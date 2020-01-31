@@ -1,9 +1,15 @@
 {
   "private": true,
-  "workspaces": [
-    "packages/core",
-    "packages/app"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ], 
+    "nohoist": [
+      "**/webpack-dev-server",
+      "**/babel-loader",
+      "**/babel-jest"
+    ]
+  },
   "devDependencies": {
     "lerna": "^3.20.2",
     "prettier": "^1.19.1",
