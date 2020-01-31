@@ -1,0 +1,9 @@
+{
+    "name": "@backstage/app",
+    "version": "0.0.0",
+    "main": "./src/index.js",
+    "dependencies": {
+        "@backstage/core": "0.0.0",
+        "react": "^16.12.0"
+    }
+}
