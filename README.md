@@ -1,9 +1,16 @@
 # Backstage
 
-What is Backstage?
+[![GitHub license](https://img.shields.io/github/license/spotify/backstage.svg)](./LICENSE)
 
+## What is Backstage?
 
-# License
+Backstage is an open platform for building developer portals.
+
+## Getting started
+
+## Documentation
+
+## License
 
 Copyright 2020 Spotify AB.
 
