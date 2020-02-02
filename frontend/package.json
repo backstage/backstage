@@ -1,19 +1,23 @@
 {
+  "name": "root",
   "private": true,
+  "scripts": {
+    "start": "yarn workspace @backstage/app start",
+    "build": "yarn workspace @backstage/app build",
+    "test": "cross-env CI=true lerna run test --stream --parallel -- --coverage",
+    "lint": "lerna run lint --stream"
+  },
   "workspaces": {
     "packages": [
-      "packages/*"
-    ], 
-    "nohoist": [
-      "**/webpack-dev-server",
-      "**/babel-loader",
-      "**/babel-jest"
+      "packages/*",
+      "packages/plugins/*"
     ]
   },
+  "version": "1.0.0",
   "devDependencies": {
+    "cross-env": "^7.0.0",
     "lerna": "^3.20.2",
     "prettier": "^1.19.1",
     "typescript": "^3.7.5"
-  },
-  "name": "frontend"
+  }
 }

@@ -1,0 +1,7 @@
+**/node_modules/**
+**/dist/**
+**/storybook-static/**
+**/coverage/**
+**/build/**
+**/.git/**
+**/public/**

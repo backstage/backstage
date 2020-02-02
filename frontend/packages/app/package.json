@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@backstage/core": "0.0.0",
+    "@backstage/plugin-hello-world": "0.0.0",
+    "@react-workspaces/react-scripts": "^3.3.0-alpha-08",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -10,16 +13,20 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "cross-env": "^7.0.0",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.3.1",
-    "typescript": "~3.7.2"
+    "react-dom": "^16.12.0"
+  },
+  "workspaces": {
+    "nohoist": [
+      "@react-workspaces/react-scripts"
+    ]
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts start",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts build",
+    "test": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts test",
+    "lint": "eslint ./src/**/*.{ts,tsx} --max-warnings=0 --format=codeframe"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -35,5 +42,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "license": "Apache-2.0"
 }
