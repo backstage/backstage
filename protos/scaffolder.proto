@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package spotify.backstage.scaffolder.v1alpha1;
+
+service Scaffolder {
+  rpc Scaffolder(ScaffolderRequest) returns (ScaffolderReply);
+}
+
+message ScaffolderRequest {
+  string name = 1;
+}
+
+message ScaffolderReply {
+  string message = 1;
+}

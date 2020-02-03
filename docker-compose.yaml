@@ -16,3 +16,9 @@ services:
     build:
       context: backend/hello
     restart: unless-stopped
+
+  scaffolder:
+    container_name: boss-scaffolder
+    build:
+      context: backend/scaffolder
+    restart: unless-stopped
