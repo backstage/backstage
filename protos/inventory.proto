@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package spotify.backstage.inventory.v1alpha1;
+
+service Inventory {
+  rpc GetEntity(GetEntityRequest) returns (GetEntityReply);
+}
+
+message GetEntityRequest {
+  Entity entity = 1;
+  repeated string include_facts = 2;
+}
+
+message GetEntityReply {
+  Entity entity = 1;
+  repeated Fact facts = 2;
+}
+
+message Entity {
+  string kind = 1;
+  string id = 2;
+}
+
+message Fact {
+  string name = 1;
+  string value = 2;
+}
