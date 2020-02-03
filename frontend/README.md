@@ -5,7 +5,7 @@
 Serve app:
 
 ```bash
-yarn serve
+yarn start
 ```
 
 Build app:
