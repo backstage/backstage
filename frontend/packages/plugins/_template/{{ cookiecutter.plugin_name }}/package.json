@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/{{ cookiecutter.plugin_name }}",
+  "name": "@backstage/plugin-{{ cookiecutter.plugin_name }}",
   "version": "0.0.0",
   "main": "src/index.ts",
   "main:src": "src/index.ts",
