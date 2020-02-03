@@ -26,23 +26,23 @@ const useStyles = makeStyles(theme => ({
     background: '#181818',
     color: 'white',
     height: '100vh',
-    paddingLeft: '1rem',
-    paddingTop: '1rem',
+    paddingLeft: theme.spacing(2),
+    paddingTop: theme.spacing(2),
   },
   pageHeader: {
     // FIXME: Make part of PageHeader component
     background: 'linear-gradient(262.63deg, #19D15A 4.2%, #1CAB5B 72.01%)',
     height: '120px',
-    paddingTop: '1rem',
-    paddingLeft: '1rem',
+    paddingTop: theme.spacing(2),
+    paddingLeft: theme.spacing(2),
     color: 'white',
   },
   pageBody: {
-    paddingLeft: '1rem',
-    paddingTop: '1rem',
+    paddingLeft: theme.spacing(2),
+    paddingTop: theme.spacing(2),
   },
   avatarButton: {
-    padding: '1rem',
+    padding: theme.spacing(2),
   },
 }));
 
