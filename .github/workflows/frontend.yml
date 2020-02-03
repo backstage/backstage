@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - 'frontend/**'
+    - '.github/**'
 
 jobs:
   build:
@@ -14,11 +15,23 @@ jobs:
         node-version: [12.x]
 
     steps:
-    - uses: actions/checkout@v1
+    - name: checkout code
+      uses: actions/checkout@v1
+    - name: cache node modules
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
     - name: use node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
-      working-directory: ./frontend
       with:
+        working-directory: ./frontend
         node-version: ${{ matrix.node-version }}
     - name: yarn install, build, and test
       working-directory: ./frontend
