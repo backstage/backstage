@@ -8,6 +8,16 @@ Backstage is an open platform for building developer portals.
 
 ## Getting started
 
+## Plugins
+
+### Creating a Plugin
+
+Run the following:
+
+```terminal
+$ ./tools/cookiecutter/init.sh frontend/packages/plugins/_template --output-dir frontend/packages/plugins
+```
+
 ## Documentation
 
 ## License
