@@ -1,1 +1,1 @@
-{{cookiecutter.plugin_name}}
+Welcome to your {{cookiecutter.plugin_name}} plugin!

@@ -1,7 +1,7 @@
 import plugin from './plugin';
 
-describe('plugin-1', () => {
+describe('{{ cookiecutter.plugin_name }}', () => {
   it('should export plugin', () => {
-    expect(plugin.id).toBe('change-me-id');
+    expect(plugin.id).toBe('{{ cookiecutter.plugin_name }}');
   });
 });
