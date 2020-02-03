@@ -1,0 +1,18 @@
+#!/usr/bin/env docker-compose -f
+
+version: "3.4"
+
+services:
+  proxy:
+    container_name: boss-proxy
+    build:
+      context: backend/proxy
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+
+  hello:
+    container_name: boss-hello
+    build:
+      context: backend/hello
+    restart: unless-stopped
