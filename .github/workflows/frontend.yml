@@ -17,17 +17,15 @@ jobs:
     steps:
     - name: checkout code
       uses: actions/checkout@v1
-    - name: cache node modules
-      uses: actions/cache@v1
-      env:
-        cache-name: cache-node-modules
+    - name: get yarn cache
+      id: yarn-cache
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+    - uses: actions/cache@v1
       with:
-        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+        path: ${{ steps.yarn-cache.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+          ${{ runner.os }}-yarn-
     - name: use node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
