@@ -17,9 +17,11 @@ jobs:
     - uses: actions/checkout@v1
     - name: use node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
+      working-directory: ./frontend
       with:
         node-version: ${{ matrix.node-version }}
     - name: yarn install, build, and test
+      working-directory: ./frontend
       run: |
         yarn install
         yarn build --if-present
