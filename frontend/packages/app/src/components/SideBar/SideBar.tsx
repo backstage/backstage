@@ -7,29 +7,11 @@ import {
   Link,
   styled,
 } from '@material-ui/core';
-// import FeatureFlags from 'shared/apis/featureFlags/featureFlags';
-/*
-import {
-  ExploreIcon,
-  ExperimentationIcon,
-  SearchIcon,
-  HomeIcon,
-  TechDocsIcon,
-  NewsIcon,
-  SpotifyIcon,
-  FolderIcon,
-  CreateIcon,
-  GroupIcon,
-  MachineLearningIcon,
-  RemoveIcon,
-  TechInsightsIcon,
-  ManageIcon,
-} from 'shared/icons';
-import { Link } from 'shared/components';
-*/
 
 import HomeIcon from '@material-ui/icons/Home';
 import ServiceIcon from '@material-ui/icons/DeviceHub';
+import WebIcon from '@material-ui/icons/Language';
+import LibIcon from '@material-ui/icons/LocalLibrary';
 import CreateIcon from '@material-ui/icons/AddCircleOutline';
 
 const drawerWidthClosed = 64;
@@ -85,6 +67,7 @@ const SidebarItem: FC<SidebarItemProps> = ({
         className={clsx(classes.root, classes.closed)}
         href={to}
         onClick={onClick}
+        underline="none"
       >
         <Icon fontSize="small" />
       </Link>
@@ -96,6 +79,7 @@ const SidebarItem: FC<SidebarItemProps> = ({
       className={clsx(classes.root, classes.open)}
       href={to}
       onClick={onClick}
+      underline="none"
     >
       <div className={classes.iconContainer}>
         <Icon fontSize="small" />
@@ -125,7 +109,7 @@ const useSidebarLogoStyles = makeStyles({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginLeft: -10,
+    marginLeft: 22,
     whiteSpace: 'nowrap',
   },
   titleDot: {
@@ -168,6 +152,7 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     overflow: 'visible',
     width: theme.spacing(7) + 1,
+    height: '100vh',
   },
   drawer: {
     display: 'flex',
@@ -181,7 +166,6 @@ const useStyles = makeStyles(theme => ({
     background: '#171717',
     overflowX: 'hidden',
     width: drawerWidthClosed,
-    // color: '#fff',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.shortest,
@@ -220,11 +204,15 @@ const SideBar: FC<{}> = () => {
       <Context.Provider value={open}>
         <div className={clsx(classes.drawer, { [classes.drawerOpen]: open })}>
           <SidebarLogo />
+          <Spacer />
           <Divider />
           <SidebarItem icon={HomeIcon} to="/" text="Home" />
           <Divider />
           <SidebarItem icon={ServiceIcon} to="/services" text="Services" />
+          <SidebarItem icon={WebIcon} to="/websites" text="Websites" />
+          <SidebarItem icon={LibIcon} to="/libraries" text="Libraries" />
           <Divider />
+          <Space />
           <SidebarItem icon={CreateIcon} text="Create..." />
         </div>
       </Context.Provider>
