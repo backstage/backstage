@@ -23,4 +23,6 @@ module.exports = {
       version: 'detect', // Tells eslint-plugin-react to automatically detect the version of React to use
     },
   },
+  // Adding this to .eslintignore just doesn't even, let me know if you can make it work ._.
+  ignorePatterns: ['**/*_pb.js', '**/*_pb.d.ts'],
 };
