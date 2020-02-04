@@ -5,7 +5,8 @@ import (
 	"net"
 
 	"github.com/spotify/backstage/inventory/app"
-	pb "github.com/spotify/backstage/inventory/protos"
+	pb "github.com/spotify/backstage/proto/inventory/v1"
+
 	"google.golang.org/grpc"
 )
 
