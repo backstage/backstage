@@ -1,9 +1,9 @@
-import React, { FC, Fragment } from 'react';
+import React, { FC } from 'react';
 import helloWorld, { MyComponent } from '@backstage/plugin-hello-world';
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import SideBar from './components/SideBar';
-import PageHeader from './components/PageHeader';
+//import PageHeader from './components/PageHeader';
+import { Header, Page, InfoCard } from '@backstage/core';
 import { LoginComponent } from '@backstage/plugin-login';
 import {
   BrowserRouter as Router,
@@ -11,6 +11,15 @@ import {
   Route,
   Link as RouterLink,
 } from 'react-router-dom';
+import { BackstageTheme, withGlobalStyles, theme } from '@backstage/core';
+import { CssBaseline, MuiThemeProvider, makeStyles } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/styles';
+import { StylesProvider, createGenerateClassName } from '@material-ui/styles';
+import HomePageTimer from './components/HomepageTimer';
+
+const generateClassName = createGenerateClassName({
+  productionPrefix: 'stajl',
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,8 +35,7 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto',
   },
   pageBody: {
-    paddingLeft: theme.spacing(2),
-    paddingTop: theme.spacing(2),
+    padding: theme.spacing(2),
   },
   avatarButton: {
     padding: theme.spacing(2),
@@ -36,24 +44,32 @@ const useStyles = makeStyles(theme => ({
 
 const App: FC<{}> = () => {
   return (
-    <AppShell>
-      <Router>
-        <Switch>
-          <Route exact path="/">
-            <Home />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-        </Switch>
-      </Router>
-    </AppShell>
+    <CssBaseline>
+      <MuiThemeProvider theme={BackstageTheme}>
+        <StylesProvider generateClassName={generateClassName}>
+          <ThemeProvider theme={BackstageTheme}>
+            <AppContent>
+              <Router>
+                <Switch>
+                  <Route exact path="/">
+                    <Home />
+                  </Route>
+                  <Route path="/login">
+                    <Login />
+                  </Route>
+                </Switch>
+              </Router>
+            </AppContent>
+          </ThemeProvider>
+        </StylesProvider>
+      </MuiThemeProvider>
+    </CssBaseline>
   );
 };
 
 const Home: FC<{}> = () => {
   return (
-    <Fragment>
+    <InfoCard title="Home Page">
       <Typography variant="body1">
         {' '}
         …with plugin {helloWorld?.id ?? 'wat'}:
@@ -62,18 +78,18 @@ const Home: FC<{}> = () => {
       <div>
         <RouterLink to="/login">Go to Login</RouterLink>
       </div>
-    </Fragment>
+    </InfoCard>
   );
 };
 
 const Login: FC<{}> = () => {
   return (
-    <Fragment>
+    <InfoCard title="Login Page">
       <LoginComponent />
       <div>
         <RouterLink to="/">Go to Home</RouterLink>
       </div>
-    </Fragment>
+    </InfoCard>
   );
 };
 
@@ -83,12 +99,18 @@ const AppShell: FC<{}> = ({ children }) => {
   return (
     <div className={classes.root}>
       <SideBar />
-      <div className={classes.mainContentArea}>
-        <PageHeader />
-        <div className={classes.pageBody}>{children}</div>
-      </div>
+      <Page theme={theme.home}>
+        <div className={classes.mainContentArea}>
+          <Header title="This is Backstage!">
+            <HomePageTimer />
+          </Header>
+          <div className={classes.pageBody}>{children}</div>
+        </div>
+      </Page>
     </div>
   );
 };
+
+const AppContent = withGlobalStyles(AppShell);
 
 export default App;
