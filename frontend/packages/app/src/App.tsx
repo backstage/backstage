@@ -12,6 +12,8 @@ import {
   Link as RouterLink,
 } from 'react-router-dom';
 
+import { Button } from './shared/components';
+
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',

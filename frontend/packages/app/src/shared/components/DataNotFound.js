@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
-import PenguinIcon from 'cdn/sadpenguin.png';
 import Link from 'shared/components/Link';
 
 class DataNotFound extends React.Component {
@@ -22,7 +21,6 @@ class DataNotFound extends React.Component {
     return (
       <div align="center">
         <div align="center" style={{ maxWidth: 500, marginTop: 120 }}>
-          <img src={PenguinIcon} alt="empty" style={{ width: 160, opacity: 0.3 }} />
           <Typography variant="h6">Not found</Typography>
           <p>Error: {error}</p>
           <p>{info}</p>

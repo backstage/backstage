@@ -1069,6 +1069,39 @@
   resolved "https://registry.npmjs.org/@csstools/normalize.css/-/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha512-ij4wRiunFfaJxjB0BdrYHIH8FxBJpOwNPhhAcunlmPdXudL1WQV1qoP9un6JsEBAgQH+7UXyyjh0g7jTxXK6tg==
 
+"@devexpress/dx-core@2.4.0", "@devexpress/dx-core@^2.4.0":
+  version "2.4.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@devexpress/dx-core/-/dx-core-2.4.0.tgz#d65fc545ed23e87c94c4e7935e1b027fafee4453"
+  integrity sha1-1l/FRe0j6HyUxOeTXhsCf6/uRFM=
+
+"@devexpress/dx-grid-core@2.4.0", "@devexpress/dx-grid-core@^2.4.0":
+  version "2.4.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@devexpress/dx-grid-core/-/dx-grid-core-2.4.0.tgz#c63126fd303fa00995a77948b12992e056d19bfd"
+  integrity sha1-xjEm/TA/oAmVp3lIsSmS4FbRm/0=
+
+"@devexpress/dx-react-core@^2.4.0":
+  version "2.4.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@devexpress/dx-react-core/-/dx-react-core-2.4.0.tgz#47ee91dfb07a5933e96c69ae02261135cfc67860"
+  integrity sha1-R+6R37B6WTPpbGmuAiYRNc/GeGA=
+  dependencies:
+    "@devexpress/dx-core" "2.4.0"
+    prop-types "^15.7.2"
+
+"@devexpress/dx-react-grid-material-ui@^2.4.0":
+  version "2.4.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@devexpress/dx-react-grid-material-ui/-/dx-react-grid-material-ui-2.4.0.tgz#71c94aeca4ffed355e2c2f097303237545faab16"
+  integrity sha1-cclK7KT/7TVeLC8JcwMjdUX6qxY=
+  dependencies:
+    clsx "^1.0.4"
+    prop-types "^15.7.2"
+
+"@devexpress/dx-react-grid@^2.4.0":
+  version "2.4.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@devexpress/dx-react-grid/-/dx-react-grid-2.4.0.tgz#5b1d92f3a44008139e0e0a17a4735361f9d85a3a"
+  integrity sha1-Wx2S86RACBOeDgoXpHNTYfnYWjo=
+  dependencies:
+    "@devexpress/dx-grid-core" "2.4.0"
+
 "@emotion/hash@^0.7.4":
   version "0.7.4"
   resolved "https://registry.npmjs.org/@emotion/hash/-/hash-0.7.4.tgz#f14932887422c9056b15a8d222a9074a7dfa2831"
@@ -4516,6 +4549,11 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+classnames@^2.2.6:
+  version "2.2.6"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
+  integrity sha1-Q5Nb/90pHzJtrQogUwmzjQD2UM4=
+
 clean-css@4.2.x:
   version "4.2.3"
   resolved "https://registry.npmjs.org/clean-css/-/clean-css-4.2.3.tgz#507b5de7d97b48ee53d84adb0160ff6216380f78"
@@ -4650,6 +4688,11 @@ clsx@^1.0.2:
   version "1.0.4"
   resolved "https://registry.npmjs.org/clsx/-/clsx-1.0.4.tgz#0c0171f6d5cb2fe83848463c15fcc26b4df8c2ec"
   integrity sha512-1mQ557MIZTrL/140j+JVdRM6e31/OA4vTYxXgqIIZlndyfjHpyawKZia1Im05Vp9BWmImkcNrNtFYQMyFcgJDg==
+
+clsx@^1.0.4:
+  version "1.1.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/clsx/-/clsx-1.1.0.tgz#62937c6adfea771247c34b54d320fb99624f5702"
+  integrity sha1-YpN8at/qdxJHw0tU0yD7mWJPVwI=
 
 cmd-shim@^3.0.0, cmd-shim@^3.0.3:
   version "3.0.3"
