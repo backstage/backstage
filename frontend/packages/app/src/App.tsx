@@ -36,20 +36,18 @@ const useStyles = makeStyles(theme => ({
 
 const App: FC<{}> = () => {
   return (
-    <Router>
-      <Switch>
-        <Route exact path="/">
-          <AppShell>
+    <AppShell>
+      <Router>
+        <Switch>
+          <Route exact path="/">
             <Home />
-          </AppShell>
-        </Route>
-        <Route path="/login">
-          <AppShell>
+          </Route>
+          <Route path="/login">
             <Login />
-          </AppShell>
-        </Route>
-      </Switch>
-    </Router>
+          </Route>
+        </Switch>
+      </Router>
+    </AppShell>
   );
 };
 
