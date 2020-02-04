@@ -11,22 +11,20 @@ services:
     ports:
       - "8080:80"
 
-  # identity:
-  #   container_name: boss-identity
-  #   build:
-  #     context: backend/identity
-  #   restart: unless-stopped
-
-  # inventory:
-  #   container_name: boss-inventory
-  #   build:
-  #     context: backend/inventory
-  #   restart: unless-stopped
+  identity:
+    container_name: boss-identity
+    build:
+      context: backend
+      args:
+        service: identity
+    restart: unless-stopped
+    volumes:
+       - ./backend/identity/identity-data.json:/app/identity-data.json
 
   scaffolder:
     container_name: boss-scaffolder
     build:
-      context: backend/scaffolder
+      context: backend
+      args:
+        service: scaffolder
     restart: unless-stopped
-
-

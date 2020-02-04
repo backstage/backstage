@@ -24,7 +24,7 @@ static_resources:
                     - name: local_service
                       domains: ['*']
                       routes:
-                        - match: { prefix: '/identity' }
+                        - match: { prefix: '/spotify.backstage.identity.v1.Identity/' }
                           route:
                             cluster: identity_service
                             max_grpc_timeout: 0s
@@ -57,7 +57,7 @@ static_resources:
       hosts:
         - socket_address:
             address: identity
-            port_value: 80
+            port_value: 50051
     - name: inventory_service
       connect_timeout: 0.25s
       type: logical_dns
@@ -66,7 +66,7 @@ static_resources:
       hosts:
         - socket_address:
             address: inventory
-            port_value: 80
+            port_value: 50051
     - name: scaffolder_service
       connect_timeout: 0.25s
       type: logical_dns
@@ -74,5 +74,5 @@ static_resources:
       lb_policy: round_robin
       hosts:
         - socket_address:
-            address: scaffolder
-            port_value: 80
+            address: identity
+            port_value: 50051
