@@ -1,9 +1,16 @@
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 import helloWorld, { MyComponent } from '@backstage/plugin-hello-world';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import SideBar from './components/SideBar';
 import PageHeader from './components/PageHeader';
+import { LoginComponent } from '@backstage/plugin-login';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link as RouterLink
+} from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,6 +35,50 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const App: FC<{}> = () => {
+  return (
+  <Router>
+    <Switch>
+      <Route exact path="/">
+        <AppShell>
+          <Home />
+        </AppShell>
+      </Route>
+      <Route path="/login">
+      <AppShell>
+          <Login />
+        </AppShell>
+      </Route>
+    </Switch>
+    </Router>);
+};
+
+const Home: FC<{}> = () => {
+  return (
+    <Fragment>
+      <Typography variant="body1">
+        {' '}
+        …with plugin {helloWorld?.id ?? 'wat'}:
+      </Typography>
+      <MyComponent />
+      <div>
+        <RouterLink to="/login">Go to Login</RouterLink>
+      </div>
+    </Fragment>
+  );
+};
+
+const Login: FC<{}> = () => {
+  return (
+    <Fragment>
+      <LoginComponent />
+      <div>
+        <RouterLink to="/">Go to Home</RouterLink>
+      </div>
+    </Fragment>
+    );
+}
+
+const AppShell: FC<{}> = ({children}) => {
   const classes = useStyles();
 
   return (
@@ -36,15 +87,11 @@ const App: FC<{}> = () => {
       <div className={classes.mainContentArea}>
         <PageHeader />
         <div className={classes.pageBody}>
-          <Typography variant="body1">
-            {' '}
-            …with plugin {helloWorld?.id ?? 'wat'}:
-          </Typography>
-          <MyComponent />
+          {children}
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default App;
