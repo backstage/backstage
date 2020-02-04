@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package spotify.backstage.identity.v1;
+
+option go_package = "identityv1";
+
+service Identity {
+  // Returned user's groups will only have ID field populated
+  rpc GetUser(GetUserRequest) returns (GetUserReply);
+
+  // Child groups will only have their ID fields populated
+  // Users in the group will not have their groups popuplated
+  rpc GetGroup(GetGroupRequest) returns (GetGroupReply);
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message GetUserReply {
+  User user = 1;
+  repeated Group groups = 2;
+}
+
+message GetGroupRequest {
+  string id = 1;
+}
+
+message GetGroupReply {
+  Group groups = 1;
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+}
+
+message Group {
+  string id = 1;
+  repeated User users = 2;
+  repeated Group groups = 3;
+}

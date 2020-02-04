@@ -1,0 +1,18 @@
+
+protoc:
+  version: 3.8.0
+lint:
+  group: uber2
+  rules:
+    remove:
+      - REQUEST_RESPONSE_TYPES_UNIQUE
+  file_header:
+    path: ../LICENSE
+generate:
+  go_options:
+    import_path: github.com/spotify/backstage
+  plugins:
+    - name: go
+      type: go
+      flags: plugins=grpc
+      output: ../backend/proto
