@@ -1,11 +1,12 @@
 export { default as Button } from './Button';
 export { default as CircleProgress } from './CircleProgress';
+export { default as ComponentWorkflowsEndpointsDropdown } from './ComponentWorkflowsEndpointsDropdown';
 export { default as ConfirmPrompt } from './ConfirmPrompt';
 export { default as CopyTextButton } from './CopyTextButton';
 export { default as DataNotFound } from './DataNotFound';
 export { default as DebugPrint } from './DebugPrint';
 export { default as EmptyState } from './EmptyState';
-// export { default as Error } from './Error';
+export { default as Error } from './Error';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ErrorPanel } from './ErrorPanel';
 export { default as ExpansionAlertPanel } from './ExpansionAlertPanel';
@@ -18,26 +19,14 @@ export { default as InfoPanel } from './InfoPanel';
 export { AlphaLabel, BetaLabel } from './Lifecycle';
 export { default as Link } from './Link';
 export { default as Markdown } from './Markdown';
-export {
-  MetadataList,
-  MetadataListItem,
-  MetadataTable,
-  MetadataTableItem,
-} from './MetadataTable';
+export { MetadataList, MetadataListItem, MetadataTable, MetadataTableItem } from './MetadataTable';
 export { default as ModalView } from './ModalView';
 export { default as PagerDutyServiceStatus } from './PagerDutyServiceStatus';
 export { default as PrimaryTableLink } from './PrimaryTableLink';
 export { default as Progress } from './Progress';
 export { default as ProgressOverlay } from './ProgressOverlay';
 export { default as SortableTable } from './SortableTable';
-export {
-  StatusError,
-  StatusNA,
-  StatusOK,
-  StatusPending,
-  StatusRunning,
-  StatusWarning,
-} from './Status';
+export { StatusError, StatusNA, StatusOK, StatusPending, StatusRunning, StatusWarning } from './Status';
 export { default as SvgImageIcon } from './SvgImageIcon';
 export { Tabs } from './Tabs';
 export { default as TextIconLink } from './TextIconLink';

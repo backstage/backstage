@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
 
+import PenguinIcon from 'cdn/sadpenguin.png';
+
 const styles = {
   container: {
     maxWidth: 500,
@@ -28,17 +30,15 @@ export default class EmptyState extends Component {
     info: PropTypes.shape({
       title: PropTypes.string.isRequired,
       image: PropTypes.string,
-      helperText: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
-        .isRequired,
+      helperText: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
       button: PropTypes.element,
-      bottomText: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
-        .isRequired,
+      bottomText: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
     }).isRequired,
   };
 
   render() {
     const { info } = this.props;
-    const imgSrc = info.image || 'todo-icon-missing';
+    const imgSrc = info.image || PenguinIcon;
     return (
       <div align="center" data-testid="empty">
         <div align="center" style={styles.container}>
