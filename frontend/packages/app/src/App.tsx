@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto',
   },
   pageBody: {
-    paddingLeftß: theme.spacing(2),
+    paddingLeft: theme.spacing(2),
     paddingTop: theme.spacing(2),
   },
   avatarButton: {
