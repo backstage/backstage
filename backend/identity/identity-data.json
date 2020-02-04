@@ -1,0 +1,23 @@
+{
+  "users": [
+    {
+      "id": "rugvip",
+      "name": "Patrik",
+      "groups": ["backstage"]
+    }
+  ],
+  "groups": [
+    {
+      "id": "spotify",
+      "groups": ["backstage", "scio"]
+    },
+    {
+      "id": "backstage",
+      "groups": []
+    },
+    {
+      "id": "scio",
+      "groups": []
+    }
+  ]
+}

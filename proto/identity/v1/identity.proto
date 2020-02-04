@@ -27,7 +27,7 @@ message GetGroupRequest {
 }
 
 message GetGroupReply {
-  Group groups = 1;
+  Group group = 1;
 }
 
 message User {
