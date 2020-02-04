@@ -21,4 +21,6 @@ module.exports = {
       version: 'detect',
     },
   },
+  // Adding this to .eslintignore just doesn't even, let me know if you can make it work ._.
+  ignorePatterns: ['**/*_pb.js', '**/*_pb.d.ts'],
 };

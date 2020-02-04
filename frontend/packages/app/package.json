@@ -23,10 +23,10 @@
     ]
   },
   "scripts": {
-    "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts start",
-    "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts build",
-    "test": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts test",
-    "lint": "eslint ./src/**/*.{ts,tsx} --max-warnings=0 --format=codeframe"
+    "start": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts start",
+    "build": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
+    "test": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts test",
+    "lint": "cross-env EXTEND_ESLINT=true eslint ./src/**/*.{ts,tsx} --max-warnings=0 --format=codeframe"
   },
   "eslintConfig": {
     "extends": "react-app"
