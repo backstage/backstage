@@ -1,4 +1,4 @@
-import search_system_z_backend_json from './search_system-z-backend.json';
+import backstage_backend_json from './backstage-backend.json';
 
 export function getOpenProxyHost() {
   return 'mocked-proxy';
@@ -8,7 +8,7 @@ export default {
   client: {
     query: jest.fn().mockImplementation(() => {
       return new Promise(resolve => {
-        resolve(search_system_z_backend_json);
+        resolve(backstage_backend_json);
       });
     }),
   },
