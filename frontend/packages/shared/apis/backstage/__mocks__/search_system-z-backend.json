@@ -1,0 +1,14 @@
+{
+  "data": {
+    "elasticSearch": {
+      "data": [{ "__typename": "Component", "id": "system-z-backend", "componentType": "service" }],
+      "aggregations": [
+        { "name": "metadata", "buckets": [{ "key": "data-endpoints", "docCount": 10 }] },
+        {
+          "name": "lifecycle.keyword",
+          "buckets": [{ "key": "production", "docCount": 5 }, { "key": "experimental", "docCount": 5 }]
+        }
+      ]
+    }
+  }
+}

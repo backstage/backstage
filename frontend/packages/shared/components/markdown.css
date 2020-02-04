@@ -1,0 +1,129 @@
+.markdown a {
+  color: #0a6ebe;
+}
+
+.markdown a:hover {
+  color: #2196f3;
+}
+
+.markdown img,
+.markdown code {
+  color: #333;
+  border: none;
+  background: white;
+  border-radius: 3px;
+}
+
+.markdown img {
+  max-width: 700px;
+}
+
+.markdown code {
+  padding: 2px;
+}
+
+.markdown pre code {
+  border: 1px solid #ddd;
+  padding: 20px;
+  max-width: 1000px;
+}
+
+.markdown h2 code {
+  font-size: 26px;
+}
+
+.markdown .anchor {
+  margin-left: -20px;
+  margin-right: 5px;
+}
+
+.markdown blockquote {
+  background: white;
+  border: 1px solid #eee;
+  padding: 10px;
+  color: #333;
+  margin: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.markdown blockquote p {
+  margin: 5px;
+}
+
+.markdown .note-highlight {
+  margin-left: 10px;
+  padding: 10px;
+  background: #dfd;
+  border: 1px solid lightgrey;
+  border-radius: 10px;
+}
+
+.markdown .note-highlight .heading {
+  font-weight: bold;
+}
+
+.markdown .darkBackground a {
+  color: #a4e7f9;
+}
+
+.markdown .darkBackground a:hover {
+  color: #87c9ff;
+}
+
+.markdown > p {
+  margin: 0px;
+}
+
+.markdown > ol,
+.markdown > ul {
+  padding-left: 60px;
+}
+
+.markdown.docs h1,
+.markdown.docs h2,
+.markdown.docs h3,
+.markdown.docs h4,
+.markdown.docs h5 {
+  margin-left: -10px;
+  border-bottom: 1px solid #bbb;
+}
+
+.markdown.docs table {
+  padding: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 1em;
+  border: 0;
+}
+
+.markdown.docs tbody {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.markdown.docs table tr {
+  border: 0;
+  border-top: 1px solid #ccc;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+}
+
+.markdown.docs table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+.markdown.docs table tr th,
+.markdown.docs table tr td {
+  font-size: 1em;
+  border: 1px solid #ccc;
+  margin: 0;
+  padding: 0.5em 1em;
+}
+
+.markdown.docs table tr th {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}

@@ -1,0 +1,4 @@
+export const ERROR_LOG_ADD = 'ERROR_LOG_ADD';
+export const ERROR_LOG_OPEN = 'ERROR_LOG_OPEN';
+export const ERROR_LOG_CLOSE = 'ERROR_LOG_CLOSE';
+export const ERROR_LOG_UNSELECT = 'ERROR_LOG_UNSELECT';
