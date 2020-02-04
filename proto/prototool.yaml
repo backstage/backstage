@@ -10,7 +10,7 @@ lint:
     path: ../LICENSE
 generate:
   go_options:
-    import_path: github.com/spotify/backstage
+    import_path: github.com/spotify/backstage/backend
   plugins:
     - name: go
       type: go

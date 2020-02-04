@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	identityv1 "github.com/spotify/backstage/proto/identity/v1"
+	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
 	"google.golang.org/grpc"
 )
 
@@ -20,19 +20,15 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	identityv1.RegisterIdentityServer(grpcServer, &server{})
+	pb.RegisterScaffolderServer(grpcServer, &server{})
 
-	log.Println("Serving Identity Service")
+	log.Println("Serving Scaffolder Service")
 	grpcServer.Serve(lis)
 }
 
 type server struct {
 }
 
-func (s *server) GetUser(ctx context.Context, req *identityv1.GetUserRequest) (*identityv1.GetUserReply, error) {
-	return &identityv1.GetUserReply{}, nil
-}
-
-func (s *server) GetGroup(ctx context.Context, req *identityv1.GetGroupRequest) (*identityv1.GetGroupReply, error) {
-	return &identityv1.GetGroupReply{}, nil
+func (s *server) GetAllTemplates(ctx context.Context, req *pb.Empty) (*pb.GetAllTemplatesResponse, error) {
+	return &pb.GetAllTemplatesResponse{}, nil
 }
