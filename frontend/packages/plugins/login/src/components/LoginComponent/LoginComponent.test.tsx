@@ -5,6 +5,6 @@ import LoginComponent from './LoginComponent';
 describe('LoginComponent', () => {
   it('should render', () => {
     const rendered = render(<LoginComponent />);
-    expect(rendered.getByText('Username')).toBeInTheDocument();
+    expect(rendered.getByText('Login')).toBeInTheDocument();
   });
 });
