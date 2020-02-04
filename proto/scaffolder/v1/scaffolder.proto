@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package spotify.backstage.scaffolder.v1;
+
+option go_package = "scaffolderv1";
+
+service Scaffolder {}
+
+message Template {
+  string id = 1;
+  string name = 2;
+}

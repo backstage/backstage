@@ -8,6 +8,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -324,11 +326,11 @@ var fileDescriptor_2343b5ee8923b571 = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConn
+var _ grpc.ClientConnInterface
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
+const _ = grpc.SupportPackageIsVersion6
 
 // IdentityClient is the client API for Identity service.
 //
@@ -342,10 +344,10 @@ type IdentityClient interface {
 }
 
 type identityClient struct {
-	cc *grpc.ClientConn
+	cc grpc.ClientConnInterface
 }
 
-func NewIdentityClient(cc *grpc.ClientConn) IdentityClient {
+func NewIdentityClient(cc grpc.ClientConnInterface) IdentityClient {
 	return &identityClient{cc}
 }
 
@@ -374,6 +376,17 @@ type IdentityServer interface {
 	// Child groups will only have their ID fields populated
 	// Users in the group will not have their groups popuplated
 	GetGroup(context.Context, *GetGroupRequest) (*GetGroupReply, error)
+}
+
+// UnimplementedIdentityServer can be embedded to have forward compatible implementations.
+type UnimplementedIdentityServer struct {
+}
+
+func (*UnimplementedIdentityServer) GetUser(ctx context.Context, req *GetUserRequest) (*GetUserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+}
+func (*UnimplementedIdentityServer) GetGroup(ctx context.Context, req *GetGroupRequest) (*GetGroupReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGroup not implemented")
 }
 
 func RegisterIdentityServer(s *grpc.Server, srv IdentityServer) {

@@ -21,12 +21,40 @@ static_resources:
                 route_config:
                   name: local_route
                   virtual_hosts:
-                    - name: local_service
+                    - name: identity_service
                       domains: ['*']
                       routes:
-                        - match: { prefix: '/' }
+                        - match: { prefix: '/identity' }
                           route:
-                            cluster: hello_service
+                            cluster: identity_service
+                            max_grpc_timeout: 0s
+                      cors:
+                        allow_origin_string_match:
+                          - prefix: '*'
+                        allow_methods: GET, PUT, DELETE, POST, OPTIONS
+                        allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout
+                        max_age: '1728000'
+                        expose_headers: custom-header-1,grpc-status,grpc-message
+                    - name: inventory_service
+                      domains: ['*']
+                      routes:
+                        - match: { prefix: '/inventory' }
+                          route:
+                            cluster: inventory_service
+                            max_grpc_timeout: 0s
+                      cors:
+                        allow_origin_string_match:
+                          - prefix: '*'
+                        allow_methods: GET, PUT, DELETE, POST, OPTIONS
+                        allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout
+                        max_age: '1728000'
+                        expose_headers: custom-header-1,grpc-status,grpc-message
+                    - name: scaffolder_service
+                      domains: ['*']
+                      routes:
+                        - match: { prefix: '/scaffolder' }
+                          route:
+                            cluster: scaffolder_service
                             max_grpc_timeout: 0s
                       cors:
                         allow_origin_string_match:
@@ -41,12 +69,30 @@ static_resources:
                   - name: envoy.router
 
   clusters:
-    - name: hello_service
+    - name: identity_service
       connect_timeout: 0.25s
       type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
       hosts:
         - socket_address:
-            address: hello
+            address: identity
+            port_value: 80
+    - name: inventory_service
+      connect_timeout: 0.25s
+      type: logical_dns
+      http2_protocol_options: {}
+      lb_policy: round_robin
+      hosts:
+        - socket_address:
+            address: inventory
+            port_value: 80
+    - name: scaffolder_service
+      connect_timeout: 0.25s
+      type: logical_dns
+      http2_protocol_options: {}
+      lb_policy: round_robin
+      hosts:
+        - socket_address:
+            address: scaffolder
             port_value: 80
