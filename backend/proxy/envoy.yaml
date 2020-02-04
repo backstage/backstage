@@ -24,9 +24,17 @@ static_resources:
                     - name: local_service
                       domains: ['*']
                       routes:
-                        - match: { prefix: '/' }
+                        - match: { prefix: '/identity' }
                           route:
-                            cluster: hello_service
+                            cluster: identity_service
+                            max_grpc_timeout: 0s
+                        - match: { prefix: '/inventory' }
+                          route:
+                            cluster: inventory_service
+                            max_grpc_timeout: 0s
+                        - match: { prefix: '/spotify.backstage.scaffolder.v1.Scaffolder' }
+                          route:
+                            cluster: scaffolder_service
                             max_grpc_timeout: 0s
                       cors:
                         allow_origin_string_match:
@@ -41,12 +49,30 @@ static_resources:
                   - name: envoy.router
 
   clusters:
-    - name: hello_service
+    - name: identity_service
       connect_timeout: 0.25s
       type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
       hosts:
         - socket_address:
-            address: hello
+            address: identity
+            port_value: 80
+    - name: inventory_service
+      connect_timeout: 0.25s
+      type: logical_dns
+      http2_protocol_options: {}
+      lb_policy: round_robin
+      hosts:
+        - socket_address:
+            address: inventory
+            port_value: 80
+    - name: scaffolder_service
+      connect_timeout: 0.25s
+      type: logical_dns
+      http2_protocol_options: {}
+      lb_policy: round_robin
+      hosts:
+        - socket_address:
+            address: scaffolder
             port_value: 80

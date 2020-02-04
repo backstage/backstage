@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package spotify.backstage.scaffolder.v1;
+
+import "identity/v1/identity.proto";
+
+option go_package = "scaffolderv1";
+
+service Scaffolder {
+	rpc GetAllTemplates(Empty) returns (GetAllTemplatesResponse);
+}
+
+message Empty {}
+
+message GetAllTemplatesResponse {
+	repeated Template templates = 1;
+}
+
+message Template {
+  string id = 1;
+  string name = 2;
+  spotify.backstage.identity.v1.User user = 3;
+}

@@ -11,8 +11,22 @@ services:
     ports:
       - "8080:80"
 
-  hello:
-    container_name: boss-hello
+  # identity:
+  #   container_name: boss-identity
+  #   build:
+  #     context: backend/identity
+  #   restart: unless-stopped
+
+  # inventory:
+  #   container_name: boss-inventory
+  #   build:
+  #     context: backend/inventory
+  #   restart: unless-stopped
+
+  scaffolder:
+    container_name: boss-scaffolder
     build:
-      context: backend/hello
+      context: backend/scaffolder
     restart: unless-stopped
+
+
