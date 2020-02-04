@@ -21,38 +21,18 @@ static_resources:
                 route_config:
                   name: local_route
                   virtual_hosts:
-                    - name: identity_service
+                    - name: local_service
                       domains: ['*']
                       routes:
                         - match: { prefix: '/identity' }
                           route:
                             cluster: identity_service
                             max_grpc_timeout: 0s
-                      cors:
-                        allow_origin_string_match:
-                          - prefix: '*'
-                        allow_methods: GET, PUT, DELETE, POST, OPTIONS
-                        allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout
-                        max_age: '1728000'
-                        expose_headers: custom-header-1,grpc-status,grpc-message
-                    - name: inventory_service
-                      domains: ['*']
-                      routes:
                         - match: { prefix: '/inventory' }
                           route:
                             cluster: inventory_service
                             max_grpc_timeout: 0s
-                      cors:
-                        allow_origin_string_match:
-                          - prefix: '*'
-                        allow_methods: GET, PUT, DELETE, POST, OPTIONS
-                        allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout
-                        max_age: '1728000'
-                        expose_headers: custom-header-1,grpc-status,grpc-message
-                    - name: scaffolder_service
-                      domains: ['*']
-                      routes:
-                        - match: { prefix: '/scaffolder' }
+                        - match: { prefix: '/spotify.backstage.scaffolder.v1.Scaffolder' }
                           route:
                             cluster: scaffolder_service
                             max_grpc_timeout: 0s
