@@ -9,8 +9,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link as RouterLink
-} from "react-router-dom";
+  Link as RouterLink,
+} from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto',
   },
   pageBody: {
-    paddingLeft: theme.spacing(2),
+    paddingLeftß: theme.spacing(2),
     paddingTop: theme.spacing(2),
   },
   avatarButton: {
@@ -36,20 +36,21 @@ const useStyles = makeStyles(theme => ({
 
 const App: FC<{}> = () => {
   return (
-  <Router>
-    <Switch>
-      <Route exact path="/">
-        <AppShell>
-          <Home />
-        </AppShell>
-      </Route>
-      <Route path="/login">
-      <AppShell>
-          <Login />
-        </AppShell>
-      </Route>
-    </Switch>
-    </Router>);
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <AppShell>
+            <Home />
+          </AppShell>
+        </Route>
+        <Route path="/login">
+          <AppShell>
+            <Login />
+          </AppShell>
+        </Route>
+      </Switch>
+    </Router>
+  );
 };
 
 const Home: FC<{}> = () => {
@@ -75,10 +76,10 @@ const Login: FC<{}> = () => {
         <RouterLink to="/">Go to Home</RouterLink>
       </div>
     </Fragment>
-    );
-}
+  );
+};
 
-const AppShell: FC<{}> = ({children}) => {
+const AppShell: FC<{}> = ({ children }) => {
   const classes = useStyles();
 
   return (
@@ -86,12 +87,10 @@ const AppShell: FC<{}> = ({children}) => {
       <SideBar />
       <div className={classes.mainContentArea}>
         <PageHeader />
-        <div className={classes.pageBody}>
-          {children}
-        </div>
+        <div className={classes.pageBody}>{children}</div>
       </div>
     </div>
   );
-}
+};
 
 export default App;

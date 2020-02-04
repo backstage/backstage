@@ -1,18 +1,35 @@
 import React, { FC, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
 
 const LoginComponent: FC<{}> = () => {
   return (
     <Fragment>
-      <TextField variant="outlined" label="Username: " />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => window.location.href = "/"}
+      <Grid container spacing={8} alignItems="flex-end">
+        <Grid item md={true} sm={true} xs={true}>
+          <TextField
+            id="username"
+            label="Username"
+            type="email"
+            autoFocus
+            required
+          />
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        justify="flex-start"
+        style={{ marginTop: '24px', marginBottom: '24px' }}
       >
-        Login
-      </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          style={{ textTransform: 'none' }}
+        >
+          Login
+        </Button>
+      </Grid>
     </Fragment>
   );
 };
