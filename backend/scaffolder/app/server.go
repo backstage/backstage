@@ -14,6 +14,7 @@ type Server struct {
 
 // GetAllTemplates returns the local templatess
 func (s *Server) GetAllTemplates(ctx context.Context, req *pb.Empty) (*pb.GetAllTemplatesReply, error) {
+	// todo (blam): yes we currently read the disk on every load. but it's fine for now 🤷‍♂️
 	definitions, err := s.Repository.Load()
 	var templates []*pb.Template
 
