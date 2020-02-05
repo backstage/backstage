@@ -14,17 +14,24 @@ type Server struct {
 
 // GetAllTemplates returns the local templatess
 func (s *Server) GetAllTemplates(ctx context.Context, req *pb.Empty) (*pb.GetAllTemplatesReply, error) {
-	_, err := s.Repository.Load()
-	template := &pb.Template{
-		Id:   "react-ssr-template",
-		Name: "React SSR Template",
-		User: &identity.User{
-			Id:   "spotify",
-			Name: "Spotify",
-		},
-	}
+	definitions, err := s.Repository.Load()
+	var templates []*pb.Template
 
-	templates := []*pb.Template{template}
+	for _, definition := range definitions {
+		template := &pb.Template{
+			Id:          definition.ID,
+			Name:        definition.Name,
+			Description: definition.Description,
+			// need to actually call the idenity service here to get the
+			// actual user and propgate back when needed.
+			User: &identity.User{
+				Id:   "spotify",
+				Name: "Spotify",
+			},
+		}
+
+		templates = append(templates, template)
+	}
 
 	return &pb.GetAllTemplatesReply{
 		Templates: templates,

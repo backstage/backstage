@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
 )
 
@@ -18,8 +20,30 @@ type TemplateDefinition struct {
 
 // Load will return all the Repository templates
 func (s *Repository) Load() ([]*TemplateDefinition, error) {
-	matches, err := filepath.Glob("templates/**/template-info.json")
-	fmt.Println(matches)
+	templateInfoFilePaths, err := filepath.Glob("templates/**/template-info.json")
+	var templateDefinitions []*TemplateDefinition
 
-	return []*TemplateDefinition{}, err
+	if err != nil {
+		fmt.Errorf("failed to load template-info files")
+		return nil, err
+	}
+
+	for _, templatePath := range templateInfoFilePaths {
+		content, err := ioutil.ReadFile(templatePath)
+		if err != nil {
+			fmt.Errorf("failed to load path for %s", templatePath)
+			continue
+		}
+
+		definition := TemplateDefinition{}
+		err = json.Unmarshal([]byte(content), &definition)
+		if err != nil {
+			fmt.Errorf("failed to unmarshal  %s", templatePath)
+			continue
+		}
+
+		templateDefinitions = append(templateDefinitions, &definition)
+	}
+
+	return templateDefinitions, err
 }
