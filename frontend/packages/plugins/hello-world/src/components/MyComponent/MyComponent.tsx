@@ -1,8 +1,8 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import { HelloPromiseClient } from '../../proto/hello_grpc_web_pb';
 import { HelloRequest } from '../../proto/hello_pb';
-import { Paper, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 
 const MyComponent: FC<{}> = () => {
   const [message, setMessage] = useState<string>('');
@@ -25,7 +25,7 @@ const MyComponent: FC<{}> = () => {
   }, []);
 
   return (
-    <Paper square>
+    <Fragment>
       <Typography variant="body1">{message}</Typography>
       <Typography variant="body1" color="error">
         {error}
@@ -37,7 +37,7 @@ const MyComponent: FC<{}> = () => {
       >
         Hello!
       </Button>
-    </Paper>
+    </Fragment>
   );
 };
 
