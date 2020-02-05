@@ -1,5 +1,5 @@
 import React, { createContext, useContext, FC } from 'react';
-import { EntityConfig } from './types';
+import { EntityConfig } from '../entity/EntityKind';
 
 type Value = {
   config: EntityConfig;

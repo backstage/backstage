@@ -1,6 +1,6 @@
 import {
   createEntityKind,
-  createOverviewPage,
+  createWidgetView,
   createEntityView,
 } from '@backstage/core';
 import ComputerIcon from '@material-ui/icons/Computer';
@@ -8,7 +8,7 @@ import MockEntityPage from './MockEntityPage';
 import MockEntityCard from './MockEntityCard';
 
 /* SERVICE */
-const serviceOverviewPage = createOverviewPage()
+const serviceOverviewPage = createWidgetView()
   .addComponent(MockEntityCard)
   .addComponent(MockEntityCard);
 

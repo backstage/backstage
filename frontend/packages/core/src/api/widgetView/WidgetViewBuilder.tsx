@@ -1,12 +1,12 @@
 import React, { ComponentType, FC } from 'react';
-import { App, AppComponentBuilder } from './types';
+import { App, AppComponentBuilder } from '../app/types';
 
 type Props = {
   app: App;
   cards: ComponentType<any>[];
 };
 
-const OverviewPageComponent: FC<Props> = ({ cards }) => {
+const WidgetViewComponent: FC<Props> = ({ cards }) => {
   return (
     <div>
       {cards.map(CardComponent => (
@@ -16,16 +16,16 @@ const OverviewPageComponent: FC<Props> = ({ cards }) => {
   );
 };
 
-type OverviewPageRegistration = {
+type WidgetViewRegistration = {
   type: 'component';
   component: ComponentType<any>;
 };
 
-export default class OverviewPageBuilder extends AppComponentBuilder {
-  private readonly registrations = new Array<OverviewPageRegistration>();
+export default class WidgetViewBuilder extends AppComponentBuilder {
+  private readonly registrations = new Array<WidgetViewRegistration>();
   private output?: ComponentType<any>;
 
-  addComponent(component: ComponentType<any>): OverviewPageBuilder {
+  addComponent(component: ComponentType<any>): WidgetViewBuilder {
     this.registrations.push({ type: 'component', component });
     return this;
   }
@@ -40,11 +40,11 @@ export default class OverviewPageBuilder extends AppComponentBuilder {
         case 'component':
           return reg.component;
         default:
-          throw new Error(`Unknown OverviewPageBuilder registration`);
+          throw new Error(`Unknown WidgetViewBuilder registration`);
       }
     });
 
-    this.output = () => <OverviewPageComponent app={app} cards={cards} />;
+    this.output = () => <WidgetViewComponent app={app} cards={cards} />;
     return this.output;
   }
 }

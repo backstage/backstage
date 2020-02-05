@@ -1,10 +1,10 @@
 import React, { ComponentType, FC } from 'react';
-import { AppComponentBuilder, App } from './types';
-import { useEntity, useEntityUri, useEntityConfig } from './EntityContext';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import EntityLink from './EntityLink';
+import { AppComponentBuilder, App } from '../app/types';
+import { useEntity, useEntityUri, useEntityConfig } from './EntityContext';
+import EntityLink from '../../components/EntityLink/EntityLink';
 
 const EntityLayout: FC<{}> = ({ children }) => {
   const config = useEntityConfig();
