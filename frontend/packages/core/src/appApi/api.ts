@@ -1,5 +1,5 @@
 import AppBuilder from './AppBuilder';
-import { EntityConfig } from './types';
+import { EntityConfig, PluginConfig, BackstagePlugin } from './types';
 import EntityKind from './EntityKind';
 import OverviewPageBuilder from './OverviewPageBuilder';
 import EntityViewBuilder from './EntityViewPageBuilder';
@@ -18,4 +18,8 @@ export function createOverviewPage() {
 
 export function createEntityView() {
   return new EntityViewBuilder();
+}
+
+export function createPlugin(config: PluginConfig): BackstagePlugin {
+  return { register() {}, ...config };
 }

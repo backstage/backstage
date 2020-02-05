@@ -5,6 +5,7 @@
   "dependencies": {
     "@backstage/core": "0.0.0",
     "@backstage/plugin-hello-world": "0.0.0",
+    "@backstage/plugin-home-page": "0.0.0",
     "@backstage/plugin-login": "0.0.0",
     "@react-workspaces/react-scripts": "^3.3.0-alpha-08",
     "@testing-library/jest-dom": "^4.2.4",

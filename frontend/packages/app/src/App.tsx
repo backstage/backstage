@@ -1,17 +1,15 @@
 import {
   BackstageTheme,
   createApp,
-  EntityLink,
   Header,
   InfoCard,
   Page,
   theme,
 } from '@backstage/core';
-import helloWorld, { MyComponent } from '@backstage/plugin-hello-world';
 //import PageHeader from './components/PageHeader';
 import { LoginComponent } from '@backstage/plugin-login';
+import HomePagePlugin from '@backstage/plugin-home-page';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
 import React, { FC } from 'react';
 import {
   BrowserRouter as Router,
@@ -58,27 +56,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Home: FC<{}> = () => {
-  return (
-    <InfoCard title="Home Page">
-      <Typography variant="body1">
-        {' '}
-        …with plugin {helloWorld?.id ?? 'wat'}:
-      </Typography>
-      <MyComponent />
-      <div>
-        <RouterLink to="/login">Go to Login</RouterLink>
-        <EntityLink kind="service" id="backstage-backend">
-          Backstage Backend
-        </EntityLink>
-        <EntityLink uri="entity:service:backstage-lb" subPath="ci-cd">
-          Backstage LB CI/CD
-        </EntityLink>
-      </div>
-    </InfoCard>
-  );
-};
-
 const Login: FC<{}> = () => {
   return (
     <InfoCard title="Login Page">
@@ -111,7 +88,8 @@ const AppShell: FC<{}> = ({ children }) => {
 const app = createApp();
 
 app.registerEntityKind(...entities);
-app.setHomePage(Home);
+app.registerPlugin(HomePagePlugin);
+
 const AppComponent = app.build();
 
 const App: FC<{}> = () => {
