@@ -1,6 +1,4 @@
 export * from './appApi';
-export * from './types';
-export { default as createPlugin } from './createPlugin';
 export { default as Page } from '../src/layout/Page';
 export { gradients, theme } from '../src/layout/Page';
 export { default as Header } from '../src/layout/Header/Header';

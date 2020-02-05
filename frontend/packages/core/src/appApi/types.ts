@@ -34,3 +34,40 @@ export type UserApi = {
 
   getUser(): Promise<User>;
 };
+
+export type PluginConfig = {
+  id: string;
+  register?(hooks: PluginHooks): void;
+};
+
+export interface BackstagePlugin {
+  id: string;
+  register(hooks: PluginHooks): void;
+}
+
+export type PluginHooks = {
+  router: Router;
+};
+
+export type RouteOptions = {
+  // Whether the route path must match exactly, defaults to true.
+  exact?: boolean;
+};
+
+export type RedirectOptions = {
+  // Whether the route path must match exactly, defaults to true.
+  exact?: boolean;
+};
+
+export type Router = {
+  registerRoute(
+    path: string,
+    Component: React.ComponentType<any>,
+    options?: RouteOptions,
+  ): void;
+  registerRedirect(
+    path: string,
+    target: string,
+    options?: RedirectOptions,
+  ): void;
+};

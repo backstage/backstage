@@ -1,9 +1,10 @@
 {
-  "name": "@backstage/core",
+  "name": "@backstage/plugin-home-page",
   "version": "0.0.0",
   "main": "src/index.ts",
   "main:src": "src/index.ts",
   "devDependencies": {
+    "@backstage/core": "0.0.0",
     "@spotify/web-scripts": "^6.0.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -12,13 +13,10 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
-    "@types/react-router-dom": "^5.1.3",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-helmet": "5.2.1",
-    "react-addons-text-content": "0.0.4",
-    "react-router-dom": "^5.1.2",
-    "recompose": "0.30.0"
+    "@material-ui/core": "^4.9.1",
+    "@material-ui/icons": "^4.9.1"
   },
   "scripts": {
     "lint": "web-scripts lint",

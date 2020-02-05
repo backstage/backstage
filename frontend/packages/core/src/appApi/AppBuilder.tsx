@@ -1,13 +1,10 @@
 import React, { ComponentType, FC } from 'react';
 import { AppContextProvider } from './AppContext';
 import { App, EntityConfig, AppComponentBuilder } from './types';
-import { Route, Switch, useParams } from 'react-router-dom';
+import { Route, Switch, useParams, Redirect } from 'react-router-dom';
 import EntityKind from './EntityKind';
 import { EntityContextProvider } from './EntityContext';
-
-const DefaultHomePage: FC<{}> = () => {
-  return <span>Hello! I am default home page</span>;
-};
+import { BackstagePlugin } from './types';
 
 class AppImpl implements App {
   constructor(private readonly entities: Map<string, EntityKind>) {}
@@ -33,7 +30,7 @@ function builtComponent(
 
 export default class AppBuilder {
   private readonly entities = new Map<string, EntityKind>();
-  private homePage: ComponentType = DefaultHomePage;
+  private readonly plugins = new Map<string, BackstagePlugin>();
 
   registerEntityKind(...entity: EntityKind[]) {
     for (const e of entity) {
@@ -45,14 +42,20 @@ export default class AppBuilder {
     }
   }
 
-  setHomePage(page: ComponentType<{}>) {
-    this.homePage = page;
+  registerPlugin(...plugin: BackstagePlugin[]) {
+    for (const p of plugin) {
+      const { id } = p;
+      if (this.plugins.has(id)) {
+        throw new Error(`Plugin '${id}' is already registered`);
+      }
+      this.plugins.set(id, p);
+    }
   }
 
   build(): ComponentType<{}> {
     const app = new AppImpl(this.entities);
 
-    const entityRoutes = [];
+    const entityRoutes = new Array<JSX.Element>();
 
     for (const { config } of this.entities.values()) {
       const { kind, pages } = config;
@@ -92,13 +95,41 @@ export default class AppBuilder {
       }
     }
 
-    const routes = [...entityRoutes];
+    const pluginRoutes = new Array<JSX.Element>();
+
+    for (const plugin of this.plugins.values()) {
+      plugin.register({
+        router: {
+          registerRoute(path, component, options = {}) {
+            if (path.startsWith('/entity/')) {
+              throw new Error(
+                `Plugin ${plugin.id} tried to register forbidden route ${path}`,
+              );
+            }
+            pluginRoutes.push(
+              <Route path={path} component={component} {...options} />,
+            );
+          },
+          registerRedirect(path, target, options = {}) {
+            if (path.startsWith('/entity/')) {
+              throw new Error(
+                `Plugin ${plugin.id} tried to register forbidden redirect ${path}`,
+              );
+            }
+            pluginRoutes.push(
+              <Redirect path={path} to={target} {...options} />,
+            );
+          },
+        },
+      });
+    }
+
+    const routes = [...pluginRoutes, ...entityRoutes];
 
     return () => (
       <AppContextProvider app={app}>
         <Switch>
           {routes}
-          <Route exact path="/" component={this.homePage} />
           <Route component={() => <span>404 Not Found</span>} />
         </Switch>
       </AppContextProvider>

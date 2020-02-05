@@ -6,6 +6,5 @@ describe('App', () => {
   it('renders learn react link', () => {
     const rendered = render(<App />);
     rendered.getByText('This is Backstage!');
-    rendered.getByText('…with plugin hello-world:');
   });
 });
