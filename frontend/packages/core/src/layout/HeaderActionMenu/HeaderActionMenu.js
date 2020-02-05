@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { IconButton, List, ListItem, ListItemIcon, ListItemText, Popover } from '@material-ui/core';
-import { KebabMenuIcon } from 'shared/icons';
+import { default as KebabMenuIcon } from './MenuVertical';
 
 const ActionItem = ({ label, secondaryLabel, icon, disabled = false, onClick, WrapperComponent = React.Fragment }) => {
   return (

@@ -41,7 +41,7 @@ class HeaderLabel extends Component {
     return (
       <span className={classes.root}>
         <Typography className={classes.label}>{label}</Typography>
-        {url ? <Link to={url}>{content}</Link> : content}
+        {url ? <Link href={url}>{content}</Link> : content}
       </span>
     );
   }

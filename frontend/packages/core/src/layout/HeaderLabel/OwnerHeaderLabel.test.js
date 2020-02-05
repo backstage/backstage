@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, prettyDOM } from '@testing-library/react';
 import OwnerHeaderLabel from './OwnerHeaderLabel';
 import { wrapInThemedTestApp } from '../../testUtils';
 

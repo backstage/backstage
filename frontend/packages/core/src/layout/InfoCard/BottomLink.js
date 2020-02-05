@@ -17,7 +17,7 @@ export default class BottomLink extends Component {
     return (
       <div>
         <Divider />
-        <Link to={link} onClick={onClick} highlight="none">
+        <Link href={link} onClick={onClick} highlight="none">
           <ListItem>
             <ListItemIcon>
               <ArrowIcon />

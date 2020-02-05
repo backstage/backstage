@@ -1,52 +1,3 @@
-import '../../assets/bursts/bursts.css';
-import circle1 from '../../assets/bursts/circle-1.svg';
-import circle2 from '../../assets/bursts/circle-2.svg';
-import triangle1 from '../../assets/bursts/triangle-1.svg';
-import triangle2 from '../../assets/bursts/triangle-2.svg';
-import triangle3 from '../../assets/bursts/triangle-3.svg';
-import rectangle1 from '../../assets/bursts/rectangle-1.svg';
-import rectangle2 from '../../assets/bursts/rectangle-2.svg';
-
-// TODO move this file to shared and out of core
-
-export const shapes = {
-  circle1: {
-    backgroundImage: `url(${circle1})`,
-    width: 'calc(400px + 20%)',
-    backgroundPosition: '100px 60%',
-  },
-  circle2: {
-    backgroundImage: `url(${circle2})`,
-    width: 'calc(400px + 20%)',
-    backgroundPosition: '100px 58%',
-  },
-  rectangle1: {
-    backgroundImage: `url(${rectangle1})`,
-    width: 'calc(400px + 20%)',
-    backgroundPosition: '100px 60%',
-  },
-  rectangle2: {
-    backgroundImage: `url(${rectangle2})`,
-    width: 'calc(400px + 20%)',
-    backgroundPosition: '30px 35%',
-  },
-  triangle1: {
-    backgroundImage: `url(${triangle1})`,
-    width: 'calc(500px + 30%)',
-    backgroundPosition: '100px calc(50px + 45%)',
-  },
-  triangle2: {
-    backgroundImage: `url(${triangle2})`,
-    width: 'calc(400px + 20%)',
-    backgroundPosition: '100px 38%',
-  },
-  triangle3: {
-    backgroundImage: `url(${triangle3})`,
-    width: 'calc(400px + 20%)',
-    backgroundPosition: '100px 76%',
-  },
-};
-
 export const gradients = {
   blue: 'linear-gradient(135deg, #2D46B9 0%, #509BF5 100%)',
   darkBlue: 'linear-gradient(44deg, #1E3264 0%, #A0C3D2 100%)',
@@ -71,102 +22,26 @@ export const theme = {
   service: {
     activeNavLinkColor: '#1D7F6E',
     gradient: gradients.tealGreen,
-    burstShape: shapes.rectangle2,
-  },
-  appFeature: {
-    activeNavLinkColor: '#FF6437',
-    gradient: gradients.orangeYellow,
-    burstShape: shapes.triangle1,
-  },
-  app: {
-    activeNavLinkColor: '#A72525',
-    gradient: gradients.redOrange,
-    burstShape: shapes.triangle1,
-  },
-  endpoint: {
-    activeNavLinkColor: '#9315b0',
-    gradient: gradients.purpleBlue,
-    burstShape: shapes.circle1,
-  },
-  pipeline: {
-    activeNavLinkColor: '#9315b0',
-    gradient: gradients.purpleBlue,
-    burstShape: shapes.circle1,
+    burstShape: null,
   },
   website: {
     activeNavLinkColor: '#765d90',
     gradient: gradients.purple,
-    burstShape: shapes.rectangle2,
-  },
-  workflow: {
-    activeNavLinkColor: '#AF2996',
-    secondary: '#9315b0',
-    gradient: gradients.purpleBlue,
-    burstShape: shapes.circle1,
-  },
-  library: {
-    activeNavLinkColor: '#B39AC8',
-    gradient: gradients.sunset,
-    burstShape: shapes.triangle3,
-  },
-  other: {
-    activeNavLinkColor: '#8f6858',
-    gradient: gradients.brown,
-    burstShape: shapes.rectangle1,
-  },
-  system: {
-    activeNavLinkColor: '#526C90',
-    gradient: gradients.darkBlue,
-    burstShape: shapes.triangle2,
-  },
-  project: {
-    activeNavLinkColor: '#F13DA2',
-    gradient: gradients.pinkOrange,
-    burstShape: shapes.triangle3,
-  },
-  tool: {
-    activeNavLinkColor: '#B39AC8',
-    gradient: gradients.violetPeach,
-    burstShape: shapes.rectangle1,
+    burstShape: null,
   },
   home: {
     activeNavLinkColor: '#00814e',
     gradient: gradients.green,
-    burstShape: shapes.triangle2,
+    burstShape: null,
   },
   org: {
     activeNavLinkColor: '#6044ef',
     gradient: gradients.violetGreen,
-    burstShape: shapes.triangle3,
+    burstShape: null,
   },
   documentation: {
     activeNavLinkColor: '#04c2ba',
     gradient: gradients.tpm,
-    burstShape: shapes.circle2,
-  },
-  blogPost: {
-    activeNavLinkColor: '#FFF',
-    gradient: 'linear-gradient(90deg, #033A45 0%, #033A45 100%)',
-    burstShape: shapes.circle2,
-  },
-  machineLearning: {
-    activeNavLinkColor: '#0033DD',
-    gradient: gradients.royalBlue,
-    burstShape: shapes.circle1,
-  },
-  partnership: {
-    activeNavLinkColor: '#000000',
-    gradient: gradients.grey,
-    burstShape: shapes.rectangle2,
-  },
-  ml: {
-    activeNavLinkColor: '#B39AC8',
-    gradient: gradients.blue,
-    burstShape: shapes.circle1,
-  },
-  scienceBox: {
-    activeNavLinkColor: '#69B9FF', // matches sky gradient beginning point
-    gradient: gradients.sky,
-    burstShape: shapes.circle1,
+    burstShape: null,
   },
 };

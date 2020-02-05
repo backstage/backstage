@@ -1,2 +1,2 @@
 export { default } from './Page';
-export { shapes, gradients, theme } from './PageThemeProvider';
+export { gradients, theme } from './PageThemeProvider';

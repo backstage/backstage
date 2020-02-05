@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Tooltip, withStyles } from '@material-ui/core';
+import { Tooltip, Link, withStyles } from '@material-ui/core';
 
-import { StatusError } from 'shared/components/Status';
-import Link from 'shared/components/Link';
-import HeaderLabel from 'shared/components/layout/HeaderLabel';
+import { StatusError } from '../../components/Status';
+import HeaderLabel from './HeaderLabel';
 
 const style = theme => ({
   notVerified: {
@@ -33,7 +32,7 @@ class OwnerHeaderLabel extends Component {
     const isBadSquad = owner.type !== 'squad';
 
     const notVerified = isBadSquad && (
-      <Link to="https://spotify.stackenterprise.co/a/4412/23">
+      <Link href="https://spotify.stackenterprise.co/a/4412/23">
         <span className={classes.notVerified}>
           <StatusError style={{ position: 'relative', top: 2 }} /> Squad not verified!
         </span>
