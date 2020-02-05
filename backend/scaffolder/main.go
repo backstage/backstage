@@ -5,8 +5,8 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
 	identity "github.com/spotify/backstage/backend/proto/identity/v1"
+	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
 	"google.golang.org/grpc"
 )
 
@@ -27,21 +27,26 @@ func main() {
 	grpcServer.Serve(lis)
 }
 
-type server struct {
+// LocalTemplate json representation
+type LocalTemplate struct {
+	ID   string
+	Name string
 }
 
+type server struct{}
+
 func (s *server) GetAllTemplates(ctx context.Context, req *pb.Empty) (*pb.GetAllTemplatesResponse, error) {
-	template := &pb.Template {
-		Id: "react-ssr-template",
+	template := &pb.Template{
+		Id:   "react-ssr-template",
 		Name: "React SSR Template",
-		User: &identity.User {
-			Id: "spotify",
+		User: &identity.User{
+			Id:   "spotify",
 			Name: "Spotify",
 		},
 	}
 
-	templates := []*pb.Template{ template }
-	
+	templates := []*pb.Template{template}
+
 	return &pb.GetAllTemplatesResponse{
 		Templates: templates,
 	}, nil
