@@ -11,11 +11,25 @@ import {
   Route,
   Link as RouterLink,
 } from 'react-router-dom';
-import { BackstageTheme, withGlobalStyles, theme } from '@backstage/core';
+import { BackstageTheme, theme } from '@backstage/core';
 import { CssBaseline, ThemeProvider, makeStyles } from '@material-ui/core';
 import HomePageTimer from './components/HomepageTimer';
 
 const useStyles = makeStyles(theme => ({
+  '@global': {
+    html: {
+      height: '100%',
+      fontFamily: theme.typography.fontFamily,
+    },
+    body: {
+      height: '100%',
+      fontFamily: theme.typography.fontFamily,
+    },
+    a: {
+      color: 'inherit',
+      textDecoration: 'none',
+    },
+  },
   root: {
     display: 'grid',
     // FIXME: Don't used a fixed width here
@@ -40,7 +54,7 @@ const App: FC<{}> = () => {
   return (
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
-        <AppContent>
+        <AppShell>
           <Router>
             <Switch>
               <Route exact path="/">
@@ -51,7 +65,7 @@ const App: FC<{}> = () => {
               </Route>
             </Switch>
           </Router>
-        </AppContent>
+        </AppShell>
       </ThemeProvider>
     </CssBaseline>
   );
@@ -100,7 +114,5 @@ const AppShell: FC<{}> = ({ children }) => {
     </div>
   );
 };
-
-const AppContent = withGlobalStyles(AppShell);
 
 export default App;
