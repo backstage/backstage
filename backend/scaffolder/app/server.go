@@ -2,22 +2,19 @@ package app
 
 import (
 	"context"
-	"fmt"
-	"github.com/spotify/backstage/scaffolder/repository"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
+	identity "github.com/spotify/backstage/backend/proto/identity/v1"
 	pb "github.com/spotify/backstage/proto/scaffolder/v1"
+	"github.com/spotify/backstage/scaffolder/repository"
 )
 
 // Server is the inventory Grpc server
 type Server struct {
-	Repository *repsoitory.Repository
+	Repository *repository.Repository
 }
 
 // GetAllTemplates returns the local templatess
-func (s *server) GetAllTemplates(ctx context.Context, req *pb.Empty) (*pb.GetAllTemplatesResponse, error) {
-	err, localTemplates := s.repostiory.Load()
+func (s *Server) GetAllTemplates(ctx context.Context, req *pb.Empty) (*pb.GetAllTemplatesReply, error) {
+	_, err := s.Repository.Load()
 	template := &pb.Template{
 		Id:   "react-ssr-template",
 		Name: "React SSR Template",
@@ -29,7 +26,7 @@ func (s *server) GetAllTemplates(ctx context.Context, req *pb.Empty) (*pb.GetAll
 
 	templates := []*pb.Template{template}
 
-	return &pb.GetAllTemplatesResponse{
+	return &pb.GetAllTemplatesReply{
 		Templates: templates,
-	}, nil
+	}, err
 }

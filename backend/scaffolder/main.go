@@ -1,11 +1,12 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net"
 
+	pb "github.com/spotify/backstage/proto/scaffolder/v1"
 	"github.com/spotify/backstage/scaffolder/app"
+
 	"google.golang.org/grpc"
 )
 

@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 )
 
-// Local Repository
-type Local struct{}
+// Repository Repository
+type Repository struct{}
 
 // TemplateDefinition maps to whats stored in the repo
 type TemplateDefinition struct {
@@ -16,8 +16,10 @@ type TemplateDefinition struct {
 	OwnerID     string
 }
 
-// Load will return all the local templates
-func (s *Local) Load() ([]*TemplateDefinition, error) {
+// Load will return all the Repository templates
+func (s *Repository) Load() ([]*TemplateDefinition, error) {
 	matches, err := filepath.Glob("templates/**/template-info.json")
 	fmt.Println(matches)
+
+	return []*TemplateDefinition{}, err
 }
