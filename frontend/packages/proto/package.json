@@ -1,0 +1,7 @@
+{
+  "name": "@backstage/protobuf-definitions",
+  "version": "0.0.0",
+  "devDependencies": {
+    "ts-protoc-gen": "^0.12.0"
+  }
+}
