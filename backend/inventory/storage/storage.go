@@ -64,3 +64,29 @@ func (s *Storage) GetFact(entityUri, name string) (string, error) {
 
 	return value, nil
 }
+
+func (s *Storage) CreateEntity(entityUri string) error {
+	return s.db.Update(func(tx *bbolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte(entityUri))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+func (s *Storage) GetEntity(entityUri string) (string, error) {
+	err := s.db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte(entityUri))
+		if b == nil {
+			return fmt.Errorf("bucket '%s' does not exist", entityUri)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return entityUri, nil
+}
