@@ -45,5 +45,5 @@ func (s *Repository) Load() ([]*TemplateDefinition, error) {
 		templateDefinitions = append(templateDefinitions, &definition)
 	}
 
-	return templateDefinitions, err
+	return templateDefinitions, nil
 }
