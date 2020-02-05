@@ -6,7 +6,6 @@ import {
   InfoCard,
   Page,
   theme,
-  withGlobalStyles,
 } from '@backstage/core';
 import helloWorld, { MyComponent } from '@backstage/plugin-hello-world';
 //import PageHeader from './components/PageHeader';
@@ -25,6 +24,20 @@ import SideBar from './components/SideBar';
 import entities from './entities';
 
 const useStyles = makeStyles(theme => ({
+  '@global': {
+    html: {
+      height: '100%',
+      fontFamily: theme.typography.fontFamily,
+    },
+    body: {
+      height: '100%',
+      fontFamily: theme.typography.fontFamily,
+    },
+    a: {
+      color: 'inherit',
+      textDecoration: 'none',
+    },
+  },
   root: {
     display: 'grid',
     // FIXME: Don't used a fixed width here
@@ -95,8 +108,6 @@ const AppShell: FC<{}> = ({ children }) => {
   );
 };
 
-const AppContent = withGlobalStyles(AppShell);
-
 const app = createApp();
 
 app.registerEntityKind(...entities);
@@ -107,7 +118,7 @@ const App: FC<{}> = () => {
   return (
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
-        <AppContent>
+        <AppShell>
           <Router>
             <Switch>
               <Route path="/login">
@@ -118,7 +129,7 @@ const App: FC<{}> = () => {
               </Route>
             </Switch>
           </Router>
-        </AppContent>
+        </AppShell>
       </ThemeProvider>
     </CssBaseline>
   );

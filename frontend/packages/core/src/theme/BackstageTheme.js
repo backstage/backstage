@@ -1,4 +1,4 @@
-import { createMuiTheme, withStyles } from '@material-ui/core';
+import { createMuiTheme } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { blue, yellow } from '@material-ui/core/colors';
 
@@ -332,24 +332,4 @@ const BackstageTheme = { ...extendedTheme, ...createOverrides(extendedTheme) };
 
 // Temporary workaround for files incorrectly importing the theme directly
 export const V1 = BackstageTheme;
-
-// Default styles for the application other than the built in mui components
-const styles = theme => ({
-  '@global': {
-    html: {
-      height: '100%',
-      fontFamily: theme.typography.fontFamily,
-    },
-    body: {
-      height: '100%',
-      fontFamily: theme.typography.fontFamily,
-    },
-    a: {
-      color: 'inherit',
-      textDecoration: 'none',
-    },
-  },
-});
-
-export const withGlobalStyles = withStyles(styles);
 export default BackstageTheme;
