@@ -6,7 +6,7 @@ Collection of all Backstage protobuf definitions.
 
 Managed with prototool, install instructions at https://github.com/uber/prototool/blob/dev/docs/install.md
 
-## Install Depenedencies
+## Install Dependencies
 
 You will need to have `protoc-gen-go` available in your path. You can find out more information here: https://github.com/golang/protobuf
 
