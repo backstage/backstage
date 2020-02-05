@@ -1,3 +1,4 @@
+export * from './appApi';
 export * from './types';
 export { default as createPlugin } from './createPlugin';
 export { default as Page } from '../src/layout/Page';
