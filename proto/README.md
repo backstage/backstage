@@ -4,32 +4,55 @@ Collection of all Backstage protobuf definitions.
 
 ## Usage
 
-Managed with prototool, install instructions at https://github.com/uber/prototool/blob/dev/docs/install.md
+Managed with [Prototool](https://github.com/uber/prototool), install instructions at <https://github.com/uber/prototool/blob/dev/docs/install.md>
 
 ## Install Dependencies
 
-You will need to have `protoc-gen-go` available in your path. You can find out more information here: https://github.com/golang/protobuf
+### Prototool
 
+```bash
+$ brew install prototool
+```
 
-```sh
+### protoc-gen-go
+
+This will enable code generation in Go for interacting with gRPC-Web. You will need to have `protoc-gen-go` available in your path. You can find out more information here: https://github.com/golang/protobuf
+
+```bash
 $ go get -u github.com/golang/protobuf/protoc-gen-go
 $ protoc-gen-go # should now be available in your path providing you GOPATH + GOBIN paths are setup correctly.
 ```
 
+### protoc-gen-ts
 
-### Generate code
+This will enable code generation in TypeScript for interacting with gRPC-Web. From the root, you will need to run [Yarn](https://yarnpkg.com) in the `frontend` folder:
 
-Run to generate code to `backend/proto/`:
-
+```bash
+$ yarn --cwd ./frontend install
 ```
-$ prototool generate
+
+After this, you should be all set!
+
+## Generating Code
+
+To generate the Protobuf definitions in Go and TypeScript, run the following command from the root with [Prototool](https://github.com/uber/prototool):
+
+```bash
+$ prototool generate ./proto
 ```
 
-Generated code should be check in to the repo.
+This will generate the respective "generated" files in the following folders:
 
-### Import generated go code
+- `backend/proto`
+- `frontend/packages/proto/src/generated`
 
-Example import of inventory:
+All generated code related to Protocol Buffers should be checked in to the repository.
+
+## Code Examples
+
+### Import using Go
+
+This is what you'll need to use for development in any of the `backend` services.
 
 ```go
 package spotify.backstage.identity.v1;
@@ -37,4 +60,29 @@ package spotify.backstage.identity.v1;
 func main() {
   identityv1.NewInventoryClient(nil)
 }
+```
+
+### Import using TypeScript
+
+This is what you'll need to use for development in any of the `frontend` services.
+Firstly, ensure this line is in your `package.json` within the `frontend/` folder:
+
+```js
+"dependencies": {
+  "@backstage/protobuf-definitions": "0.0.0",
+  ...
+}
+```
+
+Next, you can use them in your [Yarn Workspaces](https://yarnpkg.com/en/docs/workspaces/) package using the following:
+
+```ts
+import { IdentityClient } from "@backstage/protocol-definitions/generated/identity/v1/identity_pb_service";
+
+const client = new IdentityClient("http://localhost:8080");
+// const req = new GetUserRequest();
+// req.setUsername("johndoe");
+// client.getUser(req, (err, user) => {
+//   /* ... */
+// });
 ```
