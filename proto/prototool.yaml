@@ -18,3 +18,4 @@ generate:
     - name: ts
       path: ../frontend/node_modules/ts-protoc-gen/bin/protoc-gen-ts
       output: ../frontend/packages/proto/src/generated
+      flags: service=grpc-web
