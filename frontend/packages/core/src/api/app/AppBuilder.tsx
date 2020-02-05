@@ -1,10 +1,10 @@
 import React, { ComponentType, FC } from 'react';
+import { Route, Switch, useParams } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
-import { App, EntityConfig, AppComponentBuilder } from './types';
-import { Route, Switch, useParams, Redirect } from 'react-router-dom';
-import EntityKind from './EntityKind';
-import { EntityContextProvider } from './EntityContext';
-import { BackstagePlugin } from './types';
+import { App, AppComponentBuilder } from './types';
+import EntityKind, { EntityConfig } from '../entity/EntityKind';
+import { EntityContextProvider } from '../entityView/EntityContext';
+import BackstagePlugin, { registerSymbol } from '../plugin/Plugin';
 
 class AppImpl implements App {
   constructor(private readonly entities: Map<string, EntityKind>) {}
@@ -30,7 +30,7 @@ function builtComponent(
 
 export default class AppBuilder {
   private readonly entities = new Map<string, EntityKind>();
-  private readonly plugins = new Map<string, BackstagePlugin>();
+  private readonly plugins = new Set<BackstagePlugin>();
 
   registerEntityKind(...entity: EntityKind[]) {
     for (const e of entity) {
@@ -44,11 +44,10 @@ export default class AppBuilder {
 
   registerPlugin(...plugin: BackstagePlugin[]) {
     for (const p of plugin) {
-      const { id } = p;
-      if (this.plugins.has(id)) {
-        throw new Error(`Plugin '${id}' is already registered`);
+      if (this.plugins.has(p)) {
+        throw new Error(`Plugin '${p}' is already registered`);
       }
-      this.plugins.set(id, p);
+      this.plugins.add(p);
     }
   }
 
@@ -98,30 +97,8 @@ export default class AppBuilder {
     const pluginRoutes = new Array<JSX.Element>();
 
     for (const plugin of this.plugins.values()) {
-      plugin.register({
-        router: {
-          registerRoute(path, component, options = {}) {
-            if (path.startsWith('/entity/')) {
-              throw new Error(
-                `Plugin ${plugin.id} tried to register forbidden route ${path}`,
-              );
-            }
-            pluginRoutes.push(
-              <Route path={path} component={component} {...options} />,
-            );
-          },
-          registerRedirect(path, target, options = {}) {
-            if (path.startsWith('/entity/')) {
-              throw new Error(
-                `Plugin ${plugin.id} tried to register forbidden redirect ${path}`,
-              );
-            }
-            pluginRoutes.push(
-              <Redirect path={path} to={target} {...options} />,
-            );
-          },
-        },
-      });
+      const { routes = [] } = plugin[registerSymbol]();
+      pluginRoutes.push(...routes);
     }
 
     const routes = [...pluginRoutes, ...entityRoutes];
