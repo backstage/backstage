@@ -1,14 +1,11 @@
 import { createMuiTheme, withStyles } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { blue, yellow } from '@material-ui/core/colors';
-import tinycolor from 'tinycolor2';
 
 export const COLORS = {
   PAGE_BACKGROUND: '#F8F8F8',
   DEFAULT_PAGE_THEME_COLOR: '#7C3699',
-  DEFAULT_PAGE_THEME_LIGHT_COLOR: tinycolor('#7C3699')
-    .lighten(50)
-    .toString(),
+  DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
   ERROR_BACKGROUND_COLOR: '#FFEBEE',
   ERROR_TEXT_COLOR: '#CA001B',
   INFO_TEXT_COLOR: '#004e8a',

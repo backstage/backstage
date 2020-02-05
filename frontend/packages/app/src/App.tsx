@@ -12,14 +12,8 @@ import {
   Link as RouterLink,
 } from 'react-router-dom';
 import { BackstageTheme, withGlobalStyles, theme } from '@backstage/core';
-import { CssBaseline, MuiThemeProvider, makeStyles } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/styles';
-import { StylesProvider, createGenerateClassName } from '@material-ui/styles';
+import { CssBaseline, ThemeProvider, makeStyles } from '@material-ui/core';
 import HomePageTimer from './components/HomepageTimer';
-
-const generateClassName = createGenerateClassName({
-  productionPrefix: 'stajl',
-});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,24 +39,20 @@ const useStyles = makeStyles(theme => ({
 const App: FC<{}> = () => {
   return (
     <CssBaseline>
-      <MuiThemeProvider theme={BackstageTheme}>
-        <StylesProvider generateClassName={generateClassName}>
-          <ThemeProvider theme={BackstageTheme}>
-            <AppContent>
-              <Router>
-                <Switch>
-                  <Route exact path="/">
-                    <Home />
-                  </Route>
-                  <Route path="/login">
-                    <Login />
-                  </Route>
-                </Switch>
-              </Router>
-            </AppContent>
-          </ThemeProvider>
-        </StylesProvider>
-      </MuiThemeProvider>
+      <ThemeProvider theme={BackstageTheme}>
+        <AppContent>
+          <Router>
+            <Switch>
+              <Route exact path="/">
+                <Home />
+              </Route>
+              <Route path="/login">
+                <Login />
+              </Route>
+            </Switch>
+          </Router>
+        </AppContent>
+      </ThemeProvider>
     </CssBaseline>
   );
 };
