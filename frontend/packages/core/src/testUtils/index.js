@@ -14,10 +14,7 @@ import ErrorBoundary from '../layout/ErrorBoundary';
 export { default as Keyboard } from './Keyboard';
 export { default as mockBreakpoint } from './mockBreakpoint';
 
-export function wrapInTestApp(
-  Component,
-  initialRouterEntries,
-) {
+export function wrapInTestApp(Component, initialRouterEntries) {
   const Wrapper = Component instanceof Function ? Component : () => Component;
 
   return (
@@ -30,16 +27,10 @@ export function wrapInTestApp(
 }
 
 export function wrapInThemedTestApp(component, initialRouterEntries) {
-  const themed = (
-    <MuiThemeProvider theme={V1}>
-      <ThemeProvider theme={V1}>{component}</ThemeProvider>
-    </MuiThemeProvider>
-  );
+  const themed = <ThemeProvider theme={V1}>{component}</ThemeProvider>;
   return wrapInTestApp(themed, initialRouterEntries);
 }
 
 export const wrapInTheme = (component, theme = V1) => (
-  <MuiThemeProvider theme={theme}>
-    <ThemeProvider theme={theme}>{component}</ThemeProvider>
-  </MuiThemeProvider>
+  <ThemeProvider theme={theme}>{component}</ThemeProvider>
 );
