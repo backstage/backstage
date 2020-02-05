@@ -9,5 +9,3 @@ export { default as InfoCard } from '../src/layout/InfoCard';
 export { default as ErrorBoundary } from '../src/layout/ErrorBoundary';
 
 export { default as BackstageTheme } from '../src/theme/BackstageTheme';
-export { withGlobalStyles } from '../src/theme/BackstageTheme';
-
