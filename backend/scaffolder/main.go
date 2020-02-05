@@ -6,6 +6,7 @@ import (
 	"net"
 
 	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
+	identity "github.com/spotify/backstage/backend/proto/identity/v1"
 	"google.golang.org/grpc"
 )
 
@@ -30,5 +31,18 @@ type server struct {
 }
 
 func (s *server) GetAllTemplates(ctx context.Context, req *pb.Empty) (*pb.GetAllTemplatesResponse, error) {
-	return &pb.GetAllTemplatesResponse{}, nil
+	template := &pb.Template {
+		Id: "react-ssr-template",
+		Name: "React SSR Template",
+		User: &identity.User {
+			Id: "spotify",
+			Name: "Spotify",
+		},
+	}
+
+	templates := []*pb.Template{ template }
+	
+	return &pb.GetAllTemplatesResponse{
+		Templates: templates,
+	}, nil
 }
