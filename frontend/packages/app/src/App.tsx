@@ -1,19 +1,28 @@
-import React, { FC } from 'react';
+import {
+  BackstageTheme,
+  createApp,
+  EntityLink,
+  Header,
+  InfoCard,
+  Page,
+  theme,
+  withGlobalStyles,
+} from '@backstage/core';
 import helloWorld, { MyComponent } from '@backstage/plugin-hello-world';
-import Typography from '@material-ui/core/Typography';
-import SideBar from './components/SideBar';
 //import PageHeader from './components/PageHeader';
-import { Header, Page, InfoCard } from '@backstage/core';
 import { LoginComponent } from '@backstage/plugin-login';
+import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import React, { FC } from 'react';
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
   Link as RouterLink,
+  Route,
+  Switch,
 } from 'react-router-dom';
-import { BackstageTheme, withGlobalStyles, theme } from '@backstage/core';
-import { CssBaseline, ThemeProvider, makeStyles } from '@material-ui/core';
 import HomePageTimer from './components/HomepageTimer';
+import SideBar from './components/SideBar';
+import entities from './entities';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,27 +45,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const App: FC<{}> = () => {
-  return (
-    <CssBaseline>
-      <ThemeProvider theme={BackstageTheme}>
-        <AppContent>
-          <Router>
-            <Switch>
-              <Route exact path="/">
-                <Home />
-              </Route>
-              <Route path="/login">
-                <Login />
-              </Route>
-            </Switch>
-          </Router>
-        </AppContent>
-      </ThemeProvider>
-    </CssBaseline>
-  );
-};
-
 const Home: FC<{}> = () => {
   return (
     <InfoCard title="Home Page">
@@ -67,6 +55,12 @@ const Home: FC<{}> = () => {
       <MyComponent />
       <div>
         <RouterLink to="/login">Go to Login</RouterLink>
+        <EntityLink kind="service" id="backstage-backend">
+          Backstage Backend
+        </EntityLink>
+        <EntityLink uri="entity:service:backstage-lb" subPath="ci-cd">
+          Backstage LB CI/CD
+        </EntityLink>
       </div>
     </InfoCard>
   );
@@ -102,5 +96,32 @@ const AppShell: FC<{}> = ({ children }) => {
 };
 
 const AppContent = withGlobalStyles(AppShell);
+
+const app = createApp();
+
+app.registerEntityKind(...entities);
+app.setHomePage(Home);
+const AppComponent = app.build();
+
+const App: FC<{}> = () => {
+  return (
+    <CssBaseline>
+      <ThemeProvider theme={BackstageTheme}>
+        <AppContent>
+          <Router>
+            <Switch>
+              <Route path="/login">
+                <Login />
+              </Route>
+              <Route>
+                <AppComponent />
+              </Route>
+            </Switch>
+          </Router>
+        </AppContent>
+      </ThemeProvider>
+    </CssBaseline>
+  );
+};
 
 export default App;
