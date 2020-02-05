@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { HeaderLabel } from 'shared/components/layout';
-import { wrapInThemedTestApp } from 'testUtils';
+import HeaderLabel from './HeaderLabel';
+import { wrapInThemedTestApp } from '../../testUtils';
 
 describe('<HeaderLabel />', () => {
   it('should have a label', () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInTestApp } from 'testUtils';
+import { wrapInTestApp } from '../../testUtils';
 import InfoCard from './InfoCard';
 
 const minProps = {

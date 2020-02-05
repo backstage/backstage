@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { OwnerHeaderLabel } from 'shared/components/layout';
-import { wrapInThemedTestApp } from 'testUtils';
+import OwnerHeaderLabel from './OwnerHeaderLabel';
+import { wrapInThemedTestApp } from '../../testUtils';
 
 const properOwner = { id: 'tools', name: 'tools', type: 'squad' };
 const badOwner = { id: 'tools-xxx', name: 'tools-xxx' };

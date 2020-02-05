@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Header } from 'shared/components/layout';
-import { wrapInThemedTestApp } from 'testUtils';
+import Header from './Header';
+import { wrapInThemedTestApp } from '../../testUtils';
 
 jest.mock('react-helmet', () => {
   return ({ defaultTitle }) => <div>defaultTitle: {defaultTitle}</div>;

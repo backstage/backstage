@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitForElement } from '@testing-library/react';
 
 import SupportButton from './SupportButton';
-import { wrapInThemedTestApp, Keyboard } from 'testUtils';
+import { wrapInThemedTestApp, Keyboard } from '../../testUtils';
 
 describe('<SupportButton />', () => {
   it('renders without exploding', () => {

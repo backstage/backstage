@@ -1,9 +1,8 @@
 import React from 'react';
 import { matchPath } from 'react-router';
 import { fireEvent, render } from '@testing-library/react';
-
-import NavItem from 'shared/components/layout/NavItem';
-import { wrapInThemedTestApp } from 'testUtils';
+import NavItem from './NavItem';
+import { wrapInThemedTestApp } from '../../testUtils';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),

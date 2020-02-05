@@ -1,17 +1,23 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 
-import { Navigation, NavItem } from 'shared/components/layout';
-import { wrapInThemedTestApp } from 'testUtils';
+import Navigation from './Navigation';
+import NavItem from './NavItem';
+import { wrapInThemedTestApp } from '../../testUtils';
 
-import { GcpProjectIcon, OverviewIcon } from 'shared/icons';
+import { default as GcpProjectIcon } from './GcpProjectByTools';
+import { default as OverviewIcon } from './InfoSquared';
 
 describe('<Navigation />', () => {
   it('renders without exploding', () => {
     const nav = (
       <Navigation>
         <NavItem title="Overview" icon={<OverviewIcon />} href={'/'} />
-        <NavItem title="Projects" icon={<GcpProjectIcon />} href={'/projects'} />
+        <NavItem
+          title="Projects"
+          icon={<GcpProjectIcon />}
+          href={'/projects'}
+        />
       </Navigation>
     );
     const rendered = render(wrapInThemedTestApp(nav));
@@ -23,7 +29,11 @@ describe('<Navigation />', () => {
     const nav = (
       <Navigation condensable={true}>
         <NavItem title="Overview" icon={<OverviewIcon />} href={'/'} />
-        <NavItem title="Projects" icon={<GcpProjectIcon />} href={'/projects'} />
+        <NavItem
+          title="Projects"
+          icon={<GcpProjectIcon />}
+          href={'/projects'}
+        />
       </Navigation>
     );
     const rendered = render(wrapInThemedTestApp(nav));
@@ -35,7 +45,11 @@ describe('<Navigation />', () => {
     const nav = (
       <Navigation condensable={true}>
         <NavItem title="Overview" icon={<OverviewIcon />} href={'/'} />
-        <NavItem title="Projects" icon={<GcpProjectIcon />} href={'/projects'} />
+        <NavItem
+          title="Projects"
+          icon={<GcpProjectIcon />}
+          href={'/projects'}
+        />
       </Navigation>
     );
     const rendered = render(wrapInThemedTestApp(nav));
@@ -47,7 +61,11 @@ describe('<Navigation />', () => {
   it('should have an anchor with correct href', () => {
     const nav = (
       <Navigation>
-        <NavItem title="Projects" icon={<GcpProjectIcon />} href={'/projects'} />
+        <NavItem
+          title="Projects"
+          icon={<GcpProjectIcon />}
+          href={'/projects'}
+        />
       </Navigation>
     );
     const rendered = render(wrapInThemedTestApp(nav));

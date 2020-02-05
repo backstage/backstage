@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { wrapInThemedTestApp, Keyboard } from 'testUtils';
+import { wrapInThemedTestApp, Keyboard } from '../../testUtils';
 import HeaderActionMenu from './HeaderActionMenu';
 
 describe('<ComponentContextMenu />', () => {
