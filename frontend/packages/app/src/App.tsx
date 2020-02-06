@@ -11,15 +11,12 @@ import { LoginComponent } from '@backstage/plugin-login';
 import HomePagePlugin from '@backstage/plugin-home-page';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import React, { FC } from 'react';
-import {
-  BrowserRouter as Router,
-  Link as RouterLink,
-  Route,
-  Switch,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import HomePageTimer from './components/HomepageTimer';
 import SideBar from './components/SideBar';
 import entities from './entities';
+import { LoginBarrier } from './login/LoginBarrier';
+import { MockCurrentUser } from './login/MockCurrentUser';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -56,13 +53,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const currentUser = new MockCurrentUser();
+
 const Login: FC<{}> = () => {
   return (
     <InfoCard title="Login Page">
-      <LoginComponent />
-      <div>
-        <RouterLink to="/">Go to Home</RouterLink>
-      </div>
+      <LoginComponent onLogin={username => currentUser.login(username)} />
     </InfoCard>
   );
 };
@@ -96,18 +92,20 @@ const App: FC<{}> = () => {
   return (
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
-        <AppShell>
-          <Router>
-            <Switch>
-              <Route path="/login">
-                <Login />
-              </Route>
-              <Route>
-                <AppComponent />
-              </Route>
-            </Switch>
-          </Router>
-        </AppShell>
+        <LoginBarrier fallback={Login} state$={currentUser.state}>
+          <AppShell>
+            <Router>
+              <Switch>
+                <Route path="/login">
+                  <Login />
+                </Route>
+                <Route>
+                  <AppComponent />
+                </Route>
+              </Switch>
+            </Router>
+          </AppShell>
+        </LoginBarrier>
       </ThemeProvider>
     </CssBaseline>
   );
