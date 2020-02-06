@@ -16,6 +16,20 @@ type Server struct {
 	Storage *storage.Storage
 }
 
+func (s *Server) ListEntities(ctx context.Context, req *pb.ListEntitiesRequest) (*pb.ListEntitiesReply, error) {
+	entities, err := s.Storage.ListEntities(req.UriPrefix)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "could not list entities")
+	}
+
+	result := make([]*pb.Entity, len(entities))
+	for i, v := range entities {
+		result[i] = &pb.Entity{Uri: v}
+	}
+
+	return &pb.ListEntitiesReply{Entities: result}, nil
+}
+
 func (s *Server) CreateEntity(ctx context.Context, req *pb.CreateEntityRequest) (*pb.CreateEntityReply, error) {
 	err := s.Storage.CreateEntity(req.GetEntity().GetUri())
 	if err != nil {
@@ -34,7 +48,7 @@ func (s *Server) GetEntity(ctx context.Context, req *pb.GetEntityRequest) (*pb.G
 	for _, factName := range req.GetIncludeFacts() {
 		value, err := s.Storage.GetFact(entityUri, factName)
 		if err != nil {
-			return nil, status.Error(codes.Internal, fmt.Sprintf("could not get fact %v for %v" , factName, entityUri))
+			return nil, status.Error(codes.Internal, fmt.Sprintf("could not get fact %v for %v", factName, entityUri))
 		}
 		facts = append(facts, &pb.Fact{Name: factName, Value: value})
 	}

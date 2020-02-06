@@ -3,6 +3,7 @@ package storage
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"go.etcd.io/bbolt"
 )
@@ -62,11 +63,37 @@ func (s *Storage) GetFact(entityUri, name string) (string, error) {
 		value = string(b.Get([]byte(name)))
 		return nil
 	})
+
 	if err != nil {
 		return "", err
 	}
 
 	return value, nil
+}
+
+func (s *Storage) ListEntities(uriPrefix string) ([]string, error) {
+	entities := []string{}
+	err := s.db.View(func(tx *bbolt.Tx) error {
+		err := tx.ForEach(func(name []byte, b *bbolt.Bucket) error {
+			namestring := string(name)
+			if uriPrefix == "" || strings.HasPrefix(namestring, uriPrefix) {
+				entities = append(entities, namestring)
+			}
+			return nil
+		})
+
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return entities, nil
 }
 
 func (s *Storage) CreateEntity(entityUri string) error {
