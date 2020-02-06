@@ -27,11 +27,22 @@ message CreateEntityReply {
   Entity entity = 1;
 }
 
+message SetFactRequest {
+  string entityUri = 1;
+  string name = 2;
+  string value = 3;
+}
+
+message SetFactReply {
+  string factUri = 1;
+}
+
 message Entity {
   string uri = 1;
 }
 
 message Fact {
-  string name = 1;
-  string value = 2;
+  string entityUri = 1;
+  string name = 2;
+  string value = 3;
 }

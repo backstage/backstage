@@ -31,3 +31,11 @@ func (s *Server) GetEntity(ctx context.Context, req *pb.GetEntityRequest) (*pb.G
 	}
 	return &pb.GetEntityReply{Entity: &pb.Entity{Uri: entityUri}}, nil
 }
+
+func (s *Server) SetFact(ctx context.Context, req *pb.SetFactRequest) (*pb.SetFactReply, error) {
+	factUri, err := s.Storage.SetFact(req.EntityUri, req.Name, req.Value)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "could not set fact")
+	}
+	return &pb.SetFactReply{FactUri: factUri} , nil
+}
