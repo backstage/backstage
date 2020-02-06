@@ -36,7 +36,7 @@ static_resources:
                           route:
                             cluster: inventory_service
                             max_grpc_timeout: 0s
-                        - match: { prefix: '/spotify.backstage.scaffolder.v1.Scaffolder' }
+                        - match: { prefix: '/spotify.backstage.scaffolder.v1.Scaffolder/' }
                           route:
                             cluster: scaffolder_service
                             max_grpc_timeout: 0s
@@ -87,5 +87,5 @@ static_resources:
       lb_policy: round_robin
       hosts:
         - socket_address:
-            address: identity
+            address: scaffolder
             port_value: 50051
