@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@backstage/core": "0.0.0",
+    "@backstage/plugin-github-actions": "0.0.0",
     "@backstage/plugin-hello-world": "0.0.0",
     "@backstage/plugin-home-page": "0.0.0",
     "@backstage/plugin-login": "0.0.0",

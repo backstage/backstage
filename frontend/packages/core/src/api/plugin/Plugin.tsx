@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
+import PluginOutputHook from './PluginOutputHook';
 
 export type PluginConfig = {
   id: string;
@@ -8,6 +9,7 @@ export type PluginConfig = {
 
 export type PluginHooks = {
   router: Router;
+  provide<T>(ref: PluginOutputHook<T>, value: T): void;
 };
 
 export type RouteOptions = {
@@ -35,9 +37,11 @@ export type Router = {
 
 export type PluginRegistrationResult = {
   routes?: JSX.Element[];
+  outputs?: Map<PluginOutputHook<any>, any>;
 };
 
 export const registerSymbol = Symbol('plugin-register');
+export const outputSymbol = Symbol('plugin-output');
 
 export default class Plugin {
   private result?: PluginRegistrationResult;
@@ -55,6 +59,7 @@ export default class Plugin {
     const { id } = this.config;
 
     const routes = new Array<JSX.Element>();
+    const outputs = new Map<PluginOutputHook<any>, any>();
 
     this.config.register({
       router: {
@@ -86,10 +91,18 @@ export default class Plugin {
           );
         },
       },
+      provide(hook, value) {
+        outputs.set(hook, value);
+      },
     });
 
-    this.result = { routes };
+    this.result = { routes, outputs };
     return this.result;
+  }
+
+  [outputSymbol]<T>(outputHook: PluginOutputHook<T>): T | undefined {
+    const { outputs } = this[registerSymbol]();
+    return outputs?.get(outputHook) as T;
   }
 
   toString() {

@@ -5,6 +5,8 @@ import ListItem from '@material-ui/core/ListItem';
 import { AppComponentBuilder, App } from '../app/types';
 import { useEntity, useEntityUri, useEntityConfig } from './EntityContext';
 import EntityLink from '../../components/EntityLink/EntityLink';
+import BackstagePlugin, { outputSymbol } from '../plugin/Plugin';
+import { entityViewPage } from '../plugin/outputs';
 
 const EntityLayout: FC<{}> = ({ children }) => {
   const config = useEntityConfig();
@@ -57,7 +59,7 @@ const EntityViewComponent: FC<Props> = ({ pages }) => {
         {pages.map(({ path, component }) => (
           <Route
             key={path}
-            exact
+            exact={false}
             path={`${basePath}/${path}`}
             component={component}
           />
@@ -74,6 +76,10 @@ type EntityViewRegistration =
       title: string;
       path: string;
       page: AppComponentBuilder;
+    }
+  | {
+      type: 'plugin';
+      plugin: BackstagePlugin;
     }
   | {
       type: 'component';
@@ -103,6 +109,11 @@ export default class EntityViewBuilder extends AppComponentBuilder {
     return this;
   }
 
+  register(plugin: BackstagePlugin): EntityViewBuilder {
+    this.registrations.push({ type: 'plugin', plugin });
+    return this;
+  }
+
   build(app: App): ComponentType<any> {
     const pages = this.registrations.map(registration => {
       switch (registration.type) {
@@ -113,6 +124,16 @@ export default class EntityViewBuilder extends AppComponentBuilder {
         case 'component': {
           const { title, path, component } = registration;
           return { title, path, component };
+        }
+        case 'plugin': {
+          const { plugin } = registration;
+          const output = plugin[outputSymbol](entityViewPage);
+          if (!output) {
+            throw new Error(
+              `Plugin ${plugin} was registered as entity view, but did not have any output`,
+            );
+          }
+          return output;
         }
         default:
           throw new Error(`Unknown EntityViewBuilder registration`);
