@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core';
 import { Circle } from 'rc-progress';
-import { COLORS, V1 } from 'core/app/Themes';
+import { COLORS } from '@backstage/core';
 
 const styles = theme => ({
   root: {
@@ -43,7 +43,7 @@ class CircleProgress extends Component {
 
   static getProgressColor(value, inverse, max /* , classes */) {
     if (isNaN(value)) {
-      return V1.palette.textVerySubtle;
+      return 'grey';
     }
 
     max = max ? max : CircleProgress.defaultProps.max;
@@ -70,10 +70,17 @@ class CircleProgress extends Component {
           percent={asPercentage}
           strokeWidth="12"
           trailWidth="12"
-          strokeColor={CircleProgress.getProgressColor(asActual, inverse, max, classes)}
+          strokeColor={CircleProgress.getProgressColor(
+            asActual,
+            inverse,
+            max,
+            classes,
+          )}
           className={classes.circle}
         />
-        <div className={classes.overlay}>{isNaN(value) ? 'N/A' : `${asActual}${unit}`}</div>
+        <div className={classes.overlay}>
+          {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
+        </div>
       </div>
     );
   }

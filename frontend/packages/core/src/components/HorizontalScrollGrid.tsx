@@ -3,8 +3,7 @@ import classNames from 'classnames';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { IconButton } from '.';
-import { Grid } from '@material-ui/core';
+import { Grid, IconButton } from '@material-ui/core';
 
 // Generated with https://larsenwork.com/easing-gradients/
 const fadeGradient = `
@@ -79,8 +78,12 @@ const useStyles = makeStyles<Theme, Props>(theme => ({
 }));
 
 // Returns scroll distance from left and right
-function useScrollDistance(ref: React.MutableRefObject<HTMLElement | undefined>): [number, number] {
-  const [[scrollLeft, scrollRight], setScroll] = React.useState<[number, number]>([0, 0]);
+function useScrollDistance(
+  ref: React.MutableRefObject<HTMLElement | undefined>,
+): [number, number] {
+  const [[scrollLeft, scrollRight], setScroll] = React.useState<
+    [number, number]
+  >([0, 0]);
 
   React.useLayoutEffect(() => {
     const el = ref.current;
@@ -110,7 +113,11 @@ function useScrollDistance(ref: React.MutableRefObject<HTMLElement | undefined>)
 
 // Used to animate scrolling. Returns a single setScrollTarger function, when called with e.g. 200,
 // the element pointer to by the ref will be scrolled 200px forwards over time.
-function useSmoothScroll(ref: React.MutableRefObject<HTMLElement | undefined>, speed: number, minDistance: number) {
+function useSmoothScroll(
+  ref: React.MutableRefObject<HTMLElement | undefined>,
+  speed: number,
+  minDistance: number,
+) {
   const [scrollTarget, setScrollTarget] = React.useState<number>(0);
 
   React.useLayoutEffect(() => {
@@ -145,7 +152,13 @@ function useSmoothScroll(ref: React.MutableRefObject<HTMLElement | undefined>, s
 }
 
 const HorizontalScrollGrid: FC<Props> = props => {
-  const { scrollStep = 100, scrollSpeed = 50, minScrollDistance = 5, children, ...otherProps } = props;
+  const {
+    scrollStep = 100,
+    scrollSpeed = 50,
+    minScrollDistance = 5,
+    children,
+    ...otherProps
+  } = props;
   const classes = useStyles(props);
   const ref = React.useRef<HTMLElement>();
 
@@ -162,7 +175,13 @@ const HorizontalScrollGrid: FC<Props> = props => {
 
   return (
     <div {...otherProps} className={classes.root}>
-      <Grid container direction="row" wrap="nowrap" className={classes.container} ref={ref as any}>
+      <Grid
+        container
+        direction="row"
+        wrap="nowrap"
+        className={classes.container}
+        ref={ref as any}
+      >
         {children}
       </Grid>
       <div
