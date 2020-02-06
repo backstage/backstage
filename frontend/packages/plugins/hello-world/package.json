@@ -22,8 +22,7 @@
   },
   "scripts": {
     "lint": "web-scripts lint",
-    "test": "web-scripts test",
-    "proto": "../../../scripts/gen-proto.sh hello.proto"
+    "test": "web-scripts test"
   },
   "license": "Apache-2.0"
 }

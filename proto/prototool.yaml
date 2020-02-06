@@ -1,4 +1,3 @@
-
 protoc:
   version: 3.8.0
 lint:
@@ -16,3 +15,7 @@ generate:
       type: go
       flags: plugins=grpc
       output: ../backend/proto
+    - name: ts
+      path: frontend/node_modules/ts-protoc-gen/bin/protoc-gen-ts
+      output: ../frontend/packages/proto/src/generated
+      flags: service=grpc-web

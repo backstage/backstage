@@ -8,6 +8,16 @@ Backstage is an open platform for building developer portals.
 
 ## Getting started
 
+### Protobuf Definitions
+
+To generate the Protobuf definitions in Go and TypeScript, run the following command from the root with [Prototool](https://github.com/uber/prototool):
+
+```bash
+$ prototool generate ./proto
+```
+
+See [proto/README.md](proto/README.md) for more information.
+
 ## Plugins
 
 ### Creating a Plugin
