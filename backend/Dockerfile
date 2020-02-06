@@ -16,7 +16,7 @@ RUN go build .
 
 
 ### Running Container Stage
-FROM debian:buster AS run
+FROM debian:buster AS default
 ARG service
 
 WORKDIR /app/
@@ -28,6 +28,6 @@ CMD ["./service"]
 
 ### Scaffolder Stage
 ### needs extra cookiecutter
-FROM run AS scaffolder
+FROM default AS scaffolder
 RUN apt-get update && apt-get install -y python-pip
 RUN pip install cookiecutter==1.7.0 --index-url https://pypi.python.org/simple

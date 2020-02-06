@@ -15,6 +15,7 @@ services:
     container_name: boss-identity
     build:
       context: backend
+      target: default
       args:
         service: identity
     restart: unless-stopped
@@ -25,6 +26,7 @@ services:
     container_name: boss-builds
     build:
       context: backend
+      target: default
       args:
         service: builds
     restart: unless-stopped
