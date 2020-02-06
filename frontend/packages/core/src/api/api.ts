@@ -1,7 +1,7 @@
 import AppBuilder from './app/AppBuilder';
 import EntityKind, { EntityConfig } from './entity/EntityKind';
 import WidgetViewBuilder from './widgetView/WidgetViewBuilder';
-import EntityViewBuilder from './entityView/EntityViewPageBuilder';
+import EntityPageBuilder from './entityView/EntityPageBuilder';
 import BackstagePlugin, { PluginConfig } from './plugin/Plugin';
 
 export function createApp() {
@@ -16,8 +16,8 @@ export function createWidgetView() {
   return new WidgetViewBuilder();
 }
 
-export function createEntityView() {
-  return new EntityViewBuilder();
+export function createEntityPage() {
+  return new EntityPageBuilder();
 }
 
 export function createPlugin(config: PluginConfig): BackstagePlugin {

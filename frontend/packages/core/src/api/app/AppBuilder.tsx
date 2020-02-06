@@ -1,10 +1,10 @@
 import React, { ComponentType, FC } from 'react';
-import { Route, Switch, useParams } from 'react-router-dom';
+import { Route, Switch, useParams, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App, AppComponentBuilder } from './types';
 import EntityKind, { EntityConfig } from '../entity/EntityKind';
 import { EntityContextProvider } from '../entityView/EntityContext';
-import BackstagePlugin, { registerSymbol } from '../plugin/Plugin';
+import BackstagePlugin from '../plugin/Plugin';
 
 class AppImpl implements App {
   constructor(private readonly entities: Map<string, EntityKind>) {}
@@ -97,8 +97,31 @@ export default class AppBuilder {
     const pluginRoutes = new Array<JSX.Element>();
 
     for (const plugin of this.plugins.values()) {
-      const { routes = [] } = plugin[registerSymbol]();
-      pluginRoutes.push(...routes);
+      for (const output of plugin.output()) {
+        switch (output.type) {
+          case 'route': {
+            const { path, component, options = {} } = output;
+            const { exact = true } = options;
+            pluginRoutes.push(
+              <Route
+                key={path}
+                path={path}
+                component={component}
+                exact={exact}
+              />,
+            );
+            break;
+          }
+          case 'redirect-route': {
+            const { path, target, options = {} } = output;
+            const { exact = true } = options;
+            pluginRoutes.push(
+              <Redirect key={path} path={path} to={target} exact={exact} />,
+            );
+            break;
+          }
+        }
+      }
     }
 
     const routes = [...pluginRoutes, ...entityRoutes];
