@@ -6,12 +6,12 @@ import {
   Page,
   theme,
 } from '@backstage/core';
+import HomePagePlugin from '@backstage/plugin-home-page';
 //import PageHeader from './components/PageHeader';
 import { LoginComponent } from '@backstage/plugin-login';
-import HomePagePlugin from '@backstage/plugin-home-page';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import React, { FC } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import HomePageTimer from './components/HomepageTimer';
 import SideBar from './components/SideBar';
 import entities from './entities';
@@ -92,20 +92,13 @@ const App: FC<{}> = () => {
   return (
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
-        <LoginBarrier fallback={Login} state$={currentUser.state}>
-          <AppShell>
-            <Router>
-              <Switch>
-                <Route path="/login">
-                  <Login />
-                </Route>
-                <Route>
-                  <AppComponent />
-                </Route>
-              </Switch>
-            </Router>
-          </AppShell>
-        </LoginBarrier>
+        <Router>
+          <LoginBarrier fallback={Login} state$={currentUser.state}>
+            <AppShell>
+              <AppComponent />
+            </AppShell>
+          </LoginBarrier>
+        </Router>
       </ThemeProvider>
     </CssBaseline>
   );
