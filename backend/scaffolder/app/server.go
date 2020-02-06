@@ -30,7 +30,7 @@ func NewServer() *Server {
 // Create scaffolds the repo in github and then will create push to the repository
 func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateReply, error) {
 	// first create the repository with github
-	fmt.Sprintln("Creating repository for Component  %s", req.ComponentId)
+	fmt.Sprintf("Creating repository for Component %s", req.ComponentId)
 	repo := remote.Repository{
 		Name:    req.ComponentId,
 		Org:     req.Org,
