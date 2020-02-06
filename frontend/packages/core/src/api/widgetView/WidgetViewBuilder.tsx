@@ -9,8 +9,8 @@ type Props = {
 const WidgetViewComponent: FC<Props> = ({ cards }) => {
   return (
     <div>
-      {cards.map(CardComponent => (
-        <CardComponent />
+      {cards.map((CardComponent, index) => (
+        <CardComponent key={index} />
       ))}
     </div>
   );
