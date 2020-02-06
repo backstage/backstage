@@ -213,7 +213,7 @@ const SideBar: FC<{}> = () => {
           <SidebarItem icon={LibIcon} to="/libraries" text="Libraries" />
           <Divider />
           <Space />
-          <SidebarItem icon={CreateIcon} text="Create..." />
+          <SidebarItem icon={CreateIcon} to="/create" text="Create..." />
         </div>
       </Context.Provider>
     </div>
