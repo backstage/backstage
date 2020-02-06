@@ -5,10 +5,19 @@ package spotify.backstage.inventory.v1;
 option go_package = "inventoryv1";
 
 service Inventory {
+  rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesReply);
   rpc GetEntity(GetEntityRequest) returns (GetEntityReply);
   rpc CreateEntity(CreateEntityRequest) returns (CreateEntityReply);
   rpc SetFact(SetFactRequest) returns (SetFactReply);
   rpc GetFact(GetFactRequest) returns (GetFactReply);
+}
+
+message ListEntitiesRequest {
+  string uriPrefix = 1;
+}
+
+message ListEntitiesReply {
+  repeated Entity entities = 1;
 }
 
 message GetEntityRequest {

@@ -1,5 +1,43 @@
 import * as jspb from "google-protobuf"
 
+export class ListEntitiesRequest extends jspb.Message {
+  getUriprefix(): string;
+  setUriprefix(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListEntitiesRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ListEntitiesRequest): ListEntitiesRequest.AsObject;
+  static serializeBinaryToWriter(message: ListEntitiesRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListEntitiesRequest;
+  static deserializeBinaryFromReader(message: ListEntitiesRequest, reader: jspb.BinaryReader): ListEntitiesRequest;
+}
+
+export namespace ListEntitiesRequest {
+  export type AsObject = {
+    uriprefix: string,
+  }
+}
+
+export class ListEntitiesReply extends jspb.Message {
+  getEntitiesList(): Array<Entity>;
+  setEntitiesList(value: Array<Entity>): void;
+  clearEntitiesList(): void;
+  addEntities(value?: Entity, index?: number): Entity;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListEntitiesReply.AsObject;
+  static toObject(includeInstance: boolean, msg: ListEntitiesReply): ListEntitiesReply.AsObject;
+  static serializeBinaryToWriter(message: ListEntitiesReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListEntitiesReply;
+  static deserializeBinaryFromReader(message: ListEntitiesReply, reader: jspb.BinaryReader): ListEntitiesReply;
+}
+
+export namespace ListEntitiesReply {
+  export type AsObject = {
+    entitiesList: Array<Entity.AsObject>,
+  }
+}
+
 export class GetEntityRequest extends jspb.Message {
   getEntity(): Entity | undefined;
   setEntity(value?: Entity): void;
@@ -119,8 +157,10 @@ export namespace SetFactRequest {
 }
 
 export class SetFactReply extends jspb.Message {
-  getFacturi(): string;
-  setFacturi(value: string): void;
+  getFact(): Fact | undefined;
+  setFact(value?: Fact): void;
+  hasFact(): boolean;
+  clearFact(): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SetFactReply.AsObject;
@@ -132,7 +172,49 @@ export class SetFactReply extends jspb.Message {
 
 export namespace SetFactReply {
   export type AsObject = {
-    facturi: string,
+    fact?: Fact.AsObject,
+  }
+}
+
+export class GetFactRequest extends jspb.Message {
+  getEntityuri(): string;
+  setEntityuri(value: string): void;
+
+  getName(): string;
+  setName(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetFactRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetFactRequest): GetFactRequest.AsObject;
+  static serializeBinaryToWriter(message: GetFactRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetFactRequest;
+  static deserializeBinaryFromReader(message: GetFactRequest, reader: jspb.BinaryReader): GetFactRequest;
+}
+
+export namespace GetFactRequest {
+  export type AsObject = {
+    entityuri: string,
+    name: string,
+  }
+}
+
+export class GetFactReply extends jspb.Message {
+  getFact(): Fact | undefined;
+  setFact(value?: Fact): void;
+  hasFact(): boolean;
+  clearFact(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetFactReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetFactReply): GetFactReply.AsObject;
+  static serializeBinaryToWriter(message: GetFactReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetFactReply;
+  static deserializeBinaryFromReader(message: GetFactReply, reader: jspb.BinaryReader): GetFactReply;
+}
+
+export namespace GetFactReply {
+  export type AsObject = {
+    fact?: Fact.AsObject,
   }
 }
 
@@ -155,9 +237,6 @@ export namespace Entity {
 }
 
 export class Fact extends jspb.Message {
-  getEntityuri(): string;
-  setEntityuri(value: string): void;
-
   getName(): string;
   setName(value: string): void;
 
@@ -174,7 +253,6 @@ export class Fact extends jspb.Message {
 
 export namespace Fact {
   export type AsObject = {
-    entityuri: string,
     name: string,
     value: string,
   }

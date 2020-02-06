@@ -13,6 +13,38 @@ import (
 	pb "github.com/spotify/backstage/proto/inventory/v1"
 )
 
+func TestServerListEntities(t *testing.T) {
+	testStorage := NewTestStorage()
+	defer testStorage.Close()
+	s := Server{Storage: testStorage.Storage}
+
+	entity := &pb.Entity{Uri: "boss://test/test"}
+
+	_, err := s.CreateEntity(context.Background(), &pb.CreateEntityRequest{Entity: entity})
+	if err != nil {
+		t.Errorf("ServerTest(TestServerListEntities) could not create: %v", err)
+	}
+
+	list, err := s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: ""})
+	if err != nil {
+		t.Errorf("ServerTest(TestServerListEntities) could not list: %v", err)
+	}
+	if len(list.GetEntities()) != 1 {
+		t.Errorf("ServerTest(TestServerListEntities) expected %v items, got %v", 1, len(list.GetEntities()))
+	}
+	if list.GetEntities()[0].GetUri() != "boss://test/test" {
+		t.Errorf("ServerTest(TestServerListEntities) expected uri %v, got %v", "boss://test/test", list.GetEntities()[0].GetUri())
+	}
+
+	list, err = s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: "boss://test2"})
+	if err != nil {
+		t.Errorf("ServerTest(TestServerListEntities) could not list: %v", err)
+	}
+	if len(list.GetEntities()) != 0 {
+		t.Errorf("ServerTest(TestServerListEntities) expected %v items, got %v", 0, len(list.GetEntities()))
+	}
+}
+
 func TestServerCreateEntity(t *testing.T) {
 	testStorage := NewTestStorage()
 	defer testStorage.Close()
