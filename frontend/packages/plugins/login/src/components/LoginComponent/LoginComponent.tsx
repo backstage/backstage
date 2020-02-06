@@ -23,7 +23,7 @@ const LoginComponent: FC<{}> = () => {
         style={{ marginTop: '24px', marginBottom: '24px' }}
       >
         <Button
-          variant="outlined"
+          variant="contained"
           color="primary"
           style={{ textTransform: 'none' }}
         >
