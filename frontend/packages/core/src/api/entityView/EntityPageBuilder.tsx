@@ -6,59 +6,51 @@ import { AppComponentBuilder, App } from '../app/types';
 import { useEntity, useEntityUri, useEntityConfig } from './EntityContext';
 import EntityLink from '../../components/EntityLink/EntityLink';
 import BackstagePlugin from '../plugin/Plugin';
+import { Header } from '../..';
+import {
+  EntityPageNavbarProps,
+  EntityPageHeaderProps,
+  EntityPageProps,
+  EntityPageNavItem,
+  EntityPageView,
+} from './types';
 
-const EntityLayout: FC<{}> = ({ children }) => {
-  const config = useEntityConfig();
-  return (
-    <div style={{ backgroundColor: config.color.primary }}>{children}</div>
-  );
-};
+// type AppComponents = {
+//   EntityPage: ComponentType<EntityPageProps>;
+//   EntityPageNavbar: ComponentType<EntityPageNavbarProps>;
+//   EntityPageHeader: ComponentType<EntityPageHeaderProps>;
+// };
 
-const EntitySidebar: FC<{}> = ({ children }) => {
-  return <List>{children}</List>;
-};
-
-const EntitySidebarItem: FC<{ title: string; path: string }> = ({
-  title,
-  path,
-}) => {
+const DefaultEntityPageNavbar: FC<EntityPageNavbarProps> = ({ navItems }) => {
   const entityUri = useEntityUri();
 
   return (
-    <ListItem>
-      <EntityLink uri={entityUri} subPath={path}>
-        {title}
-      </EntityLink>
-    </ListItem>
+    <List>
+      {navItems.map(({ title, target }) => (
+        <ListItem key={target}>
+          <EntityLink uri={entityUri} subPath={target}>
+            {title}
+          </EntityLink>
+        </ListItem>
+      ))}
+    </List>
   );
 };
 
-type EntityPageNavItem = {
-  title: string;
-  target: string;
+const DefaultEntityPageHeader: FC<EntityPageHeaderProps> = () => {
+  const { id } = useEntity();
+  const config = useEntityConfig();
+  return <Header title={`${config.title} - ${id}`} />;
 };
 
-type EntityPageView = {
-  path: string;
-  component: ComponentType<any>;
-};
-
-type Props = {
-  navItems: EntityPageNavItem[];
-  views: EntityPageView[];
-};
-
-const EntityPageComponent: FC<Props> = ({ navItems, views }) => {
+const DefaultEntityPage: FC<EntityPageProps> = ({ navItems, views }) => {
   const { kind, id } = useEntity();
   const basePath = `/entity/${kind}/${id}`;
 
   return (
-    <EntityLayout>
-      <EntitySidebar>
-        {navItems.map(({ title, target }) => (
-          <EntitySidebarItem key={target} title={title} path={target} />
-        ))}
-      </EntitySidebar>
+    <div>
+      <DefaultEntityPageHeader />
+      <DefaultEntityPageNavbar navItems={navItems} />
       <Switch>
         {views.map(({ path, component }) => (
           <Route
@@ -70,7 +62,7 @@ const EntityPageComponent: FC<Props> = ({ navItems, views }) => {
         ))}
         <Redirect from={basePath} to={`${basePath}${views[0].path}`} />
       </Switch>
-    </EntityLayout>
+    </div>
   );
 };
 
@@ -162,6 +154,6 @@ export default class EntityPageBuilder extends AppComponentBuilder {
       }
     }
 
-    return () => <EntityPageComponent navItems={navItems} views={views} />;
+    return () => <DefaultEntityPage navItems={navItems} views={views} />;
   }
 }
