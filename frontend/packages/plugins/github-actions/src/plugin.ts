@@ -11,6 +11,6 @@ export default createPlugin({
   register({ entityPage }) {
     entityPage.navItem({ title: 'CI/CD', target: '/builds' });
     entityPage.route('/builds', BuildListPage);
-    entityPage.route('/builds/:buildId', BuildDetailsPage);
+    entityPage.route('/builds/:buildUri', BuildDetailsPage);
   },
 });
