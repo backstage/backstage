@@ -36,8 +36,8 @@ const BuildListPage: FC<{}> = () => {
   }
   if (status.error) {
     return (
-      <Typography variant="h4" color="error">
-        Failed to load builds, {status.error}
+      <Typography variant="h6" color="error">
+        Failed to load builds, {status.error.message}
       </Typography>
     );
   }
