@@ -2,9 +2,10 @@ module github.com/spotify/backstage/scaffolder
 
 go 1.13
 
-replace github.com/spotify/backstage/proto => ../proto
-
-replace github.com/spotify/backstage/backend/proto => ../proto
+replace (
+	github.com/spotify/backstage/backend/proto => ./../proto
+	github.com/spotify/backstage/proto => ../proto
+)
 
 require (
 	github.com/golang/protobuf v1.3.3
