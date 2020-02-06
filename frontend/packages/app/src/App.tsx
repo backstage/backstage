@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
     // FIXME: Don't used a fixed width here
-    gridTemplateColumns: '224px auto',
+    gridTemplateColumns: '64px auto',
     gridTemplateRows: 'auto 1fr',
     width: '100%',
     height: '100vh',
