@@ -9,7 +9,8 @@ import (
 )
 
 // Filesystem Repository
-type Filesystem struct{}
+type Filesystem struct {
+}
 
 func file(src, dst string) error {
 	var err error
@@ -78,7 +79,6 @@ type Template struct {
 // and return the temp location
 func (f *Filesystem) PrepareTemplate(template Template) (string, error) {
 	tempDirectory, _ := ioutil.TempDir(os.TempDir(), template.ID)
-	fmt.Println(tempDirectory)
 	if err := dir("./templates/"+template.ID, tempDirectory); err != nil {
 		return "", err
 	}

@@ -1,3 +1,4 @@
+### Builder Stage
 FROM golang:1.13 AS build
 ARG service
 
@@ -13,7 +14,9 @@ COPY $service/ /build/$service/
 
 RUN go build .
 
-FROM debian:buster
+
+### Running Container Stage
+FROM debian:buster AS run
 ARG service
 
 WORKDIR /app/
@@ -21,3 +24,10 @@ WORKDIR /app/
 COPY --from=build /build/$service/$service /app/service
 
 CMD ["./service"]
+
+
+### Scaffolder Stage
+### needs extra cookiecutter
+FROM run AS scaffolder
+RUN apt-get update && apt-get install -y python-pip
+RUN pip install cookiecutter==1.7.0 --index-url https://pypi.python.org/simple

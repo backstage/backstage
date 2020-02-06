@@ -25,6 +25,7 @@ services:
     container_name: boss-builds
     build:
       context: backend
+      target: run
       args:
         service: builds
     restart: unless-stopped
@@ -34,6 +35,7 @@ services:
     container_name: boss-scaffolder
     build:
       context: backend
+      target: scaffolder
       args:
         service: scaffolder
     restart: unless-stopped

@@ -3,8 +3,11 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/golang/protobuf/jsonpb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"log"
+	"os/exec"
 
 	identity "github.com/spotify/backstage/backend/proto/identity/v1"
 	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
@@ -30,20 +33,40 @@ func NewServer() *Server {
 // Create scaffolds the repo in github and then will create push to the repository
 func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateReply, error) {
 	// first create the repository with github
-	fmt.Sprintf("Creating repository for Component %s", req.ComponentId)
-	repo := remote.Repository{
-		Name:    req.ComponentId,
-		Org:     req.Org,
-		Private: req.Private,
-	}
-	if _, err := s.github.CreateRepository(repo); err != nil {
-		return nil, status.Error(codes.Internal, fmt.Sprintf("Could not create repository %s/%s", req.Org, req.ComponentId))
-	}
+	log.Printf("Creating repository for Component %s", req.ComponentId)
+	// repo := remote.Repository{
+	// 	Name:    req.ComponentId,
+	// 	Org:     req.Org,
+	// 	Private: req.Private,
+	// }
+
+	// if _, err := s.github.CreateRepository(repo); err != nil {
+	// 	return nil, status.Error(codes.Internal, fmt.Sprintf("Could not create repository %s/%s", req.Org, req.ComponentId))
+	// }
+
+	marshaller := &jsonpb.Marshaler{}
+	d, e := marshaller.MarshalToString(req.Metadata)
 
 	// move the template into a temporary directory
-	tempFolder, _ := s.fs.PrepareTemplate(fs.Template{req.TemplateId})
+	tempFolder, err := s.fs.PrepareTemplate(
+		fs.Template{
+			ID:       req.TemplateId,
+			Metadata: req.Metadata,
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Could not prepare the template"))
+	}
 
-	fmt.Sprintf("Created temporary folder %s", tempFolder)
+	log.Printf("Created temporary folder %s", tempFolder)
+	// TODO(blam): Probably need to wrap this in a timeout or something to avoid waiting to long
+	cmd := exec.Command("cookiecutter", "--no-input", "-v", tempFolder)
+	cmd.Dir = tempFolder
+	err := cmd.Run()
+
+	fmt.Println(output)
+	fmt.Println(err)
+
 	// use git bindings to add the remote with access token and push to the directory
 	return nil, nil
 }
