@@ -25,7 +25,6 @@ services:
     container_name: boss-builds
     build:
       context: backend
-      target: run
       args:
         service: builds
     restart: unless-stopped
