@@ -49,14 +49,22 @@ const BuildListPage: FC<{}> = () => {
         <Table aria-label="CI/CD builds table">
           <TableHead>
             <TableRow>
+              <TableCell>Status</TableCell>
+              <TableCell>Branch</TableCell>
               <TableCell>Message</TableCell>
               <TableCell>Commit</TableCell>
-              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {status.value!.map(build => (
               <TableRow key={build.uri}>
+                {/* TODO: make this an indicating blobby thing */}
+                <TableCell>{build.status}</TableCell>
+                <TableCell>
+                  <Typography>
+                    <LongText text={build.branch} max={30} />
+                  </Typography>
+                </TableCell>
                 <TableCell>
                   <RelativeEntityLink
                     view={`builds/${encodeURIComponent(build.uri)}`}
@@ -73,7 +81,6 @@ const BuildListPage: FC<{}> = () => {
                     </Typography>
                   </Tooltip>
                 </TableCell>
-                <TableCell>{build.status}</TableCell>
               </TableRow>
             ))}
           </TableBody>

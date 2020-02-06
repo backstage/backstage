@@ -31,7 +31,8 @@ message Build {
   string uri = 1;
   string commit_id = 2;
   string message = 3;
-  BuildStatus status = 4;
+  string branch = 4;
+  BuildStatus status = 5;
 }
 
 message BuildDetails {

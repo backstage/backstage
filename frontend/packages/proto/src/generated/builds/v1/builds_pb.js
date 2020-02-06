@@ -810,7 +810,8 @@ proto.spotify.backstage.builds.v1.Build.toObject = function(includeInstance, msg
     uri: jspb.Message.getFieldWithDefault(msg, 1, ""),
     commitId: jspb.Message.getFieldWithDefault(msg, 2, ""),
     message: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 4, 0)
+    branch: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    status: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -860,6 +861,10 @@ proto.spotify.backstage.builds.v1.Build.deserializeBinaryFromReader = function(m
       msg.setMessage(value);
       break;
     case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBranch(value);
+      break;
+    case 5:
       var value = /** @type {!proto.spotify.backstage.builds.v1.BuildStatus} */ (reader.readEnum());
       msg.setStatus(value);
       break;
@@ -913,10 +918,17 @@ proto.spotify.backstage.builds.v1.Build.serializeBinaryToWriter = function(messa
       f
     );
   }
+  f = message.getBranch();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
   f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
-      4,
+      5,
       f
     );
   }
@@ -969,17 +981,32 @@ proto.spotify.backstage.builds.v1.Build.prototype.setMessage = function(value) {
 
 
 /**
- * optional BuildStatus status = 4;
+ * optional string branch = 4;
+ * @return {string}
+ */
+proto.spotify.backstage.builds.v1.Build.prototype.getBranch = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.spotify.backstage.builds.v1.Build.prototype.setBranch = function(value) {
+  jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional BuildStatus status = 5;
  * @return {!proto.spotify.backstage.builds.v1.BuildStatus}
  */
 proto.spotify.backstage.builds.v1.Build.prototype.getStatus = function() {
-  return /** @type {!proto.spotify.backstage.builds.v1.BuildStatus} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {!proto.spotify.backstage.builds.v1.BuildStatus} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /** @param {!proto.spotify.backstage.builds.v1.BuildStatus} value */
 proto.spotify.backstage.builds.v1.Build.prototype.setStatus = function(value) {
-  jspb.Message.setProto3EnumField(this, 4, value);
+  jspb.Message.setProto3EnumField(this, 5, value);
 };
 
 
