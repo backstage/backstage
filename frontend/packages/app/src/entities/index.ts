@@ -1,7 +1,7 @@
 import {
   createEntityKind,
   createWidgetView,
-  createEntityView,
+  createEntityPage,
 } from '@backstage/core';
 import ComputerIcon from '@material-ui/icons/Computer';
 import MockEntityPage from './MockEntityPage';
@@ -13,10 +13,10 @@ const serviceOverviewPage = createWidgetView()
   .addComponent(MockEntityCard)
   .addComponent(MockEntityCard);
 
-const serviceView = createEntityView()
-  .addPage('Overview', 'overview', serviceOverviewPage)
+const serviceView = createEntityPage()
+  .addPage('Overview', '/overview', serviceOverviewPage)
   .register(GithubActionsPlugin)
-  .addComponent('Deployment', 'deployment', MockEntityPage);
+  .addComponent('Deployment', '/deployment', MockEntityPage);
 
 const serviceEntity = createEntityKind({
   kind: 'service',
