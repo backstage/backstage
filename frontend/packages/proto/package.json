@@ -1,8 +1,11 @@
 {
   "private": true,
   "name": "@backstage/protobuf-definitions",
+  "main": "src/index.ts",
+  "main:src": "src/index.ts",
   "version": "0.0.0",
-  "devDependencies": {
-    "ts-protoc-gen": "^0.12.0"
+  "dependencies": {
+    "google-protobuf": "^3.11.2",
+    "grpc-web": "^1.0.7"
   }
 }

@@ -4,9 +4,8 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/spotify/backstage/proto/scaffolder/v1"
+	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
 	"github.com/spotify/backstage/scaffolder/app"
-
 	"google.golang.org/grpc"
 )
 
@@ -21,7 +20,9 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterScaffolderServer(grpcServer, &app.Server{})
+	serverHandler := app.NewServer()
+
+	pb.RegisterScaffolderServer(grpcServer, serverHandler)
 	log.Println("Serving Scaffolder Service")
 	grpcServer.Serve(lis)
 }

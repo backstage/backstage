@@ -3,13 +3,47 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/spotify/backstage/inventory/storage"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"testing"
+
+	"github.com/spotify/backstage/inventory/storage"
 
 	pb "github.com/spotify/backstage/proto/inventory/v1"
 )
+
+func TestServerListEntities(t *testing.T) {
+	testStorage := NewTestStorage()
+	defer testStorage.Close()
+	s := Server{Storage: testStorage.Storage}
+
+	entity := &pb.Entity{Uri: "boss://test/test"}
+
+	_, err := s.CreateEntity(context.Background(), &pb.CreateEntityRequest{Entity: entity})
+	if err != nil {
+		t.Errorf("ServerTest(TestServerListEntities) could not create: %v", err)
+	}
+
+	list, err := s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: ""})
+	if err != nil {
+		t.Errorf("ServerTest(TestServerListEntities) could not list: %v", err)
+	}
+	if len(list.GetEntities()) != 1 {
+		t.Errorf("ServerTest(TestServerListEntities) expected %v items, got %v", 1, len(list.GetEntities()))
+	}
+	if list.GetEntities()[0].GetUri() != "boss://test/test" {
+		t.Errorf("ServerTest(TestServerListEntities) expected uri %v, got %v", "boss://test/test", list.GetEntities()[0].GetUri())
+	}
+
+	list, err = s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: "boss://test2"})
+	if err != nil {
+		t.Errorf("ServerTest(TestServerListEntities) could not list: %v", err)
+	}
+	if len(list.GetEntities()) != 0 {
+		t.Errorf("ServerTest(TestServerListEntities) expected %v items, got %v", 0, len(list.GetEntities()))
+	}
+}
 
 func TestServerCreateEntity(t *testing.T) {
 	testStorage := NewTestStorage()
@@ -22,7 +56,7 @@ func TestServerCreateEntity(t *testing.T) {
 	if err != nil {
 		t.Errorf("ServerTest(CreateEntity) got unexpected error %v", err)
 	}
-	if resp.GetEntity().GetUri() !=  entity.GetUri() {
+	if resp.GetEntity().GetUri() != entity.GetUri() {
 		t.Errorf("ServerTest(CreateEntity) expected %v, but got %v", entity.GetUri(), resp.GetEntity().GetUri())
 	}
 }
@@ -49,6 +83,31 @@ func TestServerGetEntity(t *testing.T) {
 	}
 }
 
+func TestServerGetEntityWithIncludedFacts(t *testing.T) {
+	testStorage := NewTestStorage()
+	defer testStorage.Close()
+	s := Server{Storage: testStorage.Storage}
+
+	entityUri := "boss://test/test"
+	setFactReq := &pb.SetFactRequest{EntityUri: entityUri, Name: "test-name", Value: "test-value"}
+	s.SetFact(context.Background(), setFactReq)
+
+	entity := &pb.Entity{Uri: entityUri}
+	req := &pb.GetEntityRequest{Entity: entity, IncludeFacts: []string{"test-name"}}
+
+	resp, err := s.GetEntity(context.Background(), req)
+	if err != nil {
+		t.Errorf("ServerTest(GetEntity) got unexpected error %v", err)
+	}
+	if resp == nil {
+		t.Errorf("ServerTest(GetEntity) returned nil")
+	}
+	expectedFacts := []*pb.Fact{{Name: "test-name", Value: "test-value"}}
+	if !reflect.DeepEqual(resp.GetFacts(), expectedFacts) {
+		t.Errorf("ServerTest(GetEntity) got %v, wanted %v", resp.GetFacts(), expectedFacts)
+	}
+}
+
 func TestServerSetFactForExistingEntity(t *testing.T) {
 	testStorage := NewTestStorage()
 	defer testStorage.Close()
@@ -66,8 +125,9 @@ func TestServerSetFactForExistingEntity(t *testing.T) {
 	if resp == nil {
 		t.Errorf("ServerTest(SetFact) returned nil")
 	}
-	if resp.GetFactUri() != entity.GetUri() + "/" + req.Name {
-		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFactUri(), entity.GetUri() + "/" + req.Name)
+	fact := &pb.Fact{Name: req.GetName(), Value: req.GetValue()}
+	if !reflect.DeepEqual(resp.GetFact(), fact) {
+		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFact(), fact)
 	}
 }
 
@@ -85,14 +145,16 @@ func TestServerSetFactForNonExistingEntity(t *testing.T) {
 	if resp == nil {
 		t.Errorf("ServerTest(SetFact) returned nil")
 	}
-	if resp.GetFactUri() != entityUri + "/" + req.Name {
-		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFactUri(), entityUri + "/" + req.Name)
+
+	fact := &pb.Fact{Name: req.GetName(), Value: req.GetValue()}
+	if !reflect.DeepEqual(resp.GetFact(), fact) {
+		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFact(), fact)
 	}
 }
 
 type TestStorage struct {
 	Storage *storage.Storage
-	Path string
+	Path    string
 }
 
 // NewTestStorage returns a TestStorage using a temporary path.
@@ -114,4 +176,3 @@ func (db *TestStorage) Close() {
 	defer os.Remove(db.Path)
 	db.Storage.Close()
 }
-

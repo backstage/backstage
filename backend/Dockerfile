@@ -16,6 +16,8 @@ RUN go build .
 FROM debian:buster
 ARG service
 
+RUN apt-get update && apt-get install -y ca-certificates
+
 WORKDIR /app/
 
 COPY --from=build /build/$service/$service /app/service

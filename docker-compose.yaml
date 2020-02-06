@@ -21,6 +21,15 @@ services:
     volumes:
        - ./backend/identity/identity-data.json:/app/identity-data.json
 
+  builds:
+    container_name: boss-builds
+    build:
+      context: backend
+      args:
+        service: builds
+    restart: unless-stopped
+    env_file: secrets.env
+
   scaffolder:
     container_name: boss-scaffolder
     build:
@@ -28,3 +37,4 @@ services:
       args:
         service: scaffolder
     restart: unless-stopped
+    env_file: secrets.env

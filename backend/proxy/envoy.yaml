@@ -28,6 +28,10 @@ static_resources:
                           route:
                             cluster: identity_service
                             max_grpc_timeout: 0s
+                        - match: { prefix: '/spotify.backstage.builds.v1.Builds/' }
+                          route:
+                            cluster: builds_service
+                            max_grpc_timeout: 0s
                         - match: { prefix: '/inventory' }
                           route:
                             cluster: inventory_service
@@ -57,6 +61,15 @@ static_resources:
       hosts:
         - socket_address:
             address: identity
+            port_value: 50051
+    - name: builds_service
+      connect_timeout: 0.25s
+      type: logical_dns
+      http2_protocol_options: {}
+      lb_policy: round_robin
+      hosts:
+        - socket_address:
+            address: builds
             port_value: 50051
     - name: inventory_service
       connect_timeout: 0.25s

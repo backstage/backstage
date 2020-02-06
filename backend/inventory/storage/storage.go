@@ -3,6 +3,7 @@ package storage
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"go.etcd.io/bbolt"
 )
@@ -37,8 +38,8 @@ func (s *Storage) Close() error {
 	return s.db.Close()
 }
 
-func (s *Storage) SetFact(entityUri, name, value string) (factUri string, err error) {
-	err = s.db.Update(func(tx *bbolt.Tx) error {
+func (s *Storage) SetFact(entityUri, name, value string) (err error) {
+	return s.db.Update(func(tx *bbolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists([]byte(entityUri))
 		if err != nil {
 			return err
@@ -49,11 +50,6 @@ func (s *Storage) SetFact(entityUri, name, value string) (factUri string, err er
 		}
 		return nil
 	})
-
-	if err != nil {
-		return "", err
-	}
-	return entityUri + "/" + name, nil
 }
 
 func (s *Storage) GetFact(entityUri, name string) (string, error) {
@@ -67,11 +63,37 @@ func (s *Storage) GetFact(entityUri, name string) (string, error) {
 		value = string(b.Get([]byte(name)))
 		return nil
 	})
+
 	if err != nil {
 		return "", err
 	}
 
 	return value, nil
+}
+
+func (s *Storage) ListEntities(uriPrefix string) ([]string, error) {
+	entities := []string{}
+	err := s.db.View(func(tx *bbolt.Tx) error {
+		err := tx.ForEach(func(name []byte, b *bbolt.Bucket) error {
+			namestring := string(name)
+			if uriPrefix == "" || strings.HasPrefix(namestring, uriPrefix) {
+				entities = append(entities, namestring)
+			}
+			return nil
+		})
+
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return entities, nil
 }
 
 func (s *Storage) CreateEntity(entityUri string) error {

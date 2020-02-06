@@ -1,6 +1,6 @@
 import { createPlugin } from '@backstage/core';
-import { entityViewPage } from '@backstage/core/src/api/plugin/outputs';
-import BuildPage from './components/BuildPage';
+import BuildDetailsPage from './components/BuildDetailsPage';
+import BuildListPage from './components/BuildListPage';
 
 // export const buildListRoute = createEntityRoute<[]>('/builds')
 // export const buildDetailsRoute = createEntityRoute<[number]>('/builds/:buildId')
@@ -8,11 +8,9 @@ import BuildPage from './components/BuildPage';
 export default createPlugin({
   id: 'github-actions',
 
-  register({ provide }) {
-    provide(entityViewPage, {
-      title: 'CI/CD',
-      path: 'builds',
-      component: BuildPage,
-    });
+  register({ entityPage }) {
+    entityPage.navItem({ title: 'CI/CD', target: '/builds' });
+    entityPage.route('/builds', BuildListPage);
+    entityPage.route('/builds/:buildUri', BuildDetailsPage);
   },
 });
