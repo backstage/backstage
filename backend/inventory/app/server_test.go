@@ -3,10 +3,12 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/spotify/backstage/inventory/storage"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"testing"
+
+	"github.com/spotify/backstage/inventory/storage"
 
 	pb "github.com/spotify/backstage/proto/inventory/v1"
 )
@@ -22,7 +24,7 @@ func TestServerCreateEntity(t *testing.T) {
 	if err != nil {
 		t.Errorf("ServerTest(CreateEntity) got unexpected error %v", err)
 	}
-	if resp.GetEntity().GetUri() !=  entity.GetUri() {
+	if resp.GetEntity().GetUri() != entity.GetUri() {
 		t.Errorf("ServerTest(CreateEntity) expected %v, but got %v", entity.GetUri(), resp.GetEntity().GetUri())
 	}
 }
@@ -49,6 +51,31 @@ func TestServerGetEntity(t *testing.T) {
 	}
 }
 
+func TestServerGetEntityWithIncludedFacts(t *testing.T) {
+	testStorage := NewTestStorage()
+	defer testStorage.Close()
+	s := Server{Storage: testStorage.Storage}
+
+	entityUri := "boss://test/test"
+	setFactReq := &pb.SetFactRequest{EntityUri: entityUri, Name: "test-name", Value: "test-value"}
+	s.SetFact(context.Background(), setFactReq)
+
+	entity := &pb.Entity{Uri: entityUri}
+	req := &pb.GetEntityRequest{Entity: entity, IncludeFacts: []string{"test-name"}}
+
+	resp, err := s.GetEntity(context.Background(), req)
+	if err != nil {
+		t.Errorf("ServerTest(GetEntity) got unexpected error %v", err)
+	}
+	if resp == nil {
+		t.Errorf("ServerTest(GetEntity) returned nil")
+	}
+	expectedFacts := []*pb.Fact{{Name: "test-name", Value: "test-value"}}
+	if !reflect.DeepEqual(resp.GetFacts(), expectedFacts) {
+		t.Errorf("ServerTest(GetEntity) got %v, wanted %v", resp.GetFacts(), expectedFacts)
+	}
+}
+
 func TestServerSetFactForExistingEntity(t *testing.T) {
 	testStorage := NewTestStorage()
 	defer testStorage.Close()
@@ -66,8 +93,9 @@ func TestServerSetFactForExistingEntity(t *testing.T) {
 	if resp == nil {
 		t.Errorf("ServerTest(SetFact) returned nil")
 	}
-	if resp.GetFactUri() != entity.GetUri() + "/" + req.Name {
-		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFactUri(), entity.GetUri() + "/" + req.Name)
+	fact := &pb.Fact{Name: req.GetName(), Value: req.GetValue()}
+	if !reflect.DeepEqual(resp.GetFact(), fact) {
+		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFact(), fact)
 	}
 }
 
@@ -85,14 +113,16 @@ func TestServerSetFactForNonExistingEntity(t *testing.T) {
 	if resp == nil {
 		t.Errorf("ServerTest(SetFact) returned nil")
 	}
-	if resp.GetFactUri() != entityUri + "/" + req.Name {
-		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFactUri(), entityUri + "/" + req.Name)
+
+	fact := &pb.Fact{Name: req.GetName(), Value: req.GetValue()}
+	if !reflect.DeepEqual(resp.GetFact(), fact) {
+		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFact(), fact)
 	}
 }
 
 type TestStorage struct {
 	Storage *storage.Storage
-	Path string
+	Path    string
 }
 
 // NewTestStorage returns a TestStorage using a temporary path.
@@ -114,4 +144,3 @@ func (db *TestStorage) Close() {
 	defer os.Remove(db.Path)
 	db.Storage.Close()
 }
-
