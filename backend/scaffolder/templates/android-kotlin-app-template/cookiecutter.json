@@ -1,5 +1,6 @@
 {
-  "component_id": "",
+  "app_id": "com.example.app",
+  "app_name": "SampleApp",
   "owner": "",
   "description": "We promise to update this description /{{cookiecutter.owner}}"
 }
