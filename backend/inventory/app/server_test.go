@@ -6,6 +6,7 @@ import (
 	"github.com/spotify/backstage/inventory/storage"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"testing"
 
 	pb "github.com/spotify/backstage/proto/inventory/v1"
@@ -49,6 +50,32 @@ func TestServerGetEntity(t *testing.T) {
 	}
 }
 
+func TestServerGetEntityWithIncludedFacts(t *testing.T) {
+	testStorage := NewTestStorage()
+	defer testStorage.Close()
+	s := Server{Storage: testStorage.Storage}
+
+	entityUri := "boss://test/test"
+	setFactReq := &pb.SetFactRequest{EntityUri: entityUri, Name: "test-name", Value: "test-value"}
+	s.SetFact(context.Background(), setFactReq)
+
+
+	entity := &pb.Entity{Uri: entityUri}
+	req := &pb.GetEntityRequest{Entity: entity, IncludeFacts: []string{"test-name"}}
+
+	resp, err := s.GetEntity(context.Background(), req)
+	if err != nil {
+		t.Errorf("ServerTest(GetEntity) got unexpected error %v", err)
+	}
+	if resp == nil {
+		t.Errorf("ServerTest(GetEntity) returned nil")
+	}
+	expectedFacts := []*pb.Fact{{Uri: "boss://test/test/test-name", Value: "test-value"}}
+	if !reflect.DeepEqual(resp.GetFacts(), expectedFacts) {
+		t.Errorf("ServerTest(GetEntity) got %v, wanted %v", resp.GetFacts(), expectedFacts)
+	}
+}
+
 func TestServerSetFactForExistingEntity(t *testing.T) {
 	testStorage := NewTestStorage()
 	defer testStorage.Close()
@@ -66,8 +93,9 @@ func TestServerSetFactForExistingEntity(t *testing.T) {
 	if resp == nil {
 		t.Errorf("ServerTest(SetFact) returned nil")
 	}
-	if resp.GetFactUri() != entity.GetUri() + "/" + req.Name {
-		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFactUri(), entity.GetUri() + "/" + req.Name)
+	fact := &pb.Fact{Uri: entity.GetUri() + "/" + req.Name, Value: "test-value"}
+	if !reflect.DeepEqual(resp.GetFact(), fact) {
+		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFact()	, fact)
 	}
 }
 
@@ -85,8 +113,9 @@ func TestServerSetFactForNonExistingEntity(t *testing.T) {
 	if resp == nil {
 		t.Errorf("ServerTest(SetFact) returned nil")
 	}
-	if resp.GetFactUri() != entityUri + "/" + req.Name {
-		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFactUri(), entityUri + "/" + req.Name)
+	fact := &pb.Fact{Uri: entityUri + "/" + req.Name, Value: "test-value"}
+	if !reflect.DeepEqual(resp.GetFact(), fact) {
+		t.Errorf("ServerTest(SetFact) got %v, wanted %v", resp.GetFact()	, fact)
 	}
 }
 

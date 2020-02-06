@@ -37,5 +37,5 @@ func (s *Server) SetFact(ctx context.Context, req *pb.SetFactRequest) (*pb.SetFa
 	if err != nil {
 		return nil, status.Error(codes.Internal, "could not set fact")
 	}
-	return &pb.SetFactReply{FactUri: factUri} , nil
+	return &pb.SetFactReply{Fact: &pb.Fact{Uri: factUri, Value: req.Value}} , nil
 }
