@@ -3,10 +3,10 @@ export {
   default as EntityLink,
   RelativeEntityLink,
 } from './components/EntityLink';
-export { default as Page } from '../src/layout/Page';
-export { gradients, theme } from '../src/layout/Page';
-export { default as Header } from '../src/layout/Header/Header';
-export { default as HeaderLabel } from '../src/layout/HeaderLabel';
-export { default as InfoCard } from '../src/layout/InfoCard';
-export { default as ErrorBoundary } from '../src/layout/ErrorBoundary';
-export { default as BackstageTheme } from '../src/theme/BackstageTheme';
+export { default as Page } from './layout/Page';
+export { gradients, theme } from './layout/Page';
+export { default as Header } from './layout/Header/Header';
+export { default as HeaderLabel } from './layout/HeaderLabel';
+export { default as InfoCard } from './layout/InfoCard';
+export { default as ErrorBoundary } from './layout/ErrorBoundary';
+export { default as BackstageTheme } from './theme/BackstageTheme';
