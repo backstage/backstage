@@ -23,15 +23,11 @@ $ go get -u github.com/golang/protobuf/protoc-gen-go
 $ protoc-gen-go # should now be available in your path providing you GOPATH + GOBIN paths are setup correctly.
 ```
 
-### protoc-gen-ts
+### protoc-gen-grpc-web
 
-This will enable code generation in TypeScript for interacting with gRPC-Web. From the root, you will need to run [Yarn](https://yarnpkg.com) in the `frontend` folder:
+This will enable code generation for interacting with gRPC-Web.
 
-```bash
-$ yarn --cwd ./frontend install
-```
-
-After this, you should be all set!
+Installation instructions are found at https://github.com/grpc/grpc-web#code-generator-plugin
 
 ## Generating Code
 
@@ -77,9 +73,9 @@ Firstly, ensure this line is in your `package.json` within the `frontend/` folde
 Next, you can use them in your [Yarn Workspaces](https://yarnpkg.com/en/docs/workspaces/) package using the following:
 
 ```ts
-import { IdentityClient } from "@backstage/protocol-definitions/generated/identity/v1/identity_pb_service";
+import { IdentityClient } from '@backstage/protocol-definitions/generated/identity/v1/identity_pb_service';
 
-const client = new IdentityClient("http://localhost:8080");
+const client = new IdentityClient('http://localhost:8080');
 // const req = new GetUserRequest();
 // req.setUsername("johndoe");
 // client.getUser(req, (err, user) => {
