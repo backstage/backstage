@@ -104,8 +104,8 @@ func TestServerSetFactForNonExistingEntity(t *testing.T) {
 	defer testStorage.Close()
 	s := Server{Storage: testStorage.Storage}
 
-	entityURI := "boss://test/test"
-	req := &pb.SetFactRequest{EntityUri: entityURI, Name: "test-name", Value: "test-value"}
+	entityUri := "boss://test/test"
+	req := &pb.SetFactRequest{EntityUri: entityUri, Name: "test-name", Value: "test-value"}
 	resp, err := s.SetFact(context.Background(), req)
 	if err != nil {
 		t.Errorf("ServerTest(SetFact) got unexpected error %v", err)
