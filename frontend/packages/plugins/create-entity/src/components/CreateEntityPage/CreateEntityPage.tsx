@@ -11,7 +11,6 @@ const CreateEntityPage: FC<{}> = () => {
     const client = new scaffolderV1.Client('http://localhost:8080');
     const req = new scaffolderV1.Empty();
     client.listTemplates(req).then((res: scaffolderV1.ListTemplatesReply) => {
-      console.log(res.toObject().templatesList);
       setTemplates(res.toObject().templatesList);
     });
   }, []);
