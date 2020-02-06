@@ -53,6 +53,6 @@ message Entity {
 }
 
 message Fact {
-  string uri = 1;
-  string value = 3;
+  string name = 1;
+  string value = 2;
 }
