@@ -1,12 +1,12 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net"
 
-	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
-	identity "github.com/spotify/backstage/backend/proto/identity/v1"
+	pb "github.com/spotify/backstage/proto/scaffolder/v1"
+	"github.com/spotify/backstage/scaffolder/app"
+
 	"google.golang.org/grpc"
 )
 
@@ -21,28 +21,7 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterScaffolderServer(grpcServer, &server{})
-
+	pb.RegisterScaffolderServer(grpcServer, &app.Server{})
 	log.Println("Serving Scaffolder Service")
 	grpcServer.Serve(lis)
-}
-
-type server struct {
-}
-
-func (s *server) GetAllTemplates(ctx context.Context, req *pb.Empty) (*pb.GetAllTemplatesResponse, error) {
-	template := &pb.Template {
-		Id: "react-ssr-template",
-		Name: "React SSR Template",
-		User: &identity.User {
-			Id: "spotify",
-			Name: "Spotify",
-		},
-	}
-
-	templates := []*pb.Template{ template }
-	
-	return &pb.GetAllTemplatesResponse{
-		Templates: templates,
-	}, nil
 }

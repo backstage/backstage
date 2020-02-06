@@ -7,17 +7,18 @@ import "identity/v1/identity.proto";
 option go_package = "scaffolderv1";
 
 service Scaffolder {
-	rpc GetAllTemplates(Empty) returns (GetAllTemplatesResponse);
+	rpc GetAllTemplates(Empty) returns (GetAllTemplatesReply);
 }
 
 message Empty {}
 
-message GetAllTemplatesResponse {
+message GetAllTemplatesReply {
 	repeated Template templates = 1;
 }
 
 message Template {
   string id = 1;
   string name = 2;
-  spotify.backstage.identity.v1.User user = 3;
+  string description = 3;
+  spotify.backstage.identity.v1.User user = 4;
 }
