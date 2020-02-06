@@ -20,8 +20,9 @@ type TemplateDefinition struct {
 
 // Load will return all the Repository templates
 func (s *Repository) Load() ([]*TemplateDefinition, error) {
-	templateInfoFilePaths, err := filepath.Glob("templates/**/template-info.json")
 	var templateDefinitions []*TemplateDefinition
+
+	templateInfoFilePaths, err := filepath.Glob("templates/**/template-info.json")
 
 	if err != nil {
 		fmt.Errorf("failed to load template-info files")

@@ -44,7 +44,7 @@ type Repository struct {
 }
 
 // CreateRepository will create the repository in Github ready for use by the scaffolder
-func (g *Github) CreateRepository(repo Repository) error {
+func (g *Github) CreateRepository(repo Repository) (*gh.Repository, error) {
 	ghRepo := &gh.Repository{
 		Name:    &repo.Name,
 		Private: &repo.Private,
@@ -56,10 +56,7 @@ func (g *Github) CreateRepository(repo Repository) error {
 		org = repo.Org
 	}
 
-	created, response, err := g.client.Repositories.Create(*g.ctx, org, ghRepo)
+	created, _, err := g.client.Repositories.Create(*g.ctx, org, ghRepo)
 
-	fmt.Println(created)
-	fmt.Println(response)
-	fmt.Println(err)
-	return nil
+	return created, err
 }
