@@ -1,19 +1,101 @@
 import React, { FC } from 'react';
-import Button from '@material-ui/core/Button';
+import { BuildsClient } from '../../apis/builds';
+import { useAsync } from 'react-use';
+import { useRouteMatch } from 'react-router-dom';
+import {
+  LinearProgress,
+  Typography,
+  TableContainer,
+  Paper,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  Link,
+  makeStyles,
+  ButtonGroup,
+  Button,
+} from '@material-ui/core';
 
-type Props = {
-  buildId: string;
-};
+const useStyles = makeStyles({
+  root: {
+    maxWidth: 720,
+  },
+});
 
-const BuildDetailsPage: FC<Props> = ({ buildId }) => {
+type Props = {};
+
+const client = BuildsClient.create('http://localhost:8080');
+
+const BuildDetailsPage: FC<Props> = () => {
+  const classes = useStyles();
+  const match = useRouteMatch<{ buildUri: string }>();
+  const buildUri = decodeURIComponent(match.params.buildUri);
+  const status = useAsync(() => client.getBuild(buildUri), [buildUri]);
+
+  if (status.loading) {
+    return <LinearProgress />;
+  }
+  if (status.error) {
+    return (
+      <Typography variant="h4" color="error">
+        Failed to load build, {status.error}
+      </Typography>
+    );
+  }
+
+  const details = status.value;
+
   return (
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={() => window.location.reload()}
-    >
-      Hello! Build details for {buildId}
-    </Button>
+    <TableContainer component={Paper} className={classes.root}>
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Message</Typography>
+            </TableCell>
+            <TableCell>{details?.build.message}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Commit ID</Typography>
+            </TableCell>
+            <TableCell>{details?.build.commitId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Status</Typography>
+            </TableCell>
+            <TableCell>{details?.build.status}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Author</Typography>
+            </TableCell>
+            <TableCell>{details?.author}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Links</Typography>
+            </TableCell>
+            <TableCell>
+              <ButtonGroup
+                variant="text"
+                color="primary"
+                aria-label="text primary button group"
+              >
+                <Button>
+                  <Link href={details?.overviewUrl}>GitHub</Link>
+                </Button>
+                <Button>
+                  <Link href={details?.logUrl}>Logs</Link>
+                </Button>
+              </ButtonGroup>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

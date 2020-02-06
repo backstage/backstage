@@ -7,39 +7,79 @@ import {
   TableCell,
   Paper,
   TableBody,
+  LinearProgress,
+  Typography,
+  Tooltip,
 } from '@material-ui/core';
 import { RelativeEntityLink } from '@backstage/core';
+import { BuildsClient } from '../../apis/builds';
+import { useAsync } from 'react-use';
+
+const client = BuildsClient.create('http://localhost:8080');
+
+const LongText: FC<{ text: string; max: number }> = ({ text, max }) => {
+  if (text.length < max) {
+    return <span>{text}</span>;
+  }
+  return (
+    <Tooltip title={text}>
+      <span>{text.slice(0, max)}...</span>
+    </Tooltip>
+  );
+};
 
 const BuildListPage: FC<{}> = () => {
-  const rows = [
-    { message: 'Fixed a Bar', commit: 'fb46ca3dfbd7af5bc43da', id: 165 },
-    { message: 'Fixed a Foo', commit: 'd7af5bc43dafb46ca3dfb', id: 164 },
-  ];
+  const status = useAsync(() => client.listBuilds('entity:spotify:backstage'));
+
+  if (status.loading) {
+    return <LinearProgress />;
+  }
+  if (status.error) {
+    return (
+      <Typography variant="h4" color="error">
+        Failed to load builds, {status.error}
+      </Typography>
+    );
+  }
+
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="CI/CD builds table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Message</TableCell>
-            <TableCell>Commit</TableCell>
-            <TableCell>Build ID</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map(row => (
-            <TableRow key={row.commit}>
-              <TableCell>{row.message}</TableCell>
-              <TableCell>{row.commit}</TableCell>
-              <TableCell>
-                <RelativeEntityLink view={`builds/${row.id}`}>
-                  {row.commit}
-                </RelativeEntityLink>
-              </TableCell>
+    <>
+      <Typography variant="h4">CI/CD Builds</Typography>
+      <TableContainer component={Paper}>
+        <Table aria-label="CI/CD builds table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Message</TableCell>
+              <TableCell>Commit</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {status.value!.map(build => (
+              <TableRow key={build.uri}>
+                <TableCell>
+                  <RelativeEntityLink
+                    view={`builds/${encodeURIComponent(build.uri)}`}
+                  >
+                    <Typography color="primary">
+                      <LongText text={build.message} max={60} />
+                    </Typography>
+                  </RelativeEntityLink>
+                </TableCell>
+                <TableCell>
+                  <Tooltip title={build.commitId}>
+                    <Typography noWrap>
+                      {build.commitId.slice(0, 10)}
+                    </Typography>
+                  </Tooltip>
+                </TableCell>
+                <TableCell>{build.status}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 
