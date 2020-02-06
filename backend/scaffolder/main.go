@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/spotify/backstage/proto/scaffolder/v1"
+	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
 	"github.com/spotify/backstage/scaffolder/app"
 
 	"google.golang.org/grpc"
