@@ -122,6 +122,7 @@ const styles = theme => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
+    marginRight: theme.spacing(6),
   },
   title: {
     color: theme.palette.bursts.fontColor,
