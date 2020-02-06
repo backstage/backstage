@@ -1,5 +1,5 @@
-import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { ComponentType } from 'react';
+import { PluginOutput, RoutePath, RouteOptions } from './types';
 
 export type PluginConfig = {
   id: string;
@@ -7,89 +7,98 @@ export type PluginConfig = {
 };
 
 export type PluginHooks = {
-  router: Router;
+  router: RouterHooks;
+  entityPage: EntityPageHooks;
 };
 
-export type RouteOptions = {
-  // Whether the route path must match exactly, defaults to true.
-  exact?: boolean;
-};
-
-export type RedirectOptions = {
-  // Whether the route path must match exactly, defaults to true.
-  exact?: boolean;
-};
-
-export type Router = {
+export type RouterHooks = {
   registerRoute(
-    path: string,
-    Component: React.ComponentType<any>,
+    path: RoutePath,
+    Component: ComponentType<any>,
     options?: RouteOptions,
   ): void;
+
   registerRedirect(
-    path: string,
-    target: string,
-    options?: RedirectOptions,
+    path: RoutePath,
+    target: RoutePath,
+    options?: RouteOptions,
   ): void;
 };
 
-export type PluginRegistrationResult = {
-  routes?: JSX.Element[];
+type EntityPageSidebarItemOptions = {
+  title: string;
+  target: RoutePath;
+};
+
+export type EntityPageHooks = {
+  navItem(options: EntityPageSidebarItemOptions): void;
+  route(
+    path: RoutePath,
+    component: ComponentType<any>,
+    options?: RouteOptions,
+  ): void;
 };
 
 export const registerSymbol = Symbol('plugin-register');
+export const outputSymbol = Symbol('plugin-output');
 
 export default class Plugin {
-  private result?: PluginRegistrationResult;
+  private storedOutput?: PluginOutput[];
 
   constructor(private readonly config: PluginConfig) {}
 
-  [registerSymbol](): PluginRegistrationResult {
-    if (this.result) {
-      return this.result;
+  output(): PluginOutput[] {
+    if (this.storedOutput) {
+      return this.storedOutput;
     }
     if (!this.config.register) {
-      return {};
+      return [];
     }
 
     const { id } = this.config;
 
-    const routes = new Array<JSX.Element>();
+    const outputs = new Array<PluginOutput>();
 
     this.config.register({
       router: {
-        registerRoute(path, component, options = {}) {
+        registerRoute(path, component, options) {
           if (path.startsWith('/entity/')) {
             throw new Error(
               `Plugin ${id} tried to register forbidden route ${path}`,
             );
           }
-          const { exact = true } = options;
-          routes.push(
-            <Route
-              key={path}
-              path={path}
-              component={component}
-              exact={exact}
-            />,
-          );
+          outputs.push({ type: 'route', path, component, options });
         },
-        registerRedirect(path, target, options = {}) {
+        registerRedirect(path, target, options) {
           if (path.startsWith('/entity/')) {
             throw new Error(
               `Plugin ${id} tried to register forbidden redirect ${path}`,
             );
           }
-          const { exact = true } = options;
-          routes.push(
-            <Redirect key={path} path={path} to={target} exact={exact} />,
-          );
+          outputs.push({ type: 'redirect-route', path, target, options });
+        },
+      },
+      entityPage: {
+        navItem({ title, target }) {
+          outputs.push({
+            type: 'entity-page-nav-item',
+            target,
+            title,
+          });
+        },
+        route(path, component, options) {
+          outputs.push({
+            type: 'entity-page-view-route',
+            path,
+            component,
+            options,
+          });
         },
       },
     });
 
-    this.result = { routes };
-    return this.result;
+    this.storedOutput = outputs;
+    return this.storedOutput;
   }
 
   toString() {

@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package spotify.backstage.builds.v1;
+
+option go_package = "buildsv1";
+
+service Builds {
+  rpc ListBuilds(ListBuildsRequest) returns (ListBuildsReply);
+  rpc GetBuild(GetBuildRequest) returns (GetBuildReply);
+}
+
+message ListBuildsRequest {
+  string entity_uri = 1;
+}
+
+message ListBuildsReply {
+  string entity_uri = 1;
+  repeated Build builds = 2;
+}
+
+message GetBuildRequest {
+  string build_uri = 1;
+}
+
+message GetBuildReply {
+  Build build = 1;
+  BuildDetails details = 2;
+}
+
+message Build {
+  string uri = 1;
+  string commit_id = 2;
+  string message = 3;
+  BuildStatus status = 4;
+}
+
+message BuildDetails {
+  string author = 1;
+  string overview_url = 2;
+  string log_url = 3;
+}
+
+enum BuildStatus {
+  NULL = 0;
+  SUCCESS = 1;
+  FAILURE = 2;
+  PENDING = 3;
+  RUNNING = 4;
+}

@@ -13,10 +13,10 @@ type Props = {
     }
 );
 
-function buildPath(kind: string, id?: string, subPath?: string) {
+export function buildPath(kind: string, id?: string, subPath?: string) {
   if (id) {
     if (subPath) {
-      return `/entity/${kind}/${id}/${subPath}`;
+      return `/entity/${kind}/${id}/${subPath.replace(/^\//, '')}`;
     }
     return `/entity/${kind}/${id}`;
   }

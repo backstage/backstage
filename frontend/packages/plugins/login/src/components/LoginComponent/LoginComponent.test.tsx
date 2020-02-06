@@ -4,7 +4,8 @@ import LoginComponent from './LoginComponent';
 
 describe('LoginComponent', () => {
   it('should render', () => {
-    const rendered = render(<LoginComponent />);
+    const onLogin = jest.fn();
+    const rendered = render(<LoginComponent onLogin={onLogin} />);
     expect(rendered.getByText('Login')).toBeInTheDocument();
   });
 });

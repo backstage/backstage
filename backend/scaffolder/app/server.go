@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	identity "github.com/spotify/backstage/backend/proto/identity/v1"
-	pb "github.com/spotify/backstage/proto/scaffolder/v1"
+	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
 	"github.com/spotify/backstage/scaffolder/fs"
 	"github.com/spotify/backstage/scaffolder/remote"
 	"github.com/spotify/backstage/scaffolder/repository"

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@backstage/core": "0.0.0",
+    "@backstage/plugin-github-actions": "0.0.0",
     "@backstage/plugin-hello-world": "0.0.0",
     "@backstage/plugin-home-page": "0.0.0",
     "@backstage/plugin-login": "0.0.0",
@@ -16,10 +17,13 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.3",
+    "@types/zen-observable": "^0.8.0",
     "cross-env": "^7.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-router-dom": "^5.1.2"
+    "react-router-dom": "^5.1.2",
+    "react-use": "^13.24.0",
+    "zen-observable": "^0.8.15"
   },
   "workspaces": {
     "nohoist": [

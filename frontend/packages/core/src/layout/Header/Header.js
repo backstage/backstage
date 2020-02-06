@@ -26,9 +26,9 @@ class Header extends Component {
 
     return typeLink ? (
       // <Link to={typeLink}>
-        <Typography className={classes.type}>{type}</Typography>
-      // </Link>
+      <Typography className={classes.type}>{type}</Typography>
     ) : (
+      // </Link>
       <Typography className={classes.type}>{type}</Typography>
     );
   }
@@ -69,12 +69,17 @@ class Header extends Component {
     const { title, pageTitleOverride, children, style, classes } = this.props;
     const pageTitle = pageTitleOverride || title;
     if (typeof pageTitle !== 'string') {
-      console.warn('<Header/> title prop is not a string, pageTitleOverride should be provided.');
+      console.warn(
+        '<Header/> title prop is not a string, pageTitleOverride should be provided.',
+      );
     }
 
     return (
       <Fragment>
-        <Helmet titleTemplate={`${pageTitle} | %s | Backstage`} defaultTitle={`${pageTitle} | Backstage`} />
+        <Helmet
+          titleTemplate={`${pageTitle} | %s | Backstage`}
+          defaultTitle={`${pageTitle} | Backstage`}
+        />
         <Theme.Consumer>
           {theme => (
             <header style={style} className={classes.header}>
@@ -98,7 +103,7 @@ const styles = theme => ({
     gridArea: 'pageHeader',
     padding: theme.spacing(3),
     minHeight: 118,
-    width: 'calc(100vw - 224px)',
+    width: '100vw',
     boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
     position: 'relative',
     zIndex: 100,
@@ -117,6 +122,7 @@ const styles = theme => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
+    marginRight: theme.spacing(6),
   },
   title: {
     color: theme.palette.bursts.fontColor,

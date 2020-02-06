@@ -6,20 +6,17 @@ import {
   Page,
   theme,
 } from '@backstage/core';
+import HomePagePlugin from '@backstage/plugin-home-page';
 //import PageHeader from './components/PageHeader';
 import { LoginComponent } from '@backstage/plugin-login';
-import HomePagePlugin from '@backstage/plugin-home-page';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import React, { FC } from 'react';
-import {
-  BrowserRouter as Router,
-  Link as RouterLink,
-  Route,
-  Switch,
-} from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import HomePageTimer from './components/HomepageTimer';
 import SideBar from './components/SideBar';
 import entities from './entities';
+import { LoginBarrier } from './login/LoginBarrier';
+import { MockCurrentUser } from './login/MockCurrentUser';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -39,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
     // FIXME: Don't used a fixed width here
-    gridTemplateColumns: '224px auto',
+    gridTemplateColumns: '64px auto',
     gridTemplateRows: 'auto 1fr',
     width: '100%',
     height: '100vh',
@@ -56,13 +53,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const currentUser = new MockCurrentUser();
+
 const Login: FC<{}> = () => {
   return (
     <InfoCard title="Login Page">
-      <LoginComponent />
-      <div>
-        <RouterLink to="/">Go to Home</RouterLink>
-      </div>
+      <LoginComponent onLogin={username => currentUser.login(username)} />
     </InfoCard>
   );
 };
@@ -96,18 +92,13 @@ const App: FC<{}> = () => {
   return (
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
-        <AppShell>
-          <Router>
-            <Switch>
-              <Route path="/login">
-                <Login />
-              </Route>
-              <Route>
-                <AppComponent />
-              </Route>
-            </Switch>
-          </Router>
-        </AppShell>
+        <Router>
+          <LoginBarrier fallback={Login} state$={currentUser.state}>
+            <AppShell>
+              <AppComponent />
+            </AppShell>
+          </LoginBarrier>
+        </Router>
       </ThemeProvider>
     </CssBaseline>
   );

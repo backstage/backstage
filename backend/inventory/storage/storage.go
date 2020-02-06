@@ -37,13 +37,17 @@ func (s *Storage) Close() error {
 	return s.db.Close()
 }
 
-func (s *Storage) SetFact(entityUri, name, value string) error {
+func (s *Storage) SetFact(entityUri, name, value string) (err error) {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists([]byte(entityUri))
 		if err != nil {
 			return err
 		}
-		return b.Put([]byte(name), []byte(value))
+		err = b.Put([]byte(name), []byte(value))
+		if err != nil {
+			return err
+		}
+		return nil
 	})
 }
 
