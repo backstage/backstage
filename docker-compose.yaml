@@ -37,3 +37,4 @@ services:
       args:
         service: scaffolder
     restart: unless-stopped
+    env_file: secrets.env
