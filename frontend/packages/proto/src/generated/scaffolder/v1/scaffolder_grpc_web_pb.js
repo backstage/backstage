@@ -13,6 +13,8 @@ grpc.web = require('grpc-web');
 
 
 var identity_v1_identity_pb = require('../../identity/v1/identity_pb.js')
+
+var google_protobuf_struct_pb = require('google-protobuf/google/protobuf/struct_pb.js')
 const proto = {};
 proto.spotify = {};
 proto.spotify.backstage = {};
@@ -75,13 +77,13 @@ proto.spotify.backstage.scaffolder.v1.ScaffolderPromiseClient =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.spotify.backstage.scaffolder.v1.Empty,
- *   !proto.spotify.backstage.scaffolder.v1.GetAllTemplatesReply>}
+ *   !proto.spotify.backstage.scaffolder.v1.ListTemplatesReply>}
  */
-const methodDescriptor_Scaffolder_GetAllTemplates = new grpc.web.MethodDescriptor(
-  '/spotify.backstage.scaffolder.v1.Scaffolder/GetAllTemplates',
+const methodDescriptor_Scaffolder_ListTemplates = new grpc.web.MethodDescriptor(
+  '/spotify.backstage.scaffolder.v1.Scaffolder/ListTemplates',
   grpc.web.MethodType.UNARY,
   proto.spotify.backstage.scaffolder.v1.Empty,
-  proto.spotify.backstage.scaffolder.v1.GetAllTemplatesReply,
+  proto.spotify.backstage.scaffolder.v1.ListTemplatesReply,
   /**
    * @param {!proto.spotify.backstage.scaffolder.v1.Empty} request
    * @return {!Uint8Array}
@@ -89,7 +91,7 @@ const methodDescriptor_Scaffolder_GetAllTemplates = new grpc.web.MethodDescripto
   function(request) {
     return request.serializeBinary();
   },
-  proto.spotify.backstage.scaffolder.v1.GetAllTemplatesReply.deserializeBinary
+  proto.spotify.backstage.scaffolder.v1.ListTemplatesReply.deserializeBinary
 );
 
 
@@ -97,10 +99,10 @@ const methodDescriptor_Scaffolder_GetAllTemplates = new grpc.web.MethodDescripto
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.spotify.backstage.scaffolder.v1.Empty,
- *   !proto.spotify.backstage.scaffolder.v1.GetAllTemplatesReply>}
+ *   !proto.spotify.backstage.scaffolder.v1.ListTemplatesReply>}
  */
-const methodInfo_Scaffolder_GetAllTemplates = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.spotify.backstage.scaffolder.v1.GetAllTemplatesReply,
+const methodInfo_Scaffolder_ListTemplates = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.spotify.backstage.scaffolder.v1.ListTemplatesReply,
   /**
    * @param {!proto.spotify.backstage.scaffolder.v1.Empty} request
    * @return {!Uint8Array}
@@ -108,7 +110,7 @@ const methodInfo_Scaffolder_GetAllTemplates = new grpc.web.AbstractClientBase.Me
   function(request) {
     return request.serializeBinary();
   },
-  proto.spotify.backstage.scaffolder.v1.GetAllTemplatesReply.deserializeBinary
+  proto.spotify.backstage.scaffolder.v1.ListTemplatesReply.deserializeBinary
 );
 
 
@@ -117,18 +119,18 @@ const methodInfo_Scaffolder_GetAllTemplates = new grpc.web.AbstractClientBase.Me
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.spotify.backstage.scaffolder.v1.GetAllTemplatesReply)}
+ * @param {function(?grpc.web.Error, ?proto.spotify.backstage.scaffolder.v1.ListTemplatesReply)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.spotify.backstage.scaffolder.v1.GetAllTemplatesReply>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.spotify.backstage.scaffolder.v1.ListTemplatesReply>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.spotify.backstage.scaffolder.v1.ScaffolderClient.prototype.getAllTemplates =
+proto.spotify.backstage.scaffolder.v1.ScaffolderClient.prototype.listTemplates =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/spotify.backstage.scaffolder.v1.Scaffolder/GetAllTemplates',
+      '/spotify.backstage.scaffolder.v1.Scaffolder/ListTemplates',
       request,
       metadata || {},
-      methodDescriptor_Scaffolder_GetAllTemplates,
+      methodDescriptor_Scaffolder_ListTemplates,
       callback);
 };
 
@@ -138,16 +140,96 @@ proto.spotify.backstage.scaffolder.v1.ScaffolderClient.prototype.getAllTemplates
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.spotify.backstage.scaffolder.v1.GetAllTemplatesReply>}
+ * @return {!Promise<!proto.spotify.backstage.scaffolder.v1.ListTemplatesReply>}
  *     A native promise that resolves to the response
  */
-proto.spotify.backstage.scaffolder.v1.ScaffolderPromiseClient.prototype.getAllTemplates =
+proto.spotify.backstage.scaffolder.v1.ScaffolderPromiseClient.prototype.listTemplates =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/spotify.backstage.scaffolder.v1.Scaffolder/GetAllTemplates',
+      '/spotify.backstage.scaffolder.v1.Scaffolder/ListTemplates',
       request,
       metadata || {},
-      methodDescriptor_Scaffolder_GetAllTemplates);
+      methodDescriptor_Scaffolder_ListTemplates);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.spotify.backstage.scaffolder.v1.CreateRequest,
+ *   !proto.spotify.backstage.scaffolder.v1.CreateReply>}
+ */
+const methodDescriptor_Scaffolder_Create = new grpc.web.MethodDescriptor(
+  '/spotify.backstage.scaffolder.v1.Scaffolder/Create',
+  grpc.web.MethodType.UNARY,
+  proto.spotify.backstage.scaffolder.v1.CreateRequest,
+  proto.spotify.backstage.scaffolder.v1.CreateReply,
+  /**
+   * @param {!proto.spotify.backstage.scaffolder.v1.CreateRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.spotify.backstage.scaffolder.v1.CreateReply.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.spotify.backstage.scaffolder.v1.CreateRequest,
+ *   !proto.spotify.backstage.scaffolder.v1.CreateReply>}
+ */
+const methodInfo_Scaffolder_Create = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.spotify.backstage.scaffolder.v1.CreateReply,
+  /**
+   * @param {!proto.spotify.backstage.scaffolder.v1.CreateRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.spotify.backstage.scaffolder.v1.CreateReply.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.spotify.backstage.scaffolder.v1.CreateRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.spotify.backstage.scaffolder.v1.CreateReply)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.spotify.backstage.scaffolder.v1.CreateReply>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.spotify.backstage.scaffolder.v1.ScaffolderClient.prototype.create =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/spotify.backstage.scaffolder.v1.Scaffolder/Create',
+      request,
+      metadata || {},
+      methodDescriptor_Scaffolder_Create,
+      callback);
+};
+
+
+/**
+ * @param {!proto.spotify.backstage.scaffolder.v1.CreateRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.spotify.backstage.scaffolder.v1.CreateReply>}
+ *     A native promise that resolves to the response
+ */
+proto.spotify.backstage.scaffolder.v1.ScaffolderPromiseClient.prototype.create =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/spotify.backstage.scaffolder.v1.Scaffolder/Create',
+      request,
+      metadata || {},
+      methodDescriptor_Scaffolder_Create);
 };
 
 
