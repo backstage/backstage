@@ -15,7 +15,9 @@ generate:
       type: go
       flags: plugins=grpc
       output: ../backend/proto
-    - name: ts
-      path: frontend/node_modules/ts-protoc-gen/bin/protoc-gen-ts
+    - name: js
+      flags: import_style=commonjs
       output: ../frontend/packages/proto/src/generated
-      flags: service=grpc-web
+    - name: grpc-web
+      flags: import_style=commonjs+dts,mode=grpcwebtext
+      output: ../frontend/packages/proto/src/generated
