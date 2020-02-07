@@ -1,17 +1,17 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, LinkProps } from 'react-router-dom';
 
-type Props = {
+type Props = Omit<LinkProps, 'to'> & {
   subPath?: string;
 } & (
-  | {
-      kind: string;
-      id?: string;
-    }
-  | {
-      uri: string;
-    }
-);
+    | {
+        kind: string;
+        id?: string;
+      }
+    | {
+        uri: string;
+      }
+  );
 
 export function buildPath(kind: string, id?: string, subPath?: string) {
   if (id) {
@@ -26,7 +26,11 @@ export function buildPath(kind: string, id?: string, subPath?: string) {
 const EntityLink: FC<Props> = ({ subPath, children, ...props }) => {
   if ('kind' in props) {
     const { kind, id } = props;
-    return <Link to={buildPath(kind, id, subPath)}>{children}</Link>;
+    return (
+      <Link to={buildPath(kind, id, subPath)} {...props}>
+        {children}
+      </Link>
+    );
   } else {
     const match = props.uri.match(/entity:([^:]+)(:[^:]+)?/);
     if (!match) {
@@ -36,7 +40,11 @@ const EntityLink: FC<Props> = ({ subPath, children, ...props }) => {
     const [, kind, maybeId] = match;
     const id = maybeId ? maybeId.slice(1) : undefined;
 
-    return <Link to={buildPath(kind, id, subPath)}>{children}</Link>;
+    return (
+      <Link to={buildPath(kind, id, subPath)} {...props}>
+        {children}
+      </Link>
+    );
   }
 };
 

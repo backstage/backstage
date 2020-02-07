@@ -1,83 +1,21 @@
-import React, { ComponentType, FC } from 'react';
-import { Route, Redirect, Switch } from 'react-router-dom';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import { AppComponentBuilder, App } from '../app/types';
-import { useEntity, useEntityUri, useEntityConfig } from './EntityContext';
-import EntityLink from '../../components/EntityLink/EntityLink';
+import React, { ComponentType } from 'react';
+import DefaultEntityPage from '../../components/DefaultEntityPage';
+import { App, AppComponentBuilder } from '../app/types';
 import BackstagePlugin from '../plugin/Plugin';
+import { EntityPageNavItem, EntityPageView } from './types';
+import { IconComponent } from '../types';
 
-const EntityLayout: FC<{}> = ({ children }) => {
-  const config = useEntityConfig();
-  return (
-    <div style={{ backgroundColor: config.color.primary }}>{children}</div>
-  );
-};
-
-const EntitySidebar: FC<{}> = ({ children }) => {
-  return <List>{children}</List>;
-};
-
-const EntitySidebarItem: FC<{ title: string; path: string }> = ({
-  title,
-  path,
-}) => {
-  const entityUri = useEntityUri();
-
-  return (
-    <ListItem>
-      <EntityLink uri={entityUri} subPath={path}>
-        {title}
-      </EntityLink>
-    </ListItem>
-  );
-};
-
-type EntityPageNavItem = {
-  title: string;
-  target: string;
-};
-
-type EntityPageView = {
-  path: string;
-  component: ComponentType<any>;
-};
-
-type Props = {
-  navItems: EntityPageNavItem[];
-  views: EntityPageView[];
-};
-
-const EntityPageComponent: FC<Props> = ({ navItems, views }) => {
-  const { kind, id } = useEntity();
-  const basePath = `/entity/${kind}/${id}`;
-
-  return (
-    <EntityLayout>
-      <EntitySidebar>
-        {navItems.map(({ title, target }) => (
-          <EntitySidebarItem key={target} title={title} path={target} />
-        ))}
-      </EntitySidebar>
-      <Switch>
-        {views.map(({ path, component }) => (
-          <Route
-            key={path}
-            exact
-            path={`${basePath}${path}`}
-            component={component}
-          />
-        ))}
-        <Redirect from={basePath} to={`${basePath}${views[0].path}`} />
-      </Switch>
-    </EntityLayout>
-  );
-};
+// type AppComponents = {
+//   EntityPage: ComponentType<EntityPageProps>;
+//   EntityPageNavbar: ComponentType<EntityPageNavbarProps>;
+//   EntityPageHeader: ComponentType<EntityPageHeaderProps>;
+// };
 
 type EntityPageRegistration =
   | {
       type: 'page';
       title: string;
+      icon: IconComponent;
       path: string;
       page: AppComponentBuilder;
     }
@@ -88,6 +26,7 @@ type EntityPageRegistration =
   | {
       type: 'component';
       title: string;
+      icon: IconComponent;
       path: string;
       component: ComponentType<any>;
     };
@@ -97,19 +36,27 @@ export default class EntityPageBuilder extends AppComponentBuilder {
 
   addPage(
     title: string,
+    icon: IconComponent,
     path: string,
     page: AppComponentBuilder,
   ): EntityPageBuilder {
-    this.registrations.push({ type: 'page', title, path, page });
+    this.registrations.push({ type: 'page', title, icon, path, page });
     return this;
   }
 
   addComponent(
     title: string,
+    icon: IconComponent,
     path: string,
     component: ComponentType<any>,
   ): EntityPageBuilder {
-    this.registrations.push({ type: 'component', title, path, component });
+    this.registrations.push({
+      type: 'component',
+      title,
+      icon,
+      path,
+      component,
+    });
     return this;
   }
 
@@ -125,14 +72,14 @@ export default class EntityPageBuilder extends AppComponentBuilder {
     for (const reg of this.registrations) {
       switch (reg.type) {
         case 'page': {
-          const { title, path, page } = reg;
-          navItems.push({ title, target: path });
+          const { title, icon, path, page } = reg;
+          navItems.push({ title, icon, target: path });
           views.push({ path, component: page.build(app) });
           break;
         }
         case 'component': {
-          const { title, path, component } = reg;
-          navItems.push({ title, target: path });
+          const { title, icon, path, component } = reg;
+          navItems.push({ title, icon, target: path });
           views.push({ path, component });
           break;
         }
@@ -141,8 +88,8 @@ export default class EntityPageBuilder extends AppComponentBuilder {
           for (const output of reg.plugin.output()) {
             switch (output.type) {
               case 'entity-page-nav-item':
-                const { title, target } = output;
-                navItems.push({ title, target });
+                const { title, icon, target } = output;
+                navItems.push({ title, icon, target });
                 added = true;
                 break;
               case 'entity-page-view-route':
@@ -162,6 +109,6 @@ export default class EntityPageBuilder extends AppComponentBuilder {
       }
     }
 
-    return () => <EntityPageComponent navItems={navItems} views={views} />;
+    return () => <DefaultEntityPage navItems={navItems} views={views} />;
   }
 }

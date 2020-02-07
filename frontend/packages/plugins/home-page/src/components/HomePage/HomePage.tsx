@@ -1,10 +1,31 @@
 import React, { FC } from 'react';
-
-import { EntityLink, InfoCard, SortableTable } from '@backstage/core';
+import { Typography, makeStyles, Theme, Grid } from '@material-ui/core';
+import HomePageTimer from '../HomepageTimer';
+import {
+  EntityLink,
+  InfoCard,
+  SortableTable,
+  Header,
+  Page,
+  theme,
+} from '@backstage/core';
 import SquadTechHealth from './SquadTechHealth';
-import { Grid, Typography } from '@material-ui/core';
+
+const useStyles = makeStyles<Theme>(theme => ({
+  mainContentArea: {
+    overflowX: 'hidden',
+    overflowY: 'auto',
+  },
+  pageBody: {
+    padding: theme.spacing(2),
+  },
+  avatarButton: {
+    padding: theme.spacing(2),
+  },
+}));
 
 const HomePage: FC<{}> = () => {
+  const classes = useStyles();
   const data = [
     { id: 'service-1', system: 'system' },
     { id: 'service-2', system: 'system' },
@@ -23,25 +44,34 @@ const HomePage: FC<{}> = () => {
   ];
 
   return (
-    <Grid container direction="column" spacing={6}>
-      <Grid item>
-        <SquadTechHealth />
-      </Grid>
-      <Grid item>
-        <InfoCard title="Stuff you own">
-          <SortableTable data={data} columns={columns} orderBy="id" />
-          <Typography variant="body1">Welcome to Backstage!</Typography>
-          <div>
-            <EntityLink kind="service" id="backstage-backend">
-              Backstage Backend
-            </EntityLink>
-            <EntityLink uri="entity:service:backstage-lb" subPath="ci-cd">
-              Backstage LB CI/CD
-            </EntityLink>
-          </div>
-        </InfoCard>
-      </Grid>
-    </Grid>
+    <Page theme={theme.home}>
+      <div className={classes.mainContentArea}>
+        <Header title="This is Backstage!">
+          <HomePageTimer />
+        </Header>
+        <div className={classes.pageBody}>
+          <Grid container direction="column" spacing={6}>
+            <Grid item>
+              <SquadTechHealth />
+            </Grid>
+            <Grid item>
+              <InfoCard title="Stuff you own">
+                <SortableTable data={data} columns={columns} orderBy="id" />
+                <Typography variant="body1">Welcome to Backstage!</Typography>
+                <div>
+                  <EntityLink kind="service" id="backstage-backend">
+                    Backstage Backend
+                  </EntityLink>
+                  <EntityLink uri="entity:service:backstage-lb" subPath="ci-cd">
+                    Backstage LB CI/CD
+                  </EntityLink>
+                </div>
+              </InfoCard>
+            </Grid>
+          </Grid>
+        </div>
+      </div>
+    </Page>
   );
 };
 

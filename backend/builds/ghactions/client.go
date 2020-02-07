@@ -56,6 +56,10 @@ func (c *Client) ListWorkflowRuns(ctx context.Context, owner, repo string) (*Wor
 	}
 	defer res.Body.Close()
 
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Upstream fetch failed with status %d %s", res.StatusCode, res.Status)
+	}
+
 	var resData WorkflowRunsListResponse
 	if err := json.NewDecoder(res.Body).Decode(&resData); err != nil {
 		return nil, err
@@ -75,6 +79,13 @@ func (c *Client) GetWorkflowRun(ctx context.Context, owner, repo, runId string) 
 		return nil, err
 	}
 	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("Upstream fetch failed with status %d %s", res.StatusCode, res.Status)
+	}
 
 	var resData WorkflowRunResponse
 	if err := json.NewDecoder(res.Body).Decode(&resData); err != nil {

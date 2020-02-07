@@ -55,6 +55,9 @@ func (s *service) GetBuild(ctx context.Context, req *buildsv1.GetBuildRequest) (
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed to fetch workflow run for %s/%s/%s, %s", owner, repo, runID, err)
 	}
+	if run == nil {
+		return nil, status.Errorf(codes.NotFound, "Workflow run %s/%s/%s not found", owner, repo, runID)
+	}
 
 	return &buildsv1.GetBuildReply{
 		Build: s.transformBuild(owner, repo, run),
@@ -96,6 +99,7 @@ func (s *service) transformBuild(owner, repo string, run *ghactions.WorkflowRunR
 		Uri:      fmt.Sprintf("entity:build:%s/%s/%d", owner, repo, run.ID),
 		CommitId: run.HeadCommit.ID,
 		Message:  run.HeadCommit.Message,
+		Branch:   run.HeadBranch,
 		Status:   stat,
 	}
 }
@@ -108,7 +112,7 @@ func (s *service) parseBuildURI(uri string) (owner, repo, runID string, err erro
 	}
 
 	match := entityURIRegex.FindStringSubmatch(uri)
-	if err != nil {
+	if match == nil {
 		return "", "", "", fmt.Errorf("uri does not match")
 	}
 

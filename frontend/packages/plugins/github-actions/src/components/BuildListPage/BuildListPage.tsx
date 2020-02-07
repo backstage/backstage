@@ -10,6 +10,8 @@ import {
   LinearProgress,
   Typography,
   Tooltip,
+  makeStyles,
+  Theme,
 } from '@material-ui/core';
 import { RelativeEntityLink } from '@backstage/core';
 import { BuildsClient } from '../../apis/builds';
@@ -28,35 +30,51 @@ const LongText: FC<{ text: string; max: number }> = ({ text, max }) => {
   );
 };
 
+const useStyles = makeStyles<Theme>(theme => ({
+  root: {
+    padding: theme.spacing(2),
+  },
+  title: {
+    paddingBottom: theme.spacing(2),
+  },
+}));
+
 const BuildListPage: FC<{}> = () => {
+  const classes = useStyles();
   const status = useAsync(() => client.listBuilds('entity:spotify:backstage'));
 
+  let content: JSX.Element;
+
   if (status.loading) {
-    return <LinearProgress />;
-  }
-  if (status.error) {
-    return (
+    content = <LinearProgress />;
+  } else if (status.error) {
+    content = (
       <Typography variant="h4" color="error">
-        Failed to load builds, {status.error}
+        Failed to load builds, {status.error.message}
       </Typography>
     );
-  }
-
-  return (
-    <>
-      <Typography variant="h4">CI/CD Builds</Typography>
+  } else {
+    content = (
       <TableContainer component={Paper}>
         <Table aria-label="CI/CD builds table">
           <TableHead>
             <TableRow>
+              <TableCell>Status</TableCell>
+              <TableCell>Branch</TableCell>
               <TableCell>Message</TableCell>
               <TableCell>Commit</TableCell>
-              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {status.value!.map(build => (
               <TableRow key={build.uri}>
+                {/* TODO: make this an indicating blobby thing */}
+                <TableCell>{build.status}</TableCell>
+                <TableCell>
+                  <Typography>
+                    <LongText text={build.branch} max={30} />
+                  </Typography>
+                </TableCell>
                 <TableCell>
                   <RelativeEntityLink
                     view={`builds/${encodeURIComponent(build.uri)}`}
@@ -73,13 +91,21 @@ const BuildListPage: FC<{}> = () => {
                     </Typography>
                   </Tooltip>
                 </TableCell>
-                <TableCell>{build.status}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-    </>
+    );
+  }
+
+  return (
+    <div className={classes.root}>
+      <Typography variant="h4" className={classes.title}>
+        CI/CD Builds
+      </Typography>
+      {content}
+    </div>
   );
 };
 

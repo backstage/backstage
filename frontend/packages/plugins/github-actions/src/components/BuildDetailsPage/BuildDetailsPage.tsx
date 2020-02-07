@@ -38,8 +38,8 @@ const BuildDetailsPage: FC<Props> = () => {
   }
   if (status.error) {
     return (
-      <Typography variant="h4" color="error">
-        Failed to load build, {status.error}
+      <Typography variant="h6" color="error">
+        Failed to load build, {status.error.message}
       </Typography>
     );
   }
@@ -50,6 +50,12 @@ const BuildDetailsPage: FC<Props> = () => {
     <TableContainer component={Paper} className={classes.root}>
       <Table>
         <TableBody>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Branch</Typography>
+            </TableCell>
+            <TableCell>{details?.build.branch}</TableCell>
+          </TableRow>
           <TableRow>
             <TableCell>
               <Typography noWrap>Message</Typography>

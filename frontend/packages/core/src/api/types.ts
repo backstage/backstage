@@ -1,10 +1,5 @@
-export type User = {
-  id: string;
-  email: string;
-};
+import { ComponentType } from 'react';
 
-export type UserApi = {
-  isLoggedIn(): Promise<boolean>;
-
-  getUser(): Promise<User>;
-};
+export type IconComponent = ComponentType<{
+  fontSize: 'inherit' | 'default' | 'small' | 'large';
+}>;
