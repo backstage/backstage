@@ -55,7 +55,7 @@ export class TemplateCard extends Component {
           </CardContent>
         )}
         <CardActions className={classes.cardActions}>
-          <Link to={item.link || `/create-component/${item.id}`}>
+          <Link href={item.link || `/create/${item.id}`}>
             <Button color="primary">{item.callToAction || 'Choose'}</Button>
           </Link>
         </CardActions>
