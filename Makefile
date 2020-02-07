@@ -1,7 +1,13 @@
 ###
 # All-in-one build command.
 ###
-build: build-protocol-definitions
+build: build-yarn-dependencies build-protocol-definitions
+
+###
+# Download dependencies from the Frontend using Yarn.
+###
+build-yarn-dependencies:
+	yarn --cwd ${PWD}/frontend install
 
 ###
 # Protobuf Definitions.
