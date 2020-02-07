@@ -4,6 +4,8 @@ import {
   createEntityPage,
 } from '@backstage/core';
 import ComputerIcon from '@material-ui/icons/Computer';
+import WebIcon from '@material-ui/icons/Web';
+import DnsIcon from '@material-ui/icons/Dns';
 import MockEntityPage from './MockEntityPage';
 import MockEntityCard from './MockEntityCard';
 import GithubActionsPlugin from '@backstage/plugin-github-actions';
@@ -14,9 +16,9 @@ const serviceOverviewPage = createWidgetView()
   .addComponent(MockEntityCard);
 
 const serviceView = createEntityPage()
-  .addPage('Overview', '/overview', serviceOverviewPage)
+  .addPage('Overview', WebIcon, '/overview', serviceOverviewPage)
   .register(GithubActionsPlugin)
-  .addComponent('Deployment', '/deployment', MockEntityPage);
+  .addComponent('Deployment', DnsIcon, '/deployment', MockEntityPage);
 
 const serviceEntity = createEntityKind({
   kind: 'service',

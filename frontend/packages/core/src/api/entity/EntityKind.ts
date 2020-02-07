@@ -1,10 +1,11 @@
 import { ComponentType } from 'react';
 import { AppComponentBuilder } from '../app/types';
+import { IconComponent } from '../types';
 
 export type EntityConfig = {
   kind: string;
   title: string;
-  icon: React.ComponentType<{ fontSize: number }>;
+  icon: IconComponent;
   color: {
     primary: string;
     secondary: string;

@@ -1,4 +1,5 @@
 import { ComponentType } from 'react';
+import { IconComponent } from '../types';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
@@ -31,6 +32,7 @@ export type EntityPageViewRouteOutput = {
 export type EntityPageNavItemOutput = {
   type: 'entity-page-nav-item';
   title: string;
+  icon: IconComponent;
   target: RoutePath;
 };
 

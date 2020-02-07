@@ -10,10 +10,13 @@ import { EntityPageNavItem, EntityPageView } from './types';
 //   EntityPageHeader: ComponentType<EntityPageHeaderProps>;
 // };
 
+type IconComponent = ComponentType<{ fontSize?: number }>;
+
 type EntityPageRegistration =
   | {
       type: 'page';
       title: string;
+      icon: IconComponent;
       path: string;
       page: AppComponentBuilder;
     }
@@ -24,6 +27,7 @@ type EntityPageRegistration =
   | {
       type: 'component';
       title: string;
+      icon: IconComponent;
       path: string;
       component: ComponentType<any>;
     };
@@ -33,19 +37,27 @@ export default class EntityPageBuilder extends AppComponentBuilder {
 
   addPage(
     title: string,
+    icon: IconComponent,
     path: string,
     page: AppComponentBuilder,
   ): EntityPageBuilder {
-    this.registrations.push({ type: 'page', title, path, page });
+    this.registrations.push({ type: 'page', title, icon, path, page });
     return this;
   }
 
   addComponent(
     title: string,
+    icon: IconComponent,
     path: string,
     component: ComponentType<any>,
   ): EntityPageBuilder {
-    this.registrations.push({ type: 'component', title, path, component });
+    this.registrations.push({
+      type: 'component',
+      title,
+      icon,
+      path,
+      component,
+    });
     return this;
   }
 
@@ -61,14 +73,14 @@ export default class EntityPageBuilder extends AppComponentBuilder {
     for (const reg of this.registrations) {
       switch (reg.type) {
         case 'page': {
-          const { title, path, page } = reg;
-          navItems.push({ title, target: path });
+          const { title, icon, path, page } = reg;
+          navItems.push({ title, icon, target: path });
           views.push({ path, component: page.build(app) });
           break;
         }
         case 'component': {
-          const { title, path, component } = reg;
-          navItems.push({ title, target: path });
+          const { title, icon, path, component } = reg;
+          navItems.push({ title, icon, target: path });
           views.push({ path, component });
           break;
         }
@@ -77,8 +89,8 @@ export default class EntityPageBuilder extends AppComponentBuilder {
           for (const output of reg.plugin.output()) {
             switch (output.type) {
               case 'entity-page-nav-item':
-                const { title, target } = output;
-                navItems.push({ title, target });
+                const { title, icon, target } = output;
+                navItems.push({ title, icon, target });
                 added = true;
                 break;
               case 'entity-page-view-route':

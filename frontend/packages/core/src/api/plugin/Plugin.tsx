@@ -27,6 +27,7 @@ export type RouterHooks = {
 
 type EntityPageSidebarItemOptions = {
   title: string;
+  icon: IconComponent;
   target: RoutePath;
 };
 
@@ -79,11 +80,12 @@ export default class Plugin {
         },
       },
       entityPage: {
-        navItem({ title, target }) {
+        navItem({ title, icon, target }) {
           outputs.push({
             type: 'entity-page-nav-item',
-            target,
             title,
+            icon,
+            target,
           });
         },
         route(path, component, options) {

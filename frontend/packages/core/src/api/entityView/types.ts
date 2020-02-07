@@ -1,6 +1,8 @@
 import { ComponentType } from 'react';
+import { IconComponent } from '../types';
 
 export type EntityPageNavItem = {
+  icon: IconComponent;
   title: string;
   target: string;
 };
