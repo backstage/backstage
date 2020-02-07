@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     // FIXME: Don't used a fixed width here
     gridTemplateColumns: '64px auto',
     gridTemplateRows: '1fr',
-    width: '100vw',
+    width: '100%',
     height: '100vh',
   },
 }));

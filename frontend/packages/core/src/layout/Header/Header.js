@@ -103,7 +103,7 @@ const styles = theme => ({
     gridArea: 'pageHeader',
     padding: theme.spacing(3),
     minHeight: 118,
-    width: '100vw',
+    width: '100%',
     boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
     position: 'relative',
     zIndex: 100,
