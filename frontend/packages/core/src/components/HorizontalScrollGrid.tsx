@@ -1,9 +1,8 @@
 import React, { FC } from 'react';
 import classNames from 'classnames';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { Grid, IconButton } from '@material-ui/core';
+import { Grid, IconButton, makeStyles, Theme } from '@material-ui/core';
 
 // Generated with https://larsenwork.com/easing-gradients/
 const fadeGradient = `
@@ -34,7 +33,7 @@ type Props = {
   minScrollDistance?: number; // limits how small steps the scroll can take in px
 };
 
-const useStyles = makeStyles<Theme, Props>(theme => ({
+const useStyles = makeStyles<Theme>(theme => ({
   root: {
     position: 'relative',
     display: 'flex',
@@ -43,7 +42,7 @@ const useStyles = makeStyles<Theme, Props>(theme => ({
   },
   container: {
     overflow: 'auto',
-    scrollbarWidth: 0, // hide in FF
+    scrollbarWidth: 0 as any, // hide in FF
     '&::-webkit-scrollbar': {
       display: 'none', // hide in Chrome
     },

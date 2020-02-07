@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInThemedTestApp } from '../testUtils';
-import CircleProgress from '@backstage/core';
+import CircleProgress from './CircleProgress';
 //import { COLORS, V1 } from 'core/app/Themes';
 
 describe('<CircleProgress />', () => {

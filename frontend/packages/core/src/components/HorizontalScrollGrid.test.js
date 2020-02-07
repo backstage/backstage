@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { renderWithEffects, wrapInThemedTestApp } from '../testUtils';
-import HorizontalScrollGrid from 'shared/components/HorizontalScrollGrid';
+import HorizontalScrollGrid from './HorizontalScrollGrid';
 import { Grid } from '@material-ui/core';
 
 describe('<HorizontalScrollGrid />', () => {
