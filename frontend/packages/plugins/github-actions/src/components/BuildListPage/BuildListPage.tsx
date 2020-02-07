@@ -13,7 +13,7 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core';
-import { RelativeEntityLink } from '@backstage/core';
+import { RelativeEntityLink, useEntity } from '@backstage/core';
 import { BuildsClient } from '../../apis/builds';
 import { useAsync } from 'react-use';
 import BuildStatusIndicator from '../BuildStatusIndicator';
@@ -42,7 +42,8 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 const BuildListPage: FC<{}> = () => {
   const classes = useStyles();
-  const status = useAsync(() => client.listBuilds('entity:spotify:backstage'));
+  const { kind, id } = useEntity();
+  const status = useAsync(() => client.listBuilds(`entity:${kind}:${id}`));
 
   let content: JSX.Element;
 
