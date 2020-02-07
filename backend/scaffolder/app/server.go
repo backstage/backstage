@@ -7,11 +7,11 @@ import (
 	identity "github.com/spotify/backstage/backend/proto/identity/v1"
 	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
 
-	// "google.golang.org/grpc"
 	inventory "github.com/spotify/backstage/backend/proto/inventory/v1"
 	"github.com/spotify/backstage/scaffolder/fs"
 	"github.com/spotify/backstage/scaffolder/lib"
 	"github.com/spotify/backstage/scaffolder/repository"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log"
@@ -29,15 +29,15 @@ type Server struct {
 
 // NewServer creates a new server for with all the things
 func NewServer() *Server {
-	// conn, errc := grpc.Dial("http://inventory:50051")
+	conn, err := grpc.Dial("inventory:50051", grpc.WithInsecure())
 
-	// if err != nil {
-	// 	log.Fatal("Cannot connect to inventory service")
-	// }
+	if err != nil {
+		log.Fatal("Cannot connect to inventory service")
+	}
 
-	//inventory: inventory.NewInventoryClient(conn),
 	return &Server{
-		github: lib.NewGithubClient(),
+		github:    lib.NewGithubClient(),
+		inventory: inventory.NewInventoryClient(conn),
 	}
 }
 
@@ -99,6 +99,17 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 
 	if err := s.git.Push(pushOptions); err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprintf("Failed to push the repository to Github %s", err))
+	}
+
+	// notify the inventory service
+	_, err = s.inventory.CreateEntity(ctx, &inventory.CreateEntityRequest{
+		Entity: &inventory.Entity{
+			Uri: fmt.Sprintf("boss://service/%s", req.ComponentId),
+		},
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Failed to register the entity in the inventory %s", err))
 	}
 
 	return &pb.CreateReply{
