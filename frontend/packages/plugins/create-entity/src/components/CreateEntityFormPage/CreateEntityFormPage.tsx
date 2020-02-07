@@ -27,7 +27,9 @@ const CreateEntityFormPage = () => {
       const req = new scaffolderV1.CreateRequest();
       req.setComponentId(values.entityId);
       req.setTemplateId(templateId);
-      // req.setOrg('soapraj');
+      req.setMetadata({
+        description: values.description
+      });
       req.setPrivate(false);
       client.create(req).then((res: scaffolderV1.CreateReply) => {
         console.log('COMPONENT CREATED');
