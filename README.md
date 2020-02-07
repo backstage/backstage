@@ -10,10 +10,10 @@ Backstage is an open platform for building developer portals.
 
 ### Protobuf Definitions
 
-To generate the Protobuf definitions in Go and TypeScript, run the following command from the root with [Prototool](https://github.com/uber/prototool):
+To generate the Protobuf definitions in Go and TypeScript, run the following command from the root to run [Prototool](https://github.com/uber/prototool):
 
 ```bash
-$ prototool generate ./proto
+$ make build-protocol-definitions
 ```
 
 See [proto/README.md](proto/README.md) for more information.
@@ -25,13 +25,13 @@ See [proto/README.md](proto/README.md) for more information.
 Run the following:
 
 ```bash
-$ ./tools/cookiecutter/init.sh frontend/packages/plugins/_template --output-dir frontend/packages/plugins
+$ make scaffold-new-frontend-plugin
 ```
 
 This will generate a plugin in the `frontend/packages/plugins` folder. It is important to note you will still need to include the plugin in your `frontend/packages/app` in the `package.json`. You will then be able to import it as follows:
 
 ```bash
-$ ./tools/cookiecutter/init.sh frontend/packages/plugins/_template --output-dir frontend/packages/plugins
+$ make scaffold-new-frontend-plugin
 plugin_name [example-plugin]: github-api
 
 $ vim frontend/packages/app/package.json
