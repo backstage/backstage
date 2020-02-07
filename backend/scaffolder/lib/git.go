@@ -23,7 +23,11 @@ type PushRepositoryOptions struct {
 // Push will push the repository to github
 func (g *Git) Push(options PushRepositoryOptions) error {
 	// use git bindings to add the remote with access token and push to the directory
-	repo, err := git.PlainInit(options.TempFolder, false)
+	repo, err := git.PlainInit(
+		fmt.Sprintf("%s/%s", options.TempFolder, options.ComponentID),
+		false,
+	)
+
 	if err != nil {
 		log.Printf("Failed to init the git repository")
 		return err

@@ -6,6 +6,9 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	identity "github.com/spotify/backstage/backend/proto/identity/v1"
 	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
+
+	// "google.golang.org/grpc"
+	inventory "github.com/spotify/backstage/backend/proto/inventory/v1"
 	"github.com/spotify/backstage/scaffolder/fs"
 	"github.com/spotify/backstage/scaffolder/lib"
 	"github.com/spotify/backstage/scaffolder/repository"
@@ -21,10 +24,18 @@ type Server struct {
 	fs         *fs.Filesystem
 	cookie     *lib.Cutter
 	git        *lib.Git
+	inventory  inventory.InventoryClient
 }
 
 // NewServer creates a new server for with all the things
 func NewServer() *Server {
+	// conn, errc := grpc.Dial("http://inventory:50051")
+
+	// if err != nil {
+	// 	log.Fatal("Cannot connect to inventory service")
+	// }
+
+	//inventory: inventory.NewInventoryClient(conn),
 	return &Server{
 		github: lib.NewGithubClient(),
 	}
@@ -39,8 +50,9 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 		Org:     req.Org,
 		Private: req.Private,
 	}
+
 	if _, err := s.github.CreateRepository(repo); err != nil {
-		return nil, status.Error(codes.Internal, fmt.Sprintf("Could not create repository %s/%s", req.Org, req.ComponentId))
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Could not create repository %s/%s %s", req.Org, req.ComponentId, err))
 	}
 
 	// move the template into a temporary directory
@@ -51,7 +63,7 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 	)
 
 	if err != nil {
-		return nil, status.Error(codes.Internal, "Could not prepare the template")
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Could not prepare the template %s", err))
 	}
 
 	// get the optional metadatafields from the json
@@ -59,7 +71,7 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 	cutterMetadata, err := marshaler.MarshalToString(req.Metadata)
 
 	if err != nil {
-		return nil, status.Error(codes.Internal, "Could not marshal the cookiecutter metadata")
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Could not marshal the cookiecutter metadata %s", err))
 	}
 
 	cookieTemplate := lib.CookieCutterTemplate{
@@ -86,7 +98,7 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 	}
 
 	if err := s.git.Push(pushOptions); err != nil {
-		return nil, status.Error(codes.Internal, "Failed to push the repository to Github")
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Failed to push the repository to Github %s", err))
 	}
 
 	return &pb.CreateReply{

@@ -41,6 +41,10 @@ services:
     env_file: secrets.env
 
   scaffolder:
+    depends_on:
+      - inventory
+    links:
+      - inventory
     container_name: boss-scaffolder
     build:
       context: backend

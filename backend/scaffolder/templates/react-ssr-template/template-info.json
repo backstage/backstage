@@ -2,22 +2,5 @@
 	"id": "react-ssr-template",
 	"name": "React SSR",
 	"description": "Next.js application skeleton for creating isomorphic web applications.",
-	"ownerId": "ownerId",
-	"fields": [
-		{
-			"id": "description",
-			"title": "description",
-			"type": "text",
-			"description": "Description of the component",
-			"validators": [
-				{ "type": "required" },
-				{ "type": "string-range", "min": 4, "max": 33 },
-				{
-					"type": "regex",
-					"match": "^[a-z][a-z0-9]+$",
-					"message": "Owner names must consist only of lowercase letters"
-				}
-			]
-		}
-	]
+	"ownerId": "ownerId"
 }
