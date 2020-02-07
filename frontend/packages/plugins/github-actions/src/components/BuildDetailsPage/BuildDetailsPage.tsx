@@ -15,13 +15,22 @@ import {
   makeStyles,
   ButtonGroup,
   Button,
+  Theme,
 } from '@material-ui/core';
+import { RelativeEntityLink } from '@backstage/core';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<Theme>(theme => ({
   root: {
     maxWidth: 720,
+    margin: theme.spacing(2),
   },
-});
+  title: {
+    padding: theme.spacing(1, 0, 2, 0),
+  },
+  table: {
+    padding: theme.spacing(1),
+  },
+}));
 
 type Props = {};
 
@@ -47,61 +56,71 @@ const BuildDetailsPage: FC<Props> = () => {
   const details = status.value;
 
   return (
-    <TableContainer component={Paper} className={classes.root}>
-      <Table>
-        <TableBody>
-          <TableRow>
-            <TableCell>
-              <Typography noWrap>Branch</Typography>
-            </TableCell>
-            <TableCell>{details?.build.branch}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography noWrap>Message</Typography>
-            </TableCell>
-            <TableCell>{details?.build.message}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography noWrap>Commit ID</Typography>
-            </TableCell>
-            <TableCell>{details?.build.commitId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography noWrap>Status</Typography>
-            </TableCell>
-            <TableCell>{details?.build.status}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography noWrap>Author</Typography>
-            </TableCell>
-            <TableCell>{details?.author}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography noWrap>Links</Typography>
-            </TableCell>
-            <TableCell>
-              <ButtonGroup
-                variant="text"
-                color="primary"
-                aria-label="text primary button group"
-              >
-                <Button>
-                  <Link href={details?.overviewUrl}>GitHub</Link>
-                </Button>
-                <Button>
-                  <Link href={details?.logUrl}>Logs</Link>
-                </Button>
-              </ButtonGroup>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <div className={classes.root}>
+      <Typography className={classes.title} variant="h3">
+        <RelativeEntityLink view="/builds">
+          <Typography component={'span'} variant="h3" color="primary">
+            &lt;{' '}
+          </Typography>
+        </RelativeEntityLink>
+        Build Details
+      </Typography>
+      <TableContainer component={Paper} className={classes.table}>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell>
+                <Typography noWrap>Branch</Typography>
+              </TableCell>
+              <TableCell>{details?.build.branch}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography noWrap>Message</Typography>
+              </TableCell>
+              <TableCell>{details?.build.message}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography noWrap>Commit ID</Typography>
+              </TableCell>
+              <TableCell>{details?.build.commitId}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography noWrap>Status</Typography>
+              </TableCell>
+              <TableCell>{details?.build.status}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography noWrap>Author</Typography>
+              </TableCell>
+              <TableCell>{details?.author}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography noWrap>Links</Typography>
+              </TableCell>
+              <TableCell>
+                <ButtonGroup
+                  variant="text"
+                  color="primary"
+                  aria-label="text primary button group"
+                >
+                  <Button>
+                    <Link href={details?.overviewUrl}>GitHub</Link>
+                  </Button>
+                  <Button>
+                    <Link href={details?.logUrl}>Logs</Link>
+                  </Button>
+                </ButtonGroup>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 };
 
