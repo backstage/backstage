@@ -35,7 +35,6 @@ func NewServer() *Server {
 		log.Fatal("Cannot connect to inventory service")
 	}
 
-	//inventory: inventory.NewInventoryClient(conn),
 	return &Server{
 		github:    lib.NewGithubClient(),
 		inventory: inventory.NewInventoryClient(conn),
@@ -103,7 +102,7 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 	}
 
 	// notify the inventory service
-	_, err = s.inventory.CreateEntity(context.Background(), &inventory.CreateEntityRequest{
+	_, err = s.inventory.CreateEntity(ctx, &inventory.CreateEntityRequest{
 		Entity: &inventory.Entity{
 			Uri: fmt.Sprintf("boss://service/%s", req.ComponentId),
 		},
