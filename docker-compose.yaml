@@ -28,8 +28,6 @@ services:
       args:
         service: inventory
     restart: unless-stopped
-    volumes:
-       - ./backend/inventory/inventory-data.json:/app/inventory-data.json
 
   builds:
     container_name: boss-builds
