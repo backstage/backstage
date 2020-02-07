@@ -51,4 +51,4 @@ stop-backends:
 # Run the frontend services.
 ###
 start-frontend:
-	yarn --pwd ${PWD}/frontend start
+	yarn --cwd ${PWD}/frontend start
