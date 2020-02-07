@@ -21,7 +21,7 @@ services:
     volumes:
        - ./backend/identity/identity-data.json:/app/identity-data.json
 
-  identity:
+  inventory:
     container_name: boss-inventory
     build:
       context: backend
