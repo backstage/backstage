@@ -1,0 +1,57 @@
+{
+  "schema": [
+    {
+      "id": "module_name",
+      "title": "Module name",
+      "type": "text",
+      "description": "Module name used to generate Android Studio files and class names. CamelCase e.g. 'MyNewModule'",
+      "validators": [
+        {
+          "type": "required"
+        },
+        {
+          "type": "regex",
+          "match": "^[A-Z][A-Za-z]+$",
+          "message": "Module name must be CamelCase"
+        }
+      ]
+    },
+    {
+      "id": "module_id",
+      "title": "Module ID",
+      "type": "text",
+      "description": "Module id used as package for the new module. FQDN e.g. 'com.example.module'",
+      "validators": [
+        {
+          "type": "required"
+        },
+        {
+          "type": "regex",
+          "match": "^[a-z][a-z.]+$",
+          "message": "Module ID must be a fully qualified domain name"
+        }
+      ]
+    },
+    {
+     "id": "owner",
+     "title": "owner",
+     "type": "text",
+     "description": "The owner name used to identify the owner of this component",
+     "validators": [
+       { 
+         "type": "required" 
+       },
+       { 
+         "type": "string-range", 
+         "min": 4,
+         "max": 33 
+       },
+       { 
+         "type": "regex",
+         "match": "^[a-z][a-z0-9]+$",
+         "message": "Owner names must consist only of lowercase letters" 
+       }
+     ]
+   }
+ ]
+}

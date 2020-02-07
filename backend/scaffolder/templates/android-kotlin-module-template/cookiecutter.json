@@ -1,0 +1,6 @@
+{
+  "module_id": "com.example.module",
+  "module_name": "SampleModule",
+  "owner": "",
+  "description": "We promise to update this description /{{cookiecutter.owner}}"
+}
