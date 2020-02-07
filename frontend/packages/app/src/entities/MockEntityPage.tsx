@@ -1,9 +1,12 @@
 import React, { FC } from 'react';
-import { useEntityUri } from '@backstage/core';
+import { Typography } from '@material-ui/core';
 
 const MockEntityPage: FC<{}> = () => {
-  const uri = useEntityUri();
-  return <span>Mock page for {uri}, replace with some userful plugin</span>;
+  return (
+    <Typography style={{ padding: 24 }} variant="h3">
+      This page is intentionally left blank
+    </Typography>
+  );
 };
 
 export default MockEntityPage;
