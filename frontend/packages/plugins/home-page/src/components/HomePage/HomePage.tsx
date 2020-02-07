@@ -26,22 +26,24 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 const HomePage: FC<{}> = () => {
   const classes = useStyles();
+  const columns = [
+    { id: 'id', label: 'ID' },
+    { id: 'kind', label: 'Kind' },
+  ];
+
   const data = [
-    { id: 'service-1', system: 'system' },
-    { id: 'service-2', system: 'system' },
-  ];
-
-  /*
-  const columns = [
-    { id: 'idLink', label: 'ID', sortValue: row => row.id },
-    { id: 'systemLink', label: 'SYSTEM', sortValue: row => row.system },
-  ];
-
-  */
-  const columns = [
-    { id: 'idLink', label: 'ID' },
-    { id: 'systemLink', label: 'SYSTEM' },
-  ];
+    { id: 'backstage', kind: 'service' },
+    { id: 'backstage-microsite', kind: 'website' },
+  ].map(({ id, kind }) => {
+    return {
+      id: (
+        <EntityLink kind={kind} id={id}>
+          <Typography color="primary">{id}</Typography>
+        </EntityLink>
+      ),
+      kind: <Typography>{kind}</Typography>,
+    };
+  });
 
   return (
     <Page theme={theme.home}>
@@ -51,21 +53,12 @@ const HomePage: FC<{}> = () => {
         </Header>
         <div className={classes.pageBody}>
           <Grid container direction="column" spacing={6}>
-            <Grid item>
+            <Grid item xs={12}>
               <SquadTechHealth />
             </Grid>
-            <Grid item>
-              <InfoCard title="Stuff you own">
+            <Grid item xs={4}>
+              <InfoCard title="Stuff you own" maxWidth>
                 <SortableTable data={data} columns={columns} orderBy="id" />
-                <Typography variant="body1">Welcome to Backstage!</Typography>
-                <div>
-                  <EntityLink kind="service" id="backstage-backend">
-                    Backstage Backend
-                  </EntityLink>
-                  <EntityLink uri="entity:service:backstage-lb" subPath="ci-cd">
-                    Backstage LB CI/CD
-                  </EntityLink>
-                </div>
               </InfoCard>
             </Grid>
           </Grid>
