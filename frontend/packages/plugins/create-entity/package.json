@@ -18,7 +18,8 @@
     "react-dom": "^16.12.0",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
-    "formik": "2.1.4"
+    "formik": "2.1.4",
+    "formik-material-ui": "2.0.0-alpha.3"
   },
   "scripts": {
     "lint": "web-scripts lint",

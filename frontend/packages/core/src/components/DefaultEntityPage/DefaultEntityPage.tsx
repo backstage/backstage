@@ -6,7 +6,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import DefaultEntityPageHeader from '../DefaultEntityPageHeader';
 import DefaultEntityPageNavbar from '../DefaultEntityPageNavbar';
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles<Theme>({
   root: {
     display: 'grid',
     gridTemplateAreas: `
@@ -16,7 +16,6 @@ const useStyles = makeStyles<Theme>(theme => ({
     gridTemplateRows: 'auto 1fr',
     gridTemplateColumns: 'auto 1fr',
     minHeight: '100%',
-    paddingBottom: theme.spacing(3),
   },
   header: {
     gridArea: 'header',
@@ -27,7 +26,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   content: {
     gridArea: 'content',
   },
-}));
+});
 
 const DefaultEntityPage: FC<EntityPageProps> = ({ navItems, views }) => {
   const classes = useStyles();

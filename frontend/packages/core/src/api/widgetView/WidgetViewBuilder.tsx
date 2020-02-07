@@ -1,50 +1,65 @@
-import React, { ComponentType, FC } from 'react';
+import React, { ComponentType } from 'react';
 import { App, AppComponentBuilder } from '../app/types';
+import { Widget } from './types';
+import BackstagePlugin from '../plugin/Plugin';
+import DefaultWidgetView from '../../components/DefaultWidgetView';
 
-type Props = {
-  app: App;
-  cards: ComponentType<any>[];
-};
-
-const WidgetViewComponent: FC<Props> = ({ cards }) => {
-  return (
-    <div>
-      {cards.map((CardComponent, index) => (
-        <CardComponent key={index} />
-      ))}
-    </div>
-  );
-};
-
-type WidgetViewRegistration = {
-  type: 'component';
-  component: ComponentType<any>;
-};
+type WidgetViewRegistration =
+  | {
+      type: 'component';
+      widget: Widget;
+    }
+  | {
+      type: 'plugin';
+      plugin: BackstagePlugin;
+    };
 
 export default class WidgetViewBuilder extends AppComponentBuilder {
   private readonly registrations = new Array<WidgetViewRegistration>();
   private output?: ComponentType<any>;
 
-  addComponent(component: ComponentType<any>): WidgetViewBuilder {
-    this.registrations.push({ type: 'component', component });
+  add(widget: Widget): WidgetViewBuilder {
+    this.registrations.push({ type: 'component', widget });
     return this;
   }
 
-  build(app: App): ComponentType<any> {
+  register(plugin: BackstagePlugin): WidgetViewBuilder {
+    this.registrations.push({ type: 'plugin', plugin });
+    return this;
+  }
+
+  build(_app: App): ComponentType<any> {
     if (this.output) {
       return this.output;
     }
 
-    const cards = this.registrations.map(reg => {
+    const widgets = new Array<Widget>();
+
+    for (const reg of this.registrations) {
       switch (reg.type) {
         case 'component':
-          return reg.component;
+          widgets.push(reg.widget);
+          break;
+        case 'plugin':
+          let added = false;
+          for (const output of reg.plugin.output()) {
+            if (output.type === 'widget') {
+              widgets.push(output.widget);
+              added = true;
+            }
+          }
+          if (!added) {
+            throw new Error(
+              `Plugin ${reg.plugin} was registered as widget provider, but did not provide any widgets`,
+            );
+          }
+          break;
         default:
           throw new Error(`Unknown WidgetViewBuilder registration`);
       }
-    });
+    }
 
-    this.output = () => <WidgetViewComponent app={app} cards={cards} />;
+    this.output = () => <DefaultWidgetView widgets={widgets} />;
     return this.output;
   }
 }

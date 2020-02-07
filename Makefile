@@ -1,13 +1,34 @@
 ###
-# All-in-one build command.
+# All-in-one commands
 ###
-build: build-yarn-dependencies build-protocol-definitions
+init: init-secrets
+install: install-homebrew-dependencies install-yarn-dependencies install-forego
+start: build-protocol-definitions
+	forego start
+
+###
+# Setup secrets
+###
+init-secrets:
+	cp secrets.env.example secrets.env
+
+###
+# Install any Homebrew dependencies specified in Brewfile
+###
+install-homebrew-dependencies:
+	brew bundle
 
 ###
 # Download dependencies from the Frontend using Yarn.
 ###
-build-yarn-dependencies:
+install-yarn-dependencies:
 	yarn --cwd ${PWD}/frontend install
+
+###
+# Install Forego for running both frontend and backend in a single command.
+###
+install-forego:
+	go get -u github.com/ddollar/forego
 
 ###
 # Protobuf Definitions.
