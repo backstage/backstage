@@ -15,15 +15,17 @@ const WidgetViewComponent: FC<WidgetViewProps> = ({ widgets }) => {
   const classes = useStyles();
 
   return (
-    <Grid className={classes.root} container direction="row" spacing={6}>
-      {widgets.map(({ size, component: WidgetComponent }, index) => (
-        <Grid key={index} item xs={size}>
-          <Paper className={classes.widgetWrapper}>
-            <WidgetComponent />
-          </Paper>
-        </Grid>
-      ))}
-    </Grid>
+    <div className={classes.root}>
+      <Grid container direction="row" spacing={2}>
+        {widgets.map(({ size, component: WidgetComponent }, index) => (
+          <Grid key={index} item xs={size}>
+            <Paper className={classes.widgetWrapper}>
+              <WidgetComponent />
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+    </div>
   );
 };
 
