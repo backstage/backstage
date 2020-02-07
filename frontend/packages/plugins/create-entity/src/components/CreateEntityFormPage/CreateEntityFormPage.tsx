@@ -54,7 +54,7 @@ const CreateEntityFormPage = () => {
   return (
     <Fragment>
       <InfoCard title={`Create New ${templateId}`}>
-        {componentCreated ? <div>{componentCreated} is created! <span role="img" arai-label="tada">🎉</span></div> :
+        {componentCreated ? <div>{componentCreated} is created! <span role="img" aria-label="tada">🎉</span></div> :
         <form onSubmit={formik.handleSubmit}>
           <div className={classes.formGroup}>
             <TextField
