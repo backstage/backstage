@@ -23,17 +23,14 @@ const CreateEntityFormPage = () => {
       description: '',
     },
     onSubmit: (values: any) => {
-      console.log(JSON.stringify(values, null, 2));
-      console.log(google_protobuf_struct_pb);
       const client = new scaffolderV1.Client('http://localhost:8080');
       const req = new scaffolderV1.CreateRequest();
       req.setComponentId(values.entityId);
       req.setTemplateId(templateId);
+
       req.setMetadata(
-        new google_protobuf_struct_pb.Struct({
-          fields: {
-            description: values.description,
-          },
+        new google_protobuf_struct_pb.Struct.fromJavaScript({
+          description: values.description,
         }),
       );
       req.setPrivate(false);
