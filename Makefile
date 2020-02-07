@@ -1,12 +1,27 @@
 ###
-# All-in-one build command.
+# All-in-one commands
 ###
-build: build-yarn-dependencies build-protocol-definitions
+init: init-secrets
+install: install-homebrew-dependencies install-yarn-dependencies
+start: build-protocol-definitions start-backends start-frontend
+stop: stop-backends
+
+###
+# Setup secrets
+###
+init-secrets:
+	cp secrets.env.example secrets.env
+
+###
+# Install any Homebrew dependencies specified in Brewfile
+###
+install-homebrew-dependencies:
+	brew bundle
 
 ###
 # Download dependencies from the Frontend using Yarn.
 ###
-build-yarn-dependencies:
+install-yarn-dependencies:
 	yarn --cwd ${PWD}/frontend install
 
 ###
@@ -22,3 +37,18 @@ build-protocol-definitions:
 ###
 scaffold-new-frontend-plugin:
 	${PWD}/tools/cookiecutter/init.sh frontend/packages/plugins/_template --output-dir frontend/packages/plugins
+
+###
+# Run the backend services
+###
+start-backends:
+	${PWD}/docker-compose.yaml up --build --detach
+
+stop-backends:
+	${PWD}/docker-compose.yaml down
+
+###
+# Run the frontend services.
+###
+start-frontend:
+	yarn --pwd ${PWD}/frontend start
