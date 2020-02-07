@@ -59,7 +59,7 @@ const LoginComponent: FC<Props> = ({ onLogin }) => {
           Login
         </Button>
       </Grid>
-      <Typography>{error || 'Just enter any fake username'}</Typography>
+      <Typography>{error || 'Use your github username'}</Typography>
     </form>
   );
 };

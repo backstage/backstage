@@ -7127,6 +7127,11 @@ form-data@~2.3.2:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
+formik-material-ui@2.0.0-alpha.3:
+  version "2.0.0-alpha.3"
+  resolved "https://registry.npmjs.org/formik-material-ui/-/formik-material-ui-2.0.0-alpha.3.tgz#1f5e4d98068686fa1c1c0cf54e75b51e92b14981"
+  integrity sha512-jVG18/cFa89j9omVPQUSJ+4kK7mJ1Wxz0hPVUKwdX+Cr1Z4Vfl1pBo6tJ0xzS2cOj4NEN35D+9Ft1DPAsDa90g==
+
 formik@2.1.4:
   version "2.1.4"
   resolved "https://registry.npmjs.org/formik/-/formik-2.1.4.tgz#8deef07ec845ea98f75e03da4aad7aab4ac46570"

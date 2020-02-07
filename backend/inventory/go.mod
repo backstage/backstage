@@ -5,7 +5,10 @@ go 1.12
 replace github.com/spotify/backstage/proto => ../proto
 
 require (
+	github.com/BurntSushi/toml v0.3.1
 	github.com/golang/protobuf v1.3.3
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
+	github.com/sirupsen/logrus v1.4.2
 	github.com/spotify/backstage/proto v0.0.0-00010101000000-000000000000
 	go.etcd.io/bbolt v1.3.3
 	golang.org/x/lint v0.0.0-20190313153728-d0100b6bd8b3
