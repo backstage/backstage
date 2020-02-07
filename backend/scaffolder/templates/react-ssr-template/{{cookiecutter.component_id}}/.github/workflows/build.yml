@@ -1,9 +1,6 @@
 name: Frontend CI
 
-on:
-  push:
-    paths:
-    - '.'
+on: [push]
 
 jobs:
   build:
