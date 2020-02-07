@@ -19,7 +19,7 @@ func NewGithubClient() *Github {
 	accessToken := os.Getenv("BOSS_GH_ACCESS_TOKEN")
 
 	if accessToken == "" {
-		log.Panic("No BOSS_GH_ACCESS_TOKEN set. Cannot continue")
+		log.Fatal("No BOSS_GH_ACCESS_TOKEN set. Cannot continue")
 	}
 
 	ctx := context.Background()
