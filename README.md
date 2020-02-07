@@ -26,6 +26,31 @@ $ make build-protocol-definitions
 
 See [proto/README.md](proto/README.md) for more information.
 
+## Running Locally
+
+First step is to set up a `secrets.env` file in the root of the repo. Use the following template but fill in your own values:
+
+```bash
+# Github Access token with repo scope, created at https://github.com/settings/tokens
+BOSS_GH_ACCESS_TOKEN=<access-token>
+```
+
+Then run start all backend services using `docker-compose`:
+
+```bash
+$ ./docker-compose.yaml up --build
+```
+
+And finally install all dependencies and start serving the frontend using `yarn`:
+
+```bash
+$ cd frontend
+
+$ yarn install
+
+$ yarn start
+```
+
 ## Plugins
 
 ### Creating a Plugin
