@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { RelativeEntityLink } from '@backstage/core';
+import { RelativeEntityLink, useEntity } from '@backstage/core';
 import { BuildsClient } from '../../apis/builds';
 import { useAsync } from 'react-use';
 import {
@@ -27,7 +27,8 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 const BuildInfoCard: FC<{}> = () => {
   const classes = useStyles();
-  const status = useAsync(() => client.listBuilds('entity:spotify:backstage'));
+  const { kind, id } = useEntity();
+  const status = useAsync(() => client.listBuilds(`entity:${kind}:${id}`));
 
   let content: JSX.Element;
 
