@@ -34,8 +34,8 @@ func TestServer(t *testing.T) {
 		if len(list.GetEntities()) != 1 {
 			t.Errorf("ServerTest(ListEntities) expected %v items, got %v", 1, len(list.GetEntities()))
 		}
-		if list.GetEntities()[0].GetEntity().GetUri() != entityURI {
-			t.Errorf("ServerTest(ListEntities) expected uri %v, got %v", "boss://test/test", list.GetEntities()[0].GetEntity().GetUri())
+		if list.GetEntities()[0].GetUri() != entityURI {
+			t.Errorf("ServerTest(ListEntities) expected uri %v, got %v", "boss://test/test", list.GetEntities()[0].GetUri())
 		}
 		expectedFacts := []*pb.Fact{{Name: "test-name", Value: "test-value"}}
 		if !reflect.DeepEqual(list.GetEntities()[0].GetFacts(), expectedFacts) {
@@ -83,8 +83,8 @@ func TestServer(t *testing.T) {
 			t.Errorf("ServerTest(GetEntity) returned nil")
 		}
 		expectedFacts := []*pb.Fact{{Name: "test-name", Value: "test-value"}}
-		if !reflect.DeepEqual(resp.GetFacts(), expectedFacts) {
-			t.Errorf("ServerTest(GetEntity) got %v, wanted %v", resp.GetFacts(), expectedFacts)
+		if !reflect.DeepEqual(resp.GetEntity().GetFacts(), expectedFacts) {
+			t.Errorf("ServerTest(GetEntity) got %v, wanted %v", resp.GetEntity().GetFacts(), expectedFacts)
 		}
 	})
 	t.Run("Set fact for existing entity", func(t *testing.T) {

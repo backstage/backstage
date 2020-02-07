@@ -19,10 +19,10 @@ export namespace ListEntitiesRequest {
 }
 
 export class ListEntitiesReply extends jspb.Message {
-  getEntitiesList(): Array<GetEntityReply>;
-  setEntitiesList(value: Array<GetEntityReply>): void;
+  getEntitiesList(): Array<Entity>;
+  setEntitiesList(value: Array<Entity>): void;
   clearEntitiesList(): void;
-  addEntities(value?: GetEntityReply, index?: number): GetEntityReply;
+  addEntities(value?: Entity, index?: number): Entity;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListEntitiesReply.AsObject;
@@ -34,7 +34,7 @@ export class ListEntitiesReply extends jspb.Message {
 
 export namespace ListEntitiesReply {
   export type AsObject = {
-    entitiesList: Array<GetEntityReply.AsObject>,
+    entitiesList: Array<Entity.AsObject>,
   }
 }
 
@@ -43,11 +43,6 @@ export class GetEntityRequest extends jspb.Message {
   setEntity(value?: Entity): void;
   hasEntity(): boolean;
   clearEntity(): void;
-
-  getIncludeFactsList(): Array<string>;
-  setIncludeFactsList(value: Array<string>): void;
-  clearIncludeFactsList(): void;
-  addIncludeFacts(value: string, index?: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetEntityRequest.AsObject;
@@ -60,7 +55,6 @@ export class GetEntityRequest extends jspb.Message {
 export namespace GetEntityRequest {
   export type AsObject = {
     entity?: Entity.AsObject,
-    includeFactsList: Array<string>,
   }
 }
 
@@ -69,11 +63,6 @@ export class GetEntityReply extends jspb.Message {
   setEntity(value?: Entity): void;
   hasEntity(): boolean;
   clearEntity(): void;
-
-  getFactsList(): Array<Fact>;
-  setFactsList(value: Array<Fact>): void;
-  clearFactsList(): void;
-  addFacts(value?: Fact, index?: number): Fact;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetEntityReply.AsObject;
@@ -86,7 +75,6 @@ export class GetEntityReply extends jspb.Message {
 export namespace GetEntityReply {
   export type AsObject = {
     entity?: Entity.AsObject,
-    factsList: Array<Fact.AsObject>,
   }
 }
 
@@ -222,6 +210,11 @@ export class Entity extends jspb.Message {
   getUri(): string;
   setUri(value: string): void;
 
+  getFactsList(): Array<Fact>;
+  setFactsList(value: Array<Fact>): void;
+  clearFactsList(): void;
+  addFacts(value?: Fact, index?: number): Fact;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Entity.AsObject;
   static toObject(includeInstance: boolean, msg: Entity): Entity.AsObject;
@@ -233,6 +226,7 @@ export class Entity extends jspb.Message {
 export namespace Entity {
   export type AsObject = {
     uri: string,
+    factsList: Array<Fact.AsObject>,
   }
 }
 

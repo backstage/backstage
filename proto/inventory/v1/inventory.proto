@@ -17,17 +17,15 @@ message ListEntitiesRequest {
 }
 
 message ListEntitiesReply {
-  repeated GetEntityReply entities = 1;
+  repeated Entity entities = 1;
 }
 
 message GetEntityRequest {
   Entity entity = 1;
-  repeated string include_facts = 2;
 }
 
 message GetEntityReply {
   Entity entity = 1;
-  repeated Fact facts = 2;
 }
 
 message CreateEntityRequest {
@@ -59,6 +57,7 @@ message GetFactReply {
 
 message Entity {
   string uri = 1;
+  repeated Fact facts = 2;
 }
 
 message Fact {

@@ -22,7 +22,7 @@ func (s *Server) ListEntities(ctx context.Context, req *pb.ListEntitiesRequest) 
 		return nil, status.Error(codes.Internal, "could not list entities")
 	}
 
-	var result []*pb.GetEntityReply
+	var result []*pb.Entity
 	for _, entity := range entities {
 		var facts []*pb.Fact
 		factTuples, err := s.Storage.GetFacts(entity)
@@ -32,7 +32,7 @@ func (s *Server) ListEntities(ctx context.Context, req *pb.ListEntitiesRequest) 
 		for key, value := range factTuples {
 			facts = append(facts, &pb.Fact{Name: key, Value: value})
 		}
-		result = append(result, &pb.GetEntityReply{Entity: &pb.Entity{Uri: entity}, Facts: facts})
+		result = append(result, &pb.Entity{Uri: entity, Facts: facts})
 	}
 
 	return &pb.ListEntitiesReply{Entities: result}, nil
@@ -63,7 +63,7 @@ func (s *Server) GetEntity(ctx context.Context, req *pb.GetEntityRequest) (*pb.G
 	for key, value := range factTuples {
 		facts = append(facts, &pb.Fact{Name: key, Value: value})
 	}
-	return &pb.GetEntityReply{Entity: &pb.Entity{Uri: entityUri}, Facts: facts}, nil
+	return &pb.GetEntityReply{Entity: &pb.Entity{Uri: entityUri, Facts: facts}}, nil
 }
 
 func (s *Server) SetFact(ctx context.Context, req *pb.SetFactRequest) (*pb.SetFactReply, error) {

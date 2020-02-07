@@ -76,7 +76,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.spotify.backstage.inventory.v1.GetEntityRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.spotify.backstage.inventory.v1.GetEntityRequest.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.spotify.backstage.inventory.v1.GetEntityRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -97,7 +97,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.spotify.backstage.inventory.v1.GetEntityReply = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.spotify.backstage.inventory.v1.GetEntityReply.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.spotify.backstage.inventory.v1.GetEntityReply, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -244,7 +244,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.spotify.backstage.inventory.v1.Entity = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.spotify.backstage.inventory.v1.Entity.repeatedFields_, null);
 };
 goog.inherits(proto.spotify.backstage.inventory.v1.Entity, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -442,7 +442,7 @@ proto.spotify.backstage.inventory.v1.ListEntitiesReply.prototype.toObject = func
 proto.spotify.backstage.inventory.v1.ListEntitiesReply.toObject = function(includeInstance, msg) {
   var f, obj = {
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
-    proto.spotify.backstage.inventory.v1.GetEntityReply.toObject, includeInstance)
+    proto.spotify.backstage.inventory.v1.Entity.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -480,8 +480,8 @@ proto.spotify.backstage.inventory.v1.ListEntitiesReply.deserializeBinaryFromRead
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.spotify.backstage.inventory.v1.GetEntityReply;
-      reader.readMessage(value,proto.spotify.backstage.inventory.v1.GetEntityReply.deserializeBinaryFromReader);
+      var value = new proto.spotify.backstage.inventory.v1.Entity;
+      reader.readMessage(value,proto.spotify.backstage.inventory.v1.Entity.deserializeBinaryFromReader);
       msg.addEntities(value);
       break;
     default:
@@ -518,35 +518,35 @@ proto.spotify.backstage.inventory.v1.ListEntitiesReply.serializeBinaryToWriter =
     writer.writeRepeatedMessage(
       1,
       f,
-      proto.spotify.backstage.inventory.v1.GetEntityReply.serializeBinaryToWriter
+      proto.spotify.backstage.inventory.v1.Entity.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * repeated GetEntityReply entities = 1;
- * @return {!Array<!proto.spotify.backstage.inventory.v1.GetEntityReply>}
+ * repeated Entity entities = 1;
+ * @return {!Array<!proto.spotify.backstage.inventory.v1.Entity>}
  */
 proto.spotify.backstage.inventory.v1.ListEntitiesReply.prototype.getEntitiesList = function() {
-  return /** @type{!Array<!proto.spotify.backstage.inventory.v1.GetEntityReply>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.spotify.backstage.inventory.v1.GetEntityReply, 1));
+  return /** @type{!Array<!proto.spotify.backstage.inventory.v1.Entity>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.spotify.backstage.inventory.v1.Entity, 1));
 };
 
 
-/** @param {!Array<!proto.spotify.backstage.inventory.v1.GetEntityReply>} value */
+/** @param {!Array<!proto.spotify.backstage.inventory.v1.Entity>} value */
 proto.spotify.backstage.inventory.v1.ListEntitiesReply.prototype.setEntitiesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * @param {!proto.spotify.backstage.inventory.v1.GetEntityReply=} opt_value
+ * @param {!proto.spotify.backstage.inventory.v1.Entity=} opt_value
  * @param {number=} opt_index
- * @return {!proto.spotify.backstage.inventory.v1.GetEntityReply}
+ * @return {!proto.spotify.backstage.inventory.v1.Entity}
  */
 proto.spotify.backstage.inventory.v1.ListEntitiesReply.prototype.addEntities = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.spotify.backstage.inventory.v1.GetEntityReply, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.spotify.backstage.inventory.v1.Entity, opt_index);
 };
 
 
@@ -558,13 +558,6 @@ proto.spotify.backstage.inventory.v1.ListEntitiesReply.prototype.clearEntitiesLi
 };
 
 
-
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.spotify.backstage.inventory.v1.GetEntityRequest.repeatedFields_ = [2];
 
 
 
@@ -597,8 +590,7 @@ proto.spotify.backstage.inventory.v1.GetEntityRequest.prototype.toObject = funct
  */
 proto.spotify.backstage.inventory.v1.GetEntityRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    entity: (f = msg.getEntity()) && proto.spotify.backstage.inventory.v1.Entity.toObject(includeInstance, f),
-    includeFactsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f
+    entity: (f = msg.getEntity()) && proto.spotify.backstage.inventory.v1.Entity.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -640,10 +632,6 @@ proto.spotify.backstage.inventory.v1.GetEntityRequest.deserializeBinaryFromReade
       reader.readMessage(value,proto.spotify.backstage.inventory.v1.Entity.deserializeBinaryFromReader);
       msg.setEntity(value);
       break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.addIncludeFacts(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -679,13 +667,6 @@ proto.spotify.backstage.inventory.v1.GetEntityRequest.serializeBinaryToWriter = 
       1,
       f,
       proto.spotify.backstage.inventory.v1.Entity.serializeBinaryToWriter
-    );
-  }
-  f = message.getIncludeFactsList();
-  if (f.length > 0) {
-    writer.writeRepeatedString(
-      2,
-      f
     );
   }
 };
@@ -724,45 +705,6 @@ proto.spotify.backstage.inventory.v1.GetEntityRequest.prototype.hasEntity = func
 };
 
 
-/**
- * repeated string include_facts = 2;
- * @return {!Array<string>}
- */
-proto.spotify.backstage.inventory.v1.GetEntityRequest.prototype.getIncludeFactsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
-};
-
-
-/** @param {!Array<string>} value */
-proto.spotify.backstage.inventory.v1.GetEntityRequest.prototype.setIncludeFactsList = function(value) {
-  jspb.Message.setField(this, 2, value || []);
-};
-
-
-/**
- * @param {string} value
- * @param {number=} opt_index
- */
-proto.spotify.backstage.inventory.v1.GetEntityRequest.prototype.addIncludeFacts = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 2, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- */
-proto.spotify.backstage.inventory.v1.GetEntityRequest.prototype.clearIncludeFactsList = function() {
-  this.setIncludeFactsList([]);
-};
-
-
-
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.spotify.backstage.inventory.v1.GetEntityReply.repeatedFields_ = [2];
 
 
 
@@ -795,9 +737,7 @@ proto.spotify.backstage.inventory.v1.GetEntityReply.prototype.toObject = functio
  */
 proto.spotify.backstage.inventory.v1.GetEntityReply.toObject = function(includeInstance, msg) {
   var f, obj = {
-    entity: (f = msg.getEntity()) && proto.spotify.backstage.inventory.v1.Entity.toObject(includeInstance, f),
-    factsList: jspb.Message.toObjectList(msg.getFactsList(),
-    proto.spotify.backstage.inventory.v1.Fact.toObject, includeInstance)
+    entity: (f = msg.getEntity()) && proto.spotify.backstage.inventory.v1.Entity.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -839,11 +779,6 @@ proto.spotify.backstage.inventory.v1.GetEntityReply.deserializeBinaryFromReader 
       reader.readMessage(value,proto.spotify.backstage.inventory.v1.Entity.deserializeBinaryFromReader);
       msg.setEntity(value);
       break;
-    case 2:
-      var value = new proto.spotify.backstage.inventory.v1.Fact;
-      reader.readMessage(value,proto.spotify.backstage.inventory.v1.Fact.deserializeBinaryFromReader);
-      msg.addFacts(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -881,14 +816,6 @@ proto.spotify.backstage.inventory.v1.GetEntityReply.serializeBinaryToWriter = fu
       proto.spotify.backstage.inventory.v1.Entity.serializeBinaryToWriter
     );
   }
-  f = message.getFactsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      2,
-      f,
-      proto.spotify.backstage.inventory.v1.Fact.serializeBinaryToWriter
-    );
-  }
 };
 
 
@@ -922,40 +849,6 @@ proto.spotify.backstage.inventory.v1.GetEntityReply.prototype.clearEntity = func
  */
 proto.spotify.backstage.inventory.v1.GetEntityReply.prototype.hasEntity = function() {
   return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * repeated Fact facts = 2;
- * @return {!Array<!proto.spotify.backstage.inventory.v1.Fact>}
- */
-proto.spotify.backstage.inventory.v1.GetEntityReply.prototype.getFactsList = function() {
-  return /** @type{!Array<!proto.spotify.backstage.inventory.v1.Fact>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.spotify.backstage.inventory.v1.Fact, 2));
-};
-
-
-/** @param {!Array<!proto.spotify.backstage.inventory.v1.Fact>} value */
-proto.spotify.backstage.inventory.v1.GetEntityReply.prototype.setFactsList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 2, value);
-};
-
-
-/**
- * @param {!proto.spotify.backstage.inventory.v1.Fact=} opt_value
- * @param {number=} opt_index
- * @return {!proto.spotify.backstage.inventory.v1.Fact}
- */
-proto.spotify.backstage.inventory.v1.GetEntityReply.prototype.addFacts = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.spotify.backstage.inventory.v1.Fact, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- */
-proto.spotify.backstage.inventory.v1.GetEntityReply.prototype.clearFactsList = function() {
-  this.setFactsList([]);
 };
 
 
@@ -1883,6 +1776,13 @@ proto.spotify.backstage.inventory.v1.GetFactReply.prototype.hasFact = function()
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.spotify.backstage.inventory.v1.Entity.repeatedFields_ = [2];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -1914,7 +1814,9 @@ proto.spotify.backstage.inventory.v1.Entity.prototype.toObject = function(opt_in
  */
 proto.spotify.backstage.inventory.v1.Entity.toObject = function(includeInstance, msg) {
   var f, obj = {
-    uri: jspb.Message.getFieldWithDefault(msg, 1, "")
+    uri: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    factsList: jspb.Message.toObjectList(msg.getFactsList(),
+    proto.spotify.backstage.inventory.v1.Fact.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -1955,6 +1857,11 @@ proto.spotify.backstage.inventory.v1.Entity.deserializeBinaryFromReader = functi
       var value = /** @type {string} */ (reader.readString());
       msg.setUri(value);
       break;
+    case 2:
+      var value = new proto.spotify.backstage.inventory.v1.Fact;
+      reader.readMessage(value,proto.spotify.backstage.inventory.v1.Fact.deserializeBinaryFromReader);
+      msg.addFacts(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1991,6 +1898,14 @@ proto.spotify.backstage.inventory.v1.Entity.serializeBinaryToWriter = function(m
       f
     );
   }
+  f = message.getFactsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      2,
+      f,
+      proto.spotify.backstage.inventory.v1.Fact.serializeBinaryToWriter
+    );
+  }
 };
 
 
@@ -2006,6 +1921,40 @@ proto.spotify.backstage.inventory.v1.Entity.prototype.getUri = function() {
 /** @param {string} value */
 proto.spotify.backstage.inventory.v1.Entity.prototype.setUri = function(value) {
   jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * repeated Fact facts = 2;
+ * @return {!Array<!proto.spotify.backstage.inventory.v1.Fact>}
+ */
+proto.spotify.backstage.inventory.v1.Entity.prototype.getFactsList = function() {
+  return /** @type{!Array<!proto.spotify.backstage.inventory.v1.Fact>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.spotify.backstage.inventory.v1.Fact, 2));
+};
+
+
+/** @param {!Array<!proto.spotify.backstage.inventory.v1.Fact>} value */
+proto.spotify.backstage.inventory.v1.Entity.prototype.setFactsList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 2, value);
+};
+
+
+/**
+ * @param {!proto.spotify.backstage.inventory.v1.Fact=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.spotify.backstage.inventory.v1.Fact}
+ */
+proto.spotify.backstage.inventory.v1.Entity.prototype.addFacts = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.spotify.backstage.inventory.v1.Fact, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ */
+proto.spotify.backstage.inventory.v1.Entity.prototype.clearFactsList = function() {
+  this.setFactsList([]);
 };
 
 
