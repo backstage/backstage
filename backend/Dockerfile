@@ -32,4 +32,5 @@ CMD ["./service"]
 ### needs extra cookiecutter
 FROM default AS scaffolder
 RUN apt-get update && apt-get install -y python-pip
+RUN apt-get install -y python-backports.functools-lru-cache
 RUN pip install cookiecutter==1.7.0 --index-url https://pypi.python.org/simple
