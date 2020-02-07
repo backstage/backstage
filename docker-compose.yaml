@@ -49,6 +49,6 @@ services:
         service: scaffolder
     restart: unless-stopped
     volumes:
-      - ./backend/scaffolder/templates:/app/templates
+      - ./backend/scaffolder/templates:/app/templates:ro
 
     env_file: secrets.env

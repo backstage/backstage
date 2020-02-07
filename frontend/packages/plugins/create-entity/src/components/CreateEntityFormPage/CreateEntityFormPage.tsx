@@ -6,7 +6,7 @@ import { InfoCard } from '@backstage/core';
 
 const useStyles = makeStyles(theme => ({
   formGroup: {
-    padding: '10px',
+    padding: theme.spacing(2),
   },
 }));
 
