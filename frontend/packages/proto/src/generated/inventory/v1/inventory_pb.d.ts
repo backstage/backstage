@@ -19,10 +19,10 @@ export namespace ListEntitiesRequest {
 }
 
 export class ListEntitiesReply extends jspb.Message {
-  getEntitiesList(): Array<Entity>;
-  setEntitiesList(value: Array<Entity>): void;
+  getEntitiesList(): Array<GetEntityReply>;
+  setEntitiesList(value: Array<GetEntityReply>): void;
   clearEntitiesList(): void;
-  addEntities(value?: Entity, index?: number): Entity;
+  addEntities(value?: GetEntityReply, index?: number): GetEntityReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListEntitiesReply.AsObject;
@@ -34,7 +34,7 @@ export class ListEntitiesReply extends jspb.Message {
 
 export namespace ListEntitiesReply {
   export type AsObject = {
-    entitiesList: Array<Entity.AsObject>,
+    entitiesList: Array<GetEntityReply.AsObject>,
   }
 }
 

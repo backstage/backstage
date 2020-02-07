@@ -22,9 +22,17 @@ func (s *Server) ListEntities(ctx context.Context, req *pb.ListEntitiesRequest) 
 		return nil, status.Error(codes.Internal, "could not list entities")
 	}
 
-	var result []*pb.Entity
-	for _, v := range entities {
-		result = append(result, &pb.Entity{Uri: v})
+	var result []*pb.GetEntityReply
+	for _, entity := range entities {
+		var facts []*pb.Fact
+		factTuples, err := s.Storage.GetFacts(entity)
+		if err != nil {
+			return nil, status.Error(codes.Internal, fmt.Sprintf("could not get facts for %v", entity))
+		}
+		for key, value := range factTuples {
+			facts = append(facts, &pb.Fact{Name: key, Value: value})
+		}
+		result = append(result, &pb.GetEntityReply{Entity: &pb.Entity{Uri: entity}, Facts: facts})
 	}
 
 	return &pb.ListEntitiesReply{Entities: result}, nil
@@ -41,18 +49,20 @@ func (s *Server) CreateEntity(ctx context.Context, req *pb.CreateEntityRequest) 
 // GetEntity returns an inventory Entity with the selected facts
 func (s *Server) GetEntity(ctx context.Context, req *pb.GetEntityRequest) (*pb.GetEntityReply, error) {
 	var facts []*pb.Fact
+
 	entityUri, err := s.Storage.GetEntity(req.GetEntity().GetUri())
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprintf("could not get entity %v", err))
 	}
-	for _, factName := range req.GetIncludeFacts() {
-		value, err := s.Storage.GetFact(entityUri, factName)
-		if err != nil {
-			return nil, status.Error(codes.Internal, fmt.Sprintf("could not get fact %v for %v", factName, entityUri))
-		}
-		facts = append(facts, &pb.Fact{Name: factName, Value: value})
+
+	factTuples, err := s.Storage.GetFacts(entityUri)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("could not get facts for %v", entityUri))
 	}
 
+	for key, value := range factTuples {
+		facts = append(facts, &pb.Fact{Name: key, Value: value})
+	}
 	return &pb.GetEntityReply{Entity: &pb.Entity{Uri: entityUri}, Facts: facts}, nil
 }
 

@@ -17,7 +17,7 @@ message ListEntitiesRequest {
 }
 
 message ListEntitiesReply {
-  repeated Entity entities = 1;
+  repeated GetEntityReply entities = 1;
 }
 
 message GetEntityRequest {
