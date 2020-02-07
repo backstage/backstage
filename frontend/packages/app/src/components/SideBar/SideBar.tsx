@@ -152,7 +152,7 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     overflow: 'visible',
     width: theme.spacing(7) + 1,
-    height: '100vh',
+    height: '100%',
   },
   drawer: {
     display: 'flex',

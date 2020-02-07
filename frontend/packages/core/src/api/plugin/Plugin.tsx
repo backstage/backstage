@@ -1,6 +1,7 @@
 import { ComponentType } from 'react';
 import { PluginOutput, RoutePath, RouteOptions } from './types';
 import { IconComponent } from '../types';
+import { Widget } from '../widgetView/types';
 
 export type PluginConfig = {
   id: string;
@@ -10,6 +11,7 @@ export type PluginConfig = {
 export type PluginHooks = {
   router: RouterHooks;
   entityPage: EntityPageHooks;
+  widgets: WidgetHooks;
 };
 
 export type RouterHooks = {
@@ -39,6 +41,10 @@ export type EntityPageHooks = {
     component: ComponentType<any>,
     options?: RouteOptions,
   ): void;
+};
+
+export type WidgetHooks = {
+  add(widget: Widget): void;
 };
 
 export const registerSymbol = Symbol('plugin-register');
@@ -96,6 +102,11 @@ export default class Plugin {
             component,
             options,
           });
+        },
+      },
+      widgets: {
+        add(widget: Widget) {
+          outputs.push({ type: 'widget', widget });
         },
       },
     });

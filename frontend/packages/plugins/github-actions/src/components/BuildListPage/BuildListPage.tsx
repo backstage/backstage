@@ -16,6 +16,7 @@ import {
 import { RelativeEntityLink } from '@backstage/core';
 import { BuildsClient } from '../../apis/builds';
 import { useAsync } from 'react-use';
+import BuildStatusIndicator from '../BuildStatusIndicator';
 
 const client = BuildsClient.create('http://localhost:8080');
 
@@ -35,7 +36,7 @@ const useStyles = makeStyles<Theme>(theme => ({
     padding: theme.spacing(2),
   },
   title: {
-    paddingBottom: theme.spacing(2),
+    padding: theme.spacing(1, 0, 2, 0),
   },
 }));
 
@@ -49,7 +50,7 @@ const BuildListPage: FC<{}> = () => {
     content = <LinearProgress />;
   } else if (status.error) {
     content = (
-      <Typography variant="h4" color="error">
+      <Typography variant="h2" color="error">
         Failed to load builds, {status.error.message}
       </Typography>
     );
@@ -68,8 +69,9 @@ const BuildListPage: FC<{}> = () => {
           <TableBody>
             {status.value!.map(build => (
               <TableRow key={build.uri}>
-                {/* TODO: make this an indicating blobby thing */}
-                <TableCell>{build.status}</TableCell>
+                <TableCell>
+                  <BuildStatusIndicator status={build.status} />
+                </TableCell>
                 <TableCell>
                   <Typography>
                     <LongText text={build.branch} max={30} />
@@ -101,7 +103,7 @@ const BuildListPage: FC<{}> = () => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h4" className={classes.title}>
+      <Typography variant="h3" className={classes.title}>
         CI/CD Builds
       </Typography>
       {content}

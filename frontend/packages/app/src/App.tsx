@@ -1,8 +1,4 @@
-import {
-  BackstageTheme,
-  createApp,
-  InfoCard,
-} from '@backstage/core';
+import { BackstageTheme, createApp, InfoCard } from '@backstage/core';
 //import PageHeader from './components/PageHeader';
 import { LoginComponent } from '@backstage/plugin-login';
 import HomePagePlugin from '@backstage/plugin-home-page';
@@ -24,6 +20,7 @@ const useStyles = makeStyles(theme => ({
     body: {
       height: '100%',
       fontFamily: theme.typography.fontFamily,
+      'overscroll-behavior-y': 'none',
     },
     a: {
       color: 'inherit',
