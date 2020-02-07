@@ -15,86 +15,65 @@ import (
 
 var entityURI = "boss://test/test"
 
-func TestServerListEntities(t *testing.T) {
+func TestServer(t *testing.T) {
 	testStorage := NewTestStorage()
 	defer testStorage.Close()
 	s := Server{Storage: testStorage.Storage}
 
-	entity := &pb.Entity{Uri: entityURI}
+	t.Run("Listing Entities matching prefix", func(t *testing.T) {
+		entity := &pb.Entity{Uri: entityURI}
 
-	_, err := s.CreateEntity(context.Background(), &pb.CreateEntityRequest{Entity: entity})
-	if err != nil {
-		t.Errorf("ServerTest(TestServerListEntities) could not create: %v", err)
-	}
+		s.CreateEntity(context.Background(), &pb.CreateEntityRequest{Entity: entity})
+		setFactReq := &pb.SetFactRequest{EntityUri: entityURI, Name: "test-name", Value: "test-value"}
+		s.SetFact(context.Background(), setFactReq)
 
-	list, err := s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: ""})
-	if err != nil {
-		t.Errorf("ServerTest(TestServerListEntities) could not list: %v", err)
-	}
-	if len(list.GetEntities()) != 1 {
-		t.Errorf("ServerTest(TestServerListEntities) expected %v items, got %v", 1, len(list.GetEntities()))
-	}
-	if list.GetEntities()[0].GetUri() != entityURI {
-		t.Errorf("ServerTest(TestServerListEntities) expected uri %v, got %v", "boss://test/test", list.GetEntities()[0].GetUri())
-	}
+		list, err := s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: ""})
+		if err != nil {
+			t.Errorf("ServerTest(ListEntities) could not list: %v", err)
+		}
+		if len(list.GetEntities()) != 1 {
+			t.Errorf("ServerTest(ListEntities) expected %v items, got %v", 1, len(list.GetEntities()))
+		}
+		if list.GetEntities()[0].GetUri() != entityURI {
+			t.Errorf("ServerTest(ListEntities) expected uri %v, got %v", "boss://test/test", list.GetEntities()[0].GetUri())
+		}
+		expectedFacts := []*pb.Fact{{Name: "test-name", Value: "test-value"}}
+		if !reflect.DeepEqual(list.GetEntities()[0].GetFacts(), expectedFacts) {
+			t.Errorf("ServerTest(ListEntities) got %v, wanted %v", list.GetEntities()[0].GetFacts(), expectedFacts)
+		}
+	})
 
-	list, err = s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: "boss://test2"})
-	if err != nil {
-		t.Errorf("ServerTest(TestServerListEntities) could not list: %v", err)
-	}
-	if len(list.GetEntities()) != 0 {
-		t.Errorf("ServerTest(TestServerListEntities) expected %v items, got %v", 0, len(list.GetEntities()))
-	}
-}
+	t.Run("Listing Entities not matching prefix", func(t *testing.T) {
+		entity := &pb.Entity{Uri: entityURI}
 
-func TestServerCreateEntity(t *testing.T) {
-	testStorage := NewTestStorage()
-	defer testStorage.Close()
-	s := Server{Storage: testStorage.Storage}
+		s.CreateEntity(context.Background(), &pb.CreateEntityRequest{Entity: entity})
+		list, err := s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: "boss://test2"})
+		if err != nil {
+			t.Errorf("ServerTest(TestServerListEntities) could not list: %v", err)
+		}
+		if len(list.GetEntities()) != 0 {
+			t.Errorf("ServerTest(TestServerListEntities) expected %v items, got %v", 0, len(list.GetEntities()))
+		}
+	})
 
-	entity := &pb.Entity{Uri: entityURI}
-	createReq := &pb.CreateEntityRequest{Entity: entity}
-	resp, err := s.CreateEntity(context.Background(), createReq)
-	if err != nil {
-		t.Errorf("ServerTest(CreateEntity) got unexpected error %v", err)
-	}
-	if resp.GetEntity().GetUri() != entity.GetUri() {
-		t.Errorf("ServerTest(CreateEntity) expected %v, but got %v", entity.GetUri(), resp.GetEntity().GetUri())
-	}
-}
-
-func TestServerGetEntity(t *testing.T) {
-	t.Run("Get entity", func(t *testing.T) {
-		testStorage := NewTestStorage()
-		defer testStorage.Close()
-		s := Server{Storage: testStorage.Storage}
-
+	t.Run("Creating entity", func(t *testing.T) {
 		entity := &pb.Entity{Uri: entityURI}
 		createReq := &pb.CreateEntityRequest{Entity: entity}
-		s.CreateEntity(context.Background(), createReq)
-
-		req := &pb.GetEntityRequest{Entity: entity}
-		resp, err := s.GetEntity(context.Background(), req)
+		resp, err := s.CreateEntity(context.Background(), createReq)
 		if err != nil {
-			t.Errorf("ServerTest(GetEntity) got unexpected error %v", err)
-		}
-		if resp == nil {
-			t.Errorf("ServerTest(GetEntity) returned nil")
+			t.Errorf("ServerTest(CreateEntity) got unexpected error %v", err)
 		}
 		if resp.GetEntity().GetUri() != entity.GetUri() {
-			t.Errorf("ServerTest(GetEntity) got %v, wanted %v", resp.GetEntity().GetUri(), entity.GetUri())
+			t.Errorf("ServerTest(CreateEntity) expected %v, but got %v", entity.GetUri(), resp.GetEntity().GetUri())
 		}
 	})
 
 	t.Run("Get entity with included facts", func(t *testing.T) {
-		testStorage := NewTestStorage()
-		defer testStorage.Close()
-		s := Server{Storage: testStorage.Storage}
 		setFactReq := &pb.SetFactRequest{EntityUri: entityURI, Name: "test-name", Value: "test-value"}
 		s.SetFact(context.Background(), setFactReq)
 
 		entity := &pb.Entity{Uri: entityURI}
-		req := &pb.GetEntityRequest{Entity: entity, IncludeFacts: []string{"test-name"}}
+		req := &pb.GetEntityRequest{Entity: entity}
 
 		resp, err := s.GetEntity(context.Background(), req)
 		if err != nil {
@@ -104,18 +83,11 @@ func TestServerGetEntity(t *testing.T) {
 			t.Errorf("ServerTest(GetEntity) returned nil")
 		}
 		expectedFacts := []*pb.Fact{{Name: "test-name", Value: "test-value"}}
-		if !reflect.DeepEqual(resp.GetFacts(), expectedFacts) {
-			t.Errorf("ServerTest(GetEntity) got %v, wanted %v", resp.GetFacts(), expectedFacts)
+		if !reflect.DeepEqual(resp.GetEntity().GetFacts(), expectedFacts) {
+			t.Errorf("ServerTest(GetEntity) got %v, wanted %v", resp.GetEntity().GetFacts(), expectedFacts)
 		}
 	})
-}
-
-func TestServerSetFactForExistingEntity(t *testing.T) {
 	t.Run("Set fact for existing entity", func(t *testing.T) {
-		testStorage := NewTestStorage()
-		defer testStorage.Close()
-		s := Server{Storage: testStorage.Storage}
-
 		entity := &pb.Entity{Uri: entityURI}
 		createReq := &pb.CreateEntityRequest{Entity: entity}
 		s.CreateEntity(context.Background(), createReq)
@@ -134,10 +106,6 @@ func TestServerSetFactForExistingEntity(t *testing.T) {
 	})
 
 	t.Run("Set fact for non-existing entity", func(t *testing.T) {
-		testStorage := NewTestStorage()
-		defer testStorage.Close()
-		s := Server{Storage: testStorage.Storage}
-
 		req := &pb.SetFactRequest{EntityUri: entityURI, Name: "test-name", Value: "test-value"}
 		resp, err := s.SetFact(context.Background(), req)
 		if err != nil {

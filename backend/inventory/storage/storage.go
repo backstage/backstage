@@ -121,3 +121,25 @@ func (s *Storage) GetEntity(entityUri string) (string, error) {
 
 	return entityUri, nil
 }
+
+func (s *Storage) GetFacts(entityUri string) (map[string]string, error) {
+	facts := make(map[string]string)
+
+	err := s.db.View(func(tx *bbolt.Tx) error {
+		entityBucket := tx.Bucket([]byte(entityUri))
+		if entityBucket == nil {
+			return fmt.Errorf("bucket '%s' does not exist", entityUri)
+		}
+		c := entityBucket.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			facts[string(k)] = string(v)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return facts, nil
+}
