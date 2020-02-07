@@ -1,7 +1,12 @@
-import { BackstageTheme, createApp, InfoCard } from '@backstage/core';
-import HomePagePlugin from '@backstage/plugin-home-page';
+import {
+  BackstageTheme,
+  createApp,
+  InfoCard,
+} from '@backstage/core';
 //import PageHeader from './components/PageHeader';
 import { LoginComponent } from '@backstage/plugin-login';
+import HomePagePlugin from '@backstage/plugin-home-page';
+import CreateEntityPlugin from '@backstage/plugin-create-entity';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -60,6 +65,7 @@ const app = createApp();
 
 app.registerEntityKind(...entities);
 app.registerPlugin(HomePagePlugin);
+app.registerPlugin(CreateEntityPlugin);
 
 const AppComponent = app.build();
 
