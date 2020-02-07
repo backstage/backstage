@@ -1,5 +1,6 @@
 import { ComponentType } from 'react';
 import { PluginOutput, RoutePath, RouteOptions } from './types';
+import { IconComponent } from '../types';
 
 export type PluginConfig = {
   id: string;
@@ -27,6 +28,7 @@ export type RouterHooks = {
 
 type EntityPageSidebarItemOptions = {
   title: string;
+  icon: IconComponent;
   target: RoutePath;
 };
 
@@ -79,11 +81,12 @@ export default class Plugin {
         },
       },
       entityPage: {
-        navItem({ title, target }) {
+        navItem({ title, icon, target }) {
           outputs.push({
             type: 'entity-page-nav-item',
-            target,
             title,
+            icon,
+            target,
           });
         },
         route(path, component, options) {

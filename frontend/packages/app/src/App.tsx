@@ -1,18 +1,10 @@
-import {
-  BackstageTheme,
-  createApp,
-  Header,
-  InfoCard,
-  Page,
-  theme,
-} from '@backstage/core';
+import { BackstageTheme, createApp, InfoCard } from '@backstage/core';
 import HomePagePlugin from '@backstage/plugin-home-page';
 //import PageHeader from './components/PageHeader';
 import { LoginComponent } from '@backstage/plugin-login';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import HomePageTimer from './components/HomepageTimer';
 import SideBar from './components/SideBar';
 import entities from './entities';
 import { LoginBarrier } from './login/LoginBarrier';
@@ -37,19 +29,9 @@ const useStyles = makeStyles(theme => ({
     display: 'grid',
     // FIXME: Don't used a fixed width here
     gridTemplateColumns: '64px auto',
-    gridTemplateRows: 'auto 1fr',
+    gridTemplateRows: '1fr',
     width: '100%',
     height: '100vh',
-  },
-  mainContentArea: {
-    overflowX: 'hidden',
-    overflowY: 'auto',
-  },
-  pageBody: {
-    padding: theme.spacing(2),
-  },
-  avatarButton: {
-    padding: theme.spacing(2),
   },
 }));
 
@@ -69,14 +51,7 @@ const AppShell: FC<{}> = ({ children }) => {
   return (
     <div className={classes.root}>
       <SideBar />
-      <Page theme={theme.home}>
-        <div className={classes.mainContentArea}>
-          <Header title="This is Backstage!">
-            <HomePageTimer />
-          </Header>
-          <div className={classes.pageBody}>{children}</div>
-        </div>
-      </Page>
+      {children}
     </div>
   );
 };

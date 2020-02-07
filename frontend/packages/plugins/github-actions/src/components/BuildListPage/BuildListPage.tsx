@@ -10,6 +10,8 @@ import {
   LinearProgress,
   Typography,
   Tooltip,
+  makeStyles,
+  Theme,
 } from '@material-ui/core';
 import { RelativeEntityLink } from '@backstage/core';
 import { BuildsClient } from '../../apis/builds';
@@ -28,23 +30,31 @@ const LongText: FC<{ text: string; max: number }> = ({ text, max }) => {
   );
 };
 
+const useStyles = makeStyles<Theme>(theme => ({
+  root: {
+    padding: theme.spacing(2),
+  },
+  title: {
+    paddingBottom: theme.spacing(2),
+  },
+}));
+
 const BuildListPage: FC<{}> = () => {
+  const classes = useStyles();
   const status = useAsync(() => client.listBuilds('entity:spotify:backstage'));
 
+  let content: JSX.Element;
+
   if (status.loading) {
-    return <LinearProgress />;
-  }
-  if (status.error) {
-    return (
-      <Typography variant="h6" color="error">
+    content = <LinearProgress />;
+  } else if (status.error) {
+    content = (
+      <Typography variant="h4" color="error">
         Failed to load builds, {status.error.message}
       </Typography>
     );
-  }
-
-  return (
-    <>
-      <Typography variant="h4">CI/CD Builds</Typography>
+  } else {
+    content = (
       <TableContainer component={Paper}>
         <Table aria-label="CI/CD builds table">
           <TableHead>
@@ -86,7 +96,16 @@ const BuildListPage: FC<{}> = () => {
           </TableBody>
         </Table>
       </TableContainer>
-    </>
+    );
+  }
+
+  return (
+    <div className={classes.root}>
+      <Typography variant="h4" className={classes.title}>
+        CI/CD Builds
+      </Typography>
+      {content}
+    </div>
   );
 };
 
