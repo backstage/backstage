@@ -38,8 +38,8 @@ const BuildDetailsPage: FC<Props> = () => {
   }
   if (status.error) {
     return (
-      <Typography variant="h4" color="error">
-        Failed to load build, {status.error}
+      <Typography variant="h6" color="error">
+        Failed to load build, {status.error.message}
       </Typography>
     );
   }
