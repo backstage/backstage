@@ -35,7 +35,7 @@ const useStyles = makeStyles<Theme>(theme => ({
     padding: theme.spacing(2),
   },
   title: {
-    paddingBottom: theme.spacing(2),
+    padding: theme.spacing(1, 0, 2, 0),
   },
 }));
 
@@ -49,7 +49,7 @@ const BuildListPage: FC<{}> = () => {
     content = <LinearProgress />;
   } else if (status.error) {
     content = (
-      <Typography variant="h4" color="error">
+      <Typography variant="h2" color="error">
         Failed to load builds, {status.error.message}
       </Typography>
     );
@@ -101,7 +101,7 @@ const BuildListPage: FC<{}> = () => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h4" className={classes.title}>
+      <Typography variant="h3" className={classes.title}>
         CI/CD Builds
       </Typography>
       {content}
