@@ -16,6 +16,3 @@ brew "yarn"
 
 # Backend
 brew "go"
-
-
-
