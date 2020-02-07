@@ -1,5 +1,6 @@
 import { ComponentType } from 'react';
 import { PluginOutput, RoutePath, RouteOptions } from './types';
+import { IconComponent } from '../types';
 
 export type PluginConfig = {
   id: string;

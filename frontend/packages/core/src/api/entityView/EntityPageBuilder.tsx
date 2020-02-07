@@ -3,14 +3,13 @@ import DefaultEntityPage from '../../components/DefaultEntityPage';
 import { App, AppComponentBuilder } from '../app/types';
 import BackstagePlugin from '../plugin/Plugin';
 import { EntityPageNavItem, EntityPageView } from './types';
+import { IconComponent } from '../types';
 
 // type AppComponents = {
 //   EntityPage: ComponentType<EntityPageProps>;
 //   EntityPageNavbar: ComponentType<EntityPageNavbarProps>;
 //   EntityPageHeader: ComponentType<EntityPageHeaderProps>;
 // };
-
-type IconComponent = ComponentType<{ fontSize?: number }>;
 
 type EntityPageRegistration =
   | {
