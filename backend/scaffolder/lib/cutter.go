@@ -28,6 +28,7 @@ func (c *Cutter) WriteMetadata(template CookieCutterTemplate) error {
 	}
 
 	temporaryCookieCutter["component_id"] = template.ComponentID
+	temporaryCookieCutter["_copy_without_render"] = []string{".github/workflows/*"}
 	finalMetadata, _ := json.Marshal(temporaryCookieCutter)
 
 	file, err := os.Create(fmt.Sprintf("%s/cookiecutter.json", template.Path))

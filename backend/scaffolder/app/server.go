@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/jsonpb"
 	identity "github.com/spotify/backstage/backend/proto/identity/v1"
-	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
-
 	inventory "github.com/spotify/backstage/backend/proto/inventory/v1"
+	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
 	"github.com/spotify/backstage/scaffolder/fs"
 	"github.com/spotify/backstage/scaffolder/lib"
 	"github.com/spotify/backstage/scaffolder/repository"
@@ -15,6 +14,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log"
+	"os"
 )
 
 // Server is the inventory Grpc server
@@ -105,6 +105,20 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 	_, err = s.inventory.CreateEntity(ctx, &inventory.CreateEntityRequest{
 		Entity: &inventory.Entity{
 			Uri: fmt.Sprintf("boss://service/%s", req.ComponentId),
+			Facts: []*inventory.Fact{
+				{
+					Name:  "githubOwner",
+					Value: os.Getenv("BOSS_GH_USERNAME"),
+				},
+				{
+					Name:  "githubRepo",
+					Value: req.ComponentId,
+				},
+				{
+					Name:  "backstageTemplate",
+					Value: req.TemplateId,
+				},
+			},
 		},
 	})
 
