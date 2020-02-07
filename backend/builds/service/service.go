@@ -5,26 +5,61 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/prometheus/common/log"
 	"github.com/spotify/backstage/builds/ghactions"
 	buildsv1 "github.com/spotify/backstage/proto/builds/v1"
+	inventoryv1 "github.com/spotify/backstage/proto/inventory/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type service struct {
-	ghClient *ghactions.Client
+	ghClient  *ghactions.Client
+	inventory inventoryv1.InventoryClient
 }
 
 var _ buildsv1.BuildsServer = (*service)(nil)
 
 // New creates a new identity data server
-func New(ghClient *ghactions.Client) buildsv1.BuildsServer {
-	return &service{ghClient}
+func New(ghClient *ghactions.Client, inventory inventoryv1.InventoryClient) buildsv1.BuildsServer {
+	return &service{ghClient, inventory}
 }
 
 func (s *service) ListBuilds(ctx context.Context, req *buildsv1.ListBuildsRequest) (*buildsv1.ListBuildsReply, error) {
+	uri := req.GetEntityUri()
+	kind, id, err := s.parseEntityURI(uri)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Invalid build URI '%s', %s", uri, err)
+	}
+
 	owner := "spotify"
 	repo := "backstage"
+
+	ownerReq, err := s.inventory.GetFact(ctx, &inventoryv1.GetFactRequest{
+		EntityUri: fmt.Sprintf("boss://%s/%s", kind, id),
+		Name:      "githubOwner",
+	})
+	if err != nil {
+		log.Errorf("Failed to fetch owner for %s, defaulting to %s", uri, owner)
+	}
+	if ownerReq.GetFact().GetValue() != "" {
+		owner = ownerReq.Fact.GetValue()
+	} else {
+		log.Errorf("No owner found for %s, defaulting to %s", uri, owner)
+	}
+
+	repotReq, err := s.inventory.GetFact(ctx, &inventoryv1.GetFactRequest{
+		EntityUri: fmt.Sprintf("boss://%s/%s", kind, id),
+		Name:      "githubRepo",
+	})
+	if err != nil {
+		log.Errorf("Failed to fetch repo for %s, defaulting to %s", uri, repo)
+	}
+	if repotReq.GetFact().GetValue() != "" {
+		repo = repotReq.GetFact().GetValue()
+	} else {
+		log.Errorf("No repo found for %s, defaulting to %s", uri, owner)
+	}
 
 	result, err := s.ghClient.ListWorkflowRuns(ctx, owner, repo)
 	if err != nil {
@@ -104,17 +139,32 @@ func (s *service) transformBuild(owner, repo string, run *ghactions.WorkflowRunR
 	}
 }
 
-var entityURIRegex = regexp.MustCompile("^entity:build:([^/:]+)/([^/:]+)/([^/:]+)$")
+var buildURIRegex = regexp.MustCompile("^entity:build:([^/:]+)/([^/:]+)/([^/:]+)$")
 
 func (s *service) parseBuildURI(uri string) (owner, repo, runID string, err error) {
 	if uri == "" {
 		return "", "", "", fmt.Errorf("uri is empty")
 	}
 
-	match := entityURIRegex.FindStringSubmatch(uri)
+	match := buildURIRegex.FindStringSubmatch(uri)
 	if match == nil {
 		return "", "", "", fmt.Errorf("uri does not match")
 	}
 
 	return match[1], match[2], match[3], nil
+}
+
+var entityURIRegex = regexp.MustCompile("^entity:([^:]+):([^:]+)$")
+
+func (s *service) parseEntityURI(uri string) (kind, id string, err error) {
+	if uri == "" {
+		return "", "", fmt.Errorf("uri is empty")
+	}
+
+	match := entityURIRegex.FindStringSubmatch(uri)
+	if match == nil {
+		return "", "", fmt.Errorf("uri does not match")
+	}
+
+	return match[1], match[2], nil
 }
