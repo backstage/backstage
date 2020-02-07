@@ -13,7 +13,7 @@ import GithubActionsPlugin from '@backstage/plugin-github-actions';
 /* SERVICE */
 const serviceOverviewPage = createWidgetView()
   .add({ size: 4, component: MockEntityCard })
-  .add({ size: 4, component: MockEntityCard });
+  .register(GithubActionsPlugin);
 
 const serviceView = createEntityPage()
   .addPage('Overview', WebIcon, '/overview', serviceOverviewPage)
