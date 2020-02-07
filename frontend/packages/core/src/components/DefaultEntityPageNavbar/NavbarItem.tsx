@@ -15,7 +15,6 @@ const useStyles = makeStyles<Theme>(theme => ({
     display: 'block',
     overflow: 'hidden',
     borderBottom: `1px solid #d9d9d9`,
-    paddingLeft: theme.spacing(1),
   },
   label: {
     color: '#333',
