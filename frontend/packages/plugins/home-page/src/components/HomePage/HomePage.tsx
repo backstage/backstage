@@ -10,6 +10,7 @@ import {
   theme,
 } from '@backstage/core';
 import SquadTechHealth from './SquadTechHealth';
+import { inventoryV1 } from '@backstage/protobuf-definitions';
 
 const useStyles = makeStyles<Theme>(theme => ({
   mainContentArea: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles<Theme>(theme => ({
     overflowY: 'auto',
   },
   pageBody: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(3),
   },
   avatarButton: {
     padding: theme.spacing(2),
@@ -27,7 +28,7 @@ const useStyles = makeStyles<Theme>(theme => ({
 const HomePage: FC<{}> = () => {
   const classes = useStyles();
   const columns = [
-    { id: 'id', label: 'ID' },
+    { id: 'entity', label: 'ID' },
     { id: 'kind', label: 'Kind' },
   ];
 
@@ -36,7 +37,8 @@ const HomePage: FC<{}> = () => {
     { id: 'backstage-microsite', kind: 'website' },
   ].map(({ id, kind }) => {
     return {
-      id: (
+      id,
+      entity: (
         <EntityLink kind={kind} id={id}>
           <Typography color="primary">{id}</Typography>
         </EntityLink>
@@ -52,14 +54,17 @@ const HomePage: FC<{}> = () => {
           <HomePageTimer />
         </Header>
         <div className={classes.pageBody}>
-          <Grid container direction="column" spacing={6}>
-            <Grid item xs={12}>
-              <SquadTechHealth />
-            </Grid>
-            <Grid item xs={4}>
-              <InfoCard title="Stuff you own" maxWidth>
+          <Grid container direction="row" spacing={3}>
+            <Grid item xs={6}>
+              <Typography variant="h3" style={{ padding: '8px 0 16px 0' }}>
+                Things you own
+              </Typography>
+              <InfoCard maxWidth>
                 <SortableTable data={data} columns={columns} orderBy="id" />
               </InfoCard>
+            </Grid>
+            <Grid item xs={6}>
+              <SquadTechHealth />
             </Grid>
           </Grid>
         </div>
