@@ -32,11 +32,11 @@ static_resources:
                           route:
                             cluster: builds_service
                             max_grpc_timeout: 0s
-                        - match: { prefix: '/inventory' }
+                        - match: { prefix: '/spotify.backstage.inventory.v1.Inventory/' }
                           route:
                             cluster: inventory_service
                             max_grpc_timeout: 0s
-                        - match: { prefix: '/spotify.backstage.scaffolder.v1.Scaffolder' }
+                        - match: { prefix: '/spotify.backstage.scaffolder.v1.Scaffolder/' }
                           route:
                             cluster: scaffolder_service
                             max_grpc_timeout: 0s
