@@ -16,6 +16,7 @@ import {
 import { RelativeEntityLink } from '@backstage/core';
 import { BuildsClient } from '../../apis/builds';
 import { useAsync } from 'react-use';
+import BuildStatusIndicator from '../BuildStatusIndicator';
 
 const client = BuildsClient.create('http://localhost:8080');
 
@@ -68,8 +69,9 @@ const BuildListPage: FC<{}> = () => {
           <TableBody>
             {status.value!.map(build => (
               <TableRow key={build.uri}>
-                {/* TODO: make this an indicating blobby thing */}
-                <TableCell>{build.status}</TableCell>
+                <TableCell>
+                  <BuildStatusIndicator status={build.status} />
+                </TableCell>
                 <TableCell>
                   <Typography>
                     <LongText text={build.branch} max={30} />

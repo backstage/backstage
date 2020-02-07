@@ -12,6 +12,7 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core';
+import BuildStatusIndicator from '../BuildStatusIndicator';
 
 const client = BuildsClient.create('http://localhost:8080');
 
@@ -67,7 +68,9 @@ const BuildInfoCard: FC<{}> = () => {
             <TableCell>
               <Typography noWrap>Status</Typography>
             </TableCell>
-            <TableCell>{build?.status}</TableCell>
+            <TableCell>
+              <BuildStatusIndicator status={build?.status} />
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
