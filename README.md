@@ -28,10 +28,12 @@ See [proto/README.md](proto/README.md) for more information.
 
 ## Running Locally
 
-First step is to set up a `secrets.env` file in the root of the repo. Use the following template but fill in your own values:
+First step is to set up a `secrets.env` file in the root of the repo. Use the following template but fill in your own values (without quotes!):
 
 ```bash
-# Github Access token with repo scope, created at https://github.com/settings/tokens
+# GitHub username
+BOSS_GH_USERNAME=<username>
+# GitHub Access token with repo scope, created at https://github.com/settings/tokens
 BOSS_GH_ACCESS_TOKEN=<access-token>
 ```
 
