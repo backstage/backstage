@@ -99,6 +99,7 @@ func (s *service) transformBuild(owner, repo string, run *ghactions.WorkflowRunR
 		Uri:      fmt.Sprintf("entity:build:%s/%s/%d", owner, repo, run.ID),
 		CommitId: run.HeadCommit.ID,
 		Message:  run.HeadCommit.Message,
+		Branch:   run.HeadBranch,
 		Status:   stat,
 	}
 }

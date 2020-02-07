@@ -52,6 +52,12 @@ const BuildDetailsPage: FC<Props> = () => {
         <TableBody>
           <TableRow>
             <TableCell>
+              <Typography noWrap>Branch</Typography>
+            </TableCell>
+            <TableCell>{details?.build.branch}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
               <Typography noWrap>Message</Typography>
             </TableCell>
             <TableCell>{details?.build.message}</TableCell>

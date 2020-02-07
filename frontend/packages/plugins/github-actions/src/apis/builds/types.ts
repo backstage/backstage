@@ -9,6 +9,7 @@ export enum BuildStatus {
 export type Build = {
   commitId: string;
   message: string;
+  branch: string;
   status: BuildStatus;
   uri: string;
 };

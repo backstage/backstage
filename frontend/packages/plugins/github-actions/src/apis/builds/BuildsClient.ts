@@ -52,6 +52,7 @@ export default class BuildsClient {
     return {
       commitId: build.getCommitId(),
       message: build.getMessage(),
+      branch: build.getBranch(),
       status: statusTable[build.getStatus()] || BuildStatus.Null,
       uri: build.getUri(),
     };

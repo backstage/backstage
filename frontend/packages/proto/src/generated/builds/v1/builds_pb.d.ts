@@ -96,6 +96,9 @@ export class Build extends jspb.Message {
   getMessage(): string;
   setMessage(value: string): void;
 
+  getBranch(): string;
+  setBranch(value: string): void;
+
   getStatus(): BuildStatus;
   setStatus(value: BuildStatus): void;
 
@@ -112,6 +115,7 @@ export namespace Build {
     uri: string,
     commitId: string,
     message: string,
+    branch: string,
     status: BuildStatus,
   }
 }
