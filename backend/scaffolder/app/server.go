@@ -4,30 +4,29 @@ import (
 	"context"
 	"fmt"
 	"github.com/golang/protobuf/jsonpb"
+	identity "github.com/spotify/backstage/backend/proto/identity/v1"
+	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
+	"github.com/spotify/backstage/scaffolder/fs"
+	"github.com/spotify/backstage/scaffolder/lib"
+	"github.com/spotify/backstage/scaffolder/repository"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log"
-
-	identity "github.com/spotify/backstage/backend/proto/identity/v1"
-	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
-	"github.com/spotify/backstage/scaffolder/cutter"
-	"github.com/spotify/backstage/scaffolder/fs"
-	"github.com/spotify/backstage/scaffolder/remote"
-	"github.com/spotify/backstage/scaffolder/repository"
 )
 
 // Server is the inventory Grpc server
 type Server struct {
 	repository *repository.Repository
-	github     *remote.Github
+	github     *lib.Github
 	fs         *fs.Filesystem
-	cookie     *cutter.Cutter
+	cookie     *lib.Cutter
+	git        *lib.Git
 }
 
 // NewServer creates a new server for with all the things
 func NewServer() *Server {
 	return &Server{
-		github: remote.NewGithubClient(),
+		github: lib.NewGithubClient(),
 	}
 }
 
@@ -35,7 +34,7 @@ func NewServer() *Server {
 func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateReply, error) {
 	// first create the repository with github
 	log.Printf("Creating repository for Component %s", req.ComponentId)
-	repo := remote.Repository{
+	repo := lib.Repository{
 		Name:    req.ComponentId,
 		Org:     req.Org,
 		Private: req.Private,
@@ -63,7 +62,7 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 		return nil, status.Error(codes.Internal, "Could not marshal the cookiecutter metadata")
 	}
 
-	cookieTemplate := cutter.CookieCutterTemplate{
+	cookieTemplate := lib.CookieCutterTemplate{
 		Path:        tempFolder,
 		ComponentID: req.ComponentId,
 		Metadata:    cutterMetadata,
@@ -79,8 +78,20 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 		return nil, status.Error(codes.Internal, "Failed to run the cookie cutter")
 	}
 
-	// use git bindings to add the remote with access token and push to the directory
-	return nil, nil
+	// push to github
+	pushOptions := lib.PushRepositoryOptions{
+		TempFolder:  tempFolder,
+		ComponentID: req.ComponentId,
+		Org:         req.Org,
+	}
+
+	if err := s.git.Push(pushOptions); err != nil {
+		return nil, status.Error(codes.Internal, "Failed to push the repository to Github")
+	}
+
+	return &pb.CreateReply{
+		ComponentId: req.ComponentId,
+	}, nil
 }
 
 // ListTemplates returns the local templatess

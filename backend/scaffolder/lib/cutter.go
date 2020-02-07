@@ -1,4 +1,4 @@
-package cutter
+package lib
 
 import (
 	"encoding/json"

@@ -14,4 +14,5 @@ require (
 	github.com/spotify/backstage/proto v0.0.0-00010101000000-000000000000
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
 	google.golang.org/grpc v1.27.0
+	gopkg.in/src-d/go-git.v4 v4.13.1
 )
