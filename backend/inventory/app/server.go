@@ -22,9 +22,9 @@ func (s *Server) ListEntities(ctx context.Context, req *pb.ListEntitiesRequest) 
 		return nil, status.Error(codes.Internal, "could not list entities")
 	}
 
-	result := make([]*pb.Entity, len(entities))
-	for i, v := range entities {
-		result[i] = &pb.Entity{Uri: v}
+	var result []*pb.Entity
+	for _, v := range entities {
+		result = append(result, &pb.Entity{Uri: v})
 	}
 
 	return &pb.ListEntitiesReply{Entities: result}, nil
