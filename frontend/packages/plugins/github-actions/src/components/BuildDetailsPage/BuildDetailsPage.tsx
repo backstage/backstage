@@ -18,6 +18,7 @@ import {
   Theme,
 } from '@material-ui/core';
 import { RelativeEntityLink } from '@backstage/core';
+import BuildStatusIndicator from '../BuildStatusIndicator';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -90,7 +91,9 @@ const BuildDetailsPage: FC<Props> = () => {
               <TableCell>
                 <Typography noWrap>Status</Typography>
               </TableCell>
-              <TableCell>{details?.build.status}</TableCell>
+              <TableCell>
+                <BuildStatusIndicator status={details?.build.status} />
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
