@@ -1,13 +1,15 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { renderWithEffects, wrapInThemedTestApp } from 'testUtils';
+import { renderWithEffects, wrapInThemedTestApp } from '../testUtils';
 import HorizontalScrollGrid from 'shared/components/HorizontalScrollGrid';
 import { Grid } from '@material-ui/core';
 
 describe('<HorizontalScrollGrid />', () => {
   beforeEach(() => {
     jest.spyOn(window.performance, 'now').mockReturnValue(5);
-    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb(20));
+    jest
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation(cb => cb(20));
   });
 
   afterEach(() => {
