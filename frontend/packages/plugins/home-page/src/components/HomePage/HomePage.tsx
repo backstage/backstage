@@ -10,7 +10,6 @@ import {
   theme,
 } from '@backstage/core';
 import SquadTechHealth from './SquadTechHealth';
-import { inventoryV1 } from '@backstage/protobuf-definitions';
 
 const useStyles = makeStyles<Theme>(theme => ({
   mainContentArea: {
