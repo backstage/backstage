@@ -37,6 +37,10 @@ services:
         service: builds
     restart: unless-stopped
     env_file: secrets.env
+    depends_on:
+      - inventory
+    links:
+      - inventory
 
   scaffolder:
     depends_on:
