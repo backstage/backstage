@@ -8,6 +8,14 @@ Backstage is an open platform for building developer portals.
 
 ## Getting started
 
+### Secrets
+
+To setup secrets, copy the `secrets.env.example` to `secrets.env` as such:
+
+```bash
+$ cp secrets.env.example secrets.env
+```
+
 ### Protobuf Definitions
 
 To generate the Protobuf definitions in Go and TypeScript, run the following command from the root with [Prototool](https://github.com/uber/prototool):
