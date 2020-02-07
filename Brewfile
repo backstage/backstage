@@ -8,7 +8,6 @@ brew "docker"
 brew "docker-compose"
 brew "protobuf"
 brew "prototool"
-brew "forego"
 cask "docker"
 
 # Frontend

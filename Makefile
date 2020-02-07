@@ -2,9 +2,9 @@
 # All-in-one commands
 ###
 init: init-secrets
-install: install-homebrew-dependencies install-yarn-dependencies
-start: build-protocol-definitions start-backends start-frontend
-stop: stop-backends
+install: install-homebrew-dependencies install-yarn-dependencies install-forego
+start: build-protocol-definitions
+	forego start
 
 ###
 # Setup secrets
@@ -25,6 +25,12 @@ install-yarn-dependencies:
 	yarn --cwd ${PWD}/frontend install
 
 ###
+# Install Forego for running both frontend and backend in a single command.
+###
+install-forego:
+	go get -u github.com/ddollar/forego
+
+###
 # Protobuf Definitions.
 # This will generate Protobuf definitions from ./proto to both Go and JS/TypeScript.
 ###
@@ -37,18 +43,3 @@ build-protocol-definitions:
 ###
 scaffold-new-frontend-plugin:
 	${PWD}/tools/cookiecutter/init.sh frontend/packages/plugins/_template --output-dir frontend/packages/plugins
-
-###
-# Run the backend services
-###
-start-backends:
-	${PWD}/docker-compose.yaml up --build --detach
-
-stop-backends:
-	${PWD}/docker-compose.yaml down
-
-###
-# Run the frontend services.
-###
-start-frontend:
-	yarn --cwd ${PWD}/frontend start
