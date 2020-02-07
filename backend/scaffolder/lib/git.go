@@ -27,6 +27,7 @@ func (g *Git) Push(options PushRepositoryOptions) error {
 		fmt.Sprintf("%s/%s", options.TempFolder, options.ComponentID),
 		false,
 	)
+
 	if err != nil {
 		log.Printf("Failed to init the git repository")
 		return err

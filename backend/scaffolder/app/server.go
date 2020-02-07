@@ -6,6 +6,9 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	identity "github.com/spotify/backstage/backend/proto/identity/v1"
 	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
+
+	// "google.golang.org/grpc"
+	inventory "github.com/spotify/backstage/backend/proto/inventory/v1"
 	"github.com/spotify/backstage/scaffolder/fs"
 	"github.com/spotify/backstage/scaffolder/lib"
 	"github.com/spotify/backstage/scaffolder/repository"
@@ -21,10 +24,18 @@ type Server struct {
 	fs         *fs.Filesystem
 	cookie     *lib.Cutter
 	git        *lib.Git
+	inventory  inventory.InventoryClient
 }
 
 // NewServer creates a new server for with all the things
 func NewServer() *Server {
+	// conn, errc := grpc.Dial("http://inventory:50051")
+
+	// if err != nil {
+	// 	log.Fatal("Cannot connect to inventory service")
+	// }
+
+	//inventory: inventory.NewInventoryClient(conn),
 	return &Server{
 		github: lib.NewGithubClient(),
 	}
@@ -87,7 +98,7 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 	}
 
 	if err := s.git.Push(pushOptions); err != nil {
-		return nil, status.Error(codes.Internal, fmt.Sprinf("Failed to push the repository to Github %s", err))
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Failed to push the repository to Github %s", err))
 	}
 
 	return &pb.CreateReply{
