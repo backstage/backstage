@@ -4,7 +4,8 @@ import { useFormik } from 'formik';
 import { Button, TextField, makeStyles } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import { scaffolderV1 } from '@backstage/protobuf-definitions';
-import * as google_protobuf_struct_pb from 'google-protobuf/google/protobuf/struct_pb.js';
+const google_protobuf_struct_pb = require('google-protobuf/google/protobuf/struct_pb.js');
+// import * as google_protobuf_struct_pb from 'google-protobuf/google/protobuf/struct_pb.js';
 
 const useStyles = makeStyles(theme => ({
   formGroup: {
