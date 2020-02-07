@@ -1,5 +1,6 @@
 import { ComponentType } from 'react';
 import { IconComponent } from '../types';
+import { Widget } from '../widgetView/types';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
@@ -22,6 +23,11 @@ export type RedirectRouteOutput = {
   options?: RouteOptions;
 };
 
+export type WidgetOutput = {
+  type: 'widget';
+  widget: Widget;
+};
+
 export type EntityPageViewRouteOutput = {
   type: 'entity-page-view-route';
   path: RoutePath;
@@ -39,5 +45,6 @@ export type EntityPageNavItemOutput = {
 export type PluginOutput =
   | RouteOutput
   | RedirectRouteOutput
+  | WidgetOutput
   | EntityPageViewRouteOutput
   | EntityPageNavItemOutput;
