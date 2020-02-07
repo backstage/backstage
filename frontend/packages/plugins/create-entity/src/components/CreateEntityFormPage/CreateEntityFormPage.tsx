@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import { Button, TextField, makeStyles } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import { scaffolderV1 } from '@backstage/protobuf-definitions';
+import * as google_protobuf_struct_pb from 'google-protobuf/google/protobuf/struct_pb.js';
 
 const useStyles = makeStyles(theme => ({
   formGroup: {
@@ -23,19 +24,24 @@ const CreateEntityFormPage = () => {
     },
     onSubmit: (values: any) => {
       console.log(JSON.stringify(values, null, 2));
+      console.log(google_protobuf_struct_pb);
       const client = new scaffolderV1.Client('http://localhost:8080');
       const req = new scaffolderV1.CreateRequest();
       req.setComponentId(values.entityId);
       req.setTemplateId(templateId);
-      req.setMetadata({
-        description: values.description
-      });
+      req.setMetadata(
+        new google_protobuf_struct_pb.Struct({
+          fields: {
+            description: values.description,
+          },
+        }),
+      );
       req.setPrivate(false);
       client.create(req).then((res: scaffolderV1.CreateReply) => {
         console.log('COMPONENT CREATED');
         console.log(res.toObject().componentId);
       });
-    }
+    },
   });
 
   return (
@@ -61,7 +67,11 @@ const CreateEntityFormPage = () => {
             ></TextField>
           </div>
           <div className={classes.formGroup}>
-            <Button variant="contained" color="primary" onClick={formik.submitForm}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={formik.submitForm}
+            >
               Submit
             </Button>
           </div>
