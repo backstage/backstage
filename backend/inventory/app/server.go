@@ -39,9 +39,17 @@ func (s *Server) ListEntities(ctx context.Context, req *pb.ListEntitiesRequest) 
 }
 
 func (s *Server) CreateEntity(ctx context.Context, req *pb.CreateEntityRequest) (*pb.CreateEntityReply, error) {
-	err := s.Storage.CreateEntity(req.GetEntity().GetUri())
+	uri := req.GetEntity().GetUri()
+	err := s.Storage.CreateEntity(uri)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "could not create entity")
+	}
+	for _, fact := range req.GetEntity().GetFacts() {
+		if fact.GetName() != "" {
+			if err := s.Storage.SetFact(uri, fact.GetName(), fact.GetValue()); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to set fact %s, %s", fact.GetName(), err)
+			}
+		}
 	}
 	return &pb.CreateEntityReply{Entity: req.GetEntity()}, nil
 }
