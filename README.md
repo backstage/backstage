@@ -8,12 +8,22 @@ Backstage is an open platform for building developer portals.
 
 ## Getting started
 
+### Install Dependencies with Homebrew and Yarn
+
+Run the following to install relevant dependencies (such as Git, Docker, etc):
+
+```bash
+# If you don't have Homebrew, run the following command:
+# $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+$ make install
+```
+
 ### Secrets
 
 To setup secrets, copy the `secrets.env.example` to `secrets.env` as such:
 
 ```bash
-$ cp secrets.env.example secrets.env
+$ make init-secrets
 ```
 
 ### Protobuf Definitions
@@ -28,29 +38,10 @@ See [proto/README.md](proto/README.md) for more information.
 
 ## Running Locally
 
-First step is to set up a `secrets.env` file in the root of the repo. Use the following template but fill in your own values (without quotes!):
+Once you've installed all dependencies, start serving the frontend using `yarn`:
 
 ```bash
-# GitHub username
-BOSS_GH_USERNAME=<username>
-# GitHub Access token with repo scope, created at https://github.com/settings/tokens
-BOSS_GH_ACCESS_TOKEN=<access-token>
-```
-
-Then run start all backend services using `docker-compose`:
-
-```bash
-$ ./docker-compose.yaml up --build
-```
-
-And finally install all dependencies and start serving the frontend using `yarn`:
-
-```bash
-$ cd frontend
-
-$ yarn install
-
-$ yarn start
+$ make start
 ```
 
 ## Plugins
