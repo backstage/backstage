@@ -3,35 +3,38 @@ package app
 import (
 	"context"
 	"fmt"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
+	"github.com/golang/protobuf/jsonpb"
 	identity "github.com/spotify/backstage/backend/proto/identity/v1"
 	pb "github.com/spotify/backstage/backend/proto/scaffolder/v1"
 	"github.com/spotify/backstage/scaffolder/fs"
-	"github.com/spotify/backstage/scaffolder/remote"
+	"github.com/spotify/backstage/scaffolder/lib"
 	"github.com/spotify/backstage/scaffolder/repository"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"log"
 )
 
 // Server is the inventory Grpc server
 type Server struct {
 	repository *repository.Repository
-	github     *remote.Github
+	github     *lib.Github
 	fs         *fs.Filesystem
+	cookie     *lib.Cutter
+	git        *lib.Git
 }
 
 // NewServer creates a new server for with all the things
 func NewServer() *Server {
 	return &Server{
-		github: remote.NewGithubClient(),
+		github: lib.NewGithubClient(),
 	}
 }
 
 // Create scaffolds the repo in github and then will create push to the repository
 func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateReply, error) {
 	// first create the repository with github
-	fmt.Sprintf("Creating repository for Component %s", req.ComponentId)
-	repo := remote.Repository{
+	log.Printf("Creating repository for Component %s", req.ComponentId)
+	repo := lib.Repository{
 		Name:    req.ComponentId,
 		Org:     req.Org,
 		Private: req.Private,
@@ -41,16 +44,59 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 	}
 
 	// move the template into a temporary directory
-	tempFolder, _ := s.fs.PrepareTemplate(fs.Template{req.TemplateId})
+	tempFolder, err := s.fs.PrepareTemplate(
+		fs.Template{
+			ID: req.TemplateId,
+		},
+	)
 
-	fmt.Sprintf("Created temporary folder %s", tempFolder)
-	// use git bindings to add the remote with access token and push to the directory
-	return nil, nil
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Could not prepare the template")
+	}
+
+	// get the optional metadatafields from the json
+	marshaler := &jsonpb.Marshaler{}
+	cutterMetadata, err := marshaler.MarshalToString(req.Metadata)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Could not marshal the cookiecutter metadata")
+	}
+
+	cookieTemplate := lib.CookieCutterTemplate{
+		Path:        tempFolder,
+		ComponentID: req.ComponentId,
+		Metadata:    cutterMetadata,
+	}
+
+	// create the cookicutter json
+	if err := s.cookie.WriteMetadata(cookieTemplate); err != nil {
+		return nil, status.Error(codes.Internal, "Could not write cookie metadata")
+	}
+
+	// run the cookiecutter on the folder
+	if err := s.cookie.Run(cookieTemplate); err != nil {
+		return nil, status.Error(codes.Internal, "Failed to run the cookie cutter")
+	}
+
+	// push to github
+	pushOptions := lib.PushRepositoryOptions{
+		TempFolder:  tempFolder,
+		ComponentID: req.ComponentId,
+		Org:         req.Org,
+	}
+
+	if err := s.git.Push(pushOptions); err != nil {
+		return nil, status.Error(codes.Internal, "Failed to push the repository to Github")
+	}
+
+	return &pb.CreateReply{
+		ComponentId: req.ComponentId,
+	}, nil
 }
 
 // ListTemplates returns the local templatess
 func (s *Server) ListTemplates(ctx context.Context, req *pb.Empty) (*pb.ListTemplatesReply, error) {
-	// todo (blam): yes we currently read the disk on every load. but it's fine for now 🤷‍♂️
+	// TODO(blam): yes we currently read the disk on every load. but it's fine for now 🤷‍♂️
 	definitions, err := s.repository.Load()
 	var templates []*pb.Template
 
@@ -59,6 +105,7 @@ func (s *Server) ListTemplates(ctx context.Context, req *pb.Empty) (*pb.ListTemp
 			Id:          definition.ID,
 			Name:        definition.Name,
 			Description: definition.Description,
+
 			// need to actually call the idenity service here to get the
 			// actual user and propgate back when needed.
 			User: &identity.User{

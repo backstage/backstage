@@ -1,10 +1,10 @@
-package remote
+package lib
 
 import (
 	"context"
-	"fmt"
 	gh "github.com/google/go-github/v29/github"
 	"golang.org/x/oauth2"
+	"log"
 	"os"
 )
 
@@ -19,8 +19,7 @@ func NewGithubClient() *Github {
 	accessToken := os.Getenv("BOSS_GH_ACCESS_TOKEN")
 
 	if accessToken == "" {
-		fmt.Println("No BOSS_GH_ACCESS_TOKEN set. Cannot continue")
-		os.Exit(1)
+		log.Fatal("No BOSS_GH_ACCESS_TOKEN set. Cannot continue")
 	}
 
 	ctx := context.Background()
