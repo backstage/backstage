@@ -4,6 +4,7 @@ import {
   makeStyles,
   SvgIcon,
   Typography,
+  Theme,
   Link,
   styled,
 } from '@material-ui/core';
@@ -19,7 +20,7 @@ const drawerWidthOpen = 220;
 
 const Context = createContext<boolean>(false);
 
-const useSidebarItemStyles = makeStyles({
+const useSidebarItemStyles = makeStyles<Theme>(theme => ({
   root: {
     color: '#b5b5b5',
     display: 'flex',
@@ -35,15 +36,21 @@ const useSidebarItemStyles = makeStyles({
   open: {
     width: drawerWidthOpen,
   },
+  label: {
+    fontWeight: 'bolder',
+    whiteSpace: 'nowrap',
+    lineHeight: 1.0,
+    marginLeft: theme.spacing(1),
+  },
   iconContainer: {
     height: '100%',
     width: drawerWidthClosed,
-    marginRight: -16,
+    marginRight: -theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+}));
 
 type SidebarItemProps = {
   icon: typeof SvgIcon;
@@ -84,7 +91,9 @@ const SidebarItem: FC<SidebarItemProps> = ({
       <div className={classes.iconContainer}>
         <Icon fontSize="small" />
       </div>
-      <Typography variant="subtitle2">{text}</Typography>
+      <Typography variant="subtitle1" className={classes.label}>
+        {text}
+      </Typography>
     </Link>
   );
 };
