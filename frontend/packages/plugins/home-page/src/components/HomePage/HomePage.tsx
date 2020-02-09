@@ -94,6 +94,7 @@ const HomePage: FC<{}> = () => {
               : greeting.greeting
           }
           tooltip={greeting.language}
+          subtitle="Welcome to Backstage"
         >
           <HomePageTimer />
         </Header>
