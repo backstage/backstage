@@ -1,11 +1,5 @@
 import React, { FC } from 'react';
-import {
-  Typography,
-  makeStyles,
-  Theme,
-  Grid,
-  LinearProgress,
-} from '@material-ui/core';
+import { Typography, makeStyles, Theme, Grid } from '@material-ui/core';
 import HomePageTimer from '../HomepageTimer';
 import {
   EntityLink,
@@ -14,6 +8,8 @@ import {
   Header,
   Page,
   theme,
+  Progress,
+  getTimeBasedGreeting,
 } from '@backstage/core';
 import SquadTechHealth from './SquadTechHealth';
 import { useAsync } from 'react-use';
@@ -70,7 +66,7 @@ const HomePage: FC<{}> = () => {
   ];
 
   if (status.loading) {
-    return <LinearProgress />;
+    return <Progress />;
   }
 
   const data = STATIC_DATA.concat(status?.value ?? []).map(({ id, kind }) => {
@@ -85,10 +81,20 @@ const HomePage: FC<{}> = () => {
     };
   });
 
+  const greeting = getTimeBasedGreeting();
+  const profile = { givenName: 'Suzy' };
+
   return (
     <Page theme={theme.home}>
       <div className={classes.mainContentArea}>
-        <Header title="This is Backstage!">
+        <Header
+          title={
+            profile
+              ? `${greeting.greeting}, ${profile.givenName}`
+              : greeting.greeting
+          }
+          tooltip={greeting.language}
+        >
           <HomePageTimer />
         </Header>
         <div className={classes.pageBody}>

@@ -44,7 +44,7 @@ export function getTimeBasedGreeting() {
     if (hour < 17) return 'goodAfternoon';
     if (hour < 23) return 'goodEvening';
   };
-  const greetings = require(`shared/apis/time/locales/${timeOfDay(hour)}.locales.json`);
+  const greetings = require(`./locales/${timeOfDay(hour)}.locales.json`);
   const greetingsKey = random(Object.keys(greetings));
   return {
     language: greetingsKey,

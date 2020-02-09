@@ -21,6 +21,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@types/classnames": "^2.2.9"
+    "@types/classnames": "^2.2.9",
+    "moment": "^2.24.0"
   }
 }
