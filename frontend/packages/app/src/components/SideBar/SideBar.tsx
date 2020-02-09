@@ -4,6 +4,7 @@ import {
   makeStyles,
   SvgIcon,
   Typography,
+  Theme,
   Link,
   styled,
 } from '@material-ui/core';
@@ -19,7 +20,7 @@ const drawerWidthOpen = 220;
 
 const Context = createContext<boolean>(false);
 
-const useSidebarItemStyles = makeStyles({
+const useSidebarItemStyles = makeStyles<Theme>(theme => ({
   root: {
     color: '#b5b5b5',
     display: 'flex',
@@ -35,15 +36,21 @@ const useSidebarItemStyles = makeStyles({
   open: {
     width: drawerWidthOpen,
   },
+  label: {
+    fontWeight: 'bolder',
+    whiteSpace: 'nowrap',
+    lineHeight: 1.0,
+    marginLeft: theme.spacing(1),
+  },
   iconContainer: {
     height: '100%',
     width: drawerWidthClosed,
-    marginRight: -16,
+    marginRight: -theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+}));
 
 type SidebarItemProps = {
   icon: typeof SvgIcon;
@@ -84,7 +91,9 @@ const SidebarItem: FC<SidebarItemProps> = ({
       <div className={classes.iconContainer}>
         <Icon fontSize="small" />
       </div>
-      <Typography variant="subtitle2">{text}</Typography>
+      <Typography variant="subtitle1" className={classes.label}>
+        {text}
+      </Typography>
     </Link>
   );
 };
@@ -92,7 +101,6 @@ const SidebarItem: FC<SidebarItemProps> = ({
 const useSidebarLogoStyles = makeStyles({
   root: {
     height: drawerWidthClosed,
-    color: '#fff',
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
@@ -103,14 +111,12 @@ const useSidebarLogoStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logo: {
-    fontSize: 32,
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 22,
     whiteSpace: 'nowrap',
+    color: '#fff',
   },
   titleDot: {
     color: '#1DB954',
@@ -123,10 +129,12 @@ const SidebarLogo: FC<{}> = () => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h6" color="inherit" className={classes.title}>
-        {open ? 'Backstage' : 'B'}
-        <span className={classes.titleDot}>.</span>
-      </Typography>
+      <Link href="/" underline="none">
+        <Typography variant="h6" color="inherit" className={classes.title}>
+          {open ? 'Backstage' : 'B'}
+          <span className={classes.titleDot}>.</span>
+        </Typography>
+      </Link>
     </div>
   );
 };

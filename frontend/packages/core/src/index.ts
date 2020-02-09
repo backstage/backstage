@@ -1,3 +1,4 @@
+export { getTimeBasedGreeting } from './api/time/timeUtil';
 export * from './api';
 export {
   default as EntityLink,
