@@ -92,7 +92,6 @@ const SidebarItem: FC<SidebarItemProps> = ({
 const useSidebarLogoStyles = makeStyles({
   root: {
     height: drawerWidthClosed,
-    color: '#fff',
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
@@ -103,14 +102,12 @@ const useSidebarLogoStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logo: {
-    fontSize: 32,
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 22,
     whiteSpace: 'nowrap',
+    color: '#fff',
   },
   titleDot: {
     color: '#1DB954',
@@ -123,10 +120,12 @@ const SidebarLogo: FC<{}> = () => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h6" color="inherit" className={classes.title}>
-        {open ? 'Backstage' : 'B'}
-        <span className={classes.titleDot}>.</span>
-      </Typography>
+      <Link href="/" underline="none">
+        <Typography variant="h6" color="inherit" className={classes.title}>
+          {open ? 'Backstage' : 'B'}
+          <span className={classes.titleDot}>.</span>
+        </Typography>
+      </Link>
     </div>
   );
 };
