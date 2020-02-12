@@ -27,16 +27,12 @@ func New(ghClient *ghactions.Client, inventory inventoryv1.InventoryClient) buil
 
 func (s *service) ListBuilds(ctx context.Context, req *buildsv1.ListBuildsRequest) (*buildsv1.ListBuildsReply, error) {
 	uri := req.GetEntityUri()
-	kind, id, err := s.parseEntityURI(uri)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Invalid build URI '%s', %s", uri, err)
-	}
 
 	owner := "spotify"
 	repo := "backstage"
 
 	ownerReq, err := s.inventory.GetFact(ctx, &inventoryv1.GetFactRequest{
-		EntityUri: fmt.Sprintf("boss://%s/%s", kind, id),
+		EntityUri: uri,
 		Name:      "githubOwner",
 	})
 	if err != nil {
@@ -49,7 +45,7 @@ func (s *service) ListBuilds(ctx context.Context, req *buildsv1.ListBuildsReques
 	}
 
 	repotReq, err := s.inventory.GetFact(ctx, &inventoryv1.GetFactRequest{
-		EntityUri: fmt.Sprintf("boss://%s/%s", kind, id),
+		EntityUri: uri,
 		Name:      "githubRepo",
 	})
 	if err != nil {

@@ -104,7 +104,7 @@ func (s *Server) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateR
 	// notify the inventory service
 	_, err = s.inventory.CreateEntity(ctx, &inventory.CreateEntityRequest{
 		Entity: &inventory.Entity{
-			Uri: fmt.Sprintf("boss://service/%s", req.ComponentId),
+			Uri: fmt.Sprintf("entity:service:%s", req.ComponentId),
 			Facts: []*inventory.Fact{
 				{
 					Name:  "githubOwner",
