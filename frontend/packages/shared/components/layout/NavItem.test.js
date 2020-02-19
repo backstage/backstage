@@ -15,11 +15,6 @@ const minProps = {
   href: '/mocked',
 };
 
-const minChildProps = {
-  title: 'A child title',
-  href: '/child',
-};
-
 describe('<NavLink />', () => {
   it('renders without exploding', () => {
     const rendered = render(wrapInThemedTestApp(<NavItem {...minProps} />));
@@ -59,7 +54,8 @@ describe('<NavLink />', () => {
     const { getByText, getByTestId } = render(
       wrapInThemedTestApp(
         <NavItem {...minProps}>
-          <NavItem {...minChildProps} />
+          <NavItem title="Child 1 title" href="/child" />
+          <NavItem title="Child 2 title" href="/second-child" />
         </NavItem>,
       ),
     );
@@ -71,13 +67,15 @@ describe('<NavLink />', () => {
     const { getByText, getByTestId, queryByText } = render(
       wrapInThemedTestApp(
         <NavItem {...minProps}>
-          <NavItem {...minChildProps} />
+          <NavItem title="Child 1 title" href="/child" />
+          <NavItem title="Child 2 title" href="/second-child" />
         </NavItem>,
       ),
     );
     expect(queryByText('A child link')).not.toBeInTheDocument();
     fireEvent.click(getByTestId('expand-toggle'));
-    expect(getByText('A child title')).toBeInTheDocument();
+    expect(getByText('Child 1 title')).toBeInTheDocument();
+    expect(getByText('Child 2 title')).toBeInTheDocument();
   });
 
   it('shows nested navigation automatically if the child is active', () => {
@@ -85,11 +83,12 @@ describe('<NavLink />', () => {
     const { getByText } = render(
       wrapInThemedTestApp(
         <NavItem {...minProps}>
-          <NavItem {...minChildProps} />
+          <NavItem title="Child 1 title" href="/child" />
+          <NavItem title="Child 2 title" href="/second-child" />
         </NavItem>,
       ),
     );
     expect(getByText('A link title')).toBeInTheDocument();
-    expect(getByText('A child title')).toBeInTheDocument();
+    expect(getByText('Child 1 title')).toBeInTheDocument();
   });
 });
