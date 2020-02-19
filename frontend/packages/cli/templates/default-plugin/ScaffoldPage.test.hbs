@@ -1,0 +1,14 @@
+import React from 'react';
+import { render } from '@testing-library/react';
+import { wrapInThemedTestApp } from 'testUtils';
+
+import {{id}}Page from './{{id}}Page';
+
+const minProps = {};
+
+describe('<{{id}}Page />', () => {
+  it('renders without exploding', () => {
+    const { getByText } = render(wrapInThemedTestApp(<{{id}}Page {...minProps} />));
+    expect(getByText(/Hello world.*/)).toBeInTheDocument();
+  });
+});
