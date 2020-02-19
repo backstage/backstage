@@ -100,7 +100,7 @@ class NavItem extends Component {
     // Automatically expand nested nav if one of the child elements is active
     const isChildActive = React.Children.toArray(children).some(c => NavItem.isActive(c.props.href, c.props.exact));
     const isExpanded = expanded || isChildActive;
-    const selfAwareChildren = children && React.cloneElement(children, { child: true });
+    const selfAwareChildren = children && React.Children.map(children, c => React.cloneElement(c, { child: true }));
 
     let iconElement;
 
