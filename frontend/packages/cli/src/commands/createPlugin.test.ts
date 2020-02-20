@@ -1,21 +1,23 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { createPluginFolder, createFileFromTemplate } from './createPlugin';
 
 describe('createPlugin', () => {
   describe('createPluginFolder', () => {
     it('should create a plugin directory in the correct place', () => {
-      const tempDir = fs.mkdtempSync('createPluginTest');
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
       try {
         const pluginFolder = createPluginFolder(tempDir, 'foo');
         expect(fs.existsSync(pluginFolder)).toBe(true);
+        expect(pluginFolder).toMatch(/packages\/plugins\/foo/);
       } finally {
         fs.rmdirSync(tempDir, { recursive: true });
       }
     });
 
     it('should not create a plugin directory if it already exists', () => {
-      const tempDir = fs.mkdtempSync('createPluginTest');
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
       try {
         const pluginFolder = createPluginFolder(tempDir, 'foo');
         expect(fs.existsSync(pluginFolder)).toBe(true);
@@ -30,7 +32,7 @@ describe('createPlugin', () => {
 
   describe('createFileFromTemplate', () => {
     it('should generate a valid output with inserted values', () => {
-      const tempDir = fs.mkdtempSync('createFileFromTemplate');
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
       try {
         const sourceData = '{"name": "@spotify-backstage/{{id}}"}';
         const targetData = '{"name": "@spotify-backstage/foo"}';

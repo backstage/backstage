@@ -14,6 +14,7 @@
   "devDependencies": {
     "@spotify/web-scripts": "^6.0.0",
     "@types/node": "^13.7.2",
+    "@types/inquirer": "^6.5.0",
     "nodemon": "^2.0.2",
     "ts-node": "^8.6.2"
   },
@@ -21,12 +22,11 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@types/inquirer": "^6.5.0",
     "commander": "^4.1.1",
     "dashify": "^2.0.0",
     "handlebars": "^4.7.3",
-    "inquirer": "^7.0.4",
-    "replace-in-file": "^5.0.2"
+    "replace-in-file": "^5.0.2",
+    "inquirer": "^7.0.4"
   },
   "files": [
     "templates",
