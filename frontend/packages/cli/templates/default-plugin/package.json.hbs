@@ -1,6 +1,6 @@
 {
-  "name": "@spotify-backstage/cli",
-  "version": "1.0.0",
+  "name": "@spotify-backstage/{{id}}",
+  "version": "{{version}}",
   "main": "src/index.ts",
   "main:src": "src/index.ts",
   "license": "Apache-2.0",
@@ -18,21 +18,8 @@
     "ts-node": "^8.6.2"
   },
   "bin": {
-    "backstage-cli": "bin/backstage-cli"
+    "backstage-{{id}}": "bin/backstage-{{id}}"
   },
-  "dependencies": {
-    "@types/inquirer": "^6.5.0",
-    "commander": "^4.1.1",
-    "dashify": "^2.0.0",
-    "handlebars": "^4.7.3",
-    "inquirer": "^7.0.4",
-    "replace-in-file": "^5.0.2"
-  },
-  "files": [
-    "templates",
-    "bin",
-    "cjs"
-  ],
   "nodemonConfig": {
     "watch": "./src",
     "exec": "ts-node",

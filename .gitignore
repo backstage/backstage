@@ -1,3 +1,4 @@
+.idea/
 secrets.env
 .DS_Store
 cjs/
