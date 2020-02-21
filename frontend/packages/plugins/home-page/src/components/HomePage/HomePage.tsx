@@ -10,7 +10,7 @@ import {
   theme,
   Progress,
   getTimeBasedGreeting,
-} from '@backstage/core';
+} from '@spotify-backstage/core';
 import SquadTechHealth from './SquadTechHealth';
 import { useAsync } from 'react-use';
 

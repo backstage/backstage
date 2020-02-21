@@ -13,7 +13,7 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core';
-import { RelativeEntityLink, useEntity } from '@backstage/core';
+import { RelativeEntityLink, useEntity } from '@spotify-backstage/core';
 import { BuildsClient } from '../../apis/builds';
 import { useAsync } from 'react-use';
 import BuildStatusIndicator from '../BuildStatusIndicator';

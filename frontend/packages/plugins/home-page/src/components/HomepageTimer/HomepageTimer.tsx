@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { HeaderLabel } from '@backstage/core';
+import { HeaderLabel } from '@spotify-backstage/core';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
 const nycOptions = { timeZone: 'America/New_York', ...timeFormat };

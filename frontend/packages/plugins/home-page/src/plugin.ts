@@ -1,4 +1,4 @@
-import { createPlugin } from '@backstage/core';
+import { createPlugin } from '@spotify-backstage/core';
 import HomePage from './components/HomePage';
 
 export default createPlugin({

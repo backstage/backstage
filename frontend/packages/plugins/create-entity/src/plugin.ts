@@ -1,4 +1,4 @@
-import { createPlugin } from '@backstage/core';
+import { createPlugin } from '@spotify-backstage/core';
 import CreateEntityPage from './components/CreateEntityPage';
 import CreateEntityFormPage from './components/CreateEntityFormPage';
 

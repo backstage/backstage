@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useEntityUri } from '@backstage/core';
+import { useEntityUri } from '@spotify-backstage/core';
 
 const MockEntityPage: FC<{}> = () => {
   const uri = useEntityUri();

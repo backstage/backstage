@@ -1,4 +1,4 @@
-import { createPlugin } from '@backstage/core';
+import { createPlugin } from '@spotify-backstage/core';
 import BuildDetailsPage from './components/BuildDetailsPage';
 import BuildListPage from './components/BuildListPage';
 import BuildIcon from '@material-ui/icons/Build';

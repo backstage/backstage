@@ -1,4 +1,4 @@
-import { BackstageTheme, createApp, InfoCard } from '@backstage/core';
+import { BackstageTheme, createApp, InfoCard } from '@spotify-backstage/core';
 //import PageHeader from './components/PageHeader';
 import { LoginComponent } from '@backstage/plugin-login';
 import HomePagePlugin from '@backstage/plugin-home-page';

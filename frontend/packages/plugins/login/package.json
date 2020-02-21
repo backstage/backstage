@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "main:src": "src/index.ts",
   "devDependencies": {
-    "@backstage/core": "0.0.0",
+    "@spotify-backstage/core": "0.0.0",
     "@spotify/web-scripts": "^6.0.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",

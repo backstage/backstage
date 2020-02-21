@@ -120,6 +120,8 @@ export default class AppBuilder {
             );
             break;
           }
+          default:
+            break;
         }
       }
     }

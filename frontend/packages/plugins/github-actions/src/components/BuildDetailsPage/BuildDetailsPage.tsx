@@ -17,7 +17,7 @@ import {
   Button,
   Theme,
 } from '@material-ui/core';
-import { RelativeEntityLink } from '@backstage/core';
+import { RelativeEntityLink } from '@spotify-backstage/core';
 import BuildStatusIndicator from '../BuildStatusIndicator';
 
 const useStyles = makeStyles<Theme>(theme => ({
