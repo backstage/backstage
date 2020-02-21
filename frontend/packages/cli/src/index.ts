@@ -18,5 +18,5 @@ const main = (argv: string[]) => {
   program.parse(argv);
 };
 
-// main(process.argv);
-main([process.argv[0], process.argv[1], 'create-plugin']);
+main(process.argv);
+// main([process.argv[0], process.argv[1], 'create-plugin']);
