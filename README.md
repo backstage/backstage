@@ -50,28 +50,27 @@ The final `yarn start` command should open a local instance of Backstage in your
 
 ### Creating a Plugin
 
-Run the following:
+To create a new plugin, go to the `frontend/` directory and run the following:
 
 ```bash
-$ make scaffold-new-frontend-plugin
+$ yarn && yarn create-plugin
 ```
 
-This will generate a plugin in the `frontend/packages/plugins` folder. It is important to note you will still need to include the plugin in your `frontend/packages/app` in the `package.json`. You will then be able to import it as follows:
+This will prompt you to enter an ID for your plugin, and then create your plugin inside the `packages/plugins/` directory. Note that the plugin will not yet be included in the app, to include it add the following for a plugin called `my-plugin`:
 
-```bash
-$ make scaffold-new-frontend-plugin
-plugin_name [example-plugin]: github-api
+In `"dependencies"` inside [packages/app/package.json](frontend/packages/app/package.json) add the following:
 
-$ vim frontend/packages/app/package.json
-# Add the following line to your package.json
-# Note all plugins are prefixed with "plugin-" by default with a version number of "0.0.0"
-# "@backstage/plugin-github-api": "0.0.0",
-
-$ vim frontend/packages/app/src/App.tsx
-# Add the following line to import your generated component
-# import { ExampleComponent } from '@backstage/plugin-github-api';
-# <ExampleComponent />
+```json
+"@spotify-backstage/plugin-my-plugin": "0.0.0"
 ```
+
+In [packages/app/src/plugins.ts](frontend/packages/app/src/plugins.ts), add the following:
+
+```
+export { default as MyPlugin } from '@spotify-backstage/plugin-my-plugin';
+```
+
+You should now be able to see the default plugin page at [localhost:3000/my-plugin](http://localhost:3000/my-plugin) if you're serving the frontend.
 
 ## Protobuf Definitions
 
