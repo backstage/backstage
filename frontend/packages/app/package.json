@@ -8,7 +8,7 @@
   "dependencies": {
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
-    "@spotify-backstage/core": "0.0.0",
+    "@spotify-backstage/core": "1.0.0",
     "@backstage/plugin-github-actions": "0.0.0",
     "@backstage/plugin-hello-world": "0.0.0",
     "@backstage/plugin-home-page": "0.0.0",

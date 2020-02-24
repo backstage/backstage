@@ -1,6 +1,6 @@
 {
   "name": "@spotify-backstage/core",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "Apache-2.0",
   "private": false,
   "main": "src/index.ts",
@@ -11,7 +11,6 @@
     "test": "web-scripts test"
   },
   "dependencies": {
-    "@backstage/protobuf-definitions": "^0.0.0",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@types/google-protobuf": "^3.7.2",
@@ -33,6 +32,6 @@
     "@spotify/web-scripts": "^6.0.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
+    "@testing-library/user-event": "^7.1.2"
   }
 }
