@@ -1,7 +1,8 @@
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import handlebars from 'handlebars';
-import inquirer from 'inquirer';
+import inquirer, { Answers, Question } from 'inquirer';
+import recursive from 'recursive-readdir';
 
 export const createPluginFolder = (rootDir: string, id: string): string => {
   const destination = path.join(rootDir, 'packages', 'plugins', id);
@@ -23,26 +24,56 @@ export const createPluginFolder = (rootDir: string, id: string): string => {
 };
 
 export const createFileFromTemplate = (
-  sourcePath: string,
-  destinationPath: string,
-  answers: { [key: string]: string },
+  source: string,
+  destination: string,
+  answers: Answers,
 ) => {
-  const template = fs.readFileSync(sourcePath);
+  const template = fs.readFileSync(source);
   const compiled = handlebars.compile(template.toString());
   const contents = compiled({
-    name: path.basename(destinationPath),
+    name: path.basename(destination),
     ...answers,
   });
   try {
-    fs.writeFileSync(destinationPath, contents);
+    fs.writeFileSync(destination, contents);
   } catch (e) {
-    throw new Error(`Failed to create file: ${destinationPath}: ${e.message}`);
+    throw new Error(`Failed to create file: ${destination}: ${e.message}`);
   }
+};
+
+export const createFromTemplateDir = async (
+  templateFolder: string,
+  destinationFolder: string,
+  answers: Answers,
+) => {
+  let files = [];
+  try {
+    files = await recursive(templateFolder);
+  } catch (e) {
+    throw new Error(`Failed to read files in template directory: ${e.message}`);
+  }
+
+  files.forEach(file => {
+    fs.ensureDirSync(
+      file
+        .replace(templateFolder, destinationFolder)
+        .replace(path.basename(file), ''),
+    );
+    if (file.endsWith('hbs')) {
+      createFileFromTemplate(
+        file,
+        file.replace(templateFolder, destinationFolder).replace(/\.hbs$/, ''),
+        answers,
+      );
+    } else {
+      fs.copyFileSync(file, file.replace(templateFolder, destinationFolder));
+    }
+  });
 };
 
 const createPlugin = async (): Promise<any> => {
   const currentDir = process.argv[1];
-  const questions = [
+  const questions: Question[] = [
     {
       type: 'input',
       name: 'id',
@@ -51,13 +82,11 @@ const createPlugin = async (): Promise<any> => {
         value ? true : 'Please enter an ID for the plugin',
     },
   ];
-
-  const answers: { [key: string]: string } = await inquirer.prompt(questions);
+  const answers: Answers = await inquirer.prompt(questions);
   const destinationFolder = createPluginFolder(
     path.join(currentDir, '..', '..', '..'),
     answers.id,
   );
-
   const templateFolder = path.join(
     currentDir,
     '..',
@@ -67,15 +96,14 @@ const createPlugin = async (): Promise<any> => {
     'templates',
     'default-plugin',
   );
-  const files = [{ input: 'package.json.hbs', output: 'package.json' }];
 
-  files.forEach(file => {
-    createFileFromTemplate(
-      path.join(templateFolder, file.input),
-      path.join(destinationFolder, file.output),
-      answers,
-    );
-  });
+  await createFromTemplateDir(templateFolder, destinationFolder, answers);
+
+  console.log(
+    `✨ You have created a Backstage Plugin packages/plugins/${answers.id}`,
+  );
+  console.log('');
+  console.log('Run yarn start in the plugin directory to start it');
 
   return destinationFolder;
 };
