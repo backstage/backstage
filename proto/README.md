@@ -4,19 +4,21 @@ Collection of all Backstage protobuf definitions.
 
 ## Usage
 
-Managed with [Prototool](https://github.com/uber/prototool), install instructions at <https://github.com/uber/prototool/blob/dev/docs/install.md>
+Prodobuf definitions are managed with [Prototool](https://github.com/uber/prototool).
 
-## Install Dependencies
+## Installing Dependencies
 
 ### Prototool
 
-```bash
-$ brew install prototool
-```
+See [installation instructions](https://github.com/uber/prototool/blob/dev/docs/install.md). On MacOS you can use `brew install prototool`.
+
+### Go
+
+You will need to have Go installed, along with a properly set up `GOPATH` and `$GOPATH/bin` added to your `PATH`, follow the instructions [here](https://golang.org/doc/install#install).
 
 ### protoc-gen-go
 
-This will enable code generation in Go for interacting with gRPC-Web. You will need to have `protoc-gen-go` available in your path. You can find out more information here: https://github.com/golang/protobuf
+This will enable code generation for Go. You will need to have `protoc-gen-go` available in your path. You can find out more information here: https://github.com/golang/protobuf
 
 ```bash
 $ go get -u github.com/golang/protobuf/protoc-gen-go
@@ -31,10 +33,10 @@ Installation instructions are found at https://github.com/grpc/grpc-web#code-gen
 
 ## Generating Code
 
-To generate the Protobuf definitions in Go and TypeScript, run the following command from the root with [Prototool](https://github.com/uber/prototool):
+To generate the Protobuf definitions in Go and TypeScript, run the following command inside the `proto/` directory with [Prototool](https://github.com/uber/prototool):
 
 ```bash
-$ prototool generate ./proto
+$ prototool generate
 ```
 
 This will generate the respective "generated" files in the following folders:
