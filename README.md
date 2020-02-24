@@ -29,19 +29,19 @@ $ make init-secrets
 The full local system consists of a collection of backend services, as well as a web application. From the root of the project directory, run the following in a terminal to start up all backend services locally:
 
 ```bash
-cd backend
+$ cd backend
 
-docker-compose up --build
+$ docker-compose up --build
 ```
 
 Once the backend services are up and running, open a separate terminal window and start the web app using the following commands from the project root:
 
 ```bash
-cd frontend
+$ cd frontend
 
-yarn # may take a while
+$ yarn # may take a while
 
-yarn start
+$ yarn start
 ```
 
 The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
