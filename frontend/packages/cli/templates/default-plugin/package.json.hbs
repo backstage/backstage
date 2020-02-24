@@ -1,6 +1,6 @@
 {
-  "name": "@spotify-backstage/{{id}}",
-  "version": "0.0.1",
+  "name": "@spotify-backstage/plugin-{{id}}",
+  "version": "0.0.0",
   "main": "src/index.ts",
   "main:src": "src/index.ts",
   "license": "Apache-2.0",
@@ -8,21 +8,9 @@
   "scripts": {
     "build": "web-scripts build",
     "lint": "web-scripts lint",
-    "test": "web-scripts test",
-    "start": "nodemon ."
+    "test": "web-scripts test"
   },
   "devDependencies": {
-    "@spotify/web-scripts": "^6.0.0",
-    "@types/node": "^13.7.2",
-    "nodemon": "^2.0.2",
-    "ts-node": "^8.6.2"
-  },
-  "bin": {
-    "backstage-{{id}}": "bin/backstage-{{id}}"
-  },
-  "nodemonConfig": {
-    "watch": "./src",
-    "exec": "ts-node",
-    "ext": "ts"
+    "@spotify/web-scripts": "^6.0.0"
   }
 }

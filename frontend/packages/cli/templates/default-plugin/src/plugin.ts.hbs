@@ -1,5 +1,9 @@
-import { createPlugin } from '@backstage/core';
+import { createPlugin } from '@spotify-backstage/core';
+import ExampleComponent from './components/ExampleComponent';
 
 export default createPlugin({
   id: '{{ id }}',
+  register({ router }) {
+    router.registerRoute('/{{ id }}', ExampleComponent);
+  },
 });

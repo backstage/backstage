@@ -1,11 +1,10 @@
 import { BackstageTheme, createApp, InfoCard } from '@spotify-backstage/core';
 //import PageHeader from './components/PageHeader';
 import { LoginComponent } from '@backstage/plugin-login';
-import HomePagePlugin from '@backstage/plugin-home-page';
-import CreateEntityPlugin from '@backstage/plugin-create-entity';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
+import * as plugins from './plugins';
 import SideBar from './components/SideBar';
 import entities from './entities';
 import { LoginBarrier } from './login/LoginBarrier';
@@ -61,8 +60,7 @@ const AppShell: FC<{}> = ({ children }) => {
 const app = createApp();
 
 app.registerEntityKind(...entities);
-app.registerPlugin(HomePagePlugin);
-app.registerPlugin(CreateEntityPlugin);
+app.registerPlugin(...Object.values(plugins));
 
 const AppComponent = app.build();
 
