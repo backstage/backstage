@@ -2558,36 +2558,6 @@
   dependencies:
     type-detect "4.0.8"
 
-"@spotify-backstage/cli@file:packages/cli":
-  version "1.1.0"
-  dependencies:
-    commander "^4.1.1"
-    dashify "^2.0.0"
-    fs-extra "^8.1.0"
-    handlebars "^4.7.3"
-    inquirer "^7.0.4"
-    recursive-readdir "^2.2.2"
-    replace-in-file "^5.0.2"
-"@spotify-backstage/core@file:packages/core":
-  version "1.0.0"
-  dependencies:
-    "@material-ui/core" "^4.9.1"
-    "@material-ui/icons" "^4.9.1"
-    "@types/google-protobuf" "^3.7.2"
-    "@types/jest" "^24.0.0"
-    "@types/node" "^12.0.0"
-    "@types/react" "^16.9.0"
-    "@types/react-dom" "^16.9.0"
-    "@types/react-router-dom" "^5.1.3"
-    classnames "^2.2.6"
-    rc-progress "^2.5.2"
-    react "^16.12.0"
-    react-addons-text-content "0.0.4"
-    react-dom "^16.12.0"
-    react-helmet "5.2.1"
-    react-router-dom "^5.1.2"
-    recompose "0.30.0"
-
 "@spotify/eslint-config-base@^6.0.0":
   version "6.0.0"
   resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-6.0.0.tgz#487da7dbb89380b4eb778f4b902b8bba9b1f389f"
