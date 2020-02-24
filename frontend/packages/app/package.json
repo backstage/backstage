@@ -2,9 +2,6 @@
   "name": "@backstage/app",
   "version": "0.1.0",
   "private": true,
-  "devDependencies": {
-    "@spotify/web-scripts": "^6.0.0"
-  },
   "dependencies": {
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
