@@ -21,41 +21,38 @@ services:
     volumes:
        - ./identity/identity-data.json:/app/identity-data.json
 
-  inventory:
-    container_name: boss-inventory
-    build:
-      context: .
-      args:
-        service: inventory
-    restart: unless-stopped
-    volumes:
-      - ./inventory/inventory.db:/app/inventory.db
+  # inventory:
+  #   container_name: boss-inventory
+  #   build:
+  #     context: .
+  #     args:
+  #       service: inventory
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./inventory/inventory.db:/app/inventory.db
 
-  builds:
-    container_name: boss-builds
-    build:
-      context: .
-      args:
-        service: builds
-    restart: unless-stopped
-    env_file: ../secrets.env
-    depends_on:
-      - inventory
-    links:
-      - inventory
+  # builds:
+  #   container_name: boss-builds
+  #   build:
+  #     context: .
+  #     args:
+  #       service: builds
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - inventory
+  #   links:
+  #     - inventory
 
-  scaffolder:
-    depends_on:
-      - inventory
-    links:
-      - inventory
-    build:
-      context: .
-      args:
-        service: scaffolder
-        base_image: scaffolder
-    restart: unless-stopped
-    volumes:
-      - ./scaffolder/templates:/app/templates:ro
-
-    env_file: ../secrets.env
+  # scaffolder:
+  #   depends_on:
+  #     - inventory
+  #   links:
+  #     - inventory
+  #   build:
+  #     context: .
+  #     args:
+  #       service: scaffolder
+  #       base_image: scaffolder
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./scaffolder/templates:/app/templates:ro
