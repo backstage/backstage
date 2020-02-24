@@ -16,14 +16,6 @@ For running the backend, depending on your OS, you need [Docker Desktop for Mac]
 
 The above dependencies are enough to run and work on the Backstage frontend packages. To develop backend services, there are some more tools to install, see [backend/README.md](backend/README.md). To update protobuf definitions, you will need another set of tools, see [proto/README.md](proto/README.md).
 
-### Secrets
-
-To setup secrets, copy the `secrets.env.example` to `secrets.env` as such:
-
-```bash
-$ make init-secrets
-```
-
 ## Running Locally
 
 The full local system consists of a collection of backend services, as well as a web application. From the root of the project directory, run the following in a terminal to start up all backend services locally:
