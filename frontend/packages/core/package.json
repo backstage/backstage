@@ -1,15 +1,19 @@
 {
-  "name": "@backstage/core",
-  "version": "0.0.0",
+  "name": "@spotify-backstage/core",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "private": false,
   "main": "src/index.ts",
   "main:src": "src/index.ts",
-  "devDependencies": {
+  "scripts": {
+    "build": "web-scripts build",
+    "lint": "web-scripts lint",
+    "test": "web-scripts test"
+  },
+  "dependencies": {
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
-    "@spotify/web-scripts": "^6.0.0",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
+    "@types/google-protobuf": "^3.7.2",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
@@ -18,15 +22,16 @@
     "classnames": "^2.2.6",
     "rc-progress": "^2.5.2",
     "react": "^16.12.0",
+    "react-addons-text-content": "0.0.4",
     "react-dom": "^16.12.0",
     "react-helmet": "5.2.1",
-    "react-addons-text-content": "0.0.4",
     "react-router-dom": "^5.1.2",
     "recompose": "0.30.0"
   },
-  "scripts": {
-    "lint": "web-scripts lint",
-    "test": "web-scripts test"
-  },
-  "license": "Apache-2.0"
+  "devDependencies": {
+    "@spotify/web-scripts": "^6.0.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2"
+  }
 }

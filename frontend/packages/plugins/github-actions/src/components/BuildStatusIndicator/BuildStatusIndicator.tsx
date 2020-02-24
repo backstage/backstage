@@ -5,7 +5,7 @@ import FailureIcon from '@material-ui/icons/Error';
 import SuccessIcon from '@material-ui/icons/CheckCircle';
 import ProgressIcon from '@material-ui/icons/Autorenew';
 import UnknownIcon from '@material-ui/icons/Help';
-import { IconComponent } from '@backstage/core';
+import { IconComponent } from '@spotify-backstage/core';
 
 type Props = {
   status?: BuildStatus;

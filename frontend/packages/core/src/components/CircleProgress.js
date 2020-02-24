@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core';
 import { Circle } from 'rc-progress';
-import { COLORS } from '@backstage/core';
+import { COLORS } from '@spotify-backstage/core';
 
 const styles = theme => ({
   root: {

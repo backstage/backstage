@@ -2,7 +2,7 @@ import {
   createEntityKind,
   createWidgetView,
   createEntityPage,
-} from '@backstage/core';
+} from '@spotify-backstage/core';
 import ComputerIcon from '@material-ui/icons/Computer';
 import WebIcon from '@material-ui/icons/Web';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';

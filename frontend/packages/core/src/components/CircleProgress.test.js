@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInThemedTestApp } from '../testUtils';
 import CircleProgress from './CircleProgress';
-//import { COLORS, V1 } from 'core/app/Themes';
+// import { COLORS, V1 } from 'core/app/Themes';
 
 describe('<CircleProgress />', () => {
   it('renders without exploding', () => {
@@ -34,13 +34,14 @@ describe('<CircleProgress />', () => {
     getByText('10m');
   });
 
-  xit('colors the progress correct', () => {
+  /*
+  it('colors the progress correct', () => {
     expect(CircleProgress.getProgressColor()).toBe(V1.palette.textVerySubtle);
     expect(CircleProgress.getProgressColor(10)).toBe(COLORS.STATUS.ERROR);
     expect(CircleProgress.getProgressColor(50)).toBe(COLORS.STATUS.WARNING);
     expect(CircleProgress.getProgressColor(90)).toBe(COLORS.STATUS.OK);
   });
-  xit('colors the inverse progress correct', () => {
+  it('colors the inverse progress correct', () => {
     expect(CircleProgress.getProgressColor()).toBe(V1.palette.textVerySubtle);
     expect(CircleProgress.getProgressColor(10, true)).toBe(COLORS.STATUS.OK);
     expect(CircleProgress.getProgressColor(50, true)).toBe(
@@ -48,4 +49,5 @@ describe('<CircleProgress />', () => {
     );
     expect(CircleProgress.getProgressColor(90, true)).toBe(COLORS.STATUS.ERROR);
   });
+  */
 });

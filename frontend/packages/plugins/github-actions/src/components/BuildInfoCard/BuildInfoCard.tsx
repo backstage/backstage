@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { RelativeEntityLink, useEntity } from '@backstage/core';
+import { RelativeEntityLink, useEntity } from '@spotify-backstage/core';
 import { BuildsClient } from '../../apis/builds';
 import { useAsync } from 'react-use';
 import {
