@@ -8,15 +8,13 @@ Backstage is an open platform for building developer portals.
 
 ## Getting started
 
-### Install Dependencies with Homebrew and Yarn
+### Install Dependencies
 
-Run the following to install relevant dependencies (such as Git, Docker, etc):
+To run the frontend, you will need to have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git), [NodeJS](https://nodejs.org/en/download/), and [yarn](https://classic.yarnpkg.com/en/docs/install#mac-stable) installed.
 
-```bash
-# If you don't have Homebrew, run the following command:
-# $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-$ make install
-```
+For running the backend, depending on your OS, you need [Docker Desktop for Mac](https://docs.docker.com/docker-for-mac/install/), [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/install/), or for Linux, [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/#install-compose-on-linux-systems).
+
+The above dependencies are enough to run and work on the Backstage frontend packages. To develop backend services, there are some more tools to install, see [backend/README.md](backend/README.md). To update protobuf definitions, you will need another set of tools, see [proto/README.md](proto/README.md).
 
 ### Secrets
 
@@ -26,23 +24,27 @@ To setup secrets, copy the `secrets.env.example` to `secrets.env` as such:
 $ make init-secrets
 ```
 
-### Protobuf Definitions
-
-To generate the Protobuf definitions in Go and TypeScript, run the following command from the root to run [Prototool](https://github.com/uber/prototool):
-
-```bash
-$ make build-protocol-definitions
-```
-
-See [proto/README.md](proto/README.md) for more information.
-
 ## Running Locally
 
-Once you've installed all dependencies, start serving the frontend using `yarn`:
+The full local system consists of a collection of backend services, as well as a web application. From the root of the project directory, run the following in a terminal to start up all backend services locally:
 
 ```bash
-$ make start
+cd backend
+
+docker-compose up --build
 ```
+
+Once the backend services are up and running, open a separate terminal window and start the web app using the following commands from the project root:
+
+```bash
+cd frontend
+
+yarn # may take a while
+
+yarn start
+```
+
+The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
 
 ## Plugins
 
@@ -70,6 +72,12 @@ $ vim frontend/packages/app/src/App.tsx
 # import { ExampleComponent } from '@backstage/plugin-github-api';
 # <ExampleComponent />
 ```
+
+## Protobuf Definitions
+
+The protobuf definitions are all found in the `/proto` folder in the project root. They are used to generate code for gRPC communication for both the frontend and backend. The generated code is checked into version control though, so unless you want to change the protobuf definitions you don't need to install any tooling.
+
+Information about how to work with the protobuf definitions can be found inside [proto/README.md](proto/README.md).
 
 ## Documentation
 
