@@ -62,7 +62,13 @@ In [packages/app/src/plugins.ts](frontend/packages/app/src/plugins.ts), add the 
 export { default as MyPlugin } from '@spotify-backstage/plugin-my-plugin';
 ```
 
-You should now be able to see the default plugin page at [localhost:3000/my-plugin](http://localhost:3000/my-plugin) if you're serving the frontend.
+To apply the above changes, go to the `frontend/` directory and run:
+
+```
+$ yarn
+```
+
+Now start or restart `yarn start`, and you should be able to see the default page for your new plugin at [localhost:3000/my-plugin](http://localhost:3000/my-plugin).
 
 ## Protobuf Definitions
 
