@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { theme } from './PageThemeProvider';
 
-export const Theme = React.createContext({});
+type Theme = typeof theme['service'];
 
-class Page extends Component {
+export const Theme = React.createContext<Theme>(theme.service);
+
+class Page extends Component<{ theme: Theme }> {
   static defaultProps = {
-    theme: theme.other,
+    theme: theme.home,
   };
 
   render() {
