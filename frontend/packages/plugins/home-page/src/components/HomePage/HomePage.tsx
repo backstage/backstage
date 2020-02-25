@@ -9,7 +9,6 @@ import {
   Page,
   theme,
   Progress,
-  getTimeBasedGreeting,
 } from '@spotify-backstage/core';
 import SquadTechHealth from './SquadTechHealth';
 import { useAsync } from 'react-use';
@@ -81,19 +80,13 @@ const HomePage: FC<{}> = () => {
     };
   });
 
-  const greeting = getTimeBasedGreeting();
   const profile = { givenName: 'Suzy' };
 
   return (
     <Page theme={theme.home}>
       <div className={classes.mainContentArea}>
         <Header
-          title={
-            profile
-              ? `${greeting.greeting}, ${profile.givenName}`
-              : greeting.greeting
-          }
-          tooltip={greeting.language}
+          title={profile ? `Hello, ${profile.givenName}` : 'Hello'}
           subtitle="Welcome to Backstage"
         >
           <HomePageTimer />
