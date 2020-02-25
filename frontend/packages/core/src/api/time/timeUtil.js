@@ -28,26 +28,3 @@ export function relativeTime(timestamp) {
 // Select a large random integer at startup, to prevent the greetings to change every time the user
 // navigates.
 const greetingRandomSeed = Math.floor(Math.random() * 1000000);
-
-export function getTimeBasedGreeting() {
-  const random = array => array[greetingRandomSeed % array.length];
-
-  const hour = new Date(Date.now()).getHours();
-  if (hour >= 23) {
-    return {
-      language: 'Seriously',
-      greeting: 'Get some rest',
-    };
-  }
-  const timeOfDay = hour => {
-    if (hour < 12) return 'goodMorning';
-    if (hour < 17) return 'goodAfternoon';
-    if (hour < 23) return 'goodEvening';
-  };
-  const greetings = require(`./locales/${timeOfDay(hour)}.locales.json`);
-  const greetingsKey = random(Object.keys(greetings));
-  return {
-    language: greetingsKey,
-    greeting: greetings[greetingsKey],
-  };
-}

@@ -1,4 +1,3 @@
-export { getTimeBasedGreeting } from './api/time/timeUtil';
 export * from './api';
 export {
   default as EntityLink,
@@ -17,4 +16,4 @@ export { default as ProgressCard } from './components/ProgressCard';
 export { default as CircleProgress } from './components/CircleProgress';
 export { default as Progress } from './components/Progress';
 export { default as SortableTable } from './components/SortableTable';
-export { default as TemplateList } from '../src/components/TemplateList/TemplateList';
+export { default as TemplateList } from './components/TemplateList/TemplateList';
