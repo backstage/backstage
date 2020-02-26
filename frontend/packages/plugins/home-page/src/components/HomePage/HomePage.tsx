@@ -17,11 +17,11 @@ import { inventoryV1 } from '@backstage/protobuf-definitions';
 
 const client = new inventoryV1.Client('http://localhost:8080');
 
-const entityUriRegex = /boss:\/\/service\/(.*)/;
+const entityUriRegex = /entity:service:(.*)/;
 
 async function fetchServices() {
   const req = new inventoryV1.ListEntitiesRequest();
-  req.setUriprefix('boss://service/');
+  req.setUriprefix('entity:service:');
   const res = await client.listEntities(req);
 
   return res

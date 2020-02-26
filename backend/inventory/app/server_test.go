@@ -13,7 +13,7 @@ import (
 	pb "github.com/spotify/backstage/proto/inventory/v1"
 )
 
-var entityURI = "boss://test/test"
+var entityURI = "entity:test:test"
 
 func TestServer(t *testing.T) {
 	testStorage := NewTestStorage()
@@ -35,7 +35,7 @@ func TestServer(t *testing.T) {
 			t.Errorf("ServerTest(ListEntities) expected %v items, got %v", 1, len(list.GetEntities()))
 		}
 		if list.GetEntities()[0].GetUri() != entityURI {
-			t.Errorf("ServerTest(ListEntities) expected uri %v, got %v", "boss://test/test", list.GetEntities()[0].GetUri())
+			t.Errorf("ServerTest(ListEntities) expected uri %v, got %v", "entity:test:test", list.GetEntities()[0].GetUri())
 		}
 		expectedFacts := []*pb.Fact{{Name: "test-name", Value: "test-value"}}
 		if !reflect.DeepEqual(list.GetEntities()[0].GetFacts(), expectedFacts) {
@@ -47,7 +47,7 @@ func TestServer(t *testing.T) {
 		entity := &pb.Entity{Uri: entityURI}
 
 		s.CreateEntity(context.Background(), &pb.CreateEntityRequest{Entity: entity})
-		list, err := s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: "boss://test2"})
+		list, err := s.ListEntities(context.Background(), &pb.ListEntitiesRequest{UriPrefix: "entity:test2"})
 		if err != nil {
 			t.Errorf("ServerTest(TestServerListEntities) could not list: %v", err)
 		}
