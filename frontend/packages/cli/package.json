@@ -29,6 +29,7 @@
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.3",
     "inquirer": "^7.0.4",
+    "react-scripts": "^3.4.0",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^5.0.2"
   },
