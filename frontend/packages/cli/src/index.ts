@@ -1,6 +1,7 @@
 import program from 'commander';
 import createPluginCommand from './commands/createPlugin';
 import servePlugin from './commands/servePlugin';
+import watch from './commands/watch-deps';
 
 process.on('unhandledRejection', err => {
   throw err;
@@ -16,6 +17,11 @@ const main = (argv: string[]) => {
     .command('serve-plugin')
     .description('Serves a plugin dev folder')
     .action(servePlugin);
+
+  program
+    .command('watch-deps')
+    .description('Watch all dependencies while running another command')
+    .action(watch);
 
   program.on('command:*', () => {
     console.error(
