@@ -13,13 +13,14 @@ export function startCompiler(pkg: Package, log: Logger) {
   // Start the watch script inside the dependency
   const watch = spawn('yarn', ['run', ...args], {
     cwd: pkg.location,
+    env: { FORCE_COLOR: 'true', ...process.env },
     stdio: 'pipe',
   });
 
+  watch.stdin.end();
   watch.stdout!.on('data', (data: Buffer) => {
     log.out(data.toString('utf8'));
   });
-
   watch.stderr!.on('data', data => {
     log.err(data.toString('utf8'));
   });

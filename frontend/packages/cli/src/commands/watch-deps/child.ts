@@ -5,6 +5,7 @@ import { createLogger } from './logger';
 export function startChild(args: string[]) {
   const [command, ...commandArgs] = args;
   const child = spawn(command, commandArgs, {
+    env: { FORCE_COLOR: 'true', ...process.env },
     stdio: ['inherit', 'pipe', 'pipe'],
   });
 
