@@ -1,7 +1,7 @@
 import program from 'commander';
 import createPluginCommand from './commands/createPlugin';
-import servePlugin from './commands/servePlugin';
 import watch from './commands/watch-deps';
+import serve from './commands/serve';
 
 process.on('unhandledRejection', err => {
   throw err;
@@ -14,9 +14,9 @@ const main = (argv: string[]) => {
     .action(createPluginCommand);
 
   program
-    .command('serve-plugin')
-    .description('Serves a plugin dev folder')
-    .action(servePlugin);
+    .command('serve')
+    .description('Serves the dev/ folder of a package')
+    .action(serve);
 
   program
     .command('watch-deps')
