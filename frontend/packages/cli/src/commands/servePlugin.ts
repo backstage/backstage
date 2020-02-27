@@ -42,6 +42,7 @@ const findPaths = () => {
  */
 export default async () => {
   process.env.BABEL_ENV = 'development';
+  // @ts-ignore
   process.env.NODE_ENV = 'development';
 
   // Load our own and then override react-scripts paths before loading other modules
