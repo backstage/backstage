@@ -6,7 +6,7 @@
   "private": false,
   "scripts": {
     "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS",
-    "start": "backstage-cli watch-deps -- backstage-cli serve-plugin",
+    "start": "backstage-cli watch-deps -- backstage-cli serve",
     "lint": "web-scripts lint",
     "test": "web-scripts test"
   },
