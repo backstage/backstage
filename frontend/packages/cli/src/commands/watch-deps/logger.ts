@@ -8,11 +8,9 @@ export type ColorFunc = (msg: string) => string;
 // Logger utility that prefixes logs and removes terminal clear commands
 export function createLogger(prefix: string = ''): Logger {
   const write = (stream: NodeJS.WriteStream, msg: string) => {
-    if (msg.startsWith('\x1b\x63')) {
-      msg = msg.slice(2);
-    }
-    const str = msg.trimRight().replace(/^/gm, prefix) + '\n';
-    stream.write(str, 'utf8');
+    const noClearMsg = msg.startsWith('\x1b\x63') ? msg.slice(2) : msg;
+    const prefixedMsg = noClearMsg.trimRight().replace(/^/gm, prefix);
+    stream.write(`${prefixedMsg}\n`, 'utf8');
   };
 
   return {

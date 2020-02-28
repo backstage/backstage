@@ -43,7 +43,7 @@ export default async (_command: any, args: string[]) => {
   // We lazily watch all our deps, as in we don't start the actual watch compiler until a change is detected
   await startWatchers(allDeps, WATCH_LOCATIONS, pkg => {
     startCompiler(pkg, logFactory(pkg.name)).promise.catch(error => {
-      console.error(error);
+      process.stderr.write(`${error}\n`);
     });
   });
 

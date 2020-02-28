@@ -5,7 +5,7 @@ export default async () => {
   try {
     await startDevServer();
   } catch (error) {
-    console.error(chalk.red(error.message));
+    process.stderr.write(`${chalk.red(error.message)}\n`);
     process.exit(1);
   }
 };
