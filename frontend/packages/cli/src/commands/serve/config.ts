@@ -15,8 +15,9 @@ export function createConfig(paths: Paths): webpack.Configuration {
     profile: false,
     bail: false,
     devtool: 'cheap-module-eval-source-map',
+    context: paths.appPath,
     entry: [
-      require.resolve('webpack-dev-server/client') + '?/',
+      `${require.resolve('webpack-dev-server/client')}?/`,
       require.resolve('webpack/hot/dev-server'),
       paths.appDevEntry,
     ],
@@ -84,10 +85,14 @@ export function createConfig(paths: Paths): webpack.Configuration {
         template: paths.appHtml,
       }),
       new ForkTsCheckerWebpackPlugin({
-        async: true,
-        useTypescriptIncrementalApi: true,
-        checkSyntacticErrors: true,
         tsconfig: paths.appTsConfig,
+        eslint: true,
+        eslintOptions: {
+          parserOptions: {
+            project: paths.appTsConfig,
+            tsconfigRootDir: paths.appPath,
+          },
+        },
         reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
       }),
       new webpack.HotModuleReplacementPlugin(),
