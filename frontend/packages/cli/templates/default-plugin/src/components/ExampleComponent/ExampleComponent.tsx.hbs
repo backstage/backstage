@@ -1,8 +1,40 @@
 import React, { FC } from 'react';
-import Typography from '@material-ui/core/Typography';
+import { Typography, makeStyles, Theme } from '@material-ui/core';
+
+import { InfoCard, Header, Page, theme } from '@spotify-backstage/core';
+
+const useStyles = makeStyles<Theme>(theme => ({
+  mainContentArea: {
+    overflowX: 'hidden',
+    overflowY: 'auto',
+  },
+  pageBody: {
+    padding: theme.spacing(3),
+  },
+}));
 
 const ExampleComponent: FC<{}> = () => {
-  return <Typography variant="h1">Welcome to {{ id }}!</Typography>;
+  const classes = useStyles();
+  return (
+    <Page theme={theme.home}>
+      <div className={classes.mainContentArea}>
+        <Header
+          title="Welcome to {{ id }}!"
+          subtitle="Optional subtitle"
+        ></Header>
+        <div className={classes.pageBody}>
+          <Typography variant="h3" style={{ padding: '8px 0 16px 0' }}>
+            Plugin page title
+          </Typography>
+          <InfoCard title="Information card" maxWidth>
+            <Typography variant="body1">
+              All content should be wrapped in a card like this.
+            </Typography>
+          </InfoCard>
+        </div>
+      </div>
+    </Page>
+  );
 };
 
 export default ExampleComponent;
