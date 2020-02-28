@@ -14,6 +14,9 @@
       "packages/plugins/*"
     ]
   },
+  "resolutions": {
+    "react-dev-utils": "10.1.0"
+  },
   "version": "1.0.0",
   "devDependencies": {
     "cross-env": "^7.0.0",
