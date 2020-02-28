@@ -14,9 +14,14 @@
   "devDependencies": {
     "@spotify/web-scripts": "^6.0.0",
     "@types/fs-extra": "^8.1.0",
+    "@types/html-webpack-plugin": "^3.2.2",
     "@types/inquirer": "^6.5.0",
     "@types/node": "^13.7.2",
+    "@types/react-dev-utils": "^9.0.4",
     "@types/recursive-readdir": "^2.2.0",
+    "@types/webpack": "^4.41.7",
+    "@types/webpack-dev-server": "^3.10.0",
+    "del": "^5.1.0",
     "nodemon": "^2.0.2",
     "ts-node": "^8.6.2"
   },
@@ -24,13 +29,20 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
+    "chokidar": "^3.3.1",
     "commander": "^4.1.1",
     "dashify": "^2.0.0",
+    "fork-ts-checker-webpack-plugin": "^4.0.5",
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.3",
+    "html-webpack-plugin": "^3.2.0",
     "inquirer": "^7.0.4",
+    "react-dev-utils": "^10.2.0",
     "recursive-readdir": "^2.2.2",
-    "replace-in-file": "^5.0.2"
+    "replace-in-file": "^5.0.2",
+    "ts-loader": "^6.2.1",
+    "webpack": "^4.41.6",
+    "webpack-dev-server": "^3.10.3"
   },
   "files": [
     "templates",

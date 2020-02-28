@@ -1,5 +1,11 @@
 import program from 'commander';
 import createPluginCommand from './commands/createPlugin';
+import watch from './commands/watch-deps';
+import serve from './commands/serve';
+
+process.on('unhandledRejection', err => {
+  throw err;
+});
 
 const main = (argv: string[]) => {
   program
@@ -7,7 +13,18 @@ const main = (argv: string[]) => {
     .description('Creates a new plugin in the current repository')
     .action(createPluginCommand);
 
+  program
+    .command('serve')
+    .description('Serves the dev/ folder of a package')
+    .action(serve);
+
+  program
+    .command('watch-deps')
+    .description('Watch all dependencies while running another command')
+    .action(watch);
+
   program.on('command:*', () => {
+    // eslint-disable-next-line no-console
     console.error(
       'Invalid command: %s\nSee --help for a list of available commands.',
       program.args.join(' '),

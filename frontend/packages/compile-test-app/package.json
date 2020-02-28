@@ -1,0 +1,18 @@
+{
+  "name": "compile-test-app",
+  "version": "0.0.0",
+  "main": "dist/cjs/index.js",
+  "license": "Apache-2.0",
+  "private": false,
+  "scripts": {
+    "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS",
+    "start": "backstage-cli watch-deps -- backstage-cli serve",
+    "lint": "web-scripts lint",
+    "test": "web-scripts test"
+  },
+  "devDependencies": {
+    "@spotify/web-scripts": "^6.0.0",
+    "@spotify-backstage/cli": "^1.2.0",
+    "compile-test-lib": "0.0.0"
+  }
+}
