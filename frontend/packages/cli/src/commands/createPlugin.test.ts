@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import del from 'del';
 import {
   createFileFromTemplate,
   createFromTemplateDir,
@@ -16,7 +17,7 @@ describe('createPlugin', () => {
         expect(fs.existsSync(pluginFolder)).toBe(true);
         expect(pluginFolder).toMatch(/packages\/plugins\/foo/);
       } finally {
-        fs.rmdirSync(tempDir, { recursive: true });
+        del.sync(tempDir, { force: true });
       }
     });
 
@@ -29,7 +30,7 @@ describe('createPlugin', () => {
           /A plugin with the same name already exists/,
         );
       } finally {
-        fs.rmdirSync(tempDir, { recursive: true });
+        del.sync(tempDir, { force: true });
       }
     });
   });
@@ -49,7 +50,7 @@ describe('createPlugin', () => {
         expect(fs.existsSync(targetPath)).toBe(true);
         expect(fs.readFileSync(targetPath).toString()).toBe(targetData);
       } finally {
-        fs.rmdirSync(tempDir, { recursive: true });
+        del.sync(tempDir, { force: true });
       }
     });
   });
@@ -77,10 +78,9 @@ describe('createPlugin', () => {
         expect(fs.existsSync(subDir)).toBe(true);
         expect(fs.existsSync(testFile)).toBe(true);
       } finally {
-        fs.rmdirSync(templateRootDir, { recursive: true });
-        fs.rmdirSync(destinationRootDir, { recursive: true });
+        await del(templateRootDir, { force: true });
+        await del(destinationRootDir, { force: true });
       }
     });
-    xit('should handle errors on reading template directory', async () => {});
   });
 });
