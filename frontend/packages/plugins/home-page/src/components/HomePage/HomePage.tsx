@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { Typography, makeStyles, Theme, Grid } from '@material-ui/core';
 import HomePageTimer from '../HomepageTimer';
 import {
+  Content,
   EntityLink,
   InfoCard,
   SortableTable,
@@ -48,9 +49,6 @@ const useStyles = makeStyles<Theme>(theme => ({
     overflowX: 'hidden',
     overflowY: 'auto',
   },
-  pageBody: {
-    padding: theme.spacing(3),
-  },
   avatarButton: {
     padding: theme.spacing(2),
   },
@@ -91,7 +89,7 @@ const HomePage: FC<{}> = () => {
         >
           <HomePageTimer />
         </Header>
-        <div className={classes.pageBody}>
+        <Content>
           <Grid container direction="row" spacing={3}>
             <Grid item xs={6}>
               <Typography variant="h3" style={{ padding: '8px 0 16px 0' }}>
@@ -105,7 +103,7 @@ const HomePage: FC<{}> = () => {
               <SquadTechHealth />
             </Grid>
           </Grid>
-        </div>
+        </Content>
       </div>
     </Page>
   );
