@@ -6,7 +6,7 @@
 
 Backstage is an open platform for building developer portals.
 
-The philosophy behind Backstage is simple: don't expose your engineers to the full complexity of all your infrastructure tooling and services -- hide it behind a consistent, centralized and delightful interface.
+The philosophy behind Backstage is simple: don't expose your engineers to the full complexity of all your infrastructure tooling and services -- hide it behind a _single_ centralized and consistent interface.
 
 ![headline](headline.png)
 
@@ -14,7 +14,7 @@ The philosophy behind Backstage is simple: don't expose your engineers to the fu
 
 The Backstage platform consists of a number of different components:
 
-- **frontend** Main web application that users interact with. It's built up by a number of different _Plugins_. Plugins all use a common set of platform API's and reusable UI components. Each plugin is treated as a self-contained web app and can include almost any type of content.
+- **frontend** Main web application that users interact with. It's built up by a number of different _Plugins_. Plugins all use a common set of platform API's and reusable UI components. Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
 - **backend** GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
 - **proxy** Terminates HTTPS and exposes any RESTful API to Plugins.
 - **identity** A backend service that holds your organisation's metadata.
