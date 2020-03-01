@@ -10,6 +10,8 @@ The philosophy behind Backstage is simple: don't expose your engineers to the fu
 
 ![headline](headline.png)
 
+At Spotify we believe that a better developer experience leads to happier and more productive engineers.
+
 ## Overview
 
 The Backstage platform consists of a number of different components:
