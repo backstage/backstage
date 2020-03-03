@@ -1,6 +1,6 @@
 import { BackstageTheme, createApp, InfoCard } from '@spotify-backstage/core';
 //import PageHeader from './components/PageHeader';
-import { LoginComponent } from '@backstage/plugin-login';
+import { LoginComponent } from '@spotify-backstage/plugin-login';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';

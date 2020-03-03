@@ -1,6 +1,6 @@
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { InfoCard, TemplateList } from '@spotify-backstage/core';
-import { scaffolderV1 } from '@backstage/protobuf-definitions';
+import { scaffolderV1 } from '@spotify-backstage/protobuf-definitions';
 
 const CreateEntityPage: FC<{}> = () => {
   const [templates, setTemplates] = useState<

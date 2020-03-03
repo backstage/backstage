@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-home-page",
+  "name": "@spotify-backstage/plugin-home-page",
   "version": "0.0.0",
   "main": "src/index.ts",
   "main:src": "src/index.ts",

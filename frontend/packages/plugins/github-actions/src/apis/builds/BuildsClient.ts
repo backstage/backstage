@@ -1,4 +1,4 @@
-import { buildsV1 } from '@backstage/protobuf-definitions';
+import { buildsV1 } from '@spotify-backstage/protobuf-definitions';
 import { BuildStatus, Build, BuildDetails } from './types';
 
 const statusTable = {

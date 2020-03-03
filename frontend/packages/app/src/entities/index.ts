@@ -13,7 +13,7 @@ import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import DnsIcon from '@material-ui/icons/Dns';
 import MockEntityPage from './MockEntityPage';
 import MockEntityCard from './MockEntityCard';
-import GithubActionsPlugin from '@backstage/plugin-github-actions';
+import GithubActionsPlugin from '@spotify-backstage/plugin-github-actions';
 
 /* SERVICE */
 const serviceOverviewPage = createWidgetView()

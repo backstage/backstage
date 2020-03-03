@@ -3,7 +3,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { Button, TextField, makeStyles } from '@material-ui/core';
 import { InfoCard, Progress } from '@spotify-backstage/core';
-import { scaffolderV1 } from '@backstage/protobuf-definitions';
+import { scaffolderV1 } from '@spotify-backstage/protobuf-definitions';
 const google_protobuf_struct_pb = require('google-protobuf/google/protobuf/struct_pb.js');
 // import * as google_protobuf_struct_pb from 'google-protobuf/google/protobuf/struct_pb.js';
 
