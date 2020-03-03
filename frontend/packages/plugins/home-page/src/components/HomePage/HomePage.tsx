@@ -14,7 +14,7 @@ import {
 import SquadTechHealth from './SquadTechHealth';
 import { useAsync } from 'react-use';
 
-import { inventoryV1 } from '@backstage/protobuf-definitions';
+import { inventoryV1 } from '@spotify-backstage/protobuf-definitions';
 
 const client = new inventoryV1.Client('http://localhost:8080');
 

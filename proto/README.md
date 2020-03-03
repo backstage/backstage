@@ -67,7 +67,7 @@ Firstly, ensure this line is in your `package.json` within the `frontend/` folde
 
 ```js
 "dependencies": {
-  "@backstage/protobuf-definitions": "0.0.0",
+  "@spotify-backstage/protobuf-definitions": "0.0.0",
   ...
 }
 ```
@@ -75,7 +75,7 @@ Firstly, ensure this line is in your `package.json` within the `frontend/` folde
 Next, you can use them in your [Yarn Workspaces](https://yarnpkg.com/en/docs/workspaces/) package using the following:
 
 ```ts
-import { IdentityClient } from '@backstage/protocol-definitions/generated/identity/v1/identity_pb_service';
+import { IdentityClient } from '@spotify-backstage/protocol-definitions/generated/identity/v1/identity_pb_service';
 
 const client = new IdentityClient('http://localhost:8080');
 // const req = new GetUserRequest();

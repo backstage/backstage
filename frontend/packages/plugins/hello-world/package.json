@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-hello-world",
+  "name": "@spotify-backstage/plugin-hello-world",
   "version": "0.0.0",
   "main": "src/index.ts",
   "main:src": "src/index.ts",

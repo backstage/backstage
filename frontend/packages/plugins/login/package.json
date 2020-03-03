@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-login",
+  "name": "@spotify-backstage/plugin-login",
   "version": "0.0.0",
   "main": "src/index.ts",
   "main:src": "src/index.ts",

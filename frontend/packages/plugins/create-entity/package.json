@@ -1,11 +1,11 @@
 {
-  "name": "@backstage/plugin-create-entity",
+  "name": "@spotify-backstage/plugin-create-entity",
   "version": "0.0.0",
   "main": "src/index.ts",
   "main:src": "src/index.ts",
   "devDependencies": {
     "@spotify-backstage/core": "1.0.0",
-    "@backstage/protobuf-definitions": "0.0.0",
+    "@spotify-backstage/protobuf-definitions": "0.0.0",
     "@spotify/web-scripts": "^6.0.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
