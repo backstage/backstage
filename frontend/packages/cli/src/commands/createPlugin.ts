@@ -4,6 +4,8 @@ import handlebars from 'handlebars';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
 import recursive from 'recursive-readdir';
+import { promisify } from 'util';
+import { exec } from 'child_process';
 
 export const createPluginFolder = (rootDir: string, id: string): string => {
   const destination = path.join(rootDir, 'packages', 'plugins', id);
@@ -18,7 +20,9 @@ export const createPluginFolder = (rootDir: string, id: string): string => {
 
   try {
     console.log(
-      chalk.green(`Creating:\t${chalk.cyan(destination.replace(rootDir, ''))}`),
+      chalk.green(
+        ` creating:\t${chalk.cyan(destination.replace(rootDir, ''))}`,
+      ),
     );
     fs.mkdirSync(destination, { recursive: true });
     return destination;
@@ -42,7 +46,7 @@ export const createFileFromTemplate = (
   });
   try {
     console.log(
-      chalk.green(`Creating:\t${chalk.cyan(path.basename(destination))}`),
+      chalk.green(` creating:\t${chalk.cyan(path.basename(destination))}`),
     );
     fs.writeFileSync(destination, contents);
   } catch (e) {
@@ -75,7 +79,7 @@ export const createFromTemplateDir = async (
         answers,
       );
     } else {
-      console.log(chalk.green(`Copying:\t${chalk.cyan(path.basename(file))}`));
+      console.log(chalk.green(` copying:\t${chalk.cyan(path.basename(file))}`));
       try {
         fs.copyFileSync(file, file.replace(templateFolder, destinationFolder));
       } catch (e) {
@@ -98,9 +102,9 @@ const cleanUp = async (rootDir: string, id: string) => {
       type: 'confirm',
       name: 'cleanup',
       message: chalk.yellow(
-        `Do you want to remove the created directory and all the files in it?\ndir: ${chalk.cyan(
+        `It seems that something went wrong when creating the plugin 🤔 Do you want to remove the directory and all the files in it?\nRemove: ${chalk.cyan(
           destination,
-        )}`,
+        )}?`,
       ),
     },
   ];
@@ -119,6 +123,24 @@ const cleanUp = async (rootDir: string, id: string) => {
       console.log();
       console.log(chalk.red(`Failed to cleanup: ${e.message}`));
       console.log();
+    }
+  }
+};
+
+const buildPlugin = async (pluginFolder: string) => {
+  const prom_exec = promisify(exec);
+
+  // const commands = ['yarn', 'yarn build'];
+  const commands = ['yarn'];
+  for (const command of commands) {
+    try {
+      console.log(chalk.green(` executing:\t${chalk.cyan(command)}`));
+      process.chdir(pluginFolder);
+      await prom_exec(command, { timeout: 60000 });
+    } catch (e) {
+      throw new Error(
+        `Could not execute command ${chalk.cyan(command)}: ${e.message}`,
+      );
     }
   }
 };
@@ -148,21 +170,21 @@ const createPlugin = async (): Promise<any> => {
   );
 
   try {
+    console.log();
+    console.log(chalk.green('Creating the plugin...'));
     const destinationFolder = createPluginFolder(rootDir, answers.id);
     await createFromTemplateDir(templateFolder, destinationFolder, answers);
 
     console.log();
-    console.log(
-      chalk.green(
-        `Successfully created a Backstage Plugin in ${chalk.cyan(
-          path.join('packages', 'plugins', answers.id),
-        )}`,
-      ),
-    );
+    console.log(chalk.green(`Building the plugin...`));
+    await buildPlugin(destinationFolder);
 
+    console.log();
     console.log(
       chalk.green(
-        `Run ${chalk.cyan('yarn start')} in the plugin directory to start it.`,
+        `Successfully created ${chalk.cyan(
+          `@spotify-backstage/plugin-${answers.id}`,
+        )}`,
       ),
     );
     console.log();
