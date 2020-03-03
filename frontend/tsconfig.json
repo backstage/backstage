@@ -1,8 +1,9 @@
 {
   "extends": "@spotify/web-scripts/config/tsconfig.json",
-  "include": ["packages/*/src", "packages/plugins/*/src"],
+  "exclude": ["**/*.test.*"],
   "compilerOptions": {
-    "noEmit": true,
-    "incremental": false
+    "allowJs": true,
+    "noEmit": false,
+    "incremental": true
   }
 }
