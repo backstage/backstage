@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import handlebars from 'handlebars';
+import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
 import recursive from 'recursive-readdir';
 
@@ -9,11 +10,16 @@ export const createPluginFolder = (rootDir: string, id: string): string => {
 
   if (fs.existsSync(destination)) {
     throw new Error(
-      `A plugin with the same name already exists: ${destination}`,
+      `A plugin with the same name already exists: ${chalk.cyan(
+        destination.replace(rootDir, ''),
+      )}\nPlease try again with a different plugin Id`,
     );
   }
 
   try {
+    console.log(
+      chalk.green(`Creating:\t${chalk.cyan(destination.replace(rootDir, ''))}`),
+    );
     fs.mkdirSync(destination, { recursive: true });
     return destination;
   } catch (e) {
@@ -35,6 +41,9 @@ export const createFileFromTemplate = (
     ...answers,
   });
   try {
+    console.log(
+      chalk.green(`Creating:\t${chalk.cyan(path.basename(destination))}`),
+    );
     fs.writeFileSync(destination, contents);
   } catch (e) {
     throw new Error(`Failed to create file: ${destination}: ${e.message}`);
@@ -66,46 +75,72 @@ export const createFromTemplateDir = async (
         answers,
       );
     } else {
-      fs.copyFileSync(file, file.replace(templateFolder, destinationFolder));
+      console.log(chalk.green(`Copying:\t${chalk.cyan(path.basename(file))}`));
+      try {
+        fs.copyFileSync(file, file.replace(templateFolder, destinationFolder));
+      } catch (e) {
+        throw new Error(
+          `Failed to copy file: ${file.replace(
+            templateFolder,
+            destinationFolder,
+          )}: ${e.message}`,
+        );
+      }
     }
   });
 };
 
 const createPlugin = async (): Promise<any> => {
-  const currentDir = process.argv[1];
-  const questions: Question[] = [
-    {
-      type: 'input',
-      name: 'id',
-      message: 'Enter an ID for the plugin [required]',
-      validate: (value: any) =>
-        value ? true : 'Please enter an ID for the plugin',
-    },
-  ];
-  const answers: Answers = await inquirer.prompt(questions);
-  const destinationFolder = createPluginFolder(
-    path.join(currentDir, '..', '..', '..'),
-    answers.id,
-  );
-  const templateFolder = path.join(
-    currentDir,
-    '..',
-    '..',
-    '@spotify-backstage',
-    'cli',
-    'templates',
-    'default-plugin',
-  );
+  try {
+    const currentDir = process.argv[1];
+    const questions: Question[] = [
+      {
+        type: 'input',
+        name: 'id',
+        message: chalk.blue('Enter an ID for the plugin [required]'),
+        validate: (value: any) =>
+          value ? true : chalk.red('Please enter an ID for the plugin'),
+      },
+    ];
+    const answers: Answers = await inquirer.prompt(questions);
+    const destinationFolder = createPluginFolder(
+      path.join(currentDir, '..', '..', '..'),
+      answers.id,
+    );
+    const templateFolder = path.join(
+      currentDir,
+      '..',
+      '..',
+      '@spotify-backstage',
+      'cli',
+      'templates',
+      'default-plugin',
+    );
 
-  await createFromTemplateDir(templateFolder, destinationFolder, answers);
+    await createFromTemplateDir(templateFolder, destinationFolder, answers);
 
-  console.log(
-    `✨ You have created a Backstage Plugin packages/plugins/${answers.id}`,
-  );
-  console.log('');
-  console.log('Run yarn start in the plugin directory to start it');
+    console.log();
+    console.log(
+      chalk.green(
+        `Successfully created a Backstage Plugin in ${chalk.cyan(
+          path.join('packages', 'plugins', answers.id),
+        )}`,
+      ),
+    );
 
-  return destinationFolder;
+    console.log(
+      chalk.green(
+        `Run ${chalk.cyan('yarn start')} in the plugin directory to start it.`,
+      ),
+    );
+    console.log();
+
+    return destinationFolder;
+  } catch (e) {
+    console.log();
+    console.log(e.message);
+    console.log();
+  }
 };
 
 export default createPlugin;
