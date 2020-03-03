@@ -1,5 +1,6 @@
 import program from 'commander';
 import chalk from 'chalk';
+import fs from 'fs';
 import createPluginCommand from './commands/createPlugin';
 import watch from './commands/watch-deps';
 import serve from './commands/serve';
@@ -9,6 +10,15 @@ process.on('unhandledRejection', err => {
 });
 
 const main = (argv: string[]) => {
+  const version = fs
+    .readFileSync('package.json', 'utf-8')
+    .split('\n')
+    .filter(row => row.match(/"version":/))
+    .join()
+    .match(/"version":\s"(?<version>\d\.\d\.\d)"/)?.groups?.version;
+
+  program.name('backstage-cli').version(version ?? '0.0.0');
+
   program
     .command('create-plugin')
     .description('Creates a new plugin in the current repository')
