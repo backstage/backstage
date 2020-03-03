@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
+    "exec": "npx ts-node ./src",
     "build": "web-scripts build",
     "lint": "web-scripts lint",
     "test": "web-scripts test",
