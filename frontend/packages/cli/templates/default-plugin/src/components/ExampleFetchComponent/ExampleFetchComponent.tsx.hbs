@@ -57,7 +57,7 @@ export const DenseTable: FC<DenseTableProps> = ({ users }) => {
         </TableHead>
         <TableBody>
           {users.map(user => (
-            <TableRow key={user.id.value}>
+            <TableRow key={user.email}>
               <TableCell>
                 {user.name.first} {user.name.last}
               </TableCell>
