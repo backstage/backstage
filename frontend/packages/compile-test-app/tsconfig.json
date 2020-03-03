@@ -1,4 +1,7 @@
 {
   "extends": "@spotify/web-scripts/config/tsconfig.json",
-  "include": ["dev", "src"]
+  "include": ["dev", "src"],
+  "compilerOptions": {
+    "noEmit": false
+  }
 }

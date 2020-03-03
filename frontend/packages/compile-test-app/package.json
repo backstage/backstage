@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS",
+    "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS --project tsconfig.build.json",
     "start": "backstage-cli watch-deps -- backstage-cli serve",
     "lint": "web-scripts lint",
     "test": "web-scripts test"

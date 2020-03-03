@@ -1,0 +1,4 @@
+{
+  "extends": "@spotify/web-scripts/config/tsconfig.json",
+  "include": ["src"]
+}
