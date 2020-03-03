@@ -12,7 +12,7 @@ export const createPluginFolder = (rootDir: string, id: string): string => {
     throw new Error(
       `A plugin with the same name already exists: ${chalk.cyan(
         destination.replace(rootDir, ''),
-      )}\nPlease try again with a different plugin Id`,
+      )}\nPlease try again with a different Plugin ID`,
     );
   }
 
@@ -90,33 +90,65 @@ export const createFromTemplateDir = async (
   });
 };
 
-const createPlugin = async (): Promise<any> => {
-  try {
-    const currentDir = process.argv[1];
-    const questions: Question[] = [
-      {
-        type: 'input',
-        name: 'id',
-        message: chalk.blue('Enter an ID for the plugin [required]'),
-        validate: (value: any) =>
-          value ? true : chalk.red('Please enter an ID for the plugin'),
-      },
-    ];
-    const answers: Answers = await inquirer.prompt(questions);
-    const destinationFolder = createPluginFolder(
-      path.join(currentDir, '..', '..', '..'),
-      answers.id,
-    );
-    const templateFolder = path.join(
-      currentDir,
-      '..',
-      '..',
-      '@spotify-backstage',
-      'cli',
-      'templates',
-      'default-plugin',
-    );
+const cleanUp = async (rootDir: string, id: string) => {
+  const destination = path.join(rootDir, 'packages', 'plugins', id);
 
+  const questions: Question[] = [
+    {
+      type: 'confirm',
+      name: 'cleanup',
+      message: chalk.yellow(
+        `Do you want to remove the created directory and all the files in it?\ndir: ${chalk.cyan(
+          destination,
+        )}`,
+      ),
+    },
+  ];
+  const answers: Answers = await inquirer.prompt(questions);
+
+  if (answers.cleanup) {
+    try {
+      // Not using recursion here, so only empty directories can be removed
+      fs.rmdirSync(destination);
+      console.log();
+      console.log(
+        chalk.green(`Removing ${chalk.cyan(destination.replace(rootDir, ''))}`),
+      );
+      console.log();
+    } catch (e) {
+      console.log();
+      console.log(chalk.red(`Failed to cleanup: ${e.message}`));
+      console.log();
+    }
+  }
+};
+
+const createPlugin = async (): Promise<any> => {
+  const questions: Question[] = [
+    {
+      type: 'input',
+      name: 'id',
+      message: chalk.blue('Enter an ID for the plugin [required]'),
+      validate: (value: any) =>
+        value ? true : chalk.red('Please enter an ID for the plugin'),
+    },
+  ];
+  const answers: Answers = await inquirer.prompt(questions);
+
+  const currentDir = process.argv[1];
+  const rootDir = path.join(currentDir, '..', '..', '..');
+  const templateFolder = path.join(
+    currentDir,
+    '..',
+    '..',
+    '@spotify-backstage',
+    'cli',
+    'templates',
+    'default-plugin',
+  );
+
+  try {
+    const destinationFolder = createPluginFolder(rootDir, answers.id);
     await createFromTemplateDir(templateFolder, destinationFolder, answers);
 
     console.log();
@@ -138,8 +170,10 @@ const createPlugin = async (): Promise<any> => {
     return destinationFolder;
   } catch (e) {
     console.log();
-    console.log(e.message);
+    console.log(chalk.red(e.message));
     console.log();
+
+    await cleanUp(rootDir, answers.id);
   }
 };
 
