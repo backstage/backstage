@@ -8,6 +8,9 @@ import { promisify } from 'util';
 import { exec } from 'child_process';
 
 export const createPluginFolder = (rootDir: string, id: string): string => {
+  console.log();
+  console.log(chalk.green(' Create the plugin directory:'));
+
   const destination = path.join(rootDir, 'packages', 'plugins', id);
 
   if (fs.existsSync(destination)) {
@@ -21,7 +24,7 @@ export const createPluginFolder = (rootDir: string, id: string): string => {
   try {
     console.log(
       chalk.green(
-        ` creating:\t${chalk.cyan(destination.replace(rootDir, ''))}`,
+        `  created:\t${chalk.cyan(destination.replace(rootDir, ''))}`,
       ),
     );
     fs.mkdirSync(destination, { recursive: true });
@@ -46,7 +49,7 @@ export const createFileFromTemplate = (
   });
   try {
     console.log(
-      chalk.green(` creating:\t${chalk.cyan(path.basename(destination))}`),
+      chalk.green(`  created:\t${chalk.cyan(path.basename(destination))}`),
     );
     fs.writeFileSync(destination, contents);
   } catch (e) {
@@ -59,6 +62,9 @@ export const createFromTemplateDir = async (
   destinationFolder: string,
   answers: Answers,
 ) => {
+  console.log();
+  console.log(chalk.green(' Set up the plugin files:'));
+
   let files = [];
   try {
     files = await recursive(templateFolder);
@@ -79,8 +85,10 @@ export const createFromTemplateDir = async (
         answers,
       );
     } else {
-      console.log(chalk.green(` copying:\t${chalk.cyan(path.basename(file))}`));
       try {
+        console.log(
+          chalk.green(`  copied:\t${chalk.cyan(path.basename(file))}`),
+        );
         fs.copyFileSync(file, file.replace(templateFolder, destinationFolder));
       } catch (e) {
         throw new Error(
@@ -128,13 +136,16 @@ const cleanUp = async (rootDir: string, id: string) => {
 };
 
 const buildPlugin = async (pluginFolder: string) => {
+  console.log();
+  console.log(chalk.green(` Build the plugin:`));
+
   const prom_exec = promisify(exec);
 
   // const commands = ['yarn', 'yarn build'];
   const commands = ['yarn'];
   for (const command of commands) {
     try {
-      console.log(chalk.green(` executing:\t${chalk.cyan(command)}`));
+      console.log(chalk.green(`  executing:\t${chalk.cyan(command)}`));
       process.chdir(pluginFolder);
       await prom_exec(command, { timeout: 60000 });
     } catch (e) {
@@ -172,11 +183,9 @@ const createPlugin = async (): Promise<any> => {
   try {
     console.log();
     console.log(chalk.green('Creating the plugin...'));
+
     const destinationFolder = createPluginFolder(rootDir, answers.id);
     await createFromTemplateDir(templateFolder, destinationFolder, answers);
-
-    console.log();
-    console.log(chalk.green(`Building the plugin...`));
     await buildPlugin(destinationFolder);
 
     console.log();
