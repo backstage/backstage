@@ -1,9 +1,9 @@
 {
   "name": "@spotify-backstage/plugin-home-page",
   "version": "0.0.0",
-  "main": "src/index.ts",
-  "main:src": "src/index.ts",
+  "main": "dist/cjs",
   "devDependencies": {
+    "@spotify-backstage/cli": "^1.2.0",
     "@spotify-backstage/core": "1.0.0",
     "@spotify/web-scripts": "^6.0.0",
     "@testing-library/jest-dom": "^4.2.4",
@@ -19,6 +19,7 @@
     "@material-ui/icons": "^4.9.1"
   },
   "scripts": {
+    "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS",
     "lint": "web-scripts lint",
     "test": "web-scripts test"
   },
