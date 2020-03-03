@@ -10,14 +10,9 @@ process.on('unhandledRejection', err => {
 });
 
 const main = (argv: string[]) => {
-  const version = fs
-    .readFileSync('package.json', 'utf-8')
-    .split('\n')
-    .filter(row => row.match(/"version":/))
-    .join()
-    .match(/"version":\s"(?<version>\d\.\d\.\d)"/)?.groups?.version;
+  const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 
-  program.name('backstage-cli').version(version ?? '0.0.0');
+  program.name('backstage-cli').version(packageJson.version ?? '0.0.0');
 
   program
     .command('create-plugin')
@@ -52,4 +47,4 @@ const main = (argv: string[]) => {
 };
 
 main(process.argv);
-// main([process.argv[0], process.argv[1], 'create-plugin']);
+// main([process.argv[0], process.argv[1], '--version']);
