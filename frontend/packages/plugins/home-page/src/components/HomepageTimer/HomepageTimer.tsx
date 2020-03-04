@@ -2,14 +2,14 @@ import React, { FC } from 'react';
 import { HeaderLabel } from '@spotify-backstage/core';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
+const utcOptions = { timeZone: 'UTC', ...timeFormat };
 const nycOptions = { timeZone: 'America/New_York', ...timeFormat };
-const sydOptions = { timeZone: 'Australia/Sydney', ...timeFormat };
 const tyoOptions = { timeZone: 'Asia/Tokyo', ...timeFormat };
 const stoOptions = { timeZone: 'Europe/Stockholm', ...timeFormat };
 
 const defaultTimes = {
   timeNY: '',
-  timeSYD: '',
+  timeUTC: '',
   timeTYO: '',
   timeSTO: '',
 };
@@ -29,7 +29,7 @@ function getTimes() {
 }
 
 const HomePageTimer: FC<{}> = () => {
-  const [{ timeNY, timeSYD, timeTYO, timeSTO }, setTimes] = React.useState(
+  const [{ timeNY, timeUTC, timeTYO, timeSTO }, setTimes] = React.useState(
     defaultTimes,
   );
 
@@ -48,9 +48,9 @@ const HomePageTimer: FC<{}> = () => {
   return (
     <>
       <HeaderLabel label="NYC" value={timeNY} />
+      <HeaderLabel label="UTC" value={timeUTC} />
       <HeaderLabel label="STO" value={timeSTO} />
       <HeaderLabel label="TYO" value={timeTYO} />
-      <HeaderLabel label="SYD" value={timeSYD} />
     </>
   );
 };
