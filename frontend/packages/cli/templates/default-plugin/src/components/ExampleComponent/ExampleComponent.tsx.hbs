@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { Typography, makeStyles, Theme } from '@material-ui/core';
-
+import { Typography, Grid, makeStyles, Theme } from '@material-ui/core';
 import { InfoCard, Header, Page, theme } from '@spotify-backstage/core';
+import ExampleFetchComponent from '../ExampleFetchComponent';
 
 const useStyles = makeStyles<Theme>(theme => ({
   mainContentArea: {
@@ -18,23 +18,33 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 const ExampleComponent: FC<{}> = () => {
   const classes = useStyles();
+
   return (
     <Page theme={theme.home}>
       <div className={classes.mainContentArea}>
-        <Header
-          title="Welcome to {{ id }}!"
-          subtitle="Optional subtitle"
-        ></Header>
-        <div className={classes.pageBody}>
-          <Typography variant="h3" className={classes.title}>
-            Plugin page title
-          </Typography>
-          <InfoCard title="Information card" maxWidth>
-            <Typography variant="body1">
-              All content should be wrapped in a card like this.
-            </Typography>
-          </InfoCard>
-        </div>
+        <Header title="Welcome to {{ id }}!" subtitle="Optional subtitle"></Header>
+        <Grid
+          container
+          spacing={3}
+          direction={'column'}
+          className={classes.pageBody}
+        >
+          <Grid item>
+            <Typography variant="h3">Plugin page title</Typography>
+          </Grid>
+          <Grid item>
+            <InfoCard title="Information card" maxWidth>
+              <Typography variant="body1">
+                All content should be wrapped in a card like this.
+              </Typography>
+            </InfoCard>
+          </Grid>
+          <Grid item>
+            <InfoCard title="Example User List (fetching data from randomuser.me)">
+              <ExampleFetchComponent />
+            </InfoCard>
+          </Grid>
+        </Grid>
       </div>
     </Page>
   );
