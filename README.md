@@ -51,8 +51,6 @@ $ cd frontend
 
 $ yarn # may take a while
 
-$ yarn build
-
 $ yarn start
 ```
 
