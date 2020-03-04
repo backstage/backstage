@@ -63,11 +63,11 @@ export const createFileFromTemplate = (
 
 const sortObjectByKeys = (obj: {[name in string]: string}) => {
   return Object.keys(obj)
-          .sort((a: string, b: string): number => a > b ? 1 : 0)
-          .reduce((result:{[name in string]: string}, key: string) => {
+          .sort()
+          .reduce((result, key: string) => {
             result[key] = obj[key];
             return result;
-          }, {});
+          }, {} as { [name in string]: string });
 }
 
 const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
@@ -99,15 +99,14 @@ export const addPluginDependencyToApp = (rootDir: string, pluginName: string): s
   
   dependencies[pluginPackage] = pluginPackageVersion;
   packageFileJson.dependencies = sortObjectByKeys(dependencies);
-  fs.writeFileSync(packageFile, JSON.stringify(packageFileJson, null, 2), 'utf-8');
-  fs.appendFileSync(packageFile, '\n', 'utf-8'); // new line at end of file
+  fs.writeFileSync(packageFile, `${JSON.stringify(packageFileJson, null, 2)}\n`, 'utf-8');
   return pluginPackage;
 }
 
 export const addPluginToApp = (rootDir: string, pluginName: string) => {
   const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName.split('-').map(name => capitalize(name)).join('');
-  const pluginExport = `\nexport { default as ${pluginNameCapitalized} } from '${pluginPackage}';`;
+  const pluginExport = `export { default as ${pluginNameCapitalized} } from '${pluginPackage}';`;
   const pluginsFile = path.join(rootDir, 'packages', 'app', 'src', 'plugins.ts');
 
   addExportStatement(pluginsFile, pluginExport);
@@ -265,7 +264,7 @@ const createPlugin = async (): Promise<any> => {
 
     addPluginDependencyToApp(rootDir, answers.id);
     addPluginToApp(rootDir, answers.id);
-    
+
     console.log();
     console.log(
       chalk.green(
