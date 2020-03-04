@@ -90,12 +90,6 @@ $ yarn
 
 Now start or restart `yarn start`, and you should be able to see the default page for your new plugin at [localhost:3000/my-plugin](http://localhost:3000/my-plugin).
 
-## Protobuf Definitions
-
-The protobuf definitions are all found in the `/proto` folder in the project root. They are used to generate code for gRPC communication for both the frontend and backend. The generated code is checked into version control though, so unless you want to change the protobuf definitions you don't need to install any tooling.
-
-Information about how to work with the protobuf definitions can be found inside [proto/README.md](proto/README.md).
-
 ## Documentation
 
 ## License
