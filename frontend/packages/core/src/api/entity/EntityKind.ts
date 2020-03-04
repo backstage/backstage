@@ -1,6 +1,6 @@
 import { ComponentType } from 'react';
 import { AppComponentBuilder } from '../app/types';
-import { IconComponent } from '../types';
+import { IconComponent } from '../../icons';
 
 export type EntityConfig = {
   kind: string;

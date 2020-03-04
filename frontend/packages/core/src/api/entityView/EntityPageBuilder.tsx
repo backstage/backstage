@@ -3,7 +3,7 @@ import DefaultEntityPage from '../../components/DefaultEntityPage';
 import { App, AppComponentBuilder } from '../app/types';
 import BackstagePlugin from '../plugin/Plugin';
 import { EntityPageNavItem, EntityPageView } from './types';
-import { IconComponent } from '../types';
+import { IconComponent } from '../../icons';
 
 // type AppComponents = {
 //   EntityPage: ComponentType<EntityPageProps>;
