@@ -26,20 +26,15 @@ export const createPluginFolder = (rootDir: string, id: string): string => {
     );
   }
 
+  process.stdout.write(
+    chalk.green(`  creating\t${chalk.cyan(destination.replace(rootDir, ''))}`),
+  );
   try {
     fs.mkdirSync(destination, { recursive: true });
-    console.log(
-      chalk.green(
-        `  created:\t ✓ ${chalk.cyan(destination.replace(rootDir, ''))}`,
-      ),
-    );
+    process.stdout.write(chalk.green(' ✓\n'));
     return destination;
   } catch (e) {
-    console.log(
-      chalk.red(
-        `  failed:\t ✗ ${chalk.cyan(destination.replace(rootDir, ''))}`,
-      ),
-    );
+    process.stdout.write(chalk.red(` ✗\n`));
     throw new Error(
       `Failed to create plugin directory: ${destination}: ${e.message}`,
     );
@@ -59,13 +54,9 @@ export const createFileFromTemplate = (
   });
   try {
     fs.writeFileSync(destination, contents);
-    console.log(
-      chalk.green(`  created:\t ✓ ${chalk.cyan(path.basename(destination))}`),
-    );
+    process.stdout.write(chalk.green(` ✓\n`));
   } catch (e) {
-    console.log(
-      chalk.red(`  failed:\t ✗ ${chalk.cyan(path.basename(destination))}`),
-    );
+    process.stdout.write(chalk.red(` ✗\n`));
     throw new Error(`Failed to create file: ${destination}: ${e.message}`);
   }
 };
@@ -76,24 +67,27 @@ export const createFromTemplateDir = async (
   answers: Answers,
 ) => {
   console.log();
-
   console.log(chalk.green(' Reading template files:'));
 
   let files = [];
 
+  process.stdout.write(chalk.green(`  reading\t`));
   try {
     files = await recursive(templateFolder);
-    console.log(
-      chalk.green(`  read:\t\t ✓ ${chalk.cyan(`${files.length} files`)}`),
+    process.stdout.write(
+      chalk.green(`${chalk.cyan(`${files.length} files`)} ✓\n`),
     );
   } catch (e) {
-    console.log(chalk.red(`  failed:\t ✗ 0 files`));
+    console.log(chalk.red(` ✗ 0 files\n`));
     throw new Error(`Failed to read files in template directory: ${e.message}`);
   }
 
   console.log();
   console.log(chalk.green(' Setting up the plugin files:'));
   files.forEach(file => {
+    process.stdout.write(
+      chalk.green(`  processing\t${chalk.cyan(path.basename(file))}`),
+    );
     fs.ensureDirSync(
       file
         .replace(templateFolder, destinationFolder)
@@ -108,13 +102,9 @@ export const createFromTemplateDir = async (
     } else {
       try {
         fs.copyFileSync(file, file.replace(templateFolder, destinationFolder));
-        console.log(
-          chalk.green(`  copied:\t ✓ ${chalk.cyan(path.basename(file))}`),
-        );
+        process.stdout.write(chalk.green(` ✓\n`));
       } catch (e) {
-        console.log(
-          chalk.red(`  failed:\t ✗ ${chalk.cyan(path.basename(file))}`),
-        );
+        process.stdout.write(chalk.red(` ✗\n`));
         throw new Error(
           `Failed to copy file: ${file.replace(
             templateFolder,
@@ -143,20 +133,24 @@ const cleanUp = async (rootDir: string, id: string) => {
   const answers: Answers = await inquirer.prompt(questions);
 
   if (answers.cleanup) {
+    console.log();
+    console.log(chalk.green(`🧹  Cleaning up...`));
+    console.log();
+    console.log(chalk.green(` Removing plugin:`));
+    process.stdout.write(
+      chalk.green(
+        `  deleting\t${chalk.cyan(destination.replace(rootDir, ''))}`,
+      ),
+    );
     try {
       // Not using recursion here, so only empty directories can be removed
       fs.rmdirSync(destination);
-      console.log();
-      console.log(
-        chalk.green(
-          `🧹  Removing ${chalk.cyan(destination.replace(rootDir, ''))}`,
-        ),
-      );
+      process.stdout.write(chalk.green(` ✓\n`));
       console.log();
     } catch (e) {
+      process.stdout.write(chalk.red(` ✗\n`));
       console.log();
       console.log(chalk.red(`Failed to cleanup: ${e.message}`));
-      console.log();
     }
   }
 };
@@ -170,12 +164,13 @@ const buildPlugin = async (pluginFolder: string) => {
   // const commands = ['yarn', 'yarn build'];
   const commands = ['yarn'];
   for (const command of commands) {
+    process.stdout.write(chalk.green(`  executing\t${chalk.cyan(command)}`));
     try {
       process.chdir(pluginFolder);
       await prom_exec(command, { timeout: 60000 });
-      console.log(chalk.green(`  executed:\t ✓ ${chalk.cyan(command)}`));
+      process.stdout.write(chalk.cyan(` ✓\n`));
     } catch (e) {
-      console.log(chalk.red(`  failed:\t ✗ ${chalk.cyan(command)}`));
+      process.stdout.write(chalk.red(` ✗\n`));
       throw new Error(
         `Could not execute command ${chalk.cyan(command)}: ${e.message}`,
       );
