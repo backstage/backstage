@@ -61,16 +61,17 @@ export const createFileFromTemplate = (
   }
 };
 
-const sortObjectByKeys = (obj: {[name in string]: string}) => {
+const sortObjectByKeys = (obj: { [name in string]: string }) => {
   return Object.keys(obj)
-          .sort()
-          .reduce((result, key: string) => {
-            result[key] = obj[key];
-            return result;
-          }, {} as { [name in string]: string });
-}
+    .sort()
+    .reduce((result, key: string) => {
+      result[key] = obj[key];
+      return result;
+    }, {} as { [name in string]: string });
+};
 
-const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
+const capitalize = (str: string): string =>
+  str.charAt(0).toUpperCase() + str.slice(1);
 
 const addExportStatement = (file: string, exportStatement: string) => {
   const newContents = fs
@@ -85,32 +86,48 @@ const addExportStatement = (file: string, exportStatement: string) => {
   fs.writeFileSync(file, newContents, 'utf8');
 };
 
-export const addPluginDependencyToApp = (rootDir: string, pluginName: string): string => {
+export const addPluginDependencyToApp = (
+  rootDir: string,
+  pluginName: string,
+): string => {
   const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
-  const pluginPackageVersion = "0.0.0";
+  const pluginPackageVersion = '0.0.0';
   const packageFile = path.join(rootDir, 'packages', 'app', 'package.json');
   const packageFileContent = fs.readFileSync(packageFile, 'utf-8').toString();
   const packageFileJson = JSON.parse(packageFileContent);
   const dependencies = packageFileJson.dependencies;
-  
+
   if (typeof dependencies[pluginPackage] !== 'undefined') {
     throw new Error(`Plugin ${pluginPackage} already exists in ${packageFile}`);
   }
-  
+
   dependencies[pluginPackage] = pluginPackageVersion;
   packageFileJson.dependencies = sortObjectByKeys(dependencies);
-  fs.writeFileSync(packageFile, `${JSON.stringify(packageFileJson, null, 2)}\n`, 'utf-8');
+  fs.writeFileSync(
+    packageFile,
+    `${JSON.stringify(packageFileJson, null, 2)}\n`,
+    'utf-8',
+  );
   return pluginPackage;
-}
+};
 
 export const addPluginToApp = (rootDir: string, pluginName: string) => {
   const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
-  const pluginNameCapitalized = pluginName.split('-').map(name => capitalize(name)).join('');
+  const pluginNameCapitalized = pluginName
+    .split('-')
+    .map(name => capitalize(name))
+    .join('');
   const pluginExport = `export { default as ${pluginNameCapitalized} } from '${pluginPackage}';`;
-  const pluginsFile = path.join(rootDir, 'packages', 'app', 'src', 'plugins.ts');
+  const pluginsFile = path.join(
+    rootDir,
+    'packages',
+    'app',
+    'src',
+    'plugins.ts',
+  );
 
   addExportStatement(pluginsFile, pluginExport);
-}
+};
 
 export const createFromTemplateDir = async (
   templateFolder: string,
@@ -229,7 +246,6 @@ const buildPlugin = async (pluginFolder: string) => {
 };
 
 const createPlugin = async (): Promise<any> => {
-  
   const questions: Question[] = [
     {
       type: 'input',
