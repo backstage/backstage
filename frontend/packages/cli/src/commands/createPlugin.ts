@@ -9,11 +9,16 @@ import { exec } from 'child_process';
 
 export const createPluginFolder = (rootDir: string, id: string): string => {
   console.log();
-  console.log(chalk.green(' Create the plugin directory:'));
+  console.log(chalk.green(' Creating the plugin directory:'));
 
   const destination = path.join(rootDir, 'packages', 'plugins', id);
 
   if (fs.existsSync(destination)) {
+    console.log(
+      chalk.red(
+        `  failed:\t ✗ ${chalk.cyan(destination.replace(rootDir, ''))}`,
+      ),
+    );
     throw new Error(
       `A plugin with the same name already exists: ${chalk.cyan(
         destination.replace(rootDir, ''),
@@ -22,14 +27,19 @@ export const createPluginFolder = (rootDir: string, id: string): string => {
   }
 
   try {
+    fs.mkdirSync(destination, { recursive: true });
     console.log(
       chalk.green(
-        `  created:\t${chalk.cyan(destination.replace(rootDir, ''))}`,
+        `  created:\t ✓ ${chalk.cyan(destination.replace(rootDir, ''))}`,
       ),
     );
-    fs.mkdirSync(destination, { recursive: true });
     return destination;
   } catch (e) {
+    console.log(
+      chalk.red(
+        `  failed:\t ✗ ${chalk.cyan(destination.replace(rootDir, ''))}`,
+      ),
+    );
     throw new Error(
       `Failed to create plugin directory: ${destination}: ${e.message}`,
     );
@@ -48,11 +58,14 @@ export const createFileFromTemplate = (
     ...answers,
   });
   try {
-    console.log(
-      chalk.green(`  created:\t${chalk.cyan(path.basename(destination))}`),
-    );
     fs.writeFileSync(destination, contents);
+    console.log(
+      chalk.green(`  created:\t ✓ ${chalk.cyan(path.basename(destination))}`),
+    );
   } catch (e) {
+    console.log(
+      chalk.red(`  failed:\t ✗ ${chalk.cyan(path.basename(destination))}`),
+    );
     throw new Error(`Failed to create file: ${destination}: ${e.message}`);
   }
 };
@@ -63,15 +76,23 @@ export const createFromTemplateDir = async (
   answers: Answers,
 ) => {
   console.log();
-  console.log(chalk.green(' Set up the plugin files:'));
+
+  console.log(chalk.green(' Reading template files:'));
 
   let files = [];
+
   try {
     files = await recursive(templateFolder);
+    console.log(
+      chalk.green(`  read:\t\t ✓ ${chalk.cyan(`${files.length} files`)}`),
+    );
   } catch (e) {
+    console.log(chalk.red(`  failed:\t ✗ 0 files`));
     throw new Error(`Failed to read files in template directory: ${e.message}`);
   }
 
+  console.log();
+  console.log(chalk.green(' Setting up the plugin files:'));
   files.forEach(file => {
     fs.ensureDirSync(
       file
@@ -86,11 +107,14 @@ export const createFromTemplateDir = async (
       );
     } else {
       try {
-        console.log(
-          chalk.green(`  copied:\t${chalk.cyan(path.basename(file))}`),
-        );
         fs.copyFileSync(file, file.replace(templateFolder, destinationFolder));
+        console.log(
+          chalk.green(`  copied:\t ✓ ${chalk.cyan(path.basename(file))}`),
+        );
       } catch (e) {
+        console.log(
+          chalk.red(`  failed:\t ✗ ${chalk.cyan(path.basename(file))}`),
+        );
         throw new Error(
           `Failed to copy file: ${file.replace(
             templateFolder,
@@ -110,9 +134,9 @@ const cleanUp = async (rootDir: string, id: string) => {
       type: 'confirm',
       name: 'cleanup',
       message: chalk.yellow(
-        `It seems that something went wrong when creating the plugin 🤔 Do you want to remove the directory and all the files in it?\nRemove: ${chalk.cyan(
+        `It seems that something went wrong when creating the plugin 🤔\nDo you want to remove the following directory and all the files in it:\n${chalk.cyan(
           destination,
-        )}?`,
+        )}`,
       ),
     },
   ];
@@ -124,7 +148,9 @@ const cleanUp = async (rootDir: string, id: string) => {
       fs.rmdirSync(destination);
       console.log();
       console.log(
-        chalk.green(`Removing ${chalk.cyan(destination.replace(rootDir, ''))}`),
+        chalk.green(
+          `🧹  Removing ${chalk.cyan(destination.replace(rootDir, ''))}`,
+        ),
       );
       console.log();
     } catch (e) {
@@ -137,7 +163,7 @@ const cleanUp = async (rootDir: string, id: string) => {
 
 const buildPlugin = async (pluginFolder: string) => {
   console.log();
-  console.log(chalk.green(` Build the plugin:`));
+  console.log(chalk.green(` Building the plugin:`));
 
   const prom_exec = promisify(exec);
 
@@ -145,10 +171,11 @@ const buildPlugin = async (pluginFolder: string) => {
   const commands = ['yarn'];
   for (const command of commands) {
     try {
-      console.log(chalk.green(`  executing:\t${chalk.cyan(command)}`));
       process.chdir(pluginFolder);
       await prom_exec(command, { timeout: 60000 });
+      console.log(chalk.green(`  executed:\t ✓ ${chalk.cyan(command)}`));
     } catch (e) {
+      console.log(chalk.red(`  failed:\t ✗ ${chalk.cyan(command)}`));
       throw new Error(
         `Could not execute command ${chalk.cyan(command)}: ${e.message}`,
       );
@@ -182,7 +209,7 @@ const createPlugin = async (): Promise<any> => {
 
   try {
     console.log();
-    console.log(chalk.green('Creating the plugin...'));
+    console.log(chalk.green('🧩  Creating the plugin...'));
 
     const destinationFolder = createPluginFolder(rootDir, answers.id);
     await createFromTemplateDir(templateFolder, destinationFolder, answers);
@@ -191,7 +218,7 @@ const createPlugin = async (): Promise<any> => {
     console.log();
     console.log(
       chalk.green(
-        `Successfully created ${chalk.cyan(
+        `🥇  Successfully created ${chalk.cyan(
           `@spotify-backstage/plugin-${answers.id}`,
         )}`,
       ),
@@ -201,7 +228,9 @@ const createPlugin = async (): Promise<any> => {
     return destinationFolder;
   } catch (e) {
     console.log();
-    console.log(chalk.red(e.message));
+    console.log(`${chalk.red(e.message)}`);
+    console.log();
+    console.log(`🔥  ${chalk.red('Failed to create plugin!')}`);
     console.log();
 
     await cleanUp(rootDir, answers.id);
