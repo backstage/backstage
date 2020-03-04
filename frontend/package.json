@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "start": "yarn workspace @spotify-backstage/app start",
+    "start": "yarn build && yarn workspace @spotify-backstage/app start",
     "build": "lerna run build",
     "test": "cross-env CI=true lerna run test --stream --parallel -- --coverage",
     "create-plugin": "yarn workspace @spotify-backstage/cli build && backstage-cli create-plugin",
