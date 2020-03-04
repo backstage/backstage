@@ -21,11 +21,11 @@ function getTimes() {
   // Using the browser native toLocaleTimeString instead of huge moment-tz
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
   const timeNY = d.toLocaleTimeString(lang, nycOptions);
-  const timeSYD = d.toLocaleTimeString(lang, sydOptions);
+  const timeUTC = d.toLocaleTimeString(lang, utcOptions);
   const timeTYO = d.toLocaleTimeString(lang, tyoOptions);
   const timeSTO = d.toLocaleTimeString(lang, stoOptions);
 
-  return { timeNY, timeSYD, timeTYO, timeSTO };
+  return { timeNY, timeUTC, timeTYO, timeSTO };
 }
 
 const HomePageTimer: FC<{}> = () => {
