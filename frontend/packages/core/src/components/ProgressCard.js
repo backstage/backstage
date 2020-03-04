@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core';
 
-import { InfoCard, CircleProgress } from '@spotify-backstage/core';
+import InfoCard from '../layout/InfoCard';
+import CircleProgress from './CircleProgress';
 
 const styles = {
   root: {

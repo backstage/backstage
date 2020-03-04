@@ -1,0 +1,10 @@
+import React from 'react';
+import { render } from '@testing-library/react';
+import ExampleFetchComponent from './ExampleFetchComponent';
+
+describe('ExampleFetchComponent', () => {
+  it('should render', () => {
+    const rendered = render(<ExampleFetchComponent />);
+    expect(rendered.getByTestId('progress')).toBeInTheDocument();
+  });
+});

@@ -1,9 +1,9 @@
 {
   "name": "@spotify-backstage/plugin-hello-world",
   "version": "0.0.0",
-  "main": "src/index.ts",
-  "main:src": "src/index.ts",
+  "main": "dist/cjs",
   "devDependencies": {
+    "@spotify-backstage/cli": "^1.2.0",
     "@spotify-backstage/core": "1.0.0",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
@@ -21,6 +21,7 @@
     "react-dom": "^16.12.0"
   },
   "scripts": {
+    "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS",
     "lint": "web-scripts lint",
     "test": "web-scripts test"
   },
