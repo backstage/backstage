@@ -27,9 +27,6 @@ export const COLORS = {
   },
 };
 
-const displayFace = "Red Hat Display";
-const textFace = "Red Hat Text";
-
 const extendedThemeConfig = {
   props: {
     MuiGrid: {
@@ -84,25 +81,27 @@ const extendedThemeConfig = {
     background: '#333333',
   },
   typography: {
-    // This feels bad, but is effective
-    fontFamily: textFace,
+    fontFamily: [
+      '"Helvetica Neue"',
+      'Helvetica',
+      'Roboto',
+      'Arial',
+      'sans-serif',
+    ].join(','),
     h4: {
       // Page name/heading | Dialog titles
-      fontFamily: displayFace,
       fontSize: 48,
       color: '#2D2D2D',
       fontWeight: 700,
     },
     h3: {
       // Page titles
-      fontFamily: displayFace,
       fontSize: 32,
       color: '#2D2D2D',
       fontWeight: 700,
     },
     h2: {
       // Card titles | Sub headings in dialogs
-      fontFamily: displayFace,
       fontSize: 24,
       color: '#2D2D2D',
       fontWeight: 700,
@@ -111,43 +110,36 @@ const extendedThemeConfig = {
     },
     header3: {
       // Table headers (ALL CAPS!)
-      fontFamily: textFace,
       fontSize: 12,
       color: '#9E9E9E',
     },
     menuItem1: {
       // Sidebar menu item
-      fontFamily: displayFace,
       fontSize: 16,
       color: '#828282',
       fontWeight: 700,
     },
     menuItem2: {
       // Dropdown menu items | Form labels | Deep links from cards (Go to...)
-      fontFamily: textFace,
       fontSize: 16,
       color: '#2D2D2D',
     },
     text: {
       // Table entries | Information/error text/messages | General copy/paragraphs
-      fontFamily: textFace,
       fontSize: 13,
       color: '#2D2D2D',
     },
     links: {
       // Table entries | Information/error text/messages | General copy/paragraphs
-      fontFamily: textFace,
       color: '#509BF5',
     },
     tabSelected: {
       // Selected tab
-      fontFamily: textFace,
       fontSize: 18,
       color: '#2D2D2D',
     },
     tabUnselected: {
       // Unselected tab
-      fontFamily: textFace,
       fontSize: 18,
       color: '#9E9E9E',
     },
