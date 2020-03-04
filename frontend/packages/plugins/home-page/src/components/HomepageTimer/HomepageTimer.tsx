@@ -2,15 +2,15 @@ import React, { FC } from 'react';
 import { HeaderLabel } from '@spotify-backstage/core';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
-const nycOptions = { timeZone: 'America/New_York', ...timeFormat };
 const utcOptions = { timeZone: 'UTC', ...timeFormat };
-const lonOptions = { timeZone: 'Europe/London', ...timeFormat };
+const nycOptions = { timeZone: 'America/New_York', ...timeFormat };
+const tyoOptions = { timeZone: 'Asia/Tokyo', ...timeFormat };
 const stoOptions = { timeZone: 'Europe/Stockholm', ...timeFormat };
 
 const defaultTimes = {
   timeNY: '',
   timeUTC: '',
-  timeLON: '',
+  timeTYO: '',
   timeSTO: '',
 };
 
@@ -22,14 +22,14 @@ function getTimes() {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
   const timeNY = d.toLocaleTimeString(lang, nycOptions);
   const timeUTC = d.toLocaleTimeString(lang, utcOptions);
-  const timeLON = d.toLocaleTimeString(lang, lonOptions);
+  const timeTYO = d.toLocaleTimeString(lang, tyoOptions);
   const timeSTO = d.toLocaleTimeString(lang, stoOptions);
 
-  return { timeNY, timeUTC, timeLON, timeSTO };
+  return { timeNY, timeUTC, timeTYO, timeSTO };
 }
 
 const HomePageTimer: FC<{}> = () => {
-  const [{ timeNY, timeUTC, timeLON, timeSTO }, setTimes] = React.useState(
+  const [{ timeNY, timeUTC, timeTYO, timeSTO }, setTimes] = React.useState(
     defaultTimes,
   );
 
@@ -49,8 +49,8 @@ const HomePageTimer: FC<{}> = () => {
     <>
       <HeaderLabel label="NYC" value={timeNY} />
       <HeaderLabel label="UTC" value={timeUTC} />
-      <HeaderLabel label="LON" value={timeLON} />
       <HeaderLabel label="STO" value={timeSTO} />
+      <HeaderLabel label="TYO" value={timeTYO} />
     </>
   );
 };
