@@ -3,13 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@spotify-backstage/cli": "^1.2.0",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@spotify-backstage/core": "1.0.0",
-    "@spotify-backstage/plugin-github-actions": "0.0.0",
     "@spotify-backstage/plugin-home-page": "0.0.0",
     "@spotify-backstage/plugin-login": "0.0.0",
-    "@spotify-backstage/plugin-create-entity": "0.0.0",
     "@react-workspaces/react-scripts": "^3.3.0-alpha-08",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -33,7 +32,7 @@
     ]
   },
   "scripts": {
-    "start": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts start",
+    "start": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true backstage-cli watch-deps -- react-scripts start",
     "build": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
     "test": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts test",
     "lint": "cross-env EXTEND_ESLINT=true eslint ./src/**/*.{ts,tsx} --max-warnings=0 --format=codeframe"
