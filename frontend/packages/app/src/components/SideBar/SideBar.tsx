@@ -10,10 +10,6 @@ import {
 } from '@material-ui/core';
 
 import HomeIcon from '@material-ui/icons/Home';
-import ServiceIcon from '@material-ui/icons/DeviceHub';
-import WebIcon from '@material-ui/icons/Language';
-import LibIcon from '@material-ui/icons/LocalLibrary';
-import CreateIcon from '@material-ui/icons/AddCircleOutline';
 
 const drawerWidthClosed = 64;
 const drawerWidthOpen = 220;
@@ -263,12 +259,7 @@ const SideBar: FC<Props> = ({
           <Divider />
           <SidebarItem icon={HomeIcon} to="/" text="Home" />
           <Divider />
-          <SidebarItem icon={ServiceIcon} to="/services" text="Services" />
-          <SidebarItem icon={WebIcon} to="/websites" text="Websites" />
-          <SidebarItem icon={LibIcon} to="/libraries" text="Libraries" />
-          <Divider />
           <Space />
-          <SidebarItem icon={CreateIcon} to="/create" text="Create..." />
         </div>
       </Context.Provider>
     </div>
