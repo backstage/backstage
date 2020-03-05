@@ -1,10 +1,9 @@
 import { resolve as resolvePath } from 'path';
-import { readFileSync } from 'fs';
 import chalk from 'chalk';
 
 import { createLoggerFactory } from './logger';
-import { findAllDeps } from './packages';
-import { startWatchers } from './watcher';
+import { getPackageDeps } from './packages';
+import { startWatcher, startPackageWatcher } from './watcher';
 import { startCompiler } from './compiler';
 import { startChild } from './child';
 
@@ -26,10 +25,6 @@ const WATCH_LOCATIONS = ['package.json', 'src', 'assets'];
  */
 export default async (_command: any, args: string[]) => {
   const localPackagePath = resolvePath('package.json');
-  const packageJson = JSON.parse(readFileSync(localPackagePath, 'utf8'));
-
-  // Find all direct and transitive local dependencies of the current package.
-  const allDeps = await findAllDeps(packageJson.name, PACKAGE_BLACKLIST);
 
   // Rotate through different prefix colors to make it easier to differenciate between different deps
   const logFactory = createLoggerFactory([
@@ -40,14 +35,22 @@ export default async (_command: any, args: string[]) => {
     chalk.cyan,
   ]);
 
+  // Find all direct and transitive local dependencies of the current package.
+  const deps = await getPackageDeps(localPackagePath, PACKAGE_BLACKLIST);
+
   // We lazily watch all our deps, as in we don't start the actual watch compiler until a change is detected
-  await startWatchers(allDeps, WATCH_LOCATIONS, pkg => {
+  const watcher = await startWatcher(deps, WATCH_LOCATIONS, pkg => {
     startCompiler(pkg, logFactory(pkg.name)).promise.catch(error => {
       process.stderr.write(`${error}\n`);
     });
   });
 
-  if (args.length) {
+  await startPackageWatcher(localPackagePath, async () => {
+    const newDeps = await getPackageDeps(localPackagePath, PACKAGE_BLACKLIST);
+    await watcher.update(newDeps);
+  });
+
+  if (args?.length) {
     startChild(args);
   }
 };

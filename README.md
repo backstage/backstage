@@ -66,27 +66,9 @@ To create a new plugin, go to the `frontend/` directory and run the following:
 $ yarn && yarn create-plugin
 ```
 
-This will prompt you to enter an ID for your plugin, and then create your plugin inside the `packages/plugins/` directory. Note that the plugin will not yet be included in the app, to include it add the following for a plugin called `my-plugin`:
+This will prompt you to enter an ID for your plugin, and then create your plugin inside the `packages/plugins/` directory. The plugin will be automatically included in the app by modifing the app's `package.json` and `src/plugins.ts`.
 
-In `"dependencies"` inside [packages/app/package.json](frontend/packages/app/package.json) add the following:
-
-```json
-"@spotify-backstage/plugin-my-plugin": "0.0.0"
-```
-
-In [packages/app/src/plugins.ts](frontend/packages/app/src/plugins.ts), add the following:
-
-```
-export { default as MyPlugin } from '@spotify-backstage/plugin-my-plugin';
-```
-
-To apply the above changes, go to the `frontend/` directory and run:
-
-```
-$ yarn
-```
-
-Now start or restart `yarn start`, and you should be able to see the default page for your new plugin at [localhost:3000/my-plugin](http://localhost:3000/my-plugin).
+If you have `yarn start` already running you should be able to see the default page for your new plugin at [localhost:3000/my-plugin](http://localhost:3000/my-plugin), if you called the plugin `"my-plugin"`.
 
 ## Documentation
 

@@ -1,6 +1,12 @@
 import { resolve as resolvePath } from 'path';
+import chalk from 'chalk';
 import chokidar from 'chokidar';
 import { Package } from './packages';
+import { createLogger } from './logger';
+
+export type Watcher = {
+  update(newPackages: Package[]): Promise<void>;
+};
 
 /*
  * Watch for changes inside a collection of packages. When a change is detected, stop
@@ -8,15 +14,17 @@ import { Package } from './packages';
  *
  * The returned promise is resolved once all watchers are ready.
  */
-export async function startWatchers(
+export async function startWatcher(
   packages: Package[],
   paths: string[],
   callback: (pkg: Package) => void,
-): Promise<void> {
-  const readyPromises = [];
+): Promise<Watcher> {
+  const watchedPackageLocations = new Set<string>();
+  const logger = createLogger();
 
-  for (const pkg of packages) {
+  const watchPackage = async (pkg: Package) => {
     let signalled = false;
+    watchedPackageLocations.add(pkg.location);
 
     const watchLocations = paths.map(path => resolvePath(pkg.location, path));
     const watcher = chokidar
@@ -33,13 +41,69 @@ export async function startWatchers(
         watcher.close();
       });
 
-    readyPromises.push(
-      new Promise((resolve, reject) => {
-        watcher.on('ready', resolve);
-        watcher.on('error', reject);
-      }),
-    );
-  }
+    return new Promise((resolve, reject) => {
+      watcher.on('ready', resolve);
+      watcher.on('error', reject);
+    });
+  };
 
-  await Promise.all(readyPromises);
+  const update = async (newPackages: Package[]) => {
+    const promises = new Array<Promise<unknown>>();
+
+    for (const pkg of newPackages) {
+      if (watchedPackageLocations.has(pkg.location)) {
+        continue;
+      }
+
+      logger.out(chalk.green(`Starting watch of new dependency ${pkg.name}`));
+      promises.push(watchPackage(pkg));
+    }
+
+    await Promise.all(promises);
+  };
+
+  await Promise.all(packages.map(watchPackage));
+
+  return { update };
+}
+
+/**
+ * Watch a package.json for updates
+ */
+export function startPackageWatcher(packagePath: string, callback: () => void) {
+  let changed = false;
+  let working = false;
+
+  const notifyDeps = async () => {
+    changed = true;
+    if (working) {
+      return;
+    }
+    working = true;
+    changed = false;
+
+    try {
+      await callback();
+    } finally {
+      working = false;
+      // Keep going if a change was emitted while working
+      if (changed) {
+        notifyDeps();
+      }
+    }
+  };
+
+  const watcher = chokidar
+    .watch(packagePath, {
+      ignoreInitial: true,
+      disableGlobbing: true,
+    })
+    .on('all', () => {
+      notifyDeps();
+    });
+
+  return new Promise((resolve, reject) => {
+    watcher.on('ready', resolve);
+    watcher.on('error', reject);
+  });
 }

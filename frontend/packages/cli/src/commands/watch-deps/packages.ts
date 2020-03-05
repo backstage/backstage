@@ -1,4 +1,8 @@
 import { resolve as resolvePath } from 'path';
+import fs from 'fs';
+import { promisify } from 'util';
+
+const readFile = promisify(fs.readFile);
 
 const LernaProject = require('@lerna/project');
 const PackageGraph = require('@lerna/package-graph');
@@ -43,4 +47,11 @@ export async function findAllDeps(
   }
 
   return [...deps.values()];
+}
+
+export async function getPackageDeps(packagePath: string, blacklist: string[]) {
+  const packageData = await readFile(packagePath, 'utf8');
+  const packageJson = JSON.parse(packageData);
+
+  return await findAllDeps(packageJson.name, blacklist);
 }
