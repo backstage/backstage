@@ -39,9 +39,9 @@ export const createTemporaryPluginFolder = (tempDir: string) => {
   );
   try {
     fs.mkdirSync(tempDir);
-    process.stdout.write(chalk.green(MARKER_SUCCESS));
+    process.stdout.write(MARKER_SUCCESS);
   } catch (e) {
-    process.stdout.write(chalk.red(MARKER_FAILURE));
+    process.stdout.write(MARKER_FAILURE);
     throw new Error(
       `Failed to create temporary plugin directory: ${e.message}`,
     );
@@ -129,7 +129,7 @@ export const addPluginDependencyToApp = (
       'utf-8',
     );
   } catch (e) {
-    process.stdout.write(chalk.red(MARKER_FAILURE));
+    process.stdout.write(MARKER_FAILURE);
     throw new Error(
       `Failed to add plugin as dependency in app: ${packageFile}: ${e.message}`,
     );
@@ -164,7 +164,7 @@ export const addPluginToApp = (rootDir: string, pluginName: string) => {
   try {
     addExportStatement(pluginsFile, pluginExport);
   } catch (e) {
-    process.stdout.write(chalk.red(MARKER_FAILURE));
+    process.stdout.write(MARKER_FAILURE);
     throw new Error(
       `Failed to import plugin in app: ${pluginsFile}: ${e.message}`,
     );
@@ -239,10 +239,10 @@ const cleanUp = (tempDir: string, id: string) => {
   process.stdout.write(chalk.green(` Cleaning up ${chalk.cyan(id)}`));
   try {
     fs.rmdirSync(tempDir, { recursive: true });
-    process.stdout.write(chalk.green(MARKER_SUCCESS));
+    process.stdout.write(MARKER_SUCCESS);
     console.log();
   } catch (e) {
-    process.stdout.write(chalk.red(MARKER_FAILURE));
+    process.stdout.write(MARKER_FAILURE);
     console.log();
     console.log(chalk.red(`Failed to cleanup: ${e.message}`));
   }
@@ -281,9 +281,9 @@ export const movePlugin = (tempDir: string, rootDir: string, id: string) => {
   );
   try {
     fs.moveSync(tempDir, destination);
-    process.stdout.write(chalk.green(MARKER_SUCCESS));
+    process.stdout.write(MARKER_SUCCESS);
   } catch (e) {
-    process.stdout.write(chalk.red(MARKER_FAILURE));
+    process.stdout.write(MARKER_FAILURE);
     throw new Error(`Failed to move plugin: ${e.message}`);
   }
 };
