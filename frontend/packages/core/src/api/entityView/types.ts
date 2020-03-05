@@ -1,5 +1,5 @@
 import { ComponentType } from 'react';
-import { IconComponent } from '../types';
+import { IconComponent } from '../../icons';
 
 export type EntityPageNavItem = {
   icon: IconComponent;

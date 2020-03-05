@@ -5,9 +5,18 @@ import { App, AppComponentBuilder } from './types';
 import EntityKind, { EntityConfig } from '../entity/EntityKind';
 import { EntityContextProvider } from '../entityView/EntityContext';
 import BackstagePlugin from '../plugin/Plugin';
+import {
+  IconComponent,
+  SystemIcons,
+  SystemIconKey,
+  defaultSystemIcons,
+} from '../../icons';
 
 class AppImpl implements App {
-  constructor(private readonly entities: Map<string, EntityKind>) {}
+  constructor(
+    private readonly entities: Map<string, EntityKind>,
+    private readonly systemIcons: SystemIcons,
+  ) {}
 
   getEntityConfig(kind: string): EntityConfig {
     const entity = this.entities.get(kind);
@@ -15,6 +24,10 @@ class AppImpl implements App {
       throw new Error('EntityKind not found');
     }
     return entity.config;
+  }
+
+  getSystemIcon(key: SystemIconKey): IconComponent {
+    return this.systemIcons[key];
   }
 }
 
@@ -30,6 +43,7 @@ function builtComponent(
 
 export default class AppBuilder {
   private readonly entities = new Map<string, EntityKind>();
+  private systemIcons = { ...defaultSystemIcons };
   private readonly plugins = new Set<BackstagePlugin>();
 
   registerEntityKind(...entity: EntityKind[]) {
@@ -42,6 +56,10 @@ export default class AppBuilder {
     }
   }
 
+  registerIcons(icons: Partial<SystemIcons>) {
+    this.systemIcons = { ...this.systemIcons, ...icons };
+  }
+
   registerPlugin(...plugin: BackstagePlugin[]) {
     for (const p of plugin) {
       if (this.plugins.has(p)) {
@@ -52,7 +70,7 @@ export default class AppBuilder {
   }
 
   build(): ComponentType<{}> {
-    const app = new AppImpl(this.entities);
+    const app = new AppImpl(this.entities, this.systemIcons);
 
     const entityRoutes = new Array<JSX.Element>();
 
