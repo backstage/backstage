@@ -6,6 +6,8 @@ import inquirer, { Answers, Question } from 'inquirer';
 import recursive from 'recursive-readdir';
 import { promisify } from 'util';
 import { exec } from 'child_process';
+import { resolve as resolvePath } from 'path';
+import { realpathSync, existsSync } from 'fs';
 
 const MARKER_SUCCESS = chalk.green(` ✓\n`);
 const MARKER_FAILURE = chalk.red(` ✗\n`);
@@ -19,18 +21,20 @@ export const createPluginFolder = (rootDir: string, id: string): string => {
   if (fs.existsSync(destination)) {
     console.log(
       chalk.red(
-        `  failed:\t ✗ ${chalk.cyan(destination.replace(rootDir, ''))}`,
+        `  failed:\t ✗ ${chalk.cyan(destination.replace(`${rootDir}/`, ''))}`,
       ),
     );
     throw new Error(
       `A plugin with the same name already exists: ${chalk.cyan(
-        destination.replace(rootDir, ''),
+        destination.replace(`${rootDir}/`, ''),
       )}\nPlease try again with a different Plugin ID`,
     );
   }
 
   process.stdout.write(
-    chalk.green(`  creating\t${chalk.cyan(destination.replace(rootDir, ''))}`),
+    chalk.green(
+      `  creating\t${chalk.cyan(destination.replace(`${rootDir}/`, ''))}`,
+    ),
   );
   try {
     fs.mkdirSync(destination, { recursive: true });
@@ -92,29 +96,52 @@ const addExportStatement = (file: string, exportStatement: string) => {
 export const addPluginDependencyToApp = (
   rootDir: string,
   pluginName: string,
-): string => {
+) => {
+  console.log();
+  console.log(chalk.green(' Adding plugin as dependency in app:'));
+
   const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
   const pluginPackageVersion = '0.0.0';
   const packageFile = path.join(rootDir, 'packages', 'app', 'package.json');
-  const packageFileContent = fs.readFileSync(packageFile, 'utf-8').toString();
-  const packageFileJson = JSON.parse(packageFileContent);
-  const dependencies = packageFileJson.dependencies;
 
-  if (typeof dependencies[pluginPackage] !== 'undefined') {
-    throw new Error(`Plugin ${pluginPackage} already exists in ${packageFile}`);
+  process.stdout.write(
+    chalk.green(
+      `  processing\t${chalk.cyan(packageFile.replace(`${rootDir}/`, ''))}`,
+    ),
+  );
+
+  try {
+    const packageFileContent = fs.readFileSync(packageFile, 'utf-8');
+    const packageFileJson = JSON.parse(packageFileContent);
+    const dependencies = packageFileJson.dependencies;
+
+    if (dependencies[pluginPackage]) {
+      throw new Error(
+        `Plugin ${pluginPackage} already exists in ${packageFile}`,
+      );
+    }
+
+    dependencies[pluginPackage] = pluginPackageVersion;
+    packageFileJson.dependencies = sortObjectByKeys(dependencies);
+    fs.writeFileSync(
+      packageFile,
+      `${JSON.stringify(packageFileJson, null, 2)}\n`,
+      'utf-8',
+    );
+  } catch (e) {
+    process.stdout.write(chalk.red(` ✗\n`));
+    throw new Error(
+      `Failed to add plugin as dependency in app: ${packageFile}: ${e.message}`,
+    );
   }
 
-  dependencies[pluginPackage] = pluginPackageVersion;
-  packageFileJson.dependencies = sortObjectByKeys(dependencies);
-  fs.writeFileSync(
-    packageFile,
-    `${JSON.stringify(packageFileJson, null, 2)}\n`,
-    'utf-8',
-  );
-  return pluginPackage;
+  process.stdout.write(MARKER_SUCCESS);
 };
 
 export const addPluginToApp = (rootDir: string, pluginName: string) => {
+  console.log();
+  console.log(chalk.green(' Import plugin in app:'));
+
   const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
     .split('-')
@@ -128,8 +155,22 @@ export const addPluginToApp = (rootDir: string, pluginName: string) => {
     'src',
     'plugins.ts',
   );
+  process.stdout.write(
+    chalk.green(
+      `  processing\t${chalk.cyan(pluginsFile.replace(`${rootDir}/`, ''))}`,
+    ),
+  );
 
-  addExportStatement(pluginsFile, pluginExport);
+  try {
+    addExportStatement(pluginsFile, pluginExport);
+  } catch (e) {
+    process.stdout.write(chalk.red(` ✗\n`));
+    throw new Error(
+      `Failed to import plugin in app: ${pluginsFile}: ${e.message}`,
+    );
+  }
+
+  process.stdout.write(MARKER_SUCCESS);
 };
 
 export const createFromTemplateDir = async (
@@ -210,7 +251,7 @@ const cleanUp = async (rootDir: string, id: string) => {
     console.log(chalk.green(` Removing plugin:`));
     process.stdout.write(
       chalk.green(
-        `  deleting\t${chalk.cyan(destination.replace(rootDir, ''))}`,
+        `  deleting\t${chalk.cyan(destination.replace(`${rootDir}/`, ''))}`,
       ),
     );
     try {
@@ -260,17 +301,10 @@ const createPlugin = async (): Promise<any> => {
   ];
   const answers: Answers = await inquirer.prompt(questions);
 
-  const currentDir = process.argv[1];
-  const rootDir = path.join(currentDir, '..', '..', '..');
-  const templateFolder = path.join(
-    currentDir,
-    '..',
-    '..',
-    '@spotify-backstage',
-    'cli',
-    'templates',
-    'default-plugin',
-  );
+  const rootDir = realpathSync(process.cwd());
+  const appPackage = resolvePath(rootDir, 'packages', 'app');
+  const cliPackage = resolvePath(__dirname, '..', '..');
+  const templateFolder = resolvePath(cliPackage, 'templates', 'default-plugin');
 
   try {
     console.log();
@@ -280,8 +314,10 @@ const createPlugin = async (): Promise<any> => {
     await createFromTemplateDir(templateFolder, destinationFolder, answers);
     await buildPlugin(destinationFolder);
 
-    addPluginDependencyToApp(rootDir, answers.id);
-    addPluginToApp(rootDir, answers.id);
+    if (existsSync(appPackage)) {
+      addPluginDependencyToApp(rootDir, answers.id);
+      addPluginToApp(rootDir, answers.id);
+    }
 
     console.log();
     console.log(

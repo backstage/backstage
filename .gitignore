@@ -4,3 +4,4 @@ secrets.env
 cjs/
 esm/
 types/
+.vscode/
