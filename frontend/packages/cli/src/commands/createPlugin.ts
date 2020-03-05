@@ -7,6 +7,9 @@ import recursive from 'recursive-readdir';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 
+const MARKER_SUCCESS = chalk.green(` ✓\n`);
+const MARKER_FAILURE = chalk.red(` ✗\n`);
+
 export const createPluginFolder = (rootDir: string, id: string): string => {
   console.log();
   console.log(chalk.green(' Creating the plugin directory:'));
@@ -54,9 +57,9 @@ export const createFileFromTemplate = (
   });
   try {
     fs.writeFileSync(destination, contents);
-    process.stdout.write(chalk.green(` ✓\n`));
+    process.stdout.write(MARKER_SUCCESS);
   } catch (e) {
-    process.stdout.write(chalk.red(` ✗\n`));
+    process.stdout.write(MARKER_FAILURE);
     throw new Error(`Failed to create file: ${destination}: ${e.message}`);
   }
 };
@@ -170,9 +173,9 @@ export const createFromTemplateDir = async (
     } else {
       try {
         fs.copyFileSync(file, file.replace(templateFolder, destinationFolder));
-        process.stdout.write(chalk.green(` ✓\n`));
+        process.stdout.write(MARKER_SUCCESS);
       } catch (e) {
-        process.stdout.write(chalk.red(` ✗\n`));
+        process.stdout.write(MARKER_FAILURE);
         throw new Error(
           `Failed to copy file: ${file.replace(
             templateFolder,
@@ -213,10 +216,10 @@ const cleanUp = async (rootDir: string, id: string) => {
     try {
       // Not using recursion here, so only empty directories can be removed
       fs.rmdirSync(destination);
-      process.stdout.write(chalk.green(` ✓\n`));
+      process.stdout.write(MARKER_SUCCESS);
       console.log();
     } catch (e) {
-      process.stdout.write(chalk.red(` ✗\n`));
+      process.stdout.write(MARKER_FAILURE);
       console.log();
       console.log(chalk.red(`Failed to cleanup: ${e.message}`));
     }
@@ -235,9 +238,9 @@ const buildPlugin = async (pluginFolder: string) => {
     try {
       process.chdir(pluginFolder);
       await prom_exec(command, { timeout: 60000 });
-      process.stdout.write(chalk.cyan(` ✓\n`));
+      process.stdout.write(MARKER_SUCCESS);
     } catch (e) {
-      process.stdout.write(chalk.red(` ✗\n`));
+      process.stdout.write(MARKER_FAILURE);
       throw new Error(
         `Could not execute command ${chalk.cyan(command)}: ${e.message}`,
       );
