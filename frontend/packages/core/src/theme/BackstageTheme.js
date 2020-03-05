@@ -81,23 +81,30 @@ const extendedThemeConfig = {
     background: '#333333',
   },
   typography: {
+    fontFamily: [
+      '"Helvetica Neue"',
+      'Helvetica',
+      'Roboto',
+      'Arial',
+      'sans-serif',
+    ].join(','),
     h4: {
       // Page name/heading | Dialog titles
       fontSize: 48,
       color: '#2D2D2D',
-      fontWeight: 'bold',
+      fontWeight: 700,
     },
     h3: {
       // Page titles
       fontSize: 32,
       color: '#2D2D2D',
-      fontWeight: 'bold',
+      fontWeight: 700,
     },
     h2: {
       // Card titles | Sub headings in dialogs
       fontSize: 24,
       color: '#2D2D2D',
-      fontWeight: 'bold',
+      fontWeight: 700,
       lineHeight: 1.2,
       marginBottom: 6,
     },
@@ -110,7 +117,7 @@ const extendedThemeConfig = {
       // Sidebar menu item
       fontSize: 16,
       color: '#828282',
-      fontWeight: 'bold',
+      fontWeight: 700,
     },
     menuItem2: {
       // Dropdown menu items | Form labels | Deep links from cards (Go to...)
