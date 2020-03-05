@@ -1,4 +1,4 @@
-import React, { FC, useState, createContext, useContext } from 'react';
+import React, { FC, useRef, useState, createContext, useContext } from 'react';
 import clsx from 'clsx';
 import {
   makeStyles,
@@ -17,6 +17,9 @@ import CreateIcon from '@material-ui/icons/AddCircleOutline';
 
 const drawerWidthClosed = 64;
 const drawerWidthOpen = 220;
+
+const defaultOpenDelayMs = 400;
+const defaultCloseDelayMs = 200;
 
 const Context = createContext<boolean>(false);
 
@@ -160,13 +163,12 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     overflow: 'visible',
     width: theme.spacing(7) + 1,
-    height: '100%',
   },
   drawer: {
     display: 'flex',
     flexFlow: 'column nowrap',
     alignItems: 'flex-start',
-    position: 'fixed',
+    position: 'absolute',
     left: 0,
     top: 0,
     bottom: 0,
@@ -186,18 +188,58 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.shorter,
     }),
   },
+  drawerPeek: {
+    width: drawerWidthClosed + 4,
+  },
 }));
 
-const SideBar: FC<{}> = () => {
+enum State {
+  Closed,
+  Peek,
+  Open,
+}
+
+type Props = {
+  openDelayMs?: number;
+  closeDelayMs?: number;
+};
+
+const SideBar: FC<Props> = ({
+  openDelayMs = defaultOpenDelayMs,
+  closeDelayMs = defaultCloseDelayMs,
+}) => {
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
+  const [state, setState] = useState(State.Closed);
+  const hoverTimerRef = useRef<NodeJS.Timer>();
 
   const handleOpen = () => {
-    setOpen(true);
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = undefined;
+    }
+    if (state !== State.Open) {
+      hoverTimerRef.current = setTimeout(() => {
+        hoverTimerRef.current = undefined;
+        setState(State.Open);
+      }, openDelayMs);
+
+      setState(State.Peek);
+    }
   };
 
   const handleClose = () => {
-    setOpen(false);
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = undefined;
+    }
+    if (state === State.Peek) {
+      setState(State.Closed);
+    } else if (state === State.Open) {
+      hoverTimerRef.current = setTimeout(() => {
+        hoverTimerRef.current = undefined;
+        setState(State.Closed);
+      }, closeDelayMs);
+    }
   };
 
   return (
@@ -209,8 +251,13 @@ const SideBar: FC<{}> = () => {
       onBlur={handleClose}
       data-testid="sidebar-root"
     >
-      <Context.Provider value={open}>
-        <div className={clsx(classes.drawer, { [classes.drawerOpen]: open })}>
+      <Context.Provider value={state === State.Open}>
+        <div
+          className={clsx(classes.drawer, {
+            [classes.drawerPeek]: state === State.Peek,
+            [classes.drawerOpen]: state === State.Open,
+          })}
+        >
           <SidebarLogo />
           <Spacer />
           <Divider />
