@@ -47,8 +47,6 @@ $ docker-compose up --build
 Once the backend services are up and running, open a separate terminal window and start the web app using the following commands from the project root:
 
 ```bash
-$ cd frontend
-
 $ yarn # may take a while
 
 $ yarn start
@@ -60,7 +58,7 @@ The final `yarn start` command should open a local instance of Backstage in your
 
 ### Creating a Plugin
 
-To create a new plugin, go to the `frontend/` directory and run the following:
+To create a new plugin, run the following:
 
 ```bash
 $ yarn && yarn create-plugin

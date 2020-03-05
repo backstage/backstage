@@ -39,10 +39,7 @@ To generate the Protobuf definitions in Go and TypeScript, run the following com
 $ prototool generate
 ```
 
-This will generate the respective "generated" files in the following folders:
-
-- `backend/proto`
-- `frontend/packages/proto/src/generated`
+This will generate the respective "generated" files in the `backend/proto` folder.
 
 All generated code related to Protocol Buffers should be checked in to the repository.
 
@@ -58,29 +55,4 @@ package spotify.backstage.identity.v1;
 func main() {
   identityv1.NewInventoryClient(nil)
 }
-```
-
-### Import using TypeScript
-
-This is what you'll need to use for development in any of the `frontend` services.
-Firstly, ensure this line is in your `package.json` within the `frontend/` folder:
-
-```js
-"dependencies": {
-  "@spotify-backstage/protobuf-definitions": "0.0.0",
-  ...
-}
-```
-
-Next, you can use them in your [Yarn Workspaces](https://yarnpkg.com/en/docs/workspaces/) package using the following:
-
-```ts
-import { IdentityClient } from '@spotify-backstage/protocol-definitions/generated/identity/v1/identity_pb_service';
-
-const client = new IdentityClient('http://localhost:8080');
-// const req = new GetUserRequest();
-// req.setUsername("johndoe");
-// client.getUser(req, (err, user) => {
-//   /* ... */
-// });
 ```
