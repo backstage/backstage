@@ -1,14 +1,10 @@
-import { BackstageTheme, createApp, InfoCard } from '@spotify-backstage/core';
-//import PageHeader from './components/PageHeader';
-import { LoginComponent } from '@spotify-backstage/plugin-login';
+import { BackstageTheme, createApp } from '@spotify-backstage/core';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import * as plugins from './plugins';
 import SideBar from './components/SideBar';
 import entities from './entities';
-import { LoginBarrier } from './login/LoginBarrier';
-import { MockCurrentUser } from './login/MockCurrentUser';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -36,16 +32,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const currentUser = new MockCurrentUser();
-
-const Login: FC<{}> = () => {
-  return (
-    <InfoCard title="Login Page">
-      <LoginComponent onLogin={username => currentUser.login(username)} />
-    </InfoCard>
-  );
-};
-
 const AppShell: FC<{}> = ({ children }) => {
   const classes = useStyles();
 
@@ -69,11 +55,9 @@ const App: FC<{}> = () => {
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
         <Router>
-          <LoginBarrier fallback={Login} state$={currentUser.state}>
-            <AppShell>
-              <AppComponent />
-            </AppShell>
-          </LoginBarrier>
+          <AppShell>
+            <AppComponent />
+          </AppShell>
         </Router>
       </ThemeProvider>
     </CssBaseline>

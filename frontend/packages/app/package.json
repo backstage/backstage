@@ -8,7 +8,6 @@
     "@material-ui/icons": "^4.9.1",
     "@spotify-backstage/core": "1.0.0",
     "@spotify-backstage/plugin-home-page": "0.0.0",
-    "@spotify-backstage/plugin-login": "0.0.0",
     "@react-workspaces/react-scripts": "^3.3.0-alpha-08",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
