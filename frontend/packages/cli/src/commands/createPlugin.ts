@@ -229,7 +229,7 @@ const buildPlugin = async (pluginFolder: string) => {
 
   const prom_exec = promisify(exec);
 
-  const commands = ['yarn', 'yarn build'];
+  const commands = ['yarn install', 'yarn build'];
   for (const command of commands) {
     process.stdout.write(chalk.green(`  executing\t${chalk.cyan(command)}`));
     try {
