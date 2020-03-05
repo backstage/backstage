@@ -11,12 +11,6 @@ export const COLORS = {
   INFO_TEXT_COLOR: '#004e8a',
   LINK_TEXT: '#0A6EBE',
   LINK_TEXT_HOVER: '#2196F3',
-  COMPONENT_TYPES: {
-    SERVICE: '#39732E',
-    ENDPOINT: '#B71C1C',
-    PROJECT: '#E657AA',
-    WORKFLOW: '#c15013',
-  },
   NAMED: {
     WHITE: '#FEFEFE',
   },
@@ -53,9 +47,6 @@ const extendedThemeConfig = {
       fontColor: COLORS.NAMED.WHITE,
       slackChannelText: '#ddd',
       backgroundColor: {
-        service: COLORS.COMPONENT_TYPES.SERVICE,
-        endpoint: COLORS.COMPONENT_TYPES.ENDPOINT,
-        project: COLORS.COMPONENT_TYPES.PROJECT,
         default: COLORS.DEFAULT_PAGE_THEME_COLOR,
       },
     },
@@ -81,118 +72,33 @@ const extendedThemeConfig = {
     background: '#333333',
   },
   typography: {
-    fontFamily: [
-      '"Helvetica Neue"',
-      'Helvetica',
-      'Roboto',
-      'Arial',
-      'sans-serif',
-    ].join(','),
-    h4: {
-      // Page name/heading | Dialog titles
-      fontSize: 48,
-      color: '#2D2D2D',
-      fontWeight: 700,
-    },
-    h3: {
-      // Page titles
-      fontSize: 32,
-      color: '#2D2D2D',
-      fontWeight: 700,
-    },
-    h2: {
-      // Card titles | Sub headings in dialogs
-      fontSize: 24,
-      color: '#2D2D2D',
-      fontWeight: 700,
-      lineHeight: 1.2,
-      marginBottom: 6,
-    },
-    header3: {
-      // Table headers (ALL CAPS!)
-      fontSize: 12,
-      color: '#9E9E9E',
-    },
-    menuItem1: {
-      // Sidebar menu item
-      fontSize: 16,
-      color: '#828282',
-      fontWeight: 700,
-    },
-    menuItem2: {
-      // Dropdown menu items | Form labels | Deep links from cards (Go to...)
-      fontSize: 16,
-      color: '#2D2D2D',
-    },
-    text: {
-      // Table entries | Information/error text/messages | General copy/paragraphs
-      fontSize: 13,
-      color: '#2D2D2D',
-    },
-    links: {
-      // Table entries | Information/error text/messages | General copy/paragraphs
-      color: '#509BF5',
-    },
-    tabSelected: {
-      // Selected tab
-      fontSize: 18,
-      color: '#2D2D2D',
-    },
-    tabUnselected: {
-      // Unselected tab
-      fontSize: 18,
-      color: '#9E9E9E',
-    },
-    code: {
-      fontFamily: 'monospace',
-      whiteSpace: 'pre',
-      fontSize: '16px',
-    },
-    caption: {
-      // Restores caption to display: block to match MUI3 behavior; this global override should
-      // be removed if possible.
-      display: 'block',
-    },
+    fontFamily: '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif',
   },
 };
 
 const createOverrides = theme => {
-  const overrides = {
-    MuiAppBar: {
-      root: {
-        zIndex: 1049,
-        height: 44,
-      },
-      colorPrimary: {
-        backgroundColor: '#212121',
-      },
-    },
-    MuiToolbar: {
-      root: {
-        '@media (min-width:600px)': {
-          minHeight: 44,
-        },
-      },
-    },
+  return {
     MuiTableRow: {
+      // Alternating row backgrounds
       root: {
-        height: 'auto',
         '&:nth-of-type(odd)': {
           backgroundColor: theme.palette.background.default,
         },
       },
+      // Use pointer for hoverable rows
       hover: {
         '&:hover': {
           cursor: 'pointer',
         },
       },
+      // Alternating head backgrounds
       head: {
-        height: 'auto',
         '&:nth-of-type(odd)': {
           backgroundColor: COLORS.NAMED.WHITE,
         },
       },
     },
+    // Tables are more dense than default mui tables
     MuiTableCell: {
       root: {
         wordBreak: 'break-word',
@@ -212,11 +118,13 @@ const createOverrides = theme => {
       },
     },
     MuiTabs: {
+      // Tabs are smaller than default mui tab rows
       root: {
         minHeight: 24,
       },
     },
     MuiTab: {
+      // Tabs are smaller and have a hover background
       root: {
         color: theme.palette.link,
         minHeight: 24,
@@ -236,6 +144,7 @@ const createOverrides = theme => {
       },
     },
     MuiTableSortLabel: {
+      // No color change on hover, just rely on the arrow showing up instead.
       root: {
         color: 'inherit',
         '&:hover': {
@@ -245,6 +154,7 @@ const createOverrides = theme => {
           color: 'inherit',
         },
       },
+      // Bold font for highlighting selected column
       active: {
         fontWeight: 'bold',
         color: 'inherit',
@@ -252,6 +162,7 @@ const createOverrides = theme => {
     },
     MuiListItemText: {
       dense: {
+        // Default dense list items to adding ellipsis for really long str...
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -259,73 +170,29 @@ const createOverrides = theme => {
     },
     MuiButton: {
       text: {
-        padding: '6px 16px',
+        // Text buttons have less padding by default, but we want to keep the original padding
+        padding: null,
       },
     },
     MuiChip: {
       root: {
+        // By default there's no margin, but it's usually wanted, so we add some trailing margin
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
       },
     },
-    MuiDivider: {
-      light: {
-        backgroundColor: '#727272',
-      },
-    },
-    MuiDialogTitle: {
-      root: {
-        minWidth: 600,
-      },
-    },
     MuiCardHeader: {
       root: {
-        // Remove bottom padding on titles; there is always a CardContent below that also has padding,
-        // so without this fix there will be too much space below the title.
-        paddingBottom: '0',
-        // Mui 1.2.1 introduced more padding left and right with media queries.
-        // Question is if we should override them or just go with the defaults
-        '@media (min-width:600px)': {
-          paddingLeft: theme.spacing(2),
-          paddingRight: theme.spacing(2),
-        },
-      },
-    },
-    MuiCardContent: {
-      root: {
-        '&:last-child': {
-          // There is some odd extra whitespace at the bottom of card content, which makes it look
-          // bottom-heavy and uneven; set it to the same as the other sides
-          paddingBottom: theme.spacing(2),
-        },
-        // Mui 1.2.1 introduced more padding left and right with media queries.
-        // Question is if we should override them or just go with the defaults
-        '@media (min-width:600px)': {
-          paddingLeft: theme.spacing(2),
-          paddingRight: theme.spacing(2),
-        },
+        // Reduce padding between header and content
+        paddingBottom: 0,
       },
     },
     MuiCardActions: {
       root: {
+        // We default to putting the card actions at the end
         justifyContent: 'flex-end',
       },
     },
-    MuiListSubheader: {
-      sticky: {
-        // Sticky subheaders need to be opaque so that they overwrite list items as you scroll down.
-        backgroundColor: theme.palette.background.paper,
-      },
-    },
-    Toolbar: {
-      toolbar: {
-        // Override the toolbar in dx-react-grid table
-        marginTop: '-64px',
-      },
-    },
-  };
-  return {
-    overrides,
   };
 };
 
