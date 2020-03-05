@@ -5,29 +5,32 @@ import del from 'del';
 import {
   createFileFromTemplate,
   createFromTemplateDir,
-  createPluginFolder,
+  createTemporaryPluginFolder,
+  movePlugin,
 } from './createPlugin';
 
 describe('createPlugin', () => {
   describe('createPluginFolder', () => {
-    it('should create a plugin directory in the correct place', () => {
-      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
+    it('should create a temporary plugin directory in the correct place', () => {
+      const id = 'testPlugin';
+      const tempDir = path.join(os.tmpdir(), id);
       try {
-        const pluginFolder = createPluginFolder(tempDir, 'foo');
-        expect(fs.existsSync(pluginFolder)).toBe(true);
-        expect(pluginFolder).toMatch(/packages\/plugins\/foo/);
+        createTemporaryPluginFolder(tempDir);
+        expect(fs.existsSync(tempDir)).toBe(true);
+        expect(tempDir).toMatch(id);
       } finally {
         del.sync(tempDir, { force: true });
       }
     });
 
-    it('should not create a plugin directory if it already exists', () => {
-      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
+    it('should not create a temporary plugin directory if it already exists', () => {
+      const id = 'testPlugin';
+      const tempDir = path.join(os.tmpdir(), id);
       try {
-        const pluginFolder = createPluginFolder(tempDir, 'foo');
-        expect(fs.existsSync(pluginFolder)).toBe(true);
-        expect(() => createPluginFolder(tempDir, 'foo')).toThrowError(
-          /A plugin with the same name already exists/,
+        createTemporaryPluginFolder(tempDir);
+        expect(fs.existsSync(tempDir)).toBe(true);
+        expect(() => createTemporaryPluginFolder(tempDir)).toThrowError(
+          /Failed to create temporary plugin directory/,
         );
       } finally {
         del.sync(tempDir, { force: true });
@@ -80,6 +83,24 @@ describe('createPlugin', () => {
       } finally {
         await del(templateRootDir, { force: true });
         await del(destinationRootDir, { force: true });
+      }
+    });
+  });
+
+  describe('movePlugin', () => {
+    it('should move the temporary plugin directory to its final place', () => {
+      const id = 'testPlugin';
+      const tempDir = path.join(os.tmpdir(), id);
+      const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
+      const pluginFolder = path.join(rootDir, 'packages', 'plugins', id);
+      try {
+        createTemporaryPluginFolder(tempDir);
+        movePlugin(tempDir, rootDir, id);
+        expect(fs.existsSync(pluginFolder)).toBe(true);
+        expect(pluginFolder).toMatch(`/packages\/plugins\/${id}`);
+      } finally {
+        del.sync(tempDir, { force: true });
+        del.sync(rootDir, { force: true });
       }
     });
   });
