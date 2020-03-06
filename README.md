@@ -58,10 +58,10 @@ The final `yarn start` command should open a local instance of Backstage in your
 
 ### Creating a Plugin
 
-To create a new plugin, run the following:
+To create a new plugin, make sure you're run `yarn` to install dependencies, then run the following:
 
 ```bash
-$ yarn && yarn create-plugin
+$ yarn create-plugin
 ```
 
 This will prompt you to enter an ID for your plugin, and then create your plugin inside the `packages/plugins/` directory. The plugin will be automatically included in the app by modifing the app's `package.json` and `src/plugins.ts`.
