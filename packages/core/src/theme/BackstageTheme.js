@@ -73,6 +73,24 @@ const extendedThemeConfig = {
   },
   typography: {
     fontFamily: '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif',
+    h4: {
+      fontSize: 30,
+      fontWeight: 700,
+    },
+    h3: {
+      fontSize: 32,
+      fontWeight: 700,
+    },
+    h2: {
+      fontSize: 34,
+      fontWeight: 700,
+      lineHeight: 1.2,
+      marginBottom: 6,
+    },
+    h1: {
+      fontSize: 36,
+      fontWeight: 700,
+    },
   },
 };
 
