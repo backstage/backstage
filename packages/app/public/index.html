@@ -51,6 +51,29 @@
       href="%PUBLIC_URL%/safari-pinned-tab.svg"
       color="#5bbad5"
     />
+    <style>
+      @media only screen {
+        html {
+          zoom: 0.7;
+        }
+      }
+
+      @media only screen and (min-width: 800px) {
+        html {
+          zoom: 0.85;
+        }
+      }
+
+      @media only screen and (min-width: 1200px) {
+        html {
+          zoom: 1;
+        }
+      }
+
+      #root {
+        min-height: 100%;
+      }
+    </style>
     <title>Backstage</title>
   </head>
   <body style="margin: 0">

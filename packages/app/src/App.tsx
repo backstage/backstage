@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: '64px auto',
     gridTemplateRows: '1fr',
     width: '100%',
-    height: '100vh',
+    height: '100%',
   },
 }));
 
