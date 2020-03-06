@@ -19,22 +19,22 @@ const useStyles = makeStyles({
 type User = {
   gender: string; // "male"
   name: {
-    title: string; //"Mr",
+    title: string; // "Mr",
     first: string; // "Duane",
-    last: string; //"Reed"
+    last: string; // "Reed"
   };
   location: object; // {street: {number: 5060, name: "Hickory Creek Dr"}, city: "Albany", state: "New South Wales",…}
   email: string; // "duane.reed@example.com"
   login: object; // {uuid: "4b785022-9a23-4ab9-8a23-cb3fb43969a9", username: "blackdog796", password: "patch",…}
   dob: object; // {date: "1983-06-22T12:30:23.016Z", age: 37}
   registered: object; // {date: "2006-06-13T18:48:28.037Z", age: 14}
-  phone: string; //"07-2154-5651"
+  phone: string; // "07-2154-5651"
   cell: string; // "0405-592-879"
   id: {
     name: string; // "TFN",
     value: string; // "796260432"
   };
-  picture: object; //{large: "https://randomuser.me/api/portraits/men/95.jpg",…}
+  picture: object; // {large: "https://randomuser.me/api/portraits/men/95.jpg",…}
   nat: string; // "AU"
 };
 
@@ -82,9 +82,9 @@ const ExampleFetchComponent: FC<{}> = () => {
     return <LinearProgress data-testid="progress" />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
-  } else {
-    return <DenseTable users={value || []} />;
   }
+
+  return <DenseTable users={value || []} />;
 };
 
 export default ExampleFetchComponent;
