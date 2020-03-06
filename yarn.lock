@@ -2032,7 +2032,7 @@
     tar "^4.4.10"
     temp-write "^3.4.0"
 
-"@lerna/package-graph@3.18.5":
+"@lerna/package-graph@3.18.5", "@lerna/package-graph@^3.18.5":
   version "3.18.5"
   resolved "https://registry.npmjs.org/@lerna/package-graph/-/package-graph-3.18.5.tgz#c740e2ea3578d059e551633e950690831b941f6b"
   integrity sha512-8QDrR9T+dBegjeLr+n9WZTVxUYUhIUjUgZ0gvNxUBN8S1WB9r6H5Yk56/MVaB64tA3oGAN9IIxX6w0WvTfFudA==
@@ -2069,7 +2069,7 @@
     npmlog "^4.1.2"
     upath "^1.2.0"
 
-"@lerna/project@3.18.0":
+"@lerna/project@3.18.0", "@lerna/project@^3.18.0":
   version "3.18.0"
   resolved "https://registry.npmjs.org/@lerna/project/-/project-3.18.0.tgz#56feee01daeb42c03cbdf0ed8a2a10cbce32f670"
   integrity sha512-+LDwvdAp0BurOAWmeHE3uuticsq9hNxBI0+FMHiIai8jrygpJGahaQrBYWpwbshbQyVLeQgx3+YJdW2TbEdFWA==
