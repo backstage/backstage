@@ -4,8 +4,7 @@ import handlebars from 'handlebars';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
 import recursive from 'recursive-readdir';
-import { promisify } from 'util';
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import { realpathSync, existsSync } from 'fs';
 import os from 'os';
@@ -265,8 +264,6 @@ const buildPlugin = async (pluginFolder: string) => {
   console.log();
   console.log(chalk.green(` Building the plugin:`));
 
-  const prom_exec = promisify(exec);
-
   const commands = ['yarn install', 'yarn build'];
   for (const command of commands) {
     const spinner = ora({
@@ -276,13 +273,13 @@ const buildPlugin = async (pluginFolder: string) => {
     }).start();
     try {
       process.chdir(pluginFolder);
-      await prom_exec(command, { timeout: 60000 });
+      execSync(command, { timeout: 60000, stdio: 'pipe' });
       spinner.succeed();
     } catch (e) {
       spinner.fail();
-      throw new Error(
-        `Could not execute command ${chalk.cyan(command)}: ${e.message}`,
-      );
+      process.stdout.write(e.stderr);
+      process.stdout.write(e.stdout);
+      throw new Error(`Could not execute command ${chalk.cyan(command)}`);
     }
   }
 };
