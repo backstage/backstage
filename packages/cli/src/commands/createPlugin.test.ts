@@ -92,12 +92,12 @@ describe('createPlugin', () => {
       const id = 'testPlugin';
       const tempDir = path.join(os.tmpdir(), id);
       const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
-      const pluginFolder = path.join(rootDir, 'packages', 'plugins', id);
+      const pluginDir = path.join(rootDir, 'packages', 'plugins', id);
       try {
         createTemporaryPluginFolder(tempDir);
-        movePlugin(tempDir, rootDir, id);
-        expect(fs.existsSync(pluginFolder)).toBe(true);
-        expect(pluginFolder).toMatch(`/packages\/plugins\/${id}`);
+        movePlugin(tempDir, pluginDir, id);
+        expect(fs.existsSync(pluginDir)).toBe(true);
+        expect(pluginDir).toMatch(`/packages\/plugins\/${id}`);
       } finally {
         del.sync(tempDir, { force: true });
         del.sync(rootDir, { force: true });
