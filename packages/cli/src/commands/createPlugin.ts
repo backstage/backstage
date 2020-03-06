@@ -303,7 +303,9 @@ export const movePlugin = (
     process.stdout.write(MARKER_SUCCESS);
   } catch (e) {
     process.stdout.write(MARKER_FAILURE);
-    throw new Error(`Failed to move plugin: ${e.message}`);
+    throw new Error(
+      `Failed to move plugin from ${tempDir} to ${destination}: ${e.message}`,
+    );
   }
 };
 
@@ -324,14 +326,7 @@ const createPlugin = async () => {
   const cliPackage = resolvePath(__dirname, '..', '..');
   const templateFolder = resolvePath(cliPackage, 'templates', 'default-plugin');
   const tempDir = path.join(os.tmpdir(), answers.id);
-  const pluginDir = path.join(
-    rootDir,
-    '..',
-    '..',
-    'packages',
-    'plugins',
-    answers.id,
-  );
+  const pluginDir = path.join(rootDir, 'packages', 'plugins', answers.id);
 
   console.log();
   console.log(chalk.green('Creating the plugin...'));
