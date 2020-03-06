@@ -19,7 +19,13 @@ export const gradients = {
   sky: 'linear-gradient(135deg, #69B9FF 0%, #ACCEEC 100%)',
 };
 
-export const theme = {
+export type PageTheme = {
+  activeNavLinkColor: string;
+  gradient: string;
+  burstShape: any;
+};
+
+export const pageTheme: Record<string, PageTheme> = {
   service: {
     activeNavLinkColor: '#1D7F6E',
     gradient: gradients.tealGreen,
