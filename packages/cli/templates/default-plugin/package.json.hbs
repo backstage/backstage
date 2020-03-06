@@ -5,13 +5,12 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS",
-    "lint": "web-scripts lint",
-    "test": "web-scripts test"
+    "build": "backstage-cli plugin:build",
+    "lint": "backstage-cli plugin:lint",
+    "test": "backstage-cli plugin:test"
   },
   "devDependencies": {
-    "@spotify-backstage/cli": "^1.2.0",
-    "@spotify/web-scripts": "^6.0.0"
+    "@spotify-backstage/cli": "^1.2.0"
   },
   "dependencies": {
     "@material-ui/lab": "4.0.0-alpha.45"
