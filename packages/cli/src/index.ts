@@ -3,7 +3,10 @@ import chalk from 'chalk';
 import fs from 'fs';
 import createPluginCommand from './commands/createPlugin';
 import watch from './commands/watch-deps';
-import serve from './commands/serve';
+import pluginBuild from './commands/plugin/build';
+import pluginLint from './commands/plugin/lint';
+import pluginServe from './commands/plugin/serve';
+import pluginTest from './commands/plugin/test';
 
 process.on('unhandledRejection', err => {
   throw err;
@@ -20,9 +23,26 @@ const main = (argv: string[]) => {
     .action(createPluginCommand);
 
   program
-    .command('serve')
-    .description('Serves the dev/ folder of a package')
-    .action(serve);
+    .command('plugin:build')
+    .option('--watch', 'Enable watch mode')
+    .description('Build a plugin')
+    .action(pluginBuild);
+
+  program
+    .command('plugin:lint')
+    .description('Lint a plugin')
+    .action(pluginLint);
+
+  program
+    .command('plugin:serve')
+    .description('Serves the dev/ folder of a plugin')
+    .action(pluginServe);
+
+  program
+    .command('plugin:test')
+    .option('--watch', 'Enable watch mode')
+    .description('Run all tests for a plugin')
+    .action(pluginTest);
 
   program
     .command('watch-deps')
