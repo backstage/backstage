@@ -5,7 +5,7 @@ const path = require('path');
 // Figure out whether we're running inside the backstage repo or as an installed dependency
 const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
 if (!isLocal) {
-  require('../cjs');
+  require('../dist');
 } else {
   require('ts-node').register({
     project: path.resolve(__dirname, '../tsconfig.json'),
