@@ -12,7 +12,6 @@
     "start": "nodemon ."
   },
   "devDependencies": {
-    "@spotify/web-scripts": "^6.0.0",
     "@types/fs-extra": "^8.1.0",
     "@types/html-webpack-plugin": "^3.2.2",
     "@types/inquirer": "^6.5.0",
@@ -32,6 +31,7 @@
   "dependencies": {
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
+    "@spotify/web-scripts": "^6.0.0",
     "chokidar": "^3.3.1",
     "commander": "^4.1.1",
     "dashify": "^2.0.0",
