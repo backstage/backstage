@@ -92,7 +92,7 @@ describe('createPlugin', () => {
       const id = 'testPlugin';
       const tempDir = path.join(os.tmpdir(), id);
       const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
-      const pluginDir = path.join(rootDir, 'packages', 'plugins', id);
+      const pluginDir = path.join(rootDir, 'plugins', id);
       try {
         createTemporaryPluginFolder(tempDir);
         movePlugin(tempDir, pluginDir, id);
