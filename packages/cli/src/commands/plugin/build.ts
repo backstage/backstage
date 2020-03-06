@@ -17,7 +17,10 @@ export default async (cmd: Command) => {
   }
 
   try {
-    spawnSync('tsc', args, { stdio: 'inherit' });
+    const result = spawnSync('tsc', args, { stdio: 'inherit' });
+    if (result.error) {
+      throw result.error;
+    }
   } catch (error) {
     process.stderr.write(`${chalk.red(error.message)}\n`);
     process.exit(1);

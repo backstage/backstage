@@ -5,7 +5,10 @@ export default async () => {
   const args = ['lint'];
 
   try {
-    spawnSync('web-scripts', args, { stdio: 'inherit' });
+    const result = spawnSync('web-scripts', args, { stdio: 'inherit' });
+    if (result.error) {
+      throw result.error;
+    }
   } catch (error) {
     process.stderr.write(`${chalk.red(error.message)}\n`);
     process.exit(1);
