@@ -18,7 +18,7 @@ const checkExists = (rootDir: string, id: string) => {
   console.log();
   console.log(chalk.green(' Checking if the plugin already exists:'));
 
-  const destination = path.join(rootDir, 'packages', 'plugins', id);
+  const destination = path.join(rootDir, 'plugins', id);
 
   if (fs.existsSync(destination)) {
     console.log(
@@ -326,7 +326,7 @@ const createPlugin = async () => {
   const cliPackage = resolvePath(__dirname, '..', '..');
   const templateFolder = resolvePath(cliPackage, 'templates', 'default-plugin');
   const tempDir = path.join(os.tmpdir(), answers.id);
-  const pluginDir = path.join(rootDir, 'packages', 'plugins', answers.id);
+  const pluginDir = path.join(rootDir, 'plugins', answers.id);
 
   console.log();
   console.log(chalk.green('Creating the plugin...'));
