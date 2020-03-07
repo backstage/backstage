@@ -5,6 +5,8 @@ import {
   Header,
   Page,
   theme as pageTheme,
+  Content,
+  ContentHeader,
 } from '@spotify-backstage/core';
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
@@ -12,9 +14,6 @@ const useStyles = makeStyles<Theme>(theme => ({
   mainContentArea: {
     overflowX: 'hidden',
     overflowY: 'auto',
-  },
-  pageBody: {
-    padding: theme.spacing(3),
   },
   title: {
     padding: theme.spacing(1, 0, 2, 0),
@@ -28,28 +27,28 @@ const ExampleComponent: FC<{}> = () => {
     <Page theme={pageTheme.tool}>
       <div className={classes.mainContentArea}>
         <Header title="Welcome to {{ id }}!" subtitle="Optional subtitle" />
-        <Grid
-          container
-          spacing={3}
-          direction="column"
-          className={classes.pageBody}
-        >
-          <Grid item>
-            <Typography variant="h3">Plugin page title</Typography>
+        <Content>
+          <ContentHeader title="Plugin title" />
+          <Grid
+            container
+            spacing={3}
+            direction="column"
+            className={classes.pageBody}
+          >
+            <Grid item>
+              <InfoCard title="Information card" maxWidth>
+                <Typography variant="body1">
+                  All content should be wrapped in a card like this.
+                </Typography>
+              </InfoCard>
+            </Grid>
+            <Grid item>
+              <InfoCard title="Example User List (fetching data from randomuser.me)">
+                <ExampleFetchComponent />
+              </InfoCard>
+            </Grid>
           </Grid>
-          <Grid item>
-            <InfoCard title="Information card" maxWidth>
-              <Typography variant="body1">
-                All content should be wrapped in a card like this.
-              </Typography>
-            </InfoCard>
-          </Grid>
-          <Grid item>
-            <InfoCard title="Example User List (fetching data from randomuser.me)">
-              <ExampleFetchComponent />
-            </InfoCard>
-          </Grid>
-        </Grid>
+        </Content>
       </div>
     </Page>
   );
