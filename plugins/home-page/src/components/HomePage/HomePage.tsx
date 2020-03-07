@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Typography, makeStyles, Theme, Grid } from '@material-ui/core';
+import { Typography, Grid } from '@material-ui/core';
 import HomePageTimer from '../HomepageTimer';
 import {
   Content,
@@ -8,7 +8,7 @@ import {
   SortableTable,
   Header,
   Page,
-  theme,
+  pageTheme,
 } from '@spotify-backstage/core';
 import SquadTechHealth from './SquadTechHealth';
 
@@ -17,18 +17,7 @@ const STATIC_DATA = [
   { id: 'backstage-microsite', kind: 'website' },
 ];
 
-const useStyles = makeStyles<Theme>(theme => ({
-  mainContentArea: {
-    overflowX: 'hidden',
-    overflowY: 'auto',
-  },
-  avatarButton: {
-    padding: theme.spacing(2),
-  },
-}));
-
 const HomePage: FC<{}> = () => {
-  const classes = useStyles();
   const columns = [
     { id: 'entity', label: 'ID' },
     { id: 'kind', label: 'Kind' },
@@ -49,28 +38,28 @@ const HomePage: FC<{}> = () => {
   const profile = { givenName: 'Suzy' };
 
   return (
-    <Page theme={theme.home}>
-      <div className={classes.mainContentArea}>
-        <Header
-          title={profile ? `Hello, ${profile.givenName}` : 'Hello'}
-          subtitle="Welcome to Backstage"
-        >
-          <HomePageTimer />
-        </Header>
-        <Content>
-          <Grid container direction="row" spacing={3}>
-            <Grid item xs={6}>
-              <Typography variant="h3">Things you own</Typography>
-              <InfoCard maxWidth>
-                <SortableTable data={data} columns={columns} orderBy="id" />
-              </InfoCard>
-            </Grid>
-            <Grid item xs={6}>
-              <SquadTechHealth />
-            </Grid>
+    <Page theme={pageTheme.home}>
+      <Header
+        title={profile ? `Hello, ${profile.givenName}` : 'Hello'}
+        subtitle="Welcome to Backstage"
+      >
+        <HomePageTimer />
+      </Header>
+      <Content>
+        <Grid container direction="row" spacing={3}>
+          <Grid item xs={6}>
+            <Typography variant="h3">
+              Things you own
+            </Typography>
+            <InfoCard maxWidth>
+              <SortableTable data={data} columns={columns} orderBy="id" />
+            </InfoCard>
           </Grid>
-        </Content>
-      </div>
+          <Grid item xs={6}>
+            <SquadTechHealth />
+          </Grid>
+        </Grid>
+      </Content>
     </Page>
   );
 };
