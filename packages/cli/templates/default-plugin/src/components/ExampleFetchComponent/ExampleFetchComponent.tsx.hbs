@@ -14,6 +14,11 @@ const useStyles = makeStyles({
   table: {
     minWidth: 650,
   },
+  avatar: {
+    height: 32,
+    width: 32,
+    borderRadius: '50%',
+  },
 });
 
 type User = {
@@ -34,7 +39,7 @@ type User = {
     name: string; // "TFN",
     value: string; // "796260432"
   };
-  picture: object; // {large: "https://randomuser.me/api/portraits/men/95.jpg",…}
+  picture: { medium: string }; // {medium: "https://randomuser.me/api/portraits/men/95.jpg",…}
   nat: string; // "AU"
 };
 
@@ -50,6 +55,7 @@ export const DenseTable: FC<DenseTableProps> = ({ users }) => {
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
+            <TableCell>Avatar</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Nationality</TableCell>
@@ -58,6 +64,13 @@ export const DenseTable: FC<DenseTableProps> = ({ users }) => {
         <TableBody>
           {users.map(user => (
             <TableRow key={user.email}>
+              <TableCell>
+                <img
+                  src={user.picture.medium}
+                  className={classes.avatar}
+                  alt={user.name.first}
+                />
+              </TableCell>
               <TableCell>
                 {user.name.first} {user.name.last}
               </TableCell>
