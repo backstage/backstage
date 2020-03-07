@@ -5,6 +5,8 @@ on:
     paths:
       - '*'
       - '.github/workflows/frontend.yml'
+on:
+  push:
     paths-ignore:
       - 'backend/inventory/**'
       - 'backend/scaffolder/**'
