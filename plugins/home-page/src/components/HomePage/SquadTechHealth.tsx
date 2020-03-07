@@ -6,9 +6,7 @@ import { HorizontalScrollGrid, ProgressCard } from '@spotify-backstage/core';
 const SquadTechHealth: FC<{}> = () => {
   return (
     <>
-      <Typography variant="h3" style={{ padding: '8px 0 16px 0' }}>
-        Team Metrics
-      </Typography>
+      <Typography variant="h3">Team Metrics</Typography>
       <HorizontalScrollGrid scrollStep={400} scrollSpeed={100}>
         <Grid item>
           <ProgressCard

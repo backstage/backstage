@@ -48,7 +48,7 @@ const HomePage: FC<{}> = () => {
       <Content>
         <Grid container direction="row" spacing={3}>
           <Grid item xs={6}>
-            <Typography variant="h3" style={{ padding: '8px 0 16px 0' }}>
+            <Typography variant="h3">
               Things you own
             </Typography>
             <InfoCard maxWidth>
