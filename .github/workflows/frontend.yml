@@ -5,6 +5,8 @@ on:
     paths:
       - '*'
       - '.github/workflows/frontend.yml'
+      - '!backend/inventory/**'
+      - '!backend/scaffolder/**'
 
 jobs:
   build:
