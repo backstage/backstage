@@ -10,4 +10,5 @@
 - [ ] Relevant documentation updated
 - [ ] Prettier run on changed files
 - [ ] Tests added for new functionality
+- [ ] [CODEOWNERS](./CODEOWNERS) updated (for new stuff)
 - [ ] Regression tests added for bug fixes
