@@ -4,6 +4,7 @@
   "compilerOptions": {
     "allowJs": true,
     "noEmit": false,
+    "declarationMap": true,
     "incremental": true
   }
 }
