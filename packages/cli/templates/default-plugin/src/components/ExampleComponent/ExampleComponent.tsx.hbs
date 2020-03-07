@@ -13,34 +13,31 @@ import ExampleFetchComponent from '../ExampleFetchComponent';
 
 const ExampleComponent: FC<{}> = () => (
   <Page theme={pageTheme.tool}>
-    <div className={classes.mainContentArea}>
-      <Header title="Welcome to {{ id }}!" subtitle="Optional subtitle">
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content>
-        <ContentHeader title="Plugin title" />
-        <Grid
-          container
-          spacing={3}
-          direction="column"
-          className={classes.pageBody}
-        >
-          <Grid item>
-            <InfoCard title="Information card" maxWidth>
-              <Typography variant="body1">
-                All content should be wrapped in a card like this.
-              </Typography>
-            </InfoCard>
-          </Grid>
-          <Grid item>
-            <InfoCard title="Example User List (fetching data from randomuser.me)">
-              <ExampleFetchComponent />
-            </InfoCard>
-          </Grid>
+    <Header title="Welcome to {{ id }}!" subtitle="Optional subtitle">
+      <HeaderLabel label="Owner" value="Team X" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+    <Content>
+      <ContentHeader title="Plugin title" />
+      <Grid
+        container
+        spacing={3}
+        direction="column"
+      >
+        <Grid item>
+          <InfoCard title="Information card" maxWidth>
+            <Typography variant="body1">
+              All content should be wrapped in a card like this.
+            </Typography>
+          </InfoCard>
         </Grid>
-      </Content>
-    </div>
+        <Grid item>
+          <InfoCard title="Example User List (fetching data from randomuser.me)">
+            <ExampleFetchComponent />
+          </InfoCard>
+        </Grid>
+      </Grid>
+    </Content>
   </Page>
 );
 
