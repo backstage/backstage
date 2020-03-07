@@ -7,6 +7,7 @@ import {
   theme as pageTheme,
   Content,
   ContentHeader,
+  HeaderLabel,
 } from '@spotify-backstage/core';
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
@@ -26,7 +27,10 @@ const ExampleComponent: FC<{}> = () => {
   return (
     <Page theme={pageTheme.tool}>
       <div className={classes.mainContentArea}>
-        <Header title="Welcome to {{ id }}!" subtitle="Optional subtitle" />
+        <Header title="Welcome to {{ id }}!" subtitle="Optional subtitle">
+          <HeaderLabel label="Owner" value="Team X" />
+          <HeaderLabel label="Lifecycle" value="Alpha" />
+        </Header>
         <Content>
           <ContentHeader title="Plugin title" />
           <Grid
