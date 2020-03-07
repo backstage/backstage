@@ -1,19 +1,17 @@
 {
   "name": "@spotify-backstage/cli",
-  "version": "1.3.0",
-  "main": "src/index.ts",
-  "main:src": "src/index.ts",
+  "version": "1.4.0",
+  "main": "dist",
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
     "exec": "npx ts-node ./src",
-    "build": "web-scripts build",
+    "build": "tsc --outDir dist --noEmit false --module CommonJS",
     "lint": "web-scripts lint",
     "test": "web-scripts test",
     "start": "nodemon ."
   },
   "devDependencies": {
-    "@spotify/web-scripts": "^6.0.0",
     "@types/fs-extra": "^8.1.0",
     "@types/html-webpack-plugin": "^3.2.2",
     "@types/inquirer": "^6.5.0",
@@ -33,6 +31,7 @@
   "dependencies": {
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
+    "@spotify/web-scripts": "^6.0.0",
     "chokidar": "^3.3.1",
     "commander": "^4.1.1",
     "dashify": "^2.0.0",
@@ -52,7 +51,7 @@
   "files": [
     "templates",
     "bin",
-    "cjs"
+    "dist"
   ],
   "nodemonConfig": {
     "watch": "./src",
