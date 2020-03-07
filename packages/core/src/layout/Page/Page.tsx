@@ -1,20 +1,31 @@
-import React, { Component } from 'react';
-import { theme } from './PageThemeProvider';
+import React, { FC } from 'react';
+import { PageTheme, pageTheme } from './PageThemeProvider';
+import { makeStyles } from '@material-ui/core';
 
-type Theme = typeof theme['service'];
+export const Theme = React.createContext<PageTheme>(pageTheme.service);
 
-export const Theme = React.createContext<Theme>(theme.service);
+const useStyles = makeStyles(() => ({
+  root: {
+    display: 'grid',
+    gridTemplateAreas:
+      "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
+    gridTemplateRows: 'auto auto 1fr',
+    gridTemplateColumns: 'auto 1fr auto',
+    minHeight: '100%',
+  },
+}));
 
-class Page extends Component<{ theme: Theme }> {
-  static defaultProps = {
-    theme: theme.home,
-  };
+type Props = {
+  theme?: PageTheme;
+};
 
-  render() {
-    const { theme, children } = this.props;
-
-    return <Theme.Provider value={theme}>{children}</Theme.Provider>;
-  }
-}
+const Page: FC<Props> = ({ theme = pageTheme.home, children }) => {
+  const classes = useStyles();
+  return (
+    <Theme.Provider value={theme}>
+      <div className={classes.root}>{children}</div>
+    </Theme.Provider>
+  );
+};
 
 export default Page;

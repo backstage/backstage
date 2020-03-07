@@ -17,11 +17,11 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
     'background-repeat': 'no-repeat',
     'background-size': 'cover',
-    opacity:0.1,
-  }
+    opacity: 0.1,
+  },
 }));
 
-const Burst = ({theme}) => {
+const Burst = ({ theme }) => {
   const classes = useStyles();
 
   return (
@@ -29,6 +29,6 @@ const Burst = ({theme}) => {
       <div className={classes.burstShape} style={theme.burstShape} />
     </div>
   );
-}
+};
 
 export default Burst;
