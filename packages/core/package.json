@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "license": "Apache-2.0",
   "private": false,
-  "main": "dist/cjs",
+  "main": "dist/cjs/index.js",
+  "types": "dist/cjs/index.d.ts",
   "scripts": {
     "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS",
     "lint": "web-scripts lint",

@@ -1,7 +1,8 @@
 {
   "name": "@spotify-backstage/plugin-home-page",
   "version": "0.0.0",
-  "main": "dist/cjs",
+  "main": "dist/cjs/index.js",
+  "types": "dist/cjs/index.d.ts",
   "devDependencies": {
     "@spotify-backstage/cli": "^1.2.0",
     "@spotify-backstage/core": "1.0.0",
