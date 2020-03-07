@@ -6,9 +6,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
+import { Progress } from '@spotify-backstage/core';
 
 const useStyles = makeStyles({
   table: {
@@ -92,7 +92,7 @@ const ExampleFetchComponent: FC<{}> = () => {
   }, []);
 
   if (loading) {
-    return <LinearProgress data-testid="progress" />;
+    return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
