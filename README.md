@@ -7,7 +7,7 @@
 
 Backstage is an open platform for building developer portals.
 
-The philosophy behind Backstage is simple: don't expose your engineers to the full complexity of all your infrastructure tooling and services -- hide it behind a _single_ centralized, consistent user-friendly interface.
+The philosophy behind Backstage is simple: Don't expose your engineers to the full complexity of your infrastructure tooling. Engineers should be shipping code — not figuring out a whole new toolset every time they want to implement the basics.
 
 ![headline](headline.png)
 
@@ -17,10 +17,10 @@ At Spotify we believe that a better developer experience leads to happier and mo
 
 The Backstage platform consists of a number of different components:
 
-- **frontend** Main web application that users interact with. It's built up by a number of different _Plugins_. Plugins all use a common set of platform API's and reusable UI components. Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
-- **backend** GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
-- **proxy** Terminates HTTPS and exposes any RESTful API to Plugins.
-- **identity** A backend service that holds your organisation's metadata.
+- **frontend** - Main web application that users interact with. It's built up by a number of different _Plugins_. Plugins all use a common set of platform API's and reusable UI components. Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
+- **backend** (not released yet) - GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
+- **proxy** - Terminates HTTPS and exposes any RESTful API to Plugins.
+- **identity** (not released yet) - A backend service that holds your organisation's metadata.
 
 ![overview](backstage_overview.png)
 
