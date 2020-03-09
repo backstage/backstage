@@ -11,6 +11,7 @@ export { default as Header } from './layout/Header/Header';
 export { default as HeaderLabel } from './layout/HeaderLabel';
 export { default as InfoCard } from './layout/InfoCard';
 export { default as ErrorBoundary } from './layout/ErrorBoundary';
+export * from './layout/Sidebar';
 export { default as BackstageTheme } from './theme/BackstageTheme';
 export { COLORS } from './theme/BackstageTheme';
 export { default as HorizontalScrollGrid } from './components/HorizontalScrollGrid';
