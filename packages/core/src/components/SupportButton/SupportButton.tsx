@@ -16,9 +16,9 @@ import GroupIcon from '@material-ui/icons/Group';
 // import { StackOverflow, StackOverflowTag } from 'shared/components/layout';
 
 type Props = {
-  slackChannel: string | string[];
-  email: string | string[];
-  plugin: any;
+  slackChannel?: string | string[];
+  email?: string | string[];
+  plugin?: any;
 };
 
 const useStyles = makeStyles(theme => ({

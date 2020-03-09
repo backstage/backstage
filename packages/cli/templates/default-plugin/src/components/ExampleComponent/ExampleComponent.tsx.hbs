@@ -8,6 +8,7 @@ import {
   Content,
   ContentHeader,
   HeaderLabel,
+  SupportButton
 } from '@spotify-backstage/core';
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
@@ -18,7 +19,7 @@ const ExampleComponent: FC<{}> = () => (
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
     <Content>
-      <ContentHeader title="Plugin title" />
+      <ContentHeader title="Plugin title"><SupportButton></SupportButton></ContentHeader>
       <Grid
         container
         spacing={3}
