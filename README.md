@@ -11,16 +11,19 @@ The philosophy behind Backstage is simple: Don't expose your engineers to the fu
 
 ![headline](headline.png)
 
-At Spotify we believe that a better developer experience leads to happier and more productive engineers.
+At Spotify we [strongly believe](https://backstage.io/the-spotify-story) that a better developer experience leads to happier and more productive engineers.
 
 ## Overview
 
 The Backstage platform consists of a number of different components:
 
-- **frontend** - Main web application that users interact with. It's built up by a number of different _Plugins_. Plugins all use a common set of platform API's and reusable UI components. Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
-- **backend** (not released yet) - GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
+- **frontend** - Main web application that users interact with. It's built up by a number of different _Plugins_. 
+- **plugins** - Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform API's and reusable UI components. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
+- **backend** * - GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
 - **proxy** - Terminates HTTPS and exposes any RESTful API to Plugins.
-- **identity** (not released yet) - A backend service that holds your organisation's metadata.
+- **identity** * - A backend service that holds your organisation's metadata.
+
+_* not yet released_ 
 
 ![overview](backstage_overview.png)
 
@@ -28,23 +31,15 @@ The Backstage platform consists of a number of different components:
 
 ### Install Dependencies
 
-To run the frontend, you will need to have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git), [NodeJS](https://nodejs.org/en/download/), and [yarn](https://classic.yarnpkg.com/en/docs/install#mac-stable) installed.
+To run the frontend, you will need to have the following installed:
 
-For running the backend, depending on your OS, you need [Docker Desktop for Mac](https://docs.docker.com/docker-for-mac/install/), [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/install/), or for Linux, [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/#install-compose-on-linux-systems).
+* [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+* [NodeJS](https://nodejs.org/en/download/)
+* [yarn](https://classic.yarnpkg.com/en/docs/install#mac-stable)
 
-The above dependencies are enough to run and work on the Backstage frontend packages. To develop backend services, there are some more tools to install, see [backend/README.md](backend/README.md). To update protobuf definitions, you will need another set of tools, see [proto/README.md](proto/README.md).
+## Running the frontend locally
 
-## Running Locally
-
-The full local system consists of a collection of backend services, as well as a web application. From the root of the project directory, run the following in a terminal to start up all backend services locally:
-
-```bash
-$ cd backend
-
-$ docker-compose up --build
-```
-
-Once the backend services are up and running, open a separate terminal window and start the web app using the following commands from the project root:
+Open a terminal window and start the web app using the following commands from the project root:
 
 ```bash
 $ yarn # may take a while
@@ -68,7 +63,23 @@ This will prompt you to enter an ID for your plugin, and then create your plugin
 
 If you have `yarn start` already running you should be able to see the default page for your new plugin at [localhost:3000/my-plugin](http://localhost:3000/my-plugin), if you called the plugin `"my-plugin"`.
 
+## Running the backend(s) locally
+
+For running the backend, depending on your OS, you need [Docker Desktop for Mac](https://docs.docker.com/docker-for-mac/install/), [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/install/), or for Linux, [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/#install-compose-on-linux-systems).
+
+The full local system consists of a collection of backend services, as well as a web application. From the root of the project directory, run the following in a terminal to start up all backend services locally:
+
+```bash
+$ cd backend
+
+$ docker-compose up --build
+```
+
+To develop backend services, there are some more tools to install, see [backend/README.md](backend/README.md). To update protobuf definitions, you will need another set of tools, see [proto/README.md](proto/README.md).
+
 ## Documentation
+
+_TODO: Add links to docs on backstage.io_
 
 ## License
 
