@@ -41,6 +41,7 @@ const main = (argv: string[]) => {
   program
     .command('plugin:test')
     .option('--watch', 'Enable watch mode')
+    .option('--coverage', 'Report test coverage')
     .description('Run all tests for a plugin')
     .action(pluginTest);
 
