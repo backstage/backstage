@@ -1,10 +1,10 @@
-import { BackstageTheme, createApp } from '@spotify-backstage/core';
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
+import { BackstageTheme, createApp } from '@spotify-backstage/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import * as plugins from './plugins';
-import SideBar from './components/SideBar';
+import Root from './components/Root';
 import entities from './entities';
+import * as plugins from './plugins';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -22,42 +22,22 @@ const useStyles = makeStyles(theme => ({
       textDecoration: 'none',
     },
   },
-  root: {
-    display: 'grid',
-    // FIXME: Don't used a fixed width here
-    gridTemplateColumns: '64px auto',
-    gridTemplateRows: '1fr',
-    width: '100%',
-    height: '100%',
-  },
 }));
 
-const AppShell: FC<{}> = ({ children }) => {
-  const classes = useStyles();
-
-  return (
-    <div className={classes.root}>
-      <SideBar />
-      {children}
-    </div>
-  );
-};
-
 const app = createApp();
-
 app.registerEntityKind(...entities);
 app.registerPlugin(...Object.values(plugins));
-
 const AppComponent = app.build();
 
 const App: FC<{}> = () => {
+  useStyles();
   return (
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
         <Router>
-          <AppShell>
+          <Root>
             <AppComponent />
-          </AppShell>
+          </Root>
         </Router>
       </ThemeProvider>
     </CssBaseline>
