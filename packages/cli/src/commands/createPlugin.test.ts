@@ -97,7 +97,7 @@ describe('createPlugin', () => {
         createTemporaryPluginFolder(tempDir);
         movePlugin(tempDir, pluginDir, id);
         expect(fs.existsSync(pluginDir)).toBe(true);
-        expect(pluginDir).toMatch(`/packages\/plugins\/${id}`);
+        expect(pluginDir).toMatch(`/plugins\/${id}`);
       } finally {
         del.sync(tempDir, { force: true });
         del.sync(rootDir, { force: true });
