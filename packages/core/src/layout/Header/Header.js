@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Typography, withStyles, Tooltip } from '@material-ui/core';
 import { Theme } from '../Page/Page';
 // import { Link } from 'shared/components';
-import Burst from './Burst';
+import Waves from './Waves';
 import Helmet from 'react-helmet';
 
 class Header extends Component {
@@ -83,7 +83,7 @@ class Header extends Component {
         <Theme.Consumer>
           {theme => (
             <header style={style} className={classes.header}>
-              <Burst theme={theme} />
+              <Waves theme={theme} />
               <div className={classes.leftItemsBox}>
                 {this.typeFragment()}
                 {this.titleFragment()}
