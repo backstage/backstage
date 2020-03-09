@@ -6,7 +6,7 @@ import watch from './commands/watch-deps';
 import pluginBuild from './commands/plugin/build';
 import pluginLint from './commands/plugin/lint';
 import pluginServe from './commands/plugin/serve';
-import pluginTest from './commands/plugin/test';
+import pluginTest from './commands/plugin/testCommand';
 
 process.on('unhandledRejection', err => {
   throw err;
