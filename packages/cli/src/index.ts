@@ -6,7 +6,7 @@ import watch from './commands/watch-deps';
 import pluginBuild from './commands/plugin/build';
 import pluginLint from './commands/plugin/lint';
 import pluginServe from './commands/plugin/serve';
-import pluginTest from './commands/plugin/test';
+import pluginTest from './commands/plugin/testCommand';
 
 process.on('unhandledRejection', err => {
   throw err;
@@ -41,6 +41,7 @@ const main = (argv: string[]) => {
   program
     .command('plugin:test')
     .option('--watch', 'Enable watch mode')
+    .option('--coverage', 'Report test coverage')
     .description('Run all tests for a plugin')
     .action(pluginTest);
 
