@@ -8,6 +8,9 @@ export default async (cmd: Command) => {
   if (cmd.watch) {
     args.push('--watch');
   }
+  if (cmd.coverage) {
+    args.push('--coverage');
+  }
 
   try {
     const result = spawnSync('web-scripts', args, { stdio: 'inherit' });
