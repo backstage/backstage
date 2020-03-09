@@ -17,13 +17,13 @@ At Spotify we [strongly believe](https://backstage.io/the-spotify-story) that a 
 
 The Backstage platform consists of a number of different components:
 
-- **frontend** - Main web application that users interact with. It's built up by a number of different _Plugins_. 
+- **frontend** - Main web application that users interact with. It's built up by a number of different _Plugins_.
 - **plugins** - Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform API's and reusable UI components. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
-- **backend** * - GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
-- **proxy** - Terminates HTTPS and exposes any RESTful API to Plugins.
-- **identity** * - A backend service that holds your organisation's metadata.
+- **backend** \* - GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
+- **proxy** \* - Terminates HTTPS and exposes any RESTful API to Plugins.
+- **identity** \* - A backend service that holds your organisation's metadata.
 
-_* not yet released_ 
+_\* not yet released_
 
 ![overview](backstage_overview.png)
 
@@ -62,20 +62,6 @@ $ yarn create-plugin
 This will prompt you to enter an ID for your plugin, and then create your plugin inside the `plugins/` directory. The plugin will be automatically included in the app by modifing the app's `package.json` and `src/plugins.ts`.
 
 If you have `yarn start` already running you should be able to see the default page for your new plugin at [localhost:3000/my-plugin](http://localhost:3000/my-plugin), if you called the plugin `"my-plugin"`.
-
-## Running the backend(s) locally
-
-For running the backend, depending on your OS, you need [Docker Desktop for Mac](https://docs.docker.com/docker-for-mac/install/), [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/install/), or for Linux, [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/#install-compose-on-linux-systems).
-
-The full local system consists of a collection of backend services, as well as a web application. From the root of the project directory, run the following in a terminal to start up all backend services locally:
-
-```bash
-$ cd backend
-
-$ docker-compose up --build
-```
-
-To develop backend services, there are some more tools to install, see [backend/README.md](backend/README.md). To update protobuf definitions, you will need another set of tools, see [proto/README.md](proto/README.md).
 
 ## Documentation
 
