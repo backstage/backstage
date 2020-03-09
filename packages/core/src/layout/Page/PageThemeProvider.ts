@@ -68,6 +68,11 @@ export const gradients = {
     colors: ['#69B9FF', '#ACCEEC'],
     style: 'linear-gradient(135deg, #69B9FF 0%, #ACCEEC 100%)',
   },
+  teal: {
+    colors: ['#1F8A77', 'rgba(155, 240, 225, 1.0)'],
+    style:
+      'linear-gradient(180.91deg, rgba(155, 240, 225, 0.72) -42.22%, rgba(155, 240, 225, 0) 85.3%)',
+  },
 };
 
 export type PageTheme = {
@@ -86,7 +91,7 @@ export const pageTheme: Record<string, PageTheme> = {
   },
   home: {
     activeNavLinkColor: '#00814e',
-    gradient: gradients.green,
+    gradient: gradients.teal,
   },
   org: {
     activeNavLinkColor: '#6044ef',
