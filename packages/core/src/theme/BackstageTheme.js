@@ -101,119 +101,121 @@ const extendedThemeConfig = {
 
 const createOverrides = theme => {
   return {
-    MuiTableRow: {
-      // Alternating row backgrounds
-      root: {
-        '&:nth-of-type(odd)': {
-          backgroundColor: theme.palette.background.default,
+    overrides: {
+      MuiTableRow: {
+        // Alternating row backgrounds
+        root: {
+          '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.background.default,
+          },
+        },
+        // Use pointer for hoverable rows
+        hover: {
+          '&:hover': {
+            cursor: 'pointer',
+          },
+        },
+        // Alternating head backgrounds
+        head: {
+          '&:nth-of-type(odd)': {
+            backgroundColor: COLORS.NAMED.WHITE,
+          },
         },
       },
-      // Use pointer for hoverable rows
-      hover: {
-        '&:hover': {
-          cursor: 'pointer',
+      // Tables are more dense than default mui tables
+      MuiTableCell: {
+        root: {
+          wordBreak: 'break-word',
+          overflow: 'hidden',
+          verticalAlign: 'middle',
+          lineHeight: '1',
+          margin: 0,
+          padding: '8px',
+          borderBottom: 0,
+        },
+        head: {
+          wordBreak: 'break-word',
+          overflow: 'hidden',
+          color: 'rgb(179, 179, 179)',
+          fontWeight: 'normal',
+          lineHeight: '1',
         },
       },
-      // Alternating head backgrounds
-      head: {
-        '&:nth-of-type(odd)': {
-          backgroundColor: COLORS.NAMED.WHITE,
+      MuiTabs: {
+        // Tabs are smaller than default mui tab rows
+        root: {
+          minHeight: 24,
         },
       },
-    },
-    // Tables are more dense than default mui tables
-    MuiTableCell: {
-      root: {
-        wordBreak: 'break-word',
-        overflow: 'hidden',
-        verticalAlign: 'middle',
-        lineHeight: '1',
-        margin: 0,
-        padding: '8px',
-        borderBottom: 0,
-      },
-      head: {
-        wordBreak: 'break-word',
-        overflow: 'hidden',
-        color: 'rgb(179, 179, 179)',
-        fontWeight: 'normal',
-        lineHeight: '1',
-      },
-    },
-    MuiTabs: {
-      // Tabs are smaller than default mui tab rows
-      root: {
-        minHeight: 24,
-      },
-    },
-    MuiTab: {
-      // Tabs are smaller and have a hover background
-      root: {
-        color: theme.palette.link,
-        minHeight: 24,
-        textTransform: 'initial',
-        '&:hover': {
-          color: darken(theme.palette.link, 0.3),
-          background: lighten(theme.palette.link, 0.95),
+      MuiTab: {
+        // Tabs are smaller and have a hover background
+        root: {
+          color: theme.palette.link,
+          minHeight: 24,
+          textTransform: 'initial',
+          '&:hover': {
+            color: darken(theme.palette.link, 0.3),
+            background: lighten(theme.palette.link, 0.95),
+          },
+          [theme.breakpoints.up('md')]: {
+            minWidth: 120,
+            fontSize: theme.typography.pxToRem(14),
+            fontWeight: 500,
+          },
         },
-        [theme.breakpoints.up('md')]: {
-          minWidth: 120,
-          fontSize: theme.typography.pxToRem(14),
-          fontWeight: 500,
+        textColorPrimary: {
+          color: theme.palette.link,
         },
       },
-      textColorPrimary: {
-        color: theme.palette.link,
-      },
-    },
-    MuiTableSortLabel: {
-      // No color change on hover, just rely on the arrow showing up instead.
-      root: {
-        color: 'inherit',
-        '&:hover': {
+      MuiTableSortLabel: {
+        // No color change on hover, just rely on the arrow showing up instead.
+        root: {
+          color: 'inherit',
+          '&:hover': {
+            color: 'inherit',
+          },
+          '&:focus': {
+            color: 'inherit',
+          },
+        },
+        // Bold font for highlighting selected column
+        active: {
+          fontWeight: 'bold',
           color: 'inherit',
         },
-        '&:focus': {
-          color: 'inherit',
+      },
+      MuiListItemText: {
+        dense: {
+          // Default dense list items to adding ellipsis for really long str...
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
         },
       },
-      // Bold font for highlighting selected column
-      active: {
-        fontWeight: 'bold',
-        color: 'inherit',
+      MuiButton: {
+        text: {
+          // Text buttons have less padding by default, but we want to keep the original padding
+          padding: null,
+        },
       },
-    },
-    MuiListItemText: {
-      dense: {
-        // Default dense list items to adding ellipsis for really long str...
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
+      MuiChip: {
+        root: {
+          // By default there's no margin, but it's usually wanted, so we add some trailing margin
+          marginRight: theme.spacing(1),
+          marginBottom: theme.spacing(1),
+        },
       },
-    },
-    MuiButton: {
-      text: {
-        // Text buttons have less padding by default, but we want to keep the original padding
-        padding: null,
+      MuiCardHeader: {
+        root: {
+          // Reduce padding between header and content
+          paddingBottom: 0,
+        },
       },
-    },
-    MuiChip: {
-      root: {
-        // By default there's no margin, but it's usually wanted, so we add some trailing margin
-        marginRight: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-      },
-    },
-    MuiCardHeader: {
-      root: {
-        // Reduce padding between header and content
-        paddingBottom: 0,
-      },
-    },
-    MuiCardActions: {
-      root: {
-        // We default to putting the card actions at the end
-        justifyContent: 'flex-end',
+      MuiCardActions: {
+        root: {
+          // We default to putting the card actions at the end
+          justifyContent: 'flex-end',
+        },
       },
     },
   };
@@ -224,7 +226,6 @@ const extendedTheme = createMuiTheme(extendedThemeConfig);
 // V1 theming
 // https://material-ui-next.com/customization/themes/
 // For CSS it is advised to use JSS, see https://material-ui-next.com/customization/css-in-js/
-
 const BackstageTheme = { ...extendedTheme, ...createOverrides(extendedTheme) };
 
 // Temporary workaround for files incorrectly importing the theme directly

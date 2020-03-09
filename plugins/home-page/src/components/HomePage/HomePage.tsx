@@ -5,12 +5,17 @@ import {
   Content,
   EntityLink,
   InfoCard,
-  SortableTable,
   Header,
   Page,
   pageTheme,
 } from '@spotify-backstage/core';
 import SquadTechHealth from './SquadTechHealth';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 const STATIC_DATA = [
   { id: 'backstage', kind: 'service' },
@@ -18,11 +23,6 @@ const STATIC_DATA = [
 ];
 
 const HomePage: FC<{}> = () => {
-  const columns = [
-    { id: 'entity', label: 'ID' },
-    { id: 'kind', label: 'Kind' },
-  ];
-
   const data = STATIC_DATA.map(({ id, kind }) => {
     return {
       id,
@@ -48,11 +48,26 @@ const HomePage: FC<{}> = () => {
       <Content>
         <Grid container direction="row" spacing={3}>
           <Grid item xs={6}>
-            <Typography variant="h3">
-              Things you own
-            </Typography>
+            <Typography variant="h3">Things you own</Typography>
             <InfoCard maxWidth>
-              <SortableTable data={data} columns={columns} orderBy="id" />
+              <TableContainer>
+                <Table size="small" aria-label="a dense table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Kind</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {data.map(d => (
+                      <TableRow key={d.id}>
+                        <TableCell>{d.entity}</TableCell>
+                        <TableCell>{d.kind}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </InfoCard>
           </Grid>
           <Grid item xs={6}>
