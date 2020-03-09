@@ -11,6 +11,8 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import GroupIcon from '@material-ui/icons/Group';
+import HelpIcon from '@material-ui/icons/Help';
+
 // import { EmailIcon, SlackIcon, SupportIcon } from 'shared/icons';
 // import { Button, Link } from 'shared/components';
 // import { StackOverflow, StackOverflowTag } from 'shared/components/layout';
@@ -61,7 +63,7 @@ const SupportButton: FC<Props> = ({
   return (
     <Fragment>
       <Button color="primary" onClick={onClickHandler}>
-        <GroupIcon className={classes.leftIcon} />
+        <HelpIcon className={classes.leftIcon} />
         Support
       </Button>
       <Popover
