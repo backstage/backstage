@@ -11,8 +11,6 @@ The philosophy behind Backstage is simple: Don't expose your engineers to the fu
 
 ![headline](headline.png)
 
-At Spotify we [strongly believe](https://backstage.io/the-spotify-story) that a better developer experience leads to happier and more productive engineers.
-
 ## Project roadmap
 
 Backstage has been in production for over 2 years inside Spotify. But the Open Source version is still in an early stage. We are envisioning three phases of the project and we are commited to deliver on all of them:
