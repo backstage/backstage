@@ -37,3 +37,8 @@ jobs:
           yarn test
         env:
           CI: true
+      # This creates a new plugin and pollutes the workspace, so it should be run last.
+      - name: verify app serve and plugin creation
+        run: |
+          sudo sysctl fs.inotify.max_user_watches=524288
+          node scripts/cli-e2e-test.js
