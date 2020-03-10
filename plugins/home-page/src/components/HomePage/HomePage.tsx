@@ -1,9 +1,8 @@
 import React, { FC } from 'react';
-import { Typography, Grid } from '@material-ui/core';
+import { Typography, Link, Grid } from '@material-ui/core';
 import HomePageTimer from '../HomepageTimer';
 import {
   Content,
-  EntityLink,
   InfoCard,
   Header,
   Page,
@@ -27,9 +26,9 @@ const HomePage: FC<{}> = () => {
     return {
       id,
       entity: (
-        <EntityLink kind={kind} id={id}>
+        <Link href={`entity/${kind}/${id}`}>
           <Typography color="primary">{id}</Typography>
-        </EntityLink>
+        </Link>
       ),
       kind: <Typography>{kind}</Typography>,
     };

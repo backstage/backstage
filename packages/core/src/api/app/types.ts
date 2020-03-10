@@ -1,9 +1,7 @@
 import { ComponentType } from 'react';
-import { EntityConfig } from '../entity/EntityKind';
 import { IconComponent, SystemIconKey } from '../../icons';
 
 export type App = {
-  getEntityConfig(kind: string): EntityConfig;
   getSystemIcon(key: SystemIconKey): IconComponent;
 };
 
