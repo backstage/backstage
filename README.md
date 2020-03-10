@@ -17,11 +17,11 @@ Backstage has been in production for over 2 years inside Spotify. But the Open S
 
 * **Phase 1: Extensible frontend platform** (now) - Backstage helps you get started building a single consistent UI layer for your internal infrastructure. Creating a Plugin is super simple.
 
-* **Phase 2: Software inventory** (next 2-3 months) - A central _software inventory_ with clear ownership and the ability to easily create and manage software at scale. Regardless if your developers want to create a new library, see their service's deployment status in Kubernetes or the test coverage for a website -- Backstage provides all of those tools in a _single_ developer portal.
+* **Phase 2: Software inventory** (next 2-3 months) - A central _software inventory_ with clear ownership and the ability to easily create and manage software at scale. Regardless if your developers want to create a new library, see their service's deployment status in Kubernetes or the test coverage for a website -- Backstage provides all of those tools - and many more - in a _single_ developer portal.
 
 * **Phase 3: Ecosystem** (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
 
-The ultimate goal of Backstage is to become the de facto standard UI layer for the infrastructure landscape. We know. This is a **bold** message. We can't do it alone. If this sounds interesting, let's talk: [alund@spotify.com](mailto:alund@spotify.com).
+The ultimate goal of Backstage is to become the de facto standard UI layer for the infrastructure landscape. We know. This is a **bold** message. And we can't do it alone. If this sounds interesting, let's talk: [alund@spotify.com](mailto:alund@spotify.com).
 
 ## Overview
 
