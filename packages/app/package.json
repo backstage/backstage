@@ -8,6 +8,7 @@
     "@spotify-backstage/cli": "^1.2.0",
     "@spotify-backstage/core": "1.0.0",
     "@spotify-backstage/plugin-home-page": "0.0.0",
+    "@spotify-backstage/plugin-welcome": "0.0.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",

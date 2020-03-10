@@ -1,9 +1,9 @@
 import { createPlugin } from '@spotify-backstage/core';
-import HomePage from './components/HomePage';
+import WelcomePage from './components/WelcomePage';
 
 export default createPlugin({
-  id: 'home-page',
+  id: 'welcome',
   register({ router }) {
-    router.registerRoute('/home', HomePage);
+    router.registerRoute('/', WelcomePage);
   },
 });
