@@ -1,6 +1,6 @@
 {
   "name": "@spotify-backstage/plugin-welcome",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
   "license": "Apache-2.0",
@@ -11,7 +11,8 @@
     "test": "backstage-cli plugin:test"
   },
   "devDependencies": {
-    "@spotify-backstage/cli": "^1.2.0"
+    "@spotify-backstage/core": "^0.1.0",
+    "@spotify-backstage/cli": "^0.1.0"
   },
   "dependencies": {
     "@material-ui/lab": "4.0.0-alpha.45"

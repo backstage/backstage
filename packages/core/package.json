@@ -1,6 +1,6 @@
 {
   "name": "@spotify-backstage/core",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "private": false,
   "main": "dist/cjs/index.js",
@@ -11,7 +11,7 @@
     "test": "web-scripts test"
   },
   "dependencies": {
-    "@spotify-backstage/cli": "^1.2.0",
+    "@spotify-backstage/cli": "^0.1.0",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@types/google-protobuf": "^3.7.2",
