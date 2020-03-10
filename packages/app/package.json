@@ -5,7 +5,6 @@
   "dependencies": {
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
-    "@react-workspaces/react-scripts": "^3.3.0-alpha-08",
     "@spotify-backstage/cli": "^1.2.0",
     "@spotify-backstage/core": "1.0.0",
     "@spotify-backstage/plugin-home-page": "0.0.0",
@@ -22,13 +21,9 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
+    "react-scripts": "^3.4.0",
     "react-use": "^13.24.0",
     "zen-observable": "^0.8.15"
-  },
-  "workspaces": {
-    "nohoist": [
-      "@react-workspaces/react-scripts"
-    ]
   },
   "scripts": {
     "start": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true backstage-cli watch-deps -- react-scripts start",
