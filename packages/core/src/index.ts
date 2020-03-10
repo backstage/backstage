@@ -1,8 +1,4 @@
 export * from './api';
-export {
-  default as EntityLink,
-  RelativeEntityLink,
-} from './components/EntityLink';
 export { default as Page } from './layout/Page';
 export { gradients, pageTheme, PageTheme } from './layout/Page';
 export { default as Content } from './layout/Content/Content';

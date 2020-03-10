@@ -1,6 +1,5 @@
 import { ComponentType } from 'react';
 import { PluginOutput, RoutePath, RouteOptions } from './types';
-import { IconComponent } from '../../icons';
 import { Widget } from '../widgetView/types';
 
 export type PluginConfig = {
@@ -10,7 +9,6 @@ export type PluginConfig = {
 
 export type PluginHooks = {
   router: RouterHooks;
-  entityPage: EntityPageHooks;
   widgets: WidgetHooks;
 };
 
@@ -24,21 +22,6 @@ export type RouterHooks = {
   registerRedirect(
     path: RoutePath,
     target: RoutePath,
-    options?: RouteOptions,
-  ): void;
-};
-
-type EntityPageSidebarItemOptions = {
-  title: string;
-  icon: IconComponent;
-  target: RoutePath;
-};
-
-export type EntityPageHooks = {
-  navItem(options: EntityPageSidebarItemOptions): void;
-  route(
-    path: RoutePath,
-    component: ComponentType<any>,
     options?: RouteOptions,
   ): void;
 };
@@ -63,45 +46,15 @@ export default class Plugin {
       return [];
     }
 
-    const { id } = this.config;
-
     const outputs = new Array<PluginOutput>();
 
     this.config.register({
       router: {
         registerRoute(path, component, options) {
-          if (path.startsWith('/entity/')) {
-            throw new Error(
-              `Plugin ${id} tried to register forbidden route ${path}`,
-            );
-          }
           outputs.push({ type: 'route', path, component, options });
         },
         registerRedirect(path, target, options) {
-          if (path.startsWith('/entity/')) {
-            throw new Error(
-              `Plugin ${id} tried to register forbidden redirect ${path}`,
-            );
-          }
           outputs.push({ type: 'redirect-route', path, target, options });
-        },
-      },
-      entityPage: {
-        navItem({ title, icon, target }) {
-          outputs.push({
-            type: 'entity-page-nav-item',
-            title,
-            icon,
-            target,
-          });
-        },
-        route(path, component, options) {
-          outputs.push({
-            type: 'entity-page-view-route',
-            path,
-            component,
-            options,
-          });
         },
       },
       widgets: {

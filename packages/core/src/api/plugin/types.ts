@@ -1,5 +1,4 @@
 import { ComponentType } from 'react';
-import { IconComponent } from '../../icons';
 import { Widget } from '../widgetView/types';
 
 export type RouteOptions = {
@@ -28,23 +27,4 @@ export type WidgetOutput = {
   widget: Widget;
 };
 
-export type EntityPageViewRouteOutput = {
-  type: 'entity-page-view-route';
-  path: RoutePath;
-  component: ComponentType<any>;
-  options?: RouteOptions;
-};
-
-export type EntityPageNavItemOutput = {
-  type: 'entity-page-nav-item';
-  title: string;
-  icon: IconComponent;
-  target: RoutePath;
-};
-
-export type PluginOutput =
-  | RouteOutput
-  | RedirectRouteOutput
-  | WidgetOutput
-  | EntityPageViewRouteOutput
-  | EntityPageNavItemOutput;
+export type PluginOutput = RouteOutput | RedirectRouteOutput | WidgetOutput;
