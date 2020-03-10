@@ -59,9 +59,7 @@ To create a new plugin, make sure you're run `yarn` to install dependencies, the
 $ yarn create-plugin
 ```
 
-This will prompt you to enter an ID for your plugin, and then create your plugin inside the `plugins/` directory. The plugin will be automatically included in the app by modifing the app's `package.json` and `src/plugins.ts`.
-
-If you have `yarn start` already running you should be able to see the default page for your new plugin at [localhost:3000/my-plugin](http://localhost:3000/my-plugin), if you called the plugin `"my-plugin"`.
+For more information see [Developing a Backstage Plugin](plugins/README.md)
 
 ## Documentation
 
