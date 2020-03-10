@@ -33,7 +33,7 @@ const useSidebarLogoStyles = makeStyles({
     color: '#fff',
   },
   titleDot: {
-    color: '#1DB954',
+    color: '#68c5b5',
   },
 });
 
