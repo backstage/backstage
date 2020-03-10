@@ -22,7 +22,8 @@
     "cross-env": "^7.0.0",
     "lerna": "^3.20.2",
     "prettier": "^1.19.1",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "zombie": "^6.1.4"
   },
   "dependencies": {
     "@types/classnames": "^2.2.9",
