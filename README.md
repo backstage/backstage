@@ -21,7 +21,7 @@ Backstage has been in production for over 2 years inside Spotify. But the Open S
 
 * **Phase 3: Ecosystem** (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
 
-The ultimate goal of Backstage is to become the de facto standard UI layer for the infrastructure landscape. We know. This is a **bold** message. And we can't do it alone. If this sounds interesting, let's talk: [alund@spotify.com](mailto:alund@spotify.com).
+The ultimate goal of Backstage is to become the de facto standard UI layer for the infrastructure landscape. We know. This is a **bold** message. And we can't do it alone. If this sounds interesting, jump in or reach out: [alund@spotify.com](mailto:alund@spotify.com).
 
 ## Overview
 
