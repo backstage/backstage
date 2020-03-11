@@ -47,7 +47,6 @@ const main = (argv: string[]) => {
 
   program
     .command('plugin:copyAssets')
-    .option('--watch', 'Enable watch mode')
     .description('Copy assets for a plugin')
     .action(pluginCopyAssets);
 
