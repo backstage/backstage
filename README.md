@@ -59,7 +59,7 @@ To create a new plugin, make sure you're run `yarn` to install dependencies, the
 $ yarn create-plugin
 ```
 
-For more information see [Developing a Backstage Plugin](plugins/README.md)
+For more information see [Developing a Backstage Plugin](plugins/README.md).
 
 ## Documentation
 

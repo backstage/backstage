@@ -1,13 +1,13 @@
 # Plugin Development in Backstage
-Backstage plugins provides features to an Backstage App. 
+Backstage plugins provide features to a Backstage App. 
 
 Each plugin is treated as a self-contained web app and can include almost any type of content. 
-Plugins all use a common set of platform API's and reusable UI components. 
-Plugins can fetch data either from a backend or through any RESTful API exposed directly or through 
-a proxy.
+Plugins all use a common set of platform APIs and reusable UI components. 
+Plugins can fetch data from external sources using the regular browser APIs or by depending on 
+external modules to do the work.
 
 ## Creating a new plugin
-On your command-line, invoke the `backstage-cli` to create a new plugin:
+On your command line, invoke the `backstage-cli` to create a new plugin:
 ```bash
 yarn create-plugin
 ```
@@ -22,12 +22,15 @@ plugin directly by navigating to `http://localhost:3000/my-plugin`.*
 
 ![](my-plugin_screenshot.png)
 
+## Developing guidelines
+
+
 ## Plugin concepts / API
 
 ### Routing
-Each plugin is responsible for registering it's components to corresponding routes in the app.
+Each plugin is responsible for registering its components to corresponding routes in the app.
 
-The app will call the `createPlugin` method on each plugin, passing in an `router` object with a set 
+The app will call the `createPlugin` method on each plugin, passing in a `router` object with a set 
 of methods on it.
 
 ```typescript
