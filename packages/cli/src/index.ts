@@ -19,6 +19,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import createPluginCommand from './commands/createPlugin';
 import watch from './commands/watch-deps';
+import pluginCopyAssets from './commands/plugin/copyAssets';
 import pluginBuild from './commands/plugin/build';
 import pluginLint from './commands/plugin/lint';
 import pluginServe from './commands/plugin/serve';
@@ -43,6 +44,12 @@ const main = (argv: string[]) => {
     .option('--watch', 'Enable watch mode')
     .description('Build a plugin')
     .action(pluginBuild);
+
+  program
+    .command('plugin:copyAssets')
+    .option('--watch', 'Enable watch mode')
+    .description('Copy assets for a plugin')
+    .action(pluginCopyAssets);
 
   program
     .command('plugin:lint')
