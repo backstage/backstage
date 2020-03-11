@@ -30,7 +30,7 @@ const WelcomePage: FC<{}> = () => {
         <ContentHeader title="Getting Started">
           <SupportButton></SupportButton>
         </ContentHeader>
-        <Grid container direction="row" spacing={3}>
+        <Grid container>
           <Grid item xs={12} md={6}>
             <InfoCard maxWidth>
               <Typography variant="body1" gutterBottom>
@@ -41,38 +41,35 @@ const WelcomePage: FC<{}> = () => {
               <Typography variant="h6" gutterBottom>
                 The Setup
               </Typography>
-              <Typography variant="body1" gutterBottom>
-                Backstage is put together from three base concepts, the core,
+              <Typography variant="body1" paragraph>
+                Backstage is put together from three base concepts: the core,
                 the app and the plugins.
               </Typography>
               <ul>
-                <li>The core is resonsible for base functionality.</li>
+                <li>The core is responsible for base functionality.</li>
                 <li>The app provides the base UI and connects the plugins.</li>
                 <li>
                   The plugins make Backstage useful for the end users with
-                  specific views and functionaity.
+                  specific views and functionality.
                 </li>
               </ul>
               <Typography variant="h6" gutterBottom>
                 Try It Out
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1" paragraph>
                 We suggest you either check out the documentation for{' '}
                 <Link href="https://github.com/spotify/backstage#plugins">
                   creating a plugin
                 </Link>{' '}
                 or have a look in the code for the{' '}
-                <RouterLink
-                  to="/home"
-                  className="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary"
-                >
+                <Link component={RouterLink} to="/home">
                   Home Page
-                </RouterLink>{' '}
+                </Link>{' '}
                 in the directory "plugins/home-page/src".
               </Typography>
             </InfoCard>
           </Grid>
-          <Grid item xs={12} md={4} lg={3}>
+          <Grid item>
             <InfoCard>
               <Typography variant="h5">Quick Links</Typography>
               <List>
