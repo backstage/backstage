@@ -24,6 +24,8 @@ plugin directly by navigating to `http://localhost:3000/my-plugin`.*
 
 ## Developing guidelines
 
+- Consider writing plugins in `TypeScript`.
+- Plan the directory structure of your plugin so that it becomes easy to manage.
 
 ## Plugin concepts / API
 
