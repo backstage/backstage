@@ -42,13 +42,15 @@ describe('createPlugin', () => {
     it('should generate a valid output with inserted values', () => {
       const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
       try {
-        const sourceData = '{"name": "@spotify-backstage/{{id}}"}';
-        const targetData = '{"name": "@spotify-backstage/foo"}';
+        const sourceData =
+          '{"name": "@spotify-backstage/{{id}}", "version": "{{version}}"}';
+        const targetData =
+          '{"name": "@spotify-backstage/foo", "version": "0.0.0"}';
         const sourcePath = path.join(tempDir, 'in.hbs');
         const targetPath = path.join(tempDir, 'out.json');
         fs.writeFileSync(sourcePath, sourceData);
 
-        createFileFromTemplate(sourcePath, targetPath, { id: 'foo' });
+        createFileFromTemplate(sourcePath, targetPath, { id: 'foo' }, '0.0.0');
 
         expect(fs.existsSync(targetPath)).toBe(true);
         expect(fs.readFileSync(targetPath).toString()).toBe(targetData);
@@ -77,7 +79,12 @@ describe('createPlugin', () => {
         'test.txt',
       );
       try {
-        await createFromTemplateDir(templateRootDir, destinationRootDir, {});
+        await createFromTemplateDir(
+          templateRootDir,
+          destinationRootDir,
+          {},
+          '0.0.0',
+        );
         expect(fs.existsSync(subDir)).toBe(true);
         expect(fs.existsSync(testFile)).toBe(true);
       } finally {
