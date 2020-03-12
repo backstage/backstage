@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import ApiRef, { ApiRefConfig } from './apis/ApiRef';
-import AppBuilder from './app/AppBuilder';
-import WidgetViewBuilder from './widgetView/WidgetViewBuilder';
-import BackstagePlugin, { PluginConfig } from './plugin/Plugin';
+import ApiRef from './ApiRef';
 
-export function createApp() {
-  return new AppBuilder();
-}
+export type AnyApiRef = ApiRef<any>;
 
-export function createApiRef<T>(config: ApiRefConfig) {
-  return new ApiRef<T>(config);
-}
+export type ApiRefType<T> = T extends ApiRef<infer U> ? U : never;
 
-export function createWidgetView() {
-  return new WidgetViewBuilder();
-}
+export type TypesToApiRefs<T> = { [key in keyof T]: ApiRef<T[key]> };
 
-export function createPlugin(config: PluginConfig): BackstagePlugin {
-  return new BackstagePlugin(config);
-}
+export type ApiRefsToTypes<T extends { [key in any]: ApiRef<any> }> = {
+  [key in keyof T]: ApiRefType<T[key]>;
+};
+
+export type ApiHolder = {
+  get<T>(api: ApiRef<T>): T | undefined;
+};
+
+export type ApiFactory<A, I, D> = {
+  implements: ApiRef<A>;
+  deps: TypesToApiRefs<D>;
+  factory(deps: D): I extends A ? I : never;
+};

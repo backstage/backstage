@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-import ApiRef, { ApiRefConfig } from './apis/ApiRef';
-import AppBuilder from './app/AppBuilder';
-import WidgetViewBuilder from './widgetView/WidgetViewBuilder';
-import BackstagePlugin, { PluginConfig } from './plugin/Plugin';
-
-export function createApp() {
-  return new AppBuilder();
-}
-
-export function createApiRef<T>(config: ApiRefConfig) {
-  return new ApiRef<T>(config);
-}
-
-export function createWidgetView() {
-  return new WidgetViewBuilder();
-}
-
-export function createPlugin(config: PluginConfig): BackstagePlugin {
-  return new BackstagePlugin(config);
-}
+export { default as ApiProvider, useApi } from './ApiProvider';
+export { default as ApiRegistry } from './ApiRegistry';
+export { default as ApiTestRegistry } from './ApiTestRegistry';
+export * from './types';

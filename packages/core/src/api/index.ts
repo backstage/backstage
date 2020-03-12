@@ -15,4 +15,5 @@
  */
 
 export * from './api';
+export * from './apis';
 export { useApp } from './app/AppContext';
