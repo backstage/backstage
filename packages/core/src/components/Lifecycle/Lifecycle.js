@@ -52,7 +52,7 @@ export class AlphaLabel extends Lifecycle {
 
 export class BetaLabel extends Lifecycle {
   render() {
-    const fontSize = this.props.fontSize ? this.props.fontSize : this.props.isShorthand ? '120%' : '100%';
+    const fontSize = this.props.fontSize || (this.props.isShorthand ? '120%' : '100%');
     const style = { ...styles.beta, fontSize, ...this.props.style };
 
     return this.props.isShorthand ? <span style={style}>&beta;</span> : <span style={style}>Beta</span>;

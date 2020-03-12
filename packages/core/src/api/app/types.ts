@@ -22,6 +22,7 @@ export type App = {
 };
 
 export class AppComponentBuilder<T = any> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   build(_app: App): ComponentType<T> {
     throw new Error('Must override build() in AppComponentBuilder');
   }

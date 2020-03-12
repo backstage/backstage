@@ -133,9 +133,9 @@ const SupportButton: FC<Props> = ({
                 <GroupIcon />
               </ListItemIcon>
               <ListItemText primary="Contact" />
-              {contactEmails.map((email, index) => (
+              {contactEmails.map((em, index) => (
                 <Typography key={index}>
-                  <Link>{email}</Link>
+                  <Link>{em}</Link>
                 </Typography>
               ))}
             </ListItem>

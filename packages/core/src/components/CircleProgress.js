@@ -62,12 +62,12 @@ class CircleProgress extends Component {
       return 'grey';
     }
 
-    max = max ? max : CircleProgress.defaultProps.max;
-    value = inverse ? max - value : value;
+    const actualMax = max ? max : CircleProgress.defaultProps.max;
+    const actualValue = inverse ? actualMax - value : value;
 
-    if (value < max / 3) {
+    if (actualValue < actualMax / 3) {
       return COLORS.STATUS.ERROR;
-    } else if (value < max * (2 / 3)) {
+    } else if (actualValue < actualMax * (2 / 3)) {
       return COLORS.STATUS.WARNING;
     }
     return COLORS.STATUS.OK;

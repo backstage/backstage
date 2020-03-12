@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInThemedTestApp } from '../testUtils';
 import CircleProgress from './CircleProgress';
-// import { COLORS, V1 } from 'core/app/Themes';
+import { COLORS, V1 } from '../theme/BackstageTheme';
 
 describe('<CircleProgress />', () => {
   it('renders without exploding', () => {
@@ -50,7 +50,6 @@ describe('<CircleProgress />', () => {
     getByText('10m');
   });
 
-  /*
   it('colors the progress correct', () => {
     expect(CircleProgress.getProgressColor()).toBe(V1.palette.textVerySubtle);
     expect(CircleProgress.getProgressColor(10)).toBe(COLORS.STATUS.ERROR);
@@ -65,5 +64,4 @@ describe('<CircleProgress />', () => {
     );
     expect(CircleProgress.getProgressColor(90, true)).toBe(COLORS.STATUS.ERROR);
   });
-  */
 });

@@ -66,7 +66,9 @@ export default class Keyboard {
     } else if (target.baseElement) {
       this.document = target.baseElement.ownerDocument;
     } else {
-      throw TypeError('Keyboard(target): target must be DOM node or react-testing-library render() output');
+      throw new TypeError(
+        'Keyboard(target): target must be DOM node or react-testing-library render() output',
+      );
     }
   }
 
@@ -82,7 +84,9 @@ export default class Keyboard {
   }
 
   _pretty(element) {
-    const attrs = [...element.attributes].map(attr => `${attr.name}="${attr.value}"`).join(' ');
+    const attrs = [...element.attributes]
+      .map(attr => `${attr.name}="${attr.value}"`)
+      .join(' ');
     return `<${element.nodeName.toLowerCase()} ${attrs}>`;
   }
 
@@ -91,7 +95,11 @@ export default class Keyboard {
   }
 
   async type(input) {
-    this._log(`sending sequence '${input}' with initial focus ${this._pretty(this.focused)}`);
+    this._log(
+      `sending sequence '${input}' with initial focus ${this._pretty(
+        this.focused,
+      )}`,
+    );
     await this.send(Keyboard.fromReadableInput(input));
   }
 
@@ -106,13 +114,19 @@ export default class Keyboard {
 
       const focused = this.focused;
       if (!focused || focused === this.document.body) {
-        throw Error(`No element focused in document while trying to type '${Keyboard.toReadableInput(chars)}'`);
+        throw Error(
+          `No element focused in document while trying to type '${Keyboard.toReadableInput(
+            chars,
+          )}'`,
+        );
       }
       const nextValue = (focused.value || '') + key;
 
       if (charCode >= 32) {
         await this._sendKey(key, charCode, () => {
-          this._log(`sending +${key} = '${nextValue}' to ${this._pretty(focused)}`);
+          this._log(
+            `sending +${key} = '${nextValue}' to ${this._pretty(focused)}`,
+          );
           fireEvent.change(focused, {
             target: { value: nextValue },
             bubbles: true,
@@ -162,7 +176,9 @@ export default class Keyboard {
       const focusedIndex = tabbable.indexOf(focused);
       const nextFocus = tabbable[focusedIndex + (1 % tabbable.length)];
 
-      this._log(`tabbing to ${this._pretty(nextFocus)} ${this.focused.textContent}`);
+      this._log(
+        `tabbing to ${this._pretty(nextFocus)} ${this.focused.textContent}`,
+      );
       nextFocus.focus();
     });
   }
