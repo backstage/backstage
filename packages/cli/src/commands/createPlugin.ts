@@ -58,11 +58,13 @@ export const createFileFromTemplate = (
   source: string,
   destination: string,
   answers: Answers,
+  version: string,
 ) => {
   const template = fs.readFileSync(source);
   const compiled = handlebars.compile(template.toString());
   const contents = compiled({
     name: path.basename(destination),
+    version,
     ...answers,
   });
   try {
@@ -102,12 +104,12 @@ const addExportStatement = (file: string, exportStatement: string) => {
 export const addPluginDependencyToApp = (
   rootDir: string,
   pluginName: string,
+  version: string,
 ) => {
   console.log();
   console.log(chalk.green(' Adding plugin as dependency in app:'));
 
   const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
-  const pluginPackageVersion = '0.0.0';
   const packageFile = path.join(rootDir, 'packages', 'app', 'package.json');
 
   process.stdout.write(
@@ -127,7 +129,7 @@ export const addPluginDependencyToApp = (
       );
     }
 
-    dependencies[pluginPackage] = pluginPackageVersion;
+    dependencies[pluginPackage] = `^${version}`;
     packageFileJson.dependencies = sortObjectByKeys(dependencies);
     fs.writeFileSync(
       packageFile,
@@ -183,6 +185,7 @@ export const createFromTemplateDir = async (
   templateFolder: string,
   destinationFolder: string,
   answers: Answers,
+  version: string,
 ) => {
   console.log();
   console.log(chalk.green(' Reading template files:'));
@@ -219,6 +222,7 @@ export const createFromTemplateDir = async (
         file,
         file.replace(templateFolder, destinationFolder).replace(/\.hbs$/, ''),
         answers,
+        version,
       );
     } else {
       try {
@@ -324,6 +328,7 @@ const createPlugin = async () => {
   const templateFolder = resolvePath(cliPackage, 'templates', 'default-plugin');
   const tempDir = path.join(os.tmpdir(), answers.id);
   const pluginDir = path.join(rootDir, 'plugins', answers.id);
+  const version = require(resolvePath(cliPackage, 'package.json')).version;
 
   console.log();
   console.log(chalk.green('Creating the plugin...'));
@@ -331,12 +336,12 @@ const createPlugin = async () => {
   try {
     checkExists(rootDir, answers.id);
     createTemporaryPluginFolder(tempDir);
-    await createFromTemplateDir(templateFolder, tempDir, answers);
+    await createFromTemplateDir(templateFolder, tempDir, answers, version);
     movePlugin(tempDir, pluginDir, answers.id);
     await buildPlugin(pluginDir);
 
     if (existsSync(appPackage)) {
-      addPluginDependencyToApp(rootDir, answers.id);
+      addPluginDependencyToApp(rootDir, answers.id, version);
       addPluginToApp(rootDir, answers.id);
     }
 
