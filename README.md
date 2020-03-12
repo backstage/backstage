@@ -71,6 +71,13 @@ $ yarn create-plugin
 
 For more information see [Developing a Backstage Plugin](plugins/README.md).
 
+## Developer support
+
+Please join our [Discord](https://discordapp.com/) server:
+
+- [#general](https://discord.gg/MUpMjP2) - Developer focused discussions
+- [#support](https://discord.gg/dKhwsBp) - Support in how to use Backstage
+
 ## Documentation
 
 _TODO: Add links to docs on backstage.io_
