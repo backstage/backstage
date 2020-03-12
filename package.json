@@ -17,6 +17,7 @@
   "version": "1.0.0",
   "devDependencies": {
     "cross-env": "^7.0.0",
+    "eslint-plugin-notice": "^0.8.9",
     "lerna": "^3.20.2",
     "prettier": "^1.19.1",
     "typescript": "^3.7.5",
