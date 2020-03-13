@@ -56,6 +56,7 @@ describe('<CircleProgress />', () => {
     expect(CircleProgress.getProgressColor(50)).toBe(COLORS.STATUS.WARNING);
     expect(CircleProgress.getProgressColor(90)).toBe(COLORS.STATUS.OK);
   });
+
   it('colors the inverse progress correct', () => {
     expect(CircleProgress.getProgressColor()).toBe(V1.palette.textVerySubtle);
     expect(CircleProgress.getProgressColor(10, true)).toBe(COLORS.STATUS.OK);
