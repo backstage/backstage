@@ -33,6 +33,7 @@ describe('<CircleProgress />', () => {
     );
     getByText('10%');
   });
+
   it('handles max prop', () => {
     const { getByText } = render(
       wrapInThemedTestApp(
@@ -41,6 +42,7 @@ describe('<CircleProgress />', () => {
     );
     getByText('1%');
   });
+
   it('handles unit prop', () => {
     const { getByText } = render(
       wrapInThemedTestApp(
@@ -50,14 +52,14 @@ describe('<CircleProgress />', () => {
     getByText('10m');
   });
 
-  it('colors the progress correct', () => {
+  it('colors the progress correctly', () => {
     expect(CircleProgress.getProgressColor()).toBe(V1.palette.textVerySubtle);
     expect(CircleProgress.getProgressColor(10)).toBe(COLORS.STATUS.ERROR);
     expect(CircleProgress.getProgressColor(50)).toBe(COLORS.STATUS.WARNING);
     expect(CircleProgress.getProgressColor(90)).toBe(COLORS.STATUS.OK);
   });
 
-  it('colors the inverse progress correct', () => {
+  it('colors the inverse progress correctly', () => {
     expect(CircleProgress.getProgressColor()).toBe(V1.palette.textVerySubtle);
     expect(CircleProgress.getProgressColor(10, true)).toBe(COLORS.STATUS.OK);
     expect(CircleProgress.getProgressColor(50, true)).toBe(
