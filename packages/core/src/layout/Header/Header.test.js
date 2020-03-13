@@ -47,7 +47,7 @@ describe('<Header/>', () => {
   });
 
   it('should have type rendered', () => {
-    const rendered = render(wrapInThemedTestApp(<Header title="Title" type="service" />));
-    rendered.getByText('service');
+    const rendered = render(wrapInThemedTestApp(<Header title="Title" type="tool" />));
+    rendered.getByText('tool');
   });
 });

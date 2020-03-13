@@ -18,7 +18,7 @@ import React, { FC } from 'react';
 import { PageTheme, pageTheme } from './PageThemeProvider';
 import { makeStyles } from '@material-ui/core';
 
-export const Theme = React.createContext<PageTheme>(pageTheme.service);
+export const Theme = React.createContext<PageTheme>(pageTheme.home);
 
 const useStyles = makeStyles(() => ({
   root: {
