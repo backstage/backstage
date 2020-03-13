@@ -1,10 +1,8 @@
 name: Frontend CI
 
 on:
-  push:
-    paths:
-      - '*'
-      - '.github/workflows/frontend.yml'
+  pull_request:
+    types: [opened, reopened, edited, synchronize]
 
 jobs:
   build:
