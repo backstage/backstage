@@ -19,7 +19,7 @@
     "@material-ui/icons": "^4.9.1"
   },
   "scripts": {
-    "build": "backstage-cli plugin:copyAssets && backstage-cli plugin:build",
+    "build": "backstage-cli plugin:build",
     "lint": "backstage-cli plugin:lint",
     "test": "backstage-cli plugin:test"
   },
