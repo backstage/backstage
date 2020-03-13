@@ -17,6 +17,9 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { spawnSync } from 'child_process';
+import fs from 'fs-extra';
+import recursive from 'recursive-readdir';
+import path from 'path';
 
 export default async (cmd: Command) => {
   const args = [
@@ -33,6 +36,7 @@ export default async (cmd: Command) => {
   }
 
   try {
+    await copyStaticAssets();
     const result = spawnSync('tsc', args, { stdio: 'inherit' });
     if (result.error) {
       throw result.error;
@@ -42,4 +46,21 @@ export default async (cmd: Command) => {
     process.stderr.write(`${chalk.red(error.message)}\n`);
     process.exit(1);
   }
+};
+
+const copyStaticAssets = async () => {
+  const pluginRoot = fs.realpathSync(process.cwd());
+  const source = path.resolve(pluginRoot, 'src');
+  const destination = path.resolve(pluginRoot, 'dist', 'cjs');
+  const assetFiles = await recursive(source, [
+    '**/*.tsx',
+    '**/*.ts',
+    '**/*.js',
+  ]);
+  assetFiles.forEach(file => {
+    const fileToBeCopied = file.replace(source, destination);
+    const dirForFileToBeCopied = path.dirname(fileToBeCopied);
+    fs.ensureDirSync(dirForFileToBeCopied);
+    fs.copyFileSync(file, file.replace(source, destination).toString());
+  });
 };
