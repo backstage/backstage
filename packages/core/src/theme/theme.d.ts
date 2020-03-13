@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
-import { LinearProgress } from '@material-ui/core';
+import { Theme } from '@material-ui/core';
 
-const Progress = childProps => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const handle = setTimeout(() => setIsVisible(true), 250);
-    return () => clearTimeout(handle);
-  }, []);
-
-  return isVisible ? (
-    <LinearProgress {...childProps} data-testid="progress" />
-  ) : (
-    <div style={{ display: 'none' }} data-testid="progress" />
-  );
+export type BackstageTheme = Theme & {
+  palette: {
+    status: {
+      ok: string;
+      warning: string;
+      error: string;
+      pending: string;
+      running: string;
+      background: string;
+    };
+  };
 };
-
-export default Progress;
