@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType } from 'react';
-import { App, AppComponentBuilder } from '../app/types';
+import { AppComponentBuilder } from '../app/types';
 import { Widget } from './types';
 import BackstagePlugin from '../plugin/Plugin';
 import DefaultWidgetView from '../../components/DefaultWidgetView';
@@ -44,7 +44,7 @@ export default class WidgetViewBuilder extends AppComponentBuilder {
     return this;
   }
 
-  build(_app: App): ComponentType<any> {
+  build(): ComponentType<any> {
     if (this.output) {
       return this.output;
     }
@@ -57,17 +57,19 @@ export default class WidgetViewBuilder extends AppComponentBuilder {
           widgets.push(reg.widget);
           break;
         case 'plugin':
-          let added = false;
-          for (const output of reg.plugin.output()) {
-            if (output.type === 'widget') {
-              widgets.push(output.widget);
-              added = true;
+          {
+            let added = false;
+            for (const output of reg.plugin.output()) {
+              if (output.type === 'widget') {
+                widgets.push(output.widget);
+                added = true;
+              }
             }
-          }
-          if (!added) {
-            throw new Error(
-              `Plugin ${reg.plugin} was registered as widget provider, but did not provide any widgets`,
-            );
+            if (!added) {
+              throw new Error(
+                `Plugin ${reg.plugin} was registered as widget provider, but did not provide any widgets`,
+              );
+            }
           }
           break;
         default:

@@ -18,7 +18,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core';
 import { Circle } from 'rc-progress';
-import { COLORS } from '../theme/BackstageTheme';
+import { COLORS, V1 } from '../theme/BackstageTheme';
 
 const styles = theme => ({
   root: {
@@ -59,15 +59,15 @@ class CircleProgress extends Component {
 
   static getProgressColor(value, inverse, max /* , classes */) {
     if (isNaN(value)) {
-      return 'grey';
+      return V1.palette.textVerySubtle;
     }
 
-    max = max ? max : CircleProgress.defaultProps.max;
-    value = inverse ? max - value : value;
+    const actualMax = max ? max : CircleProgress.defaultProps.max;
+    const actualValue = inverse ? actualMax - value : value;
 
-    if (value < max / 3) {
+    if (actualValue < actualMax / 3) {
       return COLORS.STATUS.ERROR;
-    } else if (value < max * (2 / 3)) {
+    } else if (actualValue < actualMax * (2 / 3)) {
       return COLORS.STATUS.WARNING;
     }
     return COLORS.STATUS.OK;

@@ -117,6 +117,9 @@ function useScrollDistance(
 
     el.addEventListener('scroll', handleUpdate);
     window.addEventListener('resize', handleUpdate);
+    // TODO(freben): Remove this eslint exception later
+    // It's here because @types/react-router-dom v5 pulls in @types/react that have the wrong signature
+    // eslint-disable-next-line consistent-return
     return () => {
       el.removeEventListener('scroll', handleUpdate);
       window.removeEventListener('resize', handleUpdate);
@@ -160,6 +163,9 @@ function useSmoothScroll(
       }
     });
 
+    // TODO(freben): Remove this eslint exception later
+    // It's here because @types/react-router-dom v5 pulls in @types/react that have the wrong signature
+    // eslint-disable-next-line consistent-return
     return () => cancelAnimationFrame(id);
   }, [ref, scrollTarget, speed, minDistance]);
 

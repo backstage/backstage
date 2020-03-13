@@ -47,7 +47,11 @@ const EnhancedTableHead = ({ columns, onRequestSort, order, orderBy }) => {
             sortDirection={orderBy === column.id ? order : false}
             style={column.style}
           >
-            <Tooltip title="Sort" placement={column.numeric ? 'bottom-end' : 'bottom-start'} enterDelay={300}>
+            <Tooltip
+              title="Sort"
+              placement={column.numeric ? 'bottom-end' : 'bottom-start'}
+              enterDelay={300}
+            >
               <TableSortLabel
                 active={orderBy === column.id}
                 direction={order}
@@ -100,7 +104,11 @@ CellContent.propTypes = {
 
 const DataTableCell = ({ column, row }) => {
   return (
-    <TableCell align={column.numeric ? 'right' : 'left'} key={column.id} style={{ verticalAlign: 'top' }}>
+    <TableCell
+      align={column.numeric ? 'right' : 'left'}
+      key={column.id}
+      style={{ verticalAlign: 'top' }}
+    >
       <CellContent data={row[column.id] || ''} />
     </TableCell>
   );
@@ -183,17 +191,6 @@ const DataTableRow = pure(({ row, columns, handleRowClick, style }) => {
  * @deprecated use shared/components/DataGrid
  */
 class SortableTable extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleRowClick = this.handleRowClick.bind(this);
-
-    this.state = {
-      orderBy: props.orderBy,
-      order: 'asc',
-      data: props.data,
-    };
-  }
-
   static propTypes = {
     // TODO: figure out how to make id of the object requried while others are dynamic
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -203,10 +200,15 @@ class SortableTable extends React.Component {
     dataVersion: PropTypes.string,
   };
 
-  UNSAFE_componentWillReceiveProps(props) {
-    if (props.dataVersion !== this.props.dataVersion) {
-      this.updateData(props.data, this.state.orderBy, this.state.order);
-    }
+  constructor(props) {
+    super(props);
+    this.handleRowClick = this.handleRowClick.bind(this);
+
+    this.state = {
+      orderBy: props.orderBy,
+      order: 'asc',
+      data: props.data,
+    };
   }
 
   handleRequestSort = (event, property) => {
@@ -219,8 +221,16 @@ class SortableTable extends React.Component {
     this.updateData(this.state.data, orderBy, order);
   };
 
+  handleRowClick = (event, id) => {
+    if (this.props.onRowClicked) {
+      this.props.onRowClicked(id, event);
+    }
+  };
+
   updateData = (data, orderBy, order) => {
-    const sortValueFn = (this.props.columns.filter(col => col.id === orderBy)[0] || {}).sortValue;
+    const sortValueFn = (
+      this.props.columns.filter(col => col.id === orderBy)[0] || {}
+    ).sortValue;
 
     const sortedData = data.slice().sort((a, b) => {
       const valueA = sortValueFn ? sortValueFn(a) : a[orderBy];
@@ -234,11 +244,11 @@ class SortableTable extends React.Component {
     this.setState({ data: sortedData, order, orderBy });
   };
 
-  handleRowClick = (event, id) => {
-    if (this.props.onRowClicked) {
-      this.props.onRowClicked(id, event);
+  UNSAFE_componentWillReceiveProps(props) {
+    if (props.dataVersion !== this.props.dataVersion) {
+      this.updateData(props.data, this.state.orderBy, this.state.order);
     }
-  };
+  }
 
   render() {
     const { data, order, orderBy } = this.state;
@@ -249,17 +259,32 @@ class SortableTable extends React.Component {
       tableFoot = (
         <TableFooter>
           {footerData.map(row => (
-            <DataTableRow key={row.id} columns={columns} row={row} style={{ height: 'auto' }} />
+            <DataTableRow
+              key={row.id}
+              columns={columns}
+              row={row}
+              style={{ height: 'auto' }}
+            />
           ))}
         </TableFooter>
       );
     }
     return (
       <Table>
-        <EnhancedTableHead columns={columns} onRequestSort={this.handleRequestSort} order={order} orderBy={orderBy} />
+        <EnhancedTableHead
+          columns={columns}
+          onRequestSort={this.handleRequestSort}
+          order={order}
+          orderBy={orderBy}
+        />
         <TableBody key={dataVersion}>
           {data.map(row => (
-            <DataTableRow key={row.id} columns={columns} row={row} handleRowClick={this.handleRowClick} />
+            <DataTableRow
+              key={row.id}
+              columns={columns}
+              row={row}
+              handleRowClick={this.handleRowClick}
+            />
           ))}
         </TableBody>
         {tableFoot}
