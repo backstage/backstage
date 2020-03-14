@@ -39,39 +39,9 @@ _\* not yet released_
 
 ![overview](backstage_overview.png)
 
-## Getting started
+## Documentation
 
-### Install Dependencies
-
-To run the frontend, you will need to have the following installed:
-
-- [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-- [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
-- [yarn](https://classic.yarnpkg.com/en/docs/install)
-
-## Running the frontend locally
-
-Open a terminal window and start the web app using the following commands from the project root:
-
-```bash
-$ yarn # may take a while
-
-$ yarn start
-```
-
-The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
-
-## Plugins
-
-### Creating a Plugin
-
-To create a new plugin, make sure you're run `yarn` to install dependencies, then run the following:
-
-```bash
-$ yarn create-plugin
-```
-
-For more information see [Developing a Backstage Plugin](plugins/README.md).
+[Find the docs here.](docs/README.md)
 
 ## Developer support
 
@@ -79,10 +49,6 @@ Please join our [Discord](https://discordapp.com/) server:
 
 - [#general](https://discord.gg/MUpMjP2) - Developer focused discussions
 - [#support](https://discord.gg/dKhwsBp) - Support in how to use Backstage
-
-## Documentation
-
-_TODO: Add links to docs on backstage.io_
 
 ## License
 
