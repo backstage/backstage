@@ -26,5 +26,18 @@ export type BackstageTheme = Theme & {
       running: string;
       background: string;
     };
+    border: string;
+    textVerySubtle: string;
+    textSubtle: string;
+    highlight: string;
+    errorBackground: string;
+    warningBackground: string;
+    infoBackground: string;
+    errorText: string;
+    infoText: string;
+    warningText: string;
+    linkHover: string;
+    link: string;
+    gold: string;
   };
 };
