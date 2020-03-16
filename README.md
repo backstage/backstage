@@ -39,16 +39,38 @@ _\* not yet released_
 
 ![overview](backstage_overview.png)
 
+## Getting started
+
+To run the Backstage frontend, you will need to have the following installed:
+
+- [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
+- [yarn](https://classic.yarnpkg.com/en/docs/install)
+
+Open a terminal window and start the web app using the following commands from the project root:
+
+```bash
+$ yarn # may take a while
+
+$ yarn start
+```
+
+The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
+
 ## Documentation
 
-[Find the docs here.](docs/README.md)
+- [Create a Plugin](docs/getting-started/create-a-plugin.md)
+- [Structure of a Plugin](docs/getting-started/structure-of-a-plugin.md)
+- [Frontend architecture](docs/architecture-terminology.md)
+- [API references](docs/reference/README.md)
+- Using Backstage components (TODO)
 
-## Developer support
+## Community
 
-Please join our [Discord](https://discordapp.com/) server:
-
-- [#general](https://discord.gg/MUpMjP2) - Developer focused discussions
-- [#support](https://discord.gg/dKhwsBp) - Support in how to use Backstage
+- [Discord chat](https://discord.gg/MUpMjP2) - Get support or discuss the project
+- [Good First Issues](https://github.com/spotify/backstage/labels/good%20first%20issue) - Start here if you want to contribute
+- [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
+- Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
 
 ## License
 
