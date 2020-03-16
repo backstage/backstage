@@ -132,12 +132,18 @@ const SupportButton: FC<Props> = ({
               <ListItemIcon>
                 <GroupIcon />
               </ListItemIcon>
-              <ListItemText primary="Contact" />
-              {contactEmails.map((em, index) => (
-                <Typography key={index}>
-                  <Link>{em}</Link>
-                </Typography>
-              ))}
+              <ListItemText
+                primary="Contact"
+                secondary={
+                  <div>
+                    {contactEmails.map((em, index) => (
+                      <Typography key={index}>
+                        <Link>{em}</Link>
+                      </Typography>
+                    ))}
+                  </div>
+                }
+              />
             </ListItem>
           )}
         </List>
