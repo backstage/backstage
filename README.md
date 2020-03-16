@@ -41,6 +41,16 @@ _\* not yet released_
 
 ## Getting started
 
+You can get started using Backstage either through our online playground (via [Gitpod](https://gitpod.io)) or locally on your machine.
+
+### Online Playground
+
+Using [Gitpod](https://gitpod.io) you can play about with Backstage using their online IDE.
+
+[![](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/spotify/backstage)
+
+### Local Setup
+
 To run the Backstage frontend, you will need to have the following installed:
 
 - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
