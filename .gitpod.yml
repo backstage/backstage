@@ -1,0 +1,35 @@
+# This operates as the configuration file for temporary deployments through Gitpod.
+# Reference documentation: https://www.gitpod.io/docs/config-gitpod-file/
+
+# The Docker image to run your workspace in.
+# Defaults to gitpod/workspace-full
+# image: gitpod/workspace-full
+
+# Command to start on workspace startup
+tasks:
+  - init: yarn install
+    command: yarn start
+
+# Ports to expose on workspace startup
+ports:
+  - port: 3000
+    onOpen: open-preview
+
+# GitHub-specific configuration
+# See GitHub app: https://github.com/apps/gitpod-io
+github:
+  prebuilds:
+    # enable for the master/default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: true
+    # enable for pull requests coming from this repo (defaults to true)
+    pullRequests: true
+    # enable for pull requests coming from forks (defaults to false)
+    pullRequestsFromForks: true
+    # add a "Review in Gitpod" button as a comment to pull requests (defaults to true)
+    addComment: true
+    # add a "Review in Gitpod" button to pull requests (defaults to false)
+    # addBadge: false
+    # add a label once the prebuild is ready to pull requests (defaults to false)
+    # addLabel: prebuilt-in-gitpod
