@@ -72,6 +72,8 @@ The final `yarn start` command should open a local instance of Backstage in your
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
 
+Or, if you are an open source developer and are interested in joining our team, please reach out to [foss-opportunities@spotify.com ](mailto:foss-opportunities@spotify.com)
+
 ## License
 
 Copyright 2020 Spotify AB.
