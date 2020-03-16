@@ -7,7 +7,7 @@
 
 Backstage is an open platform for building developer portals.
 
-The philosophy behind Backstage is simple: Don't expose your engineers to the full complexity of your infrastructure tooling. Engineers should be shipping code — not figuring out a whole new toolset every time they want to implement the basics. Backstage allows you add "stuff" (tooling, services, features, etc.) by adding a plugin, instead of building a new tool. This saves you work and avoids the need of your team to learn how to use a support yet another tool.
+The philosophy behind Backstage is simple: Don't expose your engineers to the full complexity of your infrastructure tooling. Engineers should be shipping code — not figuring out a whole new toolset every time they want to implement the basics. Backstage allows you add "stuff" (tooling, services, features, etc.) by adding a plugin, instead of building a new tool. This saves you work and avoids the need of your team to learn how to use and support yet another tool.
 
 ![headline](headline.png)
 
