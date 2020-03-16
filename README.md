@@ -50,7 +50,7 @@ To run the Backstage frontend, you will need to have the following installed:
 Open a terminal window and start the web app using the following commands from the project root:
 
 ```bash
-$ yarn # may take a while
+$ yarn install # may take a while
 
 $ yarn start
 ```
