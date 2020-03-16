@@ -15,9 +15,15 @@
  */
 
 import React, { FC } from 'react';
-import Link from '@material-ui/core/Link';
 import { Link as RouterLink } from 'react-router-dom';
-import { Typography, Grid } from '@material-ui/core';
+import {
+  Typography,
+  Grid,
+  List,
+  ListItem,
+  ListItemText,
+  Link,
+} from '@material-ui/core';
 import Timer from '../Timer';
 import {
   Content,
@@ -28,8 +34,6 @@ import {
   ContentHeader,
   SupportButton,
 } from '@spotify-backstage/core';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 
 const WelcomePage: FC<{}> = () => {
   const profile = { givenName: '' };
@@ -64,14 +68,20 @@ const WelcomePage: FC<{}> = () => {
                 Backstage is put together from three base concepts: the core,
                 the app and the plugins.
               </Typography>
-              <ul>
-                <li>The core is responsible for base functionality.</li>
-                <li>The app provides the base UI and connects the plugins.</li>
-                <li>
-                  The plugins make Backstage useful for the end users with
-                  specific views and functionality.
-                </li>
-              </ul>
+              <List>
+                <ListItem>
+                  <ListItemText primary="The core is responsible for base functionality." />
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary="The app provides the base UI and connects the plugins." />
+                </ListItem>
+                <ListItem>
+                  <ListItemText
+                    primary="The plugins make Backstage useful for the end users with
+                  specific views and functionality."
+                  />
+                </ListItem>
+              </List>
               <Typography variant="h6" gutterBottom>
                 Try It Out
               </Typography>
