@@ -37,7 +37,7 @@ export default async (cmd: Command) => {
 
   try {
     await copyStaticAssets();
-    const result = spawnSync('tsc', args, { stdio: 'inherit' });
+    const result = spawnSync('tsc', args, { stdio: 'inherit', shell: true });
     if (result.error) {
       throw result.error;
     }

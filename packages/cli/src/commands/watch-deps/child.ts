@@ -23,6 +23,7 @@ export function startChild(args: string[]) {
   const child = spawn(command, commandArgs, {
     env: { FORCE_COLOR: 'true', ...process.env },
     stdio: ['inherit', 'pipe', 'pipe'],
+    shell: true,
   });
 
   // We need to avoid clearing the terminal, or the build feedback of dependencies will be lost

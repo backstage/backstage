@@ -31,6 +31,7 @@ export function startCompiler(pkg: Package, log: Logger) {
     cwd: pkg.location,
     env: { FORCE_COLOR: 'true', ...process.env },
     stdio: 'pipe',
+    shell: true,
   });
 
   watch.stdin.end();
