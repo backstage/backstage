@@ -12,4 +12,6 @@ COPY . .
 
 RUN yarn build
 
+EXPOSE 3000
+
 CMD ["yarn", "workspace", "@spotify-backstage/app", "start"]
