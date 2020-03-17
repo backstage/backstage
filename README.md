@@ -63,10 +63,10 @@ Run the following commands if you have Docker environment
 
 ```bash
 $ docker build . -t spotify/backstage
-$ docker run --rm -it -p 3000:3000 backstage
+$ docker run --rm -it -p 80:80 backstage
 ```
 
-Then open http://localhost:3000/ on your browser.
+Then open http://localhost/ on your browser.
 
 ## Documentation
 
