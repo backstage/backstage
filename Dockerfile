@@ -1,5 +1,4 @@
-FROM node:12 as builder
-
+FROM node:12
 WORKDIR /app
 
 COPY package.json yarn.lock .yarnrc .npmrc /app/
