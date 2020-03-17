@@ -69,6 +69,7 @@ The final `yarn start` command should open a local instance of Backstage in your
 
 - [Discord chat](https://discord.gg/MUpMjP2) - Get support or discuss the project
 - [Good First Issues](https://github.com/spotify/backstage/labels/good%20first%20issue) - Start here if you want to contribute
+- [FAQ](docs/FAQ.md) - Frequently Asked Questions
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
 
