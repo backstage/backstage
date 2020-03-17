@@ -25,7 +25,7 @@ export default async (cmd: Command) => {
   }
 
   try {
-    const result = spawnSync('web-scripts', args, { stdio: 'inherit' });
+    const result = spawnSync('web-scripts', args, { stdio: 'inherit', shell: true });
     if (result.error) {
       throw result.error;
     }

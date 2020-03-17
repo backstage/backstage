@@ -68,7 +68,7 @@ function spawnPiped(cmd, options) {
     };
   }
 
-  const child = spawn(cmd[0], cmd.slice(1), { stdio: 'pipe', ...options });
+  const child = spawn(cmd[0], cmd.slice(1), { stdio: 'pipe', shell: true, ...options });
   child.on('error', handleError);
   child.on('exit', code => {
     if (code) {
