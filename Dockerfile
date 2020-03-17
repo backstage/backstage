@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:12 as builder
 WORKDIR /app
 
 COPY package.json yarn.lock .yarnrc .npmrc /app/
@@ -12,6 +12,6 @@ COPY . .
 
 RUN yarn build
 
-EXPOSE 3000
+FROM nginx:mainline
 
-CMD ["yarn", "workspace", "@spotify-backstage/app", "start"]
+COPY --from=builder /app/packages/app/build /usr/share/nginx/html
