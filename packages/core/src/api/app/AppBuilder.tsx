@@ -19,6 +19,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App } from './types';
 import BackstagePlugin from '../plugin/Plugin';
+import ErrorPage from '../../layout/ErrorPage';
 import {
   IconComponent,
   SystemIcons,
@@ -90,7 +91,8 @@ export default class AppBuilder {
       <AppContextProvider app={app}>
         <Switch>
           {routes}
-          <Route component={() => <span>404 Not Found</span>} />
+          <Route render={(props) => <ErrorPage {...props} status="404" errorTitle="Page Not Found"
+            errorBody="Looks like somebody dropped the mic." backButton={true} />}/>
         </Switch>
       </AppContextProvider>
     );

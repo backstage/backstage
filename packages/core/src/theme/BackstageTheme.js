@@ -21,6 +21,7 @@ import { blue, yellow } from '@material-ui/core/colors';
 export const COLORS = {
   PAGE_BACKGROUND: '#F8F8F8',
   DEFAULT_PAGE_THEME_COLOR: '#7C3699',
+  DEFAULT_PAGE_ACCENT_COLOR: '#AD64CC',
   DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
   ERROR_BACKGROUND_COLOR: '#FFEBEE',
   ERROR_TEXT_COLOR: '#CA001B',
@@ -64,6 +65,7 @@ const extendedThemeConfig = {
       slackChannelText: '#ddd',
       backgroundColor: {
         default: COLORS.DEFAULT_PAGE_THEME_COLOR,
+        accent: COLORS.DEFAULT_PAGE_ACCENT_COLOR,
       },
     },
     primary: {
