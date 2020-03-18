@@ -13,6 +13,14 @@ The philosophy behind Backstage is simple: Don't expose your engineers to the fu
 
 For more information go to [backstage.io](https://backstage.io)
 
+## What problem does Backstage solve?
+
+As companies grow, their infrastructure systems get messier. Backstage unifies all your infrastructure tooling, services, and documentation with a single, consistent UI. 
+
+This blog post provides more examples of how Backstage is used inside Spotify:
+
+https://labs.spotify.com/2020/03/17/what-the-heck-is-backstage-anyway/
+
 ## Project roadmap
 
 We created Backstage about 4 years ago. While our internal version of Backstage has had the benefit of time to mature and evolve, the first iteration of our open source version is still nascent. We are envisioning three phases of the project and we have already begun work on various aspects of these phases:
@@ -22,6 +30,8 @@ We created Backstage about 4 years ago. While our internal version of Backstage 
 - **Phase 2:** Manage your stuff (next 2-3 months) - Manage anything from microservices to software components to infrastructure and your service catalog. Regardless of whether you want to create a new library, view service deployment status in Kubernetes, or check the test coverage for a website -- Backstage will provide all of those tools - and many more - in a single developer portal.
 
 - **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
+
+Check out our [Milestones](https://github.com/spotify/backstage/milestones) and how they relate to the 3 Phases outlined above.
 
 Our vision for Backstage is for it to become the trusted standard toolbox (read: UX layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone. If this sounds interesting or you'd like to help us shape our product vision, we'd love to talk. You can email me directly: [alund@spotify.com](mailto:alund@spotify.com).
 
