@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![](https://github.com/spotify/backstage/workflows/Frontend%20CI/badge.svg)
-
+[![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/EBHEGzX)
 ## What is Backstage?
 
 Backstage is an open platform for building developer portals.
