@@ -1,4 +1,4 @@
-const copyrightTemplate = `/*
+/*
  * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +14,29 @@ const copyrightTemplate = `/*
  * limitations under the License.
  */
 
-`;
-
-const base = require('@spotify-backstage/cli/config/eslint');
-
 module.exports = {
-  ...base,
-  rules: {
-    ...base.rules,
-    'notice/notice': [
-      'error',
-      {
-        template: copyrightTemplate,
-        onNonMatchingHeader: 'replace',
-      },
-    ],
+  extends: [
+    '@spotify/eslint-config-base',
+    '@spotify/eslint-config-react',
+    '@spotify/eslint-config-typescript',
+    'prettier',
+    'prettier/react',
+    'prettier/@typescript-eslint',
+    'plugin:jest/recommended',
+  ],
+  parser: '@typescript-eslint/parser',
+  plugins: ['notice'],
+  env: {
+    jest: true,
   },
+  parserOptions: {
+    ecmaVersion: 2018,
+    sourceType: 'module',
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  ignorePatterns: ['**/dist/**', '**/build/**'],
 };

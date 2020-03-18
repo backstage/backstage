@@ -1,4 +1,4 @@
-const copyrightTemplate = `/*
+/*
  * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +14,14 @@ const copyrightTemplate = `/*
  * limitations under the License.
  */
 
-`;
+import { Command } from 'commander';
+import { run } from '../../helpers/run';
 
-const base = require('@spotify-backstage/cli/config/eslint');
+export default async (cmd: Command) => {
+  const args = ['lint'];
+  if (cmd.fix) {
+    args.push('--fix');
+  }
 
-module.exports = {
-  ...base,
-  rules: {
-    ...base.rules,
-    'notice/notice': [
-      'error',
-      {
-        template: copyrightTemplate,
-        onNonMatchingHeader: 'replace',
-      },
-    ],
-  },
+  await run('web-scripts', args);
 };

@@ -28,10 +28,7 @@
     "start": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true backstage-cli watch-deps -- react-scripts start",
     "build": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
     "test": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts test",
-    "lint": "cross-env EXTEND_ESLINT=true eslint ./src/**/*.{ts,tsx} --max-warnings=0 --format=codeframe"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "lint": "backstage-cli app:lint"
   },
   "browserslist": {
     "production": [
