@@ -22,6 +22,7 @@ import { getPackageDeps } from './packages';
 import { startWatcher, startPackageWatcher } from './watcher';
 import { startCompiler } from './compiler';
 import { startChild } from './child';
+import { waitForExit } from '../../helpers/run';
 
 const PACKAGE_BLACKLIST = [
   // We never want to watch for changes in the cli, but all packages will depend on it.
@@ -67,6 +68,6 @@ export default async (_command: any, args: string[]) => {
   });
 
   if (args?.length) {
-    startChild(args);
+    await waitForExit(startChild(args));
   }
 };

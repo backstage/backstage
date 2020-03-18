@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
 import { Command } from 'commander';
-import { spawnSync } from 'child_process';
 import fs from 'fs-extra';
 import recursive from 'recursive-readdir';
 import path from 'path';
+import { run } from '../../helpers/run';
 
 export default async (cmd: Command) => {
   const args = [
@@ -35,17 +34,8 @@ export default async (cmd: Command) => {
     args.push('--watch');
   }
 
-  try {
-    await copyStaticAssets();
-    const result = spawnSync('tsc', args, { stdio: 'inherit', shell: true });
-    if (result.error) {
-      throw result.error;
-    }
-    process.exit(result.status ?? 0);
-  } catch (error) {
-    process.stderr.write(`${chalk.red(error.message)}\n`);
-    process.exit(1);
-  }
+  await copyStaticAssets();
+  await run('tsc', args);
 };
 
 const copyStaticAssets = async () => {
