@@ -46,6 +46,9 @@ function print(msg) {
 }
 
 async function waitForExit(child) {
+  if (child.exitCode !== null) {
+    throw new Error(`Child already exited with code ${child.exitCode}`);
+  }
   await new Promise((resolve, reject) =>
     child.once('exit', code => {
       if (code) {
