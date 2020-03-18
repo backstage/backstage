@@ -79,7 +79,7 @@ const styles = theme => ({
      lineHeight: '1.0em',
      wordBreak: 'break-all',
      fontSize: 'calc(64px + 6 * ((100vw - 320px) / 680))',
-     margin: '25vh 0 0 0',
+     padding: '25vh 0 0 0',
      'text-align':'center',
    },
    subtitle: {
@@ -90,7 +90,7 @@ const styles = theme => ({
    info: {
      fontSize: 'calc(16px + 6 * ((100vw - 320px) / 680))',
      'text-align':'center',
-     margin: '5vh 0 0 0',
+     padding: '5vh 0 0 0',
      color: theme.palette.bursts.fontColor,
    },
 });
