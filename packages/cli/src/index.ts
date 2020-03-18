@@ -23,10 +23,7 @@ import pluginBuild from './commands/plugin/build';
 import pluginLint from './commands/plugin/lint';
 import pluginServe from './commands/plugin/serve';
 import pluginTest from './commands/plugin/testCommand';
-
-process.on('unhandledRejection', err => {
-  throw err;
-});
+import { exitWithError } from './helpers/errors';
 
 const main = (argv: string[]) => {
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
@@ -36,36 +33,36 @@ const main = (argv: string[]) => {
   program
     .command('create-plugin')
     .description('Creates a new plugin in the current repository')
-    .action(createPluginCommand);
+    .action(actionHandler(createPluginCommand));
 
   program
     .command('plugin:build')
     .option('--watch', 'Enable watch mode')
     .description('Build a plugin')
-    .action(pluginBuild);
+    .action(actionHandler(pluginBuild));
 
   program
     .command('plugin:lint')
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint a plugin')
-    .action(pluginLint);
+    .action(actionHandler(pluginLint));
 
   program
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
-    .action(pluginServe);
+    .action(actionHandler(pluginServe));
 
   program
     .command('plugin:test')
     .option('--watch', 'Enable watch mode')
     .option('--coverage', 'Report test coverage')
     .description('Run all tests for a plugin')
-    .action(pluginTest);
+    .action(actionHandler(pluginTest));
 
   program
     .command('watch-deps')
     .description('Watch all dependencies while running another command')
-    .action(watch);
+    .action(actionHandler(watch));
 
   program.on('command:*', () => {
     console.log();
@@ -83,6 +80,28 @@ const main = (argv: string[]) => {
 
   program.parse(argv);
 };
+
+// Wraps an action function so that it always exits and handles errors
+function actionHandler<T extends readonly any[]>(
+  actionFunc: (...args: T) => Promise<any>,
+): (...args: T) => Promise<never> {
+  return async (...args: T) => {
+    try {
+      await actionFunc(...args);
+      process.exit(0);
+    } catch (error) {
+      exitWithError(error);
+    }
+  };
+}
+
+process.on('unhandledRejection', rejection => {
+  if (rejection instanceof Error) {
+    exitWithError(rejection);
+  } else {
+    exitWithError(new Error(`Unknown rejection: '${rejection}'`));
+  }
+});
 
 main(process.argv);
 // main([process.argv[0], process.argv[1], '--version']);

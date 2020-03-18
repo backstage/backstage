@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
 import { Command } from 'commander';
-import { spawnSync } from 'child_process';
+import { run } from '../../helpers/run';
 
 export default async (cmd: Command) => {
   const args = ['lint'];
@@ -24,14 +23,5 @@ export default async (cmd: Command) => {
     args.push('--fix');
   }
 
-  try {
-    const result = spawnSync('web-scripts', args, { stdio: 'inherit', shell: true });
-    if (result.error) {
-      throw result.error;
-    }
-    process.exit(result.status ?? 0);
-  } catch (error) {
-    process.stderr.write(`${chalk.red(error.message)}\n`);
-    process.exit(1);
-  }
+  await run('web-scripts', args);
 };
