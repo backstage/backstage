@@ -15,13 +15,22 @@
  */
 
 import { Command } from 'commander';
-import { run } from '../../helpers/run';
+import { resolve as resolvePath } from 'path';
+import { run } from '../helpers/run';
 
 export default async (cmd: Command) => {
-  const args = ['lint', '--max-warnings=0', '--format=codeframe'];
-  if (cmd.fix) {
-    args.push('--fix');
+  const args = [
+    'test',
+    '--config',
+    resolvePath(__dirname, '../../config/jest.js'),
+  ];
+
+  if (cmd.watch) {
+    args.push('--watch');
+  }
+  if (cmd.coverage) {
+    args.push('--coverage');
   }
 
-  await run('web-scripts', args);
+  await run('web-scripts', args, { stdio: 'inherit' });
 };

@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-module.exports = {
-  ...require('@spotify/web-scripts/config/jest.config.js'),
-  setupFilesAfterEnv: ['../jest.setup.ts'],
+import { Command } from 'commander';
+import { run } from '../helpers/run';
+
+export default async (cmd: Command) => {
+  const args = ['lint', '--max-warnings=0', '--format=codeframe'];
+  if (cmd.fix) {
+    args.push('--fix');
+  }
+
+  await run('web-scripts', args);
 };
