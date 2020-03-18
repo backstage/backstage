@@ -34,4 +34,5 @@ export function startChild(args: string[]) {
   child.stderr!.on('data', data => {
     log.err(data.toString('utf8'));
   });
+  return child;
 }

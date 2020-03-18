@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SpawnSyncOptions, spawn } from 'child_process';
+import { SpawnSyncOptions, spawn, ChildProcess } from 'child_process';
 import { ExitCodeError } from './errors';
 
 // Runs a child command, returning a promise that is only resolved if the child exits with code 0.
@@ -23,20 +23,33 @@ export async function run(
   args: string[] = [],
   options: SpawnSyncOptions = {},
 ) {
-  return new Promise((resolve, reject) => {
-    const env: NodeJS.ProcessEnv = {
-      ...process.env,
-      FORCE_COLOR: 'true',
-      ...(options.env ?? {}),
-    };
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    FORCE_COLOR: 'true',
+    ...(options.env ?? {}),
+  };
 
-    const child = spawn(name, args, {
-      stdio: 'inherit',
-      shell: true,
-      ...options,
-      env,
-    });
+  const child = spawn(name, args, {
+    stdio: 'inherit',
+    shell: true,
+    ...options,
+    env,
+  });
 
+  await waitForExit(child);
+}
+
+export async function waitForExit(
+  child: ChildProcess & { exitCode?: number },
+): Promise<void> {
+  if (typeof child.exitCode === 'number') {
+    if (child.exitCode) {
+      throw new ExitCodeError(child.exitCode, name);
+    }
+    return;
+  }
+
+  await new Promise((resolve, reject) => {
     child.once('error', error => reject(error));
     child.once('exit', code => {
       if (code) {
