@@ -50,6 +50,7 @@
   },
   "files": [
     "templates",
+    "config",
     "bin",
     "dist"
   ],

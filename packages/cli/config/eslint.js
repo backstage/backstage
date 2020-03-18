@@ -14,8 +14,29 @@
  * limitations under the License.
  */
 
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom/extend-expect';
+module.exports = {
+  extends: [
+    '@spotify/eslint-config-base',
+    '@spotify/eslint-config-react',
+    '@spotify/eslint-config-typescript',
+    'prettier',
+    'prettier/react',
+    'prettier/@typescript-eslint',
+    'plugin:jest/recommended',
+  ],
+  parser: '@typescript-eslint/parser',
+  plugins: ['notice'],
+  env: {
+    jest: true,
+  },
+  parserOptions: {
+    ecmaVersion: 2018,
+    sourceType: 'module',
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  ignorePatterns: ['**/dist/**', '**/build/**'],
+};

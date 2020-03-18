@@ -19,6 +19,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import createPluginCommand from './commands/createPlugin';
 import watch from './commands/watch-deps';
+import appLint from './commands/app/lint';
 import pluginBuild from './commands/plugin/build';
 import pluginLint from './commands/plugin/lint';
 import pluginServe from './commands/plugin/serve';
@@ -29,6 +30,12 @@ const main = (argv: string[]) => {
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 
   program.name('backstage-cli').version(packageJson.version ?? '0.0.0');
+
+  program
+    .command('app:lint')
+    .option('--fix', 'Attempt to automatically fix violations')
+    .description('Lint an app')
+    .action(actionHandler(appLint));
 
   program
     .command('create-plugin')
