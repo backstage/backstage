@@ -36,11 +36,12 @@ export async function run(
     env,
   });
 
-  await waitForExit(child);
+  await waitForExit(child, name);
 }
 
 export async function waitForExit(
   child: ChildProcess & { exitCode?: number },
+  name?: string,
 ): Promise<void> {
   if (typeof child.exitCode === 'number') {
     if (child.exitCode) {
