@@ -20,6 +20,7 @@ import fs from 'fs';
 import createPluginCommand from './commands/createPlugin';
 import watch from './commands/watch-deps';
 import appLint from './commands/app/lint';
+import appTest from './commands/app/testCommand';
 import pluginBuild from './commands/plugin/build';
 import pluginLint from './commands/plugin/lint';
 import pluginServe from './commands/plugin/serve';
@@ -36,6 +37,13 @@ const main = (argv: string[]) => {
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint an app')
     .action(actionHandler(appLint));
+
+  program
+    .command('app:test')
+    .option('--watch', 'Enable watch mode')
+    .option('--coverage', 'Report test coverage')
+    .description('Run all tests for an app')
+    .action(actionHandler(appTest));
 
   program
     .command('create-plugin')
