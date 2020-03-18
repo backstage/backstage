@@ -25,7 +25,8 @@ describe('ExampleComponent', () => {
     const rendered = render(
       <ThemeProvider theme={BackstageTheme}>
         <ExampleComponent />
-      </ThemeProvider>,);
+      </ThemeProvider>,
+    );
     expect(rendered.getByText('Welcome to {{ id }}!')).toBeInTheDocument();
   });
 });
