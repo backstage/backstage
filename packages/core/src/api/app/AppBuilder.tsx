@@ -21,6 +21,8 @@ import { App } from './types';
 import BackstagePlugin from 'api/plugin/Plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import { featureFlagsApiRef } from 'api/apis/definitions/featureFlags';
+import ErrorPage from '../../layout/ErrorPage';
+
 import {
   IconComponent,
   SystemIcons,
@@ -103,6 +105,7 @@ export default class AppBuilder {
       }
     }
 
+<<<<<<< HEAD
     const FeatureFlags = this.apis && this.apis.get(featureFlagsApiRef);
     if (FeatureFlags) {
       FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
@@ -110,6 +113,16 @@ export default class AppBuilder {
 
     routes.push(
       <Route key="login" path="/login" component={LoginPage} exact />,
+=======
+    return () => (
+      <AppContextProvider app={app}>
+        <Switch>
+          {routes}
+          <Route render={(props) => <ErrorPage {...props} status="404" errorTitle="Page Not Found"
+            errorBody="Looks like somebody dropped the mic." backButton={true} />}/>
+        </Switch>
+      </AppContextProvider>
+>>>>>>> core: Implemented error page, closes #170
     );
 
     let rendered = (
