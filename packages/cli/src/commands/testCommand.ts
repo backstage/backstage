@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
-module.exports = {
-  ...require('@spotify/web-scripts/config/jest.config.js'),
-  setupFilesAfterEnv: ['../jest.setup.ts'],
+import { Command } from 'commander';
+import { resolve as resolvePath } from 'path';
+import { run } from '../helpers/run';
+
+export default async (cmd: Command) => {
+  const args = [
+    'test',
+    '--config',
+    resolvePath(__dirname, '../../config/jest.js'),
+  ];
+
+  if (cmd.watch) {
+    args.push('--watch');
+  }
+  if (cmd.coverage) {
+    args.push('--coverage');
+  }
+
+  await run('web-scripts', args, { stdio: 'inherit' });
 };
