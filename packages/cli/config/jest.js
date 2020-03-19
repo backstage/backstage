@@ -21,14 +21,22 @@ const path = require('path');
 // manually extend @spotify/web-scripts/config/jest.config.js that is desired
 if (fs.existsSync('jest.config.js')) {
   module.exports = require(path.resolve('jest.config.js'));
+} else if (fs.existsSync('jest.config.ts')) {
+  module.exports = require(path.resolve('jest.config.ts'));
 } else {
+  const extraOptions = {};
+
+  // Use src/setupTests.ts as the default location for configuring test env
+  if (fs.existsSync('src/setupTests.ts')) {
+    extraOptions.setupFilesAfterEnv = ['<rootDir>/setupTests.ts'];
+  }
+
   module.exports = {
     // We base the jest config on web-scripts, it's pretty flat so we skip any complex merging of config objects
     // Config can be found here: https://github.com/spotify/web-scripts/blob/master/packages/web-scripts/config/jest.config.js
     ...require('@spotify/web-scripts/config/jest.config.js'),
 
-    // Use src/setupTests.ts as the default location for configuring test env
-    setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
+    ...extraOptions,
 
     // If the package has a jest object in package.json we merge that config in. This is the recommended
     // location for configuring tests.
