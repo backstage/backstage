@@ -12,7 +12,8 @@
   },
   "devDependencies": {
     "@spotify-backstage/core": "^0.1.0",
-    "@spotify-backstage/cli": "^0.1.0"
+    "@spotify-backstage/cli": "^0.1.0",
+    "@types/testing-library__jest-dom": "5.0.2"
   },
   "dependencies": {
     "@material-ui/lab": "4.0.0-alpha.45"
