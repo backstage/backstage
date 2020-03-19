@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-import { ApiHolder, ApiRegistry } from '@spotify-backstage/core';
+import { ApiHolder, ApiRegistry, errorApiRef } from '@spotify-backstage/core';
 
 const builder = ApiRegistry.builder();
+
+class ErrorDialogForwarder {
+  post(error: Error) {
+    // eslint-disable-next-line no-console
+    console.error(`Received error, ${error}`);
+  }
+}
+
+export const errorDialogForwarder = new ErrorDialogForwarder();
+
+builder.add(errorApiRef, errorDialogForwarder);
 
 export default builder.build() as ApiHolder;
