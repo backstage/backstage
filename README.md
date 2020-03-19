@@ -80,6 +80,7 @@ Then open http://localhost/ on your browser.
 
 ## Documentation
 
+- [FAQs](docs/FAQ.md)
 - [Create a Plugin](docs/getting-started/create-a-plugin.md)
 - [Structure of a Plugin](docs/getting-started/structure-of-a-plugin.md)
 - [Frontend architecture](docs/architecture-terminology.md)
