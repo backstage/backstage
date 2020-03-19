@@ -22,6 +22,7 @@ import watch from './commands/watch-deps';
 import lintCommand from './commands/lint';
 import testCommand from './commands/testCommand';
 import appBuild from './commands/app/build';
+import appServe from './commands/app/serve';
 import pluginBuild from './commands/plugin/build';
 import pluginServe from './commands/plugin/serve';
 import { exitWithError } from './helpers/errors';
@@ -35,6 +36,11 @@ const main = (argv: string[]) => {
     .command('app:build')
     .description('Build an app for a production release')
     .action(actionHandler(appBuild));
+
+  program
+    .command('app:serve')
+    .description('Serve an app for local development')
+    .action(actionHandler(appServe));
 
   program
     .command('create-plugin')
