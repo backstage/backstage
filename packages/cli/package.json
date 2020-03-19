@@ -7,8 +7,8 @@
   "scripts": {
     "exec": "npx ts-node ./src",
     "build": "tsc --outDir dist --noEmit false --module CommonJS",
-    "lint": "web-scripts lint",
-    "test": "web-scripts test",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
     "start": "nodemon ."
   },
   "devDependencies": {
