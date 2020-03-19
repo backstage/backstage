@@ -23,6 +23,8 @@ import { ErrorApi, ErrorContext } from '@spotify-backstage/core';
 type SubscriberFunc = (error: Error) => void;
 type Unsubscribe = () => void;
 
+// TODO: figure out where to put implementations of APIs, both inside apps
+// but also in core/separate package.
 export class ErrorDisplayForwarder implements ErrorApi {
   private readonly subscribers = new Set<SubscriberFunc>();
 
@@ -47,6 +49,7 @@ type Props = {
   forwarder: ErrorDisplayForwarder;
 };
 
+// TODO: improve on this and promote to a shared component for use by all apps.
 const ErrorDisplay: FC<Props> = ({ forwarder }) => {
   const [errors, setErrors] = useState<Array<Error>>([]);
 
