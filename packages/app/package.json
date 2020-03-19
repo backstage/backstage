@@ -26,7 +26,7 @@
   },
   "scripts": {
     "start": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true backstage-cli watch-deps -- react-scripts start",
-    "build": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
+    "build": "backstage-cli app:build",
     "test": "backstage-cli test",
     "lint": "backstage-cli lint"
   },
