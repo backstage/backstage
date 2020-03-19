@@ -22,7 +22,7 @@ type ApiImpl<T = unknown> = readonly [ApiRef<T>, T];
 class ApiRegistryBuilder {
   private apis: ApiImpl[] = [];
 
-  add<T>(api: ApiRef<T>, impl: T): T {
+  add<T, I extends T>(api: ApiRef<T>, impl: I): I {
     this.apis.push([api, impl]);
     return impl;
   }
