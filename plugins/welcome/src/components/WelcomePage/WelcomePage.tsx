@@ -34,6 +34,7 @@ import {
   ContentHeader,
   SupportButton,
 } from '@spotify-backstage/core';
+import ErrorButton from './ErrorButton';
 
 const WelcomePage: FC<{}> = () => {
   const profile = { givenName: '' };
@@ -111,6 +112,15 @@ const WelcomePage: FC<{}> = () => {
                   </Link>
                 </ListItem>
               </List>
+            </InfoCard>
+          </Grid>
+          <Grid item>
+            <InfoCard title="APIs">
+              <Typography>
+                The button below is an example of how to consume APIs.
+              </Typography>
+              <br />
+              <ErrorButton />
             </InfoCard>
           </Grid>
         </Grid>
