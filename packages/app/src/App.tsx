@@ -19,8 +19,9 @@ import { BackstageTheme, createApp } from '@spotify-backstage/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
+import ErrorDisplay from './components/ErrorDisplay';
 import * as plugins from './plugins';
-import apis from './apis';
+import apis, { errorDialogForwarder } from './apis';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -50,6 +51,7 @@ const App: FC<{}> = () => {
   return (
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
+        <ErrorDisplay forwarder={errorDialogForwarder} />
         <Router>
           <Root>
             <AppComponent />

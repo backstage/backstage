@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.45",
     "@spotify-backstage/cli": "^0.1.0",
     "@spotify-backstage/core": "^0.1.0",
     "@spotify-backstage/plugin-home-page": "^0.1.0",
