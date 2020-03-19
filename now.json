@@ -1,9 +1,30 @@
 {
-  "version": 2,
-    "builds": [
-      { "src": "./packages/app/build/**", "use": "@now/static" }
-    ],
-    "routes": [
-      { "src": "/(.*)", "dest": "packages/app/build/$1" }
-    ]
+  "builds": [{ "src": "packages/app/build/**", "use": "@now/static" }],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "headers": { "cache-control": "public, max-age=2592000" },
+      "dest": "packages/app/build/static/$1"
+    },
+    { "src": "/favicon.ico", "dest": "packages/app/build/favicon.ico" },
+    {
+      "src": "/asset-manifest.json",
+      "dest": "packages/app/build/asset-manifest.json"
+    },
+    { "src": "/manifest.json", "dest": "packages/app/build/manifest.json" },
+    {
+      "src": "/precache-manifest.(.*)",
+      "dest": "packages/app/build/precache-manifest.$1"
+    },
+    {
+      "src": "/service-worker.js",
+      "headers": { "cache-control": "s-maxage=0" },
+      "dest": "packages/app/build/service-worker.js"
+    },
+    {
+      "src": "/(.*)",
+      "headers": { "cache-control": "s-maxage=0" },
+      "dest": "packages/app/build/index.html"
+    }
+  ]
 }
