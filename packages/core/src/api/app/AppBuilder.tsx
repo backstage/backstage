@@ -25,6 +25,7 @@ import {
   SystemIconKey,
   defaultSystemIcons,
 } from '../../icons';
+import { ApiHolder, ApiProvider } from '../apis';
 import LoginPage from './LoginPage';
 
 class AppImpl implements App {
@@ -36,8 +37,13 @@ class AppImpl implements App {
 }
 
 export default class AppBuilder {
+  private apis?: ApiHolder;
   private systemIcons = { ...defaultSystemIcons };
   private readonly plugins = new Set<BackstagePlugin>();
+
+  registerApis(apis: ApiHolder) {
+    this.apis = apis;
+  }
 
   registerIcons(icons: Partial<SystemIcons>) {
     this.systemIcons = { ...this.systemIcons, ...icons };
@@ -91,13 +97,17 @@ export default class AppBuilder {
       <Route key="login" path="/login" component={LoginPage} exact />,
     );
 
-    return () => (
-      <AppContextProvider app={app}>
-        <Switch>
-          {routes}
-          <Route component={() => <span>404 Not Found</span>} />
-        </Switch>
-      </AppContextProvider>
+    let rendered = (
+      <Switch>
+        {routes}
+        <Route component={() => <span>404 Not Found</span>} />
+      </Switch>
     );
+
+    if (this.apis) {
+      rendered = <ApiProvider apis={this.apis} children={rendered} />;
+    }
+
+    return () => <AppContextProvider app={app} children={rendered} />;
   }
 }

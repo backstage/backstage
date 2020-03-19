@@ -20,6 +20,7 @@ import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import * as plugins from './plugins';
+import apis from './apis';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -40,6 +41,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const app = createApp();
+app.registerApis(apis);
 app.registerPlugin(...Object.values(plugins));
 const AppComponent = app.build();
 
