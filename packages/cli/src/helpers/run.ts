@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { SpawnSyncOptions, spawn, ChildProcess } from 'child_process';
+import { SpawnOptions, spawn, ChildProcess } from 'child_process';
 import { ExitCodeError } from './errors';
+
+type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
+  env?: Partial<NodeJS.ProcessEnv>;
+};
 
 // Runs a child command, returning a promise that is only resolved if the child exits with code 0.
 export async function run(
   name: string,
   args: string[] = [],
-  options: SpawnSyncOptions = {},
+  options: SpawnOptionsPartialEnv = {},
 ) {
   const env: NodeJS.ProcessEnv = {
     ...process.env,

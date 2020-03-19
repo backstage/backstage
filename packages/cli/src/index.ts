@@ -21,6 +21,8 @@ import createPluginCommand from './commands/createPlugin';
 import watch from './commands/watch-deps';
 import lintCommand from './commands/lint';
 import testCommand from './commands/testCommand';
+import appBuild from './commands/app/build';
+import appServe from './commands/app/serve';
 import pluginBuild from './commands/plugin/build';
 import pluginServe from './commands/plugin/serve';
 import { exitWithError } from './helpers/errors';
@@ -29,6 +31,16 @@ const main = (argv: string[]) => {
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 
   program.name('backstage-cli').version(packageJson.version ?? '0.0.0');
+
+  program
+    .command('app:build')
+    .description('Build an app for a production release')
+    .action(actionHandler(appBuild));
+
+  program
+    .command('app:serve')
+    .description('Serve an app for local development')
+    .action(actionHandler(appServe));
 
   program
     .command('create-plugin')

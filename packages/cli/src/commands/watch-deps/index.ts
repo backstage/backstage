@@ -31,16 +31,9 @@ const PACKAGE_BLACKLIST = [
 
 const WATCH_LOCATIONS = ['package.json', 'src', 'assets'];
 
-/*
- * The watch-deps command is meant to improve iteration speed while working in a large monorepo
- * with packages that are built independently, meaning packages depends on each other's build output.
- *
- * The command traverses all dependencies of the current package within the monorepo, and starts
- * watching for updates in all those packages. If a change is detected, we stop listening for changes,
- * and instead start up watch mode for that package. Starting watch mode means running the first
- * available yarn script out of "build:watch", "watch", or "build" --watch.
- */
-export default async (_command: any, args: string[]) => {
+// Start watching for dependency changes.
+// The returned promise resolves when watchers have started for all current dependencies.
+export async function watchDeps() {
   const localPackagePath = resolvePath('package.json');
 
   // Rotate through different prefix colors to make it easier to differenciate between different deps
@@ -66,6 +59,19 @@ export default async (_command: any, args: string[]) => {
     const newDeps = await getPackageDeps(localPackagePath, PACKAGE_BLACKLIST);
     await watcher.update(newDeps);
   });
+}
+
+/*
+ * The watch-deps command is meant to improve iteration speed while working in a large monorepo
+ * with packages that are built independently, meaning packages depends on each other's build output.
+ *
+ * The command traverses all dependencies of the current package within the monorepo, and starts
+ * watching for updates in all those packages. If a change is detected, we stop listening for changes,
+ * and instead start up watch mode for that package. Starting watch mode means running the first
+ * available yarn script out of "build:watch", "watch", or "build" --watch.
+ */
+export default async (_command: any, args: string[]) => {
+  await watchDeps();
 
   if (args?.length) {
     await waitForExit(startChild(args));
