@@ -41,7 +41,8 @@ jobs:
           sudo sysctl fs.inotify.max_user_watches=524288
           node scripts/cli-e2e-test.js
       - name: yarn lint, test after plugin creation
-        path: 'plugins/*'
+        paths:
+        - 'plugins/*'
         run: |
           yarn lint
           yarn test
