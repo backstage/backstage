@@ -1,9 +1,15 @@
 {
   "name": "@backstage/plugin-home-page",
   "version": "0.1.1-alpha.0",
-  "main": "dist/cjs/index.js",
-  "types": "dist/cjs/index.d.ts",
-  "private": true,
+  "module": "build/index.esm.js",
+  "types": "build/index.d.ts",
+  "license": "Apache-2.0",
+  "private": false,
+  "scripts": {
+    "build": "backstage-cli build-cache -- backstage-cli plugin:build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test"
+  },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.0",
     "@backstage/core": "^0.1.1-alpha.0",
@@ -18,10 +24,12 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   },
-  "scripts": {
-    "build": "backstage-cli build-cache -- backstage-cli plugin:build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test"
-  },
-  "license": "Apache-2.0"
+  "peerDependencies": {
+    "@material-ui/core": "^4.9.1",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.45",
+    "@backstage/core": "^0.1.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "name": "@backstage/plugin-{{id}}",
   "version": "{{version}}",
-  "main": "dist/cjs/index.js",
-  "types": "dist/cjs/index.d.ts",
+  "main": "build/index.esm.js",
+  "types": "build/index.d.ts",
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
@@ -12,11 +12,20 @@
   },
   "devDependencies": {
     "@backstage/cli": "^{{version}}",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^12.0.0",
     "@types/testing-library__jest-dom": "5.0.2",
     "jest-fetch-mock": "^3.0.3"
   },
-  "dependencies": {
-    "@backstage/core": "^{{version}}",
-    "@material-ui/lab": "4.0.0-alpha.45"
+  "peerDependencies": {
+    "@backstage/core": "^0.1.0",
+    "@material-ui/core": "^4.9.1",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.45",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
   }
 }

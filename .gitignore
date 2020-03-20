@@ -1,6 +1,7 @@
 .idea/
 .DS_Store
 .vscode/
+.vsls.json
 
 # @spotify/web-script build output
 cjs/

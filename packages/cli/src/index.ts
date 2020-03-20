@@ -143,4 +143,6 @@ process.on('unhandledRejection', rejection => {
 });
 
 main(process.argv);
-// main([process.argv[0], process.argv[1], '--version']);
+// process.chdir('../../plugins/welcome');
+// console.log(`DEBUG: ${process.cwd()}`);
+// main([process.argv[0], process.argv[1], 'plugin:build']);
