@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-module.exports = {
-  ...require('@spotify/web-scripts/config/jest.config.js'),
-  setupFilesAfterEnv: ['../jest.setup.ts'],
+import { run } from '../../helpers/run';
+
+export default async () => {
+  const args = ['build'];
+
+  await run('react-scripts', args, {
+    env: {
+      EXTEND_ESLINT: 'true',
+      SKIP_PREFLIGHT_CHECK: 'true',
+    },
+  });
 };

@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-module.exports = {
-  ...require('@spotify/web-scripts/config/jest.config.js'),
-  setupFilesAfterEnv: ['../jest.setup.ts'],
+import { run } from '../../helpers/run';
+import { watchDeps } from '../watch-deps';
+
+export default async () => {
+  const args = ['start'];
+
+  // Start dynamic watch and build of dependencies, then serve the app
+  await watchDeps();
+  await run('react-scripts', args, {
+    env: {
+      EXTEND_ESLINT: 'true',
+      SKIP_PREFLIGHT_CHECK: 'true',
+    },
+  });
 };

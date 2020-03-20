@@ -7,8 +7,8 @@
   "scripts": {
     "exec": "npx ts-node ./src",
     "build": "tsc --outDir dist --noEmit false --module CommonJS",
-    "lint": "web-scripts lint",
-    "test": "web-scripts test",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
     "start": "nodemon ."
   },
   "devDependencies": {
@@ -42,6 +42,7 @@
     "inquirer": "^7.0.4",
     "ora": "^4.0.3",
     "react-dev-utils": "^10.2.0",
+    "react-scripts": "^3.4.0",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^5.0.2",
     "ts-loader": "^6.2.1",

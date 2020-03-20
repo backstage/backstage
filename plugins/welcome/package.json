@@ -7,12 +7,13 @@
   "private": false,
   "scripts": {
     "build": "backstage-cli plugin:build",
-    "lint": "backstage-cli plugin:lint",
-    "test": "backstage-cli plugin:test"
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test"
   },
   "devDependencies": {
     "@spotify-backstage/core": "^0.1.0",
-    "@spotify-backstage/cli": "^0.1.0"
+    "@spotify-backstage/cli": "^0.1.0",
+    "@types/testing-library__jest-dom": "5.0.2"
   },
   "dependencies": {
     "@material-ui/lab": "4.0.0-alpha.45"

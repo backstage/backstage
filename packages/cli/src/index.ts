@@ -19,11 +19,12 @@ import chalk from 'chalk';
 import fs from 'fs';
 import createPluginCommand from './commands/createPlugin';
 import watch from './commands/watch-deps';
-import appLint from './commands/app/lint';
+import lintCommand from './commands/lint';
+import testCommand from './commands/testCommand';
+import appBuild from './commands/app/build';
+import appServe from './commands/app/serve';
 import pluginBuild from './commands/plugin/build';
-import pluginLint from './commands/plugin/lint';
 import pluginServe from './commands/plugin/serve';
-import pluginTest from './commands/plugin/testCommand';
 import { exitWithError } from './helpers/errors';
 
 const main = (argv: string[]) => {
@@ -32,10 +33,14 @@ const main = (argv: string[]) => {
   program.name('backstage-cli').version(packageJson.version ?? '0.0.0');
 
   program
-    .command('app:lint')
-    .option('--fix', 'Attempt to automatically fix violations')
-    .description('Lint an app')
-    .action(actionHandler(appLint));
+    .command('app:build')
+    .description('Build an app for a production release')
+    .action(actionHandler(appBuild));
+
+  program
+    .command('app:serve')
+    .description('Serve an app for local development')
+    .action(actionHandler(appServe));
 
   program
     .command('create-plugin')
@@ -49,22 +54,22 @@ const main = (argv: string[]) => {
     .action(actionHandler(pluginBuild));
 
   program
-    .command('plugin:lint')
-    .option('--fix', 'Attempt to automatically fix violations')
-    .description('Lint a plugin')
-    .action(actionHandler(pluginLint));
-
-  program
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
     .action(actionHandler(pluginServe));
 
   program
-    .command('plugin:test')
+    .command('lint')
+    .option('--fix', 'Attempt to automatically fix violations')
+    .description('Lint a package')
+    .action(actionHandler(lintCommand));
+
+  program
+    .command('test')
     .option('--watch', 'Enable watch mode')
     .option('--coverage', 'Report test coverage')
-    .description('Run all tests for a plugin')
-    .action(actionHandler(pluginTest));
+    .description('Run all tests for package')
+    .action(actionHandler(testCommand));
 
   program
     .command('watch-deps')

@@ -20,15 +20,14 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.0",
     "react-use": "^13.24.0",
     "zen-observable": "^0.8.15"
   },
   "scripts": {
-    "start": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true backstage-cli watch-deps -- react-scripts start",
-    "build": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
-    "test": "cross-env EXTEND_ESLINT=true SKIP_PREFLIGHT_CHECK=true react-scripts test",
-    "lint": "backstage-cli app:lint"
+    "start": "backstage-cli app:serve",
+    "build": "backstage-cli app:build",
+    "test": "backstage-cli test",
+    "lint": "backstage-cli lint"
   },
   "browserslist": {
     "production": [

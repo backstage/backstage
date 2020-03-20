@@ -1,21 +1,23 @@
+![headline](docs/headline.png)
+
 # [Backstage](https://backstage.io)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![](https://github.com/spotify/backstage/workflows/Frontend%20CI/badge.svg)
 [![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/EBHEGzX)
+![Code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
+
 ## What is Backstage?
 
 Backstage is an open platform for building developer portals.
 
 The philosophy behind Backstage is simple: Don't expose your engineers to the full complexity of your infrastructure tooling. Engineers should be shipping code — not figuring out a whole new toolset every time they want to implement the basics. Backstage allows you add "stuff" (tooling, services, features, etc.) by adding a plugin, instead of building a new tool. This saves you work and avoids the need of your team to learn how to use and support yet another tool.
 
-![headline](headline.png)
-
 For more information go to [backstage.io](https://backstage.io)
 
 ## What problem does Backstage solve?
 
-As companies grow, their infrastructure systems get messier. Backstage unifies all your infrastructure tooling, services, and documentation with a single, consistent UI. 
+As companies grow, their infrastructure systems get messier. Backstage unifies all your infrastructure tooling, services, and documentation with a single, consistent UI.
 
 This blog post provides more examples of how Backstage is used inside Spotify:
 
@@ -80,6 +82,7 @@ Then open http://localhost/ on your browser.
 
 ## Documentation
 
+- [FAQs](docs/FAQ.md)
 - [Create a Plugin](docs/getting-started/create-a-plugin.md)
 - [Structure of a Plugin](docs/getting-started/structure-of-a-plugin.md)
 - [Frontend architecture](docs/architecture-terminology.md)
