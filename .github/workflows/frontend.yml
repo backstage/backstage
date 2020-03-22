@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v2
-      - run: |
+        run: |
           git fetch --no-tags --prune --depth=1 origin +refs/heads/master:refs/remotes/origin/master
       - name: get yarn cache
         id: yarn-cache
