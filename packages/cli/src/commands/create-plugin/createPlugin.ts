@@ -25,7 +25,11 @@ import { resolve as resolvePath } from 'path';
 import { realpathSync, existsSync } from 'fs';
 import os from 'os';
 import ora from 'ora';
-import { parseOwnerIds, addCodeownersEntry } from './lib/codeowners';
+import {
+  parseOwnerIds,
+  addCodeownersEntry,
+  getCodeownersFilePath,
+} from './lib/codeowners';
 
 const MARKER_SUCCESS = chalk.green(` ✔︎\n`);
 const MARKER_FAILURE = chalk.red(` ✘\n`);
@@ -328,6 +332,9 @@ export const movePlugin = (
 };
 
 const createPlugin = async () => {
+  const rootDir = realpathSync(process.cwd());
+  const codeownersPath = await getCodeownersFilePath(rootDir);
+
   const questions: Question[] = [
     {
       type: 'input',
@@ -344,7 +351,10 @@ const createPlugin = async () => {
         return true;
       },
     },
-    {
+  ];
+
+  if (codeownersPath) {
+    questions.push({
       type: 'input',
       name: 'owner',
       message: chalk.blue(
@@ -364,14 +374,13 @@ const createPlugin = async () => {
 
         return true;
       },
-    },
-  ];
+    });
+  }
+
   const answers: Answers = await inquirer.prompt(questions);
 
-  const rootDir = realpathSync(process.cwd());
-  const codeownersPath = path.join(rootDir, '.github', 'CODEOWNERS');
   const appPackage = resolvePath(rootDir, 'packages', 'app');
-  const cliPackage = resolvePath(__dirname, '..', '..');
+  const cliPackage = resolvePath(__dirname, '..', '..', '..');
   const templateFolder = resolvePath(cliPackage, 'templates', 'default-plugin');
   const tempDir = path.join(os.tmpdir(), answers.id);
   const pluginDir = path.join(rootDir, 'plugins', answers.id);
@@ -394,8 +403,8 @@ const createPlugin = async () => {
     }
 
     if (ownerIds && ownerIds.length) {
-      addCodeownersEntry(
-        codeownersPath,
+      await addCodeownersEntry(
+        codeownersPath!,
         path.join('plugins', answers.id),
         ownerIds,
       );

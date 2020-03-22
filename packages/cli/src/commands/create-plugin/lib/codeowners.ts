@@ -15,10 +15,35 @@
  */
 
 import fs from 'fs-extra';
+import path from 'path';
 
 const TEAM_ID_RE = /^@[-\w]+\/[-\w]+$/;
 const USER_ID_RE = /^@[-\w]+$/;
-const EMAIL_RE = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+const EMAIL_RE = /^[^@]+@[-.\w]+\.[-\w]+$/i;
+
+type CodeownersEntry = {
+  ownedPath: string;
+  ownerIds: string[];
+};
+
+export async function getCodeownersFilePath(
+  rootDir: string,
+): Promise<string | undefined> {
+  const paths = [
+    path.join(rootDir, '.github', 'CODEOWNERS'),
+    path.join(rootDir, '.gitlab', 'CODEOWNERS'),
+    path.join(rootDir, 'docs', 'CODEOWNERS'),
+    path.join(rootDir, 'CODEOWNERS'),
+  ];
+
+  for (const p of paths) {
+    if (await fs.pathExists(p)) {
+      return p;
+    }
+  }
+
+  return undefined;
+}
 
 export function isValidSingleOwnerId(id: string): boolean {
   if (!id || typeof id !== 'string') {
@@ -43,12 +68,12 @@ export function parseOwnerIds(
   return ids;
 }
 
-export function addCodeownersEntry(
+export async function addCodeownersEntry(
   codeownersFilePath: string,
   ownedPath: string,
   ownerIds: string[],
-): void {
-  const allLines = fs.readFileSync(codeownersFilePath, 'utf8').split('\n');
+): Promise<void> {
+  const allLines = (await fs.readFile(codeownersFilePath, 'utf8')).split('\n');
 
   // Only keep comments from the top of the file
   const commentLines = [];
@@ -59,30 +84,34 @@ export function addCodeownersEntry(
     commentLines.push(line);
   }
 
-  const oldDeclarationEntries = allLines
+  const oldDeclarationEntries: CodeownersEntry[] = allLines
     .filter(line => line[0] !== '#')
     .map(line => line.split(/\s+/).filter(Boolean))
-    .filter(items => items.length >= 2);
+    .filter(tokens => tokens.length >= 2)
+    .map(tokens => ({
+      ownedPath: tokens[0],
+      ownerIds: tokens.slice(1),
+    }));
 
   const newDeclarationEntries = oldDeclarationEntries
-    .filter(items => items[0] !== '*')
-    .concat([[ownedPath, ...ownerIds]])
-    .sort((l1, l2) => l1[0].localeCompare(l2[0]))
-    .concat([['*', '@spotify/backstage-core']]);
+    .filter(entry => entry.ownedPath !== '*')
+    .concat([{ ownedPath, ownerIds }])
+    .sort((l1, l2) => l1.ownedPath.localeCompare(l2.ownedPath))
+    .concat([{ ownedPath: '*', ownerIds: ['@spotify/backstage-core'] }]);
 
   // Calculate longest path to be able to align entries nicely
   const longestOwnedPath = newDeclarationEntries.reduce(
-    (length, entry) => Math.max(length, entry[0].length),
+    (length, entry) => Math.max(length, entry.ownedPath.length),
     0,
   );
 
   const newDeclarationLines = newDeclarationEntries.map(entry => {
-    const entryPath = entry[0] + ' '.repeat(longestOwnedPath - entry[0].length);
-    const entryOwners = entry.slice(1);
-    return [entryPath, ...entryOwners].join(' ');
+    const entryPath =
+      entry.ownedPath + ' '.repeat(longestOwnedPath - entry.ownedPath.length);
+    return [entryPath, ...entry.ownerIds].join(' ');
   });
 
   const newLines = [...commentLines, '', ...newDeclarationLines, ''];
 
-  fs.writeFileSync(codeownersFilePath, newLines.join('\n'), 'utf8');
+  await fs.writeFile(codeownersFilePath, newLines.join('\n'), 'utf8');
 }
