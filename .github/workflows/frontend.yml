@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v2
-        with:
-          ref: master
       - name: get yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
