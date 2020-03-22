@@ -10,7 +10,11 @@ insert_final_newline = true
 charset = utf-8
 indent_style = space
 
-[*.{ts,json,js}]
+[*.html]
+indent_style = space
+indent_size = 2
+
+[*.{ts,json,js,tsx,jsx}]
 indent_style = space
 indent_size = 2
 
