@@ -1,17 +1,20 @@
-name: Frontend CI
+name: CLI Test
 
 on:
   pull_request:
+    paths: ['.github/workflows/cli.yml', 'packages/cli/**']
     types: [opened, reopened, edited, synchronize]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os: [ubuntu-latest]
         node-version: [12.x]
 
+    name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - name: find location of yarn cache
@@ -27,11 +30,20 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: yarn install, build, and test
+      - run: yarn install
+      - run: yarn build
+      # This creates a new plugin and pollutes the workspace, so it should be run last.
+      - name: verify app serve and plugin creation
+        shell: bash
         run: |
-          yarn install
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo sysctl fs.inotify.max_user_watches=524288
+          fi
+          node scripts/cli-e2e-test.js
+      - name: yarn lint, test after plugin creation
+        working-directory: plugins/test-plugin
+        run: |
           yarn lint
-          yarn build
           yarn test
         env:
           CI: true
