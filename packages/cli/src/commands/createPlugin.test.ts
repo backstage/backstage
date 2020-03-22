@@ -26,7 +26,7 @@ import {
 } from './createPlugin';
 
 describe('createPlugin', () => {
-  describe('createPluginFolder', () => {
+  describe('createTemporaryPluginFolder', () => {
     it('should create a temporary plugin directory in the correct place', () => {
       const id = 'testPlugin';
       const tempDir = path.join(os.tmpdir(), id);
