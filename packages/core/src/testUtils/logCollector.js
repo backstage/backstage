@@ -15,6 +15,7 @@
  */
 
 /* eslint-disable no-console */
+/* eslint-disable no-param-reassign */
 
 // If the callback function is async this one will be too.
 export function withLogCollector(logsToCollect, callback) {
