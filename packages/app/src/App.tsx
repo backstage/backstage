@@ -20,6 +20,7 @@ import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import * as plugins from './plugins';
+import * as config from './config';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -49,7 +50,7 @@ const App: FC<{}> = () => {
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
         <Router>
-          <Root>
+          <Root sidebarItems={config.sidebarItems}>
             <AppComponent />
           </Root>
         </Router>

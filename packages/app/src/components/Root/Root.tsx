@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { FC, useContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { FC, useContext, ReactNode } from 'react';
 import { Link, makeStyles, Typography } from '@material-ui/core';
-import HomeIcon from '@material-ui/icons/Home';
+import SvgIcon from '@material-ui/core/SvgIcon';
 import {
   Sidebar,
   SidebarPage,
@@ -70,22 +69,30 @@ const SidebarLogo: FC<{}> = () => {
   );
 };
 
-const Root: FC<{}> = ({ children }) => (
+type SidebarItem = {
+  icon: typeof SvgIcon;
+  route: string;
+  label: string;
+};
+type SidebarProps = {
+  sidebarItems: SidebarItem[];
+  children: ReactNode;
+};
+
+const Root: FC<SidebarProps> = ({ sidebarItems, children }: SidebarProps) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
       <SidebarSpacer />
       <SidebarDivider />
-      <SidebarItem icon={HomeIcon} to="/" text="Home" />
+      {sidebarItems.map(d => (
+        <SidebarItem icon={d.icon} to={d.route} text={d.label} />
+      ))}
       <SidebarDivider />
       <SidebarSpace />
     </Sidebar>
     {children}
   </SidebarPage>
 );
-
-Root.propTypes = {
-  children: PropTypes.node,
-};
 
 export default Root;
