@@ -43,24 +43,23 @@ jobs:
         env:
           CI: true
 
-  jobs:
-    deoloy-storybook:
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      runs-on: ubuntu-latest
+  deploy-storybook:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
 
-      strategy:
-        matrix:
-          node-version: [12.x]
-      steps:
-        - uses: actions/checkout@v2
-        - name: build storybook
-          if: github.event_name === 'push' && github.ref == 'refs/heads/master'
-          run: |
-            yarn build-storybook
-        - name: deploy gh-pages
-          if: github.event_name === 'push' && github.ref == 'refs/heads/master'
-          uses: JamesIves/github-pages-deploy-action@3.4.2
-          with:
-            ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-            BRANCH: gh-pages
-            FOLDER: packages/core/storybook-static
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: build storybook
+        if: github.event_name === 'push' && github.ref == 'refs/heads/master'
+        run: |
+          yarn build-storybook
+      - name: deploy gh-pages
+        if: github.event_name === 'push' && github.ref == 'refs/heads/master'
+        uses: JamesIves/github-pages-deploy-action@3.4.2
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: packages/core/storybook-static
