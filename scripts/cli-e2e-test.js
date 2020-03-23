@@ -36,8 +36,16 @@ async function main() {
     print('Backstage loaded correctly, creating plugin');
 
     const createPlugin = spawnPiped(['yarn', 'create-plugin']);
+
+    let stdout = '';
+    createPlugin.stdout.on('data', data => {
+      stdout = stdout + data.toString('utf8');
+    });
+
+    await waitFor(() => stdout.includes('Enter an ID for the plugin'));
     createPlugin.stdin.write('test-plugin\n');
-    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    await waitFor(() => stdout.includes('Enter the owner(s) of the plugin'));
     createPlugin.stdin.write('@someuser\n');
 
     print('Waiting for plugin create script to be done');
@@ -57,6 +65,18 @@ async function main() {
   await waitForExit(start);
 
   process.exit(0);
+}
+
+function waitFor(fn) {
+  return new Promise(resolve => {
+    const handle = setInterval(() => {
+      if (fn()) {
+        clearInterval(handle);
+        resolve();
+        return;
+      }
+    }, 100);
+  });
 }
 
 function print(msg) {
@@ -117,7 +137,7 @@ async function waitForPageWithText(
   browser,
   path,
   text,
-  { intervalMs = 1000, maxAttempts = 60 } = {},
+  { intervalMs = 1000, maxAttempts = 120 } = {},
 ) {
   let attempts = 0;
   for (;;) {
