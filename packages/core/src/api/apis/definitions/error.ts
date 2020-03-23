@@ -20,7 +20,7 @@ import ApiRef from '../ApiRef';
  * Mirrors the javascript Error class, for the purpose of
  * providing documentation and optional fields.
  */
-export type Error = {
+type Error = {
   name: string;
   message: string;
   stack?: string;
