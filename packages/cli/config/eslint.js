@@ -39,4 +39,13 @@ module.exports = {
     },
   },
   ignorePatterns: ['**/dist/**', '**/build/**'],
+  overrides: [
+    {
+      files: ['**/*.ts?(x)'],
+      rules: {
+        // Default to not enforcing prop-types in typescript
+        'react/prop-types': 0,
+      },
+    },
+  ],
 };
