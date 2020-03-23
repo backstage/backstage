@@ -14,8 +14,22 @@
  * limitations under the License.
  */
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export * from './types';
-export * from './definitions';
+import React, { FC } from 'react';
+import { Button } from '@material-ui/core';
+import { errorApiRef, useApi } from '@spotify-backstage/core';
+
+const ErrorButton: FC<{}> = () => {
+  const errorApi = useApi(errorApiRef);
+
+  const handleClick = () => {
+    errorApi.post(new Error('Oh no!'));
+  };
+
+  return (
+    <Button variant="contained" color="primary" onClick={handleClick}>
+      Trigger an error!
+    </Button>
+  );
+};
+
+export default ErrorButton;
