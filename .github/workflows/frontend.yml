@@ -57,7 +57,7 @@ jobs:
         run: |
           yarn build-storybook
       - name: deploy gh-pages
-        if: github.event_name === 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JamesIves/github-pages-deploy-action@3.4.2
         with:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
