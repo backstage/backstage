@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+  app:
+    volumes:
+      - app_dir:/app/packages/app/build
+    build: .
+
+  web:
+    ports:
+      - 8080:80
+    volumes:
+      - ./docker/backstage.conf:/etc/nginx/conf.d/backstage.conf
+      - type: volume
+        source: app_dir
+        target: /usr/share/backstage/html
+        volume:
+          nocopy: true
+    image: nginx:mainline
+
+volumes:
+  app_dir:
