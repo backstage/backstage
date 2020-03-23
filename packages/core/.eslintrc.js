@@ -9,6 +9,8 @@ module.exports = {
     },
   ],
   rules: {
+    // TODO: add prop types to JS and remove
+    'react/prop-types': 0,
     'jest/expect-expect': 0,
   },
 };
