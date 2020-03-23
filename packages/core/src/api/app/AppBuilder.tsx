@@ -25,6 +25,7 @@ import {
   SystemIconKey,
   defaultSystemIcons,
 } from '../../icons';
+import LoginPage from './LoginPage';
 
 class AppImpl implements App {
   constructor(private readonly systemIcons: SystemIcons) {}
@@ -85,6 +86,10 @@ export default class AppBuilder {
         }
       }
     }
+
+    routes.push(
+      <Route key="login" path="/login" component={LoginPage} exact />,
+    );
 
     return () => (
       <AppContextProvider app={app}>
