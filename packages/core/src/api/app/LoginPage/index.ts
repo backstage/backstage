@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-import '@testing-library/jest-dom/extend-expect';
-require('jest-fetch-mock').enableMocks();
+export { default } from './LoginPage';

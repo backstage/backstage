@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-import '@testing-library/jest-dom/extend-expect';
-require('jest-fetch-mock').enableMocks();
+import { ApiHolder, ApiRegistry, errorApiRef } from '@spotify-backstage/core';
+import { ErrorDisplayForwarder } from './components/ErrorDisplay/ErrorDisplay';
+
+const builder = ApiRegistry.builder();
+
+export const errorDialogForwarder = new ErrorDisplayForwarder();
+
+builder.add(errorApiRef, errorDialogForwarder);
+
+export default builder.build() as ApiHolder;

@@ -13,9 +13,8 @@ jobs:
         node-version: [12.x]
 
     steps:
-      - name: checkout code
-        uses: actions/checkout@v2
-      - name: get yarn cache
+      - uses: actions/checkout@v2
+      - name: find location of yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - uses: actions/cache@v1
@@ -24,6 +23,11 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+      - name: cache node_modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -33,18 +37,6 @@ jobs:
           yarn install
           yarn lint
           yarn build
-          yarn test
-        env:
-          CI: true
-      # This creates a new plugin and pollutes the workspace, so it should be run last.
-      - name: verify app serve and plugin creation
-        run: |
-          sudo sysctl fs.inotify.max_user_watches=524288
-          node scripts/cli-e2e-test.js
-      - name: yarn lint, test after plugin creation
-        working-directory: plugins/test-plugin
-        run: |
-          yarn lint
           yarn test
         env:
           CI: true

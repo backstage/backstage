@@ -1,0 +1,50 @@
+name: CLI Test
+
+on:
+  pull_request:
+    paths: ['.github/workflows/cli.yml', 'packages/cli/**']
+    types: [opened, reopened, edited, synchronize]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [12.x]
+
+    name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: find location of yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install
+      - run: yarn build
+      # This creates a new plugin and pollutes the workspace, so it should be run last.
+      - name: verify app serve and plugin creation on Windows
+        if: runner.os == 'Windows'
+        run: node scripts/cli-e2e-test.js
+      - name: verify app serve and plugin creation on Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo sysctl fs.inotify.max_user_watches=524288
+          node scripts/cli-e2e-test.js
+      - name: yarn lint, test after plugin creation
+        working-directory: plugins/test-plugin
+        run: |
+          yarn lint
+          yarn test
+        env:
+          CI: true

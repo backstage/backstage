@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-import '@testing-library/jest-dom/extend-expect';
-require('jest-fetch-mock').enableMocks();
+import React from 'react';
+import Progress from '.';
+
+export default {
+  title: 'Progress',
+  component: Progress,
+};
+
+export const progress = () => <Progress />;
