@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         node-version: [12.x]
 
     name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
@@ -33,12 +33,13 @@ jobs:
       - run: yarn install
       - run: yarn build
       # This creates a new plugin and pollutes the workspace, so it should be run last.
-      - name: verify app serve and plugin creation
-        shell: bash
+      - name: verify app serve and plugin creation on Windows
+        if: runner.os == 'Windows'
+        run: node scripts/cli-e2e-test.js
+      - name: verify app serve and plugin creation on Linux
+        if: runner.os == 'Linux'
         run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            sudo sysctl fs.inotify.max_user_watches=524288
-          fi
+          sudo sysctl fs.inotify.max_user_watches=524288
           node scripts/cli-e2e-test.js
       - name: yarn lint, test after plugin creation
         working-directory: plugins/test-plugin
