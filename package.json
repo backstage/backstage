@@ -7,7 +7,7 @@
   "scripts": {
     "start": "yarn build && yarn workspace @spotify-backstage/app start",
     "build": "lerna run build",
-    "test": "cross-env CI=true lerna run test -- --coverage",
+    "test": "cross-env CI=true lerna run test --since origin/master -- --coverage",
     "create-plugin": "backstage-cli create-plugin",
     "lint": "lerna run lint",
     "storybook": "yarn workspace @spotify-backstage/core storybook",
