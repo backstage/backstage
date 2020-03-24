@@ -4,7 +4,10 @@ on:
   pull_request:
     types: [opened, reopened, edited, synchronize]
   push:
-    branches: master
+    branches:
+      - master
+    paths:
+      - 'packages/core/src/**'
 
 jobs:
   build:
@@ -54,10 +57,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: build storybook'
         run: |
+          yarn install
           yarn build-storybook
       - name: deploy gh-pages
         uses: JamesIves/github-pages-deploy-action@3.4.2
         with:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: packages/core/storybook-static
