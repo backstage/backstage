@@ -29,3 +29,5 @@ lead to integrations for Github specifically being developed in an early stage.
 Hosting this project on Github does not exclude integrations with other alternatives such as Gitlab or
 Bitbucket. We believe that in time there will be plugins that will provide functionality for these tools
 as well. Hopefully contributed by the community.
+
+And note that implementations of Backstage can be hosted wherever you feel suits your needs best.
