@@ -17,6 +17,7 @@
 import program from 'commander';
 import chalk from 'chalk';
 import fs from 'fs';
+import createAppCommand from './commands/create-app/createApp';
 import createPluginCommand from './commands/create-plugin/createPlugin';
 import watch from './commands/watch-deps';
 import lintCommand from './commands/lint';
@@ -31,6 +32,11 @@ const main = (argv: string[]) => {
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 
   program.name('backstage-cli').version(packageJson.version ?? '0.0.0');
+
+  program
+    .command('create-app')
+    .description('Creates a new app in a new directory')
+    .action(actionHandler(createAppCommand));
 
   program
     .command('app:build')

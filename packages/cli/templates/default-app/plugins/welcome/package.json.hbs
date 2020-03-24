@@ -1,0 +1,20 @@
+{
+  "name": "plugin-welcome",
+  "version": "0.0.0",
+  "main": "dist/cjs/index.js",
+  "types": "dist/cjs/index.d.ts",
+  "private": true,
+  "scripts": {
+    "build": "backstage-cli plugin:build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test"
+  },
+  "devDependencies": {
+    "@backstage/core": "^{{version}}",
+    "@backstage/cli": "^{{version}}",
+    "@types/testing-library__jest-dom": "5.0.2"
+  },
+  "dependencies": {
+    "@material-ui/lab": "4.0.0-alpha.45"
+  }
+}
