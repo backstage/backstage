@@ -14,8 +14,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: fetch history, tags and branches
-        run: git fetch
+        with:
+          fetch-depth: 2
+      - run: git checkout HEAD^
       - name: find location of yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
