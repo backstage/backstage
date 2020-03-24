@@ -14,8 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: checkout branch master
-        run: git checkout master
+      - name: fetch branch master
+        run: git fetch origin master
       - name: find location of yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
