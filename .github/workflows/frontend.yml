@@ -66,4 +66,4 @@ jobs:
         with:
           ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: packages/core/storybook-static
+          FOLDER: packages/storybook/dist
