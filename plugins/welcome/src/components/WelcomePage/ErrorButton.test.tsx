@@ -15,28 +15,27 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import WelcomePage from './WelcomePage';
-import { ThemeProvider } from '@material-ui/core';
-import {
-  BackstageTheme,
-  ApiProvider,
-  ApiRegistry,
-  errorApiRef,
-} from '@spotify-backstage/core';
+import { render, fireEvent } from '@testing-library/react';
+import ErrorButton from './ErrorButton';
+import { ApiRegistry, errorApiRef, ApiProvider } from '@spotify-backstage/core';
 
-describe('WelcomePage', () => {
-  it('should render', () => {
-    // TODO: use common test app with mock implementations of all core APIs
+describe('ErrorButton', () => {
+  it('should trigger an error', () => {
+    const errorApi = { post: jest.fn() };
+
     const rendered = render(
-      <ApiProvider
-        apis={ApiRegistry.from([[errorApiRef, { post: jest.fn() }]])}
-      >
-        <ThemeProvider theme={BackstageTheme}>
-          <WelcomePage />
-        </ThemeProvider>
+      <ApiProvider apis={ApiRegistry.from([[errorApiRef, errorApi]])}>
+        <ErrorButton />
       </ApiProvider>,
     );
-    expect(rendered.baseElement).toBeInTheDocument();
+
+    const button = rendered.getByText('Trigger an error!');
+    expect(button).toBeInTheDocument();
+
+    expect(errorApi.post).not.toHaveBeenCalled();
+    fireEvent.click(button);
+    expect(errorApi.post).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Oh no!' }),
+    );
   });
 });

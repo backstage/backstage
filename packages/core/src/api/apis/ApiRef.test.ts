@@ -25,14 +25,26 @@ describe('ApiRef', () => {
     expect(() => ref.T).toThrow('tried to read ApiRef.T of apiRef{abc}');
   });
 
-  it('should require a ascii letters only in id', () => {
-    for (const id of ['a', 'abc', 'ABC', 'aBC', 'aBc']) {
+  it('should reject invalid ids', () => {
+    for (const id of ['a', 'abc', 'a.b.c', 'ab.c', 'abc.abc.abc3']) {
       expect(new ApiRef({ id, description: '123' }).id).toBe(id);
     }
 
-    for (const id of ['123', 'ab-c', 'ab_c', 'a2c', '', '_']) {
+    for (const id of [
+      '123',
+      'ab-c',
+      'ab_c',
+      '.',
+      '2ac',
+      'ab.3a',
+      '.abc',
+      'abc.',
+      'ab..s',
+      '',
+      '_',
+    ]) {
       expect(() => new ApiRef({ id, description: '123' }).id).toThrow(
-        `API id must only contain ascii letters, got '${id}'`,
+        `API id must only contain lowercase alphanums separated by dots, got '${id}'`,
       );
     }
   });

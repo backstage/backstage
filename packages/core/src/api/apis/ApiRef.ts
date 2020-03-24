@@ -21,9 +21,9 @@ export type ApiRefConfig = {
 
 export default class ApiRef<T> {
   constructor(private readonly config: ApiRefConfig) {
-    if (!config.id.match(/^[a-zA-Z]+$/)) {
+    if (!config.id.match(/^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*$/)) {
       throw new Error(
-        `API id must only contain ascii letters, got '${config.id}'`,
+        `API id must only contain lowercase alphanums separated by dots, got '${config.id}'`,
       );
     }
   }

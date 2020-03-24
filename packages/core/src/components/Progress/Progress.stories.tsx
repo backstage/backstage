@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export * from './types';
-export * from './definitions';
+import React from 'react';
+import Progress from '.';
+
+export default {
+  title: 'Progress',
+  component: Progress,
+};
+
+export const progress = () => <Progress />;

@@ -37,6 +37,8 @@ async function main() {
 
     const createPlugin = spawnPiped(['yarn', 'create-plugin']);
     createPlugin.stdin.write('test-plugin\n');
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    createPlugin.stdin.write('@someuser\n');
 
     print('Waiting for plugin create script to be done');
     await waitForExit(createPlugin);

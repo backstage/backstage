@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export * from './types';
-export * from './definitions';
+import { ApiHolder, ApiRegistry, errorApiRef } from '@spotify-backstage/core';
+import { ErrorDisplayForwarder } from './components/ErrorDisplay/ErrorDisplay';
+
+const builder = ApiRegistry.builder();
+
+export const errorDialogForwarder = new ErrorDisplayForwarder();
+
+builder.add(errorApiRef, errorDialogForwarder);
+
+export default builder.build() as ApiHolder;
