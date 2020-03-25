@@ -60,10 +60,10 @@ jobs:
       - name: build storybook'
         run: |
           yarn install
-          yarn build-storybook
+          yarn workspace storybook build-storybook
       - name: deploy gh-pages
         uses: JamesIves/github-pages-deploy-action@3.4.2
         with:
-          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: packages/storybook/dist
