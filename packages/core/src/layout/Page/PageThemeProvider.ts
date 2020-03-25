@@ -75,7 +75,7 @@ export const gradients: Record<string, Gradient> = {
     colors: ['#69B9FF', '#ACCEEC'],
   },
   teal: {
-    colors: ['#1F8A77', 'rgba(155, 240, 225, 1.0)'],
+    colors: ['#005E4D', '#9BF0E1'],
   },
 };
 

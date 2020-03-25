@@ -84,7 +84,6 @@ const Waves = ({ theme }) => {
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor={color1} />
-          <stop offset="1" stopColor={color2} />
         </linearGradient>
         <linearGradient
           id="paint1_linear"
@@ -94,8 +93,8 @@ const Waves = ({ theme }) => {
           y2="241.925"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={color2} stopOpacity="0.72" />
-          <stop offset="1" stopColor={color2} stopOpacity="0" />
+          <stop stopColor={color2} stopOpacity="35%" />
+          <stop offset="1" stopColor={color2} stopOpacity="20%" />
         </linearGradient>
         <linearGradient
           id="paint2_linear"
@@ -105,8 +104,8 @@ const Waves = ({ theme }) => {
           y2="-103.806"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={color2} stopOpacity="0.72" />
-          <stop offset="1" stopColor={color2} stopOpacity="0" />
+          <stop stopColor={color2} stopOpacity="15%" />
+          <stop offset="1" stopColor={color2} stopOpacity="30%" />
         </linearGradient>
         <linearGradient
           id="paint3_linear"
@@ -116,8 +115,8 @@ const Waves = ({ theme }) => {
           y2="104.375"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={color2} stopOpacity="0.72" />
-          <stop offset="1" stopColor={color2} stopOpacity="0" />
+          <stop stopColor={color2} stopOpacity="30%" />
+          <stop offset="1" stopColor={color2} stopOpacity="5%" />
         </linearGradient>
         <linearGradient
           id="paint4_linear"
@@ -127,8 +126,8 @@ const Waves = ({ theme }) => {
           y2="194.894"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={color2} stopOpacity="0.72" />
-          <stop offset="1" stopColor={color2} stopOpacity="0" />
+          <stop stopColor={color2} stopOpacity="30%" />
+          <stop offset="1" stopColor={color2} stopOpacity="15%" />
         </linearGradient>
       </defs>
     </svg>
