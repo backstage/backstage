@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
+  "private": true,
   "devDependencies": {
     "@spotify-backstage/cli": "^0.1.0",
     "@spotify-backstage/core": "^0.1.0",

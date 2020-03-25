@@ -24,6 +24,9 @@
     "test": "backstage-cli test",
     "start": "nodemon ."
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
     "@types/html-webpack-plugin": "^3.2.2",

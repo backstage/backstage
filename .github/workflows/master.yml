@@ -1,8 +1,8 @@
-name: Frontend CI
+name: Master Build
 
 on:
-  pull_request:
-    types: [opened, reopened, edited, synchronize]
+  push:
+    branches: [master]
 
 jobs:
   build:
@@ -17,8 +17,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: fetch branch master
-        run: git fetch origin master
       - name: find location of global yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -38,7 +36,19 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
       - run: yarn install
       - run: yarn lint
       - run: yarn build
       - run: yarn test
+      # Publishes current version of packages that are not already present in the registry
+      - name: publish
+        run: npx --no-install lerna publish from-package --yes
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Tags the commit with the version in the core package if the tag doesn't exist
+      - uses: Klemensas/action-autotag@1.2.3
+        with:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          package_root: "packages/core"
+          tag_prefix: "v"
