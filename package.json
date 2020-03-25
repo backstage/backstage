@@ -10,8 +10,7 @@
     "test": "cross-env CI=true lerna run test --since origin/master -- --coverage",
     "create-plugin": "backstage-cli create-plugin",
     "lint": "lerna run lint",
-    "storybook": "yarn workspace @spotify-backstage/core storybook",
-    "build-storybook": "yarn workspace @spotify-backstage/core build-storybook"
+    "storybook": "yarn workspace storybook start"
   },
   "workspaces": {
     "packages": [
