@@ -12,6 +12,9 @@ jobs:
       matrix:
         node-version: [12.x]
 
+    env:
+      CI: true
+
     steps:
       - uses: actions/checkout@v2
       - name: fetch branch master
@@ -34,11 +37,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: yarn install, build, and test
-        run: |
-          yarn install
-          yarn lint
-          yarn build
-          yarn test
-        env:
-          CI: true
+      - run: yarn install
+      - run: yarn lint
+      - run: yarn build
+      - run: yarn test
