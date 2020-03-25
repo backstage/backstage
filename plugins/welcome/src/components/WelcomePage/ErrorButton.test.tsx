@@ -17,7 +17,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import ErrorButton from './ErrorButton';
-import { ApiRegistry, errorApiRef, ApiProvider } from '@spotify-backstage/core';
+import { ApiRegistry, errorApiRef, ApiProvider } from '@backstage/core';
 
 describe('ErrorButton', () => {
   it('should trigger an error', () => {

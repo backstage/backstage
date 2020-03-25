@@ -59,9 +59,8 @@ describe('createPlugin', () => {
       const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
       try {
         const sourceData =
-          '{"name": "@spotify-backstage/{{id}}", "version": "{{version}}"}';
-        const targetData =
-          '{"name": "@spotify-backstage/foo", "version": "0.0.0"}';
+          '{"name": "@backstage/{{id}}", "version": "{{version}}"}';
+        const targetData = '{"name": "@backstage/foo", "version": "0.0.0"}';
         const sourcePath = path.join(tempDir, 'in.hbs');
         const targetPath = path.join(tempDir, 'out.json');
         fs.writeFileSync(sourcePath, sourceData);

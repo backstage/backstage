@@ -1,5 +1,5 @@
 {
-  "name": "@spotify-backstage/core",
+  "name": "@backstage/core",
   "description": "Core API used by Backstage plugins and apps",
   "version": "0.1.0",
   "private": false,
@@ -42,7 +42,7 @@
     "recompose": "0.30.0"
   },
   "devDependencies": {
-    "@spotify-backstage/cli": "^0.1.0",
+    "@backstage/cli": "^0.1.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",

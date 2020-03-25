@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiHolder, ApiRegistry, errorApiRef } from '@spotify-backstage/core';
+import { ApiHolder, ApiRegistry, errorApiRef } from '@backstage/core';
 import { ErrorDisplayForwarder } from './components/ErrorDisplay/ErrorDisplay';
 
 const builder = ApiRegistry.builder();

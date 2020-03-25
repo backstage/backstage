@@ -1,5 +1,5 @@
 {
-  "name": "@spotify-backstage/plugin-welcome",
+  "name": "@backstage/plugin-welcome",
   "version": "0.1.0",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
@@ -11,8 +11,8 @@
     "test": "backstage-cli test"
   },
   "devDependencies": {
-    "@spotify-backstage/core": "^0.1.0",
-    "@spotify-backstage/cli": "^0.1.0",
+    "@backstage/core": "^0.1.0",
+    "@backstage/cli": "^0.1.0",
     "@types/testing-library__jest-dom": "5.0.2"
   },
   "dependencies": {

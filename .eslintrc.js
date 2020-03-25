@@ -1,5 +1,5 @@
-const path = require('path')
-const base = require('@spotify-backstage/cli/config/eslint');
+const path = require('path');
+const base = require('@backstage/cli/config/eslint');
 
 module.exports = {
   ...base,
@@ -8,7 +8,7 @@ module.exports = {
     'notice/notice': [
       'error',
       {
-        templateFile: path.resolve(__dirname, "scripts/copyright.js"),
+        templateFile: path.resolve(__dirname, 'scripts/copyright.js'),
       },
     ],
   },

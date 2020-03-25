@@ -1,5 +1,5 @@
 {
-  "name": "@spotify-backstage/cli",
+  "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
   "version": "0.1.0",
   "private": false,
