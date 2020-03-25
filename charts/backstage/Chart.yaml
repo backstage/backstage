@@ -1,0 +1,6 @@
+apiVersion: v2
+name: backstage
+description: Backstage is an open platform for building developer portals.
+type: application
+version: 0.0.1
+appVersion: 0.0.1
