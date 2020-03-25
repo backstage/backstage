@@ -1,0 +1,21 @@
+{
+  "name": "storybook",
+  "version": "0.0.0",
+  "description": "Storybook build for core package",
+  "private": true,
+  "scripts": {
+    "start": "start-storybook -p 6006",
+    "build-storybook": "build-storybook --output-dir dist"
+  },
+  "workspaces": {
+    "nohoist": [
+      "@storybook/**"
+    ]
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "^5.3.17",
+    "@storybook/addon-links": "^5.3.17",
+    "@storybook/addons": "^5.3.17",
+    "@storybook/react": "^5.3.17"
+  }
+}

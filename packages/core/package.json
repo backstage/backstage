@@ -8,9 +8,7 @@
   "scripts": {
     "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "test": "backstage-cli test"
   },
   "publishConfig": {
     "access": "public"
@@ -31,17 +29,10 @@
     "recompose": "0.30.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
     "@spotify-backstage/cli": "^0.1.0",
-    "@storybook/addon-actions": "^5.3.17",
-    "@storybook/addon-links": "^5.3.17",
-    "@storybook/addons": "^5.3.17",
-    "@storybook/react": "^5.3.17",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "babel-loader": "^8.1.0",
-    "prop-types": "^15.7.2",
-    "ts-loader": "^6.2.1"
+    "prop-types": "^15.7.2"
   }
 }

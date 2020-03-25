@@ -20,3 +20,14 @@ Additional open sourced plugins would be added to the `plugins` directory in thi
 While we encourage using the open soure model, integrators that want to experiment with
 Backstage internally may also choose to develop closed source plugins in a manner that suits
 them best, for example in their respective Backstage source repository.
+
+## Any plans for integrating with other repository managers such as Gitlab or Bitbucket?
+
+We chose Github by the fact that it is the tool that we are most familiar with and that will naturally
+lead to integrations for Github specifically being developed in an early stage.
+
+Hosting this project on Github does not exclude integrations with other alternatives such as Gitlab or
+Bitbucket. We believe that in time there will be plugins that will provide functionality for these tools
+as well. Hopefully contributed by the community.
+
+And note that implementations of Backstage can be hosted wherever you feel suits your needs best.
