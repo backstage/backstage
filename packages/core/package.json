@@ -1,8 +1,21 @@
 {
   "name": "@spotify-backstage/core",
+  "description": "Core API used by Backstage plugins and apps",
   "version": "0.1.0",
-  "license": "Apache-2.0",
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spotify/backstage",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
   "scripts": {
