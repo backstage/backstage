@@ -12,6 +12,9 @@ jobs:
       matrix:
         node-version: [12.x]
 
+    env:
+      CI: true
+
     steps:
       - uses: actions/checkout@v2
       - name: find location of global yarn cache
@@ -34,20 +37,15 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-      - name: yarn install, build, and test
-        run: |
-          yarn install
-          yarn lint
-          yarn build
-          yarn test
-        env:
-          CI: true
+      - run: yarn install
+      - run: yarn lint
+      - run: yarn build
+      - run: yarn test
       # Publishes current version of packages that are not already present in the registry
       - name: publish
         run: npx --no-install lerna publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          CI: true
       # Tags the commit with the version in the core package if the tag doesn't exist
       - uses: Klemensas/action-autotag@1.2.3
         with:
