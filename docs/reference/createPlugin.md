@@ -32,8 +32,8 @@ import ExampleComponent from './components/ExampleComponent';
 
 export default createPlugin({
   id: 'new-plugin',
-  register({ router, featureFlags: { registerFeatureFlag } }) {
-    registerFeatureFlag('enable-example-component');
+  register({ router, featureFlags }) {
+    featureFlags.registerFeatureFlag('enable-example-component');
 
     router.registerRoute('/new-plugin', ExampleComponent);
   },
