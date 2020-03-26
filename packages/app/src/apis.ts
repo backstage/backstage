@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { ApiHolder, ApiRegistry, errorApiRef } from '@backstage/core';
+import {
+  ApiHolder,
+  ApiRegistry,
+  errorApiRef,
+  featureFlagsApiRef,
+  FeatureFlags,
+} from '@backstage/core';
 import { ErrorDisplayForwarder } from './components/ErrorDisplay/ErrorDisplay';
 
 const builder = ApiRegistry.builder();
@@ -22,5 +28,6 @@ const builder = ApiRegistry.builder();
 export const errorDialogForwarder = new ErrorDisplayForwarder();
 
 builder.add(errorApiRef, errorDialogForwarder);
+builder.add(featureFlagsApiRef, FeatureFlags);
 
 export default builder.build() as ApiHolder;

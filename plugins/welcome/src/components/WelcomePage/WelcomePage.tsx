@@ -33,10 +33,13 @@ import {
   pageTheme,
   ContentHeader,
   SupportButton,
+  featureFlagsApiRef,
+  useApi,
 } from '@backstage/core';
 import ErrorButton from './ErrorButton';
 
 const WelcomePage: FC<{}> = () => {
+  const featureFlagsApi = useApi(featureFlagsApiRef);
   const profile = { givenName: '' };
 
   return (
