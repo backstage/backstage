@@ -19,7 +19,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App } from './types';
 import BackstagePlugin from '../plugin/Plugin';
-import { FeatureFlagName } from '../plugin/types';
+import { FeatureFlagsEntry, FeatureFlagsContextProvider } from './FeatureFlags';
 import {
   IconComponent,
   SystemIcons,
@@ -63,7 +63,7 @@ export default class AppBuilder {
     const app = new AppImpl(this.systemIcons);
 
     const routes = new Array<JSX.Element>();
-    const registeredFeatureFlags = new Array<{ name: FeatureFlagName }>();
+    const registeredFeatureFlags = new Array<FeatureFlagsEntry>();
 
     for (const plugin of this.plugins.values()) {
       for (const output of plugin.output()) {
@@ -113,6 +113,13 @@ export default class AppBuilder {
     if (this.apis) {
       rendered = <ApiProvider apis={this.apis} children={rendered} />;
     }
+
+    rendered = (
+      <FeatureFlagsContextProvider
+        registeredFeatureFlags={registeredFeatureFlags}
+        children={rendered}
+      />
+    );
 
     return () => <AppContextProvider app={app} children={rendered} />;
   }

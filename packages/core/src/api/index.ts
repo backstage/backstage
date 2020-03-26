@@ -16,5 +16,5 @@
 
 export * from './api';
 export * from './apis';
-export { FeatureFlags } from './app/FeatureFlags';
+export { FeatureFlags, FeatureFlagsContext } from './app/FeatureFlags';
 export { useApp } from './app/AppContext';

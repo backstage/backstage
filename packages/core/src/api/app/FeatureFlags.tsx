@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// import React, { createContext, useContext, useState, FC } from 'react';
+import React, { ComponentType, createContext, FC } from 'react';
 import { FeatureFlagName } from '../plugin/types';
 import { FeatureFlagsApi } from '../apis/definitions/featureFlags';
 import { staticImplements } from '../../testUtils';
@@ -75,3 +75,34 @@ export class FeatureFlags {
     this.saveUserEnabledFeatureFlags(flags);
   }
 }
+
+/**
+ * Create a shared React context for Feature Flags.
+ *
+ * This will be used to propagate all available feature flags to
+ * Backstage components. This enables viewing all of the components.
+ */
+export interface FeatureFlagsEntry {
+  name: FeatureFlagName;
+}
+
+export const FeatureFlagsContext = createContext<{
+  registeredFeatureFlags: FeatureFlagsEntry[];
+}>({
+  registeredFeatureFlags: [],
+});
+
+interface Props {
+  registeredFeatureFlags: FeatureFlagsEntry[];
+  children: ComponentType;
+}
+
+export const FeatureFlagsContextProvider: FC<Props> = ({
+  registeredFeatureFlags,
+  children,
+}) => (
+  <FeatureFlagsContext.Provider
+    value={{ registeredFeatureFlags }}
+    children={children}
+  />
+);
