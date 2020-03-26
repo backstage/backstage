@@ -71,6 +71,7 @@ export const FeatureFlags = new FeatureFlagsImpl();
  * Backstage components. This enables viewing all of the available flags.
  */
 export interface FeatureFlagsEntry {
+  pluginId: string;
   name: FeatureFlagName;
 }
 
