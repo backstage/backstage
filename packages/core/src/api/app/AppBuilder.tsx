@@ -19,7 +19,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App } from './types';
 import BackstagePlugin from '../plugin/Plugin';
-import { FeatureFlagName } from '../plugin/Plugin/types';
+import { FeatureFlagName } from '../plugin/types';
 import {
   IconComponent,
   SystemIcons,

@@ -15,7 +15,7 @@
  */
 
 // import React, { createContext, useContext, useState, FC } from 'react';
-import { FeatureFlagName } from '../plugin/Plugin/types';
+import { FeatureFlagName } from '../plugin/types';
 import { FeatureFlagsApi } from '../apis/definitions/featureFlags';
 
 // TODO: figure out where to put implementations of APIs, both inside apps
