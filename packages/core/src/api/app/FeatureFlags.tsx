@@ -21,9 +21,9 @@ import { FeatureFlagsApi } from '../apis/definitions/featureFlags';
 // TODO: figure out where to put implementations of APIs, both inside apps
 // but also in core/separate package.
 export class FeatureFlags implements FeatureFlagsApi {
-  private readonly localStorageKey = 'featureFlags';
+  private static readonly localStorageKey = 'featureFlags';
 
-  private getEnabledFeatureFlags(): Set<FeatureFlagName> {
+  private static getEnabledFeatureFlags(): Set<FeatureFlagName> {
     if (!('localStorage' in window)) {
       throw new Error(
         'Feature Flags are not supported on browsers without the Local Storage API',
@@ -40,7 +40,7 @@ export class FeatureFlags implements FeatureFlagsApi {
     }
   }
 
-  private saveFeatureFlags(flags: Set<FeatureFlagName>): void {
+  private static saveFeatureFlags(flags: Set<FeatureFlagName>): void {
     if (!('localStorage' in window)) {
       throw new Error(
         'Feature Flags are not supported on browsers without the Local Storage API',
@@ -55,17 +55,17 @@ export class FeatureFlags implements FeatureFlagsApi {
     );
   }
 
-  getItem(name: FeatureFlagName): boolean {
+  static getItem(name: FeatureFlagName): boolean {
     return this.getFeatureFlags().has(name);
   }
 
-  enable(name: FeatureFlagName): void {
+  static enable(name: FeatureFlagName): void {
     const flags = this.getFeatureFlags();
     flags.add(name);
     this.saveFeatureFlags(flags);
   }
 
-  disable(name: FeatureFlagName): void {
+  static disable(name: FeatureFlagName): void {
     const flags = this.getFeatureFlags();
     flags.delete(name);
     this.saveFeatureFlags(flags);
