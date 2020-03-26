@@ -17,15 +17,13 @@
 import React, { ComponentType, createContext, FC } from 'react';
 import { FeatureFlagName } from '../plugin/types';
 import { FeatureFlagsApi } from '../apis/definitions/featureFlags';
-import { staticImplements } from '../../testUtils';
 
 // TODO: figure out where to put implementations of APIs, both inside apps
 // but also in core/separate package.
-@staticImplements<FeatureFlagsApi>()
-export class FeatureFlags {
-  private static readonly localStorageKey = 'featureFlags';
+class FeatureFlagsImpl implements FeatureFlagsApi {
+  private readonly localStorageKey = 'featureFlags';
 
-  private static getUserEnabledFeatureFlags(): Set<FeatureFlagName> {
+  private getUserEnabledFeatureFlags(): Set<FeatureFlagName> {
     if (!('localStorage' in window)) {
       throw new Error(
         'Feature Flags are not supported on browsers without the Local Storage API',
@@ -42,9 +40,7 @@ export class FeatureFlags {
     }
   }
 
-  private static saveUserEnabledFeatureFlags(
-    flags: Set<FeatureFlagName>,
-  ): void {
+  private saveUserEnabledFeatureFlags(flags: Set<FeatureFlagName>): void {
     if (!('localStorage' in window)) {
       throw new Error(
         'Feature Flags are not supported on browsers without the Local Storage API',
@@ -59,32 +55,34 @@ export class FeatureFlags {
     );
   }
 
-  static getItem(name: FeatureFlagName): boolean {
+  getItem(name: FeatureFlagName): boolean {
     return this.getUserEnabledFeatureFlags().has(name);
   }
 
-  static enable(name: FeatureFlagName): void {
+  enable(name: FeatureFlagName): void {
     const flags = this.getUserEnabledFeatureFlags();
     flags.add(name);
     this.saveUserEnabledFeatureFlags(flags);
   }
 
-  static disable(name: FeatureFlagName): void {
+  disable(name: FeatureFlagName): void {
     const flags = this.getUserEnabledFeatureFlags();
     flags.delete(name);
     this.saveUserEnabledFeatureFlags(flags);
   }
 
-  static toggle(name: FeatureFlagName): void {
+  toggle(name: FeatureFlagName): void {
     (this.getItem(name) ? this.disable : this.enable).bind(this)(name);
   }
 }
+
+export const FeatureFlags = new FeatureFlagsImpl();
 
 /**
  * Create a shared React context for Feature Flags.
  *
  * This will be used to propagate all available feature flags to
- * Backstage components. This enables viewing all of the components.
+ * Backstage components. This enables viewing all of the available flags.
  */
 export interface FeatureFlagsEntry {
   name: FeatureFlagName;
