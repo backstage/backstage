@@ -23,7 +23,6 @@ import {
   ListItem,
   ListItemText,
   Link,
-  Button,
 } from '@material-ui/core';
 import Timer from '../Timer';
 import {
@@ -34,13 +33,11 @@ import {
   pageTheme,
   ContentHeader,
   SupportButton,
-  featureFlagsApiRef,
-  useApi,
 } from '@backstage/core';
 import ErrorButton from './ErrorButton';
+import ToggleFeatureFlagButton from './ToggleFeatureFlagButton';
 
 const WelcomePage: FC<{}> = () => {
-  const featureFlagsApi = useApi(featureFlagsApiRef);
   const profile = { givenName: '' };
 
   return (
@@ -127,22 +124,7 @@ const WelcomePage: FC<{}> = () => {
               <ErrorButton />
               <br />
               <br />
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  featureFlagsApi.set(
-                    'enable-welcome-box',
-                    !featureFlagsApi.get('enable-welcome-box'),
-                  );
-                  window.location.reload();
-                }}
-              >
-                {featureFlagsApi.get('enable-welcome-box')
-                  ? 'Disable '
-                  : 'Enable '}{' '}
-                'enable-welcome-box' feature flag
-              </Button>
+              <ToggleFeatureFlagButton />
             </InfoCard>
           </Grid>
         </Grid>
