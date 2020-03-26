@@ -45,6 +45,11 @@ export type FeatureFlagsApi = {
    * Disable an registered feature flag.
    */
   disable(name: FeatureFlagName): void;
+
+  /**
+   * Toggle an registered feature flag on or off.
+   */
+  toggle(name: FeatureFlagName): void;
 };
 
 export const featureFlagsApiRef = new ApiRef<FeatureFlagsApi>({

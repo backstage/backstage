@@ -74,6 +74,10 @@ export class FeatureFlags {
     flags.delete(name);
     this.saveUserEnabledFeatureFlags(flags);
   }
+
+  static toggle(name: FeatureFlagName): void {
+    (this.getItem(name) ? this.disable : this.enable).bind(this)(name);
+  }
 }
 
 /**
