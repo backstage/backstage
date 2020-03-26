@@ -33,7 +33,7 @@ We created Backstage about 4 years ago. While our internal version of Backstage 
 
 - 🐇 **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
 
-Check out our [Milestones](https://github.com/spotify/backstage/milestones) and how they relate to the 3 Phases outlined above.
+Check out our [Milestones](https://github.com/spotify/backstage/milestones) and open [RFCs](https://github.com/spotify/backstage/labels/rfc) how they relate to the three Phases outlined above. 
 
 Our vision for Backstage is for it to become the trusted standard toolbox (read: UX layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone. If this sounds interesting or you'd like to help us shape our product vision, we'd love to talk. You can email me directly: [alund@spotify.com](mailto:alund@spotify.com).
 
@@ -93,6 +93,7 @@ Then open http://localhost/ on your browser.
 
 - [Discord chat](https://discord.gg/MUpMjP2) - Get support or discuss the project
 - [Good First Issues](https://github.com/spotify/backstage/labels/good%20first%20issue) - Start here if you want to contribute
+- [RFCs](https://github.com/spotify/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](docs/FAQ.md) - Frequently Asked Questions
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
