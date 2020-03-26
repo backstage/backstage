@@ -15,7 +15,12 @@
  */
 
 import { ComponentType } from 'react';
-import { PluginOutput, RoutePath, RouteOptions } from './types';
+import {
+  PluginOutput,
+  RoutePath,
+  RouteOptions,
+  FeatureFlagName,
+} from './types';
 import { Widget } from '../widgetView/types';
 
 export type PluginConfig = {
@@ -26,6 +31,7 @@ export type PluginConfig = {
 export type PluginHooks = {
   router: RouterHooks;
   widgets: WidgetHooks;
+  featureFlags: FeatureFlagsHooks;
 };
 
 export type RouterHooks = {
@@ -44,6 +50,10 @@ export type RouterHooks = {
 
 export type WidgetHooks = {
   add(widget: Widget): void;
+};
+
+export type FeatureFlagsHooks = {
+  registerFeatureFlag(name: FeatureFlagName): void;
 };
 
 export const registerSymbol = Symbol('plugin-register');
@@ -76,6 +86,11 @@ export default class Plugin {
       widgets: {
         add(widget: Widget) {
           outputs.push({ type: 'widget', widget });
+        },
+      },
+      featureFlags: {
+        registerFeatureFlag(name) {
+          outputs.push({ type: 'feature-flag', name });
         },
       },
     });
