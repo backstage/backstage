@@ -17,13 +17,15 @@
 // import React, { createContext, useContext, useState, FC } from 'react';
 import { FeatureFlagName } from '../plugin/types';
 import { FeatureFlagsApi } from '../apis/definitions/featureFlags';
+import { staticImplements } from '../../testUtils';
 
 // TODO: figure out where to put implementations of APIs, both inside apps
 // but also in core/separate package.
-export class FeatureFlags implements FeatureFlagsApi {
+@staticImplements<FeatureFlagsApi>()
+export class FeatureFlags {
   private static readonly localStorageKey = 'featureFlags';
 
-  private static getEnabledFeatureFlags(): Set<FeatureFlagName> {
+  private static getUserEnabledFeatureFlags(): Set<FeatureFlagName> {
     if (!('localStorage' in window)) {
       throw new Error(
         'Feature Flags are not supported on browsers without the Local Storage API',
@@ -40,7 +42,9 @@ export class FeatureFlags implements FeatureFlagsApi {
     }
   }
 
-  private static saveFeatureFlags(flags: Set<FeatureFlagName>): void {
+  private static saveUserEnabledFeatureFlags(
+    flags: Set<FeatureFlagName>,
+  ): void {
     if (!('localStorage' in window)) {
       throw new Error(
         'Feature Flags are not supported on browsers without the Local Storage API',
@@ -56,18 +60,18 @@ export class FeatureFlags implements FeatureFlagsApi {
   }
 
   static getItem(name: FeatureFlagName): boolean {
-    return this.getFeatureFlags().has(name);
+    return this.getUserEnabledFeatureFlags().has(name);
   }
 
   static enable(name: FeatureFlagName): void {
-    const flags = this.getFeatureFlags();
+    const flags = this.getUserEnabledFeatureFlags();
     flags.add(name);
-    this.saveFeatureFlags(flags);
+    this.saveUserEnabledFeatureFlags(flags);
   }
 
   static disable(name: FeatureFlagName): void {
-    const flags = this.getFeatureFlags();
+    const flags = this.getUserEnabledFeatureFlags();
     flags.delete(name);
-    this.saveFeatureFlags(flags);
+    this.saveUserEnabledFeatureFlags(flags);
   }
 }

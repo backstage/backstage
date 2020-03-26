@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src"],
   "compilerOptions": {
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "experimentalDecorators": true
   }
 }

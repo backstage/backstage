@@ -28,6 +28,7 @@ import { render } from '@testing-library/react';
 export { default as Keyboard } from './Keyboard';
 export { default as mockBreakpoint } from './mockBreakpoint';
 export * from './logCollector';
+export * from './decorators';
 
 export function wrapInTestApp(Component, initialRouterEntries) {
   const Wrapper = Component instanceof Function ? Component : () => Component;
