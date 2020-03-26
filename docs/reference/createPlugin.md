@@ -26,7 +26,7 @@ type PluginHooks = {
 Showcasing adding multiple routes and a redirect.
 
 ```jsx
-import { createPlugin } from '@spotify-backstage/core';
+import { createPlugin } from '@backstage/core';
 import ExampleComponent from './components/ExampleComponent';
 
 export default createPlugin({

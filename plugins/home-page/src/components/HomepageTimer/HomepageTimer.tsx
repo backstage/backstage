@@ -15,7 +15,7 @@
  */
 
 import React, { FC } from 'react';
-import { HeaderLabel } from '@spotify-backstage/core';
+import { HeaderLabel } from '@backstage/core';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
 const utcOptions = { timeZone: 'UTC', ...timeFormat };

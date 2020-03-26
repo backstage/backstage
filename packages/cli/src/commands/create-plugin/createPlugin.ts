@@ -130,7 +130,7 @@ export const addPluginDependencyToApp = (
   console.log();
   console.log(chalk.green(' Adding plugin as dependency in app:'));
 
-  const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
+  const pluginPackage = `@backstage/plugin-${pluginName}`;
   const packageFile = path.join(rootDir, 'packages', 'app', 'package.json');
 
   process.stdout.write(
@@ -171,7 +171,7 @@ export const addPluginToApp = (rootDir: string, pluginName: string) => {
   console.log();
   console.log(chalk.green(' Import plugin in app:'));
 
-  const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
+  const pluginPackage = `@backstage/plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
     .split('-')
     .map(name => capitalize(name))
@@ -414,7 +414,7 @@ const createPlugin = async () => {
     console.log(
       chalk.green(
         `🥇  Successfully created ${chalk.cyan(
-          `@spotify-backstage/plugin-${answers.id}`,
+          `@backstage/plugin-${answers.id}`,
         )}`,
       ),
     );

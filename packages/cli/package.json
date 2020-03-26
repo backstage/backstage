@@ -1,7 +1,7 @@
 {
-  "name": "@spotify-backstage/cli",
+  "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.0",
+  "version": "0.1.1-alpha.0",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -23,9 +23,6 @@
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "start": "nodemon ."
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",

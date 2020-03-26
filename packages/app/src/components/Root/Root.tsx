@@ -28,7 +28,7 @@ import {
   SidebarSpacer,
   SidebarDivider,
   SidebarSpace,
-} from '@spotify-backstage/core';
+} from '@backstage/core';
 
 const useSidebarLogoStyles = makeStyles({
   root: {

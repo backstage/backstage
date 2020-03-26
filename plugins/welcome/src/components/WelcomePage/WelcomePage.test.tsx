@@ -23,7 +23,7 @@ import {
   ApiProvider,
   ApiRegistry,
   errorApiRef,
-} from '@spotify-backstage/core';
+} from '@backstage/core';
 
 describe('WelcomePage', () => {
   it('should render', () => {
