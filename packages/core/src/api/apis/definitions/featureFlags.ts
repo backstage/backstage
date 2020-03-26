@@ -28,13 +28,19 @@ import { FeatureFlagName } from '../../plugin/types';
  * or unstable upcoming features. Although there will be a common interface for users
  * to enable and disable feature flags, this API acts as another way to enable/disable.
  */
+
+export enum FeatureFlagState {
+  NotEnabled = false,
+  Enabled = true,
+}
+
 export type FeatureFlagsApi = {
   /**
    * Get the current user's status of a Feature Flag
    *
    * @returns bool True if the current user has enabled the feature flag
    */
-  getItem(name: FeatureFlagName): boolean;
+  getItem(name: FeatureFlagName): FeatureFlagState;
 
   /**
    * Enable an registered feature flag.

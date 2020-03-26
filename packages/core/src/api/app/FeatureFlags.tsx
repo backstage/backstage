@@ -16,7 +16,10 @@
 
 import React, { ComponentType, createContext, FC } from 'react';
 import { FeatureFlagName } from '../plugin/types';
-import { FeatureFlagsApi } from '../apis/definitions/featureFlags';
+import {
+  FeatureFlagState,
+  FeatureFlagsApi,
+} from '../apis/definitions/featureFlags';
 
 // TODO: figure out where to put implementations of APIs, both inside apps
 // but also in core/separate package.
@@ -55,8 +58,8 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
     );
   }
 
-  getItem(name: FeatureFlagName): boolean {
-    return this.getUserEnabledFeatureFlags().has(name);
+  getItem(name: FeatureFlagName): FeatureFlagState {
+    return this.getUserEnabledFeatureFlags().has(name) as FeatureFlagState;
   }
 
   enable(name: FeatureFlagName): void {
