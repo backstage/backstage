@@ -91,7 +91,7 @@ export default class AppBuilder {
           }
           case 'feature-flag': {
             registeredFeatureFlags.push({
-              pluginId: plugin.config.id,
+              pluginId: plugin.getId(),
               name: output.name,
             });
             break;

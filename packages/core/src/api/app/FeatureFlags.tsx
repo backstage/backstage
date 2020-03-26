@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, createContext, FC } from 'react';
+import React, { ReactNode, createContext, FC } from 'react';
 import { FeatureFlagName } from '../plugin/types';
 import {
   FeatureFlagState,
@@ -37,14 +37,20 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
       const featureFlagsJson = window.localStorage.getItem(
         this.localStorageKey,
       );
-      return new Set<>(Object.keys(JSON.parse(featureFlagsJson!)));
+      return new Set<FeatureFlagName>(
+        Object.keys(JSON.parse(featureFlagsJson!)),
+      );
     } catch (err) {
-      return new Set<>();
+      return new Set<FeatureFlagName>();
     }
   }
 
   get(name: FeatureFlagName): FeatureFlagState {
-    return this.getUserEnabledFeatureFlags().has(name) as FeatureFlagState;
+    if (this.getUserEnabledFeatureFlags().has(name)) {
+      return FeatureFlagState.Enabled;
+    }
+
+    return FeatureFlagState.NotEnabled;
   }
 
   set(name: FeatureFlagName, state: FeatureFlagState): void {
@@ -83,7 +89,7 @@ export const FeatureFlagsContext = createContext<{
 
 interface Props {
   registeredFeatureFlags: FeatureFlagsEntry[];
-  children: ComponentType;
+  children: ReactNode;
 }
 
 export const FeatureFlagsContextProvider: FC<Props> = ({

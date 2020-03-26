@@ -64,6 +64,10 @@ export default class Plugin {
 
   constructor(private readonly config: PluginConfig) {}
 
+  getId(): string {
+    return this.config.id;
+  }
+
   output(): PluginOutput[] {
     if (this.storedOutput) {
       return this.storedOutput;

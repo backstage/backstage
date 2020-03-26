@@ -30,8 +30,8 @@ import { FeatureFlagName } from '../../plugin/types';
  */
 
 export enum FeatureFlagState {
-  NotEnabled = false,
-  Enabled = true,
+  NotEnabled = 0,
+  Enabled = 1,
 }
 
 export type FeatureFlagsApi = {
