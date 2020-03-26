@@ -19,6 +19,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App } from './types';
 import BackstagePlugin from '../plugin/Plugin';
+import { FeatureFlagName } from '../plugin/Plugin/types';
 import {
   IconComponent,
   SystemIcons,
@@ -62,6 +63,7 @@ export default class AppBuilder {
     const app = new AppImpl(this.systemIcons);
 
     const routes = new Array<JSX.Element>();
+    const registeredFeatureFlags = new Array<{ name: FeatureFlagName }>();
 
     for (const plugin of this.plugins.values()) {
       for (const output of plugin.output()) {
@@ -85,6 +87,10 @@ export default class AppBuilder {
             routes.push(
               <Redirect key={path} path={path} to={target} exact={exact} />,
             );
+            break;
+          }
+          case 'feature-flag': {
+            registeredFeatureFlags.push({ name: output.name });
             break;
           }
           default:
