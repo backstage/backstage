@@ -43,12 +43,15 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
     }
   }
 
-  private saveUserEnabledFeatureFlags(flags: Set<FeatureFlagName>): void {
-    if (!('localStorage' in window)) {
-      throw new Error(
-        'Feature Flags are not supported on browsers without the Local Storage API',
-      );
-    }
+  get(name: FeatureFlagName): FeatureFlagState {
+    return this.getUserEnabledFeatureFlags().has(name) as FeatureFlagState;
+  }
+
+  set(name: FeatureFlagName, state: FeatureFlagState): void {
+    const flags = this.getUserEnabledFeatureFlags();
+
+    if (state === FeatureFlagState.NotEnabled) flags.delete(name);
+    if (state === FeatureFlagState.Enabled) flags.add(name);
 
     window.localStorage.setItem(
       this.localStorageKey,
@@ -56,26 +59,6 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
         [...flags].reduce((list, flag) => ({ ...list, [flag]: true }), {}),
       ),
     );
-  }
-
-  getItem(name: FeatureFlagName): FeatureFlagState {
-    return this.getUserEnabledFeatureFlags().has(name) as FeatureFlagState;
-  }
-
-  enable(name: FeatureFlagName): void {
-    const flags = this.getUserEnabledFeatureFlags();
-    flags.add(name);
-    this.saveUserEnabledFeatureFlags(flags);
-  }
-
-  disable(name: FeatureFlagName): void {
-    const flags = this.getUserEnabledFeatureFlags();
-    flags.delete(name);
-    this.saveUserEnabledFeatureFlags(flags);
-  }
-
-  toggle(name: FeatureFlagName): void {
-    (this.getItem(name) ? this.disable : this.enable).bind(this)(name);
   }
 }
 

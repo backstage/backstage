@@ -36,7 +36,6 @@ import {
   SupportButton,
   featureFlagsApiRef,
   useApi,
-  FeatureFlagsContext,
 } from '@backstage/core';
 import ErrorButton from './ErrorButton';
 
@@ -132,11 +131,14 @@ const WelcomePage: FC<{}> = () => {
                 variant="contained"
                 color="secondary"
                 onClick={() => {
-                  featureFlagsApi.toggle('enable-welcome-box');
+                  featureFlagsApi.set(
+                    'enable-welcome-box',
+                    !featureFlagsApi.get('enable-welcome-box'),
+                  );
                   window.location.reload();
                 }}
               >
-                {featureFlagsApi.getItem('enable-welcome-box')
+                {featureFlagsApi.get('enable-welcome-box')
                   ? 'Disable '
                   : 'Enable '}{' '}
                 'enable-welcome-box' feature flag

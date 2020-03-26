@@ -35,7 +35,7 @@ import { featureFlagsApiRef, useApi } from '@backstage/core';
 
 const ExampleButton: FC<{}> = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
-  const handleClick = () => featureFlagsApi.enable('enable-example-feature');
+  const handleClick = () => featureFlagsApi.set('enable-example-feature', .Enabled);
 
   return (
     <Button variant="contained" color="primary" onClick={handleClick}>
@@ -55,7 +55,7 @@ import { Button } from '@material-ui/core';
 import { FeatureFlags } from '@backstage/core';
 
 const ExampleButton: FC<{}> = () => {
-  const handleClick = () => FeatureFlags.enable('enable-example-feature');
+  const handleClick = () => FeatureFlags.set('enable-example-feature', .Enabled);
 
   return (
     <Button variant="contained" color="primary" onClick={handleClick}>

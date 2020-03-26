@@ -40,22 +40,12 @@ export type FeatureFlagsApi = {
    *
    * @returns bool True if the current user has enabled the feature flag
    */
-  getItem(name: FeatureFlagName): FeatureFlagState;
+  get(name: FeatureFlagName): FeatureFlagState;
 
   /**
-   * Enable an registered feature flag.
+   * Set the state of a Feature Flag
    */
-  enable(name: FeatureFlagName): void;
-
-  /**
-   * Disable an registered feature flag.
-   */
-  disable(name: FeatureFlagName): void;
-
-  /**
-   * Toggle an registered feature flag on or off.
-   */
-  toggle(name: FeatureFlagName): void;
+  set(name: FeatureFlagName, state: FeatureFlagState): void;
 };
 
 export const featureFlagsApiRef = new ApiRef<FeatureFlagsApi>({
