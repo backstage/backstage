@@ -31,3 +31,10 @@ Bitbucket. We believe that in time there will be plugins that will provide funct
 as well. Hopefully contributed by the community.
 
 And note that implementations of Backstage can be hosted wherever you feel suits your needs best.
+
+## Is Backstage only suitable for developer portals?
+
+No, not really. The core frontend framework could be used for building any large-scale web application where multiple teams are building separate parts of the app, but you want the overall experience to be consistent.
+
+That being said, in [Phase 2](https://github.com/spotify/backstage#project-roadmap) of the project we will add features that are needed for developer portals and systems for managing software ecosystems. Our ambition will be to keep Backstage modular.
+
