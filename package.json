@@ -6,6 +6,7 @@
   },
   "scripts": {
     "start": "yarn build && yarn workspace example-app start",
+    "bundle": "yarn build && yarn workspace example-app bundle",
     "build": "lerna run build",
     "test": "cross-env CI=true lerna run test --since origin/master -- --coverage",
     "create-plugin": "backstage-cli create-plugin",
