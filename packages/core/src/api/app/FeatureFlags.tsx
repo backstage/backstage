@@ -56,8 +56,34 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
   set(name: FeatureFlagName, state: FeatureFlagState): void {
     const flags = this.getUserEnabledFeatureFlags();
 
-    if (state === FeatureFlagState.NotEnabled) flags.delete(name);
-    if (state === FeatureFlagState.Enabled) flags.add(name);
+    if (name.length < 3) {
+      throw new Error(
+        'The `name` argument must have a minimum length of three characters.',
+      );
+    }
+
+    if (name.length > 150) {
+      throw new Error('The `name` argument must not exceed 150 characters.');
+    }
+
+    if (!name.match(/^[a-z]+[a-z0-9-]+$/)) {
+      throw new Error(
+        'The `name` argument must start with a lowercase letter and only contain lowercase letters, numbers and hyphens.' +
+          'Examples: feature-flag-one, alpha, release-2020',
+      );
+    }
+
+    if (state === FeatureFlagState.Enabled) {
+      flags.add(name);
+    } else if (state === FeatureFlagState.NotEnabled) {
+      flags.delete(name);
+    } else {
+      throw new Error(
+        'The `state` argument requires a recognized value from the FeatureFlagState enum. ' +
+          'Please check the Backstage documentation to see all the available options.' +
+          'Example values: FeatureFlagState.NotEnabled, FeatureFlagState.Enabled',
+      );
+    }
 
     window.localStorage.setItem(
       this.localStorageKey,
