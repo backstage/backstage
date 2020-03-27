@@ -15,17 +15,13 @@
  */
 
 import fs from 'fs-extra';
-import {
-  dirname,
-  resolve as resolvePath,
-  relative as relativePath,
-} from 'path';
+import { resolve as resolvePath, relative as relativePath } from 'path';
 import { promisify } from 'util';
 import { exec as execCb } from 'child_process';
 import { Command } from 'commander';
-import tar from 'tar';
 import { ExitCodeError } from '../../helpers/errors';
 import { run } from '../../helpers/run';
+import { readFileFromArchive, extractArchive, createArchive } from './archive';
 const exec = promisify(execCb);
 
 const INFO_FILE = '.backstage-build-cache';
@@ -70,7 +66,7 @@ export default async (cmd: Command, args: string[]) => {
   if (cacheHit) {
     if (cache.needsCopy) {
       print('external cache hit, copying from external cache');
-      await copyFromExternalCache(cache, options);
+      await extractArchive(cache.archivePath, options.output);
     } else {
       print('cache hit, nothing to be done');
     }
@@ -83,31 +79,10 @@ export default async (cmd: Command, args: string[]) => {
       print('caching build output');
       const infoData = Buffer.from(JSON.stringify({ trees }, null, 2), 'utf8');
       await fs.writeFile(resolvePath(options.output, INFO_FILE), infoData);
-      await copyToExternalCache(cache, options);
+      await createArchive(cache.archivePath, options.output);
     }
   }
 };
-
-async function copyToExternalCache(
-  cache: Cache,
-  options: Options,
-): Promise<void> {
-  await fs.remove(cache.archivePath);
-  await fs.ensureDir(dirname(cache.archivePath));
-  await tar.create(
-    { gzip: true, file: cache.archivePath, cwd: options.output },
-    ['.'],
-  );
-}
-
-async function copyFromExternalCache(
-  cache: Cache,
-  options: Options,
-): Promise<void> {
-  await fs.remove(options.output);
-  await fs.ensureDir(options.output);
-  await tar.extract({ file: cache.archivePath, cwd: options.output });
-}
 
 async function build([prog, ...args]: string[]): Promise<void> {
   await run(prog, args);
@@ -164,7 +139,8 @@ async function readCache(options: Options): Promise<Cache> {
   try {
     const externalCacheExists = await fs.pathExists(location);
     if (externalCacheExists) {
-      const trees = await readInfoFileFromArchive(archivePath);
+      const infoData = await readFileFromArchive(archivePath, INFO_FILE);
+      const { trees } = JSON.parse(infoData.toString('utf8'));
       if (trees) {
         return {
           archivePath,
@@ -179,42 +155,6 @@ async function readCache(options: Options): Promise<Cache> {
     print(`failed to read external cache archive, ${error}`);
   }
   return { archivePath, writable: true };
-}
-
-async function readInfoFileFromArchive(
-  archivePath: string,
-): Promise<string[] | undefined> {
-  const reader = fs.createReadStream(archivePath);
-  const parser = new ((tar.Parse as unknown) as { new (): tar.ParseStream })();
-
-  const infoEntry = await new Promise<tar.ReadEntry>((resolve, reject) => {
-    parser.on('entry', entry => {
-      if (entry.path === `./${INFO_FILE}`) {
-        resolve(entry);
-        reader.close();
-      } else {
-        entry.resume();
-      }
-    });
-    parser.on('end', () => {
-      reject(new Error('cache archive did not contain build info'));
-    });
-    parser.on('error', error => reject(error));
-    reader.on('error', error => reject(error));
-
-    reader.pipe(parser);
-  });
-
-  const infoData = await new Promise<Buffer>((resolve, reject) => {
-    const chunks = new Array<Buffer>();
-    infoEntry.on('data', chunk => chunks.push(chunk));
-    infoEntry.on('end', () => resolve(Buffer.concat(chunks)));
-    infoEntry.on('error', error => reject(error));
-  });
-
-  const info = JSON.parse(infoData.toString('utf8'));
-
-  return info.trees;
 }
 
 async function getInputHashes(options: Options): Promise<string[]> {
