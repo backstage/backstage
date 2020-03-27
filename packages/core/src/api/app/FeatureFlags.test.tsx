@@ -16,12 +16,7 @@
 
 import React, { ReactNode, useContext, useEffect, useRef } from 'react';
 import { render } from '@testing-library/react';
-import {
-  FeatureFlags,
-  FeatureFlagsEntry,
-  FeatureFlagsContext,
-  FeatureFlagsContextProvider,
-} from './FeatureFlags';
+import { FeatureFlags } from './FeatureFlags';
 import { FeatureFlagState } from '../apis/definitions/featureFlags';
 
 function useRenderCount() {
@@ -37,13 +32,7 @@ function withFeatureFlags(
     { name: 'feature-flag-two', pluginId: 'plugin-two' },
     { name: 'feature-flag-three', pluginId: 'plugin-two' },
   ]),
-) {
-  return (
-    <FeatureFlagsContextProvider featureFlags={featureFlags}>
-      {children}
-    </FeatureFlagsContextProvider>
-  );
-}
+) {}
 
 describe('FeatureFlags', () => {
   beforeEach(() => {
@@ -253,123 +242,5 @@ describe('FeatureFlags', () => {
 
       render(withFeatureFlags(<Component />));
     });
-  });
-});
-
-describe('FeatureFlagsContext', () => {
-  beforeEach(() => {
-    window.localStorage.clear();
-  });
-
-  it('returns an empty set without the context', () => {
-    const Component = () => {
-      const { featureFlags } = useContext(FeatureFlagsContext);
-      expect(featureFlags).toEqual(new Set());
-      return null;
-    };
-
-    render(<Component />);
-  });
-
-  it('returns a set of registered feature flags', () => {
-    expect.assertions(2);
-
-    const mockFeatureFlags = new Set<FeatureFlagsEntry>([
-      { name: 'feature-flag-one', pluginId: 'plugin-one' },
-      { name: 'feature-flag-two', pluginId: 'plugin-two' },
-    ]);
-
-    const Component = () => {
-      const { featureFlags } = useContext(FeatureFlagsContext);
-      expect(featureFlags).toEqual(mockFeatureFlags);
-      return null;
-    };
-
-    render(withFeatureFlags(<Component />, mockFeatureFlags));
-  });
-
-  it('returns a set of user enabled feature flags', () => {
-    expect.assertions(1);
-
-    window.localStorage.setItem(
-      'featureFlags',
-      JSON.stringify({
-        'feature-flag-one': true,
-        'feature-flag-three': true,
-      }),
-    );
-
-    const Component = () => {
-      const { enabledFeatureFlags } = useContext(FeatureFlagsContext);
-
-      if (enabledFeatureFlags.size > 0) {
-        expect(enabledFeatureFlags).toEqual(
-          new Set(['feature-flag-one', 'feature-flag-three']),
-        );
-      }
-
-      return null;
-    };
-
-    render(withFeatureFlags(<Component />));
-  });
-
-  it('correctly re-renders when calling refreshEnabledFeatureFlags', () => {
-    // First is the initial context
-    // Second is the context with the state from FeatureFlagsContextProvider
-    // Third is from calling refreshEnabledFeatureFlags
-    expect.assertions(3);
-
-    const FirstRender = ({ context: { enabledFeatureFlags } }) => {
-      useEffect(() => {
-        expect(enabledFeatureFlags).toEqual(new Set());
-      }, []);
-      return null;
-    };
-
-    const SecondRender = ({
-      context: { enabledFeatureFlags, refreshEnabledFeatureFlags },
-    }) => {
-      useEffect(() => {
-        expect(enabledFeatureFlags).toEqual(new Set());
-
-        // Change localStorage
-        window.localStorage.setItem(
-          'featureFlags',
-          JSON.stringify({
-            'feature-flag-one': true,
-            'feature-flag-three': true,
-          }),
-        );
-
-        // Refresh
-        refreshEnabledFeatureFlags();
-      }, []);
-
-      return null;
-    };
-
-    const ThirdRender = ({ context: { enabledFeatureFlags } }) => {
-      useEffect(() => {
-        expect(enabledFeatureFlags).toEqual(
-          new Set(['feature-flag-one', 'feature-flag-three']),
-        );
-      }, []);
-
-      return null;
-    };
-
-    const Component = () => {
-      const context = useContext(FeatureFlagsContext);
-      const renderCount = useRenderCount();
-
-      if (renderCount === 0) return <FirstRender context={context} />;
-      if (renderCount === 1) return <SecondRender context={context} />;
-      if (renderCount === 2) return <ThirdRender context={context} />;
-
-      return null;
-    };
-
-    render(withFeatureFlags(<Component />));
   });
 });

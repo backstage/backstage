@@ -14,77 +14,16 @@
  * limitations under the License.
  */
 
-import React, {
-  ReactNode,
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  FC,
-} from 'react';
 import { FeatureFlagName } from '../plugin/types';
 import {
   FeatureFlagState,
   FeatureFlagsApi,
 } from '../apis/definitions/featureFlags';
 
-/**
- * Create a shared React context for Feature Flags.
- *
- * This will be used to propagate all available feature flags to
- * Backstage components. This enables viewing all of the available flags.
- */
 export interface FeatureFlagsEntry {
   pluginId: string;
   name: FeatureFlagName;
 }
-
-export interface IFeatureFlagsContext {
-  featureFlags: Set<FeatureFlagsEntry>;
-  enabledFeatureFlags: Set<FeatureFlagName>;
-  refreshEnabledFeatureFlags: () => void;
-}
-
-export const FeatureFlagsContext = createContext<IFeatureFlagsContext>({
-  featureFlags: new Set<FeatureFlagsEntry>(),
-  enabledFeatureFlags: new Set<FeatureFlagName>(),
-  refreshEnabledFeatureFlags: () => {
-    throw new Error(
-      'The refreshEnabledFeatureFlags method is not implemented as it is not called from within the FeatureFlagsContext context within React. ' +
-        'See the Backstage documentation for examples on how to use the Feature Flags API.',
-    );
-  },
-});
-
-export const FeatureFlagsContextProvider: FC<{
-  featureFlags: Set<FeatureFlagsEntry>;
-  children: ReactNode;
-}> = ({ featureFlags, children }) => {
-  const [enabledFeatureFlags, setEnabledFeatureFlags] = useState<
-    Set<FeatureFlagName>
-  >(new Set<FeatureFlagName>());
-
-  const refreshEnabledFeatureFlags = () => {
-    // eslint-disable-next-line no-use-before-define
-    setEnabledFeatureFlags(FeatureFlags.getEnabledFeatureFlags());
-  };
-
-  // Initially populate our setEnabledFeatureFlags
-  useEffect(() => {
-    refreshEnabledFeatureFlags();
-  }, []);
-
-  return (
-    <FeatureFlagsContext.Provider
-      value={{
-        featureFlags,
-        enabledFeatureFlags,
-        refreshEnabledFeatureFlags,
-      }}
-      children={children}
-    />
-  );
-};
 
 /**
  * Create the FeatureFlags implementation based on the API.
@@ -95,46 +34,9 @@ export const FeatureFlagsContextProvider: FC<{
 class FeatureFlagsImpl implements FeatureFlagsApi {
   private readonly localStorageKey = 'featureFlags';
 
-  private get(
-    enabledFeatureFlags: Set<string>,
-    name: FeatureFlagName,
-  ): FeatureFlagState {
-    if (enabledFeatureFlags.has(name)) {
-      return FeatureFlagState.Enabled;
-    }
+  public constructor(public registeredFeatureFlags: FeatureFlagsEntry[] = []) {}
 
-    return FeatureFlagState.NotEnabled;
-  }
-
-  private set(name: FeatureFlagName, state: FeatureFlagState): void {
-    const errors = this.checkFeatureFlagNameErrors(name);
-    const flags = this.getEnabledFeatureFlags();
-
-    if (errors.length > 0) {
-      throw new Error(errors[0]);
-    }
-
-    if (state === FeatureFlagState.Enabled) {
-      flags.add(name);
-    } else if (state === FeatureFlagState.NotEnabled) {
-      flags.delete(name);
-    } else {
-      throw new Error(
-        'The `state` argument requires a recognized value from the FeatureFlagState enum. ' +
-          'Please check the Backstage documentation to see all the available options.' +
-          'Example values: FeatureFlagState.NotEnabled, FeatureFlagState.Enabled',
-      );
-    }
-
-    window.localStorage.setItem(
-      this.localStorageKey,
-      JSON.stringify(
-        [...flags].reduce((list, flag) => ({ ...list, [flag]: true }), {}),
-      ),
-    );
-  }
-
-  getEnabledFeatureFlags(): Set<FeatureFlagName> {
+  private getUserEnabledFeatureFlags(): Set<FeatureFlagName> {
     if (!('localStorage' in window)) {
       throw new Error(
         'Feature Flags are not supported on browsers without the Local Storage API',

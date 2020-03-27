@@ -19,7 +19,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App } from './types';
 import BackstagePlugin from '../plugin/Plugin';
-import { FeatureFlagsEntry, FeatureFlagsContextProvider } from './FeatureFlags';
+import { FeatureFlags, FeatureFlagsEntry } from './FeatureFlags';
 import {
   IconComponent,
   SystemIcons,
@@ -102,6 +102,8 @@ export default class AppBuilder {
       }
     }
 
+    FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
+
     routes.push(
       <Route key="login" path="/login" component={LoginPage} exact />,
     );
@@ -116,13 +118,6 @@ export default class AppBuilder {
     if (this.apis) {
       rendered = <ApiProvider apis={this.apis} children={rendered} />;
     }
-
-    rendered = (
-      <FeatureFlagsContextProvider
-        featureFlags={registeredFeatureFlags}
-        children={rendered}
-      />
-    );
 
     return () => <AppContextProvider app={app} children={rendered} />;
   }
