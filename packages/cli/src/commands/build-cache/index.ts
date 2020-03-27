@@ -25,6 +25,7 @@ import { exec as execCb } from 'child_process';
 import { Command } from 'commander';
 import tar from 'tar';
 import { ExitCodeError } from '../../helpers/errors';
+import { run } from '../../helpers/run';
 const exec = promisify(execCb);
 
 const INFO_FILE = '.backstage-build-cache';
@@ -38,7 +39,7 @@ type Options = {
 };
 
 async function parseOptions(cmd: Command): Promise<Options> {
-  const repoRoot = await run('git rev-parse --show-toplevel');
+  const repoRoot = await cmdOutput('git rev-parse --show-toplevel');
   const argTransformer = (arg: string) =>
     resolvePath(arg.replace(/<repoRoot>/g, repoRoot).replace(/'/g, ''));
 
@@ -67,11 +68,11 @@ export default async (cmd: Command, args: string[]) => {
 
   const cacheHit = cache.readable && cache.trees?.join(',') === trees.join(',');
   if (cacheHit) {
-    print('cache hit, no need to build');
-
     if (cache.needsCopy) {
-      print('copying external cache to build output dir');
+      print('external cache hit, copying from external cache');
       await copyFromExternalCache(cache, options);
+    } else {
+      print('cache hit, nothing to be done');
     }
   } else {
     print('cache miss, need to build');
@@ -108,11 +109,11 @@ async function copyFromExternalCache(
   await tar.extract({ file: cache.archivePath, cwd: options.output });
 }
 
-async function build(args: string[]): Promise<void> {
-  console.log(`Will build using '${args.join(' ')}'`);
+async function build([prog, ...args]: string[]): Promise<void> {
+  await run(prog, args);
 }
 
-async function run(cmd: string) {
+async function cmdOutput(cmd: string) {
   try {
     const { stdout } = await exec(cmd);
     return stdout.trim();
@@ -219,7 +220,7 @@ async function readInfoFileFromArchive(
 async function getInputHashes(options: Options): Promise<string[]> {
   const trees = [];
   for (const input of options.inputs) {
-    const output = await run(`git ls-tree HEAD '${input}'`);
+    const output = await cmdOutput(`git ls-tree HEAD '${input}'`);
     const [, , sha] = output.split(/\s+/, 3);
     trees.push(sha);
   }
