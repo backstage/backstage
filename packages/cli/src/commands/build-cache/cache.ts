@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, relative as relativePath } from 'path';
-import { runPlain } from '../../helpers/run';
+import { runPlain, runCheck } from '../../helpers/run';
 import { Options } from './options';
 import { extractArchive, createArchive } from './archive';
 
@@ -47,9 +47,10 @@ export class Cache {
     const location = resolvePath(options.cacheDir, repoPath);
 
     // Make sure we don't have any uncommitted changes to the input, in that case we consider the cache to be missing
-    try {
-      // await exec(`git diff --quiet HEAD -- ${options.inputs.join(' ')}`);
-    } catch (error) {
+    const noChanges = await runCheck(
+      `git diff --quiet HEAD -- ${options.inputs.join(' ')}`,
+    );
+    if (!noChanges) {
       return new Cache();
     }
 

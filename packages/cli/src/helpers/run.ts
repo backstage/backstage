@@ -62,6 +62,15 @@ export async function runPlain(cmd: string) {
   }
 }
 
+export async function runCheck(cmd: string): Promise<boolean> {
+  try {
+    await exec(cmd);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 export async function waitForExit(
   child: ChildProcess & { exitCode?: number },
   name?: string,
