@@ -20,105 +20,158 @@ import {
   FeatureFlagsApi,
 } from '../apis/definitions/featureFlags';
 
-export interface FeatureFlagsEntry {
+/**
+ * Helper method for validating compatibility and flag name.
+ */
+export function validateBrowserCompat(): void {
+  if (!('localStorage' in window)) {
+    throw new Error(
+      'Feature Flags are not supported on browsers without the Local Storage API',
+    );
+  }
+}
+
+export function validateFlagName(name: FeatureFlagName): void {
+  if (name.length < 3) {
+    throw new Error(`The '${name}' feature flag must have a minimum length of three characters.`);
+  }
+
+  if (name.length > 150) {
+    throw new Error(`The '${name}' feature flag must not exceed 150 characters.`);
+  }
+
+  if (!name.match(/^[a-z]+[a-z0-9-]+$/)) {
+    throw new Error(
+      `The '${name}' feature flag must start with a lowercase letter and only contain lowercase letters, numbers and hyphens. ` +
+        'Examples: feature-flag-one, alpha, release-2020',
+    );
+  }
+}
+
+/**
+ * The UserFlags class.
+ *
+ * This acts as a data structure for the user's feature flags. You
+ * can use this to retrieve, add, edit, delete, clear and save the user's
+ * feature flags to the local browser for persisted storage.
+ */
+export class UserFlags extends Map<FeatureFlagName, FeatureFlagState> {
+  constructor() {
+    validateBrowserCompat();
+
+    try {
+      const jsonString = window.localStorage.getItem('featureFlags') as string;
+      const json = JSON.parse(jsonString);
+      super(Object.entries(json));
+    } catch (err) {
+      super([]);
+    }
+  }
+
+  get(name: FeatureFlagName): FeatureFlagState {
+    validateFlagName(name);
+    return super.get(name) || FeatureFlagState.NotEnabled;
+  }
+
+  set(name: FeatureFlagName, state: FeatureFlagState): this {
+    validateFlagName(name);
+    super.set(name, state);
+    this.save();
+    return this;
+  }
+
+  delete(name: FeatureFlagName): boolean {
+    const exists = !!this.get(name);
+    super.delete(name);
+    this.save();
+    return exists;
+  }
+
+  clear(): void {
+    super.clear();
+    this.save();
+  }
+
+  save(): void {
+    window.localStorage.setItem(
+      'featureFlags',
+      JSON.stringify(this.toObject()),
+    );
+  }
+
+  toObject() {
+    return Array.from(this.entries()).reduce(
+      (obj, [key, value]) => ({ ...obj, [key]: value }),
+      {},
+    );
+  }
+
+  toJSON() {
+    return JSON.stringify(this.toObject());
+  }
+
+  toString() {
+    return this.toJSON();
+  }
+}
+
+/**
+ * The FeatureFlagsRegistry class.
+ *
+ * This acts as a holding data structure for feature flags
+ * that plugins wish to register for use in Backstage.
+ */
+export interface FeatureFlagsRegistryItem {
   pluginId: string;
   name: FeatureFlagName;
+}
+
+export class FeatureFlagsRegistry extends Array<FeatureFlagsRegistryItem> {
+  static from(entries: FeatureFlagsRegistryItem[]) {
+    Array.from(entries).forEach(entry => validateFlagName(entry.name));
+    return new FeatureFlagsRegistry(...entries);
+  }
+
+  push(...entries: FeatureFlagsRegistryItem[]): number {
+    Array.from(entries).forEach(entry => validateFlagName(entry.name));
+    return super.push(...entries);
+  }
+
+  concat(
+    ...entries: (
+      | FeatureFlagsRegistryItem
+      | ConcatArray<FeatureFlagsRegistryItem>
+    )[]
+  ): FeatureFlagsRegistryItem[] {
+    const _concat = super.concat(...entries);
+    Array.from(_concat).forEach(entry => validateFlagName(entry.name));
+    return _concat;
+  }
+
+  toObject() {
+    return [...this.values()];
+  }
+
+  toJSON() {
+    return JSON.stringify(this.toObject());
+  }
+
+  toString() {
+    return this.toJSON();
+  }
 }
 
 /**
  * Create the FeatureFlags implementation based on the API.
  */
+export class FeatureFlags implements FeatureFlagsApi {
+  public registeredFeatureFlags: FeatureFlagsRegistryItem[] = [];
 
-// TODO: figure out where to put implementations of APIs, both inside apps
-// but also in core/separate package.
-class FeatureFlagsImpl implements FeatureFlagsApi {
-  private readonly localStorageKey = 'featureFlags';
-
-  public constructor(public registeredFeatureFlags: FeatureFlagsEntry[] = []) {}
-
-  private getUserEnabledFeatureFlags(): Set<FeatureFlagName> {
-    if (!('localStorage' in window)) {
-      throw new Error(
-        'Feature Flags are not supported on browsers without the Local Storage API',
-      );
-    }
-
-    try {
-      const featureFlagsJson = window.localStorage.getItem(
-        this.localStorageKey,
-      );
-      return new Set<FeatureFlagName>(
-        Object.keys(JSON.parse(featureFlagsJson!)),
-      );
-    } catch (err) {
-      return new Set<FeatureFlagName>();
-    }
+  getFlags(): UserFlags {
+    return new UserFlags();
   }
 
-  // We don't make this private as we need this to validate
-  // in the `registerFeatureFlag` method in the Plugin API.
-  checkFeatureFlagNameErrors(name: FeatureFlagName): string[] {
-    const errors: string[] = [];
-
-    if (name.length < 3) {
-      errors.push('The name must have a minimum length of three characters.');
-    }
-
-    if (name.length > 150) {
-      errors.push('The name must not exceed 150 characters.');
-    }
-
-    if (!name.match(/^[a-z]+[a-z0-9-]+$/)) {
-      errors.push(
-        'The name must start with a lowercase letter and only contain lowercase letters, numbers and hyphens. ' +
-          'Examples: feature-flag-one, alpha, release-2020',
-      );
-    }
-
-    return errors;
-  }
-
-  useFeatureFlag(
-    name: FeatureFlagName,
-  ): [FeatureFlagState, (state: FeatureFlagState) => void] {
-    // Check for context
-    const context = useContext(FeatureFlagsContext);
-    if (!context) {
-      throw new Error(
-        'No FeatureFlagsContext found. ' +
-          'Please use this React Hook in the context of your <App />',
-      );
-    }
-
-    // Check for errors
-    // eslint-disable-next-line no-use-before-define
-    const errors = FeatureFlags.checkFeatureFlagNameErrors(name);
-    if (errors.length > 0) {
-      throw new Error(errors[0]);
-    }
-
-    // Check if the feature flag is registered
-    const allFlagNames = [...context.featureFlags].map(flag => flag.name);
-    if (!allFlagNames.includes(name)) {
-      throw new Error(
-        `The '${name}' feature flag is not registered by any plugin. ` +
-          `See the 'registerFeatureFlag' method in the Plugin API (or in your plugin.ts file) on how to register Feature Flags.`,
-      );
-    }
-
-    // eslint-disable-next-line no-use-before-define
-    const currentState = FeatureFlags.get(context.enabledFeatureFlags, name);
-    const setState = (state: FeatureFlagState): void => {
-      // Set the value
-      // eslint-disable-next-line no-use-before-define
-      FeatureFlags.set(name, state);
-
-      // Now update the global state
-      context.refreshEnabledFeatureFlags();
-    };
-
-    return [currentState, setState];
+  getRegisteredFlags(): FeatureFlagsRegistry {
+    return FeatureFlagsRegistry.from(this.registeredFeatureFlags);
   }
 }
-
-export const FeatureFlags = new FeatureFlagsImpl();

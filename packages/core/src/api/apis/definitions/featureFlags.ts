@@ -15,7 +15,11 @@
  */
 
 import ApiRef from '../ApiRef';
-import { FeatureFlagName } from '../../plugin/types';
+import {
+  UserFlags,
+  FeatureFlagsRegistry,
+  FeatureFlagsRegistryItem,
+} from '../../app/FeatureFlags';
 
 /**
  * The feature flags API is used to toggle functionality to users across plugins and Backstage.
@@ -34,30 +38,22 @@ export enum FeatureFlagState {
   Enabled = 1,
 }
 
-export type FeatureFlagsApi = {
+export interface FeatureFlagsApi {
   /**
-   * Get a list of the user's currently enabled feature flags.
-   * Reads directly from window.localStorage Browser API.
-   *
-   * @returns string[] enabledFeatureFlags List of feature flags enabled by the current user
+   * Store a list of registered feature flags.
    */
-  getEnabledFeatureFlags(): Set<FeatureFlagName>;
+  registeredFeatureFlags: FeatureFlagsRegistryItem[];
 
   /**
-   * Check the feature flag name convention.
-   * Used in the `registerFeatureFlag` method as well as in the `set` method.
-   *
-   * @returns string[] errors List of errors as string. Empty array if no errors.
+   * Get a list of all feature flags from the current user.
    */
-  checkFeatureFlagNameErrors(name: FeatureFlagName): string[];
+  getFlags(): UserFlags;
 
   /**
-   * Use Feature Flags as a React Hook.
+   * Get a list of all registered flags.
    */
-  useFeatureFlag(
-    name: FeatureFlagName,
-  ): [FeatureFlagState, (state: FeatureFlagState) => void];
-};
+  getRegisteredFlags(): FeatureFlagsRegistry;
+}
 
 export const featureFlagsApiRef = new ApiRef<FeatureFlagsApi>({
   id: 'core.featureflags',

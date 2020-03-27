@@ -22,6 +22,6 @@ export default createPlugin({
   register({ router, featureFlags }) {
     router.registerRoute('/', WelcomePage);
 
-    featureFlags.registerFeatureFlag('enable-welcome-box');
+    featureFlags.register('enable-welcome-box');
   },
 });

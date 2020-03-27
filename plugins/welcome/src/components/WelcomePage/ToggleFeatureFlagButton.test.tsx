@@ -22,37 +22,27 @@ import {
   featureFlagsApiRef,
   ApiProvider,
   FeatureFlags,
-  FeatureFlagsContextProvider,
 } from '@backstage/core';
 
-function withFeatureFlags(children: ReactNode) {
-  const featureFlags = new Set([
-    { pluginId: 'welcome', name: 'enable-welcome-box' },
-  ]);
-
+function withApiRegistry(component: ReactNode, featureFlags: FeatureFlags) {
   return (
-    <FeatureFlagsContextProvider featureFlags={featureFlags}>
-      {children}
-    </FeatureFlagsContextProvider>
-  );
-}
-
-function withApiRegistry(children: ReactNode) {
-  return (
-    <ApiProvider apis={ApiRegistry.from([[featureFlagsApiRef, FeatureFlags]])}>
-      {children}
+    <ApiProvider apis={ApiRegistry.from([[featureFlagsApiRef, featureFlags]])}>
+      {component}
     </ApiProvider>
   );
 }
 
 describe('ToggleFeatureFlagButton', () => {
+  let featureFlags: FeatureFlags;
+
   beforeEach(() => {
+    featureFlags = new FeatureFlags();
     window.localStorage.clear();
   });
 
   it('should enable the feature flag', () => {
     const rendered = render(
-      withFeatureFlags(withApiRegistry(<ToggleFeatureFlagButton />)),
+      withApiRegistry(<ToggleFeatureFlagButton />, featureFlags),
     );
 
     const button = rendered.getByTestId('button-switch-feature-flag-state');
@@ -60,22 +50,22 @@ describe('ToggleFeatureFlagButton', () => {
 
     expect(window.localStorage.featureFlags).toBeUndefined();
     fireEvent.click(button);
-    expect(window.localStorage.featureFlags).toBe(
-      '{"enable-welcome-box":true}',
-    );
+    expect(window.localStorage.featureFlags).toBe('{"enable-welcome-box":1}');
   });
 
   it('should disable the feature flag', () => {
-    const rendered = render(
-      withFeatureFlags(withApiRegistry(<ToggleFeatureFlagButton />)),
-    );
+    const Component = () =>
+      withApiRegistry(<ToggleFeatureFlagButton />, featureFlags);
+    const rendered = render(<Component />);
 
     const button = rendered.getByTestId('button-switch-feature-flag-state');
     expect(button).toBeInTheDocument();
 
     expect(window.localStorage.featureFlags).toBeUndefined();
     fireEvent.click(button);
+    expect(window.localStorage.featureFlags).toBe('{"enable-welcome-box":1}');
+    rendered.rerender(<Component />);
     fireEvent.click(button);
-    expect(window.localStorage.featureFlags).toBe('{}');
+    expect(window.localStorage.featureFlags).toBe('{"enable-welcome-box":0}');
   });
 });

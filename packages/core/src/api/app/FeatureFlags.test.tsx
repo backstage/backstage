@@ -14,233 +14,231 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useContext, useEffect, useRef } from 'react';
-import { render } from '@testing-library/react';
-import { FeatureFlags } from './FeatureFlags';
+import { FeatureFlags as FeatureFlagsImpl } from './FeatureFlags';
 import { FeatureFlagState } from '../apis/definitions/featureFlags';
-
-function useRenderCount() {
-  const renderCount = useRef(-1);
-  renderCount.current += 1;
-  return renderCount.current;
-}
-
-function withFeatureFlags(
-  children: ReactNode,
-  featureFlags: Set<FeatureFlagsEntry> = new Set([
-    { name: 'feature-flag-one', pluginId: 'plugin-one' },
-    { name: 'feature-flag-two', pluginId: 'plugin-two' },
-    { name: 'feature-flag-three', pluginId: 'plugin-two' },
-  ]),
-) {}
 
 describe('FeatureFlags', () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  describe('#getEnabledFeatureFlags', () => {
-    it('returns an empty set', () => {
-      expect(FeatureFlags.getEnabledFeatureFlags()).toEqual(new Set());
+  describe('#getFlags', () => {
+    let FeatureFlags;
+
+    beforeEach(() => {
+      FeatureFlags = new FeatureFlagsImpl();
     });
 
-    it('returns enabled feature flags', () => {
+    it('returns no flags', () => {
+      expect(FeatureFlags.getFlags().toObject()).toMatchObject({});
+    });
+
+    it('returns the correct flags', () => {
       window.localStorage.setItem(
         'featureFlags',
         JSON.stringify({
-          'feature-flag-one': true,
-          'feature-flag-three': true,
+          'feature-flag-one': 1,
+          'feature-flag-two': 1,
+          'feature-flag-three': 0,
         }),
       );
 
-      expect(FeatureFlags.getEnabledFeatureFlags()).toEqual(
-        new Set(['feature-flag-one', 'feature-flag-three']),
+      expect(FeatureFlags.getFlags().toObject()).toMatchObject({
+        'feature-flag-one': FeatureFlagState.Enabled,
+        'feature-flag-two': FeatureFlagState.Enabled,
+        'feature-flag-three': FeatureFlagState.NotEnabled,
+      });
+    });
+
+    it('gets the correct values', () => {
+      window.localStorage.setItem(
+        'featureFlags',
+        JSON.stringify({
+          'feature-flag-one': 1,
+          'feature-flag-two': 0,
+        }),
       );
+
+      expect(FeatureFlags.getFlags().get('feature-flag-one')).toEqual(
+        FeatureFlagState.Enabled,
+      );
+      expect(FeatureFlags.getFlags().get('feature-flag-two')).toEqual(
+        FeatureFlagState.NotEnabled,
+      );
+      expect(FeatureFlags.getFlags().get('feature-flag-three')).toEqual(
+        FeatureFlagState.NotEnabled,
+      );
+    });
+
+    it('sets the correct values', () => {
+      const flags = FeatureFlags.getFlags();
+      flags.set('feature-flag-zero', FeatureFlagState.Enabled);
+
+      expect(flags.get('feature-flag-zero')).toEqual(FeatureFlagState.Enabled);
+      expect(window.localStorage.getItem('featureFlags')).toEqual(
+        '{"feature-flag-zero":1}',
+      );
+    });
+
+    it('deletes the correct values', () => {
+      window.localStorage.setItem(
+        'featureFlags',
+        JSON.stringify({
+          'feature-flag-one': 1,
+          'feature-flag-two': 0,
+        }),
+      );
+
+      const flags = FeatureFlags.getFlags();
+      flags.delete('feature-flag-one');
+
+      expect(flags.get('feature-flag-one')).toEqual(
+        FeatureFlagState.NotEnabled,
+      );
+      expect(window.localStorage.getItem('featureFlags')).toEqual(
+        '{"feature-flag-two":0}',
+      );
+    });
+
+    it('clears all values', () => {
+      window.localStorage.setItem(
+        'featureFlags',
+        JSON.stringify({
+          'feature-flag-one': 1,
+          'feature-flag-two': 1,
+          'feature-flag-three': 0,
+        }),
+      );
+
+      const flags = FeatureFlags.getFlags();
+      flags.clear();
+
+      expect(flags.toObject()).toEqual({});
+      expect(window.localStorage.getItem('featureFlags')).toEqual('{}');
     });
   });
 
-  describe('#checkFeatureFlagNameErrors', () => {
-    it('returns an error if less than three characters', () => {
-      const errors = FeatureFlags.checkFeatureFlagNameErrors('ab');
-      expect(errors[0]).toMatch(/minimum length of three characters/i);
+  describe('#getRegisteredFlags', () => {
+    let FeatureFlags;
+
+    beforeEach(() => {
+      FeatureFlags = new FeatureFlagsImpl();
+      FeatureFlags.registeredFeatureFlags = [
+        { name: 'registered-flag-1', pluginId: 'plugin-one' },
+        { name: 'registered-flag-2', pluginId: 'plugin-one' },
+        { name: 'registered-flag-3', pluginId: 'plugin-two' },
+      ];
     });
 
-    it('returns an error if greater than 150 characters', () => {
-      const errors = FeatureFlags.checkFeatureFlagNameErrors(
-        'loremipsumdolorsitametconsecteturadipiscingelitnuncvitaeportaexaullamcorperturpismaurisutmattisnequemorbisediaculisauguevivamuspulvinarcursuseratblandithendreritquisqueuttinciduntmagnavestibulumblanditaugueat',
-      );
-      expect(errors[0]).toMatch(/not exceed 150 characters/i);
+    it('should return an empty list', () => {
+      FeatureFlags.registeredFeatureFlags = [];
+      expect(FeatureFlags.getRegisteredFlags().toObject()).toEqual([]);
     });
 
-    it('returns an error if name does not start with a lowercase letter', () => {
-      const errors = FeatureFlags.checkFeatureFlagNameErrors('123456789');
-      expect(errors[0]).toMatch(/start with a lowercase letter/i);
+    it('should return an valid list', () => {
+      expect(FeatureFlags.getRegisteredFlags().toObject()).toMatchObject([
+        { name: 'registered-flag-1', pluginId: 'plugin-one' },
+        { name: 'registered-flag-2', pluginId: 'plugin-one' },
+        { name: 'registered-flag-3', pluginId: 'plugin-two' },
+      ]);
     });
 
-    it('returns an error if name contains characters other than lowercase letters, numbers and hyphens', () => {
-      const errors = FeatureFlags.checkFeatureFlagNameErrors(
-        'Invalid_Feature_Flag',
-      );
-      expect(errors[0]).toMatch(
-        /only contain lowercase letters, numbers and hyphens/i,
-      );
+    it('should get the correct values', () => {
+      const getByName = name =>
+        FeatureFlags.getRegisteredFlags().find(flag => flag.name === name);
+
+      expect(getByName('registered-flag-0')).toBeUndefined();
+      expect(getByName('registered-flag-1')).toEqual({
+        name: 'registered-flag-1',
+        pluginId: 'plugin-one',
+      });
+      expect(getByName('registered-flag-2')).toEqual({
+        name: 'registered-flag-2',
+        pluginId: 'plugin-one',
+      });
+      expect(getByName('registered-flag-3')).toEqual({
+        name: 'registered-flag-3',
+        pluginId: 'plugin-two',
+      });
     });
 
-    it('returns no errors', () => {
-      const errors = FeatureFlags.checkFeatureFlagNameErrors(
-        'valid-feature-flag',
-      );
-      expect(errors.length).toBe(0);
-    });
-  });
+    it('should append the correct value', () => {
+      const flags = FeatureFlags.getRegisteredFlags();
 
-  describe('#useFeatureFlag', () => {
-    it('throws an error if the feature flag is not registered', () => {
-      const Component = () => {
-        expect(() => {
-          FeatureFlags.useFeatureFlag('feature-flag-four');
-        }).toThrow(/'feature-flag-four' feature flag is not registered/i);
+      flags.push({
+        name: 'registered-flag-4',
+        pluginId: 'plugin-three',
+      });
 
-        return null;
-      };
-
-      render(withFeatureFlags(<Component />));
+      expect(flags.toObject()).toMatchObject([
+        { name: 'registered-flag-1', pluginId: 'plugin-one' },
+        { name: 'registered-flag-2', pluginId: 'plugin-one' },
+        { name: 'registered-flag-3', pluginId: 'plugin-two' },
+        { name: 'registered-flag-4', pluginId: 'plugin-three' },
+      ]);
     });
 
-    it('throws an error if changing value is not recognized', () => {
-      const Component = () => {
-        const [, setState] = FeatureFlags.useFeatureFlag('feature-flag-one');
-        const renderCount = useRenderCount();
-        if (renderCount === 1) {
-          // @ts-ignore
-          expect(() => setState('not valid')).toThrow(
-            /requires a recognized value from the FeatureFlagState/i,
-          );
-        }
-        return null;
-      };
+    it('should concat the correct values', () => {
+      const flags = FeatureFlags.getRegisteredFlags();
+      const concatValues = flags.concat([
+        {
+          name: 'registered-flag-4',
+          pluginId: 'plugin-three',
+        },
+        {
+          name: 'registered-flag-5',
+          pluginId: 'plugin-four',
+        },
+      ]);
 
-      render(withFeatureFlags(<Component />));
+      expect(concatValues).toMatchObject([
+        { name: 'registered-flag-1', pluginId: 'plugin-one' },
+        { name: 'registered-flag-2', pluginId: 'plugin-one' },
+        { name: 'registered-flag-3', pluginId: 'plugin-two' },
+        { name: 'registered-flag-4', pluginId: 'plugin-three' },
+        { name: 'registered-flag-5', pluginId: 'plugin-four' },
+      ]);
     });
 
-    it('defaults to .NotEnabled', () => {
-      const Component = () => {
-        const renderCount = useRenderCount();
-        const [state] = FeatureFlags.useFeatureFlag('feature-flag-one');
-        if (renderCount === 1) {
-          expect(state).toEqual(FeatureFlagState.NotEnabled);
-        }
-        return null;
-      };
-
-      render(withFeatureFlags(<Component />));
+    it('throws an error if length is less than three characters', () => {
+      const flags = FeatureFlags.getRegisteredFlags();
+      expect(() =>
+        flags.push({
+          name: 'ab',
+          pluginId: 'plugin-three',
+        }),
+      ).toThrow(/minimum length of three characters/i);
     });
 
-    it('returns an .Enabled state', () => {
-      window.localStorage.setItem('featureFlags', '{"feature-flag-one":true}');
-
-      const Component = () => {
-        const [state] = FeatureFlags.useFeatureFlag('feature-flag-one');
-        const renderCount = useRenderCount();
-        if (renderCount === 1) {
-          expect(state).toEqual(FeatureFlagState.Enabled);
-        }
-        return null;
-      };
-
-      render(withFeatureFlags(<Component />));
+    it('throws an error if length is greater than 150 characters', () => {
+      const flags = FeatureFlags.getRegisteredFlags();
+      expect(() =>
+        flags.push({
+          name:
+            'loremipsumdolorsitametconsecteturadipiscingelitnuncvitaeportaexaullamcorperturpismaurisutmattisnequemorbisediaculisauguevivamuspulvinarcursuseratblandithendreritquisqueuttinciduntmagnavestibulumblanditaugueat',
+          pluginId: 'plugin-three',
+        }),
+      ).toThrow(/not exceed 150 characters/i);
     });
 
-    it('returns an .NotEnabled state', () => {
-      const Component = () => {
-        const [state] = FeatureFlags.useFeatureFlag('feature-flag-one');
-        const renderCount = useRenderCount();
-        if (renderCount === 1) {
-          expect(state).toEqual(FeatureFlagState.NotEnabled);
-        }
-        return null;
-      };
-
-      render(withFeatureFlags(<Component />));
+    it('throws an error if name does not start with a lowercase letter', () => {
+      const flags = FeatureFlags.getRegisteredFlags();
+      expect(() =>
+        flags.push({
+          name: '123456789',
+          pluginId: 'plugin-three',
+        }),
+      ).toThrow(/start with a lowercase letter/i);
     });
 
-    it('changes state to .Enabled', () => {
-      const Component = () => {
-        const [state, setState] = FeatureFlags.useFeatureFlag(
-          'feature-flag-one',
-        );
-        const renderCount = useRenderCount();
-        if (renderCount === 1) setState(FeatureFlagState.Enabled);
-        if (renderCount === 2) expect(state).toEqual(FeatureFlagState.Enabled);
-        return null;
-      };
-
-      render(withFeatureFlags(<Component />));
-    });
-
-    it('changes state to .NotEnabled', () => {
-      window.localStorage.setItem('featureFlags', '{"feature-flag-one":true}');
-
-      const Component = () => {
-        const [state, setState] = FeatureFlags.useFeatureFlag(
-          'feature-flag-one',
-        );
-        const renderCount = useRenderCount();
-        if (renderCount === 1) setState(FeatureFlagState.NotEnabled);
-        if (renderCount === 2)
-          expect(state).toEqual(FeatureFlagState.NotEnabled);
-        return null;
-      };
-
-      render(withFeatureFlags(<Component />));
-    });
-
-    it('changes state to .Enabled then .NotEnabled', () => {
-      const Component = () => {
-        const [state, setState] = FeatureFlags.useFeatureFlag(
-          'feature-flag-one',
-        );
-        const renderCount = useRenderCount();
-        if (renderCount === 1) setState(FeatureFlagState.Enabled);
-        if (renderCount === 2) setState(FeatureFlagState.NotEnabled);
-        if (renderCount === 3)
-          expect(state).toEqual(FeatureFlagState.NotEnabled);
-        return null;
-      };
-
-      render(withFeatureFlags(<Component />));
-    });
-
-    it('changes multiple feature flag states', () => {
-      expect.assertions(3);
-
-      const Component = () => {
-        const renderCount = useRenderCount();
-        const [stateA, setStateA] = FeatureFlags.useFeatureFlag(
-          'feature-flag-one',
-        );
-        const [stateB, setStateB] = FeatureFlags.useFeatureFlag(
-          'feature-flag-two',
-        );
-
-        useEffect(() => {
-          if (renderCount === 1) {
-            setStateA(FeatureFlagState.Enabled);
-            setStateB(FeatureFlagState.Enabled);
-          }
-          if (renderCount === 2) {
-            expect(stateA).toEqual(FeatureFlagState.Enabled);
-            expect(stateB).toEqual(FeatureFlagState.Enabled);
-            expect(window.localStorage.getItem('featureFlags')).toEqual(
-              '{"feature-flag-one":true,"feature-flag-two":true}',
-            );
-          }
-        }, [renderCount]);
-
-        return null;
-      };
-
-      render(withFeatureFlags(<Component />));
+    it('throws an error if name contains characters other than lowercase letters, numbers and hyphens', () => {
+      const flags = FeatureFlags.getRegisteredFlags();
+      expect(() =>
+        flags.push({
+          name: 'Invalid_Feature_Flag',
+          pluginId: 'plugin-three',
+        }),
+      ).toThrow(/only contain lowercase letters, numbers and hyphens/i);
     });
   });
 });

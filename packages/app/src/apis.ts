@@ -26,8 +26,8 @@ import { ErrorDisplayForwarder } from './components/ErrorDisplay/ErrorDisplay';
 const builder = ApiRegistry.builder();
 
 export const errorDialogForwarder = new ErrorDisplayForwarder();
-
 builder.add(errorApiRef, errorDialogForwarder);
-builder.add(featureFlagsApiRef, FeatureFlags);
+
+builder.add(featureFlagsApiRef, new FeatureFlags());
 
 export default builder.build() as ApiHolder;

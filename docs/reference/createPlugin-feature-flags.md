@@ -4,7 +4,7 @@ The `featureFlags` object passed to the `register` function makes it possible fo
 
 ```typescript
 export type FeatureFlagsHooks = {
-  registerFeatureFlag(name: FeatureFlagName): void;
+  register(name: FeatureFlagName): void;
 };
 ```
 
@@ -17,7 +17,7 @@ export default createPlugin({
   id: 'welcome',
   register({ router, featureFlags }) {
     // router.registerRoute('/', Component);
-    featureFlags.registerFeatureFlag('enable-example-feature');
+    featureFlags.register('enable-example-feature');
   },
 });
 ```
@@ -48,11 +48,10 @@ import { Button } from '@material-ui/core';
 import { featureFlagsApiRef, useApi } from '@backstage/core';
 
 const ExampleButton: FC<{}> = () => {
-  const { useFeatureFlag } = useApi(featureFlagsApiRef);
-  const [flagState, setFlagState] = useFeatureFlag('enable-example-feature');
+  const flags = useApi(featureFlagsApiRef).getFlags();
 
   const handleClick = () => {
-    setFlagState(FeatureFlagState.Enabled);
+    flags.set('enable-example-feature', FeatureFlagState.Enabled);
   };
 
   return (
@@ -62,7 +61,5 @@ const ExampleButton: FC<{}> = () => {
   );
 };
 ```
-
-Note that you must register it with `registerFeatureFlag` otherwise the `useFeatureFlag` will throw an error.
 
 [Back to References](README.md)

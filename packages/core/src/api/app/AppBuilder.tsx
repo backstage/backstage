@@ -19,7 +19,8 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App } from './types';
 import BackstagePlugin from '../plugin/Plugin';
-import { FeatureFlags, FeatureFlagsEntry } from './FeatureFlags';
+import { FeatureFlagsRegistryItem } from './FeatureFlags';
+import { featureFlagsApiRef } from '../apis/definitions/featureFlags';
 import {
   IconComponent,
   SystemIcons,
@@ -63,7 +64,7 @@ export default class AppBuilder {
     const app = new AppImpl(this.systemIcons);
 
     const routes = new Array<JSX.Element>();
-    const registeredFeatureFlags = new Set<FeatureFlagsEntry>();
+    const registeredFeatureFlags = new Array<FeatureFlagsRegistryItem>();
 
     for (const plugin of this.plugins.values()) {
       for (const output of plugin.output()) {
@@ -90,7 +91,7 @@ export default class AppBuilder {
             break;
           }
           case 'feature-flag': {
-            registeredFeatureFlags.add({
+            registeredFeatureFlags.push({
               pluginId: plugin.getId(),
               name: output.name,
             });
@@ -102,7 +103,10 @@ export default class AppBuilder {
       }
     }
 
-    FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
+    const FeatureFlags = this.apis && this.apis.get(featureFlagsApiRef);
+    if (FeatureFlags) {
+      FeatureFlags!.registeredFeatureFlags = registeredFeatureFlags;
+    }
 
     routes.push(
       <Route key="login" path="/login" component={LoginPage} exact />,
