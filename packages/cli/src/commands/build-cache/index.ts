@@ -48,7 +48,7 @@ export default async (cmd: Command, args: string[]) => {
 
     if (cacheResult.archive) {
       print('caching build output');
-      await cacheResult.archive(options.output);
+      await cacheResult.archive(options.output, options.maxCacheEntries);
     }
   }
 };

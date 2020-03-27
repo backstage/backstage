@@ -15,6 +15,7 @@ jobs:
     env:
       CI: true
       BACKSTAGE_CACHE_DIR: <repoRoot>/.backstage-build-cache
+      BACKSTAGE_CACHE_MAX_ENTRIES: 2
 
     steps:
       - uses: actions/checkout@v2

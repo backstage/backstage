@@ -18,10 +18,13 @@ import { resolve as resolvePath } from 'path';
 import { Command } from 'commander';
 import { runPlain } from '../../helpers/run';
 
+const DEFAULT_MAX_ENTRIES = 10;
+
 export type Options = {
   inputs: string[];
   output: string;
   cacheDir: string;
+  maxCacheEntries: number;
   repoRoot: string;
 };
 
@@ -38,5 +41,7 @@ export async function parseOptions(cmd: Command): Promise<Options> {
   const cacheDir = argTransformer(
     process.env.BACKSTAGE_CACHE_DIR || cmd.cacheDir,
   );
-  return { inputs, output, cacheDir, repoRoot };
+  const maxCacheEntries =
+    Number(process.env.BACKSTAGE_CACHE_MAX_ENTRIES) || DEFAULT_MAX_ENTRIES;
+  return { inputs, output, cacheDir, repoRoot, maxCacheEntries };
 }

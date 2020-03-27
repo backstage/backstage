@@ -20,13 +20,12 @@ import { runPlain, runCheck } from '../../helpers/run';
 import { Options } from './options';
 import { extractArchive, createArchive } from './archive';
 
-const MAX_ENTRIES = 10;
 const INFO_FILE = '.backstage-build-cache';
 
 export type CacheQueryResult = {
   hit: boolean;
   copy?: (outputDir: string) => Promise<void>;
-  archive?: (outputDir: string) => Promise<void>;
+  archive?: (outputDir: string, maxEntries: number) => Promise<void>;
 };
 
 export type CacheKey = string[];
@@ -83,7 +82,7 @@ export class Cache {
       return { hit: false };
     }
 
-    const archive = async (outputDir: string) => {
+    const archive = async (outputDir: string, maxEntries: number) => {
       await writeCacheInfo(outputDir, { key });
 
       const timestamp = new Date().toISOString().replace(/-|:|\..*/g, '');
@@ -111,7 +110,7 @@ export class Cache {
       entries.unshift({ key, path: archiveName });
 
       // Remove old cache entries
-      const removedEntries = entries.splice(MAX_ENTRIES);
+      const removedEntries = entries.splice(maxEntries);
       for (const entry of removedEntries) {
         try {
           await fs.remove(resolvePath(location, entry.path));
