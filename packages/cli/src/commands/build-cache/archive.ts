@@ -18,41 +18,6 @@ import fs from 'fs-extra';
 import tar from 'tar';
 import { dirname } from 'path';
 
-export async function readFileFromArchive(
-  archivePath: string,
-  filePath: string,
-): Promise<Buffer> {
-  const reader = fs.createReadStream(archivePath);
-  const parser = new ((tar.Parse as unknown) as { new (): tar.ParseStream })();
-
-  const fileEntry = await new Promise<tar.ReadEntry>((resolve, reject) => {
-    parser.on('entry', entry => {
-      if (entry.path === `./${filePath}`) {
-        resolve(entry);
-        reader.close();
-      } else {
-        entry.resume();
-      }
-    });
-    parser.on('end', () => {
-      reject(new Error('cache archive did not contain build info'));
-    });
-    parser.on('error', error => reject(error));
-    reader.on('error', error => reject(error));
-
-    reader.pipe(parser);
-  });
-
-  const data = await new Promise<Buffer>((resolve, reject) => {
-    const chunks = new Array<Buffer>();
-    fileEntry.on('data', chunk => chunks.push(chunk));
-    fileEntry.on('end', () => resolve(Buffer.concat(chunks)));
-    fileEntry.on('error', error => reject(error));
-  });
-
-  return data;
-}
-
 // packages all files in inputDir into an archive at archivePath, deleting any existing archive
 export async function createArchive(
   archivePath: string,
