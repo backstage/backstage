@@ -199,6 +199,7 @@ async function readInfoFileFromArchive(
       reject(new Error('cache archive did not contain build info'));
     });
     parser.on('error', error => reject(error));
+    reader.on('error', error => reject(error));
 
     reader.pipe(parser);
   });
