@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { SpawnOptions, spawn, ChildProcess } from 'child_process';
+import {
+  SpawnOptions,
+  spawn,
+  ChildProcess,
+  exec as execCb,
+} from 'child_process';
 import { ExitCodeError } from './errors';
+import { promisify } from 'util';
+const exec = promisify(execCb);
 
 type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
   env?: Partial<NodeJS.ProcessEnv>;
@@ -41,6 +48,18 @@ export async function run(
   });
 
   await waitForExit(child, name);
+}
+
+export async function runPlain(cmd: string) {
+  try {
+    const { stdout } = await exec(cmd);
+    return stdout.trim();
+  } catch (error) {
+    if (error.stderr) {
+      process.stderr.write(error.stderr);
+    }
+    throw new ExitCodeError(error.code, cmd);
+  }
 }
 
 export async function waitForExit(

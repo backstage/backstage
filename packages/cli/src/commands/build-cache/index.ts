@@ -16,13 +16,9 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, relative as relativePath } from 'path';
-import { promisify } from 'util';
-import { exec as execCb } from 'child_process';
 import { Command } from 'commander';
-import { ExitCodeError } from '../../helpers/errors';
-import { run } from '../../helpers/run';
+import { run, runPlain } from '../../helpers/run';
 import { readFileFromArchive, extractArchive, createArchive } from './archive';
-const exec = promisify(execCb);
 
 const INFO_FILE = '.backstage-build-cache';
 const CACHE_ARCHIVE = 'cache.tgz';
@@ -35,7 +31,7 @@ type Options = {
 };
 
 async function parseOptions(cmd: Command): Promise<Options> {
-  const repoRoot = await cmdOutput('git rev-parse --show-toplevel');
+  const repoRoot = await runPlain('git rev-parse --show-toplevel');
   const argTransformer = (arg: string) =>
     resolvePath(arg.replace(/<repoRoot>/g, repoRoot).replace(/'/g, ''));
 
@@ -73,7 +69,7 @@ export default async (cmd: Command, args: string[]) => {
   } else {
     print('cache miss, need to build');
 
-    await build(args);
+    await run(args[0], args.slice(1));
 
     if (cache.writable) {
       print('caching build output');
@@ -83,22 +79,6 @@ export default async (cmd: Command, args: string[]) => {
     }
   }
 };
-
-async function build([prog, ...args]: string[]): Promise<void> {
-  await run(prog, args);
-}
-
-async function cmdOutput(cmd: string) {
-  try {
-    const { stdout } = await exec(cmd);
-    return stdout.trim();
-  } catch (error) {
-    if (error.stderr) {
-      process.stderr.write(error.stderr);
-    }
-    throw new ExitCodeError(error.code, cmd);
-  }
-}
 
 type Cache = {
   // External location of the cache outside the output folder
@@ -160,7 +140,7 @@ async function readCache(options: Options): Promise<Cache> {
 async function getInputHashes(options: Options): Promise<string[]> {
   const trees = [];
   for (const input of options.inputs) {
-    const output = await cmdOutput(`git ls-tree HEAD '${input}'`);
+    const output = await runPlain(`git ls-tree HEAD '${input}'`);
     const [, , sha] = output.split(/\s+/, 3);
     trees.push(sha);
   }
