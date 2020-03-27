@@ -8,9 +8,23 @@ export type FeatureFlagsHooks = {
 };
 ```
 
+Here's a code sample:
+
+```typescript
+import { createPlugin } from '@backstage/core';
+
+export default createPlugin({
+  id: 'welcome',
+  register({ router, featureFlags }) {
+    // router.registerRoute('/', Component);
+    featureFlags.registerFeatureFlag('enable-example-feature');
+  },
+});
+```
+
 ## Using with useApi
 
-This is the **recommended** way of using the API. It's officially supported by Backstage. To use it, you'll first need to register the `FeatureFlags` API via `ApiRegistry` in your `apis.ts` in your App:
+To use it, you'll first need to register the `FeatureFlags` API via `ApiRegistry` in your `apis.ts` in your App:
 
 ```tsx
 import {
@@ -34,8 +48,12 @@ import { Button } from '@material-ui/core';
 import { featureFlagsApiRef, useApi } from '@backstage/core';
 
 const ExampleButton: FC<{}> = () => {
-  const featureFlagsApi = useApi(featureFlagsApiRef);
-  const handleClick = () => featureFlagsApi.set('enable-example-feature', .Enabled);
+  const { useFeatureFlag } = useApi(featureFlagsApiRef);
+  const [flagState, setFlagState] = useFeatureFlag('enable-example-feature');
+
+  const handleClick = () => {
+    setFlagState(FeatureFlagState.Enabled);
+  };
 
   return (
     <Button variant="contained" color="primary" onClick={handleClick}>
@@ -45,24 +63,6 @@ const ExampleButton: FC<{}> = () => {
 };
 ```
 
-## Using directly with the `FeatureFlags` object
-
-This is **only** for backwards-compatibility support for Spotify's internal Backstage plugins. This may be deprecated in the distant future so generally we advise against using it.
-
-```tsx
-import React, { FC } from 'react';
-import { Button } from '@material-ui/core';
-import { FeatureFlags } from '@backstage/core';
-
-const ExampleButton: FC<{}> = () => {
-  const handleClick = () => FeatureFlags.set('enable-example-feature', .Enabled);
-
-  return (
-    <Button variant="contained" color="primary" onClick={handleClick}>
-      Enable the 'enable-example-feature' feature flag
-    </Button>
-  );
-};
-```
+Note that you must register it with `registerFeatureFlag` otherwise the `useFeatureFlag` will throw an error.
 
 [Back to References](README.md)

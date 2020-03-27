@@ -156,21 +156,19 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
   // We don't make this private as we need this to validate
   // in the `registerFeatureFlag` method in the Plugin API.
   checkFeatureFlagNameErrors(name: FeatureFlagName): string[] {
-    const errors = [];
+    const errors: string[] = [];
 
     if (name.length < 3) {
-      errors.push(
-        'The `name` argument must have a minimum length of three characters.',
-      );
+      errors.push('The name must have a minimum length of three characters.');
     }
 
     if (name.length > 150) {
-      errors.push('The `name` argument must not exceed 150 characters.');
+      errors.push('The name must not exceed 150 characters.');
     }
 
     if (!name.match(/^[a-z]+[a-z0-9-]+$/)) {
       errors.push(
-        'The `name` argument must start with a lowercase letter and only contain lowercase letters, numbers and hyphens. ' +
+        'The name must start with a lowercase letter and only contain lowercase letters, numbers and hyphens. ' +
           'Examples: feature-flag-one, alpha, release-2020',
       );
     }
