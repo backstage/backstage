@@ -23,6 +23,8 @@ import ErrorDisplay from './components/ErrorDisplay';
 import * as plugins from './plugins';
 import apis, { errorDialogForwarder } from './apis';
 
+
+const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 const useStyles = makeStyles(theme => ({
   '@global': {
     html: {
@@ -33,6 +35,8 @@ const useStyles = makeStyles(theme => ({
       height: '100%',
       fontFamily: theme.typography.fontFamily,
       'overscroll-behavior-y': 'none',
+      background: isDark ? '#222222' : '#fafafa',
+      color: isDark ? '#fff' : '#000'
     },
     a: {
       color: 'inherit',
