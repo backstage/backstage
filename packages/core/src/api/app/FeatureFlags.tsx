@@ -62,7 +62,7 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
 
     if (!name.match(/^[a-z]+[a-z0-9-]+$/)) {
       errors.push(
-        'The `name` argument must start with a lowercase letter and only contain lowercase letters, numbers and hyphens.' +
+        'The `name` argument must start with a lowercase letter and only contain lowercase letters, numbers and hyphens. ' +
           'Examples: feature-flag-one, alpha, release-2020',
       );
     }

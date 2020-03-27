@@ -21,6 +21,7 @@ import {
   RouteOptions,
   FeatureFlagName,
 } from './types';
+import { FeatureFlags } from '../app/FeatureFlags';
 import { Widget } from '../widgetView/types';
 
 export type PluginConfig = {
@@ -76,6 +77,7 @@ export default class Plugin {
       return [];
     }
 
+    const pluginId = this.getId();
     const outputs = new Array<PluginOutput>();
 
     this.config.register({
@@ -94,6 +96,14 @@ export default class Plugin {
       },
       featureFlags: {
         registerFeatureFlag(name) {
+          const errors = FeatureFlags.checkFeatureFlagNameErrors(name);
+
+          if (errors.length > 0) {
+            throw new Error(
+              `Failed to register '${name}' feature flag in '${pluginId}' plugin: ${errors[0]}`,
+            );
+          }
+
           outputs.push({ type: 'feature-flag', name });
         },
       },
