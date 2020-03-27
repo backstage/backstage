@@ -27,7 +27,7 @@ import {
   TextField,
   List,
   ListItem,
-  Link
+  Link,
 } from '@material-ui/core';
 import InfoCard from '../../../layout/InfoCard/InfoCard';
 
@@ -37,7 +37,9 @@ enum AuthType {
 
 const LoginPage: FC<{}> = () => {
   const [githubUsername, setGithubUsername] = useState(String);
-  const [githubPersonalAuthToken, setGithubPersonalAuthToken] = useState(String);
+  const [githubPersonalAuthToken, setGithubPersonalAuthToken] = useState(
+    String,
+  );
   const [loginDetails, setLoginDetails] = useState(Object);
 
   const saveGithubInfo = (info: {}) => {
@@ -70,11 +72,11 @@ const LoginPage: FC<{}> = () => {
         'Content-Type': 'application/x-www-form-urlencoded',
       }),
     })
-      .then((response) => {
+      .then(response => {
         if (response.status === 200) return response.json();
         throw Error(`${response.status} ${response.statusText}`);
       })
-      .then((data) => {
+      .then(data => {
         const info = {
           username: username,
           token: token,
@@ -158,6 +160,7 @@ const LoginPage: FC<{}> = () => {
                 </ListItem>
                 <ListItem>
                   <Button
+                    data-testid="github-auth-button"
                     variant="outlined"
                     color="primary"
                     onClick={() => authenticate(AuthType.GitHub)}

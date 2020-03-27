@@ -16,7 +16,8 @@
 
 import React, { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Snackbar } from '@material-ui/core';
+import { Snackbar, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
 import { ErrorApi, ErrorContext } from '@backstage/core';
 
@@ -73,7 +74,19 @@ const ErrorDisplay: FC<Props> = ({ forwarder }) => {
       message={firstError.toString()}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
     >
-      <Alert onClose={handleClose} severity="error">
+      <Alert
+        action={
+          <IconButton
+            color="inherit"
+            size="small"
+            onClick={handleClose}
+            data-testid="error-button-close"
+          >
+            <CloseIcon />
+          </IconButton>
+        }
+        severity="error"
+      >
         {firstError.toString()}
       </Alert>
     </Snackbar>

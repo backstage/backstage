@@ -26,7 +26,12 @@ const ErrorButton: FC<{}> = () => {
   };
 
   return (
-    <Button variant="contained" color="primary" onClick={handleClick}>
+    <Button
+      data-testid="error-button"
+      variant="contained"
+      color="primary"
+      onClick={handleClick}
+    >
       Trigger an error!
     </Button>
   );
