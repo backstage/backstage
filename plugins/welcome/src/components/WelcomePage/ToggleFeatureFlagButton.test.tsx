@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import ToggleFeatureFlagButton from './ToggleFeatureFlagButton';
 import {
@@ -22,7 +22,28 @@ import {
   featureFlagsApiRef,
   ApiProvider,
   FeatureFlags,
+  FeatureFlagsContextProvider,
 } from '@backstage/core';
+
+function withFeatureFlags(children: ReactNode) {
+  const featureFlags = new Set([
+    { pluginId: 'welcome', name: 'enable-welcome-box' },
+  ]);
+
+  return (
+    <FeatureFlagsContextProvider featureFlags={featureFlags}>
+      {children}
+    </FeatureFlagsContextProvider>
+  );
+}
+
+function withApiRegistry(children: ReactNode) {
+  return (
+    <ApiProvider apis={ApiRegistry.from([[featureFlagsApiRef, FeatureFlags]])}>
+      {children}
+    </ApiProvider>
+  );
+}
 
 describe('ToggleFeatureFlagButton', () => {
   beforeEach(() => {
@@ -31,11 +52,7 @@ describe('ToggleFeatureFlagButton', () => {
 
   it('should enable the feature flag', () => {
     const rendered = render(
-      <ApiProvider
-        apis={ApiRegistry.from([[featureFlagsApiRef, FeatureFlags]])}
-      >
-        <ToggleFeatureFlagButton />
-      </ApiProvider>,
+      withFeatureFlags(withApiRegistry(<ToggleFeatureFlagButton />)),
     );
 
     const button = rendered.getByTestId('button-switch-feature-flag-state');
@@ -50,11 +67,7 @@ describe('ToggleFeatureFlagButton', () => {
 
   it('should disable the feature flag', () => {
     const rendered = render(
-      <ApiProvider
-        apis={ApiRegistry.from([[featureFlagsApiRef, FeatureFlags]])}
-      >
-        <ToggleFeatureFlagButton />
-      </ApiProvider>,
+      withFeatureFlags(withApiRegistry(<ToggleFeatureFlagButton />)),
     );
 
     const button = rendered.getByTestId('button-switch-feature-flag-state');
