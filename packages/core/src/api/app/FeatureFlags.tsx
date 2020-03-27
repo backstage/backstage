@@ -45,6 +45,31 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
     }
   }
 
+  // We don't make this private as we need this to validate
+  // in the `registerFeatureFlag` method in the Plugin API.
+  checkFeatureFlagNameErrors(name: FeatureFlagName): string[] {
+    const errors = [];
+
+    if (name.length < 3) {
+      errors.push(
+        'The `name` argument must have a minimum length of three characters.',
+      );
+    }
+
+    if (name.length > 150) {
+      errors.push('The `name` argument must not exceed 150 characters.');
+    }
+
+    if (!name.match(/^[a-z]+[a-z0-9-]+$/)) {
+      errors.push(
+        'The `name` argument must start with a lowercase letter and only contain lowercase letters, numbers and hyphens.' +
+          'Examples: feature-flag-one, alpha, release-2020',
+      );
+    }
+
+    return errors;
+  }
+
   get(name: FeatureFlagName): FeatureFlagState {
     if (this.getUserEnabledFeatureFlags().has(name)) {
       return FeatureFlagState.Enabled;
@@ -54,23 +79,11 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
   }
 
   set(name: FeatureFlagName, state: FeatureFlagState): void {
+    const errors = this.checkFeatureFlagNameErrors(name);
     const flags = this.getUserEnabledFeatureFlags();
 
-    if (name.length < 3) {
-      throw new Error(
-        'The `name` argument must have a minimum length of three characters.',
-      );
-    }
-
-    if (name.length > 150) {
-      throw new Error('The `name` argument must not exceed 150 characters.');
-    }
-
-    if (!name.match(/^[a-z]+[a-z0-9-]+$/)) {
-      throw new Error(
-        'The `name` argument must start with a lowercase letter and only contain lowercase letters, numbers and hyphens.' +
-          'Examples: feature-flag-one, alpha, release-2020',
-      );
+    if (errors.length > 0) {
+      throw new Error(errors[0]);
     }
 
     if (state === FeatureFlagState.Enabled) {

@@ -36,6 +36,14 @@ export enum FeatureFlagState {
 
 export type FeatureFlagsApi = {
   /**
+   * Check the feature flag name convention. Used in the
+   * `registerFeatureFlag` method as well as in the `set` method.
+   *
+   * @returns string[] errors List of errors as string. Empty array if no errors.
+   */
+  checkFeatureFlagNameErrors(name: FeatureFlagName): string[];
+
+  /**
    * Get the current user's status of a Feature Flag
    *
    * @returns bool True if the current user has enabled the feature flag
