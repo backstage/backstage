@@ -14,12 +14,48 @@
  * limitations under the License.
  */
 
-import React from "react";
-export interface ThemeContextInterface {
+import React, {useState, useEffect} from "react";
+export type ThemeContextType = {
   theme: string,
   toggleTheme: () => void
 }
-export const ThemeContext = React.createContext<ThemeContextInterface>({
+export const ThemeContext = React.createContext<ThemeContextType>({
   theme: 'light',
   toggleTheme: () => {}
 });
+
+
+export function useThemeType(themeId : string) : [string, () => void] {
+  const [theme, setTheme] = useState(themeId);
+  useEffect(() => {
+    const mql = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkListener = (event : MediaQueryListEvent) => {
+      if (localStorage.getItem('theme') === 'auto') {
+        if (event.matches) {
+          setTheme('dark');
+        } else {
+          setTheme('light');
+        }
+        setTheme('auto');
+      }
+    };
+    mql.addEventListener( "change", darkListener);
+    return () => {
+      mql.removeEventListener('change', darkListener);
+    }
+  });
+  function toggleTheme () {
+    if (theme === 'light') {
+      setTheme('dark');
+      localStorage.setItem('theme', 'dark');
+    } else if (theme === 'dark') {
+      setTheme('auto');
+      localStorage.setItem('theme', 'auto');
+      setTheme('auto');
+    } else {
+      setTheme('light');
+      localStorage.setItem('theme', 'light');
+    }
+  }
+  return [theme, toggleTheme];
+}
