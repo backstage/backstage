@@ -15,14 +15,20 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, relative as relativePath } from 'path';
+import {
+  dirname,
+  resolve as resolvePath,
+  relative as relativePath,
+} from 'path';
 import { promisify } from 'util';
 import { exec as execCb } from 'child_process';
 import { Command } from 'commander';
+import tar from 'tar';
 import { ExitCodeError } from '../../helpers/errors';
 const exec = promisify(execCb);
 
 const INFO_FILE = '.backstage-build-cache';
+const CACHE_ARCHIVE = 'cache.tgz';
 
 type Options = {
   inputs: string[];
@@ -62,25 +68,29 @@ export default async (cmd: Command, args: string[]) => {
   console.log('DEBUG: trees =', trees);
 
   const cacheHit = cache.readable && cache.trees?.join(',') === trees.join(',');
+  console.log('DEBUG: cacheHit =', cacheHit);
   if (!cacheHit) {
     await build(options);
 
-    await fs.writeFile(
-      resolvePath(options.output, INFO_FILE),
-      JSON.stringify({ trees }, null, 2),
-      'utf-8',
-    );
     if (cache.writable) {
+      await fs.writeFile(
+        resolvePath(options.output, INFO_FILE),
+        JSON.stringify({ trees }, null, 2),
+        'utf8',
+      );
       console.log(`DEBUG: write cache`);
-      console.log('DEBUG: cache.location =', cache.location);
-      await fs.remove(cache.location);
-      console.log('DEBUG: options.output =', options.output);
-      await fs.copy(options.output, cache.location);
+      console.log('DEBUG: cache.archivePath =', cache.archivePath);
+      await fs.remove(cache.archivePath);
+      await fs.ensureDir(dirname(cache.archivePath));
+      await tar.create(
+        { gzip: true, file: cache.archivePath, cwd: options.output },
+        ['.'],
+      );
     }
   } else if (cache.needsCopy) {
-    console.log(`DEBUG: would copy cache`);
     await fs.remove(options.output);
-    await fs.copy(cache.location, options.output);
+    await fs.ensureDir(options.output);
+    await tar.extract({ file: cache.archivePath, cwd: options.output });
   }
 
   const ls = await run('ls derp');
@@ -105,7 +115,7 @@ async function run(cmd: string) {
 
 type Cache = {
   // External location of the cache outside the output folder
-  location: string;
+  archivePath: string;
   readable?: boolean;
   writable?: boolean;
   needsCopy?: boolean;
@@ -115,12 +125,13 @@ type Cache = {
 async function readCache(options: Options): Promise<Cache> {
   const repoPath = relativePath(options.repoRoot, process.cwd());
   const location = resolvePath(options.cacheDir, repoPath);
+  const archivePath = resolvePath(location, CACHE_ARCHIVE);
 
   // Make sure we don't have any uncommitted changes to the input, in that case we consider the cache to be missing
   try {
-    await exec(`git diff --quiet HEAD -- ${options.inputs.join(' ')}`);
+    // await exec(`git diff --quiet HEAD -- ${options.inputs.join(' ')}`);
   } catch (error) {
-    return { location };
+    return { archivePath };
   }
 
   try {
@@ -131,7 +142,7 @@ async function readCache(options: Options): Promise<Cache> {
       const trees = await readInfoFile(options.output);
       if (trees) {
         return {
-          location,
+          archivePath,
           trees,
           readable: true,
           writable: true,
@@ -141,10 +152,10 @@ async function readCache(options: Options): Promise<Cache> {
 
     const externalCacheExists = await fs.pathExists(location);
     if (externalCacheExists) {
-      const trees = await readInfoFile(location);
+      const trees = await readInfoFileFromArchive(archivePath);
       if (trees) {
         return {
-          location,
+          archivePath,
           trees,
           readable: true,
           writable: true,
@@ -155,13 +166,48 @@ async function readCache(options: Options): Promise<Cache> {
   } catch (error) {
     console.log(`Cache not found, ${error}`);
   }
-  return { location, writable: true };
+  return { archivePath, writable: true };
 }
 
 async function readInfoFile(dir: string): Promise<string[] | undefined> {
-  const infoContents = await fs.readFile(resolvePath(dir, INFO_FILE), 'utf-8');
+  const infoContents = await fs.readFile(resolvePath(dir, INFO_FILE), 'utf8');
   const { trees } = JSON.parse(infoContents);
   return trees;
+}
+
+async function readInfoFileFromArchive(
+  archivePath: string,
+): Promise<string[] | undefined> {
+  const reader = fs.createReadStream(archivePath);
+  const parser = new ((tar.Parse as unknown) as { new (): tar.ParseStream })();
+
+  const infoEntry = await new Promise<tar.ReadEntry>((resolve, reject) => {
+    parser.on('entry', entry => {
+      if (entry.path === `./${INFO_FILE}`) {
+        resolve(entry);
+        reader.close();
+      } else {
+        entry.resume();
+      }
+    });
+    parser.on('end', () => {
+      reject(new Error('cache archive did not contain build info'));
+    });
+    parser.on('error', error => reject(error));
+
+    reader.pipe(parser);
+  });
+
+  const infoData = await new Promise<Buffer>((resolve, reject) => {
+    const chunks = new Array<Buffer>();
+    infoEntry.on('data', chunk => chunks.push(chunk));
+    infoEntry.on('end', () => resolve(Buffer.concat(chunks)));
+    infoEntry.on('error', error => reject(error));
+  });
+
+  const info = JSON.parse(infoData.toString('utf8'));
+
+  return info.trees;
 }
 
 async function getInputHashes(options: Options): Promise<string[]> {
