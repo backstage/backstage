@@ -20,7 +20,7 @@ import { runPlain } from '../../helpers/run';
 import { readFileFromArchive } from './archive';
 import { Options } from './options';
 
-export type Cache = {
+export type CacheHit = {
   // External location of the cache outside the output folder
   archivePath: string;
   readable?: boolean;
@@ -29,71 +29,105 @@ export type Cache = {
   trees?: string[];
 };
 
+export type CacheKey = string[];
+
+type CacheEntry = {
+  key: CacheKey;
+  archivePath: string;
+};
+
 const CACHE_ARCHIVE = 'cache.tgz';
 const INFO_FILE = '.backstage-build-cache';
 
-export async function readCache(options: Options): Promise<Cache> {
-  const repoPath = relativePath(options.repoRoot, process.cwd());
-  const location = resolvePath(options.cacheDir, repoPath);
-  const archivePath = resolvePath(location, CACHE_ARCHIVE);
+export class Cache {
+  static async read(options: Options) {
+    const repoPath = relativePath(options.repoRoot, process.cwd());
+    const location = resolvePath(options.cacheDir, repoPath);
 
-  // Make sure we don't have any uncommitted changes to the input, in that case we consider the cache to be missing
-  try {
-    // await exec(`git diff --quiet HEAD -- ${options.inputs.join(' ')}`);
-  } catch (error) {
-    return { archivePath };
+    // Make sure we don't have any uncommitted changes to the input, in that case we consider the cache to be missing
+    try {
+      // await exec(`git diff --quiet HEAD -- ${options.inputs.join(' ')}`);
+    } catch (error) {
+      return new Cache();
+    }
+
+    let localKey: CacheKey = [];
+
+    const localInfoFile = resolvePath(options.output, INFO_FILE);
+    const outputCacheExists = await fs.pathExists(localInfoFile);
+    if (outputCacheExists) {
+      const infoData = await fs.readFile(localInfoFile);
+      const { trees } = JSON.parse(infoData.toString('utf8'));
+      localKey = trees;
+    }
+
+    try {
+      const externalCacheExists = await fs.pathExists(location);
+      if (externalCacheExists) {
+        const archivePath = resolvePath(location, CACHE_ARCHIVE);
+        const infoData = await readFileFromArchive(archivePath, INFO_FILE);
+        const { trees } = JSON.parse(infoData.toString('utf8'));
+        if (trees) {
+          return new Cache([{ archivePath, key: trees }], location, localKey);
+        }
+      }
+    } catch (error) {
+      throw new Error(`failed to read external cache archive, ${error}`);
+    }
+
+    return new Cache([], location, localKey);
   }
 
-  const infoFilePath = resolvePath(options.output, INFO_FILE);
-  const outputCacheExists = await fs.pathExists(infoFilePath);
-  if (outputCacheExists) {
-    const infoData = await fs.readFile(infoFilePath);
-    const { trees } = JSON.parse(infoData.toString('utf8'));
-    if (trees) {
+  static async readInputKey(inputPaths: string[]): Promise<CacheKey> {
+    const trees = [];
+    for (const inputPath of inputPaths) {
+      const output = await runPlain(`git ls-tree HEAD '${inputPath}'`);
+      const [, , sha] = output.split(/\s+/, 3);
+      trees.push(sha);
+    }
+    return trees;
+  }
+
+  constructor(
+    private readonly entries: CacheEntry[] = [],
+    private readonly location?: string,
+    private readonly localKey?: CacheKey,
+  ) {}
+
+  find(key: CacheKey): CacheHit | undefined {
+    if (!this.location) {
+      return undefined;
+    }
+    if (this.localKey?.join(',') === key.join(',')) {
       return {
-        archivePath,
-        trees,
-        readable: true,
-        writable: true,
+        needsCopy: false,
+        archivePath: resolvePath(this.location, CACHE_ARCHIVE),
       };
     }
-  }
-
-  try {
-    const externalCacheExists = await fs.pathExists(location);
-    if (externalCacheExists) {
-      const infoData = await readFileFromArchive(archivePath, INFO_FILE);
-      const { trees } = JSON.parse(infoData.toString('utf8'));
-      if (trees) {
-        return {
-          archivePath,
-          trees,
-          readable: true,
-          writable: true,
-          needsCopy: true,
-        };
-      }
+    const matchingEntry = this.entries.find(entry => entry.key === key);
+    if (!matchingEntry) {
+      return undefined;
     }
-  } catch (error) {
-    throw new Error(`failed to read external cache archive, ${error}`);
+    return {
+      needsCopy: true,
+      archivePath: matchingEntry.archivePath,
+    };
   }
-  return { archivePath, writable: true };
-}
 
-export async function writeCacheInfo(
-  trees: string[],
-  options: Options,
-): Promise<void> {
-  const infoData = Buffer.from(JSON.stringify({ trees }, null, 2), 'utf8');
-  await fs.writeFile(resolvePath(options.output, INFO_FILE), infoData);
-}
-
-export async function readInputHashes(options: Options): Promise<string[]> {
-  const trees = [];
-  for (const input of options.inputs) {
-    const output = await runPlain(`git ls-tree HEAD '${input}'`);
-    const [, , sha] = output.split(/\s+/, 3);
-    trees.push(sha);
+  get shouldCacheOutput() {
+    return Boolean(this.location);
   }
-  return trees;
+
+  async prepareOutput(key: CacheKey, outputDir: string): Promise<string> {
+    if (!this.location) {
+      throw new Error("can't write cache output, no location set");
+    }
+    const infoData = Buffer.from(
+      JSON.stringify({ trees: key }, null, 2),
+      'utf8',
+    );
+    await fs.writeFile(resolvePath(outputDir, INFO_FILE), infoData);
+    const archivePath = resolvePath(this.location, CACHE_ARCHIVE);
+    return archivePath;
+  }
 }

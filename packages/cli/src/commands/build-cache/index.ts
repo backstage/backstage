@@ -17,7 +17,7 @@
 import { Command } from 'commander';
 import { run } from '../../helpers/run';
 import { extractArchive, createArchive } from './archive';
-import { readCache, readInputHashes, writeCacheInfo } from './cache';
+import { Cache } from './cache';
 import { parseOptions } from './options';
 
 function print(msg: string) {
@@ -31,14 +31,14 @@ function print(msg: string) {
  */
 export default async (cmd: Command, args: string[]) => {
   const options = await parseOptions(cmd);
-  const cache = await readCache(options);
-  const trees = await readInputHashes(options);
+  const cache = await Cache.read(options);
+  const key = await Cache.readInputKey(options.inputs);
 
-  const cacheHit = cache.readable && cache.trees?.join(',') === trees.join(',');
+  const cacheHit = cache.find(key);
   if (cacheHit) {
-    if (cache.needsCopy) {
+    if (cacheHit.needsCopy) {
       print('external cache hit, copying from external cache');
-      await extractArchive(cache.archivePath, options.output);
+      await extractArchive(cacheHit.archivePath, options.output);
     } else {
       print('cache hit, nothing to be done');
     }
@@ -47,10 +47,10 @@ export default async (cmd: Command, args: string[]) => {
 
     await run(args[0], args.slice(1));
 
-    if (cache.writable) {
+    if (cache.shouldCacheOutput) {
       print('caching build output');
-      await writeCacheInfo(trees, options);
-      await createArchive(cache.archivePath, options.output);
+      const archivePath = await cache.prepareOutput(key, options.output);
+      await createArchive(archivePath, options.output);
     }
   }
 };
