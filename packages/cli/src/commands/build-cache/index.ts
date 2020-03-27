@@ -16,7 +16,6 @@
 
 import { Command } from 'commander';
 import { run } from '../../helpers/run';
-import { extractArchive, createArchive } from './archive';
 import { Cache } from './cache';
 import { parseOptions } from './options';
 
@@ -34,11 +33,11 @@ export default async (cmd: Command, args: string[]) => {
   const cache = await Cache.read(options);
   const key = await Cache.readInputKey(options.inputs);
 
-  const cacheHit = cache.find(key);
-  if (cacheHit) {
-    if (cacheHit.needsCopy) {
-      print('external cache hit, copying from external cache');
-      await extractArchive(cacheHit.archivePath, options.output);
+  const cacheResult = cache.query(key);
+  if (cacheResult.hit) {
+    if (cacheResult.copy) {
+      print('external cache hit, copying archive to output folder');
+      await cacheResult.copy(options.output);
     } else {
       print('cache hit, nothing to be done');
     }
@@ -47,10 +46,9 @@ export default async (cmd: Command, args: string[]) => {
 
     await run(args[0], args.slice(1));
 
-    if (cache.shouldCacheOutput) {
+    if (cacheResult.archive) {
       print('caching build output');
-      const archivePath = await cache.prepareOutput(key, options.output);
-      await createArchive(archivePath, options.output);
+      await cacheResult.archive(options.output);
     }
   }
 };
