@@ -28,7 +28,11 @@
     "start": "backstage-cli app:serve",
     "build": "backstage-cli app:build",
     "test": "backstage-cli test",
-    "lint": "backstage-cli lint"
+    "test:e2e": "start-server-and-test start http://localhost:3000 cy:dev",
+    "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run",
+    "lint": "backstage-cli lint",
+    "cy:dev": "cypress open",
+    "cy:run": "cypress run"
   },
   "browserslist": {
     "production": [
@@ -42,5 +46,11 @@
       "last 1 safari version"
     ]
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@testing-library/cypress": "^6.0.0",
+    "@types/jquery": "^3.3.34",
+    "cypress": "^4.2.0",
+    "start-server-and-test": "^1.10.11"
+  }
 }
