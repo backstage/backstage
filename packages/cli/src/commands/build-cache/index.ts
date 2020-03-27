@@ -51,6 +51,10 @@ async function parseOptions(cmd: Command): Promise<Options> {
   return { inputs, output, cacheDir, repoRoot };
 }
 
+function print(msg: string) {
+  process.stdout.write(`[build-cache] ${msg}\n`);
+}
+
 /*
  * The build-cache command is used to make builds a no-op if there are no changes to the package.
  * It supports both local development where the output directory remains intact, as well as CI
@@ -58,47 +62,54 @@ async function parseOptions(cmd: Command): Promise<Options> {
  */
 export default async (cmd: Command, args: string[]) => {
   const options = await parseOptions(cmd);
-  console.log('DEBUG: options =', options);
-  console.log('DEBUG: args =', args);
-
   const cache = await readCache(options);
-  console.log('DEBUG: cache =', cache);
-
   const trees = await getInputHashes(options);
-  console.log('DEBUG: trees =', trees);
 
   const cacheHit = cache.readable && cache.trees?.join(',') === trees.join(',');
-  console.log('DEBUG: cacheHit =', cacheHit);
-  if (!cacheHit) {
-    await build(options);
+  if (cacheHit) {
+    print('cache hit, no need to build');
+
+    if (cache.needsCopy) {
+      print('copying external cache to build output dir');
+      await copyFromExternalCache(cache, options);
+    }
+  } else {
+    print('cache miss, need to build');
+
+    await build(args);
 
     if (cache.writable) {
-      await fs.writeFile(
-        resolvePath(options.output, INFO_FILE),
-        JSON.stringify({ trees }, null, 2),
-        'utf8',
-      );
-      console.log(`DEBUG: write cache`);
-      console.log('DEBUG: cache.archivePath =', cache.archivePath);
-      await fs.remove(cache.archivePath);
-      await fs.ensureDir(dirname(cache.archivePath));
-      await tar.create(
-        { gzip: true, file: cache.archivePath, cwd: options.output },
-        ['.'],
-      );
+      print('caching build output');
+      const infoData = Buffer.from(JSON.stringify({ trees }, null, 2), 'utf8');
+      await fs.writeFile(resolvePath(options.output, INFO_FILE), infoData);
+      await copyToExternalCache(cache, options);
     }
-  } else if (cache.needsCopy) {
-    await fs.remove(options.output);
-    await fs.ensureDir(options.output);
-    await tar.extract({ file: cache.archivePath, cwd: options.output });
   }
-
-  const ls = await run('ls derp');
-  console.log('DEBUG: ls =', ls);
 };
 
-async function build(options: Options): Promise<void> {
-  console.log(`Imma build ${options.output}`);
+async function copyToExternalCache(
+  cache: Cache,
+  options: Options,
+): Promise<void> {
+  await fs.remove(cache.archivePath);
+  await fs.ensureDir(dirname(cache.archivePath));
+  await tar.create(
+    { gzip: true, file: cache.archivePath, cwd: options.output },
+    ['.'],
+  );
+}
+
+async function copyFromExternalCache(
+  cache: Cache,
+  options: Options,
+): Promise<void> {
+  await fs.remove(options.output);
+  await fs.ensureDir(options.output);
+  await tar.extract({ file: cache.archivePath, cwd: options.output });
+}
+
+async function build(args: string[]): Promise<void> {
+  console.log(`Will build using '${args.join(' ')}'`);
 }
 
 async function run(cmd: string) {
@@ -134,22 +145,22 @@ async function readCache(options: Options): Promise<Cache> {
     return { archivePath };
   }
 
-  try {
-    const outputCacheExists = await fs.pathExists(
-      resolvePath(options.output, INFO_FILE),
-    );
-    if (outputCacheExists) {
-      const trees = await readInfoFile(options.output);
-      if (trees) {
-        return {
-          archivePath,
-          trees,
-          readable: true,
-          writable: true,
-        };
-      }
+  const infoFilePath = resolvePath(options.output, INFO_FILE);
+  const outputCacheExists = await fs.pathExists(infoFilePath);
+  if (outputCacheExists) {
+    const infoData = await fs.readFile(infoFilePath);
+    const { trees } = JSON.parse(infoData.toString('utf8'));
+    if (trees) {
+      return {
+        archivePath,
+        trees,
+        readable: true,
+        writable: true,
+      };
     }
+  }
 
+  try {
     const externalCacheExists = await fs.pathExists(location);
     if (externalCacheExists) {
       const trees = await readInfoFileFromArchive(archivePath);
@@ -164,15 +175,9 @@ async function readCache(options: Options): Promise<Cache> {
       }
     }
   } catch (error) {
-    console.log(`Cache not found, ${error}`);
+    print(`failed to read external cache archive, ${error}`);
   }
   return { archivePath, writable: true };
-}
-
-async function readInfoFile(dir: string): Promise<string[] | undefined> {
-  const infoContents = await fs.readFile(resolvePath(dir, INFO_FILE), 'utf8');
-  const { trees } = JSON.parse(infoContents);
-  return trees;
 }
 
 async function readInfoFileFromArchive(
