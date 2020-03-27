@@ -125,7 +125,7 @@ const createOverrides = theme => {
         '@global': {
           body: {
             backgroundColor: theme.palette.background.default,
-            color: theme.palette.font
+            color: theme.palette.color.default
           }
         }
       },
@@ -253,8 +253,8 @@ const extendedTheme = createMuiTheme(extendedThemeConfig);
 // V1 theming
 // https://material-ui-next.com/customization/themes/
 // For CSS it is advised to use JSS, see https://material-ui-next.com/customization/css-in-js/
-const BackstageTheme = { ...extendedTheme, ...createOverrides(extendedTheme) };
+const BackstageThemeLight = { ...extendedTheme, ...createOverrides(extendedTheme) };
 
 // Temporary workaround for files incorrectly importing the theme directly
-export const V1 = BackstageTheme;
-export default BackstageTheme;
+export const V1 = BackstageThemeLight;
+export default BackstageThemeLight;

@@ -15,16 +15,17 @@
  */
 
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
-import { BackstageTheme, createApp } from '@backstage/core';
-import React, { FC } from 'react';
+import { BackstageThemeLight, BackstageThemeDark, createApp } from '@backstage/core';
+import React, {FC, useState} from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import ErrorDisplay from './components/ErrorDisplay';
 import * as plugins from './plugins';
 import apis, { errorDialogForwarder } from './apis';
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
+import { ThemeContext } from './ThemeContext';
 
-const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 const useStyles = makeStyles(theme => ({
   '@global': {
     html: {
@@ -34,9 +35,7 @@ const useStyles = makeStyles(theme => ({
     body: {
       height: '100%',
       fontFamily: theme.typography.fontFamily,
-      'overscroll-behavior-y': 'none',
-      background: isDark ? '#222222' : '#fafafa',
-      color: isDark ? '#fff' : '#000'
+      'overscroll-behavior-y': 'none'
     },
     a: {
       color: 'inherit',
@@ -52,17 +51,39 @@ const AppComponent = app.build();
 
 const App: FC<{}> = () => {
   useStyles();
+  let themeId : string = localStorage.getItem('light') || 'auto';
+  if (['light', 'dark'].indexOf(themeId) < 0) {
+    themeId = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light';
+  }
+  const [theme, setTheme] = useState(themeId);
+  const toggleTheme = () => {
+    if (theme === 'light') {
+      setTheme('dark');
+      localStorage.setItem('light', 'dark');
+    } else if (theme === 'light') {
+      setTheme('auto');
+      localStorage.setItem('light', 'auto');
+      themeId = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light';
+    } else {
+      setTheme('light');
+      localStorage.setItem('light', 'light');
+    }
+  }
+  const backstageThemeDark = BackstageThemeDark;
+  const backstageThemeLight = BackstageThemeLight;
   return (
-    <CssBaseline>
-      <ThemeProvider theme={BackstageTheme}>
-        <ErrorDisplay forwarder={errorDialogForwarder} />
-        <Router>
-          <Root>
-            <AppComponent />
-          </Root>
-        </Router>
+    <ThemeContext.Provider value={{theme, toggleTheme}}>
+      <ThemeProvider theme={theme === 'dark' ? backstageThemeDark : backstageThemeLight}>
+        <CssBaseline>
+          <ErrorDisplay forwarder={errorDialogForwarder} />
+          <Router>
+            <Root>
+              <AppComponent />
+            </Root>
+          </Router>
+        </CssBaseline>
       </ThemeProvider>
-    </CssBaseline>
+    </ThemeContext.Provider>
   );
 };
 

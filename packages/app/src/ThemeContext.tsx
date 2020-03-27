@@ -14,31 +14,12 @@
  * limitations under the License.
  */
 
-import { Theme } from '@material-ui/core';
-
-export type BackstageTheme = Theme & {
-  palette: {
-    status: {
-      ok: string;
-      warning: string;
-      error: string;
-      pending: string;
-      running: string;
-      background: string;
-    };
-    color: string;
-    border: string;
-    textVerySubtle: string;
-    textSubtle: string;
-    highlight: string;
-    errorBackground: string;
-    warningBackground: string;
-    infoBackground: string;
-    errorText: string;
-    infoText: string;
-    warningText: string;
-    linkHover: string;
-    link: string;
-    gold: string;
-  };
-};
+import React from "react";
+export interface ThemeContextInterface {
+  theme: string,
+  toggleTheme: () => void
+}
+export const ThemeContext = React.createContext<ThemeContextInterface>({
+  theme: 'light',
+  toggleTheme: () => {}
+});
