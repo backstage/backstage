@@ -119,7 +119,7 @@ export default class AppBuilder {
 
     rendered = (
       <FeatureFlagsContextProvider
-        registeredFeatureFlags={registeredFeatureFlags}
+        featureFlags={registeredFeatureFlags}
         children={rendered}
       />
     );

@@ -124,8 +124,8 @@ describe('FeatureFlagsContext', () => {
     expect.assertions(1);
 
     const Component = () => {
-      const { registeredFeatureFlags } = useContext(FeatureFlagsContext);
-      expect(registeredFeatureFlags).toEqual([]);
+      const { featureFlags } = useContext(FeatureFlagsContext);
+      expect(featureFlags).toEqual([]);
       return null;
     };
 
@@ -141,13 +141,13 @@ describe('FeatureFlagsContext', () => {
     ];
 
     const Component = () => {
-      const { registeredFeatureFlags } = useContext(FeatureFlagsContext);
-      expect(registeredFeatureFlags).toBe(mockFeatureFlags);
+      const { featureFlags } = useContext(FeatureFlagsContext);
+      expect(featureFlags).toBe(mockFeatureFlags);
       return null;
     };
 
     render(
-      <FeatureFlagsContextProvider registeredFeatureFlags={mockFeatureFlags}>
+      <FeatureFlagsContextProvider featureFlags={mockFeatureFlags}>
         <Component />
       </FeatureFlagsContextProvider>,
     );

@@ -14,12 +14,56 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, createContext, FC } from 'react';
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useState,
+  FC,
+} from 'react';
 import { FeatureFlagName } from '../plugin/types';
 import {
   FeatureFlagState,
   FeatureFlagsApi,
 } from '../apis/definitions/featureFlags';
+
+/**
+ * Create a shared React context for Feature Flags.
+ *
+ * This will be used to propagate all available feature flags to
+ * Backstage components. This enables viewing all of the available flags.
+ */
+export interface FeatureFlagsEntry {
+  pluginId: string;
+  name: FeatureFlagName;
+  userEnabled: boolean;
+}
+
+export interface IFeatureFlagsContext {
+  featureFlags: FeatureFlagsEntry[];
+}
+
+export const FeatureFlagsContext = createContext<IFeatureFlagsContext>({
+  featureFlags: [],
+});
+
+export const FeatureFlagsContextProvider: FC<{
+  featureFlags: FeatureFlagsEntry[];
+  children: ReactNode;
+}> = ({ featureFlags, children }) => {
+  const [userEnabledFlags, setUserEnabledFlags] = useState<string[]>([]);
+
+  return (
+    <FeatureFlagsContext.Provider
+      value={{ featureFlags, userEnabledFlags, setUserEnabledFlags }}
+      children={children}
+    />
+  );
+};
+
+/**
+ * Create the FeatureFlags implementation based on the API.
+ */
 
 // TODO: figure out where to put implementations of APIs, both inside apps
 // but also in core/separate package.
@@ -108,35 +152,3 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
 }
 
 export const FeatureFlags = new FeatureFlagsImpl();
-
-/**
- * Create a shared React context for Feature Flags.
- *
- * This will be used to propagate all available feature flags to
- * Backstage components. This enables viewing all of the available flags.
- */
-export interface FeatureFlagsEntry {
-  pluginId: string;
-  name: FeatureFlagName;
-}
-
-export const FeatureFlagsContext = createContext<{
-  registeredFeatureFlags: FeatureFlagsEntry[];
-}>({
-  registeredFeatureFlags: [],
-});
-
-interface Props {
-  registeredFeatureFlags: FeatureFlagsEntry[];
-  children: ReactNode;
-}
-
-export const FeatureFlagsContextProvider: FC<Props> = ({
-  registeredFeatureFlags,
-  children,
-}) => (
-  <FeatureFlagsContext.Provider
-    value={{ registeredFeatureFlags }}
-    children={children}
-  />
-);
