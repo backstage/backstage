@@ -14,6 +14,7 @@ jobs:
 
     env:
       CI: true
+      BACKSTAGE_CACHE_DIR: <repoRoot>/.backstage-build-cache
 
     steps:
       - uses: actions/checkout@v2
@@ -27,11 +28,13 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: cache node_modules/.cache
+      - name: cache build cache
         uses: actions/cache@v1
         with:
-          path: node_modules/.cache
-          key: node_modules-cache
+          path: .backstage-build-cache
+          key: build-cache-${{ github.sha }}
+          restore-keys: |
+            build-cache-
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
