@@ -19,15 +19,15 @@ import { Button } from '@material-ui/core';
 import { FeatureFlagState, featureFlagsApiRef, useApi } from '@backstage/core';
 
 const ToggleFeatureFlagButton: FC<{}> = () => {
-  const featureFlagsApi = useApi(featureFlagsApiRef);
+  const { useFeatureFlag } = useApi(featureFlagsApiRef);
+  const [flagState, setFlagState] = useFeatureFlag('enable-welcome-box');
 
   const handleClick = () => {
-    const isEnabled = featureFlagsApi.get('enable-welcome-box');
-    featureFlagsApi.set(
-      'enable-welcome-box',
-      isEnabled ? FeatureFlagState.NotEnabled : FeatureFlagState.Enabled,
-    );
-    window.location.reload();
+    if (flagState === FeatureFlagState.Enabled) {
+      setFlagState(FeatureFlagState.NotEnabled);
+    } else {
+      setFlagState(FeatureFlagState.Enabled);
+    }
   };
 
   return (
@@ -37,10 +37,9 @@ const ToggleFeatureFlagButton: FC<{}> = () => {
       onClick={handleClick}
       data-testid="button-switch-feature-flag-state"
     >
-      {featureFlagsApi.get('enable-welcome-box') ===
-        FeatureFlagState.NotEnabled &&
+      {flagState === FeatureFlagState.NotEnabled &&
         'Enable "enable-welcome-box" feature flag'}
-      {featureFlagsApi.get('enable-welcome-box') === FeatureFlagState.Enabled &&
+      {flagState === FeatureFlagState.Enabled &&
         'Disable "enable-welcome-box" feature flag'}
     </Button>
   );

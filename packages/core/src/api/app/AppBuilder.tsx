@@ -63,7 +63,7 @@ export default class AppBuilder {
     const app = new AppImpl(this.systemIcons);
 
     const routes = new Array<JSX.Element>();
-    const registeredFeatureFlags = new Array<FeatureFlagsEntry>();
+    const registeredFeatureFlags = new Set<FeatureFlagsEntry>();
 
     for (const plugin of this.plugins.values()) {
       for (const output of plugin.output()) {
@@ -90,7 +90,7 @@ export default class AppBuilder {
             break;
           }
           case 'feature-flag': {
-            registeredFeatureFlags.push({
+            registeredFeatureFlags.add({
               pluginId: plugin.getId(),
               name: output.name,
             });

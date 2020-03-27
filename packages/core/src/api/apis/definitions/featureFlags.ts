@@ -36,24 +36,27 @@ export enum FeatureFlagState {
 
 export type FeatureFlagsApi = {
   /**
-   * Check the feature flag name convention. Used in the
-   * `registerFeatureFlag` method as well as in the `set` method.
+   * Get a list of the user's currently enabled feature flags.
+   * Reads directly from window.localStorage Browser API.
+   *
+   * @returns string[] enabledFeatureFlags List of feature flags enabled by the current user
+   */
+  getEnabledFeatureFlags(): Set<FeatureFlagName>;
+
+  /**
+   * Check the feature flag name convention.
+   * Used in the `registerFeatureFlag` method as well as in the `set` method.
    *
    * @returns string[] errors List of errors as string. Empty array if no errors.
    */
   checkFeatureFlagNameErrors(name: FeatureFlagName): string[];
 
   /**
-   * Get the current user's status of a Feature Flag
-   *
-   * @returns bool True if the current user has enabled the feature flag
+   * Use Feature Flags as a React Hook.
    */
-  get(name: FeatureFlagName): FeatureFlagState;
-
-  /**
-   * Set the state of a Feature Flag
-   */
-  set(name: FeatureFlagName, state: FeatureFlagState): void;
+  useFeatureFlag(
+    name: FeatureFlagName,
+  ): [FeatureFlagState, (state: FeatureFlagState) => void];
 };
 
 export const featureFlagsApiRef = new ApiRef<FeatureFlagsApi>({

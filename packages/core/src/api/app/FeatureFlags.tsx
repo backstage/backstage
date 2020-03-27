@@ -19,6 +19,7 @@ import React, {
   createContext,
   useContext,
   useState,
+  useEffect,
   FC,
 } from 'react';
 import { FeatureFlagName } from '../plugin/types';
@@ -36,26 +37,50 @@ import {
 export interface FeatureFlagsEntry {
   pluginId: string;
   name: FeatureFlagName;
-  userEnabled: boolean;
 }
 
 export interface IFeatureFlagsContext {
-  featureFlags: FeatureFlagsEntry[];
+  featureFlags: Set<FeatureFlagsEntry>;
+  enabledFeatureFlags: Set<FeatureFlagName>;
+  refreshEnabledFeatureFlags: () => void;
 }
 
 export const FeatureFlagsContext = createContext<IFeatureFlagsContext>({
-  featureFlags: [],
+  featureFlags: new Set<FeatureFlagsEntry>(),
+  enabledFeatureFlags: new Set<FeatureFlagName>(),
+  refreshEnabledFeatureFlags: () => {
+    throw new Error(
+      'The refreshEnabledFeatureFlags method is not implemented as it is not called from within the FeatureFlagsContext context within React. ' +
+        'See the Backstage documentation for examples on how to use the Feature Flags API.',
+    );
+  },
 });
 
 export const FeatureFlagsContextProvider: FC<{
-  featureFlags: FeatureFlagsEntry[];
+  featureFlags: Set<FeatureFlagsEntry>;
   children: ReactNode;
 }> = ({ featureFlags, children }) => {
-  const [userEnabledFlags, setUserEnabledFlags] = useState<string[]>([]);
+  const [enabledFeatureFlags, setEnabledFeatureFlags] = useState<
+    Set<FeatureFlagName>
+  >(new Set<FeatureFlagName>());
+
+  const refreshEnabledFeatureFlags = () => {
+    // eslint-disable-next-line no-use-before-define
+    setEnabledFeatureFlags(FeatureFlags.getEnabledFeatureFlags());
+  };
+
+  // Initially populate our setEnabledFeatureFlags
+  useEffect(() => {
+    refreshEnabledFeatureFlags();
+  }, []);
 
   return (
     <FeatureFlagsContext.Provider
-      value={{ featureFlags, userEnabledFlags, setUserEnabledFlags }}
+      value={{
+        featureFlags,
+        enabledFeatureFlags,
+        refreshEnabledFeatureFlags,
+      }}
       children={children}
     />
   );
@@ -70,7 +95,46 @@ export const FeatureFlagsContextProvider: FC<{
 class FeatureFlagsImpl implements FeatureFlagsApi {
   private readonly localStorageKey = 'featureFlags';
 
-  private getUserEnabledFeatureFlags(): Set<FeatureFlagName> {
+  private get(
+    enabledFeatureFlags: Set<string>,
+    name: FeatureFlagName,
+  ): FeatureFlagState {
+    if (enabledFeatureFlags.has(name)) {
+      return FeatureFlagState.Enabled;
+    }
+
+    return FeatureFlagState.NotEnabled;
+  }
+
+  private set(name: FeatureFlagName, state: FeatureFlagState): void {
+    const errors = this.checkFeatureFlagNameErrors(name);
+    const flags = this.getEnabledFeatureFlags();
+
+    if (errors.length > 0) {
+      throw new Error(errors[0]);
+    }
+
+    if (state === FeatureFlagState.Enabled) {
+      flags.add(name);
+    } else if (state === FeatureFlagState.NotEnabled) {
+      flags.delete(name);
+    } else {
+      throw new Error(
+        'The `state` argument requires a recognized value from the FeatureFlagState enum. ' +
+          'Please check the Backstage documentation to see all the available options.' +
+          'Example values: FeatureFlagState.NotEnabled, FeatureFlagState.Enabled',
+      );
+    }
+
+    window.localStorage.setItem(
+      this.localStorageKey,
+      JSON.stringify(
+        [...flags].reduce((list, flag) => ({ ...list, [flag]: true }), {}),
+      ),
+    );
+  }
+
+  getEnabledFeatureFlags(): Set<FeatureFlagName> {
     if (!('localStorage' in window)) {
       throw new Error(
         'Feature Flags are not supported on browsers without the Local Storage API',
@@ -114,40 +178,46 @@ class FeatureFlagsImpl implements FeatureFlagsApi {
     return errors;
   }
 
-  get(name: FeatureFlagName): FeatureFlagState {
-    if (this.getUserEnabledFeatureFlags().has(name)) {
-      return FeatureFlagState.Enabled;
+  useFeatureFlag(
+    name: FeatureFlagName,
+  ): [FeatureFlagState, (state: FeatureFlagState) => void] {
+    // Check for context
+    const context = useContext(FeatureFlagsContext);
+    if (!context) {
+      throw new Error(
+        'No FeatureFlagsContext found. ' +
+          'Please use this React Hook in the context of your <App />',
+      );
     }
 
-    return FeatureFlagState.NotEnabled;
-  }
-
-  set(name: FeatureFlagName, state: FeatureFlagState): void {
-    const errors = this.checkFeatureFlagNameErrors(name);
-    const flags = this.getUserEnabledFeatureFlags();
-
+    // Check for errors
+    // eslint-disable-next-line no-use-before-define
+    const errors = FeatureFlags.checkFeatureFlagNameErrors(name);
     if (errors.length > 0) {
       throw new Error(errors[0]);
     }
 
-    if (state === FeatureFlagState.Enabled) {
-      flags.add(name);
-    } else if (state === FeatureFlagState.NotEnabled) {
-      flags.delete(name);
-    } else {
+    // Check if the feature flag is registered
+    const allFlagNames = [...context.featureFlags].map(flag => flag.name);
+    if (!allFlagNames.includes(name)) {
       throw new Error(
-        'The `state` argument requires a recognized value from the FeatureFlagState enum. ' +
-          'Please check the Backstage documentation to see all the available options.' +
-          'Example values: FeatureFlagState.NotEnabled, FeatureFlagState.Enabled',
+        `The '${name}' feature flag is not registered by any plugin. ` +
+          `See the 'registerFeatureFlag' method in the Plugin API (or in your plugin.ts file) on how to register Feature Flags.`,
       );
     }
 
-    window.localStorage.setItem(
-      this.localStorageKey,
-      JSON.stringify(
-        [...flags].reduce((list, flag) => ({ ...list, [flag]: true }), {}),
-      ),
-    );
+    // eslint-disable-next-line no-use-before-define
+    const currentState = FeatureFlags.get(context.enabledFeatureFlags, name);
+    const setState = (state: FeatureFlagState): void => {
+      // Set the value
+      // eslint-disable-next-line no-use-before-define
+      FeatureFlags.set(name, state);
+
+      // Now update the global state
+      context.refreshEnabledFeatureFlags();
+    };
+
+    return [currentState, setState];
   }
 }
 
