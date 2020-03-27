@@ -35,6 +35,8 @@ export async function parseOptions(cmd: Command): Promise<Options> {
     inputs.push(argTransformer('.'));
   }
   const output = argTransformer(cmd.output);
-  const cacheDir = argTransformer(cmd.cacheDir);
+  const cacheDir = argTransformer(
+    process.env.BACKSTAGE_CACHE_DIR || cmd.cacheDir,
+  );
   return { inputs, output, cacheDir, repoRoot };
 }
