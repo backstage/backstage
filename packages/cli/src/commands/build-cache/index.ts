@@ -14,35 +14,11 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { resolve as resolvePath, relative as relativePath } from 'path';
 import { Command } from 'commander';
-import { run, runPlain } from '../../helpers/run';
-import { readFileFromArchive, extractArchive, createArchive } from './archive';
-
-const INFO_FILE = '.backstage-build-cache';
-const CACHE_ARCHIVE = 'cache.tgz';
-
-type Options = {
-  inputs: string[];
-  output: string;
-  cacheDir: string;
-  repoRoot: string;
-};
-
-async function parseOptions(cmd: Command): Promise<Options> {
-  const repoRoot = await runPlain('git rev-parse --show-toplevel');
-  const argTransformer = (arg: string) =>
-    resolvePath(arg.replace(/<repoRoot>/g, repoRoot).replace(/'/g, ''));
-
-  const inputs = cmd.input.map(argTransformer) as string[];
-  if (inputs.length === 0) {
-    inputs.push(argTransformer('.'));
-  }
-  const output = argTransformer(cmd.output);
-  const cacheDir = argTransformer(cmd.cacheDir);
-  return { inputs, output, cacheDir, repoRoot };
-}
+import { run } from '../../helpers/run';
+import { extractArchive, createArchive } from './archive';
+import { readCache, readInputHashes, writeCacheInfo } from './cache';
+import { parseOptions } from './options';
 
 function print(msg: string) {
   process.stdout.write(`[build-cache] ${msg}\n`);
@@ -56,7 +32,7 @@ function print(msg: string) {
 export default async (cmd: Command, args: string[]) => {
   const options = await parseOptions(cmd);
   const cache = await readCache(options);
-  const trees = await getInputHashes(options);
+  const trees = await readInputHashes(options);
 
   const cacheHit = cache.readable && cache.trees?.join(',') === trees.join(',');
   if (cacheHit) {
@@ -73,76 +49,8 @@ export default async (cmd: Command, args: string[]) => {
 
     if (cache.writable) {
       print('caching build output');
-      const infoData = Buffer.from(JSON.stringify({ trees }, null, 2), 'utf8');
-      await fs.writeFile(resolvePath(options.output, INFO_FILE), infoData);
+      await writeCacheInfo(trees, options);
       await createArchive(cache.archivePath, options.output);
     }
   }
 };
-
-type Cache = {
-  // External location of the cache outside the output folder
-  archivePath: string;
-  readable?: boolean;
-  writable?: boolean;
-  needsCopy?: boolean;
-  trees?: string[];
-};
-
-async function readCache(options: Options): Promise<Cache> {
-  const repoPath = relativePath(options.repoRoot, process.cwd());
-  const location = resolvePath(options.cacheDir, repoPath);
-  const archivePath = resolvePath(location, CACHE_ARCHIVE);
-
-  // Make sure we don't have any uncommitted changes to the input, in that case we consider the cache to be missing
-  try {
-    // await exec(`git diff --quiet HEAD -- ${options.inputs.join(' ')}`);
-  } catch (error) {
-    return { archivePath };
-  }
-
-  const infoFilePath = resolvePath(options.output, INFO_FILE);
-  const outputCacheExists = await fs.pathExists(infoFilePath);
-  if (outputCacheExists) {
-    const infoData = await fs.readFile(infoFilePath);
-    const { trees } = JSON.parse(infoData.toString('utf8'));
-    if (trees) {
-      return {
-        archivePath,
-        trees,
-        readable: true,
-        writable: true,
-      };
-    }
-  }
-
-  try {
-    const externalCacheExists = await fs.pathExists(location);
-    if (externalCacheExists) {
-      const infoData = await readFileFromArchive(archivePath, INFO_FILE);
-      const { trees } = JSON.parse(infoData.toString('utf8'));
-      if (trees) {
-        return {
-          archivePath,
-          trees,
-          readable: true,
-          writable: true,
-          needsCopy: true,
-        };
-      }
-    }
-  } catch (error) {
-    print(`failed to read external cache archive, ${error}`);
-  }
-  return { archivePath, writable: true };
-}
-
-async function getInputHashes(options: Options): Promise<string[]> {
-  const trees = [];
-  for (const input of options.inputs) {
-    const output = await runPlain(`git ls-tree HEAD '${input}'`);
-    const [, , sha] = output.split(/\s+/, 3);
-    trees.push(sha);
-  }
-  return trees;
-}
