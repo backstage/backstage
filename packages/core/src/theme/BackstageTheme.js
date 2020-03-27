@@ -15,8 +15,10 @@
  */
 
 import { createMuiTheme } from '@material-ui/core';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { blue, yellow } from '@material-ui/core/colors';
+const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
 export const COLORS = {
   PAGE_BACKGROUND: '#F8F8F8',
@@ -37,7 +39,7 @@ export const COLORS = {
   },
 };
 // Add dark mode support
-if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+if (prefersDarkMode) {
   COLORS.PAGE_BACKGROUND = '#282828';
   COLORS.DEFAULT_PAGE_THEME_COLOR = '#232323';
 }
@@ -120,7 +122,7 @@ const extendedThemeConfig = {
   },
 };
 // Add dark mode support
-if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+if (prefersDarkMode) {
   extendedThemeConfig.palette.type = 'dark'
 }
 
