@@ -19,7 +19,7 @@
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
   "scripts": {
-    "build": "tsc --outDir dist/cjs --noEmit false --module CommonJS",
+    "build": "backstage-cli build-cache -- tsc --outDir dist/cjs --noEmit false --module CommonJS",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test"
   },

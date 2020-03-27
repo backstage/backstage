@@ -19,7 +19,7 @@
   "main": "dist",
   "scripts": {
     "exec": "npx ts-node ./src",
-    "build": "tsc --outDir dist --noEmit false --module CommonJS",
+    "build": "backstage-cli build-cache -- tsc --outDir dist --noEmit false --module CommonJS",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "start": "nodemon ."
