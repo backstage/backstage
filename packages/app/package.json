@@ -51,6 +51,7 @@
     "@testing-library/cypress": "^6.0.0",
     "@types/jquery": "^3.3.34",
     "cypress": "^4.2.0",
+    "eslint-plugin-cypress": "^2.10.3",
     "start-server-and-test": "^1.10.11"
   }
 }
