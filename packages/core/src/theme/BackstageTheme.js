@@ -40,7 +40,6 @@ export const COLORS = {
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
   COLORS.PAGE_BACKGROUND = '#282828';
   COLORS.DEFAULT_PAGE_THEME_COLOR = '#232323';
-  COLORS.NAMED.WHITE = '#010101';
 }
 
 const extendedThemeConfig = {
