@@ -114,6 +114,10 @@ const extendedThemeConfig = {
     },
   },
 };
+// Add dark mode support
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  extendedThemeConfig.palette.type = 'dark'
+}
 
 const createOverrides = theme => {
   return {
