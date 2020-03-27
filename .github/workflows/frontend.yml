@@ -29,11 +29,11 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: cache node_modules
+      - name: cache node_modules/.cache
         uses: actions/cache@v1
         with:
-          path: node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+          path: node_modules/.cache
+          key: node_modules-cache
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
