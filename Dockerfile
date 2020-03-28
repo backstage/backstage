@@ -15,3 +15,4 @@ RUN yarn build
 FROM nginx:mainline
 
 COPY --from=builder /app/packages/app/build /usr/share/nginx/html
+COPY ./docker/default.conf /etc/nginx/conf.d/default.conf
