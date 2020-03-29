@@ -16,6 +16,7 @@
 import React from 'react';
 import InfoCard from '.';
 
+const cardContentStyle = { height: '200px' };
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export default {
@@ -25,18 +26,18 @@ export default {
 
 export const Default = () => (
   <InfoCard title="Information Card">
-    <div style={{ height: '200px' }} />
+    <div style={cardContentStyle} />
   </InfoCard>
 );
 
 export const Subhead = () => (
   <InfoCard title="Information Card" subheader="Subhead">
-    <div style={{ height: '200px' }} />
+    <div style={cardContentStyle} />
   </InfoCard>
 );
 
 export const LinkInFooter = () => (
-  <InfoCard title="Information Card" deepLink={...linkInfo}>
-    <div style={{ height: '200px' }} />
+  <InfoCard title="Information Card" deepLink={linkInfo}>
+    <div style={cardContentStyle} />
   </InfoCard>
 );
