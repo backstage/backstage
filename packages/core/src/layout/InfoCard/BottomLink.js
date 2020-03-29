@@ -17,9 +17,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from '@material-ui/core';
-import { Divider, ListItemText } from '@material-ui/core';
+import { Divider, ListItemText, withStyles } from '@material-ui/core';
 import { ListItem, ListItemIcon } from '@material-ui/core';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
+import grey from '@material-ui/core/colors/grey';
+
+const LinkBottomText = withStyles({
+  primary: {
+    fontWeight: '700',
+    color: grey[900],
+  },
+})(ListItemText);
+
+const ListItemBottom = withStyles({
+  root: {
+    maxWidth: 'fit-content',
+    padding: '16px 16px 16px 20px',
+  },
+})(ListItem);
 
 export default class BottomLink extends Component {
   static propTypes = {
@@ -34,12 +49,12 @@ export default class BottomLink extends Component {
       <div>
         <Divider />
         <Link href={link} onClick={onClick} highlight="none">
-          <ListItem>
+          <ListItemBottom>
+            <LinkBottomText>{title}</LinkBottomText>
             <ListItemIcon>
               <ArrowIcon />
             </ListItemIcon>
-            <ListItemText>{title}</ListItemText>
-          </ListItem>
+          </ListItemBottom>
         </Link>
       </div>
     );

@@ -29,7 +29,13 @@ import BottomLink from './BottomLink';
 
 import textContent from 'react-addons-text-content';
 
-const BoldHeader = withStyles({ title: { fontWeight: '700' } })(CardHeader);
+const BoldHeader = withStyles({
+  title: { fontWeight: '700' },
+  subheader: { paddingTop: '2px' },
+  root: {
+    padding: '16px 16px 16px 20px',
+  },
+})(CardHeader);
 const CardActionsTopRight = withStyles({
   root: {
     display: 'inline-block',
@@ -183,12 +189,15 @@ class InfoCard extends Component {
       >
         <ErrorBoundary slackChannel={slackChannel}>
           {title && (
-            <BoldHeader
-              title={title}
-              subheader={subheader}
-              style={{ display: 'inline-block', ...headerStyle }}
-              {...headerProps}
-            />
+            <>
+              <BoldHeader
+                title={title}
+                subheader={subheader}
+                style={{ display: 'inline-block', ...headerStyle }}
+                {...headerProps}
+              />
+              <Divider />
+            </>
           )}
           {actionsTopRight && (
             <CardActionsTopRight>{actionsTopRight}</CardActionsTopRight>
