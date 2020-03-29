@@ -36,18 +36,24 @@ describe('<Header/>', () => {
   });
 
   it('should override document title', () => {
-    const rendered = render(wrapInThemedTestApp(<Header title="Title1" pageTitleOverride="Title2" />));
+    const rendered = render(
+      wrapInThemedTestApp(<Header title="Title1" pageTitleOverride="Title2" />),
+    );
     rendered.getByText('Title1');
     rendered.getByText('defaultTitle: Title2 | Backstage');
   });
 
   it('should have subtitle', () => {
-    const rendered = render(wrapInThemedTestApp(<Header title="Title" subtitle="Subtitle" />));
+    const rendered = render(
+      wrapInThemedTestApp(<Header title="Title" subtitle="Subtitle" />),
+    );
     rendered.getByText('Subtitle');
   });
 
   it('should have type rendered', () => {
-    const rendered = render(wrapInThemedTestApp(<Header title="Title" type="tool" />));
+    const rendered = render(
+      wrapInThemedTestApp(<Header title="Title" type="tool" />),
+    );
     rendered.getByText('tool');
   });
 });
