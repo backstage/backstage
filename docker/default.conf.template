@@ -1,5 +1,5 @@
 server {
-    listen       80;
+    listen       $PORT;
     server_name  localhost;
 
     #charset koi8-r;
@@ -20,4 +20,3 @@ server {
         root   /usr/share/nginx/html;
     }
 }
-
