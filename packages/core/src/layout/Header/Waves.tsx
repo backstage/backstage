@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core';
+import { PageTheme } from '@backstage/core';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<PageTheme>({
   wave: {
     position: 'absolute',
     height: '100%',
@@ -26,11 +27,15 @@ const useStyles = makeStyles({
     bottom: 0,
     left: 0,
     right: 0,
-    'z-index': -1,
+    zIndex: -1,
   },
 });
 
-const Waves = ({ theme }) => {
+type Props = {
+  theme: PageTheme;
+};
+
+const Waves: FC<Props> = ({ theme }) => {
   const classes = useStyles();
   const [color1, color2] = theme.gradient.colors;
 
@@ -41,6 +46,7 @@ const Waves = ({ theme }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={classes.wave}
+      data-testid="wave-svg"
     >
       <rect width="1440" height="94" fill="url(#paint0_linear)" />
       <g opacity="0.8">
