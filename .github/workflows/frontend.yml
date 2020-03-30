@@ -3,6 +3,11 @@ name: Frontend CI
 on:
   pull_request:
     types: [opened, reopened, edited, synchronize]
+  push:
+    branches:
+      - master
+    paths:
+      - 'packages/core/src/**'
 
 jobs:
   build:
@@ -42,3 +47,23 @@ jobs:
       - run: yarn lint
       - run: yarn build
       - run: yarn test
+
+  deploy-storybook:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: build storybook
+        run: |
+          yarn install
+          yarn workspace storybook build-storybook
+      - name: deploy gh-pages
+        uses: JamesIves/github-pages-deploy-action@3.4.2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: packages/storybook/dist
