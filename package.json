@@ -23,7 +23,9 @@
   "devDependencies": {
     "cross-env": "^7.0.0",
     "eslint-plugin-notice": "^0.8.9",
+    "husky": "^4.2.3",
     "lerna": "^3.20.2",
+    "lint-staged": "^10.1.0",
     "prettier": "^1.19.1",
     "typescript": "^3.7.5",
     "zombie": "^6.1.4"
@@ -31,5 +33,15 @@
   "dependencies": {
     "@types/classnames": "^2.2.9",
     "moment": "^2.24.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+      "*.{js,jsx,ts,tsx}": [
+        "prettier --config ./prettier.config.js  --list-different --write"
+      ]
   }
 }
