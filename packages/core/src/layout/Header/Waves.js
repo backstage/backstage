@@ -84,7 +84,6 @@ const Waves = ({ theme }) => {
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor={color1} />
-          <stop offset="1" stopColor={color2} />
         </linearGradient>
         <linearGradient
           id="paint1_linear"
