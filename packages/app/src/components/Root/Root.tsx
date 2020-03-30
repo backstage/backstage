@@ -29,7 +29,7 @@ import {
   SidebarDivider,
   SidebarSpace,
 } from '@backstage/core';
-import ToggleThemeSidebarItem from "./ToggleThemeSidebarItem";
+import ToggleThemeSidebarItem from './ToggleThemeSidebarItem';
 
 const useSidebarLogoStyles = makeStyles({
   root: {

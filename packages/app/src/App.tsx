@@ -15,15 +15,19 @@
  */
 
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
-import { BackstageThemeLight, BackstageThemeDark, createApp } from '@backstage/core';
-import React, {FC} from 'react';
+import {
+  BackstageThemeLight,
+  BackstageThemeDark,
+  createApp,
+} from '@backstage/core';
+import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import ErrorDisplay from './components/ErrorDisplay';
 import * as plugins from './plugins';
 import apis, { errorDialogForwarder } from './apis';
 
-import {ThemeContext, ThemeContextType, useThemeType} from './ThemeContext';
+import { ThemeContext, ThemeContextType, useThemeType } from './ThemeContext';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -50,24 +54,28 @@ const AppComponent = app.build();
 
 const App: FC<{}> = () => {
   useStyles();
-  const [theme, toggleTheme] = useThemeType(localStorage.getItem('theme') || "auto");
+  const [theme, toggleTheme] = useThemeType(
+    localStorage.getItem('theme') || 'auto',
+  );
 
   let backstageTheme = BackstageThemeLight;
   switch (theme) {
     case 'light':
       backstageTheme = BackstageThemeLight;
       break;
-    case "dark":
+    case 'dark':
       backstageTheme = BackstageThemeDark;
       break;
     default:
-      backstageTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ?
-        BackstageThemeDark : BackstageThemeLight;
+      backstageTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? BackstageThemeDark
+        : BackstageThemeLight;
       break;
   }
 
-  const themeContext : ThemeContextType  = {
-    theme, toggleTheme
+  const themeContext: ThemeContextType = {
+    theme,
+    toggleTheme,
   };
   return (
     <ThemeContext.Provider value={themeContext}>

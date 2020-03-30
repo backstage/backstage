@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from 'react';
 export type ThemeContextType = {
-  theme: string,
-  toggleTheme: () => void
-}
+  theme: string;
+  toggleTheme: () => void;
+};
 export const ThemeContext = React.createContext<ThemeContextType>({
   theme: 'light',
-  toggleTheme: () => {}
+  toggleTheme: () => {},
 });
 
-
-export function useThemeType(themeId : string) : [string, () => void] {
+export function useThemeType(themeId: string): [string, () => void] {
   const [theme, setTheme] = useState(themeId);
   useEffect(() => {
     const mql = window.matchMedia('(prefers-color-scheme: dark)');
-    const darkListener = (event : MediaQueryListEvent) => {
+    const darkListener = (event: MediaQueryListEvent) => {
       if (localStorage.getItem('theme') === 'auto') {
         if (event.matches) {
           setTheme('dark');
@@ -39,12 +38,12 @@ export function useThemeType(themeId : string) : [string, () => void] {
         setTheme('auto');
       }
     };
-    mql.addEventListener( "change", darkListener);
+    mql.addEventListener('change', darkListener);
     return () => {
       mql.removeEventListener('change', darkListener);
-    }
+    };
   });
-  function toggleTheme () {
+  function toggleTheme() {
     if (theme === 'light') {
       setTheme('dark');
       localStorage.setItem('theme', 'dark');

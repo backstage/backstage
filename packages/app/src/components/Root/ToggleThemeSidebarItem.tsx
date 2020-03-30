@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, {FC} from 'react';
-import {SidebarItem} from "@backstage/core";
-import {ThemeContext } from '../../ThemeContext';
+import React, { FC } from 'react';
+import { SidebarItem } from '@backstage/core';
+import { ThemeContext } from '../../ThemeContext';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import ToggleOnIcon from '@material-ui/icons/ToggleOn';
@@ -27,16 +27,16 @@ const ToggleThemeSidebarItem: FC<{}> = () => {
         let text = 'Auto';
         let icon = ToggleOnIcon;
         switch (themeContext.theme) {
-          case "dark":
+          case 'dark':
             text = 'Dark mode';
             icon = Brightness2Icon;
             break;
-          case "light":
+          case 'light':
             text = 'Light mode';
             icon = WbSunnyIcon;
             break;
           default:
-            text = "Auto";
+            text = 'Auto';
             icon = ToggleOnIcon;
             break;
         }
@@ -47,10 +47,10 @@ const ToggleThemeSidebarItem: FC<{}> = () => {
             onClick={themeContext.toggleTheme}
             icon={icon}
           />
-        )
+        );
       }}
     </ThemeContext.Consumer>
-  )
-}
+  );
+};
 
 export default ToggleThemeSidebarItem;
