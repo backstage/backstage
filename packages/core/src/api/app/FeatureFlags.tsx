@@ -168,9 +168,10 @@ export class FeatureFlagsRegistry extends Array<FeatureFlagsRegistryItem> {
  */
 export class FeatureFlags implements FeatureFlagsApi {
   public registeredFeatureFlags: FeatureFlagsRegistryItem[] = [];
+  private readonly userFlags: UserFlags = new UserFlags();
 
   getFlags(): UserFlags {
-    return new UserFlags();
+    return this.userFlags;
   }
 
   getRegisteredFlags(): FeatureFlagsRegistry {

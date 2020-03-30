@@ -43,6 +43,7 @@ describe('FeatureFlags', () => {
         }),
       );
 
+      featureFlags = new FeatureFlagsImpl();
       expect(featureFlags.getFlags().toObject()).toMatchObject({
         'feature-flag-one': FeatureFlagState.Enabled,
         'feature-flag-two': FeatureFlagState.Enabled,
@@ -58,6 +59,8 @@ describe('FeatureFlags', () => {
           'feature-flag-two': 0,
         }),
       );
+
+      featureFlags = new FeatureFlagsImpl();
 
       expect(featureFlags.getFlags().get('feature-flag-one')).toEqual(
         FeatureFlagState.Enabled,
@@ -89,6 +92,7 @@ describe('FeatureFlags', () => {
         }),
       );
 
+      featureFlags = new FeatureFlagsImpl();
       const flags = featureFlags.getFlags();
       flags.delete('feature-flag-one');
 
