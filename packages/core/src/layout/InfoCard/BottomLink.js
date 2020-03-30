@@ -21,22 +21,19 @@ import { Divider, ListItemText, withStyles } from '@material-ui/core';
 import { ListItem, ListItemIcon } from '@material-ui/core';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import grey from '@material-ui/core/colors/grey';
+import Box from '@material-ui/core/Box';
 
-const LinkBottomText = withStyles({
-  primary: {
-    fontWeight: '700',
-    color: grey[900],
-  },
-})(ListItemText);
-
-const ListItemBottom = withStyles({
+const styles = theme => ({
   root: {
     maxWidth: 'fit-content',
-    padding: '16px 16px 16px 20px',
+    padding: theme.spacing(2, 2, 2, 2.5)
   },
-})(ListItem);
-
-export default class BottomLink extends Component {
+  boxTitle: {
+    margin: 0,
+    color: grey[900]
+  }
+})
+class BottomLink extends Component {
   static propTypes = {
     link: PropTypes.string,
     title: PropTypes.string,
@@ -44,19 +41,23 @@ export default class BottomLink extends Component {
   };
 
   render() {
-    const { link, title, onClick } = this.props;
+    const { link, title, onClick, classes } = this.props;
     return (
       <div>
         <Divider />
         <Link href={link} onClick={onClick} highlight="none">
-          <ListItemBottom>
-            <LinkBottomText>{title}</LinkBottomText>
+          <ListItem className={classes.root}>
+            <ListItemText>
+              <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>{title}</Box>
+            </ListItemText>
             <ListItemIcon>
               <ArrowIcon />
             </ListItemIcon>
-          </ListItemBottom>
+          </ListItem>
         </Link>
       </div>
     );
   }
 }
+
+export default withStyles(styles)(BottomLink);
