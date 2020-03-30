@@ -23,14 +23,14 @@ describe('FeatureFlags', () => {
   });
 
   describe('#getFlags', () => {
-    let FeatureFlags;
+    let featureFlags;
 
     beforeEach(() => {
-      FeatureFlags = new FeatureFlagsImpl();
+      featureFlags = new FeatureFlagsImpl();
     });
 
     it('returns no flags', () => {
-      expect(FeatureFlags.getFlags().toObject()).toMatchObject({});
+      expect(featureFlags.getFlags().toObject()).toMatchObject({});
     });
 
     it('returns the correct flags', () => {
@@ -43,7 +43,7 @@ describe('FeatureFlags', () => {
         }),
       );
 
-      expect(FeatureFlags.getFlags().toObject()).toMatchObject({
+      expect(featureFlags.getFlags().toObject()).toMatchObject({
         'feature-flag-one': FeatureFlagState.Enabled,
         'feature-flag-two': FeatureFlagState.Enabled,
         'feature-flag-three': FeatureFlagState.NotEnabled,
@@ -59,19 +59,19 @@ describe('FeatureFlags', () => {
         }),
       );
 
-      expect(FeatureFlags.getFlags().get('feature-flag-one')).toEqual(
+      expect(featureFlags.getFlags().get('feature-flag-one')).toEqual(
         FeatureFlagState.Enabled,
       );
-      expect(FeatureFlags.getFlags().get('feature-flag-two')).toEqual(
+      expect(featureFlags.getFlags().get('feature-flag-two')).toEqual(
         FeatureFlagState.NotEnabled,
       );
-      expect(FeatureFlags.getFlags().get('feature-flag-three')).toEqual(
+      expect(featureFlags.getFlags().get('feature-flag-three')).toEqual(
         FeatureFlagState.NotEnabled,
       );
     });
 
     it('sets the correct values', () => {
-      const flags = FeatureFlags.getFlags();
+      const flags = featureFlags.getFlags();
       flags.set('feature-flag-zero', FeatureFlagState.Enabled);
 
       expect(flags.get('feature-flag-zero')).toEqual(FeatureFlagState.Enabled);
@@ -89,7 +89,7 @@ describe('FeatureFlags', () => {
         }),
       );
 
-      const flags = FeatureFlags.getFlags();
+      const flags = featureFlags.getFlags();
       flags.delete('feature-flag-one');
 
       expect(flags.get('feature-flag-one')).toEqual(
@@ -110,7 +110,7 @@ describe('FeatureFlags', () => {
         }),
       );
 
-      const flags = FeatureFlags.getFlags();
+      const flags = featureFlags.getFlags();
       flags.clear();
 
       expect(flags.toObject()).toEqual({});
@@ -119,11 +119,11 @@ describe('FeatureFlags', () => {
   });
 
   describe('#getRegisteredFlags', () => {
-    let FeatureFlags;
+    let featureFlags;
 
     beforeEach(() => {
-      FeatureFlags = new FeatureFlagsImpl();
-      FeatureFlags.registeredFeatureFlags = [
+      featureFlags = new FeatureFlagsImpl();
+      featureFlags.registeredFeatureFlags = [
         { name: 'registered-flag-1', pluginId: 'plugin-one' },
         { name: 'registered-flag-2', pluginId: 'plugin-one' },
         { name: 'registered-flag-3', pluginId: 'plugin-two' },
@@ -131,12 +131,12 @@ describe('FeatureFlags', () => {
     });
 
     it('should return an empty list', () => {
-      FeatureFlags.registeredFeatureFlags = [];
-      expect(FeatureFlags.getRegisteredFlags().toObject()).toEqual([]);
+      featureFlags.registeredFeatureFlags = [];
+      expect(featureFlags.getRegisteredFlags().toObject()).toEqual([]);
     });
 
     it('should return an valid list', () => {
-      expect(FeatureFlags.getRegisteredFlags().toObject()).toMatchObject([
+      expect(featureFlags.getRegisteredFlags().toObject()).toMatchObject([
         { name: 'registered-flag-1', pluginId: 'plugin-one' },
         { name: 'registered-flag-2', pluginId: 'plugin-one' },
         { name: 'registered-flag-3', pluginId: 'plugin-two' },
@@ -145,7 +145,7 @@ describe('FeatureFlags', () => {
 
     it('should get the correct values', () => {
       const getByName = name =>
-        FeatureFlags.getRegisteredFlags().find(flag => flag.name === name);
+        featureFlags.getRegisteredFlags().find(flag => flag.name === name);
 
       expect(getByName('registered-flag-0')).toBeUndefined();
       expect(getByName('registered-flag-1')).toEqual({
@@ -163,7 +163,7 @@ describe('FeatureFlags', () => {
     });
 
     it('should append the correct value', () => {
-      const flags = FeatureFlags.getRegisteredFlags();
+      const flags = featureFlags.getRegisteredFlags();
 
       flags.push({
         name: 'registered-flag-4',
@@ -179,7 +179,7 @@ describe('FeatureFlags', () => {
     });
 
     it('should concat the correct values', () => {
-      const flags = FeatureFlags.getRegisteredFlags();
+      const flags = featureFlags.getRegisteredFlags();
       const concatValues = flags.concat([
         {
           name: 'registered-flag-4',
@@ -201,7 +201,7 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if length is less than three characters', () => {
-      const flags = FeatureFlags.getRegisteredFlags();
+      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
         flags.push({
           name: 'ab',
@@ -211,7 +211,7 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if length is greater than 150 characters', () => {
-      const flags = FeatureFlags.getRegisteredFlags();
+      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
         flags.push({
           name:
@@ -222,7 +222,7 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if name does not start with a lowercase letter', () => {
-      const flags = FeatureFlags.getRegisteredFlags();
+      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
         flags.push({
           name: '123456789',
@@ -232,7 +232,7 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if name contains characters other than lowercase letters, numbers and hyphens', () => {
-      const flags = FeatureFlags.getRegisteredFlags();
+      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
         flags.push({
           name: 'Invalid_Feature_Flag',
