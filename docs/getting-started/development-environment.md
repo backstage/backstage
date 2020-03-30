@@ -15,7 +15,7 @@ By default, backstage will start on port 3000, however you can override this by 
 Once successfully started, you should see the following message in your terminal window:
 
 ```
-You can now view @backstage/app in the browser.
+You can now view example-app in the browser.
 
   Local:            http://localhost:8080
   On Your Network:  http://192.168.1.224:8080
