@@ -60,15 +60,15 @@ export function validateFlagName(name: FeatureFlagName): void {
  * feature flags to the local browser for persisted storage.
  */
 export class UserFlags extends Map<FeatureFlagName, FeatureFlagState> {
-  constructor() {
+  static load(): UserFlags {
     validateBrowserCompat();
 
     try {
       const jsonString = window.localStorage.getItem('featureFlags') as string;
       const json = JSON.parse(jsonString);
-      super(Object.entries(json));
+      return new this(Object.entries(json));
     } catch (err) {
-      super([]);
+      return new this([]);
     }
   }
 
@@ -168,7 +168,7 @@ export class FeatureFlagsRegistry extends Array<FeatureFlagsRegistryItem> {
  */
 export class FeatureFlags implements FeatureFlagsApi {
   public registeredFeatureFlags: FeatureFlagsRegistryItem[] = [];
-  private readonly userFlags: UserFlags = new UserFlags();
+  private readonly userFlags: UserFlags = UserFlags.load();
 
   getFlags(): UserFlags {
     return this.userFlags;
