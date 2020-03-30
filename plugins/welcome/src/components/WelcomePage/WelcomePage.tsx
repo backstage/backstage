@@ -33,7 +33,7 @@ import {
   pageTheme,
   ContentHeader,
   SupportButton,
-} from '@spotify-backstage/core';
+} from '@backstage/core';
 import ErrorButton from './ErrorButton';
 
 const WelcomePage: FC<{}> = () => {

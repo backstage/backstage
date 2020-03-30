@@ -5,13 +5,13 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "start": "yarn build && yarn workspace @spotify-backstage/app start",
+    "start": "yarn build && yarn workspace @backstage/app start",
     "build": "lerna run build",
     "test": "cross-env CI=true lerna run test --since origin/master -- --coverage",
     "create-plugin": "backstage-cli create-plugin",
+    "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push; fi",
     "lint": "lerna run lint",
-    "storybook": "yarn workspace @spotify-backstage/core storybook",
-    "build-storybook": "yarn workspace @spotify-backstage/core build-storybook"
+    "storybook": "yarn workspace storybook start"
   },
   "workspaces": {
     "packages": [

@@ -17,13 +17,7 @@
 import React, { FC } from 'react';
 import { Typography, Link, Grid } from '@material-ui/core';
 import HomePageTimer from '../HomepageTimer';
-import {
-  Content,
-  InfoCard,
-  Header,
-  Page,
-  pageTheme,
-} from '@spotify-backstage/core';
+import { Content, InfoCard, Header, Page, pageTheme } from '@backstage/core';
 import SquadTechHealth from './SquadTechHealth';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';

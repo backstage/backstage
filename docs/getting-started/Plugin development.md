@@ -40,7 +40,7 @@ The app will call the `createPlugin` method on each plugin, passing in a `router
 of methods on it.
 
 ```typescript
-import { createPlugin } from '@spotify-backstage/core';
+import { createPlugin } from '@backstage/core';
 import ExampleComponent from './components/ExampleComponent';
 
 export default createPlugin({

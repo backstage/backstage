@@ -18,7 +18,7 @@ import React, { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { ErrorApi, ErrorContext } from '@spotify-backstage/core';
+import { ErrorApi, ErrorContext } from '@backstage/core';
 
 type SubscriberFunc = (error: Error) => void;
 type Unsubscribe = () => void;
