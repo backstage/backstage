@@ -24,9 +24,10 @@ const ToggleFeatureFlagButton: FC<{}> = () => {
   const flagState = flags.get('enable-welcome-box');
 
   const handleClick = () => {
-    const newValue = flagState
-      ? FeatureFlagState.NotEnabled
-      : FeatureFlagState.Enabled;
+    const newValue =
+      flagState === FeatureFlagState.On
+        ? FeatureFlagState.Off
+        : FeatureFlagState.On;
     flags.set('enable-welcome-box', newValue);
     window.location.reload();
   };
@@ -38,7 +39,7 @@ const ToggleFeatureFlagButton: FC<{}> = () => {
       onClick={handleClick}
       data-testid="button-switch-feature-flag-state"
     >
-      {flagState === FeatureFlagState.NotEnabled
+      {flagState === FeatureFlagState.On
         ? 'Disable "enable-welcome-box" feature flag'
         : 'Enable "enable-welcome-box" feature flag'}
     </Button>

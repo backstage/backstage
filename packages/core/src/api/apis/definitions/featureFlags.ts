@@ -34,8 +34,8 @@ import {
  */
 
 export enum FeatureFlagState {
-  NotEnabled = 0,
-  Enabled = 1,
+  Off = 0,
+  On = 1,
 }
 
 export interface FeatureFlagsApi {

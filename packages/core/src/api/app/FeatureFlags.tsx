@@ -73,7 +73,7 @@ export class UserFlags extends Map<FeatureFlagName, FeatureFlagState> {
   }
 
   get(name: FeatureFlagName): FeatureFlagState {
-    return super.get(name) || FeatureFlagState.NotEnabled;
+    return super.get(name) || FeatureFlagState.Off;
   }
 
   set(name: FeatureFlagName, state: FeatureFlagState): this {
@@ -168,9 +168,10 @@ export class FeatureFlagsRegistry extends Array<FeatureFlagsRegistryItem> {
  */
 export class FeatureFlags implements FeatureFlagsApi {
   public registeredFeatureFlags: FeatureFlagsRegistryItem[] = [];
-  private readonly userFlags: UserFlags = UserFlags.load();
+  private userFlags: UserFlags | undefined;
 
   getFlags(): UserFlags {
+    if (!this.userFlags) this.userFlags = UserFlags.load();
     return this.userFlags;
   }
 

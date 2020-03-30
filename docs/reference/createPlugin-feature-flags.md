@@ -51,7 +51,7 @@ const ExampleButton: FC<{}> = () => {
   const flags = useApi(featureFlagsApiRef).getFlags();
 
   const handleClick = () => {
-    flags.set('enable-example-feature', FeatureFlagState.Enabled);
+    flags.set('enable-example-feature', FeatureFlagState.On);
   };
 
   return (

@@ -45,9 +45,9 @@ describe('FeatureFlags', () => {
 
       featureFlags = new FeatureFlagsImpl();
       expect(featureFlags.getFlags().toObject()).toMatchObject({
-        'feature-flag-one': FeatureFlagState.Enabled,
-        'feature-flag-two': FeatureFlagState.Enabled,
-        'feature-flag-three': FeatureFlagState.NotEnabled,
+        'feature-flag-one': FeatureFlagState.On,
+        'feature-flag-two': FeatureFlagState.On,
+        'feature-flag-three': FeatureFlagState.Off,
       });
     });
 
@@ -63,21 +63,21 @@ describe('FeatureFlags', () => {
       featureFlags = new FeatureFlagsImpl();
 
       expect(featureFlags.getFlags().get('feature-flag-one')).toEqual(
-        FeatureFlagState.Enabled,
+        FeatureFlagState.On,
       );
       expect(featureFlags.getFlags().get('feature-flag-two')).toEqual(
-        FeatureFlagState.NotEnabled,
+        FeatureFlagState.Off,
       );
       expect(featureFlags.getFlags().get('feature-flag-three')).toEqual(
-        FeatureFlagState.NotEnabled,
+        FeatureFlagState.Off,
       );
     });
 
     it('sets the correct values', () => {
       const flags = featureFlags.getFlags();
-      flags.set('feature-flag-zero', FeatureFlagState.Enabled);
+      flags.set('feature-flag-zero', FeatureFlagState.On);
 
-      expect(flags.get('feature-flag-zero')).toEqual(FeatureFlagState.Enabled);
+      expect(flags.get('feature-flag-zero')).toEqual(FeatureFlagState.On);
       expect(window.localStorage.getItem('featureFlags')).toEqual(
         '{"feature-flag-zero":1}',
       );
@@ -96,9 +96,7 @@ describe('FeatureFlags', () => {
       const flags = featureFlags.getFlags();
       flags.delete('feature-flag-one');
 
-      expect(flags.get('feature-flag-one')).toEqual(
-        FeatureFlagState.NotEnabled,
-      );
+      expect(flags.get('feature-flag-one')).toEqual(FeatureFlagState.Off);
       expect(window.localStorage.getItem('featureFlags')).toEqual(
         '{"feature-flag-two":0}',
       );

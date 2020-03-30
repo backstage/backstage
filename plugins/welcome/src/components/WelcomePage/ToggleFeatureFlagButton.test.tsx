@@ -54,17 +54,16 @@ describe('ToggleFeatureFlagButton', () => {
   });
 
   it('should disable the feature flag', () => {
-    const Component = () =>
-      withApiRegistry(<ToggleFeatureFlagButton />, featureFlags);
-    const rendered = render(<Component />);
+    window.localStorage.setItem('featureFlags', '{"enable-welcome-box":1}');
+
+    const rendered = render(
+      withApiRegistry(<ToggleFeatureFlagButton />, featureFlags),
+    );
 
     const button = rendered.getByTestId('button-switch-feature-flag-state');
     expect(button).toBeInTheDocument();
 
-    expect(window.localStorage.featureFlags).toBeUndefined();
-    fireEvent.click(button);
     expect(window.localStorage.featureFlags).toBe('{"enable-welcome-box":1}');
-    rendered.rerender(<Component />);
     fireEvent.click(button);
     expect(window.localStorage.featureFlags).toBe('{"enable-welcome-box":0}');
   });
