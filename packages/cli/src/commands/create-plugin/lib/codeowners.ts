@@ -20,6 +20,7 @@ import path from 'path';
 const TEAM_ID_RE = /^@[-\w]+\/[-\w]+$/;
 const USER_ID_RE = /^@[-\w]+$/;
 const EMAIL_RE = /^[^@]+@[-.\w]+\.[-\w]+$/i;
+const DEFAULT_OWNER = '@spotify/backstage-core';
 
 type CodeownersEntry = {
   ownedPath: string;
@@ -96,8 +97,11 @@ export async function addCodeownersEntry(
   const newDeclarationEntries = oldDeclarationEntries
     .filter(entry => entry.ownedPath !== '*')
     .concat([{ ownedPath, ownerIds }])
-    .sort((l1, l2) => l1.ownedPath.localeCompare(l2.ownedPath))
-    .concat([{ ownedPath: '*', ownerIds: ['@spotify/backstage-core'] }]);
+    .sort((l1, l2) => l1.ownedPath.localeCompare(l2.ownedPath));
+  newDeclarationEntries.unshift({
+    ownedPath: '*',
+    ownerIds: [DEFAULT_OWNER],
+  });
 
   // Calculate longest path to be able to align entries nicely
   const longestOwnedPath = newDeclarationEntries.reduce(
