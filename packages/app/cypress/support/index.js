@@ -13,28 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { FC } from 'react';
-import { Button } from '@material-ui/core';
-import { errorApiRef, useApi } from '@backstage/core';
-
-const ErrorButton: FC<{}> = () => {
-  const errorApi = useApi(errorApiRef);
-
-  const handleClick = () => {
-    errorApi.post(new Error('Oh no!'));
-  };
-
-  return (
-    <Button
-      data-testid="error-button"
-      variant="contained"
-      color="primary"
-      onClick={handleClick}
-    >
-      Trigger an error!
-    </Button>
-  );
-};
-
-export default ErrorButton;
+import '@testing-library/cypress/add-commands';
