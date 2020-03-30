@@ -1,24 +1,23 @@
-name: Frontend CI
+name: Deploy Storybook
 
 on:
-  pull_request:
-    types: [opened, reopened, edited, synchronize]
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/storybook-deploy.yml'
+      - 'packages/storybook/**'
+      - 'packages/core/src/**'
 
 jobs:
-  build:
+  deploy-storybook:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [12.x]
-
-    env:
-      CI: true
-
     steps:
       - uses: actions/checkout@v2
-      - name: fetch branch master
-        run: git fetch origin master
       - name: find location of global yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -34,13 +33,18 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
       - run: yarn install
-      - run: yarn lint
-      - run: yarn build
-      - run: yarn test
-      - name: verify storybook
+      - name: build storybook
         run: yarn workspace storybook build-storybook
+      - name: deploy storybook to gh-pages
+        uses: JamesIves/github-pages-deploy-action@3.4.2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: packages/storybook/dist
