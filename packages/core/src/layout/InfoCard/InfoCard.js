@@ -29,13 +29,17 @@ import BottomLink from './BottomLink';
 
 import textContent from 'react-addons-text-content';
 
+const styles = theme => ({
+  header: {
+    padding: theme.spacing(2, 2, 2, 2.5)
+  }
+});
+
 const BoldHeader = withStyles({
   title: { fontWeight: '700' },
   subheader: { paddingTop: '2px' },
-  root: {
-    padding: '16px 16px 16px 20px',
-  },
 })(CardHeader);
+
 const CardActionsTopRight = withStyles({
   root: {
     display: 'inline-block',
@@ -191,6 +195,7 @@ class InfoCard extends Component {
           {title && (
             <>
               <BoldHeader
+                className={classes.header}
                 title={title}
                 subheader={subheader}
                 style={{ display: 'inline-block', ...headerStyle }}
@@ -221,4 +226,4 @@ class InfoCard extends Component {
   }
 }
 
-export default InfoCard;
+export default withStyles(styles)(InfoCard);

@@ -58,7 +58,7 @@ const HomePage: FC<{}> = () => {
         <Grid container direction="row" spacing={3}>
           <Grid item xs={6}>
             <Typography variant="h3">Things you own</Typography>
-            <InfoCard maxWidth>
+            <InfoCard>
               <TableContainer>
                 <Table size="small" aria-label="a dense table">
                   <TableHead>

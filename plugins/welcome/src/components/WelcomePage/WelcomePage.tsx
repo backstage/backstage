@@ -53,7 +53,7 @@ const WelcomePage: FC<{}> = () => {
         </ContentHeader>
         <Grid container>
           <Grid item xs={12} md={6}>
-            <InfoCard maxWidth>
+            <InfoCard>
               <Typography variant="body1" gutterBottom>
                 You now have a running instance of Backstage!
                 <span role="img" aria-label="confetti">
