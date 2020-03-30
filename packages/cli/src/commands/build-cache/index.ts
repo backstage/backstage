@@ -30,8 +30,15 @@ function print(msg: string) {
  */
 export default async (cmd: Command, args: string[]) => {
   const options = await parseOptions(cmd);
-  const cache = await Cache.read(options);
+
   const key = await Cache.readInputKey(options.inputs);
+  if (!key) {
+    print('input directory is dirty, skipping cache');
+    await run(args[0], args.slice(1));
+    return;
+  }
+
+  const cache = await Cache.read(options);
 
   const cacheResult = cache.query(key);
   if (cacheResult.hit) {
@@ -41,14 +48,13 @@ export default async (cmd: Command, args: string[]) => {
     } else {
       print('cache hit, nothing to be done');
     }
-  } else {
-    print('cache miss, need to build');
-
-    await run(args[0], args.slice(1));
-
-    if (cacheResult.archive) {
-      print('caching build output');
-      await cacheResult.archive(options.output, options.maxCacheEntries);
-    }
+    return;
   }
+
+  print('cache miss, need to build');
+
+  await run(args[0], args.slice(1));
+
+  print('caching build output');
+  await cacheResult.archive(options.output, options.maxCacheEntries);
 };

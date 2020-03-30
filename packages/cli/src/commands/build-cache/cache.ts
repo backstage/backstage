@@ -29,9 +29,9 @@ export type CacheQueryResult = {
   // If there is a cache hit and this method is defined, it needs to be called to restore the
   // output contents before continuing.
   copy?: (outputDir: string) => Promise<void>;
-  // If this method is defined, it should be called after a successful build to archive the output content.
-  // The content will be archived using the same key as was used in the cache.
-  archive?: (outputDir: string, maxEntries: number) => Promise<void>;
+  // Call after a successful build to archive the output content.
+  // The content will be archived using the same key as was used to query the cache.
+  archive: (outputDir: string, maxEntries: number) => Promise<void>;
 };
 
 // Key that determines whether cached output can be reused
@@ -61,26 +61,31 @@ export class Cache {
     const repoPath = relativePath(options.repoRoot, process.cwd());
     const location = resolvePath(options.cacheDir, repoPath);
 
-    // Make sure we don't have any uncommitted changes to the input, in that case we consider the cache to be missing
-    const noChanges = await runCheck(
-      `git diff --quiet HEAD -- ${options.inputs.join(' ')}`,
-    );
-    if (!noChanges) {
-      return new Cache();
-    }
-
     const outputInfo = await readCacheInfo(options.output);
     const localKey = outputInfo?.key;
 
     const { entries = [] } = (await readCacheInfo(location)) ?? {};
-    return new Cache(entries, location, localKey);
+    return new Cache(location, entries, localKey);
   }
 
-  // Generates a key based on the contents of the input paths
-  static async readInputKey(inputPaths: string[]): Promise<CacheKey> {
+  // Generates a key based on the contents of the input paths.
+  // Returns undefined if it's not possible to generate a stable key.
+  static async readInputKey(
+    inputPaths: string[],
+  ): Promise<CacheKey | undefined> {
+    const quotedInputPaths = inputPaths.map(input => `'${input}'`);
+
+    // Make sure we don't have any uncommitted changes to the input, in that case we skip caching.
+    const noChanges = await runCheck(
+      `git diff --quiet HEAD -- ${quotedInputPaths.join(' ')}`,
+    );
+    if (!noChanges) {
+      return undefined;
+    }
+
     const trees = [];
-    for (const inputPath of inputPaths) {
-      const output = await runPlain(`git ls-tree HEAD '${inputPath}'`);
+    for (const quotedInputPath of quotedInputPaths) {
+      const output = await runPlain(`git ls-tree HEAD ${quotedInputPath}`);
       const [, , sha] = output.split(/\s+/, 3);
       trees.push(sha);
     }
@@ -88,17 +93,14 @@ export class Cache {
   }
 
   constructor(
+    private readonly location: string,
     private readonly entries: CacheEntry[] = [],
-    private readonly location?: string,
     private readonly localKey?: CacheKey,
   ) {}
 
   // Query for the presense of cached output for a given key
   query(key: CacheKey): CacheQueryResult {
     const { location } = this;
-    if (!location) {
-      return { hit: false };
-    }
 
     const archive = async (outputDir: string, maxEntries: number) => {
       await writeCacheInfo(outputDir, { key });
