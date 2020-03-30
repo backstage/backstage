@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/app",
+  "name": "example-app",
   "version": "0.1.1-alpha.0",
   "private": true,
   "dependencies": {
