@@ -8,7 +8,8 @@ COPY plugins /app/plugins
 
 RUN yarn
 
-COPY . .
+COPY lerna.json tsconfig.json .eslintignore .eslintrc.js /app/
+COPY scripts/ /app/scripts
 
 RUN yarn build
 
