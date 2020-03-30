@@ -33,11 +33,15 @@ export function validateBrowserCompat(): void {
 
 export function validateFlagName(name: FeatureFlagName): void {
   if (name.length < 3) {
-    throw new Error(`The '${name}' feature flag must have a minimum length of three characters.`);
+    throw new Error(
+      `The '${name}' feature flag must have a minimum length of three characters.`,
+    );
   }
 
   if (name.length > 150) {
-    throw new Error(`The '${name}' feature flag must not exceed 150 characters.`);
+    throw new Error(
+      `The '${name}' feature flag must not exceed 150 characters.`,
+    );
   }
 
   if (!name.match(/^[a-z]+[a-z0-9-]+$/)) {
@@ -69,22 +73,20 @@ export class UserFlags extends Map<FeatureFlagName, FeatureFlagState> {
   }
 
   get(name: FeatureFlagName): FeatureFlagState {
-    validateFlagName(name);
     return super.get(name) || FeatureFlagState.NotEnabled;
   }
 
   set(name: FeatureFlagName, state: FeatureFlagState): this {
     validateFlagName(name);
-    super.set(name, state);
+    const output = super.set(name, state);
     this.save();
-    return this;
+    return output;
   }
 
   delete(name: FeatureFlagName): boolean {
-    const exists = !!this.get(name);
-    super.delete(name);
+    const output = super.delete(name);
     this.save();
-    return exists;
+    return output;
   }
 
   clear(): void {
