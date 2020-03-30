@@ -19,7 +19,9 @@ import WelcomePage from './components/WelcomePage';
 
 export default createPlugin({
   id: 'welcome',
-  register({ router }) {
+  register({ router, featureFlags }) {
     router.registerRoute('/', WelcomePage);
+
+    featureFlags.register('enable-welcome-box');
   },
 });

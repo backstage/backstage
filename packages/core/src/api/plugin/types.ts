@@ -43,4 +43,15 @@ export type WidgetOutput = {
   widget: Widget;
 };
 
-export type PluginOutput = RouteOutput | RedirectRouteOutput | WidgetOutput;
+export type FeatureFlagName = string;
+
+export type FeatureFlagOutput = {
+  type: 'feature-flag';
+  name: FeatureFlagName;
+};
+
+export type PluginOutput =
+  | RouteOutput
+  | RedirectRouteOutput
+  | WidgetOutput
+  | FeatureFlagOutput;
