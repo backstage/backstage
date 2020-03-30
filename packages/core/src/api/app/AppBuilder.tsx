@@ -105,7 +105,7 @@ export default class AppBuilder {
 
     const FeatureFlags = this.apis && this.apis.get(featureFlagsApiRef);
     if (FeatureFlags) {
-      FeatureFlags!.registeredFeatureFlags = registeredFeatureFlags;
+      FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
     }
 
     routes.push(
