@@ -22,25 +22,41 @@ import { extractArchive, createArchive } from './archive';
 
 const INFO_FILE = '.backstage-build-cache';
 
+// Result from a cache query
 export type CacheQueryResult = {
+  // True if there was a cache hit
   hit: boolean;
+  // If there is a cache hit and this method is defined, it needs to be called to restore the
+  // output contents before continuing.
   copy?: (outputDir: string) => Promise<void>;
+  // If this method is defined, it should be called after a successful build to archive the output content.
+  // The content will be archived using the same key as was used in the cache.
   archive?: (outputDir: string, maxEntries: number) => Promise<void>;
 };
 
+// Key that determines whether cached output can be reused
 export type CacheKey = string[];
 
 type CacheEntry = {
+  // Key for the input of this cache entry
   key: CacheKey;
+  // Path to the archive of this cache entry
   path: string;
 };
 
+// Struct containing information about cache entries on the filesystem.
+// Stored inside the INFO_FILE as JSON.
 type CacheInfo = {
+  // Optional key entry for the contents of the current directory. Used to key the
+  // output present in the outputs folder, where the info file resides inside the output folder.
   key?: CacheKey;
+  // Optional list of cache archives present in the same directory. Resides in the external
+  // cache location inside one info file for each package.
   entries?: CacheEntry[];
 };
 
 export class Cache {
+  // Read the current cache state form the filesystem.
   static async read(options: Options) {
     const repoPath = relativePath(options.repoRoot, process.cwd());
     const location = resolvePath(options.cacheDir, repoPath);
@@ -60,6 +76,7 @@ export class Cache {
     return new Cache(entries, location, localKey);
   }
 
+  // Generates a key based on the contents of the input paths
   static async readInputKey(inputPaths: string[]): Promise<CacheKey> {
     const trees = [];
     for (const inputPath of inputPaths) {
@@ -76,6 +93,7 @@ export class Cache {
     private readonly localKey?: CacheKey,
   ) {}
 
+  // Query for the presense of cached output for a given key
   query(key: CacheKey): CacheQueryResult {
     const { location } = this;
     if (!location) {
@@ -142,6 +160,7 @@ export class Cache {
   }
 }
 
+// Compares to cache keys, returning true if they are both defined and equal
 function compareKeys(a?: CacheKey, b?: CacheKey): boolean {
   if (!a || !b) {
     return false;
@@ -149,6 +168,7 @@ function compareKeys(a?: CacheKey, b?: CacheKey): boolean {
   return a.join(',') === b.join(',');
 }
 
+// Read and parse a cache info file in the given directory
 async function readCacheInfo(
   parentDir: string,
 ): Promise<CacheInfo | undefined> {
@@ -163,6 +183,7 @@ async function readCacheInfo(
   return cacheInfo;
 }
 
+// Write a cache info file to the given directory
 async function writeCacheInfo(
   parentDir: string,
   cacheInfo: CacheInfo,
