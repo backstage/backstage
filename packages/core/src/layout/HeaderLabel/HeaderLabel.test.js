@@ -31,12 +31,18 @@ describe('<HeaderLabel />', () => {
   });
 
   it('should have value', () => {
-    const rendered = render(wrapInThemedTestApp(<HeaderLabel label="Label" value="Value" />));
+    const rendered = render(
+      wrapInThemedTestApp(<HeaderLabel label="Label" value="Value" />),
+    );
     expect(rendered.getByText('Value')).toBeInTheDocument();
   });
 
   it('should have a link', () => {
-    const rendered = render(wrapInThemedTestApp(<HeaderLabel label="Label" value="Value" url="/test" />));
+    const rendered = render(
+      wrapInThemedTestApp(
+        <HeaderLabel label="Label" value="Value" url="/test" />,
+      ),
+    );
     const anchor = rendered.container.querySelector('a');
     expect(rendered.getByText('Value')).toBeInTheDocument();
     expect(anchor.href).toBe('http://localhost/test');
