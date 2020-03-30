@@ -17,18 +17,7 @@ You _might_ also need to set your Heroku app's stack to `container`
 $ heroku stack:set container -a <your-app>
 ```
 
-There are two small tweaks made to Backstage's default Dockerfile to run on Heroku:
-
-1. Do not run nginx as the `nginx` user.
-2. Replace the standard port (80) in `/etc/nginx/conf.d/default.conf` with the wildcard `$PORT`, which Heroku will set for us.
-
-These changes are in the `deployment/Dockerfile.heroku` file, which you will need to copy into your root directory before deploying:
-
-```bash
-$ cp deployment/Dockerfile.heroku Dockerfile
-```
-
-With these changes, we can build/push the Docker image to Heroku's container registry and release it to the `web` worker.
+We can now build/push the Docker image to Heroku's container registry and release it to the `web` worker.
 
 ```bash
 $ heroku container:push web -a <your-app>
