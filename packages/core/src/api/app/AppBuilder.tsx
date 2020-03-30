@@ -91,8 +91,7 @@ export default class AppBuilder {
       <AppContextProvider app={app}>
         <Switch>
           {routes}
-          <Route render={(props) => <ErrorPage {...props} status="404" errorTitle="Page Not Found"
-            errorBody="Looks like somebody dropped the mic." backButton={true} />}/>
+          <Route render={(props) => <ErrorPage {...props} status="404" errorTitle="PAGE NOT FOUND" backButton={true} />}/>
         </Switch>
       </AppContextProvider>
     );

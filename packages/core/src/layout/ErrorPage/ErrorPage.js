@@ -16,8 +16,9 @@
 
 import React, { Component, Fragment } from 'react';
 import { Typography, withStyles, Tooltip } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
 import { Theme } from '../Page/Page';
+import MicDrop from './MicDrop';
 
 class BackButton extends Component {
   constructor(props) {
@@ -26,10 +27,13 @@ class BackButton extends Component {
 
   render() {
     return (
-      <Button variant="contained" color="primary"
-        onClick={this.props.history.goBack}>
-          Back
-      </Button>
+      <Fragment>
+      <Link onClick={this.props.history.goBack}>
+          Go back
+      </Link>... or if you think this is a bug,
+      please file an <Link href="https://github.com/spotify/backstage/issues">
+      issue</Link>.
+      </Fragment>
     )
   }
 }
@@ -45,12 +49,13 @@ class ErrorPage extends Component {
        <Theme.Consumer>
          {theme => (
            <div>
-            <div className={classes.errorBg} />
+            <div className={classes.errorBg}>
+            <MicDrop />
+            </div>
+            <div className={classes.subtitle}>ERROR {status}: {errorTitle}</div>
              <div className={classes.title}>
-               {status}
+               Looks like someone dropped the mic!
              </div>
-             <div className={classes.subtitle}>{errorTitle}</div>
-             <div className={classes.info}>{errorBody}</div>
              <div className={classes.info}>
              { backButton && <BackButton {...this.props} /> }
              </div>
@@ -72,26 +77,27 @@ const styles = theme => ({
      right: 0,
      position: 'absolute',
      'z-index': -1,
-     background: 'linear-gradient(87.29deg,' + theme.palette.bursts.backgroundColor.accent + ' 17.71%,' + theme.palette.bursts.backgroundColor.default + ' 80.85%)'
    },
    title: {
-     color: theme.palette.bursts.fontColor,
      lineHeight: '1.0em',
      wordBreak: 'break-all',
-     fontSize: 'calc(64px + 6 * ((100vw - 320px) / 680))',
-     padding: '25vh 0 0 0',
-     'text-align':'center',
+     fontSize: 'calc(42px + 6 * ((100vw - 320px) / 680))',
+     width: '35vw',
+     padding: '0 8vh 0 4vw',
+     'word-break': 'normal',
    },
    subtitle: {
-     color: 'rgba(255, 255, 255, 0.8)',
-     fontSize: 'calc(30px + 6 * ((100vw - 320px) / 680))',
-     'text-align':'center',
+     color: theme.palette.textSubtle,
+     fontSize: 'calc(12px + 6 * ((100vw - 320px) / 680))',
+     padding: '8vh 0 0 4vw',
+     'word-break': 'normal',
    },
    info: {
      fontSize: 'calc(16px + 6 * ((100vw - 320px) / 680))',
-     'text-align':'center',
-     padding: '5vh 0 0 0',
-     color: theme.palette.bursts.fontColor,
+     color: theme.palette.textSubtle,
+     padding: '8vh 0 0 4vw',
+     width: "35vw",
+     'word-break': 'normal',
    },
 });
 
