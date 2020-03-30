@@ -405,7 +405,7 @@ const createPlugin = async () => {
     if (ownerIds && ownerIds.length) {
       await addCodeownersEntry(
         codeownersPath!,
-        path.join('plugins', answers.id),
+        `/plugins/${answers.id}`,
         ownerIds,
       );
     }
