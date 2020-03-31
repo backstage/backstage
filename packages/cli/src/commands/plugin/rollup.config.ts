@@ -21,23 +21,34 @@ import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import image from 'rollup-plugin-image-files';
 
-export default {
-  input: 'src/index.ts',
-  output: {
-    file: 'build/index.esm.js',
-    format: 'esm',
-    sourcemap: true,
-  },
+const plugins = [
+  peerDepsExternal(),
+  resolve(),
+  commonjs({
+    include: ['node_modules/**', '../../node_modules/**'],
+    exclude: ['**/*.stories.js'],
+  }),
+  postcss(),
+  image(),
+  typescript(),
+];
 
-  plugins: [
-    peerDepsExternal(),
-    resolve(),
-    commonjs({
-      include: ['node_modules/**', '../../node_modules/**'],
-      exclude: ['**/*.stories.js'],
-    }),
-    postcss(),
-    image(),
-    typescript(),
-  ],
-};
+export default [
+  {
+    input: 'src/index.ts',
+    output: {
+      file: 'build/index.esm.js',
+      format: 'esm',
+      sourcemap: true,
+    },
+    plugins,
+  },
+  {
+    input: 'src/index.ts',
+    output: {
+      file: 'build/index.cjs.js',
+      format: 'cjs',
+    },
+    plugins,
+  },
+];
