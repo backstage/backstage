@@ -3803,7 +3803,7 @@
   resolved "https://registry.npmjs.org/@types/retry/-/retry-0.12.0.tgz#2b35eccfcee7d38cd72ad99232fbd58bffb3c84d"
   integrity sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==
 
-"@types/rollup-plugin-peer-deps-external@2.2.0":
+"@types/rollup-plugin-peer-deps-external@^2.2.0":
   version "2.2.0"
   resolved "https://registry.npmjs.org/@types/rollup-plugin-peer-deps-external/-/rollup-plugin-peer-deps-external-2.2.0.tgz#eae7d8b9d27fa037f5bcaded24e389f85b81973c"
   integrity sha512-BiztED+KYJPBI3ihLSOuuZSzy836WAOpC9UrMtDqk3+VeByR8A5pJJ9pCVnq/dfB4wyCeiFL+FlyJnqZuP3pxg==
@@ -3811,7 +3811,7 @@
     "@types/node" "*"
     rollup "^0.63.4"
 
-"@types/rollup-plugin-postcss@2.0.0":
+"@types/rollup-plugin-postcss@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@types/rollup-plugin-postcss/-/rollup-plugin-postcss-2.0.0.tgz#b1bcc686c7dbe441f2fcfb47cac01acc508f46c0"
   integrity sha512-lw4LvCcWpQ/Yomb9bxT69uAN5ZfW6nhL9itEu3z0IzsNNqKalwIDo7pEK8jxoiHQmcPaYzayAfo4M1JT/h8crw==
