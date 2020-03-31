@@ -16,7 +16,6 @@
 
 import React, { ComponentClass, Component, SFC } from 'react';
 
-
 type Props = {
   slackChannel: string;
 };
@@ -25,9 +24,12 @@ type State = {
   error?: Error;
   errorInfo?: string;
   onError?: (error: Error, errorInfo: string) => null;
-}
+};
 
-const ErrorBoundary: ComponentClass<Props, State> = class ErrorBoundary extends Component<Props, State> {
+const ErrorBoundary: ComponentClass<
+  Props,
+  State
+> = class ErrorBoundary extends Component<Props, State> {
   constructor(props) {
     super(props);
 
@@ -35,7 +37,7 @@ const ErrorBoundary: ComponentClass<Props, State> = class ErrorBoundary extends 
       error: undefined,
       errorInfo: undefined,
       onError: props.onError,
-    }
+    };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -61,7 +63,7 @@ const ErrorBoundary: ComponentClass<Props, State> = class ErrorBoundary extends 
       <Error error={error} errorInfo={errorInfo} slackChannel={slackChannel} />
     );
   }
-}
+};
 
 export default ErrorBoundary;
 
@@ -69,7 +71,7 @@ type EProps = {
   error?: Error;
   errorInfo?: string;
   slackChannel: string;
-}
+};
 
 const Error: SFC<EProps> = ({ slackChannel }) => {
   return (
