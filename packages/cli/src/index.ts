@@ -18,6 +18,7 @@ import program from 'commander';
 import chalk from 'chalk';
 import fs from 'fs';
 import createPluginCommand from './commands/create-plugin/createPlugin';
+import removePluginCommand from './commands/remove-plugin/removePlugin';
 import watch from './commands/watch-deps';
 import buildCache from './commands/build-cache';
 import lintCommand from './commands/lint';
@@ -47,6 +48,11 @@ const main = (argv: string[]) => {
     .command('create-plugin')
     .description('Creates a new plugin in the current repository')
     .action(actionHandler(createPluginCommand));
+
+  program
+    .command('remove-plugin')
+    .description('Removes plugin in the current repository')
+    .action(actionHandler(removePluginCommand));
 
   program
     .command('plugin:build')

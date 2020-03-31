@@ -10,6 +10,7 @@
     "build": "lerna run build",
     "test": "cross-env CI=true lerna run test --since origin/master -- --coverage",
     "create-plugin": "backstage-cli create-plugin",
+    "remove-plugin": "backstage-cli remove-plugin",
     "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push; fi",
     "lint": "cross-env CI=true lerna run lint --since origin/master --",
     "storybook": "yarn workspace storybook start"
