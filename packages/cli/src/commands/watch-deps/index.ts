@@ -26,7 +26,7 @@ import { waitForExit } from '../../helpers/run';
 
 const PACKAGE_BLACKLIST = [
   // We never want to watch for changes in the cli, but all packages will depend on it.
-  '@spotify-backstage/cli',
+  '@backstage/cli',
 ];
 
 const WATCH_LOCATIONS = ['package.json', 'src', 'assets'];

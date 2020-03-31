@@ -19,12 +19,16 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App } from './types';
 import BackstagePlugin from '../plugin/Plugin';
+import { FeatureFlagsRegistryItem } from './FeatureFlags';
+import { featureFlagsApiRef } from '../apis/definitions/featureFlags';
 import {
   IconComponent,
   SystemIcons,
   SystemIconKey,
   defaultSystemIcons,
 } from '../../icons';
+import { ApiHolder, ApiProvider } from '../apis';
+import LoginPage from './LoginPage';
 
 class AppImpl implements App {
   constructor(private readonly systemIcons: SystemIcons) {}
@@ -35,8 +39,13 @@ class AppImpl implements App {
 }
 
 export default class AppBuilder {
+  private apis?: ApiHolder;
   private systemIcons = { ...defaultSystemIcons };
   private readonly plugins = new Set<BackstagePlugin>();
+
+  registerApis(apis: ApiHolder) {
+    this.apis = apis;
+  }
 
   registerIcons(icons: Partial<SystemIcons>) {
     this.systemIcons = { ...this.systemIcons, ...icons };
@@ -55,6 +64,7 @@ export default class AppBuilder {
     const app = new AppImpl(this.systemIcons);
 
     const routes = new Array<JSX.Element>();
+    const registeredFeatureFlags = new Array<FeatureFlagsRegistryItem>();
 
     for (const plugin of this.plugins.values()) {
       for (const output of plugin.output()) {
@@ -80,19 +90,39 @@ export default class AppBuilder {
             );
             break;
           }
+          case 'feature-flag': {
+            registeredFeatureFlags.push({
+              pluginId: plugin.getId(),
+              name: output.name,
+            });
+            break;
+          }
           default:
             break;
         }
       }
     }
 
-    return () => (
-      <AppContextProvider app={app}>
-        <Switch>
-          {routes}
-          <Route component={() => <span>404 Not Found</span>} />
-        </Switch>
-      </AppContextProvider>
+    const FeatureFlags = this.apis && this.apis.get(featureFlagsApiRef);
+    if (FeatureFlags) {
+      FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
+    }
+
+    routes.push(
+      <Route key="login" path="/login" component={LoginPage} exact />,
     );
+
+    let rendered = (
+      <Switch>
+        {routes}
+        <Route component={() => <span>404 Not Found</span>} />
+      </Switch>
+    );
+
+    if (this.apis) {
+      rendered = <ApiProvider apis={this.apis} children={rendered} />;
+    }
+
+    return () => <AppContextProvider app={app} children={rendered} />;
   }
 }

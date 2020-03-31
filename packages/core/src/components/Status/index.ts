@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { StatusError, StatusFailed, StatusNA, StatusOK, StatusPending, StatusRunning, StatusWarning } from './Status';
+export {
+  StatusError,
+  StatusFailed,
+  StatusNA,
+  StatusOK,
+  StatusPending,
+  StatusRunning,
+  StatusWarning,
+} from './Status';

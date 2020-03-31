@@ -19,8 +19,14 @@ import { TypesToApiRefs, AnyApiRef, ApiHolder, ApiFactory } from './types';
 
 export default class ApiTestRegistry implements ApiHolder {
   private readonly apis = new Map<AnyApiRef, unknown>();
-  private factories = new Map<AnyApiRef, ApiFactory<unknown, unknown, unknown>>();
-  private savedFactories = new Map<AnyApiRef, ApiFactory<unknown, unknown, unknown>>();
+  private factories = new Map<
+    AnyApiRef,
+    ApiFactory<unknown, unknown, unknown>
+  >();
+  private savedFactories = new Map<
+    AnyApiRef,
+    ApiFactory<unknown, unknown, unknown>
+  >();
 
   get<T>(ref: ApiRef<T>): T | undefined {
     return this.load(ref);
@@ -28,7 +34,10 @@ export default class ApiTestRegistry implements ApiHolder {
 
   register<T>(ref: ApiRef<T>, factoryFunc: () => T): ApiTestRegistry;
   register<A, I, D>(factory: ApiFactory<A, I, D>): ApiTestRegistry;
-  register<A, I, D, T>(factory: ApiRef<T> | ApiFactory<A, I, D>, factoryFunc?: () => T): ApiTestRegistry {
+  register<A, I, D, T>(
+    factory: ApiRef<T> | ApiFactory<A, I, D>,
+    factoryFunc?: () => T,
+  ): ApiTestRegistry {
     if (factory instanceof ApiRef) {
       this.factories.set(factory, {
         implements: factory,
@@ -63,16 +72,25 @@ export default class ApiTestRegistry implements ApiHolder {
     }
 
     if (loading.includes(factory.implements)) {
-      throw new Error(`Circular dependency of api factory for ${factory.implements}`);
+      throw new Error(
+        `Circular dependency of api factory for ${factory.implements}`,
+      );
     }
 
-    const deps = this.loadDeps(ref, factory.deps, [...loading, factory.implements]);
+    const deps = this.loadDeps(ref, factory.deps, [
+      ...loading,
+      factory.implements,
+    ]);
     const api = factory.factory(deps);
     this.apis.set(ref, api);
     return api as T;
   }
 
-  private loadDeps<T>(dependent: ApiRef<unknown>, apis: TypesToApiRefs<T>, loading: AnyApiRef[]): T {
+  private loadDeps<T>(
+    dependent: ApiRef<unknown>,
+    apis: TypesToApiRefs<T>,
+    loading: AnyApiRef[],
+  ): T {
     const impls = {} as T;
 
     for (const key in apis) {
@@ -81,7 +99,9 @@ export default class ApiTestRegistry implements ApiHolder {
 
         const api = this.load(ref, loading);
         if (!api) {
-          throw new Error(`No API factory available for dependency ${ref} of dependent ${dependent}`);
+          throw new Error(
+            `No API factory available for dependency ${ref} of dependent ${dependent}`,
+          );
         }
         impls[key] = api;
       }

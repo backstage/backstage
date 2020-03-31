@@ -33,7 +33,9 @@ import {
   pageTheme,
   ContentHeader,
   SupportButton,
-} from '@spotify-backstage/core';
+} from '@backstage/core';
+import ErrorButton from './ErrorButton';
+import ToggleFeatureFlagButton from './ToggleFeatureFlagButton';
 
 const WelcomePage: FC<{}> = () => {
   const profile = { givenName: '' };
@@ -52,7 +54,7 @@ const WelcomePage: FC<{}> = () => {
         </ContentHeader>
         <Grid container>
           <Grid item xs={12} md={6}>
-            <InfoCard maxWidth>
+            <InfoCard>
               <Typography variant="body1" gutterBottom>
                 You now have a running instance of Backstage!
                 <span role="img" aria-label="confetti">
@@ -111,6 +113,18 @@ const WelcomePage: FC<{}> = () => {
                   </Link>
                 </ListItem>
               </List>
+            </InfoCard>
+          </Grid>
+          <Grid item>
+            <InfoCard title="APIs">
+              <Typography>
+                The button below is an example of how to consume APIs.
+              </Typography>
+              <br />
+              <ErrorButton />
+              <br />
+              <br />
+              <ToggleFeatureFlagButton />
             </InfoCard>
           </Grid>
         </Grid>

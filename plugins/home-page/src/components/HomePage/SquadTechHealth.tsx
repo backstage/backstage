@@ -17,7 +17,7 @@
 import React, { FC } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 
-import { HorizontalScrollGrid, ProgressCard } from '@spotify-backstage/core';
+import { HorizontalScrollGrid, ProgressCard } from '@backstage/core';
 
 const SquadTechHealth: FC<{}> = () => {
   return (

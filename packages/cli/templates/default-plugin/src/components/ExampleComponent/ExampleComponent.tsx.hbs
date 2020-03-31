@@ -25,7 +25,7 @@ import {
   ContentHeader,
   HeaderLabel,
   SupportButton,
-} from '@spotify-backstage/core';
+} from '@backstage/core';
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
 const ExampleComponent: FC<{}> = () => (
@@ -40,7 +40,7 @@ const ExampleComponent: FC<{}> = () => (
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>
-          <InfoCard title="Information card" maxWidth>
+          <InfoCard title="Information card">
             <Typography variant="body1">
               All content should be wrapped in a card like this.
             </Typography>

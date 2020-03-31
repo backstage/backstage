@@ -59,13 +59,24 @@ describe('ApiTestRegistry', () => {
 
   it('should register factories with dependencies', () => {
     // 100% coverage + happy typescript = hasOwnProperty + this atrocity
-    const cDeps = Object.create({ c: cRef }, { a: { enumerable: true, value: aRef } });
+    const cDeps = Object.create(
+      { c: cRef },
+      { a: { enumerable: true, value: aRef } },
+    );
     cDeps.b = bRef;
 
     const registry = new ApiTestRegistry();
     registry.register({ implements: aRef, deps: {}, factory: () => 3 });
-    registry.register({ implements: bRef, deps: { dep: aRef }, factory: ({ dep }) => `hello ${dep}` });
-    registry.register({ implements: cRef, deps: cDeps, factory: ({ a, b }) => b.repeat(a) });
+    registry.register({
+      implements: bRef,
+      deps: { dep: aRef },
+      factory: ({ dep }) => `hello ${dep}`,
+    });
+    registry.register({
+      implements: cRef,
+      deps: cDeps,
+      factory: ({ a, b }) => b.repeat(a),
+    });
     expect(registry.get(aRef)).toBe(3);
     expect(registry.get(bRef)).toBe('hello 3');
     expect(registry.get(cRef)).toBe('hello 3hello 3hello 3');
@@ -73,17 +84,39 @@ describe('ApiTestRegistry', () => {
 
   it('should not allow cyclic dependencies', () => {
     const registry = new ApiTestRegistry();
-    registry.register({ implements: aRef, deps: { b: bRef }, factory: () => 1 });
-    registry.register({ implements: bRef, deps: { c: cRef }, factory: () => 'b' });
-    registry.register({ implements: cRef, deps: { a: aRef }, factory: () => 'c' });
-    expect(() => registry.get(aRef)).toThrow('Circular dependency of api factory for apiRef{a}');
-    expect(() => registry.get(bRef)).toThrow('Circular dependency of api factory for apiRef{b}');
-    expect(() => registry.get(cRef)).toThrow('Circular dependency of api factory for apiRef{c}');
+    registry.register({
+      implements: aRef,
+      deps: { b: bRef },
+      factory: () => 1,
+    });
+    registry.register({
+      implements: bRef,
+      deps: { c: cRef },
+      factory: () => 'b',
+    });
+    registry.register({
+      implements: cRef,
+      deps: { a: aRef },
+      factory: () => 'c',
+    });
+    expect(() => registry.get(aRef)).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
+    expect(() => registry.get(bRef)).toThrow(
+      'Circular dependency of api factory for apiRef{b}',
+    );
+    expect(() => registry.get(cRef)).toThrow(
+      'Circular dependency of api factory for apiRef{c}',
+    );
   });
 
   it('should throw error if dependency is not available', () => {
     const registry = new ApiTestRegistry();
-    registry.register({ implements: aRef, deps: { b: bRef }, factory: () => 1 });
+    registry.register({
+      implements: aRef,
+      deps: { b: bRef },
+      factory: () => 1,
+    });
     expect(() => registry.get(aRef)).toThrow(
       'No API factory available for dependency apiRef{b} of dependent apiRef{a}',
     );

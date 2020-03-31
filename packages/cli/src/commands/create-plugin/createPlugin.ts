@@ -25,6 +25,11 @@ import { resolve as resolvePath } from 'path';
 import { realpathSync, existsSync } from 'fs';
 import os from 'os';
 import ora from 'ora';
+import {
+  parseOwnerIds,
+  addCodeownersEntry,
+  getCodeownersFilePath,
+} from './lib/codeowners';
 
 const MARKER_SUCCESS = chalk.green(` ✔︎\n`);
 const MARKER_FAILURE = chalk.red(` ✘\n`);
@@ -125,7 +130,7 @@ export const addPluginDependencyToApp = (
   console.log();
   console.log(chalk.green(' Adding plugin as dependency in app:'));
 
-  const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
+  const pluginPackage = `@backstage/plugin-${pluginName}`;
   const packageFile = path.join(rootDir, 'packages', 'app', 'package.json');
 
   process.stdout.write(
@@ -166,7 +171,7 @@ export const addPluginToApp = (rootDir: string, pluginName: string) => {
   console.log();
   console.log(chalk.green(' Import plugin in app:'));
 
-  const pluginPackage = `@spotify-backstage/plugin-${pluginName}`;
+  const pluginPackage = `@backstage/plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
     .split('-')
     .map(name => capitalize(name))
@@ -327,6 +332,9 @@ export const movePlugin = (
 };
 
 const createPlugin = async () => {
+  const rootDir = realpathSync(process.cwd());
+  const codeownersPath = await getCodeownersFilePath(rootDir);
+
   const questions: Question[] = [
     {
       type: 'input',
@@ -344,15 +352,40 @@ const createPlugin = async () => {
       },
     },
   ];
+
+  if (codeownersPath) {
+    questions.push({
+      type: 'input',
+      name: 'owner',
+      message: chalk.blue(
+        'Enter the owner(s) of the plugin. If specified, this will be added to CODEOWNERS for the plugin path. [optional]',
+      ),
+      validate: (value: any) => {
+        if (!value) {
+          return true;
+        }
+
+        const ownerIds = parseOwnerIds(value);
+        if (!ownerIds) {
+          return chalk.red(
+            'The owner must be a space separated list of team names (e.g. @org/team-name), usernames (e.g. @username), or the email addresses of users (e.g. user@example.com).',
+          );
+        }
+
+        return true;
+      },
+    });
+  }
+
   const answers: Answers = await inquirer.prompt(questions);
 
-  const rootDir = realpathSync(process.cwd());
   const appPackage = resolvePath(rootDir, 'packages', 'app');
-  const cliPackage = resolvePath(__dirname, '..', '..');
+  const cliPackage = resolvePath(__dirname, '..', '..', '..');
   const templateFolder = resolvePath(cliPackage, 'templates', 'default-plugin');
   const tempDir = path.join(os.tmpdir(), answers.id);
   const pluginDir = path.join(rootDir, 'plugins', answers.id);
   const version = require(resolvePath(cliPackage, 'package.json')).version;
+  const ownerIds = parseOwnerIds(answers.owner);
 
   console.log();
   console.log(chalk.green('Creating the plugin...'));
@@ -369,11 +402,19 @@ const createPlugin = async () => {
       addPluginToApp(rootDir, answers.id);
     }
 
+    if (ownerIds && ownerIds.length) {
+      await addCodeownersEntry(
+        codeownersPath!,
+        `/plugins/${answers.id}`,
+        ownerIds,
+      );
+    }
+
     console.log();
     console.log(
       chalk.green(
         `🥇  Successfully created ${chalk.cyan(
-          `@spotify-backstage/plugin-${answers.id}`,
+          `@backstage/plugin-${answers.id}`,
         )}`,
       ),
     );

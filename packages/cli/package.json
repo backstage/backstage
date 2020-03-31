@@ -1,12 +1,25 @@
 {
-  "name": "@spotify-backstage/cli",
-  "version": "0.1.0",
-  "main": "dist",
-  "license": "Apache-2.0",
+  "name": "@backstage/cli",
+  "description": "CLI for developing Backstage plugins and apps",
+  "version": "0.1.1-alpha.0",
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spotify/backstage",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist",
   "scripts": {
     "exec": "npx ts-node ./src",
-    "build": "tsc --outDir dist --noEmit false --module CommonJS",
+    "build": "backstage-cli build-cache -- tsc --outDir dist --noEmit false --module CommonJS",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "start": "nodemon ."
@@ -19,10 +32,12 @@
     "@types/ora": "^3.2.0",
     "@types/react-dev-utils": "^9.0.4",
     "@types/recursive-readdir": "^2.2.0",
+    "@types/tar": "^4.0.3",
     "@types/webpack": "^4.41.7",
     "@types/webpack-dev-server": "^3.10.0",
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
+    "tar": "^6.0.1",
     "ts-node": "^8.6.2"
   },
   "bin": {

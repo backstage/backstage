@@ -43,7 +43,7 @@ In the root folder you have some configuration for typescript and jest, the test
 In the `src` folder we get to the interesting bits. Check out the `plugin.ts`:
 
 ```jsx
-import { createPlugin } from '@spotify-backstage/core';
+import { createPlugin } from '@backstage/core';
 import ExampleComponent from './components/ExampleComponent';
 
 export default createPlugin({

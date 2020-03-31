@@ -18,14 +18,24 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import WelcomePage from './WelcomePage';
 import { ThemeProvider } from '@material-ui/core';
-import { BackstageTheme } from '@spotify-backstage/core';
+import {
+  BackstageTheme,
+  ApiProvider,
+  ApiRegistry,
+  errorApiRef,
+} from '@backstage/core';
 
 describe('WelcomePage', () => {
   it('should render', () => {
+    // TODO: use common test app with mock implementations of all core APIs
     const rendered = render(
-      <ThemeProvider theme={BackstageTheme}>
-        <WelcomePage />
-      </ThemeProvider>,
+      <ApiProvider
+        apis={ApiRegistry.from([[errorApiRef, { post: jest.fn() }]])}
+      >
+        <ThemeProvider theme={BackstageTheme}>
+          <WelcomePage />
+        </ThemeProvider>
+      </ApiProvider>,
     );
     expect(rendered.baseElement).toBeInTheDocument();
   });

@@ -15,11 +15,13 @@
  */
 
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
-import { BackstageTheme, createApp } from '@spotify-backstage/core';
+import { BackstageTheme, createApp } from '@backstage/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
+import ErrorDisplay from './components/ErrorDisplay';
 import * as plugins from './plugins';
+import apis, { errorDialogForwarder } from './apis';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -40,6 +42,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const app = createApp();
+app.registerApis(apis);
 app.registerPlugin(...Object.values(plugins));
 const AppComponent = app.build();
 
@@ -48,6 +51,7 @@ const App: FC<{}> = () => {
   return (
     <CssBaseline>
       <ThemeProvider theme={BackstageTheme}>
+        <ErrorDisplay forwarder={errorDialogForwarder} />
         <Router>
           <Root>
             <AppComponent />

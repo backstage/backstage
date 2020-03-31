@@ -15,10 +15,24 @@
  */
 
 import React, { Fragment } from 'react';
-import { IconButton, List, ListItem, ListItemIcon, ListItemText, Popover } from '@material-ui/core';
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Popover,
+} from '@material-ui/core';
 import { default as KebabMenuIcon } from './MenuVertical';
 
-const ActionItem = ({ label, secondaryLabel, icon, disabled = false, onClick, WrapperComponent = React.Fragment }) => {
+const ActionItem = ({
+  label,
+  secondaryLabel,
+  icon,
+  disabled = false,
+  onClick,
+  WrapperComponent = React.Fragment,
+}) => {
   return (
     <WrapperComponent>
       <ListItem
@@ -48,7 +62,13 @@ const HeaderActionMenu = ({ actionItems }) => {
         onClick={() => setOpen(true)}
         data-testid="header-action-menu"
         ref={anchorElRef}
-        style={{ color: 'white', height: 56, width: 56, marginRight: -4, padding: 0 }}
+        style={{
+          color: 'white',
+          height: 56,
+          width: 56,
+          marginRight: -4,
+          padding: 0,
+        }}
       >
         <KebabMenuIcon titleAccess="menu" style={{ fontSize: 40 }} />
       </IconButton>

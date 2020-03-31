@@ -1,11 +1,14 @@
 {
-  "name": "@spotify-backstage/plugin-home-page",
-  "version": "0.1.0",
+  "name": "@backstage/plugin-home-page",
+  "version": "0.1.1-alpha.0",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
+  "private": true,
   "devDependencies": {
-    "@spotify-backstage/cli": "^0.1.0",
-    "@spotify-backstage/core": "^0.1.0",
+    "@backstage/cli": "^0.1.1-alpha.0",
+    "@backstage/core": "^0.1.1-alpha.0",
+    "@material-ui/core": "^4.9.1",
+    "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -13,12 +16,10 @@
     "@types/node": "^12.0.0",
     "@types/testing-library__jest-dom": "5.0.2",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "@material-ui/core": "^4.9.1",
-    "@material-ui/icons": "^4.9.1"
+    "react-dom": "^16.12.0"
   },
   "scripts": {
-    "build": "backstage-cli plugin:build",
+    "build": "backstage-cli build-cache -- backstage-cli plugin:build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test"
   },

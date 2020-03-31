@@ -20,3 +20,23 @@ Additional open sourced plugins would be added to the `plugins` directory in thi
 While we encourage using the open soure model, integrators that want to experiment with
 Backstage internally may also choose to develop closed source plugins in a manner that suits
 them best, for example in their respective Backstage source repository.
+
+## Any plans for integrating with other repository managers such as Gitlab or Bitbucket?
+
+We chose Github by the fact that it is the tool that we are most familiar with and that will naturally
+lead to integrations for Github specifically being developed in an early stage.
+
+Hosting this project on Github does not exclude integrations with other alternatives such as Gitlab or
+Bitbucket. We believe that in time there will be plugins that will provide functionality for these tools
+as well. Hopefully contributed by the community.
+
+And note that implementations of Backstage can be hosted wherever you feel suits your needs best.
+
+## Can Backstage by used for other things than developer portals?
+
+Yes. 
+
+The core frontend framework could be used for building any large-scale web application where multiple teams are building separate parts of the app, but you want the overall experience to be consistent.
+
+That being said, in [Phase 2](https://github.com/spotify/backstage#project-roadmap) of the project we will add features that are needed for developer portals and systems for managing software ecosystems. Our ambition will be to keep Backstage modular.
+

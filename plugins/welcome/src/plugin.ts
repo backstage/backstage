@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@spotify-backstage/core';
+import { createPlugin } from '@backstage/core';
 import WelcomePage from './components/WelcomePage';
 
 export default createPlugin({
   id: 'welcome',
-  register({ router }) {
+  register({ router, featureFlags }) {
     router.registerRoute('/', WelcomePage);
+
+    featureFlags.register('enable-welcome-box');
   },
 });

@@ -16,12 +16,14 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
+import mockFetch from 'jest-fetch-mock';
 import ExampleComponent from './ExampleComponent';
 import { ThemeProvider } from '@material-ui/core';
-import { BackstageTheme } from '@spotify-backstage/core';
+import { BackstageTheme } from '@backstage/core';
 
 describe('ExampleComponent', () => {
   it('should render', () => {
+    mockFetch.mockResponse(() => new Promise(() => {}));
     const rendered = render(
       <ThemeProvider theme={BackstageTheme}>
         <ExampleComponent />

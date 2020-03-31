@@ -17,13 +17,7 @@
 import React, { FC } from 'react';
 import { Typography, Link, Grid } from '@material-ui/core';
 import HomePageTimer from '../HomepageTimer';
-import {
-  Content,
-  InfoCard,
-  Header,
-  Page,
-  pageTheme,
-} from '@spotify-backstage/core';
+import { Content, InfoCard, Header, Page, pageTheme } from '@backstage/core';
 import SquadTechHealth from './SquadTechHealth';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -64,7 +58,7 @@ const HomePage: FC<{}> = () => {
         <Grid container direction="row" spacing={3}>
           <Grid item xs={6}>
             <Typography variant="h3">Things you own</Typography>
-            <InfoCard maxWidth>
+            <InfoCard>
               <TableContainer>
                 <Table size="small" aria-label="a dense table">
                   <TableHead>

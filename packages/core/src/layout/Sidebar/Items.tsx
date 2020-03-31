@@ -94,7 +94,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
       onClick={onClick}
       underline="none"
     >
-      <div className={classes.iconContainer}>
+      <div data-testid="login-button" className={classes.iconContainer}>
         <Icon fontSize="small" />
       </div>
       <Typography variant="subtitle1" className={classes.label}>

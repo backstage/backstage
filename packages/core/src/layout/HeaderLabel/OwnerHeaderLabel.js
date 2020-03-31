@@ -50,7 +50,8 @@ class OwnerHeaderLabel extends Component {
     const notVerified = isBadSquad && (
       <Link href="https://spotify.stackenterprise.co/a/4412/23">
         <span className={classes.notVerified}>
-          <StatusError style={{ position: 'relative', top: 2 }} /> Squad not verified!
+          <StatusError style={{ position: 'relative', top: 2 }} /> Squad not
+          verified!
         </span>
       </Link>
     );
