@@ -16,86 +16,50 @@
 
 import fs from 'fs-extra';
 import path from 'path';
+import { promisify } from 'util';
 import handlebars from 'handlebars';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
 import recursive from 'recursive-readdir';
-import { execSync } from 'child_process';
+import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
-import { realpathSync, existsSync } from 'fs';
 import os from 'os';
-import ora from 'ora';
 import {
   parseOwnerIds,
   addCodeownersEntry,
   getCodeownersFilePath,
 } from './lib/codeowners';
+import { Task } from '../../helpers/tasks';
+const exec = promisify(execCb);
 
-const MARKER_SUCCESS = chalk.green(` ✔︎\n`);
-const MARKER_FAILURE = chalk.red(` ✘\n`);
+async function checkExists(rootDir: string, id: string) {
+  Task.section('Checking if the plugin ID is available');
 
-const checkExists = (rootDir: string, id: string) => {
-  console.log();
-  console.log(chalk.green(' Checking if the plugin already exists:'));
+  await Task.forItem('checking', id, async () => {
+    const destination = path.join(rootDir, 'plugins', id);
 
-  const destination = path.join(rootDir, 'plugins', id);
-
-  if (fs.existsSync(destination)) {
-    console.log(
-      chalk.red(
-        `  plugin ID\t${chalk.cyan(id)} already exists${MARKER_FAILURE}`,
-      ),
-    );
-    throw new Error(
-      `A plugin with the same name already exists: ${chalk.cyan(
-        destination.replace(`${rootDir}/`, ''),
-      )}\nPlease try again with a different plugin ID`,
-    );
-  }
-  console.log(
-    chalk.green(`  plugin ID\t${chalk.cyan(id)} is available${MARKER_SUCCESS}`),
-  );
-};
-
-export const createTemporaryPluginFolder = (tempDir: string) => {
-  console.log();
-  console.log(chalk.green(' Creating a temporary plugin directory:'));
-
-  process.stdout.write(
-    chalk.green(`  creating\t${chalk.cyan('temporary')} directory`),
-  );
-  try {
-    fs.mkdirSync(tempDir);
-    process.stdout.write(MARKER_SUCCESS);
-  } catch (e) {
-    process.stdout.write(MARKER_FAILURE);
-    throw new Error(
-      `Failed to create temporary plugin directory: ${e.message}`,
-    );
-  }
-};
-
-export const createFileFromTemplate = (
-  source: string,
-  destination: string,
-  answers: Answers,
-  version: string,
-) => {
-  const template = fs.readFileSync(source);
-  const compiled = handlebars.compile(template.toString());
-  const contents = compiled({
-    name: path.basename(destination),
-    version,
-    ...answers,
+    if (await fs.pathExists(destination)) {
+      const existing = chalk.cyan(destination.replace(`${rootDir}/`, ''));
+      throw new Error(
+        `A plugin with the same name already exists: ${existing}\nPlease try again with a different plugin ID`,
+      );
+    }
   });
-  try {
-    fs.writeFileSync(destination, contents);
-    process.stdout.write(MARKER_SUCCESS);
-  } catch (e) {
-    process.stdout.write(MARKER_FAILURE);
-    throw new Error(`Failed to create file: ${destination}: ${e.message}`);
-  }
-};
+}
+
+export async function createTemporaryPluginFolder(tempDir: string) {
+  Task.section('Creating a temporary plugin directory');
+
+  await Task.forItem('creating', 'temporary directory', async () => {
+    try {
+      await fs.mkdir(tempDir);
+    } catch (error) {
+      throw new Error(
+        `Failed to create temporary plugin directory: ${error.message}`,
+      );
+    }
+  });
+}
 
 const sortObjectByKeys = (obj: { [name in string]: string }) => {
   return Object.keys(obj)
@@ -109,9 +73,9 @@ const sortObjectByKeys = (obj: { [name in string]: string }) => {
 const capitalize = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
-const addExportStatement = (file: string, exportStatement: string) => {
-  const newContents = fs
-    .readFileSync(file, 'utf8')
+async function addExportStatement(file: string, exportStatement: string) {
+  const contents = await fs.readFile(file, 'utf8');
+  const newContents = contents
     .split('\n')
     .filter(Boolean) // get rid of empty lines
     .concat([exportStatement])
@@ -119,28 +83,22 @@ const addExportStatement = (file: string, exportStatement: string) => {
     .concat(['']) // newline at end of file
     .join('\n');
 
-  fs.writeFileSync(file, newContents, 'utf8');
-};
+  await fs.writeFile(file, newContents, 'utf8');
+}
 
-export const addPluginDependencyToApp = (
+export async function addPluginDependencyToApp(
   rootDir: string,
   pluginName: string,
   version: string,
-) => {
-  console.log();
-  console.log(chalk.green(' Adding plugin as dependency in app:'));
+) {
+  Task.section('Adding plugin as dependency in app');
 
   const pluginPackage = `@backstage/plugin-${pluginName}`;
-  const packageFile = path.join(rootDir, 'packages', 'app', 'package.json');
+  const packageFilePath = 'packages/app/package.json';
+  const packageFile = path.join(rootDir, packageFilePath);
 
-  process.stdout.write(
-    chalk.green(
-      `  processing\t${chalk.cyan(packageFile.replace(`${rootDir}/`, ''))}`,
-    ),
-  );
-
-  try {
-    const packageFileContent = fs.readFileSync(packageFile, 'utf-8');
+  await Task.forItem('processing', packageFilePath, async () => {
+    const packageFileContent = await fs.readFile(packageFile, 'utf-8');
     const packageFileJson = JSON.parse(packageFileContent);
     const dependencies = packageFileJson.dependencies;
 
@@ -152,24 +110,18 @@ export const addPluginDependencyToApp = (
 
     dependencies[pluginPackage] = `^${version}`;
     packageFileJson.dependencies = sortObjectByKeys(dependencies);
-    fs.writeFileSync(
-      packageFile,
-      `${JSON.stringify(packageFileJson, null, 2)}\n`,
-      'utf-8',
-    );
-  } catch (e) {
-    process.stdout.write(MARKER_FAILURE);
-    throw new Error(
-      `Failed to add plugin as dependency in app: ${packageFile}: ${e.message}`,
-    );
-  }
+    const newContents = `${JSON.stringify(packageFileJson, null, 2)}\n`;
 
-  process.stdout.write(MARKER_SUCCESS);
-};
+    await fs.writeFile(packageFile, newContents, 'utf-8').catch(error => {
+      throw new Error(
+        `Failed to add plugin as dependency to app: ${packageFile}: ${error.message}`,
+      );
+    });
+  });
+}
 
-export const addPluginToApp = (rootDir: string, pluginName: string) => {
-  console.log();
-  console.log(chalk.green(' Import plugin in app:'));
+export async function addPluginToApp(rootDir: string, pluginName: string) {
+  Task.section('Import plugin in app');
 
   const pluginPackage = `@backstage/plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
@@ -177,30 +129,17 @@ export const addPluginToApp = (rootDir: string, pluginName: string) => {
     .map(name => capitalize(name))
     .join('');
   const pluginExport = `export { default as ${pluginNameCapitalized} } from '${pluginPackage}';`;
-  const pluginsFile = path.join(
-    rootDir,
-    'packages',
-    'app',
-    'src',
-    'plugins.ts',
-  );
-  process.stdout.write(
-    chalk.green(
-      `  processing\t${chalk.cyan(pluginsFile.replace(`${rootDir}/`, ''))}`,
-    ),
-  );
+  const pluginsFilePath = 'packages/app/src/plugins.ts';
+  const pluginsFile = resolvePath(rootDir, pluginsFilePath);
 
-  try {
-    addExportStatement(pluginsFile, pluginExport);
-  } catch (e) {
-    process.stdout.write(MARKER_FAILURE);
-    throw new Error(
-      `Failed to import plugin in app: ${pluginsFile}: ${e.message}`,
-    );
-  }
-
-  process.stdout.write(MARKER_SUCCESS);
-};
+  await Task.forItem('processing', pluginsFilePath, async () => {
+    await addExportStatement(pluginsFile, pluginExport).catch(error => {
+      throw new Error(
+        `Failed to import plugin in app: ${pluginsFile}: ${error.message}`,
+      );
+    });
+  });
+}
 
 export const createFromTemplateDir = async (
   templateFolder: string,
@@ -208,131 +147,91 @@ export const createFromTemplateDir = async (
   answers: Answers,
   version: string,
 ) => {
-  console.log();
-  console.log(chalk.green(' Reading template files:'));
-
-  let files = [];
-
-  try {
-    files = await recursive(templateFolder);
-    console.log(
-      chalk.green(
-        `  reading\t${chalk.cyan(`${files.length} files`)}${MARKER_SUCCESS}`,
-      ),
-    );
-  } catch (e) {
-    console.log(
-      chalk.red(`  reading\t${chalk.cyan('0')} files${MARKER_FAILURE}`),
-    );
-    throw new Error(`Failed to read files in template directory: ${e.message}`);
-  }
-
-  console.log();
-  console.log(chalk.green(' Setting up the plugin files:'));
-  files.forEach(file => {
-    process.stdout.write(
-      chalk.green(`  processing\t${chalk.cyan(path.basename(file))}`),
-    );
-    fs.ensureDirSync(
-      file
-        .replace(templateFolder, destinationFolder)
-        .replace(path.basename(file), ''),
-    );
-    if (file.endsWith('hbs')) {
-      createFileFromTemplate(
-        file,
-        file.replace(templateFolder, destinationFolder).replace(/\.hbs$/, ''),
-        answers,
-        version,
-      );
-    } else {
-      try {
-        fs.copyFileSync(file, file.replace(templateFolder, destinationFolder));
-        process.stdout.write(MARKER_SUCCESS);
-      } catch (e) {
-        process.stdout.write(MARKER_FAILURE);
-        throw new Error(
-          `Failed to copy file: ${file.replace(
-            templateFolder,
-            destinationFolder,
-          )}: ${e.message}`,
-        );
-      }
-    }
+  Task.section('Setting up plugin files');
+  const files = await recursive(templateFolder).catch(error => {
+    throw new Error(`Failed to read template directory: ${error.message}`);
   });
-};
 
-const cleanUp = async (tempDir: string, id: string) => {
-  console.log(
-    chalk.green(
-      `It seems that something went wrong when creating the plugin 🤔 `,
-    ),
-  );
-  console.log(
-    chalk.green('We are going to clean up, and then you can try again.'),
-  );
-  const spinner = ora({
-    prefixText: chalk.green(` Cleaning up\t${chalk.cyan(id)}`),
-    spinner: 'arc',
-    color: 'green',
-  }).start();
-  try {
-    await fs.remove(tempDir);
-    spinner.succeed();
-  } catch (e) {
-    spinner.fail();
-    console.log(chalk.red(`Failed to cleanup: ${e.message}`));
+  for (const file of files) {
+    const destinationFile = file.replace(templateFolder, destinationFolder);
+    path.dirname(file);
+    await fs.ensureDir(path.dirname(file));
+
+    if (file.endsWith('.hbs')) {
+      await Task.forItem('templating', file, async () => {
+        const destination = destinationFile.replace(/\.hbs$/, '');
+
+        const template = await fs.readFile(path.basename(file));
+        const compiled = handlebars.compile(template.toString());
+        const contents = compiled({
+          name: path.basename(destination),
+          version,
+          ...answers,
+        });
+
+        await fs.writeFile(destination, contents).catch(error => {
+          throw new Error(
+            `Failed to create file: ${destination}: ${error.message}`,
+          );
+        });
+      });
+    } else {
+      await Task.forItem('copying', file, async () => {
+        await fs.copyFile(file, destinationFile).catch(error => {
+          const destination = destinationFile;
+          throw new Error(
+            `Failed to copy file to ${destination} : ${error.message}`,
+          );
+        });
+      });
+    }
   }
 };
 
-const buildPlugin = async (pluginFolder: string) => {
-  console.log();
-  console.log(chalk.green(` Building the plugin:`));
+async function cleanUp(tempDir: string, id: string) {
+  Task.log('It seems that something went wrong when creating the plugin 🤔');
+  Task.log('We are going to clean up, and then you can try again.');
+
+  await Task.forItem('Cleaning up', id, async () => {
+    await fs.remove(tempDir);
+  });
+}
+
+async function buildPlugin(pluginFolder: string) {
+  Task.section('Building the plugin');
 
   const commands = ['yarn install', 'yarn build'];
   for (const command of commands) {
-    const spinner = ora({
-      prefixText: chalk.green(`  executing\t${chalk.cyan(command)}`),
-      spinner: 'arc',
-      color: 'green',
-    }).start();
-    try {
+    await Task.forItem('executing', command, async () => {
       process.chdir(pluginFolder);
-      execSync(command, { timeout: 60000, stdio: 'pipe' });
-      spinner.succeed();
-    } catch (e) {
-      spinner.fail();
-      process.stdout.write(e.stderr);
-      process.stdout.write(e.stdout);
-      throw new Error(`Could not execute command ${chalk.cyan(command)}`);
-    }
-  }
-};
 
-export const movePlugin = (
+      await exec(command).catch(error => {
+        process.stdout.write(error.stderr);
+        process.stdout.write(error.stdout);
+        throw new Error(`Could not execute command ${chalk.cyan(command)}`);
+      });
+    });
+  }
+}
+
+export async function movePlugin(
   tempDir: string,
   destination: string,
   id: string,
-) => {
-  console.log();
-  console.log(chalk.green(` Moving the plugin:`));
+) {
+  Task.section('Moving the plugin to final location');
 
-  process.stdout.write(
-    chalk.green(`  moving\t${chalk.cyan(id)} to final location`),
-  );
-  try {
-    fs.moveSync(tempDir, destination);
-    process.stdout.write(MARKER_SUCCESS);
-  } catch (e) {
-    process.stdout.write(MARKER_FAILURE);
-    throw new Error(
-      `Failed to move plugin from ${tempDir} to ${destination}: ${e.message}`,
-    );
-  }
-};
+  await Task.forItem('moving', id, async () => {
+    await fs.move(tempDir, destination).catch(error => {
+      throw new Error(
+        `Failed to move plugin from ${tempDir} to ${destination}: ${error.message}`,
+      );
+    });
+  });
+}
 
-const createPlugin = async () => {
-  const rootDir = realpathSync(process.cwd());
+export default async () => {
+  const rootDir = await fs.realpath(process.cwd());
   const codeownersPath = await getCodeownersFilePath(rootDir);
 
   const questions: Question[] = [
@@ -387,19 +286,19 @@ const createPlugin = async () => {
   const version = require(resolvePath(cliPackage, 'package.json')).version;
   const ownerIds = parseOwnerIds(answers.owner);
 
-  console.log();
-  console.log(chalk.green('Creating the plugin...'));
+  Task.log();
+  Task.log('Creating the plugin...');
 
   try {
-    checkExists(rootDir, answers.id);
-    createTemporaryPluginFolder(tempDir);
+    await checkExists(rootDir, answers.id);
+    await createTemporaryPluginFolder(tempDir);
     await createFromTemplateDir(templateFolder, tempDir, answers, version);
-    movePlugin(tempDir, pluginDir, answers.id);
+    await movePlugin(tempDir, pluginDir, answers.id);
     await buildPlugin(pluginDir);
 
-    if (existsSync(appPackage)) {
-      addPluginDependencyToApp(rootDir, answers.id, version);
-      addPluginToApp(rootDir, answers.id);
+    if (await fs.pathExists(appPackage)) {
+      await addPluginDependencyToApp(rootDir, answers.id, version);
+      await addPluginToApp(rootDir, answers.id);
     }
 
     if (ownerIds && ownerIds.length) {
@@ -410,18 +309,16 @@ const createPlugin = async () => {
       );
     }
 
-    console.log();
-    console.log(
-      chalk.green(
-        `🥇  Successfully created ${chalk.cyan(
-          `@backstage/plugin-${answers.id}`,
-        )}`,
-      ),
+    Task.log();
+    Task.log(
+      `🥇  Successfully created ${chalk.cyan(
+        `@backstage/plugin-${answers.id}`,
+      )}`,
     );
+    Task.log();
+  } catch (error) {
     console.log();
-  } catch (e) {
-    console.log();
-    console.log(`${chalk.red(e.message)}`);
+    console.log(`${chalk.red(error.message)}`);
     console.log();
     await cleanUp(tempDir, answers.id);
     console.log();
@@ -429,5 +326,3 @@ const createPlugin = async () => {
     console.log();
   }
 };
-
-export default createPlugin;
