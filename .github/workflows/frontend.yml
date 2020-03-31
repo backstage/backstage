@@ -53,6 +53,6 @@ jobs:
       - run: yarn build
       - run: yarn test
       - name: yarn bundle, if app was changed
-        run: git diff --quiet origin/master HEAD -- packages/app || yarn bundle
+        run: git diff --quiet origin/master HEAD -- packages/app packages/core || yarn bundle
       - name: verify storybook
         run: yarn workspace storybook build-storybook
