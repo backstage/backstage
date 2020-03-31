@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React, { ComponentClass, Component, SFC } from 'react';
 
-export default class ErrorBoundary extends Component {
+
+type Props = {
+  slackChannel: string;
+};
+
+type State = {
+  error?: Error;
+  errorInfo?: string;
+  onError?: (error: Error, errorInfo: string) => null;
+}
+
+const ErrorBoundary: ComponentClass<Props, State> = class ErrorBoundary extends Component<Props, State> {
   constructor(props) {
     super(props);
 
     this.state = {
-      error: null,
-      errorInfo: null,
+      error: undefined,
+      errorInfo: undefined,
       onError: props.onError,
-    };
+    }
   }
 
   componentDidCatch(error, errorInfo) {
@@ -33,8 +44,8 @@ export default class ErrorBoundary extends Component {
     this.setState({ error, errorInfo });
 
     // Exposed for testing
-    if (ErrorBoundary.onError) {
-      ErrorBoundary.onError(error, errorInfo);
+    if (this.state.onError) {
+      this.state.onError(error, errorInfo);
     }
   }
 
@@ -52,9 +63,15 @@ export default class ErrorBoundary extends Component {
   }
 }
 
-// Importing Error would mean importing a lot of stuff
-// will take it up in a separate PR
-const Error = ({ slackChannel }) => {
+export default ErrorBoundary;
+
+type EProps = {
+  error?: Error;
+  errorInfo?: string;
+  slackChannel: string;
+}
+
+const Error: SFC<EProps> = ({ slackChannel }) => {
   return (
     <div>
       Something went wrong here. Please contact {slackChannel} for help.
