@@ -15,13 +15,18 @@
  */
 
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
-import { BackstageTheme, createApp } from '@backstage/core';
+import {
+  BackstageThemeLight,
+  BackstageThemeDark,
+  createApp,
+} from '@backstage/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import ErrorDisplay from './components/ErrorDisplay';
 import * as plugins from './plugins';
 import apis, { errorDialogForwarder } from './apis';
+import { ThemeContextType, ThemeContext, useThemeType } from './ThemeContext';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -48,17 +53,42 @@ const AppComponent = app.build();
 
 const App: FC<{}> = () => {
   useStyles();
+  const [theme, toggleTheme] = useThemeType(
+    localStorage.getItem('theme') || 'auto',
+  );
+
+  let backstageTheme = BackstageThemeLight;
+  switch (theme) {
+    case 'light':
+      backstageTheme = BackstageThemeLight;
+      break;
+    case 'dark':
+      backstageTheme = BackstageThemeDark;
+      break;
+    default:
+      backstageTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? BackstageThemeDark
+        : BackstageThemeLight;
+      break;
+  }
+
+  const themeContext: ThemeContextType = {
+    theme,
+    toggleTheme,
+  };
   return (
-    <CssBaseline>
-      <ThemeProvider theme={BackstageTheme}>
-        <ErrorDisplay forwarder={errorDialogForwarder} />
-        <Router>
-          <Root>
-            <AppComponent />
-          </Root>
-        </Router>
+    <ThemeContext.Provider value={themeContext}>
+      <ThemeProvider theme={backstageTheme}>
+        <CssBaseline>
+          <ErrorDisplay forwarder={errorDialogForwarder} />
+          <Router>
+            <Root>
+              <AppComponent />
+            </Root>
+          </Router>
+        </CssBaseline>
       </ThemeProvider>
-    </CssBaseline>
+    </ThemeContext.Provider>
   );
 };
 
