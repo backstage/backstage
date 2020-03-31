@@ -33,8 +33,11 @@ describe('testUtils.Keyboard', () => {
     const rendered = render(
       <form onSubmit={handleSubmit}>
         <input onChange={({ target: { value } }) => typed1.push(value)} />
-        {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-        <input onChange={({ target: { value } }) => typed2.push(value)} autoFocus />
+        <input
+          onChange={({ target: { value } }) => typed2.push(value)}
+          /* eslint-disable-next-line jsx-a11y/no-autofocus */
+          autoFocus
+        />
         <input onChange={({ target: { value } }) => typed3.push(value)} />
       </form>,
     );
@@ -64,9 +67,18 @@ describe('testUtils.Keyboard', () => {
 
     const rendered = render(
       <form onSubmit={handleSubmit}>
-        <input defaultValue="1" onChange={({ target: { value } }) => typed1.push(value)} />
-        <input defaultValue="2" onChange={({ target: { value } }) => typed2.push(value)} />
-        <input defaultValue="3" onChange={({ target: { value } }) => typed3.push(value)} />
+        <input
+          defaultValue="1"
+          onChange={({ target: { value } }) => typed1.push(value)}
+        />
+        <input
+          defaultValue="2"
+          onChange={({ target: { value } }) => typed2.push(value)}
+        />
+        <input
+          defaultValue="3"
+          onChange={({ target: { value } }) => typed3.push(value)}
+        />
       </form>,
     );
 

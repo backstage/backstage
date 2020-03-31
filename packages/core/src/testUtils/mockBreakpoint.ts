@@ -29,7 +29,9 @@ const queryToBreakpoint = {
 function toBreakpoint(query: string) {
   const breakpoint = queryToBreakpoint[query];
   if (!breakpoint) {
-    throw new Error(`received unknown media query in breakpoint mock: '${query}'`);
+    throw new Error(
+      `received unknown media query in breakpoint mock: '${query}'`,
+    );
   }
   return breakpoint;
 }
