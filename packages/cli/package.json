@@ -61,7 +61,7 @@
     "inquirer": "^7.0.4",
     "ora": "^4.0.3",
     "react-dev-utils": "^10.2.0",
-    "react-scripts": "^3.4.0",
+    "react-scripts": "^3.4.1",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^5.0.2",
     "rollup": "^2.1.0",

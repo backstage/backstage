@@ -18,15 +18,13 @@ const rollup = require('rollup'); // "import" is not working for some reason...
 import rollupConfig from './rollup.config';
 
 export default async () => {
-  for (const config of rollupConfig) {
-    const inputOptions = {
-      input: config.input,
-      plugins: config.plugins,
-    };
-    const outputOptions = config.output;
+  const inputOptions = {
+    input: rollupConfig.input,
+    plugins: rollupConfig.plugins,
+  };
+  const outputOptions = rollupConfig.output;
 
-    const bundle = await rollup.rollup(inputOptions);
-    await bundle.generate(outputOptions);
-    await bundle.write(outputOptions);
-  }
+  const bundle = await rollup.rollup(inputOptions);
+  await bundle.generate(outputOptions);
+  await bundle.write(outputOptions);
 };

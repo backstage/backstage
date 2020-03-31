@@ -2,7 +2,6 @@
   "name": "@backstage/plugin-welcome",
   "version": "0.1.1-alpha.0",
   "main": "build/index.cjs.js",
-  "module": "build/index.esm.js",
   "types": "build/index.d.ts",
   "private": false,
   "license": "Apache-2.0",
