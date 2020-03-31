@@ -15,15 +15,11 @@
  */
 import fse from 'fs-extra';
 import path from 'path';
-// import handlebars from 'handlebars';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
-// import recursive from 'recursive-readdir';
-// import { execSync } from 'child_process';
-// import { resolve as resolvePath } from 'path';
-import { realpathSync /*existsSync*/ } from 'fs';
-// import os from 'os';
+import { realpathSync } from 'fs';
 import ora from 'ora';
+// import os from 'os';
 
 const MARKER_SUCCESS = chalk.green(` ✔︎`);
 const MARKER_FAILURE = chalk.red(` ✘`);
