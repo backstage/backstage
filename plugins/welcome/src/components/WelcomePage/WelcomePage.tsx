@@ -35,7 +35,6 @@ import {
   SupportButton,
 } from '@backstage/core';
 import ErrorButton from './ErrorButton';
-import ToggleFeatureFlagButton from './ToggleFeatureFlagButton';
 
 const WelcomePage: FC<{}> = () => {
   const profile = { givenName: '' };
@@ -54,7 +53,7 @@ const WelcomePage: FC<{}> = () => {
         </ContentHeader>
         <Grid container>
           <Grid item xs={12} md={6}>
-            <InfoCard>
+            <InfoCard maxWidth>
               <Typography variant="body1" gutterBottom>
                 You now have a running instance of Backstage!
                 <span role="img" aria-label="confetti">
@@ -122,9 +121,6 @@ const WelcomePage: FC<{}> = () => {
               </Typography>
               <br />
               <ErrorButton />
-              <br />
-              <br />
-              <ToggleFeatureFlagButton />
             </InfoCard>
           </Grid>
         </Grid>

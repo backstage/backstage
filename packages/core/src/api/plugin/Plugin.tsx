@@ -15,13 +15,7 @@
  */
 
 import { ComponentType } from 'react';
-import {
-  PluginOutput,
-  RoutePath,
-  RouteOptions,
-  FeatureFlagName,
-} from './types';
-import { validateBrowserCompat, validateFlagName } from '../app/FeatureFlags';
+import { PluginOutput, RoutePath, RouteOptions } from './types';
 import { Widget } from '../widgetView/types';
 
 export type PluginConfig = {
@@ -32,7 +26,6 @@ export type PluginConfig = {
 export type PluginHooks = {
   router: RouterHooks;
   widgets: WidgetHooks;
-  featureFlags: FeatureFlagsHooks;
 };
 
 export type RouterHooks = {
@@ -53,10 +46,6 @@ export type WidgetHooks = {
   add(widget: Widget): void;
 };
 
-export type FeatureFlagsHooks = {
-  register(name: FeatureFlagName): void;
-};
-
 export const registerSymbol = Symbol('plugin-register');
 export const outputSymbol = Symbol('plugin-output');
 
@@ -64,10 +53,6 @@ export default class Plugin {
   private storedOutput?: PluginOutput[];
 
   constructor(private readonly config: PluginConfig) {}
-
-  getId(): string {
-    return this.config.id;
-  }
 
   output(): PluginOutput[] {
     if (this.storedOutput) {
@@ -91,13 +76,6 @@ export default class Plugin {
       widgets: {
         add(widget: Widget) {
           outputs.push({ type: 'widget', widget });
-        },
-      },
-      featureFlags: {
-        register(name) {
-          validateBrowserCompat();
-          validateFlagName(name);
-          outputs.push({ type: 'feature-flag', name });
         },
       },
     });

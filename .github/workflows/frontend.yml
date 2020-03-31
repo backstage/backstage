@@ -42,5 +42,3 @@ jobs:
       - run: yarn lint
       - run: yarn build
       - run: yarn test
-      - name: verify storybook
-        run: yarn workspace storybook build-storybook

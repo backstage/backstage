@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import { PageTheme } from '../Page';
 
-const useStyles = makeStyles<PageTheme>({
+const useStyles = makeStyles({
   wave: {
     position: 'absolute',
     height: '100%',
@@ -27,15 +26,11 @@ const useStyles = makeStyles<PageTheme>({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: -1,
+    'z-index': -1,
   },
 });
 
-type Props = {
-  theme: PageTheme;
-};
-
-const Waves: FC<Props> = ({ theme }) => {
+const Waves = ({ theme }) => {
   const classes = useStyles();
   const [color1, color2] = theme.gradient.colors;
 
@@ -46,7 +41,6 @@ const Waves: FC<Props> = ({ theme }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={classes.wave}
-      data-testid="wave-svg"
     >
       <rect width="1440" height="94" fill="url(#paint0_linear)" />
       <g opacity="0.8">
@@ -90,6 +84,7 @@ const Waves: FC<Props> = ({ theme }) => {
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor={color1} />
+          <stop offset="1" stopColor={color2} />
         </linearGradient>
         <linearGradient
           id="paint1_linear"

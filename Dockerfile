@@ -8,17 +8,10 @@ COPY plugins /app/plugins
 
 RUN yarn
 
-COPY lerna.json tsconfig.json .eslintignore .eslintrc.js /app/
-COPY scripts/ /app/scripts
+COPY . .
 
 RUN yarn build
 
 FROM nginx:mainline
 
 COPY --from=builder /app/packages/app/build /usr/share/nginx/html
-
-COPY docker/default.conf.template /etc/nginx/conf.d/default.conf.template
-COPY docker/run.sh /usr/local/bin/run.sh
-CMD run.sh
-
-ENV PORT 80

@@ -2,10 +2,7 @@ name: CLI Test
 
 on:
   pull_request:
-    paths:
-      - '.github/workflows/cli.yml'
-      - 'packages/cli/**'
-      - 'packages/core/**'
+    paths: ['.github/workflows/cli.yml', 'packages/cli/**']
     types: [opened, reopened, edited, synchronize]
 
 jobs:

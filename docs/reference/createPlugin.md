@@ -17,14 +17,13 @@ type PluginHooks = {
 };
 ```
 
-- [Read more about the router here](createPlugin-router.md)
-- [Read more about feature flags here](createPlugin-feature-flags.md)
+[Read more about the router here](createPlugin-router.md)
 
 ## Example Uses
 
 ### Creating a basic plugin
 
-Showcasing adding multiple routes, a feature flag and a redirect.
+Showcasing adding multiple routes and a redirect.
 
 ```jsx
 import { createPlugin } from '@backstage/core';
@@ -32,9 +31,7 @@ import ExampleComponent from './components/ExampleComponent';
 
 export default createPlugin({
   id: 'new-plugin',
-  register({ router, featureFlags }) {
-    featureFlags.register('enable-example-component');
-
+  register({ router }) {
     router.registerRoute('/new-plugin', ExampleComponent);
   },
 });
