@@ -18,12 +18,12 @@ import React, { ComponentClass, Component, SFC } from 'react';
 
 type Props = {
   slackChannel: string;
+  onError?: (error: Error, errorInfo: string) => null;
 };
 
 type State = {
   error?: Error;
   errorInfo?: string;
-  onError?: (error: Error, errorInfo: string) => null;
 };
 
 const ErrorBoundary: ComponentClass<
@@ -36,7 +36,6 @@ const ErrorBoundary: ComponentClass<
     this.state = {
       error: undefined,
       errorInfo: undefined,
-      onError: props.onError,
     };
   }
 
@@ -46,8 +45,8 @@ const ErrorBoundary: ComponentClass<
     this.setState({ error, errorInfo });
 
     // Exposed for testing
-    if (this.state.onError) {
-      this.state.onError(error, errorInfo);
+    if (this.props.onError) {
+      this.props.onError(error, errorInfo);
     }
   }
 
