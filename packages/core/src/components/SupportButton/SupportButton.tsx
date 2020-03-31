@@ -78,7 +78,11 @@ const SupportButton: FC<Props> = ({
 
   return (
     <Fragment>
-      <Button color="primary" onClick={onClickHandler}>
+      <Button
+        data-testid="support-button"
+        color="primary"
+        onClick={onClickHandler}
+      >
         <HelpIcon className={classes.leftIcon} />
         Support
       </Button>

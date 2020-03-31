@@ -13,21 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {
-  ApiHolder,
-  ApiRegistry,
-  errorApiRef,
-  featureFlagsApiRef,
-  FeatureFlags,
-} from '@backstage/core';
-import { ErrorDisplayForwarder } from './components/ErrorDisplay/ErrorDisplay';
-
-const builder = ApiRegistry.builder();
-
-export const errorDialogForwarder = new ErrorDisplayForwarder();
-builder.add(errorApiRef, errorDialogForwarder);
-
-builder.add(featureFlagsApiRef, new FeatureFlags());
-
-export default builder.build() as ApiHolder;
+import '@testing-library/cypress/add-commands';

@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  ApiHolder,
-  ApiRegistry,
-  errorApiRef,
-  featureFlagsApiRef,
-  FeatureFlags,
-} from '@backstage/core';
-import { ErrorDisplayForwarder } from './components/ErrorDisplay/ErrorDisplay';
+import React from 'react';
+import { render } from '@testing-library/react';
+import { pageTheme } from '../Page/PageThemeProvider';
+import Waves from './Waves';
 
-const builder = ApiRegistry.builder();
-
-export const errorDialogForwarder = new ErrorDisplayForwarder();
-builder.add(errorApiRef, errorDialogForwarder);
-
-builder.add(featureFlagsApiRef, new FeatureFlags());
-
-export default builder.build() as ApiHolder;
+describe('<Waves/>', () => {
+  it('should render svg', () => {
+    const rendered = render(<Waves theme={pageTheme.home} />);
+    rendered.getByTestId('wave-svg');
+  });
+});

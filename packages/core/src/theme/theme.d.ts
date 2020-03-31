@@ -40,5 +40,12 @@ export type BackstageTheme = Theme & {
     linkHover: string;
     link: string;
     gold: string;
+    bursts: {
+      fontColor: string;
+      slackChannelText: string;
+      backgroundColor: {
+        default: string;
+      };
+    };
   };
 };

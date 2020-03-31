@@ -69,16 +69,8 @@ $ yarn start
 
 The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
 
-### (Optional)Try on Docker
-
-Run the following commands if you have Docker environment
-
-```bash
-$ docker build . -t spotify/backstage
-$ docker run --rm -it -p 80:80 spotify/backstage
-```
-
-Then open http://localhost/ on your browser.
+For more complex development environment configuration, see the 
+[Development Environment](docs/getting-started/development-environment.md) section of the Getting Started docs.
 
 ## Documentation
 

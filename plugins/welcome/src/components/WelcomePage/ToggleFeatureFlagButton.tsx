@@ -16,25 +16,34 @@
 
 import React, { FC } from 'react';
 import { Button } from '@material-ui/core';
-import { errorApiRef, useApi } from '@backstage/core';
+import { FeatureFlagState, featureFlagsApiRef, useApi } from '@backstage/core';
 
-const ErrorButton: FC<{}> = () => {
-  const errorApi = useApi(errorApiRef);
+const ToggleFeatureFlagButton: FC<{}> = () => {
+  const featureFlagsApi = useApi(featureFlagsApiRef);
+  const flags = featureFlagsApi.getFlags();
+  const flagState = flags.get('enable-welcome-box');
 
   const handleClick = () => {
-    errorApi.post(new Error('Oh no!'));
+    const newValue =
+      flagState === FeatureFlagState.On
+        ? FeatureFlagState.Off
+        : FeatureFlagState.On;
+    flags.set('enable-welcome-box', newValue);
+    window.location.reload();
   };
 
   return (
     <Button
-      data-testid="error-button"
       variant="contained"
-      color="primary"
+      color="secondary"
       onClick={handleClick}
+      data-testid="button-switch-feature-flag-state"
     >
-      Trigger an error!
+      {flagState === FeatureFlagState.On
+        ? 'Disable "enable-welcome-box" feature flag'
+        : 'Enable "enable-welcome-box" feature flag'}
     </Button>
   );
 };
 
-export default ErrorButton;
+export default ToggleFeatureFlagButton;
