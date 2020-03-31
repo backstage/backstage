@@ -33,7 +33,7 @@ export const checkExists = async (rootDir: string, pluginName: string) => {
     color: 'green',
   }).start();
   try {
-    let pathExist = await fse.pathExists(destination);
+    const pathExist = await fse.pathExists(destination);
     if (pathExist) {
       spinner.succeed();
       console.log(
@@ -115,6 +115,9 @@ export const removeStatementContainingID = async (file: string, ID: string) => {
   if (finalContent === originalContent)
     throw new Error(`File was not modified.`);
 };
+
+const capitalize = (str: string): string =>
+  str.charAt(0).toUpperCase() + str.slice(1);
 
 export const removeExportStatementFromPlugins = async (
   pluginsFile: string,
@@ -223,9 +226,6 @@ export const removePluginDependencyFromApp = async (
     );
   }
 };
-
-const capitalize = (str: string): string =>
-  str.charAt(0).toUpperCase() + str.slice(1);
 
 const removePlugin = async () => {
   const questions: Question[] = [
