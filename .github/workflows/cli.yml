@@ -34,7 +34,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install
+      - name: yarn install
+        run: yarn install --frozen-lockfile
       - run: yarn build
       # This creates a new plugin and pollutes the workspace, so it should be run last.
       - name: verify app serve and plugin creation on Windows

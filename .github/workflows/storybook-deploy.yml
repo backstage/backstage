@@ -39,7 +39,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-      - run: yarn install
+      - name: yarn install
+        run: yarn install --frozen-lockfile
       - name: build storybook
         run: yarn workspace storybook build-storybook
       - name: deploy storybook to gh-pages
