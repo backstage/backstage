@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "build": "backstage-cli plugin:build",
+    "build": "backstage-cli build-cache -- backstage-cli plugin:build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test"
   },

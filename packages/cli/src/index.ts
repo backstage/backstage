@@ -19,6 +19,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import createPluginCommand from './commands/create-plugin/createPlugin';
 import watch from './commands/watch-deps';
+import buildCache from './commands/build-cache';
 import lintCommand from './commands/lint';
 import testCommand from './commands/testCommand';
 import appBuild from './commands/app/build';
@@ -75,6 +76,23 @@ const main = (argv: string[]) => {
     .command('watch-deps')
     .description('Watch all dependencies while running another command')
     .action(actionHandler(watch));
+
+  program
+    .command('build-cache')
+    .description('Wrap build command with a cache')
+    .option(
+      '--input <dirs>',
+      'List of input directories that invalidate the cache [.]',
+      (value, acc) => acc.concat(value),
+      [],
+    )
+    .option('--output <dir>', 'Output directory to cache', 'dist')
+    .option(
+      '--cache-dir <dir>',
+      'Cache dir',
+      '<repoRoot>/node_modules/.cache/backstage-builds',
+    )
+    .action(actionHandler(buildCache));
 
   program.on('command:*', () => {
     console.log();

@@ -14,6 +14,8 @@ jobs:
 
     env:
       CI: true
+      BACKSTAGE_CACHE_DIR: <repoRoot>/.backstage-build-cache
+      BACKSTAGE_CACHE_MAX_ENTRIES: 2
 
     steps:
       - uses: actions/checkout@v2
@@ -34,6 +36,13 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: cache build cache
+        uses: actions/cache@v1
+        with:
+          path: .backstage-build-cache
+          key: build-cache-${{ github.sha }}
+          restore-keys: |
+            build-cache-
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -43,5 +52,7 @@ jobs:
       - run: yarn lint
       - run: yarn build
       - run: yarn test
+      - name: yarn bundle, if app was changed
+        run: git diff --quiet origin/master HEAD -- packages/app packages/core || yarn bundle
       - name: verify storybook
         run: yarn workspace storybook build-storybook
