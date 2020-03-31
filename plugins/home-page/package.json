@@ -1,8 +1,8 @@
 {
   "name": "@backstage/plugin-home-page",
   "version": "0.1.1-alpha.0",
-  "main": "build/index.cjs.js",
-  "types": "build/index.d.ts",
+  "main": "dist/index.cjs.js",
+  "types": "dist/index.d.ts",
   "license": "Apache-2.0",
   "private": false,
   "scripts": {

@@ -24,7 +24,7 @@ import imageFiles from 'rollup-plugin-image-files';
 export default {
   input: 'src/index.ts',
   output: {
-    file: 'build/index.cjs.js',
+    file: 'dist/index.cjs.js',
     format: 'cjs',
   },
   plugins: [
