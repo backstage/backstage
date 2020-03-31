@@ -15,13 +15,21 @@
  */
 
 import chalk from 'chalk';
+import fs from 'fs-extra';
+import handlebars from 'handlebars';
 import ora from 'ora';
+import { basename, dirname } from 'path';
+import recursive from 'recursive-readdir';
 
 const TASK_NAME_MAX_LENGTH = 14;
 
 export class Task {
   static log(name: string = '') {
     process.stdout.write(`${chalk.green(name)}\n`);
+  }
+
+  static error(message: string = '') {
+    process.stdout.write(`\n${chalk.red(message)}\n\n`);
   }
 
   static section(name: string) {
@@ -48,6 +56,46 @@ export class Task {
     } catch (error) {
       spinner.fail();
       throw error;
+    }
+  }
+}
+
+export async function templatingTask(
+  templateDir: string,
+  destinationDir: string,
+  context: any,
+) {
+  const files = await recursive(templateDir).catch(error => {
+    throw new Error(`Failed to read template directory: ${error.message}`);
+  });
+
+  for (const file of files) {
+    const destinationFile = file.replace(templateDir, destinationDir);
+    await fs.ensureDir(dirname(destinationFile));
+
+    if (file.endsWith('.hbs')) {
+      await Task.forItem('templating', basename(file), async () => {
+        const destination = destinationFile.replace(/\.hbs$/, '');
+
+        const template = await fs.readFile(file);
+        const compiled = handlebars.compile(template.toString());
+        const contents = compiled({ name: basename(destination), ...context });
+
+        await fs.writeFile(destination, contents).catch(error => {
+          throw new Error(
+            `Failed to create file: ${destination}: ${error.message}`,
+          );
+        });
+      });
+    } else {
+      await Task.forItem('copying', basename(file), async () => {
+        await fs.copyFile(file, destinationFile).catch(error => {
+          const destination = destinationFile;
+          throw new Error(
+            `Failed to copy file to ${destination} : ${error.message}`,
+          );
+        });
+      });
     }
   }
 }

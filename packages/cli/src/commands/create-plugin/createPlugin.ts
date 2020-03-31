@@ -17,10 +17,8 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { promisify } from 'util';
-import handlebars from 'handlebars';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
-import recursive from 'recursive-readdir';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
@@ -29,12 +27,10 @@ import {
   addCodeownersEntry,
   getCodeownersFilePath,
 } from './lib/codeowners';
-import { Task } from '../../helpers/tasks';
+import { Task, templatingTask } from '../../helpers/tasks';
 const exec = promisify(execCb);
 
 async function checkExists(rootDir: string, id: string) {
-  Task.section('Checking if the plugin ID is available');
-
   await Task.forItem('checking', id, async () => {
     const destination = path.join(rootDir, 'plugins', id);
 
@@ -48,8 +44,6 @@ async function checkExists(rootDir: string, id: string) {
 }
 
 export async function createTemporaryPluginFolder(tempDir: string) {
-  Task.section('Creating a temporary plugin directory');
-
   await Task.forItem('creating', 'temporary directory', async () => {
     try {
       await fs.mkdir(tempDir);
@@ -91,8 +85,6 @@ export async function addPluginDependencyToApp(
   pluginName: string,
   version: string,
 ) {
-  Task.section('Adding plugin as dependency in app');
-
   const pluginPackage = `@backstage/plugin-${pluginName}`;
   const packageFilePath = 'packages/app/package.json';
   const packageFile = path.join(rootDir, packageFilePath);
@@ -121,8 +113,6 @@ export async function addPluginDependencyToApp(
 }
 
 export async function addPluginToApp(rootDir: string, pluginName: string) {
-  Task.section('Import plugin in app');
-
   const pluginPackage = `@backstage/plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
     .split('-')
@@ -141,65 +131,13 @@ export async function addPluginToApp(rootDir: string, pluginName: string) {
   });
 }
 
-export const createFromTemplateDir = async (
-  templateFolder: string,
-  destinationFolder: string,
-  answers: Answers,
-  version: string,
-) => {
-  Task.section('Setting up plugin files');
-  const files = await recursive(templateFolder).catch(error => {
-    throw new Error(`Failed to read template directory: ${error.message}`);
-  });
-
-  for (const file of files) {
-    const destinationFile = file.replace(templateFolder, destinationFolder);
-    path.dirname(file);
-    await fs.ensureDir(path.dirname(file));
-
-    if (file.endsWith('.hbs')) {
-      await Task.forItem('templating', file, async () => {
-        const destination = destinationFile.replace(/\.hbs$/, '');
-
-        const template = await fs.readFile(path.basename(file));
-        const compiled = handlebars.compile(template.toString());
-        const contents = compiled({
-          name: path.basename(destination),
-          version,
-          ...answers,
-        });
-
-        await fs.writeFile(destination, contents).catch(error => {
-          throw new Error(
-            `Failed to create file: ${destination}: ${error.message}`,
-          );
-        });
-      });
-    } else {
-      await Task.forItem('copying', file, async () => {
-        await fs.copyFile(file, destinationFile).catch(error => {
-          const destination = destinationFile;
-          throw new Error(
-            `Failed to copy file to ${destination} : ${error.message}`,
-          );
-        });
-      });
-    }
-  }
-};
-
-async function cleanUp(tempDir: string, id: string) {
-  Task.log('It seems that something went wrong when creating the plugin 🤔');
-  Task.log('We are going to clean up, and then you can try again.');
-
-  await Task.forItem('Cleaning up', id, async () => {
+async function cleanUp(tempDir: string) {
+  await Task.forItem('remove', 'temporary directory', async () => {
     await fs.remove(tempDir);
   });
 }
 
 async function buildPlugin(pluginFolder: string) {
-  Task.section('Building the plugin');
-
   const commands = ['yarn install', 'yarn build'];
   for (const command of commands) {
     await Task.forItem('executing', command, async () => {
@@ -219,8 +157,6 @@ export async function movePlugin(
   destination: string,
   id: string,
 ) {
-  Task.section('Moving the plugin to final location');
-
   await Task.forItem('moving', id, async () => {
     await fs.move(tempDir, destination).catch(error => {
       throw new Error(
@@ -280,7 +216,7 @@ export default async () => {
 
   const appPackage = resolvePath(rootDir, 'packages', 'app');
   const cliPackage = resolvePath(__dirname, '..', '..', '..');
-  const templateFolder = resolvePath(cliPackage, 'templates', 'default-plugin');
+  const templateDir = resolvePath(cliPackage, 'templates', 'default-plugin');
   const tempDir = path.join(os.tmpdir(), answers.id);
   const pluginDir = path.join(rootDir, 'plugins', answers.id);
   const version = require(resolvePath(cliPackage, 'package.json')).version;
@@ -290,14 +226,26 @@ export default async () => {
   Task.log('Creating the plugin...');
 
   try {
+    Task.section('Checking if the plugin ID is available');
     await checkExists(rootDir, answers.id);
+
+    Task.section('Creating a temporary plugin directory');
     await createTemporaryPluginFolder(tempDir);
-    await createFromTemplateDir(templateFolder, tempDir, answers, version);
+
+    Task.section('Preparing files');
+    await templatingTask(templateDir, tempDir, { ...answers, version });
+
+    Task.section('Moving to final location');
     await movePlugin(tempDir, pluginDir, answers.id);
+
+    Task.section('Building the plugin');
     await buildPlugin(pluginDir);
 
     if (await fs.pathExists(appPackage)) {
+      Task.section('Adding plugin as dependency in app');
       await addPluginDependencyToApp(rootDir, answers.id, version);
+
+      Task.section('Import plugin in app');
       await addPluginToApp(rootDir, answers.id);
     }
 
@@ -317,12 +265,13 @@ export default async () => {
     );
     Task.log();
   } catch (error) {
-    console.log();
-    console.log(`${chalk.red(error.message)}`);
-    console.log();
-    await cleanUp(tempDir, answers.id);
-    console.log();
-    console.log(`🔥  ${chalk.red('Failed to create plugin!')}`);
-    console.log();
+    Task.error(error.message);
+
+    Task.log('It seems that something went wrong when creating the plugin 🤔');
+    Task.log('We are going to clean up, and then you can try again.');
+
+    Task.section('Cleanup');
+    await cleanUp(tempDir);
+    Task.error('🔥  Failed to create plugin!');
   }
 };
