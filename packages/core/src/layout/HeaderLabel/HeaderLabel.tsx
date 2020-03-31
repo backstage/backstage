@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Typography, withStyles } from '@material-ui/core';
+import React, { FC } from 'react';
+import { Typography, makeStyles } from '@material-ui/core';
 import { Link } from '@material-ui/core';
+import { BackstageTheme } from '../../theme/theme';
 
-const style = theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     textAlign: 'left',
     margin: theme.spacing(2),
@@ -40,27 +40,38 @@ const style = theme => ({
     fontSize: 14,
     height: '16px',
   },
-});
+}));
 
-class HeaderLabel extends Component {
-  static propTypes = {
-    label: PropTypes.string.isRequired,
-    value: PropTypes.node,
-    url: PropTypes.string,
-  };
+type HeaderLabelContentProps = {
+  value: React.ReactNode;
+  className: string;
+};
 
-  render() {
-    const { label, value, url, classes } = this.props;
-    const content = (
-      <Typography className={classes.value}>{value || '<Unknown>'}</Typography>
-    );
-    return (
-      <span className={classes.root}>
-        <Typography className={classes.label}>{label}</Typography>
-        {url ? <Link href={url}>{content}</Link> : content}
-      </span>
-    );
-  }
-}
+const HeaderLabelContent: FC<HeaderLabelContentProps> = ({
+  value,
+  className,
+}) => <Typography className={className}>{value}</Typography>;
 
-export default withStyles(style)(HeaderLabel);
+type HeaderLabelProps = {
+  label: string;
+  value?: HeaderLabelContentProps['value'];
+  url?: string;
+};
+
+const HeaderLabel: FC<HeaderLabelProps> = ({ label, value, url }) => {
+  const classes = useStyles();
+  const content = (
+    <HeaderLabelContent
+      className={classes.value}
+      value={value || '<Unknown>'}
+    />
+  );
+  return (
+    <span className={classes.root}>
+      <Typography className={classes.label}>{label}</Typography>
+      {url ? <Link href={url}>{content}</Link> : content}
+    </span>
+  );
+};
+
+export default HeaderLabel;
