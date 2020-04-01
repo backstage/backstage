@@ -16,15 +16,33 @@
 
 const rollup = require('rollup'); // "import" is not working for some reason...
 import rollupConfig from './rollup.config';
+import { Command } from 'commander';
+import { run } from '../../helpers/run';
 
-export default async () => {
+export default async (cmd: Command) => {
   const inputOptions = {
     input: rollupConfig.input,
     plugins: rollupConfig.plugins,
   };
   const outputOptions = rollupConfig.output;
 
-  const bundle = await rollup.rollup(inputOptions);
-  await bundle.generate(outputOptions);
-  await bundle.write(outputOptions);
+  if (cmd.watch) {
+    await run('rollup -c -w');
+    // const watchOptions = {
+    //   ...inputOptions,
+    //   output: [outputOptions],
+    //   watch: {
+    //     include: ['src/**/*'],
+    //     chokidar: true,
+    //   },
+    // };
+    // const watcher = rollup.watch(watchOptions);
+    // watcher.on('event', (event: any) => {
+    //   process.stdout.write(event);
+    // });
+  } else {
+    const bundle = await rollup.rollup(inputOptions);
+    await bundle.generate(outputOptions);
+    await bundle.write(outputOptions);
+  }
 };
