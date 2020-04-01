@@ -30,6 +30,13 @@ describe('<HeaderLabel />', () => {
     expect(rendered.getByText('<Unknown>')).toBeInTheDocument();
   });
 
+  it('should say unknown when passing null as value prop', () => {
+    const rendered = render(
+      wrapInThemedTestApp(<HeaderLabel label="Label" value={null} />),
+    );
+    expect(rendered.getByText('<Unknown>')).toBeInTheDocument();
+  });
+
   it('should have value', () => {
     const rendered = render(
       wrapInThemedTestApp(<HeaderLabel label="Label" value="Value" />),
@@ -43,7 +50,7 @@ describe('<HeaderLabel />', () => {
         <HeaderLabel label="Label" value="Value" url="/test" />,
       ),
     );
-    const anchor = rendered.container.querySelector('a');
+    const anchor = rendered.container.querySelector('a') as HTMLAnchorElement;
     expect(rendered.getByText('Value')).toBeInTheDocument();
     expect(anchor.href).toBe('http://localhost/test');
   });
