@@ -32,3 +32,4 @@ export { default as CircleProgress } from './components/CircleProgress';
 export { default as Progress } from './components/Progress';
 export { default as SupportButton } from './components/SupportButton';
 export { default as SortableTable } from './components/SortableTable';
+export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
