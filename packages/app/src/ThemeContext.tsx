@@ -27,6 +27,9 @@ export const ThemeContext = React.createContext<ThemeContextType>({
 export function useThemeType(themeId: string): [string, () => void] {
   const [theme, setTheme] = useState(themeId);
   useEffect(() => {
+    if (!window.matchMedia) {
+      return () => {};
+    }
     const mql = window.matchMedia('(prefers-color-scheme: dark)');
     const darkListener = (event: MediaQueryListEvent) => {
       if (localStorage.getItem('theme') === 'auto') {
@@ -48,6 +51,12 @@ export function useThemeType(themeId: string): [string, () => void] {
       setTheme('dark');
       localStorage.setItem('theme', 'dark');
     } else if (theme === 'dark') {
+      if (!window.matchMedia) {
+        setTheme('light');
+        localStorage.setItem('theme', 'light');
+        setTheme('light');
+        return;
+      }
       setTheme('auto');
       localStorage.setItem('theme', 'auto');
       setTheme('auto');
