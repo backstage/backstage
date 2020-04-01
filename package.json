@@ -12,6 +12,7 @@
     "create-plugin": "backstage-cli create-plugin",
     "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push; fi",
     "lint": "cross-env CI=true lerna run lint --since origin/master --",
+    "lerna": "lerna",
     "storybook": "yarn workspace storybook start"
   },
   "workspaces": {

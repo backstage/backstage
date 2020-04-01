@@ -48,12 +48,21 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: yarn install
         run: yarn install --frozen-lockfile
-      - run: yarn lint
-      - run: yarn build
-      - run: yarn test
+
+      - name: lint
+        run: yarn lerna -- run lint --since origin/master
+
+      - name: build
+        run: yarn build
+
+      - name: test
+        run: yarn lerna -- run test --since origin/master -- --coverage
+
       - name: yarn bundle, if app was changed
-        run: git diff --quiet origin/master HEAD -- packages/app packages/core || yarn bundle
+        run: git diff --quiet origin/master HEAD -- yarn.lock packages/app packages/core || yarn bundle
+
       - name: verify storybook
         run: yarn workspace storybook build-storybook
