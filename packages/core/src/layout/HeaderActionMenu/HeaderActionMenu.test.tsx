@@ -41,7 +41,7 @@ describe('<ComponentContextMenu />', () => {
       'aria-disabled',
       'true',
     );
-    fireEvent.click(rendered.queryByText('Some label'));
+    fireEvent.click(rendered.queryByText('Some label') as Node);
     expect(onClickFunction).toHaveBeenCalled();
     // We do not expect the dropdown to disappear after click
     expect(rendered.queryByText('Some label')).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe('<ComponentContextMenu />', () => {
     expect(onClickFunction).not.toHaveBeenCalled();
     fireEvent.click(rendered.getByTestId('header-action-menu'));
     expect(onClickFunction).not.toHaveBeenCalled();
-    fireEvent.click(rendered.queryByText('Secondary label'));
+    fireEvent.click(rendered.queryByText('Secondary label') as Node);
     expect(onClickFunction).toHaveBeenCalled();
     // We do not expect the dropdown to disappear after click
     expect(rendered.queryByText('Some label')).toBeInTheDocument();

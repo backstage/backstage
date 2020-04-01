@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from 'react';
+import React, { Fragment, ReactElement, FC, ComponentType } from 'react';
 import {
   IconButton,
   List,
@@ -22,10 +22,20 @@ import {
   ListItemIcon,
   ListItemText,
   Popover,
+  ListItemTextProps,
 } from '@material-ui/core';
 import { default as KebabMenuIcon } from './MenuVertical';
 
-const ActionItem = ({
+type ActionItemProps = {
+  label?: ListItemTextProps['primary'];
+  secondaryLabel?: ListItemTextProps['secondary'];
+  icon?: ReactElement;
+  disabled?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  WrapperComponent?: ComponentType;
+};
+
+const ActionItem: FC<ActionItemProps> = ({
   label,
   secondaryLabel,
   icon,
@@ -52,7 +62,11 @@ const ActionItem = ({
   );
 };
 
-const HeaderActionMenu = ({ actionItems }) => {
+export type HeaderActionMenuProps = {
+  actionItems: ActionItemProps[];
+};
+
+const HeaderActionMenu: FC<HeaderActionMenuProps> = ({ actionItems }) => {
   const [open, setOpen] = React.useState(false);
   const anchorElRef = React.useRef(null);
 
@@ -80,8 +94,10 @@ const HeaderActionMenu = ({ actionItems }) => {
         onClose={() => setOpen(false)}
       >
         <List>
-          {actionItems.map(actionItem => {
-            return <ActionItem key={actionItem.label} {...actionItem} />;
+          {actionItems.map((actionItem, i) => {
+            return (
+              <ActionItem key={`header-action-menu-${i}`} {...actionItem} />
+            );
           })}
         </List>
       </Popover>
