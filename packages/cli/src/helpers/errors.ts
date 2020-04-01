@@ -37,10 +37,10 @@ export class ExitCodeError extends CustomError {
 
 export function exitWithError(error: Error): never {
   if (error instanceof ExitCodeError) {
-    process.stderr.write(`${chalk.red(error.message)}\n`);
+    process.stderr.write(`\n${chalk.red(error.message)}\n\n`);
     process.exit(error.code);
   } else {
-    process.stderr.write(`${chalk.red(`${error}`)}\n`);
+    process.stderr.write(`\n${chalk.red(`${error}`)}\n\n`);
     process.exit(1);
   }
 }

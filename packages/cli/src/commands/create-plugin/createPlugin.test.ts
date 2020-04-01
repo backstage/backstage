@@ -14,115 +14,55 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import del from 'del';
-import {
-  createFileFromTemplate,
-  createFromTemplateDir,
-  createTemporaryPluginFolder,
-  movePlugin,
-} from './createPlugin';
+import { createTemporaryPluginFolder, movePlugin } from './createPlugin';
 
 describe('createPlugin', () => {
   describe('createPluginFolder', () => {
-    it('should create a temporary plugin directory in the correct place', () => {
+    it('should create a temporary plugin directory in the correct place', async () => {
       const id = 'testPlugin';
       const tempDir = path.join(os.tmpdir(), id);
       try {
-        createTemporaryPluginFolder(tempDir);
-        expect(fs.existsSync(tempDir)).toBe(true);
+        await createTemporaryPluginFolder(tempDir);
+        await expect(fs.pathExists(tempDir)).resolves.toBe(true);
         expect(tempDir).toMatch(id);
       } finally {
-        del.sync(tempDir, { force: true });
+        await del(tempDir, { force: true });
       }
     });
 
-    it('should not create a temporary plugin directory if it already exists', () => {
+    it('should not create a temporary plugin directory if it already exists', async () => {
       const id = 'testPlugin';
       const tempDir = path.join(os.tmpdir(), id);
       try {
-        createTemporaryPluginFolder(tempDir);
-        expect(fs.existsSync(tempDir)).toBe(true);
-        expect(() => createTemporaryPluginFolder(tempDir)).toThrowError(
+        await createTemporaryPluginFolder(tempDir);
+        await expect(fs.pathExists(tempDir)).resolves.toBe(true);
+        await expect(createTemporaryPluginFolder(tempDir)).rejects.toThrow(
           /Failed to create temporary plugin directory/,
         );
       } finally {
-        del.sync(tempDir, { force: true });
-      }
-    });
-  });
-
-  describe('createFileFromTemplate', () => {
-    it('should generate a valid output with inserted values', () => {
-      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
-      try {
-        const sourceData =
-          '{"name": "@backstage/{{id}}", "version": "{{version}}"}';
-        const targetData = '{"name": "@backstage/foo", "version": "0.0.0"}';
-        const sourcePath = path.join(tempDir, 'in.hbs');
-        const targetPath = path.join(tempDir, 'out.json');
-        fs.writeFileSync(sourcePath, sourceData);
-
-        createFileFromTemplate(sourcePath, targetPath, { id: 'foo' }, '0.0.0');
-
-        expect(fs.existsSync(targetPath)).toBe(true);
-        expect(fs.readFileSync(targetPath).toString()).toBe(targetData);
-      } finally {
-        del.sync(tempDir, { force: true });
-      }
-    });
-  });
-
-  describe('createFromTemplateDir', () => {
-    it('should create sub-directories and files', async () => {
-      const templateRootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
-      const templateSubDir = fs.mkdtempSync(path.join(templateRootDir, 'sub-'));
-      fs.writeFileSync(path.join(templateSubDir, 'test.txt'), 'testing');
-
-      const destinationRootDir = fs.mkdtempSync(
-        path.join(os.tmpdir(), 'test-'),
-      );
-      const subDir = path.join(
-        destinationRootDir,
-        path.basename(templateSubDir),
-      );
-      const testFile = path.join(
-        destinationRootDir,
-        path.basename(templateSubDir),
-        'test.txt',
-      );
-      try {
-        await createFromTemplateDir(
-          templateRootDir,
-          destinationRootDir,
-          {},
-          '0.0.0',
-        );
-        expect(fs.existsSync(subDir)).toBe(true);
-        expect(fs.existsSync(testFile)).toBe(true);
-      } finally {
-        await del(templateRootDir, { force: true });
-        await del(destinationRootDir, { force: true });
+        await del(tempDir, { force: true });
       }
     });
   });
 
   describe('movePlugin', () => {
-    it('should move the temporary plugin directory to its final place', () => {
+    it('should move the temporary plugin directory to its final place', async () => {
       const id = 'testPlugin';
       const tempDir = path.join(os.tmpdir(), id);
-      const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-'));
+      const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-'));
       const pluginDir = path.join(rootDir, 'plugins', id);
       try {
-        createTemporaryPluginFolder(tempDir);
-        movePlugin(tempDir, pluginDir, id);
-        expect(fs.existsSync(pluginDir)).toBe(true);
+        await createTemporaryPluginFolder(tempDir);
+        await movePlugin(tempDir, pluginDir, id);
+        await expect(fs.pathExists(pluginDir)).resolves.toBe(true);
         expect(pluginDir).toMatch(`/plugins\/${id}`);
       } finally {
-        del.sync(tempDir, { force: true });
-        del.sync(rootDir, { force: true });
+        await del(tempDir, { force: true });
+        await del(rootDir, { force: true });
       }
     });
   });
