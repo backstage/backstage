@@ -41,8 +41,8 @@
     }
   },
   "lint-staged": {
-      "*.{js,jsx,ts,tsx}": [
-        "prettier --config ./prettier.config.js  --list-different --write"
-      ]
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --config ./prettier.config.js  --list-different --write"
+    ]
   }
 }
