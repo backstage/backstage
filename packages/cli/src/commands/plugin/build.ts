@@ -14,35 +14,21 @@
  * limitations under the License.
  */
 
-const rollup = require('rollup'); // "import" is not working for some reason...
-import rollupConfig from './rollup.config';
+import { rollup, watch, RollupWatchOptions, OutputOptions } from 'rollup';
+import conf from './rollup.config';
 import { Command } from 'commander';
-import { run } from '../../helpers/run';
 
 export default async (cmd: Command) => {
-  const inputOptions = {
-    input: rollupConfig.input,
-    plugins: rollupConfig.plugins,
-  };
-  const outputOptions = rollupConfig.output;
-
   if (cmd.watch) {
-    await run('rollup -c -w');
-    // const watchOptions = {
-    //   ...inputOptions,
-    //   output: [outputOptions],
-    //   watch: {
-    //     include: ['src/**/*'],
-    //     chokidar: true,
-    //   },
-    // };
-    // const watcher = rollup.watch(watchOptions);
-    // watcher.on('event', (event: any) => {
-    //   process.stdout.write(event);
-    // });
+    const watcher = watch(conf as RollupWatchOptions);
+    watcher.on('event', console.log);
+    await new Promise(() => {});
   } else {
-    const bundle = await rollup.rollup(inputOptions);
-    await bundle.generate(outputOptions);
-    await bundle.write(outputOptions);
+    const bundle = await rollup({
+      input: conf.input,
+      plugins: conf.plugins,
+    });
+    await bundle.generate(conf.output as OutputOptions);
+    await bundle.write(conf.output as OutputOptions);
   }
 };

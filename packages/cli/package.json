@@ -64,7 +64,7 @@
     "react-scripts": "^3.4.1",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^5.0.2",
-    "rollup": "^2.1.0",
+    "rollup": "^2.3.2",
     "rollup-plugin-image-files": "^1.4.2",
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-postcss": "^2.5.0",
