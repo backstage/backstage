@@ -17,6 +17,10 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         node-version: [12.x]
 
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
+
     name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
