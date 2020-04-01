@@ -35,6 +35,9 @@
     "@types/classnames": "^2.2.9",
     "moment": "^2.24.0"
   },
+  "resolutions": {
+    "**/cypress": "4.2.0"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
