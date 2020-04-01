@@ -19,6 +19,8 @@ const childProcess = require('child_process');
 const { spawn } = childProcess;
 const Browser = require('zombie');
 
+const EXPECTED_LOAD_ERRORS = /connect ECONNREFUSED|did not get to load all resources/;
+
 Browser.localhost('localhost', 3000);
 
 async function main() {
@@ -146,11 +148,15 @@ async function waitForPageWithText(
       await browser.visit(path);
       break;
     } catch (error) {
-      attempts++;
-      if (attempts > maxAttempts) {
-        throw new Error(
-          `Failed to load page '${path}', max number of attempts reached`,
-        );
+      if (error.message.match(EXPECTED_LOAD_ERRORS)) {
+        attempts++;
+        if (attempts > maxAttempts) {
+          throw new Error(
+            `Failed to load page '${path}', max number of attempts reached`,
+          );
+        }
+      } else {
+        throw error;
       }
     }
   }
@@ -164,7 +170,7 @@ async function waitForPageWithText(
 }
 
 function handleError(err) {
-  process.stdout.write(`${err.name}: ${err.message}\n`);
+  process.stdout.write(`${err.name}: ${err.stack || err.message}\n`);
   if (typeof err.code === 'number') {
     process.exit(err.code);
   } else {
