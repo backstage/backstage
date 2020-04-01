@@ -5,8 +5,6 @@
     "allowJs": true,
     "noEmit": false,
     "declarationMap": true,
-    "incremental": true,
-    "typeRoots": ["node_modules/@types"],
-    "types": ["node", "jest"]
+    "incremental": true
   }
 }
