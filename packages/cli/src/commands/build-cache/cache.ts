@@ -19,6 +19,7 @@ import { resolve as resolvePath, relative as relativePath } from 'path';
 import { runPlain, runCheck } from '../../helpers/run';
 import { Options } from './options';
 import { extractArchive, createArchive } from './archive';
+import { paths } from '../../helpers/paths';
 
 const INFO_FILE = '.backstage-build-cache';
 
@@ -58,8 +59,8 @@ type CacheInfo = {
 export class Cache {
   // Read the current cache state form the filesystem.
   static async read(options: Options) {
-    const repoPath = relativePath(options.repoRoot, process.cwd());
-    const location = resolvePath(options.cacheDir, repoPath);
+    const relativePackagePath = relativePath(paths.targetRoot, paths.targetDir);
+    const location = resolvePath(options.cacheDir, relativePackagePath);
 
     const outputInfo = await readCacheInfo(options.output);
     const localKey = outputInfo?.key;
