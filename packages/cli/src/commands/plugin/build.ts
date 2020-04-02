@@ -22,7 +22,7 @@ export default async (cmd: Command) => {
   if (cmd.watch) {
     // We're not resolving this promise because watch() doesn't have any exit event.
     // Instead we just wait until the user sends an interrupt signal.
-    return new Promise(() => {
+    await new Promise(() => {
       const watcher = watch(conf);
       watcher.on('event', event => {
         //   START        — the watcher is (re)starting
