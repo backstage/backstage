@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { run } from '../helpers/run';
-import { paths } from '../helpers/paths';
-
-export default async (cmd: Command) => {
-  const args = ['test', '--config', paths.resolveOwn('config/jest.js')];
-
-  if (cmd.watch) {
-    args.push('--watch');
-  }
-  if (cmd.coverage) {
-    args.push('--coverage');
-  }
-
-  await run('web-scripts', args, { stdio: 'inherit' });
-};
+declare module 'rollup-plugin-image-files';

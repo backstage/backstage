@@ -16,7 +16,7 @@
 
 import { resolve as resolvePath } from 'path';
 import { Command } from 'commander';
-import { runPlain } from '../../helpers/run';
+import { paths } from '../../helpers/paths';
 
 const DEFAULT_MAX_ENTRIES = 10;
 
@@ -25,13 +25,11 @@ export type Options = {
   output: string;
   cacheDir: string;
   maxCacheEntries: number;
-  repoRoot: string;
 };
 
 export async function parseOptions(cmd: Command): Promise<Options> {
-  const repoRoot = await runPlain('git rev-parse --show-toplevel');
   const argTransformer = (arg: string) =>
-    resolvePath(arg.replace(/<repoRoot>/g, repoRoot).replace(/'/g, ''));
+    resolvePath(arg.replace(/<repoRoot>/g, paths.targetRoot).replace(/'/g, ''));
 
   const inputs = cmd.input.map(argTransformer) as string[];
   if (inputs.length === 0) {
@@ -43,5 +41,5 @@ export async function parseOptions(cmd: Command): Promise<Options> {
   );
   const maxCacheEntries =
     Number(process.env.BACKSTAGE_CACHE_MAX_ENTRIES) || DEFAULT_MAX_ENTRIES;
-  return { inputs, output, cacheDir, repoRoot, maxCacheEntries };
+  return { inputs, output, cacheDir, maxCacheEntries };
 }

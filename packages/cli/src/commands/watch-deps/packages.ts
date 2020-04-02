@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
+import { paths } from '../../helpers/paths';
 
 const readFile = promisify(fs.readFile);
 
@@ -34,7 +34,7 @@ export async function findAllDeps(
   rootPackageName: string,
   blacklist: string[],
 ): Promise<Package[]> {
-  const project = new LernaProject(resolvePath('.'));
+  const project = new LernaProject(paths.targetDir);
   const packages = await project.getPackages();
   const graph = new PackageGraph(packages);
 

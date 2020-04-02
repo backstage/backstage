@@ -5,6 +5,7 @@
     "allowJs": true,
     "noEmit": false,
     "declarationMap": true,
-    "incremental": true
+    "incremental": true,
+    "module": "es6"
   }
 }
