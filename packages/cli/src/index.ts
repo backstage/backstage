@@ -17,6 +17,8 @@
 import program from 'commander';
 import chalk from 'chalk';
 import fs from 'fs';
+import { resolve as resolvePath } from 'path';
+import createAppCommand from './commands/create-app/createApp';
 import createPluginCommand from './commands/create-plugin/createPlugin';
 import watch from './commands/watch-deps';
 import buildCache from './commands/build-cache';
@@ -29,9 +31,16 @@ import pluginServe from './commands/plugin/serve';
 import { exitWithError } from './helpers/errors';
 
 const main = (argv: string[]) => {
-  const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+  const packageJson = JSON.parse(
+    fs.readFileSync(resolvePath(__dirname, '../package.json'), 'utf-8'),
+  );
 
   program.name('backstage-cli').version(packageJson.version ?? '0.0.0');
+
+  program
+    .command('create-app')
+    .description('Creates a new app in a new directory')
+    .action(actionHandler(createAppCommand));
 
   program
     .command('app:build')

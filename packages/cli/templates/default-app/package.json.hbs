@@ -1,0 +1,24 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {
+    "start": "yarn build && yarn workspace app start",
+    "build": "lerna run build",
+    "test": "cross-env CI=true lerna run test -- --coverage",
+    "create-plugin": "backstage-cli create-plugin",
+    "lint": "lerna run lint"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "plugins/*"
+    ]
+  },
+  "version": "1.0.0",
+  "devDependencies": {
+    "@backstage/cli": "^{{version}}",
+    "cross-env": "^7.0.0",
+    "lerna": "^3.20.2",
+    "prettier": "^1.19.1"
+  }
+}
