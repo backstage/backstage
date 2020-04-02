@@ -10,6 +10,7 @@
     "build": "lerna run build",
     "test": "yarn build && lerna run test --since origin/master -- --coverage",
     "lint": "lerna run lint --since origin/master --",
+    "docker-build": "yarn bundle && docker build . -t spotify/backstage",
     "create-plugin": "backstage-cli create-plugin",
     "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push; fi",
     "lerna": "lerna",
