@@ -75,8 +75,7 @@ For more complex development environment configuration, see the
 ## Documentation
 
 - [FAQs](docs/FAQ.md)
-- [Create a Plugin](docs/getting-started/create-a-plugin.md)
-- [Structure of a Plugin](docs/getting-started/structure-of-a-plugin.md)
+- [Getting Started](docs/getting-started/README.md)
 - [Frontend architecture](docs/architecture-terminology.md)
 - [API references](docs/reference/README.md)
 - Using Backstage components (TODO)
