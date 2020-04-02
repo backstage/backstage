@@ -173,7 +173,7 @@ const InfoCard: FC<Props> = ({
   }
 
   return (
-    <Card style={calculatedStyle} classes={classes}>
+    <Card style={calculatedStyle}>
       <ErrorBoundary slackChannel={slackChannel}>
         {title && (
           <>
