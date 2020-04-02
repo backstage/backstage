@@ -67,18 +67,21 @@ const sortObjectByKeys = (obj: { [name in string]: string }) => {
 const capitalize = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
-async function addExportStatement(file: string, exportStatement: string) {
-  const contents = await fs.readFile(file, 'utf8');
-  const newContents = contents
+const addExportStatement = async (
+  file: string,
+  importStatement: string,
+  exportStatement: string,
+) => {
+  const newContents = fs
+    .readFileSync(file, 'utf8')
     .split('\n')
     .filter(Boolean) // get rid of empty lines
-    .concat([exportStatement])
-    .sort()
+    .concat([importStatement, exportStatement])
     .concat(['']) // newline at end of file
     .join('\n');
 
   await fs.writeFile(file, newContents, 'utf8');
-}
+};
 
 export async function addPluginDependencyToApp(
   rootDir: string,
@@ -118,16 +121,19 @@ export async function addPluginToApp(rootDir: string, pluginName: string) {
     .split('-')
     .map(name => capitalize(name))
     .join('');
-  const pluginExport = `export { default as ${pluginNameCapitalized} } from '${pluginPackage}';`;
+  const pluginImport = `import { default as ${pluginNameCapitalized} } from '${pluginPackage}';`;
+  const pluginExport = `export { ${pluginNameCapitalized} };`;
   const pluginsFilePath = 'packages/app/src/plugins.ts';
   const pluginsFile = resolvePath(rootDir, pluginsFilePath);
 
   await Task.forItem('processing', pluginsFilePath, async () => {
-    await addExportStatement(pluginsFile, pluginExport).catch(error => {
-      throw new Error(
-        `Failed to import plugin in app: ${pluginsFile}: ${error.message}`,
-      );
-    });
+    await addExportStatement(pluginsFile, pluginImport, pluginExport).catch(
+      error => {
+        throw new Error(
+          `Failed to import plugin in app: ${pluginsFile}: ${error.message}`,
+        );
+      },
+    );
   });
 }
 
