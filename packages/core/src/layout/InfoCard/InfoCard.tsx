@@ -25,7 +25,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
-import BottomLink from './BottomLink';
+import BottomLink, { Props as BottomLinkProps } from './BottomLink';
 import { BackstageTheme } from '../../theme/theme';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -34,19 +34,18 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-const BoldHeader = withStyles({
+const BoldHeader = withStyles(theme => ({
   title: { fontWeight: 700 },
-  subheader: { paddingTop: '2px' },
-})(CardHeader);
+  subheader: { paddingTop: theme.spacing(1) },
+}))(CardHeader);
 
-const CardActionsTopRight = withStyles({
+const CardActionsTopRight = withStyles(theme => ({
   root: {
     display: 'inline-block',
-    paddingRight: '16px',
-    paddingTop: '16px',
+    padding: theme.spacing(8, 8, 0, 0),
     float: 'right',
   },
-})(CardActions);
+}))(CardActions);
 
 const VARIANT_STYLES = {
   card: {
@@ -124,12 +123,12 @@ type Props = {
   title?: ReactNode;
   subheader?: ReactNode;
   divider?: boolean;
-  deepLink?: object;
+  deepLink?: BottomLinkProps;
   slackChannel?: string;
   variant?: string;
   style?: object;
   cardStyle?: object;
-  children: ReactNode;
+  children?: ReactNode;
   headerStyle?: object;
   headerProps?: object;
   actionsClassName?: string;
@@ -145,8 +144,6 @@ const InfoCard: FC<Props> = ({
   deepLink,
   slackChannel = '#backstage',
   variant,
-  style,
-  cardStyle,
   children,
   headerStyle,
   headerProps,
@@ -156,18 +153,6 @@ const InfoCard: FC<Props> = ({
   actionsTopRight,
 }) => {
   const classes = useStyles();
-  if (style) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'InfoCard: using `style` property directly, consider migrating your style to variant in InfoCard',
-    );
-  }
-  if (cardStyle) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'InfoCard: using `cardStyle` property directly, consider migrating your style to variant in InfoCard',
-    );
-  }
 
   /**
    * If variant is specified, we build up styles for that particular variant for both
@@ -187,15 +172,8 @@ const InfoCard: FC<Props> = ({
     });
   }
 
-  // Apply the passed styles on top
-  const computedStyle = { ...calculatedStyle, ...style };
-  const computedCardStyle = {
-    ...calculatedCardStyle,
-    ...cardStyle,
-  };
-
   return (
-    <Card style={computedStyle} classes={classes}>
+    <Card style={calculatedStyle} classes={classes}>
       <ErrorBoundary slackChannel={slackChannel}>
         {title && (
           <>
@@ -213,7 +191,7 @@ const InfoCard: FC<Props> = ({
           <CardActionsTopRight>{actionsTopRight}</CardActionsTopRight>
         )}
         {divider && <Divider />}
-        <CardContent className={cardClassName} style={computedCardStyle}>
+        <CardContent className={cardClassName} style={calculatedCardStyle}>
           {children}
         </CardContent>
         {actions && (
