@@ -20,6 +20,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import imageFiles from 'rollup-plugin-image-files';
+import { RollupWatchOptions } from 'rollup';
 
 export default {
   input: 'src/index.ts',
@@ -38,4 +39,4 @@ export default {
     imageFiles(),
     typescript(),
   ],
-};
+} as RollupWatchOptions;

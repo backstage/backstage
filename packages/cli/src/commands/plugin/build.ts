@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { rollup, watch, RollupWatchOptions, OutputOptions } from 'rollup';
+import { rollup, watch, OutputOptions } from 'rollup';
 import conf from './rollup.config';
 import { Command } from 'commander';
 
 export default async (cmd: Command) => {
   if (cmd.watch) {
-    const watcher = watch(conf as RollupWatchOptions);
+    const watcher = watch(conf);
     watcher.on('event', console.log);
     await new Promise(() => {});
   } else {
