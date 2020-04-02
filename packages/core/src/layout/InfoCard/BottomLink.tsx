@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import { Link } from '@material-ui/core';
-import { Divider, ListItemText, withStyles } from '@material-ui/core';
+import { Divider, ListItemText, makeStyles } from '@material-ui/core';
 import { ListItem, ListItemIcon } from '@material-ui/core';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import grey from '@material-ui/core/colors/grey';
 import Box from '@material-ui/core/Box';
+import { BackstageTheme } from '../../theme/theme';
 
-const styles = theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     maxWidth: 'fit-content',
     padding: theme.spacing(2, 2, 2, 2.5)
@@ -31,33 +31,37 @@ const styles = theme => ({
   boxTitle: {
     margin: 0,
     color: grey[900]
-  }
-})
-class BottomLink extends Component {
-  static propTypes = {
-    link: PropTypes.string,
-    title: PropTypes.string,
-    onClick: PropTypes.func,
-  };
+  },
+}));
 
-  render() {
-    const { link, title, onClick, classes } = this.props;
-    return (
-      <div>
-        <Divider />
-        <Link href={link} onClick={onClick} highlight="none">
-          <ListItem className={classes.root}>
-            <ListItemText>
-              <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>{title}</Box>
-            </ListItemText>
-            <ListItemIcon>
-              <ArrowIcon />
-            </ListItemIcon>
-          </ListItem>
-        </Link>
-      </div>
-    );
-  }
+export type Props = {
+  link: string;
+  title: string;
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+};
+
+const BottomLink: FC<Props> = ({
+  link,
+  title,
+  onClick,
+}) => {
+  const classes = useStyles();
+  
+  return (
+    <div>
+      <Divider />
+      <Link href={link} onClick={onClick}>
+        <ListItem className={classes.root}>
+          <ListItemText>
+            <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>{title}</Box>
+          </ListItemText>
+          <ListItemIcon>
+            <ArrowIcon />
+          </ListItemIcon>
+        </ListItem>
+      </Link>
+    </div>
+  );
 }
 
-export default withStyles(styles)(BottomLink);
+export default BottomLink;
