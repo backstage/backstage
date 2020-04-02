@@ -26,11 +26,11 @@ import { BackstageTheme } from '../../theme/theme';
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     maxWidth: 'fit-content',
-    padding: theme.spacing(2, 2, 2, 2.5)
+    padding: theme.spacing(2, 2, 2, 2.5),
   },
   boxTitle: {
     margin: 0,
-    color: grey[900]
+    color: grey[900],
   },
 }));
 
@@ -40,20 +40,18 @@ export type Props = {
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-const BottomLink: FC<Props> = ({
-  link,
-  title,
-  onClick,
-}) => {
+const BottomLink: FC<Props> = ({ link, title, onClick }) => {
   const classes = useStyles();
-  
+
   return (
     <div>
       <Divider />
       <Link href={link} onClick={onClick}>
         <ListItem className={classes.root}>
           <ListItemText>
-            <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>{title}</Box>
+            <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
+              {title}
+            </Box>
           </ListItemText>
           <ListItemIcon>
             <ArrowIcon />
@@ -62,6 +60,6 @@ const BottomLink: FC<Props> = ({
       </Link>
     </div>
   );
-}
+};
 
 export default BottomLink;
