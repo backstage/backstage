@@ -20,15 +20,30 @@ import { Command } from 'commander';
 
 export default async (cmd: Command) => {
   if (cmd.watch) {
-    const watcher = watch(conf);
-    watcher.on('event', console.log);
-    await new Promise(() => {});
-  } else {
-    const bundle = await rollup({
-      input: conf.input,
-      plugins: conf.plugins,
+    // We're not resolving this promise because watch() doesn't have any exit event.
+    // Instead we just wait until the user sends an interrupt signal.
+    return new Promise(() => {
+      const watcher = watch(conf);
+      watcher.on('event', event => {
+        //   START        — the watcher is (re)starting
+        //   BUNDLE_START — building an individual bundle
+        //   BUNDLE_END   — finished building a bundle
+        //   END          — finished building all bundles
+        //   ERROR        — encountered an error while bundling
+
+        if (event.code === 'ERROR') {
+          console.log(event.error);
+        } else {
+          console.log(event.code);
+        }
+      });
     });
-    await bundle.generate(conf.output as OutputOptions);
-    await bundle.write(conf.output as OutputOptions);
   }
+
+  const bundle = await rollup({
+    input: conf.input,
+    plugins: conf.plugins,
+  });
+  await bundle.generate(conf.output as OutputOptions);
+  await bundle.write(conf.output as OutputOptions);
 };
