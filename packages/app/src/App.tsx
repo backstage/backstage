@@ -66,6 +66,10 @@ const App: FC<{}> = () => {
       backstageTheme = BackstageThemeDark;
       break;
     default:
+      if (!window.matchMedia) {
+        backstageTheme = BackstageThemeLight;
+        break;
+      }
       backstageTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
         ? BackstageThemeDark
         : BackstageThemeLight;
