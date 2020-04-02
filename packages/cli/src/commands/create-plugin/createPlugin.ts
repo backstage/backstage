@@ -15,7 +15,6 @@
  */
 
 import fs from 'fs-extra';
-import path from 'path';
 import { promisify } from 'util';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
@@ -27,12 +26,13 @@ import {
   addCodeownersEntry,
   getCodeownersFilePath,
 } from './lib/codeowners';
+import { paths } from '../../helpers/paths';
 import { Task, templatingTask } from '../../helpers/tasks';
 const exec = promisify(execCb);
 
 async function checkExists(rootDir: string, id: string) {
   await Task.forItem('checking', id, async () => {
-    const destination = path.join(rootDir, 'plugins', id);
+    const destination = resolvePath(rootDir, 'plugins', id);
 
     if (await fs.pathExists(destination)) {
       const existing = chalk.cyan(destination.replace(`${rootDir}/`, ''));
@@ -90,7 +90,7 @@ export async function addPluginDependencyToApp(
 ) {
   const pluginPackage = `@backstage/plugin-${pluginName}`;
   const packageFilePath = 'packages/app/package.json';
-  const packageFile = path.join(rootDir, packageFilePath);
+  const packageFile = resolvePath(rootDir, packageFilePath);
 
   await Task.forItem('processing', packageFilePath, async () => {
     const packageFileContent = await fs.readFile(packageFile, 'utf-8');
@@ -173,8 +173,7 @@ export async function movePlugin(
 }
 
 export default async () => {
-  const rootDir = await fs.realpath(process.cwd());
-  const codeownersPath = await getCodeownersFilePath(rootDir);
+  const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
 
   const questions: Question[] = [
     {
@@ -220,12 +219,11 @@ export default async () => {
 
   const answers: Answers = await inquirer.prompt(questions);
 
-  const appPackage = resolvePath(rootDir, 'packages', 'app');
-  const cliPackage = resolvePath(__dirname, '..', '..', '..');
-  const templateDir = resolvePath(cliPackage, 'templates', 'default-plugin');
-  const tempDir = path.join(os.tmpdir(), answers.id);
-  const pluginDir = path.join(rootDir, 'plugins', answers.id);
-  const version = require(resolvePath(cliPackage, 'package.json')).version;
+  const appPackage = paths.resolveTargetRoot('packages/app');
+  const templateDir = paths.resolveOwn('templates/default-plugin');
+  const tempDir = resolvePath(os.tmpdir(), answers.id);
+  const pluginDir = paths.resolveTargetRoot('plugins', answers.id);
+  const version = require(paths.resolveOwn('package.json')).version;
   const ownerIds = parseOwnerIds(answers.owner);
 
   Task.log();
@@ -233,7 +231,7 @@ export default async () => {
 
   try {
     Task.section('Checking if the plugin ID is available');
-    await checkExists(rootDir, answers.id);
+    await checkExists(paths.targetRoot, answers.id);
 
     Task.section('Creating a temporary plugin directory');
     await createTemporaryPluginFolder(tempDir);
@@ -249,10 +247,10 @@ export default async () => {
 
     if (await fs.pathExists(appPackage)) {
       Task.section('Adding plugin as dependency in app');
-      await addPluginDependencyToApp(rootDir, answers.id, version);
+      await addPluginDependencyToApp(paths.targetRoot, answers.id, version);
 
       Task.section('Import plugin in app');
-      await addPluginToApp(rootDir, answers.id);
+      await addPluginToApp(paths.targetRoot, answers.id);
     }
 
     if (ownerIds && ownerIds.length) {

@@ -15,15 +15,11 @@
  */
 
 import { Command } from 'commander';
-import { resolve as resolvePath } from 'path';
 import { run } from '../helpers/run';
+import { paths } from '../helpers/paths';
 
 export default async (cmd: Command) => {
-  const args = [
-    'test',
-    '--config',
-    resolvePath(__dirname, '../../config/jest.js'),
-  ];
+  const args = ['test', '--config', paths.resolveOwn('config/jest.js')];
 
   if (cmd.watch) {
     args.push('--watch');

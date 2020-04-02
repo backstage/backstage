@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
 import chalk from 'chalk';
 
 import { createLoggerFactory } from './logger';
@@ -23,6 +22,7 @@ import { startWatcher, startPackageWatcher } from './watcher';
 import { startCompiler } from './compiler';
 import { startChild } from './child';
 import { waitForExit } from '../../helpers/run';
+import { paths } from '../../helpers/paths';
 
 const PACKAGE_BLACKLIST = [
   // We never want to watch for changes in the cli, but all packages will depend on it.
@@ -34,7 +34,7 @@ const WATCH_LOCATIONS = ['package.json', 'src', 'assets'];
 // Start watching for dependency changes.
 // The returned promise resolves when watchers have started for all current dependencies.
 export async function watchDeps() {
-  const localPackagePath = resolvePath('package.json');
+  const localPackagePath = paths.resolveTarget('package.json');
 
   // Rotate through different prefix colors to make it easier to differenciate between different deps
   const logFactory = createLoggerFactory([

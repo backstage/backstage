@@ -16,8 +16,6 @@
 
 import program from 'commander';
 import chalk from 'chalk';
-import fs from 'fs';
-import { resolve as resolvePath } from 'path';
 import createAppCommand from './commands/create-app/createApp';
 import createPluginCommand from './commands/create-plugin/createPlugin';
 import watch from './commands/watch-deps';
@@ -29,13 +27,12 @@ import appServe from './commands/app/serve';
 import pluginBuild from './commands/plugin/build';
 import pluginServe from './commands/plugin/serve';
 import { exitWithError } from './helpers/errors';
+import { paths } from './helpers/paths';
 
 const main = (argv: string[]) => {
-  const packageJson = JSON.parse(
-    fs.readFileSync(resolvePath(__dirname, '../package.json'), 'utf-8'),
-  );
+  const version = require(paths.resolveOwn('package.json')).version;
 
-  program.name('backstage-cli').version(packageJson.version ?? '0.0.0');
+  program.name('backstage-cli').version(version);
 
   program
     .command('create-app')
