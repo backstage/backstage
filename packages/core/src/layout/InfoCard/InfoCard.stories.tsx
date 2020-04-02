@@ -16,7 +16,7 @@
 import React from 'react';
 import InfoCard from '.';
 
-const cardContentStyle = { height: '200px' };
+const cardContentStyle = { height: '200px', background: #F9F9F9 };
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export default {
