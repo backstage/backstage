@@ -14,43 +14,36 @@
  * limitations under the License.
  */
 
+import { rollup, watch, OutputOptions } from 'rollup';
+import conf from './rollup.config';
 import { Command } from 'commander';
-import fs from 'fs-extra';
-import path from 'path';
-import recursive from 'recursive-readdir';
-import { run } from '../../helpers/run';
-
-const copyStaticAssets = async () => {
-  const pluginRoot = fs.realpathSync(process.cwd());
-  const source = path.resolve(pluginRoot, 'src');
-  const destination = path.resolve(pluginRoot, 'dist', 'cjs');
-  const assetFiles = await recursive(source, [
-    '**/*.tsx',
-    '**/*.ts',
-    '**/*.js',
-  ]);
-  assetFiles.forEach(file => {
-    const fileToBeCopied = file.replace(source, destination);
-    const dirForFileToBeCopied = path.dirname(fileToBeCopied);
-    fs.ensureDirSync(dirForFileToBeCopied);
-    fs.copyFileSync(file, file.replace(source, destination).toString());
-  });
-};
 
 export default async (cmd: Command) => {
-  const args = [
-    '--outDir',
-    'dist/cjs',
-    '--noEmit',
-    'false',
-    '--module',
-    'CommonJS',
-  ];
-
   if (cmd.watch) {
-    args.push('--watch');
+    // We're not resolving this promise because watch() doesn't have any exit event.
+    // Instead we just wait until the user sends an interrupt signal.
+    await new Promise(() => {
+      const watcher = watch(conf);
+      watcher.on('event', event => {
+        //   START        — the watcher is (re)starting
+        //   BUNDLE_START — building an individual bundle
+        //   BUNDLE_END   — finished building a bundle
+        //   END          — finished building all bundles
+        //   ERROR        — encountered an error while bundling
+
+        if (event.code === 'ERROR') {
+          console.log(event.error);
+        } else {
+          console.log(event.code);
+        }
+      });
+    });
   }
 
-  await copyStaticAssets();
-  await run('tsc', args);
+  const bundle = await rollup({
+    input: conf.input,
+    plugins: conf.plugins,
+  });
+  await bundle.generate(conf.output as OutputOptions);
+  await bundle.write(conf.output as OutputOptions);
 };

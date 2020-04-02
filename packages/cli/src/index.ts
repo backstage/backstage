@@ -143,4 +143,3 @@ process.on('unhandledRejection', rejection => {
 });
 
 main(process.argv);
-// main([process.argv[0], process.argv[1], '--version']);

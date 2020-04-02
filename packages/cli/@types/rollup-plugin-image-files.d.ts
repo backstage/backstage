@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-import { default as HomePagePlugin } from '@backstage/plugin-home-page';
-import { default as WelcomePlugin } from '@backstage/plugin-welcome';
-export { HomePagePlugin, WelcomePlugin };
+declare module 'rollup-plugin-image-files';
