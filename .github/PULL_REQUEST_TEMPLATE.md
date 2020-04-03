@@ -5,7 +5,7 @@
 
 #### :heavy_check_mark: Checklist
 <!--- Put an `x` in all the boxes that apply: -->
-- [ ] All tests are passing `yarn test`
+- [ ] All tests are passing `npm test`
 - [ ] Screenshots attached (for UI changes)
 - [ ] Relevant documentation updated
 - [ ] Prettier run on changed files

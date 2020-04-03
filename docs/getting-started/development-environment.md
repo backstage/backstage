@@ -3,14 +3,14 @@
 Open a terminal window and start the web app using the following commands from the project root:
 
 ```bash
-$ yarn install # may take a while
+$ npx yarn install # may take a while
 
-$ yarn start
+$ npm start
 ```
 
-The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
+The final `npm start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
 
-By default, backstage will start on port 3000, however you can override this by setting an environment variable `PORT` on your local machine. e.g. `export PORT=8080` then running `yarn start`. Or `PORT=8080 yarn start`.
+By default, backstage will start on port 3000, however you can override this by setting an environment variable `PORT` on your local machine. e.g. `export PORT=8080` then running `npm start`. Or `PORT=8080 npm start`.
 
 Once successfully started, you should see the following message in your terminal window:
 
