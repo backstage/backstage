@@ -24,8 +24,8 @@
   },
   "version": "1.0.0",
   "devDependencies": {
+    "@spotify/eslint-config-oss": "^1.0.1",
     "cross-env": "^7.0.0",
-    "eslint-plugin-notice": "^0.8.9",
     "husky": "^4.2.3",
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.0",
