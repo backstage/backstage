@@ -4,7 +4,7 @@ A Backstage Plugin adds functionality to Backstage.
 
 ## Create a plugin
 
-To create a new plugin, make sure you've run `yarn` and installed dependencies, then run the following on your command line (invoking the `backstage-cli`).
+To create a new plugin, make sure you've run `yarn install` and installed dependencies, then run the following on your command line (invoking the `backstage-cli`).
 
 ```bash
 yarn create-plugin
