@@ -57,17 +57,56 @@ To run the Backstage frontend, you will need to have the following installed:
 
 - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
-- [yarn](https://classic.yarnpkg.com/en/docs/install)
 
-Open a terminal window and start the web app using the following commands from the project root:
+Open a terminal window and run the following commands from the project root:
+
+First, install the project's dependencies with yarn:
 
 ```bash
-$ yarn install # may take a while
-
-$ yarn start
+$ npx yarn install # may take a while
+npx: installed 1 in ...
+yarn install v<project yarn version>
+[1/5] Validating package.json...
+[2/5] Resolving packages...
+[3/5] Fetching packages...
+[4/5] Linking dependencies...
+[5/5] Building fresh packages...
 ```
 
-The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
+Next, start the web app:
+
+```bash
+$ npm start
+
+> root@1.0.0 start C:\src\github\spotify\me\backstage
+> yarn build && yarn workspace example-app start
+
+yarn run v<project yarn version>
+$ lerna run build
+lerna notice cli v<project lerna version>
+lerna info Executing command in 4 packages: "yarn run build"
+lerna info run Ran npm script 'build' in '@backstage/cli' in ...:
+$ backstage-cli build-cache -- tsc --outDir dist --noEmit false --module CommonJS
+[build-cache] cache miss, need to build
+[build-cache] caching build output
+lerna info run Ran npm script 'build' in '@backstage/core' in ...:
+$ backstage-cli build-cache -- tsc --outDir dist/cjs --noEmit false --module CommonJS
+[build-cache] cache miss, need to build
+[build-cache] caching build output
+lerna info run Ran npm script 'build' in '@backstage/plugin-home-page' in ...:
+$ backstage-cli build-cache -- backstage-cli plugin:build
+Compiled successfully!
+
+You can now view example-app in the browser.
+
+  Local:            http://localhost:3000
+  ...
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+```
+
+The final `npm start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
 
 For more complex development environment configuration, see the
 [Development Environment](docs/getting-started/development-environment.md) section of the Getting Started docs.

@@ -31,6 +31,7 @@
     "lint-staged": "^10.1.0",
     "prettier": "^1.19.1",
     "typescript": "^3.7.5",
+    "yarn": "^1.22.1",
     "zombie": "^6.1.4"
   },
   "dependencies": {
