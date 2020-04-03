@@ -25,7 +25,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
-import BottomLink, { Props as BottomLinkProps } from './BottomLink';
+import BottomLink, { Props as BottomLinkProps } from '../BottomLink';
 import { BackstageTheme } from '../../theme/theme';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
