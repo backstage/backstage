@@ -31,7 +31,9 @@ export default {
   },
   plugins: [
     peerDepsExternal(),
-    resolve(),
+    resolve({
+      mainFields: ['browser', 'module', 'main'],
+    }),
     commonjs({
       include: ['node_modules/**', '../../node_modules/**'],
       exclude: ['**/*.stories.js'],
