@@ -4,7 +4,7 @@
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
-  "private": false,
+  "private": true,
   "scripts": {
     "build:watch": "backstage-cli plugin:build --watch",
     "build": "backstage-cli build-cache -- backstage-cli plugin:build",
