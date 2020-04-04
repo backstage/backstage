@@ -45,7 +45,7 @@ Then, later, you can directly use it via `useApi`:
 ```tsx
 import React, { FC } from 'react';
 import { Button } from '@material-ui/core';
-import { featureFlagsApiRef, useApi } from '@backstage/core';
+import { FeatureFlagState, featureFlagsApiRef, useApi } from '@backstage/core';
 
 const ExampleButton: FC<{}> = () => {
   const flags = useApi(featureFlagsApiRef).getFlags();

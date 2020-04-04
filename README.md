@@ -33,7 +33,7 @@ We created Backstage about 4 years ago. While our internal version of Backstage 
 
 - 🐇 **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
 
-Check out our [Milestones](https://github.com/spotify/backstage/milestones) and open [RFCs](https://github.com/spotify/backstage/labels/rfc) how they relate to the three Phases outlined above. 
+Check out our [Milestones](https://github.com/spotify/backstage/milestones) and open [RFCs](https://github.com/spotify/backstage/labels/rfc) how they relate to the three Phases outlined above.
 
 Our vision for Backstage is for it to become the trusted standard toolbox (read: UX layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone. If this sounds interesting or you'd like to help us shape our product vision, we'd love to talk. You can email me directly: [alund@spotify.com](mailto:alund@spotify.com).
 
@@ -69,7 +69,7 @@ $ yarn start
 
 The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
 
-For more complex development environment configuration, see the 
+For more complex development environment configuration, see the
 [Development Environment](docs/getting-started/development-environment.md) section of the Getting Started docs.
 
 ## Documentation
@@ -79,6 +79,7 @@ For more complex development environment configuration, see the
 - [Structure of a Plugin](docs/getting-started/structure-of-a-plugin.md)
 - [Frontend architecture](docs/architecture-terminology.md)
 - [API references](docs/reference/README.md)
+- [Storybook - UI components](http://storybook.backstage.io) ([WIP](https://github.com/spotify/backstage/milestone/9))
 - Using Backstage components (TODO)
 
 ## Community

@@ -8,11 +8,13 @@
     "start": "yarn build && yarn workspace example-app start",
     "bundle": "yarn build && yarn workspace example-app bundle",
     "build": "lerna run build",
-    "test": "cross-env CI=true lerna run test --since origin/master -- --coverage",
+    "test": "yarn build && lerna run test --since origin/master -- --coverage",
+    "lint": "lerna run lint --since origin/master --",
+    "docker-build": "yarn bundle && docker build . -t spotify/backstage",
     "create-plugin": "backstage-cli create-plugin",
     "remove-plugin": "backstage-cli remove-plugin",
     "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push; fi",
-    "lint": "cross-env CI=true lerna run lint --since origin/master --",
+    "lerna": "lerna",
     "storybook": "yarn workspace storybook start"
   },
   "workspaces": {
@@ -36,14 +38,17 @@
     "@types/classnames": "^2.2.9",
     "moment": "^2.24.0"
   },
+  "resolutions": {
+    "**/cypress": "4.2.0"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
-      "*.{js,jsx,ts,tsx}": [
-        "prettier --config ./prettier.config.js  --list-different --write"
-      ]
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --config ./prettier.config.js  --list-different --write"
+    ]
   }
 }

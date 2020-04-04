@@ -14,6 +14,7 @@ jobs:
 
     env:
       CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
       BACKSTAGE_CACHE_DIR: <repoRoot>/.backstage-build-cache
       BACKSTAGE_CACHE_MAX_ENTRIES: 2
 
@@ -46,16 +47,25 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
+
       - name: yarn install
         run: yarn install --frozen-lockfile
-      - run: yarn lint
-      - run: yarn build
-      - run: yarn test
+
+      - name: lint
+        run: yarn lerna -- run lint
+
+      - name: build
+        run: yarn build
+
+      - name: test
+        run: yarn lerna -- run test -- --coverage
+
       # Publishes current version of packages that are not already present in the registry
       - name: publish
-        run: npx --no-install lerna publish from-package --yes
+        run: yarn lerna -- publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       # Tags the commit with the version in the core package if the tag doesn't exist
       - uses: Klemensas/action-autotag@1.2.3
         with:
