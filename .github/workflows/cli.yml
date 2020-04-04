@@ -6,7 +6,6 @@ on:
       - '.github/workflows/cli.yml'
       - 'packages/cli/**'
       - 'packages/core/**'
-    types: [opened, reopened, edited, synchronize]
 
 jobs:
   build:
