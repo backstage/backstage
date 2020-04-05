@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/core';
 
 import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';

@@ -23,9 +23,10 @@ module.exports = {
     'prettier/react',
     'prettier/@typescript-eslint',
     'plugin:jest/recommended',
+    'plugin:monorepo/recommended',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['notice'],
+  plugins: ['notice', 'import'],
   env: {
     jest: true,
   },
@@ -39,12 +40,39 @@ module.exports = {
     },
   },
   ignorePatterns: ['**/dist/**', '**/build/**'],
+  rules: {
+    'import/no-duplicates': 'warn',
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: false,
+        optionalDependencies: true,
+        peerDependencies: true,
+        bundledDependencies: true,
+      },
+    ],
+  },
   overrides: [
     {
       files: ['**/*.ts?(x)'],
       rules: {
         // Default to not enforcing prop-types in typescript
         'react/prop-types': 0,
+      },
+    },
+    {
+      files: ['**/*.test.*', '**/src/setupTests.*', '**/src/testUtils/**'],
+      rules: {
+        // Tests are allowed to import dev dependencies
+        'import/no-extraneous-dependencies': [
+          'error',
+          {
+            devDependencies: true,
+            optionalDependencies: true,
+            peerDependencies: true,
+            bundledDependencies: true,
+          },
+        ],
       },
     },
   ],
