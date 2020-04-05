@@ -39,7 +39,6 @@
     "@types/webpack-dev-server": "^3.10.0",
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
-    "tar": "^6.0.1",
     "ts-node": "^8.6.2"
   },
   "bin": {
@@ -52,6 +51,7 @@
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@spotify/web-scripts": "^6.0.0",
+    "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^4.1.1",
     "dashify": "^2.0.0",
@@ -72,9 +72,13 @@
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-postcss": "^2.5.0",
     "rollup-plugin-typescript2": "^0.26.0",
+    "tar": "^6.0.1",
     "ts-loader": "^6.2.1",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0"
   },
   "files": [
     "templates",
