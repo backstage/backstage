@@ -30,7 +30,9 @@ export default {
     format: 'cjs',
   },
   plugins: [
-    peerDepsExternal(),
+    peerDepsExternal({
+      includeDependencies: true,
+    }),
     resolve({
       mainFields: ['browser', 'module', 'main'],
     }),
