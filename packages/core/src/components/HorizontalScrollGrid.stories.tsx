@@ -30,7 +30,7 @@ export const Default = () => (
     <HorizontalScrollGrid>
       {opacityArray.map(element => {
         const style = { backgroundColor: `rgba(0, 185, 151, ${element})` };
-        return <div style={{ ...style, ...cardContentStyle }} />;
+        return <div style={{ ...style, ...cardContentStyle }} key={element} />;
       })}
     </HorizontalScrollGrid>
   </div>

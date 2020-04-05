@@ -21,5 +21,13 @@ export default {
   component: BetaLabel,
 };
 
-export const Default = () => <BetaLabel />;
-export const Shorthand = () => <BetaLabel isShorthand />;
+export const Default = () => (
+  <>
+    This feature is in <BetaLabel />
+  </>
+);
+export const Shorthand = () => (
+  <>
+    This feature is in <BetaLabel isShorthand />
+  </>
+);

@@ -21,5 +21,13 @@ export default {
   component: AlphaLabel,
 };
 
-export const Default = () => <AlphaLabel />;
-export const Shorthand = () => <AlphaLabel isShorthand />;
+export const Default = () => (
+  <>
+    This feature is in <AlphaLabel />
+  </>
+);
+export const Shorthand = () => (
+  <>
+    This feature is in <AlphaLabel isShorthand />
+  </>
+);
