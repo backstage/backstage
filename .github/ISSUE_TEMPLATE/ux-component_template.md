@@ -1,6 +1,6 @@
 ---
 name: 'UX Component'
-about: 'For designers to request UX components to be added to the Backstage Storybook.'
+about: 'For designers to request UX components to be added to the Backstage Storybook'
 ---
 
 ## 🗒 General
