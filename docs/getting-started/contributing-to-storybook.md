@@ -17,6 +17,8 @@ core
             └── Progress.stories.tsx
 ```
 
+> _Note: make sure your component story file has the following format componentName.stories.tsx_
+
 ## Running locally
 
 Go to `packages/storybook`, run `yarn install` and install the dependencies, then run the following on your command line: `yarn start`
