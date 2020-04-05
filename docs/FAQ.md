@@ -42,5 +42,5 @@ That being said, in [Phase 2](https://github.com/spotify/backstage#project-roadm
 
 ## Q: My company doesn't have thousands of developers. Is Backstage overkill?
 
-Sure, having something like Backstage gets more important as the number of developers in your company grows. One of the core reasons to adopt Backstage is to help standardise how software is built at your company. Setting guidelines and deciding on standards is easier when your company is smaller.
+Not really. Sure, having something like Backstage gets more important as the number of developers in your company grows. One of the core reasons to adopt Backstage is to help standardise how software is built at your company. Setting guidelines and deciding on standards is easier when your company is smaller.
 
