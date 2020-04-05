@@ -1,3 +1,8 @@
+---
+name: 'UX Component'
+about: 'For designers to request for UX components to be added to the Backstage Storybook.'
+---
+
 ## 🗒 General
 <!--- Write a nice note to the community requesting the creation of a new component! -->
 <!--- Include an image of your component. Bonus points for a GIF! -->
