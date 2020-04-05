@@ -30,5 +30,3 @@ _You should see a log like the image above._
 If everything worked out, your server will be running on **port 6006**, go to your browser and navigate to `http://localhost:6006/`. You should be able to navigate and see the Storybook page.
 
 ![](storybook-page.png)
-
-[Back to Getting Started](README.md)
