@@ -22,4 +22,4 @@ export default {
 };
 
 export const Default = () => <AlphaLabel />;
-export const Shorthand = () => <AlphaLabel isShorthand={true} />;
+export const Shorthand = () => <AlphaLabel isShorthand />;

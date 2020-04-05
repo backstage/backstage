@@ -22,4 +22,4 @@ export default {
 };
 
 export const Default = () => <BetaLabel />;
-export const Shorthand = () => <BetaLabel isShorthand={true} />;
+export const Shorthand = () => <BetaLabel isShorthand />;
