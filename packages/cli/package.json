@@ -55,6 +55,8 @@
     "chokidar": "^3.3.1",
     "commander": "^4.1.1",
     "dashify": "^2.0.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-monorepo": "^0.2.1",
     "fork-ts-checker-webpack-plugin": "^4.0.5",
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.3",
