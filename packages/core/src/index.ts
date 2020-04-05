@@ -22,7 +22,6 @@ export { default as ContentHeader } from './layout/ContentHeader/ContentHeader';
 export { default as Header } from './layout/Header/Header';
 export { default as HeaderLabel } from './layout/HeaderLabel';
 export { default as InfoCard } from './layout/InfoCard';
-
 export { default as ErrorBoundary } from './layout/ErrorBoundary';
 export * from './layout/Sidebar';
 export { default as BackstageThemeLight } from './theme/BackstageThemeLight';
