@@ -16,3 +16,17 @@ core
             ├── Progress.tsx
             └── Progress.stories.tsx
 ```
+
+## Running locally
+
+Go to `packages/storybook`, run `yarn install` and install the dependencies, then run the following on your command line: `yarn start`
+
+![](running-storybook.png)
+
+_You should see a log like the image above._
+
+If `yarn start` is running, go to your browser and navigate to `http://localhost:6006/`. You should be able to navigate and see the Storybook page.
+
+![](storybook-page.png)
+
+[Back to Getting Started](README.md)
