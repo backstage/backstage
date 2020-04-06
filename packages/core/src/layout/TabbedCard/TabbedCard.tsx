@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, ReactNode } from 'react';
+import React, { FC, useState, ReactElement, ReactNode } from 'react';
 import {
   Card,
   CardContent,
@@ -24,81 +24,80 @@ import {
   makeStyles,
   Tabs,
   Tab,
+  TabProps,
 } from '@material-ui/core';
+import BottomLink, { Props as BottomLinkProps } from '../BottomLink';
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 import { BackstageTheme } from '../../theme/theme';
 
+const useTabsStyles = makeStyles<BackstageTheme>(theme => ({
+  root: {
+    padding: theme.spacing(0, 2, 0, 2.5),
+  },
+}));
+
 const BoldHeader = withStyles(theme => ({
+  root: { padding: theme.spacing(2, 2, 2, 2.5), display: 'inline-block' },
   title: { fontWeight: 700 },
   subheader: { paddingTop: theme.spacing(1) },
 }))(CardHeader);
 
 type Props = {
   slackChannel?: string;
-  children?: ReactNode;
+  children?: ReactElement<TabProps>[];
+  title?: string;
+  value?: number | string;
+  deepLink?: BottomLinkProps;
 };
 
-const TabbedCard: FC<Props> = ({ slackChannel = '#backstage', children }) => {
+const TabbedCard: FC<Props> = ({
+  slackChannel = '#backstage',
+  children,
+  title,
+  deepLink,
+}) => {
+  const tabsClasses = useTabsStyles();
+  const [selectedIndex, selectIndex] = useState(0);
+
+  const handleChange = (_ev, newSelectedIndex) => selectIndex(newSelectedIndex);
+
+  let selectedTabContent: ReactNode;
+  React.Children.map(children, (child, index) => {
+    if (index === selectedIndex) selectedTabContent = child?.props.children;
+  });
+
   return (
     <Card>
-      <ErrorBoundary slackChannel={slackChannel}>{children}</ErrorBoundary>
+      <ErrorBoundary slackChannel={slackChannel}>
+        {title && <BoldHeader title={title} />}
+        <Tabs
+          classes={tabsClasses}
+          value={selectedIndex}
+          onChange={handleChange}
+        >
+          {children}
+        </Tabs>
+        <Divider />
+        <CardContent>{selectedTabContent}</CardContent>
+        {deepLink && <BottomLink {...deepLink} />}
+      </ErrorBoundary>
     </Card>
   );
 };
 
-type CardTabProps = {
-  label: string;
-  value?: any;
-};
-
-const CardTab: FC<CardTabProps> = ({ ...props }) => {
-  return <Tab {...props} />;
-};
-
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  header: {
-    padding: theme.spacing(2, 2, 2, 2.5),
+const useCardTabStyles = makeStyles<BackstageTheme>(theme => ({
+  root: {
+    minWidth: theme.spacing(6),
+    padding: theme.spacing(1, 0, 1, 0),
+    margin: theme.spacing(0, 2, 0, 0),
+    textTransform: 'none',
   },
 }));
 
-type CardTabsProps = {
-  children: ReactNode;
-  value: any;
-  title: string;
-  onChange: (event: React.ChangeEvent<{}>, value: any) => void;
+const CardTab: FC<TabProps> = ({ ...props }) => {
+  const classes = useCardTabStyles();
+
+  return <Tab classes={classes} {...props} />;
 };
 
-const CardTabs: FC<CardTabsProps> = ({ children, value, title, onChange }) => {
-  const classes = useStyles();
-
-  return (
-    <>
-      <BoldHeader className={classes.header} title={title} />
-      <Tabs value={value} onChange={onChange}>
-        {children}
-      </Tabs>
-      <Divider />
-    </>
-  );
-};
-
-type CardTabPanelProps = {
-  children: ReactNode;
-  value: number;
-  index: number;
-};
-
-const CardTabPanel: FC<CardTabPanelProps> = ({ children, value, index }) => {
-  return (
-    <CardContent
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-    >
-      {children}
-    </CardContent>
-  );
-};
-
-export { TabbedCard, CardTabPanel, CardTabs, CardTab };
+export { TabbedCard, CardTab };

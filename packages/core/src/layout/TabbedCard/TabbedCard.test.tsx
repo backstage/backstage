@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '../../testUtils';
-import { TabbedCard, CardTabs, CardTab, BottomLink } from '.';
+import { TabbedCard, CardTab, BottomLink } from '.';
 
 const minProps = {
   title: 'Some title',
@@ -32,9 +32,8 @@ describe('<InfoCard />', () => {
     const rendered = render(
       wrapInTestApp(
         <TabbedCard>
-          <CardTabs onChange={() => {}} value={0} title={minProps.title}>
-            <CardTab label="Test 1" />
-          </CardTabs>
+          <CardTab label="Test 1">Test Content</CardTab>
+          <CardTab label="Test 2">Test Content</CardTab>
         </TabbedCard>,
       ),
     );
@@ -44,8 +43,9 @@ describe('<InfoCard />', () => {
   it('renders a deepLink when prop is set', () => {
     const rendered = render(
       wrapInTestApp(
-        <TabbedCard>
-          <BottomLink {...minProps.deepLink} />
+        <TabbedCard deepLink={minProps.deepLink}>
+          <CardTab label="Test 1">Test Content</CardTab>
+          <CardTab label="Test 2">Test Content</CardTab>
         </TabbedCard>,
       ),
     );
