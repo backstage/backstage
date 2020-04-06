@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { TabbedCard, CardTab } from '.';
 
 export default {
@@ -23,7 +23,7 @@ export default {
 
 export const Default = () => {
   return (
-    <TabbedCard title="Default Test Header">
+    <TabbedCard title="Default Example Header">
       <CardTab label="Option 1">some content 1</CardTab>
       <CardTab label="Option 2">some content 2</CardTab>
       <CardTab label="Option 3">some content 3</CardTab>
@@ -36,11 +36,38 @@ const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export const WithFooterLink = () => {
   return (
-    <TabbedCard title="Footer Link Test Header" deepLink={linkInfo}>
+    <TabbedCard title="Footer Link Example Header" deepLink={linkInfo}>
       <CardTab label="Option 1">some content 1</CardTab>
       <CardTab label="Option 2">some content 2</CardTab>
       <CardTab label="Option 3">some content 3</CardTab>
       <CardTab label="Option 4">some content 4</CardTab>
+    </TabbedCard>
+  );
+};
+
+export const WithControllerTabValue = () => {
+  const [selectedTab, setSelectedTab] = useState('one');
+
+  const handleChange = (_ev, newSelectedTab) => setSelectedTab(newSelectedTab);
+
+  return (
+    <TabbedCard
+      value={selectedTab}
+      onChange={handleChange}
+      title="Controlled Value Example"
+    >
+      <CardTab value="one" label="Option 1">
+        some content 1
+      </CardTab>
+      <CardTab value="two" label="Option 2">
+        some content 2
+      </CardTab>
+      <CardTab value="three" label="Option 3">
+        some content 3
+      </CardTab>
+      <CardTab value="four" label="Option 4">
+        some content 4
+      </CardTab>
     </TabbedCard>
   );
 };
