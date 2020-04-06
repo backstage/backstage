@@ -32,6 +32,7 @@ export { default as HorizontalScrollGrid } from './components/HorizontalScrollGr
 export { default as ProgressCard } from './components/ProgressCard';
 export { default as CircleProgress } from './components/CircleProgress';
 export { default as Progress } from './components/Progress';
+export { AlphaLabel, BetaLabel } from './components/Lifecycle';
 export { default as SupportButton } from './components/SupportButton';
 export { default as SortableTable } from './components/SortableTable';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
