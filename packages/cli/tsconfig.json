@@ -2,11 +2,8 @@
   "extends": "../../tsconfig.json",
   "include": ["src"],
   "compilerOptions": {
-    "outDir": "dist",
-    "module": "CommonJS",
-    "baseUrl": "src",
-    "paths": {
-      "*": ["src/*"]
-    }
+    "outFile": "dist/index.js",
+    "module": "amd",
+    "baseUrl": "src"
   }
 }
