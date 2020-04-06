@@ -15,13 +15,13 @@
  */
 
 import chalk from 'chalk';
-
+import fs from 'fs-extra';
 import { createLoggerFactory } from './logger';
-import { getPackageDeps } from './packages';
+import { findAllDeps } from './packages';
 import { startWatcher, startPackageWatcher } from './watcher';
 import { startCompiler } from './compiler';
 import { startChild } from './child';
-import { waitForExit } from 'helpers/run';
+import { waitForExit, run } from 'helpers/run';
 import { paths } from 'helpers/paths';
 
 const PACKAGE_BLACKLIST = [
@@ -31,9 +31,13 @@ const PACKAGE_BLACKLIST = [
 
 const WATCH_LOCATIONS = ['package.json', 'src', 'assets'];
 
+export type Options = {
+  build?: boolean;
+};
+
 // Start watching for dependency changes.
 // The returned promise resolves when watchers have started for all current dependencies.
-export async function watchDeps() {
+export async function watchDeps(options: Options = {}) {
   const localPackagePath = paths.resolveTarget('package.json');
 
   // Rotate through different prefix colors to make it easier to differenciate between different deps
@@ -46,7 +50,21 @@ export async function watchDeps() {
   ]);
 
   // Find all direct and transitive local dependencies of the current package.
-  const deps = await getPackageDeps(localPackagePath, PACKAGE_BLACKLIST);
+  const packageData = await fs.readFile(localPackagePath, 'utf8');
+  const packageJson = JSON.parse(packageData);
+  const packageName = packageJson.name;
+
+  const deps = await findAllDeps(packageName, PACKAGE_BLACKLIST);
+
+  if (options.build) {
+    await run('lerna', [
+      'run',
+      '--scope',
+      packageName,
+      '--include-dependencies',
+      'build',
+    ]);
+  }
 
   // We lazily watch all our deps, as in we don't start the actual watch compiler until a change is detected
   const watcher = await startWatcher(deps, WATCH_LOCATIONS, pkg => {
@@ -56,7 +74,7 @@ export async function watchDeps() {
   });
 
   await startPackageWatcher(localPackagePath, async () => {
-    const newDeps = await getPackageDeps(localPackagePath, PACKAGE_BLACKLIST);
+    const newDeps = await findAllDeps(packageName, PACKAGE_BLACKLIST);
     await watcher.update(newDeps);
   });
 }
