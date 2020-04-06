@@ -17,6 +17,7 @@
 import { rollup, watch, OutputOptions } from 'rollup';
 import conf from './rollup.config';
 import { Command } from 'commander';
+import { withCache, getDefaultCacheOptions } from 'commands/build-cache';
 
 export default async (cmd: Command) => {
   if (cmd.watch) {
@@ -40,10 +41,12 @@ export default async (cmd: Command) => {
     });
   }
 
-  const bundle = await rollup({
-    input: conf.input,
-    plugins: conf.plugins,
+  await withCache(getDefaultCacheOptions(), async () => {
+    const bundle = await rollup({
+      input: conf.input,
+      plugins: conf.plugins,
+    });
+    await bundle.generate(conf.output as OutputOptions);
+    await bundle.write(conf.output as OutputOptions);
   });
-  await bundle.generate(conf.output as OutputOptions);
-  await bundle.write(conf.output as OutputOptions);
 };
