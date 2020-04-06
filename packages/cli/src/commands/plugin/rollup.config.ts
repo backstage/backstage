@@ -20,6 +20,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import imageFiles from 'rollup-plugin-image-files';
+import json from '@rollup/plugin-json';
 import { RollupWatchOptions } from 'rollup';
 
 export default {
@@ -30,13 +31,16 @@ export default {
   },
   plugins: [
     peerDepsExternal(),
-    resolve(),
+    resolve({
+      mainFields: ['browser', 'module', 'main'],
+    }),
     commonjs({
       include: ['node_modules/**', '../../node_modules/**'],
       exclude: ['**/*.stories.js'],
     }),
     postcss(),
     imageFiles(),
+    json(),
     typescript(),
   ],
 } as RollupWatchOptions;

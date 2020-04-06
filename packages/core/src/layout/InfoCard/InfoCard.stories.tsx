@@ -15,8 +15,9 @@
  */
 import React from 'react';
 import InfoCard from '.';
+import { Grid } from '@material-ui/core';
 
-const cardContentStyle = { height: '200px' };
+const cardContentStyle = { height: 200, width: 500 };
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export default {
@@ -24,20 +25,32 @@ export default {
   component: InfoCard,
 };
 
+const Wrapper = ({ children }) => (
+  <Grid container spacing={4}>
+    <Grid item>{children}</Grid>
+  </Grid>
+);
+
 export const Default = () => (
-  <InfoCard title="Information Card">
-    <div style={cardContentStyle} />
-  </InfoCard>
+  <Wrapper>
+    <InfoCard title="Information Card">
+      <div style={cardContentStyle} />
+    </InfoCard>
+  </Wrapper>
 );
 
 export const Subhead = () => (
-  <InfoCard title="Information Card" subheader="Subhead">
-    <div style={cardContentStyle} />
-  </InfoCard>
+  <Wrapper>
+    <InfoCard title="Information Card" subheader="Subhead">
+      <div style={cardContentStyle} />
+    </InfoCard>
+  </Wrapper>
 );
 
 export const LinkInFooter = () => (
-  <InfoCard title="Information Card" deepLink={linkInfo}>
-    <div style={cardContentStyle} />
-  </InfoCard>
+  <Wrapper>
+    <InfoCard title="Information Card" deepLink={linkInfo}>
+      <div style={cardContentStyle} />
+    </InfoCard>
+  </Wrapper>
 );

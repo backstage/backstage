@@ -19,6 +19,17 @@ import { render } from '@testing-library/react';
 import App from './App';
 
 describe('App', () => {
+  beforeAll(() => {
+    Object.defineProperty(window, 'matchMedia', {
+      value: jest.fn(() => {
+        return {
+          matches: true,
+          addEventListener: jest.fn(),
+          removeEventListener: jest.fn(),
+        };
+      }),
+    });
+  });
   it('should render', () => {
     const rendered = render(<App />);
     expect(rendered.baseElement).toBeInTheDocument();

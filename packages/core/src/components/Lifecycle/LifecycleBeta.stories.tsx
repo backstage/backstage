@@ -1,5 +1,5 @@
 /*
- * Copyright <%= YEAR %> Spotify AB
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,3 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { BetaLabel } from './Lifecycle';
+
+export default {
+  title: 'Beta Lifecycle',
+  component: BetaLabel,
+};
+
+export const Default = () => (
+  <>
+    This feature is in <BetaLabel />
+  </>
+);
+export const Shorthand = () => (
+  <>
+    This feature is in <BetaLabel isShorthand />
+  </>
+);

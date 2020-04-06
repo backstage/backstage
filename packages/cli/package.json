@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.0",
+  "version": "0.1.1-alpha.1",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -32,14 +32,13 @@
     "@types/ora": "^3.2.0",
     "@types/react-dev-utils": "^9.0.4",
     "@types/recursive-readdir": "^2.2.0",
-    "@types/tar": "^4.0.3",
     "@types/rollup-plugin-peer-deps-external": "^2.2.0",
     "@types/rollup-plugin-postcss": "^2.0.0",
+    "@types/tar": "^4.0.3",
     "@types/webpack": "^4.41.7",
     "@types/webpack-dev-server": "^3.10.0",
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
-    "tar": "^6.0.1",
     "ts-node": "^8.6.2"
   },
   "bin": {
@@ -49,11 +48,15 @@
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
     "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@spotify/web-scripts": "^6.0.0",
+    "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^4.1.1",
     "dashify": "^2.0.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-monorepo": "^0.2.1",
     "fork-ts-checker-webpack-plugin": "^4.0.5",
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.3",
@@ -69,9 +72,13 @@
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-postcss": "^2.5.0",
     "rollup-plugin-typescript2": "^0.26.0",
+    "tar": "^6.0.1",
     "ts-loader": "^6.2.1",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0"
   },
   "files": [
     "templates",
