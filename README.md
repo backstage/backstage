@@ -13,7 +13,7 @@ Backstage is an open platform for building developer portals.
 
 The philosophy behind Backstage is simple: Don't expose your engineers to the full complexity of your infrastructure tooling. Engineers should be shipping code — not figuring out a whole new toolset every time they want to implement the basics. Backstage allows you add "stuff" (tooling, services, features, etc.) by adding a plugin, instead of building a new tool. This saves you work and avoids the need of your team to learn how to use and support yet another tool.
 
-For more information go to [backstage.io](https://backstage.io)
+For more information go to [backstage.io](https://backstage.io) or join our [Discord chatroom](https://discord.gg/EBHEGzX).
 
 ## What problem does Backstage solve?
 
@@ -84,7 +84,7 @@ For more complex development environment configuration, see the
 
 ## Community
 
-- [Discord chat](https://discord.gg/MUpMjP2) - Get support or discuss the project
+- [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the project
 - [Good First Issues](https://github.com/spotify/backstage/labels/good%20first%20issue) - Start here if you want to contribute
 - [RFCs](https://github.com/spotify/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](docs/FAQ.md) - Frequently Asked Questions
