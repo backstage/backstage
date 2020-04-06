@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '../../testUtils';
-import { TabbedCard, CardTab, BottomLink } from '.';
+import { TabbedCard, CardTab } from '.';
 
 const minProps = {
   title: 'Some title',
@@ -31,7 +31,7 @@ describe('<InfoCard />', () => {
   it('renders without exploding', () => {
     const rendered = render(
       wrapInTestApp(
-        <TabbedCard>
+        <TabbedCard title={minProps.title}>
           <CardTab label="Test 1">Test Content</CardTab>
           <CardTab label="Test 2">Test Content</CardTab>
         </TabbedCard>,

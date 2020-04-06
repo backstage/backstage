@@ -94,7 +94,11 @@ const useCardTabStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-const CardTab: FC<TabProps> = ({ ...props }) => {
+type CardTabProps = TabProps & {
+  children: ReactNode;
+};
+
+const CardTab: FC<CardTabProps> = ({ children, ...props }) => {
   const classes = useCardTabStyles();
 
   return <Tab classes={classes} {...props} />;
