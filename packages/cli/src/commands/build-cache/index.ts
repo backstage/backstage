@@ -17,24 +17,21 @@
 import { Command } from 'commander';
 import { run } from 'helpers/run';
 import { Cache } from './cache';
-import { parseOptions } from './options';
+import { parseOptions, Options } from './options';
 
 function print(msg: string) {
   process.stdout.write(`[build-cache] ${msg}\n`);
 }
 
-/*
- * The build-cache command is used to make builds a no-op if there are no changes to the package.
- * It supports both local development where the output directory remains intact, as well as CI
- * where the output directory is stored in a separate cache dir.
- */
-export default async (cmd: Command, args: string[]) => {
-  const options = await parseOptions(cmd);
-
+// Wrap a build function with a cache, which won't call the build function on cache hit
+export async function withCache(
+  options: Options,
+  buildFunc: () => Promise<void>,
+): Promise<void> {
   const key = await Cache.readInputKey(options.inputs);
   if (!key) {
     print('input directory is dirty, skipping cache');
-    await run(args[0], args.slice(1));
+    await buildFunc();
     return;
   }
 
@@ -52,9 +49,22 @@ export default async (cmd: Command, args: string[]) => {
   }
 
   print('cache miss, need to build');
+  await buildFunc();
 
-  await run(args[0], args.slice(1));
-
-  print('caching build output');
   await cacheResult.archive(options.output, options.maxCacheEntries);
+}
+
+/*
+ * The build-cache command is used to make builds a no-op if there are no changes to the package.
+ * It supports both local development where the output directory remains intact, as well as CI
+ * where the output directory is stored in a separate cache dir.
+ */
+export default async (cmd: Command, args: string[]) => {
+  const options = await parseOptions(cmd);
+
+  await withCache(options, async () => {
+    await run(args[0], args.slice(1));
+  });
 };
+
+export * from './options';
