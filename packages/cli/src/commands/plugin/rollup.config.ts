@@ -46,7 +46,6 @@ export default {
     json(),
     typescript({
       include: `${paths.resolveTarget('src')}/**/*.{js,jsx,ts,tsx}`,
-      exclude: [paths.resolveTarget('src/testUtils/**')],
     }),
   ],
 } as RollupWatchOptions;

@@ -16,9 +16,8 @@
 
 import { Link, makeStyles, Typography } from '@material-ui/core';
 import React, { FC } from 'react';
-import { BackstageTheme } from '../../theme/theme';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     textAlign: 'left',
     margin: theme.spacing(2),

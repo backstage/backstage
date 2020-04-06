@@ -15,12 +15,11 @@
  */
 
 import { makeStyles } from '@material-ui/core';
+import { BackstageTheme, COLORS } from '@backstage/theme';
 import { Circle } from 'rc-progress';
 import React, { FC } from 'react';
-import { COLORS } from '../theme/BackstageTheme';
-import { BackstageTheme } from '../theme/theme';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles<typeof BackstageTheme>(theme => ({
   root: {
     position: 'relative',
     lineHeight: 0,

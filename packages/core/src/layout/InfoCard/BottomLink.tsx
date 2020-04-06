@@ -26,9 +26,8 @@ import Box from '@material-ui/core/Box';
 import grey from '@material-ui/core/colors/grey';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import React, { FC } from 'react';
-import { BackstageTheme } from '../../theme/theme';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: 'fit-content',
     padding: theme.spacing(2, 2, 2, 2.5),

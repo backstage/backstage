@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import WelcomePage from './WelcomePage';
 import { ThemeProvider } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/core';
+import { BackstageTheme } from '@backstage/theme';
 
 describe('WelcomePage', () => {
   it('should render', () => {
