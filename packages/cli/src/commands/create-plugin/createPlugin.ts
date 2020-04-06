@@ -26,8 +26,8 @@ import {
   addCodeownersEntry,
   getCodeownersFilePath,
 } from './lib/codeowners';
-import { paths } from '../../helpers/paths';
-import { Task, templatingTask } from '../../helpers/tasks';
+import { paths } from 'helpers/paths';
+import { Task, templatingTask } from 'helpers/tasks';
 const exec = promisify(execCb);
 
 async function checkExists(rootDir: string, id: string) {

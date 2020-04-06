@@ -21,8 +21,8 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
-import { Task, templatingTask } from '../../helpers/tasks';
-import { paths } from '../../helpers/paths';
+import { Task, templatingTask } from 'helpers/tasks';
+import { paths } from 'helpers/paths';
 const exec = promisify(execCb);
 
 async function checkExists(rootDir: string, name: string) {

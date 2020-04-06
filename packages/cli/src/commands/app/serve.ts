@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { run } from '../../helpers/run';
-import { watchDeps } from '../watch-deps';
+import { run } from 'helpers/run';
+import { watchDeps } from 'commands/watch-deps';
 
 export default async () => {
   const args = ['start'];

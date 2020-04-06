@@ -16,7 +16,7 @@
 
 import { resolve as resolvePath } from 'path';
 import { Command } from 'commander';
-import { paths } from '../../helpers/paths';
+import { paths } from 'helpers/paths';
 
 const DEFAULT_MAX_ENTRIES = 10;
 
