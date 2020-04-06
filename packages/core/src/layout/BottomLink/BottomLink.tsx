@@ -15,9 +15,14 @@
  */
 
 import React, { FC } from 'react';
-import { Link } from '@material-ui/core';
-import { Divider, ListItemText, makeStyles } from '@material-ui/core';
-import { ListItem, ListItemIcon } from '@material-ui/core';
+import {
+  Link,
+  ListItem,
+  ListItemIcon,
+  Divider,
+  ListItemText,
+  makeStyles,
+} from '@material-ui/core';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import grey from '@material-ui/core/colors/grey';
 import Box from '@material-ui/core/Box';
