@@ -35,6 +35,7 @@ if (fs.existsSync('jest.config.js')) {
     // We base the jest config on web-scripts, it's pretty flat so we skip any complex merging of config objects
     // Config can be found here: https://github.com/spotify/web-scripts/blob/master/packages/web-scripts/config/jest.config.js
     ...require('@spotify/web-scripts/config/jest.config.js'),
+    rootDir: process.cwd(),
 
     ...extraOptions,
 
