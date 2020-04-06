@@ -45,7 +45,7 @@ export const WithFooterLink = () => {
   );
 };
 
-export const WithControllerTabValue = () => {
+export const WithControlledTabValue = () => {
   const [selectedTab, setSelectedTab] = useState('one');
 
   const handleChange = (_ev, newSelectedTab) => setSelectedTab(newSelectedTab);
