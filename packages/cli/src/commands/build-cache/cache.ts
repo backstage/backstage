@@ -20,6 +20,7 @@ import { runPlain, runCheck } from 'helpers/run';
 import { Options } from './options';
 import { extractArchive, createArchive } from './archive';
 import { paths } from 'helpers/paths';
+import { version, isDev } from 'helpers/version';
 
 const INFO_FILE = '.backstage-build-cache';
 
@@ -74,7 +75,14 @@ export class Cache {
   static async readInputKey(
     inputPaths: string[],
   ): Promise<CacheKey | undefined> {
-    const quotedInputPaths = inputPaths.map(input => `'${input}'`);
+    const allInputPaths = inputPaths.slice();
+
+    // If we're executing the cli inside the backstage repo, we add the cli src as cache key as well
+    if (isDev) {
+      allInputPaths.unshift(paths.ownDir);
+    }
+
+    const quotedInputPaths = allInputPaths.map(input => `'${input}'`);
 
     // Make sure we don't have any uncommitted changes to the input, in that case we skip caching.
     const noChanges = await runCheck(
@@ -90,7 +98,12 @@ export class Cache {
       const [, , sha] = output.split(/\s+/, 3);
       trees.push(sha);
     }
-    return trees;
+
+    if (isDev) {
+      return trees;
+    }
+    // If we're executing as a dependency, use the version as a key
+    return [version, ...trees];
   }
 
   constructor(
