@@ -39,7 +39,7 @@ export default {
     }),
     commonjs({
       include: ['node_modules/**', '../../node_modules/**'],
-      exclude: ['**/*.stories.js'],
+      exclude: ['**/*.stories.*', '**/*.test.*'],
     }),
     postcss(),
     imageFiles(),

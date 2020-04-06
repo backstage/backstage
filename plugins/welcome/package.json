@@ -22,8 +22,8 @@
     "@types/testing-library__jest-dom": "5.0.2"
   },
   "peerDependencies": {
-    "@backstage/core": "^0.1.1-alpha.2",
-    "@backstage/theme": "^0.1.1-alpha.2",
+    "@backstage/core": "^0.1.1-alpha.3",
+    "@backstage/theme": "^0.1.1-alpha.3",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",

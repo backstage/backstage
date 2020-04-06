@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export { default as ApiRef } from './ApiRef';
-export * from './types';
-export * from './definitions';
+import { createPlugin } from '@backstage/core';
+import AuditList from './components/AuditList';
+import AuditView from './components/AuditView';
+import CreateAudit from './components/CreateAudit';
+
+export default createPlugin({
+  id: 'lighthouse',
+  register({ router }) {
+    router.registerRoute('/lighthouse', AuditList);
+    router.registerRoute('/lighthouse/audit/:id', AuditView);
+    router.registerRoute('/lighthouse/create-audit', CreateAudit);
+  },
+});

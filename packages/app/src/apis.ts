@@ -21,13 +21,21 @@ import {
   featureFlagsApiRef,
   FeatureFlags,
 } from '@backstage/core';
+import {
+  lighthouseApiRef,
+  LighthouseRestApi,
+} from '@backstage/plugin-lighthouse';
+
 import { ErrorDisplayForwarder } from './components/ErrorDisplay/ErrorDisplay';
 
 const builder = ApiRegistry.builder();
 
 export const errorDialogForwarder = new ErrorDisplayForwarder();
+
 builder.add(errorApiRef, errorDialogForwarder);
 
 builder.add(featureFlagsApiRef, new FeatureFlags());
+
+builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
 
 export default builder.build() as ApiHolder;

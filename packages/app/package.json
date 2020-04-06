@@ -5,9 +5,10 @@
   "dependencies": {
     "@backstage/cli": "^0.1.1-alpha.3",
     "@backstage/core": "^0.1.1-alpha.3",
-    "@backstage/plugin-home-page": "^0.1.1-alpha.3",
-    "@backstage/plugin-welcome": "^0.1.1-alpha.3",
     "@backstage/theme": "^0.1.1-alpha.3",
+    "@backstage/plugin-home-page": "^0.1.1-alpha.3",
+    "@backstage/plugin-lighthouse": "^0.1.1-alpha.3",
+    "@backstage/plugin-welcome": "^0.1.1-alpha.3",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",

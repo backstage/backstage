@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /*
  * Copyright 2020 Spotify AB
  *
@@ -13,10 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React, { FC } from 'react';
+import { StatusPending, StatusError, StatusOK } from '@backstage/core';
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export { default as ApiRef } from './ApiRef';
-export * from './types';
-export * from './definitions';
+import { Audit } from '../../api';
+
+const AuditStatusIcon: FC<{ audit: Audit }> = ({ audit }) => {
+  if (audit.status === 'FAILED') return <StatusError />;
+  if (audit.status === 'COMPLETED') return <StatusOK />;
+  return <StatusPending />;
+};
+
+export default AuditStatusIcon;

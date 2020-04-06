@@ -15,6 +15,7 @@
  */
 
 import React, { FC } from 'react';
+import classNames from 'classnames';
 import { Theme, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -25,12 +26,27 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingBottom: theme.spacing(3),
     ...theme.mixins.gutters({}),
   },
+  stretch: {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+  },
 }));
 
-const Content: FC<{}> = ({ children, ...props }) => {
+const Content: FC<{ stretch?: boolean; className?: string }> = ({
+  children,
+  className,
+  stretch,
+  ...props
+}) => {
   const classes = useStyles();
   return (
-    <article {...props} className={classes.root}>
+    <article
+      {...props}
+      className={classNames(classes.root, className, {
+        [classes.stretch]: stretch,
+      })}
+    >
       {children}
     </article>
   );
