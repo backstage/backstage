@@ -19,7 +19,7 @@ const childProcess = require('child_process');
 const { spawn } = childProcess;
 const Browser = require('zombie');
 
-const EXPECTED_LOAD_ERRORS = /connect ECONNREFUSED|did not get to load all resources/;
+const EXPECTED_LOAD_ERRORS = /ECONNREFUSED|ECONNRESET|did not get to load all resources/;
 
 Browser.localhost('localhost', 3000);
 
