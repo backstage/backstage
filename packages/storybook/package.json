@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "description": "Storybook build for core package",
   "private": true,
   "scripts": {
