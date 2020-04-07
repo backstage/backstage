@@ -15,7 +15,7 @@
  */
 
 import { Command } from 'commander';
-import { run } from '../../helpers/run';
+import { run } from 'helpers/run';
 import { Cache } from './cache';
 import { parseOptions } from './options';
 

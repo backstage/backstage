@@ -16,10 +16,10 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, relative as relativePath } from 'path';
-import { runPlain, runCheck } from '../../helpers/run';
+import { runPlain, runCheck } from 'helpers/run';
 import { Options } from './options';
 import { extractArchive, createArchive } from './archive';
-import { paths } from '../../helpers/paths';
+import { paths } from 'helpers/paths';
 
 const INFO_FILE = '.backstage-build-cache';
 

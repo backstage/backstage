@@ -24,7 +24,9 @@ if (fs.existsSync('jest.config.js')) {
 } else if (fs.existsSync('jest.config.ts')) {
   module.exports = require(path.resolve('jest.config.ts'));
 } else {
-  const extraOptions = {};
+  const extraOptions = {
+    modulePaths: ['<rootDir>'],
+  };
 
   // Use src/setupTests.ts as the default location for configuring test env
   if (fs.existsSync('src/setupTests.ts')) {

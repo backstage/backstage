@@ -16,7 +16,7 @@
 
 import fs from 'fs';
 import { promisify } from 'util';
-import { paths } from '../../helpers/paths';
+import { paths } from 'helpers/paths';
 
 const readFile = promisify(fs.readFile);
 

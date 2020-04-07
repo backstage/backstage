@@ -15,8 +15,8 @@
  */
 
 import { Command } from 'commander';
-import { run } from '../helpers/run';
-import { paths } from '../helpers/paths';
+import { run } from 'helpers/run';
+import { paths } from 'helpers/paths';
 
 export default async (cmd: Command) => {
   const args = ['test', '--config', paths.resolveOwn('config/jest.js')];
