@@ -78,6 +78,7 @@ For more complex development environment configuration, see the
 - [Getting Started](docs/getting-started/README.md)
 - [Architecture](docs/architecture-terminology.md)
 - [API references](docs/reference/README.md)
+- [Designing for Backstage](docs/design.md)
 - [Storybook - UI components](http://storybook.backstage.io) ([WIP](https://github.com/spotify/backstage/milestone/9))
 - [Contributing to Storybook](docs/getting-started/contributing-to-storybook.md)
 - Using Backstage components (TODO)
