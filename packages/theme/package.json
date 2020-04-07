@@ -19,8 +19,7 @@
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build:watch": "backstage-cli plugin:build --watch",
-    "build": "backstage-cli build-cache -- backstage-cli plugin:build",
+    "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint"
   },
   "devDependencies": {
