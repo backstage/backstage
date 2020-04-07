@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import { Command } from 'commander';
 import { run } from 'helpers/run';
 import { Cache } from './cache';
@@ -31,6 +32,7 @@ export async function withCache(
   const key = await Cache.readInputKey(options.inputs);
   if (!key) {
     print('input directory is dirty, skipping cache');
+    await fs.remove(options.output);
     await buildFunc();
     return;
   }
@@ -49,6 +51,7 @@ export async function withCache(
   }
 
   print('cache miss, need to build');
+  await fs.remove(options.output);
   await buildFunc();
 
   await cacheResult.archive(options.output, options.maxCacheEntries);
