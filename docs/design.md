@@ -26,10 +26,8 @@ The chart below details how we work. ***Stay tuned***: We are currently in the p
 
 
 The following diagram shows the relationship between the Backstage Design System and our foundation, which comprises of [Material UI](https://material-ui.com/) that is shaped by user experience and user interface decisions made by our Backstage Design Team. Also note, we encourage you to take the core experience we’ve crafted and add custom theming to better represent your organization! 
-| Backstage Design System  |
-|---|
-| Backstage UI/UX  |
-|  Material UI |
+
+![dls](docs/DLS.png)
 
 
 ## ✅ Our Priorities
