@@ -16,12 +16,10 @@
 
 import program from 'commander';
 import chalk from 'chalk';
-import { exitWithError } from './helpers/errors';
-import { paths } from './helpers/paths';
+import { exitWithError } from 'helpers/errors';
+import { version } from 'helpers/version';
 
 const main = (argv: string[]) => {
-  const version = require(paths.resolveOwn('package.json')).version;
-
   program.name('backstage-cli').version(version);
 
   program

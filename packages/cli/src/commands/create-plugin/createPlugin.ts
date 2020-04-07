@@ -27,6 +27,7 @@ import {
   getCodeownersFilePath,
 } from './lib/codeowners';
 import { paths } from 'helpers/paths';
+import { version } from 'helpers/version';
 import { Task, templatingTask } from 'helpers/tasks';
 const exec = promisify(execCb);
 
@@ -86,7 +87,7 @@ const addExportStatement = async (
 export async function addPluginDependencyToApp(
   rootDir: string,
   pluginName: string,
-  version: string,
+  versionStr: string,
 ) {
   const pluginPackage = `@backstage/plugin-${pluginName}`;
   const packageFilePath = 'packages/app/package.json';
@@ -103,7 +104,7 @@ export async function addPluginDependencyToApp(
       );
     }
 
-    dependencies[pluginPackage] = `^${version}`;
+    dependencies[pluginPackage] = `^${versionStr}`;
     packageFileJson.dependencies = sortObjectByKeys(dependencies);
     const newContents = `${JSON.stringify(packageFileJson, null, 2)}\n`;
 
@@ -223,7 +224,6 @@ export default async () => {
   const templateDir = paths.resolveOwn('templates/default-plugin');
   const tempDir = resolvePath(os.tmpdir(), answers.id);
   const pluginDir = paths.resolveTargetRoot('plugins', answers.id);
-  const version = require(paths.resolveOwn('package.json')).version;
   const ownerIds = parseOwnerIds(answers.owner);
 
   Task.log();
