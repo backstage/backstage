@@ -96,6 +96,10 @@ export class Cache {
     for (const quotedInputPath of quotedInputPaths) {
       const output = await runPlain(`git ls-tree HEAD ${quotedInputPath}`);
       const [, , sha] = output.split(/\s+/, 3);
+      // If we can't get a tree sha it means we're outside of tracked files, so treat as dirty
+      if (!sha) {
+        return undefined;
+      }
       trees.push(sha);
     }
 
