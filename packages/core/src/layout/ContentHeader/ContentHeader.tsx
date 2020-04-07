@@ -21,9 +21,8 @@
 import React, { ComponentType, Fragment, FC } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 import Helmet from 'react-helmet';
-import { BackstageTheme } from '../../theme/theme';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   container: {
     width: '100%',
     display: 'flex',

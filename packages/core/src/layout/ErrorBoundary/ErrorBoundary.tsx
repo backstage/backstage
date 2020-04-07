@@ -17,7 +17,7 @@
 import React, { ComponentClass, Component, SFC } from 'react';
 
 type Props = {
-  slackChannel: string;
+  slackChannel?: string;
   onError?: (error: Error, errorInfo: string) => null;
 };
 
@@ -69,13 +69,14 @@ export default ErrorBoundary;
 type EProps = {
   error?: Error;
   errorInfo?: string;
-  slackChannel: string;
+  slackChannel?: string;
 };
 
 const Error: SFC<EProps> = ({ slackChannel }) => {
   return (
     <div>
-      Something went wrong here. Please contact {slackChannel} for help.
+      Something went wrong here.{' '}
+      {slackChannel && <>Please contact {slackChannel} for help.</>}
     </div>
   );
 };

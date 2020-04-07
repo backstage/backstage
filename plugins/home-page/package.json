@@ -13,6 +13,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.2",
     "@backstage/core": "^0.1.1-alpha.2",
+    "@backstage/theme": "^0.1.1-alpha.2",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^4.2.4",
@@ -25,7 +26,8 @@
     "react-dom": "^16.12.0"
   },
   "peerDependencies": {
-    "@backstage/core": "^0.1.1-alpha.1",
+    "@backstage/core": "^0.1.1-alpha.2",
+    "@backstage/theme": "^0.1.1-alpha.2",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",

@@ -42,9 +42,14 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.2",
+    "@backstage/test-utils": "^0.1.1-alpha.2",
+    "@backstage/theme": "^0.1.1-alpha.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "react-router": "^5.1.2"
+  },
+  "peerDependencies": {
+    "@backstage/theme": "^0.1.1-alpha.2"
   }
 }
