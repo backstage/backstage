@@ -24,7 +24,7 @@ import {
   ListItemText,
   Link,
 } from '@material-ui/core';
-import Timer from '../Timer';
+import Timer from 'components/Timer';
 import {
   Content,
   InfoCard,
