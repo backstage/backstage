@@ -41,12 +41,12 @@ This is the universal user experience that is shared amongst all Backstage users
 In the beginning, most of our issues will be centered around creating universal components for our Backstage Design System and adding them to our Storybook so plugin developers can reference them. We’ll also be creating issues that are focused on building up our core Backstage user experience. We’ll be labeling our issues in GitHub with ‘design’ and/or ‘storybook’ - so feel free to browse and tackle the tasks that interest you. If you have any questions regarding an issue, you can ask them in the comments section of the issue or on [Discord](https://discord.gg/PefUsZ). We absolutely adore our external contributors and will send you virtual semlas  for your contributions!
 
 ### Request a component.
-Create an issue (label it design and assign it to katz95) or send us a message on [Discord](https://discord.gg/PefUsZ) (#design channel) with details of what the component is and its relevant use cases. Your request will be reviewed by our design team and you should hear back from us within 1-2 business days. We’ll get back to you and let you know whether your requested component will get picked up by our team as something to be added to our design system.
+Create an issue (label it design and assign it to katz95) or send us a message on [Discord](https://discord.gg/PefUsZ) (*#design* channel) with details of what the component is and its relevant use cases. Your request will be reviewed by our design team and you should hear back from us within 1-2 business days. We’ll get back to you and let you know whether your requested component will get picked up by our team as something to be added to our design system.
 
 ## ✏️ Resources
 **[Storybook](http://storybook.backstage.io/)** - where you can view our components. If you’d like to help build up our design system, you can also add components we’ve designed to the Storybook as well.
 
-**[Discord](https://discord.gg/PefUsZ)** - all design questions should be directed to the #design channel.
+**[Discord](https://discord.gg/PefUsZ)** - all design questions should be directed to the *#design* channel.
 
 **Documentation**
 - Patterns (stay tuned)
