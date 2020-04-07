@@ -15,7 +15,7 @@
  */
 
 import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey } from '../../icons';
+import { IconComponent, SystemIconKey } from 'icons';
 
 export type App = {
   getSystemIcon(key: SystemIconKey): IconComponent;

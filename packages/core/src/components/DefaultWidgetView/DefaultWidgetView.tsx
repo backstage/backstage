@@ -16,7 +16,7 @@
 
 import React, { FC } from 'react';
 import { Grid, Paper, makeStyles, Theme } from '@material-ui/core';
-import { WidgetViewProps } from '../../api/widgetView/types';
+import { WidgetViewProps } from 'api/widgetView/types';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
