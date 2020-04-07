@@ -22,6 +22,7 @@ import postcss from 'rollup-plugin-postcss';
 import imageFiles from 'rollup-plugin-image-files';
 import json from '@rollup/plugin-json';
 import { RollupWatchOptions } from 'rollup';
+import { paths } from '../../helpers/paths';
 
 export default {
   input: 'src/index.ts',
@@ -30,7 +31,9 @@ export default {
     format: 'cjs',
   },
   plugins: [
-    peerDepsExternal(),
+    peerDepsExternal({
+      includeDependencies: true,
+    }),
     resolve({
       mainFields: ['browser', 'module', 'main'],
     }),
@@ -41,6 +44,9 @@ export default {
     postcss(),
     imageFiles(),
     json(),
-    typescript(),
+    typescript({
+      include: `${paths.resolveTarget('src')}/**/*.{js,jsx,ts,tsx}`,
+      exclude: [paths.resolveTarget('src/testUtils/**')],
+    }),
   ],
 } as RollupWatchOptions;
