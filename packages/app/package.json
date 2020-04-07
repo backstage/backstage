@@ -1,12 +1,12 @@
 {
   "name": "example-app",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "private": true,
   "dependencies": {
-    "@backstage/cli": "^0.1.1-alpha.1",
-    "@backstage/core": "^0.1.1-alpha.1",
-    "@backstage/plugin-home-page": "^0.1.1-alpha.1",
-    "@backstage/plugin-welcome": "^0.1.1-alpha.1",
+    "@backstage/cli": "^0.1.1-alpha.2",
+    "@backstage/core": "^0.1.1-alpha.2",
+    "@backstage/plugin-home-page": "^0.1.1-alpha.2",
+    "@backstage/plugin-welcome": "^0.1.1-alpha.2",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
