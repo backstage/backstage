@@ -19,10 +19,20 @@ There are a lot of exciting things coming up and we want to keep you in the loop
 ## 🛠 Our Practice
 The chart below details how we work. ***Stay tuned***: We are currently in the process of securing a Figma workspace for Backstage Open Source, and we plan on referencing Figma documents to share specs and prototypes with the community.
 
+### Creating a New Design Component
 |  Step 1 |  Step 2 | Step 3  |  Step 4 |  Step 5 | Step 6  |
 |:---|:---|:---|:---|:---|:---|
 |  Platform design team submits an issue to **spotify/Backstage GitHub** with a potential component. |  Backstage community offers feedback or approval on **spotify/Backstage GitHub**. |  Platform design team adjusts accordingly (as they see fit) and update the Figma DLS document. |  Designed component is added to **spotify/Backstage GitHub** as an issue. |  External or internal Backstage open source contributors build the component. |  External or internal contributors add the component to the **Backstage Storybook**. 🎉 |
 
+
+### Building for Backstage
+|  Step 1 |  Step 2 |  Step 3 | Step 4  | 
+|:---|:---|:---|:---|
+|  External or internal contributors use Backstage and come up with an idea of an entity to build for Backstage. |External or internal contributors refer to the Backstage Open Source design system documentation in the Figma DLS document.   | External or internal contributors leverage the components and tokens from the Backstage Storybook.  | External or internal contributors build their Backstage entity. | 
+
+| Step 5  | Step 6  |  Step 7 | Step 8  |
+|:---|:---|:---|:---|
+| External or internal contributors make a pull request for their entity on spotify/Backstage GitHub for review.  |  Platform designers and devs review the entity and submit feedback or approval on spotify/Backstage GitHub. | External or internal contributors make the changes, pull request is approved and the entity is merged. It’s live on Backstage! 🎉  | If the entity happens to be or include a UX component, it’s added to Backstage Storybook as well.  |
 
 
 The following diagram shows the relationship between the Backstage Design System and our foundation, which comprises of [Material UI](https://material-ui.com/) that is shaped by user experience and user interface decisions made by our Backstage Design Team. Also note, we encourage you to take the core experience we’ve crafted and add custom theming to better represent your organization! 
