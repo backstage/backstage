@@ -21,7 +21,7 @@ export default async () => {
   const args = ['start'];
 
   // Start dynamic watch and build of dependencies, then serve the app
-  await watchDeps();
+  await watchDeps({ build: true });
   await run('react-scripts', args, {
     env: {
       EXTEND_ESLINT: 'true',
