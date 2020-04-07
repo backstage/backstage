@@ -1,11 +1,3 @@
 {
-  "extends": "@spotify/web-scripts/config/tsconfig.json",
-  "exclude": ["**/*.test.*"],
-  "compilerOptions": {
-    "allowJs": true,
-    "noEmit": false,
-    "declarationMap": true,
-    "incremental": true,
-    "module": "es6"
-  }
+  "extends": "@backstage/cli/config/tsconfig.json"
 }
