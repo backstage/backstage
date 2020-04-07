@@ -27,25 +27,33 @@ if (!isLocal) {
   // This is a solution for getting src-relative imports to work with typescript/node in
   // the published package. We're using `module: "amd"` to ship the entire cli implementation
   // in one file, and it also happens to generate correct module definition and import statements.
-
   // Minimal AMD implementation
   const moduleFactories = {};
   const moduleCache = {};
   global.define = (name, deps, moduleFunc) => {
     moduleFactories[name] = () => {
       const exportsObj = {};
-      const impls = deps.slice(2).map(dep => {
-        const factory = moduleFactories[dep];
-        if (!factory) {
-          return require(dep);
-        }
-        if (!moduleCache[dep]) {
-          moduleCache[dep] = factory();
-        }
-        return moduleCache[dep];
-      });
 
-      moduleFunc(require, exportsObj, ...impls);
+      // require() that first searches for locally defined amd modules
+      const requireFunc = name => {
+        let factory = moduleFactories[name];
+        if (!factory) {
+          // Check /index as well, to mirror nodejs resolution
+          const index = `${name}/index`;
+          if (!moduleFactories[index]) {
+            return require(name);
+          }
+          name = index;
+          factory = moduleFactories[name];
+        }
+        if (!moduleCache[name]) {
+          moduleCache[name] = factory();
+        }
+        return moduleCache[name];
+      };
+      const impls = deps.slice(2).map(requireFunc);
+
+      moduleFunc(requireFunc, exportsObj, ...impls);
 
       return exportsObj;
     };
