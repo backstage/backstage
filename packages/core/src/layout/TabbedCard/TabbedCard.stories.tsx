@@ -51,23 +51,27 @@ export const WithControlledTabValue = () => {
   const handleChange = (_ev, newSelectedTab) => setSelectedTab(newSelectedTab);
 
   return (
-    <TabbedCard
-      value={selectedTab}
-      onChange={handleChange}
-      title="Controlled Value Example"
-    >
-      <CardTab value="one" label="Option 1">
-        some content 1
-      </CardTab>
-      <CardTab value="two" label="Option 2">
-        some content 2
-      </CardTab>
-      <CardTab value="three" label="Option 3">
-        some content 3
-      </CardTab>
-      <CardTab value="four" label="Option 4">
-        some content 4
-      </CardTab>
-    </TabbedCard>
+    <>
+      <span>Selected tab is {selectedTab}</span>
+
+      <TabbedCard
+        value={selectedTab}
+        onChange={handleChange}
+        title="Controlled Value Example"
+      >
+        <CardTab value="one" label="Option 1">
+          some content 1
+        </CardTab>
+        <CardTab value="two" label="Option 2">
+          some content 2
+        </CardTab>
+        <CardTab value="three" label="Option 3">
+          some content 3
+        </CardTab>
+        <CardTab value="four" label="Option 4">
+          some content 4
+        </CardTab>
+      </TabbedCard>
+    </>
   );
 };

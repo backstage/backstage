@@ -33,6 +33,11 @@ import { BackstageTheme } from '../../theme/theme';
 const useTabsStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     padding: theme.spacing(0, 2, 0, 2.5),
+    minHeight: theme.spacing(3),
+  },
+  indicator: {
+    backgroundColor: theme.palette.info.main,
+    height: theme.spacing(0.3),
   },
 }));
 
@@ -100,9 +105,13 @@ const TabbedCard: FC<Props> = ({
 const useCardTabStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     minWidth: theme.spacing(6),
-    padding: theme.spacing(1, 0, 1, 0),
+    minHeight: theme.spacing(3),
     margin: theme.spacing(0, 2, 0, 0),
+    padding: theme.spacing(0.5, 0, 0.5, 0),
     textTransform: 'none',
+  },
+  selected: {
+    fontWeight: 'bold',
   },
 }));
 
@@ -113,7 +122,7 @@ type CardTabProps = TabProps & {
 const CardTab: FC<CardTabProps> = ({ children, ...props }) => {
   const classes = useCardTabStyles();
 
-  return <Tab classes={classes} {...props} />;
+  return <Tab disableRipple={true} classes={classes} {...props} />;
 };
 
 export { TabbedCard, CardTab };

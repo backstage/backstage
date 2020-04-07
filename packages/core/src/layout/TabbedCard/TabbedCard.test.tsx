@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '../../testUtils';
 import { TabbedCard, CardTab } from '.';
 
@@ -50,5 +50,20 @@ describe('<InfoCard />', () => {
       ),
     );
     expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
+  });
+
+  it('switches tabs when clicking', () => {
+    const rendered = render(
+      wrapInTestApp(
+        <TabbedCard>
+          <CardTab label="Test 1">Test Content 1</CardTab>
+          <CardTab label="Test 2">Test Content 2</CardTab>
+        </TabbedCard>,
+      ),
+    );
+    expect(rendered.getByText('Test Content 1')).toBeInTheDocument();
+
+    fireEvent.click(rendered.getByText('Test 2'));
+    expect(rendered.getByText('Test Content 2')).toBeInTheDocument();
   });
 });
