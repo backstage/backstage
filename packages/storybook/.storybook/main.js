@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   stories: [
     '../../core/src/layout/**/*.stories.tsx',
@@ -5,6 +7,7 @@ module.exports = {
   ],
   addons: ['@storybook/addon-actions', '@storybook/addon-links'],
   webpackFinal: async config => {
+    config.resolve.modules.push(path.resolve(__dirname, '../../core/src'));
     config.module.rules.push(
       {
         test: /\.(ts|tsx)$/,
