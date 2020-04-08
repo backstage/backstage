@@ -16,6 +16,16 @@ or
 $ yarn add @backstage/cli
 ```
 
+## Development
+
+For local development the cli can be used directly, even from other packages in this repo. The `bin/backstage-cli` entrypoint contains a switch that will load the implementation from the `src` directory when executed inside this repo.
+
+To try out the `create-app` command locally, you can execute the following from the parent directory of this repo:
+
+```bash
+./backstage/packages/cli/bin/backstage-cli create-app
+```
+
 ## Documentation
 
 - [Backstage Readme](https://github.com/spotify/backstage/blob/master/README.md)
