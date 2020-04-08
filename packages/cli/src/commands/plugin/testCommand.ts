@@ -15,7 +15,7 @@
  */
 
 import { Command } from 'commander';
-import { run } from '../../helpers/run';
+import { run } from 'helpers/run';
 
 export default async (cmd: Command) => {
   const args = ['test'];

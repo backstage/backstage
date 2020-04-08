@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core",
   "description": "Core API used by Backstage plugins and apps",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -16,11 +16,10 @@
     "backstage"
   ],
   "license": "Apache-2.0",
-  "main": "dist/cjs/index.js",
-  "types": "dist/cjs/index.d.ts",
+  "main": "dist/index.cjs.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build:watch": "tsc --outDir dist/cjs --noEmit false --module CommonJS --watch",
-    "build": "backstage-cli build-cache -- tsc --outDir dist/cjs --noEmit false --module CommonJS",
+    "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test"
   },
@@ -31,6 +30,8 @@
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "classnames": "^2.2.6",
+    "clsx": "^1.1.0",
+    "prop-types": "^15.7.2",
     "rc-progress": "^2.5.2",
     "react": "^16.12.0",
     "react-addons-text-content": "0.0.4",
@@ -40,10 +41,15 @@
     "recompose": "0.30.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.1",
+    "@backstage/cli": "^0.1.1-alpha.2",
+    "@backstage/test-utils": "^0.1.1-alpha.2",
+    "@backstage/theme": "^0.1.1-alpha.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "prop-types": "^15.7.2"
+    "react-router": "^5.1.2"
+  },
+  "peerDependencies": {
+    "@backstage/theme": "^0.1.1-alpha.2"
   }
 }

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import {
-  BackstageThemeLight,
-  BackstageThemeDark,
-  createApp,
-} from '@backstage/core';
+  CssBaseline,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from '@material-ui/core';
+import { BackstageThemeLight, BackstageThemeDark } from '@backstage/theme';
+import { createApp } from '@backstage/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
@@ -51,13 +53,15 @@ app.registerApis(apis);
 app.registerPlugin(...Object.values(plugins));
 const AppComponent = app.build();
 
+type T = typeof BackstageThemeLight | typeof BackstageThemeDark;
+
 const App: FC<{}> = () => {
   useStyles();
   const [theme, toggleTheme] = useThemeType(
     localStorage.getItem('theme') || 'auto',
   );
 
-  let backstageTheme = BackstageThemeLight;
+  let backstageTheme: T = BackstageThemeLight;
   switch (theme) {
     case 'light':
       backstageTheme = BackstageThemeLight;
@@ -82,7 +86,7 @@ const App: FC<{}> = () => {
   };
   return (
     <ThemeContext.Provider value={themeContext}>
-      <ThemeProvider theme={backstageTheme}>
+      <ThemeProvider theme={backstageTheme as Theme}>
         <CssBaseline>
           <ErrorDisplay forwarder={errorDialogForwarder} />
           <Router>

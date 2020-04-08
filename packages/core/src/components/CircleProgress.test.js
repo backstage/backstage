@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '../testUtils';
+import { COLORS } from '@backstage/theme';
+import { wrapInThemedTestApp } from '@backstage/test-utils';
 import CircleProgress, { getProgressColor } from './CircleProgress';
-import { COLORS } from '../theme/BackstageTheme';
 
 describe('<CircleProgress />', () => {
   it('renders without exploding', () => {

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-module.exports = {
-  ...require('@spotify/web-scripts/config/jest.config.js'),
-  setupFilesAfterEnv: ['../jest.setup.ts'],
-};
+export { default as BackstageThemeLight } from './BackstageThemeLight';
+export { default as BackstageThemeDark } from './BackstageThemeDark';
+export { default as BackstageTheme, COLORS } from './BackstageTheme';

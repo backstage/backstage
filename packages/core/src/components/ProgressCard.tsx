@@ -18,15 +18,16 @@ import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core';
 
 import InfoCard from '../layout/InfoCard';
+import { Props as BottomLinkProps } from '../layout/InfoCard/BottomLink';
 import CircleProgress from './CircleProgress';
 
 type Props = {
   title: string;
   subheader?: string;
   variant?: string;
-  progress: number | string;
-  deepLink?: string | { title: string; link: string };
-  gacontext?: string;
+  /** Progress in % specified as decimal, e.g. "0.23" */
+  progress: number;
+  deepLink?: BottomLinkProps;
 };
 
 const useStyles = makeStyles({
@@ -40,25 +41,15 @@ const ProgressCard: FC<Props> = props => {
   const classes = useStyles(props);
   const { title, subheader, progress, deepLink, variant } = props;
 
-  // TODO(freben): Make type more strict when InfoCard is written in TS
-  let link: any = undefined;
-  if (deepLink) {
-    if (typeof deepLink === 'string') {
-      link = { title: 'View more', link: deepLink };
-    } else {
-      link = deepLink;
-    }
-  }
-
   return (
     <div className={classes.root}>
       <InfoCard
         title={title}
         subheader={subheader}
-        deepLink={link}
+        deepLink={deepLink}
         variant={variant}
       >
-        <CircleProgress value={Number(progress)} />
+        <CircleProgress value={progress} />
       </InfoCard>
     </div>
   );

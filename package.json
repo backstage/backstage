@@ -5,11 +5,13 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "start": "yarn build && yarn workspace example-app start",
+    "start": "yarn workspace example-app start",
     "bundle": "yarn build && yarn workspace example-app bundle",
     "build": "lerna run build",
     "test": "yarn build && lerna run test --since origin/master -- --coverage",
+    "test:all": "yarn build && lerna run test -- --coverage",
     "lint": "lerna run lint --since origin/master --",
+    "lint:all": "lerna run lint --",
     "docker-build": "yarn bundle && docker build . -t spotify/backstage",
     "create-plugin": "backstage-cli create-plugin",
     "remove-plugin": "backstage-cli remove-plugin",
@@ -25,8 +27,8 @@
   },
   "version": "1.0.0",
   "devDependencies": {
+    "@spotify/eslint-config-oss": "^1.0.1",
     "cross-env": "^7.0.0",
-    "eslint-plugin-notice": "^0.8.9",
     "husky": "^4.2.3",
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.0",

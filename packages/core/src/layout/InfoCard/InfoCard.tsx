@@ -26,9 +26,8 @@ import {
 } from '@material-ui/core';
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 import BottomLink, { Props as BottomLinkProps } from './BottomLink';
-import { BackstageTheme } from '../../theme/theme';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   header: {
     padding: theme.spacing(2, 2, 2, 2.5),
   },

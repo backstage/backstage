@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import { Link } from '@material-ui/core';
-import { Divider, ListItemText, makeStyles } from '@material-ui/core';
-import { ListItem, ListItemIcon } from '@material-ui/core';
-import ArrowIcon from '@material-ui/icons/ArrowForward';
-import grey from '@material-ui/core/colors/grey';
+import {
+  Divider,
+  Link,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+} from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import { BackstageTheme } from '../../theme/theme';
+import grey from '@material-ui/core/colors/grey';
+import ArrowIcon from '@material-ui/icons/ArrowForward';
+import React, { FC } from 'react';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: 'fit-content',
     padding: theme.spacing(2, 2, 2, 2.5),

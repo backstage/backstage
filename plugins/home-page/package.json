@@ -1,19 +1,19 @@
 {
   "name": "@backstage/plugin-home-page",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "build:watch": "backstage-cli plugin:build --watch",
-    "build": "backstage-cli build-cache -- backstage-cli plugin:build",
+    "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.1",
-    "@backstage/core": "^0.1.1-alpha.1",
+    "@backstage/cli": "^0.1.1-alpha.2",
+    "@backstage/core": "^0.1.1-alpha.2",
+    "@backstage/theme": "^0.1.1-alpha.2",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^4.2.4",
@@ -26,7 +26,8 @@
     "react-dom": "^16.12.0"
   },
   "peerDependencies": {
-    "@backstage/core": "^0.1.1-alpha.1",
+    "@backstage/core": "^0.1.1-alpha.2",
+    "@backstage/theme": "^0.1.1-alpha.2",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",

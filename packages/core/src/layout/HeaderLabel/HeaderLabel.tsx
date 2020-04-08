@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
+import { Link, makeStyles, Typography } from '@material-ui/core';
 import React, { FC } from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
-import { Link } from '@material-ui/core';
-import { BackstageTheme } from '../../theme/theme';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     textAlign: 'left',
     margin: theme.spacing(2),

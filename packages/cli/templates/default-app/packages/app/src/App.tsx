@@ -1,5 +1,6 @@
 import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
-import { BackstageTheme, createApp } from '@backstage/core';
+import { createApp } from '@backstage/core';
+import { BackstageTheme } from '@backstage/theme';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import * as plugins from './plugins';

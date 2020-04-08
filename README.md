@@ -13,7 +13,7 @@ Backstage is an open platform for building developer portals.
 
 The philosophy behind Backstage is simple: Don't expose your engineers to the full complexity of your infrastructure tooling. Engineers should be shipping code — not figuring out a whole new toolset every time they want to implement the basics. Backstage allows you add "stuff" (tooling, services, features, etc.) by adding a plugin, instead of building a new tool. This saves you work and avoids the need of your team to learn how to use and support yet another tool.
 
-For more information go to [backstage.io](https://backstage.io)
+For more information go to [backstage.io](https://backstage.io) or join our [Discord chatroom](https://discord.gg/EBHEGzX).
 
 ## What problem does Backstage solve?
 
@@ -41,7 +41,7 @@ Our vision for Backstage is for it to become the trusted standard toolbox (read:
 
 The Backstage platform consists of a number of different components:
 
-- **frontend** - Main web application that users interact with. It's built up by a number of different _Plugins_.
+- **app** - Main web application that users interact with. It's built up by a number of different _Plugins_. This repo contains an example implementation of an app (located in `packages/example-app`) and you can easily get started with your own app by [creating one](docs/getting-started/create-an-app.md).
 - **plugins** - Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform API's and reusable UI components. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
 - **backend** \* - GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
 - **proxy** \* - Terminates HTTPS and exposes any RESTful API to Plugins.
@@ -53,7 +53,7 @@ _\* not yet released_
 
 ## Getting started
 
-To run the Backstage frontend, you will need to have the following installed:
+To run a Backstage app, you will need to have the following installed:
 
 - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
@@ -75,16 +75,17 @@ For more complex development environment configuration, see the
 ## Documentation
 
 - [FAQs](docs/FAQ.md)
-- [Create a Plugin](docs/getting-started/create-a-plugin.md)
-- [Structure of a Plugin](docs/getting-started/structure-of-a-plugin.md)
-- [Frontend architecture](docs/architecture-terminology.md)
+- [Getting Started](docs/getting-started/README.md)
+- [Architecture](docs/architecture-terminology.md)
 - [API references](docs/reference/README.md)
+- [Designing for Backstage](docs/design.md)
 - [Storybook - UI components](http://storybook.backstage.io) ([WIP](https://github.com/spotify/backstage/milestone/9))
+- [Contributing to Storybook](docs/getting-started/contributing-to-storybook.md)
 - Using Backstage components (TODO)
 
 ## Community
 
-- [Discord chat](https://discord.gg/MUpMjP2) - Get support or discuss the project
+- [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the project
 - [Good First Issues](https://github.com/spotify/backstage/labels/good%20first%20issue) - Start here if you want to contribute
 - [RFCs](https://github.com/spotify/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](docs/FAQ.md) - Frequently Asked Questions

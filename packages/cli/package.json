@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -19,7 +19,7 @@
   "main": "dist",
   "scripts": {
     "exec": "npx ts-node ./src",
-    "build": "backstage-cli build-cache -- tsc --outDir dist --noEmit false --module CommonJS",
+    "build": "backstage-cli build-cache -- tsc",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "start": "nodemon ."
@@ -39,8 +39,8 @@
     "@types/webpack-dev-server": "^3.10.0",
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
-    "tar": "^6.0.1",
-    "ts-node": "^8.6.2"
+    "ts-node": "^8.6.2",
+    "tsconfig-paths": "^3.9.0"
   },
   "bin": {
     "backstage-cli": "bin/backstage-cli"
@@ -52,9 +52,12 @@
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@spotify/web-scripts": "^6.0.0",
+    "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^4.1.1",
     "dashify": "^2.0.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-monorepo": "^0.2.1",
     "fork-ts-checker-webpack-plugin": "^4.0.5",
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.3",
@@ -70,9 +73,13 @@
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-postcss": "^2.5.0",
     "rollup-plugin-typescript2": "^0.26.0",
+    "tar": "^6.0.1",
     "ts-loader": "^6.2.1",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0"
   },
   "files": [
     "templates",

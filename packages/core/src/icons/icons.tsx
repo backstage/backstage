@@ -18,7 +18,7 @@ import { SvgIconProps } from '@material-ui/core';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import React, { FC } from 'react';
-import { useApp } from '../api';
+import { useApp } from '../api/app/AppContext';
 import { IconComponent, SystemIconKey, SystemIcons } from './types';
 
 export const defaultSystemIcons: SystemIcons = {

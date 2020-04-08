@@ -6,3 +6,4 @@ Check out [https://backstage.io]() or see the table of content below.
 - [Getting started](getting-started/README.md)
 - [References](reference/README.md)
 - [Publishing](publishing.md)
+- [Designing for Backstage](design.md)

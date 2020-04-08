@@ -16,78 +16,69 @@
 
 import program from 'commander';
 import chalk from 'chalk';
-import createAppCommand from './commands/create-app/createApp';
-import createPluginCommand from './commands/create-plugin/createPlugin';
-import removePluginCommand from './commands/remove-plugin/removePlugin';
-import watch from './commands/watch-deps';
-import buildCache from './commands/build-cache';
-import lintCommand from './commands/lint';
-import testCommand from './commands/testCommand';
-import appBuild from './commands/app/build';
-import appServe from './commands/app/serve';
-import pluginBuild from './commands/plugin/build';
-import pluginServe from './commands/plugin/serve';
-import { exitWithError } from './helpers/errors';
-import { paths } from './helpers/paths';
+import { exitWithError } from 'helpers/errors';
+import { version } from 'helpers/version';
 
 const main = (argv: string[]) => {
-  const version = require(paths.resolveOwn('package.json')).version;
-
   program.name('backstage-cli').version(version);
 
   program
     .command('create-app')
     .description('Creates a new app in a new directory')
-    .action(actionHandler(createAppCommand));
+    .action(actionHandler(() => require('commands/create-app/createApp')));
 
   program
     .command('app:build')
     .description('Build an app for a production release')
-    .action(actionHandler(appBuild));
+    .action(actionHandler(() => require('commands/app/build')));
 
   program
     .command('app:serve')
     .description('Serve an app for local development')
-    .action(actionHandler(appServe));
+    .action(actionHandler(() => require('commands/app/serve')));
 
   program
     .command('create-plugin')
     .description('Creates a new plugin in the current repository')
-    .action(actionHandler(createPluginCommand));
+    .action(
+      actionHandler(() => require('commands/create-plugin/createPlugin')),
+    );
 
   program
     .command('remove-plugin')
     .description('Removes plugin in the current repository')
-    .action(actionHandler(removePluginCommand));
+    .action(
+      actionHandler(() => require('commands/remove-plugin/removePlugin')),
+    );
 
   program
     .command('plugin:build')
     .option('--watch', 'Enable watch mode')
     .description('Build a plugin')
-    .action(actionHandler(pluginBuild));
+    .action(actionHandler(() => require('commands/plugin/build')));
 
   program
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
-    .action(actionHandler(pluginServe));
+    .action(actionHandler(() => require('commands/plugin/serve')));
 
   program
     .command('lint')
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint a package')
-    .action(actionHandler(lintCommand));
+    .action(actionHandler(() => require('commands/lint')));
 
   program
     .command('test')
     .option('--watch', 'Enable watch mode')
     .option('--coverage', 'Report test coverage')
     .description('Run all tests for package')
-    .action(actionHandler(testCommand));
+    .action(actionHandler(() => require('commands/testCommand')));
 
   program
     .command('watch-deps')
     .description('Watch all dependencies while running another command')
-    .action(actionHandler(watch));
+    .action(actionHandler(() => require('commands/watch-deps')));
 
   program
     .command('build-cache')
@@ -104,7 +95,7 @@ const main = (argv: string[]) => {
       'Cache dir',
       '<repoRoot>/node_modules/.cache/backstage-builds',
     )
-    .action(actionHandler(buildCache));
+    .action(actionHandler(() => require('commands/build-cache')));
 
   program.on('command:*', () => {
     console.log();
@@ -125,10 +116,11 @@ const main = (argv: string[]) => {
 
 // Wraps an action function so that it always exits and handles errors
 function actionHandler<T extends readonly any[]>(
-  actionFunc: (...args: T) => Promise<any>,
+  actionRequireFunc: () => { default(...args: T): Promise<any> },
 ): (...args: T) => Promise<never> {
   return async (...args: T) => {
     try {
+      const actionFunc = actionRequireFunc().default;
       await actionFunc(...args);
       process.exit(0);
     } catch (error) {

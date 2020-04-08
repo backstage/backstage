@@ -18,8 +18,11 @@ import { createMuiTheme } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { blue, yellow } from '@material-ui/core/colors';
 
+import { BackstageMuiTheme, BackstageMuiThemeOptions } from './types';
+
 export const COLORS = {
-  PAGE_BACKGROUND: '#F8F8F8',
+  PAGE_BACKGROUND: '#282828',
+  EFAULT_PAGE_THEME_COLOR: '#232323',
   DEFAULT_PAGE_THEME_COLOR: '#7C3699',
   DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
   ERROR_BACKGROUND_COLOR: '#FFEBEE',
@@ -37,7 +40,7 @@ export const COLORS = {
   },
 };
 
-const extendedThemeConfig = {
+const extendedThemeConfig: BackstageMuiThemeOptions = {
   props: {
     MuiGrid: {
       spacing: 2,
@@ -49,8 +52,13 @@ const extendedThemeConfig = {
   palette: {
     background: {
       default: COLORS.PAGE_BACKGROUND,
+      // @ts-ignore
       informational: '#60a3cb',
     },
+    color: {
+      default: '#fff',
+    },
+    type: 'dark',
     status: {
       ok: COLORS.STATUS.OK,
       warning: COLORS.STATUS.WARNING,
@@ -66,6 +74,7 @@ const extendedThemeConfig = {
         default: COLORS.DEFAULT_PAGE_THEME_COLOR,
       },
     },
+    // @ts-ignore
     primary: {
       main: blue[500],
     },
@@ -115,9 +124,19 @@ const extendedThemeConfig = {
   },
 };
 
-const createOverrides = theme => {
+const createOverrides = (theme: BackstageMuiTheme): BackstageMuiTheme => {
   return {
     overrides: {
+      // @ts-ignore
+      MuiCSSBaseline: {
+        '@global': {
+          body: {
+            backgroundColor: theme.palette.background.default,
+            // @ts-ignore
+            color: theme.palette.color.default,
+          },
+        },
+      },
       MuiTableRow: {
         // Alternating row backgrounds
         root: {
@@ -211,7 +230,7 @@ const createOverrides = theme => {
       MuiButton: {
         text: {
           // Text buttons have less padding by default, but we want to keep the original padding
-          padding: null,
+          padding: undefined,
         },
       },
       MuiChip: {
@@ -237,13 +256,17 @@ const createOverrides = theme => {
   };
 };
 
-const extendedTheme = createMuiTheme(extendedThemeConfig);
+const extendedTheme = createMuiTheme(extendedThemeConfig) as BackstageMuiTheme;
 
 // V1 theming
 // https://material-ui-next.com/customization/themes/
 // For CSS it is advised to use JSS, see https://material-ui-next.com/customization/css-in-js/
-const BackstageTheme = { ...extendedTheme, ...createOverrides(extendedTheme) };
+const BackstageThemeDark = {
+  ...extendedTheme,
+  ...createOverrides(extendedTheme),
+};
 
 // Temporary workaround for files incorrectly importing the theme directly
-export const V1 = BackstageTheme;
-export default BackstageTheme;
+export const V1 = BackstageThemeDark;
+
+export default BackstageThemeDark;

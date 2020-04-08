@@ -18,6 +18,8 @@ import { createMuiTheme } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { blue, yellow } from '@material-ui/core/colors';
 
+import { BackstageMuiTheme, BackstageMuiThemeOptions } from './types';
+
 export const COLORS = {
   PAGE_BACKGROUND: '#F8F8F8',
   DEFAULT_PAGE_THEME_COLOR: '#7C3699',
@@ -37,7 +39,7 @@ export const COLORS = {
   },
 };
 
-const extendedThemeConfig = {
+const extendedThemeConfig: BackstageMuiThemeOptions = {
   props: {
     MuiGrid: {
       spacing: 2,
@@ -49,6 +51,7 @@ const extendedThemeConfig = {
   palette: {
     background: {
       default: COLORS.PAGE_BACKGROUND,
+      // @ts-ignore
       informational: '#60a3cb',
     },
     color: {
@@ -69,6 +72,7 @@ const extendedThemeConfig = {
         default: COLORS.DEFAULT_PAGE_THEME_COLOR,
       },
     },
+    // @ts-ignore
     primary: {
       main: blue[500],
     },
@@ -118,13 +122,17 @@ const extendedThemeConfig = {
   },
 };
 
-const createOverrides = theme => {
+const createOverrides = (
+  theme: BackstageMuiTheme,
+): Partial<BackstageMuiTheme> => {
   return {
     overrides: {
+      // @ts-ignore
       MuiCSSBaseline: {
         '@global': {
           body: {
             backgroundColor: theme.palette.background.default,
+            // @ts-ignore
             color: theme.palette.color.default,
           },
         },
@@ -222,7 +230,7 @@ const createOverrides = theme => {
       MuiButton: {
         text: {
           // Text buttons have less padding by default, but we want to keep the original padding
-          padding: null,
+          padding: undefined,
         },
       },
       MuiChip: {
@@ -248,7 +256,7 @@ const createOverrides = theme => {
   };
 };
 
-const extendedTheme = createMuiTheme(extendedThemeConfig);
+const extendedTheme = createMuiTheme(extendedThemeConfig) as BackstageMuiTheme;
 
 // V1 theming
 // https://material-ui-next.com/customization/themes/
@@ -260,4 +268,5 @@ const BackstageThemeLight = {
 
 // Temporary workaround for files incorrectly importing the theme directly
 export const V1 = BackstageThemeLight;
+
 export default BackstageThemeLight;

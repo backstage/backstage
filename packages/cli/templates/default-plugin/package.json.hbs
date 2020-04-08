@@ -6,8 +6,7 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "build:watch": "backstage-cli plugin:build --watch",
-    "build": "backstage-cli build-cache -- backstage-cli plugin:build",
+    "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test"
   },
@@ -23,10 +22,12 @@
   },
   "peerDependencies": {
     "@backstage/core": "^{{version}}",
+    "@backstage/theme": "^{{version}}",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "react-use": "^13.0.0"
   }
 }

@@ -14,39 +14,52 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { ThemeProvider } from '@material-ui/styles';
-
+import React, {
+  ComponentType,
+  ReactNode,
+  FunctionComponent,
+  ReactElement,
+} from 'react';
+import { ThemeProvider } from '@material-ui/core';
+import { act } from 'react-dom/test-utils';
+import { render, RenderResult } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';
-
-import { V1 } from '../theme/BackstageTheme';
-import ErrorBoundary from '../layout/ErrorBoundary';
-import { act } from 'react-dom/test-utils';
-import { render } from '@testing-library/react';
+import { BackstageTheme } from '@backstage/theme';
 
 export { default as Keyboard } from './Keyboard';
 export { default as mockBreakpoint } from './mockBreakpoint';
 export * from './logCollector';
 
-export function wrapInTestApp(Component, initialRouterEntries) {
-  const Wrapper = Component instanceof Function ? Component : () => Component;
+export function wrapInTestApp(
+  Component: ComponentType | ReactNode,
+  initialRouterEntries: string[] = ['/'],
+) {
+  let Wrapper: ComponentType;
+  if (Component instanceof Function) {
+    Wrapper = Component;
+  } else {
+    Wrapper = (() => Component) as FunctionComponent;
+  }
 
   return (
-    <MemoryRouter initialEntries={initialRouterEntries || ['/']}>
-      <ErrorBoundary>
-        <Route component={Wrapper} />
-      </ErrorBoundary>
+    <MemoryRouter initialEntries={initialRouterEntries}>
+      <Route component={Wrapper} />
     </MemoryRouter>
   );
 }
 
-export function wrapInThemedTestApp(component, initialRouterEntries) {
-  const themed = <ThemeProvider theme={V1}>{component}</ThemeProvider>;
+export function wrapInThemedTestApp(
+  component: ReactNode,
+  initialRouterEntries: string[] = ['/'],
+) {
+  const themed = (
+    <ThemeProvider theme={BackstageTheme}>{component}</ThemeProvider>
+  );
   return wrapInTestApp(themed, initialRouterEntries);
 }
 
-export const wrapInTheme = (component, theme = V1) => (
+export const wrapInTheme = (component: ReactNode, theme = BackstageTheme) => (
   <ThemeProvider theme={theme}>{component}</ThemeProvider>
 );
 
@@ -55,10 +68,13 @@ export const wrapInTheme = (component, theme = V1) => (
 // cleaner, since act doesn't return the result of the evaluated function.
 // https://github.com/testing-library/react-testing-library/issues/281
 // https://github.com/facebook/react/pull/14853
-export async function renderWithEffects(nodes) {
-  let value;
-  await act(async () => {
-    value = await render(nodes);
+export async function renderWithEffects(
+  nodes: ReactElement,
+): Promise<RenderResult> {
+  let value: RenderResult;
+  await act(() => {
+    value = render(nodes);
   });
+  // @ts-ignore
   return value;
 }

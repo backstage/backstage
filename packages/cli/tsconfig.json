@@ -1,10 +1,9 @@
 {
-  "extends": "@spotify/web-scripts/config/tsconfig.json",
+  "extends": "../../tsconfig.json",
   "include": ["src"],
   "compilerOptions": {
-    "baseUrl": "src",
-    "paths": {
-      "*": ["src/*"]
-    }
+    "outFile": "dist/index.js",
+    "module": "amd",
+    "baseUrl": "src"
   }
 }
