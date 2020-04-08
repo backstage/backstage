@@ -18,16 +18,16 @@ import React, { ComponentType } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App } from './types';
-import BackstagePlugin from '../plugin/Plugin';
+import BackstagePlugin from 'api/plugin/Plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
-import { featureFlagsApiRef } from '../apis/definitions/featureFlags';
+import { featureFlagsApiRef } from 'api/apis/definitions/featureFlags';
 import {
   IconComponent,
   SystemIcons,
   SystemIconKey,
   defaultSystemIcons,
-} from '../../icons';
-import { ApiHolder, ApiProvider } from '../apis';
+} from 'icons';
+import { ApiHolder, ApiProvider } from 'api/apis';
 import LoginPage from './LoginPage';
 
 class AppImpl implements App {
