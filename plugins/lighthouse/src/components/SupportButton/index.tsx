@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { SupportButton } from '@backstage/core';
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export { default as ApiRef } from './ApiRef';
-export * from './types';
-export * from './definitions';
+export default function LighthouseSupportButton() {
+  return (
+    <SupportButton>
+      Lighthouse audits run for any web domain, stored over time.
+    </SupportButton>
+  );
+}
