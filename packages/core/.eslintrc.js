@@ -1,13 +1,5 @@
 module.exports = {
-  overrides: [
-    {
-      files: ['**/*.ts?(x)'],
-      rules: {
-        // TODO: add prop types and set to 1
-        'react/prop-types': 0,
-      },
-    },
-  ],
+  extends: [require.resolve('@backstage/cli/config/eslint.js')],
   rules: {
     // TODO: add prop types to JS and remove
     'react/prop-types': 0,

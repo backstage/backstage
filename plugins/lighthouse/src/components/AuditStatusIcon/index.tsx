@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 /*
  * Copyright 2020 Spotify AB
  *
