@@ -57,11 +57,11 @@ async function cleanUp(tempDir: string) {
   });
 }
 
-async function buildApp(pluginFolder: string) {
+async function buildApp(appFolder: string) {
   const commands = ['yarn install', 'yarn build'];
   for (const command of commands) {
     await Task.forItem('executing', command, async () => {
-      process.chdir(pluginFolder);
+      process.chdir(appFolder);
 
       await exec(command).catch(error => {
         process.stdout.write(error.stderr);
@@ -80,7 +80,7 @@ export async function moveApp(
   await Task.forItem('moving', id, async () => {
     await fs.move(tempDir, destination).catch(error => {
       throw new Error(
-        `Failed to move plugin from ${tempDir} to ${destination}: ${error.message}`,
+        `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
       );
     });
   });
@@ -97,7 +97,7 @@ export default async () => {
           return chalk.red('Please enter a name for the app');
         } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
           return chalk.red(
-            'Plugin name must be kebab-cased and contain only letters, digits, and dashes.',
+            'App name must be kebab-cased and contain only letters, digits, and dashes.',
           );
         }
         return true;
