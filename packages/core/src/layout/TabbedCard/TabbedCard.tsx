@@ -49,7 +49,7 @@ const BoldHeader = withStyles(theme => ({
 type Props = {
   slackChannel?: string;
   children?: ReactElement<TabProps>[];
-  onChange?: (event: React.ChangeEvent<{}>, value: any) => void;
+  onChange?: (event: React.ChangeEvent<{}>, value: number | string) => void;
   title?: string;
   value?: number | string;
   deepLink?: BottomLinkProps;
@@ -68,7 +68,7 @@ const TabbedCard: FC<Props> = ({
 
   const handleChange = onChange
     ? onChange
-    : (_ev, newSelectedIndex) => selectIndex(newSelectedIndex);
+    : (_ev, newSelectedIndex: number) => selectIndex(newSelectedIndex);
 
   let selectedTabContent: ReactNode;
   if (!value) {

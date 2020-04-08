@@ -66,4 +66,40 @@ describe('<TabbedCard />', () => {
     fireEvent.click(rendered.getByText('Test 2'));
     expect(rendered.getByText('Test Content 2')).toBeInTheDocument();
   });
+
+  it('switches tabs when clicking in controlled mode', () => {
+    let selectedTab = 'one';
+
+    const handleTabChange = jest.fn(
+      (_ev, newSelectedTab) => (selectedTab = newSelectedTab),
+    );
+
+    const rendered = render(
+      wrapInTestApp(
+        <TabbedCard value={selectedTab} onChange={handleTabChange}>
+          <CardTab value="one" label="Test 1">
+            Test Content 1
+          </CardTab>
+          <CardTab value="two" label="Test 2">
+            Test Content 2
+          </CardTab>
+        </TabbedCard>,
+      ),
+    );
+    expect(rendered.getByText('Test Content 1')).toBeInTheDocument();
+
+    fireEvent.click(rendered.getByText('Test 2'));
+    expect(handleTabChange.mock.calls.length).toBe(1);
+    rendered.rerender(
+      <TabbedCard value={selectedTab} onChange={handleTabChange}>
+        <CardTab value="one" label="Test 1">
+          Test Content 1
+        </CardTab>
+        <CardTab value="two" label="Test 2">
+          Test Content 2
+        </CardTab>
+      </TabbedCard>,
+    );
+    expect(rendered.getByText('Test Content 2')).toBeInTheDocument();
+  });
 });
