@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core",
   "description": "Core API used by Backstage plugins and apps",
-  "version": "0.1.1-alpha.2",
+  "version": "0.1.1-alpha.3",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -41,9 +41,9 @@
     "recompose": "0.30.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.2",
-    "@backstage/test-utils": "^0.1.1-alpha.2",
-    "@backstage/theme": "^0.1.1-alpha.2",
+    "@backstage/cli": "^0.1.1-alpha.3",
+    "@backstage/test-utils": "^0.1.1-alpha.3",
+    "@backstage/theme": "^0.1.1-alpha.3",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
