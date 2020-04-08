@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -39,7 +39,8 @@
     "@types/webpack-dev-server": "^3.10.0",
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
-    "ts-node": "^8.6.2"
+    "ts-node": "^8.6.2",
+    "tsconfig-paths": "^3.9.0"
   },
   "bin": {
     "backstage-cli": "bin/backstage-cli"

@@ -77,8 +77,22 @@ export function findRootPath(topPath: string): string {
   );
 }
 
+// Finds the root of the cli package itself
+export function findOwnDir() {
+  // Known relative locations of package in dist/dev
+  const pathDist = '..';
+  const pathDev = '../..';
+
+  // Check the closest dir first
+  const pkgInDist = resolvePath(__dirname, pathDist, 'package.json');
+  const isDist = fs.pathExistsSync(pkgInDist);
+
+  const path = isDist ? pathDist : pathDev;
+  return resolvePath(__dirname, path);
+}
+
 export function findPaths(): Paths {
-  const ownDir = resolvePath(__dirname, '../..');
+  const ownDir = findOwnDir();
   const targetDir = fs.realpathSync(process.cwd());
 
   // We're not always running in a monorepo, so we lazy init this to only crash commands

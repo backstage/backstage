@@ -28,9 +28,8 @@ import {
 } from '@material-ui/core';
 import BottomLink, { Props as BottomLinkProps } from '../BottomLink';
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
-import { BackstageTheme } from '../../theme/theme';
 
-const useTabsStyles = makeStyles<BackstageTheme>(theme => ({
+const useTabsStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(0, 2, 0, 2.5),
     minHeight: theme.spacing(3),
@@ -102,7 +101,7 @@ const TabbedCard: FC<Props> = ({
   );
 };
 
-const useCardTabStyles = makeStyles<BackstageTheme>(theme => ({
+const useCardTabStyles = makeStyles(theme => ({
   root: {
     minWidth: theme.spacing(6),
     minHeight: theme.spacing(3),
@@ -122,7 +121,7 @@ type CardTabProps = TabProps & {
 const CardTab: FC<CardTabProps> = ({ children, ...props }) => {
   const classes = useCardTabStyles();
 
-  return <Tab disableRipple={true} classes={classes} {...props} />;
+  return <Tab disableRipple classes={classes} {...props} />;
 };
 
 export { TabbedCard, CardTab };

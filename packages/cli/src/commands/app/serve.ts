@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-import { run } from '../../helpers/run';
-import { watchDeps } from '../watch-deps';
+import { spawn } from 'child_process';
+import { waitForExit } from 'helpers/run';
+import { watchDeps } from 'commands/watch-deps';
+import { createLogger } from 'commands/watch-deps/logger';
 
 export default async () => {
-  const args = ['start'];
-
   // Start dynamic watch and build of dependencies, then serve the app
-  await watchDeps();
-  await run('react-scripts', args, {
+  await watchDeps({ build: true });
+
+  const child = spawn('react-scripts', ['start'], {
     env: {
+      FORCE_COLOR: 'true',
       EXTEND_ESLINT: 'true',
       SKIP_PREFLIGHT_CHECK: 'true',
+      ...process.env,
     },
+    stdio: ['inherit', 'pipe', 'inherit'],
+    shell: true,
   });
+
+  // We need to avoid clearing the terminal, or the build feedback of dependencies will be lost
+  const log = createLogger();
+  child.stdout.setEncoding('utf8');
+  child.stdout!.on('data', log.out);
+  await waitForExit(child);
 };

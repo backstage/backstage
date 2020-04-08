@@ -1,0 +1,32 @@
+{
+  "name": "@backstage/theme",
+  "description": "material-ui theme for use with Backstage.",
+  "version": "0.1.1-alpha.2",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spotify/backstage",
+    "directory": "packages/theme"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "backstage-cli plugin:build",
+    "lint": "backstage-cli lint"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.2",
+    "@material-ui/core": "^4.9.1"
+  },
+  "peerDependencies": {
+    "@material-ui/core": "^4.9.1"
+  }
+}

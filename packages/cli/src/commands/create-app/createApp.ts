@@ -21,8 +21,9 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
-import { Task, templatingTask } from '../../helpers/tasks';
-import { paths } from '../../helpers/paths';
+import { Task, templatingTask } from 'helpers/tasks';
+import { paths } from 'helpers/paths';
+import { version } from 'helpers/version';
 const exec = promisify(execCb);
 
 async function checkExists(rootDir: string, name: string) {
@@ -108,7 +109,6 @@ export default async () => {
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
   const appDir = resolvePath(paths.targetDir, answers.name);
-  const version = require(paths.resolveOwn('package.json')).version;
 
   Task.log();
   Task.log('Creating the app...');

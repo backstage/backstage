@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '../testUtils';
+import { wrapInThemedTestApp } from '@backstage/test-utils';
 
 import ProgressCard from './ProgressCard';
 

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core",
   "description": "Core API used by Backstage plugins and apps",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -19,8 +19,7 @@
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build:watch": "backstage-cli plugin:build --watch",
-    "build": "backstage-cli build-cache -- backstage-cli plugin:build",
+    "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test"
   },
@@ -42,10 +41,15 @@
     "recompose": "0.30.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.1",
+    "@backstage/cli": "^0.1.1-alpha.2",
+    "@backstage/test-utils": "^0.1.1-alpha.2",
+    "@backstage/theme": "^0.1.1-alpha.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "react-router": "^5.1.2"
+  },
+  "peerDependencies": {
+    "@backstage/theme": "^0.1.1-alpha.2"
   }
 }

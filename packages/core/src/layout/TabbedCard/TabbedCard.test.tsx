@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { wrapInTestApp } from '../../testUtils';
+import { wrapInTestApp } from '@backstage/test-utils';
 import { TabbedCard, CardTab } from '.';
 
 const minProps = {
@@ -27,7 +27,7 @@ const minProps = {
   },
 };
 
-describe('<InfoCard />', () => {
+describe('<TabbedCard />', () => {
   it('renders without exploding', () => {
     const rendered = render(
       wrapInTestApp(
