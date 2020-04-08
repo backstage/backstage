@@ -50,9 +50,9 @@ const AuditList: FC<{}> = () => {
     : 1;
 
   const lighthouseApi = useApi(lighthouseApiRef);
-  const { value, loading, error } = useAsync(
-    async (): Promise<WebsiteListResponse> =>
-      lighthouseApi.getWebsiteList({
+  const { value, loading, error } = useAsync<WebsiteListResponse>(
+    async () =>
+      await lighthouseApi.getWebsiteList({
         limit: LIMIT,
         offset: (page - 1) * LIMIT,
       }),

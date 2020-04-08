@@ -106,7 +106,7 @@ const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
       <iframe
         className={classes.iframe}
         title={`Lighthouse audit${audit?.url ? ` for ${audit.url}` : ''}`}
-        src={`${lighthouseUrl}/v1/audits/${params.id}`}
+        src={`${lighthouseUrl}/v1/audits/${encodeURIComponent(params.id)}`}
       />
     </InfoCard>
   );
@@ -118,7 +118,7 @@ const ConnectedAuditView: FC<{}> = () => {
   const classes = useStyles();
 
   const { loading, error, value: nextValue } = useAsync<Website>(
-    async () => lighthouseApi.getWebsiteForAuditId(params.id),
+    async () => await lighthouseApi.getWebsiteForAuditId(params.id),
     [params.id],
   );
   const [value, setValue] = useState<Website>();

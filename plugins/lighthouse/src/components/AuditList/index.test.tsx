@@ -27,23 +27,22 @@ jest.mock('react-router-dom', () => {
 
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import fs from 'fs';
-import path from 'path';
 import mockFetch from 'jest-fetch-mock';
 import { render, fireEvent } from '@testing-library/react';
 import { ApiRegistry, ApiProvider } from '@backstage/core';
 import { wrapInThemedTestApp, wrapInTheme } from '@backstage/test-utils';
 
-import { lighthouseApiRef, LighthouseRestApi } from '../../api';
+import {
+  lighthouseApiRef,
+  LighthouseRestApi,
+  WebsiteListResponse,
+} from '../../api';
 import AuditList from '.';
 
-const { useHistory } = require.requireMock('react-router-dom');
+import * as data from '../../__fixtures__/website-list-response.json';
 
-const websiteListJson = fs
-  .readFileSync(
-    path.join(__dirname, '../../__fixtures__/website-list-response.json'),
-  )
-  .toString();
+const { useHistory } = require.requireMock('react-router-dom');
+const websiteListResponse = data as WebsiteListResponse;
 
 describe('AuditList', () => {
   let apis: ApiRegistry;
@@ -52,7 +51,7 @@ describe('AuditList', () => {
     apis = ApiRegistry.from([
       [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
     ]);
-    mockFetch.mockResponse(websiteListJson);
+    mockFetch.mockResponse(JSON.stringify(websiteListResponse));
   });
 
   it('should render the table', async () => {
@@ -116,7 +115,7 @@ describe('AuditList', () => {
 
     describe('when multiple pages are needed', () => {
       beforeEach(() => {
-        const response = JSON.parse(websiteListJson);
+        const response = { ...websiteListResponse };
         response.limit = 5;
         response.offset = 5;
         response.total = 7;

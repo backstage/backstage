@@ -47,7 +47,8 @@ your app's [\`plugins.ts\`](https://github.com/spotify/backstage/blob/master/pac
 to enable the plugin:
 
 \`\`\`js
-export { default as LighthousePlugin } from '@backstage/plugin-lighthouse';
+import { default as LighthousePlugin } from '@backstage/plugin-lighthouse';
+export LighthousePlugin;
 \`\`\`
 
 Then, you need to use the \`lighthouseApiRef\` exported from the plugin to initialize the Rest API in

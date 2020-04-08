@@ -26,8 +26,6 @@ jest.mock('react-router-dom', () => {
 });
 
 import React from 'react';
-import fs from 'fs';
-import path from 'path';
 import mockFetch from 'jest-fetch-mock';
 import { wait, render, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -39,18 +37,14 @@ import {
 } from '@backstage/core';
 import { wrapInThemedTestApp, wrapInTheme } from '@backstage/test-utils';
 
-import { lighthouseApiRef, LighthouseRestApi } from '../../api';
+import { lighthouseApiRef, LighthouseRestApi, Audit } from '../../api';
 import CreateAudit from '.';
+import * as data from '../../__fixtures__/create-audit-response.json';
 
 const { useHistory }: { useHistory: jest.Mock } = require.requireMock(
   'react-router-dom',
 );
-
-const createAuditResponseJson = fs
-  .readFileSync(
-    path.join(__dirname, '../../__fixtures__/create-audit-response.json'),
-  )
-  .toString();
+const createAuditResponse = data as Audit;
 
 // TODO add act() to these tests without breaking them!
 describe('CreateAudit', () => {
@@ -123,7 +117,7 @@ describe('CreateAudit', () => {
   describe('when the audit is successfully created', () => {
     it('triggers a location change to the table', async () => {
       useHistory().push.mockClear();
-      mockFetch.mockResponseOnce(createAuditResponseJson);
+      mockFetch.mockResponseOnce(JSON.stringify(createAuditResponse));
 
       const rendered = render(
         wrapInThemedTestApp(

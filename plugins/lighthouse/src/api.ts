@@ -122,13 +122,18 @@ export class LighthouseRestApi implements LighthouseApi {
   async getWebsiteList({ limit, offset }: LASListRequest = {}): Promise<
     WebsiteListResponse
   > {
+    const params = new URLSearchParams();
+    if (typeof limit === 'number') params.append('limit', limit.toString());
+    if (typeof offset === 'number') params.append('offset', offset.toString());
     return await this.fetch<WebsiteListResponse>(
-      `/v1/websites?limit=${limit}&offset=${offset}`,
+      `/v1/websites?${params.toString()}`,
     );
   }
 
   async getWebsiteForAuditId(auditId: string): Promise<Website> {
-    return await this.fetch<Website>(`/v1/audits/${auditId}/website`);
+    return await this.fetch<Website>(
+      `/v1/audits/${encodeURIComponent(auditId)}/website`,
+    );
   }
 
   async triggerAudit(payload: TriggerAuditPayload): Promise<Audit> {

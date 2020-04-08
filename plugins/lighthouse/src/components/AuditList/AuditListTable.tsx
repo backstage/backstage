@@ -51,17 +51,21 @@ export const CATEGORY_LABELS: Record<LighthouseCategoryId, string> = {
   pwa: 'Progressive Web App',
 };
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   table: {
     minWidth: 650,
   },
   status: {
     textTransform: 'capitalize',
   },
-  link: { padding: '0.75rem 0', display: 'inline-block' },
+  link: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+    display: 'inline-block',
+  },
   statusCell: { whiteSpace: 'nowrap' },
   sparklinesCell: { minWidth: 120 },
-});
+}));
 
 type SparklinesDataByCategory = Record<LighthouseCategoryId, number[]>;
 function buildSparklinesDataForItem(item: Website): SparklinesDataByCategory {

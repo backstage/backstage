@@ -15,8 +15,6 @@
  */
 
 import React from 'react';
-import fs from 'fs';
-import path from 'path';
 import { render } from '@testing-library/react';
 import { wrapInThemedTestApp } from '@backstage/test-utils';
 
@@ -24,15 +22,9 @@ import AuditListTable from './AuditListTable';
 import { WebsiteListResponse } from '../../api';
 import { formatTime } from '../../utils';
 
-const websiteListResponseJson = fs
-  .readFileSync(
-    path.join(__dirname, '../../__fixtures__/website-list-response.json'),
-  )
-  .toString();
+import * as data from '../../__fixtures__/website-list-response.json';
 
-const websiteListResponse: WebsiteListResponse = JSON.parse(
-  websiteListResponseJson,
-);
+const websiteListResponse = data as WebsiteListResponse;
 
 describe('AuditListTable', () => {
   it('renders the link to each website', () => {
