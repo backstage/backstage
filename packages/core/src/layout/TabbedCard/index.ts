@@ -15,4 +15,3 @@
  */
 
 export * from './TabbedCard';
-export { default as BottomLink } from '../BottomLink';
