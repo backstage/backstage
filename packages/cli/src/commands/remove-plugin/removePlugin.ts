@@ -17,89 +17,70 @@ import fse from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
-import { realpathSync } from 'fs';
-import ora from 'ora';
+import { getCodeownersFilePath } from '../create-plugin/lib/codeowners';
+import { paths } from 'helpers/paths';
+import { Task } from 'helpers/tasks';
 // import os from 'os';
 
-const MARKER_SUCCESS = chalk.green(` ✔︎`);
-const MARKER_FAILURE = chalk.red(` ✘`);
 const BACKSTAGE = '@backstage';
 
 export const checkExists = async (rootDir: string, pluginName: string) => {
-  const destination = path.join(rootDir, 'plugins', pluginName);
-  const spinner = ora({
-    prefixText: `   Checking plugin exists.`,
-    spinner: 'arc',
-    color: 'green',
-  }).start();
-  try {
-    const pathExist = await fse.pathExists(destination);
-    if (pathExist) {
-      spinner.succeed();
-      console.log(
-        chalk.green(
-          `   Plugin ID ${chalk.cyan(
-            pluginName,
-          )} exists at: ${destination.replace(
-            `${rootDir}`,
-            '',
-          )} ${MARKER_SUCCESS}`,
+  await Task.forItem('checking', pluginName, async () => {
+    try {
+      const destination = path.join(rootDir, 'plugins', pluginName);
+      const pathExist = await fse.pathExists(destination);
+
+      if (!pathExist) {
+        throw new Error(
+          chalk.red(`   Plugin ${chalk.cyan(pluginName)} does not exist!`),
+        );
+      }
+    } catch (e) {
+      throw new Error(
+        chalk.red(
+          `   There was an error removing plugin ${chalk.cyan(pluginName)}: ${
+            e.message
+          }`,
         ),
       );
-    } else {
-      throw new Error(
-        chalk.red(`   Plugin ${chalk.cyan(pluginName)} does not exist!`),
-      );
     }
-  } catch (e) {
-    spinner.fail();
-    throw new Error(
-      chalk.red(
-        `   There was an error removing plugin ${chalk.cyan(pluginName)}: ${
-          e.message
-        }`,
-      ),
-    );
-  }
+  });
 };
 
-export const removePluginDirectory = async (
-  destination: string,
-  pluginName: string,
-) => {
-  console.log(`   Removing plugin files ${chalk.cyan(destination)}.`);
-  try {
-    await fse.remove(destination);
-    console.log(
-      chalk.green(`   Plugin files removed successfully. ${MARKER_SUCCESS}`),
-    );
-  } catch (e) {
-    throw Error(
-      `   Could not remove Plugin\t${pluginName}. ${MARKER_FAILURE} \n Please try again. Error: ${e.message}`,
-    );
-  }
+export const removePluginDirectory = async (destination: string) => {
+  await Task.forItem('removing', 'plugin files', async () => {
+    try {
+      await fse.remove(destination);
+    } catch (e) {
+      throw Error(
+        chalk.red(
+          `   There was a problem removing the plugin directory: ${e.message}`,
+        ),
+      );
+    }
+  });
 };
 
 export const removeSymLink = async (destination: string) => {
-  console.log(
-    `   Removing symbolic link if it exists at:\t${chalk.cyan(destination)}.`,
-  );
-  const symLinkExists = fse.pathExists(destination);
-  if (symLinkExists) {
-    try {
-      await fse.remove(destination);
-      console.log(
-        chalk.green(`   Symbolic link successfully removed. ${MARKER_SUCCESS}`),
-      );
-    } catch (e) {
-      throw Error(
-        `   Could not remove symbolic link\t${destination}. ${MARKER_FAILURE} \n Please try again. Error: ${e.message}`,
-      );
+  await Task.forItem('removing', 'symbolic link', async () => {
+    const symLinkExists = fse.pathExists(destination);
+    if (symLinkExists) {
+      try {
+        await fse.remove(destination);
+      } catch (e) {
+        throw Error(
+          chalk.red(
+            `   Could not remove symbolic link\t${chalk.cyan(destination)}: ${
+              e.message
+            }`,
+          ),
+        );
+      }
     }
-  }
+  });
 };
 
-export const removeStatementContainingID = async (file: string, ID: string) => {
+const removeAllStatementsContainingID = async (file: string, ID: string) => {
   const originalContent = await fse.readFile(file, 'utf8');
   const contentAfterRemoval = originalContent
     .split('\n')
@@ -107,7 +88,6 @@ export const removeStatementContainingID = async (file: string, ID: string) => {
     .filter(statement => {
       return !statement.includes(`${ID}`);
     }) // get rid of lines with pluginName
-    .sort()
     .concat(['']) // newline at end of line
     .join('\n');
   await fse.writeFile(file, contentAfterRemoval, 'utf8');
@@ -119,7 +99,7 @@ export const removeStatementContainingID = async (file: string, ID: string) => {
 const capitalize = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
-export const removeExportStatementFromPlugins = async (
+export const removeReferencesFromPluginsFile = async (
   pluginsFile: string,
   pluginName: string,
 ) => {
@@ -127,107 +107,82 @@ export const removeExportStatementFromPlugins = async (
     .split('-')
     .map(name => capitalize(name))
     .join('');
-  console.log(
-    `   Removing export statement from ${chalk.cyan(
-      pluginsFile.replace(pluginsFile.split('/app', 1)[0], ''),
-    )}`,
-  ); // remove long path
-  try {
-    await removeStatementContainingID(pluginsFile, pluginNameCapitalized);
-    console.log(
-      chalk.green(
-        `   Successfully removed export statement from /app/src/plugin.ts ${MARKER_SUCCESS}`,
-      ),
-    );
-  } catch (e) {
-    throw new Error(
-      chalk.red(
-        `   There was an error removing export statement for plugin ${chalk.cyan(
-          pluginNameCapitalized,
-        )} ${MARKER_FAILURE} ${e.message}`,
-      ),
-    );
-  }
+
+  await Task.forItem('removing', 'export references', async () => {
+    try {
+      await removeAllStatementsContainingID(pluginsFile, pluginNameCapitalized);
+    } catch (e) {
+      throw new Error(
+        chalk.red(
+          `   There was an error removing export statement for plugin ${chalk.cyan(
+            pluginNameCapitalized,
+          )}: ${e.message}`,
+        ),
+      );
+    }
+  });
 };
 
 export const removePluginFromCodeOwners = async (
   codeOwnersFile: string,
   pluginName: string,
 ) => {
-  console.log(
-    `   Removing teams and owners from ${chalk.cyan(
-      codeOwnersFile.replace(codeOwnersFile.split('/.git', 1)[0], ''),
-    )}`,
-  ); // remove long path
-  try {
-    await removeStatementContainingID(codeOwnersFile, pluginName);
-    console.log(
-      chalk.green(
-        `   Successfully removed codeowners statement from /.git/CODEOWNERS ${MARKER_SUCCESS}`,
-      ),
-    );
-  } catch (e) {
-    throw new Error(
-      chalk.red(
-        `   There was an error removing code owners statement for plugin ${chalk.cyan(
-          pluginName,
-        )} ${MARKER_FAILURE} ${e.message}`,
-      ),
-    );
-  }
+  await Task.forItem('removing', 'codeowners references', async () => {
+    try {
+      await removeAllStatementsContainingID(codeOwnersFile, pluginName);
+    } catch (e) {
+      throw new Error(
+        chalk.red(
+          `   There was an error removing code owners statement for plugin ${chalk.cyan(
+            pluginName,
+          )}: ${e.message}`,
+        ),
+      );
+    }
+  });
 };
 
-export const removePluginDependencyFromApp = async (
-  packageFile: string,
+export const removeReferencesFromAppPackage = async (
+  appPackageFile: string,
   pluginName: string,
 ) => {
   const pluginPackage = `${BACKSTAGE}/plugin-${pluginName}`;
 
-  console.log(
-    `   Removing plugin from app dependencies ${chalk.cyan(
-      packageFile.replace(`${packageFile}/packages`, ''),
-    )}:`,
-  );
+  await Task.forItem('removing', 'plugin app dependency', async () => {
+    try {
+      const appPackageFileContent = await fse.readFile(appPackageFile, 'utf-8');
+      const appPackageFileContentJSON = JSON.parse(appPackageFileContent);
+      const dependencies = appPackageFileContentJSON.dependencies;
 
-  try {
-    const packageFileContent = await fse.readFile(packageFile, 'utf-8');
-    const packageFileContentJSON = JSON.parse(packageFileContent);
-    const dependencies = packageFileContentJSON.dependencies;
+      if (!dependencies[pluginPackage]) {
+        throw new Error(
+          chalk.red(
+            ` Plugin ${chalk.cyan(
+              pluginPackage,
+            )} does not exist in ${chalk.cyan(appPackageFile)}`,
+          ),
+        );
+      }
 
-    if (!dependencies[pluginPackage]) {
+      delete dependencies[pluginPackage];
+      await fse.writeFile(
+        appPackageFile,
+        `${JSON.stringify(appPackageFileContentJSON, null, 2)}\n`,
+        'utf-8',
+      );
+    } catch (e) {
       throw new Error(
         chalk.red(
-          ` Plugin ${chalk.cyan(
-            pluginPackage,
-          )} does not exist in ${chalk.yellow(packageFile)}`,
+          `  Failed to remove plugin as dependency in app: ${chalk.cyan(
+            appPackageFile,
+          )}: ${e.message}`,
         ),
       );
     }
-
-    delete dependencies[pluginPackage];
-    await fse.writeFile(
-      packageFile,
-      `${JSON.stringify(packageFileContentJSON, null, 2)}\n`,
-      'utf-8',
-    );
-
-    console.log(
-      chalk.green(
-        `   Successfully removed plugin from app dependencies. ${MARKER_SUCCESS}`,
-      ),
-    );
-  } catch (e) {
-    throw new Error(
-      `${chalk.red(
-        `  Failed to remove plugin as dependency in app: ${chalk.cyan(
-          packageFile,
-        )}:`,
-      )} ${e.message}`,
-    );
-  }
+  });
 };
 
-const removePlugin = async () => {
+export default async () => {
   const questions: Question[] = [
     {
       type: 'input',
@@ -249,45 +204,54 @@ const removePlugin = async () => {
   ];
 
   const answers: Answers = await inquirer.prompt(questions);
-
-  const rootDir = realpathSync(process.cwd());
-  const codeOwnersFile = path.join(rootDir, '.github', 'CODEOWNERS');
   const pluginName: string = answers.pluginName;
-  const packageFile = path.join(rootDir, 'packages', 'app', 'package.json');
-  const pluginsFile = path.join(
-    rootDir,
-    'packages',
-    'app',
-    'src',
-    'plugins.ts',
+  const appPackage = paths.resolveTargetRoot('packages/app');
+  const pluginDir = paths.resolveTargetRoot('plugins', answers.pluginName);
+  const codeOwnersFile = await getCodeownersFilePath(paths.targetRoot);
+  const appPackageFile = path.join(appPackage, 'package.json');
+  const appPluginsFile = path.join(appPackage, 'src', 'plugins.ts');
+  const pluginScopedDirectory = paths.resolveTargetRoot(
+    'node_modules',
+    BACKSTAGE,
+    `plugin-${pluginName}`,
   );
-  const pluginDirectory = path.join(rootDir, 'plugins', pluginName);
-  const pluginScopedDirectory = path.join(
-    rootDir,
-    `node_modules/${BACKSTAGE}/plugin-${pluginName}`,
-  );
+
+  Task.log();
+  Task.log('Removing the plugin...');
+
   console.log(pluginScopedDirectory);
   try {
-    await checkExists(rootDir, pluginName);
-    await removeExportStatementFromPlugins(pluginsFile, pluginName);
-    await removePluginDependencyFromApp(packageFile, pluginName);
-    await removePluginDirectory(pluginDirectory, pluginName);
+    Task.section('Checking the plugin exists.');
+    await checkExists(paths.targetRoot, pluginName);
+
+    Task.section('Removing plugin files.');
+    await removePluginDirectory(pluginDir);
+
+    Task.section('Removing symbolic link from @backstage.');
     await removeSymLink(pluginScopedDirectory);
-    await removePluginFromCodeOwners(codeOwnersFile, pluginName);
-    console.log(
-      chalk.green(
-        `Successfully removed plugin ${chalk.cyan(pluginName)} from app.`,
-      ),
+
+    if (await fse.pathExists(appPackage)) {
+      Task.section('Removing references from plugins.ts.');
+      await removeReferencesFromPluginsFile(appPluginsFile, pluginName);
+
+      Task.section('Removing plugin dependency from app.');
+      await removeReferencesFromAppPackage(appPackageFile, pluginName);
+    }
+
+    if (codeOwnersFile) {
+      Task.section('Removing codeowners reference.');
+      await removePluginFromCodeOwners(codeOwnersFile, pluginName);
+    }
+
+    Task.log();
+    Task.log(
+      `🥇  Successfully removed ${chalk.cyan(
+        `@backstage/plugin-${answers.id}`,
+      )}`,
     );
-  } catch (e) {
-    // If error, restore files
-    console.log(e);
-    throw new Error(
-      chalk.red(
-        `Failed to remove plugin: ${chalk.cyan(pluginName)}: ${e.message}`,
-      ),
-    );
+    Task.log();
+  } catch (error) {
+    Task.error(error.message);
+    Task.log('It seems that something went wrong when removing the plugin 🤔');
   }
 };
-
-export default removePlugin;
