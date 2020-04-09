@@ -31,6 +31,49 @@ const BACKSTAGE = `@backstage`;
 const testPluginName = 'yarn-test-package';
 const testPluginPackage = `${BACKSTAGE}/plugin-${testPluginName}`;
 
+const removeEmptyLines = (file: string): string =>
+  file
+    .split('\n')
+    .filter(Boolean)
+    .join('\n');
+
+const createTestPackageFile = async (
+  testFilePath: string,
+  packageFile: string,
+) => {
+  // Copy contents of package file for test
+  const packageFileContent = JSON.parse(fse.readFileSync(packageFile, 'utf8'));
+
+  packageFileContent.dependencies[testPluginPackage] = '0.1.0';
+  fse.createFileSync(testFilePath);
+  fse.writeFileSync(
+    testFilePath,
+    `${JSON.stringify(packageFileContent, null, 2)}\n`,
+    'utf8',
+  );
+  return;
+};
+const createTestPluginFile = async (
+  testFilePath: string,
+  pluginsFilePath: string,
+) => {
+  // Copy contents of package file for test
+  fse.copyFileSync(pluginsFilePath, testFilePath);
+  const pluginNameCapitalized = testPluginName
+    .split('-')
+    .map(name => capitalize(name))
+    .join('');
+  const importStatement = `import { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
+  const exportStatement = `export {${pluginNameCapitalized}}`;
+  addExportStatement(testFilePath, importStatement, exportStatement);
+};
+
+function mkTestDir(testDirPath: string) {
+  fse.mkdirSync(testDirPath);
+  for (let i = 0; i < 50; i++)
+    fse.createFileSync(path.join(testDirPath, `testFile${i}.ts`));
+}
+
 describe('removePlugin', () => {
   describe('Remove Plugin Dependencies', () => {
     const appPath = paths.resolveTargetRoot('packages', 'app');
@@ -131,46 +174,3 @@ describe('removePlugin', () => {
     });
   });
 });
-
-const removeEmptyLines = (file: string): string =>
-  file
-    .split('\n')
-    .filter(Boolean)
-    .join('\n');
-
-const createTestPackageFile = async (
-  testFilePath: string,
-  packageFile: string,
-) => {
-  // Copy contents of package file for test
-  const packageFileContent = JSON.parse(fse.readFileSync(packageFile, 'utf8'));
-
-  packageFileContent.dependencies[testPluginPackage] = '0.1.0';
-  fse.createFileSync(testFilePath);
-  fse.writeFileSync(
-    testFilePath,
-    `${JSON.stringify(packageFileContent, null, 2)}\n`,
-    'utf8',
-  );
-  return;
-};
-const createTestPluginFile = async (
-  testFilePath: string,
-  pluginsFilePath: string,
-) => {
-  // Copy contents of package file for test
-  fse.copyFileSync(pluginsFilePath, testFilePath);
-  const pluginNameCapitalized = testPluginName
-    .split('-')
-    .map(name => capitalize(name))
-    .join('');
-  const importStatement = `import { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
-  const exportStatement = `export {${pluginNameCapitalized}}`;
-  addExportStatement(testFilePath, importStatement, exportStatement);
-};
-
-function mkTestDir(testDirPath: string) {
-  fse.mkdirSync(testDirPath);
-  for (let i = 0; i < 50; i++)
-    fse.createFileSync(path.join(testDirPath, `testFile${i}.ts`));
-}
