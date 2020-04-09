@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { default as HomePagePlugin } from '@backstage/plugin-home-page';
-import { default as WelcomePlugin } from '@backstage/plugin-welcome';
-import { default as LighthousePlugin } from '@backstage/plugin-lighthouse';
+import { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
+import { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
+import { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
 export { HomePagePlugin, WelcomePlugin, LighthousePlugin };
