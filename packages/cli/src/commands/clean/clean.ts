@@ -19,10 +19,7 @@ import { getDefaultCacheOptions } from 'commands/build-cache/options';
 
 const cacheOptions = getDefaultCacheOptions();
 
-export default async function clean(
-  outputPath: string = cacheOptions.output,
-  cachePath: string = cacheOptions.cacheDir,
-) {
-  fs.remove(outputPath);
-  fs.remove(cachePath);
+export default async function clean() {
+  await fs.remove(cacheOptions.output);
+  await fs.remove(cacheOptions.cacheDir);
 }
