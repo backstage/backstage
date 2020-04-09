@@ -16,48 +16,161 @@
 
 import fse from 'fs-extra';
 import path from 'path';
-import { removePluginDependencyFromApp } from './removePlugin';
+import { paths } from '../../helpers/paths';
+import { addExportStatement, capitalize } from '../create-plugin/createPlugin';
+import { addCodeownersEntry } from '../create-plugin/lib/codeowners';
+import {
+  removeReferencesFromAppPackage,
+  removeReferencesFromPluginsFile,
+  removePluginDirectory,
+  removeSymLink,
+  removePluginFromCodeOwners,
+} from './removePlugin';
 
-const rootDir = fse.realpathSync(process.cwd().replace('/cli', ''));
 const BACKSTAGE = `@backstage`;
+const testPluginName = 'yarn-test-package';
+const testPluginPackage = `${BACKSTAGE}/plugin-${testPluginName}`;
 
-// test remove export statement
 describe('removePlugin', () => {
   describe('Remove Plugin Dependencies', () => {
-    // Set up test
-    // Copy contents of package file for test
-    const packageFile = path.join(rootDir, 'app', 'package.json');
-    const testFilePath = path.join(rootDir, 'app', 'test.json');
-    const testPluginName = 'yarn-test-package';
-    const testPluginPackage = `${BACKSTAGE}/plugin-${testPluginName}`;
-
-    const packageFileContents = JSON.parse(
-      fse.readFileSync(packageFile, 'utf8'),
-    );
-    packageFileContents.dependencies[testPluginPackage] = '0.1.0';
-
-    it('should remove plugin dependency from /packages/app/package.json', async () => {
-      fse.createFileSync(testFilePath);
-      fse.writeFileSync(
-        testFilePath,
-        `${JSON.stringify(packageFileContents, null, 2)}\n`,
-        'utf8',
-      );
-      console.log(JSON.parse(fse.readFileSync(testFilePath, 'utf8')));
+    const appPath = paths.resolveTargetRoot('packages', 'app');
+    const githubDir = paths.resolveTargetRoot('.github');
+    it('removes plugin references from /packages/app/package.json', async () => {
+      // Set up test
+      const packageFilePath = path.join(appPath, 'package.json');
+      const testFilePath = path.join(appPath, 'test.json');
+      createTestPackageFile(testFilePath, packageFilePath);
       try {
-        await removePluginDependencyFromApp(testFilePath, testPluginName);
-        expect(
-          JSON.parse(fse.readFileSync(testFilePath, 'utf8')).hasOwnProperty(
-            testPluginPackage,
-          ),
-        ).toBe(false);
+        await removeReferencesFromAppPackage(testFilePath, testPluginName);
+        const testFileContent = removeEmptyLines(
+          fse.readFileSync(testFilePath, 'utf8'),
+        );
+        const packageFileContent = removeEmptyLines(
+          fse.readFileSync(packageFilePath, 'utf8'),
+        );
+        expect(testFileContent === packageFileContent).toBe(true);
       } finally {
         fse.removeSync(testFilePath);
       }
     });
+    it('removes plugin exports from /packages/app/src/packacge.json', async () => {
+      const testFilePath = path.join(appPath, 'src', 'test.ts');
+      const pluginsFilePaths = path.join(appPath, 'src', 'plugins.ts');
+      createTestPluginFile(testFilePath, pluginsFilePaths);
+      try {
+        await removeReferencesFromPluginsFile(testFilePath, testPluginName);
+        const testFileContent = removeEmptyLines(
+          fse.readFileSync(testFilePath, 'utf8'),
+        );
+        const pluginsFileContent = removeEmptyLines(
+          fse.readFileSync(pluginsFilePaths, 'utf8'),
+        );
+        expect(testFileContent === pluginsFileContent).toBe(true);
+      } finally {
+        fse.removeSync(testFilePath);
+      }
+    });
+    it('removes codeOwners references', async () => {
+      const testFilePath = path.join(githubDir, 'test');
+      const codeownersPath = path.join(githubDir, 'CODEOWNERS');
+      try {
+        fse.copySync(codeownersPath, testFilePath);
+        const testFileContent = removeEmptyLines(
+          fse.readFileSync(testFilePath, 'utf8'),
+        );
+        const codeOwnersFileContent = removeEmptyLines(
+          fse.readFileSync(codeownersPath, 'utf8'),
+        );
+        await addCodeownersEntry(testFilePath!, `/plugins/${testPluginName}`, [
+          '@thisIsAtestTeam',
+          'test@gmail.com',
+        ]);
+        await removePluginFromCodeOwners(testFilePath, testPluginName);
+        expect(testFileContent === codeOwnersFileContent).toBeTruthy();
+      } finally {
+        if (fse.existsSync(testFilePath)) fse.removeSync(testFilePath);
+      }
+    });
+  });
+  describe('Remove files', () => {
+    const testDirPath = path.join(
+      paths.resolveTargetRoot(),
+      'plugins',
+      testPluginName,
+    );
+    describe('Removes Plugin Directory', () => {
+      it('removes plugin directory from /plugins', async () => {
+        try {
+          mkTestDir(testDirPath);
+          expect(fse.existsSync(testDirPath)).toBeTruthy();
+          await removePluginDirectory(testDirPath);
+          expect(fse.existsSync(testDirPath)).toBeFalsy();
+        } finally {
+          if (fse.existsSync(testDirPath)) fse.removeSync(testDirPath);
+        }
+      });
+    });
+    describe('Removes System Link', () => {
+      it('removes system link from @backstage', async () => {
+        const scopedDir = paths.resolveTargetRoot('node_modules', '@backstage');
+        const testSymLinkPath = path.join(
+          scopedDir,
+          `plugin-${testPluginName}`,
+        );
+        try {
+          mkTestDir(testDirPath);
+          fse.ensureSymlinkSync(testSymLinkPath, testDirPath);
+
+          await removeSymLink(testSymLinkPath);
+          expect(fse.existsSync(testSymLinkPath)).toBeFalsy();
+        } finally {
+          if (fse.existsSync(testDirPath)) fse.removeSync(testDirPath);
+          if (fse.existsSync(testSymLinkPath)) fse.removeSync(testSymLinkPath);
+        }
+      });
+    });
   });
 });
-// Still to implement
-// test remove plugin dependency from app
-// remove plugin from directory
-// remove symlink from lerna scope
+
+const removeEmptyLines = (file: string): string =>
+  file
+    .split('\n')
+    .filter(Boolean)
+    .join('\n');
+
+const createTestPackageFile = async (
+  testFilePath: string,
+  packageFile: string,
+) => {
+  // Copy contents of package file for test
+  const packageFileContent = JSON.parse(fse.readFileSync(packageFile, 'utf8'));
+
+  packageFileContent.dependencies[testPluginPackage] = '0.1.0';
+  fse.createFileSync(testFilePath);
+  fse.writeFileSync(
+    testFilePath,
+    `${JSON.stringify(packageFileContent, null, 2)}\n`,
+    'utf8',
+  );
+  return;
+};
+const createTestPluginFile = async (
+  testFilePath: string,
+  pluginsFilePath: string,
+) => {
+  // Copy contents of package file for test
+  fse.copyFileSync(pluginsFilePath, testFilePath);
+  const pluginNameCapitalized = testPluginName
+    .split('-')
+    .map(name => capitalize(name))
+    .join('');
+  const importStatement = `import { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
+  const exportStatement = `export {${pluginNameCapitalized}}`;
+  addExportStatement(testFilePath, importStatement, exportStatement);
+};
+
+function mkTestDir(testDirPath: string) {
+  fse.mkdirSync(testDirPath);
+  for (let i = 0; i < 50; i++)
+    fse.createFileSync(path.join(testDirPath, `testFile${i}.ts`));
+}
