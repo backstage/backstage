@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import plugin from './plugin';
+import { plugin } from './plugin';
 
 describe('lighthouse', () => {
   it('should export plugin', () => {
