@@ -17,7 +17,7 @@ import React from 'react';
 import { AlphaLabel } from './Lifecycle';
 
 export default {
-  title: 'Alpha Lifecycle',
+  title: 'Lifecycle - Alpha',
   component: AlphaLabel,
 };
 
