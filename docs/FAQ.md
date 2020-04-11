@@ -17,7 +17,7 @@ and a large flora of components.
 
 Additional open sourced plugins would be added to the `plugins` directory in this monorepo.
 
-While we encourage using the open soure model, integrators that want to experiment with
+While we encourage using the open source model, integrators that want to experiment with
 Backstage internally may also choose to develop closed source plugins in a manner that suits
 them best, for example in their respective Backstage source repository.
 

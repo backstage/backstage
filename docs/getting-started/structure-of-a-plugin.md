@@ -54,7 +54,7 @@ export default createPlugin({
 });
 ```
 
-This is where the plugin is created and where it hooks into the app by declaring what component should be shown on what url. See reference docs for [createPlugin(coming soon)](http://github.com/spotify/backstage/) or [router(coming soon)](http://github.com/spotify/backstage/).
+This is where the plugin is created and where it hooks into the app by declaring what component should be shown on what url. See reference docs for [createPlugin](../reference/createPlugin.md) or [router](../reference/createPlugin-router.md).
 
 ## Components
 
