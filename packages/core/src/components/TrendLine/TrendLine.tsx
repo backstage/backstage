@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { FC } from 'react';
 import { Sparklines, SparklinesLine, SparklinesProps } from 'react-sparklines';
 import { COLORS } from '@backstage/theme';
@@ -25,7 +26,7 @@ function color(data: number[]): string | undefined {
   return COLORS.STATUS.ERROR;
 }
 
-const CategoryTrendline: FC<SparklinesProps & { title?: string }> = props => {
+const Trendline: FC<SparklinesProps & { title?: string }> = props => {
   if (!props.data) return null;
   return (
     <Sparklines width={120} height={30} min={0} max={1} {...props}>
@@ -35,4 +36,4 @@ const CategoryTrendline: FC<SparklinesProps & { title?: string }> = props => {
   );
 };
 
-export default CategoryTrendline;
+export default Trendline;
