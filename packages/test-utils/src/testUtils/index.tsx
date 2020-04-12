@@ -14,67 +14,8 @@
  * limitations under the License.
  */
 
-import React, {
-  ComponentType,
-  ReactNode,
-  FunctionComponent,
-  ReactElement,
-} from 'react';
-import { ThemeProvider } from '@material-ui/core';
-import { act } from 'react-dom/test-utils';
-import { render, RenderResult } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
-import { Route } from 'react-router-dom';
-import { BackstageTheme } from '@backstage/theme';
-
 export { default as Keyboard } from './Keyboard';
 export { default as mockBreakpoint } from './mockBreakpoint';
+export * from './appWrappers';
 export * from './logCollector';
-
-export function wrapInTestApp(
-  Component: ComponentType | ReactNode,
-  initialRouterEntries: string[] = ['/'],
-) {
-  let Wrapper: ComponentType;
-  if (Component instanceof Function) {
-    Wrapper = Component;
-  } else {
-    Wrapper = (() => Component) as FunctionComponent;
-  }
-
-  return (
-    <MemoryRouter initialEntries={initialRouterEntries}>
-      <Route component={Wrapper} />
-    </MemoryRouter>
-  );
-}
-
-export function wrapInThemedTestApp(
-  component: ReactNode,
-  initialRouterEntries: string[] = ['/'],
-) {
-  const themed = (
-    <ThemeProvider theme={BackstageTheme}>{component}</ThemeProvider>
-  );
-  return wrapInTestApp(themed, initialRouterEntries);
-}
-
-export const wrapInTheme = (component: ReactNode, theme = BackstageTheme) => (
-  <ThemeProvider theme={theme}>{component}</ThemeProvider>
-);
-
-// Components using useEffect to perform an asynchronous action (such as fetch) must be rendered within an async
-// act call to properly get the final state, even with mocked responses. This utility method makes the signature a bit
-// cleaner, since act doesn't return the result of the evaluated function.
-// https://github.com/testing-library/react-testing-library/issues/281
-// https://github.com/facebook/react/pull/14853
-export async function renderWithEffects(
-  nodes: ReactElement,
-): Promise<RenderResult> {
-  let value: RenderResult;
-  await act(() => {
-    value = render(nodes);
-  });
-  // @ts-ignore
-  return value;
-}
+export * from './testingLibrary';
