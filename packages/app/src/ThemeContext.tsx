@@ -41,9 +41,9 @@ export function useThemeType(themeId: string): [string, () => void] {
         setTheme('auto');
       }
     };
-    mql.addEventListener('change', darkListener);
+    mql.addListener(darkListener);
     return () => {
-      mql.removeEventListener('change', darkListener);
+      mql.removeListener(darkListener);
     };
   });
   function toggleTheme() {
