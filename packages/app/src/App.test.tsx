@@ -24,8 +24,8 @@ describe('App', () => {
       value: jest.fn(() => {
         return {
           matches: true,
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
+          addListener: jest.fn(),
+          removeListener: jest.fn(),
         };
       }),
     });
