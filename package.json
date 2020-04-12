@@ -33,7 +33,6 @@
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.0",
     "prettier": "^1.19.1",
-    "rimraf": "^3.0.2",
     "typescript": "^3.7.5",
     "zombie": "^6.1.4"
   },
