@@ -15,11 +15,19 @@
  */
 
 import fs from 'fs-extra';
+import { resolve as resolvePath, relative as relativePath } from 'path';
 import { getDefaultCacheOptions } from 'commands/build-cache/options';
-
-const cacheOptions = getDefaultCacheOptions();
+import { paths } from 'helpers/paths';
 
 export default async function clean() {
+  const cacheOptions = getDefaultCacheOptions();
+  const packagePath = getPackagePath(cacheOptions.cacheDir);
   await fs.remove(cacheOptions.output);
-  await fs.remove(cacheOptions.cacheDir);
+  await fs.remove(packagePath);
+}
+
+function getPackagePath(cacheDir: string) {
+  const relativePackagePath = relativePath(paths.targetRoot, paths.targetDir);
+  const packagePath = resolvePath(cacheDir, relativePackagePath);
+  return packagePath;
 }
