@@ -8,7 +8,8 @@
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test"
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.3",
