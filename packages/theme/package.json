@@ -20,7 +20,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "backstage-cli plugin:build",
-    "lint": "backstage-cli lint"
+    "lint": "backstage-cli lint", 
+    "clean": "backstage-cli clean"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.3",
