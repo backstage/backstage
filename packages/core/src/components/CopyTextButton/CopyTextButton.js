@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { IconButton, Tooltip, withStyles } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopy';
@@ -82,7 +82,7 @@ class CopyTextButton extends React.Component {
     const { classes, text, tooltipDelay, tooltipText } = this.props;
 
     return (
-      <Fragment>
+      <>
         <input
           ref={el => (this.clipboardInput = el)}
           type="text"
@@ -101,7 +101,7 @@ class CopyTextButton extends React.Component {
             <CopyIcon />
           </IconButton>
         </Tooltip>
-      </Fragment>
+      </>
     );
   }
 }
