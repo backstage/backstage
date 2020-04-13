@@ -15,22 +15,28 @@
  */
 import React, { FC } from 'react';
 import { Sparklines, SparklinesLine, SparklinesProps } from 'react-sparklines';
-import { COLORS } from '@backstage/theme';
+import { useTheme } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 
-function color(data: number[]): string | undefined {
+function color(
+  data: number[],
+  theme: typeof BackstageTheme,
+): string | undefined {
   const lastNum = data[data.length - 1];
   if (!lastNum) return undefined;
-  if (lastNum >= 0.9) return COLORS.STATUS.OK;
-  if (lastNum >= 0.5) return COLORS.STATUS.WARNING;
-  return COLORS.STATUS.ERROR;
+  if (lastNum >= 0.9) return theme.palette.status.ok;
+  if (lastNum >= 0.5) return theme.palette.status.warning;
+  return theme.palette.status.error;
 }
 
 const CategoryTrendline: FC<SparklinesProps & { title?: string }> = props => {
+  const theme = useTheme<typeof BackstageTheme>();
+
   if (!props.data) return null;
   return (
     <Sparklines width={120} height={30} min={0} max={1} {...props}>
       {props.title && <title>{props.title}</title>}
-      <SparklinesLine color={color(props.data)} />
+      <SparklinesLine color={color(props.data, theme)} />
     </Sparklines>
   );
 };
