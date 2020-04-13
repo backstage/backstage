@@ -33,3 +33,4 @@ export { default as SupportButton } from './components/SupportButton';
 export { default as SortableTable } from './components/SortableTable';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
 export * from './components/Status';
+export { default as WarningPanel } from './components/WarningPanel';
