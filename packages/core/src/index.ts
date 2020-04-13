@@ -27,6 +27,7 @@ export * from './layout/Sidebar';
 export { default as HorizontalScrollGrid } from './components/HorizontalScrollGrid';
 export { default as ProgressCard } from './components/ProgressCard';
 export { default as CircleProgress } from './components/CircleProgress';
+export { default as CopyTextButton } from './components/CopyTextButton';
 export { default as Progress } from './components/Progress';
 export { AlphaLabel, BetaLabel } from './components/Lifecycle';
 export { default as SupportButton } from './components/SupportButton';
