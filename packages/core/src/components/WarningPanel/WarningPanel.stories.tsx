@@ -16,7 +16,7 @@
 
 import React from 'react';
 import WarningPanel from '.';
-import { Link } from '@material-ui/core';
+import { Link, Button } from '@material-ui/core';
 
 export default {
   title: 'Warning Panel',
@@ -34,4 +34,12 @@ export const Default = () => (
       </>
     }
   />
+);
+
+export const Children = () => (
+  <WarningPanel title="Lineage Warning">
+    <Button variant="outlined" color="primary">
+      Supports custom children - for example this button
+    </Button>
+  </WarningPanel>
 );

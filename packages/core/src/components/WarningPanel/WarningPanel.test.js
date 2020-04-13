@@ -30,10 +30,11 @@ describe('<WarningPanel />', () => {
     expect(getByText('Mock title')).toBeInTheDocument();
   });
 
-  it('renders message', () => {
+  it('renders message and children', () => {
     const { getByText } = render(
-      wrapInThemedTestApp(<WarningPanel {...minProps} />),
+      wrapInThemedTestApp(<WarningPanel {...minProps}>children</WarningPanel>),
     );
     expect(getByText('Some more info')).toBeInTheDocument();
+    expect(getByText('children')).toBeInTheDocument();
   });
 });
