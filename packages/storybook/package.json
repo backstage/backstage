@@ -17,8 +17,5 @@
     "@storybook/addon-links": "^5.3.17",
     "@storybook/addons": "^5.3.17",
     "@storybook/react": "^5.3.17"
-  },
-  "dependencies": {
-    "@backstage/theme": "^0.1.1-alpha.3"
   }
 }
