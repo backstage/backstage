@@ -1,0 +1,6 @@
+[build]
+  command = "yarn build"
+  publish = "packages/app/build/"
+
+[build.environment]
+  NODE_VERSION = "12"
