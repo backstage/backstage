@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import plugin from './plugin';
+import { plugin } from './plugin';
 
 describe('home-page', () => {
   it('should export plugin', () => {

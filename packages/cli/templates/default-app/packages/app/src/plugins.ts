@@ -1,1 +1,1 @@
-export { default as WelcomePlugin } from 'plugin-welcome';
+export { plugin as WelcomePlugin } from 'plugin-welcome';
