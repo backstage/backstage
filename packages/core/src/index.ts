@@ -24,6 +24,7 @@ export { default as HeaderLabel } from './layout/HeaderLabel';
 export { default as InfoCard } from './layout/InfoCard';
 export { default as ErrorBoundary } from './layout/ErrorBoundary';
 export * from './layout/Sidebar';
+export { default as BreakHints } from './components/BreakHints';
 export { default as HorizontalScrollGrid } from './components/HorizontalScrollGrid';
 export { default as ProgressCard } from './components/ProgressCard';
 export { default as CircleProgress } from './components/CircleProgress';
