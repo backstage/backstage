@@ -32,3 +32,11 @@ export const WithTooltip = () => (
     tooltipText="Custom tooltip shown on button click"
   />
 );
+
+export const LongerTooltipDelay = () => (
+  <CopyTextButton
+    text="The text to copy to clipboard"
+    tooltipText="Waiting 3s before removing tooltip"
+    tooltipDelay={3000}
+  />
+);
