@@ -15,4 +15,4 @@
  */
 export { default as BackstageThemeLight } from './BackstageThemeLight';
 export { default as BackstageThemeDark } from './BackstageThemeDark';
-export { default as BackstageTheme, COLORS } from './BackstageTheme';
+export { default as BackstageTheme } from './BackstageTheme';
