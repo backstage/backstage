@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Link,
-  makeStyles,
-  styled,
-  SvgIcon,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import { Link, makeStyles, styled, Theme, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import React, { FC, useContext } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
@@ -59,7 +52,7 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 type SidebarItemProps = {
-  icon: typeof SvgIcon;
+  icon: JSX.Element;
   text: string;
   to?: string;
   onClick?: () => void;
@@ -82,7 +75,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
         onClick={onClick}
         underline="none"
       >
-        <Icon fontSize="small" />
+        {Icon}
       </Link>
     );
   }
@@ -95,7 +88,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
       underline="none"
     >
       <div data-testid="login-button" className={classes.iconContainer}>
-        <Icon fontSize="small" />
+        {Icon}
       </div>
       <Typography variant="subtitle1" className={classes.label}>
         {text}
