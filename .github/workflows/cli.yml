@@ -6,6 +6,7 @@ on:
       - '.github/workflows/cli.yml'
       - 'packages/cli/**'
       - 'packages/core/**'
+      - 'scripts/**'
 
 jobs:
   build:
@@ -40,17 +41,18 @@ jobs:
       - name: yarn install
         run: yarn install --frozen-lockfile
       - run: yarn build
-      # This creates a new plugin and pollutes the workspace, so it should be run last.
-      - name: verify app serve and plugin creation on Windows
+      # This creates a new app and plugin which pollutes the workspace, so it should be run last.
+      - name: verify app and plugin creation on Windows
         if: runner.os == 'Windows'
         run: node scripts/cli-e2e-test.js
-      - name: verify app serve and plugin creation on Linux
+      - name: verify app and plugin creation on Linux
         if: runner.os == 'Linux'
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
           node scripts/cli-e2e-test.js
-      - name: yarn lint, test after plugin creation
-        working-directory: plugins/test-plugin
+      # This should lint and test both an app and a plugin
+      - name: yarn lint, test after creation
+        working-directory: test-app
         run: |
           yarn lint
           yarn test
