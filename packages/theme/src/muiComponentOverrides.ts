@@ -16,110 +16,8 @@
 
 import { createMuiTheme } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
-import { blue, yellow } from '@material-ui/core/colors';
 
 import { BackstageMuiTheme, BackstageMuiThemeOptions } from './types';
-
-const COLORS = {
-  PAGE_BACKGROUND: '#F8F8F8',
-  DEFAULT_PAGE_THEME_COLOR: '#7C3699',
-  DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
-  SIDEBAR_BACKGROUND_COLOR: '#171717',
-  ERROR_BACKGROUND_COLOR: '#FFEBEE',
-  ERROR_TEXT_COLOR: '#CA001B',
-  INFO_TEXT_COLOR: '#004e8a',
-  LINK_TEXT: '#0A6EBE',
-  LINK_TEXT_HOVER: '#2196F3',
-  NAMED: {
-    WHITE: '#FEFEFE',
-  },
-  STATUS: {
-    OK: '#1db855',
-    WARNING: '#f49b20',
-    ERROR: '#CA001B',
-  },
-};
-
-const extendedThemeConfig: BackstageMuiThemeOptions = {
-  props: {
-    MuiGrid: {
-      spacing: 2,
-    },
-    MuiSwitch: {
-      color: 'primary',
-    },
-  },
-  palette: {
-    background: {
-      default: COLORS.PAGE_BACKGROUND,
-      // @ts-ignore
-      informational: '#60a3cb',
-    },
-    status: {
-      ok: COLORS.STATUS.OK,
-      warning: COLORS.STATUS.WARNING,
-      error: COLORS.STATUS.ERROR,
-      running: '#BEBEBE',
-      pending: '#5BC0DE',
-      background: COLORS.NAMED.WHITE,
-    },
-    bursts: {
-      fontColor: COLORS.NAMED.WHITE,
-      slackChannelText: '#ddd',
-      backgroundColor: {
-        default: COLORS.DEFAULT_PAGE_THEME_COLOR,
-      },
-    },
-    // @ts-ignore
-    primary: {
-      main: blue[500],
-    },
-    border: '#E6E6E6',
-    textVerySubtle: '#DDD',
-    textSubtle: '#6E6E6E',
-    highlight: '#FFFBCC',
-    errorBackground: COLORS.ERROR_BACKGROUND_COLOR,
-    warningBackground: '#F59B23',
-    infoBackground: '#ebf5ff',
-    errorText: COLORS.ERROR_TEXT_COLOR,
-    infoText: COLORS.INFO_TEXT_COLOR,
-    warningText: COLORS.NAMED.WHITE,
-    linkHover: COLORS.LINK_TEXT_HOVER,
-    link: COLORS.LINK_TEXT,
-    gold: yellow.A700,
-    sidebar: COLORS.SIDEBAR_BACKGROUND_COLOR,
-  },
-  navigation: {
-    width: 220,
-    background: '#333333',
-  },
-  typography: {
-    fontFamily: '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif',
-    h5: {
-      fontWeight: 700,
-    },
-    h4: {
-      fontWeight: 700,
-      fontSize: 28,
-      marginBottom: 6,
-    },
-    h3: {
-      fontSize: 32,
-      fontWeight: 700,
-      marginBottom: 6,
-    },
-    h2: {
-      fontSize: 40,
-      fontWeight: 700,
-      marginBottom: 8,
-    },
-    h1: {
-      fontSize: 54,
-      fontWeight: 700,
-      marginBottom: 10,
-    },
-  },
-};
 
 const createOverrides = (
   theme: BackstageMuiTheme,
@@ -141,7 +39,7 @@ const createOverrides = (
       // Alternating head backgrounds
       head: {
         '&:nth-of-type(odd)': {
-          backgroundColor: COLORS.NAMED.WHITE,
+          backgroundColor: theme.palette.background.paper,
         },
       },
     },
@@ -243,7 +141,7 @@ const createOverrides = (
   };
 };
 
-function createBackstageTheme(
+function applyComponentOverrides(
   ...config: BackstageMuiThemeOptions[]
 ): BackstageMuiTheme {
   const withoutOverrides = createMuiTheme(...config) as BackstageMuiTheme;
@@ -255,5 +153,3 @@ function createBackstageTheme(
 }
 
 const defaultTheme = createBackstageTheme(extendedThemeConfig);
-
-export default defaultTheme;
