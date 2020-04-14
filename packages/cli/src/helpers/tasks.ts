@@ -37,6 +37,10 @@ export class Task {
     process.stdout.write(`\n ${title}\n`);
   }
 
+  static exit(code: number = 0) {
+    process.exit(code);
+  }
+
   static async forItem(
     task: string,
     item: string,

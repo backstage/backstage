@@ -134,6 +134,7 @@ export default async () => {
       chalk.green(`🥇  Successfully created ${chalk.cyan(answers.name)}`),
     );
     Task.log();
+    Task.exit();
   } catch (error) {
     Task.error(error.message);
 
@@ -143,5 +144,6 @@ export default async () => {
     Task.section('Cleanup');
     await cleanUp(tempDir);
     Task.error('🔥  Failed to create app!');
+    Task.exit(1);
   }
 };
