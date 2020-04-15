@@ -20,11 +20,11 @@ import { blue, yellow } from '@material-ui/core/colors';
 
 import { BackstageMuiTheme, BackstageMuiThemeOptions } from './types';
 
-export const COLORS = {
+const COLORS = {
   PAGE_BACKGROUND: '#282828',
-  EFAULT_PAGE_THEME_COLOR: '#232323',
   DEFAULT_PAGE_THEME_COLOR: '#7C3699',
   DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
+  SIDEBAR_BACKGROUND_COLOR: '#424242',
   ERROR_BACKGROUND_COLOR: '#FFEBEE',
   ERROR_TEXT_COLOR: '#CA001B',
   INFO_TEXT_COLOR: '#004e8a',
@@ -91,6 +91,7 @@ const extendedThemeConfig: BackstageMuiThemeOptions = {
     linkHover: COLORS.LINK_TEXT_HOVER,
     link: COLORS.LINK_TEXT,
     gold: yellow.A700,
+    sidebar: COLORS.SIDEBAR_BACKGROUND_COLOR,
   },
   navigation: {
     width: 220,

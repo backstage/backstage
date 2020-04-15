@@ -20,10 +20,6 @@ import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { BackstageTheme } from '@backstage/theme';
 
-export { default as Keyboard } from './Keyboard';
-export { default as mockBreakpoint } from './mockBreakpoint';
-export * from './logCollector';
-
 export function wrapInTestApp(
   Component: ComponentType | ReactNode,
   initialRouterEntries: string[] = ['/'],

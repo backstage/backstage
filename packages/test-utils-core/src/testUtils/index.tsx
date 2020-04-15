@@ -13,5 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './testUtils';
-export * from '@backstage/test-utils-core';
+
+export * from './Keyboard';
+export * from './logCollector';
+export * from './testingLibrary';

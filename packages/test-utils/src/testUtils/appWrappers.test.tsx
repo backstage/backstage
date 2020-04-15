@@ -13,5 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './testUtils';
-export * from '@backstage/test-utils-core';
+
+import React from 'react';
+import { render } from '@testing-library/react';
+import { wrapInTestApp } from './appWrappers';
+import { Route } from 'react-router';
+
+describe('wrapInTestApp', () => {
+  it('should provide routing', () => {
+    const rendered = render(
+      wrapInTestApp(
+        <>
+          <Route path="/route1">Route 1</Route>
+          <Route path="/route2">Route 2</Route>
+        </>,
+        ['/route2'],
+      ),
+    );
+    expect(rendered.getByText('Route 2')).toBeInTheDocument();
+  });
+});

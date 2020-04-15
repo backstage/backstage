@@ -26,10 +26,12 @@ You can now view example-app in the browser.
 Run the following commands if you have Docker environment
 
 ```bash
-$ docker build . -t spotify/backstage
+$ yarn docker-build
 $ docker run --rm -it -p 80:80 spotify/backstage
 ```
 
 Then open http://localhost/ on your browser.
+
+> See [package.json](/package.json) for other yarn commands/options.
 
 [Back to Docs](README.md)

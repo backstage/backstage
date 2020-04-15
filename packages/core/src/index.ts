@@ -36,3 +36,4 @@ export { default as SortableTable } from './components/SortableTable';
 export { default as StructuredMetadataTable } from './components/StructuredMetadataTable';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
 export * from './components/Status';
+export { default as WarningPanel } from './components/WarningPanel';
