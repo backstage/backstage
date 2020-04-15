@@ -14,40 +14,38 @@
  * limitations under the License.
  */
 
-const darkColors = {
-  PAGE_BACKGROUND: '#282828',
-  DEFAULT_PAGE_THEME_COLOR: '#7C3699',
-  DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
-  ERROR_BACKGROUND_COLOR: '#FFEBEE',
-  ERROR_TEXT_COLOR: '#CA001B',
-  INFO_TEXT_COLOR: '#004e8a',
-  LINK_TEXT: '#0A6EBE',
-  LINK_TEXT_HOVER: '#2196F3',
-  NAMED: {
-    WHITE: '#FEFEFE',
-  },
-  STATUS: {
-    OK: '#1db855',
-    WARNING: '#f49b20',
-    ERROR: '#CA001B',
-  },
-};
+import { createTheme } from 'baseTheme';
 
-const lightColors = {
+export const lightTheme = createTheme('light', {
+  TEXT_COLOR: '#000',
   PAGE_BACKGROUND: '#F8F8F8',
   DEFAULT_PAGE_THEME_COLOR: '#7C3699',
   DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
+  SIDEBAR_BACKGROUND_COLOR: '#171717',
   ERROR_BACKGROUND_COLOR: '#FFEBEE',
   ERROR_TEXT_COLOR: '#CA001B',
   INFO_TEXT_COLOR: '#004e8a',
   LINK_TEXT: '#0A6EBE',
   LINK_TEXT_HOVER: '#2196F3',
-  NAMED: {
-    WHITE: '#FEFEFE',
-  },
-  STATUS: {
-    OK: '#1db855',
-    WARNING: '#f49b20',
-    ERROR: '#CA001B',
-  },
-};
+  NAMED_WHITE: '#FEFEFE',
+  STATUS_OK: '#1db855',
+  STATUS_WARNING: '#f49b20',
+  STATUS_ERROR: '#CA001B',
+});
+
+export const darkTheme = createTheme('dark', {
+  TEXT_COLOR: '#fff',
+  PAGE_BACKGROUND: '#282828',
+  DEFAULT_PAGE_THEME_COLOR: '#7C3699',
+  DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
+  SIDEBAR_BACKGROUND_COLOR: '#424242',
+  ERROR_BACKGROUND_COLOR: '#FFEBEE',
+  ERROR_TEXT_COLOR: '#CA001B',
+  INFO_TEXT_COLOR: '#004e8a',
+  LINK_TEXT: '#0A6EBE',
+  LINK_TEXT_HOVER: '#2196F3',
+  NAMED_WHITE: '#FEFEFE',
+  STATUS_OK: '#1db855',
+  STATUS_WARNING: '#f49b20',
+  STATUS_ERROR: '#CA001B',
+});

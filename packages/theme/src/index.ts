@@ -13,6 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { default as BackstageThemeLight } from './BackstageThemeLight';
-export { default as BackstageThemeDark } from './BackstageThemeDark';
-export { default as BackstageTheme } from './BackstageTheme';
+
+// TODO: backwards compatibility, remove
+import { lightTheme, darkTheme } from './themes';
+export {
+  lightTheme as BackstageTheme,
+  lightTheme as BackstageThemeLight,
+  darkTheme as BackstageThemeDark,
+};
+
+export * from './themes';
+export * from './baseTheme';

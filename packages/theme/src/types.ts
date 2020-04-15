@@ -16,7 +16,24 @@
 
 import { Theme, ThemeOptions } from '@material-ui/core';
 
-export type BackstageMuiPalette = Theme['palette'] & {
+export type BackstageColorScheme = {
+  TEXT_COLOR: string;
+  PAGE_BACKGROUND: string;
+  DEFAULT_PAGE_THEME_COLOR: string;
+  DEFAULT_PAGE_THEME_LIGHT_COLOR: string;
+  SIDEBAR_BACKGROUND_COLOR: string;
+  ERROR_BACKGROUND_COLOR: string;
+  ERROR_TEXT_COLOR: string;
+  INFO_TEXT_COLOR: string;
+  LINK_TEXT: string;
+  LINK_TEXT_HOVER: string;
+  NAMED_WHITE: string;
+  STATUS_OK: string;
+  STATUS_WARNING: string;
+  STATUS_ERROR: string;
+};
+
+export type BackstagePalette = Theme['palette'] & {
   status: {
     ok: string;
     warning: string;
@@ -48,10 +65,10 @@ export type BackstageMuiPalette = Theme['palette'] & {
   };
 };
 
-export interface BackstageMuiTheme extends Theme {
-  palette: BackstageMuiPalette;
+export interface BackstageTheme extends Theme {
+  palette: BackstagePalette;
 }
 
-export interface BackstageMuiThemeOptions extends ThemeOptions {
-  palette: Partial<BackstageMuiPalette>;
+export interface BackstageThemeOptions extends ThemeOptions {
+  palette: Partial<BackstagePalette>;
 }
