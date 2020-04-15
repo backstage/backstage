@@ -1,12 +1,19 @@
 {
   "name": "root",
+  "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "scripts": {
-    "start": "yarn build && yarn workspace app start",
+    "start": "yarn workspace app start",
+    "bundle": "yarn build && yarn workspace example-app bundle",
     "build": "lerna run build",
-    "test": "cross-env CI=true lerna run test -- --coverage",
-    "create-plugin": "backstage-cli create-plugin",
-    "lint": "lerna run lint"
+    "test": "yarn build && lerna run test --since origin/master -- --coverage",
+    "test:all": "yarn build && lerna run test -- --coverage",
+    "lint": "lerna run lint --since origin/master --",
+    "lint:all": "lerna run lint --",
+    "create-plugin": "backstage-cli create-plugin"
   },
   "workspaces": {
     "packages": [
@@ -14,10 +21,8 @@
       "plugins/*"
     ]
   },
-  "version": "1.0.0",
   "devDependencies": {
     "@backstage/cli": "^{{version}}",
-    "cross-env": "^7.0.0",
     "lerna": "^3.20.2",
     "prettier": "^1.19.1"
   }
