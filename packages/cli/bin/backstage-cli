@@ -19,7 +19,11 @@ const path = require('path');
 
 // Figure out whether we're running inside the backstage repo or as an installed dependency
 const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
-if (!isLocal) {
+
+// This is used for e2e-tests where we create a new app in a tmp folder
+const isTemp = path.resolve(__dirname).includes(require('os').tmpdir());
+
+if (!isLocal || isTemp || process.env.E2E) {
   // src-relative imports are a pain to get to work with plain tsc compilation, as the
   // transpiled code will maintain the imports as they are in the source. Which means an
   // import for `helpers/paths` will start like that in the output, which won't work in NodeJS.

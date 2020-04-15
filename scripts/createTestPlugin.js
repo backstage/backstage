@@ -29,8 +29,8 @@ async function createTestPlugin() {
     await waitFor(() => stdout.includes('Enter an ID for the plugin'));
     createPlugin.stdin.write('test-plugin\n');
 
-    await waitFor(() => stdout.includes('Enter the owner(s) of the plugin'));
-    createPlugin.stdin.write('@someuser\n');
+    // await waitFor(() => stdout.includes('Enter the owner(s) of the plugin'));
+    // createPlugin.stdin.write('@someuser\n');
 
     print('Waiting for plugin create script to be done');
     await waitForExit(createPlugin);

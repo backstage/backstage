@@ -16,9 +16,9 @@
 
 const { spawnPiped, waitFor, waitForExit, print } = require('./helpers');
 
-async function createTestApp() {
+async function createTestApp(cmd) {
   print('Creating a Backstage App');
-  const createApp = spawnPiped(['yarn', 'create-app']);
+  const createApp = spawnPiped(['node', cmd]);
 
   try {
     let stdout = '';

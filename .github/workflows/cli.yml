@@ -41,18 +41,24 @@ jobs:
       - name: yarn install
         run: yarn install --frozen-lockfile
       - run: yarn build
-      # This creates a new app and plugin which pollutes the workspace, so it should be run last.
+      # generate temp directory
+      - name: generate tempdir
+        id: generate_tempdir
+        run: echo ::set-output name=tempdir::$(node scripts/generateTempDir.js)
+        # This creates a new app and plugin which pollutes the workspace, so it should be run last.
       - name: verify app and plugin creation on Windows
+        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
         if: runner.os == 'Windows'
-        run: node scripts/cli-e2e-test.js
+        run: node ${{ github.workspace }}/scripts/cli-e2e-test.js
       - name: verify app and plugin creation on Linux
+        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
         if: runner.os == 'Linux'
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
-          node scripts/cli-e2e-test.js
+          node ${{ github.workspace }}/scripts/cli-e2e-test.js
       # This should lint and test both an app and a plugin
       - name: yarn lint, test after creation
-        working-directory: test-app
+        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}/test-app
         run: |
           yarn lint
           yarn test

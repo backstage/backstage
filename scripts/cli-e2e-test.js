@@ -27,19 +27,31 @@ const {
 
 const createTestApp = require('./createTestApp');
 const createTestPlugin = require('./createTestPlugin');
+const generateTempDir = require('./generateTempDir.js');
 
 Browser.localhost('localhost', 3000);
 
 async function main() {
-  process.env.CI = 'true';
+  process.env.E2E = 'true';
 
-  const projectDir = resolvePath(__dirname, '..');
-  process.chdir(projectDir);
+  const rootDir = process.env.CI
+    ? resolvePath(process.env.GITHUB_WORKSPACE)
+    : resolvePath(__dirname, '..');
 
-  await createTestApp();
+  const tempDir = process.env.CI
+    ? resolvePath(__dirname)
+    : await generateTempDir();
 
-  const appDir = resolvePath(projectDir, 'test-app');
+  process.chdir(tempDir);
+  await waitForExit(spawnPiped(['yarn', 'init --yes']));
+
+  const createAppCmd = `${rootDir}/packages/cli/bin/backstage-cli create-app`;
+  await createTestApp(createAppCmd);
+
+  const appDir = resolvePath(tempDir, 'test-app');
   process.chdir(appDir);
+
+  await createTestPlugin();
 
   print('Starting the app');
   const startApp = spawnPiped(['yarn', 'start']);
@@ -47,7 +59,6 @@ async function main() {
   try {
     const browser = new Browser();
 
-    await createTestPlugin();
     await waitForPageWithText(browser, '/', 'Welcome to Backstage');
     await waitForPageWithText(
       browser,
