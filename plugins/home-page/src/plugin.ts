@@ -15,9 +15,9 @@
  */
 
 import { createPlugin } from '@backstage/core';
-import HomePage from './components/HomePage';
+import HomePage from 'components/HomePage';
 
-export default createPlugin({
+export const plugin = createPlugin({
   id: 'home-page',
   register({ router }) {
     router.registerRoute('/home', HomePage);

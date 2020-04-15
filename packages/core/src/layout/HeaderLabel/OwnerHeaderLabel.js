@@ -18,7 +18,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Tooltip, Link, withStyles } from '@material-ui/core';
 
-import { StatusError } from '../../components/Status';
+import { StatusError } from 'components/Status';
 import HeaderLabel from './HeaderLabel';
 
 const style = theme => ({

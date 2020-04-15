@@ -17,7 +17,7 @@
 import { createPlugin } from '@backstage/core';
 import ExampleComponent from './components/ExampleComponent';
 
-export default createPlugin({
+export const plugin = createPlugin({
   id: '{{ id }}',
   register({ router }) {
     router.registerRoute('/{{ id }}', ExampleComponent);

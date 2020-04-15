@@ -20,7 +20,7 @@ import { blue, yellow } from '@material-ui/core/colors';
 
 import { BackstageMuiTheme, BackstageMuiThemeOptions } from './types';
 
-export const COLORS = {
+const COLORS = {
   PAGE_BACKGROUND: '#282828',
   EFAULT_PAGE_THEME_COLOR: '#232323',
   DEFAULT_PAGE_THEME_COLOR: '#7C3699',

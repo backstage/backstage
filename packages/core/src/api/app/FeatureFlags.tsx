@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { FeatureFlagName } from '../plugin/types';
+import { FeatureFlagName } from 'api/plugin/types';
 import {
   FeatureFlagState,
   FeatureFlagsApi,
-} from '../apis/definitions/featureFlags';
+} from 'api/apis/definitions/featureFlags';
 
 /**
  * Helper method for validating compatibility and flag name.

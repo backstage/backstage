@@ -15,10 +15,10 @@
  */
 
 import React, { ComponentType } from 'react';
-import { AppComponentBuilder } from '../app/types';
+import { AppComponentBuilder } from 'api/app/types';
 import { Widget } from './types';
-import BackstagePlugin from '../plugin/Plugin';
-import DefaultWidgetView from '../../components/DefaultWidgetView';
+import BackstagePlugin from 'api/plugin/Plugin';
+import DefaultWidgetView from 'components/DefaultWidgetView';
 
 type WidgetViewRegistration =
   | {

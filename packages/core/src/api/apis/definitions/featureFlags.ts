@@ -19,7 +19,7 @@ import {
   UserFlags,
   FeatureFlagsRegistry,
   FeatureFlagsRegistryItem,
-} from '../../app/FeatureFlags';
+} from 'api/app/FeatureFlags';
 
 /**
  * The feature flags API is used to toggle functionality to users across plugins and Backstage.

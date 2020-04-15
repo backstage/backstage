@@ -26,7 +26,7 @@ module.exports = {
     'plugin:monorepo/recommended',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['notice', 'import'],
+  plugins: ['import'],
   env: {
     jest: true,
   },

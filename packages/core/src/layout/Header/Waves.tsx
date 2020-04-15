@@ -16,7 +16,7 @@
 
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core';
-import { PageTheme } from '../Page';
+import { PageTheme } from 'layout/Page';
 
 const useStyles = makeStyles<PageTheme>({
   wave: {

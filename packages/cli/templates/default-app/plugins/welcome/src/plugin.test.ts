@@ -1,4 +1,4 @@
-import plugin from './plugin';
+import { plugin } from './plugin';
 
 describe('welcome', () => {
   it('should export plugin', () => {

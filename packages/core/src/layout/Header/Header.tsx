@@ -19,7 +19,7 @@ import Helmet from 'react-helmet';
 import { Typography, Tooltip, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
-import { Theme } from '../Page/Page';
+import { Theme } from 'layout/Page/Page';
 // import { Link } from 'shared/components';
 import Waves from './Waves';
 
