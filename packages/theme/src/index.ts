@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// TODO: backwards compatibility, remove
-import { lightTheme } from './themes';
-export { lightTheme as BackstageTheme };
-
 export * from './themes';
 export * from './baseTheme';
+export * from './types';
