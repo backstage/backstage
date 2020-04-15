@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import React, { FC } from 'react';
 import {
-  Divider,
   Link,
   ListItem,
   ListItemIcon,
+  Divider,
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import grey from '@material-ui/core/colors/grey';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
-import React, { FC } from 'react';
+import grey from '@material-ui/core/colors/grey';
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles(theme => ({
   root: {
