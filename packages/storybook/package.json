@@ -15,6 +15,7 @@
   "devDependencies": {
     "@storybook/addon-actions": "^5.3.17",
     "@storybook/addon-links": "^5.3.17",
+    "@storybook/addon-storysource": "^5.3.18",
     "@storybook/addons": "^5.3.17",
     "@storybook/react": "^5.3.17"
   }

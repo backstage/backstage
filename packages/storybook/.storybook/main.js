@@ -5,7 +5,11 @@ module.exports = {
     '../../core/src/layout/**/*.stories.tsx',
     '../../core/src/components/**/*.stories.tsx',
   ],
-  addons: ['@storybook/addon-actions', '@storybook/addon-links'],
+  addons: [
+    '@storybook/addon-actions',
+    '@storybook/addon-links',
+    '@storybook/addon-storysource',
+  ],
   webpackFinal: async config => {
     config.resolve.alias = {
       ...config.resolve.alias,
