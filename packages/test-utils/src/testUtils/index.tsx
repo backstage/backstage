@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-export { default as Keyboard } from './Keyboard';
 export { default as mockBreakpoint } from './mockBreakpoint';
 export * from './appWrappers';
-export * from './logCollector';
-export * from './testingLibrary';

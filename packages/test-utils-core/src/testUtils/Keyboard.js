@@ -23,7 +23,7 @@ const codes = {
   Esc: 27,
 };
 
-export default class Keyboard {
+export class Keyboard {
   static async type(target, input) {
     await new Keyboard(target).type(input);
   }
