@@ -16,14 +16,13 @@
 
 import { createMuiTheme } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
+import { Overrides } from '@material-ui/core/styles/overrides';
 
 import {
   BackstageTheme,
   BackstageThemeOptions,
   BackstagePaletteOptions,
 } from './types';
-
-type Overrides = Partial<BackstageTheme['overrides']>;
 
 export function createThemeOptions(
   palette: BackstagePaletteOptions,
