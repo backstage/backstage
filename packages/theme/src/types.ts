@@ -15,6 +15,10 @@
  */
 
 import { Theme, ThemeOptions } from '@material-ui/core';
+import {
+  PaletteOptions,
+  Palette,
+} from '@material-ui/core/styles/createPalette';
 
 export type BackstageColorScheme = {
   TEXT_COLOR: string;
@@ -33,7 +37,7 @@ export type BackstageColorScheme = {
   STATUS_ERROR: string;
 };
 
-export type BackstagePalette = Theme['palette'] & {
+type PaletteAdditions = {
   status: {
     ok: string;
     warning: string;
@@ -65,10 +69,13 @@ export type BackstagePalette = Theme['palette'] & {
   };
 };
 
+export type BackstagePalette = Palette & PaletteAdditions;
+export type BackstagePaletteOptions = PaletteOptions & PaletteAdditions;
+
 export interface BackstageTheme extends Theme {
   palette: BackstagePalette;
 }
 
 export interface BackstageThemeOptions extends ThemeOptions {
-  palette: Partial<BackstagePalette>;
+  palette: BackstagePaletteOptions;
 }
