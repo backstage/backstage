@@ -25,11 +25,11 @@ export default {
 
 export const Default = () => (
   <WarningPanel
-    title="Lineage Warning"
+    title="Example Warning Title"
     message={
       <>
-        This entity is missing lineage data. If this is unexpected, please make
-        sure you have set up Lineage correctly by following{' '}
+        This example entity is missing something. If this is unexpected, please
+        make sure you have set up everything correctly by following{' '}
         <Link href="http://example.com">this guide</Link>.
       </>
     }
@@ -37,7 +37,7 @@ export const Default = () => (
 );
 
 export const Children = () => (
-  <WarningPanel title="Lineage Warning">
+  <WarningPanel title="Example Warning Title">
     <Button variant="outlined" color="primary">
       Supports custom children - for example this button
     </Button>
