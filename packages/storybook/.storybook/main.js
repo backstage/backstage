@@ -7,6 +7,10 @@ module.exports = {
   ],
   addons: ['@storybook/addon-actions', '@storybook/addon-links'],
   webpackFinal: async config => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@backstage/theme': path.resolve(__dirname, '../../theme/src'),
+    };
     config.resolve.modules.push(path.resolve(__dirname, '../../core/src'));
     config.module.rules.push(
       {
