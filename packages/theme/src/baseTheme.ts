@@ -42,11 +42,6 @@ export function createThemeOptions(
       type,
       background: {
         default: colors.PAGE_BACKGROUND,
-        // @ts-ignore
-        informational: '#60a3cb',
-      },
-      color: {
-        default: colors.TEXT_COLOR,
       },
       status: {
         ok: colors.STATUS_OK,
@@ -63,7 +58,6 @@ export function createThemeOptions(
           default: colors.DEFAULT_PAGE_THEME_COLOR,
         },
       },
-      // @ts-ignore
       primary: {
         main: blue[500],
       },
@@ -81,10 +75,6 @@ export function createThemeOptions(
       link: colors.LINK_TEXT,
       gold: yellow.A700,
       sidebar: colors.SIDEBAR_BACKGROUND_COLOR,
-    },
-    navigation: {
-      width: 220,
-      background: '#333333',
     },
     typography: {
       fontFamily: '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif',
