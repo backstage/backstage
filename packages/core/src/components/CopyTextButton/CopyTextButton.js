@@ -18,6 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { IconButton, Tooltip, withStyles } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopy';
+import { errorApiRef, useApi } from '../api';
 
 const buttonStyles = theme => ({
   button: {
@@ -74,7 +75,8 @@ class CopyTextButton extends React.Component {
       this.clipboardInput.select();
       document.execCommand('copy');
     } catch (error) {
-      // console.error(error);
+      const errorApi = useApi(errorApiRef);
+      errorApi.post(error);
     }
   };
 
@@ -86,7 +88,7 @@ class CopyTextButton extends React.Component {
         <input
           ref={el => (this.clipboardInput = el)}
           type="text"
-          style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}
+          style={{ position: 'absolute', top: -9999, left: 9999 }}
           defaultValue={text}
         />
         <Tooltip
