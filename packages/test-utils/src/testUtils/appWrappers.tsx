@@ -18,7 +18,7 @@ import React, { ComponentType, ReactNode, FunctionComponent } from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';
-import { BackstageTheme } from '@backstage/theme';
+import { lightTheme } from '@backstage/theme';
 
 export function wrapInTestApp(
   Component: ComponentType | ReactNode,
@@ -42,12 +42,10 @@ export function wrapInThemedTestApp(
   component: ReactNode,
   initialRouterEntries: string[] = ['/'],
 ) {
-  const themed = (
-    <ThemeProvider theme={BackstageTheme}>{component}</ThemeProvider>
-  );
+  const themed = <ThemeProvider theme={lightTheme}>{component}</ThemeProvider>;
   return wrapInTestApp(themed, initialRouterEntries);
 }
 
-export const wrapInTheme = (component: ReactNode, theme = BackstageTheme) => (
+export const wrapInTheme = (component: ReactNode, theme = lightTheme) => (
   <ThemeProvider theme={theme}>{component}</ThemeProvider>
 );

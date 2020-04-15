@@ -18,12 +18,12 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import HomePage from './HomePage';
 import { ThemeProvider } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
+import { lightTheme } from '@backstage/theme';
 
 describe('HomePage', () => {
   it('should render', () => {
     const rendered = render(
-      <ThemeProvider theme={BackstageTheme}>
+      <ThemeProvider theme={lightTheme}>
         <HomePage />
       </ThemeProvider>,
     );

@@ -15,12 +15,8 @@
  */
 
 // TODO: backwards compatibility, remove
-import { lightTheme, darkTheme } from './themes';
-export {
-  lightTheme as BackstageTheme,
-  lightTheme as BackstageThemeLight,
-  darkTheme as BackstageThemeDark,
-};
+import { lightTheme } from './themes';
+export { lightTheme as BackstageTheme };
 
 export * from './themes';
 export * from './baseTheme';
