@@ -15,37 +15,82 @@
  */
 
 import { createTheme } from 'baseTheme';
+import { blue, yellow } from '@material-ui/core/colors';
 
-export const lightTheme = createTheme('light', {
-  TEXT_COLOR: '#000',
-  PAGE_BACKGROUND: '#F8F8F8',
-  DEFAULT_PAGE_THEME_COLOR: '#7C3699',
-  DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
-  SIDEBAR_BACKGROUND_COLOR: '#171717',
-  ERROR_BACKGROUND_COLOR: '#FFEBEE',
-  ERROR_TEXT_COLOR: '#CA001B',
-  INFO_TEXT_COLOR: '#004e8a',
-  LINK_TEXT: '#0A6EBE',
-  LINK_TEXT_HOVER: '#2196F3',
-  NAMED_WHITE: '#FEFEFE',
-  STATUS_OK: '#1db855',
-  STATUS_WARNING: '#f49b20',
-  STATUS_ERROR: '#CA001B',
+export const lightTheme = createTheme({
+  type: 'light',
+  background: {
+    default: '#F8F8F8',
+  },
+  status: {
+    ok: '#1db855',
+    warning: '#f49b20',
+    error: '#CA001B',
+    running: '#BEBEBE',
+    pending: '#5BC0DE',
+    background: '#FEFEFE',
+  },
+  bursts: {
+    fontColor: '#FEFEFE',
+    slackChannelText: '#ddd',
+    backgroundColor: {
+      default: '#7C3699',
+    },
+  },
+  primary: {
+    main: blue[500],
+  },
+  border: '#E6E6E6',
+  textVerySubtle: '#DDD',
+  textSubtle: '#6E6E6E',
+  highlight: '#FFFBCC',
+  errorBackground: '#FFEBEE',
+  warningBackground: '#F59B23',
+  infoBackground: '#ebf5ff',
+  errorText: '#CA001B',
+  infoText: '#004e8a',
+  warningText: '#FEFEFE',
+  linkHover: '#2196F3',
+  link: '#0A6EBE',
+  gold: yellow.A700,
+  sidebar: '#171717',
 });
 
-export const darkTheme = createTheme('dark', {
-  TEXT_COLOR: '#fff',
-  PAGE_BACKGROUND: '#282828',
-  DEFAULT_PAGE_THEME_COLOR: '#7C3699',
-  DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
-  SIDEBAR_BACKGROUND_COLOR: '#424242',
-  ERROR_BACKGROUND_COLOR: '#FFEBEE',
-  ERROR_TEXT_COLOR: '#CA001B',
-  INFO_TEXT_COLOR: '#004e8a',
-  LINK_TEXT: '#0A6EBE',
-  LINK_TEXT_HOVER: '#2196F3',
-  NAMED_WHITE: '#FEFEFE',
-  STATUS_OK: '#1db855',
-  STATUS_WARNING: '#f49b20',
-  STATUS_ERROR: '#CA001B',
+export const darkTheme = createTheme({
+  type: 'dark',
+  background: {
+    default: '#282828',
+  },
+  status: {
+    ok: '#1db855',
+    warning: '#f49b20',
+    error: '#CA001B',
+    running: '#BEBEBE',
+    pending: '#5BC0DE',
+    background: '#FEFEFE',
+  },
+  bursts: {
+    fontColor: '#FEFEFE',
+    slackChannelText: '#ddd',
+    backgroundColor: {
+      default: '#7C3699',
+    },
+  },
+  primary: {
+    main: blue[500],
+  },
+  border: '#E6E6E6',
+  textVerySubtle: '#DDD',
+  textSubtle: '#6E6E6E',
+  highlight: '#FFFBCC',
+  errorBackground: '#FFEBEE',
+  warningBackground: '#F59B23',
+  infoBackground: '#ebf5ff',
+  errorText: '#CA001B',
+  infoText: '#004e8a',
+  warningText: '#FEFEFE',
+  linkHover: '#2196F3',
+  link: '#0A6EBE',
+  gold: yellow.A700,
+  sidebar: '#424242',
 });

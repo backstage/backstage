@@ -16,20 +16,20 @@
 
 import { createMuiTheme } from '@material-ui/core';
 import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
-import { blue, yellow } from '@material-ui/core/colors';
+
 import {
   BackstageTheme,
   BackstageThemeOptions,
-  BackstageColorScheme,
+  BackstagePaletteOptions,
 } from './types';
 
 type Overrides = Partial<BackstageTheme['overrides']>;
 
 export function createThemeOptions(
-  type: 'light' | 'dark',
-  colors: BackstageColorScheme,
+  palette: BackstagePaletteOptions,
 ): BackstageThemeOptions {
   return {
+    palette,
     props: {
       MuiGrid: {
         spacing: 2,
@@ -37,44 +37,6 @@ export function createThemeOptions(
       MuiSwitch: {
         color: 'primary',
       },
-    },
-    palette: {
-      type,
-      background: {
-        default: colors.PAGE_BACKGROUND,
-      },
-      status: {
-        ok: colors.STATUS_OK,
-        warning: colors.STATUS_WARNING,
-        error: colors.STATUS_ERROR,
-        running: '#BEBEBE',
-        pending: '#5BC0DE',
-        background: colors.NAMED_WHITE,
-      },
-      bursts: {
-        fontColor: colors.NAMED_WHITE,
-        slackChannelText: '#ddd',
-        backgroundColor: {
-          default: colors.DEFAULT_PAGE_THEME_COLOR,
-        },
-      },
-      primary: {
-        main: blue[500],
-      },
-      border: '#E6E6E6',
-      textVerySubtle: '#DDD',
-      textSubtle: '#6E6E6E',
-      highlight: '#FFFBCC',
-      errorBackground: colors.ERROR_BACKGROUND_COLOR,
-      warningBackground: '#F59B23',
-      infoBackground: '#ebf5ff',
-      errorText: colors.ERROR_TEXT_COLOR,
-      infoText: colors.INFO_TEXT_COLOR,
-      warningText: colors.NAMED_WHITE,
-      linkHover: colors.LINK_TEXT_HOVER,
-      link: colors.LINK_TEXT,
-      gold: yellow.A700,
-      sidebar: colors.SIDEBAR_BACKGROUND_COLOR,
     },
     typography: {
       fontFamily: '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif',
@@ -225,13 +187,10 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
   };
 }
 
-// Creates a Backstage MUI theme using a color scheme.
+// Creates a Backstage MUI theme using a palette.
 // The theme is created with the common Backstage options and component styles.
-export function createTheme(
-  type: 'light' | 'dark',
-  colors: BackstageColorScheme,
-): BackstageTheme {
-  const themeOptions = createThemeOptions(type, colors);
+export function createTheme(palette: BackstagePaletteOptions): BackstageTheme {
+  const themeOptions = createThemeOptions(palette);
   const baseTheme = createMuiTheme(themeOptions) as BackstageTheme;
   const overrides = createThemeOverrides(baseTheme);
   const theme = { ...baseTheme, overrides };

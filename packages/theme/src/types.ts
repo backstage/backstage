@@ -20,23 +20,6 @@ import {
   Palette,
 } from '@material-ui/core/styles/createPalette';
 
-export type BackstageColorScheme = {
-  TEXT_COLOR: string;
-  PAGE_BACKGROUND: string;
-  DEFAULT_PAGE_THEME_COLOR: string;
-  DEFAULT_PAGE_THEME_LIGHT_COLOR: string;
-  SIDEBAR_BACKGROUND_COLOR: string;
-  ERROR_BACKGROUND_COLOR: string;
-  ERROR_TEXT_COLOR: string;
-  INFO_TEXT_COLOR: string;
-  LINK_TEXT: string;
-  LINK_TEXT_HOVER: string;
-  NAMED_WHITE: string;
-  STATUS_OK: string;
-  STATUS_WARNING: string;
-  STATUS_ERROR: string;
-};
-
 type PaletteAdditions = {
   status: {
     ok: string;
