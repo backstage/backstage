@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "yarn workspace app start",
-    "bundle": "yarn build && yarn workspace example-app bundle",
+    "bundle": "yarn build && yarn workspace app bundle",
     "build": "lerna run build",
     "test": "yarn build && lerna run test --since origin/master -- --coverage",
     "test:all": "yarn build && lerna run test -- --coverage",
