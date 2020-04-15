@@ -24,6 +24,7 @@ const COLORS = {
   PAGE_BACKGROUND: '#F8F8F8',
   DEFAULT_PAGE_THEME_COLOR: '#7C3699',
   DEFAULT_PAGE_THEME_LIGHT_COLOR: '#ECDBF2',
+  SIDEBAR_BACKGROUND_COLOR: '#171717',
   ERROR_BACKGROUND_COLOR: '#FFEBEE',
   ERROR_TEXT_COLOR: '#CA001B',
   INFO_TEXT_COLOR: '#004e8a',
@@ -86,6 +87,7 @@ const extendedThemeConfig: BackstageMuiThemeOptions = {
     linkHover: COLORS.LINK_TEXT_HOVER,
     link: COLORS.LINK_TEXT,
     gold: yellow.A700,
+    sidebar: COLORS.SIDEBAR_BACKGROUND_COLOR,
   },
   navigation: {
     width: 220,

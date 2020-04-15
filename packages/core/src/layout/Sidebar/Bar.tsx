@@ -18,8 +18,9 @@ import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import React, { FC, useRef, useState } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
+import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<typeof BackstageTheme>(theme => ({
   root: {
     zIndex: 1000,
     position: 'relative',
@@ -35,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     top: 0,
     bottom: 0,
     padding: 0,
-    background: '#171717',
+    background: theme.palette.sidebar,
     overflowX: 'hidden',
     width: sidebarConfig.drawerWidthClosed,
     transition: theme.transitions.create('width', {
