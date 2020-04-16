@@ -61,16 +61,12 @@ jobs:
         env:
           BACKSTAGE_E2E_CLI_TEST: true
       - name: lint newly created app and plugin
-        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
-        run: |
-          cd test-app
-          yarn lint:all
+        run: yarn lint:all
+        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}/test-app
         env:
           BACKSTAGE_E2E_CLI_TEST: true
       - name: test newly created app and plugin
-        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
-        run: |
-          cd test-app
-          yarn test:all
+        run: yarn test:all
+        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}/test-app
         env:
           BACKSTAGE_E2E_CLI_TEST: true
