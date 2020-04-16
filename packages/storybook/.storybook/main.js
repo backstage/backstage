@@ -13,7 +13,7 @@ module.exports = {
   webpackFinal: async config => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@backstage/theme': path.resolve(__dirname, '../../theme/src'),
+      '@backstage/theme': path.resolve(__dirname, '../../theme'),
     };
     config.resolve.modules.push(path.resolve(__dirname, '../../core/src'));
     config.module.rules.push(

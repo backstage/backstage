@@ -19,7 +19,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { Circle } from 'rc-progress';
 import React, { FC } from 'react';
 
-const useStyles = makeStyles<typeof BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     position: 'relative',
     lineHeight: 0,

@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import WelcomePage from './WelcomePage';
 import { ThemeProvider } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
+import { lightTheme } from '@backstage/theme';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 
 describe('WelcomePage', () => {
@@ -28,7 +28,7 @@ describe('WelcomePage', () => {
       <ApiProvider
         apis={ApiRegistry.from([[errorApiRef, { post: jest.fn() }]])}
       >
-        <ThemeProvider theme={BackstageTheme}>
+        <ThemeProvider theme={lightTheme}>
           <WelcomePage />
         </ThemeProvider>
       </ApiProvider>,

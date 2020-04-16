@@ -30,6 +30,7 @@
   "scripts": {
     "start": "backstage-cli app:serve",
     "bundle": "backstage-cli app:build",
+    "clean": "backstage-cli clean",
     "test": "backstage-cli test",
     "test:e2e": "start-server-and-test start http://localhost:3000 cy:dev",
     "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run",
