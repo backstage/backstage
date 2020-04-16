@@ -20,7 +20,6 @@ jobs:
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
-      BACKSTAGE_E2E_CLI_TEST: true
 
     name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
@@ -45,18 +44,22 @@ jobs:
       # generate temp directory
       - name: generate tempdir
         id: generate_tempdir
-        run: echo ::set-output name=tempdir::$(node scripts/generateTempDir.js)
+        run: echo "::set-output name=tempdir::$(node scripts/generateTempDir.js)"
         # This creates a new app and plugin which pollutes the workspace, so it should be run last.
       - name: verify app and plugin creation on Windows
         working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
         if: runner.os == 'Windows'
         run: node ${{ github.workspace }}/scripts/cli-e2e-test.js
+        env:
+          BACKSTAGE_E2E_CLI_TEST: true
       - name: verify app and plugin creation on Linux
         working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
         if: runner.os == 'Linux'
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
           node ${{ github.workspace }}/scripts/cli-e2e-test.js
+        env:
+          BACKSTAGE_E2E_CLI_TEST: true
       # This should lint and test both an app and a plugin
       - name: yarn lint, test after creation
         working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
@@ -64,3 +67,5 @@ jobs:
           cd test-app
           yarn lint:all
           yarn test:all
+        env:
+          BACKSTAGE_E2E_CLI_TEST: true
