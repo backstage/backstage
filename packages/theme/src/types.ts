@@ -38,6 +38,7 @@ export type BackstageMuiPalette = Theme['palette'] & {
   linkHover: string;
   link: string;
   gold: string;
+  sidebar: string;
   bursts: {
     fontColor: string;
     slackChannelText: string;

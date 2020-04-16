@@ -17,7 +17,7 @@
 import { createPlugin } from '@backstage/core';
 import WelcomePage from 'components/WelcomePage';
 
-export default createPlugin({
+export const plugin = createPlugin({
   id: 'welcome',
   register({ router, featureFlags }) {
     router.registerRoute('/', WelcomePage);
