@@ -70,14 +70,13 @@ export const capitalize = (str: string): string =>
 
 export const addExportStatement = async (
   file: string,
-  importStatement: string,
   exportStatement: string,
 ) => {
   const newContents = fs
     .readFileSync(file, 'utf8')
     .split('\n')
     .filter(Boolean) // get rid of empty lines
-    .concat([importStatement, exportStatement])
+    .concat([exportStatement])
     .concat(['']) // newline at end of file
     .join('\n');
 
@@ -122,19 +121,16 @@ export async function addPluginToApp(rootDir: string, pluginName: string) {
     .split('-')
     .map(name => capitalize(name))
     .join('');
-  const pluginImport = `import { plugin as ${pluginNameCapitalized} } from '${pluginPackage}';`;
-  const pluginExport = `export { ${pluginNameCapitalized} };`;
+  const pluginExport = `export { plugin as ${pluginNameCapitalized} } from '${pluginPackage}';`;
   const pluginsFilePath = 'packages/app/src/plugins.ts';
   const pluginsFile = resolvePath(rootDir, pluginsFilePath);
 
   await Task.forItem('processing', pluginsFilePath, async () => {
-    await addExportStatement(pluginsFile, pluginImport, pluginExport).catch(
-      error => {
-        throw new Error(
-          `Failed to import plugin in app: ${pluginsFile}: ${error.message}`,
-        );
-      },
-    );
+    await addExportStatement(pluginsFile, pluginExport).catch(error => {
+      throw new Error(
+        `Failed to import plugin in app: ${pluginsFile}: ${error.message}`,
+      );
+    });
   });
 }
 
