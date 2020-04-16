@@ -9,7 +9,8 @@
   },
   "workspaces": {
     "nohoist": [
-      "@storybook/**"
+      "@storybook/react/**",
+      "@storybook/addons/**"
     ]
   },
   "dependencies": {

@@ -46,7 +46,6 @@
     "@backstage/test-utils": "0.1.1-alpha.4",
     "@backstage/test-utils-core": "^0.1.1-alpha.4",
     "@backstage/theme": "^0.1.1-alpha.4",
-    "@storybook/addon-storysource": "^5.3.18",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
