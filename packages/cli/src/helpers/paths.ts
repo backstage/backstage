@@ -25,6 +25,9 @@ export type Paths = {
   // Root dir of the cli itself, containing package.json
   ownDir: string;
 
+  // Monorepo root dir of the cli itself. Only accessible when running inside Backstage repo.
+  ownRoot: string;
+
   // The location of the app that the cli is being executed in
   targetDir: string;
 
@@ -33,6 +36,9 @@ export type Paths = {
 
   // Resolve a path relative to own repo
   resolveOwn: ResolveFunc;
+
+  // Resolve a path relative to own monorepo root. Only accessible when running inside Backstage repo.
+  resolveOwnRoot: ResolveFunc;
 
   // Resolve a path relative to the app
   resolveTarget: ResolveFunc;
@@ -91,9 +97,30 @@ export function findOwnDir() {
   return resolvePath(__dirname, path);
 }
 
+// Finds the root of the monorepo that the cli exists in. Only accessible when running inside Backstage repo.
+export function findOwnRootPath(ownDir: string) {
+  const isLocal = fs.pathExistsSync(resolvePath(ownDir, 'src'));
+  if (!isLocal) {
+    throw new Error(
+      'Tried to access monorepo package root dir outside of Backstage repository',
+    );
+  }
+
+  return resolvePath(ownDir, '../..');
+}
+
 export function findPaths(): Paths {
   const ownDir = findOwnDir();
   const targetDir = fs.realpathSync(process.cwd());
+
+  // Lazy load this as it will throw an error if we're not inside the Backstage repo.
+  let ownRoot = '';
+  const getOwnRoot = () => {
+    if (!ownRoot) {
+      ownRoot = findOwnRootPath(ownDir);
+    }
+    return ownRoot;
+  };
 
   // We're not always running in a monorepo, so we lazy init this to only crash commands
   // that require a monorepo when we're not in one.
@@ -107,11 +134,15 @@ export function findPaths(): Paths {
 
   return {
     ownDir,
+    get ownRoot() {
+      return getOwnRoot();
+    },
     targetDir,
     get targetRoot() {
       return getTargetRoot();
     },
     resolveOwn: (...paths) => resolvePath(ownDir, ...paths),
+    resolveOwnRoot: (...paths) => resolvePath(getOwnRoot(), ...paths),
     resolveTarget: (...paths) => resolvePath(targetDir, ...paths),
     resolveTargetRoot: (...paths) => resolvePath(getTargetRoot(), ...paths),
   };
