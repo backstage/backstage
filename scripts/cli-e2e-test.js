@@ -44,8 +44,6 @@ async function main() {
   process.chdir(tempDir);
   process.stdout.write(`Temp directory: ${process.cwd()}\n`);
 
-  await waitForExit(spawnPiped(['yarn', 'init --yes']));
-
   const createCmdPath = require('path').join(
     rootDir,
     'packages',
