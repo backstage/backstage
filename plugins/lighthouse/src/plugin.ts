@@ -19,7 +19,7 @@ import AuditList from './components/AuditList';
 import AuditView from './components/AuditView';
 import CreateAudit from './components/CreateAudit';
 
-export default createPlugin({
+export const plugin = createPlugin({
   id: 'lighthouse',
   register({ router }) {
     router.registerRoute('/lighthouse', AuditList);

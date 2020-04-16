@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
-import { BackstageTheme, COLORS } from '@backstage/theme';
+import { makeStyles, useTheme } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 import { Circle } from 'rc-progress';
 import React, { FC } from 'react';
 
@@ -55,7 +55,7 @@ const defaultProps = {
   max: 100,
 };
 
-export function getProgressColor(value, inverse, max) {
+export function getProgressColor(palette, value, inverse, max) {
   if (isNaN(value)) {
     return '#ddd';
   }
@@ -64,16 +64,17 @@ export function getProgressColor(value, inverse, max) {
   const actualValue = inverse ? actualMax - value : value;
 
   if (actualValue < actualMax / 3) {
-    return COLORS.STATUS.ERROR;
+    return palette.status.error;
   } else if (actualValue < actualMax * (2 / 3)) {
-    return COLORS.STATUS.WARNING;
+    return palette.status.warning;
   }
 
-  return COLORS.STATUS.OK;
+  return palette.status.ok;
 }
 
 const CircleProgress: FC<Props> = props => {
   const classes = useStyles(props);
+  const theme = useTheme();
   const { value, fractional, inverse, unit, max } = {
     ...defaultProps,
     ...props,
@@ -89,7 +90,7 @@ const CircleProgress: FC<Props> = props => {
         percent={asPercentage}
         strokeWidth={12}
         trailWidth={12}
-        strokeColor={getProgressColor(asActual, inverse, max)}
+        strokeColor={getProgressColor(theme.palette, asActual, inverse, max)}
         className={classes.circle}
       />
       <div className={classes.overlay}>

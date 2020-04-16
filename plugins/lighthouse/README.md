@@ -7,7 +7,7 @@ A frontend for [lighthouse-audit-service](https://github.com/spotify/lighthouse-
 ### Use cases
 
 Google's [Lighthouse](https://developers.google.com/web/tools/lighthouse) auditing tool for websites
-is a great open-source resource forbenchmarking and improving the accessibility, performance, SEO, and best practices of your site.
+is a great open-source resource for benchmarking and improving the accessibility, performance, SEO, and best practices of your site.
 At Spotify, we keep track of Lighthouse audit scores over time to look at trends and overall areas for investment.
 
 This plugin allows you to generate on-demand Lighthouse audits for websites, and to track the trends for the

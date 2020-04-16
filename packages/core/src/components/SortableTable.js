@@ -171,7 +171,7 @@ const DataTableRow = pure(({ row, columns, handleRowClick, style }) => {
  * @example
  * render {
  *    const data = [
- *     { id: 'buffalos', amount: 1, status: <Error />, statusValue: 2 }
+ *     { id: 'buffalos', amount: 1, status: <Error />, statusValue: 2 },
  *     { id: 'milk', amount: 3, status: <Warning />, statusValue: 1 }
  *   ];
  *   const columns = [

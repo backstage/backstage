@@ -26,7 +26,7 @@ module.exports = {
     'plugin:monorepo/recommended',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['notice', 'import'],
+  plugins: ['import'],
   env: {
     jest: true,
   },
@@ -50,6 +50,10 @@ module.exports = {
         peerDependencies: true,
         bundledDependencies: true,
       },
+    ],
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      { vars: 'all', args: 'after-used', ignoreRestSiblings: true },
     ],
   },
   overrides: [

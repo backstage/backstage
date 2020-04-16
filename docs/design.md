@@ -1,4 +1,4 @@
-# Designing for Backstage 
+![header](designheader.png)
 
 Much like Backstage Open Source, this is a *living* document! We'll keep this updated as we evolve our practices!
 

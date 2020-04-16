@@ -19,7 +19,7 @@ import ApiProvider, { useApi, withApis } from './ApiProvider';
 import ApiRef from './ApiRef';
 import ApiRegistry from './ApiRegistry';
 import { render } from '@testing-library/react';
-import { withLogCollector } from '@backstage/test-utils';
+import { withLogCollector } from '@backstage/test-utils-core';
 
 describe('ApiProvider', () => {
   type Api = () => string;

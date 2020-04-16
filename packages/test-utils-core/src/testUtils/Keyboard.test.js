@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Keyboard from './Keyboard';
+import { Keyboard } from './Keyboard';
 import { render } from '@testing-library/react';
 
 describe('testUtils.Keyboard', () => {

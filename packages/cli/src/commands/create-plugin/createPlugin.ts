@@ -122,7 +122,7 @@ export async function addPluginToApp(rootDir: string, pluginName: string) {
     .split('-')
     .map(name => capitalize(name))
     .join('');
-  const pluginImport = `import { default as ${pluginNameCapitalized} } from '${pluginPackage}';`;
+  const pluginImport = `import { plugin as ${pluginNameCapitalized} } from '${pluginPackage}';`;
   const pluginExport = `export { ${pluginNameCapitalized} };`;
   const pluginsFilePath = 'packages/app/src/plugins.ts';
   const pluginsFile = resolvePath(rootDir, pluginsFilePath);

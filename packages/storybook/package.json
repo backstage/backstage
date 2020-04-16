@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "0.1.1-alpha.3",
+  "version": "0.1.1-alpha.4",
   "description": "Storybook build for core package",
   "private": true,
   "scripts": {
@@ -15,6 +15,7 @@
   "devDependencies": {
     "@storybook/addon-actions": "^5.3.17",
     "@storybook/addon-links": "^5.3.17",
+    "@storybook/addon-storysource": "^5.3.18",
     "@storybook/addons": "^5.3.17",
     "@storybook/react": "^5.3.17"
   }
