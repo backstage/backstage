@@ -18,7 +18,7 @@ const { resolve: resolvePath } = require('path');
 const { spawnPiped, waitFor, waitForExit, print } = require('./helpers');
 
 async function createTestApp() {
-  const cliPath = resolvePath(__dirname, '../packages/cli/bin/backstage-cli');
+  const cliPath = resolvePath(__dirname, '../bin/backstage-cli');
 
   print('Creating a Backstage App');
   const createApp = spawnPiped(['node', cliPath, 'create-app']);

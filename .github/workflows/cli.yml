@@ -44,7 +44,7 @@ jobs:
       - name: verify app and plugin creation on Windows
         working-directory: ${{ runner.temp }}
         if: runner.os == 'Windows'
-        run: node ${{ github.workspace }}/scripts/cli-e2e-test.js
+        run: node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
         env:
           BACKSTAGE_E2E_CLI_TEST: true
       - name: verify app and plugin creation on Linux
@@ -52,7 +52,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
-          node ${{ github.workspace }}/scripts/cli-e2e-test.js
+          node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
         env:
           BACKSTAGE_E2E_CLI_TEST: true
       - name: lint newly created app and plugin

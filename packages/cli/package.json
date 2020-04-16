@@ -22,6 +22,7 @@
     "build": "backstage-cli build-cache -- tsc",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
+    "test:e2e": "node e2e-test/cli-e2e-test.js",
     "clean": "backstage-cli clean",
     "start": "nodemon ."
   },
@@ -41,7 +42,8 @@
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
     "ts-node": "^8.6.2",
-    "tsconfig-paths": "^3.9.0"
+    "tsconfig-paths": "^3.9.0",
+    "zombie": "^6.1.4"
   },
   "bin": {
     "backstage-cli": "bin/backstage-cli"
