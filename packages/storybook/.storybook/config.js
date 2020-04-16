@@ -1,10 +1,10 @@
 import React from 'react';
 import { addDecorator } from '@storybook/react';
-import { BackstageTheme } from '@backstage/theme';
+import { lightTheme } from '@backstage/theme';
 import { CssBaseline, ThemeProvider } from '@material-ui/core';
 
 addDecorator(story => (
-  <ThemeProvider theme={BackstageTheme}>
+  <ThemeProvider theme={lightTheme}>
     <CssBaseline>{story()}</CssBaseline>
   </ThemeProvider>
 ));

@@ -19,7 +19,7 @@ import { BackstageTheme } from '@backstage/theme';
 import classNames from 'classnames';
 import React, { FC } from 'react';
 
-const useStyles = makeStyles<typeof BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   status: {
     width: 12,
     height: 12,

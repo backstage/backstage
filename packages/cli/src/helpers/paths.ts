@@ -53,7 +53,7 @@ export function findRootPath(topPath: string): string {
       try {
         const contents = fs.readFileSync(packagePath, 'utf8');
         const data = JSON.parse(contents);
-        if (data.name === 'root') {
+        if (data.name === 'root' || data.name.includes('backstage-e2e')) {
           return path;
         }
       } catch (error) {

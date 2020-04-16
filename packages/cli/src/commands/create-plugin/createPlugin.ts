@@ -268,6 +268,7 @@ export default async () => {
       )}`,
     );
     Task.log();
+    Task.exit();
   } catch (error) {
     Task.error(error.message);
 
@@ -277,5 +278,6 @@ export default async () => {
     Task.section('Cleanup');
     await cleanUp(tempDir);
     Task.error('🔥  Failed to create plugin!');
+    Task.exit(1);
   }
 };

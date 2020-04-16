@@ -15,19 +15,37 @@
  */
 import React, { useState } from 'react';
 import { TabbedCard, CardTab } from '.';
+import { Grid } from '@material-ui/core';
+
+const cardContentStyle = { height: 200, width: 500 };
 
 export default {
   title: 'Tabbed Card',
   component: TabbedCard,
+  decorators: [
+    storyFn => (
+      <Grid container spacing={4}>
+        <Grid item>{storyFn()}</Grid>
+      </Grid>
+    ),
+  ],
 };
 
 export const Default = () => {
   return (
     <TabbedCard title="Default Example Header">
-      <CardTab label="Option 1">some content 1</CardTab>
-      <CardTab label="Option 2">some content 2</CardTab>
-      <CardTab label="Option 3">some content 3</CardTab>
-      <CardTab label="Option 4">some content 4</CardTab>
+      <CardTab label="Option 1">
+        <div style={cardContentStyle}>Some content</div>
+      </CardTab>
+      <CardTab label="Option 2">
+        <div style={cardContentStyle}>Some content 2</div>
+      </CardTab>
+      <CardTab label="Option 3">
+        <div style={cardContentStyle}>Some content 3</div>
+      </CardTab>
+      <CardTab label="Option 4">
+        <div style={cardContentStyle}>Some content 4</div>
+      </CardTab>
     </TabbedCard>
   );
 };
@@ -37,10 +55,18 @@ const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 export const WithFooterLink = () => {
   return (
     <TabbedCard title="Footer Link Example Header" deepLink={linkInfo}>
-      <CardTab label="Option 1">some content 1</CardTab>
-      <CardTab label="Option 2">some content 2</CardTab>
-      <CardTab label="Option 3">some content 3</CardTab>
-      <CardTab label="Option 4">some content 4</CardTab>
+      <CardTab label="Option 1">
+        <div style={cardContentStyle}>Some content</div>
+      </CardTab>
+      <CardTab label="Option 2">
+        <div style={cardContentStyle}>Some content 2</div>
+      </CardTab>
+      <CardTab label="Option 3">
+        <div style={cardContentStyle}>Some content 3</div>
+      </CardTab>
+      <CardTab label="Option 4">
+        <div style={cardContentStyle}>Some content 4</div>
+      </CardTab>
     </TabbedCard>
   );
 };
@@ -60,16 +86,16 @@ export const WithControlledTabValue = () => {
         title="Controlled Value Example"
       >
         <CardTab value="one" label="Option 1">
-          some content 1
+          <div style={cardContentStyle}>Some content</div>
         </CardTab>
         <CardTab value="two" label="Option 2">
-          some content 2
+          <div style={cardContentStyle}>Some content 2</div>
         </CardTab>
         <CardTab value="three" label="Option 3">
-          some content 3
+          <div style={cardContentStyle}>Some content 3</div>
         </CardTab>
         <CardTab value="four" label="Option 4">
-          some content 4
+          <div style={cardContentStyle}>Some content 4</div>
         </CardTab>
       </TabbedCard>
     </>

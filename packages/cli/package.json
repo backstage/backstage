@@ -22,6 +22,7 @@
     "build": "backstage-cli build-cache -- tsc",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
+    "clean": "backstage-cli clean",
     "start": "nodemon ."
   },
   "devDependencies": {
