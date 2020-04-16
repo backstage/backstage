@@ -23,6 +23,7 @@ import { startCompiler } from './compiler';
 import { startChild } from './child';
 import { waitForExit, run } from 'helpers/run';
 import { paths } from 'helpers/paths';
+import { Command } from 'commander';
 
 const PACKAGE_BLACKLIST = [
   // We never want to watch for changes in the cli, but all packages will depend on it.
@@ -88,8 +89,14 @@ export async function watchDeps(options: Options = {}) {
  * and instead start up watch mode for that package. Starting watch mode means running the first
  * available yarn script out of "build:watch", "watch", or "build" --watch.
  */
-export default async (_command: any, args: string[]) => {
-  await watchDeps();
+export default async (cmd: Command, args: string[]) => {
+  const options: Options = {};
+
+  if (cmd.build) {
+    options.build = true;
+  }
+
+  await watchDeps(options);
 
   if (args?.length) {
     await waitForExit(startChild(args));
