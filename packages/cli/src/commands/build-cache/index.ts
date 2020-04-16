@@ -30,7 +30,7 @@ export async function withCache(
   buildFunc: () => Promise<void>,
 ): Promise<void> {
   const key = await Cache.readInputKey(options.inputs);
-  if (!key || process.env.E2E) {
+  if (!key || process.env.BACKSTAGE_E2E_CLI_TEST) {
     print('input directory is dirty, skipping cache');
     await fs.remove(options.output);
     await buildFunc();

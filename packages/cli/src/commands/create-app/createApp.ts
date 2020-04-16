@@ -155,7 +155,7 @@ export default async () => {
     await moveApp(tempDir, appDir, answers.name);
 
     // e2e testing needs special treatment
-    if (process.env.E2E) {
+    if (process.env.BACKSTAGE_E2E_CLI_TEST) {
       Task.section('Linking packages locally for e2e tests');
       const rootDir = process.env.CI
         ? resolvePath(process.env.GITHUB_WORKSPACE!)

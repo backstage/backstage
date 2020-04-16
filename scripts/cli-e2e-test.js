@@ -32,7 +32,7 @@ const generateTempDir = require('./generateTempDir.js');
 Browser.localhost('localhost', 3000);
 
 async function main() {
-  process.env.E2E = 'true';
+  process.env.BACKSTAGE_E2E_CLI_TEST = 'true';
 
   const rootDir = process.env.CI
     ? resolvePath(process.env.GITHUB_WORKSPACE)
