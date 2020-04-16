@@ -19,10 +19,7 @@ import { Sparklines, SparklinesLine, SparklinesProps } from 'react-sparklines';
 import { useTheme } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
-function color(
-  data: number[],
-  theme: typeof BackstageTheme,
-): string | undefined {
+function color(data: number[], theme: BackstageTheme): string | undefined {
   const lastNum = data[data.length - 1];
   if (!lastNum) return undefined;
   if (lastNum >= 0.9) return theme.palette.status.ok;
