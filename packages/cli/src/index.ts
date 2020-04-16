@@ -90,6 +90,11 @@ const main = (argv: string[]) => {
     )
     .action(actionHandler(() => require('commands/build-cache')));
 
+  program
+    .command('clean')
+    .description('Delete cache directories')
+    .action(actionHandler(() => require('commands/clean/clean')));
+
   program.on('command:*', () => {
     console.log();
     console.log(

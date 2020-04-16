@@ -9,7 +9,8 @@
     "build:watch": "backstage-cli plugin:build --watch",
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test"
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean"
   },
   "dependencies": {
     "react-markdown": "^4.3.1",
