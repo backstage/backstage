@@ -18,7 +18,7 @@ Look through the GitHub issues for [bugs](https://github.com/spotify/backstage/l
 
 ## Build a Plugin
 
-The value of Backstage grows with every new Plugin that gets added. Wouldn't it be fantastic if there was a Plugin for every infrastructure projects out there? We think so.
+The value of Backstage grows with every new Plugin that gets added. Wouldn't it be fantastic if there was a Plugin for every infrastructure projects out there? We think so. And we would love your help.
 
 What kind of Plugins should/could be created? Some inspiration from the 120+ Plugins that we have developed inside Spotify can be found [here](https://backstage.io/demos), but the we will keep a running list of suggestions labeled with `[plugin]`:
 
@@ -59,3 +59,7 @@ If you need help, just jump into our [Discord chatroom](https://discord.gg/MUpMj
 This project adheres to the [Spotify FOSS Code of Conduct][code-of-conduct]. By participating, you are expected to honor this code.
 
 [code-of-conduct]: https://github.com/spotify/backstage/blob/master/CODE_OF_CONDUCT.md
+
+# Security Issues?
+
+Please report sensitive security issues via Spotify's bug-bounty program (https://hackerone.com/spotify) rather than GitHub.
