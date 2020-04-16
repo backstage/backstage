@@ -22,7 +22,7 @@ export default {
   component: TrendLine,
 };
 
-const width = 600;
+const width = 140;
 
 export const Default = () => (
   <div style={{ width }}>
