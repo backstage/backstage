@@ -34,24 +34,13 @@ Browser.localhost('localhost', 3000);
 async function main() {
   process.env.BACKSTAGE_E2E_CLI_TEST = 'true';
 
-  const rootDir = process.env.CI
-    ? resolvePath(process.env.GITHUB_WORKSPACE)
-    : resolvePath(__dirname, '..');
-
   const tempDir = process.env.CI ? process.cwd() : await generateTempDir();
 
   process.stdout.write(`Initial directory: ${process.cwd()}\n`);
   process.chdir(tempDir);
   process.stdout.write(`Temp directory: ${process.cwd()}\n`);
 
-  const createCmdPath = require('path').join(
-    rootDir,
-    'packages',
-    'cli',
-    'bin',
-    'backstage-cli',
-  );
-  await createTestApp(`${createCmdPath} create-app`);
+  await createTestApp();
 
   const appDir = resolvePath(tempDir, 'test-app');
   process.chdir(appDir);

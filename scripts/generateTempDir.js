@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+const fs = require('fs-extra');
+const os = require('os');
+const { resolve: resolvePath } = require('path');
 const { handleError } = require('./helpers');
 
 async function generateTempDir() {
-  const tempDir = await require('fs-extra').mkdtemp(
-    require('path').join(require('os').tmpdir(), 'backstage-e2e-'),
-  );
+  const tempDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
   process.stdout.write(tempDir);
   return tempDir;
 }
