@@ -40,14 +40,24 @@ async function main() {
 
   const tempDir = process.env.CI ? process.cwd() : await generateTempDir();
 
+  process.stdout.write(`Initial directory: ${process.cwd()}\n`);
   process.chdir(tempDir);
+  process.stdout.write(`Temp directory: ${process.cwd()}\n`);
+
   await waitForExit(spawnPiped(['yarn', 'init --yes']));
 
-  const createAppCmd = `${rootDir}/packages/cli/bin/backstage-cli create-app`;
-  await createTestApp(createAppCmd);
+  const createCmdPath = require('path').join(
+    rootDir,
+    'packages',
+    'cli',
+    'bin',
+    'backstage-cli',
+  );
+  await createTestApp(`${createCmdPath} create-app`);
 
   const appDir = resolvePath(tempDir, 'test-app');
   process.chdir(appDir);
+  process.stdout.write(`App directory: ${appDir}\n`);
 
   await createTestPlugin();
 
