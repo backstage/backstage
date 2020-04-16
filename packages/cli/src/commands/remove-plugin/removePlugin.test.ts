@@ -16,8 +16,13 @@
 
 import fse from 'fs-extra';
 import path from 'path';
+import os from 'os';
 import { paths } from '../../helpers/paths';
-import { addExportStatement, capitalize } from '../create-plugin/createPlugin';
+import {
+  addExportStatement,
+  capitalize,
+  createTemporaryPluginFolder,
+} from '../create-plugin/createPlugin';
 import { addCodeownersEntry } from '../create-plugin/lib/codeowners';
 import {
   removeReferencesFromAppPackage,
@@ -27,9 +32,11 @@ import {
   removePluginFromCodeOwners,
 } from './removePlugin';
 
+// Some constant variables
 const BACKSTAGE = `@backstage`;
 const testPluginName = 'yarn-test-package';
 const testPluginPackage = `${BACKSTAGE}/plugin-${testPluginName}`;
+const tempDir = path.join(os.tmpdir(), 'remove-plugin-test');
 
 const removeEmptyLines = (file: string): string =>
   file
@@ -53,6 +60,7 @@ const createTestPackageFile = async (
   );
   return;
 };
+
 const createTestPluginFile = async (
   testFilePath: string,
   pluginsFilePath: string,
@@ -63,16 +71,20 @@ const createTestPluginFile = async (
     .split('-')
     .map(name => capitalize(name))
     .join('');
-  const importStatement = `import { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
-  const exportStatement = `export {${pluginNameCapitalized}}`;
-  addExportStatement(testFilePath, importStatement, exportStatement);
+  const exportStatement = `export { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
+  addExportStatement(testFilePath, exportStatement);
 };
 
-function mkTestDir(testDirPath: string) {
+const mkTestPluginDir = (testDirPath: string) => {
   fse.mkdirSync(testDirPath);
   for (let i = 0; i < 50; i++)
     fse.createFileSync(path.join(testDirPath, `testFile${i}.ts`));
-}
+};
+
+beforeAll(() => {
+  // Create temporary directory for all tests
+  createTemporaryPluginFolder(tempDir);
+});
 
 describe('removePlugin', () => {
   describe('Remove Plugin Dependencies', () => {
@@ -81,7 +93,7 @@ describe('removePlugin', () => {
     it('removes plugin references from /packages/app/package.json', async () => {
       // Set up test
       const packageFilePath = path.join(appPath, 'package.json');
-      const testFilePath = path.join(appPath, 'test.json');
+      const testFilePath = path.join(tempDir, 'test.json');
       createTestPackageFile(testFilePath, packageFilePath);
       try {
         await removeReferencesFromAppPackage(testFilePath, testPluginName);
@@ -97,7 +109,7 @@ describe('removePlugin', () => {
       }
     });
     it('removes plugin exports from /packages/app/src/packacge.json', async () => {
-      const testFilePath = path.join(appPath, 'src', 'test.ts');
+      const testFilePath = path.join(tempDir, 'test.ts');
       const pluginsFilePaths = path.join(appPath, 'src', 'plugins.ts');
       createTestPluginFile(testFilePath, pluginsFilePaths);
       try {
@@ -114,7 +126,7 @@ describe('removePlugin', () => {
       }
     });
     it('removes codeOwners references', async () => {
-      const testFilePath = path.join(githubDir, 'test');
+      const testFilePath = path.join(tempDir, 'test');
       const codeownersPath = path.join(githubDir, 'CODEOWNERS');
       try {
         fse.copySync(codeownersPath, testFilePath);
@@ -144,7 +156,7 @@ describe('removePlugin', () => {
     describe('Removes Plugin Directory', () => {
       it('removes plugin directory from /plugins', async () => {
         try {
-          mkTestDir(testDirPath);
+          mkTestPluginDir(testDirPath);
           expect(fse.existsSync(testDirPath)).toBeTruthy();
           await removePluginDirectory(testDirPath);
           expect(fse.existsSync(testDirPath)).toBeFalsy();
@@ -161,7 +173,7 @@ describe('removePlugin', () => {
           `plugin-${testPluginName}`,
         );
         try {
-          mkTestDir(testDirPath);
+          mkTestPluginDir(testDirPath);
           fse.ensureSymlinkSync(testSymLinkPath, testDirPath);
 
           await removeSymLink(testSymLinkPath);
@@ -173,4 +185,9 @@ describe('removePlugin', () => {
       });
     });
   });
+});
+
+afterAll(() => {
+  // Remove temporary directory
+  fse.removeSync(tempDir);
 });
