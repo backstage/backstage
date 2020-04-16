@@ -38,9 +38,7 @@ async function main() {
     ? resolvePath(process.env.GITHUB_WORKSPACE)
     : resolvePath(__dirname, '..');
 
-  const tempDir = process.env.CI
-    ? resolvePath(__dirname)
-    : await generateTempDir();
+  const tempDir = process.env.CI ? process.cwd() : await generateTempDir();
 
   process.chdir(tempDir);
   await waitForExit(spawnPiped(['yarn', 'init --yes']));
