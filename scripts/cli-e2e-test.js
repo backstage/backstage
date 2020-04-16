@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+const os = require('os');
+const fs = require('fs-extra');
 const { resolve: resolvePath } = require('path');
 const Browser = require('zombie');
 
@@ -27,22 +29,25 @@ const {
 
 const createTestApp = require('./createTestApp');
 const createTestPlugin = require('./createTestPlugin');
-const generateTempDir = require('./generateTempDir.js');
 
 Browser.localhost('localhost', 3000);
+
+async function createTempDir() {
+  return fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
+}
 
 async function main() {
   process.env.BACKSTAGE_E2E_CLI_TEST = 'true';
 
-  const tempDir = process.env.CI ? process.cwd() : await generateTempDir();
+  const workDir = process.env.CI ? process.cwd() : await createTempDir();
 
   process.stdout.write(`Initial directory: ${process.cwd()}\n`);
-  process.chdir(tempDir);
-  process.stdout.write(`Temp directory: ${process.cwd()}\n`);
+  process.chdir(workDir);
+  process.stdout.write(`Working directory: ${process.cwd()}\n`);
 
   await createTestApp();
 
-  const appDir = resolvePath(tempDir, 'test-app');
+  const appDir = resolvePath(workDir, 'test-app');
   process.chdir(appDir);
   process.stdout.write(`App directory: ${appDir}\n`);
 
