@@ -58,8 +58,9 @@ jobs:
           node ${{ github.workspace }}/scripts/cli-e2e-test.js
       # This should lint and test both an app and a plugin
       - name: yarn lint, test after creation
-        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}/test-app
+        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
         run: |
+          cd test-app
           yarn lint:all
           yarn test:all
         env:
