@@ -60,9 +60,7 @@ jobs:
       - name: yarn lint, test after creation
         working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}/test-app
         run: |
-          pwd
-          ls -la
-          yarn lint
-          yarn test
+          yarn lint:all
+          yarn test:all
         env:
           CI: true
