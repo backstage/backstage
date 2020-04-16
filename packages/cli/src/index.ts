@@ -70,6 +70,7 @@ const main = (argv: string[]) => {
 
   program
     .command('watch-deps')
+    .option('--build', 'Build all dependencies on startup')
     .description('Watch all dependencies while running another command')
     .action(actionHandler(() => require('commands/watch-deps')));
 
