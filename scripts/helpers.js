@@ -129,9 +129,11 @@ function print(msg) {
   return process.stdout.write(`${msg}\n`);
 }
 
-module.exports.spawnPiped = spawnPiped;
-module.exports.handleError = handleError;
-module.exports.waitFor = waitFor;
-module.exports.waitForExit = waitForExit;
-module.exports.waitForPageWithText = waitForPageWithText;
-module.exports.print = print;
+module.exports = {
+  spawnPiped,
+  handleError,
+  waitFor,
+  waitForExit,
+  waitForPageWithText,
+  print,
+};
