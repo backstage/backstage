@@ -28,7 +28,7 @@ function color(data: number[], theme: BackstageTheme): string | undefined {
 }
 
 const Trendline: FC<SparklinesProps & { title?: string }> = props => {
-  const theme = useTheme<typeof BackstageTheme>();
+  const theme = useTheme<BackstageTheme>();
 
   if (!props.data) return null;
   return (
