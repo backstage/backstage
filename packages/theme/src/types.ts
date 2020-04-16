@@ -15,8 +15,12 @@
  */
 
 import { Theme, ThemeOptions } from '@material-ui/core';
+import {
+  PaletteOptions,
+  Palette,
+} from '@material-ui/core/styles/createPalette';
 
-export type BackstageMuiPalette = Theme['palette'] & {
+type PaletteAdditions = {
   status: {
     ok: string;
     warning: string;
@@ -38,6 +42,7 @@ export type BackstageMuiPalette = Theme['palette'] & {
   linkHover: string;
   link: string;
   gold: string;
+  sidebar: string;
   bursts: {
     fontColor: string;
     slackChannelText: string;
@@ -47,10 +52,13 @@ export type BackstageMuiPalette = Theme['palette'] & {
   };
 };
 
-export interface BackstageMuiTheme extends Theme {
-  palette: BackstageMuiPalette;
+export type BackstagePalette = Palette & PaletteAdditions;
+export type BackstagePaletteOptions = PaletteOptions & PaletteAdditions;
+
+export interface BackstageTheme extends Theme {
+  palette: BackstagePalette;
 }
 
-export interface BackstageMuiThemeOptions extends ThemeOptions {
-  palette: Partial<BackstageMuiPalette>;
+export interface BackstageThemeOptions extends ThemeOptions {
+  palette: BackstagePaletteOptions;
 }

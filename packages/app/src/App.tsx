@@ -20,7 +20,7 @@ import {
   Theme,
   ThemeProvider,
 } from '@material-ui/core';
-import { BackstageThemeLight, BackstageThemeDark } from '@backstage/theme';
+import { lightTheme, darkTheme } from '@backstage/theme';
 import { createApp } from '@backstage/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -53,30 +53,28 @@ app.registerApis(apis);
 app.registerPlugin(...Object.values(plugins));
 const AppComponent = app.build();
 
-type T = typeof BackstageThemeLight | typeof BackstageThemeDark;
-
 const App: FC<{}> = () => {
   useStyles();
   const [theme, toggleTheme] = useThemeType(
     localStorage.getItem('theme') || 'auto',
   );
 
-  let backstageTheme: T = BackstageThemeLight;
+  let backstageTheme = lightTheme;
   switch (theme) {
     case 'light':
-      backstageTheme = BackstageThemeLight;
+      backstageTheme = lightTheme;
       break;
     case 'dark':
-      backstageTheme = BackstageThemeDark;
+      backstageTheme = darkTheme;
       break;
     default:
       if (!window.matchMedia) {
-        backstageTheme = BackstageThemeLight;
+        backstageTheme = lightTheme;
         break;
       }
       backstageTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? BackstageThemeDark
-        : BackstageThemeLight;
+        ? darkTheme
+        : lightTheme;
       break;
   }
 
