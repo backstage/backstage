@@ -60,12 +60,17 @@ jobs:
           node ${{ github.workspace }}/scripts/cli-e2e-test.js
         env:
           BACKSTAGE_E2E_CLI_TEST: true
-      # This should lint and test both an app and a plugin
-      - name: yarn lint, test after creation
+      - name: lint newly created app and plugin
         working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
         run: |
           cd test-app
           yarn lint:all
+        env:
+          BACKSTAGE_E2E_CLI_TEST: true
+      - name: test newly created app and plugin
+        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
+        run: |
+          cd test-app
           yarn test:all
         env:
           BACKSTAGE_E2E_CLI_TEST: true
