@@ -6,6 +6,7 @@
 ![](https://github.com/spotify/backstage/workflows/Frontend%20CI/badge.svg)
 [![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/EBHEGzX)
 ![Code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
+[![](https://img.shields.io/npm/v/@backstage/core?label=Version)](https://github.com/spotify/backstage/releases)
 
 ## What is Backstage?
 
