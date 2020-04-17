@@ -15,7 +15,7 @@
  */
 
 import { spawn } from 'child_process';
-import { waitForExit } from 'helpers/run';
+import { waitForExit } from 'lib/run';
 import { watchDeps } from 'commands/watch-deps';
 import { createLogger } from 'commands/watch-deps/logger';
 

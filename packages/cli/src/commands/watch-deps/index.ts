@@ -21,8 +21,8 @@ import { findAllDeps } from './packages';
 import { startWatcher, startPackageWatcher } from './watcher';
 import { startCompiler } from './compiler';
 import { startChild } from './child';
-import { waitForExit, run } from 'helpers/run';
-import { paths } from 'helpers/paths';
+import { waitForExit, run } from 'lib/run';
+import { paths } from 'lib/paths';
 import { Command } from 'commander';
 
 const PACKAGE_BLACKLIST = [

@@ -15,7 +15,7 @@
  */
 
 import { Command } from 'commander';
-import { run } from 'helpers/run';
+import { run } from 'lib/run';
 
 export default async (cmd: Command) => {
   const args = ['lint', '--max-warnings=0', '--format=codeframe'];

@@ -15,8 +15,8 @@
  */
 
 import { Command } from 'commander';
-import { paths } from 'helpers/paths';
-import { runCheck } from 'helpers/run';
+import { paths } from 'lib/paths';
+import { runCheck } from 'lib/run';
 
 function includesAnyOf(hayStack: string[], ...needles: string[]) {
   for (const needle of needles) {

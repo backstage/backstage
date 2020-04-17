@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { Command } from 'commander';
-import { run } from 'helpers/run';
+import { run } from 'lib/run';
 import { Cache } from './cache';
 import { parseOptions, Options } from './options';
 
