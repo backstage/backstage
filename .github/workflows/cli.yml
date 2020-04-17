@@ -41,31 +41,27 @@ jobs:
       - name: yarn install
         run: yarn install --frozen-lockfile
       - run: yarn build
-      # generate temp directory
-      - name: generate tempdir
-        id: generate_tempdir
-        run: echo "::set-output name=tempdir::$(node scripts/generateTempDir.js)"
-        # This creates a new app and plugin which pollutes the workspace, so it should be run last.
       - name: verify app and plugin creation on Windows
-        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
+        working-directory: ${{ runner.temp }}
         if: runner.os == 'Windows'
-        run: node ${{ github.workspace }}/scripts/cli-e2e-test.js
+        run: node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
         env:
           BACKSTAGE_E2E_CLI_TEST: true
       - name: verify app and plugin creation on Linux
-        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
+        working-directory: ${{ runner.temp }}
         if: runner.os == 'Linux'
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
-          node ${{ github.workspace }}/scripts/cli-e2e-test.js
+          node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
         env:
           BACKSTAGE_E2E_CLI_TEST: true
-      # This should lint and test both an app and a plugin
-      - name: yarn lint, test after creation
-        working-directory: ${{ steps.generate_tempdir.outputs.tempdir }}
-        run: |
-          cd test-app
-          yarn lint:all
-          yarn test:all
+      - name: lint newly created app and plugin
+        run: yarn lint:all
+        working-directory: ${{ runner.temp }}/test-app
+        env:
+          BACKSTAGE_E2E_CLI_TEST: true
+      - name: test newly created app and plugin
+        run: yarn test:all
+        working-directory: ${{ runner.temp }}/test-app
         env:
           BACKSTAGE_E2E_CLI_TEST: true

@@ -13,21 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { AlphaLabel } from './Lifecycle';
+import TrendLine from '.';
 
 export default {
-  title: 'Lifecycle - Alpha',
-  component: AlphaLabel,
+  title: 'TrendLine',
+  component: TrendLine,
 };
 
+const width = 140;
+
 export const Default = () => (
-  <>
-    This feature is in <AlphaLabel />
-  </>
+  <div style={{ width }}>
+    <TrendLine data={[0.1, 0.7, 0.5, 0.8]} title="Trend over time" />
+  </div>
 );
-export const Shorthand = () => (
-  <>
-    This feature is in <AlphaLabel isShorthand />
-  </>
+
+export const TrendingUp = () => (
+  <div style={{ width }}>
+    <TrendLine data={[0.1, 0.5, 0.9, 1.0]} title="Trend over time" />
+  </div>
+);
+
+export const TrendingDown = () => (
+  <div style={{ width }}>
+    <TrendLine data={[0.8, 0.7, 0.5, 0.1]} title="Trend over time" />
+  </div>
 );
