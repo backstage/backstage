@@ -97,6 +97,10 @@ Take a look at the [Getting Started](docs/getting-started/README.md) guide to le
 
 Or, if you are an open source developer and are interested in joining our team, please reach out to [foss-opportunities@spotify.com ](mailto:foss-opportunities@spotify.com)
 
+## Contributing
+
+We would love your help in building Backstage! See [CONTRIBUTING](CONTRIBUTING.md) for more information.
+
 ## License
 
 Copyright 2020 Spotify AB.
