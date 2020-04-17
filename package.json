@@ -15,6 +15,7 @@
     "lint:all": "lerna run lint --",
     "docker-build": "yarn bundle && docker build . -t spotify/backstage",
     "create-plugin": "backstage-cli create-plugin",
+    "remove-plugin": "backstage-cli remove-plugin",
     "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push; fi",
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start"

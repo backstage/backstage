@@ -45,6 +45,13 @@ const main = (argv: string[]) => {
     );
 
   program
+    .command('remove-plugin')
+    .description('Removes plugin in the current repository')
+    .action(
+      actionHandler(() => require('commands/remove-plugin/removePlugin')),
+    );
+
+  program
     .command('plugin:build')
     .option('--watch', 'Enable watch mode')
     .description('Build a plugin')

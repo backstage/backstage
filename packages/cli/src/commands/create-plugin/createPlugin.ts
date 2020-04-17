@@ -65,10 +65,13 @@ const sortObjectByKeys = (obj: { [name in string]: string }) => {
     }, {} as { [name in string]: string });
 };
 
-const capitalize = (str: string): string =>
+export const capitalize = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
-const addExportStatement = async (file: string, exportStatement: string) => {
+export const addExportStatement = async (
+  file: string,
+  exportStatement: string,
+) => {
   const newContents = fs
     .readFileSync(file, 'utf8')
     .split('\n')
