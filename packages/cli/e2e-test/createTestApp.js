@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+const { resolve: resolvePath } = require('path');
 const { spawnPiped, waitFor, waitForExit, print } = require('./helpers');
 
-async function createTestApp(cmd) {
+async function createTestApp() {
+  const cliPath = resolvePath(__dirname, '../bin/backstage-cli');
+
   print('Creating a Backstage App');
-  const createApp = spawnPiped(['node', cmd]);
+  const createApp = spawnPiped(['node', cliPath, 'create-app']);
 
   try {
     let stdout = '';

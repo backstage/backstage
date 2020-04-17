@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-const { handleError } = require('./helpers');
-
-async function generateTempDir() {
-  const tempDir = await require('fs-extra').mkdtemp(
-    require('path').join(require('os').tmpdir(), 'backstage-e2e-'),
-  );
-  process.stdout.write(tempDir);
-  return tempDir;
-}
-
-module.exports = generateTempDir;
-
-process.on('unhandledRejection', handleError);
-generateTempDir().catch(handleError);
+module.exports = {
+  rules: {
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: true,
+        optionalDependencies: true,
+        peerDependencies: true,
+        bundledDependencies: true,
+      },
+    ],
+  },
+};

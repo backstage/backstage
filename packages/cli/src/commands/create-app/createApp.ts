@@ -86,26 +86,22 @@ export async function moveApp(
   });
 }
 
-async function addPackageResolutions(rootDir: string, appDir: string) {
-  process.chdir(appDir);
-
-  const packageFileContent = await fs.readFile('package.json', 'utf-8');
+async function addPackageResolutions(appDir: string) {
+  const pkgJsonPath = resolvePath(appDir, 'package.json');
+  const packageFileContent = await fs.readFile(pkgJsonPath, 'utf-8');
   const packageFileJson = JSON.parse(packageFileContent);
 
-  if (packageFileJson.resolutions) {
-    throw new Error('package.json already contains resolutions');
-  }
-  packageFileJson.resolutions = {};
+  packageFileJson.resolutions = packageFileJson.resolutions || {};
 
   const packages = ['cli', 'core', 'test-utils', 'test-utils-core', 'theme'];
 
   for (const pkg of packages) {
     await Task.forItem('adding', `${pkg} link to package.json`, async () => {
-      const pkgPath = require('path').join(rootDir, 'packages', pkg);
+      const pkgPath = paths.resolveOwnRoot('packages', pkg);
       packageFileJson.resolutions[`@backstage/${pkg}`] = `file:${pkgPath}`;
       const newContents = `${JSON.stringify(packageFileJson, null, 2)}\n`;
 
-      await fs.writeFile('package.json', newContents, 'utf-8').catch(error => {
+      await fs.writeFile(pkgJsonPath, newContents, 'utf-8').catch(error => {
         throw new Error(
           `Failed to add resolutions to package.json: ${error.message}`,
         );
@@ -157,10 +153,7 @@ export default async () => {
     // e2e testing needs special treatment
     if (process.env.BACKSTAGE_E2E_CLI_TEST) {
       Task.section('Linking packages locally for e2e tests');
-      const rootDir = process.env.CI
-        ? resolvePath(process.env.GITHUB_WORKSPACE!)
-        : resolvePath(__dirname, '..', '..', '..');
-      await addPackageResolutions(rootDir, appDir);
+      await addPackageResolutions(appDir);
     }
 
     Task.section('Building the app');
