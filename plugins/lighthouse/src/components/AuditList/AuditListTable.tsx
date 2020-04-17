@@ -24,6 +24,7 @@ import {
   TableRow,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { TrendLine } from '@backstage/core';
 
 import {
   Audit,
@@ -32,7 +33,6 @@ import {
   Website,
 } from '../../api';
 import { formatTime } from '../../utils';
-import CategoryTrendline from '../CategoryTrendline';
 import AuditStatusIcon from '../AuditStatusIcon';
 
 export const CATEGORIES: LighthouseCategoryId[] = [
@@ -132,7 +132,7 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
                   key={`${website.url}|${category}`}
                   className={classes.sparklinesCell}
                 >
-                  <CategoryTrendline
+                  <TrendLine
                     title={`trendline for ${CATEGORY_LABELS[category]} category of ${website.url}`}
                     data={categorySparklines[website.url][category] || []}
                   />

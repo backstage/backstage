@@ -17,7 +17,7 @@ import React from 'react';
 import { BetaLabel } from './Lifecycle';
 
 export default {
-  title: 'Beta Lifecycle',
+  title: 'Lifecycle - Beta',
   component: BetaLabel,
 };
 

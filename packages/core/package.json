@@ -39,6 +39,7 @@
     "react-dom": "^16.12.0",
     "react-helmet": "5.2.1",
     "react-router-dom": "^5.1.2",
+    "react-sparklines": "^1.7.0",
     "recompose": "0.30.0"
   },
   "devDependencies": {
@@ -49,6 +50,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@types/react-sparklines": "^1.7.0",
     "react-router": "^5.1.2"
   },
   "peerDependencies": {
