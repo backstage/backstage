@@ -10,21 +10,19 @@ Contributions are welcome, and they are greatly appreciated! Every little bit he
 
 ## Report bugs
 
-Report bugs at https://github.com/spotify/backstage/issues.
+No one likes bugs. Report bugs as an issue [here](https://github.com/spotify/backstage/issues/new?template=bug_template.md).
 
 ## Fix bugs or build new features
 
 Look through the GitHub issues for [bugs](https://github.com/spotify/backstage/labels/bugs), [good first issues](https://github.com/spotify/backstage/labels/good%20first%20issue) or [help wanted](https://github.com/spotify/backstage/labels/help%20wanted).
 
-## Build a Plugin
+## Build a plugin
 
-The value of Backstage grows with every new Plugin that gets added. Wouldn't it be fantastic if there was a Plugin for every infrastructure projects out there? We think so. And we would love your help.
+The value of Backstage grows with every new plugin that gets added. Wouldn't it be fantastic if there was a plugin for every infrastructure project out there? We think so. And we would love your help.
 
-What kind of Plugins should/could be created? Some inspiration from the 120+ Plugins that we have developed inside Spotify can be found [here](https://backstage.io/demos), but the we will keep a running list of suggestions labeled with `[plugin]`:
+What kind of plugins should/could be created? Some inspiration from the 120+ plugins that we have developed inside Spotify can be found [here](https://backstage.io/demos), but the we will keep a running list of suggestions labeled with [[plugin]](https://github.com/spotify/backstage/labels/plugin):
 
-https://github.com/spotify/backstage/labels/plugin
-
-A great reference example of a Plugin can be found here https://backstage.io/blog/2020/04/06/lighthouse-plugin (thanks [@fastfrwrd](https://github.com/fastfrwrd)!)
+A great reference example of a plugin can be found on [our blog](https://backstage.io/blog/2020/04/06/lighthouse-plugin) (thanks [@fastfrwrd](https://github.com/fastfrwrd)!)
 
 ## Write Documentation
 
@@ -32,13 +30,13 @@ The current documentation is very limited. Help us make the `/docs` folder come 
 
 ## Contribute to Storybook
 
-We think the best way to ensure different Plugins provide a consistent experience is through a solid set of reusable UI/UX components. Backstage uses [Storybook](http://storybook.backstage.io).
+We think the best way to ensure different plugins provide a consistent experience is through a solid set of reusable UI/UX components. Backstage uses [Storybook](http://storybook.backstage.io).
 
 Either help us [create new components](https://github.com/spotify/backstage/labels/help%20wanted) or improve stories for the existing ones (look for files with `*.stories.tsx`).
 
 ## Submit Feedback
 
-The best way to send feedback is to file an issue at https://github.com/spotify/backstage/issues.
+The best way to send feedback is to file [an issue](https://github.com/spotify/backstage/issues).
 
 If you are proposing a feature:
 
@@ -62,4 +60,4 @@ This project adheres to the [Spotify FOSS Code of Conduct][code-of-conduct]. By 
 
 # Security Issues?
 
-Please report sensitive security issues via Spotify's bug-bounty program (https://hackerone.com/spotify) rather than GitHub.
+Please report sensitive security issues via Spotify's [bug-bounty program](https://hackerone.com/spotify) rather than GitHub.
