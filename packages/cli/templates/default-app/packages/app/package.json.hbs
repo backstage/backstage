@@ -31,8 +31,8 @@
     "bundle": "backstage-cli app:build",
     "test": "backstage-cli test",
     "lint": "backstage-cli lint",
-    "test:e2e": "start-server-and-test start http://localhost:3000 cy:dev",
-    "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run",
+    "test:e2e": "PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
+    "test:e2e:ci": "PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
     "cy:dev": "cypress open",
     "cy:run": "cypress run"
   },
