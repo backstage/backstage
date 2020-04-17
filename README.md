@@ -59,23 +59,25 @@ To run a Backstage app, you will need to have the following installed:
 - [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
 - [yarn](https://classic.yarnpkg.com/en/docs/install)
 
-Open a terminal window and start the web app using the following commands from the project root:
+After cloning this repo, open a terminal window and start the web app using the following commands from the project root:
 
 ```bash
-$ yarn install # may take a while
-
-$ yarn start
+yarn install
+yarn start
 ```
 
 The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
 
-For more complex development environment configuration, see the
-[Development Environment](docs/getting-started/development-environment.md) section of the Getting Started docs.
+And thats it! You are good to go 👍
+
+### Next step
+
+Take a look at the [Getting Started](docs/getting-started/README.md) guide to learn more about how to extend the functionality with Plugins.
 
 ## Documentation
 
-- [FAQs](docs/FAQ.md)
 - [Getting Started](docs/getting-started/README.md)
+- [Create a Backstage App](docs/create-an-app.md)
 - [Architecture](docs/architecture-terminology.md)
 - [API references](docs/reference/README.md)
 - [Designing for Backstage](docs/design.md)
@@ -94,6 +96,10 @@ For more complex development environment configuration, see the
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
 
 Or, if you are an open source developer and are interested in joining our team, please reach out to [foss-opportunities@spotify.com ](mailto:foss-opportunities@spotify.com)
+
+## Contributing
+
+We would love your help in building Backstage! See [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## License
 

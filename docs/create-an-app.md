@@ -17,7 +17,7 @@ npx @backstage/cli create-app
 This will create a new Backstage App inside the current folder. The name of the app-folder is the name that was provided when prompted.
 
 <p align='center'>
-    <img src='https://github.com/spotify/backstage/raw/master/docs/getting-started/create-app_output.png' width='600' alt='create app'>
+    <img src='https://github.com/spotify/backstage/raw/master/docs/create-app_output.png' width='600' alt='create app'>
 </p>
 
 Inside that directory, it will generate all the files and folder structure needed for you to run your app.
@@ -70,7 +70,3 @@ yarn start
 ```
 
 _When `yarn start` is ready it should open up a browser window displaying your app, if not you can navigate to `http://localhost:3000`._
-
-[Next Step - Create a Backstage plugin](create-a-plugin.md)
-
-[Back to Docs](README.md)
