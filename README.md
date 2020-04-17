@@ -86,6 +86,10 @@ Take a look at the [Getting Started](docs/getting-started/README.md) guide to le
 - [Contributing to Storybook](docs/getting-started/contributing-to-storybook.md)
 - Using Backstage components (TODO)
 
+## Contributing
+
+We would love your help in building Backstage! See [CONTRIBUTING](CONTRIBUTING.md) for more information.
+
 ## Community
 
 - [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the project
@@ -97,10 +101,6 @@ Take a look at the [Getting Started](docs/getting-started/README.md) guide to le
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
 
 Or, if you are an open source developer and are interested in joining our team, please reach out to [foss-opportunities@spotify.com ](mailto:foss-opportunities@spotify.com)
-
-## Contributing
-
-We would love your help in building Backstage! See [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## License
 
