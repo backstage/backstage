@@ -18,7 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { IconButton, Tooltip, withStyles } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopy';
-import { errorApiRef, useApi } from '../api';
+import { errorApiRef, useApi } from '../../api';
 
 const buttonStyles = theme => ({
   button: {

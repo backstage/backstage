@@ -15,9 +15,10 @@
  */
 
 import React, { FC } from 'react';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip, useTheme } from '@material-ui/core';
 // @ts-ignore
 import { Line } from 'rc-progress';
+import { BackstageTheme } from '@backstage/theme';
 import { getProgressColor } from './CircleProgress';
 
 type Props = {
@@ -35,7 +36,8 @@ const HorizontalProgress: FC<Props> = ({ value }) => {
   if (percent > 100) {
     percent = 100;
   }
-  const strokeColor = getProgressColor(percent, false, 100);
+  const theme = useTheme<BackstageTheme>();
+  const strokeColor = getProgressColor(theme.palette, percent, false, 100);
   return (
     <Tooltip title={`${percent}%`}>
       <Line
