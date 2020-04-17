@@ -20,7 +20,7 @@ import React, { FC, useRef, useState } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles<typeof BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     zIndex: 1000,
     position: 'relative',

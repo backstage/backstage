@@ -34,6 +34,7 @@ export { AlphaLabel, BetaLabel } from './components/Lifecycle';
 export { default as SupportButton } from './components/SupportButton';
 export { default as SortableTable } from './components/SortableTable';
 export { default as StructuredMetadataTable } from './components/StructuredMetadataTable';
+export { default as TrendLine } from './components/TrendLine';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
 export * from './components/Status';
 export { default as WarningPanel } from './components/WarningPanel';

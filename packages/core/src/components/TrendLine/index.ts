@@ -13,21 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { AlphaLabel } from './Lifecycle';
 
-export default {
-  title: 'Lifecycle - Alpha',
-  component: AlphaLabel,
-};
-
-export const Default = () => (
-  <>
-    This feature is in <AlphaLabel />
-  </>
-);
-export const Shorthand = () => (
-  <>
-    This feature is in <AlphaLabel isShorthand />
-  </>
-);
+export { default } from './TrendLine';

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core",
   "description": "Core API used by Backstage plugins and apps",
-  "version": "0.1.1-alpha.3",
+  "version": "0.1.1-alpha.4",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -21,7 +21,8 @@
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test"
+    "test": "backstage-cli test", 
+    "clean": "backstage-cli clean"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.1",
@@ -39,16 +40,18 @@
     "react-dom": "^16.12.0",
     "react-helmet": "5.2.1",
     "react-router-dom": "^5.1.2",
+    "react-sparklines": "^1.7.0",
     "recompose": "0.30.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.3",
-    "@backstage/test-utils-core": "^0.1.1-alpha.3",
-    "@backstage/theme": "^0.1.1-alpha.3",
-    "@storybook/addon-storysource": "^5.3.18",
+    "@backstage/cli": "^0.1.1-alpha.4",
+    "@backstage/test-utils": "0.1.1-alpha.4",
+    "@backstage/test-utils-core": "^0.1.1-alpha.4",
+    "@backstage/theme": "^0.1.1-alpha.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@types/react-sparklines": "^1.7.0",
     "react-router": "^5.1.2"
   },
   "peerDependencies": {

@@ -45,6 +45,13 @@ const main = (argv: string[]) => {
     );
 
   program
+    .command('remove-plugin')
+    .description('Removes plugin in the current repository')
+    .action(
+      actionHandler(() => require('commands/remove-plugin/removePlugin')),
+    );
+
+  program
     .command('plugin:build')
     .option('--watch', 'Enable watch mode')
     .description('Build a plugin')
@@ -70,6 +77,7 @@ const main = (argv: string[]) => {
 
   program
     .command('watch-deps')
+    .option('--build', 'Build all dependencies on startup')
     .description('Watch all dependencies while running another command')
     .action(actionHandler(() => require('commands/watch-deps')));
 
@@ -89,6 +97,11 @@ const main = (argv: string[]) => {
       '<repoRoot>/node_modules/.cache/backstage-builds',
     )
     .action(actionHandler(() => require('commands/build-cache')));
+
+  program
+    .command('clean')
+    .description('Delete cache directories')
+    .action(actionHandler(() => require('commands/clean/clean')));
 
   program.on('command:*', () => {
     console.log();

@@ -86,6 +86,30 @@ export async function moveApp(
   });
 }
 
+async function addPackageResolutions(appDir: string) {
+  const pkgJsonPath = resolvePath(appDir, 'package.json');
+  const packageFileContent = await fs.readFile(pkgJsonPath, 'utf-8');
+  const packageFileJson = JSON.parse(packageFileContent);
+
+  packageFileJson.resolutions = packageFileJson.resolutions || {};
+
+  const packages = ['cli', 'core', 'test-utils', 'test-utils-core', 'theme'];
+
+  for (const pkg of packages) {
+    await Task.forItem('adding', `${pkg} link to package.json`, async () => {
+      const pkgPath = paths.resolveOwnRoot('packages', pkg);
+      packageFileJson.resolutions[`@backstage/${pkg}`] = `file:${pkgPath}`;
+      const newContents = `${JSON.stringify(packageFileJson, null, 2)}\n`;
+
+      await fs.writeFile(pkgJsonPath, newContents, 'utf-8').catch(error => {
+        throw new Error(
+          `Failed to add resolutions to package.json: ${error.message}`,
+        );
+      });
+    });
+  }
+}
+
 export default async () => {
   const questions: Question[] = [
     {
@@ -126,6 +150,12 @@ export default async () => {
     Task.section('Moving to final location');
     await moveApp(tempDir, appDir, answers.name);
 
+    // e2e testing needs special treatment
+    if (process.env.BACKSTAGE_E2E_CLI_TEST) {
+      Task.section('Linking packages locally for e2e tests');
+      await addPackageResolutions(appDir);
+    }
+
     Task.section('Building the app');
     await buildApp(appDir);
 
@@ -134,6 +164,7 @@ export default async () => {
       chalk.green(`🥇  Successfully created ${chalk.cyan(answers.name)}`),
     );
     Task.log();
+    Task.exit();
   } catch (error) {
     Task.error(error.message);
 
@@ -143,5 +174,6 @@ export default async () => {
     Task.section('Cleanup');
     await cleanUp(tempDir);
     Task.error('🔥  Failed to create app!');
+    Task.exit(1);
   }
 };
