@@ -26,6 +26,9 @@
     "clean": "backstage-cli clean",
     "start": "nodemon ."
   },
+  "bin": {
+    "backstage-cli": "bin/backstage-cli"
+  },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
     "@types/html-webpack-plugin": "^3.2.2",
@@ -44,9 +47,6 @@
     "ts-node": "^8.6.2",
     "tsconfig-paths": "^3.9.0",
     "zombie": "^6.1.4"
-  },
-  "bin": {
-    "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
     "@lerna/package-graph": "^3.18.5",
@@ -67,6 +67,7 @@
     "html-webpack-plugin": "^3.2.0",
     "inquirer": "^7.0.4",
     "ora": "^4.0.3",
+    "react": "^16.0.0",
     "react-dev-utils": "^10.2.0",
     "react-scripts": "^3.4.1",
     "recursive-readdir": "^2.2.2",
@@ -80,9 +81,6 @@
     "ts-loader": "^6.2.1",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3"
-  },
-  "peerDependencies": {
-    "react": "^16.0.0"
   },
   "files": [
     "templates",

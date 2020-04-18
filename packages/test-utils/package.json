@@ -21,26 +21,17 @@
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test", 
+    "test": "backstage-cli test",
     "clean": "backstage-cli clean"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.4",
-    "@backstage/theme": "^0.1.1-alpha.4",
-    "@material-ui/core": "^4.9.1",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
+    "@backstage/test-utils-core": "^0.1.1-alpha.4",
     "@types/jest": "^24.0.0",
-    "@types/node": "^12.0.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-router": "^5.1.2",
-    "react-router-dom": "^5.1.2"
+    "@types/node": "^12.0.0"
   },
-  "peerDependencies": {
-    "@backstage/test-utils-core": "^0.1.1-alpha.3",
-    "@backstage/theme": "^0.1.1-alpha.3",
+  "dependencies": {
+    "@backstage/theme": "^0.1.1-alpha.4",
     "@material-ui/core": "^4.9.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
