@@ -14,71 +14,11 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import fs from 'fs-extra';
-import { createLogPipeFactory } from './logger';
-import { findAllDeps } from './packages';
-import { startWatcher, startPackageWatcher } from './watcher';
-import { startCompiler } from './compiler';
-import { startChild } from './child';
-import { waitForExit, run } from 'lib/run';
-import { paths } from 'lib/paths';
+import { spawn } from 'child_process';
 import { Command } from 'commander';
-
-const PACKAGE_BLACKLIST = [
-  // We never want to watch for changes in the cli, but all packages will depend on it.
-  '@backstage/cli',
-];
-
-const WATCH_LOCATIONS = ['package.json', 'src', 'assets'];
-
-export type Options = {
-  build?: boolean;
-};
-
-// Start watching for dependency changes.
-// The returned promise resolves when watchers have started for all current dependencies.
-export async function watchDeps(options: Options = {}) {
-  const localPackagePath = paths.resolveTarget('package.json');
-
-  // Rotate through different prefix colors to make it easier to differenciate between different deps
-  const createLogPipe = createLogPipeFactory([
-    chalk.yellow,
-    chalk.blue,
-    chalk.magenta,
-    chalk.green,
-    chalk.cyan,
-  ]);
-
-  // Find all direct and transitive local dependencies of the current package.
-  const packageData = await fs.readFile(localPackagePath, 'utf8');
-  const packageJson = JSON.parse(packageData);
-  const packageName = packageJson.name;
-
-  const deps = await findAllDeps(packageName, PACKAGE_BLACKLIST);
-
-  if (options.build) {
-    await run('lerna', [
-      'run',
-      '--scope',
-      packageName,
-      '--include-dependencies',
-      'build',
-    ]);
-  }
-
-  // We lazily watch all our deps, as in we don't start the actual watch compiler until a change is detected
-  const watcher = await startWatcher(deps, WATCH_LOCATIONS, pkg => {
-    startCompiler(pkg, createLogPipe(pkg.name)).promise.catch(error => {
-      process.stderr.write(`${error}\n`);
-    });
-  });
-
-  await startPackageWatcher(localPackagePath, async () => {
-    const newDeps = await findAllDeps(packageName, PACKAGE_BLACKLIST);
-    await watcher.update(newDeps);
-  });
-}
+import { waitForExit } from 'lib/run';
+import { createLogPipe } from 'lib/logging';
+import { watchDeps, Options } from 'lib/watchDeps';
 
 /*
  * The watch-deps command is meant to improve iteration speed while working in a large monorepo
@@ -99,6 +39,17 @@ export default async (cmd: Command, args: string[]) => {
   await watchDeps(options);
 
   if (args?.length) {
-    await waitForExit(startChild(args));
+    const child = spawn(args[0], args.slice(1), {
+      env: { FORCE_COLOR: 'true', ...process.env },
+      stdio: ['inherit', 'pipe', 'pipe'],
+      shell: true,
+    });
+
+    // Use log pipe to avoid clearing the terminal
+    const logPipe = createLogPipe();
+    child.stdout.on('data', logPipe(process.stdout));
+    child.stderr.on('data', logPipe(process.stderr));
+
+    await waitForExit(child);
   }
 };

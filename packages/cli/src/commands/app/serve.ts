@@ -16,8 +16,8 @@
 
 import { spawn } from 'child_process';
 import { waitForExit } from 'lib/run';
-import { watchDeps } from 'commands/watch-deps';
 import { createLogFunc } from 'lib/logging';
+import { watchDeps } from 'lib/watchDeps';
 
 export default async () => {
   // Start dynamic watch and build of dependencies, then serve the app
