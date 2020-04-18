@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": ["**/*.test.*"],
+  "compilerOptions": {
+    "outFile": "dist/index.js",
+    "module": "amd"
+  }
+}

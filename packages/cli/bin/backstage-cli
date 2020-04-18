@@ -75,7 +75,7 @@ if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
   const cleanupPaths = require('tsconfig-paths').register({ baseUrl, paths });
 
   require('ts-node').register({
-    project: path.resolve(__dirname, '../tsconfig.json'),
+    project: path.resolve(__dirname, '../tsconfig.build.json'),
     compilerOptions: {
       module: 'CommonJS',
     },
