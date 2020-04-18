@@ -18,6 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInThemedTestApp } from '@backstage/test-utils';
 import CopyTextButton from './CopyTextButton';
+import { ApiRegistry, errorApiRef, ApiProvider } from 'api';
 
 const props = {
   text: 'mockText',
@@ -25,10 +26,25 @@ const props = {
   tooltipText: 'mockTooltip',
 };
 
+const apiRegistry = ApiRegistry.from([
+  [
+    errorApiRef,
+    {
+      post(error) {
+        throw error;
+      },
+    },
+  ],
+]);
+
 describe('<CopyTextButton />', () => {
   it('renders without exploding', () => {
     const { getByDisplayValue } = render(
-      wrapInThemedTestApp(<CopyTextButton {...props} />),
+      wrapInThemedTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <CopyTextButton {...props} />
+        </ApiProvider>,
+      ),
     );
     getByDisplayValue('mockText');
   });
@@ -38,7 +54,13 @@ describe('<CopyTextButton />', () => {
   it.skip('displays tooltip on click', () => {
     const spy = jest.fn();
     Object.defineProperty(document, 'execCommand', { value: spy });
-    const rendered = render(wrapInThemedTestApp(<CopyTextButton {...props} />));
+    const rendered = render(
+      wrapInThemedTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <CopyTextButton {...props} />
+        </ApiProvider>,
+      ),
+    );
     const button = rendered.getByTitle('mockTooltip');
     button.click();
     expect(spy).toHaveBeenCalled();
