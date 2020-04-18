@@ -20,6 +20,17 @@ import { wrapInThemedTestApp } from '@backstage/test-utils';
 import CopyTextButton from './CopyTextButton';
 import { ApiRegistry, errorApiRef, ApiProvider } from 'api';
 
+jest.mock('popper.js', () => {
+  const PopperJS = jest.requireActual('popper.js');
+
+  return class {
+    static placements = PopperJS.placements;
+    update() {}
+    destroy() {}
+    scheduleUpdate() {}
+  };
+});
+
 const props = {
   text: 'mockText',
   tooltipDelay: 2,
@@ -49,11 +60,8 @@ describe('<CopyTextButton />', () => {
     getByDisplayValue('mockText');
   });
 
-  // stefanalund: FIXME: cannot figure out wht this test fails.
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('displays tooltip on click', () => {
-    const spy = jest.fn();
-    Object.defineProperty(document, 'execCommand', { value: spy });
+  it('displays tooltip on click', async () => {
+    document.execCommand = jest.fn();
     const rendered = render(
       wrapInThemedTestApp(
         <ApiProvider apis={apiRegistry}>
@@ -63,7 +71,7 @@ describe('<CopyTextButton />', () => {
     );
     const button = rendered.getByTitle('mockTooltip');
     button.click();
-    expect(spy).toHaveBeenCalled();
+    expect(document.execCommand).toHaveBeenCalled();
     rendered.getByText('mockTooltip');
   });
 });
