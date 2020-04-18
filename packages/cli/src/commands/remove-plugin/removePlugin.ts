@@ -17,7 +17,7 @@ import fse from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
-import { getCodeownersFilePath } from '../create-plugin/lib/codeowners';
+import { getCodeownersFilePath } from 'lib/codeowners';
 import { paths } from 'lib/paths';
 import { Task } from 'lib/tasks';
 // import os from 'os';

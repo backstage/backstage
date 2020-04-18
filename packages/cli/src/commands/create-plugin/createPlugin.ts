@@ -25,7 +25,7 @@ import {
   parseOwnerIds,
   addCodeownersEntry,
   getCodeownersFilePath,
-} from './lib/codeowners';
+} from 'lib/codeowners';
 import { paths } from 'lib/paths';
 import { version } from 'lib/version';
 import { Task, templatingTask } from 'lib/tasks';

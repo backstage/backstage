@@ -23,7 +23,7 @@ import {
   capitalize,
   createTemporaryPluginFolder,
 } from '../create-plugin/createPlugin';
-import { addCodeownersEntry } from '../create-plugin/lib/codeowners';
+import { addCodeownersEntry } from 'lib/codeowners';
 import {
   removeReferencesFromAppPackage,
   removeReferencesFromPluginsFile,
