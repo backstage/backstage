@@ -17,7 +17,7 @@
 import { spawn } from 'child_process';
 import { waitForExit } from 'lib/run';
 import { watchDeps } from 'commands/watch-deps';
-import { createLogger } from 'commands/watch-deps/logger';
+import { createLogFunc } from 'lib/logging';
 
 export default async () => {
   // Start dynamic watch and build of dependencies, then serve the app
@@ -35,8 +35,6 @@ export default async () => {
   });
 
   // We need to avoid clearing the terminal, or the build feedback of dependencies will be lost
-  const log = createLogger();
-  child.stdout.setEncoding('utf8');
-  child.stdout!.on('data', log.out);
+  child.stdout.on('data', createLogFunc(process.stdout));
   await waitForExit(child);
 };

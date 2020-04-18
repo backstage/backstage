@@ -15,8 +15,7 @@
  */
 
 import { spawn } from 'child_process';
-
-import { createLogger } from './logger';
+import { createLogPipe } from 'lib/logging';
 
 export function startChild(args: string[]) {
   const [command, ...commandArgs] = args;
@@ -27,12 +26,8 @@ export function startChild(args: string[]) {
   });
 
   // We need to avoid clearing the terminal, or the build feedback of dependencies will be lost
-  const log = createLogger();
-  child.stdout!.on('data', (data: Buffer) => {
-    log.out(data.toString('utf8'));
-  });
-  child.stderr!.on('data', data => {
-    log.err(data.toString('utf8'));
-  });
+  const logPipe = createLogPipe();
+  child.stdout.on('data', logPipe(process.stdout));
+  child.stderr.on('data', logPipe(process.stderr));
   return child;
 }

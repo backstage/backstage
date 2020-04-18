@@ -16,7 +16,7 @@
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { createLoggerFactory } from './logger';
+import { createLogPipeFactory } from './logger';
 import { findAllDeps } from './packages';
 import { startWatcher, startPackageWatcher } from './watcher';
 import { startCompiler } from './compiler';
@@ -42,7 +42,7 @@ export async function watchDeps(options: Options = {}) {
   const localPackagePath = paths.resolveTarget('package.json');
 
   // Rotate through different prefix colors to make it easier to differenciate between different deps
-  const logFactory = createLoggerFactory([
+  const createLogPipe = createLogPipeFactory([
     chalk.yellow,
     chalk.blue,
     chalk.magenta,
@@ -69,7 +69,7 @@ export async function watchDeps(options: Options = {}) {
 
   // We lazily watch all our deps, as in we don't start the actual watch compiler until a change is detected
   const watcher = await startWatcher(deps, WATCH_LOCATIONS, pkg => {
-    startCompiler(pkg, logFactory(pkg.name)).promise.catch(error => {
+    startCompiler(pkg, createLogPipe(pkg.name)).promise.catch(error => {
       process.stderr.write(`${error}\n`);
     });
   });
