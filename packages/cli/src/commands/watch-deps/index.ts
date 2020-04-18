@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { spawn } from 'child_process';
 import { Command } from 'commander';
-import { waitForExit } from 'lib/run';
+import { run } from 'lib/run';
 import { createLogPipe } from 'lib/logging';
 import { watchDeps, Options } from 'lib/watchDeps';
 
@@ -39,17 +38,12 @@ export default async (cmd: Command, args: string[]) => {
   await watchDeps(options);
 
   if (args?.length) {
-    const child = spawn(args[0], args.slice(1), {
-      env: { FORCE_COLOR: 'true', ...process.env },
-      stdio: ['inherit', 'pipe', 'pipe'],
-      shell: true,
-    });
-
     // Use log pipe to avoid clearing the terminal
     const logPipe = createLogPipe();
-    child.stdout.on('data', logPipe(process.stdout));
-    child.stderr.on('data', logPipe(process.stderr));
 
-    await waitForExit(child);
+    await run(args[0], args.slice(1), {
+      stdoutLogFunc: logPipe(process.stdout),
+      stderrLogFunc: logPipe(process.stderr),
+    });
   }
 };
