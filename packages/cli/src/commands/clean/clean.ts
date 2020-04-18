@@ -16,8 +16,8 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, relative as relativePath } from 'path';
-import { getDefaultCacheOptions } from 'commands/build-cache/options';
 import { paths } from 'lib/paths';
+import { getDefaultCacheOptions } from 'lib/buildCache';
 
 export default async function clean() {
   const cacheOptions = getDefaultCacheOptions();

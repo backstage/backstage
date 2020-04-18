@@ -14,19 +14,5 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { run } from 'lib/run';
-import { withCache, parseOptions } from 'lib/buildCache';
-
-/*
- * The build-cache command is used to make builds a no-op if there are no changes to the package.
- * It supports both local development where the output directory remains intact, as well as CI
- * where the output directory is stored in a separate cache dir.
- */
-export default async (cmd: Command, args: string[]) => {
-  const options = await parseOptions(cmd);
-
-  await withCache(options, async () => {
-    await run(args[0], args.slice(1));
-  });
-};
+export * from './withCache';
+export * from './options';
