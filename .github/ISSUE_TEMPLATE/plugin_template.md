@@ -6,7 +6,7 @@ labels: plugin
 ---
 
 <!--- Thanks for suggesting a new plugin! -->
-<!--- If you plan to work on this plugin, please Assign yourself or your team member(s). If not, please add the 'help wanted' label -->
+<!--- If you plan to work on this plugin, please Assign yourself or your team member(s) -->
 
 ## Summary
 
