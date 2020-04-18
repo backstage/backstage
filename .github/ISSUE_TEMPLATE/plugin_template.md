@@ -5,9 +5,12 @@ title: '[Plugin] THE PLUGIN NAME'
 labels: plugin
 ---
 
+<!--- Thanks for suggesting a new plugin! -->
+<!--- If you plan to work on this plugin, please Assign yourself or your team member(s). If not, please add the 'help wanted' label -->
+
 ## Summary
 
-<!--- Provide a general summary of the plugin in the Title above -->
+<!--- Provide a general summary of the plugin and how it should work -->
 
 ## Project website (if applicable)
 
