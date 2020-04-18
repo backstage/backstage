@@ -43,7 +43,7 @@ Our vision for Backstage is for it to become the trusted standard toolbox (read:
 The Backstage platform consists of a number of different components:
 
 - **app** - Main web application that users interact with. It's built up by a number of different _Plugins_. This repo contains an example implementation of an app (located in `packages/example-app`) and you can easily get started with your own app by [creating one](docs/create-an-app.md).
-- **plugins** - Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform API's and reusable UI components. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
+- [**plugins**](https://github.com/spotify/backstage/tree/master/plugins) - Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform API's and reusable UI components. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
 - **backend** \* - GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
 - **proxy** \* - Terminates HTTPS and exposes any RESTful API to Plugins.
 - **identity** \* - A backend service that holds your organisation's metadata.
