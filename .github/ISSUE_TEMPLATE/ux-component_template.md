@@ -20,8 +20,4 @@ labels: design
 
 ## 🔮 Future
 
-## <!--- Any upcoming, exciting functionality for this component in the future? List that out here. -->
-
-## -
-
-## -
+<!-- Any upcoming, exciting functionality for this component in the future? List that out here. -->
