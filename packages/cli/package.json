@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "main": "dist",
   "scripts": {
-    "build": "backstage-cli build-cache -- tsc",
+    "build": "backstage-cli build-cache -- tsc --project tsconfig.build.json",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "test:e2e": "node e2e-test/cli-e2e-test.js",

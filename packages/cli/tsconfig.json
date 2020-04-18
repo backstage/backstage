@@ -1,10 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src"],
-  "exclude": ["**/*.test.*"],
   "compilerOptions": {
-    "outFile": "dist/index.js",
-    "module": "amd",
     "baseUrl": "src"
   }
 }
