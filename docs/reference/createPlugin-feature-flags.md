@@ -35,7 +35,7 @@ import {
 } from '@backstage/core';
 
 const builder = ApiRegistry.builder();
-builder.add(featureFlagsApiRef, FeatureFlags);
+builder.add(featureFlagsApiRef, new FeatureFlags());
 
 export default builder.build() as ApiHolder;
 ```
