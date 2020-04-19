@@ -27,7 +27,7 @@ const errorOutlineStyles = theme => ({
 });
 const ErrorOutlineStyled = withStyles(errorOutlineStyles)(ErrorOutline);
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<typeof BackstageTheme>(theme => ({
   message: {
     display: 'flex',
     flexDirection: 'column',

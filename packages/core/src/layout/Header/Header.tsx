@@ -23,7 +23,7 @@ import { Theme } from 'layout/Page/Page';
 // import { Link } from 'shared/components';
 import Waves from './Waves';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<typeof BackstageTheme>(theme => ({
   header: {
     gridArea: 'pageHeader',
     padding: theme.spacing(3),
