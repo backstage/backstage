@@ -70,9 +70,9 @@ const main = (argv: string[]) => {
 
   program
     .command('test')
-    .option('--watch', 'Enable watch mode')
-    .option('--coverage', 'Report test coverage')
-    .description('Run all tests for package')
+    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
+    .helpOption(', --backstage-cli-help') // Let Jest handle help
+    .description('Run tests, forwarding args to Jest, defaulting to watch mode')
     .action(actionHandler(() => require('commands/testCommand')));
 
   program
