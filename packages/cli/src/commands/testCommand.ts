@@ -15,18 +15,47 @@
  */
 
 import { Command } from 'commander';
-import { run } from 'helpers/run';
 import { paths } from 'helpers/paths';
+import { runCheck } from 'helpers/run';
+
+function includesAnyOf(hayStack: string[], ...needles: string[]) {
+  for (const needle of needles) {
+    if (hayStack.includes(needle)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export default async (cmd: Command) => {
-  const args = ['test', '--config', paths.resolveOwn('config/jest.js')];
+  // all args are forwarded to jest
+  const rawArgs = cmd.parent.rawArgs as string[];
+  const args = rawArgs.slice(rawArgs.indexOf('test') + 1);
 
-  if (cmd.watch) {
-    args.push('--watch');
-  }
-  if (cmd.coverage) {
-    args.push('--coverage');
+  // Only include our config if caller isn't passing their own config
+  if (!includesAnyOf(args, '-c', '--config')) {
+    args.push('--config', paths.resolveOwn('config/jest.js'));
   }
 
-  await run('web-scripts', args, { stdio: 'inherit' });
+  // Run in watch mode unless in CI, coverage mode, or running all tests
+  if (
+    !process.env.CI &&
+    !args.includes('--coverage') &&
+    // explicitly no watching
+    !includesAnyOf(args, '--no-watch', '--watch=false', '--watchAll=false') &&
+    // already watching
+    !includesAnyOf(args, '--watch', '--watchAll')
+  ) {
+    const isGitRepo = () => runCheck('git rev-parse --is-inside-work-tree');
+    const isMercurialRepo = () => runCheck('hg --cwd . root');
+
+    if ((await isGitRepo()) || (await isMercurialRepo())) {
+      args.push('--watch');
+    } else {
+      args.push('--watchAll');
+    }
+  }
+
+  // eslint-disable-next-line jest/no-jest-import
+  await require('jest').run(args);
 };
