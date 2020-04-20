@@ -37,7 +37,6 @@
     "zombie": "^6.1.4"
   },
   "dependencies": {
-    "@backstage/core": "^0.1.1-alpha.4",
     "@types/classnames": "^2.2.9",
     "moment": "^2.24.0"
   },
