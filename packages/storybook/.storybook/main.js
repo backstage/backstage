@@ -9,6 +9,7 @@ module.exports = {
     '@storybook/addon-actions',
     '@storybook/addon-links',
     '@storybook/addon-storysource',
+    'storybook-dark-mode/register',
   ],
   webpackFinal: async config => {
     config.resolve.alias = {
