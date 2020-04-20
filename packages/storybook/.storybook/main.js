@@ -39,6 +39,10 @@ module.exports = {
       },
     );
     config.resolve.extensions.push('.ts', '.tsx');
+
+    // Disable ProgressPlugin which logs verbose webpack build progress. Warnings and Errors are still logged.
+    config.plugins = config.plugins.filter(({ constructor }) => constructor.name !== "ProgressPlugin")
+
     return config;
   },
 };
