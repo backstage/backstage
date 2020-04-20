@@ -65,3 +65,9 @@ jobs:
         working-directory: ${{ runner.temp }}/test-app
         env:
           BACKSTAGE_E2E_CLI_TEST: true
+      - name: e2e test newly created app
+        run: yarn test:e2e:ci
+        working-directory: ${{ runner.temp }}/test-app/packages/app
+        env:
+          PORT: 3001
+          BACKSTAGE_E2E_CLI_TEST: true
