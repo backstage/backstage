@@ -60,8 +60,8 @@ const GlobalFilter: FC<GlobalFilterProps> = ({
 };
 
 type TableProps = {
-  data: Array<{}>;
-  columns: Array<{}>;
+  data: Array<any>;
+  columns: Array<any>;
 };
 
 const Table: FC<TableProps> = ({ columns, data }) => {
