@@ -16,10 +16,12 @@
 
 import React from 'react';
 import Table from './Table';
+import InfoCard from '../../layout/InfoCard';
 
 export default {
   title: 'Table',
   component: Table,
+  decorators: [story => <InfoCard title="Table">{story()}</InfoCard>],
 };
 
 const generateTestData: (number) => Array<{}> = (rows = 20) => {
@@ -48,7 +50,7 @@ const testColumns = [
   {
     Header: 'Numeric value',
     accessor: 'number',
-    type: 'numeric', // || align: 'right',
+    align: 'right',
     sortType: 'basic',
   },
   {
@@ -62,12 +64,5 @@ const testColumns = [
 const testData100 = generateTestData(100);
 
 export const DefaultTable = () => {
-  const columns = React.useMemo(() => testColumns, []);
-  const data = React.useMemo(() => testData100, []);
-
-  return (
-    <>
-      <Table data={data} columns={columns} />
-    </>
-  );
+  return <Table data={testData100} columns={testColumns} />;
 };

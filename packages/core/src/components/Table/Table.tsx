@@ -30,7 +30,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 
 import TextField from '@material-ui/core/TextField';
 
-//const useStyles = makeStyles<typeof BackstageTheme>(theme => ({ }));
+// const useStyles = makeStyles<typeof BackstageTheme>(theme => ({ }));
 type GlobalFilterProps = {
   setGlobalFilter: any;
   preGlobalFilteredRows: any;
@@ -45,17 +45,14 @@ const GlobalFilter: FC<GlobalFilterProps> = ({
   const count = preGlobalFilteredRows.length;
 
   return (
-    <span>
-      <TextField
-        value={globalFilter || ''}
-        placeholder={`${count} records...`}
-        id="standard-basic"
-        label="Search"
-        onChange={e => {
-          setGlobalFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
-        }}
-      />
-    </span>
+    <TextField
+      value={globalFilter || ''}
+      placeholder={`${count} records...`}
+      label="Search"
+      onChange={e => {
+        setGlobalFilter(e.target.value || undefined);
+      }}
+    />
   );
 };
 
@@ -65,10 +62,8 @@ type TableProps = {
 };
 
 const Table: FC<TableProps> = ({ columns, data }) => {
-  0;
   const {
     getTableProps,
-    getTableBodyProps,
     headerGroups,
     rows,
     prepareRow,
@@ -84,7 +79,7 @@ const Table: FC<TableProps> = ({ columns, data }) => {
     useSortBy,
   );
 
-  //Used for react-window rendering. Which means not at all right now.
+  // Used for react-window rendering. Which means not at all right now.
   const renderRow = useCallback(
     ({ index, style }) => {
       const row = rows[index];
@@ -104,25 +99,6 @@ const Table: FC<TableProps> = ({ columns, data }) => {
     [prepareRow, rows],
   );
 
-  const renderTableColumn = (type, column) => {
-    switch (type) {
-      default:
-        return (
-          <TableCell
-            align={type === 'numeric' ? 'right' : 'left'}
-            {...column.getHeaderProps(column.getSortByToggleProps())}
-          >
-            <TableSortLabel
-              active={column.isSorted}
-              direction={column.isSortedDesc ? 'desc' : 'asc'}
-            >
-              {column.render('Header')}
-            </TableSortLabel>
-          </TableCell>
-        );
-    }
-  };
-
   return (
     <>
       <GlobalFilter
@@ -135,9 +111,19 @@ const Table: FC<TableProps> = ({ columns, data }) => {
           <TableHead>
             {headerGroups.map(headerGroup => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column =>
-                  renderTableColumn(column.type, column),
-                )}
+                {headerGroup.headers.map(column => (
+                  <TableCell
+                    align={column.align === 'right' ? 'right' : 'left'}
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                  >
+                    <TableSortLabel
+                      active={column.isSorted}
+                      direction={column.isSortedDesc ? 'desc' : 'asc'}
+                    >
+                      {column.render('Header')}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableHead>
@@ -149,9 +135,7 @@ const Table: FC<TableProps> = ({ columns, data }) => {
                   {row.cells.map(cell => {
                     return (
                       <TableCell
-                        align={
-                          cell.column.type === 'numeric' ? 'right' : 'left'
-                        }
+                        align={cell.column.align === 'right' ? 'right' : 'left'}
                         {...cell.getCellProps()}
                       >
                         {cell.render('Cell')}
