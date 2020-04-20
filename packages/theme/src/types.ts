@@ -30,6 +30,7 @@ type PaletteAdditions = {
     background: string;
   };
   border: string;
+  textContrast: string;
   textVerySubtle: string;
   textSubtle: string;
   highlight: string;
