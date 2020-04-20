@@ -20,5 +20,6 @@
 //
 // If you think some API definition is missing, please open an Issue or send a PR!
 
+export * from './alert';
 export * from './error';
 export * from './featureFlags';

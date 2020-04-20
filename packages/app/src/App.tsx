@@ -25,9 +25,9 @@ import { createApp } from '@backstage/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
-import ErrorDisplay from './components/ErrorDisplay';
+import AlertDisplay from './components/AlertDisplay';
 import * as plugins from './plugins';
-import apis, { errorDialogForwarder } from './apis';
+import apis, { alertApiForwarder } from './apis';
 import { ThemeContextType, ThemeContext, useThemeType } from './ThemeContext';
 
 const useStyles = makeStyles(theme => ({
@@ -86,7 +86,7 @@ const App: FC<{}> = () => {
     <ThemeContext.Provider value={themeContext}>
       <ThemeProvider theme={backstageTheme as Theme}>
         <CssBaseline>
-          <ErrorDisplay forwarder={errorDialogForwarder} />
+          <AlertDisplay forwarder={alertApiForwarder} />
           <Router>
             <Root>
               <AppComponent />

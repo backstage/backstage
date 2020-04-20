@@ -7226,7 +7226,7 @@ cyclist@^1.0.1:
   resolved "https://registry.npmjs.org/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
-cypress@*, cypress@^4.2.0:
+cypress@*, cypress@4.2.0, cypress@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmjs.org/cypress/-/cypress-4.2.0.tgz#45673fb648b1a77b9a78d73e58b89ed05212d243"
   integrity sha512-8LdreL91S/QiTCLYLNbIjLL8Ht4fJmu/4HGLxUI20Tc7JSfqEfCmXELrRfuPT0kjosJwJJZacdSji9XSRkPKUw==
@@ -17222,7 +17222,7 @@ request@^2.85.0, request@^2.87.0, request@^2.88.0:
     tunnel-agent "^0.6.0"
     uuid "^3.3.2"
 
-request@cypress-io/request#b5af0d1fa47eec97ba980cde90a13e69a2afcd16:
+"request@github:cypress-io/request#b5af0d1fa47eec97ba980cde90a13e69a2afcd16":
   version "2.88.1"
   resolved "https://codeload.github.com/cypress-io/request/tar.gz/b5af0d1fa47eec97ba980cde90a13e69a2afcd16"
   dependencies:

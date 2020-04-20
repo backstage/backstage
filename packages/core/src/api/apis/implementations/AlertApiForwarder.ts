@@ -13,5 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AlertApi, AlertMessage } from '../../../';
 
-export { default } from './ErrorDisplay';
+type SubscriberFunc = (message: AlertMessage) => void;
+type Unsubscribe = () => void;
+
+export class AlertApiForwarder implements AlertApi {
+  private readonly subscribers = new Set<SubscriberFunc>();
+
+  post(alert: AlertMessage) {
+    this.subscribers.forEach(subscriber => subscriber(alert));
+  }
+
+  subscribe(func: SubscriberFunc): Unsubscribe {
+    this.subscribers.add(func);
+
+    return () => {
+      this.subscribers.delete(func);
+    };
+  }
+}
