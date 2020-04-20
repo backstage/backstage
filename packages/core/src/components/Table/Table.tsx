@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
-import React, { FC, useCallback } from 'react';
+import React, { FC } from 'react';
 import { useTable, useGlobalFilter, useSortBy } from 'react-table';
 
-import { FixedSizeList } from 'react-window';
 import MUITable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -30,7 +27,6 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 
 import TextField from '@material-ui/core/TextField';
 
-// const useStyles = makeStyles<typeof BackstageTheme>(theme => ({ }));
 type GlobalFilterProps = {
   setGlobalFilter: any;
   preGlobalFilteredRows: any;
@@ -59,9 +55,10 @@ const GlobalFilter: FC<GlobalFilterProps> = ({
 type TableProps = {
   data: Array<any>;
   columns: Array<any>;
+  showFilter?: boolean;
 };
 
-const Table: FC<TableProps> = ({ columns, data }) => {
+const Table: FC<TableProps> = ({ columns, data, showFilter = true }) => {
   const {
     getTableProps,
     headerGroups,
@@ -79,33 +76,15 @@ const Table: FC<TableProps> = ({ columns, data }) => {
     useSortBy,
   );
 
-  // Used for react-window rendering. Which means not at all right now.
-  const renderRow = useCallback(
-    ({ index, style }) => {
-      const row = rows[index];
-      prepareRow(row);
-      return (
-        <TableRow style={style} {...row.getRowProps()}>
-          {row.cells.map(cell => {
-            return (
-              <TableCell {...cell.getCellProps()}>
-                {cell.render('Cell')}
-              </TableCell>
-            );
-          })}
-        </TableRow>
-      );
-    },
-    [prepareRow, rows],
-  );
-
   return (
     <>
-      <GlobalFilter
-        preGlobalFilteredRows={preGlobalFilteredRows}
-        setGlobalFilter={setGlobalFilter}
-        globalFilter={state.globalFilter}
-      />
+      {showFilter ? (
+        <GlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredRows}
+          setGlobalFilter={setGlobalFilter}
+          globalFilter={state.globalFilter}
+        />
+      ) : null}
       <TableContainer>
         <MUITable {...getTableProps()}>
           <TableHead>
@@ -151,11 +130,5 @@ const Table: FC<TableProps> = ({ columns, data }) => {
     </>
   );
 };
-
-/*
-<FixedSizeList height={400} itemCount={rows.length} itemSize={35}>
-  {renderRow}
-</FixedSizeList>
-*/
 
 export default Table;

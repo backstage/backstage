@@ -66,3 +66,7 @@ const testData100 = generateTestData(100);
 export const DefaultTable = () => {
   return <Table data={testData100} columns={testColumns} />;
 };
+
+export const HiddenFilterTable = () => {
+  return <Table showFilter={false} data={testData100} columns={testColumns} />;
+};
