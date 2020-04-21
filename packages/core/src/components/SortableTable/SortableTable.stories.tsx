@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { StatusError, StatusOK, StatusWarning } from './Status';
+import { StatusError, StatusOK, StatusWarning } from './../Status';
 import SortableTable from './SortableTable';
 
 export default {
