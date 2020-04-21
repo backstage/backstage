@@ -16,6 +16,7 @@
 
 import React, { FC } from 'react';
 import { useTable, useGlobalFilter, useSortBy } from 'react-table';
+import type { Column } from 'react-table';
 
 import MUITable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -52,9 +53,13 @@ const GlobalFilter: FC<GlobalFilterProps> = ({
   );
 };
 
+export type ColumnProps = {
+  align?: string;
+};
+
 type TableProps = {
   data: Array<any>;
-  columns: Array<any>;
+  columns: Array<Column<{}>> & ColumnProps;
   showFilter?: boolean;
 };
 
