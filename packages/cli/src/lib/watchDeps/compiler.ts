@@ -15,11 +15,11 @@
  */
 
 import { spawn } from 'child_process';
-import { Logger } from './logger';
+import { LogPipe } from 'lib/logging';
 import chalk from 'chalk';
 import { Package } from './packages';
 
-export function startCompiler(pkg: Package, log: Logger) {
+export function startCompiler(pkg: Package, logPipe: LogPipe) {
   // First we figure out which yarn script is a available, falling back to "build --watch"
   const scriptName = ['build:watch', 'watch'].find(
     script => script in pkg.scripts,
@@ -35,12 +35,9 @@ export function startCompiler(pkg: Package, log: Logger) {
   });
 
   watch.stdin.end();
-  watch.stdout!.on('data', (data: Buffer) => {
-    log.out(data.toString('utf8'));
-  });
-  watch.stderr!.on('data', data => {
-    log.err(data.toString('utf8'));
-  });
+  watch.stdout.on('data', logPipe(process.stdout));
+  const logErr = logPipe(process.stderr);
+  watch.stderr.on('data', logErr);
 
   const promise = new Promise<void>((resolve, reject) => {
     watch.on('error', error => {
@@ -50,7 +47,7 @@ export function startCompiler(pkg: Package, log: Logger) {
     watch.on('close', (code: number) => {
       if (code !== 0) {
         const msg = `Compiler exited with code ${code}`;
-        log.err(chalk.red(msg));
+        logErr(chalk.red(msg));
         reject(new Error(msg));
       } else {
         resolve();

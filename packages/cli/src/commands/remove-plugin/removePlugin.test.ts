@@ -17,13 +17,13 @@
 import fse from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import { paths } from '../../helpers/paths';
+import { paths } from 'lib/paths';
 import {
   addExportStatement,
   capitalize,
   createTemporaryPluginFolder,
 } from '../create-plugin/createPlugin';
-import { addCodeownersEntry } from '../create-plugin/lib/codeowners';
+import { addCodeownersEntry } from 'lib/codeowners';
 import {
   removeReferencesFromAppPackage,
   removeReferencesFromPluginsFile,

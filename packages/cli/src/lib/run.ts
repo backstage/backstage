@@ -22,10 +22,15 @@ import {
 } from 'child_process';
 import { ExitCodeError } from './errors';
 import { promisify } from 'util';
+import { LogFunc } from './logging';
 const exec = promisify(execCb);
 
 type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
   env?: Partial<NodeJS.ProcessEnv>;
+  // Pipe stdout to this log function
+  stdoutLogFunc?: LogFunc;
+  // Pipe stderr to this log function
+  stderrLogFunc?: LogFunc;
 };
 
 // Runs a child command, returning a promise that is only resolved if the child exits with code 0.
@@ -34,18 +39,32 @@ export async function run(
   args: string[] = [],
   options: SpawnOptionsPartialEnv = {},
 ) {
+  const { stdoutLogFunc, stderrLogFunc } = options;
   const env: NodeJS.ProcessEnv = {
     ...process.env,
     FORCE_COLOR: 'true',
     ...(options.env ?? {}),
   };
 
+  const stdio = [
+    'inherit',
+    stdoutLogFunc ? 'pipe' : 'inherit',
+    stderrLogFunc ? 'pipe' : 'inherit',
+  ] as ('inherit' | 'pipe')[];
+
   const child = spawn(name, args, {
-    stdio: 'inherit',
+    stdio,
     shell: true,
     ...options,
     env,
   });
+
+  if (stdoutLogFunc && child.stdout) {
+    child.stdout.on('data', stdoutLogFunc);
+  }
+  if (stderrLogFunc && child.stderr) {
+    child.stderr.on('data', stderrLogFunc);
+  }
 
   await waitForExit(child, name);
 }

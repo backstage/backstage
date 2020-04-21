@@ -18,7 +18,7 @@ import { resolve as resolvePath } from 'path';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import { Package } from './packages';
-import { createLogger } from './logger';
+import { createLogFunc } from 'lib/logging';
 
 export type Watcher = {
   update(newPackages: Package[]): Promise<void>;
@@ -36,7 +36,7 @@ export async function startWatcher(
   callback: (pkg: Package) => void,
 ): Promise<Watcher> {
   const watchedPackageLocations = new Set<string>();
-  const logger = createLogger();
+  const log = createLogFunc(process.stdout);
 
   const watchPackage = async (pkg: Package) => {
     let signalled = false;
@@ -71,7 +71,7 @@ export async function startWatcher(
         continue;
       }
 
-      logger.out(chalk.green(`Starting watch of new dependency ${pkg.name}`));
+      log(chalk.green(`Starting watch of new dependency ${pkg.name}`));
       promises.push(watchPackage(pkg));
     }
 

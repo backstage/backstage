@@ -15,11 +15,11 @@
  */
 
 import { rollup, watch, OutputOptions } from 'rollup';
-import conf from './rollup.config';
 import { Command } from 'commander';
-import { withCache, getDefaultCacheOptions } from 'commands/build-cache';
-import { paths } from 'helpers/paths';
 import chalk from 'chalk';
+import { withCache, getDefaultCacheOptions } from 'lib/buildCache';
+import { paths } from 'lib/paths';
+import conf from './rollup.config';
 
 function logError(error: any) {
   console.log('');
