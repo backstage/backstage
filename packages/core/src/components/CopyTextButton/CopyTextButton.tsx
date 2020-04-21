@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef, FC } from 'react';
-import { IconButton, Tooltip, makeStyles } from '@material-ui/core';
+import React, { FC, useRef, useState } from 'react';
+import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from 'api';
@@ -53,17 +53,16 @@ type Props = {
 const defaultProps = {
   tooltipDelay: 1000,
   tooltipText: 'Text copied to clipboard',
-}
+};
 
 const CopyTextButton: FC<Props> = props => {
-
   const { text, tooltipDelay, tooltipText } = {
     ...defaultProps,
-    ...props
+    ...props,
   };
   const classes = useStyles(props);
   const errorApi = useApi(errorApiRef);
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
 
   const handleCopyClick = e => {
@@ -71,8 +70,10 @@ const CopyTextButton: FC<Props> = props => {
     setOpen(true);
 
     try {
-      inputRef.current.select();
-      document.execCommand('copy');
+      if (inputRef.current) {
+        inputRef.current.select();
+        document.execCommand('copy');
+      }
     } catch (error) {
       errorApi.post(error);
     }
