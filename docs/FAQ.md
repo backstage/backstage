@@ -1,5 +1,11 @@
 # FAQ
 
+## Do I have to write plugins in TypeScript?
+
+No, you can use JavaScript if you prefer.
+
+We want to keep the Backstage core APIs in TypeScript, but don't force it on individual plugins.
+
 ## Q: Why Material-UI?
 
 The short answer is that it's what we've been using in Backstage internally.
