@@ -16,6 +16,7 @@
 
 import React, { FC, useRef, useState } from 'react';
 import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from 'api';
@@ -101,6 +102,13 @@ const CopyTextButton: FC<Props> = props => {
       </Tooltip>
     </>
   );
+};
+
+// Type check for the JS files using this core component
+CopyTextButton.propTypes = {
+  text: PropTypes.string.isRequired,
+  tooltipDelay: PropTypes.number,
+  tooltipText: PropTypes.string,
 };
 
 export default CopyTextButton;
