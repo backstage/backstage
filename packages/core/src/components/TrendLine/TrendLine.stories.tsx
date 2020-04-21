@@ -16,28 +16,74 @@
 
 import React from 'react';
 import TrendLine from '.';
+import SortableTable from 'components/SortableTable';
 
 export default {
   title: 'TrendLine',
   component: TrendLine,
 };
 
-const width = 140;
+const containerStyle = { width: 1000, padding: 20 };
+
+const data = [
+  {
+    stock: 'A',
+    day: <TrendLine data={[0.1, 0.5, 0.7, 1]} title="Trend over time" />,
+    week: <TrendLine data={[1, 0.7, 0.9, 1]} title="Trend over time" />,
+    month: <TrendLine data={[0.1, 0.3, 0.6, 1]} title="Trend over time" />,
+    year: <TrendLine data={[0.8, 0.8, 0.8, 1]} title="Trend over time" />,
+  },
+  {
+    stock: 'B',
+    day: <TrendLine data={[0.8, 0.7, 0.5, 0.1]} title="Trend over time" />,
+    week: <TrendLine data={[1, 0.9, 0.9, 1]} title="Trend over time" />,
+    month: <TrendLine data={[1, 0.8, 0.6, 0.4]} title="Trend over time" />,
+    year: <TrendLine data={[1, 1, 0.9, 0.8]} title="Trend over time" />,
+  },
+  {
+    stock: 'C',
+    day: <TrendLine data={[0.5, 0.3, 0.9, 1]} title="Trend over time" />,
+    week: <TrendLine data={[1, 0.7, 0.9, 0.3]} title="Trend over time" />,
+    month: <TrendLine data={[0.4, 0.6, 0.8, 0.4]} title="Trend over time" />,
+    year: <TrendLine data={[0.2, 0.5, 0.8, 1]} title="Trend over time" />,
+  },
+  {
+    stock: 'D',
+    day: <TrendLine data={[0.8, 0.7, 0.5, 0.1]} title="Trend over time" />,
+    week: <TrendLine data={[0.2, 0.7, 0.9, 1]} title="Trend over time" />,
+    month: <TrendLine data={[1, 0.8, 0.8, 0.8]} title="Trend over time" />,
+    year: <TrendLine data={[1, 0.6, 0.9, 0.7]} title="Trend over time" />,
+  },
+];
+
+const columns = [
+  { id: 'stock', label: 'Stock name' },
+  { id: 'day', label: 'Day' },
+  { id: 'week', label: 'Week' },
+  { id: 'month', label: 'Month' },
+  { id: 'year', label: 'Year' },
+];
 
 export const Default = () => (
-  <div style={{ width }}>
+  <div style={containerStyle}>
+    <SortableTable data={data} columns={columns} />
+  </div>
+);
+
+export const TrendingMix = () => (
+  <div style={containerStyle}>
     <TrendLine data={[0.1, 0.7, 0.5, 0.8]} title="Trend over time" />
   </div>
 );
 
 export const TrendingUp = () => (
-  <div style={{ width }}>
+  <div style={containerStyle}>
     <TrendLine data={[0.1, 0.5, 0.9, 1.0]} title="Trend over time" />
   </div>
 );
 
 export const TrendingDown = () => (
-  <div style={{ width }}>
+  <div style={containerStyle}>
     <TrendLine data={[0.8, 0.7, 0.5, 0.1]} title="Trend over time" />
   </div>
 );
