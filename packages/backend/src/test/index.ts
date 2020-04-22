@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import express from 'express';
+import { Router } from 'express';
 
-export const testRouter = express.Router();
+export const testRouter = Router();
 
 testRouter.get('/', async (_, res) => {
   res.status(200).send('hello');
