@@ -1,28 +1,33 @@
 {
   "name": "@backstage/backend",
   "version": "0.1.1-alpha.4",
-  "main": "index.js",
+  "main": "dist",
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "start": "node dist/index",
-    "webpack": "webpack --config webpack.config.ts"
+    "build": "tsc",
+    "start": "tsc-watch --onSuccess nodemon",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "helmet": "^3.22.0",
-    "webpack": "^4.42.1",
-    "webpack-node-externals": "^1.7.2"
+    "helmet": "^3.22.0"
   },
   "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.4",
     "@types/cors": "^2.8.6",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.6",
+    "@types/express-serve-static-core": "^4.17.5",
     "@types/helmet": "^0.0.45",
-    "ts-loader": "^7.0.1",
-    "typescript": "^3.8.3",
-    "webpack-cli": "^3.3.11"
+    "tsc-watch": "^4.2.3",
+    "typescript": "^3.8.3"
+  },
+  "nodemonConfig": {
+    "watch": "./dist"
   }
 }
