@@ -14,39 +14,35 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
-import { existsSync, realpathSync } from 'fs';
+import { existsSync } from 'fs';
+import { paths } from 'lib/paths';
 
 export function getPaths() {
-  const appDir = realpathSync(process.cwd());
-
-  const resolveApp = (path: string) => resolvePath(appDir, path);
-  const resolveOwn = (path: string) => resolvePath(__dirname, '..', path);
-  const resolveAppModule = (path: string) => {
+  const resolveTargetModule = (path: string) => {
     for (const ext of ['mjs', 'js', 'ts', 'tsx', 'jsx']) {
-      const filePath = resolveApp(`${path}.${ext}`);
+      const filePath = paths.resolveTarget(`${path}.${ext}`);
       if (existsSync(filePath)) {
         return filePath;
       }
     }
-    return resolveApp(`${path}.js`);
+    return paths.resolveTarget(`${path}.js`);
   };
 
-  let appHtml = resolveApp('dev/index.html');
+  let appHtml = paths.resolveTarget('dev/index.html');
   if (!existsSync(appHtml)) {
-    appHtml = resolveOwn('../../templates/serve_index.html');
+    appHtml = paths.resolveOwn('templates/serve_index.html');
   }
 
   return {
     appHtml,
-    appPath: resolveApp('.'),
-    appAssets: resolveApp('assets'),
-    appSrc: resolveApp('src'),
-    appDev: resolveApp('dev'),
-    appDevEntry: resolveAppModule('dev/index'),
-    appTsConfig: resolveApp('tsconfig.json'),
-    appNodeModules: resolveApp('node_modules'),
-    appPackageJson: resolveApp('package.json'),
+    appPath: paths.resolveTarget('.'),
+    appAssets: paths.resolveTarget('assets'),
+    appSrc: paths.resolveTarget('src'),
+    appDev: paths.resolveTarget('dev'),
+    appDevEntry: resolveTargetModule('dev/index'),
+    appTsConfig: paths.resolveTarget('tsconfig.json'),
+    appNodeModules: paths.resolveTarget('node_modules'),
+    appPackageJson: paths.resolveTarget('package.json'),
   };
 }
 
