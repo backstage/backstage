@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export { default as ApiRef } from './ApiRef';
-export * from './types';
-export * from './definitions';
-export * from './implementations';
+// This folder contains implementations for all core APIs.
+//
+// Plugins should rely on these APIs for functionality as much as possible.
+
+export * from './AlertApiForwarder';
+export * from './ErrorApiForwarder';

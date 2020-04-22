@@ -13,11 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import ApiRef from '../ApiRef';
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export { default as ApiRef } from './ApiRef';
-export * from './types';
-export * from './definitions';
-export * from './implementations';
+export type AlertMessage = {
+  message: string;
+  // Severity will default to success since that is what material ui defaults the value to.
+  severity?: 'success' | 'info' | 'warning' | 'error';
+};
+
+/**
+ * The alert API is used to report alerts to the app, and display them to the user.
+ */
+
+export type AlertApi = {
+  /**
+   * Post an alert for handling by the application.
+   */
+  post(alert: AlertMessage);
+};
+
+export const alertApiRef = new ApiRef<AlertApi>({
+  id: 'core.alert',
+  description: 'Used to report alerts and forward them to the app',
+});
