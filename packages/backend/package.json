@@ -4,6 +4,9 @@
   "main": "dist",
   "private": true,
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">=13"
+  },
   "scripts": {
     "build": "tsc",
     "start": "tsc-watch --onSuccess nodemon",
