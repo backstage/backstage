@@ -46,6 +46,11 @@ export default {
     json(),
     typescript({
       include: `${paths.resolveTarget('src')}/**/*.{js,jsx,ts,tsx}`,
+      tsconfigOverride: {
+        // The dev folder is for the local plugin serve, ignore it in the build
+        // If we don't do this we get a folder structure similar to dist/{src,dev}/...
+        exclude: ['dev'],
+      },
       clean: true,
     }),
   ],
