@@ -39,6 +39,7 @@ export async function startDevServer() {
   const server = new WebpackDevServer(compiler, {
     hot: true,
     publicPath: '/',
+    historyApiFallback: true,
     quiet: true,
     https: protocol === 'https',
     host,
