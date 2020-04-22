@@ -17,13 +17,14 @@
 import React from 'react';
 import TrendLine from '.';
 import SortableTable from 'components/SortableTable';
+import InfoCard from 'layout/InfoCard';
 
 export default {
   title: 'TrendLine',
   component: TrendLine,
 };
 
-const containerStyle = { width: 1000, padding: 20 };
+const containerStyle = { width: 600 };
 
 const data = [
   {
@@ -57,7 +58,7 @@ const data = [
 ];
 
 const columns = [
-  { id: 'stock', label: 'Stock name' },
+  { id: 'stock', label: 'Stock' },
   { id: 'day', label: 'Day' },
   { id: 'week', label: 'Week' },
   { id: 'month', label: 'Month' },
@@ -65,9 +66,9 @@ const columns = [
 ];
 
 export const Default = () => (
-  <div style={containerStyle}>
+  <InfoCard style={containerStyle} title="Trends over time">
     <SortableTable data={data} columns={columns} />
-  </div>
+  </InfoCard>
 );
 
 export const TrendingMix = () => (
