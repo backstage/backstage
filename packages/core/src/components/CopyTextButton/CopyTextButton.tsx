@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { FC, useRef, useState } from 'react';
+import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import { IconButton, Tooltip, makeStyles } from '@material-ui/core';
 import CopyIcon from '@material-ui/icons/FileCopy';
+import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from 'api';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   button: {
     '&:hover': {
       backgroundColor: theme.palette.highlight,
@@ -44,14 +45,25 @@ const useStyles = makeStyles(theme => ({
  * Example:
  *    <CopyTextButton text="My text that I want to be copied to the clipboard" />
  */
-const CopyTextButton = ({
-  text,
-  tooltipDelay = 1000,
-  tooltipText = 'Text copied to clipboard',
-}) => {
-  const classes = useStyles();
+type Props = {
+  text: string;
+  tooltipDelay?: number;
+  tooltipText?: string;
+};
+
+const defaultProps = {
+  tooltipDelay: 1000,
+  tooltipText: 'Text copied to clipboard',
+};
+
+const CopyTextButton: FC<Props> = props => {
+  const { text, tooltipDelay, tooltipText } = {
+    ...defaultProps,
+    ...props,
+  };
+  const classes = useStyles(props);
   const errorApi = useApi(errorApiRef);
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
 
   const handleCopyClick = e => {
@@ -59,8 +71,10 @@ const CopyTextButton = ({
     setOpen(true);
 
     try {
-      inputRef.current.select();
-      document.execCommand('copy');
+      if (inputRef.current) {
+        inputRef.current.select();
+        document.execCommand('copy');
+      }
     } catch (error) {
       errorApi.post(error);
     }
@@ -90,6 +104,7 @@ const CopyTextButton = ({
   );
 };
 
+// Type check for the JS files using this core component
 CopyTextButton.propTypes = {
   text: PropTypes.string.isRequired,
   tooltipDelay: PropTypes.number,
