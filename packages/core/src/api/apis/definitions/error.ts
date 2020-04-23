@@ -53,7 +53,7 @@ export type ErrorApi = {
   /**
    * Post an error for handling by the application.
    */
-  post(error: Error, context?: ErrorContext);
+  post(error: Error, context?: ErrorContext): void;
 };
 
 export const errorApiRef = new ApiRef<ErrorApi>({

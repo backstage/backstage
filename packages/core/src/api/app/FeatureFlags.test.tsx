@@ -15,7 +15,10 @@
  */
 
 import { FeatureFlags as FeatureFlagsImpl } from './FeatureFlags';
-import { FeatureFlagState } from 'api/apis/definitions/featureFlags';
+import {
+  FeatureFlagState,
+  FeatureFlagsApi,
+} from 'api/apis/definitions/featureFlags';
 
 describe('FeatureFlags', () => {
   beforeEach(() => {
@@ -23,7 +26,7 @@ describe('FeatureFlags', () => {
   });
 
   describe('#getFlags', () => {
-    let featureFlags;
+    let featureFlags: FeatureFlagsApi;
 
     beforeEach(() => {
       featureFlags = new FeatureFlagsImpl();
@@ -121,7 +124,7 @@ describe('FeatureFlags', () => {
   });
 
   describe('#getRegisteredFlags', () => {
-    let featureFlags;
+    let featureFlags: FeatureFlagsApi;
 
     beforeEach(() => {
       featureFlags = new FeatureFlagsImpl();
@@ -146,7 +149,7 @@ describe('FeatureFlags', () => {
     });
 
     it('should get the correct values', () => {
-      const getByName = name =>
+      const getByName = (name: string) =>
         featureFlags.getRegisteredFlags().find(flag => flag.name === name);
 
       expect(getByName('registered-flag-0')).toBeUndefined();
