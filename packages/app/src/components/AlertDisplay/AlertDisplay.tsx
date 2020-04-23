@@ -19,59 +19,36 @@ import PropTypes from 'prop-types';
 import { Snackbar, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
-import { ErrorApi, ErrorContext } from '@backstage/core';
-
-type SubscriberFunc = (error: Error) => void;
-type Unsubscribe = () => void;
-
-// TODO: figure out where to put implementations of APIs, both inside apps
-// but also in core/separate package.
-export class ErrorDisplayForwarder implements ErrorApi {
-  private readonly subscribers = new Set<SubscriberFunc>();
-
-  post(error: Error, context?: ErrorContext) {
-    if (context?.hidden) {
-      return;
-    }
-
-    this.subscribers.forEach(subscriber => subscriber(error));
-  }
-
-  subscribe(func: SubscriberFunc): Unsubscribe {
-    this.subscribers.add(func);
-
-    return () => {
-      this.subscribers.delete(func);
-    };
-  }
-}
+import { AlertApiForwarder, AlertMessage } from '@backstage/core';
 
 type Props = {
-  forwarder: ErrorDisplayForwarder;
+  forwarder: AlertApiForwarder;
 };
 
 // TODO: improve on this and promote to a shared component for use by all apps.
-const ErrorDisplay: FC<Props> = ({ forwarder }) => {
-  const [errors, setErrors] = useState<Array<Error>>([]);
+const AlertDisplay: FC<Props> = ({ forwarder }) => {
+  const [messages, setMessages] = useState<Array<AlertMessage>>([]);
 
   useEffect(() => {
-    return forwarder.subscribe(error => setErrors(errs => errs.concat(error)));
+    return forwarder.subscribe((message: AlertMessage) =>
+      setMessages(msgs => msgs.concat(message)),
+    );
   }, [forwarder]);
 
-  if (errors.length === 0) {
+  if (messages.length === 0) {
     return null;
   }
 
-  const [firstError] = errors;
+  const [firstMessage] = messages;
 
   const handleClose = () => {
-    setErrors(errs => errs.filter(err => err !== firstError));
+    setMessages(msgs => msgs.filter(msg => msg !== firstMessage));
   };
 
   return (
     <Snackbar
       open
-      message={firstError.toString()}
+      message={firstMessage.message.toString()}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
     >
       <Alert
@@ -85,16 +62,16 @@ const ErrorDisplay: FC<Props> = ({ forwarder }) => {
             <CloseIcon />
           </IconButton>
         }
-        severity="error"
+        severity={firstMessage.severity}
       >
-        {firstError.toString()}
+        {firstMessage.message.toString()}
       </Alert>
     </Snackbar>
   );
 };
 
-ErrorDisplay.propTypes = {
-  forwarder: PropTypes.instanceOf(ErrorDisplayForwarder).isRequired,
+AlertDisplay.propTypes = {
+  forwarder: PropTypes.instanceOf(AlertApiForwarder).isRequired,
 };
 
-export default ErrorDisplay;
+export default AlertDisplay;
