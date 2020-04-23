@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { FC } from 'react';
 import InfoCard from '.';
 import { Grid } from '@material-ui/core';
 
@@ -25,7 +25,7 @@ export default {
   component: InfoCard,
 };
 
-const Wrapper = ({ children }) => (
+const Wrapper: FC<{}> = ({ children }) => (
   <Grid container spacing={4}>
     <Grid item>{children}</Grid>
   </Grid>

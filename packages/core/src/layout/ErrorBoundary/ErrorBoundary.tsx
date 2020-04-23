@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentClass, Component, SFC } from 'react';
+import React, { ComponentClass, Component, SFC, ErrorInfo } from 'react';
 
 type Props = {
   slackChannel?: string;
@@ -23,14 +23,14 @@ type Props = {
 
 type State = {
   error?: Error;
-  errorInfo?: string;
+  errorInfo?: ErrorInfo;
 };
 
 const ErrorBoundary: ComponentClass<
   Props,
   State
 > = class ErrorBoundary extends Component<Props, State> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
@@ -39,15 +39,10 @@ const ErrorBoundary: ComponentClass<
     };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // eslint-disable-next-line no-console
     console.error(`ErrorBoundary, error: ${error}, info: ${errorInfo}`);
     this.setState({ error, errorInfo });
-
-    // Exposed for testing
-    if (this.props.onError) {
-      this.props.onError(error, errorInfo);
-    }
   }
 
   render() {
@@ -58,9 +53,7 @@ const ErrorBoundary: ComponentClass<
       return this.props.children;
     }
 
-    return (
-      <Error error={error} errorInfo={errorInfo} slackChannel={slackChannel} />
-    );
+    return <Error error={error} slackChannel={slackChannel} />;
   }
 };
 
@@ -68,7 +61,6 @@ export default ErrorBoundary;
 
 type EProps = {
   error?: Error;
-  errorInfo?: string;
   slackChannel?: string;
 };
 
