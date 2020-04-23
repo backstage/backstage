@@ -28,21 +28,21 @@ export function getPaths() {
     return paths.resolveTarget(`${path}.js`);
   };
 
-  let appHtml = paths.resolveTarget('dev/index.html');
-  if (!existsSync(appHtml)) {
-    appHtml = paths.resolveOwn('templates/serve_index.html');
+  let targetHtml = paths.resolveTarget('dev/index.html');
+  if (!existsSync(targetHtml)) {
+    targetHtml = paths.resolveOwn('templates/serve_index.html');
   }
 
   return {
-    appHtml,
-    appPath: paths.resolveTarget('.'),
-    appAssets: paths.resolveTarget('assets'),
-    appSrc: paths.resolveTarget('src'),
-    appDev: paths.resolveTarget('dev'),
-    appDevEntry: resolveTargetModule('dev/index'),
-    appTsConfig: paths.resolveTarget('tsconfig.json'),
-    appNodeModules: paths.resolveTarget('node_modules'),
-    appPackageJson: paths.resolveTarget('package.json'),
+    targetHtml,
+    targetPath: paths.resolveTarget('.'),
+    targetAssets: paths.resolveTarget('assets'),
+    targetSrc: paths.resolveTarget('src'),
+    targetDev: paths.resolveTarget('dev'),
+    targetDevEntry: resolveTargetModule('dev/index'),
+    targetTsConfig: paths.resolveTarget('tsconfig.json'),
+    targetNodeModules: paths.resolveTarget('node_modules'),
+    targetPackageJson: paths.resolveTarget('package.json'),
   };
 }
 
