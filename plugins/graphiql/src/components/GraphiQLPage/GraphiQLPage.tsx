@@ -19,9 +19,11 @@ import { Tabs, Tab, makeStyles } from '@material-ui/core';
 import { Page, pageTheme, Content, Header, HeaderLabel } from '@backstage/core';
 import 'graphiql/graphiql.css';
 import GraphiQL from 'graphiql';
+import { StorageBucket } from 'lib/storage';
 
 const tabs = [
   {
+    id: 'gitlab',
     title: 'GitLab',
     fetcher: async (params: any) => {
       const res = await fetch('https://gitlab.com/api/graphql', {
@@ -33,6 +35,7 @@ const tabs = [
     },
   },
   {
+    id: 'countries',
     title: 'Countries',
     fetcher: async (params: any) => {
       const res = await fetch('https://countries.trevorblades.com/', {
@@ -59,6 +62,9 @@ export const GraphiQLPage: FC<{}> = () => {
   const classes = useStyles();
   const [tabIndex, setTabIndex] = useState(0);
 
+  const { id, fetcher } = tabs[tabIndex];
+  const storage = StorageBucket.forLocalStorage(`plugin/graphiql/data/${id}`);
+
   return (
     <Page theme={pageTheme.tool}>
       <Header title="GraphiQL">
@@ -71,7 +77,7 @@ export const GraphiQLPage: FC<{}> = () => {
             <Tab key={index} label={title} value={index} />
           ))}
         </Tabs>
-        <GraphiQL key={tabIndex} fetcher={tabs[tabIndex].fetcher} />
+        <GraphiQL key={tabIndex} fetcher={fetcher} storage={storage} />
       </Content>
     </Page>
   );
