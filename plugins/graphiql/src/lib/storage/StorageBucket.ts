@@ -54,7 +54,7 @@ export class StorageBucket implements Storage {
   }
 
   clear(): void {
-    this.write({});
+    this.storage.removeItem(this.bucket);
   }
 
   getItem(key: string): string | null {
