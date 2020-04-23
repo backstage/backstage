@@ -15,7 +15,7 @@
  */
 
 import React, { FC, useState } from 'react';
-import { Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab, makeStyles } from '@material-ui/core';
 import { Page, pageTheme, Content, Header, HeaderLabel } from '@backstage/core';
 import 'graphiql/graphiql.css';
 import GraphiQL from 'graphiql';
@@ -45,7 +45,18 @@ const tabs = [
   },
 ];
 
+const useStyles = makeStyles({
+  root: {
+    '@global': {
+      '.graphiql-container': {
+        boxSizing: 'initial',
+      },
+    },
+  },
+});
+
 export const GraphiQLPage: FC<{}> = () => {
+  const classes = useStyles();
   const [tabIndex, setTabIndex] = useState(0);
 
   return (
@@ -54,7 +65,7 @@ export const GraphiQLPage: FC<{}> = () => {
         <HeaderLabel label="Owner" value="Spotify" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
-      <Content noPadding>
+      <Content noPadding className={classes.root}>
         <Tabs value={tabIndex} onChange={(_, value) => setTabIndex(value)}>
           {tabs.map(({ title }, index) => (
             <Tab key={index} label={title} value={index} />
