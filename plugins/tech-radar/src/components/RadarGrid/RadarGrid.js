@@ -16,14 +16,34 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core';
 import * as CommonPropTypes from '../../utils/prop-types';
-import styles from './RadarGrid.css';
+
+const styles = {
+  ring: {
+    fill: 'none',
+    stroke: '#bbb',
+    strokeWidth: '1px',
+  },
+  axis: {
+    fill: 'none',
+    stroke: '#bbb',
+    strokeWidth: '1px',
+  },
+  text: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    fill: '#e5e5e5',
+    fontSize: '25px',
+    fontWeight: 800,
+  },
+};
 
 // A component for the background grid of the radar, with axes, rings etc.  It will render around the origin, i.e.
 // assume that (0, 0) is in the middle of the drawing.
-export default class RadarGrid extends React.PureComponent {
+class RadarGrid extends React.PureComponent {
   render() {
-    const { radius, rings } = this.props;
+    const { radius, rings, classes } = this.props;
 
     const makeRingNode = (ringRadius, ringIndex) => [
       <circle
@@ -31,13 +51,13 @@ export default class RadarGrid extends React.PureComponent {
         cx={0}
         cy={0}
         r={ringRadius}
-        className={styles.ring}
+        className={classes.ring}
       />,
       <text
         key={`t${ringIndex}`}
         y={-ringRadius + 42}
         textAnchor="middle"
-        className={styles.text}
+        className={classes.text}
       >
         {rings[ringIndex].name}
       </text>,
@@ -51,7 +71,7 @@ export default class RadarGrid extends React.PureComponent {
         y1={-radius}
         x2={0}
         y2={radius}
-        className={styles.axis}
+        className={classes.axis}
       />,
       // Y axis
       <line
@@ -60,7 +80,7 @@ export default class RadarGrid extends React.PureComponent {
         y1={0}
         x2={radius}
         y2={0}
-        className={styles.axis}
+        className={classes.axis}
       />,
     ];
 
@@ -73,4 +93,7 @@ export default class RadarGrid extends React.PureComponent {
 RadarGrid.propTypes = {
   radius: PropTypes.number.isRequired,
   rings: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.RING)).isRequired,
+  classes: PropTypes.array.isRequired, // this is the withStyles HOC
 };
+
+export default withStyles(styles)(RadarGrid);
