@@ -31,12 +31,22 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'column',
     flexGrow: 1,
   },
+  noPadding: {
+    padding: 0,
+  },
 }));
 
-const Content: FC<{ stretch?: boolean; className?: string }> = ({
-  children,
+type Props = {
+  stretch?: boolean;
+  noPadding?: boolean;
+  className?: string;
+};
+
+const Content: FC<Props> = ({
   className,
   stretch,
+  noPadding,
+  children,
   ...props
 }) => {
   const classes = useStyles();
@@ -45,6 +55,7 @@ const Content: FC<{ stretch?: boolean; className?: string }> = ({
       {...props}
       className={classNames(classes.root, className, {
         [classes.stretch]: stretch,
+        [classes.noPadding]: noPadding,
       })}
     >
       {children}
