@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as Graphiql } from '@backstage/plugin-graphiql';
+
+import { createPlugin } from '@backstage/core';
+import ExampleComponent from './components/ExampleComponent';
+
+export const plugin = createPlugin({
+  id: 'graphiql',
+  register({ router }) {
+    router.registerRoute('/graphiql', ExampleComponent);
+  },
+});

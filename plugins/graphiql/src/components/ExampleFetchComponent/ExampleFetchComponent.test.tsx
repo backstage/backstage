@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as Graphiql } from '@backstage/plugin-graphiql';
+
+import React from 'react';
+import { render } from '@testing-library/react';
+import mockFetch from 'jest-fetch-mock';
+import ExampleFetchComponent from './ExampleFetchComponent';
+
+describe('ExampleFetchComponent', () => {
+  it('should render', async () => {
+    mockFetch.mockResponse(() => new Promise(() => {}));
+    const rendered = render(<ExampleFetchComponent />);
+    expect(await rendered.findByTestId('progress')).toBeInTheDocument();
+  });
+});
