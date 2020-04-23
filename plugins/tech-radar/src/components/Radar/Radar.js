@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import { forceCollide, forceSimulation } from 'd3-force';
 import RadarPlot from '../RadarPlot';
 import Segment from '../../utils/segment';
-import Color from 'color';
+import color from 'color';
 
 export default class Radar extends React.Component {
   static adjustQuadrants(quadrants, radius, width, height) {
@@ -102,7 +102,7 @@ export default class Radar extends React.Component {
     });
   }
 
-  static adjustEntries(entries, activeEntry, quadrants, rings, radius, colors) {
+  static adjustEntries(entries, activeEntry, quadrants, rings, radius) {
     let seed = 42;
     entries.forEach((entry, idx) => {
       const quadrant = quadrants.find(q => {
@@ -137,7 +137,7 @@ export default class Radar extends React.Component {
       entry.active = activeEntry ? entry.id === activeEntry.id : false;
       entry.color = entry.active
         ? entry.ring.color
-        : Color(entry.ring.color)
+        : color(entry.ring.color)
             .desaturate(0.5)
             .lighten(0.1)
             .string();
@@ -214,7 +214,7 @@ export default class Radar extends React.Component {
           rings={rings}
           activeEntry={activeEntry}
           onEntryMouseEnter={entry => this._setActiveEntry(entry)}
-          onEntryMouseLeave={entry => this._clearActiveEntry()}
+          onEntryMouseLeave={() => this._clearActiveEntry()}
         />
       </svg>
     );
@@ -227,4 +227,5 @@ Radar.propTypes = {
   quadrants: PropTypes.arrayOf(PropTypes.object).isRequired,
   rings: PropTypes.arrayOf(PropTypes.object).isRequired,
   entries: PropTypes.arrayOf(PropTypes.object).isRequired,
+  svgProps: PropTypes.object,
 };

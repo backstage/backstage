@@ -25,7 +25,6 @@ export default class RadarLegend extends React.PureComponent {
     rings,
     onEntryMouseEnter,
     onEntryMouseLeave,
-    onEntryClick,
   ) {
     return (
       <foreignObject
@@ -44,7 +43,6 @@ export default class RadarLegend extends React.PureComponent {
                 RadarLegend._getSegment(segments, quadrant, ring),
                 onEntryMouseEnter,
                 onEntryMouseLeave,
-                onEntryClick,
               ),
             )}
           </div>
@@ -53,13 +51,7 @@ export default class RadarLegend extends React.PureComponent {
     );
   }
 
-  static _renderRing(
-    ring,
-    entries,
-    onEntryMouseEnter,
-    onEntryMouseLeave,
-    onEntryClick,
-  ) {
+  static _renderRing(ring, entries, onEntryMouseEnter, onEntryMouseLeave) {
     return (
       <div key={ring.id} className={styles.ring}>
         <h3 className={styles.ringHeading}>{ring.name}</h3>
@@ -88,7 +80,6 @@ export default class RadarLegend extends React.PureComponent {
                   onMouseLeave={
                     onEntryMouseEnter && (() => onEntryMouseLeave(entry))
                   }
-                  onClick={onEntryClick && (() => onEntryClick(entry))}
                 >
                   {node}
                 </li>
@@ -111,7 +102,6 @@ export default class RadarLegend extends React.PureComponent {
       entries,
       onEntryMouseEnter,
       onEntryMouseLeave,
-      onEntryClick,
     } = this.props;
 
     const segments = {};
@@ -133,7 +123,6 @@ export default class RadarLegend extends React.PureComponent {
             rings,
             onEntryMouseEnter,
             onEntryMouseLeave,
-            onEntryClick,
           ),
         )}
       </g>
@@ -148,5 +137,4 @@ RadarLegend.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.ENTRY)).isRequired,
   onEntryMouseEnter: PropTypes.func,
   onEntryMouseLeave: PropTypes.func,
-  onEntryClick: PropTypes.func,
 };

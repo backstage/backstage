@@ -37,7 +37,6 @@ export default class RadarPlot extends React.PureComponent {
       activeEntry,
       onEntryMouseEnter,
       onEntryMouseLeave,
-      onEntryClick,
     } = this.props;
 
     return (
@@ -52,7 +51,6 @@ export default class RadarPlot extends React.PureComponent {
           onEntryMouseLeave={
             onEntryMouseLeave && (entry => onEntryMouseLeave(entry))
           }
-          onEntryClick={onEntryClick && (entry => onEntryClick(entry))}
         />
         <g transform={`translate(${width / 2}, ${height / 2})`}>
           <RadarGrid radius={radius} rings={rings} />
@@ -74,7 +72,6 @@ export default class RadarPlot extends React.PureComponent {
               onMouseLeave={
                 onEntryMouseLeave && (() => onEntryMouseLeave(entry))
               }
-              onClick={onEntryClick && (() => onEntryClick(entry))}
             />
           ))}
           <RadarBubble
@@ -100,5 +97,4 @@ RadarPlot.propTypes = {
   activeEntry: PropTypes.object,
   onEntryMouseEnter: PropTypes.func,
   onEntryMouseLeave: PropTypes.func,
-  onEntryClick: PropTypes.func,
 };
