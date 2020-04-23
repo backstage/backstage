@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   sparklinesCell: { minWidth: 120 },
 }));
 
-export const AuditListRow: FC<{
+export const AuditRow: FC<{
   website: Website;
   categorySparkline: SparklinesDataByCategory;
 }> = ({ website, categorySparkline }) => {
@@ -83,4 +83,4 @@ export const AuditListRow: FC<{
   );
 };
 
-export default AuditListRow;
+export default AuditRow;
