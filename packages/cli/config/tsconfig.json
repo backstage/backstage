@@ -8,6 +8,7 @@
     "incremental": true,
     "module": "es6",
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node", "jest"]
   }
 }
