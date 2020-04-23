@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
+/*
+ * Hi!
+ *
+ * Note that this is an EXAMPLE Backstage backend. Please check the README.
+ *
+ * Happy hacking!
+ */
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { testRouter } from './test';
 
-const PORT = 7000;
+const PORT = parseInt(process.env.PORT ?? '', 10) || 7000;
 const app = express();
 
 app.use(helmet());
