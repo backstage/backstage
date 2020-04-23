@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  CssBaseline,
-  makeStyles,
-  Theme,
-  ThemeProvider,
-} from '@material-ui/core';
+import { CssBaseline, ThemeProvider } from '@material-ui/core';
 import { lightTheme, darkTheme } from '@backstage/theme';
 import { createApp } from '@backstage/core';
 import React, { FC } from 'react';
@@ -30,31 +25,12 @@ import * as plugins from './plugins';
 import apis, { alertApiForwarder } from './apis';
 import { ThemeContextType, ThemeContext, useThemeType } from './ThemeContext';
 
-const useStyles = makeStyles(theme => ({
-  '@global': {
-    html: {
-      height: '100%',
-      fontFamily: theme.typography.fontFamily,
-    },
-    body: {
-      height: '100%',
-      fontFamily: theme.typography.fontFamily,
-      'overscroll-behavior-y': 'none',
-    },
-    a: {
-      color: 'inherit',
-      textDecoration: 'none',
-    },
-  },
-}));
-
 const app = createApp();
 app.registerApis(apis);
 app.registerPlugin(...Object.values(plugins));
 const AppComponent = app.build();
 
 const App: FC<{}> = () => {
-  useStyles();
   const [theme, toggleTheme] = useThemeType(
     localStorage.getItem('theme') || 'auto',
   );
@@ -84,7 +60,7 @@ const App: FC<{}> = () => {
   };
   return (
     <ThemeContext.Provider value={themeContext}>
-      <ThemeProvider theme={backstageTheme as Theme}>
+      <ThemeProvider theme={backstageTheme}>
         <CssBaseline>
           <AlertDisplay forwarder={alertApiForwarder} />
           <Router>

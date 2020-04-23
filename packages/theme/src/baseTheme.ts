@@ -68,6 +68,23 @@ export function createThemeOptions(
 
 export function createThemeOverrides(theme: BackstageTheme): Overrides {
   return {
+    MuiCssBaseline: {
+      '@global': {
+        html: {
+          height: '100%',
+          fontFamily: theme.typography.fontFamily,
+        },
+        body: {
+          height: '100%',
+          fontFamily: theme.typography.fontFamily,
+          'overscroll-behavior-y': 'none',
+        },
+        a: {
+          color: 'inherit',
+          textDecoration: 'none',
+        },
+      },
+    },
     MuiTableRow: {
       // Alternating row backgrounds
       root: {
