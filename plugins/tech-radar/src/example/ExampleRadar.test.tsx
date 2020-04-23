@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
-import ExampleRadar from './example/ExampleRadar';
+import React from 'react';
+import { render } from '@testing-library/react';
+import mockFetch from 'jest-fetch-mock';
+import ExampleRadar from './ExampleRadar';
+import { ThemeProvider } from '@material-ui/core';
+import { lightTheme } from '@backstage/theme';
 
-export const plugin = createPlugin({
-  id: 'tech-radar',
-  register({ router }) {
-    router.registerRoute('/tech-radar', ExampleRadar);
-  },
+describe('ExampleRadar', () => {
+  it('should render', () => {
+    mockFetch.mockResponse(() => new Promise(() => {}));
+    const rendered = render(
+      <ThemeProvider theme={lightTheme}>
+        <ExampleRadar />
+      </ThemeProvider>,
+    );
+    expect(rendered.getByText('Welcome to the Tech Radar')).toBeInTheDocument();
+  });
 });
