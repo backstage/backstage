@@ -15,11 +15,11 @@
  */
 
 import { createPlugin } from '@backstage/core';
-import ExampleComponent from './components/ExampleComponent';
+import { GraphiQLPage } from './components';
 
 export const plugin = createPlugin({
   id: 'graphiql',
   register({ router }) {
-    router.registerRoute('/graphiql', ExampleComponent);
+    router.registerRoute('/graphiql', GraphiQLPage);
   },
 });

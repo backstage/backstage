@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-export { default } from './ExampleFetchComponent';
+declare module 'graphiql' {
+  import { FC } from 'react';
+
+  type Props = {
+    fetcher: (params: any) => Promise<any>;
+    schema?: any;
+    storage?: Storage;
+    editorTheme?: string;
+  };
+
+  const GraphiQL: FC<Props>;
+
+  export default GraphiQL;
+}
