@@ -55,7 +55,12 @@ const defaultProps = {
   max: 100,
 };
 
-export function getProgressColor(palette, value, inverse, max) {
+export function getProgressColor(
+  palette: BackstageTheme['palette'],
+  value: number,
+  inverse?: boolean,
+  max?: number,
+) {
   if (isNaN(value)) {
     return '#ddd';
   }
@@ -74,7 +79,7 @@ export function getProgressColor(palette, value, inverse, max) {
 
 const CircleProgress: FC<Props> = props => {
   const classes = useStyles(props);
-  const theme = useTheme();
+  const theme = useTheme<BackstageTheme>();
   const { value, fractional, inverse, unit, max } = {
     ...defaultProps,
     ...props,

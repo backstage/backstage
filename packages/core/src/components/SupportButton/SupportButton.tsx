@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, Fragment, useState } from 'react';
+import React, { FC, Fragment, useState, MouseEventHandler } from 'react';
 import {
   Button,
   Link,
@@ -58,10 +58,10 @@ const SupportButton: FC<Props> = ({
   // TODO: get plugin manifest with hook
 
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
 
-  const onClickHandler = event => {
+  const onClickHandler: MouseEventHandler = event => {
     setAnchorEl(event.currentTarget);
     setPopoverOpen(true);
   };

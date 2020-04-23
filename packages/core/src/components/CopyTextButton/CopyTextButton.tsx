@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useRef, useState, MouseEventHandler } from 'react';
 import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import CopyIcon from '@material-ui/icons/FileCopy';
@@ -66,7 +66,7 @@ const CopyTextButton: FC<Props> = props => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
 
-  const handleCopyClick = e => {
+  const handleCopyClick: MouseEventHandler = e => {
     e.stopPropagation();
     setOpen(true);
 

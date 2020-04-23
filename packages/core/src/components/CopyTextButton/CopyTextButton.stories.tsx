@@ -16,13 +16,13 @@
 
 import React from 'react';
 import CopyTextButton from '.';
-import { ApiProvider, errorApiRef, ApiRegistry } from 'api';
+import { ApiProvider, errorApiRef, ApiRegistry, ErrorApi } from 'api';
 
 export default {
   title: 'CopyTextButton',
   component: CopyTextButton,
   decorators: [
-    storyFn => {
+    (storyFn: () => JSX.Element) => {
       // TODO: move this to common storybook config, requires core package to be separate from components
       const registry = ApiRegistry.from([
         [
@@ -32,7 +32,7 @@ export default {
               // eslint-disable-next-line no-alert
               window.alert(`Component posted error, ${error}`);
             },
-          },
+          } as ErrorApi,
         ],
       ]);
       return <ApiProvider apis={registry} children={storyFn()} />;
