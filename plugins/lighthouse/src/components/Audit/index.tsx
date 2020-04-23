@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useState, useEffect } from 'react';
-import { useInterval, useBoolean } from 'react-use';
+import React, { FC, useState } from 'react';
+import { useInterval } from 'react-use';
 import { Website, lighthouseApiRef } from '../../api';
 import { useApi } from '@backstage/core';
 import {
@@ -29,33 +29,25 @@ export const Audit: FC<{
   categorySparkline: SparklinesDataByCategory;
 }> = ({ website, categorySparkline }) => {
   const lighthouseApi = useApi(lighthouseApiRef);
-  const fetchWebsite = async (auditId: string) => {
-    const response = await lighthouseApi.getWebsiteForAuditId(auditId);
-    return response;
-  };
-  const [delay] = useState(5000);
-  const [isIntervalRunning, toggleInterval] = useBoolean(false);
   const [websiteState, setWebsiteState] = useState(website);
   const [sparklineState, setSparklineState] = useState(categorySparkline);
 
-  useEffect(() => {
-    if (websiteState.lastAudit.status === 'RUNNING') {
-      toggleInterval(true);
-    } else toggleInterval(false);
-  });
+  const runRefresh = async () => {
+    const response = await lighthouseApi.getWebsiteForAuditId(
+      websiteState.lastAudit.id,
+    );
+    const auditStatus = response.lastAudit.status;
+    if (auditStatus === 'COMPLETED' || auditStatus === 'FAILED') {
+      setSparklineState(buildSparklinesDataForItem(response));
+      setWebsiteState(response);
+    }
+  };
 
   useInterval(
-    async () => {
-      const resWebsite = await fetchWebsite(website.lastAudit.id);
-      const auditStatus = resWebsite.lastAudit.status;
-      if (auditStatus === 'COMPLETED' || auditStatus === 'FAILED') {
-        toggleInterval(false);
-        setSparklineState(buildSparklinesDataForItem(resWebsite));
-        setWebsiteState(resWebsite);
-      }
-    },
-    isIntervalRunning ? delay : null,
+    runRefresh,
+    websiteState?.lastAudit.status === 'RUNNING' ? 5000 : null,
   );
+
   return <AuditRow website={websiteState} categorySparkline={sparklineState} />;
 };
 
