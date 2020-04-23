@@ -15,20 +15,26 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import mockFetch from 'jest-fetch-mock';
-import ExampleComponent from './ExampleComponent';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import PropTypes from 'prop-types';
+import styles from './RadarFooter.css';
 
-describe('ExampleComponent', () => {
-  it('should render', () => {
-    mockFetch.mockResponse(() => new Promise(() => {}));
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <ExampleComponent />
-      </ThemeProvider>,
+export default class RadarFooter extends React.PureComponent {
+  render() {
+    const { x, y } = this.props;
+
+    return (
+      <text
+        transform={`translate(${x}, ${y})`}
+        space="preserve"
+        className={styles.text}
+      >
+        {'▲ moved up\u00a0\u00a0\u00a0\u00a0\u00a0▼ moved down'}
+      </text>
     );
-    expect(rendered.getByText('Welcome to tech-radar!')).toBeInTheDocument();
-  });
-});
+  }
+}
+
+RadarFooter.propTypes = {
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+};

@@ -1,0 +1,10 @@
+.text {
+  composes: text from './index.css';
+  font-size: 9px;
+  fill: #fff;
+  text-anchor: middle;
+}
+
+.link {
+  cursor: pointer;
+}

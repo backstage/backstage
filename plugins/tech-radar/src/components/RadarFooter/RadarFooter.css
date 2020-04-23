@@ -1,0 +1,5 @@
+.text {
+  composes: text from './index.css';
+  font-size: 10px;
+  fill: #000;
+}

@@ -1,0 +1,20 @@
+.bubble {
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+}
+
+.visibleBubble {
+  composes: bubble;
+  opacity: 0.8;
+}
+
+.background {
+  fill: #333;
+}
+
+.text {
+  composes: text from './index.css';
+  font-size: 10px;
+  fill: #fff;
+}

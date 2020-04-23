@@ -1,0 +1,51 @@
+.quadrant {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.quadrantHeading {
+  composes: text from './index.css';
+  margin-top: 0;
+  margin-bottom: calc(18px * 0.375);
+  font-size: 18px;
+}
+
+.rings {
+  columns: 3;
+}
+
+.ring {
+  break-inside: avoid-column;
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  font-size: 12px;
+}
+
+.ringHeading {
+  composes: text from './index.css';
+  margin-top: 0;
+  margin-bottom: calc(12px * 0.375);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.ringList {
+  list-style-position: inside;
+  margin-top: 0;
+  padding-left: 0;
+  font-variant-numeric: proportional-nums;
+  -moz-font-feature-settings: 'pnum';
+  -webkit-font-feature-settings: 'pnum';
+  font-feature-settings: 'pnum';
+}
+
+.entry {
+  composes: text from './index.css';
+  font-size: 11px;
+}
+
+.entryLink {
+  pointer-events: auto;
+}

@@ -1,0 +1,18 @@
+.ring {
+  fill: none;
+  stroke: #bbb;
+  stroke-width: 1px;
+}
+
+.axis {
+  fill: none;
+  stroke: #bbb;
+  stroke-width: 1px;
+}
+
+.text {
+  composes: text from './index.css';
+  fill: #e5e5e5;
+  font-size: 25px;
+  font-weight: bold;
+}
