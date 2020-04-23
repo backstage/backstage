@@ -40,10 +40,8 @@ export const Audit: FC<{
   const [delay] = useState(5000);
   const [isIntervalRunning, toggleInterval] = useBoolean(false);
   const [websiteState, setWebsiteState] = useState(website);
+  const [sparklineState, setSparklineState] = useState(categorySparkline);
   const [counter, setCounter] = useState(1);
-  const [audit, setAudit] = useState(
-    <AuditListRow website={website} categorySparkline={categorySparkline} />,
-  );
 
 
   useEffect(() => {
@@ -62,16 +60,13 @@ export const Audit: FC<{
       setCounter(counter + 1);
       if (auditStatus === 'COMPLETED' || auditStatus === 'FAILED') {
         toggleInterval(false);
-        const rebuiltCategorySparkline = buildSparklinesDataForItem(resWebsite);
+        setSparklineState(buildSparklinesDataForItem(resWebsite));
         setWebsiteState(resWebsite);
-        setAudit(
-          <Audit website={resWebsite} categorySparkline={rebuiltCategorySparkline} />
-        );
       }
     },
     isIntervalRunning ? delay : null,
   );
-  return audit;
+  return <AuditListRow website={websiteState} categorySparkline={sparklineState} />;
 };
 
 export default Audit;
