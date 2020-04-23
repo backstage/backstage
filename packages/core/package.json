@@ -35,6 +35,7 @@
     "@types/google-protobuf": "^3.7.2",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
+    "@types/react-helmet": "^5.0.15",
     "@types/react-sparklines": "^1.7.0"
   },
   "dependencies": {

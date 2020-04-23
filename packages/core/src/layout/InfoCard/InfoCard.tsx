@@ -163,10 +163,15 @@ const InfoCard: FC<Props> = ({
   if (variant) {
     const variants = variant.split(/[\s]+/g);
     variants.forEach(name => {
-      calculatedStyle = { ...calculatedStyle, ...VARIANT_STYLES.card[name] };
+      calculatedStyle = {
+        ...calculatedStyle,
+        ...VARIANT_STYLES.card[name as keyof typeof VARIANT_STYLES['card']],
+      };
       calculatedCardStyle = {
         ...calculatedCardStyle,
-        ...VARIANT_STYLES.cardContent[name],
+        ...VARIANT_STYLES.cardContent[
+          name as keyof typeof VARIANT_STYLES['cardContent']
+        ],
       };
     });
   }

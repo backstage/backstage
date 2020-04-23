@@ -29,7 +29,7 @@ export type AlertApi = {
   /**
    * Post an alert for handling by the application.
    */
-  post(alert: AlertMessage);
+  post(alert: AlertMessage): void;
 };
 
 export const alertApiRef = new ApiRef<AlertApi>({

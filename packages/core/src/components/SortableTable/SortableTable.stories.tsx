@@ -33,7 +33,11 @@ const data = [
 const columns = [
   { id: 'id', label: 'ID' },
   { id: 'amount', disablePadding: false, numeric: true, label: 'AMOUNT' },
-  { id: 'status', label: 'STATUS', sortValue: row => row.statusValue },
+  {
+    id: 'status',
+    label: 'STATUS',
+    sortValue: (row: typeof data[0]) => row.statusValue,
+  },
 ];
 const footerData = [
   { id: 'total', amount: 4, statusValue: 2, status: <StatusError /> },
