@@ -11,7 +11,13 @@
 }
 
 .text {
-  composes: text from './index.css';
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  pointer-events: none;
+  user-select: none;
   fill: #e5e5e5;
   font-size: 25px;
   font-weight: bold;

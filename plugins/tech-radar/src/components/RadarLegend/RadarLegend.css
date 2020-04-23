@@ -6,7 +6,13 @@
 }
 
 .quadrantHeading {
-  composes: text from './index.css';
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  pointer-events: none;
+  user-select: none;
   margin-top: 0;
   margin-bottom: calc(18px * 0.375);
   font-size: 18px;
@@ -24,7 +30,13 @@
 }
 
 .ringHeading {
-  composes: text from './index.css';
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  pointer-events: none;
+  user-select: none;
   margin-top: 0;
   margin-bottom: calc(12px * 0.375);
   font-size: 12px;
@@ -42,7 +54,13 @@
 }
 
 .entry {
-  composes: text from './index.css';
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  pointer-events: none;
+  user-select: none;
   font-size: 11px;
 }
 

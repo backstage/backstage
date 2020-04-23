@@ -1,11 +1,11 @@
-.bubble {
+.bubble,
+.visibleBubble {
   pointer-events: none;
   user-select: none;
   opacity: 0;
 }
 
 .visibleBubble {
-  composes: bubble;
   opacity: 0.8;
 }
 
@@ -14,7 +14,13 @@
 }
 
 .text {
-  composes: text from './index.css';
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  pointer-events: none;
+  user-select: none;
   font-size: 10px;
   fill: #fff;
 }
