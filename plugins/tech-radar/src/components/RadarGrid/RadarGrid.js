@@ -93,7 +93,7 @@ class RadarGrid extends React.PureComponent {
 RadarGrid.propTypes = {
   radius: PropTypes.number.isRequired,
   rings: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.RING)).isRequired,
-  classes: PropTypes.array.isRequired, // this is the withStyles HOC
+  classes: PropTypes.object.isRequired, // this is the withStyles HOC
 };
 
 export default withStyles(styles)(RadarGrid);

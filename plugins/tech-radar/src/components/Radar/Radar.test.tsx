@@ -18,11 +18,28 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import GetBBoxPolyfill from '../utils/polyfills/getBBox';
+import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import ExampleRadar from './ExampleRadar';
+import Radar from './Radar';
 
-describe('ExampleRadar', () => {
+const minProps = {
+  width: 500,
+  height: 200,
+  quadrants: [{ id: 'languages', name: 'Languages' }],
+  rings: [{ id: 'use', name: 'USE', color: '#93c47d' }],
+  entries: [
+    {
+      id: 'typescript',
+      title: 'TypeScript',
+      quadrant: 'languages',
+      moved: 0,
+      ring: 'use',
+      url: '#',
+    },
+  ],
+};
+
+describe('Radar', () => {
   beforeAll(() => {
     GetBBoxPolyfill.create(0, 0, 1000, 500);
   });
@@ -32,12 +49,15 @@ describe('ExampleRadar', () => {
   });
 
   it('should render', () => {
-    const { getByText } = render(
+    const rendered = render(
       <ThemeProvider theme={lightTheme}>
-        <ExampleRadar />
+        <Radar {...minProps} />
       </ThemeProvider>,
     );
 
-    expect(getByText('Welcome to the Tech Radar!')).toBeInTheDocument();
+    const svg = rendered.container.querySelector('svg');
+    expect(svg).not.toBeNull();
+    expect(svg!.getAttribute('width')).toEqual('500');
+    expect(svg!.getAttribute('height')).toEqual('200');
   });
 });
