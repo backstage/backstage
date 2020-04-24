@@ -16,9 +16,23 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import styles from './RadarEntry.css';
+import { withStyles } from '@material-ui/core';
 
-export default class RadarEntry extends React.PureComponent {
+const styles = {
+  text: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    fontSize: '9px',
+    fill: '#fff',
+    textAnchor: 'middle',
+  },
+
+  link: {
+    cursor: 'pointer',
+  },
+};
+
+class RadarEntry extends React.PureComponent {
   render() {
     const {
       moved,
@@ -30,6 +44,7 @@ export default class RadarEntry extends React.PureComponent {
       onMouseEnter,
       onMouseLeave,
       onClick,
+      classes,
     } = this.props;
 
     const style = { fill: color };
@@ -45,7 +60,7 @@ export default class RadarEntry extends React.PureComponent {
 
     if (url) {
       blip = (
-        <a href={url} className={styles.link}>
+        <a href={url} className={classes.link}>
           {blip}
         </a>
       );
@@ -59,7 +74,7 @@ export default class RadarEntry extends React.PureComponent {
         onClick={onClick}
       >
         {blip}
-        <text y={3} className={styles.text}>
+        <text y={3} className={classes.text}>
           {number}
         </text>
       </g>
@@ -77,4 +92,7 @@ RadarEntry.propTypes = {
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
   onClick: PropTypes.func,
+  classes: PropTypes.object.isRequired,
 };
+
+export default withStyles(styles)(RadarEntry);
