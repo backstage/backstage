@@ -7822,6 +7822,7 @@ cyclist@^1.0.1:
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 cypress@*, cypress@^4.2.0:
 <<<<<<< HEAD
   version "4.4.1"
@@ -7831,6 +7832,9 @@ cypress@*, cypress@^4.2.0:
 =======
 cypress@*, cypress@4.2.0, cypress@^4.2.0:
 >>>>>>> 91e3670... re-ran yarn install
+=======
+cypress@*, cypress@^4.2.0:
+>>>>>>> 630c24d... added tests for RadarPage
   version "4.2.0"
   resolved "https://registry.npmjs.org/cypress/-/cypress-4.2.0.tgz#45673fb648b1a77b9a78d73e58b89ed05212d243"
   integrity sha512-8LdreL91S/QiTCLYLNbIjLL8Ht4fJmu/4HGLxUI20Tc7JSfqEfCmXELrRfuPT0kjosJwJJZacdSji9XSRkPKUw==
