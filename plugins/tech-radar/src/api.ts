@@ -62,7 +62,7 @@ export const techRadarApiRef = new ApiRef<TechRadarApi>({
 });
 
 export class TechRadar implements TechRadarApi {
-  private defaultAdditionalOpts: object = {
+  private defaultAdditionalOpts: Partial<TechRadarAdditionalOptions> = {
     title: 'Tech Radar',
     subtitle: 'Welcome to the Tech Radar!',
   };
