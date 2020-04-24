@@ -16,9 +16,31 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import styles from './RadarBubble.css';
+import { withStyles } from '@material-ui/core';
 
-export default class RadarBubble extends React.PureComponent {
+const styles = {
+  bubble: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    opacity: 0,
+  },
+  visibleBubble: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    opacity: 0.8,
+  },
+  background: {
+    fill: '#333',
+  },
+  text: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    fontSize: '10px',
+    fill: '#fff',
+  },
+};
+
+class RadarBubble extends React.PureComponent {
   componentDidMount() {
     this._updatePosition();
   }
@@ -64,22 +86,27 @@ export default class RadarBubble extends React.PureComponent {
   }
 
   render() {
-    const { visible, text } = this.props;
+    const { visible, text, classes } = this.props;
     return (
       <g
         ref={this._setNode}
         x={0}
         y={0}
-        className={visible ? styles.visibleBubble : styles.bubble}
+        className={visible ? classes.visibleBubble : classes.bubble}
       >
-        <rect ref={this._setRect} rx={4} ry={4} className={styles.background} />
-        <text ref={this._setText} className={styles.text}>
+        <rect
+          ref={this._setRect}
+          rx={4}
+          ry={4}
+          className={classes.background}
+        />
+        <text ref={this._setText} className={classes.text}>
           {text}
         </text>
         <path
           ref={this._setPath}
           d="M 0,0 10,0 5,8 z"
-          className={styles.background}
+          className={classes.background}
         />
       </g>
     );
@@ -91,4 +118,7 @@ RadarBubble.propTypes = {
   text: PropTypes.string.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
+  classes: PropTypes.object.isRequired,
 };
+
+export default withStyles(styles)(RadarBubble);
