@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "build": "backstage-cli plugin:build",
+    "start": "backstage-cli plugin:serve",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "clean": "backstage-cli clean"
@@ -18,7 +19,8 @@
     "@testing-library/user-event": "^7.1.2",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
-    "@types/testing-library__jest-dom": "5.0.2"
+    "@types/testing-library__jest-dom": "5.0.2",
+    "react-router-dom": "^5.1.2"
   },
   "dependencies": {
     "@backstage/core": "^0.1.1-alpha.4",

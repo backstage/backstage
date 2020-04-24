@@ -31,18 +31,19 @@ export function createConfig(paths: Paths): webpack.Configuration {
     profile: false,
     bail: false,
     devtool: 'cheap-module-eval-source-map',
-    context: paths.appPath,
+    context: paths.targetPath,
     entry: [
       `${require.resolve('webpack-dev-server/client')}?/`,
       require.resolve('webpack/hot/dev-server'),
-      paths.appDevEntry,
+      paths.targetDevEntry,
     ],
     resolve: {
-      extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
+      modules: ['node_modules', paths.targetSrc],
       plugins: [
         new ModuleScopePlugin(
-          [paths.appSrc, paths.appDev],
-          [paths.appPackageJson],
+          [paths.targetSrc, paths.targetDev],
+          [paths.targetPackageJson],
         ),
       ],
     },
@@ -51,7 +52,7 @@ export function createConfig(paths: Paths): webpack.Configuration {
         {
           test: /\.(tsx?|jsx?|mjs)$/,
           enforce: 'pre',
-          include: [paths.appSrc, paths.appDev],
+          include: [paths.targetSrc, paths.targetDev],
           use: {
             loader: 'eslint-loader',
             options: {
@@ -61,7 +62,7 @@ export function createConfig(paths: Paths): webpack.Configuration {
         },
         {
           test: /\.(tsx?|jsx?|mjs)$/,
-          include: [paths.appSrc, paths.appDev],
+          include: [paths.targetSrc, paths.targetDev],
           exclude: /node_modules/,
           loader: 'ts-loader',
           options: {
@@ -72,7 +73,7 @@ export function createConfig(paths: Paths): webpack.Configuration {
         {
           test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.frag/, /\.xml/],
           loader: 'url-loader',
-          include: paths.appAssets,
+          include: paths.targetAssets,
           options: {
             limit: 10000,
             name: 'static/media/[name].[hash:8].[ext]',
@@ -98,15 +99,15 @@ export function createConfig(paths: Paths): webpack.Configuration {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: paths.appHtml,
+        template: paths.targetHtml,
       }),
       new ForkTsCheckerWebpackPlugin({
-        tsconfig: paths.appTsConfig,
+        tsconfig: paths.targetTsConfig,
         eslint: true,
         eslintOptions: {
           parserOptions: {
-            project: paths.appTsConfig,
-            tsconfigRootDir: paths.appPath,
+            project: paths.targetTsConfig,
+            tsconfigRootDir: paths.targetPath,
           },
         },
         reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
