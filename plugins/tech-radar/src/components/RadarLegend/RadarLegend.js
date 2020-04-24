@@ -15,16 +15,67 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core';
 import * as CommonPropTypes from '../../utils/prop-types';
-import styles from './RadarLegend.css';
 
-export default class RadarLegend extends React.PureComponent {
+const styles = {
+  quadrant: {
+    height: '100%',
+    width: '100%',
+    overflow: 'hidden',
+    pointerEvents: 'none',
+  },
+  quadrantHeading: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    marginTop: 0,
+    marginBottom: 'calc(18px * 0.375)',
+    fontSize: '18px',
+  },
+  rings: {
+    columns: 3,
+  },
+  ring: {
+    breakInside: 'avoid-column',
+    pageBreakInside: 'avoid',
+    '-webkit-column-break-inside': 'avoid',
+    fontSize: '12px',
+  },
+  ringHeading: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    marginTop: 0,
+    marginBottom: 'calc(12px * 0.375)',
+    fontSize: '12px',
+    fontWeight: 800,
+  },
+  ringList: {
+    listStylePosition: 'inside',
+    marginTop: 0,
+    paddingLeft: 0,
+    fontVariantNumeric: 'proportional-nums',
+    '-moz-font-feature-settings': 'pnum',
+    '-webkit-font-feature-settings': 'pnum',
+    'font-feature-settings': 'pnum',
+  },
+  entry: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    fontSize: '11px',
+  },
+  entryLink: {
+    pointerEvents: 'none',
+  },
+};
+
+class RadarLegend extends React.PureComponent {
   static _renderQuadrant(
     segments,
     quadrant,
     rings,
     onEntryMouseEnter,
     onEntryMouseLeave,
+    classes,
   ) {
     return (
       <foreignObject
@@ -34,15 +85,16 @@ export default class RadarLegend extends React.PureComponent {
         width={quadrant.legendWidth}
         height={quadrant.legendHeight}
       >
-        <div className={styles.quadrant}>
-          <h2 className={styles.quadrantHeading}>{quadrant.name}</h2>
-          <div className={styles.rings}>
+        <div className={classes.quadrant}>
+          <h2 className={classes.quadrantHeading}>{quadrant.name}</h2>
+          <div className={classes.rings}>
             {rings.map(ring =>
               RadarLegend._renderRing(
                 ring,
                 RadarLegend._getSegment(segments, quadrant, ring),
                 onEntryMouseEnter,
                 onEntryMouseLeave,
+                classes,
               ),
             )}
           </div>
@@ -51,20 +103,26 @@ export default class RadarLegend extends React.PureComponent {
     );
   }
 
-  static _renderRing(ring, entries, onEntryMouseEnter, onEntryMouseLeave) {
+  static _renderRing(
+    ring,
+    entries,
+    onEntryMouseEnter,
+    onEntryMouseLeave,
+    classes,
+  ) {
     return (
-      <div key={ring.id} className={styles.ring}>
-        <h3 className={styles.ringHeading}>{ring.name}</h3>
+      <div key={ring.id} className={classes.ring}>
+        <h3 className={classes.ringHeading}>{ring.name}</h3>
         {entries.length === 0 ? (
           <p>(empty)</p>
         ) : (
-          <ol className={styles.ringList}>
+          <ol className={classes.ringList}>
             {entries.map(entry => {
-              let node = <span className={styles.entry}>{entry.title}</span>;
+              let node = <span className={classes.entry}>{entry.title}</span>;
 
               if (entry.url) {
                 node = (
-                  <a className={styles.entryLink} href={entry.url}>
+                  <a className={classes.entryLink} href={entry.url}>
                     {node}
                   </a>
                 );
@@ -102,6 +160,7 @@ export default class RadarLegend extends React.PureComponent {
       entries,
       onEntryMouseEnter,
       onEntryMouseLeave,
+      classes,
     } = this.props;
 
     const segments = {};
@@ -123,6 +182,7 @@ export default class RadarLegend extends React.PureComponent {
             rings,
             onEntryMouseEnter,
             onEntryMouseLeave,
+            classes,
           ),
         )}
       </g>
@@ -137,4 +197,7 @@ RadarLegend.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.ENTRY)).isRequired,
   onEntryMouseEnter: PropTypes.func,
   onEntryMouseLeave: PropTypes.func,
+  classes: PropTypes.object.isRequired,
 };
+
+export default withStyles(styles)(RadarLegend);
