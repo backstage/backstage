@@ -18,19 +18,32 @@
 // SVGGElement.prototype.getBBox to calculate boundaries.
 // JSDOM doesn't support this: https://github.com/jsdom/jsdom/issues/1664
 class GetBBoxPolyfill {
+  static exists(): boolean {
+    // @ts-ignore
+    return typeof window.Element.prototype.getBBox !== 'undefined';
+  }
+
   static create(
     x: number = 0,
     y: number = 0,
     width: number = 1000,
     height: number = 500,
-  ) {
+  ): void {
+    if (this.exists()) {
+      return;
+    }
+
     Object.defineProperty(window.Element.prototype, 'getBBox', {
       writable: false,
       value: () => ({ x, y, width, height }),
     });
   }
 
-  static remove() {
+  static remove(): void {
+    if (!this.exists()) {
+      return;
+    }
+
     // @ts-ignore
     delete window.Element.prototype.getBBox;
   }
