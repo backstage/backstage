@@ -34,9 +34,6 @@
     "lint-staged": "^10.1.0",
     "prettier": "^1.19.1"
   },
-  "resolutions": {
-    "**/cypress": "4.2.0"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
