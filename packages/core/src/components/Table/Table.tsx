@@ -17,16 +17,48 @@
 import React, { FC } from 'react';
 import { useTable, useGlobalFilter, useSortBy } from 'react-table';
 import type { Column } from 'react-table';
+import classNames from 'classnames';
 
-import MUITable from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
+import {
+  Table as MUITable,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  TextField,
+  makeStyles,
+} from '@material-ui/core';
 
-import TextField from '@material-ui/core/TextField';
+const useHighlightCellStyles = makeStyles(theme => ({
+  root: {
+    color: theme.palette.grey[900],
+  }
+}));
+
+const useCellStyles = makeStyles(theme => ({
+  root: {
+    padding: theme.spacing(1, 2, 1, 2),
+  }
+}));
+
+const useHeadStyles = makeStyles(theme => ({
+  root: {
+    '&:first-child': {
+      fontWeight: 'bold',
+    },
+    borderBottom: `1px solid ${theme.palette.grey[500]}`,
+    borderTop: `1px solid ${theme.palette.grey[500]}`,
+    textTransform: 'uppercase',
+  },
+}));
+
+const useSortLabelStyles = makeStyles(theme => ({
+  icon: {
+    margin: theme.spacing(0, 0.5, 0, 0.5),
+  }
+}));
 
 type GlobalFilterProps = {
   setGlobalFilter: any;
@@ -55,6 +87,7 @@ const GlobalFilter: FC<GlobalFilterProps> = ({
 
 export type ColumnProps = {
   align?: string;
+  highlight?: boolean;
 };
 
 type TableProps = {
@@ -64,6 +97,11 @@ type TableProps = {
 };
 
 const Table: FC<TableProps> = ({ columns, data, showFilter = true }) => {
+  const headerClasses = useHeadStyles();
+  const sortLabelClasses = useSortLabelStyles();
+  const cellClasses = useCellStyles();
+  const highlightClasses = useHighlightCellStyles();
+
   const {
     getTableProps,
     headerGroups,
@@ -97,10 +135,16 @@ const Table: FC<TableProps> = ({ columns, data, showFilter = true }) => {
               <TableRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => (
                   <TableCell
+                    className={classNames(
+                      headerClasses.root,
+                      cellClasses.root,
+                      {[highlightClasses.root]: column.highlight}
+                    )}
                     align={column.align === 'right' ? 'right' : 'left'}
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                   >
                     <TableSortLabel
+                      classes={sortLabelClasses}
                       active={column.isSorted}
                       direction={column.isSortedDesc ? 'desc' : 'asc'}
                     >
@@ -112,13 +156,14 @@ const Table: FC<TableProps> = ({ columns, data, showFilter = true }) => {
             ))}
           </TableHead>
           <TableBody>
-            {rows.map((row, i) => {
+            {rows.map((row, _i) => {
               prepareRow(row);
               return (
                 <TableRow {...row.getRowProps()}>
                   {row.cells.map(cell => {
                     return (
                       <TableCell
+                        className={cellClasses.root}
                         align={cell.column.align === 'right' ? 'right' : 'left'}
                         {...cell.getCellProps()}
                       >

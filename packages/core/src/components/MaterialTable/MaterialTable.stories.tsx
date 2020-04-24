@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import Table from './Table';
+import MaterialTable from './MaterialTable';
 import InfoCard from '../../layout/InfoCard';
 
 export default {
-  title: 'Table',
-  component: Table,
+  title: 'Material Table',
+  component: MaterialTable,
   decorators: [story => <InfoCard title="Table">{story()}</InfoCard>],
 };
 
@@ -40,34 +40,34 @@ const generateTestData: (number) => Array<{}> = (rows = 20) => {
 
 const testColumns = [
   {
-    Header: 'Column 1',
-    accessor: 'col1',
-    highlight: true,
+    title: 'Column 1',
+    field: 'col1',
+    headerStyle: {
+      color: '#000000',
+    }
   },
   {
-    Header: 'Column 2',
-    accessor: 'col2',
+    title: 'Column 2',
+    field: 'col2',
   },
   {
-    Header: 'Numeric value',
-    accessor: 'number',
-    align: 'right',
-    sortType: 'basic',
+    title: 'Numeric value',
+    field: 'number',
+    type: 'numeric',
   },
   {
-    Header: 'A Date',
-    accessor: 'date',
-    sortType: 'datetime',
-    Cell: ({ value }) => value.toLocaleDateString(),
+    title: 'A Date',
+    field: 'date',
+    render: ({ date }) => date.toLocaleDateString(),
   },
 ];
 
 const testData100 = generateTestData(100);
 
 export const DefaultTable = () => {
-  return <Table data={testData100} columns={testColumns} />;
+  return <MaterialTable data={testData100} columns={testColumns} />;
 };
 
 export const HiddenFilterTable = () => {
-  return <Table showFilter={false} data={testData100} columns={testColumns} />;
+  return <MaterialTable data={testData100} columns={testColumns} />;
 };
