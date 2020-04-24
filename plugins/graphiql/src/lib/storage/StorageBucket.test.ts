@@ -28,6 +28,13 @@ describe('StorageBucket', () => {
     }).toThrow('Direct property access is not allowed for StorageBuckets');
   });
 
+  it('should not implement all methods', () => {
+    const bucket = StorageBucket.forLocalStorage('hello');
+
+    expect(() => bucket.length).toThrow('Method not implemented.');
+    expect(() => bucket.key()).toThrow('Method not implemented.');
+  });
+
   describe('with mocked underlying storage', () => {
     const mockStorage = {
       getItem: jest.fn(),
@@ -84,6 +91,50 @@ describe('StorageBucket', () => {
       expect(bucket.getItem('x')).toBe('X');
 
       expect(mockStorage.getItem).toHaveBeenCalledTimes(1);
+      expect(mockStorage.getItem).toHaveBeenLastCalledWith('my-bucket');
+      expect(mockStorage.setItem).toHaveBeenCalledTimes(0);
+      expect(mockStorage.removeItem).toHaveBeenCalledTimes(0);
+    });
+
+    it('should remove an item', () => {
+      mockStorage.getItem.mockReturnValueOnce(
+        JSON.stringify({ x: 'X', y: 'Y' }),
+      );
+      bucket.removeItem('x');
+
+      expect(mockStorage.getItem).toHaveBeenCalledTimes(1);
+      expect(mockStorage.getItem).toHaveBeenLastCalledWith('my-bucket');
+      expect(mockStorage.setItem).toHaveBeenCalledTimes(1);
+      expect(mockStorage.setItem).toHaveBeenLastCalledWith(
+        'my-bucket',
+        JSON.stringify({ y: 'Y' }),
+      );
+      expect(mockStorage.removeItem).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not bother to write when deleting a missing key', () => {
+      mockStorage.getItem.mockReturnValueOnce(JSON.stringify({ y: 'Y' }));
+      bucket.removeItem('x');
+
+      expect(mockStorage.getItem).toHaveBeenCalledTimes(1);
+      expect(mockStorage.getItem).toHaveBeenLastCalledWith('my-bucket');
+      expect(mockStorage.setItem).toHaveBeenCalledTimes(0);
+      expect(mockStorage.removeItem).toHaveBeenCalledTimes(0);
+    });
+
+    it('should ignore bad data', () => {
+      mockStorage.getItem.mockReturnValue('derp');
+
+      expect(bucket.getItem('x')).toBe(null);
+
+      expect(mockStorage.getItem).toHaveBeenCalledTimes(1);
+      expect(mockStorage.getItem).toHaveBeenLastCalledWith('my-bucket');
+      expect(mockStorage.setItem).toHaveBeenCalledTimes(0);
+      expect(mockStorage.removeItem).toHaveBeenCalledTimes(0);
+
+      bucket.removeItem('x');
+
+      expect(mockStorage.getItem).toHaveBeenCalledTimes(2);
       expect(mockStorage.getItem).toHaveBeenLastCalledWith('my-bucket');
       expect(mockStorage.setItem).toHaveBeenCalledTimes(0);
       expect(mockStorage.removeItem).toHaveBeenCalledTimes(0);

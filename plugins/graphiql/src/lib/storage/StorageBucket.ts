@@ -71,8 +71,8 @@ export class StorageBucket implements Storage {
       return;
     }
 
-    const deleted = delete data[key];
-    if (deleted) {
+    if (key in data) {
+      delete data[key];
       this.write(data);
     }
   }
