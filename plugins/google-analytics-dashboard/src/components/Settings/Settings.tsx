@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
-export { plugin as GoogleAnalyticsDashboard } from '@backstage/plugin-google-analytics-dashboard';
+import React, { FC } from 'react';
+import { InfoCard, StructuredMetadataTable } from '@backstage/core';
+import TimeRange from 'components/TimeRange';
+import Views from 'components/Views';
+import Accounts from 'components/Accounts';
+
+const Settings: FC<{}> = () => {
+  const metadata = {
+    account: <Accounts />,
+    view: <Views />,
+    timerange: <TimeRange />,
+  };
+
+  return (
+    <InfoCard title="Settings">
+      <StructuredMetadataTable metadata={metadata} />
+    </InfoCard>
+  );
+};
+
+export default Settings;

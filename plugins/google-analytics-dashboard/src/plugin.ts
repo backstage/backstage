@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
-export { plugin as GoogleAnalyticsDashboard } from '@backstage/plugin-google-analytics-dashboard';
+import { createPlugin } from '@backstage/core';
+import Home from './components/Home';
+
+export const plugin = createPlugin({
+  id: 'google-analytics-dashboard',
+  register({ router }) {
+    router.registerRoute('/google-analytics-dashboard', Home);
+  },
+});

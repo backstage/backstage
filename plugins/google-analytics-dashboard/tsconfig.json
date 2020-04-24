@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "baseUrl": "src",
+    "types": ["gapi.client", "gapi.client.analytics"]
+  }
+}
