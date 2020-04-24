@@ -16,17 +16,26 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import styles from './RadarFooter.css';
+import { withStyles } from '@material-ui/core';
 
-export default class RadarFooter extends React.PureComponent {
+const styles = {
+  text: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    fontSize: '10px',
+    fill: '#000',
+  },
+};
+
+class RadarFooter extends React.PureComponent {
   render() {
-    const { x, y } = this.props;
+    const { x, y, classes } = this.props;
 
     return (
       <text
         transform={`translate(${x}, ${y})`}
         space="preserve"
-        className={styles.text}
+        className={classes.text}
       >
         {'▲ moved up\u00a0\u00a0\u00a0\u00a0\u00a0▼ moved down'}
       </text>
@@ -37,4 +46,7 @@ export default class RadarFooter extends React.PureComponent {
 RadarFooter.propTypes = {
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
+  classes: PropTypes.object.isRequired,
 };
+
+export default withStyles(styles)(RadarFooter);
