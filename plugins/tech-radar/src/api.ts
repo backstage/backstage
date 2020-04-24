@@ -49,12 +49,12 @@ export interface TechRadarAdditionalOptions {
   svgProps?: object;
 }
 
-export type TechRadarApi = {
+export interface TechRadarApi {
   width: number;
   height: number;
   load: () => Promise<TechRadarLoaderResponse>;
   additionalOpts: TechRadarAdditionalOptions;
-};
+}
 
 export const techRadarApiRef = new ApiRef<TechRadarApi>({
   id: 'plugin.techradar',

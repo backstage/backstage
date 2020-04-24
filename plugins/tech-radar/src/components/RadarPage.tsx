@@ -27,9 +27,9 @@ import {
   ErrorApi,
 } from '@backstage/core';
 import Radar from '../components/Radar';
-import { techRadarApiRef, TechRadar, TechRadarLoaderResponse } from '../api';
+import { techRadarApiRef, TechRadarApi, TechRadarLoaderResponse } from '../api';
 
-const useTechRadarLoader = (techRadarApi: TechRadar) => {
+const useTechRadarLoader = (techRadarApi: TechRadarApi) => {
   const [state, setState] = useState<{
     loading: boolean;
     error?: Error;
@@ -60,7 +60,7 @@ const useTechRadarLoader = (techRadarApi: TechRadar) => {
 
 const RadarPage: FC<{}> = () => {
   const errorApi = useApi<ErrorApi>(errorApiRef);
-  const techRadarApi = useApi<TechRadar>(techRadarApiRef);
+  const techRadarApi = useApi<TechRadarApi>(techRadarApiRef);
   const { loading, error, data } = useTechRadarLoader(techRadarApi);
 
   useEffect(() => {
