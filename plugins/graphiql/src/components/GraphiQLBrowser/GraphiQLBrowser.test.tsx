@@ -16,22 +16,42 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import mockFetch from 'jest-fetch-mock';
-import { GraphiQLPage } from './GraphiQLPage';
+import { GraphiQLBrowser } from './GraphiQLBrowser';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 
 jest.mock('graphiql', () => () => '<GraphiQL />');
 
-describe('GraphiQLPage', () => {
-  it('should render', () => {
-    mockFetch.mockResponse(() => new Promise(() => {}));
+describe('GraphiQLBrowser', () => {
+  it('should render error text if there are no endpoints', () => {
     const rendered = render(
       <ThemeProvider theme={lightTheme}>
-        <GraphiQLPage />
+        <GraphiQLBrowser endpoints={[]} />
       </ThemeProvider>,
     );
-    expect(rendered.getByText('GraphiQL')).toBeInTheDocument();
-    expect(rendered.getByText('<GraphiQL />')).toBeInTheDocument();
+    rendered.getByText('No endpoints available');
+  });
+
+  it('should render endpoint tabs', () => {
+    const rendered = render(
+      <ThemeProvider theme={lightTheme}>
+        <GraphiQLBrowser
+          endpoints={[
+            {
+              id: 'a',
+              title: 'Endpoint A',
+              async fetcher() {},
+            },
+            {
+              id: 'b',
+              title: 'Endpoint B',
+              async fetcher() {},
+            },
+          ]}
+        />
+      </ThemeProvider>,
+    );
+    rendered.getByText('Endpoint A');
+    rendered.getByText('Endpoint B');
   });
 });
