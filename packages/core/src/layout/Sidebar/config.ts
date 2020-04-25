@@ -18,6 +18,7 @@ import { createContext } from 'react';
 
 const drawerWidthClosed = 72;
 const iconPadding = 24;
+const userBadgePadding = 18;
 
 export const sidebarConfig = {
   drawerWidthClosed,
@@ -32,13 +33,15 @@ export const sidebarConfig = {
   iconSize: drawerWidthClosed - iconPadding * 2,
   iconPadding,
   selectedIndicatorWidth: 3,
+  userBadgePadding,
+  userBadgeDiameter: drawerWidthClosed - userBadgePadding * 2,
 };
 
-export const SIDEBAR_INTRO_LOCAL_STORAGE = '@backstage/core/sidebar-intro-dismissed'
+export const SIDEBAR_INTRO_LOCAL_STORAGE =
+  '@backstage/core/sidebar-intro-dismissed';
 
 type SidebarContextType = {
   isOpen: boolean;
-  pathname?: string;
 };
 
 export const SidebarContext = createContext<SidebarContextType>({

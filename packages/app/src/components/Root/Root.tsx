@@ -31,8 +31,8 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
+  SidebarUserBadge,
 } from '@backstage/core';
-import ToggleThemeSidebarItem from './ToggleThemeSidebarItem';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -98,7 +98,8 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarItem icon={AccountTreeIcon} to="/catalog" text="Catalog" />
       <SidebarDivider />
       <SidebarSpace />
-      <ToggleThemeSidebarItem />
+      <SidebarDivider />
+      <SidebarUserBadge />
     </Sidebar>
     {children}
   </SidebarPage>
