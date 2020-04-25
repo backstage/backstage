@@ -33,14 +33,8 @@ import express from 'express';
 export const router = express.Router();
 
 router.get('/v1/templates', async (_, res) => {
-  res
-    .status(200)
-    .send([
-      { id: 'component1' },
-      { id: 'component2' },
-      { id: 'component3' },
-      { id: 'component4' },
-    ]);
+  const templates = await Repository.list();
+  res.status(200).json(templates);
 });
 
 router.get('/v1/template/:templateId', async (_, res) => {
