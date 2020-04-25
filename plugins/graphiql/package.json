@@ -1,10 +1,23 @@
 {
   "name": "@backstage/plugin-graphiql",
+  "description": "Backstage plugin for browsing GraphQL APIs",
   "version": "0.1.1-alpha.4",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/spotify/backstage/tree/master/plugins/graphiql#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spotify/backstage",
+    "directory": "plugins/graphiql"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
-  "license": "Apache-2.0",
-  "private": true,
   "scripts": {
     "build": "backstage-cli plugin:build",
     "start": "backstage-cli plugin:serve",
@@ -34,5 +47,8 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-use": "^13.0.0"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
