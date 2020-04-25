@@ -28,8 +28,9 @@ export type EndpointConfig = {
   headers?: { [name in string]: string };
 };
 
-export class GraphQLBrowser implements GraphQLBrowseApi {
-  static createEndpoint(config: EndpointConfig): GraphQLEndpoint {
+export class GraphQLEndpoints implements GraphQLBrowseApi {
+  // Create a support
+  static create(config: EndpointConfig): GraphQLEndpoint {
     const { id, title, url, method = 'POST' } = config;
     return {
       id,
@@ -50,8 +51,8 @@ export class GraphQLBrowser implements GraphQLBrowseApi {
     };
   }
 
-  static fromEndpoints(endpoints: GraphQLEndpoint[]) {
-    return new GraphQLBrowser(endpoints);
+  static from(endpoints: GraphQLEndpoint[]) {
+    return new GraphQLEndpoints(endpoints);
   }
 
   private constructor(private readonly endpoints: GraphQLEndpoint[]) {}

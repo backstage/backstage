@@ -28,15 +28,15 @@ import {
   ApiRegistry,
 } from '@backstage/core';
 import { lightTheme } from '@backstage/theme';
-import { plugin, GraphQLBrowser, graphQlBrowseApiRef } from '../src';
+import { plugin, GraphQLEndpoints, graphQlBrowseApiRef } from '../src';
 
-const graphQlBrowseApi = GraphQLBrowser.fromEndpoints([
-  GraphQLBrowser.createEndpoint({
+const graphQlBrowseApi = GraphQLEndpoints.from([
+  GraphQLEndpoints.create({
     id: 'gitlab',
     title: 'GitLab',
     url: 'https://gitlab.com/api/graphql',
   }),
-  GraphQLBrowser.createEndpoint({
+  GraphQLEndpoints.create({
     id: 'countries',
     title: 'Countries',
     url: 'https://countries.trevorblades.com/',

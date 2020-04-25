@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './GraphQLBrowser';
+export * from './GraphQLEndpoints';
 export * from './types';
