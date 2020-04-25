@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './lib/api';
+export * from './GraphiQLBrowser';

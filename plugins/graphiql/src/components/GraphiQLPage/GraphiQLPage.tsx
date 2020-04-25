@@ -14,56 +14,51 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
-import { Tabs, Tab, makeStyles } from '@material-ui/core';
-import { Page, pageTheme, Content, Header, HeaderLabel } from '@backstage/core';
+import React, { FC } from 'react';
+import {
+  Content,
+  Header,
+  HeaderLabel,
+  Page,
+  Progress,
+  pageTheme,
+  useApi,
+} from '@backstage/core';
+import { useAsync } from 'react-use';
 import 'graphiql/graphiql.css';
-import GraphiQL from 'graphiql';
-import { StorageBucket } from 'lib/storage';
-
-const tabs = [
-  {
-    id: 'gitlab',
-    title: 'GitLab',
-    fetcher: async (params: any) => {
-      const res = await fetch('https://gitlab.com/api/graphql', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
-      });
-      return res.json();
-    },
-  },
-  {
-    id: 'countries',
-    title: 'Countries',
-    fetcher: async (params: any) => {
-      const res = await fetch('https://countries.trevorblades.com/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
-      });
-      return res.json();
-    },
-  },
-];
-
-const useStyles = makeStyles({
-  root: {
-    '@global': {
-      '.graphiql-container': {
-        boxSizing: 'initial',
-      },
-    },
-  },
-});
+import { graphQlBrowseApiRef } from 'lib/api';
+import { GraphiQLBrowser } from 'components';
+import { Typography } from '@material-ui/core';
 
 export const GraphiQLPage: FC<{}> = () => {
-  const classes = useStyles();
-  const [tabIndex, setTabIndex] = useState(0);
+  const graphQlBrowseApi = useApi(graphQlBrowseApiRef);
+  const endpoints = useAsync(() => graphQlBrowseApi.getEndpoints());
 
-  const { id, fetcher } = tabs[tabIndex];
-  const storage = StorageBucket.forLocalStorage(`plugin/graphiql/data/${id}`);
+  let content: JSX.Element;
+
+  if (endpoints.loading) {
+    content = (
+      <Content>
+        <Progress />
+      </Content>
+    );
+  } else if (endpoints.error) {
+    content = (
+      <Content>
+        <Typography variant="h4" color="error">
+          Failed to load GraphQL endpoints, {endpoints.error}
+          <br />
+          We also need a proper error component
+        </Typography>
+      </Content>
+    );
+  } else {
+    content = (
+      <Content noPadding>
+        <GraphiQLBrowser endpoints={endpoints.value!} />
+      </Content>
+    );
+  }
 
   return (
     <Page theme={pageTheme.tool}>
@@ -71,14 +66,7 @@ export const GraphiQLPage: FC<{}> = () => {
         <HeaderLabel label="Owner" value="Spotify" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
-      <Content noPadding className={classes.root}>
-        <Tabs value={tabIndex} onChange={(_, value) => setTabIndex(value)}>
-          {tabs.map(({ title }, index) => (
-            <Tab key={index} label={title} value={index} />
-          ))}
-        </Tabs>
-        <GraphiQL key={tabIndex} fetcher={fetcher} storage={storage} />
-      </Content>
+      {content}
     </Page>
   );
 };
