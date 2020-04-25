@@ -28,5 +28,8 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.9.1"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

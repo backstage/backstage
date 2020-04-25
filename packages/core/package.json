@@ -55,5 +55,8 @@
     "react-router-dom": "^5.1.2",
     "react-sparklines": "^1.7.0",
     "recompose": "0.30.0"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
