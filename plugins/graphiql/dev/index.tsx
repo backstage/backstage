@@ -25,11 +25,26 @@ import {
   Sidebar,
   SidebarItem,
   SidebarSpacer,
+  ApiRegistry,
 } from '@backstage/core';
 import { lightTheme } from '@backstage/theme';
-import { plugin } from '../src/plugin';
+import { plugin, GraphQLBrowser, graphQlBrowseApiRef } from '../src';
+
+const graphQlBrowseApi = GraphQLBrowser.fromEndpoints([
+  GraphQLBrowser.createEndpoint({
+    id: 'gitlab',
+    title: 'GitLab',
+    url: 'https://gitlab.com/api/graphql',
+  }),
+  GraphQLBrowser.createEndpoint({
+    id: 'countries',
+    title: 'Countries',
+    url: 'https://countries.trevorblades.com/',
+  }),
+]);
 
 const app = createApp();
+app.registerApis(ApiRegistry.from([[graphQlBrowseApiRef, graphQlBrowseApi]]));
 app.registerPlugin(plugin);
 const AppComponent = app.build();
 
