@@ -2,7 +2,7 @@
 
 This plugin integrates [GraphiQL](https://github.com/graphql/graphiql) as a tool to browse GraphiQL endpoints inside Backstage.
 
-The purpose of the plugin is to provide a convenient way for developers to try out GraphQL queries in their own environemnt.
+The purpose of the plugin is to provide a convenient way for developers to try out GraphQL queries in their own environment.
 By exposing GraphiQL as a plugin instead of a standalone app, it's possible to provide a preconfigured environment for engineers, and also tie into authentication providers already inside Backstage.
 
 ## Getting Started
