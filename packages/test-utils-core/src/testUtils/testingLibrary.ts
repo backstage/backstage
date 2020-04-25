@@ -27,7 +27,7 @@ export async function renderWithEffects(
   nodes: ReactElement,
 ): Promise<RenderResult> {
   let value: RenderResult;
-  await act(() => {
+  await act(async () => {
     value = render(nodes);
   });
   // @ts-ignore
