@@ -16,4 +16,3 @@
 export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
 export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
 export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as Graphiql } from '@backstage/plugin-graphiql';
