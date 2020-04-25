@@ -15,23 +15,74 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import mockFetch from 'jest-fetch-mock';
 import { GraphiQLPage } from './GraphiQLPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
+import { renderWithEffects } from '@backstage/test-utils';
+import { GraphQLBrowseApi, graphQlBrowseApiRef } from 'lib/api';
 
-jest.mock('graphiql', () => () => '<GraphiQL />');
+jest.mock('components/GraphiQLBrowser', () => ({
+  GraphiQLBrowser: () => '<GraphiQLBrowser />',
+}));
 
 describe('GraphiQLPage', () => {
-  it('should render', () => {
-    mockFetch.mockResponse(() => new Promise(() => {}));
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <GraphiQLPage />
-      </ThemeProvider>,
+  it('should show progress', async () => {
+    const loadingApi: GraphQLBrowseApi = {
+      async getEndpoints() {
+        await new Promise(() => {});
+        return [];
+      },
+    };
+
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={ApiRegistry.from([[graphQlBrowseApiRef, loadingApi]])}>
+        <ThemeProvider theme={lightTheme}>
+          <GraphiQLPage />
+        </ThemeProvider>
+        ,
+      </ApiProvider>,
     );
-    expect(rendered.getByText('GraphiQL')).toBeInTheDocument();
-    expect(rendered.getByText('<GraphiQL />')).toBeInTheDocument();
+
+    rendered.getByText('GraphiQL');
+    rendered.getByTestId('progress');
+  });
+
+  it('should show error', async () => {
+    const loadingApi: GraphQLBrowseApi = {
+      async getEndpoints() {
+        throw new Error('NOPE');
+      },
+    };
+
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={ApiRegistry.from([[graphQlBrowseApiRef, loadingApi]])}>
+        <ThemeProvider theme={lightTheme}>
+          <GraphiQLPage />
+        </ThemeProvider>
+      </ApiProvider>,
+    );
+
+    rendered.getByText('GraphiQL');
+    rendered.getByText('Failed to load GraphQL endpoints, Error: NOPE');
+  });
+
+  it('should show GraphiQLBrowser', async () => {
+    const loadingApi: GraphQLBrowseApi = {
+      async getEndpoints() {
+        return [];
+      },
+    };
+
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={ApiRegistry.from([[graphQlBrowseApiRef, loadingApi]])}>
+        <ThemeProvider theme={lightTheme}>
+          <GraphiQLPage />
+        </ThemeProvider>
+      </ApiProvider>,
+    );
+
+    rendered.getByText('GraphiQL');
+    rendered.getByText('<GraphiQLBrowser />');
   });
 });

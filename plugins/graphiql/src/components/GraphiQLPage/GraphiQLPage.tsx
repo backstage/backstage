@@ -46,9 +46,8 @@ export const GraphiQLPage: FC<{}> = () => {
     content = (
       <Content>
         <Typography variant="h4" color="error">
-          Failed to load GraphQL endpoints, {endpoints.error}
-          <br />
-          We also need a proper error component
+          {/* TODO: provide a proper error component */}
+          Failed to load GraphQL endpoints, {String(endpoints.error)}
         </Typography>
       </Content>
     );
