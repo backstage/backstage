@@ -30,8 +30,11 @@ export const sidebarConfig = {
   logoHeight: 32,
   iconContainerWidth: drawerWidthClosed,
   iconSize: drawerWidthClosed - iconPadding * 2,
+  iconPadding,
   selectedIndicatorWidth: 3,
 };
+
+export const SIDEBAR_INTRO_LOCAL_STORAGE = '@backstage/core/sidebar-intro-dismissed'
 
 type SidebarContextType = {
   isOpen: boolean;
