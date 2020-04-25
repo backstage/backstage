@@ -15,17 +15,21 @@
  */
 
 import React, { FC, useState } from 'react';
-import { Tabs, Tab, makeStyles, Typography } from '@material-ui/core';
+import { Tabs, Tab, makeStyles, Typography, Divider } from '@material-ui/core';
 import 'graphiql/graphiql.css';
 import GraphiQL from 'graphiql';
 import { StorageBucket } from 'lib/storage';
 import { GraphQLEndpoint } from 'lib/api';
+import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     height: '100%',
     display: 'flex',
     flexFlow: 'column nowrap',
+  },
+  tabs: {
+    background: theme.palette.background.paper,
   },
   graphiQlWrapper: {
     flex: 1,
@@ -35,7 +39,7 @@ const useStyles = makeStyles({
       },
     },
   },
-});
+}));
 
 type GraphiQLBrowserProps = {
   endpoints: GraphQLEndpoint[];
@@ -55,6 +59,7 @@ export const GraphiQLBrowser: FC<GraphiQLBrowserProps> = ({ endpoints }) => {
   return (
     <div className={classes.root}>
       <Tabs
+        classes={{ root: classes.tabs }}
         value={tabIndex}
         onChange={(_, value) => setTabIndex(value)}
         indicatorColor="primary"
@@ -63,6 +68,7 @@ export const GraphiQLBrowser: FC<GraphiQLBrowserProps> = ({ endpoints }) => {
           <Tab key={index} label={title} value={index} />
         ))}
       </Tabs>
+      <Divider />
       <div className={classes.graphiQlWrapper}>
         <GraphiQL key={tabIndex} fetcher={fetcher} storage={storage} />
       </div>
