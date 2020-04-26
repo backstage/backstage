@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, ComponentType } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
@@ -31,94 +31,126 @@ import {
   ApiHolder,
 } from '@backstage/core';
 import { lightTheme } from '@backstage/theme';
-import * as apiFactories from './apiFactories';
+import * as defaultApiFactories from './apiFactories';
 
+// TODO(rugvip): export proper plugin type from core that isn't the plugin class
 type BackstagePlugin = ReturnType<typeof createPlugin>;
 
-export type RenderInAppConfig = {
-  plugins: BackstagePlugin[];
-  apis: ApiFactory<unknown, unknown, unknown>[];
-};
+// DevApp builder that is similar to the App builder API, but creates an App
+// with the purpose of developing one or more plugins inside it.
+class DevAppBuilder {
+  private readonly plugins = new Array<BackstagePlugin>();
+  private readonly factories = new Array<ApiFactory<any, any, any>>();
 
-// Set up an API registry that merges together default implementations with ones provided through config.
-function setupApiRegistry(config: RenderInAppConfig): ApiHolder {
-  const providedApis = new Set(config.apis.map(factory => factory.implements));
-
-  // Exlude any default API factory that we receive a factory for in the config
-  const defaultFactories = Object.values(apiFactories).filter(factory =>
-    providedApis.has(factory.implements),
-  );
-  const allFactories = [...defaultFactories, ...config.apis];
-
-  // Use a test registry with dependency injection so that the consumer
-  // can override APIs but still depend on the default implementations.
-  const registry = new ApiTestRegistry();
-  for (const factory of allFactories) {
-    registry.register(factory);
+  // Register one or more plugins to render in the dev app
+  registerPlugin(...plugins: BackstagePlugin[]): DevAppBuilder {
+    this.plugins.push(...plugins);
+    return this;
   }
 
-  return registry;
-}
+  // Register an API factory to add to the app
+  registerApiFactory<Api, Impl, Deps>(
+    factory: ApiFactory<Api, Impl, Deps>,
+  ): DevAppBuilder {
+    this.factories.push(factory);
+    return this;
+  }
 
-// Create a sidebar that exposes the touchpoints of a plugin
-function setupSidebar(config: RenderInAppConfig): JSX.Element {
-  const sidebarItems = new Array<JSX.Element>();
+  // Build a DevApp component using the resources registered so far
+  build(): ComponentType<{}> {
+    const app = createApp();
+    app.registerApis(this.setupApiRegistry(this.factories));
+    app.registerPlugin(...this.plugins);
+    const AppComponent = app.build();
 
-  for (const plugin of config.plugins) {
-    for (const output of plugin.output()) {
-      switch (output.type) {
-        case 'route': {
-          const { path } = output;
-          sidebarItems.push(
-            <SidebarItem
-              key={path}
-              to={path}
-              text={path}
-              icon={BookmarkIcon}
-            />,
-          );
-          break;
+    const sidebar = this.setupSidebar(this.plugins);
+
+    const DevApp: FC<{}> = () => {
+      return (
+        <ThemeProvider theme={lightTheme}>
+          <CssBaseline>
+            <BrowserRouter>
+              <SidebarPage>
+                {sidebar}
+                <AppComponent />
+              </SidebarPage>
+            </BrowserRouter>
+          </CssBaseline>
+        </ThemeProvider>
+      );
+    };
+
+    return DevApp;
+  }
+
+  // Build and render directory to #root element
+  render(): void {
+    const DevApp = this.build();
+    ReactDOM.render(<DevApp />, document.getElementById('root'));
+  }
+
+  // Create a sidebar that exposes the touchpoints of a plugin
+  private setupSidebar(plugins: BackstagePlugin[]): JSX.Element {
+    const sidebarItems = new Array<JSX.Element>();
+
+    for (const plugin of plugins) {
+      for (const output of plugin.output()) {
+        switch (output.type) {
+          case 'route': {
+            const { path } = output;
+            sidebarItems.push(
+              <SidebarItem
+                key={path}
+                to={path}
+                text={path}
+                icon={BookmarkIcon}
+              />,
+            );
+            break;
+          }
+          default:
+            break;
         }
-        default:
-          break;
       }
     }
+
+    return (
+      <Sidebar>
+        <SidebarSpacer />
+        {sidebarItems}
+      </Sidebar>
+    );
   }
 
-  return (
-    <Sidebar>
-      <SidebarSpacer />
-      {sidebarItems}
-    </Sidebar>
-  );
+  // Set up an API registry that merges together default implementations with ones provided through config.
+  private setupApiRegistry(
+    providedFactories: ApiFactory<any, any, any>[],
+  ): ApiHolder {
+    const providedApis = new Set(
+      providedFactories.map(factory => factory.implements),
+    );
+
+    // Exlude any default API factory that we receive a factory for in the config
+    const defaultFactories = Object.values(
+      defaultApiFactories,
+    ).filter(factory => providedApis.has(factory.implements));
+    const allFactories = [...defaultFactories, ...providedFactories];
+
+    // Use a test registry with dependency injection so that the consumer
+    // can override APIs but still depend on the default implementations.
+    const registry = new ApiTestRegistry();
+    for (const factory of allFactories) {
+      registry.register(factory);
+    }
+
+    return registry;
+  }
 }
 
 // TODO(rugvip): Figure out patterns for how to allow in-house apps to build upon
 // this to provide their own plugin dev wrappers.
 
-// Renders one or more plugins in a dev app and exposes outputs from the plugin
-export function renderPluginsInApp(config: RenderInAppConfig): void {
-  const app = createApp();
-  app.registerApis(setupApiRegistry(config));
-  app.registerPlugin(...config.plugins);
-  const AppComponent = app.build();
-
-  const sidebar = setupSidebar(config);
-
-  const App: FC<{}> = () => {
-    return (
-      <ThemeProvider theme={lightTheme}>
-        <CssBaseline>
-          <BrowserRouter>
-            <SidebarPage>
-              {sidebar}
-              <AppComponent />
-            </SidebarPage>
-          </BrowserRouter>
-        </CssBaseline>
-      </ThemeProvider>
-    );
-  };
-
-  ReactDOM.render(<App />, document.getElementById('root'));
+// Creates a dev app for rendering one or more plugins and exposing the touchpoints of the plugin.
+export function createDevApp() {
+  return new DevAppBuilder();
 }

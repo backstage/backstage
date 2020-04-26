@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-import { renderPluginsInApp } from '@backstage/dev-utils';
+import { createDevApp } from '@backstage/dev-utils';
 import { plugin, GraphQLEndpoints, graphQlBrowseApiRef } from '../src';
-import { createApiFactory } from '@backstage/core';
 
-renderPluginsInApp({
-  plugins: [plugin],
-  apis: [
-    createApiFactory({
-      implements: graphQlBrowseApiRef,
-      deps: {},
-      factory() {
-        return GraphQLEndpoints.from([
-          GraphQLEndpoints.create({
-            id: 'gitlab',
-            title: 'GitLab',
-            url: 'https://gitlab.com/api/graphql',
-          }),
-          GraphQLEndpoints.create({
-            id: 'countries',
-            title: 'Countries',
-            url: 'https://countries.trevorblades.com/',
-          }),
-        ]);
-      },
-    }),
-  ],
-});
+createDevApp()
+  .registerPlugin(plugin)
+  .registerApiFactory({
+    implements: graphQlBrowseApiRef,
+    deps: {},
+    factory() {
+      return GraphQLEndpoints.from([
+        GraphQLEndpoints.create({
+          id: 'gitlab',
+          title: 'GitLab',
+          url: 'https://gitlab.com/api/graphql',
+        }),
+        GraphQLEndpoints.create({
+          id: 'countries',
+          title: 'Countries',
+          url: 'https://countries.trevorblades.com/',
+        }),
+      ]);
+    },
+  })
+  .render();
