@@ -86,6 +86,15 @@ class DevAppBuilder {
   // Build and render directory to #root element
   render(): void {
     const DevApp = this.build();
+
+    const paths = this.findPluginPaths(this.plugins);
+
+    if (window.location.pathname === '/') {
+      if (!paths.includes('/') && paths.length > 0) {
+        window.location.pathname = paths[0];
+      }
+    }
+
     ReactDOM.render(<DevApp />, document.getElementById('root'));
   }
 
@@ -144,6 +153,20 @@ class DevAppBuilder {
     }
 
     return registry;
+  }
+
+  private findPluginPaths(plugins: BackstagePlugin[]) {
+    const paths = new Array<string>();
+
+    for (const plugin of plugins) {
+      for (const output of plugin.output()) {
+        if (output.type === 'route') {
+          paths.push(output.path);
+        }
+      }
+    }
+
+    return paths;
   }
 }
 
