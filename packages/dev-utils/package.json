@@ -1,0 +1,47 @@
+{
+  "name": "@backstage/dev-utils",
+  "description": "Utilities for developing Backstage plugins.",
+  "version": "0.1.1-alpha.4",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spotify/backstage",
+    "directory": "packages/dev-utils"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "backstage-cli plugin:build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean"
+  },
+  "dependencies": {
+    "@backstage/cli": "^0.1.1-alpha.4",
+    "@backstage/core": "^0.1.1-alpha.4",
+    "@backstage/test-utils": "^0.1.1-alpha.4",
+    "@backstage/theme": "^0.1.1-alpha.4",
+    "@material-ui/core": "^4.9.1",
+    "@material-ui/icons": "^4.9.1",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^12.0.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2"
+  },
+  "files": [
+    "dist"
+  ]
+}
