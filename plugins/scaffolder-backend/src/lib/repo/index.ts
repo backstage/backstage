@@ -1,4 +1,4 @@
-import { DiskRepository } from './disk';
+import { Repository as DiskRepository } from './disk';
 
 /*
  * Copyright 2020 Spotify AB
@@ -35,7 +35,7 @@ class RepositoryImplementation implements RepositoryBase {
   repo?: RepositoryBase;
 
   constructor() {
-    this.repo = new DiskRepository();
+    this.repo = DiskRepository;
   }
 
   public setRepository(repo: RepositoryBase) {

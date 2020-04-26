@@ -26,7 +26,7 @@ class CookieCutter implements TemplaterBase {
     };
 
     await fs.writeJSON(options.directory, cookieInfo);
-
+    return '';
     // run cookie cutter with new json
   }
 }

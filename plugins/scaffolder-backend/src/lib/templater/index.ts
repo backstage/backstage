@@ -33,7 +33,7 @@ class TemplaterImplementation implements TemplaterBase {
   templater?: TemplaterBase;
 
   constructor() {
-    this.templater = new CookieCutterTemplaterutterTemplater();
+    this.templater = CookieCutterTemplater;
   }
 
   public setTemplater(templater: TemplaterBase) {
