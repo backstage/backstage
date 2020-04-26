@@ -23,13 +23,15 @@ export interface Template {
 }
 
 export abstract class RepositoryBase {
+  // lists all templates available
   abstract async list(): Promise<Template[]>;
+  // can be used to build an index of the available templates;
   abstract async reindex(): Promise<void>;
-  // returns a directory to run cookiecutter in
+  // returns a directory to run the templaterin
   abstract async prepare(id: string): Promise<string>;
 }
 
-class Interface implements RepositoryBase {
+class RepositoryImplementation implements RepositoryBase {
   repo?: RepositoryBase;
 
   constructor() {
@@ -45,4 +47,4 @@ class Interface implements RepositoryBase {
   reindex = () => this.repo!.reindex();
 }
 
-export const Repository = new Interface();
+export const Repository = new RepositoryImplementation();

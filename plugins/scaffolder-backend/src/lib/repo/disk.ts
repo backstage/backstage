@@ -15,12 +15,18 @@
  */
 
 import glob from 'glob';
-import { promises as fs } from 'fs';
+import * as fs from 'fs-extra';
 import { logger } from 'lib/logger';
 import { Template, RepositoryBase as Base } from '.';
 
+interface DiskIndexEntry {
+  contents: Template;
+  location: string;
+}
+
 export class DiskRepository implements Base {
   private repository: Template[] = [];
+  private localIndex: DiskIndexEntry[] = [];
 
   constructor(private repoDir = `${__dirname}/templates`) {
     this.reindex();
@@ -31,14 +37,25 @@ export class DiskRepository implements Base {
   }
 
   public async reindex(): Promise<void> {
-    this.repository = await this.index();
+    this.localIndex = await this.index();
+    this.repository = this.localIndex.map(({ contents }) => contents);
   }
 
-  public async prepare(template: string): Promise<string> {
-    return template;
+  public async prepare(templateId: string): Promise<string> {
+    const template = this.localIndex.find(
+      ({ contents }) => contents.id === templateId,
+    );
+
+    if (!template) {
+      throw new Error('Template no found');
+    }
+
+    const tempDir = await fs.promises.mkdtemp(templateId);
+    await fs.copy(template.location, tempDir);
+    return tempDir;
   }
 
-  private async index(): Promise<Template[]> {
+  private async index(): Promise<DiskIndexEntry[]> {
     return new Promise((resolve, reject) => {
       glob(`${this.repoDir}/**/template-info.json`, async (err, matches) => {
         if (err) {
@@ -46,32 +63,35 @@ export class DiskRepository implements Base {
         }
 
         const fileContents: Array<{
-          path: string;
+          location: string;
           contents: string;
         }> = await Promise.all(
-          matches.map(async (path: string) => ({
-            path,
-            contents: await fs.readFile(path, 'utf-8'),
+          matches.map(async (location: string) => ({
+            location,
+            contents: await fs.readFile(location, 'utf-8'),
           })),
         );
 
         const validFiles = fileContents.reduce(
-          (templates: Template[], currentFile) => {
+          (diskIndexEntries: DiskIndexEntry[], currentFile) => {
             try {
               const parsed: Template = JSON.parse(currentFile.contents);
-              return [...templates, parsed];
+              return [
+                ...diskIndexEntries,
+                { location: currentFile.location, contents: parsed },
+              ];
             } catch (ex) {
               logger.error('Failure parsing JSON for template', {
-                path: currentFile.path,
+                path: currentFile.location,
               });
             }
 
-            return templates;
+            return diskIndexEntries;
           },
           [],
         );
 
-        resolve(validFiles as Template[]);
+        resolve(validFiles);
       });
     });
   }
