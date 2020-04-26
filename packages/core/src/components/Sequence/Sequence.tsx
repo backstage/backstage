@@ -26,8 +26,7 @@ import SequenceFooter from './SequenceFooter';
 
 const useStyles = makeStyles((theme: any) => ({
   content: {
-    padding: theme.spacing(0, 4, 4, 4),
-    backgroundColor: 'white',
+    padding: theme.spacing(4, 4, 4, 4),
   },
   completionBox: {
     padding: theme.spacing(3),
