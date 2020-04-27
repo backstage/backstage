@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createContext, useState, useCallback } from 'react';
+import { createContext } from 'react';
 
 export type View = {
   id: string;
@@ -56,44 +56,3 @@ export const Context = createContext<ContextType>({
   setCurrentTimeRange: () => {},
   setCurrentAccount: () => {},
 });
-
-export const useSettings = (): ContextType => {
-  const [view, setView] = useState<View>({
-    id: '',
-    name: undefined,
-  });
-
-  const [timeRange, setTimeRange] = useState<TimeRange>({
-    'start-date': '7daysAgo',
-    'end-date': 'today',
-  });
-
-  const [account, setAccount] = useState<Account>({
-    id: '',
-    name: undefined,
-  });
-
-  const setCurrentView = useCallback((selectedView: View): void => {
-    setView(selectedView);
-  }, []);
-
-  const setCurrentTimeRange = useCallback(
-    (selectedTimeRange: TimeRange): void => {
-      setTimeRange(selectedTimeRange);
-    },
-    [],
-  );
-
-  const setCurrentAccount = useCallback((selectedAccount: Account): void => {
-    setAccount(selectedAccount);
-  }, []);
-
-  return {
-    view,
-    timeRange,
-    account,
-    setCurrentView,
-    setCurrentTimeRange,
-    setCurrentAccount,
-  };
-};

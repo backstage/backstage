@@ -25,7 +25,8 @@ import {
   SupportButton,
 } from '@backstage/core';
 import Dashboard from '../Dashboard';
-import { Context, useSettings } from 'contexts/Context';
+import { Context } from 'contexts/Context';
+import { useSettings } from 'hooks/useSettings';
 
 const Home: FC<{}> = () => {
   const settings = useSettings();
