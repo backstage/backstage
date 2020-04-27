@@ -28,7 +28,7 @@ const generateTestData: (number) => Array<{}> = (rows = 20) => {
   const data: Array<{}> = [];
   while (data.length <= rows) {
     data.push({
-      col1: `Some value ${data.length} | Subhead ${data.length}`,
+      col1: `Some value ${data.length}`,
       col2: `More data ${data.length}`,
       number: Math.floor(Math.random() * 1000),
       date: new Date(Math.random() * 10000000000000),
@@ -43,7 +43,6 @@ const testColumns = [
     title: 'Column 1',
     field: 'col1',
     highlight: true,
-    subhead: true,
   },
   {
     title: 'Column 2',

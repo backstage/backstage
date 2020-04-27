@@ -94,8 +94,7 @@ const tableIcons = {
 const useCellStyles = makeStyles(theme => ({
   root: {
     color: theme.palette.grey[500],
-    padding: theme.spacing(0, 2, 0, 2),
-    height: '56px',
+    padding: theme.spacing(2),
   },
 }));
 
@@ -118,32 +117,15 @@ type TableProps = {
 
 const convertColumns = columns => {
   return columns.map(column => {
-    const headerOptions: Column<{}> = {
-      headerStyle: {},
-    };
-    //const headerStyle: React.CSSProperties = {};
+    const headerStyle: React.CSSProperties = {};
 
     if (column.highlight) {
-      headerOptions.headerStyle.color = '#000000';
-    }
-    if (column.subhead) {
-      headerOptions.render = row => {
-        const [value, subvalue] = row.col1.split('|');
-
-        if (subvalue) {
-          return (
-            <>
-              <div>{value}</div>
-              <div>{subvalue}</div>
-            </>
-          );
-        } else return value;
-      };
+      headerStyle.color = '#000000';
     }
 
     return {
       ...column,
-      ...headerOptions,
+      headerStyle,
     };
   });
 };
