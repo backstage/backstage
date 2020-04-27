@@ -25,15 +25,21 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import { testRouter } from './test';
+import { router as inventoryRouter } from '@backstage/plugin-inventory-backend';
 
-const PORT = parseInt(process.env.PORT ?? '', 10) || 7000;
+const DEFAULT_PORT = 7000;
+
+const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
 const app = express();
 
 app.use(helmet());
 app.use(cors());
+app.use(compression());
 app.use(express.json());
 app.use('/test', testRouter);
+app.use('/inventory', inventoryRouter);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

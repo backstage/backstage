@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
+describe('test', () => {
+  it('unbreaks the test runner', () => {
+    expect(true).toBeTruthy();
+  });
+});

@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
+import express from 'express';
+
+export const router = express.Router();
+
+router.get('/', async (_, res) => {
+  res
+    .status(200)
+    .send([
+      { id: 'component1' },
+      { id: 'component2' },
+      { id: 'component3' },
+      { id: 'component4' },
+    ]);
+});

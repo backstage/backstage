@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import { Link, makeStyles, Typography } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import {
   Sidebar,
   SidebarPage,
@@ -79,6 +80,7 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarSpacer />
       <SidebarDivider />
       <SidebarItem icon={HomeIcon} to="/" text="Home" />
+      <SidebarItem icon={AccountTreeIcon} to="/inventory" text="Inventory" />
       <SidebarItem icon={AccountCircle} to="/login" text="Login" />
       <SidebarDivider />
       <SidebarSpace />
