@@ -22,12 +22,12 @@ import { API_KEY, CLIENT_ID } from './config';
 export const api = {
   init() {
     return new Promise((resolve, reject) => {
-      try {
-        const script = document.createElement('script');
-        script.src = 'https://apis.google.com/js/api.js';
-        document.body.appendChild(script);
+      const script = document.createElement('script');
+      script.src = 'https://apis.google.com/js/api.js';
+      document.body.appendChild(script);
 
-        const initClient = async () => {
+      const initClient = async () => {
+        try {
           await window.gapi.client.init({
             apiKey: API_KEY,
             clientId: CLIENT_ID,
@@ -43,20 +43,19 @@ export const api = {
           });
           const loginButton = document.getElementById('loginButton');
           loginButton.style.display = 'block';
-
           resolve();
-        };
+        } catch (e) {
+          reject(new Error(e.error.message));
+        }
+      };
 
-        const handleClientLoad = () => {
-          window.gapi.load('client:auth2:signin2', initClient);
-        };
+      const handleClientLoad = () => {
+        window.gapi.load('client:auth2:signin2', initClient);
+      };
 
-        script.onload = () => {
-          handleClientLoad();
-        };
-      } catch (e) {
-        reject(e);
-      }
+      script.onload = () => {
+        handleClientLoad();
+      };
     });
   },
   getGaData(query) {
@@ -65,12 +64,9 @@ export const api = {
         const data = await window.gapi.client.analytics.data.ga.get(query);
         resolve(data);
       } catch (e) {
-        reject(e);
+        reject(new Error(e.message));
       }
     });
-  },
-  isSignedIn() {
-    return window.gapi.auth2.getAuthInstance().isSignedIn.get();
   },
   listAccounts() {
     return new Promise(async (resolve, reject) => {
@@ -88,7 +84,7 @@ export const api = {
         });
         resolve(data);
       } catch (e) {
-        reject(e);
+        reject(new Error(e.message));
       }
     });
   },
@@ -111,9 +107,15 @@ export const api = {
         });
         resolve(data);
       } catch (e) {
-        reject(e);
+        reject(new Error(e.message));
       }
     });
+  },
+  isSignedIn() {
+    return window.gapi.auth2.getAuthInstance().isSignedIn.get();
+  },
+  signOut() {
+    return window.gapi.auth2.getAuthInstance().signOut();
   },
 };
 
