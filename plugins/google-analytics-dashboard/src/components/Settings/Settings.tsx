@@ -16,7 +16,7 @@
 
 import React, { FC } from 'react';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core';
-import TimeRange from 'components/TimeRange';
+import TimeRanges from 'components/TimeRanges';
 import Views from 'components/Views';
 import Accounts from 'components/Accounts';
 
@@ -24,7 +24,7 @@ const Settings: FC<{}> = () => {
   const metadata = {
     account: <Accounts />,
     view: <Views />,
-    timerange: <TimeRange />,
+    timerange: <TimeRanges />,
   };
 
   return (

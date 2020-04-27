@@ -16,9 +16,14 @@
 
 import React, { FC, useContext } from 'react';
 import Select from 'components/Select';
-import { Context, TimeRange as TimeRangeType } from 'contexts/Context';
+import { Context } from 'contexts/Context';
 
-const TimeRange: FC<{}> = () => {
+export type TimeRange = {
+  'start-date': '7daysAgo' | '30daysAgo';
+  'end-date': 'today';
+};
+
+const TimeRanges: FC<{}> = () => {
   const { timeRange, setCurrentTimeRange } = useContext(Context);
 
   const ranges = [
@@ -28,7 +33,7 @@ const TimeRange: FC<{}> = () => {
 
   const handleTimeRange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentTimeRange({
-      'start-date': event.target.value as TimeRangeType['start-date'],
+      'start-date': event.target.value as TimeRange['start-date'],
       'end-date': 'today',
     });
   };
@@ -42,4 +47,4 @@ const TimeRange: FC<{}> = () => {
   );
 };
 
-export default TimeRange;
+export default TimeRanges;
