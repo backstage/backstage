@@ -1,6 +1,13 @@
-# Title
-Welcome to the inventory-backend plugin!
+# Inventory Backend
 
-## Sub-section 1
+WORK IN PROGRESS
 
-## Sub-section 2
+This is the backend part of the default inventory plugin.
+
+It responds to requests from the frontend part, and fulfills them by delegating
+to your existing inventory related services.
+
+## Links
+
+- (Frontend part of the plugin)[https://github.com/spotify/backstage/tree/master/plugins/inventory]
+- (The Backstage homepage)[https://backstage.io]

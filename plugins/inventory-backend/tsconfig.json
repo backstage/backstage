@@ -9,6 +9,7 @@
     "strict": true,
     "target": "es5",
     "module": "commonjs",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node", "jest"]
   }
 }
