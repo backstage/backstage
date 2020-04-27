@@ -82,19 +82,22 @@ export class Cache {
       allInputPaths.unshift(paths.ownDir);
     }
 
-    const quotedInputPaths = allInputPaths.map(input => `'${input}'`);
-
     // Make sure we don't have any uncommitted changes to the input, in that case we skip caching.
     const noChanges = await runCheck(
-      `git diff --quiet HEAD -- ${quotedInputPaths.join(' ')}`,
+      'git',
+      'diff',
+      '--quiet',
+      'HEAD',
+      '--',
+      ...allInputPaths,
     );
     if (!noChanges) {
       return undefined;
     }
 
     const trees = [];
-    for (const quotedInputPath of quotedInputPaths) {
-      const output = await runPlain(`git ls-tree HEAD ${quotedInputPath}`);
+    for (const inputPath of allInputPaths) {
+      const output = await runPlain('git', 'ls-tree', 'HEAD', inputPath);
       const [, , sha] = output.split(/\s+/, 3);
       // If we can't get a tree sha it means we're outside of tracked files, so treat as dirty
       if (!sha) {

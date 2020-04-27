@@ -18,12 +18,12 @@ import {
   SpawnOptions,
   spawn,
   ChildProcess,
-  exec as execCb,
+  execFile as execFileCb,
 } from 'child_process';
 import { ExitCodeError } from './errors';
 import { promisify } from 'util';
 import { LogFunc } from './logging';
-const exec = promisify(execCb);
+const execFile = promisify(execFileCb);
 
 type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
   env?: Partial<NodeJS.ProcessEnv>;
@@ -69,21 +69,21 @@ export async function run(
   await waitForExit(child, name);
 }
 
-export async function runPlain(cmd: string) {
+export async function runPlain(cmd: string, ...args: string[]) {
   try {
-    const { stdout } = await exec(cmd);
+    const { stdout } = await execFile(cmd, args, { shell: true });
     return stdout.trim();
   } catch (error) {
     if (error.stderr) {
       process.stderr.write(error.stderr);
     }
-    throw new ExitCodeError(error.code, cmd);
+    throw new ExitCodeError(error.code, [cmd, ...args].join(' '));
   }
 }
 
-export async function runCheck(cmd: string): Promise<boolean> {
+export async function runCheck(cmd: string, ...args: string[]) {
   try {
-    await exec(cmd);
+    await execFile(cmd, args, { shell: true });
     return true;
   } catch (error) {
     return false;
