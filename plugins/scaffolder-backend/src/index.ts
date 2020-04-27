@@ -15,3 +15,4 @@
  */
 
 export { router } from './plugin';
+export const createScaffolder = () => {};

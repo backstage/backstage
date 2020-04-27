@@ -15,7 +15,7 @@
  */
 
 import glob from 'glob';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import { logger } from 'lib/logger';
 import { Template, RepositoryBase as Base } from '.';
 
@@ -28,11 +28,12 @@ export class DiskRepository implements Base {
   private repository: Template[] = [];
   private localIndex: DiskIndexEntry[] = [];
 
-  constructor(private repoDir = `${__dirname}/templates`) {
-    this.reindex();
-  }
-
+  constructor(private repoDir = `${__dirname}/templates`) {}
   public async list(): Promise<Template[]> {
+    if (this.repository.length === 0) {
+      await this.reindex();
+    }
+
     return this.repository;
   }
 

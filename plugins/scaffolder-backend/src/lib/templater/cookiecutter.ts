@@ -15,7 +15,7 @@ import { TemplaterBase, TemplaterRunOptions } from '.';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
 class CookieCutter implements TemplaterBase {
   public async run(options: TemplaterRunOptions): Promise<string> {
