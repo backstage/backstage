@@ -16,7 +16,6 @@
 
 import React, { FC } from 'react';
 import { TextField, MenuItem, makeStyles } from '@material-ui/core';
-import { Item } from 'components/SingleValueItem/SingleValueItem';
 
 const useStyles = makeStyles({
   root: {
@@ -29,7 +28,7 @@ const useStyles = makeStyles({
 type Props = {
   value: string;
   handler: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  items: Item[];
+  items: any[];
 };
 
 const Select: FC<Props> = ({ value, handler, items }) => {

@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 import { createContext } from 'react';
-
-export type View = {
-  id: string;
-  name: string | undefined;
-};
-
-export type TimeRange = {
-  'start-date': '7daysAgo' | '30daysAgo';
-  'end-date': 'today';
-};
-
-export type Account = {
-  id: string;
-  name: string | undefined;
-};
+import { View } from 'components/Views/Views';
+import { TimeRange } from 'components/TimeRanges/TimeRanges';
+import { Account } from 'components/Accounts/Accounts';
 
 export type ContextType = {
   view: View;

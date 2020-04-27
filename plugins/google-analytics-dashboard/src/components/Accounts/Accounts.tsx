@@ -22,6 +22,11 @@ import { Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import Select from 'components/Select';
 
+export type Account = {
+  id: string;
+  name: string | undefined;
+};
+
 const Accounts: FC<{}> = () => {
   const { account, setCurrentAccount } = useContext(Context);
 

@@ -22,6 +22,11 @@ import api from 'api';
 import { Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 
+export type View = {
+  id: string;
+  name: string | undefined;
+};
+
 const Views: FC<{}> = () => {
   const { view, account, setCurrentView } = useContext(Context);
 

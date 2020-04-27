@@ -24,9 +24,9 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core';
-import Dashboard from '../Dashboard';
-import { Context } from 'contexts/Context';
 import { useSettings } from 'hooks/useSettings';
+import { Context } from 'contexts/Context';
+import Dashboard from 'components/Dashboard';
 
 const Home: FC<{}> = () => {
   const settings = useSettings();
