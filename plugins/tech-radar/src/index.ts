@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
+export { plugin } from './plugin';
+
+/**
+ * The API for configuring the Tech Radar in a Backstage deployment.
+ */
+export * from './api';
+
+/**
+ * Load sample data for Backstage users to get setup quickly.
+ *
+ * @example
+ *   import { techRadarApiRef, TechRadar, loadSampleData } from '@backstage/plugin-tech-radar';
+ *   builder.add(techRadarApiRef, new TechRadar(800, 500, loadSampleData));
+ */
+export { default as loadSampleData } from './sampleData';
