@@ -37,12 +37,18 @@ export const api = {
               'https://people.googleapis.com/$discovery/rest?version=v1',
             ],
           });
+
+          window.gapi.auth2
+            .getAuthInstance()
+            .isSignedIn.listen(() => window.location.reload());
+
           await window.gapi.signin2.render('loginButton', {
             longtitle: true,
             theme: 'dark',
           });
           const loginButton = document.getElementById('loginButton');
           loginButton.style.display = 'block';
+
           resolve();
         } catch (e) {
           reject(new Error(e.error.message));
