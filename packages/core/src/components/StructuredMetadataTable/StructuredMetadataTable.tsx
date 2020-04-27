@@ -138,8 +138,8 @@ const TableItem = ({
 };
 
 interface ComponentProps {
-  metadata: { [key: string]: string };
-  dense: boolean;
+  metadata: { [key: string]: any };
+  dense?: boolean;
   options?: any;
 }
 export default class StructuredMetadataTable extends Component<ComponentProps> {

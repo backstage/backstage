@@ -67,7 +67,7 @@ export const MetadataTable = ({
   dense,
   children,
 }: {
-  dense: boolean;
+  dense?: boolean;
   children: React.ReactNode;
 }) => (
   <Table>
