@@ -58,7 +58,7 @@ const UserTrend: FC<{}> = () => {
   return (
     <Grid item>
       <Typography>User Trend</Typography>
-      <Sparklines data={data} margin={8}>
+      <Sparklines data={data}>
         <SparklinesBars
           style={{ stroke: 'white', fill: '#41c3f9', fillOpacity: 0.25 }}
         />
