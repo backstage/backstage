@@ -21,18 +21,15 @@ import api from 'api';
 import { useAsync } from 'react-use';
 import { Context } from 'contexts/Context';
 
-const useStyles = makeStyles(theme => ({
-  white: {
+const useStyles = makeStyles({
+  value: {
     fontWeight: 300,
     fontSize: 75,
     color: '#4285f4',
   },
-  foo: {
-    background: theme.palette.background.default,
-  },
-}));
+});
 
-type Item = {
+export type Item = {
   title: string;
   metric: string;
 };
@@ -45,6 +42,7 @@ const SingleValueItem: FC<Props> = ({ item }) => {
   const classes = useStyles();
   const { title, metric } = item;
   const { view, timeRange } = useContext(Context);
+
   const { value, loading, error } = useAsync(async () => {
     const query = {
       ids: `ga:${view.id}`,
@@ -79,7 +77,7 @@ const SingleValueItem: FC<Props> = ({ item }) => {
   return (
     <Grid item>
       <Typography>{title}</Typography>
-      <Typography variant="h2" className={classes.white}>
+      <Typography variant="h2" className={classes.value}>
         {Number(result).toLocaleString(undefined, { maximumFractionDigits: 1 })}
       </Typography>
     </Grid>

@@ -15,28 +15,23 @@
  */
 
 import React, { FC } from 'react';
-import {
-  TextField,
-  MenuItem,
-  makeStyles,
-  createStyles,
-} from '@material-ui/core';
+import { TextField, MenuItem, makeStyles } from '@material-ui/core';
+import { Item } from 'components/SingleValueItem/SingleValueItem';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      '& .MuiTextField-root': {
-        width: '25ch',
-      },
+const useStyles = makeStyles({
+  root: {
+    '& .MuiTextField-root': {
+      width: '25ch',
     },
-  }),
-);
+  },
+});
 
 type Props = {
-  value: any;
+  value: string;
   handler: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  items: any[];
+  items: Item[];
 };
+
 const Select: FC<Props> = ({ value, handler, items }) => {
   const classes = useStyles();
 

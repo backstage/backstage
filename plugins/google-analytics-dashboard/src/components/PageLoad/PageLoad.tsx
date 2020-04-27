@@ -21,22 +21,14 @@ import api from 'api';
 import { useAsync } from 'react-use';
 import { Context } from 'contexts/Context';
 
-const useStyles = makeStyles(theme => ({
-  white: {
-    fontWeight: 300,
-    fontSize: 75,
-    color: '#4285f4',
-  },
+const useStyles = makeStyles({
   divider: {
     opacity: '0.3',
   },
   card: {
     backgroundColor: '#4285f4',
   },
-  foo: {
-    background: theme.palette.background.default,
-  },
-}));
+});
 
 const PageLoad: FC<{}> = () => {
   const classes = useStyles();
