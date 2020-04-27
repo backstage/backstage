@@ -15,7 +15,7 @@
  */
 
 import React, { Component, Fragment } from 'react';
-import { withStyles, createStyles, WithStyles } from '@material-ui/core';
+import { withStyles, Theme, createStyles, WithStyles } from '@material-ui/core';
 import startCase from 'lodash/startCase';
 
 import {
@@ -32,12 +32,13 @@ const listStyle = createStyles({
   },
 });
 
-const nestedListStyle = createStyles({
-  root: {
-    ...listStyle.root,
-    paddingLeft: '8px',
-  },
-});
+const nestedListStyle = (theme: Theme) =>
+  createStyles({
+    root: {
+      ...listStyle.root,
+      paddingLeft: theme.spacing(1),
+    },
+  });
 
 function renderList(list: any, nested?: boolean) {
   const values = list.map((item: any, index: number) => (
