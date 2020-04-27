@@ -50,9 +50,6 @@ const SingleValueItem: FC<Props> = ({ item }) => {
       'end-date': timeRange['end-date'],
       metrics: metric,
     };
-    // await new Promise(resolve =>
-    //   setTimeout(resolve, Math.floor(Math.random() * 10000) + 1000),
-    // );
     return await api.getGaData(query);
   }, [view, timeRange]);
 
@@ -73,12 +70,15 @@ const SingleValueItem: FC<Props> = ({ item }) => {
     );
   }
 
-  const result = value!.result.totalsForAllResults[metric];
+  const result = Number(
+    value!.result.totalsForAllResults[metric],
+  ).toLocaleString(undefined, { maximumFractionDigits: 1 });
+
   return (
     <Grid item>
       <Typography>{title}</Typography>
       <Typography variant="h2" className={classes.value}>
-        {Number(result).toLocaleString(undefined, { maximumFractionDigits: 1 })}
+        {result}
       </Typography>
     </Grid>
   );

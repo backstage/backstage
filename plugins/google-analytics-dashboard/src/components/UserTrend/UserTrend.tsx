@@ -46,14 +46,19 @@ const UserTrend: FC<{}> = () => {
   }
 
   if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return (
+      <Grid item>
+        <Alert severity="error">{error.message}</Alert>
+      </Grid>
+    );
   }
+
+  const data = value.result.rows.map((row: any) => row[1]);
 
   return (
     <Grid item>
       <Typography>User Trend</Typography>
-
-      <Sparklines data={value.result.rows.map((row: any) => row[1])}>
+      <Sparklines data={data} margin={8}>
         <SparklinesBars
           style={{ stroke: 'white', fill: '#41c3f9', fillOpacity: 0.25 }}
         />

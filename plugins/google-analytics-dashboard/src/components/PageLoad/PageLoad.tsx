@@ -43,7 +43,6 @@ const PageLoad: FC<{}> = () => {
       'end-date': timeRange['end-date'],
       metrics: 'ga:avgPageLoadTime',
     };
-
     return await api.getGaData(query);
   }, [view, timeRange]);
 
@@ -65,8 +64,8 @@ const PageLoad: FC<{}> = () => {
   }
 
   const result = Number(
-    value!.result?.totalsForAllResults['ga:avgPageLoadTime'],
-  ).toFixed(1);
+    value!.result.totalsForAllResults['ga:avgPageLoadTime'],
+  ).toLocaleString(undefined, { maximumFractionDigits: 1 });
 
   return (
     <Grid item className={classes.gridItem}>
