@@ -15,7 +15,10 @@
  */
 
 import { useState, useCallback } from 'react';
-import { ContextType, View, TimeRange, Account } from 'contexts/Context';
+import { ContextType } from 'contexts/Context';
+import { View } from 'components/Views/Views';
+import { TimeRange } from 'components/TimeRanges/TimeRanges';
+import { Account } from 'components/Accounts/Accounts';
 
 export const useSettings = (): ContextType => {
   const [view, setView] = useState<View>({
