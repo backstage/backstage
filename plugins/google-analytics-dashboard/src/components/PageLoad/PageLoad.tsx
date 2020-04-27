@@ -15,18 +15,20 @@
  */
 
 import React, { FC, useContext } from 'react';
-import { Typography, Grid, makeStyles, Card, Divider } from '@material-ui/core';
+import { Typography, Grid, makeStyles } from '@material-ui/core';
 import { Alert, Skeleton } from '@material-ui/lab';
 import api from 'api';
 import { useAsync } from 'react-use';
 import { Context } from 'contexts/Context';
 
 const useStyles = makeStyles({
-  divider: {
-    opacity: '0.3',
+  gridItem: {
+    padding: 16,
   },
-  card: {
-    backgroundColor: '#4285f4',
+  value: {
+    fontWeight: 300,
+    fontSize: 75,
+    margin: '-13px 0px 7px 0px',
   },
 });
 
@@ -47,74 +49,30 @@ const PageLoad: FC<{}> = () => {
 
   if (loading) {
     return (
-      <Card className={classes.card}>
-        <Typography
-          variant="h5"
-          style={{
-            color: 'white',
-            fontWeight: 700,
-            padding: '16px 16px 16px 20px',
-          }}
-        >
-          Page Load
-        </Typography>
-        <Grid item style={{ padding: 16 }}>
-          <Skeleton variant="text" />
-          <Skeleton variant="rect" width={185} height={90} />
-        </Grid>
-      </Card>
+      <Grid item className={classes.gridItem}>
+        <Skeleton variant="text" />
+        <Skeleton variant="rect" width={185} height={90} />
+      </Grid>
     );
   }
 
   if (error) {
     return (
-      <Card className={classes.card}>
-        <Typography
-          variant="h5"
-          style={{
-            color: 'white',
-            fontWeight: 700,
-            padding: '16px 16px 16px 20px',
-          }}
-        >
-          Page Load
-        </Typography>
-        <Grid item style={{ padding: 16 }}>
-          <Alert severity="error">{error.message}</Alert>
-        </Grid>
-      </Card>
+      <Grid item className={classes.gridItem}>
+        <Alert severity="error">{error.message}</Alert>
+      </Grid>
     );
   }
 
-  const result = value!.result?.totalsForAllResults;
+  const result = Number(
+    value!.result?.totalsForAllResults['ga:avgPageLoadTime'],
+  ).toFixed(1);
 
   return (
-    <Card className={classes.card}>
-      <Typography
-        variant="h5"
-        style={{
-          color: 'white',
-          fontWeight: 700,
-          padding: '16px 16px 16px 20px',
-        }}
-      >
-        Page Load
-      </Typography>
-      <Divider className={classes.divider} />
-      <Grid item style={{ padding: 16 }}>
-        <Typography style={{ color: 'white' }}>Page Load</Typography>
-        <Typography
-          style={{
-            color: 'white',
-            fontWeight: 300,
-            fontSize: 75,
-            margin: '-13px 0px 7px 0px',
-          }}
-        >
-          {`${Number(result['ga:avgPageLoadTime']).toFixed(1)}s`}
-        </Typography>
-      </Grid>
-    </Card>
+    <Grid item className={classes.gridItem}>
+      <Typography>Page Load</Typography>
+      <Typography className={classes.value}>{result}</Typography>
+    </Grid>
   );
 };
 

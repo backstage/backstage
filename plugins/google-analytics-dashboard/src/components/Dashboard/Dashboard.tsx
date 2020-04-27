@@ -19,20 +19,24 @@ import { Grid } from '@material-ui/core';
 import { InfoCard, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import { useAsync } from 'react-use';
-import UserTrend from 'components/UserTrend';
-import PageLoad from 'components/PageLoad';
-import SingleValueItem from 'components/SingleValueItem';
-import Settings from 'components/Settings';
-import { Context } from 'contexts/Context';
 import api from 'api';
 import { API_KEY, CLIENT_ID } from 'api/config';
+import { Context } from 'contexts/Context';
+import UserTrend from 'components/UserTrend';
+import PageLoad from 'components/PageLoad';
+import Settings from 'components/Settings';
 import Intro from 'components/Intro';
+import SingleValues from 'components/SingleValues';
+import BlueCard from 'components/BlueCard';
 
 const Dashboard: FC<{}> = () => {
   const { view } = useContext(Context);
   const [isSignedIn, setIsSignedIn] = useState(false);
 
   const { loading, error } = useAsync(async () => {
+    if (!API_KEY || !CLIENT_ID) {
+      return;
+    }
     await api.init();
     setIsSignedIn(api.isSignedIn());
   }, []);
@@ -65,23 +69,17 @@ const Dashboard: FC<{}> = () => {
     );
   }
 
-  const items = [
-    { title: 'Total Users', metric: 'ga:users' },
-    { title: 'New Users', metric: 'ga:newUsers' },
-    { title: 'Session per User', metric: 'ga:sessionsPerUser' },
-  ];
-
   return (
     <Grid item container spacing={3}>
       <Grid item>
-        <PageLoad />
+        <BlueCard title="Load">
+          <PageLoad />
+        </BlueCard>
       </Grid>
       <Grid item>
         <InfoCard title="Users">
           <Grid item container spacing={8}>
-            {items.map(item => (
-              <SingleValueItem key={item.title} item={item} />
-            ))}
+            <SingleValues />
           </Grid>
         </InfoCard>
       </Grid>
