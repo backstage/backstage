@@ -15,10 +15,8 @@
  */
 
 import React, { FC, forwardRef } from 'react';
-import MTable, { MTableCell, MTableHeader } from 'material-table';
-import {
-  makeStyles
-} from '@material-ui/core';
+import MTable, { MTableCell, MTableHeader, Column } from 'material-table';
+import { makeStyles } from '@material-ui/core';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import {
@@ -40,30 +38,65 @@ import {
 } from '@material-ui/icons';
 
 const tableIcons = {
-  Add: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <AddBox {...props} ref={ref} />),
-  Check: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <Check {...props} ref={ref} />),
-  Clear: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <Clear {...props} ref={ref} />),
-  Delete: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <DeleteOutline {...props} ref={ref} />),
-  DetailPanel: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <ChevronRight {...props} ref={ref} />),
-  Edit: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <Edit {...props} ref={ref} />),
-  Export: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <SaveAlt {...props} ref={ref} />),
-  Filter: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <FilterList {...props} ref={ref} />),
-  FirstPage: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <FirstPage {...props} ref={ref} />),
-  LastPage: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <LastPage {...props} ref={ref} />),
-  NextPage: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <ChevronRight {...props} ref={ref} />),
-  PreviousPage: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <ChevronLeft {...props} ref={ref} />),
-  ResetSearch: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <Clear {...props} ref={ref} />),
-  Search: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <Search {...props} ref={ref} />),
-  SortArrow: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <ArrowUpward {...props} ref={ref} />),
-  ThirdStateCheck: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <Remove {...props} ref={ref} />),
-  ViewColumn: forwardRef((props, ref:React.Ref<SVGSVGElement>) => <ViewColumn {...props} ref={ref} />)
+  Add: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <AddBox {...props} ref={ref} />
+  )),
+  Check: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <Check {...props} ref={ref} />
+  )),
+  Clear: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <Clear {...props} ref={ref} />
+  )),
+  Delete: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <DeleteOutline {...props} ref={ref} />
+  )),
+  DetailPanel: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <ChevronRight {...props} ref={ref} />
+  )),
+  Edit: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <Edit {...props} ref={ref} />
+  )),
+  Export: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <SaveAlt {...props} ref={ref} />
+  )),
+  Filter: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <FilterList {...props} ref={ref} />
+  )),
+  FirstPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <FirstPage {...props} ref={ref} />
+  )),
+  LastPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <LastPage {...props} ref={ref} />
+  )),
+  NextPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <ChevronRight {...props} ref={ref} />
+  )),
+  PreviousPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <ChevronLeft {...props} ref={ref} />
+  )),
+  ResetSearch: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <Clear {...props} ref={ref} />
+  )),
+  Search: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <Search {...props} ref={ref} />
+  )),
+  SortArrow: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <ArrowUpward {...props} ref={ref} />
+  )),
+  ThirdStateCheck: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <Remove {...props} ref={ref} />
+  )),
+  ViewColumn: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+    <ViewColumn {...props} ref={ref} />
+  )),
 };
 
 const useCellStyles = makeStyles(theme => ({
   root: {
     color: theme.palette.grey[500],
-    padding: theme.spacing(2),
-  }
+    padding: theme.spacing(0, 2, 0, 2),
+    height: '56px',
+  },
 }));
 
 const useHeaderStyles = makeStyles(theme => ({
@@ -74,34 +107,60 @@ const useHeaderStyles = makeStyles(theme => ({
     color: '#757575',
     fontWeight: 'bold',
     position: 'static',
-  }
+  },
 }));
 
 type TableProps = {
   columns: any;
   data: any;
+  options?: any;
 };
 
-const MaterialTable: FC<TableProps> = props => {
+const convertColumns = columns => {
+  return columns.map(column => {
+    const headerOptions: Column<{}> = {
+      headerStyle: {},
+    };
+    //const headerStyle: React.CSSProperties = {};
+
+    if (column.highlight) {
+      headerOptions.headerStyle.color = '#000000';
+    }
+    if (column.subhead) {
+      headerOptions.render = row => {
+        const [value, subvalue] = row.col1.split('|');
+
+        if (subvalue) {
+          return (
+            <>
+              <div>{value}</div>
+              <div>{subvalue}</div>
+            </>
+          );
+        } else return value;
+      };
+    }
+
+    return {
+      ...column,
+      ...headerOptions,
+    };
+  });
+};
+
+const MaterialTable: FC<TableProps> = ({ columns, ...props }) => {
   const cellClasses = useCellStyles();
   const headerClasses = useHeaderStyles();
+
+  const MTColumns = convertColumns(columns);
 
   return (
     <MTable
       components={{
-        Cell: props => (
-          <MTableCell
-            className={cellClasses.root}
-            {...props}
-          />
-        ),
-        Header: props => (
-          <MTableHeader
-            classes={headerClasses}
-            {...props}
-          />
-        ),
+        Cell: props => <MTableCell className={cellClasses.root} {...props} />,
+        Header: props => <MTableHeader classes={headerClasses} {...props} />,
       }}
+      columns={MTColumns}
       icons={tableIcons}
       {...props}
     />
