@@ -67,6 +67,7 @@
     "inquirer": "^7.0.4",
     "jest": "^25.1.0",
     "jest-css-modules": "^2.1.0",
+    "jest-esm-transformer": "^1.0.0",
     "ora": "^4.0.3",
     "react": "^16.0.0",
     "react-dev-utils": "^10.2.0",

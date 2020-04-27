@@ -29,6 +29,13 @@ if (fs.existsSync('jest.config.js')) {
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
     },
+    // We build .esm.js files with plugin:build, so to be able to load these in tests they need to be transformed
+    // TODO: jest is working on module support, it's possible that we can remove this in the future
+    transform: {
+      '\\.esm\\.js$': require.resolve('jest-esm-transformer'),
+    },
+    // Default behaviour is to not apply transforms for node_modules, but we still want to tranform .esm.js files
+    transformIgnorePatterns: ['/node_modules/(?!.*\\.esm\\.js$)'],
   };
 
   // Use src/setupTests.ts as the default location for configuring test env
