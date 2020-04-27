@@ -53,7 +53,7 @@ const Dashboard: FC<{}> = () => {
     return (
       <Grid container>
         <Grid item>
-          <Intro isSignedIn={isSignedIn} />
+          <Intro />
         </Grid>
       </Grid>
     );
