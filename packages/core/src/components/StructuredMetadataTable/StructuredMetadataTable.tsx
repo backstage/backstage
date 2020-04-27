@@ -15,7 +15,7 @@
  */
 
 import React, { Component, Fragment } from 'react';
-import { withStyles } from '@material-ui/core';
+import { withStyles, createStyles, WithStyles } from '@material-ui/core';
 import startCase from 'lodash/startCase';
 
 import {
@@ -25,22 +25,22 @@ import {
   MetadataListItem,
 } from './MetadataTable';
 
-const listStyle = {
+const listStyle = createStyles({
   root: {
     margin: '0 0',
     listStyleType: 'none',
   },
-};
+});
 
-const nestedListStyle = {
+const nestedListStyle = createStyles({
   root: {
     ...listStyle.root,
     paddingLeft: '8px',
   },
-};
+});
 
-function renderList(list, options, nested) {
-  const values = list.map((item, index) => (
+function renderList(list: any, nested?: boolean) {
+  const values = list.map((item: any, index: number) => (
     <MetadataListItem key={index}>{toValue(item)}</MetadataListItem>
   ));
   return nested ? (
@@ -50,7 +50,11 @@ function renderList(list, options, nested) {
   );
 }
 
-function renderMap(map, options, nested) {
+function renderMap(
+  map: { [key: string]: any },
+  nested?: boolean,
+  options?: any,
+) {
   const values = Object.keys(map).map(key => {
     const value = toValue(map[key], true);
     const fmtKey =
@@ -72,7 +76,7 @@ function renderMap(map, options, nested) {
   );
 }
 
-function toValue(value, options, nested) {
+function toValue(value: any, options?: any, nested?: boolean) {
   if (React.isValidElement(value)) {
     return <Fragment>{value}</Fragment>;
   }
@@ -82,31 +86,44 @@ function toValue(value, options, nested) {
   }
 
   if (Array.isArray(value)) {
-    return renderList(value, options, nested);
+    return renderList(value, nested);
   }
 
   return <Fragment>{value}</Fragment>;
 }
 
-function mapToItems(info, options) {
+function mapToItems(info: { [key: string]: string }, options: any) {
   return Object.keys(info).map(key => (
     <TableItem key={key} title={key} value={info[key]} options={options} />
   ));
 }
 
+interface StyleProps extends WithStyles {
+  children?: React.ReactNode;
+}
 // Sub Components
-const StyledList = withStyles(listStyle)(({ classes, children }) => (
+const StyledList = withStyles(
+  listStyle,
+)(({ classes, children }: StyleProps) => (
   <MetadataList classes={classes}>{children}</MetadataList>
 ));
 const StyledNestedList = withStyles(
   nestedListStyle,
-)(({ classes, children }) => (
+)(({ classes, children }: StyleProps) => (
   <MetadataList classes={classes}>{children}</MetadataList>
 ));
-const ItemValue = ({ value, options }) => (
+const ItemValue = ({ value, options }: { value: any; options: any }) => (
   <Fragment>{toValue(value, options)}</Fragment>
 );
-const TableItem = ({ title, value, options }) => {
+const TableItem = ({
+  title,
+  value,
+  options,
+}: {
+  title: string;
+  value: any;
+  options: any;
+}) => {
   return (
     <MetadataTableItem
       title={
@@ -120,7 +137,12 @@ const TableItem = ({ title, value, options }) => {
   );
 };
 
-export default class StructuredMetadataTable extends Component {
+interface ComponentProps {
+  metadata: { [key: string]: string };
+  dense: boolean;
+  options?: any;
+}
+export default class StructuredMetadataTable extends Component<ComponentProps> {
   render() {
     const { metadata, dense, options } = this.props;
     const metadataItems = mapToItems(metadata, options || {});
