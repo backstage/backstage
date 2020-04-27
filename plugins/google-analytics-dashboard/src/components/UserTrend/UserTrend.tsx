@@ -40,7 +40,7 @@ const UserTrend: FC<{}> = () => {
     return (
       <Grid item>
         <Skeleton variant="text" />
-        <Skeleton variant="rect" width={300} height={90} />
+        <Skeleton variant="rect" height={90} />
       </Grid>
     );
   }

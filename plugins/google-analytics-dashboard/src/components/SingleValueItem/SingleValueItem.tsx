@@ -68,7 +68,11 @@ const SingleValueItem: FC<Props> = ({ item }) => {
   }
 
   if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return (
+      <Grid item>
+        <Alert severity="error">{error.message}</Alert>
+      </Grid>
+    );
   }
 
   const result = value!.result.totalsForAllResults[metric];

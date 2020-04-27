@@ -49,25 +49,47 @@ const PageLoad: FC<{}> = () => {
       'end-date': timeRange['end-date'],
       metrics: 'ga:avgPageLoadTime',
     };
+
     return await api.getGaData(query);
   }, [view, timeRange]);
 
   if (loading) {
     return (
-      <Card>
-        <Skeleton variant="rect" width={185} height={64}>
-          <Skeleton variant="text" style={{ padding: 16 }} />
-        </Skeleton>
-        <Divider />
-        <Skeleton variant="rect" width={185} height={160} />
+      <Card className={classes.card}>
+        <Typography
+          variant="h5"
+          style={{
+            color: 'white',
+            fontWeight: 700,
+            padding: '16px 16px 16px 20px',
+          }}
+        >
+          Page Load
+        </Typography>
+        <Grid item style={{ padding: 16 }}>
+          <Skeleton variant="text" />
+          <Skeleton variant="rect" width={185} height={90} />
+        </Grid>
       </Card>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <Alert severity="error">Some error message</Alert>
+      <Card className={classes.card}>
+        <Typography
+          variant="h5"
+          style={{
+            color: 'white',
+            fontWeight: 700,
+            padding: '16px 16px 16px 20px',
+          }}
+        >
+          Page Load
+        </Typography>
+        <Grid item style={{ padding: 16 }}>
+          <Alert severity="error">{error.message}</Alert>
+        </Grid>
       </Card>
     );
   }
