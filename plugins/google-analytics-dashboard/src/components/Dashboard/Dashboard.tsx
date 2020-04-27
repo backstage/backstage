@@ -15,40 +15,22 @@
  */
 
 import React, { FC, useState, useContext } from 'react';
-import { Typography, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { InfoCard, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import { useAsync } from 'react-use';
-import UserTrend from '../UserTrend';
-import PageLoad from '../PageLoad';
-import SingleValueItem from '../SingleValueItem';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import Settings from '../Settings';
+import UserTrend from 'components/UserTrend';
+import PageLoad from 'components/PageLoad';
+import SingleValueItem from 'components/SingleValueItem';
+import Settings from 'components/Settings';
 import { Context } from 'contexts/Context';
 import api from 'api';
-
-const GetStarted: FC<{}> = () => {
-  const CODE = `config.tsx:
-  export const GA_ACCOUNT_ID = "your account id"
-  export const GA_VIEW_ID = "your view id"
-  export const API_KEY = "your api key" 
-  export const CLIENT_ID = "your client id" 
-  `;
-  return (
-    <InfoCard title="Getting Started">
-      <Typography variant="body1">Configure the plugin</Typography>
-      <SyntaxHighlighter language="javascript" style={docco}>
-        {CODE}
-      </SyntaxHighlighter>
-    </InfoCard>
-  );
-};
+import { API_KEY, CLIENT_ID } from 'api/config';
+import Intro from 'components/Intro';
 
 const Dashboard: FC<{}> = () => {
   const { view } = useContext(Context);
   const [isSignedIn, setIsSignedIn] = useState(false);
-  // const [retrigger, setRetrigger] = useState<boolean>(false);
 
   const { loading, error } = useAsync(async () => {
     await api.init();
@@ -63,11 +45,11 @@ const Dashboard: FC<{}> = () => {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  if (!isSignedIn) {
+  if (!isSignedIn || !API_KEY || !CLIENT_ID) {
     return (
       <Grid container>
         <Grid item>
-          <GetStarted />
+          <Intro isSignedIn={isSignedIn} />
         </Grid>
       </Grid>
     );
@@ -84,18 +66,9 @@ const Dashboard: FC<{}> = () => {
   }
 
   const items = [
-    {
-      title: 'Total Users',
-      metric: 'ga:users',
-    },
-    {
-      title: 'New Users',
-      metric: 'ga:newUsers',
-    },
-    {
-      title: 'Session per User',
-      metric: 'ga:sessionsPerUser',
-    },
+    { title: 'Total Users', metric: 'ga:users' },
+    { title: 'New Users', metric: 'ga:newUsers' },
+    { title: 'Session per User', metric: 'ga:sessionsPerUser' },
   ];
 
   return (
