@@ -38,7 +38,6 @@ const tableTitleCellStyles = (theme: Theme) =>
 
 const tableContentCellStyles = {
   root: {
-    color: 'rgba(0, 0, 0, 0.6)',
     border: '0',
     verticalAlign: 'top',
   },
@@ -58,7 +57,7 @@ const listItemStyles = (theme: Theme) =>
     root: {
       padding: theme.spacing(0, 0, 1, 0),
     },
-    random: {}
+    random: {},
   });
 
 const TitleCell = withStyles(tableTitleCellStyles)(TableCell);
@@ -98,14 +97,18 @@ export const MetadataTableItem = ({
   </TableRow>
 );
 
-interface StyleProps extends WithStyles{
+interface StyleProps extends WithStyles {
   children?: React.ReactNode;
 }
 
-export const MetadataList = withStyles(listStyles)(({classes, children }: StyleProps ) => (
+export const MetadataList = withStyles(
+  listStyles,
+)(({ classes, children }: StyleProps) => (
   <ul className={classes.root}>{children}</ul>
 ));
 
-export const MetadataListItem = withStyles(listItemStyles)(({ classes, children }: StyleProps) => (
+export const MetadataListItem = withStyles(
+  listItemStyles,
+)(({ classes, children }: StyleProps) => (
   <li className={classes.root}>{children}</li>
 ));
