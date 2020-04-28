@@ -94,7 +94,8 @@ const tableIcons = {
 const useCellStyles = makeStyles(theme => ({
   root: {
     color: theme.palette.grey[500],
-    padding: theme.spacing(2),
+    padding: theme.spacing(0, 2, 0, 2),
+    height: '56px',
   },
 }));
 
@@ -148,5 +149,17 @@ const MaterialTable: FC<TableProps> = ({ columns, ...props }) => {
     />
   );
 };
+
+type SubvalueCellProps = {
+  value: React.ReactNode;
+  subvalue: React.ReactNode;
+};
+
+export const SubvalueCell: FC<SubvalueCellProps> = ({ value, subvalue }) => (
+  <>
+    <div>{value}</div>
+    <div>{subvalue}</div>
+  </>
+);
 
 export default MaterialTable;

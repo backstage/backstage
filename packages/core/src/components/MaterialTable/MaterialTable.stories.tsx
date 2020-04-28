@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import MaterialTable from './MaterialTable';
+import MaterialTable, { SubvalueCell } from './MaterialTable';
 import InfoCard from '../../layout/InfoCard';
 
 export default {
@@ -30,6 +30,7 @@ const generateTestData: (number) => Array<{}> = (rows = 20) => {
     data.push({
       col1: `Some value ${data.length}`,
       col2: `More data ${data.length}`,
+      subvalue: `Subvalue ${data.length}`,
       number: Math.floor(Math.random() * 1000),
       date: new Date(Math.random() * 10000000000000),
     });
@@ -41,8 +42,12 @@ const generateTestData: (number) => Array<{}> = (rows = 20) => {
 const testColumns = [
   {
     title: 'Column 1',
-    field: 'col1',
+    customFilterAndSearch: (query, row) =>
+      (row.col1 + ' ' + row.subvalue)
+        .toUpperCase()
+        .includes(query.toUpperCase()),
     highlight: true,
+    render: row => <SubvalueCell value={row.col1} subvalue={row.subvalue} />,
   },
   {
     title: 'Column 2',
