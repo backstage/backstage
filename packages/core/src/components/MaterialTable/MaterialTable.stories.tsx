@@ -46,6 +46,16 @@ const testColumns = [
       (row.col1 + ' ' + row.subvalue)
         .toUpperCase()
         .includes(query.toUpperCase()),
+    customSort: (rowA, rowB) => {
+      const a = rowA.col1;
+      const b = rowB.col1;
+
+      if (a !== b) {
+        if (!a) return -1;
+        if (!b) return 1;
+      }
+      return a < b ? -1 : a > b ? 1 : 0;
+    },
     highlight: true,
     render: row => <SubvalueCell value={row.col1} subvalue={row.subvalue} />,
   },
