@@ -39,60 +39,114 @@ const generateTestData: (number) => Array<{}> = (rows = 20) => {
   return data;
 };
 
-const testColumns = [
-  {
-    title: 'Column 1',
-    customFilterAndSearch: (query, row) =>
-      (row.col1 + ' ' + row.subvalue)
-        .toUpperCase()
-        .includes(query.toUpperCase()),
-    customSort: (rowA, rowB) => {
-      const a = rowA.col1;
-      const b = rowB.col1;
-
-      if (a !== b) {
-        if (!a) return -1;
-        if (!b) return 1;
-      }
-      return a < b ? -1 : a > b ? 1 : 0;
-    },
-    highlight: true,
-    render: row => <SubvalueCell value={row.col1} subvalue={row.subvalue} />,
-  },
-  {
-    title: 'Column 2',
-    field: 'col2',
-  },
-  {
-    title: 'Numeric value',
-    field: 'number',
-    type: 'numeric',
-  },
-  {
-    title: 'A Date',
-    field: 'date',
-    type: 'date',
-  },
-];
-
 const testData100 = generateTestData(100);
 
 export const DefaultTable = () => {
+  const columns = [
+    {
+      title: 'Column 1',
+      field: 'col1',
+      highlight: true,
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
   return (
     <MaterialTable
       options={{ paging: false }}
       data={testData100}
-      columns={testColumns}
+      columns={columns}
     />
   );
 };
 
-export const HiddenFilterTable = () => {
+export const HiddenSearchTable = () => {
+  const columns = [
+    {
+      title: 'Column 1',
+      field: 'col1',
+      highlight: true,
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
+  return (
+    <MaterialTable
+      options={{ paging: false, search: false }}
+      data={testData100}
+      columns={columns}
+    />
+  );
+};
+
+export const SubvalueTable = () => {
+  const columns = [
+    {
+      title: 'Column 1',
+      customFilterAndSearch: (query, row) =>
+        (row.col1 + ' ' + row.subvalue)
+          .toUpperCase()
+          .includes(query.toUpperCase()),
+      customSort: (rowA, rowB) => {
+        const a = rowA.col1;
+        const b = rowB.col1;
+
+        if (a !== b) {
+          if (!a) return -1;
+          if (!b) return 1;
+        }
+        return a < b ? -1 : a > b ? 1 : 0;
+      },
+      highlight: true,
+      render: row => <SubvalueCell value={row.col1} subvalue={row.subvalue} />,
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
   return (
     <MaterialTable
       options={{ paging: false }}
       data={testData100}
-      columns={testColumns}
+      columns={columns}
     />
   );
 };
