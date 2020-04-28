@@ -15,7 +15,7 @@
  */
 
 import React, { FC, forwardRef } from 'react';
-import MTable, { MTableCell, MTableHeader, Column } from 'material-table';
+import MTable, { MTableCell, MTableHeader } from 'material-table';
 import { makeStyles } from '@material-ui/core';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
