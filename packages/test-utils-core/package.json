@@ -21,7 +21,8 @@
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test"
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
