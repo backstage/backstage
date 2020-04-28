@@ -69,6 +69,7 @@ export const DefaultTable = () => {
       options={{ paging: false }}
       data={testData100}
       columns={columns}
+      title="Backstage Table"
     />
   );
 };
@@ -109,7 +110,10 @@ export const SubvalueTable = () => {
   const columns = [
     {
       title: 'Column 1',
-      customFilterAndSearch: (query, row) =>
+      customFilterAndSearch: (
+        query,
+        row, // Only needed if you want subvalue searchable
+      ) =>
         (row.col1 + ' ' + row.subvalue)
           .toUpperCase()
           .includes(query.toUpperCase()),

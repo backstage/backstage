@@ -15,7 +15,11 @@
  */
 
 import React, { FC, forwardRef } from 'react';
-import MTable, { MTableCell, MTableHeader } from 'material-table';
+import MTable, {
+  MTableCell,
+  MTableHeader,
+  MTableToolbar,
+} from 'material-table';
 import { makeStyles } from '@material-ui/core';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
@@ -94,14 +98,14 @@ const tableIcons = {
 const useCellStyles = makeStyles(theme => ({
   root: {
     color: theme.palette.grey[500],
-    padding: theme.spacing(0, 2, 0, 2),
+    padding: theme.spacing(0, 2, 0, 2.5),
     height: '56px',
   },
 }));
 
 const useHeaderStyles = makeStyles(theme => ({
   header: {
-    padding: theme.spacing(1, 2, 1, 2),
+    padding: theme.spacing(1, 2, 1, 2.5),
     borderTop: '1px solid #dddddd',
     borderBottom: '1px solid #d9d9d9',
     color: '#757575',
@@ -110,39 +114,63 @@ const useHeaderStyles = makeStyles(theme => ({
   },
 }));
 
+const useToolbarStyles = makeStyles(theme => ({
+  root: {
+    padding: theme.spacing(3, 0, 2.5, 2.5),
+  },
+  title: {
+    '& > h6': {
+      fontWeight: 'bold',
+    },
+  },
+}));
+
 type TableProps = {
   columns: any;
   data: any;
   options?: any;
+  title?: React.ReactNode;
 };
 
 const convertColumns = columns => {
   return columns.map(column => {
     const headerStyle: React.CSSProperties = {};
+    const cellStyle: React.CSSProperties = {};
 
     if (column.highlight) {
       headerStyle.color = '#000000';
+      cellStyle.fontWeight = 'bold';
     }
 
     return {
       ...column,
       headerStyle,
+      cellStyle,
     };
   });
 };
 
-const MaterialTable: FC<TableProps> = ({ columns, ...props }) => {
+const MaterialTable: FC<TableProps> = ({ columns, options, ...props }) => {
   const cellClasses = useCellStyles();
   const headerClasses = useHeaderStyles();
+  const toolbarClasses = useToolbarStyles();
 
   const MTColumns = convertColumns(columns);
+
+  const defaultOptions = {
+    headerStyle: {
+      textTransform: 'uppercase',
+    },
+  };
 
   return (
     <MTable
       components={{
         Cell: props => <MTableCell className={cellClasses.root} {...props} />,
         Header: props => <MTableHeader classes={headerClasses} {...props} />,
+        Toolbar: props => <MTableToolbar classes={toolbarClasses} {...props} />,
       }}
+      options={{ ...defaultOptions, ...options }}
       columns={MTColumns}
       icons={tableIcons}
       {...props}
@@ -150,16 +178,30 @@ const MaterialTable: FC<TableProps> = ({ columns, ...props }) => {
   );
 };
 
+const useSubvalueCellStyles = makeStyles(theme => ({
+  value: {
+    marginBottom: '6px',
+  },
+  subvalue: {
+    color: '#616161',
+    fontWeight: 'normal',
+  },
+}));
+
 type SubvalueCellProps = {
   value: React.ReactNode;
   subvalue: React.ReactNode;
 };
 
-export const SubvalueCell: FC<SubvalueCellProps> = ({ value, subvalue }) => (
-  <>
-    <div>{value}</div>
-    <div>{subvalue}</div>
-  </>
-);
+export const SubvalueCell: FC<SubvalueCellProps> = ({ value, subvalue }) => {
+  const classes = useSubvalueCellStyles();
+
+  return (
+    <>
+      <div className={classes.value}>{value}</div>
+      <div className={classes.subvalue}>{subvalue}</div>
+    </>
+  );
+};
 
 export default MaterialTable;
