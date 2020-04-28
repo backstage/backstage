@@ -46,8 +46,9 @@ export default async (cmd: Command) => {
     // already watching
     !includesAnyOf(args, '--watch', '--watchAll')
   ) {
-    const isGitRepo = () => runCheck('git rev-parse --is-inside-work-tree');
-    const isMercurialRepo = () => runCheck('hg --cwd . root');
+    const isGitRepo = () =>
+      runCheck('git', 'rev-parse', '--is-inside-work-tree');
+    const isMercurialRepo = () => runCheck('hg', '--cwd', '.', 'root');
 
     if ((await isGitRepo()) || (await isMercurialRepo())) {
       args.push('--watch');

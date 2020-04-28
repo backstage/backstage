@@ -30,8 +30,8 @@ export type ApiHolder = {
   get<T>(api: ApiRef<T>): T | undefined;
 };
 
-export type ApiFactory<A, I, D> = {
-  implements: ApiRef<A>;
-  deps: TypesToApiRefs<D>;
-  factory(deps: D): I extends A ? I : never;
+export type ApiFactory<Api, Impl, Deps> = {
+  implements: ApiRef<Api>;
+  deps: TypesToApiRefs<Deps>;
+  factory(deps: Deps): Impl extends Api ? Impl : never;
 };
