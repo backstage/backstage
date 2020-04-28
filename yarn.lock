@@ -2815,11 +2815,11 @@
   integrity sha512-oxR3OBBrms09Ih6yPrqcaeKgwchdw9XgRvKsF6x6uPiMy0OVYald/+GkBtyQy+IChD14WStV/XosqNxEZeTJ4Q==
 
 "@spotify/eslint-config-oss@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-oss/-/eslint-config-oss-1.0.1.tgz#01a95517e05063487c8e06b0b95cbdda33014a2a"
-  integrity sha512-G6eVEsp5WnvCglI9uhzhSeUnsKdpJ5gOLyhdZBEtqt8+MdpQSDECIfnkI8mV06dQ8FKtbqVd2NiMbkCC/gwrFQ==
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-oss/-/eslint-config-oss-1.0.2.tgz#b0e56e549c78dcdd79063ce48521f10c3420f701"
+  integrity sha512-3Tn6R98f5BWeb8anOhxYdvZywasp1RaJb+y65W7Db5+xiQVmCnSFvIM3jwysQpu1xRdlUJSCqeDHR7S4Nz3thw==
   dependencies:
-    eslint-plugin-notice "^0.8.9"
+    eslint-plugin-notice "^0.9.10"
 
 "@spotify/eslint-config-react@^6.0.0":
   version "6.0.0"
@@ -8722,10 +8722,10 @@ eslint-plugin-monorepo@^0.2.1:
     parse-package-name "^0.1.0"
     path-is-inside "^1.0.2"
 
-eslint-plugin-notice@^0.8.9:
-  version "0.8.9"
-  resolved "https://registry.npmjs.org/eslint-plugin-notice/-/eslint-plugin-notice-0.8.9.tgz#b3b55ba218b36a01fd4de998f68c66a8bf238a82"
-  integrity sha512-Z6xit9Yv7pCG/rS3DohSou1BeDffPOhmuQzE7UWMxV2h/MJmsOq3QZFyXmbi18cExlyWbz4+ztAogi2edeTbjA==
+eslint-plugin-notice@^0.9.10:
+  version "0.9.10"
+  resolved "https://registry.npmjs.org/eslint-plugin-notice/-/eslint-plugin-notice-0.9.10.tgz#89cf6377bf1c004a219c4e541321ea9125b408c8"
+  integrity sha512-rF79EuqdJKu9hhTmwUkNeSvLmmq03m/NXq/NHwUENHbdJ0wtoyOjxZBhW4QCug8v5xYE6cGe3AWkGqSIe9KUbQ==
   dependencies:
     find-root "^1.1.0"
     lodash "^4.17.15"
