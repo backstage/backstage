@@ -53,7 +53,7 @@ const BottomLink: FC<Props> = ({ link, title, onClick }) => {
   return (
     <div>
       <Divider />
-      <Link href={link} onClick={onClick} style={{ textDecoration: 'none' }}>
+      <Link href={link} onClick={onClick} underline="none">
         <ListItem className={classes.root}>
           <ListItemText>
             <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
