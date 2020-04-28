@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export { default as ApiRef } from './ApiRef';
-export * from './types';
-export * from './helpers';
-export * from './definitions';
-export * from './implementations';
+import { ApiFactory } from './types';
+
+/**
+ * Used to infer types for a standalone ApiFactory that isn't immediately passed
+ * to another function.
+ * This function doesn't actually do anything, it's only used to infer types.
+ */
+export function createApiFactory<Api, Impl, Deps>(
+  factory: ApiFactory<Api, Impl, Deps>,
+): ApiFactory<Api, Impl, Deps> {
+  return factory;
+}

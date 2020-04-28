@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export { default as ApiRef } from './ApiRef';
-export * from './types';
-export * from './helpers';
-export * from './definitions';
-export * from './implementations';
+import '@testing-library/jest-dom/extend-expect';

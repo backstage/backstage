@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export { default as ApiRef } from './ApiRef';
-export * from './types';
-export * from './helpers';
-export * from './definitions';
-export * from './implementations';
+import * as apiFactories from './apiFactories';
+import { ApiTestRegistry } from '@backstage/core';
+
+describe('apiFactories', () => {
+  it('should be possible to get an instance of each API', () => {
+    const registry = new ApiTestRegistry();
+    const factories = Object.values(apiFactories);
+
+    for (const factory of factories) {
+      registry.register(factory);
+    }
+
+    for (const factory of factories) {
+      const api = registry.get(factory.implements);
+      expect(api).toBeDefined();
+    }
+  });
+});
