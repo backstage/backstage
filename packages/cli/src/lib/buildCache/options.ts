@@ -29,9 +29,7 @@ export type Options = {
 };
 
 function transformPath(path: string): string {
-  return resolvePath(
-    path.replace(/<repoRoot>/g, paths.targetRoot).replace(/'/g, ''),
-  );
+  return resolvePath(path.replace(/<repoRoot>/g, paths.targetRoot));
 }
 
 export async function parseOptions(cmd: Command): Promise<Options> {

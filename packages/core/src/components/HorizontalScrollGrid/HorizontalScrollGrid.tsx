@@ -20,25 +20,30 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { Grid, IconButton, makeStyles, Theme } from '@material-ui/core';
 
-// Generated with https://larsenwork.com/easing-gradients/
-const fadeGradient = `
-  hsl(0, 0%, 98%) 0%,
-  hsla(0, 0%, 98%, 0.987) 8.1%,
-  hsla(0, 0%, 98%, 0.951) 15.5%,
-  hsla(0, 0%, 98%, 0.896) 22.5%,
-  hsla(0, 0%, 98%, 0.825) 29%,
-  hsla(0, 0%, 98%, 0.741) 35.3%,
-  hsla(0, 0%, 98%, 0.648) 41.2%,
-  hsla(0, 0%, 98%, 0.55) 47.1%,
-  hsla(0, 0%, 98%, 0.45) 52.9%,
-  hsla(0, 0%, 98%, 0.352) 58.8%,
-  hsla(0, 0%, 98%, 0.259) 64.7%,
-  hsla(0, 0%, 98%, 0.175) 71%,
-  hsla(0, 0%, 98%, 0.104) 77.5%,
-  hsla(0, 0%, 98%, 0.049) 84.5%,
-  hsla(0, 0%, 98%, 0.013) 91.9%,
-  hsla(0, 0%, 98%, 0) 100%
-`;
+const generateGradientStops = (themeType: 'dark' | 'light') => {
+  // 97% corresponds to the theme.palette.background.default for the light theme
+  // 16% for the dark theme
+  const luminance = themeType === 'dark' ? '16%' : '97%';
+  // Generated with https://larsenwork.com/easing-gradients/
+  return `
+    hsl(0, 0%, ${luminance}) 0%,
+    hsla(0, 0%, ${luminance}, 0.987) 8.1%,
+    hsla(0, 0%, ${luminance}, 0.951) 15.5%,
+    hsla(0, 0%, ${luminance}, 0.896) 22.5%,
+    hsla(0, 0%, ${luminance}, 0.825) 29%,
+    hsla(0, 0%, ${luminance}, 0.741) 35.3%,
+    hsla(0, 0%, ${luminance}, 0.648) 41.2%,
+    hsla(0, 0%, ${luminance}, 0.55) 47.1%,
+    hsla(0, 0%, ${luminance}, 0.45) 52.9%,
+    hsla(0, 0%, ${luminance}, 0.352) 58.8%,
+    hsla(0, 0%, ${luminance}, 0.259) 64.7%,
+    hsla(0, 0%, ${luminance}, 0.175) 71%,
+    hsla(0, 0%, ${luminance}, 0.104) 77.5%,
+    hsla(0, 0%, ${luminance}, 0.049) 84.5%,
+    hsla(0, 0%, ${luminance}, 0.013) 91.9%,
+    hsla(0, 0%, ${luminance}, 0) 100%
+  `;
+};
 
 const fadeSize = 100;
 const fadePadding = 10;
@@ -72,11 +77,15 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
   fadeLeft: {
     left: -fadePadding,
-    background: `linear-gradient(90deg, ${fadeGradient})`,
+    background: `linear-gradient(90deg, ${generateGradientStops(
+      theme.palette.type,
+    )})`,
   },
   fadeRight: {
     right: -fadePadding,
-    background: `linear-gradient(270deg, ${fadeGradient})`,
+    background: `linear-gradient(270deg, ${generateGradientStops(
+      theme.palette.type,
+    )})`,
   },
   fadeHidden: {
     opacity: 0,

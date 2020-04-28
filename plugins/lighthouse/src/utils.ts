@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useLocation } from 'react-router-dom';
-
+import {Website, Audit, LighthouseCategoryId, AuditCompleted} from './api'
 export function useQuery(): URLSearchParams {
   return new URLSearchParams(useLocation().search);
 }
@@ -27,4 +27,40 @@ export function formatTime(timestamp: string | Date) {
     date = new Date(timestamp);
   }
   return date.toUTCString();
+}
+
+export const CATEGORIES: LighthouseCategoryId[] = [
+  'accessibility',
+  'performance',
+  'seo',
+  'best-practices',
+];
+
+export const CATEGORY_LABELS: Record<LighthouseCategoryId, string> = {
+  accessibility: 'Accessibility',
+  performance: 'Performance',
+  seo: 'SEO',
+  'best-practices': 'Best Practices',
+  pwa: 'Progressive Web App',
+};
+
+export type SparklinesDataByCategory = Record<LighthouseCategoryId, number[]>;
+export function buildSparklinesDataForItem(item: Website): SparklinesDataByCategory {
+  return item.audits
+    .filter(
+      (audit: Audit): audit is AuditCompleted => audit.status === 'COMPLETED',
+    )
+    .reduce((scores, audit) => {
+      Object.values(audit.categories).forEach(category => {
+        scores[category.id] = scores[category.id] || [];
+        scores[category.id].unshift(category.score);
+      });
+
+      // edge case: if only one audit exists, force a "flat" sparkline
+      Object.values(scores).forEach(arr => {
+        if (arr.length === 1) arr.push(arr[0]);
+      });
+
+      return scores;
+    }, {} as SparklinesDataByCategory);
 }

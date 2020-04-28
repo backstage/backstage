@@ -14,56 +14,27 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-import HomeIcon from '@material-ui/icons/Home';
-import { ThemeProvider, CssBaseline } from '@material-ui/core';
-import {
-  createApp,
-  SidebarPage,
-  Sidebar,
-  SidebarItem,
-  SidebarSpacer,
-  ApiRegistry,
-} from '@backstage/core';
-import { lightTheme } from '@backstage/theme';
+import { createDevApp } from '@backstage/dev-utils';
 import { plugin, GraphQLEndpoints, graphQlBrowseApiRef } from '../src';
 
-const graphQlBrowseApi = GraphQLEndpoints.from([
-  GraphQLEndpoints.create({
-    id: 'gitlab',
-    title: 'GitLab',
-    url: 'https://gitlab.com/api/graphql',
-  }),
-  GraphQLEndpoints.create({
-    id: 'countries',
-    title: 'Countries',
-    url: 'https://countries.trevorblades.com/',
-  }),
-]);
-
-const app = createApp();
-app.registerApis(ApiRegistry.from([[graphQlBrowseApiRef, graphQlBrowseApi]]));
-app.registerPlugin(plugin);
-const AppComponent = app.build();
-
-const App: FC<{}> = () => {
-  return (
-    <ThemeProvider theme={lightTheme}>
-      <CssBaseline>
-        <BrowserRouter>
-          <SidebarPage>
-            <Sidebar>
-              <SidebarSpacer />
-              <SidebarItem icon={HomeIcon} to="/graphiql" text="Home" />
-            </Sidebar>
-            <AppComponent />
-          </SidebarPage>
-        </BrowserRouter>
-      </CssBaseline>
-    </ThemeProvider>
-  );
-};
-
-ReactDOM.render(<App />, document.getElementById('root'));
+createDevApp()
+  .registerPlugin(plugin)
+  .registerApiFactory({
+    implements: graphQlBrowseApiRef,
+    deps: {},
+    factory() {
+      return GraphQLEndpoints.from([
+        GraphQLEndpoints.create({
+          id: 'gitlab',
+          title: 'GitLab',
+          url: 'https://gitlab.com/api/graphql',
+        }),
+        GraphQLEndpoints.create({
+          id: 'countries',
+          title: 'Countries',
+          url: 'https://countries.trevorblades.com/',
+        }),
+      ]);
+    },
+  })
+  .render();

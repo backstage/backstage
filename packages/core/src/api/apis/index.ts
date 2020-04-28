@@ -19,5 +19,6 @@ export { default as ApiRegistry } from './ApiRegistry';
 export { default as ApiTestRegistry } from './ApiTestRegistry';
 export { default as ApiRef } from './ApiRef';
 export * from './types';
+export * from './helpers';
 export * from './definitions';
 export * from './implementations';
