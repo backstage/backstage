@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CookieCutterTemplater } from './cookiecutter';
+import { CookieCutter } from './cookiecutter';
 
 export interface RequiredTemplateValues {
   componentId: string;
@@ -29,14 +29,14 @@ export abstract class TemplaterBase {
   abstract async run(opts: TemplaterRunOptions): Promise<string>;
 }
 
-class TemplaterImplementation implements TemplaterBase {
+export interface TemplaterConfig {
+  templater?: TemplaterBase;
+}
+
+class Templater implements TemplaterBase {
   templater?: TemplaterBase;
 
-  constructor() {
-    this.templater = CookieCutterTemplater;
-  }
-
-  public setTemplater(templater: TemplaterBase) {
+  constructor({ templater }: TemplaterConfig) {
     this.templater = templater;
   }
 
@@ -45,4 +45,8 @@ class TemplaterImplementation implements TemplaterBase {
   }
 }
 
-export const Templater = new TemplaterImplementation();
+export const createTemplater = (
+  config: TemplaterConfig = { templater: new CookieCutter() },
+): TemplaterBase => {
+  return new Templater(config);
+};

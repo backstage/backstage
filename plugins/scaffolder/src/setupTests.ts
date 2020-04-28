@@ -14,21 +14,5 @@
  * limitations under the License.
  */
 
-import { TemplaterConfig, createTemplater } from './lib/templater';
-import { createStorage, StorageConfig } from './lib/storage';
-import express from 'express';
-
-export const createScaffolder = (config?: TemplaterConfig & StorageConfig) => {
-  const store = createStorage(config);
-
-  const templater = createTemplater(config);
-
-  const router = express.Router();
-
-  router.get('/v1/templates', async (_, res) => {
-    const templates = await store.list();
-    res.status(200).json(templates);
-  });
-
-  return router;
-};
+import '@testing-library/jest-dom/extend-expect';
+require('jest-fetch-mock').enableMocks();

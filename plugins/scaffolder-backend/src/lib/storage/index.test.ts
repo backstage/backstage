@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RepositoryBase, Repository } from '.';
+import { StorageBase, createStorage } from '.';
 
-describe('Repository Interface Test', () => {
-  const mockRepo = new (class MockRepository implements RepositoryBase {
+describe('Storage Interface Test', () => {
+  const mockStore = new (class MockStorage implements StorageBase {
     list = jest.fn();
     prepare = jest.fn();
     reindex = jest.fn();
@@ -28,29 +28,28 @@ describe('Repository Interface Test', () => {
     };
   })();
 
-  afterEach(() => mockRepo.reset());
+  afterEach(() => mockStore.reset());
 
   it('should call list of the set repo when calling list', async () => {
-    Repository.setRepository(mockRepo);
+    const store = createStorage({ store: mockStore });
+    await store.list();
 
-    await Repository.list();
-
-    expect(mockRepo.list).toHaveBeenCalled();
+    expect(mockStore.list).toHaveBeenCalled();
   });
 
   it('should reindex on the repo when calling reindex', async () => {
-    Repository.setRepository(mockRepo);
+    const store = createStorage({ store: mockStore });
 
-    await Repository.reindex();
+    await store.reindex();
 
-    expect(mockRepo.reindex).toHaveBeenCalled();
+    expect(mockStore.reindex).toHaveBeenCalled();
   });
 
   it('should call prepare with the correct id when calling prepare', async () => {
-    Repository.setRepository(mockRepo);
+    const store = createStorage({ store: mockStore });
 
-    await Repository.prepare('testid');
+    await store.prepare('testid');
 
-    expect(mockRepo.prepare).toHaveBeenCalledWith('testid');
+    expect(mockStore.prepare).toHaveBeenCalledWith('testid');
   });
 });

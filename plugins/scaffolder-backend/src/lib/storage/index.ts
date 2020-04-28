@@ -1,4 +1,4 @@
-import { Repository as DiskRepository } from './disk';
+import { DiskStorage } from './disk';
 
 /*
  * Copyright 2020 Spotify AB
@@ -22,7 +22,7 @@ export interface Template {
   ownerId: string;
 }
 
-export abstract class RepositoryBase {
+export abstract class StorageBase {
   // lists all templates available
   abstract async list(): Promise<Template[]>;
   // can be used to build an index of the available templates;
@@ -31,20 +31,24 @@ export abstract class RepositoryBase {
   abstract async prepare(id: string): Promise<string>;
 }
 
-class RepositoryImplementation implements RepositoryBase {
-  repo?: RepositoryBase;
-
-  constructor() {
-    this.repo = DiskRepository;
-  }
-
-  public setRepository(repo: RepositoryBase) {
-    this.repo = repo;
-  }
-
-  list = () => this.repo!.list();
-  prepare = (id: string) => this.repo!.prepare(id);
-  reindex = () => this.repo!.reindex();
+export interface StorageConfig {
+  store?: StorageBase;
 }
 
-export const Repository = new RepositoryImplementation();
+class Storage implements StorageBase {
+  store?: StorageBase;
+
+  constructor({ store }: StorageConfig) {
+    this.store = store;
+  }
+
+  list = () => this.store!.list();
+  prepare = (id: string) => this.store!.prepare(id);
+  reindex = () => this.store!.reindex();
+}
+
+export const createStorage = (
+  config: StorageConfig = { store: new DiskStorage() },
+): StorageBase => {
+  return new Storage(config);
+};

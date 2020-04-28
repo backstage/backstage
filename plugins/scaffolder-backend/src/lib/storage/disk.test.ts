@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiskRepository } from './disk';
+import { DiskStorage } from './disk';
 import * as path from 'path';
-describe('Template Repository', () => {
+describe('Disk Storage', () => {
   it('should load a simple template from a simple directory', async () => {
     const testTemplateDir = path.resolve(
       __dirname,
@@ -23,7 +23,7 @@ describe('Template Repository', () => {
     );
     const templateInfo = require(`${testTemplateDir}/mock-template/template-info.json`);
 
-    const repository = new DiskRepository(testTemplateDir);
+    const repository = new DiskStorage(testTemplateDir);
 
     await repository.reindex();
 
@@ -42,7 +42,7 @@ describe('Template Repository', () => {
       '../../../test/mock-multiple-templates-dir',
     );
 
-    const repository = new DiskRepository(testTemplateDir);
+    const repository = new DiskStorage(testTemplateDir);
 
     await repository.reindex();
 
@@ -57,7 +57,7 @@ describe('Template Repository', () => {
       '/some-folder-that-deffo-does-not-exist',
     );
 
-    const repository = new DiskRepository(testTemplateDir);
+    const repository = new DiskStorage(testTemplateDir);
 
     await repository.reindex();
 
@@ -72,7 +72,7 @@ describe('Template Repository', () => {
       '../../../test/mock-failing-template-dir',
     );
 
-    const repository = new DiskRepository(testTemplateDir);
+    const repository = new DiskStorage(testTemplateDir);
 
     await repository.reindex();
 

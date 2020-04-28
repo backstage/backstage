@@ -16,19 +16,21 @@
 
 import glob from 'glob';
 import fs from 'fs-extra';
-import { logger } from 'lib/logger';
-import { Template, RepositoryBase as Base } from '.';
+import { logger } from '../logger';
+import { Template, StorageBase as Base } from '.';
 
 interface DiskIndexEntry {
   contents: Template;
   location: string;
 }
 
-export class DiskRepository implements Base {
+export class DiskStorage implements Base {
   private repository: Template[] = [];
   private localIndex: DiskIndexEntry[] = [];
 
-  constructor(private repoDir = `${__dirname}/templates`) {}
+  constructor(private repoDir = `${__dirname}/../../../sample-templates`) {
+    console.warn(require('path').resolve(repoDir));
+  }
   public async list(): Promise<Template[]> {
     if (this.repository.length === 0) {
       await this.reindex();
@@ -97,5 +99,3 @@ export class DiskRepository implements Base {
     });
   }
 }
-
-export const Repository = new DiskRepository();

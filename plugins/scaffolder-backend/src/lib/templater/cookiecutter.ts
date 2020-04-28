@@ -17,7 +17,7 @@ import { TemplaterBase, TemplaterRunOptions } from '.';
  */
 import fs from 'fs-extra';
 
-class CookieCutter implements TemplaterBase {
+export class CookieCutter implements TemplaterBase {
   public async run(options: TemplaterRunOptions): Promise<string> {
     // first we need to make cookiecutter.json in the directory provided with the input values.
     const cookieInfo = {
@@ -30,5 +30,3 @@ class CookieCutter implements TemplaterBase {
     // run cookie cutter with new json
   }
 }
-
-export const CookieCutterTemplater = new CookieCutter();
