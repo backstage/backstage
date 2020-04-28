@@ -30,5 +30,15 @@ export const createScaffolder = (config?: TemplaterConfig & StorageConfig) => {
     res.status(200).json(templates);
   });
 
+  router.post('/v1/job/create', async (_, res) => {
+    // TODO(blam): Actually make this function work'
+
+    const mock = 'templateid';
+    res.status(201).json({ accepted: true });
+
+    const path = await store.prepare(mock);
+    await templater.run({ directory: path, values: { componentId: 'test' } });
+  });
+
   return router;
 };
