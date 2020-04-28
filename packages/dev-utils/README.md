@@ -2,7 +2,7 @@
 
 Utilities for developing Backstage plugins.
 
-This package provides utilities that help in developing plugins for backstage, like App wrappers and API implementations for standalone serving of apps.
+This package provides utilities that help in developing plugins for Backstage, like App wrappers and API implementations for standalone serving of apps.
 
 ## Installation
 

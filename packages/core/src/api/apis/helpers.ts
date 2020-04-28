@@ -16,9 +16,11 @@
 
 import { ApiFactory } from './types';
 
-// Used to infer types for a standalone ApiFactory that isn't immediately passed
-// to another function.
-// This function doesn't actually do anything, it's only used to infer types.
+/**
+ * Used to infer types for a standalone ApiFactory that isn't immediately passed
+ * to another function.
+ * This function doesn't actually do anything, it's only used to infer types.
+ */
 export function createApiFactory<Api, Impl, Deps>(
   factory: ApiFactory<Api, Impl, Deps>,
 ): ApiFactory<Api, Impl, Deps> {

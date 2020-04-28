@@ -36,19 +36,25 @@ import * as defaultApiFactories from './apiFactories';
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
 type BackstagePlugin = ReturnType<typeof createPlugin>;
 
-// DevApp builder that is similar to the App builder API, but creates an App
-// with the purpose of developing one or more plugins inside it.
+/**
+ * DevApp builder that is similar to the App builder API, but creates an App
+ * with the purpose of developing one or more plugins inside it.
+ */
 class DevAppBuilder {
   private readonly plugins = new Array<BackstagePlugin>();
   private readonly factories = new Array<ApiFactory<any, any, any>>();
 
-  // Register one or more plugins to render in the dev app
+  /**
+   * Register one or more plugins to render in the dev app
+   */
   registerPlugin(...plugins: BackstagePlugin[]): DevAppBuilder {
     this.plugins.push(...plugins);
     return this;
   }
 
-  // Register an API factory to add to the app
+  /**
+   * Register an API factory to add to the app
+   */
   registerApiFactory<Api, Impl, Deps>(
     factory: ApiFactory<Api, Impl, Deps>,
   ): DevAppBuilder {
@@ -56,7 +62,9 @@ class DevAppBuilder {
     return this;
   }
 
-  // Build a DevApp component using the resources registered so far
+  /**
+   * Build a DevApp component using the resources registered so far
+   */
   build(): ComponentType<{}> {
     const app = createApp();
     app.registerApis(this.setupApiRegistry(this.factories));
@@ -83,7 +91,9 @@ class DevAppBuilder {
     return DevApp;
   }
 
-  // Build and render directory to #root element
+  /**
+   * Build and render directory to #root element
+   */
   render(): void {
     const DevApp = this.build();
 
@@ -173,7 +183,9 @@ class DevAppBuilder {
 // TODO(rugvip): Figure out patterns for how to allow in-house apps to build upon
 // this to provide their own plugin dev wrappers.
 
-// Creates a dev app for rendering one or more plugins and exposing the touchpoints of the plugin.
+/**
+ * Creates a dev app for rendering one or more plugins and exposing the touchpoints of the plugin.
+ */
 export function createDevApp() {
   return new DevAppBuilder();
 }
