@@ -99,7 +99,7 @@ const tableIcons = {
   )),
 };
 
-const useCellStyles = makeStyles<typeof BackstageTheme>(theme => ({
+const useCellStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     color: theme.palette.grey[500],
     padding: theme.spacing(0, 2, 0, 2.5),
@@ -107,7 +107,7 @@ const useCellStyles = makeStyles<typeof BackstageTheme>(theme => ({
   },
 }));
 
-const useHeaderStyles = makeStyles<typeof BackstageTheme>(theme => ({
+const useHeaderStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
     padding: theme.spacing(1, 2, 1, 2.5),
     borderTop: `1px solid ${theme.palette.grey.A100}`,
@@ -118,7 +118,7 @@ const useHeaderStyles = makeStyles<typeof BackstageTheme>(theme => ({
   },
 }));
 
-const useToolbarStyles = makeStyles<typeof BackstageTheme>(theme => ({
+const useToolbarStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     padding: theme.spacing(3, 0, 2.5, 2.5),
   },
@@ -129,7 +129,7 @@ const useToolbarStyles = makeStyles<typeof BackstageTheme>(theme => ({
   },
 }));
 
-const convertColumns = columns => {
+const convertColumns = (columns: TableColumn[]): TableColumn[] => {
   return columns.map(column => {
     const headerStyle: React.CSSProperties = {};
     const cellStyle: React.CSSProperties = {};

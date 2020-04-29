@@ -16,7 +16,6 @@
 
 import React from 'react';
 import Table, { SubvalueCell, TableColumn } from './';
-import InfoCard from '../../layout/InfoCard';
 
 export default {
   title: 'Table',

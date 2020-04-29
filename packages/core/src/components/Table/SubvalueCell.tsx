@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core';
 
-const useSubvalueCellStyles = makeStyles<typeof BackstageTheme>(theme => ({
+const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
   value: {
     marginBottom: '6px',
   },
