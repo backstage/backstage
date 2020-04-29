@@ -118,7 +118,15 @@ export default class AppBuilder {
       <AppContextProvider app={app}>
         <Switch>
           {routes}
-          <Route render={(props) => <ErrorPage {...props} status="404" errorTitle="PAGE NOT FOUND" backButton={true} />}/>
+          <Route
+            render={props => (
+              <ErrorPage
+                {...props}
+                status="404"
+                statusMessage="PAGE NOT FOUND"
+              />
+            )}
+          />
         </Switch>
       </AppContextProvider>
 >>>>>>> core: Implemented error page, closes #170
