@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Ryan Pannell <r.pannell1993@gmail.com>
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ const ErrorPage = ({ status, statusMessage, history }: IErrorPageProps) => {
             </Typography>
             <Typography variant="h6">
               <Link onClick={history.goBack}>Go back</Link>... or if you think
-              this is a bug, please file an {''}
+              this is a bug, please file an 
               <Link href="https://github.com/spotify/backstage/issues">
                 issue.
               </Link>
