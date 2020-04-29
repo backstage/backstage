@@ -105,7 +105,6 @@ export default class AppBuilder {
       }
     }
 
-<<<<<<< HEAD
     const FeatureFlags = this.apis && this.apis.get(featureFlagsApiRef);
     if (FeatureFlags) {
       FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
@@ -113,29 +112,16 @@ export default class AppBuilder {
 
     routes.push(
       <Route key="login" path="/login" component={LoginPage} exact />,
-=======
-    return () => (
-      <AppContextProvider app={app}>
-        <Switch>
-          {routes}
-          <Route
-            render={props => (
-              <ErrorPage
-                {...props}
-                status="404"
-                statusMessage="PAGE NOT FOUND"
-              />
-            )}
-          />
-        </Switch>
-      </AppContextProvider>
->>>>>>> core: Implemented error page, closes #170
     );
 
     let rendered = (
       <Switch>
         {routes}
-        <Route component={() => <span>404 Not Found</span>} />
+        <Route
+          render={props => (
+            <ErrorPage {...props} status="404" statusMessage="PAGE NOT FOUND" />
+          )}
+        />
       </Switch>
     );
 
