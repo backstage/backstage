@@ -18,12 +18,15 @@
   "license": "Apache-2.0",
   "main": "dist",
   "scripts": {
-    "exec": "npx ts-node ./src",
-    "build": "backstage-cli build-cache -- tsc",
+    "build": "backstage-cli build-cache -- tsc --project tsconfig.build.json",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
+    "test:e2e": "node e2e-test/cli-e2e-test.js",
     "clean": "backstage-cli clean",
-    "start": "nodemon ."
+    "start": "nodemon --"
+  },
+  "bin": {
+    "backstage-cli": "bin/backstage-cli"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
@@ -41,10 +44,8 @@
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
     "ts-node": "^8.6.2",
-    "tsconfig-paths": "^3.9.0"
-  },
-  "bin": {
-    "backstage-cli": "bin/backstage-cli"
+    "tsconfig-paths": "^3.9.0",
+    "zombie": "^6.1.4"
   },
   "dependencies": {
     "@lerna/package-graph": "^3.18.5",
@@ -64,7 +65,10 @@
     "handlebars": "^4.7.3",
     "html-webpack-plugin": "^3.2.0",
     "inquirer": "^7.0.4",
+    "jest": "^25.1.0",
+    "jest-css-modules": "^2.1.0",
     "ora": "^4.0.3",
+    "react": "^16.0.0",
     "react-dev-utils": "^10.2.0",
     "react-scripts": "^3.4.1",
     "recursive-readdir": "^2.2.2",
@@ -79,9 +83,6 @@
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3"
   },
-  "peerDependencies": {
-    "react": "^16.0.0"
-  },
   "files": [
     "templates",
     "config",
@@ -90,7 +91,7 @@
   ],
   "nodemonConfig": {
     "watch": "./src",
-    "exec": "ts-node ./src",
+    "exec": "bin/backstage-cli",
     "ext": "ts"
   }
 }

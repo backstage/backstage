@@ -2,16 +2,9 @@
   "name": "example-app",
   "version": "0.1.1-alpha.4",
   "private": true,
-  "dependencies": {
-    "@backstage/cli": "^0.1.1-alpha.4",
-    "@backstage/core": "^0.1.1-alpha.4",
-    "@backstage/plugin-home-page": "^0.1.1-alpha.4",
-    "@backstage/plugin-lighthouse": "^0.1.1-alpha.4",
-    "@backstage/plugin-welcome": "^0.1.1-alpha.4",
-    "@backstage/theme": "^0.1.1-alpha.4",
-    "@material-ui/core": "^4.9.1",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.45",
+  "devDependencies": {
+    "@testing-library/cypress": "^6.0.0",
+    "@types/jquery": "^3.3.34",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -20,6 +13,22 @@
     "@types/react-router-dom": "^5.1.3",
     "@types/zen-observable": "^0.8.0",
     "cross-env": "^7.0.0",
+    "cypress": "^4.2.0",
+    "eslint-plugin-cypress": "^2.10.3",
+    "start-server-and-test": "^1.10.11"
+  },
+  "dependencies": {
+    "@backstage/cli": "^0.1.1-alpha.4",
+    "@backstage/core": "^0.1.1-alpha.4",
+    "@backstage/plugin-home-page": "^0.1.1-alpha.4",
+    "@backstage/plugin-inventory": "^0.1.1-alpha.4",
+    "@backstage/plugin-lighthouse": "^0.1.1-alpha.4",
+    "@backstage/plugin-tech-radar": "^0.1.1-alpha.4",
+    "@backstage/plugin-welcome": "^0.1.1-alpha.4",
+    "@backstage/theme": "^0.1.1-alpha.4",
+    "@material-ui/core": "^4.9.1",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.45",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -50,12 +59,5 @@
       "last 1 safari version"
     ]
   },
-  "license": "Apache-2.0",
-  "devDependencies": {
-    "@testing-library/cypress": "^6.0.0",
-    "@types/jquery": "^3.3.34",
-    "cypress": "^4.2.0",
-    "eslint-plugin-cypress": "^2.10.3",
-    "start-server-and-test": "^1.10.11"
-  }
+  "license": "Apache-2.0"
 }

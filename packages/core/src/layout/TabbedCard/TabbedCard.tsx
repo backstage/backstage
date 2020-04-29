@@ -68,7 +68,7 @@ const TabbedCard: FC<Props> = ({
 
   const handleChange = onChange
     ? onChange
-    : (_ev, newSelectedIndex: number) => selectIndex(newSelectedIndex);
+    : (_ev: unknown, newSelectedIndex: number) => selectIndex(newSelectedIndex);
 
   let selectedTabContent: ReactNode;
   if (!value) {

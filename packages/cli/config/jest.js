@@ -26,6 +26,9 @@ if (fs.existsSync('jest.config.js')) {
 } else {
   const extraOptions = {
     modulePaths: ['<rootDir>'],
+    moduleNameMapper: {
+      '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
+    },
   };
 
   // Use src/setupTests.ts as the default location for configuring test env

@@ -9,6 +9,7 @@ module.exports = {
     '@storybook/addon-actions',
     '@storybook/addon-links',
     '@storybook/addon-storysource',
+    'storybook-dark-mode/register',
   ],
   webpackFinal: async config => {
     config.resolve.alias = {
@@ -38,6 +39,12 @@ module.exports = {
       },
     );
     config.resolve.extensions.push('.ts', '.tsx');
+
+    // Disable ProgressPlugin which logs verbose webpack build progress. Warnings and Errors are still logged.
+    config.plugins = config.plugins.filter(
+      ({ constructor }) => constructor.name !== 'ProgressPlugin',
+    );
+
     return config;
   },
 };

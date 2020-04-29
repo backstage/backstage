@@ -1,6 +1,4 @@
 module.exports = {
-  extends: [
-    require.resolve('@backstage/cli/config/eslint.js'),
-    '@spotify/eslint-config-oss',
-  ],
+  root: true,
+  extends: ['@spotify/eslint-config-oss'],
 };

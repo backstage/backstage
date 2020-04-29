@@ -14,69 +14,43 @@
  * limitations under the License.
  */
 
-import {
-  CssBaseline,
-  makeStyles,
-  Theme,
-  ThemeProvider,
-} from '@material-ui/core';
-import { BackstageThemeLight, BackstageThemeDark } from '@backstage/theme';
+import { CssBaseline, ThemeProvider } from '@material-ui/core';
+import { lightTheme, darkTheme } from '@backstage/theme';
 import { createApp } from '@backstage/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
-import ErrorDisplay from './components/ErrorDisplay';
+import AlertDisplay from './components/AlertDisplay';
 import * as plugins from './plugins';
-import apis, { errorDialogForwarder } from './apis';
+import apis, { alertApiForwarder } from './apis';
 import { ThemeContextType, ThemeContext, useThemeType } from './ThemeContext';
-
-const useStyles = makeStyles(theme => ({
-  '@global': {
-    html: {
-      height: '100%',
-      fontFamily: theme.typography.fontFamily,
-    },
-    body: {
-      height: '100%',
-      fontFamily: theme.typography.fontFamily,
-      'overscroll-behavior-y': 'none',
-    },
-    a: {
-      color: 'inherit',
-      textDecoration: 'none',
-    },
-  },
-}));
 
 const app = createApp();
 app.registerApis(apis);
 app.registerPlugin(...Object.values(plugins));
 const AppComponent = app.build();
 
-type T = typeof BackstageThemeLight | typeof BackstageThemeDark;
-
 const App: FC<{}> = () => {
-  useStyles();
   const [theme, toggleTheme] = useThemeType(
     localStorage.getItem('theme') || 'auto',
   );
 
-  let backstageTheme: T = BackstageThemeLight;
+  let backstageTheme = lightTheme;
   switch (theme) {
     case 'light':
-      backstageTheme = BackstageThemeLight;
+      backstageTheme = lightTheme;
       break;
     case 'dark':
-      backstageTheme = BackstageThemeDark;
+      backstageTheme = darkTheme;
       break;
     default:
       if (!window.matchMedia) {
-        backstageTheme = BackstageThemeLight;
+        backstageTheme = lightTheme;
         break;
       }
       backstageTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? BackstageThemeDark
-        : BackstageThemeLight;
+        ? darkTheme
+        : lightTheme;
       break;
   }
 
@@ -86,9 +60,9 @@ const App: FC<{}> = () => {
   };
   return (
     <ThemeContext.Provider value={themeContext}>
-      <ThemeProvider theme={backstageTheme as Theme}>
+      <ThemeProvider theme={backstageTheme}>
         <CssBaseline>
-          <ErrorDisplay forwarder={errorDialogForwarder} />
+          <AlertDisplay forwarder={alertApiForwarder} />
           <Router>
             <Root>
               <AppComponent />

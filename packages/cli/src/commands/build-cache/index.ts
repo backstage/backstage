@@ -14,48 +14,9 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { Command } from 'commander';
-import { run } from 'helpers/run';
-import { Cache } from './cache';
-import { parseOptions, Options } from './options';
-
-function print(msg: string) {
-  process.stdout.write(`[build-cache] ${msg}\n`);
-}
-
-// Wrap a build function with a cache, which won't call the build function on cache hit
-export async function withCache(
-  options: Options,
-  buildFunc: () => Promise<void>,
-): Promise<void> {
-  const key = await Cache.readInputKey(options.inputs);
-  if (!key) {
-    print('input directory is dirty, skipping cache');
-    await fs.remove(options.output);
-    await buildFunc();
-    return;
-  }
-
-  const cache = await Cache.read(options);
-
-  const cacheResult = cache.query(key);
-  if (cacheResult.hit) {
-    if (cacheResult.copy) {
-      print('external cache hit, copying archive to output folder');
-      await cacheResult.copy(options.output);
-    } else {
-      print('cache hit, nothing to be done');
-    }
-    return;
-  }
-
-  print('cache miss, need to build');
-  await fs.remove(options.output);
-  await buildFunc();
-
-  await cacheResult.archive(options.output, options.maxCacheEntries);
-}
+import { run } from 'lib/run';
+import { withCache, parseOptions } from 'lib/buildCache';
 
 /*
  * The build-cache command is used to make builds a no-op if there are no changes to the package.
@@ -69,5 +30,3 @@ export default async (cmd: Command, args: string[]) => {
     await run(args[0], args.slice(1));
   });
 };
-
-export * from './options';

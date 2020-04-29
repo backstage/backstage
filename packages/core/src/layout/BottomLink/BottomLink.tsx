@@ -24,17 +24,20 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
-import grey from '@material-ui/core/colors/grey';
+import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     maxWidth: 'fit-content',
     padding: theme.spacing(2, 2, 2, 2.5),
   },
   boxTitle: {
     margin: 0,
-    color: grey[900],
+    color: theme.palette.textSubtle,
+  },
+  arrow: {
+    color: theme.palette.textSubtle,
   },
 }));
 
@@ -50,7 +53,7 @@ const BottomLink: FC<Props> = ({ link, title, onClick }) => {
   return (
     <div>
       <Divider />
-      <Link href={link} onClick={onClick}>
+      <Link href={link} onClick={onClick} underline="none">
         <ListItem className={classes.root}>
           <ListItemText>
             <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
@@ -58,7 +61,7 @@ const BottomLink: FC<Props> = ({ link, title, onClick }) => {
             </Box>
           </ListItemText>
           <ListItemIcon>
-            <ArrowIcon />
+            <ArrowIcon className={classes.arrow} />
           </ListItemIcon>
         </ListItem>
       </Link>

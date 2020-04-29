@@ -63,7 +63,7 @@ const AuditList: FC<{}> = () => {
     if (value?.total && value?.limit)
       return Math.ceil(value?.total / value?.limit);
     return 0;
-  }, [value?.total, value?.limit]);
+  }, [value]);
 
   const history = useHistory();
 

@@ -16,8 +16,8 @@
 
 import program from 'commander';
 import chalk from 'chalk';
-import { exitWithError } from 'helpers/errors';
-import { version } from 'helpers/version';
+import { exitWithError } from 'lib/errors';
+import { version } from 'lib/version';
 
 const main = (argv: string[]) => {
   program.name('backstage-cli').version(version);
@@ -45,6 +45,13 @@ const main = (argv: string[]) => {
     );
 
   program
+    .command('remove-plugin')
+    .description('Removes plugin in the current repository')
+    .action(
+      actionHandler(() => require('commands/remove-plugin/removePlugin')),
+    );
+
+  program
     .command('plugin:build')
     .option('--watch', 'Enable watch mode')
     .description('Build a plugin')
@@ -63,9 +70,9 @@ const main = (argv: string[]) => {
 
   program
     .command('test')
-    .option('--watch', 'Enable watch mode')
-    .option('--coverage', 'Report test coverage')
-    .description('Run all tests for package')
+    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
+    .helpOption(', --backstage-cli-help') // Let Jest handle help
+    .description('Run tests, forwarding args to Jest, defaulting to watch mode')
     .action(actionHandler(() => require('commands/testCommand')));
 
   program

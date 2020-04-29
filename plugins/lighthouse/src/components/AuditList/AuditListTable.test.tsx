@@ -17,19 +17,41 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { ApiRegistry, ApiProvider } from '@backstage/core';
 
 import AuditListTable from './AuditListTable';
-import { WebsiteListResponse } from '../../api';
+import {
+  WebsiteListResponse,
+  lighthouseApiRef,
+  LighthouseRestApi,
+} from '../../api';
 import { formatTime } from '../../utils';
+import mockFetch from 'jest-fetch-mock';
 
 import * as data from '../../__fixtures__/website-list-response.json';
 
 const websiteListResponse = data as WebsiteListResponse;
 
 describe('AuditListTable', () => {
+  let apis: ApiRegistry;
+
+  beforeEach(() => {
+    apis = ApiRegistry.from([
+      [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
+    ]);
+    mockFetch.mockResponse(JSON.stringify(websiteListResponse));
+  });
+
+  const auditList = (websiteList: WebsiteListResponse) => {
+    return (
+      <ApiProvider apis={apis}>
+        <AuditListTable items={websiteList.items} />
+      </ApiProvider>
+    );
+  };
   it('renders the link to each website', () => {
     const rendered = render(
-      wrapInThemedTestApp(<AuditListTable items={websiteListResponse.items} />),
+      wrapInThemedTestApp(auditList(websiteListResponse)),
     );
     const link = rendered.queryByText('https://anchor.fm');
     const website = websiteListResponse.items.find(
@@ -46,7 +68,7 @@ describe('AuditListTable', () => {
 
   it('renders the dates that are available for a given row', () => {
     const rendered = render(
-      wrapInThemedTestApp(<AuditListTable items={websiteListResponse.items} />),
+      wrapInThemedTestApp(auditList(websiteListResponse)),
     );
     const website = websiteListResponse.items.find(
       w => w.url === 'https://anchor.fm',
@@ -60,7 +82,7 @@ describe('AuditListTable', () => {
 
   it('renders the status for a given row', async () => {
     const rendered = render(
-      wrapInThemedTestApp(<AuditListTable items={websiteListResponse.items} />),
+      wrapInThemedTestApp(auditList(websiteListResponse)),
     );
 
     const completed = await rendered.findAllByText('completed');
@@ -85,9 +107,7 @@ describe('AuditListTable', () => {
   describe('sparklines', () => {
     it('correctly maps the data from the website payload', () => {
       const rendered = render(
-        wrapInThemedTestApp(
-          <AuditListTable items={websiteListResponse.items} />,
-        ),
+        wrapInThemedTestApp(auditList(websiteListResponse)),
       );
       const backstageSEO = rendered.getByTitle(
         'trendline for SEO category of https://backstage.io',
@@ -97,9 +117,7 @@ describe('AuditListTable', () => {
 
     it('does not break when no data is available', () => {
       const rendered = render(
-        wrapInThemedTestApp(
-          <AuditListTable items={websiteListResponse.items} />,
-        ),
+        wrapInThemedTestApp(auditList(websiteListResponse)),
       );
       const anchorSEO = rendered.queryByTitle(
         'trendline for SEO category of https://anchor.fm',

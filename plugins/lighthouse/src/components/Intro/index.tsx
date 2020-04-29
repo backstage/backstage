@@ -59,7 +59,7 @@ import { ApiHolder, ApiRegistry } from '@backstage/core';
 import {
   lighthouseApiRef,
   LighthouseRestApi,
-} from '@backstage/lighthouse-audits';
+} from '@backstage/plugin-lighthouse';
 
 const builder = ApiRegistry.builder();
 

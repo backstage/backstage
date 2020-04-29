@@ -20,7 +20,7 @@ import ContentHeader from './ContentHeader';
 import { wrapInThemedTestApp } from '@backstage/test-utils';
 
 jest.mock('react-helmet', () => {
-  return ({ defaultTitle }) => <div>defaultTitle: {defaultTitle}</div>;
+  return ({ defaultTitle }: any) => <div>defaultTitle: {defaultTitle}</div>;
 });
 
 describe('<ContentHeader/>', () => {

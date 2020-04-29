@@ -1,0 +1,22 @@
+{
+  "name": "@backstage/plugin-inventory-backend",
+  "version": "0.1.1-alpha.4",
+  "main": "dist",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.4"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "files": [
+    "dist"
+  ]
+}

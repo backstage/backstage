@@ -23,7 +23,7 @@ export default {
   title: 'Tabbed Card',
   component: TabbedCard,
   decorators: [
-    storyFn => (
+    (storyFn: () => JSX.Element) => (
       <Grid container spacing={4}>
         <Grid item>{storyFn()}</Grid>
       </Grid>
@@ -72,9 +72,10 @@ export const WithFooterLink = () => {
 };
 
 export const WithControlledTabValue = () => {
-  const [selectedTab, setSelectedTab] = useState('one');
+  const [selectedTab, setSelectedTab] = useState<string | number>('one');
 
-  const handleChange = (_ev, newSelectedTab) => setSelectedTab(newSelectedTab);
+  const handleChange = (_ev: any, newSelectedTab: string | number) =>
+    setSelectedTab(newSelectedTab);
 
   return (
     <>
