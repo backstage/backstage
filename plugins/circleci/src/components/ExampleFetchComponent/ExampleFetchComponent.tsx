@@ -7,14 +7,14 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ * Unless required by applicable law or agreed to in wr iting, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -22,41 +22,22 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Alert from '@material-ui/lab/Alert';
+// import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
-import { Progress } from '@backstage/core';
+// import { Progress } from '@backstage/core';
 
-import { CircleCI, GitType, CircleCIOptions } from "circleci-api";
+import { CircleCI, GitType, CircleCIOptions, BuildSummary } from 'circleci-api';
 
-const CIRCLECI_TOKEN: string = "943aa82531ccaab192b4c4bc614507dff31c094c";
+// const CIRCLECI_TOKEN: string = '943aa82531ccaab192b4c4bc614507dff31c094c';
 
 // Configure the factory with some defaults
-const options: CircleCIOptions = {
-  // Required for all requests
-  token: CIRCLECI_TOKEN, // Set your CircleCi API token
 
-  // Optional
-  // Anything set here can be overriden when making the request
+// const api = new CircleCI(options);
 
-  // Git information is required for project/build/etc endpoints
-  vcs: {
-    type: GitType.GITHUB, // default: github
-    owner: "CircleCITest3",
-    repo: "circleci-test"
-  },
-
-  // Optional query params for requests
-  // options: {
-  //   branch: "master", // default: master
-  // }
-};
-
-const api = new CircleCI(options);
-
-api.builds()
-  .then((v) => console.log("token is valid"))
-  .catch(() => console.error("invalid token"));
-
+// api
+//   .builds()
+//   .then(d => console.log('token is valid', d))
+//   .catch(() => console.error('invalid token'));
 
 const useStyles = makeStyles({
   table: {
@@ -131,21 +112,50 @@ export const DenseTable: FC<DenseTableProps> = ({ users }) => {
     </TableContainer>
   );
 };
+const options: Partial<CircleCIOptions> = {
+  // Required for all requests
+  // token: CIRCLECI_TOKEN, // Set your CircleCi API token
 
-const ExampleFetchComponent: FC<{}> = () => {
-  // const { value, loading, error } = useAsync(async (): Promise<User[]> => {
-  //   const response = await fetch('https://randomuser.me/api/?results=20');
-  //   const data = await response.json();
-  //   return data.results;
-  // }, []);
+  // Optional
+  // Anything set here can be overriden when making the request
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  }
+  // Git information is required for project/build/etc endpoints
+  vcs: {
+    type: GitType.GITHUB, // default: github
+    owner: 'CircleCITest3',
+    repo: 'circleci-test',
+  },
 
-  return <DenseTable users={value || []} />;
+  // Optional query params for requests
+  // options: {
+  //   branch: "master", // default: master
+  // }
+};
+
+const BuildList: React.FC<{ builds: BuildSummary[] }> = ({ builds }) => (
+  <ul>
+    {builds.map(build => (
+      <li key={`build-${build.build_num}`}>
+        #{build.build_num} ({build.subject})
+      </li>
+    ))}
+  </ul>
+);
+const ExampleFetchComponent: FC<{ token: string }> = ({ token }) => {
+  const api = useRef<CircleCI | null>(null);
+  useEffect(() => {
+    if (token !== '') api.current = new CircleCI({ ...options, token });
+  }, [token]);
+
+  const { value, loading, error } = useAsync(() => {
+    if (api.current) return api.current.builds();
+    return Promise.reject('Api token not provided');
+  }, [token]);
+
+  if (loading) return <div>loading</div>;
+  if (error) return <div>{JSON.stringify(error, null, 2)}</div>;
+
+  return <BuildList builds={value || []} />;
 };
 
 export default ExampleFetchComponent;

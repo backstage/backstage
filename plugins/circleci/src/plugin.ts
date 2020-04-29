@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createPlugin } from '@backstage/core';
-import ExampleComponent from './components/ExampleFetchComponent';
+import ExampleComponent from './components/ExampleComponent';
 
 export const plugin = createPlugin({
   id: 'circleci',

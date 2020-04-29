@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import { Typography, Grid } from '@material-ui/core';
+import React, { FC, useState } from 'react';
+import { Typography, Grid, Input } from '@material-ui/core';
 import {
   InfoCard,
   Header,
@@ -28,32 +28,41 @@ import {
 } from '@backstage/core';
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
-const ExampleComponent: FC<{}> = () => (
-  <Page theme={pageTheme.tool}>
-    <Header title="Welcome to circleci!" subtitle="Optional subtitle">
-      <HeaderLabel label="Owner" value="Team X" />
-      <HeaderLabel label="Lifecycle" value="Alpha" />
-    </Header>
-    <Content>
-      <ContentHeader title="Plugin title">
-        <SupportButton>A description of your plugin goes here.</SupportButton>
-      </ContentHeader>
-      <Grid container spacing={3} direction="column">
-        <Grid item>
-          <InfoCard title="Information card">
-            <Typography variant="body1">
-              All content should be wrapped in a card like this.
-            </Typography>
-          </InfoCard>
+const ExampleComponent: FC<{}> = () => {
+  const [token, setToken] = useState<string>('');
+
+  return (
+    <Page theme={pageTheme.tool}>
+      <Header title="Welcome to circleci!" subtitle="Optional subtitle">
+        <HeaderLabel label="Owner" value="Team X" />
+        <HeaderLabel label="Lifecycle" value="Alpha" />
+      </Header>
+      <Content>
+        <ContentHeader title="Plugin title">
+          <SupportButton>A description of your plugin goes here.</SupportButton>
+        </ContentHeader>
+        <Grid container spacing={3} direction="column">
+          <Grid item>
+            <InfoCard title="Information card">
+              <Typography variant="body1">
+                Please paste your CircleCI token here
+                <Input
+                  onChange={e => setToken(e.target.value)}
+                  type="password"
+                  value={token}
+                ></Input>
+              </Typography>
+            </InfoCard>
+          </Grid>
+          <Grid item>
+            <InfoCard title="Example User List (fetching data from randomuser.me)">
+              <ExampleFetchComponent token={token} />
+            </InfoCard>
+          </Grid>
         </Grid>
-        <Grid item>
-          <InfoCard title="Example User List (fetching data from randomuser.me)">
-            <ExampleFetchComponent />
-          </InfoCard>
-        </Grid>
-      </Grid>
-    </Content>
-  </Page>
-);
+      </Content>
+    </Page>
+  );
+};
 
 export default ExampleComponent;
