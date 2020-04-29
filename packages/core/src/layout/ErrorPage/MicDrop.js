@@ -19,7 +19,7 @@ import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
   micDrop: {
-    maxWidth: '80%',
+    maxWidth: '60%',
     bottom: 10,
     right: 10,
     position: 'absolute',
