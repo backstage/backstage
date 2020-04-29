@@ -15,13 +15,12 @@
  */
 
 import React from 'react';
-import Table from './Table';
+import Table, { SubvalueCell, TableColumn } from './';
 import InfoCard from '../../layout/InfoCard';
 
 export default {
   title: 'Table',
   component: Table,
-  decorators: [story => <InfoCard title="Table">{story()}</InfoCard>],
 };
 
 const generateTestData: (number) => Array<{}> = (rows = 20) => {
@@ -30,6 +29,7 @@ const generateTestData: (number) => Array<{}> = (rows = 20) => {
     data.push({
       col1: `Some value ${data.length}`,
       col2: `More data ${data.length}`,
+      subvalue: `Subvalue ${data.length}`,
       number: Math.floor(Math.random() * 1000),
       date: new Date(Math.random() * 10000000000000),
     });
@@ -38,36 +38,107 @@ const generateTestData: (number) => Array<{}> = (rows = 20) => {
   return data;
 };
 
-const testColumns = [
-  {
-    Header: 'Column 1',
-    accessor: 'col1',
-    highlight: true,
-  },
-  {
-    Header: 'Column 2',
-    accessor: 'col2',
-  },
-  {
-    Header: 'Numeric value',
-    accessor: 'number',
-    align: 'right',
-    sortType: 'basic',
-  },
-  {
-    Header: 'A Date',
-    accessor: 'date',
-    sortType: 'datetime',
-    Cell: ({ value }) => value.toLocaleDateString(),
-  },
-];
-
 const testData100 = generateTestData(100);
 
 export const DefaultTable = () => {
-  return <Table data={testData100} columns={testColumns} />;
+  const columns: TableColumn[] = [
+    {
+      title: 'Column 1',
+      field: 'col1',
+      highlight: true,
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
+  return (
+    <Table
+      options={{ paging: false }}
+      data={testData100}
+      columns={columns}
+      title="Backstage Table"
+    />
+  );
 };
 
-export const HiddenFilterTable = () => {
-  return <Table showFilter={false} data={testData100} columns={testColumns} />;
+export const HiddenSearchTable = () => {
+  const columns: TableColumn[] = [
+    {
+      title: 'Column 1',
+      field: 'col1',
+      highlight: true,
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
+  return (
+    <Table
+      options={{ paging: false, search: false }}
+      data={testData100}
+      columns={columns}
+    />
+  );
+};
+
+export const SubvalueTable = () => {
+  const columns: TableColumn[] = [
+    {
+      title: 'Column 1',
+      customFilterAndSearch: (
+        query,
+        row: any, // Only needed if you want subvalue searchable
+      ) =>
+        (row.col1 + ' ' + row.subvalue)
+          .toUpperCase()
+          .includes(query.toUpperCase()),
+      field: 'col1',
+      highlight: true,
+      render: (row: any): React.ReactNode => (
+        <SubvalueCell value={row.col1} subvalue={row.subvalue} />
+      ),
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
+  return (
+    <Table options={{ paging: false }} data={testData100} columns={columns} />
+  );
 };

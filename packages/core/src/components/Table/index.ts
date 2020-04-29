@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { default } from './Table';
+export { default, TableColumn } from './Table';
+export { default as SubvalueCell } from './SubvalueCell';
