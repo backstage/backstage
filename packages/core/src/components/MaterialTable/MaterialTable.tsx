@@ -19,7 +19,9 @@ import MTable, {
   MTableCell,
   MTableHeader,
   MTableToolbar,
+  MaterialTableProps,
 } from 'material-table';
+import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
@@ -95,7 +97,7 @@ const tableIcons = {
   )),
 };
 
-const useCellStyles = makeStyles(theme => ({
+const useCellStyles = makeStyles<typeof BackstageTheme>(theme => ({
   root: {
     color: theme.palette.grey[500],
     padding: theme.spacing(0, 2, 0, 2.5),
@@ -103,18 +105,18 @@ const useCellStyles = makeStyles(theme => ({
   },
 }));
 
-const useHeaderStyles = makeStyles(theme => ({
+const useHeaderStyles = makeStyles<typeof BackstageTheme>(theme => ({
   header: {
     padding: theme.spacing(1, 2, 1, 2.5),
-    borderTop: '1px solid #dddddd',
-    borderBottom: '1px solid #d9d9d9',
-    color: '#757575',
+    borderTop: `1px solid ${theme.palette.grey.A100}`,
+    borderBottom: `1px solid ${theme.palette.grey.A100}`,
+    color: theme.palette.textSubtle,
     fontWeight: 'bold',
     position: 'static',
   },
 }));
 
-const useToolbarStyles = makeStyles(theme => ({
+const useToolbarStyles = makeStyles<typeof BackstageTheme>(theme => ({
   root: {
     padding: theme.spacing(3, 0, 2.5, 2.5),
   },
@@ -124,13 +126,6 @@ const useToolbarStyles = makeStyles(theme => ({
     },
   },
 }));
-
-type TableProps = {
-  columns: any;
-  data: any;
-  options?: any;
-  title?: React.ReactNode;
-};
 
 const convertColumns = columns => {
   return columns.map(column => {
@@ -150,7 +145,11 @@ const convertColumns = columns => {
   });
 };
 
-const MaterialTable: FC<TableProps> = ({ columns, options, ...props }) => {
+const MaterialTable: FC<MaterialTableProps<{}>> = ({
+  columns,
+  options,
+  ...props
+}) => {
   const cellClasses = useCellStyles();
   const headerClasses = useHeaderStyles();
   const toolbarClasses = useToolbarStyles();
@@ -178,12 +177,12 @@ const MaterialTable: FC<TableProps> = ({ columns, options, ...props }) => {
   );
 };
 
-const useSubvalueCellStyles = makeStyles(theme => ({
+const useSubvalueCellStyles = makeStyles<typeof BackstageTheme>(theme => ({
   value: {
     marginBottom: '6px',
   },
   subvalue: {
-    color: '#616161',
+    color: theme.palette.textSubtle,
     fontWeight: 'normal',
   },
 }));
