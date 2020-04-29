@@ -13,9 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
-export { plugin as Explore } from '@backstage/plugin-explore';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+// Shared MUI styles for a grid-based Card layout
+export const cardLayoutStyles = theme => ({
+  container: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, 296px)',
+    gridGap: theme.spacing(3),
+    marginBottom: theme.spacing(6),
+  },
+  card: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  cardActions: {
+    flexGrow: '1',
+    alignItems: 'flex-end',
+  },
+});
+
+export const useCardLayoutStyles = makeStyles(cardLayoutStyles);
