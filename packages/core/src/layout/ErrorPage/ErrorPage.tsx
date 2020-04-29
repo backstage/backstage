@@ -17,7 +17,6 @@
 import React from 'react';
 import { Typography, Link, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Theme } from '../Page/Page';
 import MicDrop from './MicDrop';
 
 interface IErrorPageProps {
@@ -44,28 +43,22 @@ const ErrorPage = ({ status, statusMessage, history }: IErrorPageProps) => {
   const classes = useStyles();
 
   return (
-    <Theme.Consumer>
-      {theme => (
-        <Grid container className={classes.container}>
-          <MicDrop theme={theme} />
-          <Grid item xs={12} sm={4}>
-            <Typography variant="body1" className={classes.subtitle}>
-              ERROR {status}: {statusMessage}
-            </Typography>
-            <Typography variant="h2" className={classes.title}>
-              Looks like someone dropped the mic!
-            </Typography>
-            <Typography variant="h6">
-              <Link onClick={history.goBack}>Go back</Link>... or if you think
-              this is a bug, please file an 
-              <Link href="https://github.com/spotify/backstage/issues">
-                issue.
-              </Link>
-            </Typography>
-          </Grid>
-        </Grid>
-      )}
-    </Theme.Consumer>
+    <Grid container className={classes.container}>
+      <MicDrop />
+      <Grid item xs={12} sm={4}>
+        <Typography variant="body1" className={classes.subtitle}>
+          ERROR {status}: {statusMessage}
+        </Typography>
+        <Typography variant="h2" className={classes.title}>
+          Looks like someone dropped the mic!
+        </Typography>
+        <Typography variant="h6">
+          <Link onClick={history.goBack}>Go back</Link>... or if you think this
+          is a bug, please file an
+          <Link href="https://github.com/spotify/backstage/issues">issue.</Link>
+        </Typography>
+      </Grid>
+    </Grid>
   );
 };
 
