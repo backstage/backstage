@@ -20,6 +20,7 @@ import MTable, {
   MTableHeader,
   MTableToolbar,
   MaterialTableProps,
+  Options,
 } from 'material-table';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core';
@@ -156,7 +157,7 @@ const MaterialTable: FC<MaterialTableProps<{}>> = ({
 
   const MTColumns = convertColumns(columns);
 
-  const defaultOptions = {
+  const defaultOptions: Options = {
     headerStyle: {
       textTransform: 'uppercase',
     },
