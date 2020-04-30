@@ -24,8 +24,8 @@ import {
 const app = express();
 app.use(requestLoggingHandler());
 app.use('/home', myHomeRouter);
-app.use(errorHandler());
 app.use(notFoundHandler());
+app.use(errorHandler());
 
 app.listen(PORT, () => {
   getRootLogger().info(`Listening on port ${PORT}`);

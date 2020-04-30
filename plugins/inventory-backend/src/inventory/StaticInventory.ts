@@ -14,4 +14,16 @@
  * limitations under the License.
  */
 
-require('jest-fetch-mock').enableMocks();
+import { Component, Inventory } from './types';
+
+export class StaticInventory implements Inventory {
+  constructor(private components: Component[]) {}
+
+  list(): Promise<Array<Component>> {
+    return Promise.resolve([...this.components]);
+  }
+
+  item(id: string): Promise<Component | undefined> {
+    return this.list().then(items => items.find(i => i.id === id));
+  }
+}
