@@ -26,9 +26,9 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core';
-import ExampleFetchComponent from '../ExampleFetchComponent';
+import { CircleCIFetch } from '../CircleCIFetch';
 
-const ExampleComponent: FC<{}> = () => {
+export const CircleCIPage: FC<{}> = () => {
   const [token, setToken] = useState<string>('');
 
   return (
@@ -55,8 +55,8 @@ const ExampleComponent: FC<{}> = () => {
             </InfoCard>
           </Grid>
           <Grid item>
-            <InfoCard title="Example User List (fetching data from randomuser.me)">
-              <ExampleFetchComponent token={token} />
+            <InfoCard title="CI/CD">
+              <CircleCIFetch token={token} />
             </InfoCard>
           </Grid>
         </Grid>
@@ -65,4 +65,4 @@ const ExampleComponent: FC<{}> = () => {
   );
 };
 
-export default ExampleComponent;
+export default CircleCIPage;

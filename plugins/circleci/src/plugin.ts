@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { createPlugin } from '@backstage/core';
-import ExampleComponent from './components/ExampleComponent';
+import { CircleCIPage } from './components/CircleCIPage';
 
 export const plugin = createPlugin({
   id: 'circleci',
   register({ router }) {
-    router.registerRoute('/circleci', ExampleComponent);
+    router.registerRoute('/circleci', CircleCIPage);
   },
 });
