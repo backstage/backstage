@@ -15,3 +15,4 @@
  */
 
 export { plugin } from './plugin';
+export * from './api';

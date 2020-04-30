@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
-import { Typography, Grid, Input } from '@material-ui/core';
+import React, { FC } from 'react';
+import { Grid } from '@material-ui/core';
 import {
   InfoCard,
   Header,
@@ -27,10 +27,9 @@ import {
   SupportButton,
 } from '@backstage/core';
 import { CircleCIFetch } from '../CircleCIFetch';
+import { LoginCard } from '../LoginCard';
 
 export const CircleCIPage: FC<{}> = () => {
-  const [token, setToken] = useState<string>('');
-
   return (
     <Page theme={pageTheme.tool}>
       <Header title="Welcome to circleci!" subtitle="Optional subtitle">
@@ -43,20 +42,11 @@ export const CircleCIPage: FC<{}> = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <InfoCard title="Information card">
-              <Typography variant="body1">
-                Please paste your CircleCI token here
-                <Input
-                  onChange={e => setToken(e.target.value)}
-                  type="password"
-                  value={token}
-                ></Input>
-              </Typography>
-            </InfoCard>
+            <LoginCard />
           </Grid>
           <Grid item>
             <InfoCard title="CI/CD">
-              <CircleCIFetch token={token} />
+              <CircleCIFetch />
             </InfoCard>
           </Grid>
         </Grid>

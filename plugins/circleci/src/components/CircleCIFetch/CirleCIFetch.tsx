@@ -14,40 +14,22 @@
  * limitations under the License.
  */
 
-import React, { FC, useRef, useEffect } from 'react';
+import React, { FC } from 'react';
 
 // import Alert from '@material-ui/lab/Alert';
-import { useAsync } from 'react-use';
 // import { Progress } from '@backstage/core';
 
-import { CircleCI, GitType, CircleCIOptions, BuildSummary } from 'circleci-api';
+import { BuildSummary } from 'circleci-api';
 
 import { CITable, CITableBuildInfo } from '../CITable';
-const options: Partial<CircleCIOptions> = {
-  // Required for all requests
-  // token: CIRCLECI_TOKEN, // Set your CircleCi API token
-
-  // Optional
-  // Anything set here can be overriden when making the request
-
-  // Git information is required for project/build/etc endpoints
-  vcs: {
-    type: GitType.GITHUB, // default: github
-    owner: 'CircleCITest3',
-    repo: 'circleci-test',
-  },
-
-  // Optional query params for requests
-  // options: {
-  //   branch: "master", // default: master
-  // }
-};
+import { circleCIApiRef } from 'api';
+import { useApi } from '@backstage/core';
 
 // "lifecycle" : "finished", // :queued, :scheduled, :not_run, :not_running, :running or :finished
 // "outcome" : "failed", // :canceled, :infrastructure_fail, :timedout, :failed, :no_tests or :success
 
 const makeReadableStatus = (status: string | undefined) => {
-  if (typeof status === 'undefined') return ""
+  if (typeof status === 'undefined') return '';
   return ({
     retried: 'Retried',
     canceled: 'Canceled',
@@ -62,7 +44,8 @@ const makeReadableStatus = (status: string | undefined) => {
     no_tests: 'No tests',
     fixed: 'Fixed',
     success: 'Success',
-  } as Record<string, string>)[status]};
+  } as Record<string, string>)[status];
+};
 
 const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
   return buildsData.map(buildData => {
@@ -90,20 +73,19 @@ const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
   });
 };
 
-export const CircleCIFetch: FC<{ token: string }> = ({ token }) => {
-  const api = useRef<CircleCI | null>(null);
-  useEffect(() => {
-    if (token !== '') api.current = new CircleCI({ ...options, token });
-  }, [token]);
+export const CircleCIFetch: FC<{}> = () => {
+  const [builds, setBuilds] = React.useState<BuildSummary[]>([]);
+  const api = useApi(circleCIApiRef);
 
-  const { value, loading, error } = useAsync(() => {
-    if (api.current) return api.current.builds();
-    return Promise.reject('Api token not provided');
-  }, [token]);
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (!api.api) return;
+      api.getBuilds().then(setBuilds);
+    }, 1500);
+    return () => clearInterval(intervalId);
+  }, []);
 
-  if (loading) return <div>loading</div>;
-  if (error) return <div>{JSON.stringify(error, null, 2)}</div>;
-
-  const builds = transform(value || []);
-  return <CITable builds={builds} />;
+  if (!api.api) return <div>Not authenticated</div>;
+  const transformedBuilds = transform(builds || []);
+  return <CITable builds={transformedBuilds} />;
 };

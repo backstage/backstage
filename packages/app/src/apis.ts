@@ -36,6 +36,8 @@ import {
   loadSampleData,
 } from '@backstage/plugin-tech-radar';
 
+import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
+
 const builder = ApiRegistry.builder();
 
 export const alertApiForwarder = new AlertApiForwarder();
@@ -43,7 +45,7 @@ builder.add(alertApiRef, alertApiForwarder);
 
 export const errorApiForwarder = new ErrorApiForwarder(alertApiForwarder);
 builder.add(errorApiRef, errorApiForwarder);
-
+builder.add(circleCIApiRef, new CircleCIApi());
 builder.add(featureFlagsApiRef, new FeatureFlags());
 
 builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
