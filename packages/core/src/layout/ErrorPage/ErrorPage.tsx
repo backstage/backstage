@@ -17,6 +17,7 @@
 import React from 'react';
 import { Typography, Link, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { BackstageTheme } from '@backstage/theme';
 import MicDrop from './MicDrop';
 
 interface IErrorPageProps {
@@ -27,7 +28,7 @@ interface IErrorPageProps {
   };
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {
     padding: theme.spacing(8),
   },
@@ -35,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(5),
   },
   subtitle: {
-    color: theme.palette.grey[600],
+    color: theme.palette.textSubtle,
   },
 }));
 
