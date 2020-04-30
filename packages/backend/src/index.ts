@@ -22,12 +22,18 @@
  * Happy hacking!
  */
 
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import compression from 'compression';
-import { testRouter } from './test';
+import {
+  errorHandler,
+  getRootLogger,
+  notFoundHandler,
+  requestLoggingHandler,
+} from '@backstage/backend-common';
 import { router as inventoryRouter } from '@backstage/plugin-inventory-backend';
+import compression from 'compression';
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
+import { testRouter } from './test';
 
 const DEFAULT_PORT = 7000;
 
@@ -38,9 +44,12 @@ app.use(helmet());
 app.use(cors());
 app.use(compression());
 app.use(express.json());
+app.use(requestLoggingHandler());
 app.use('/test', testRouter);
 app.use('/inventory', inventoryRouter);
+app.use(errorHandler());
+app.use(notFoundHandler());
 
 app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+  getRootLogger().info(`Listening on port ${PORT}`);
 });
