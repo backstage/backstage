@@ -43,11 +43,32 @@ const options: Partial<CircleCIOptions> = {
   // }
 };
 
+// "lifecycle" : "finished", // :queued, :scheduled, :not_run, :not_running, :running or :finished
+// "outcome" : "failed", // :canceled, :infrastructure_fail, :timedout, :failed, :no_tests or :success
+
+const makeReadableStatus = (status: string | undefined) => {
+  if (typeof status === 'undefined') return ""
+  return ({
+    retried: 'Retried',
+    canceled: 'Canceled',
+    infrastructure_fail: 'Infra fail',
+    timedout: 'Timedout',
+    not_run: 'Not run',
+    running: 'Running',
+    failed: 'Failed',
+    queued: 'Queued',
+    scheduled: 'Scheduled',
+    not_running: 'Not running',
+    no_tests: 'No tests',
+    fixed: 'Fixed',
+    success: 'Success',
+  } as Record<string, string>)[status]};
+
 const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
   return buildsData.map(buildData => {
     const tableBuildInfo: CITableBuildInfo = {
       id: String(buildData.build_num),
-      buildName: String(buildData.subject),
+      buildName: buildData.subject ? String(buildData.subject) : '',
       onRetriggerClick: () => null,
       source: {
         branchName: String(buildData.branch),
@@ -56,7 +77,7 @@ const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
           url: 'todo',
         },
       },
-      status: String(buildData.status) as 'success' | 'error' | 'pending',
+      status: makeReadableStatus(buildData.status),
       tests: {
         failed: 0,
         passed: 10,

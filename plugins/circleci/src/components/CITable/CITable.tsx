@@ -29,7 +29,7 @@ export type CITableBuildInfo = {
       url: string;
     };
   };
-  status: 'success' | 'pending' | 'error';
+  status: string;
   tests?: {
     total: number;
     passed: number;
@@ -50,6 +50,7 @@ export const CITable: FC<{
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
+            <TableCell>ID</TableCell>
             <TableCell>Build</TableCell>
             <TableCell>Source</TableCell>
             <TableCell>Status</TableCell>
@@ -60,6 +61,7 @@ export const CITable: FC<{
         <TableBody>
           {builds.map(build => (
             <TableRow key={build.id}>
+              <TableCell>{build.id}</TableCell>
               <TableCell>{build.buildName}</TableCell>
               <TableCell>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
