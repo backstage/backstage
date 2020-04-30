@@ -171,9 +171,15 @@ const Table: FC<TableProps> = ({ columns, options, ...props }) => {
   return (
     <MTable
       components={{
-        Cell: props => <MTableCell className={cellClasses.root} {...props} />,
-        Header: props => <MTableHeader classes={headerClasses} {...props} />,
-        Toolbar: props => <MTableToolbar classes={toolbarClasses} {...props} />,
+        Cell: cellProps => (
+          <MTableCell className={cellClasses.root} {...cellProps} />
+        ),
+        Header: headerProps => (
+          <MTableHeader classes={headerClasses} {...headerProps} />
+        ),
+        Toolbar: toolbarProps => (
+          <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
+        ),
       }}
       options={{ ...defaultOptions, ...options }}
       columns={MTColumns}

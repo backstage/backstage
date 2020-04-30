@@ -112,7 +112,7 @@ export const SubvalueTable = () => {
         query,
         row: any, // Only needed if you want subvalue searchable
       ) =>
-        (row.col1 + ' ' + row.subvalue)
+        `${row.col1} ${row.subvalue}`
           .toUpperCase()
           .includes(query.toUpperCase()),
       field: 'col1',
