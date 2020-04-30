@@ -15,7 +15,6 @@
  */
 
 import { ComponentType } from 'react';
-import { Widget } from 'api/widgetView/types';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
@@ -38,11 +37,6 @@ export type RedirectRouteOutput = {
   options?: RouteOptions;
 };
 
-export type WidgetOutput = {
-  type: 'widget';
-  widget: Widget;
-};
-
 export type FeatureFlagName = string;
 
 export type FeatureFlagOutput = {
@@ -53,5 +47,4 @@ export type FeatureFlagOutput = {
 export type PluginOutput =
   | RouteOutput
   | RedirectRouteOutput
-  | WidgetOutput
   | FeatureFlagOutput;
