@@ -54,8 +54,10 @@ const ErrorPage = ({ status, statusMessage, history }: IErrorPageProps) => {
           Looks like someone dropped the mic!
         </Typography>
         <Typography variant="h6">
-          <Link onClick={history.goBack}>Go back</Link>... or if you think this
-          is a bug, please file an{' '}
+          <Link data-testid="go-back-link" onClick={history.goBack}>
+            Go back
+          </Link>
+          ... or if you think this is a bug, please file an{' '}
           <Link href="https://github.com/spotify/backstage/issues">issue.</Link>
         </Typography>
       </Grid>
