@@ -31,7 +31,7 @@
  */
 
 import React, { FC } from 'react';
-import { Typography, withStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
@@ -40,21 +40,40 @@ import {
   pageTheme,
   SupportButton,
 } from '@backstage/core';
-import ExploreCard from './ExploreCard';
-import { useCardLayoutStyles } from './CardLayoutStyles';
+import ExploreCard, { CardData } from './ExploreCard';
+import { BackstageTheme } from '@backstage/theme';
+
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  container: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, 296px)',
+    gridGap: theme.spacing(3),
+    marginBottom: theme.spacing(6),
+  },
+}));
 
 const toolsCards = [
   {
-    title: 'Title',
+    title: 'Tech Radar',
     description: 'Something something',
     url: 'http://spotify.com/',
-    image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
+    image:
+      'https://storage.googleapis.com/wf-blogs-engineering-media/2018/09/fe13bb32-wf-tech-radar-hero-1024x597.png',
+    tags: ['tag1', 'tag2'],
+  },
+  {
+    title: 'GraphiQL',
+    description:
+      'Integrates GraphiQL as a tool to browse GraphiQL endpoints inside Backstage.',
+    url: 'http://spotify.com/',
+    image:
+      'https://camo.githubusercontent.com/517398c3fbe0687d3d4dcbe05da82970b882e75a/68747470733a2f2f64337676366c703535716a6171632e636c6f756466726f6e742e6e65742f6974656d732f33413061324e314c3346324f304c3377326e316a2f477261706869514c382e706e673f582d436c6f75644170702d56697369746f722d49643d3433363432',
     tags: ['tag1', 'tag2'],
   },
 ];
 
 const ExplorePluginPage: FC<{}> = () => {
-  const classes = useCardLayoutStyles();
+  const classes = useStyles();
   return (
     <Page theme={pageTheme.home}>
       <Header title="Explore" subtitle="Tools and services" />
@@ -67,18 +86,8 @@ const ExplorePluginPage: FC<{}> = () => {
           </SupportButton>
         </ContentHeader>
         <div className={classes.container}>
-          {toolsCards.map((card: Card, ix: any) => (
-            <ExploreCard
-              title={card.title}
-              description={card.description}
-              image={card.image}
-              objectFit={card.fit}
-              url={card.url}
-              lifecycle={card.lifecycle}
-              domains={card.domains}
-              newsTag={card.newsTag}
-              key={ix}
-            />
+          {toolsCards.map((card: CardData, ix: any) => (
+            <ExploreCard card={card} key={ix} />
           ))}
         </div>
       </Content>
@@ -87,11 +96,5 @@ const ExplorePluginPage: FC<{}> = () => {
 };
 
 export default ExplorePluginPage;
-/*
-import ExploreLayout from 'shared/components/layout/explore/ExploreLayout';
-import ExploreCard from './components/ExploreCard';
-import { CardLayoutStyles } from 'shared/components/layout/CardLayoutStyles';
-
-*/
 
 // export default withStyles(cardLayoutStyles)(ExplorePluginPage);

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { FC } from 'react';
 import classNames from 'classnames';
-
 import {
   Button,
   Card,
@@ -25,26 +23,24 @@ import {
   CardContent,
   CardMedia,
   Chip,
-  Link,
   Typography,
-  withStyles,
+  makeStyles,
 } from '@material-ui/core';
-
-import { cardLayoutStyles } from './CardLayoutStyles';
+import { BackstageTheme } from '@backstage/theme';
 
 // import FollowNews from 'plugins/news/components/FollowNews';
 
-export type Card = {
-  title: string;
-  description: string;
-  url: string;
-  image: string;
-  tags?: string[];
-  lifecycle?: string;
-};
-
-const styles = theme => ({
-  ...cardLayoutStyles(theme),
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  /*
+  card: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  cardActions: {
+    flexGrow: '1',
+    alignItems: 'flex-end',
+  },
+  */
   media: {
     height: 128,
   },
@@ -71,90 +67,75 @@ const styles = theme => ({
   spaceBetween: {
     justifyContent: 'space-between',
   },
-});
+}));
 
-class ExploreCard extends Component {
-  static propTypes = {
-    classes: PropTypes.object.isRequired,
-    title: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
-    lifecycle: PropTypes.string,
-    domains: PropTypes.arrayOf(PropTypes.string),
-    tags: PropTypes.arrayOf(PropTypes.string),
-    newsTag: PropTypes.string,
-    description: PropTypes.string,
-    objectFit: PropTypes.oneOf(['cover', 'contain']),
-    url: PropTypes.string,
-  };
+export type CardData = {
+  title: string;
+  description: string;
+  url: string;
+  image: string;
+  tags?: string[];
+  lifecycle?: string;
+  newsTag?: string;
+};
 
-  render() {
-    const {
-      classes,
-      title,
-      description,
-      url,
-      image,
-      lifecycle,
-      domains,
-      newsTag,
-      tags,
-      objectFit = 'cover',
-    } = this.props;
-    return (
-      <Card key={title} className={classes.card}>
-        <CardMedia
-          image={image}
-          title={title}
-          className={classNames(classes.media, {
-            [classes.mediaContain]: objectFit === 'contain',
-          })}
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5">
-            {title}{' '}
-            {lifecycle && lifecycle.toLowerCase() !== 'ga' && (
-              <Chip
-                label={lifecycle}
-                className={classNames(
-                  classes.lifecycle,
-                  classes[lifecycle.toLowerCase()],
-                )}
-              />
-            )}
-          </Typography>
-          <Typography component="p">
-            {description || 'Description missing'}
-          </Typography>
-          {domains && (
-            <div className={classes.domains}>
-              {domains.map((item, idx) => (
-                <Link key={idx} to={`/explore/infra/${item}`}>
-                  <Chip label={item} clickable />
-                </Link>
-              ))}
-            </div>
+type Props = {
+  card: CardData;
+  objectFit?: 'cover' | 'contain';
+};
+
+const ExploreCard: FC<Props> = ({ card, objectFit }) => {
+  const classes = useStyles();
+
+  const { title, description, url, image, lifecycle, newsTag, tags } = card;
+
+  return (
+    <Card key={title} className={classes.card}>
+      <CardMedia
+        image={image}
+        title={title}
+        className={classNames(classes.media, {
+          [classes.mediaContain]: objectFit === 'contain',
+        })}
+      />
+      <CardContent>
+        <Typography gutterBottom variant="h5">
+          {title}{' '}
+          {lifecycle && lifecycle.toLowerCase() !== 'ga' && (
+            <Chip
+              label={lifecycle}
+              className={classNames(
+                classes.lifecycle,
+                classes[lifecycle.toLowerCase()],
+              )}
+            />
           )}
-          {tags && (
-            <div className={classes.domains}>
-              {tags.map((item, idx) => (
-                <Chip key={idx} label={item} />
-              ))}
-            </div>
-          )}
-        </CardContent>
-        <CardActions
-          className={classNames(classes.cardActions, {
-            [classes.spaceBetween]: newsTag,
-          })}
-        >
-          {newsTag && <FollowNews tag={newsTag} />}
-          <Button size="small" color="primary" href={url} disabled={!url}>
-            Explore
-          </Button>
-        </CardActions>
-      </Card>
-    );
-  }
-}
+        </Typography>
+        <Typography component="p">
+          {description || 'Description missing'}
+        </Typography>
+        {tags && (
+          <div className={classes.domains}>
+            {tags.map((item, idx) => (
+              <Chip key={idx} label={item} />
+            ))}
+          </div>
+        )}
+      </CardContent>
+      <CardActions
+        className={classNames(classes.cardActions, {
+          [classes.spaceBetween]: newsTag,
+        })}
+      >
+        {/*
+        newsTag && <FollowNews tag={newsTag} />
+        */}
+        <Button size="small" color="primary" href={url} disabled={!url}>
+          Explore
+        </Button>
+      </CardActions>
+    </Card>
+  );
+};
 
-export default withStyles(styles)(ExploreCard);
+export default ExploreCard;
