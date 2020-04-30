@@ -16,7 +16,7 @@
 
 import winston, { Logger } from 'winston';
 
-export let logger: Logger = winston.createLogger({
+let rootLogger: Logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format:
     process.env.NODE_ENV === 'production'
@@ -35,6 +35,10 @@ export let logger: Logger = winston.createLogger({
   ],
 });
 
-export function setLogger(newLogger: Logger) {
-  logger = newLogger;
+export function getRootLogger(): Logger {
+  return rootLogger;
+}
+
+export function setRootLogger(newLogger: Logger) {
+  rootLogger = newLogger;
 }

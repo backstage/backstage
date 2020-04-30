@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export * from './errors';
 export * from './logging';
 export * from './middleware';

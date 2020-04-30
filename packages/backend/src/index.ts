@@ -24,8 +24,9 @@
 
 import {
   errorHandler,
-  logger,
+  getRootLogger,
   notFoundHandler,
+  requestLoggingHandler,
 } from '@backstage/backend-common';
 import { router as inventoryRouter } from '@backstage/plugin-inventory-backend';
 import compression from 'compression';
@@ -43,11 +44,12 @@ app.use(helmet());
 app.use(cors());
 app.use(compression());
 app.use(express.json());
+app.use(requestLoggingHandler());
 app.use('/test', testRouter);
 app.use('/inventory', inventoryRouter);
 app.use(errorHandler());
 app.use(notFoundHandler());
 
 app.listen(PORT, () => {
-  logger.info(`Listening on port ${PORT}`);
+  getRootLogger().info(`Listening on port ${PORT}`);
 });

@@ -15,18 +15,20 @@ then make use of the handlers and logger as necessary:
 
 ```typescript
 import {
-  logger,
   errorHandler,
+  getRootLogger,
   notFoundHandler,
+  requestLoggingHandler,
 } from '@backstage/backend-common';
 
 const app = express();
+app.use(requestLoggingHandler());
 app.use('/home', myHomeRouter);
 app.use(errorHandler());
 app.use(notFoundHandler());
 
 app.listen(PORT, () => {
-  logger.info(`Listening on port ${PORT}`);
+  getRootLogger().info(`Listening on port ${PORT}`);
 });
 ```
 

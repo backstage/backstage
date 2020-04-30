@@ -15,12 +15,19 @@
  */
 
 import express from 'express';
+import { PassThrough } from 'stream';
 import request from 'supertest';
+import winston from 'winston';
 import { requestLoggingHandler } from './requestLoggingHandler';
 
 describe('requestLoggingHandler', () => {
   it('emits logs for each request', async () => {
-    const logger = jest.fn();
+    const logger = winston.createLogger({
+      transports: [
+        new winston.transports.Stream({ stream: new PassThrough() }),
+      ],
+    });
+    jest.spyOn(logger, 'info');
 
     const app = express();
     app.use(requestLoggingHandler(logger));
@@ -31,8 +38,14 @@ describe('requestLoggingHandler', () => {
     await r.get('/exists1');
     await r.get('/exists2');
 
-    expect(logger).toHaveBeenCalledTimes(2);
-    expect(logger).toHaveBeenNthCalledWith(1, expect.stringContaining('200'));
-    expect(logger).toHaveBeenNthCalledWith(2, expect.stringContaining('201'));
+    expect(logger.info).toHaveBeenCalledTimes(2);
+    expect(logger.info).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('200'),
+    );
+    expect(logger.info).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('201'),
+    );
   });
 });

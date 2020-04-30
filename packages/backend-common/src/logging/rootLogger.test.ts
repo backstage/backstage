@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-export class StatusCodeError extends Error {
-  public statusCode: number;
+import { PassThrough } from 'stream';
+import winston from 'winston';
+import { getRootLogger, setRootLogger } from './rootLogger';
 
-  constructor(statusCode: number, message?: string) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
+describe('rootLogger', () => {
+  it('can replace the default logger', () => {
+    const logger = winston.createLogger({
+      transports: [
+        new winston.transports.Stream({ stream: new PassThrough() }),
+      ],
+    });
+    jest.spyOn(logger, 'info');
 
-export class InvalidRequestError extends StatusCodeError {
-  constructor(message?: string) {
-    super(400, message || 'Invalid Request');
-  }
-}
+    setRootLogger(logger);
+    getRootLogger().info('testing');
 
-export class NotFoundError extends StatusCodeError {
-  constructor(message?: string) {
-    super(404, message || 'Not Found');
-  }
-}
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('testing'),
+    );
+  });
+});

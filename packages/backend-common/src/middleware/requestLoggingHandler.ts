@@ -15,23 +15,25 @@
  */
 
 import { RequestHandler } from 'express';
+import { Logger } from 'winston';
 import morgan from 'morgan';
-import { logger as commonLogger } from '../logging';
+import { getRootLogger } from '../logging';
 
 /**
  * Logs incoming requests.
  *
- * @param logger An optional logger to use. If not specified, the default logger is used.
- * @returns An Apollo request handler
+ * @param logger An optional logger to use. If not specified, the root logger will be used.
+ * @returns An Express request handler
  */
-export function requestLoggingHandler(
-  logger?: (message: String) => void,
-): RequestHandler {
-  const actualLogger = logger || commonLogger.info;
+export function requestLoggingHandler(logger?: Logger): RequestHandler {
+  const actualLogger = (logger || getRootLogger()).child({
+    type: 'incomingRequest',
+  });
+
   return morgan('combined', {
     stream: {
       write(message: String) {
-        actualLogger(message);
+        actualLogger.info(message);
       },
     },
   });

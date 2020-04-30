@@ -20,10 +20,15 @@ import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
  * Express middleware to handle errors during request processing.
  *
  * This is commonly the second to last middleware in the chain (before the
- * notFoundHandler). It special cases StatusCodeError errors to expose their
- * embedded status codes.
+ * notFoundHandler).
  *
+ * Its primary purpose is not to do translation of business logic exceptions,
+ * but rather to be a gobal catch-all for uncaught "fatal" errors that are
+ * expected to result in a 500 error. However, it also does handle some common
+ * error types (such as http-error exceptions) and returns the enclosed status
+ * code accordingly.
  *
+ * @returns An Express error request handler
  */
 export function errorHandler(): ErrorRequestHandler {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -34,19 +39,24 @@ export function errorHandler(): ErrorRequestHandler {
     _next: NextFunction,
   ) => {
     const status = getStatusCode(error);
-    const message = error.message || 'Internal Server Error';
+    const message = error.message;
     response.status(status).send(message);
   };
 }
 
 function getStatusCode(error: Error): number {
-  const errorStatusCode = (error as any).statusCode;
-  if (
-    typeof errorStatusCode === 'number' &&
-    errorStatusCode >= 100 &&
-    errorStatusCode <= 599
-  ) {
-    return errorStatusCode;
+  const knownStatusCodeFields = ['statusCode', 'status'];
+
+  for (const field of knownStatusCodeFields) {
+    const statusCode = (error as any)[field];
+    if (
+      typeof statusCode === 'number' &&
+      (statusCode | 0) === statusCode && // is whole integer
+      statusCode >= 100 &&
+      statusCode <= 599
+    ) {
+      return statusCode;
+    }
   }
 
   return 500;

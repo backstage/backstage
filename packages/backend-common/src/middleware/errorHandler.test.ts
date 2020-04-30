@@ -15,9 +15,9 @@
  */
 
 import express from 'express';
+import createError from 'http-errors';
 import request from 'supertest';
 import { errorHandler } from './errorHandler';
-import { StatusCodeError } from '../errors';
 
 describe('errorHandler', () => {
   it('gives default code and message', async () => {
@@ -36,7 +36,7 @@ describe('errorHandler', () => {
   it('takes code from StatusCodeError', async () => {
     const app = express();
     app.use('/breaks', () => {
-      throw new StatusCodeError(432, 'Some Message');
+      throw createError(432, 'Some Message');
     });
     app.use(errorHandler());
 
