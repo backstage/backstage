@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-require('jest-fetch-mock').enableMocks();
+export type Component = {
+  id: string;
+};
+
+export type Inventory = {
+  list: () => Promise<Component[]>;
+  item: (id: string) => Promise<Component | undefined>;
+};

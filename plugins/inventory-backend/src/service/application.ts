@@ -14,52 +14,38 @@
  * limitations under the License.
  */
 
-/*
- * Hi!
- *
- * Note that this is an EXAMPLE Backstage backend. Please check the README.
- *
- * Happy hacking!
- */
-
 import {
   errorHandler,
-  getRootLogger,
   notFoundHandler,
   requestLoggingHandler,
 } from '@backstage/backend-common';
-import { createRouter as inventoryRouter } from '@backstage/plugin-inventory-backend';
-import { createScaffolder } from '@backstage/plugin-scaffolder-backend';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import { testRouter } from './test';
+import { Logger } from 'winston';
+import { createRouter } from './router';
 
-const DEFAULT_PORT = 7000;
-const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
-const logger = getRootLogger().child({ type: 'plugin' });
+export interface ApplicationOptions {
+  enableCors: boolean;
+  logger: Logger;
+}
 
-async function main() {
-  const inventory = await inventoryRouter({ logger });
-  const scaffolder = createScaffolder();
-
+export async function createApplication(
+  options: ApplicationOptions,
+): Promise<express.Application> {
   const app = express();
 
   app.use(helmet());
-  app.use(cors());
+  if (options.enableCors) {
+    app.use(cors());
+  }
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/test', testRouter);
-  app.use('/inventory', inventory);
-  app.use('/scaffolder', scaffolder);
+  app.use('/', await createRouter({ logger: options.logger }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 
-  app.listen(PORT, () => {
-    getRootLogger().info(`Listening on port ${PORT}`);
-  });
+  return app;
 }
-
-main();
