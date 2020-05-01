@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export { default } from './DefaultWidgetView';
+export * from './errorHandler';
+export * from './notFoundHandler';
+export * from './requestLoggingHandler';

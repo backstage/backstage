@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import ApiRef, { ApiRefConfig } from './apis/ApiRef';
-import AppBuilder from './app/AppBuilder';
-import BackstagePlugin, { PluginConfig } from './plugin/Plugin';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 
-export function createApp() {
-  return new AppBuilder();
-}
-
-export function createApiRef<T>(config: ApiRefConfig) {
-  return new ApiRef<T>(config);
-}
-
-export function createPlugin(config: PluginConfig): BackstagePlugin {
-  return new BackstagePlugin(config);
+/**
+ * Express middleware to handle requests for missing routes.
+ *
+ * Should be used as the very last handler in the chain, as it unconditionally
+ * returns a 404 status.
+ *
+ * @returns An Express request handler
+ */
+export function notFoundHandler(): RequestHandler {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  return (_request: Request, response: Response, _next: NextFunction) => {
+    response.status(404).send();
+  };
 }

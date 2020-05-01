@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { pure } from 'recompose';
-import PropTypes from 'prop-types';
+import React, { FC, CSSProperties, memo, useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -28,11 +26,45 @@ import {
   Tooltip,
 } from '@material-ui/core';
 
+type Column = {
+  id: string;
+  label: string;
+  numeric?: boolean;
+  disablePadding: boolean;
+  style: CSSProperties;
+  // FIXME (@Koroeskohr)
+  sortValue: (obj: object) => any;
+};
+
+// XXX (@Koroeskohr): no idea what I did but this typechecks. Need answer for CellContentProps
+type Row = { [name in string]: any };
+
+type SortHandler = (
+  event: React.MouseEvent<Element, MouseEvent>,
+  property: string,
+) => void;
+
+type Order = 'asc' | 'desc';
+
+type EnhancedTableHeadProps = {
+  columns: Column[];
+  onRequestSort: SortHandler;
+  order: Order;
+  orderBy: string;
+};
+
 /**
  * Table header which supports sorting ascending and desc
  */
-const EnhancedTableHead = ({ columns, onRequestSort, order, orderBy }) => {
-  const createSortHandler = property => event => {
+const EnhancedTableHead: FC<EnhancedTableHeadProps> = ({
+  columns,
+  onRequestSort,
+  order,
+  orderBy,
+}) => {
+  const createSortHandler = (property: string) => (
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+  ) => {
     onRequestSort(event, property);
   };
 
@@ -68,25 +100,15 @@ const EnhancedTableHead = ({ columns, onRequestSort, order, orderBy }) => {
   );
 };
 
-EnhancedTableHead.propTypes = {
-  columns: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-      numeric: PropTypes.bool,
-      disablePadding: PropTypes.bool,
-      style: PropTypes.object,
-    }),
-  ).isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  order: PropTypes.string.isRequired,
-  orderBy: PropTypes.string.isRequired,
+type CellContentProps = {
+  // XXX (@Koroeskohr): what am I supposed to use here
+  data: any | any[];
 };
 
 /**
  * CellContent can be an array or a string
  */
-const CellContent = ({ data }) => {
+const CellContent: FC<CellContentProps> = ({ data }) => {
   if (Array.isArray(data)) {
     return data.map((item, index) => (
       <span key={index}>
@@ -98,11 +120,12 @@ const CellContent = ({ data }) => {
   return data;
 };
 
-CellContent.propTypes = {
-  data: PropTypes.any.isRequired,
+type DataTableCellProps = {
+  column: Column;
+  row: Row;
 };
 
-const DataTableCell = ({ column, row }) => {
+const DataTableCell: FC<DataTableCellProps> = ({ column, row }) => {
   return (
     <TableCell
       align={column.numeric ? 'right' : 'left'}
@@ -115,8 +138,20 @@ const DataTableCell = ({ column, row }) => {
 };
 
 const noop = () => {};
-const DataTableRow = pure(({ row, columns, handleRowClick, style }) => {
-  const onClick = event => (handleRowClick || noop)(event, row.id);
+type DataTableRowProps = {
+  row: Row;
+  columns: Column[];
+  handleRowClick?: (event: React.MouseEvent, rowId: string) => void;
+  style?: React.CSSProperties;
+};
+const _DataTableRow: FC<DataTableRowProps> = ({
+  row,
+  columns,
+  handleRowClick,
+  style,
+}) => {
+  const onClick: React.MouseEventHandler = event =>
+    (handleRowClick || noop)(event, row.id);
   return (
     <TableRow onClick={onClick} key={row.id} style={style}>
       {columns.map(column => (
@@ -124,17 +159,18 @@ const DataTableRow = pure(({ row, columns, handleRowClick, style }) => {
       ))}
     </TableRow>
   );
-});
+};
+const DataTableRow = memo(_DataTableRow);
 
 /**
  * Table with sorting capabilites automatic rendering of cells
  * Note that the objects in props.data needs have an id property
  * The columns array defines which columns from the data to show.
  *
- * @param {Array[Object]} data A list of data entries, where object properties must
+ * @param data A list of data entries, where object properties must
  *     be strictly equal to column ids.
  *
- * @param {Array[Object]} columns A list of columns with the following shape:
+ * @param columns A list of columns with the following shape:
  *   {
  *     // The column identifier must be strictly equal the relevant data entry
  *     // key:
@@ -154,17 +190,17 @@ const DataTableRow = pure(({ row, columns, handleRowClick, style }) => {
  *     sortValue: (Object) => Any
  *   }
  *
- *  @param {String} orderBy The column ID initially used for sorting
+ *  @param orderBy The column ID initially used for sorting
  *
- *  @param {String} [dataVersion] A version identifier for the data which *must*
+ *  @param dataVersion A version identifier for the data which *must*
  *      be updated when the contents of the data changes.  This can be used for
  *      components where the same SortableTable element will be used to display
  *      variable sets of data.
  *
- *  @param {Array[Object]} [footerData] A list of data entries to be placed in
+ *  @param footerData A list of data entries to be placed in
  *      the table footer, which will not be sorted.
  *
- *  @param {(String, Event) => Void} [onRowClicked] Get notified when a user clicks
+ *  @param onRowClicked Get notified when a user clicks
  *      on the row.  The handler will receive the row id as the first argument, and
  *      the synthetic click event as the second argument.
  *
@@ -188,49 +224,38 @@ const DataTableRow = pure(({ row, columns, handleRowClick, style }) => {
  *     ev.preventDefault();}}/>)
  * }
  *
+ * // XXX (@koroeskohr): supposedly this is leftover from your internal doc
  * @deprecated use shared/components/DataGrid
  */
-class SortableTable extends React.Component {
-  static propTypes = {
-    // TODO: figure out how to make id of the object requried while others are dynamic
-    data: PropTypes.arrayOf(PropTypes.object).isRequired,
-    orderBy: PropTypes.string.isRequired,
-    columns: PropTypes.arrayOf(PropTypes.object).isRequired,
-    onRowClicked: PropTypes.func,
-    dataVersion: PropTypes.string,
-  };
 
-  constructor(props) {
-    super(props);
-    this.handleRowClick = this.handleRowClick.bind(this);
+type SortableTableProps = {
+  data: Row[];
+  footerData: Row[];
+  orderBy: string;
+  columns: Column[];
+  onRowClicked?: (
+    id: string,
+    event: React.MouseEvent<Element, MouseEvent>,
+  ) => void;
+  dataVersion: string;
+};
 
-    this.state = {
-      orderBy: props.orderBy,
-      order: 'asc',
-      data: props.data,
-    };
-  }
+type TableState = {
+  orderBy: string;
+  order: Order;
+  data: Row[];
+};
 
-  handleRequestSort = (event, property) => {
-    event.preventDefault();
-    const orderBy = property;
-    let order = 'desc';
-    if (this.state.orderBy === property && this.state.order === 'desc') {
-      order = 'asc';
-    }
-    this.updateData(this.state.data, orderBy, order);
-  };
+const SortableTable: FC<SortableTableProps> = props => {
+  const [state, setState] = useState<TableState>({
+    orderBy: props.orderBy,
+    order: 'asc',
+    data: props.data,
+  });
 
-  handleRowClick = (event, id) => {
-    if (this.props.onRowClicked) {
-      this.props.onRowClicked(id, event);
-    }
-  };
-
-  updateData = (data, orderBy, order) => {
-    const sortValueFn = (
-      this.props.columns.filter(col => col.id === orderBy)[0] || {}
-    ).sortValue;
+  const updateData = (data: Row[], orderBy: string, order: Order) => {
+    const sortValueFn = (props.columns.find(col => col.id === orderBy) || {})
+      .sortValue;
 
     const sortedData = data.slice().sort((a, b) => {
       const valueA = sortValueFn ? sortValueFn(a) : a[orderBy];
@@ -241,56 +266,70 @@ class SortableTable extends React.Component {
       if (valueB === '' || valueB === null) return -inc;
       return valueA < valueB ? -inc : inc;
     });
-    this.setState({ data: sortedData, order, orderBy });
+    setState({ data: sortedData, order, orderBy });
   };
 
-  UNSAFE_componentWillReceiveProps(props) {
-    if (props.dataVersion !== this.props.dataVersion) {
-      this.updateData(props.data, this.state.orderBy, this.state.order);
+  const handleRequestSort: SortHandler = (event, property) => {
+    event.preventDefault();
+    const orderBy = property;
+    let order: Order = 'desc';
+    if (state.orderBy === property && state.order === 'desc') {
+      order = 'asc';
     }
-  }
+    updateData(state.data, orderBy, order);
+  };
 
-  render() {
-    const { data, order, orderBy } = this.state;
-    const { columns, dataVersion, footerData } = this.props;
-
-    let tableFoot = null;
-    if (footerData && footerData.length > 0) {
-      tableFoot = (
-        <TableFooter>
-          {footerData.map(row => (
-            <DataTableRow
-              key={row.id}
-              columns={columns}
-              row={row}
-              style={{ height: 'auto' }}
-            />
-          ))}
-        </TableFooter>
-      );
+  const handleRowClick = (event: React.MouseEvent, id: string): void => {
+    if (props.onRowClicked) {
+      props.onRowClicked(id, event);
     }
-    return (
-      <Table>
-        <EnhancedTableHead
-          columns={columns}
-          onRequestSort={this.handleRequestSort}
-          order={order}
-          orderBy={orderBy}
-        />
-        <TableBody key={dataVersion}>
-          {data.map(row => (
-            <DataTableRow
-              key={row.id}
-              columns={columns}
-              row={row}
-              handleRowClick={this.handleRowClick}
-            />
-          ))}
-        </TableBody>
-        {tableFoot}
-      </Table>
+  };
+
+  useEffect(() => {
+    const { data } = props;
+    const { orderBy, order } = state;
+    updateData(data, orderBy, order);
+  }, [props.dataVersion]);
+
+  const { data, order, orderBy } = state;
+  const { columns, dataVersion, footerData } = props;
+
+  let tableFoot = null;
+  if (footerData && footerData.length > 0) {
+    tableFoot = (
+      <TableFooter>
+        {footerData.map(row => (
+          <DataTableRow
+            key={row.id}
+            columns={columns}
+            row={row}
+            style={{ height: 'auto' }}
+          />
+        ))}
+      </TableFooter>
     );
   }
-}
+  return (
+    <Table>
+      <EnhancedTableHead
+        columns={columns}
+        onRequestSort={handleRequestSort}
+        order={order}
+        orderBy={orderBy}
+      />
+      <TableBody key={dataVersion}>
+        {data.map(row => (
+          <DataTableRow
+            key={row.id}
+            columns={columns}
+            row={row}
+            handleRowClick={handleRowClick}
+          />
+        ))}
+      </TableBody>
+      {tableFoot}
+    </Table>
+  );
+};
 
 export default SortableTable;

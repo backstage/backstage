@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-import ApiRef, { ApiRefConfig } from './apis/ApiRef';
-import AppBuilder from './app/AppBuilder';
-import BackstagePlugin, { PluginConfig } from './plugin/Plugin';
+import { PassThrough } from 'stream';
+import winston from 'winston';
+import { getRootLogger, setRootLogger } from './rootLogger';
 
-export function createApp() {
-  return new AppBuilder();
-}
+describe('rootLogger', () => {
+  it('can replace the default logger', () => {
+    const logger = winston.createLogger({
+      transports: [
+        new winston.transports.Stream({ stream: new PassThrough() }),
+      ],
+    });
+    jest.spyOn(logger, 'info');
 
-export function createApiRef<T>(config: ApiRefConfig) {
-  return new ApiRef<T>(config);
-}
+    setRootLogger(logger);
+    getRootLogger().info('testing');
 
-export function createPlugin(config: PluginConfig): BackstagePlugin {
-  return new BackstagePlugin(config);
-}
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('testing'),
+    );
+  });
+});

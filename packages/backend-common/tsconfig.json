@@ -1,0 +1,15 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "baseUrl": "src",
+    "outDir": "dist",
+    "incremental": true,
+    "sourceMap": true,
+    "declaration": true,
+    "strict": true,
+    "target": "es5",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "types": ["node", "jest"]
+  }
+}

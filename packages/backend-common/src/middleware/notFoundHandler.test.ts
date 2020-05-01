@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import ApiRef, { ApiRefConfig } from './apis/ApiRef';
-import AppBuilder from './app/AppBuilder';
-import BackstagePlugin, { PluginConfig } from './plugin/Plugin';
+import express from 'express';
+import request from 'supertest';
+import { notFoundHandler } from './notFoundHandler';
 
-export function createApp() {
-  return new AppBuilder();
-}
+describe('notFoundHandler', () => {
+  it('handles only missing routes', async () => {
+    const app = express();
+    app.use('/exists', (_, res) => res.status(200).send());
+    app.use(notFoundHandler());
 
-export function createApiRef<T>(config: ApiRefConfig) {
-  return new ApiRef<T>(config);
-}
+    const existsResponse = await request(app).get('/exists');
+    const doesNotExistResponse = await request(app).get('/doesNotExist');
 
-export function createPlugin(config: PluginConfig): BackstagePlugin {
-  return new BackstagePlugin(config);
-}
+    expect(existsResponse.status).toBe(200);
+    expect(doesNotExistResponse.status).toBe(404);
+  });
+});
