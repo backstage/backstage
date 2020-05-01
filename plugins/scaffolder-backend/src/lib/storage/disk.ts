@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import glob from 'glob';
+import globby from 'globby';
 import fs from 'fs-extra';
 import { logger } from '../logger';
 import { Template, StorageBase as Base } from '.';
@@ -29,8 +29,9 @@ export class DiskStorage implements Base {
   private localIndex: DiskIndexEntry[] = [];
 
   constructor(private repoDir = `${__dirname}/../../../sample-templates`) {
-    console.warn(require('path').resolve(repoDir));
+
   }
+
   public async list(): Promise<Template[]> {
     if (this.repository.length === 0) {
       await this.reindex();
@@ -59,43 +60,38 @@ export class DiskStorage implements Base {
   }
 
   private async index(): Promise<DiskIndexEntry[]> {
-    return new Promise((resolve, reject) => {
-      glob(`${this.repoDir}/**/template-info.json`, async (err, matches) => {
-        if (err) {
-          reject(err);
+    const matches = await globby(`${this.repoDir}/**/template-info.json`);
+
+    const fileContents: Array<{
+      location: string;
+      contents: string;
+    }> = await Promise.all(
+      matches.map(async (location: string) => ({
+        location,
+        contents: await fs.readFile(location, 'utf-8'),
+      })),
+    );
+
+    const validFiles = fileContents.reduce(
+      (diskIndexEntries: DiskIndexEntry[], currentFile) => {
+        try {
+          const parsed: Template = JSON.parse(currentFile.contents);
+          return [
+            ...diskIndexEntries,
+            { location: currentFile.location, contents: parsed },
+          ];
+        } catch (ex) {
+          logger.error('Failure parsing JSON for template', {
+            path: currentFile.location,
+          });
         }
 
-        const fileContents: Array<{
-          location: string;
-          contents: string;
-        }> = await Promise.all(
-          matches.map(async (location: string) => ({
-            location,
-            contents: await fs.readFile(location, 'utf-8'),
-          })),
-        );
+        return diskIndexEntries;
+      },
+      [],
+    );
+  
+    return validFiles;
 
-        const validFiles = fileContents.reduce(
-          (diskIndexEntries: DiskIndexEntry[], currentFile) => {
-            try {
-              const parsed: Template = JSON.parse(currentFile.contents);
-              return [
-                ...diskIndexEntries,
-                { location: currentFile.location, contents: parsed },
-              ];
-            } catch (ex) {
-              logger.error('Failure parsing JSON for template', {
-                path: currentFile.location,
-              });
-            }
-
-            return diskIndexEntries;
-          },
-          [],
-        );
-
-        resolve(validFiles);
-      });
-    });
   }
 }
