@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
+import { createPlugin } from '@backstage/core';
+import ScaffolderPage from './components/ScaffolderPage';
+
+export const plugin = createPlugin({
+  id: 'scaffolder',
+  register({ router }) {
+    router.registerRoute('/scaffolder', ScaffolderPage);
+  },
+});

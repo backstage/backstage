@@ -34,11 +34,14 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import { testRouter } from './test';
+import { createScaffolder } from '@backstage/plugin-scaffolder-backend';
 
 const DEFAULT_PORT = 7000;
 
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
 const app = express();
+
+const scaffolder = createScaffolder();
 
 app.use(helmet());
 app.use(cors());
@@ -47,6 +50,7 @@ app.use(express.json());
 app.use(requestLoggingHandler());
 app.use('/test', testRouter);
 app.use('/inventory', inventoryRouter);
+app.use('/scaffolder', scaffolder);
 app.use(errorHandler());
 app.use(notFoundHandler());
 

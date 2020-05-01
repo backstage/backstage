@@ -1,3 +1,5 @@
+import { TemplaterBase, TemplaterRunOptions } from '.';
+
 /*
  * Copyright 2020 Spotify AB
  *
@@ -13,10 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import fs from 'fs-extra';
 
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
+export class CookieCutter implements TemplaterBase {
+  public async run(options: TemplaterRunOptions): Promise<string> {
+    // first we need to make cookiecutter.json in the directory provided with the input values.
+    const cookieInfo = {
+      _copy_without_render: ['.github/workflows/*'],
+      ...options.values,
+    };
+
+    await fs.writeJSON(options.directory, cookieInfo);
+    return '';
+    // run cookie cutter with new json
+  }
+}

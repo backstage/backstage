@@ -17,6 +17,7 @@
   "dependencies": {
     "@backstage/backend-common": "0.1.1-alpha.4",
     "@backstage/plugin-inventory-backend": "0.1.1-alpha.4",
+    "@backstage/plugin-scaffolder-backend": "0.1.1-alpha.4",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
