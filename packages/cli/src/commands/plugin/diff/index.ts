@@ -14,6 +14,42 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
+import { paths } from 'lib/paths';
+import { version } from 'lib/version';
+
+type PluginInfo = {
+  id: string;
+  name: string;
+};
+
+// Reads info from the existing plugin
+async function readPluginInfo(): Promise<PluginInfo> {
+  let name: string;
+  try {
+    const pkg = require(paths.resolveTarget('package.json'));
+    name = pkg.name;
+  } catch (error) {
+    throw new Error(`Failed to read target package, ${error}`);
+  }
+
+  const pluginTsContents = await fs.readFile(
+    paths.resolveTarget('src/plugin.ts'),
+    'utf8',
+  );
+  // TODO: replace with some proper parsing logic or plugin metadata file
+  const pluginIdMatch = pluginTsContents.match(/id: ['"`](.+?)['"`]/);
+  if (!pluginIdMatch) {
+    throw new Error(`Failed to parse plugin.ts, no plugin ID found`);
+  }
+
+  const id = pluginIdMatch[1];
+
+  return { id, name };
+}
+
 export default async () => {
-  console.log(`DEBUG: Diff!`);
+  const pluginInfo = await readPluginInfo();
+  const templateVars = { version, ...pluginInfo };
+  console.log('DEBUG: templateVars =', templateVars);
 };
