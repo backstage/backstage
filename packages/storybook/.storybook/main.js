@@ -16,6 +16,8 @@ module.exports = {
 
     config.resolve.alias = {
       ...config.resolve.alias,
+      // Resolves imports of @backstage/core inside the storybook config, pointing to src
+      '@backstage/core': coreSrc,
       // Point to dist version of theme and any other packages that might be needed in the future
       '@backstage/theme': path.resolve(__dirname, '../../theme'),
     };
