@@ -18,7 +18,7 @@ import { createPlugin } from '@backstage/core';
 import ScaffolderPage from './components/ScaffolderPage';
 
 export const plugin = createPlugin({
-  id: 'inventory',
+  id: 'scaffolder',
   register({ router }) {
     router.registerRoute('/scaffolder', ScaffolderPage);
   },
