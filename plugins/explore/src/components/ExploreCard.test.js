@@ -16,16 +16,18 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from 'test-utils';
+import { wrapInThemedTestApp } from '@backstage/test-utils';
 
 import ExploreCard from './ExploreCard';
 
 const minProps = {
-  title: 'Title',
-  description: 'Something something',
-  url: 'http://spotify.com/',
-  image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
-  tags: ['tag1', 'tag2'],
+  card: {
+    title: 'Title',
+    description: 'Something something',
+    url: 'http://spotify.com/',
+    image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
+    tags: ['tag1', 'tag2'],
+  },
 };
 
 describe('<ExploreCard />', () => {
@@ -52,9 +54,13 @@ describe('<ExploreCard />', () => {
 
   it('renders default description when missing', () => {
     const propsWithoutDescription = {
-      title: 'Title',
-      url: 'http://spotify.com/',
-      image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
+      card: {
+        card: {
+          title: 'Title',
+          url: 'http://spotify.com/',
+          image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
+        },
+      },
     };
     const { getByText } = render(
       wrapInThemedTestApp(<ExploreCard {...propsWithoutDescription} />),
@@ -64,10 +70,12 @@ describe('<ExploreCard />', () => {
 
   it('renders lifecycle correctly', () => {
     const propsWithLifecycle = {
-      title: 'Title',
-      url: 'http://spotify.com/',
-      image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
-      lifecycle: 'GA',
+      card: {
+        title: 'Title',
+        url: 'http://spotify.com/',
+        image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
+        lifecycle: 'GA',
+      },
     };
     const { queryByText } = render(
       wrapInThemedTestApp(<ExploreCard {...propsWithLifecycle} />),

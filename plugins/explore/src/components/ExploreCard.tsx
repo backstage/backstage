@@ -31,16 +31,14 @@ import { BackstageTheme } from '@backstage/theme';
 // import FollowNews from 'plugins/news/components/FollowNews';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
-  /*
   card: {
     display: 'flex',
     flexDirection: 'column',
   },
   cardActions: {
-    flexGrow: '1',
+    flexGrow: 1,
     alignItems: 'flex-end',
   },
-  */
   media: {
     height: 128,
   },

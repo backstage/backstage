@@ -54,6 +54,15 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 const toolsCards = [
   {
+    title: 'Lighthouse',
+    description:
+      "Google's Lighthouse auditing tool for websites is a great open-source resource for benchmarking and improving the accessibility, performance, SEO, and best practices of your site.",
+    url: '/lighthouse',
+    image:
+      'https://raw.githubusercontent.com/GoogleChrome/lighthouse/8b3d7f052b2e64dd857e741d7395647f487697e7/assets/lighthouse-logo.png',
+    tags: ['web', 'seo', 'accessibility', 'performance'],
+  },
+  {
     title: 'Tech Radar',
     description:
       'Tech Radar is a list of technologies, complemented by an assessment result, called ring assignment.',
