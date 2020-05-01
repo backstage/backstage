@@ -63,12 +63,10 @@ enum State {
 }
 
 type Props = {
-  openDelayMs?: number;
   closeDelayMs?: number;
 };
 
 export const Sidebar: FC<Props> = ({
-  openDelayMs = sidebarConfig.defaultOpenDelayMs,
   closeDelayMs = sidebarConfig.defaultCloseDelayMs,
   children,
 }) => {
@@ -85,7 +83,7 @@ export const Sidebar: FC<Props> = ({
       hoverTimerRef.current = setTimeout(() => {
         hoverTimerRef.current = undefined;
         setState(State.Open);
-      }, openDelayMs);
+      }, 0);
 
       setState(State.Peek);
     }
