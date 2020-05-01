@@ -63,6 +63,11 @@ const main = (argv: string[]) => {
     .action(actionHandler(() => require('commands/plugin/serve')));
 
   program
+    .command('plugin:diff')
+    .description('Diff an existing plugin with the creation template')
+    .action(actionHandler(() => require('commands/plugin/diff')));
+
+  program
     .command('lint')
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint a package')
