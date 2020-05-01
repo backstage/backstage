@@ -19,7 +19,7 @@ import { Component, Inventory } from './types';
 export class StaticInventory implements Inventory {
   constructor(private components: Component[]) {}
 
-  list(): Promise<Array<Component>> {
+  list(): Promise<Component[]> {
     return Promise.resolve([...this.components]);
   }
 

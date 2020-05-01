@@ -28,21 +28,31 @@ import {
   notFoundHandler,
   requestLoggingHandler,
 } from '@backstage/backend-common';
-import { createRouter as inventoryRouter } from '@backstage/plugin-inventory-backend';
+import {
+  AggregatorInventory,
+  createRouter as inventoryRouter,
+  StaticInventory,
+} from '@backstage/plugin-inventory-backend';
 import { createScaffolder } from '@backstage/plugin-scaffolder-backend';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import { testRouter } from './test';
 
 const DEFAULT_PORT = 7000;
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
 const logger = getRootLogger().child({ type: 'plugin' });
 
 async function main() {
-  const inventory = await inventoryRouter({ logger });
-  const scaffolder = createScaffolder();
+  const inventory = new AggregatorInventory();
+  inventory.enlist(
+    new StaticInventory([
+      { id: 'component1' },
+      { id: 'component2' },
+      { id: 'component3' },
+      { id: 'component4' },
+    ]),
+  );
 
   const app = express();
 
@@ -51,9 +61,8 @@ async function main() {
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/test', testRouter);
-  app.use('/inventory', inventory);
-  app.use('/scaffolder', scaffolder);
+  app.use('/inventory', await inventoryRouter({ inventory, logger }));
+  app.use('/scaffolder', createScaffolder());
   app.use(notFoundHandler());
   app.use(errorHandler());
 

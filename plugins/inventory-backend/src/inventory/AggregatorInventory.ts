@@ -19,7 +19,7 @@ import { Component, Inventory } from './types';
 export class AggregatorInventory implements Inventory {
   inventories: Inventory[] = [];
 
-  list(): Promise<Array<Component>> {
+  list(): Promise<Component[]> {
     return Promise.all(this.inventories.map((i) => i.list())).then((lists) =>
       lists.flat(),
     );
