@@ -5,4 +5,3 @@
 # https://help.github.com/articles/about-codeowners/
 
 *                @spotify/backstage-core
-/plugins/explore @spotify/backstage-core
