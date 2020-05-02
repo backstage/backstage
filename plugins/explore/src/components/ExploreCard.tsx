@@ -28,8 +28,6 @@ import {
 } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
-// import FollowNews from 'plugins/news/components/FollowNews';
-
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   card: {
     display: 'flex',
@@ -125,9 +123,6 @@ const ExploreCard: FC<Props> = ({ card, objectFit }) => {
           [classes.spaceBetween]: newsTag,
         })}
       >
-        {/*
-        newsTag && <FollowNews tag={newsTag} />
-        */}
         <Button size="small" color="primary" href={url} disabled={!url}>
           Explore
         </Button>
