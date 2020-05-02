@@ -15,6 +15,9 @@
  */
 
 import fs from 'fs-extra';
+import { relative as relativePath } from 'path';
+import handlebars from 'handlebars';
+import recursiveReadDir from 'recursive-readdir';
 import { paths } from 'lib/paths';
 import { version } from 'lib/version';
 
@@ -48,8 +51,84 @@ async function readPluginInfo(): Promise<PluginInfo> {
   return { id, name };
 }
 
+type TemplateFile = {
+  // Relative path within the target directory
+  targetPath: string;
+  // Contents of the compiled template file
+  templateContents: string;
+} & (
+  | {
+      // Whether the template file exists in the target directory
+      targetExists: true;
+      // Contents of the file in the target directory, if it exists
+      targetContents: string;
+    }
+  | {
+      // Whether the template file exists in the target directory
+      targetExists: false;
+    }
+);
+
+async function readTemplateFile(
+  templateFile: string,
+  templateVars: any,
+): Promise<string> {
+  const contents = await fs.readFile(templateFile, 'utf8');
+
+  if (!templateFile.endsWith('.hbs')) {
+    return contents;
+  }
+
+  return handlebars.compile(contents)(templateVars);
+}
+
+async function readTemplate(
+  templateDir: string,
+  templateVars: any,
+): Promise<TemplateFile[]> {
+  const templateFilePaths = await recursiveReadDir(templateDir).catch(error => {
+    throw new Error(`Failed to read template directory: ${error.message}`);
+  });
+
+  const templateFiles = new Array<TemplateFile>();
+  for (const templateFile of templateFilePaths) {
+    // Target file inside the target dir without template extension
+    const targetFile = templateFile
+      .replace(templateDir, paths.targetDir)
+      .replace(/\.hbs$/, '');
+    const targetPath = relativePath(paths.targetDir, targetFile);
+
+    const templateContents = await readTemplateFile(templateFile, templateVars);
+
+    const targetExists = await fs.pathExists(targetFile);
+    if (targetExists) {
+      const targetContents = await fs.readFile(targetFile, 'utf8');
+      templateFiles.push({
+        targetPath,
+        targetExists,
+        targetContents,
+        templateContents,
+      });
+    } else {
+      templateFiles.push({
+        targetPath,
+        targetExists,
+        templateContents,
+      });
+    }
+  }
+
+  return templateFiles;
+}
+
 export default async () => {
   const pluginInfo = await readPluginInfo();
   const templateVars = { version, ...pluginInfo };
   console.log('DEBUG: templateVars =', templateVars);
+
+  const templateDir = paths.resolveOwn('templates/default-plugin');
+  console.log('DEBUG: templateDir =', templateDir);
+
+  const templateFiles = await readTemplate(templateDir, templateVars);
+  console.log('DEBUG: templateFiles =', templateFiles);
 };
