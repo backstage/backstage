@@ -70,13 +70,14 @@ const ExplorePluginPage: FC<{}> = () => {
   const classes = useStyles();
   return (
     <Page theme={pageTheme.home}>
-      <Header title="Explore" subtitle="Tools and services" />
+      <Header
+        title="Explore"
+        subtitle="Tools and services available in Backstage"
+      />
       <Content>
-        <ContentHeader title="Platforms">
+        <ContentHeader title="Tools">
           <SupportButton>
-            <Typography>
-              Explore platforms available in the Spotify ecosystem
-            </Typography>
+            <Typography>Explore tools available in Backstage</Typography>
           </SupportButton>
         </ContentHeader>
         <div className={classes.container}>
