@@ -42,14 +42,14 @@ describe('<ExploreCard />', () => {
     const { getByText } = render(
       wrapInThemedTestApp(<ExploreCard {...minProps} />),
     );
-    expect(getByText(minProps.title)).toBeInTheDocument();
-    expect(getByText(minProps.description)).toBeInTheDocument();
+    expect(getByText(minProps.card.title)).toBeInTheDocument();
+    expect(getByText(minProps.card.description)).toBeInTheDocument();
   });
 
   it('should link out', () => {
     const rendered = render(wrapInThemedTestApp(<ExploreCard {...minProps} />));
     const anchor = rendered.container.querySelector('a');
-    expect(anchor.href).toBe(minProps.url);
+    expect(anchor.href).toBe(minProps.card.url);
   });
 
   it('renders default description when missing', () => {
@@ -87,7 +87,7 @@ describe('<ExploreCard />', () => {
     const { getByText } = render(
       wrapInThemedTestApp(<ExploreCard {...minProps} />),
     );
-    expect(getByText(minProps.tags[0])).toBeInTheDocument();
-    expect(getByText(minProps.tags[1])).toBeInTheDocument();
+    expect(getByText(minProps.card.tags[0])).toBeInTheDocument();
+    expect(getByText(minProps.card.tags[1])).toBeInTheDocument();
   });
 });

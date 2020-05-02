@@ -56,7 +56,7 @@ const toolsCards = [
   {
     title: 'Lighthouse',
     description:
-      "Google's Lighthouse auditing tool for websites is a great open-source resource for benchmarking and improving the accessibility, performance, SEO, and best practices of your site.",
+      "Google's Lighthouse tool is a great resource for benchmarking and improving the accessibility, performance, SEO, and best practices of your website.",
     url: '/lighthouse',
     image:
       'https://raw.githubusercontent.com/GoogleChrome/lighthouse/8b3d7f052b2e64dd857e741d7395647f487697e7/assets/lighthouse-logo.png',
