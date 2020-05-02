@@ -14,81 +14,22 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, FC } from 'react';
+import React, { FC } from 'react';
 import { Grid } from '@material-ui/core';
-import {
-  Progress,
-  Page,
-  Header,
-  Content,
-  pageTheme,
-  useApi,
-  errorApiRef,
-  ErrorApi,
-} from '@backstage/core';
-import Radar from '../components/Radar';
-import { techRadarApiRef, TechRadarApi, TechRadarLoaderResponse } from '../api';
-
-const useTechRadarLoader = (techRadarApi: TechRadarApi) => {
-  const [state, setState] = useState<{
-    loading: boolean;
-    error?: Error;
-    data?: TechRadarLoaderResponse;
-  }>({
-    loading: true,
-    error: undefined,
-    data: undefined,
-  });
-
-  useEffect(() => {
-    techRadarApi
-      .load()
-      .then((payload: TechRadarLoaderResponse) => {
-        setState({ loading: false, error: undefined, data: payload });
-      })
-      .catch((err: Error) => {
-        setState({
-          loading: false,
-          error: err,
-          data: undefined,
-        });
-      });
-  }, []);
-
-  return state;
-};
+import { Page, Header, Content, pageTheme, useApi } from '@backstage/core';
+import RadarComponent from '../components/RadarComponent';
+import { techRadarApiRef, TechRadarApi } from '../api';
 
 const RadarPage: FC<{}> = () => {
-  const errorApi = useApi<ErrorApi>(errorApiRef);
   const techRadarApi = useApi<TechRadarApi>(techRadarApiRef);
-  const { loading, error, data } = useTechRadarLoader(techRadarApi);
-
-  useEffect(() => {
-    if (error) {
-      errorApi.post(error);
-    }
-  }, [error && error.message]);
 
   return (
     <Page theme={pageTheme.home}>
-      <Header
-        title={techRadarApi.additionalOpts.title}
-        subtitle={techRadarApi.additionalOpts.subtitle}
-      />
+      <Header title={techRadarApi.title} subtitle={techRadarApi.subtitle} />
       <Content>
         <Grid container spacing={3} direction="row">
           <Grid item xs={12} sm={6} md={4}>
-            {loading && <Progress />}
-            {!loading && !error && (
-              <Radar
-                width={techRadarApi.width}
-                height={techRadarApi.height}
-                svgProps={techRadarApi.additionalOpts.svgProps}
-                rings={data!.rings}
-                quadrants={data!.quadrants}
-                entries={data!.entries}
-              />
-            )}
+            <RadarComponent {...techRadarApi} />
           </Grid>
         </Grid>
       </Content>
