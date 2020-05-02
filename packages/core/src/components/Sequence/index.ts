@@ -15,4 +15,4 @@
  */
 
 export { default } from './Sequence';
-export type StepType = StepType;
+export type { StepType } from './Sequence';
