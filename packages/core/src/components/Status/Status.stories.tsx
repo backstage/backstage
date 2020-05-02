@@ -24,44 +24,72 @@ import {
   StatusRunning,
   StatusWarning,
 } from './Status';
+import SortableTable from 'components/SortableTable';
+import InfoCard from 'layout/InfoCard';
 
 export default {
   title: 'Status',
   component: StatusOK,
 };
 
-export const statusOK = () => (
-  <>
-    <StatusOK /> Status OK
-  </>
+const data = [
+  {
+    status: <StatusOK />,
+    label: 'OK',
+    usage: 'Deployment successful',
+  },
+  {
+    status: <StatusWarning />,
+    label: 'Warning',
+    usage: 'CPU utilization at 90%',
+  },
+  {
+    status: <StatusError />,
+    label: 'Error',
+    usage: 'Service could not be created',
+  },
+  {
+    status: <StatusFailed />,
+    label: 'Failed',
+    usage: 'Build for PR #34 failed',
+  },
+  {
+    status: <StatusPending />,
+    label: 'Pending',
+    usage: 'Job is waiting',
+  },
+  {
+    status: <StatusRunning />,
+    label: 'Running',
+    usage: 'Job is running',
+  },
+  {
+    status: <StatusNA />,
+    label: 'N/A',
+    usage: 'Not sure what to do',
+  },
+];
+
+const columns = [
+  { id: 'status', label: 'Status' },
+  { id: 'label', label: 'Label' },
+  { id: 'usage', label: 'Example usage' },
+];
+
+const containerStyle = { width: 600 };
+
+export const Default = () => (
+  <div style={containerStyle}>
+    <InfoCard title="Available status types">
+      <SortableTable data={data} columns={columns} />
+    </InfoCard>
+  </div>
 );
-export const statusWarning = () => (
-  <>
-    <StatusWarning /> Status Warning
-  </>
-);
-export const statusError = () => (
-  <>
-    <StatusError /> Status Error
-  </>
-);
-export const statusFailed = () => (
-  <>
-    <StatusFailed /> Status Failed
-  </>
-);
-export const statusPending = () => (
-  <>
-    <StatusPending /> Status Pending
-  </>
-);
-export const statusRunning = () => (
-  <>
-    <StatusRunning /> Status Running
-  </>
-);
-export const statusNA = () => (
-  <>
-    <StatusNA /> Status NA
-  </>
-);
+
+export const statusOK = () => <StatusOK />;
+export const statusWarning = () => <StatusWarning />;
+export const statusError = () => <StatusError />;
+export const statusFailed = () => <StatusFailed />;
+export const statusPending = () => <StatusPending />;
+export const statusRunning = () => <StatusRunning />;
+export const statusNA = () => <StatusNA />;

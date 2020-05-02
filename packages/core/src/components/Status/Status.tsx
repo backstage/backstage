@@ -44,7 +44,12 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     backgroundColor: theme.palette.status.pending,
   },
   failed: {
-    backgroundColor: 'rgba(245, 155, 35, 0.5)',
+    // Same as Error
+    width: '0',
+    height: '0',
+    borderLeft: '7px solid transparent',
+    borderRight: '7px solid transparent',
+    borderBottom: `14px solid ${theme.palette.status.error}`,
   },
   running: {
     animation: 'blink 0.8s step-start 0s infinite',
