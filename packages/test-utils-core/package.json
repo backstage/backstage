@@ -16,12 +16,13 @@
     "backstage"
   ],
   "license": "Apache-2.0",
-  "main": "dist/index.cjs.js",
+  "main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test"
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",

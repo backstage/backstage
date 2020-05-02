@@ -14,4 +14,19 @@
  * limitations under the License.
  */
 
-export { default } from './DefaultWidgetView';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
+
+/**
+ * Express middleware to handle requests for missing routes.
+ *
+ * Should be used as the very last handler in the chain, as it unconditionally
+ * returns a 404 status.
+ *
+ * @returns An Express request handler
+ */
+export function notFoundHandler(): RequestHandler {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  return (_request: Request, response: Response, _next: NextFunction) => {
+    response.status(404).send();
+  };
+}

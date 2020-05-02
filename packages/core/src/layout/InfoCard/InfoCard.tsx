@@ -52,9 +52,6 @@ const VARIANT_STYLES = {
       display: 'flex',
       flexDirection: 'column',
     },
-    widget: {
-      height: 430,
-    },
     fullHeight: {
       height: '100%',
     },
@@ -79,11 +76,6 @@ const VARIANT_STYLES = {
     },
   },
   cardContent: {
-    widget: {
-      overflowY: 'auto',
-      height: 332,
-      width: '100%',
-    },
     fullHeight: {
       height: 'calc(100% - 50px)',
     },

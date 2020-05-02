@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useState, Suspense } from 'react';
 import { Tabs, Tab, makeStyles, Typography, Divider } from '@material-ui/core';
 import 'graphiql/graphiql.css';
-import GraphiQL from 'graphiql';
 import { StorageBucket } from 'lib/storage';
 import { GraphQLEndpoint } from 'lib/api';
+import { Progress } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
+
+const GraphiQL = React.lazy(() => import('graphiql'));
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
@@ -58,20 +60,22 @@ export const GraphiQLBrowser: FC<GraphiQLBrowserProps> = ({ endpoints }) => {
 
   return (
     <div className={classes.root}>
-      <Tabs
-        classes={{ root: classes.tabs }}
-        value={tabIndex}
-        onChange={(_, value) => setTabIndex(value)}
-        indicatorColor="primary"
-      >
-        {endpoints.map(({ title }, index) => (
-          <Tab key={index} label={title} value={index} />
-        ))}
-      </Tabs>
-      <Divider />
-      <div className={classes.graphiQlWrapper}>
-        <GraphiQL key={tabIndex} fetcher={fetcher} storage={storage} />
-      </div>
+      <Suspense fallback={<Progress />}>
+        <Tabs
+          classes={{ root: classes.tabs }}
+          value={tabIndex}
+          onChange={(_, value) => setTabIndex(value)}
+          indicatorColor="primary"
+        >
+          {endpoints.map(({ title }, index) => (
+            <Tab key={index} label={title} value={index} />
+          ))}
+        </Tabs>
+        <Divider />
+        <div className={classes.graphiQlWrapper}>
+          <GraphiQL key={tabIndex} fetcher={fetcher} storage={storage} />
+        </div>
+      </Suspense>
     </div>
   );
 };

@@ -22,7 +22,6 @@ import {
   FeatureFlagName,
 } from './types';
 import { validateBrowserCompat, validateFlagName } from 'api/app/FeatureFlags';
-import { Widget } from 'api/widgetView/types';
 
 export type PluginConfig = {
   id: string;
@@ -31,7 +30,6 @@ export type PluginConfig = {
 
 export type PluginHooks = {
   router: RouterHooks;
-  widgets: WidgetHooks;
   featureFlags: FeatureFlagsHooks;
 };
 
@@ -47,10 +45,6 @@ export type RouterHooks = {
     target: RoutePath,
     options?: RouteOptions,
   ): void;
-};
-
-export type WidgetHooks = {
-  add(widget: Widget): void;
 };
 
 export type FeatureFlagsHooks = {
@@ -86,11 +80,6 @@ export default class Plugin {
         },
         registerRedirect(path, target, options) {
           outputs.push({ type: 'redirect-route', path, target, options });
-        },
-      },
-      widgets: {
-        add(widget: Widget) {
-          outputs.push({ type: 'widget', widget });
         },
       },
       featureFlags: {
