@@ -66,7 +66,7 @@ export interface TechRadarApi extends TechRadarComponentProps {
 }
 ```
 
-You can see the API directly over at <src/api.ts>.
+You can see the API directly over at [src/api.ts](./src/api.ts).
 
 ### Advanced Configuration
 
@@ -99,7 +99,7 @@ export interface TechRadarComponentProps {
 }
 ```
 
-You can see the API directly over at <src/api.ts>.
+You can see the API directly over at [src/api.ts](./src/api.ts).
 
 ## Frequently Asked Questions
 
@@ -109,7 +109,7 @@ You can see the API directly over at <src/api.ts>.
 
 ### How do I load in my own data?
 
-It's simple. In both the Simple (Backstage plugin) and Advanced (React component) configurations, you can pass through a `getData` prop which expects a `Promise<TechRadarLoaderResponse>` signature. See more in <src/api.ts>.
+It's simple. In both the Simple (Backstage plugin) and Advanced (React component) configurations, you can pass through a `getData` prop which expects a `Promise<TechRadarLoaderResponse>` signature. See more in [src/api.ts](./src/api.ts).
 
 Here's an example:
 
@@ -134,7 +134,7 @@ const getHardCodedData = () =>
 // Simple
 builder.add(techRadarApiRef, new TechRadar({
   width: 1400,
-  height: 800
+  height: 800,
   getData: getHardCodedData
 ));
 
