@@ -14,8 +14,22 @@
  * limitations under the License.
  */
 
-export * from './api';
-export * from './apis';
-export * from './navTargets';
-export { FeatureFlags } from './app/FeatureFlags';
-export { useApp } from './app/AppContext';
+import { IconComponent } from '../../icons';
+
+export type NavTarget = {
+  path: string;
+  icon: IconComponent;
+  title: string;
+};
+
+export type NavTargetConfig = {
+  path: string;
+  icon: IconComponent;
+  title: string;
+};
+
+export type NavTargetOverrideConfig = {
+  path?: string;
+  icon?: IconComponent;
+  title?: string;
+};

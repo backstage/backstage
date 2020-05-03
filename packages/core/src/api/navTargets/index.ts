@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-export * from './api';
-export * from './apis';
-export * from './navTargets';
-export { FeatureFlags } from './app/FeatureFlags';
-export { useApp } from './app/AppContext';
+export type { NavTarget, NavTargetConfig, NavTargetOverrideConfig  } from './types';
+export { createNavTarget } from './NavTarget';
