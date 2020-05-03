@@ -66,9 +66,10 @@ class PackageJsonHandler {
     prefix?: string,
   ) {
     const fullFieldName = chalk.cyan(
-      prefix ? `${prefix}[${fieldName}]` : prefix,
+      prefix ? `${prefix}[${fieldName}]` : fieldName,
     );
     const newValue = obj[fieldName];
+    const coloredNewValue = chalk.cyan(JSON.stringify(newValue));
 
     if (fieldName in targetObj) {
       const oldValue = targetObj[fieldName];
@@ -76,9 +77,8 @@ class PackageJsonHandler {
         return;
       }
 
-      const msg =
-        `Outdated field, ${fullFieldName}, change from ` +
-        `${chalk.cyan(oldValue)} to ${chalk.cyan(newValue)}?`;
+      const coloredOldValue = chalk.cyan(JSON.stringify(oldValue));
+      const msg = `package.json has mismatched field, ${fullFieldName}, change from ${coloredOldValue} to ${coloredNewValue}?`;
       if (await this.prompt(msg)) {
         targetObj[fieldName] = newValue;
         await this.write();
@@ -86,7 +86,7 @@ class PackageJsonHandler {
     } else {
       if (
         await this.prompt(
-          `Missing field ${fullFieldName}, set to ${chalk.cyan(newValue)}?`,
+          `package.json is missing field ${fullFieldName}, set to ${coloredNewValue}?`,
         )
       ) {
         targetObj[fieldName] = newValue;
