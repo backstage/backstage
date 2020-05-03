@@ -10,6 +10,7 @@
     "module": "ESNext",
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "lib": ["DOM", "DOM.Iterable", "ScriptHost", "ES2019"],
     "types": ["node", "jest"]
   }
 }
