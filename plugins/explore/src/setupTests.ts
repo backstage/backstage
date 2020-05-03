@@ -14,17 +14,5 @@
  * limitations under the License.
  */
 
-import express from 'express';
-
-export const router = express.Router();
-
-router.get('/', async (_, res) => {
-  res
-    .status(200)
-    .send([
-      { id: 'component1' },
-      { id: 'component2' },
-      { id: 'component3' },
-      { id: 'component4' },
-    ]);
-});
+import '@testing-library/jest-dom/extend-expect';
+require('jest-fetch-mock').enableMocks();

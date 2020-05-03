@@ -13,10 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
-export { plugin as Explore } from '@backstage/plugin-explore';
+
+import { Component, Inventory } from './types';
+
+export class StaticInventory implements Inventory {
+  constructor(private components: Component[]) {}
+
+  list(): Promise<Array<Component>> {
+    return Promise.resolve([...this.components]);
+  }
+
+  item(id: string): Promise<Component | undefined> {
+    return this.list().then(items => items.find(i => i.id === id));
+  }
+}

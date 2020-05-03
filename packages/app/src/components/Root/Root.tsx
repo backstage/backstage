@@ -18,6 +18,7 @@ import React, { FC, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Link, makeStyles, Typography } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
+import ExploreIcon from '@material-ui/icons/Explore';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import CreateComponentIcon from '@material-ui/icons/Create';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
@@ -81,7 +82,9 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarSpacer />
       <SidebarDivider />
       <SidebarItem icon={HomeIcon} to="/" text="Home" />
+      <SidebarItem icon={ExploreIcon} to="/explore" text="Explore" />
       <SidebarItem icon={CreateComponentIcon} to="/scaffolder" text="Create" />
+      <SidebarDivider />      
       <SidebarItem icon={AccountTreeIcon} to="/inventory" text="Inventory" />
       <SidebarItem icon={AccountCircle} to="/login" text="Login" />
       <SidebarDivider />

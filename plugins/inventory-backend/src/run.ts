@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
-export { plugin as Explore } from '@backstage/plugin-explore';
+
+import { getRootLogger } from '@backstage/backend-common';
+import { startServer } from './service/server';
+
+startServer({
+  port: process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 3003,
+  enableCors: process.env.PLUGIN_CORS
+    ? Boolean(process.env.PLUGIN_CORS)
+    : false,
+  logger: getRootLogger(),
+}).catch(err => {
+  getRootLogger().error(err);
+  process.exit(1);
+});
+
+process.on('SIGINT', () => {
+  getRootLogger().info('CTRL+C pressed; exiting.');
+  process.exit(0);
+});
