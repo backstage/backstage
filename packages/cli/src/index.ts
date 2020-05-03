@@ -64,6 +64,8 @@ const main = (argv: string[]) => {
 
   program
     .command('plugin:diff')
+    .option('--check', 'Fail if changes are required')
+    .option('--yes', 'Apply all changes')
     .description('Diff an existing plugin with the creation template')
     .action(actionHandler(() => require('commands/plugin/diff')));
 

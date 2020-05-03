@@ -16,6 +16,7 @@
 
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { Command } from 'commander';
 import { readTemplateFiles } from './read';
 import { handlers, handleAllFiles } from './handlers';
 import { PromptFunc } from './types';
@@ -49,7 +50,23 @@ const inquirerPromptFunc: PromptFunc = async msg => {
   return result;
 };
 
-export default async () => {
+const checkPromptFunc: PromptFunc = async msg => {
+  throw new Error(`Check failed, the following change was needed: ${msg}`);
+};
+const yesPromptFunc: PromptFunc = async msg => {
+  console.log(`Accepting: "${msg}"`);
+  return true;
+};
+
+export default async (cmd: Command) => {
+  let promptFunc = inquirerPromptFunc;
+
+  if (cmd.check) {
+    promptFunc = checkPromptFunc;
+  } else if (cmd.yes) {
+    promptFunc = yesPromptFunc;
+  }
+
   const templateFiles = await readTemplateFiles('default-plugin');
-  await handleAllFiles(fileHandlers, templateFiles, inquirerPromptFunc);
+  await handleAllFiles(fileHandlers, templateFiles, promptFunc);
 };
