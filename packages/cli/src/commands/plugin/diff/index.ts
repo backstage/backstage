@@ -131,7 +131,7 @@ async function writeTargetFile(targetPath: string, contents: string) {
 }
 
 class PackageJsonHandler {
-  static async handler(file: TemplateFile) {
+  static async handler(file: TemplateFile, prompt: PromptFunc) {
     console.log('Checking package.json');
 
     if (!file.targetExists) {
@@ -141,14 +141,13 @@ class PackageJsonHandler {
     const pkg = JSON.parse(file.templateContents);
     const targetPkg = JSON.parse(file.targetContents);
 
-    const handler = new PackageJsonHandler(file, pkg, targetPkg);
+    const handler = new PackageJsonHandler(file, prompt, pkg, targetPkg);
     await handler.handle();
   }
 
-  private changed: boolean = false;
-
   constructor(
     private readonly file: TemplateFile,
+    private readonly prompt: PromptFunc,
     private readonly pkg: any,
     private readonly targetPkg: any,
   ) {}
@@ -162,6 +161,7 @@ class PackageJsonHandler {
     await this.syncDependencies('devDependencies');
   }
 
+  // Make sure a field inside package.json is in sync. This mutates the targetObj and writes package.json on change.
   private async syncField(
     fieldName: string,
     obj: any = this.pkg,
@@ -179,27 +179,19 @@ class PackageJsonHandler {
         return;
       }
 
-      const { addField } = await inquirer.prompt({
-        type: 'confirm',
-        name: 'addField',
-        message: chalk.blue(
-          `Outdated field, ${fullFieldName}, change from ` +
-            `${chalk.cyan(oldValue)} to ${chalk.cyan(newValue)}?`,
-        ),
-      });
-      if (addField) {
+      const msg =
+        `Outdated field, ${fullFieldName}, change from ` +
+        `${chalk.cyan(oldValue)} to ${chalk.cyan(newValue)}?`;
+      if (await this.prompt(msg)) {
         targetObj[fieldName] = newValue;
         await this.write();
       }
     } else {
-      const { updateField } = await inquirer.prompt({
-        type: 'confirm',
-        name: 'updateField',
-        message: chalk.blue(
+      if (
+        await this.prompt(
           `Missing field ${fullFieldName}, set to ${chalk.cyan(newValue)}?`,
-        ),
-      });
-      if (updateField) {
+        )
+      ) {
         targetObj[fieldName] = newValue;
         await this.write();
       }
@@ -235,19 +227,14 @@ class PackageJsonHandler {
 }
 
 // Make sure the file is an exact match of the template
-async function exactMatchHandler(file: TemplateFile) {
+async function exactMatchHandler(file: TemplateFile, prompt: PromptFunc) {
   console.log(`Checking ${file.targetPath}`);
 
   const { targetPath, templateContents } = file;
   const coloredPath = chalk.cyan(targetPath);
 
   if (!file.targetExists) {
-    const { addFile } = await inquirer.prompt({
-      type: 'confirm',
-      name: 'addFile',
-      message: chalk.blue(`Missing ${coloredPath}, do you want to add it?`),
-    });
-    if (addFile) {
+    if (await prompt(`Missing ${coloredPath}, do you want to add it?`)) {
       await writeTargetFile(targetPath, templateContents);
     }
     return;
@@ -267,33 +254,24 @@ async function exactMatchHandler(file: TemplateFile) {
     }
   }
 
-  const { applyPatch } = await inquirer.prompt({
-    type: 'confirm',
-    name: 'applyPatch',
-    message: chalk.blue(
+  if (
+    await prompt(
       `Outdated ${coloredPath}, do you want to apply the above patch?`,
-    ),
-  });
-
-  if (applyPatch) {
+    )
+  ) {
     await writeTargetFile(targetPath, templateContents);
   }
 }
 
 // Adds the file if it is missing, but doesn't check existing files
-async function addOnlyHandler(file: TemplateFile) {
+async function addOnlyHandler(file: TemplateFile, prompt: PromptFunc) {
   console.log(`Making sure ${file.targetPath} exists`);
 
   const { targetPath, templateContents } = file;
   const coloredPath = chalk.cyan(targetPath);
 
   if (!file.targetExists) {
-    const { addFile } = await inquirer.prompt({
-      type: 'confirm',
-      name: 'addFile',
-      message: chalk.blue(`Missing ${coloredPath}, do you want to add it?`),
-    });
-    if (addFile) {
+    if (await prompt(`Missing ${coloredPath}, do you want to add it?`)) {
       await writeTargetFile(targetPath, templateContents);
     }
     return;
@@ -304,9 +282,20 @@ async function skipHandler(file: TemplateFile) {
   console.log(`Skipping ${file.targetPath}`);
 }
 
+type PromptFunc = (msg: string) => Promise<boolean>;
+
+const inquirerPromptFunc: PromptFunc = async msg => {
+  const { result } = await inquirer.prompt({
+    type: 'confirm',
+    name: 'result',
+    message: chalk.blue(msg),
+  });
+  return result;
+};
+
 type FileHandler = {
   patterns: Array<string | RegExp>;
-  handler: (file: TemplateFile) => Promise<void>;
+  handler: (file: TemplateFile, prompt: PromptFunc) => Promise<void>;
 };
 
 const fileHandlers: FileHandler[] = [
@@ -347,7 +336,7 @@ export default async () => {
       ),
     );
     if (fileHandler) {
-      await fileHandler.handler(templateFile);
+      await fileHandler.handler(templateFile, inquirerPromptFunc);
     } else {
       throw new Error(`No template file handler found for ${targetPath}`);
     }
