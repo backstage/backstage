@@ -107,7 +107,7 @@ const ExploreCard: FC<Props> = ({ card, objectFit }) => {
             />
           )}
         </Typography>
-        <Typography component="p">
+        <Typography paragraph>
           {description || 'Description missing'}
         </Typography>
         {tags && (
