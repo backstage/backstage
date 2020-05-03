@@ -118,7 +118,7 @@ class PackageJsonHandler {
   private async write() {
     await fs.writeFile(
       paths.resolveTarget(this.file.targetPath),
-      JSON.stringify(this.targetPkg, null, 2),
+      `${JSON.stringify(this.targetPkg, null, 2)}\n`,
     );
   }
 }
