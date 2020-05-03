@@ -15,13 +15,14 @@
  */
 
 import fs from 'fs-extra';
-import { relative as relativePath } from 'path';
+import { relative as relativePath, dirname } from 'path';
 import { diffLines } from 'diff';
-import handlebars, { Template } from 'handlebars';
+import handlebars from 'handlebars';
 import recursiveReadDir from 'recursive-readdir';
 import { paths } from 'lib/paths';
 import { version } from 'lib/version';
 import chalk from 'chalk';
+import inquirer from 'inquirer';
 
 type PluginInfo = {
   id: string;
@@ -123,29 +124,138 @@ async function readTemplate(
   return templateFiles;
 }
 
-async function packageJsonHandler(file: TemplateFile) {
-  if (!file.targetExists) {
-    throw new Error(`${file.targetPath} doesn't exist`);
+async function writeTargetFile(targetPath: string, contents: string) {
+  const path = paths.resolveTarget(targetPath);
+  await fs.ensureDir(dirname(path));
+  await fs.writeFile(path, contents, 'utf8');
+}
+
+class PackageJsonHandler {
+  static async handler(file: TemplateFile) {
+    console.log('Checking package.json');
+
+    if (!file.targetExists) {
+      throw new Error(`${file.targetPath} doesn't exist`);
+    }
+
+    const pkg = JSON.parse(file.templateContents);
+    const targetPkg = JSON.parse(file.targetContents);
+
+    const handler = new PackageJsonHandler(file, pkg, targetPkg);
+    await handler.handle();
   }
 
-  console.log(`pkg.json handler: ${file.targetPath}`);
-  const pkg = JSON.parse(file.templateContents);
-  console.log('DEBUG: pkg =', pkg);
-  const targetPkg = JSON.parse(file.targetContents);
-  console.log('DEBUG: targetPkg =', targetPkg);
+  private changed: boolean = false;
+
+  constructor(
+    private readonly file: TemplateFile,
+    private readonly pkg: any,
+    private readonly targetPkg: any,
+  ) {}
+
+  async handle() {
+    await this.syncField('main');
+    await this.syncField('types');
+    await this.syncField('files');
+    await this.syncScripts();
+    await this.syncDependencies('dependencies');
+    await this.syncDependencies('devDependencies');
+  }
+
+  private async syncField(
+    fieldName: string,
+    obj: any = this.pkg,
+    targetObj: any = this.targetPkg,
+    prefix?: string,
+  ) {
+    const fullFieldName = chalk.cyan(
+      prefix ? `${prefix}[${fieldName}]` : prefix,
+    );
+    const newValue = obj[fieldName];
+
+    if (fieldName in targetObj) {
+      const oldValue = targetObj[fieldName];
+      if (JSON.stringify(oldValue) === JSON.stringify(newValue)) {
+        return;
+      }
+
+      const { addField } = await inquirer.prompt({
+        type: 'confirm',
+        name: 'addField',
+        message: chalk.blue(
+          `Outdated field, ${fullFieldName}, change from ` +
+            `${chalk.cyan(oldValue)} to ${chalk.cyan(newValue)}?`,
+        ),
+      });
+      if (addField) {
+        targetObj[fieldName] = newValue;
+        await this.write();
+      }
+    } else {
+      const { updateField } = await inquirer.prompt({
+        type: 'confirm',
+        name: 'updateField',
+        message: chalk.blue(
+          `Missing field ${fullFieldName}, set to ${chalk.cyan(newValue)}?`,
+        ),
+      });
+      if (updateField) {
+        targetObj[fieldName] = newValue;
+        await this.write();
+      }
+    }
+  }
+
+  private async syncScripts() {
+    const pkgScripts = this.pkg.scripts;
+    const targetScripts = (this.targetPkg.scripts =
+      this.targetPkg.scripts || {});
+
+    for (const key of Object.keys(pkgScripts)) {
+      await this.syncField(key, pkgScripts, targetScripts, 'scripts');
+    }
+  }
+
+  private async syncDependencies(fieldName: string) {
+    const pkgDeps = this.pkg[fieldName];
+    const targetDeps = (this.targetPkg[fieldName] =
+      this.targetPkg[fieldName] || {});
+
+    for (const key of Object.keys(pkgDeps)) {
+      await this.syncField(key, pkgDeps, targetDeps, fieldName);
+    }
+  }
+
+  private async write() {
+    await fs.writeFile(
+      paths.resolveTarget(this.file.targetPath),
+      JSON.stringify(this.targetPkg, null, 2),
+    );
+  }
 }
 
 async function diffHandler(file: TemplateFile) {
+  console.log(`Checking ${file.targetPath}`);
+
+  const { targetPath, templateContents } = file;
+  const coloredPath = chalk.cyan(targetPath);
+
   if (!file.targetExists) {
-    // TODO: prompt to write template file
+    const { addFile } = await inquirer.prompt({
+      type: 'confirm',
+      name: 'addFile',
+      message: chalk.blue(`Missing ${coloredPath}, do you want to add it?`),
+    });
+    if (addFile) {
+      await writeTargetFile(targetPath, templateContents);
+    }
     return;
   }
-  if (file.targetContents === file.templateContents) {
+  if (file.targetContents === templateContents) {
     return;
   }
 
-  const diffs = diffLines(file.targetContents, file.templateContents);
-
+  const diffs = diffLines(file.targetContents, templateContents);
   for (const diff of diffs) {
     if (diff.added) {
       process.stdout.write(chalk.green(`+${diff.value}`));
@@ -154,6 +264,18 @@ async function diffHandler(file: TemplateFile) {
     } else {
       process.stdout.write(` ${diff.value}`);
     }
+  }
+
+  const { applyPatch } = await inquirer.prompt({
+    type: 'confirm',
+    name: 'applyPatch',
+    message: chalk.blue(
+      `Outdated ${coloredPath}, do you want to apply the above patch?`,
+    ),
+  });
+
+  if (applyPatch) {
+    await writeTargetFile(targetPath, templateContents);
   }
 }
 
@@ -169,7 +291,7 @@ type FileHandler = {
 const fileHandlers: FileHandler[] = [
   {
     patterns: ['package.json'],
-    handler: packageJsonHandler,
+    handler: PackageJsonHandler.handler,
   },
   {
     patterns: ['.eslintrc.js', 'tsconfig.json'],
@@ -204,6 +326,4 @@ export default async () => {
       throw new Error(`No template file handler found for ${targetPath}`);
     }
   }
-
-  console.log(`DEBUG: done!`);
 };
