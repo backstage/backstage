@@ -47,7 +47,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     backgroundColor: 'rgba(245, 155, 35, 0.5)',
   },
   running: {
-    animation: 'blink 0.8s step-start 0s infinite',
+    animation: '$blink 0.8s step-start 0s infinite',
     backgroundColor: theme.palette.status.running,
   },
   '@keyframes blink': {
