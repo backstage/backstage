@@ -234,7 +234,8 @@ class PackageJsonHandler {
   }
 }
 
-async function diffHandler(file: TemplateFile) {
+// Make sure the file is an exact match of the template
+async function exactMatchHandler(file: TemplateFile) {
   console.log(`Checking ${file.targetPath}`);
 
   const { targetPath, templateContents } = file;
@@ -279,6 +280,26 @@ async function diffHandler(file: TemplateFile) {
   }
 }
 
+// Adds the file if it is missing, but doesn't check existing files
+async function addOnlyHandler(file: TemplateFile) {
+  console.log(`Making sure ${file.targetPath} exists`);
+
+  const { targetPath, templateContents } = file;
+  const coloredPath = chalk.cyan(targetPath);
+
+  if (!file.targetExists) {
+    const { addFile } = await inquirer.prompt({
+      type: 'confirm',
+      name: 'addFile',
+      message: chalk.blue(`Missing ${coloredPath}, do you want to add it?`),
+    });
+    if (addFile) {
+      await writeTargetFile(targetPath, templateContents);
+    }
+    return;
+  }
+}
+
 async function skipHandler(file: TemplateFile) {
   console.log(`Skipping ${file.targetPath}`);
 }
@@ -294,11 +315,16 @@ const fileHandlers: FileHandler[] = [
     handler: PackageJsonHandler.handler,
   },
   {
-    patterns: ['.eslintrc.js', 'tsconfig.json'],
-    handler: diffHandler,
+    patterns: ['tsconfig.json'],
+    handler: exactMatchHandler,
   },
   {
-    patterns: ['README.md', /^^src\//],
+    // make sure files in 1st level of src/ and dev/ exist
+    patterns: ['.eslintrc.js', /^(src|dev)\/[^/]+$/],
+    handler: addOnlyHandler,
+  },
+  {
+    patterns: ['README.md', /^src\//],
     handler: skipHandler,
   },
 ];
