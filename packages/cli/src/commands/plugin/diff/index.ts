@@ -16,10 +16,12 @@
 
 import fs from 'fs-extra';
 import { relative as relativePath } from 'path';
-import handlebars from 'handlebars';
+import { diffLines } from 'diff';
+import handlebars, { Template } from 'handlebars';
 import recursiveReadDir from 'recursive-readdir';
 import { paths } from 'lib/paths';
 import { version } from 'lib/version';
+import chalk from 'chalk';
 
 type PluginInfo = {
   id: string;
@@ -121,14 +123,87 @@ async function readTemplate(
   return templateFiles;
 }
 
+async function packageJsonHandler(file: TemplateFile) {
+  if (!file.targetExists) {
+    throw new Error(`${file.targetPath} doesn't exist`);
+  }
+
+  console.log(`pkg.json handler: ${file.targetPath}`);
+  const pkg = JSON.parse(file.templateContents);
+  console.log('DEBUG: pkg =', pkg);
+  const targetPkg = JSON.parse(file.targetContents);
+  console.log('DEBUG: targetPkg =', targetPkg);
+}
+
+async function diffHandler(file: TemplateFile) {
+  if (!file.targetExists) {
+    // TODO: prompt to write template file
+    return;
+  }
+  if (file.targetContents === file.templateContents) {
+    return;
+  }
+
+  const diffs = diffLines(file.targetContents, file.templateContents);
+
+  for (const diff of diffs) {
+    if (diff.added) {
+      process.stdout.write(chalk.green(`+${diff.value}`));
+    } else if (diff.removed) {
+      process.stdout.write(chalk.red(`-${diff.value}`));
+    } else {
+      process.stdout.write(` ${diff.value}`);
+    }
+  }
+}
+
+async function skipHandler(file: TemplateFile) {
+  console.log(`Skipping ${file.targetPath}`);
+}
+
+type FileHandler = {
+  patterns: Array<string | RegExp>;
+  handler: (file: TemplateFile) => Promise<void>;
+};
+
+const fileHandlers: FileHandler[] = [
+  {
+    patterns: ['package.json'],
+    handler: packageJsonHandler,
+  },
+  {
+    patterns: ['.eslintrc.js', 'tsconfig.json'],
+    handler: diffHandler,
+  },
+  {
+    patterns: ['README.md', /^^src\//],
+    handler: skipHandler,
+  },
+];
+
 export default async () => {
   const pluginInfo = await readPluginInfo();
   const templateVars = { version, ...pluginInfo };
-  console.log('DEBUG: templateVars =', templateVars);
 
   const templateDir = paths.resolveOwn('templates/default-plugin');
-  console.log('DEBUG: templateDir =', templateDir);
 
   const templateFiles = await readTemplate(templateDir, templateVars);
-  console.log('DEBUG: templateFiles =', templateFiles);
+
+  for (const templateFile of templateFiles) {
+    const { targetPath } = templateFile;
+    const fileHandler = fileHandlers.find(handler =>
+      handler.patterns.some(pattern =>
+        typeof pattern === 'string'
+          ? pattern === targetPath
+          : pattern.test(targetPath),
+      ),
+    );
+    if (fileHandler) {
+      await fileHandler.handler(templateFile);
+    } else {
+      throw new Error(`No template file handler found for ${targetPath}`);
+    }
+  }
+
+  console.log(`DEBUG: done!`);
 };
