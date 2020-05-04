@@ -22,7 +22,7 @@ export default {
   component: Table,
 };
 
-const generateTestData: (number) => Array<{}> = (rows = 20) => {
+const generateTestData: (number: number) => Array<{}> = (rows = 20) => {
   const data: Array<{}> = [];
   while (data.length <= rows) {
     data.push({

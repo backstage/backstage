@@ -22,25 +22,44 @@
  * Happy hacking!
  */
 
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
+import {
+  errorHandler,
+  getRootLogger,
+  notFoundHandler,
+  requestLoggingHandler,
+} from '@backstage/backend-common';
+import { createRouter as inventoryRouter } from '@backstage/plugin-inventory-backend';
+import { createScaffolder } from '@backstage/plugin-scaffolder-backend';
 import compression from 'compression';
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
 import { testRouter } from './test';
-import { router as inventoryRouter } from '@backstage/plugin-inventory-backend';
 
 const DEFAULT_PORT = 7000;
-
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
-const app = express();
+const logger = getRootLogger().child({ type: 'plugin' });
 
-app.use(helmet());
-app.use(cors());
-app.use(compression());
-app.use(express.json());
-app.use('/test', testRouter);
-app.use('/inventory', inventoryRouter);
+async function main() {
+  const inventory = await inventoryRouter({ logger });
+  const scaffolder = createScaffolder();
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
+  const app = express();
+
+  app.use(helmet());
+  app.use(cors());
+  app.use(compression());
+  app.use(express.json());
+  app.use(requestLoggingHandler());
+  app.use('/test', testRouter);
+  app.use('/inventory', inventory);
+  app.use('/scaffolder', scaffolder);
+  app.use(notFoundHandler());
+  app.use(errorHandler());
+
+  app.listen(PORT, () => {
+    getRootLogger().info(`Listening on port ${PORT}`);
+  });
+}
+
+main();

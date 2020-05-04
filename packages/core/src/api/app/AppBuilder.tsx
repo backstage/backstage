@@ -21,6 +21,8 @@ import { App } from './types';
 import BackstagePlugin from 'api/plugin/Plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import { featureFlagsApiRef } from 'api/apis/definitions/featureFlags';
+import ErrorPage from '../../layout/ErrorPage';
+
 import {
   IconComponent,
   SystemIcons,
@@ -115,7 +117,11 @@ export default class AppBuilder {
     let rendered = (
       <Switch>
         {routes}
-        <Route component={() => <span>404 Not Found</span>} />
+        <Route
+          render={(props) => (
+            <ErrorPage {...props} status="404" statusMessage="PAGE NOT FOUND" />
+          )}
+        />
       </Switch>
     );
 

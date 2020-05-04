@@ -19,7 +19,7 @@ import { BackstageTheme } from '@backstage/theme';
 import classNames from 'classnames';
 import React, { FC } from 'react';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>((theme) => ({
   status: {
     width: 12,
     height: 12,
@@ -47,7 +47,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     backgroundColor: 'rgba(245, 155, 35, 0.5)',
   },
   running: {
-    animation: 'blink 0.8s step-start 0s infinite',
+    animation: '$blink 0.8s step-start 0s infinite',
     backgroundColor: theme.palette.status.running,
   },
   '@keyframes blink': {
@@ -57,7 +57,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const StatusOK: FC<{}> = props => {
+export const StatusOK: FC<{}> = (props) => {
   const classes = useStyles(props);
   return (
     <span
@@ -68,7 +68,7 @@ export const StatusOK: FC<{}> = props => {
   );
 };
 
-export const StatusWarning: FC<{}> = props => {
+export const StatusWarning: FC<{}> = (props) => {
   const classes = useStyles(props);
   return (
     <span
@@ -79,7 +79,7 @@ export const StatusWarning: FC<{}> = props => {
   );
 };
 
-export const StatusError: FC<{}> = props => {
+export const StatusError: FC<{}> = (props) => {
   const classes = useStyles(props);
   return (
     <span
@@ -90,13 +90,13 @@ export const StatusError: FC<{}> = props => {
   );
 };
 
-export const StatusNA: FC<{}> = props => (
+export const StatusNA: FC<{}> = (props) => (
   <span aria-label="Status N/A" {...props}>
     N/A
   </span>
 );
 
-export const StatusPending: FC<{}> = props => {
+export const StatusPending: FC<{}> = (props) => {
   const classes = useStyles(props);
   return (
     <span
@@ -107,7 +107,7 @@ export const StatusPending: FC<{}> = props => {
   );
 };
 
-export const StatusRunning: FC<{}> = props => {
+export const StatusRunning: FC<{}> = (props) => {
   const classes = useStyles(props);
   return (
     <span
@@ -118,7 +118,7 @@ export const StatusRunning: FC<{}> = props => {
   );
 };
 
-export const StatusFailed: FC<{}> = props => {
+export const StatusFailed: FC<{}> = (props) => {
   const classes = useStyles(props);
   return (
     <span
