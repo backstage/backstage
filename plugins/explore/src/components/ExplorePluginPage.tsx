@@ -27,7 +27,7 @@ import {
 import ExploreCard, { CardData } from './ExploreCard';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>((theme) => ({
   container: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, 296px)',

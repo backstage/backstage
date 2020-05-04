@@ -33,7 +33,7 @@ const ScaffolderPage: React.FC<{}> = () => {
       <Header title="Create a new component" subtitle="All your stuff" />
       <Content>
         <div style={{ display: 'flex' }}>
-          {STATIC_DATA.map(item => {
+          {STATIC_DATA.map((item) => {
             return (
               <InfoCard
                 title={item.name}

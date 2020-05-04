@@ -24,6 +24,6 @@ export class StaticInventory implements Inventory {
   }
 
   item(id: string): Promise<Component | undefined> {
-    return this.list().then(items => items.find(i => i.id === id));
+    return this.list().then((items) => items.find((i) => i.id === id));
   }
 }

@@ -118,7 +118,7 @@ export default class AppBuilder {
       <Switch>
         {routes}
         <Route
-          render={props => (
+          render={(props) => (
             <ErrorPage {...props} status="404" statusMessage="PAGE NOT FOUND" />
           )}
         />

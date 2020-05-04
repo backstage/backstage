@@ -14,21 +14,5 @@
  * limitations under the License.
  */
 
-import { getRootLogger } from '@backstage/backend-common';
-import { startServer } from './service/server';
-
-startServer({
-  port: process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 3003,
-  enableCors: process.env.PLUGIN_CORS
-    ? Boolean(process.env.PLUGIN_CORS)
-    : false,
-  logger: getRootLogger(),
-}).catch((err) => {
-  getRootLogger().error(err);
-  process.exit(1);
-});
-
-process.on('SIGINT', () => {
-  getRootLogger().info('CTRL+C pressed; exiting.');
-  process.exit(0);
-});
+export { default, TableColumn } from './Table';
+export { default as SubvalueCell } from './SubvalueCell';

@@ -20,13 +20,13 @@ export class AggregatorInventory implements Inventory {
   inventories: Inventory[] = [];
 
   list(): Promise<Array<Component>> {
-    return Promise.all(this.inventories.map(i => i.list())).then(lists =>
+    return Promise.all(this.inventories.map((i) => i.list())).then((lists) =>
       lists.flat(),
     );
   }
 
   item(id: string): Promise<Component | undefined> {
-    return this.list().then(items => items.find(i => i.id === id));
+    return this.list().then((items) => items.find((i) => i.id === id));
   }
 
   enlist(inventory: Inventory) {
