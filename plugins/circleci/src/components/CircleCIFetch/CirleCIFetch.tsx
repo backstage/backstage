@@ -74,18 +74,27 @@ const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
 };
 
 export const CircleCIFetch: FC<{}> = () => {
+  const [authed, setAuthed] = React.useState(false);
   const [builds, setBuilds] = React.useState<BuildSummary[]>([]);
   const api = useApi(circleCIApiRef);
 
   React.useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (!api.api) return;
+    const intervalId = setInterval(async () => {
+      if (!authed) {
+        await api.restorePersistedToken();
+        await api
+          .validateToken()
+          .then(() => {
+            setAuthed(true);
+          })
+          .catch(() => setAuthed(false));
+      }
       api.getBuilds().then(setBuilds);
     }, 1500);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [authed]);
 
-  if (!api.api) return <div>Not authenticated</div>;
+  if (!authed) return <div>Not authenticated</div>;
   const transformedBuilds = transform(builds || []);
   return <CITable builds={transformedBuilds} />;
 };
