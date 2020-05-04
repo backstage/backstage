@@ -47,12 +47,15 @@ const makeReadableStatus = (status: string | undefined) => {
   } as Record<string, string>)[status];
 };
 
-const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
+const transform = (
+  buildsData: BuildSummary[],
+  api: typeof circleCIApiRef.T,
+): CITableBuildInfo[] => {
   return buildsData.map(buildData => {
     const tableBuildInfo: CITableBuildInfo = {
       id: String(buildData.build_num),
       buildName: buildData.subject ? String(buildData.subject) : '',
-      onRetriggerClick: () => null,
+      onRetryClick: () => api.retry(String(buildData.build_num)),
       source: {
         branchName: String(buildData.branch),
         commit: {
@@ -72,7 +75,6 @@ const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
     return tableBuildInfo;
   });
 };
-
 
 export const CircleCIFetch: FC<{}> = () => {
   const [authed, setAuthed] = React.useState(false);
@@ -96,8 +98,14 @@ export const CircleCIFetch: FC<{}> = () => {
   }, [authed]);
 
   if (!authed) return <div>Not authenticated</div>;
-  const transformedBuilds = transform(builds || []);
-  return <>
-
-  {!api.authed ? <div>Not authenticated</div> : <CITable builds={transformedBuilds} />}</>;
+  const transformedBuilds = transform(builds || [], api);
+  return (
+    <>
+      {!api.authed ? (
+        <div>Not authenticated</div>
+      ) : (
+        <CITable builds={transformedBuilds} />
+      )}
+    </>
+  );
 };

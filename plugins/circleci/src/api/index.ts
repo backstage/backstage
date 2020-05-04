@@ -93,6 +93,10 @@ export class CircleCIApi {
     return new CircleCI({ ...this.options, token: this.token });
   }
 
+  async retry(buildId: string) {
+    return this.api.retry(Number(buildId));
+  }
+
   async getBuilds() {
     return this.api.builds();
   }

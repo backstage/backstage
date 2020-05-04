@@ -7,6 +7,15 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Button from '@material-ui/core/Button';
+import {
+  StatusRunning,
+  StatusFailed,
+  StatusOK,
+  StatusPending,
+  StatusNA,
+} from '@backstage/core';
+
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -36,7 +45,25 @@ export type CITableBuildInfo = {
     failed: number;
     testUrl: string; //fixme better name
   };
-  onRetriggerClick: () => void;
+  onRetryClick: () => void;
+};
+
+// :retried, :canceled, :infrastructure_fail, :timedout, :not_run, :running, :failed, :queued, :scheduled, :not_running, :no_tests, :fixed, :success
+const getStatusComponent = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'queued':
+    case 'scheduled':
+      return <StatusPending />;
+    case 'running':
+      return <StatusRunning />;
+    case 'failed':
+      return <StatusFailed />;
+    case 'success':
+      return <StatusOK />;
+    case 'canceled':
+    default:
+      return <StatusNA />;
+  }
 };
 
 export const CITable: FC<{
@@ -54,7 +81,7 @@ export const CITable: FC<{
             <TableCell>Source</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Tests</TableCell>
-            <TableCell>Retrigger</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -68,7 +95,7 @@ export const CITable: FC<{
                   <div>{build.source.commit.hash}</div>
                 </div>
               </TableCell>
-              <TableCell>{build.status}</TableCell>
+              <TableCell>{getStatusComponent(build.status)}</TableCell>
               <TableCell>
                 {build.tests && (
                   <>
@@ -78,7 +105,9 @@ export const CITable: FC<{
                   </>
                 )}
               </TableCell>
-              <TableCell>Retrigger</TableCell>
+              <TableCell>
+                <Button onClick={build.onRetryClick}>Retry</Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
