@@ -48,9 +48,9 @@ class CustomErrorBase extends Error {
 }
 
 /**
- * The request is malformed and cannot be processed.
+ * The given inputs are malformed and cannot be processed.
  */
-export class BadRequestError extends CustomErrorBase {}
+export class InputError extends CustomErrorBase {}
 
 /**
  * The request requires authentication, which was not properly supplied.

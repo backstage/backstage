@@ -79,7 +79,7 @@ function getStatusCode(error: Error): number {
 
   // Handle well-known error types
   switch (error.name) {
-    case errors.BadRequestError.name:
+    case errors.InputError.name:
       return 400;
     case errors.AuthenticationError.name:
       return 401;

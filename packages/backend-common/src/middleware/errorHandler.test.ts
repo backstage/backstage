@@ -49,8 +49,8 @@ describe('errorHandler', () => {
 
   it('handles well-known error classes', async () => {
     const app = express();
-    app.use('/BadRequestError', () => {
-      throw new errors.BadRequestError();
+    app.use('/InputError', () => {
+      throw new errors.InputError();
     });
     app.use('/AuthenticationError', () => {
       throw new errors.AuthenticationError();
@@ -67,7 +67,7 @@ describe('errorHandler', () => {
     app.use(errorHandler());
 
     const r = request(app);
-    expect((await r.get('/BadRequestError')).status).toBe(400);
+    expect((await r.get('/InputError')).status).toBe(400);
     expect((await r.get('/AuthenticationError')).status).toBe(401);
     expect((await r.get('/NotAllowedError')).status).toBe(403);
     expect((await r.get('/NotFoundError')).status).toBe(404);
