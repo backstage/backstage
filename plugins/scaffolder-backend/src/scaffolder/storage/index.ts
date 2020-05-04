@@ -1,4 +1,4 @@
-import { DiskStorage } from './disk';
+import { Logger } from "winston";
 
 /*
  * Copyright 2020 Spotify AB
@@ -33,6 +33,7 @@ export abstract class StorageBase {
 
 export interface StorageConfig {
   store?: StorageBase;
+  logger?: Logger;
 }
 
 class Storage implements StorageBase {
@@ -48,7 +49,7 @@ class Storage implements StorageBase {
 }
 
 export const createStorage = (
-  config: StorageConfig = { store: new DiskStorage() },
+  storageConfig: StorageConfig,
 ): StorageBase => {
-  return new Storage(config);
+  return new Storage(storageConfig);
 };

@@ -14,5 +14,21 @@
  * limitations under the License.
  */
 
-export * from './scaffolder';
-export * from './service/router';
+import { getRootLogger } from '@backstage/backend-common';
+import { startStandaloneServer } from './service/standaloneServer';
+
+const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 3004;
+const enableCors = process.env.PLUGIN_CORS
+  ? Boolean(process.env.PLUGIN_CORS)
+  : false;
+const logger = getRootLogger();
+
+startStandaloneServer({ port, enableCors, logger }).catch((err) => {
+  logger.error(err);
+  process.exit(1);
+});
+
+process.on('SIGINT', () => {
+  logger.info('CTRL+C pressed; exiting.');
+  process.exit(0);
+});

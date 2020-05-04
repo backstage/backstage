@@ -16,8 +16,8 @@
 
 import globby from 'globby';
 import fs from 'fs-extra';
-import { logger } from '../logger';
 import { Template, StorageBase as Base } from '.';
+import { Logger } from 'winston';
 
 interface DiskIndexEntry {
   contents: Template;
@@ -28,8 +28,11 @@ export class DiskStorage implements Base {
   private repository: Template[] = [];
   private localIndex: DiskIndexEntry[] = [];
 
-  constructor(private repoDir = `${__dirname}/../../../sample-templates`) {
-
+  private repoDir: string;
+  private logger?: Logger;
+  constructor({ directory = `${__dirname}/../../../sample-templates`, logger }: { directory?: string, logger?: Logger }) {
+    this.repoDir = directory;
+    this.logger = logger;
   }
 
   public async list(): Promise<Template[]> {
@@ -81,7 +84,7 @@ export class DiskStorage implements Base {
             { location: currentFile.location, contents: parsed },
           ];
         } catch (ex) {
-          logger.error('Failure parsing JSON for template', {
+          this.logger?.error('Failure parsing JSON for template', {
             path: currentFile.location,
           });
         }
