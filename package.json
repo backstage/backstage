@@ -6,6 +6,7 @@
   },
   "scripts": {
     "start": "yarn workspace example-app start",
+    "start:backend": "yarn workspace example-backend start",
     "bundle": "yarn build && yarn workspace example-app bundle",
     "build": "lerna run build",
     "clean": "lerna run clean",
