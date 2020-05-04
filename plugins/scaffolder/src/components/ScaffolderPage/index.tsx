@@ -24,7 +24,7 @@ import {
   Page,
   pageTheme,
 } from '@backstage/core';
-import { Typography } from '@material-ui/core';
+import { Typography, Link } from '@material-ui/core';
 
 // TODO(blam): Connect to backend
 const STATIC_DATA = [
@@ -49,6 +49,13 @@ const ScaffolderPage: React.FC<{}> = () => {
       />
       <Content>
         <ContentHeader title="Available templates" />
+        <Typography variant="body2" paragraph style={{ fontStyle: 'italic' }}>
+          <strong>NOTE!</strong> This feature is WIP. You can follow progress{' '}
+          <Link href="https://github.com/spotify/backstage/milestone/11">
+            here
+          </Link>
+          .
+        </Typography>
         <div style={{ display: 'flex' }}>
           {STATIC_DATA.map((item, ix) => {
             return (
