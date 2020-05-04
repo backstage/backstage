@@ -15,7 +15,16 @@
  */
 
 import React from 'react';
-import { Content, InfoCard, Header, Page, pageTheme } from '@backstage/core';
+import {
+  AlphaLabel,
+  Content,
+  ContentHeader,
+  InfoCard,
+  Header,
+  Page,
+  pageTheme,
+} from '@backstage/core';
+import { Typography } from '@material-ui/core';
 
 // TODO(blam): Connect to backend
 const STATIC_DATA = [
@@ -30,16 +39,25 @@ const STATIC_DATA = [
 const ScaffolderPage: React.FC<{}> = () => {
   return (
     <Page theme={pageTheme.home}>
-      <Header title="Create a new component" subtitle="All your stuff" />
+      <Header
+        title={
+          <>
+            Create a new component <AlphaLabel isShorthand />{' '}
+          </>
+        }
+        subtitle="Create new software components using standard templates"
+      />
       <Content>
+        <ContentHeader title="Available templates" />
         <div style={{ display: 'flex' }}>
-          {STATIC_DATA.map((item) => {
+          {STATIC_DATA.map((item, ix) => {
             return (
               <InfoCard
                 title={item.name}
                 deepLink={{ title: 'Create', link: '#' }}
+                key={ix}
               >
-                <p>{item.description}</p>
+                <Typography paragraph>{item.description}</Typography>
               </InfoCard>
             );
           })}

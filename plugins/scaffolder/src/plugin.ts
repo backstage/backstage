@@ -20,6 +20,6 @@ import ScaffolderPage from './components/ScaffolderPage';
 export const plugin = createPlugin({
   id: 'scaffolder',
   register({ router }) {
-    router.registerRoute('/scaffolder', ScaffolderPage);
+    router.registerRoute('/create', ScaffolderPage);
   },
 });
