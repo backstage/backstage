@@ -15,7 +15,7 @@
  */
 
 import React, { FC } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Button } from '@material-ui/core';
 import {
   InfoCard,
   Header,
@@ -27,7 +27,6 @@ import {
   SupportButton,
 } from '@backstage/core';
 import { CircleCIFetch } from '../CircleCIFetch';
-import { LoginCard } from '../LoginCard';
 
 export const CircleCIPage: FC<{}> = () => {
   return (
@@ -37,15 +36,13 @@ export const CircleCIPage: FC<{}> = () => {
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       <Content>
-        <ContentHeader title="Plugin title">
+        <ContentHeader title="Circle CI">
+          <Button href="/circleci/settings">Settings</Button>
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <LoginCard />
-          </Grid>
-          <Grid item>
-            <InfoCard title="CI/CD">
+            <InfoCard title="Pipelines">
               <CircleCIFetch />
             </InfoCard>
           </Grid>

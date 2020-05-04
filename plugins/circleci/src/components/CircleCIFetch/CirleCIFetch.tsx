@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 
 // import Alert from '@material-ui/lab/Alert';
 // import { Progress } from '@backstage/core';
@@ -24,7 +24,6 @@ import { BuildSummary } from 'circleci-api';
 import { CITable, CITableBuildInfo } from '../CITable';
 import { circleCIApiRef } from 'api';
 import { useApi } from '@backstage/core';
-import { ProjectInput } from 'components/ProjectInput/ProjectInput';
 
 // "lifecycle" : "finished", // :queued, :scheduled, :not_run, :not_running, :running or :finished
 // "outcome" : "failed", // :canceled, :infrastructure_fail, :timedout, :failed, :no_tests or :success
@@ -76,22 +75,29 @@ const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
 
 
 export const CircleCIFetch: FC<{}> = () => {
-  const [vcsOptions, setVcsOptions] = useState({owner: '', repo: ''});
+  const [authed, setAuthed] = React.useState(false);
   const [builds, setBuilds] = React.useState<BuildSummary[]>([]);
   const api = useApi(circleCIApiRef);
 
   React.useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (!api.api) return;
-      api.getBuilds(vcsOptions).then(setBuilds);
+    const intervalId = setInterval(async () => {
+      if (!authed) {
+        await api.restorePersistedSettings();
+        await api
+          .validateToken()
+          .then(() => {
+            setAuthed(true);
+          })
+          .catch(() => setAuthed(false));
+      }
+      api.getBuilds().then(setBuilds);
     }, 1500);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [authed]);
 
+  if (!authed) return <div>Not authenticated</div>;
   const transformedBuilds = transform(builds || []);
   return <>
-  <ProjectInput setGitInfo={(info) => {
-    setVcsOptions(info);
-    api.getBuilds(info).then(setBuilds)}}/>
-  {!api.api ? <div>Not authenticated</div> : <CITable builds={transformedBuilds} />}</>;
+
+  {!api.authed ? <div>Not authenticated</div> : <CITable builds={transformedBuilds} />}</>;
 };

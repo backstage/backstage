@@ -14,54 +14,91 @@
  * limitations under the License.
  */
 
-import { CircleCI, GitType, CircleCIOptions, GitInfo, getBuildSummaries } from 'circleci-api';
+import { CircleCI, GitType, CircleCIOptions } from 'circleci-api';
 import { ApiRef } from '@backstage/core';
-//import { default } from '../../../../packages/core/src/components/Status/Status.stories';
 
-const defaultVcsOptions: GitInfo = {
-  type: GitType.GITHUB, // default: github
-  owner: 'CircleCITest3',
-  repo: 'circleci-test',
-}
-
-const options: Partial<CircleCIOptions> = {
-  // Required for all requests
-  // token: CIRCLECI_TOKEN, // Set your CircleCi API token
-
-  // Optional
-  // Anything set here can be overriden when making the request
-
-  // Git information is required for project/build/etc endpoints
-  vcs: defaultVcsOptions
+const defaultOptions: Partial<CircleCIOptions> = {
+  vcs: {
+    type: GitType.GITHUB,
+    owner: 'CircleCITest3',
+    repo: 'circleci-test',
+  },
 };
-
-export class CircleCIApi {
-  api: null | CircleCI = null;
-  token: string = '';
-  constuctor() {}
-  async authenticate(token: string) {
-    try {
-      if (token === '') return Promise.reject();
-      this.api = new CircleCI({ ...options, token});
-      // await this.api.me();
-      this.token = token;
-      return Promise.resolve();
-    } catch (e) {
-      this.api = null;
-      return this.cantAuth();
-    }
-  }
-  async cantAuth() {
-    return Promise.reject("Can't auth");
-  }
-  async getBuilds({repo, owner}: {repo: string, owner: string}) {
-    if (!this.api) return this.cantAuth();
-    if (owner === '' || repo === '') return Promise.reject();
-    return getBuildSummaries(this.token, {vcs: {...defaultVcsOptions, owner, repo}});
-  }
-}
-
 export const circleCIApiRef = new ApiRef<CircleCIApi>({
   id: 'plugin.circleci.service',
   description: 'Used by the CircleCI plugin to make requests',
 });
+
+export class CircleCIApi {
+  token: string = '';
+  private options: Partial<CircleCIOptions>;
+
+  authed: boolean = false;
+  constructor(options?: Partial<CircleCIOptions>) {
+    this.options = Object.assign(Object.create(null), defaultOptions, options);
+  }
+
+  setToken(token: string) {
+    this.token = token;
+    this.persistToken();
+  }
+
+  setVCSOptions(vcs: CircleCIOptions['vcs']) {
+    this.options.vcs = vcs;
+    this.persistVCSOptions();
+  }
+
+  async persistVCSOptions() {
+    const key = circleCIApiRef.id;
+    sessionStorage.setItem(key + '_options', JSON.stringify(this.options.vcs));
+  }
+
+  async restorePersistedSettings() {
+    if (this.authed) return Promise.resolve();
+    const key = circleCIApiRef.id;
+    const persistedToken = sessionStorage.getItem(key);
+    let persistedVCSOptions: {} | undefined;
+    try {
+       persistedVCSOptions = JSON.parse(sessionStorage.getItem(key + '_options') as string);
+    } catch(e) {
+      
+    }
+    if (persistedToken && persistedVCSOptions) {
+      this.token = persistedToken;
+      this.options.vcs = persistedVCSOptions;
+      return Promise.resolve();
+    }
+    return Promise.reject();
+  }
+
+  
+
+  async persistToken() {
+    if (this.authed) return;
+    const key = circleCIApiRef.id;
+    sessionStorage.setItem(key, this.token);
+  }
+
+  async validateToken() {
+    if (!this.token || this.token === '') {
+      return Promise.reject('Wrong token');
+    }
+
+    // TODO: switch towards using personal token
+    await this.api.builds();
+    this.authed = true;
+    return Promise.resolve();
+  }
+
+  private get api() {
+    return new CircleCI({ ...this.options, token: this.token });
+  }
+
+  async getBuilds() {
+    return this.api.builds();
+  }
+
+  async getUser() {
+    return this.api.me();
+  }
+}
