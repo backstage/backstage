@@ -15,7 +15,7 @@
  */
 import { DiskStorage } from './disk';
 import * as path from 'path';
-import { Logger } from 'winston';
+
 describe('Disk Storage', () => {
   it('should load a simple template from a simple directory', async () => {
     const testTemplateDir = path.resolve(
