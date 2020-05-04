@@ -17,6 +17,7 @@
 import express from 'express';
 import createError from 'http-errors';
 import request from 'supertest';
+import * as errors from '../errors';
 import { errorHandler } from './errorHandler';
 
 describe('errorHandler', () => {
@@ -33,7 +34,7 @@ describe('errorHandler', () => {
     expect(response.text).toBe('some message');
   });
 
-  it('takes code from StatusCodeError', async () => {
+  it('takes code from http-errors library errors', async () => {
     const app = express();
     app.use('/breaks', () => {
       throw createError(432, 'Some Message');
@@ -44,5 +45,32 @@ describe('errorHandler', () => {
 
     expect(response.status).toBe(432);
     expect(response.text).toContain('Some Message');
+  });
+
+  it('handles well-known error classes', async () => {
+    const app = express();
+    app.use('/InputError', () => {
+      throw new errors.InputError();
+    });
+    app.use('/AuthenticationError', () => {
+      throw new errors.AuthenticationError();
+    });
+    app.use('/NotAllowedError', () => {
+      throw new errors.NotAllowedError();
+    });
+    app.use('/NotFoundError', () => {
+      throw new errors.NotFoundError();
+    });
+    app.use('/ConflictError', () => {
+      throw new errors.ConflictError();
+    });
+    app.use(errorHandler());
+
+    const r = request(app);
+    expect((await r.get('/InputError')).status).toBe(400);
+    expect((await r.get('/AuthenticationError')).status).toBe(401);
+    expect((await r.get('/NotAllowedError')).status).toBe(403);
+    expect((await r.get('/NotFoundError')).status).toBe(404);
+    expect((await r.get('/ConflictError')).status).toBe(409);
   });
 });

@@ -16,6 +16,7 @@
 
 import express from 'express';
 import { Logger } from 'winston';
+import Router from 'express-promise-router';
 import { Inventory } from '../inventory';
 
 export interface RouterOptions {
@@ -29,7 +30,7 @@ export async function createRouter(
   const inventory = options.inventory;
   const logger = options.logger.child({ plugin: 'inventory' });
 
-  const router = express.Router();
+  const router = Router();
   router
     .get('/', async (req, res) => {
       const components = await inventory.list();
@@ -38,11 +39,7 @@ export async function createRouter(
     .get('/:id', async (req, res) => {
       const { id } = req.params;
       const component = await inventory.item(id);
-      if (component) {
-        res.status(200).send(component);
-      } else {
-        res.status(404).send();
-      }
+      res.status(200).send(component);
     });
 
   const app = express();

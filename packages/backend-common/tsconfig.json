@@ -7,7 +7,7 @@
     "sourceMap": true,
     "declaration": true,
     "strict": true,
-    "target": "es5",
+    "target": "ES2019",
     "module": "commonjs",
     "esModuleInterop": true,
     "types": ["node", "jest"]
