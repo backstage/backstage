@@ -17,6 +17,15 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import * as errors from '../errors';
 
+export type ErrorHandlerOptions = {
+  /**
+   * Whether error response bodies should show error stack traces or not.
+   *
+   * If not specified, by default shows stack traces only in development mode.
+   */
+  showStackTraces?: boolean;
+};
+
 /**
  * Express middleware to handle errors during request processing.
  *
@@ -30,7 +39,12 @@ import * as errors from '../errors';
  *
  * @returns An Express error request handler
  */
-export function errorHandler(): ErrorRequestHandler {
+export function errorHandler(
+  options: ErrorHandlerOptions = {},
+): ErrorRequestHandler {
+  const showStackTraces =
+    options.showStackTraces ?? process.env.NODE_ENV === 'development';
+
   /* eslint-disable @typescript-eslint/no-unused-vars */
   return (
     error: Error,
@@ -43,7 +57,7 @@ export function errorHandler(): ErrorRequestHandler {
     }
 
     const status = getStatusCode(error);
-    const message = error.message;
+    const message = showStackTraces ? error.stack : error.message;
     response.status(status).send(message);
   };
 }
