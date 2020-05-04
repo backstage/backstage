@@ -31,8 +31,8 @@ export const circleCIApiRef = new ApiRef<CircleCIApi>({
 });
 
 export class CircleCIApi {
-  token: string = '';
-  private options: Partial<CircleCIOptions>;
+  private token: string = '';
+  options: Partial<CircleCIOptions>;
 
   authed: boolean = false;
   constructor(options?: Partial<CircleCIOptions>) {

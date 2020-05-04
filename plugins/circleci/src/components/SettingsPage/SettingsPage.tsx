@@ -41,8 +41,8 @@ export const SettingsPage = () => {
           </Button>
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
-        <Grid container spacing={3} direction="column">
-          <Grid item>
+        <Grid container spacing={3}>
+          <Grid item xs={6}>
             <InfoCard title="Authentication">
               <List>
                 {authed ? (
@@ -79,7 +79,14 @@ export const SettingsPage = () => {
                 )}
               </List>
             </InfoCard>
-            <ProjectInput setGitInfo={info => api.setVCSOptions(info)} />
+          </Grid>
+          <Grid item xs={6}>
+            <InfoCard title="Project configuration">
+              <ProjectInput
+                apiGitInfo={api.options.vcs}
+                setGitInfo={info => api.setVCSOptions(info)}
+              />
+            </InfoCard>
           </Grid>
         </Grid>
       </Content>

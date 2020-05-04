@@ -11,9 +11,6 @@ import {
   TableRow,
   Link,
   CircularProgress,
-  List,
-  ListItem,
-  ListItemText,
 } from '@material-ui/core';
 import { Replay as RetryIcon } from '@material-ui/icons';
 import {
@@ -78,7 +75,7 @@ export const CITable: FC<{
   builds: CITableBuildInfo[];
 }> = ({ builds }) => {
   const classes = useStyles();
-
+  const isTestDataAvailable = builds.some(build => build.tests);
   return (
     <TableContainer>
       <Table className={classes.table} size="small" aria-label="a dense table">
@@ -88,8 +85,8 @@ export const CITable: FC<{
             <TableCell>Build</TableCell>
             <TableCell>Source</TableCell>
             <TableCell align="center">Status</TableCell>
-            <TableCell>Tests</TableCell>
-            <TableCell>Actions</TableCell>
+            {isTestDataAvailable && <TableCell>Tests</TableCell>}
+            <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -102,28 +99,25 @@ export const CITable: FC<{
                 </Link>
               </TableCell>
               <TableCell>
-                <List dense>
-                  <ListItem>
-                    <ListItemText primary={build.source.branchName} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemText primary={build.source.commit.hash} />
-                  </ListItem>
-                </List>
+                {build.source.branchName}
+                <br />
+                {build.source.commit.hash}
               </TableCell>
               <TableCell align="center">
                 {getStatusComponent(build.status)}
               </TableCell>
-              <TableCell>
-                {build.tests && (
-                  <>
-                    {build.tests.passed}/{build.tests.total} (
-                    {build.tests.failed ? build.tests.failed + ', ' : ''}
-                    {build.tests.skipped ? build.tests.skipped : ''})
-                  </>
-                )}
-              </TableCell>
-              <TableCell>
+              {build.tests && (
+                <TableCell>
+                  {
+                    <>
+                      {build.tests.passed}/{build.tests.total} (
+                      {build.tests.failed ? build.tests.failed + ', ' : ''}
+                      {build.tests.skipped ? build.tests.skipped : ''})
+                    </>
+                  }
+                </TableCell>
+              )}
+              <TableCell align="center">
                 <Button onClick={build.onRetryClick}>
                   <RetryIcon />
                 </Button>

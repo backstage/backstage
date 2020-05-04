@@ -1,14 +1,20 @@
-import { useState, FC } from "react";
-import { List, ListItem, TextField, Button } from "@material-ui/core";
-import React from "react";
+import { useState, FC, useEffect } from 'react';
+import { List, ListItem, TextField, Button } from '@material-ui/core';
+import React from 'react';
 
-export const ProjectInput:FC<{
-    setGitInfo: (info: {owner: string, repo: string}) => void
-  }> = ({setGitInfo}) => {
-    
+export const ProjectInput: FC<{
+  setGitInfo: (info: { owner: string; repo: string }) => void;
+  apiGitInfo?: { owner?: string; repo?: string };
+}> = ({ setGitInfo, apiGitInfo = {} }) => {
   const [owner, setOwner] = useState('');
   const [repo, setRepo] = useState('');
-  
+
+  useEffect(() => {
+    if (apiGitInfo.owner !== owner && apiGitInfo.owner)
+      setOwner(apiGitInfo.owner);
+    if (apiGitInfo.repo !== repo && apiGitInfo.repo) setRepo(apiGitInfo.repo);
+  }, [apiGitInfo]);
+
   return (
     <List>
       <ListItem>
@@ -34,7 +40,7 @@ export const ProjectInput:FC<{
           color="primary"
           onClick={() => setGitInfo({ owner, repo })}
         >
-          Load
+          Save
         </Button>
       </ListItem>
     </List>

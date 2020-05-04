@@ -68,13 +68,13 @@ const transform = (
       },
       status: makeReadableStatus(buildData.status),
       buildUrl: buildData.build_url,
-      tests: {
-        failed: 0,
-        passed: 10,
-        skipped: 3,
-        testUrl: 'nourlnow',
-        total: 13,
-      },
+      // tests: {
+      //   failed: 0,
+      //   passed: 10,
+      //   skipped: 3,
+      //   testUrl: 'nourlnow',
+      //   total: 13,
+      // },
     };
     return tableBuildInfo;
   });
