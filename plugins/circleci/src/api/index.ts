@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { CircleCI, GitType, CircleCIOptions } from 'circleci-api';
+import { CircleCI, GitType, CircleCIOptions, GitInfo } from 'circleci-api';
 import { ApiRef } from '@backstage/core';
+import { default } from '../../../../packages/core/src/components/Status/Status.stories';
+
+const defaultVcsOptions: GitInfo = {
+  type: GitType.GITHUB, // default: github
+  owner: 'CircleCITest3',
+  repo: 'circleci-test',
+}
 
 const options: Partial<CircleCIOptions> = {
   // Required for all requests
@@ -25,20 +32,20 @@ const options: Partial<CircleCIOptions> = {
   // Anything set here can be overriden when making the request
 
   // Git information is required for project/build/etc endpoints
-  vcs: {
-    type: GitType.GITHUB, // default: github
-    owner: 'CircleCITest3',
-    repo: 'circleci-test',
-  },
+  vcs: defaultVcsOptions
 };
 
 export class CircleCIApi {
   api: null | CircleCI = null;
   constuctor() {}
-  async authenticate(token: string) {
+  async authenticate({token, owner, repo}: {token: string, owner: string, repo: string}) {
     try {
-      if (token === '') return Promise.reject();
-      this.api = new CircleCI({ ...options, token });
+      if (token === '' || owner === '' || repo === '') return Promise.reject();
+      this.api = new CircleCI({ ...options, token, vcs: {
+        type: GitType.GITHUB, // default: github
+        owner,
+        repo,
+      }});
       // await this.api.me();
       return Promise.resolve();
     } catch (e) {
