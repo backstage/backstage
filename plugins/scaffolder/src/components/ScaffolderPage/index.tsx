@@ -24,6 +24,7 @@ import {
   Page,
   pageTheme,
 } from '@backstage/core';
+import { Typography } from '@material-ui/core';
 
 // TODO(blam): Connect to backend
 const STATIC_DATA = [
@@ -56,7 +57,7 @@ const ScaffolderPage: React.FC<{}> = () => {
                 deepLink={{ title: 'Create', link: '#' }}
                 key={ix}
               >
-                <p>{item.description}</p>
+                <Typography paragraph>{item.description}</Typography>
               </InfoCard>
             );
           })}
