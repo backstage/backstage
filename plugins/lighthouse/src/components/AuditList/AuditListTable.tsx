@@ -23,11 +23,14 @@ import {
   TableRow,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { Website } from '../../api';
 import {
-  Website,
-} from '../../api';
-import { CATEGORIES, CATEGORY_LABELS, SparklinesDataByCategory, buildSparklinesDataForItem } from '../../utils';
-import Audit from '../Audit'
+  CATEGORIES,
+  CATEGORY_LABELS,
+  SparklinesDataByCategory,
+  buildSparklinesDataForItem,
+} from '../../utils';
+import Audit from '../Audit';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -51,7 +54,7 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
     () =>
       items.reduce(
         (res, item) => ({
-           ...res,
+          ...res,
           [item.url]: buildSparklinesDataForItem(item),
         }),
         {},

@@ -14,10 +14,5 @@
  * limitations under the License.
  */
 
-import { Router } from 'express';
-
-export const testRouter = Router();
-
-testRouter.get('/', async (_, res) => {
-  res.status(200).send('hello');
-});
+export { default, TableColumn } from './Table';
+export { default as SubvalueCell } from './SubvalueCell';

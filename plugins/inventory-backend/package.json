@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "start": "tsc-watch --onFirstSuccess \"nodemon dist/run.js\"",
+    "start": "tsc-watch --onFirstSuccess \"cross-env NODE_ENV=development nodemon dist/run.js\"",
     "build": "tsc",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
@@ -21,6 +21,7 @@
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-promise-router": "^3.0.3",
     "helmet": "^3.22.0",
     "morgan": "^1.10.0",
     "winston": "^3.2.1"

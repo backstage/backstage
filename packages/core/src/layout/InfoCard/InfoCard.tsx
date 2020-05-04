@@ -27,18 +27,18 @@ import {
 import ErrorBoundary from 'layout/ErrorBoundary/ErrorBoundary';
 import BottomLink, { Props as BottomLinkProps } from '../BottomLink';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   header: {
     padding: theme.spacing(2, 2, 2, 2.5),
   },
 }));
 
-const BoldHeader = withStyles(theme => ({
+const BoldHeader = withStyles((theme) => ({
   title: { fontWeight: 700 },
   subheader: { paddingTop: theme.spacing(1) },
 }))(CardHeader);
 
-const CardActionsTopRight = withStyles(theme => ({
+const CardActionsTopRight = withStyles((theme) => ({
   root: {
     display: 'inline-block',
     padding: theme.spacing(8, 8, 0, 0),
@@ -154,7 +154,7 @@ const InfoCard: FC<Props> = ({
 
   if (variant) {
     const variants = variant.split(/[\s]+/g);
-    variants.forEach(name => {
+    variants.forEach((name) => {
       calculatedStyle = {
         ...calculatedStyle,
         ...VARIANT_STYLES.card[name as keyof typeof VARIANT_STYLES['card']],

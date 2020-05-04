@@ -15,20 +15,20 @@
  */
 
 import { getRootLogger } from '@backstage/backend-common';
-import { startServer } from './service/server';
+import { startStandaloneServer } from './service/standaloneServer';
 
-startServer({
-  port: process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 3003,
-  enableCors: process.env.PLUGIN_CORS
-    ? Boolean(process.env.PLUGIN_CORS)
-    : false,
-  logger: getRootLogger(),
-}).catch(err => {
-  getRootLogger().error(err);
+const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 3003;
+const enableCors = process.env.PLUGIN_CORS
+  ? Boolean(process.env.PLUGIN_CORS)
+  : false;
+const logger = getRootLogger();
+
+startStandaloneServer({ port, enableCors, logger }).catch((err) => {
+  logger.error(err);
   process.exit(1);
 });
 
 process.on('SIGINT', () => {
-  getRootLogger().info('CTRL+C pressed; exiting.');
+  logger.info('CTRL+C pressed; exiting.');
   process.exit(0);
 });

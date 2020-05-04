@@ -28,7 +28,7 @@ import {
 } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>((theme) => ({
   card: {
     display: 'flex',
     flexDirection: 'column',

@@ -16,7 +16,8 @@
 
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { createApplication } from './application';
+import { AggregatorInventory, StaticInventory } from '../inventory';
+import { createStandaloneApplication } from './standaloneApplication';
 
 export interface ServerOptions {
   port: number;
@@ -24,12 +25,25 @@ export interface ServerOptions {
   logger: Logger;
 }
 
-export async function startServer(options: ServerOptions): Promise<Server> {
+export async function startStandaloneServer(
+  options: ServerOptions,
+): Promise<Server> {
   const logger = options.logger.child({ service: 'inventory-backend' });
 
+  const inventory = new AggregatorInventory();
+  inventory.enlist(
+    new StaticInventory([
+      { id: 'component1' },
+      { id: 'component2' },
+      { id: 'component3' },
+      { id: 'component4' },
+    ]),
+  );
+
   logger.debug('Creating application...');
-  const app = await createApplication({
+  const app = await createStandaloneApplication({
     enableCors: options.enableCors,
+    inventory,
     logger,
   });
 

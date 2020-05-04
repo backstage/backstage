@@ -84,7 +84,14 @@ const CreateAudit: FC<{}> = () => {
     } finally {
       setSubmitting(false);
     }
-  }, [url, emulatedFormFactor, lighthouseApi, setSubmitting, errorApi, history]);
+  }, [
+    url,
+    emulatedFormFactor,
+    lighthouseApi,
+    setSubmitting,
+    errorApi,
+    history,
+  ]);
 
   return (
     <Page theme={pageTheme.tool}>

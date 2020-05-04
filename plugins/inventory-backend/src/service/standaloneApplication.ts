@@ -24,26 +24,29 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import { Logger } from 'winston';
+import { Inventory } from '../inventory';
 import { createRouter } from './router';
 
 export interface ApplicationOptions {
   enableCors: boolean;
+  inventory: Inventory;
   logger: Logger;
 }
 
-export async function createApplication(
+export async function createStandaloneApplication(
   options: ApplicationOptions,
 ): Promise<express.Application> {
+  const { enableCors, inventory, logger } = options;
   const app = express();
 
   app.use(helmet());
-  if (options.enableCors) {
+  if (enableCors) {
     app.use(cors());
   }
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger: options.logger }));
+  app.use('/', await createRouter({ inventory, logger }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

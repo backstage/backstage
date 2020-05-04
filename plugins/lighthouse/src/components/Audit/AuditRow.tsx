@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import {
-  Link,
-  TableCell,
-  TableRow,
-} from '@material-ui/core';
+import { Link, TableCell, TableRow } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { TrendLine } from '@backstage/core';
+import { Website } from '../../api';
 import {
-  Website,
-} from '../../api';
-import { formatTime, CATEGORIES, CATEGORY_LABELS, SparklinesDataByCategory } from '../../utils';
+  formatTime,
+  CATEGORIES,
+  CATEGORY_LABELS,
+  SparklinesDataByCategory,
+} from '../../utils';
 import AuditStatusIcon from '../AuditStatusIcon';
 
 const useStyles = makeStyles(theme => ({
@@ -76,9 +75,7 @@ export const AuditRow: FC<{
           {website.lastAudit.status.toLowerCase()}
         </span>
       </TableCell>
-      <TableCell>
-        {formatTime(website.lastAudit.timeCreated)}
-      </TableCell>
+      <TableCell>{formatTime(website.lastAudit.timeCreated)}</TableCell>
     </TableRow>
   );
 };

@@ -15,12 +15,21 @@
  */
 
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
+import * as errors from '../errors';
+
+export type ErrorHandlerOptions = {
+  /**
+   * Whether error response bodies should show error stack traces or not.
+   *
+   * If not specified, by default shows stack traces only in development mode.
+   */
+  showStackTraces?: boolean;
+};
 
 /**
  * Express middleware to handle errors during request processing.
  *
- * This is commonly the second to last middleware in the chain (before the
- * notFoundHandler).
+ * This is commonly the very last middleware in the chain.
  *
  * Its primary purpose is not to do translation of business logic exceptions,
  * but rather to be a gobal catch-all for uncaught "fatal" errors that are
@@ -30,23 +39,32 @@ import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
  *
  * @returns An Express error request handler
  */
-export function errorHandler(): ErrorRequestHandler {
+export function errorHandler(
+  options: ErrorHandlerOptions = {},
+): ErrorRequestHandler {
+  const showStackTraces =
+    options.showStackTraces ?? process.env.NODE_ENV === 'development';
+
   /* eslint-disable @typescript-eslint/no-unused-vars */
   return (
     error: Error,
     _request: Request,
     response: Response,
-    _next: NextFunction,
+    next: NextFunction,
   ) => {
+    if (response.headersSent) {
+      next(error);
+    }
+
     const status = getStatusCode(error);
-    const message = error.message;
+    const message = showStackTraces ? error.stack : error.message;
     response.status(status).send(message);
   };
 }
 
 function getStatusCode(error: Error): number {
+  // Look for common http library status codes
   const knownStatusCodeFields = ['statusCode', 'status'];
-
   for (const field of knownStatusCodeFields) {
     const statusCode = (error as any)[field];
     if (
@@ -59,5 +77,22 @@ function getStatusCode(error: Error): number {
     }
   }
 
+  // Handle well-known error types
+  switch (error.name) {
+    case errors.InputError.name:
+      return 400;
+    case errors.AuthenticationError.name:
+      return 401;
+    case errors.NotAllowedError.name:
+      return 403;
+    case errors.NotFoundError.name:
+      return 404;
+    case errors.ConflictError.name:
+      return 409;
+    default:
+      break;
+  }
+
+  // Fall back to internal server error
   return 500;
 }
