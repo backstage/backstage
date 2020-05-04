@@ -28,51 +28,39 @@
 class CustomErrorBase extends Error {
   readonly cause?: Error;
 
-  constructor(constructor: Function, message?: string, cause?: Error) {
-    super(message);
-    Object.setPrototypeOf(this, constructor.prototype);
-    Error.captureStackTrace(this, constructor);
-    this.name = this.constructor.name;
-    this.cause = cause;
-  }
-
-  toString() {
-    let result = super.toString();
-
-    if (this.cause) {
-      result += `; caused by ${this.cause.toString()}`;
+  constructor(message?: string, cause?: Error) {
+    let fullMessage = message;
+    if (cause) {
+      if (fullMessage) {
+        fullMessage += `; caused by ${cause}`;
+      } else {
+        fullMessage = `caused by ${cause}`;
+      }
     }
 
-    return result;
+    super(fullMessage);
+
+    Error.captureStackTrace(this, this.constructor);
+
+    this.name = this.constructor.name;
+    this.cause = cause;
   }
 }
 
 /**
  * The request is malformed and cannot be processed.
  */
-export class BadRequestError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error) {
-    super(BadRequestError, message, cause);
-  }
-}
+export class BadRequestError extends CustomErrorBase {}
 
 /**
  * The request requires authentication, which was not properly supplied.
  */
-export class UnauthenticatedError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error) {
-    super(UnauthenticatedError, message, cause);
-  }
-}
+export class AuthenticationError extends CustomErrorBase {}
 
 /**
- * The authenticated caller is not permitted to perform this request.
+ * The authenticated caller is not allowed to perform this request.
  */
-export class ForbiddenError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error) {
-    super(ForbiddenError, message, cause);
-  }
-}
+export class NotAllowedError extends CustomErrorBase {}
 
 /**
  * The requested resource could not be found.
@@ -80,18 +68,10 @@ export class ForbiddenError extends CustomErrorBase {
  * Note that this error usually is used to indicate that an entity with a given
  * ID does not exist, rather than signalling that an entire route is missing.
  */
-export class NotFoundError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error) {
-    super(NotFoundError, message, cause);
-  }
-}
+export class NotFoundError extends CustomErrorBase {}
 
 /**
  * The request could not complete due to a conflict in the current state of the
  * resource.
  */
-export class ConflictError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error) {
-    super(ConflictError, message, cause);
-  }
-}
+export class ConflictError extends CustomErrorBase {}

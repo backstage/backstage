@@ -52,11 +52,11 @@ describe('errorHandler', () => {
     app.use('/BadRequestError', () => {
       throw new errors.BadRequestError();
     });
-    app.use('/UnauthenticatedError', () => {
-      throw new errors.UnauthenticatedError();
+    app.use('/AuthenticationError', () => {
+      throw new errors.AuthenticationError();
     });
-    app.use('/ForbiddenError', () => {
-      throw new errors.ForbiddenError();
+    app.use('/NotAllowedError', () => {
+      throw new errors.NotAllowedError();
     });
     app.use('/NotFoundError', () => {
       throw new errors.NotFoundError();
@@ -68,8 +68,8 @@ describe('errorHandler', () => {
 
     const r = request(app);
     expect((await r.get('/BadRequestError')).status).toBe(400);
-    expect((await r.get('/UnauthenticatedError')).status).toBe(401);
-    expect((await r.get('/ForbiddenError')).status).toBe(403);
+    expect((await r.get('/AuthenticationError')).status).toBe(401);
+    expect((await r.get('/NotAllowedError')).status).toBe(403);
     expect((await r.get('/NotFoundError')).status).toBe(404);
     expect((await r.get('/ConflictError')).status).toBe(409);
   });

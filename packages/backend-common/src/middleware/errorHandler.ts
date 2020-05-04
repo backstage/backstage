@@ -81,9 +81,9 @@ function getStatusCode(error: Error): number {
   switch (error.name) {
     case errors.BadRequestError.name:
       return 400;
-    case errors.UnauthenticatedError.name:
+    case errors.AuthenticationError.name:
       return 401;
-    case errors.ForbiddenError.name:
+    case errors.NotAllowedError.name:
       return 403;
     case errors.NotFoundError.name:
       return 404;
