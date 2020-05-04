@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 
 // import Alert from '@material-ui/lab/Alert';
 // import { Progress } from '@backstage/core';
@@ -24,6 +24,7 @@ import { BuildSummary } from 'circleci-api';
 import { CITable, CITableBuildInfo } from '../CITable';
 import { circleCIApiRef } from 'api';
 import { useApi } from '@backstage/core';
+import { ProjectInput } from 'components/ProjectInput/ProjectInput';
 
 // "lifecycle" : "finished", // :queued, :scheduled, :not_run, :not_running, :running or :finished
 // "outcome" : "failed", // :canceled, :infrastructure_fail, :timedout, :failed, :no_tests or :success
@@ -73,19 +74,24 @@ const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
   });
 };
 
+
 export const CircleCIFetch: FC<{}> = () => {
+  const [vcsOptions, setVcsOptions] = useState({owner: '', repo: ''});
   const [builds, setBuilds] = React.useState<BuildSummary[]>([]);
   const api = useApi(circleCIApiRef);
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
       if (!api.api) return;
-      api.getBuilds().then(setBuilds);
+      api.getBuilds(vcsOptions).then(setBuilds);
     }, 1500);
     return () => clearInterval(intervalId);
   }, []);
 
-  if (!api.api) return <div>Not authenticated</div>;
   const transformedBuilds = transform(builds || []);
-  return <CITable builds={transformedBuilds} />;
+  return <>
+  <ProjectInput setGitInfo={(info) => {
+    setVcsOptions(info);
+    api.getBuilds(info).then(setBuilds)}}/>
+  {!api.api ? <div>Not authenticated</div> : <CITable builds={transformedBuilds} />}</>;
 };

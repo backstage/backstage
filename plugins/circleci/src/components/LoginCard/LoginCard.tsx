@@ -33,14 +33,12 @@ const useSessionStorage = (key: string): [string, (value: string) => void] => {
 };
 export const LoginCard = () => {
   const [token, setToken] = useSessionStorage(circleCIApiRef.id + '_token');
-  const [owner, setOwner] = useSessionStorage(circleCIApiRef.id + '_owner');
-  const [repo, setRepo] = useSessionStorage(circleCIApiRef.id + '_repo');
 
   const api = useApi(circleCIApiRef);
 
   React.useEffect(() => {
     if (token && token !== '') {
-      api.authenticate({token, owner, repo});
+      api.authenticate(token);
     }
   }, []);
   return (
@@ -59,27 +57,11 @@ export const LoginCard = () => {
           />
         </ListItem>
         <ListItem>
-          <TextField
-            name="circleci-owner"
-            label="Owner"
-            value={owner}
-            onChange={e => setOwner(e.target.value)}
-          />
-        </ListItem>
-        <ListItem>
-          <TextField
-            name="circleci-repo"
-            label="Repo"
-            value={repo}
-            onChange={e => setRepo(e.target.value)}
-          />
-        </ListItem>
-        <ListItem>
           <Button
             data-testid="github-auth-button"
             variant="outlined"
             color="primary"
-            onClick={() => api.authenticate({token, owner, repo})}
+            onClick={() => api.authenticate(token)}
           >
             Authenticate
           </Button>

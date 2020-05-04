@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { CircleCI, GitType, CircleCIOptions, GitInfo } from 'circleci-api';
+import { CircleCI, GitType, CircleCIOptions, GitInfo, getBuildSummaries } from 'circleci-api';
 import { ApiRef } from '@backstage/core';
-import { default } from '../../../../packages/core/src/components/Status/Status.stories';
+//import { default } from '../../../../packages/core/src/components/Status/Status.stories';
 
 const defaultVcsOptions: GitInfo = {
   type: GitType.GITHUB, // default: github
@@ -37,16 +37,14 @@ const options: Partial<CircleCIOptions> = {
 
 export class CircleCIApi {
   api: null | CircleCI = null;
+  token: string = '';
   constuctor() {}
-  async authenticate({token, owner, repo}: {token: string, owner: string, repo: string}) {
+  async authenticate(token: string) {
     try {
-      if (token === '' || owner === '' || repo === '') return Promise.reject();
-      this.api = new CircleCI({ ...options, token, vcs: {
-        type: GitType.GITHUB, // default: github
-        owner,
-        repo,
-      }});
+      if (token === '') return Promise.reject();
+      this.api = new CircleCI({ ...options, token});
       // await this.api.me();
+      this.token = token;
       return Promise.resolve();
     } catch (e) {
       this.api = null;
@@ -56,9 +54,10 @@ export class CircleCIApi {
   async cantAuth() {
     return Promise.reject("Can't auth");
   }
-  async getBuilds() {
+  async getBuilds({repo, owner}: {repo: string, owner: string}) {
     if (!this.api) return this.cantAuth();
-    return this.api.builds();
+    if (owner === '' || repo === '') return Promise.reject();
+    return getBuildSummaries(this.token, {vcs: {...defaultVcsOptions, owner, repo}});
   }
 }
 
