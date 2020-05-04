@@ -25,48 +25,52 @@
  * use e.g. the http-errors library.
  */
 
+class CustomErrorBase extends Error {
+  readonly cause?: Error;
+
+  constructor(constructor: Function, message?: string, cause?: Error) {
+    super(message);
+    Object.setPrototypeOf(this, constructor.prototype);
+    Error.captureStackTrace(this, constructor);
+    this.name = this.constructor.name;
+    this.cause = cause;
+  }
+
+  toString() {
+    let result = super.toString();
+
+    if (this.cause) {
+      result += `; caused by ${this.cause.toString()}`;
+    }
+
+    return result;
+  }
+}
+
 /**
  * The request is malformed and cannot be processed.
  */
-export class BadRequestError extends Error {
-  readonly cause?: Error;
-
+export class BadRequestError extends CustomErrorBase {
   constructor(message?: string, cause?: Error) {
-    super(message);
-    Object.setPrototypeOf(this, BadRequestError.prototype);
-    Error.captureStackTrace(this, BadRequestError);
-    this.name = this.constructor.name;
-    this.cause = cause;
+    super(BadRequestError, message, cause);
   }
 }
 
 /**
  * The request requires authentication, which was not properly supplied.
  */
-export class UnauthenticatedError extends Error {
-  readonly cause?: Error;
-
+export class UnauthenticatedError extends CustomErrorBase {
   constructor(message?: string, cause?: Error) {
-    super(message);
-    Object.setPrototypeOf(this, UnauthenticatedError.prototype);
-    Error.captureStackTrace(this, UnauthenticatedError);
-    this.name = this.constructor.name;
-    this.cause = cause;
+    super(UnauthenticatedError, message, cause);
   }
 }
 
 /**
  * The authenticated caller is not permitted to perform this request.
  */
-export class ForbiddenError extends Error {
-  readonly cause?: Error;
-
+export class ForbiddenError extends CustomErrorBase {
   constructor(message?: string, cause?: Error) {
-    super(message);
-    Object.setPrototypeOf(this, ForbiddenError.prototype);
-    Error.captureStackTrace(this, ForbiddenError);
-    this.name = this.constructor.name;
-    this.cause = cause;
+    super(ForbiddenError, message, cause);
   }
 }
 
@@ -76,15 +80,9 @@ export class ForbiddenError extends Error {
  * Note that this error usually is used to indicate that an entity with a given
  * ID does not exist, rather than signalling that an entire route is missing.
  */
-export class NotFoundError extends Error {
-  readonly cause?: Error;
-
+export class NotFoundError extends CustomErrorBase {
   constructor(message?: string, cause?: Error) {
-    super(message);
-    Object.setPrototypeOf(this, NotFoundError.prototype);
-    Error.captureStackTrace(this, NotFoundError);
-    this.name = this.constructor.name;
-    this.cause = cause;
+    super(NotFoundError, message, cause);
   }
 }
 
@@ -92,16 +90,8 @@ export class NotFoundError extends Error {
  * The request could not complete due to a conflict in the current state of the
  * resource.
  */
-export class ConflictError extends Error {
-  readonly cause?: Error;
-
+export class ConflictError extends CustomErrorBase {
   constructor(message?: string, cause?: Error) {
-    super(message);
-    Object.setPrototypeOf(this, ConflictError.prototype);
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ConflictError);
-    }
-    this.name = this.constructor.name;
-    this.cause = cause;
+    super(ConflictError, message, cause);
   }
 }
