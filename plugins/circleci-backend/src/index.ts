@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
-export { plugin as Circleci } from '@backstage/plugin-circleci';
-// export { plugin as CircleciBackend } from '@backstage/plugin-circleci-backend';
+
+import express from 'express';
+import httpProxy from 'http-proxy';
+
+// Simple proxy for handling CORS for now
+const proxy = httpProxy.createServer({
+  target: 'https://circleci.com/api/v1.1',
+  changeOrigin: true,
+});
+proxy.on('error', e => console.error(e));
+export const router = express();
+router.use('/api', (req, res) => proxy.web(req, res));

@@ -18,6 +18,7 @@ import { CircleCI, GitType, CircleCIOptions } from 'circleci-api';
 import { ApiRef } from '@backstage/core';
 
 const defaultOptions: Partial<CircleCIOptions> = {
+  circleHost: 'http://backstage.localhost:7000/circleci/api',
   vcs: {
     type: GitType.GITHUB,
     owner: 'CircleCITest3',
@@ -59,10 +60,10 @@ export class CircleCIApi {
     const persistedToken = sessionStorage.getItem(key);
     let persistedVCSOptions: {} | undefined;
     try {
-       persistedVCSOptions = JSON.parse(sessionStorage.getItem(key + '_options') as string);
-    } catch(e) {
-      
-    }
+      persistedVCSOptions = JSON.parse(
+        sessionStorage.getItem(key + '_options') as string,
+      );
+    } catch (e) {}
     if (persistedToken && persistedVCSOptions) {
       this.token = persistedToken;
       this.options.vcs = persistedVCSOptions;
@@ -70,8 +71,6 @@ export class CircleCIApi {
     }
     return Promise.reject();
   }
-
-  
 
   async persistToken() {
     if (this.authed) return;
