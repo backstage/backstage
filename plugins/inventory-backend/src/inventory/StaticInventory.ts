@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
+import { NotFoundError } from '@backstage/backend-common';
 import { Component, Inventory } from './types';
 
 export class StaticInventory implements Inventory {
   constructor(private components: Component[]) {}
 
-  list(): Promise<Component[]> {
-    return Promise.resolve([...this.components]);
+  async list(): Promise<Component[]> {
+    return this.components.slice();
   }
 
-  item(id: string): Promise<Component | undefined> {
-    return this.list().then((items) => items.find((i) => i.id === id));
+  async item(id: string): Promise<Component> {
+    const item = this.components.find((i) => i.id === id);
+    if (!item) {
+      throw new NotFoundError(`Found no component with ID ${id}`);
+    }
+    return item;
   }
 }
