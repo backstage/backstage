@@ -24,7 +24,7 @@ export default {
   component: TrendLine,
 };
 
-const containerStyle = { width: 600 };
+const containerStyle = { width: 700 };
 
 const data = [
   {
@@ -66,9 +66,11 @@ const columns = [
 ];
 
 export const Default = () => (
-  <InfoCard style={containerStyle} title="Trends over time">
-    <SortableTable data={data} columns={columns} />
-  </InfoCard>
+  <div style={containerStyle}>
+    <InfoCard title="Trends over time">
+      <SortableTable data={data} columns={columns} />
+    </InfoCard>
+  </div>
 );
 
 export const TrendingMix = () => (

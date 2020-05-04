@@ -34,6 +34,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     backgroundColor: theme.palette.status.warning,
   },
   error: {
+    // Use same for Failed status.
     width: '0',
     height: '0',
     borderLeft: '7px solid transparent',
@@ -42,9 +43,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
   pending: {
     backgroundColor: theme.palette.status.pending,
-  },
-  failed: {
-    backgroundColor: 'rgba(245, 155, 35, 0.5)',
   },
   running: {
     animation: '$blink 0.8s step-start 0s infinite',
@@ -122,7 +120,7 @@ export const StatusFailed: FC<{}> = props => {
   const classes = useStyles(props);
   return (
     <span
-      className={classNames(classes.status, classes.failed)}
+      className={classNames(classes.status, classes.error)}
       aria-label="Status failed"
       {...props}
     />
