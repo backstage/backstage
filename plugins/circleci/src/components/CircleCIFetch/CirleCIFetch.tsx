@@ -54,7 +54,10 @@ const transform = (
   return buildsData.map(buildData => {
     const tableBuildInfo: CITableBuildInfo = {
       id: String(buildData.build_num),
-      buildName: buildData.subject ? String(buildData.subject) : '',
+      buildName: buildData.subject
+        ? buildData.subject +
+          (buildData.retry_of ? ` (retry of #${buildData.retry_of})` : '')
+        : '',
       onRetryClick: () => api.retry(String(buildData.build_num)),
       source: {
         branchName: String(buildData.branch),
@@ -64,6 +67,7 @@ const transform = (
         },
       },
       status: makeReadableStatus(buildData.status),
+      buildUrl: buildData.build_url,
       tests: {
         failed: 0,
         passed: 10,

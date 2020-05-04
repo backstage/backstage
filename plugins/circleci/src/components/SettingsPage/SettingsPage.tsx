@@ -13,12 +13,12 @@ import {
   SupportButton,
 } from '@backstage/core';
 import { ProjectInput } from 'components/ProjectInput/ProjectInput';
+import { Link as RouterLink } from 'react-router-dom';
 
 export const SettingsPage = () => {
-  const [authed, setAuthed] = React.useState(false);
-  const [token, setToken] = React.useState('');
-
   const api = useApi(circleCIApiRef);
+  const [authed, setAuthed] = React.useState(api.authed);
+  const [token, setToken] = React.useState('');
 
   React.useEffect(() => {
     api
@@ -36,7 +36,9 @@ export const SettingsPage = () => {
       </Header>
       <Content>
         <ContentHeader title="Settings">
-          <Button href="/circleci">Back</Button>
+          <Button component={RouterLink} to="/circleci">
+            Back
+          </Button>
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="column">
@@ -77,8 +79,7 @@ export const SettingsPage = () => {
                 )}
               </List>
             </InfoCard>
-            <ProjectInput setGitInfo={(info) => 
-            api.setVCSOptions(info)}/>
+            <ProjectInput setGitInfo={info => api.setVCSOptions(info)} />
           </Grid>
         </Grid>
       </Content>

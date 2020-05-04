@@ -1,15 +1,22 @@
 // Idea for this component to be somehow reusable representation of CI table view
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
 import {
-  StatusRunning,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableContainer,
+  TableRow,
+  Link,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+} from '@material-ui/core';
+import { Replay as RetryIcon } from '@material-ui/icons';
+import {
   StatusFailed,
   StatusOK,
   StatusPending,
@@ -30,6 +37,7 @@ const useStyles = makeStyles({
 export type CITableBuildInfo = {
   id: string;
   buildName: string;
+  buildUrl?: string;
   source: {
     branchName: string;
     commit: {
@@ -55,7 +63,7 @@ const getStatusComponent = (status: string) => {
     case 'scheduled':
       return <StatusPending />;
     case 'running':
-      return <StatusRunning />;
+      return <CircularProgress size={12} />;
     case 'failed':
       return <StatusFailed />;
     case 'success':
@@ -79,7 +87,7 @@ export const CITable: FC<{
             <TableCell>ID</TableCell>
             <TableCell>Build</TableCell>
             <TableCell>Source</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell align="center">Status</TableCell>
             <TableCell>Tests</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
@@ -88,14 +96,24 @@ export const CITable: FC<{
           {builds.map(build => (
             <TableRow key={build.id}>
               <TableCell>{build.id}</TableCell>
-              <TableCell>{build.buildName}</TableCell>
               <TableCell>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div>{build.source.branchName}</div>
-                  <div>{build.source.commit.hash}</div>
-                </div>
+                <Link href={build.buildUrl} target="_blank">
+                  {build.buildName}
+                </Link>
               </TableCell>
-              <TableCell>{getStatusComponent(build.status)}</TableCell>
+              <TableCell>
+                <List dense>
+                  <ListItem>
+                    <ListItemText primary={build.source.branchName} />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText primary={build.source.commit.hash} />
+                  </ListItem>
+                </List>
+              </TableCell>
+              <TableCell align="center">
+                {getStatusComponent(build.status)}
+              </TableCell>
               <TableCell>
                 {build.tests && (
                   <>
@@ -106,7 +124,9 @@ export const CITable: FC<{
                 )}
               </TableCell>
               <TableCell>
-                <Button onClick={build.onRetryClick}>Retry</Button>
+                <Button onClick={build.onRetryClick}>
+                  <RetryIcon />
+                </Button>
               </TableCell>
             </TableRow>
           ))}
