@@ -16,26 +16,18 @@
 
 import express from 'express';
 import { Logger } from 'winston';
-import { AggregatorInventory, StaticInventory } from '../inventory';
+import { Inventory } from '../inventory';
 
 export interface RouterOptions {
+  inventory: Inventory;
   logger: Logger;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
+  const inventory = options.inventory;
   const logger = options.logger.child({ plugin: 'inventory' });
-
-  const inventory = new AggregatorInventory();
-  inventory.enlist(
-    new StaticInventory([
-      { id: 'component1' },
-      { id: 'component2' },
-      { id: 'component3' },
-      { id: 'component4' },
-    ]),
-  );
 
   const router = express.Router();
   router
