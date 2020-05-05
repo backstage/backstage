@@ -54,8 +54,10 @@ module.exports = {
       ({ constructor }) => constructor.name !== 'ProgressPlugin',
     );
 
-    // Fail storybook build if there are webpack warnings
-    config.plugins.push(new WebpackPluginFailBuildOnWarning())
+    // Fail storybook build on CI if there are webpack warnings.
+    if (process.env.CI) {
+      config.plugins.push(new WebpackPluginFailBuildOnWarning())
+    }
 
     return config;
   },
