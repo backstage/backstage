@@ -55,7 +55,7 @@ describe('AuditListTable', () => {
     );
     const link = rendered.queryByText('https://anchor.fm');
     const website = websiteListResponse.items.find(
-      w => w.url === 'https://anchor.fm',
+      (w) => w.url === 'https://anchor.fm',
     );
     if (!website)
       throw new Error('https://anchor.fm must be present in fixture');
@@ -71,7 +71,7 @@ describe('AuditListTable', () => {
       wrapInThemedTestApp(auditList(websiteListResponse)),
     );
     const website = websiteListResponse.items.find(
-      w => w.url === 'https://anchor.fm',
+      (w) => w.url === 'https://anchor.fm',
     );
     if (!website)
       throw new Error('https://anchor.fm must be present in fixture');
@@ -85,21 +85,22 @@ describe('AuditListTable', () => {
       wrapInThemedTestApp(auditList(websiteListResponse)),
     );
 
-    const completed = await rendered.findAllByText('completed');
+    const completed = await rendered.findAllByText('COMPLETED');
     expect(completed).toHaveLength(
-      websiteListResponse.items.filter(w => w.lastAudit.status === 'COMPLETED')
-        .length,
+      websiteListResponse.items.filter(
+        (w) => w.lastAudit.status === 'COMPLETED',
+      ).length,
     );
 
-    const failed = await rendered.findAllByText('failed');
+    const failed = await rendered.findAllByText('FAILED');
     expect(failed).toHaveLength(
-      websiteListResponse.items.filter(w => w.lastAudit.status === 'FAILED')
+      websiteListResponse.items.filter((w) => w.lastAudit.status === 'FAILED')
         .length,
     );
 
-    const running = await rendered.findAllByText('failed');
+    const running = await rendered.findAllByText('FAILED');
     expect(running).toHaveLength(
-      websiteListResponse.items.filter(w => w.lastAudit.status === 'RUNNING')
+      websiteListResponse.items.filter((w) => w.lastAudit.status === 'RUNNING')
         .length,
     );
   });

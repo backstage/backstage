@@ -106,7 +106,7 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
     };
   });
 
-  return <Table columns={columns} data={data} />;
+  return <Table options={{ paging: false }} columns={columns} data={data} />;
 };
 
 export default AuditListTable;
