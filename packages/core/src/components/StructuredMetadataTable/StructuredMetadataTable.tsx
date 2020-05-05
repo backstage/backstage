@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment } from 'react';
-import { withStyles, Theme, createStyles, WithStyles } from '@material-ui/core';
+import React, { Component, Fragment, ReactElement } from 'react';
+import { withStyles, createStyles, WithStyles, Theme } from '@material-ui/core';
 import startCase from 'lodash/startCase';
 
 import {
@@ -40,7 +40,7 @@ const nestedListStyle = (theme: Theme) =>
     },
   });
 
-function renderList(list: any, nested?: boolean) {
+function renderList(list: Array<any>, nested?: boolean) {
   const values = list.map((item: any, index: number) => (
     <MetadataListItem key={index}>{toValue(item)}</MetadataListItem>
   ));
@@ -56,7 +56,7 @@ function renderMap(
   nested?: boolean,
   options?: any,
 ) {
-  const values = Object.keys(map).map(key => {
+  const values = Object.keys(map).map((key) => {
     const value = toValue(map[key], true);
     const fmtKey =
       options && options.titleFormat
@@ -77,7 +77,11 @@ function renderMap(
   );
 }
 
-function toValue(value: any, options?: any, nested?: boolean) {
+function toValue(
+  value: ReactElement | object | Array<any>,
+  options?: any,
+  nested?: boolean,
+) {
   if (React.isValidElement(value)) {
     return <Fragment>{value}</Fragment>;
   }
@@ -94,7 +98,7 @@ function toValue(value: any, options?: any, nested?: boolean) {
 }
 
 function mapToItems(info: { [key: string]: string }, options: any) {
-  return Object.keys(info).map(key => (
+  return Object.keys(info).map((key) => (
     <TableItem key={key} title={key} value={info[key]} options={options} />
   ));
 }
