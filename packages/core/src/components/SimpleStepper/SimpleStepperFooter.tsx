@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, ReactNode } from 'react';
+import React, { useContext, FC, ReactNode } from 'react';
 import { Button, makeStyles } from '@material-ui/core';
-import { StepActions } from './Sequence';
+import { StepActions } from './SimpleStepperStep';
+import { VerticalStepperContext } from './SimpleStepper';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(3),
     '& button': {
@@ -65,37 +66,31 @@ const BackBtn: FC<{
   </Button>
 );
 
-export type SequenceFooterProps = {
-  stepIndex: number;
-  setStepIndex: React.Dispatch<React.SetStateAction<number>>;
-  stepArray: number[];
-  setStepArray: React.Dispatch<React.SetStateAction<number[]>>;
-  length: number;
-  actions: StepActions;
-  onSequenceStepChange?: (old: number, updated: number) => void;
+export type SimpleStepperFooterProps = {
+  actions?: StepActions;
   children?: ReactNode;
-  className: string;
 };
 
-const SequenceFooter: FC<SequenceFooterProps> = ({
-  stepIndex,
-  setStepIndex,
-  stepArray,
-  setStepArray,
-  length,
-  onSequenceStepChange,
-  actions,
+const SimpleStepperFooter: FC<SimpleStepperFooterProps> = ({
+  actions = {},
   children,
-  className,
 }) => {
   const classes = useStyles();
+  const {
+    stepperLength,
+    stepIndex,
+    setStepIndex,
+    stepHistory,
+    setStepHistory,
+    onStepChange,
+  } = useContext(VerticalStepperContext);
 
   const onChange = (newIndex: number, callback?: () => void) => {
     if (callback) {
       callback();
     }
-    if (onSequenceStepChange) {
-      onSequenceStepChange(stepIndex, newIndex);
+    if (onStepChange) {
+      onStepChange(stepIndex, newIndex);
     }
 
     setStepIndex(newIndex);
@@ -103,23 +98,23 @@ const SequenceFooter: FC<SequenceFooterProps> = ({
 
   const handleNext = () => {
     const newIndex = actions.nextStep
-      ? actions.nextStep(stepIndex, length - 1)
+      ? actions.nextStep(stepIndex, stepperLength - 1)
       : stepIndex + 1;
     onChange(newIndex, actions.onNext);
-    setStepArray([...stepArray, newIndex]);
+    setStepHistory([...stepHistory, newIndex]);
   };
   const handleBack = () => {
-    stepArray.pop();
-    onChange(stepArray[stepArray.length - 1], actions.onBack);
-    setStepArray([...stepArray]);
+    stepHistory.pop();
+    onChange(stepHistory[stepHistory.length - 1], actions.onBack);
+    setStepHistory([...stepHistory]);
   };
   const handleRestart = () => {
     onChange(0, actions.onRestart);
-    setStepArray([0]);
+    setStepHistory([0]);
   };
 
   return (
-    <div className={`${classes.root} ${className}`}>
+    <div className={classes.root}>
       {[undefined, true].includes(actions.showBack) && stepIndex !== 0 && (
         <BackBtn
           text={actions.backText}
@@ -133,7 +128,7 @@ const SequenceFooter: FC<SequenceFooterProps> = ({
           text={actions.nextText}
           handleClick={handleNext}
           disabled={
-            (!!length && stepIndex >= length) ||
+            (!!stepperLength && stepIndex >= stepperLength) ||
             (!!actions.canNext && !actions.canNext())
           }
           stepIndex={stepIndex}
@@ -151,4 +146,4 @@ const SequenceFooter: FC<SequenceFooterProps> = ({
   );
 };
 
-export default SequenceFooter;
+export default SimpleStepperFooter;

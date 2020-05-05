@@ -32,7 +32,7 @@ export { default as CircleProgress } from './components/ProgressBars/CircleProgr
 export { default as HorizontalProgress } from './components/ProgressBars/HorizontalProgress';
 export { default as CopyTextButton } from './components/CopyTextButton';
 export { default as Progress } from './components/Progress';
-export { default as Sequence } from './components/Sequence';
+export * from './components/SimpleStepper';
 export { AlphaLabel, BetaLabel } from './components/Lifecycle';
 export { default as SupportButton } from './components/SupportButton';
 export { default as SortableTable } from './components/SortableTable';

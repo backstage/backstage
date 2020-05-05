@@ -14,5 +14,7 @@
  * limitations under the License.
  */
 
-export { default } from './Sequence';
-export type { StepType } from './Sequence';
+import SimpleStepper from './SimpleStepper';
+import SimpleStepperStep from './SimpleStepperStep';
+
+export { SimpleStepper, SimpleStepperStep };
