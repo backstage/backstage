@@ -133,6 +133,7 @@ async function waitForPageWithText(
       if (error instanceof browser.assert.AssertionError) {
         findTextAttempts++;
         if (findTextAttempts <= maxFindTextAttempts) {
+          await browser.visit(path);
           await new Promise(resolve => setTimeout(resolve, intervalMs));
           continue
         }
