@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import glob from 'glob';
+import globby from 'globby';
 import fs from 'fs-extra';
-import { logger } from '../logger';
 import { Template, StorageBase as Base } from '.';
+import { Logger } from 'winston';
 
 interface DiskIndexEntry {
   contents: Template;
@@ -28,9 +28,19 @@ export class DiskStorage implements Base {
   private repository: Template[] = [];
   private localIndex: DiskIndexEntry[] = [];
 
-  constructor(private repoDir = `${__dirname}/../../../sample-templates`) {
-    console.warn(require('path').resolve(repoDir));
+  private repoDir: string;
+  private logger?: Logger;
+  constructor({
+    directory = `${__dirname}/../../../sample-templates`,
+    logger,
+  }: {
+    directory?: string;
+    logger?: Logger;
+  }) {
+    this.repoDir = directory;
+    this.logger = logger;
   }
+
   public async list(): Promise<Template[]> {
     if (this.repository.length === 0) {
       await this.reindex();
@@ -59,43 +69,31 @@ export class DiskStorage implements Base {
   }
 
   private async index(): Promise<DiskIndexEntry[]> {
-    return new Promise((resolve, reject) => {
-      glob(`${this.repoDir}/**/template-info.json`, async (err, matches) => {
-        if (err) {
-          reject(err);
-        }
+    const matches = await globby(`${this.repoDir}/**/template-info.json`);
 
-        const fileContents: Array<{
-          location: string;
-          contents: string;
-        }> = await Promise.all(
-          matches.map(async (location: string) => ({
-            location,
-            contents: await fs.readFile(location, 'utf-8'),
-          })),
-        );
+    const fileContents: Array<{
+      location: string;
+      contents: string;
+    }> = await Promise.all(
+      matches.map(async (location: string) => ({
+        location,
+        contents: await fs.readFile(location, 'utf-8'),
+      })),
+    );
 
-        const validFiles = fileContents.reduce(
-          (diskIndexEntries: DiskIndexEntry[], currentFile) => {
-            try {
-              const parsed: Template = JSON.parse(currentFile.contents);
-              return [
-                ...diskIndexEntries,
-                { location: currentFile.location, contents: parsed },
-              ];
-            } catch (ex) {
-              logger.error('Failure parsing JSON for template', {
-                path: currentFile.location,
-              });
-            }
+    const validFiles: DiskIndexEntry[] = [];
 
-            return diskIndexEntries;
-          },
-          [],
-        );
+    for (const file of fileContents) {
+      try {
+        const contents: Template = JSON.parse(file.contents);
+        validFiles.push({ location: file.location, contents });
+      } catch (ex) {
+        this.logger?.error('Failure parsing JSON for template', {
+          path: file.location,
+        });
+      }
+    }
 
-        resolve(validFiles);
-      });
-    });
+    return validFiles;
   }
 }

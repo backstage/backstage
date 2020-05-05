@@ -15,6 +15,7 @@
  */
 import { DiskStorage } from './disk';
 import * as path from 'path';
+
 describe('Disk Storage', () => {
   it('should load a simple template from a simple directory', async () => {
     const testTemplateDir = path.resolve(
@@ -23,7 +24,7 @@ describe('Disk Storage', () => {
     );
     const templateInfo = require(`${testTemplateDir}/mock-template/template-info.json`);
 
-    const repository = new DiskStorage(testTemplateDir);
+    const repository = new DiskStorage({ directory: testTemplateDir });
 
     await repository.reindex();
 
@@ -42,7 +43,7 @@ describe('Disk Storage', () => {
       '../../../test/mock-multiple-templates-dir',
     );
 
-    const repository = new DiskStorage(testTemplateDir);
+    const repository = new DiskStorage({ directory: testTemplateDir });
 
     await repository.reindex();
 
@@ -57,7 +58,7 @@ describe('Disk Storage', () => {
       '/some-folder-that-deffo-does-not-exist',
     );
 
-    const repository = new DiskStorage(testTemplateDir);
+    const repository = new DiskStorage({ directory: testTemplateDir });
 
     await repository.reindex();
 
@@ -72,7 +73,7 @@ describe('Disk Storage', () => {
       '../../../test/mock-failing-template-dir',
     );
 
-    const repository = new DiskStorage(testTemplateDir);
+    const repository = new DiskStorage({ directory: testTemplateDir });
 
     await repository.reindex();
 

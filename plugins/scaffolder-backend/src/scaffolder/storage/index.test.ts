@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { StorageBase, createStorage } from '.';
+import winston from 'winston';
 
 describe('Storage Interface Test', () => {
   const mockStore = new (class MockStorage implements StorageBase {
@@ -28,17 +29,19 @@ describe('Storage Interface Test', () => {
     };
   })();
 
+  const logger = winston.createLogger();
+
   afterEach(() => mockStore.reset());
 
   it('should call list of the set repo when calling list', async () => {
-    const store = createStorage({ store: mockStore });
+    const store = createStorage({ store: mockStore, logger });
     await store.list();
 
     expect(mockStore.list).toHaveBeenCalled();
   });
 
   it('should reindex on the repo when calling reindex', async () => {
-    const store = createStorage({ store: mockStore });
+    const store = createStorage({ store: mockStore, logger });
 
     await store.reindex();
 
@@ -46,7 +49,7 @@ describe('Storage Interface Test', () => {
   });
 
   it('should call prepare with the correct id when calling prepare', async () => {
-    const store = createStorage({ store: mockStore });
+    const store = createStorage({ store: mockStore, logger });
 
     await store.prepare('testid');
 

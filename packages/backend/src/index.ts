@@ -33,7 +33,11 @@ import {
   createRouter as inventoryRouter,
   StaticInventory,
 } from '@backstage/plugin-inventory-backend';
-import { createScaffolder } from '@backstage/plugin-scaffolder-backend';
+import {
+  createRouter as scaffolderRouter,
+  DiskStorage,
+  CookieCutter,
+} from '@backstage/plugin-scaffolder-backend';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
@@ -54,6 +58,9 @@ async function main() {
     ]),
   );
 
+  const storage = new DiskStorage({ logger });
+  const templater = new CookieCutter();
+
   const app = express();
 
   app.use(helmet());
@@ -62,7 +69,7 @@ async function main() {
   app.use(express.json());
   app.use(requestLoggingHandler());
   app.use('/inventory', await inventoryRouter({ inventory, logger }));
-  app.use('/scaffolder', createScaffolder());
+  app.use('/scaffolder', await scaffolderRouter({ storage, templater, logger }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

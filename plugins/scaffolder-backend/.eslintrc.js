@@ -1,5 +1,5 @@
 module.exports = {
-  extends: [require.resolve('@backstage/cli/config/eslint')],
+  extends: [require.resolve('@backstage/cli/config/eslint.backend')],
   ignorePatterns: ['sample-templates/'],
   rules: {
     'no-console': 0, // Permitted in console programs

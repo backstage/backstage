@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { CookieCutter } from './cookiecutter';
-
 export interface RequiredTemplateValues {
   componentId: string;
 }
+
 export interface TemplaterRunOptions {
   directory: string;
   values: RequiredTemplateValues & object;
@@ -46,7 +45,7 @@ class Templater implements TemplaterBase {
 }
 
 export const createTemplater = (
-  config: TemplaterConfig = { templater: new CookieCutter() },
+  templaterConfig: TemplaterConfig,
 ): TemplaterBase => {
-  return new Templater(config);
+  return new Templater(templaterConfig);
 };
