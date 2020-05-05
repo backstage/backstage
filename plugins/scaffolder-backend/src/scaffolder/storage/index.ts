@@ -1,4 +1,4 @@
-import { Logger } from "winston";
+import { Logger } from 'winston';
 
 /*
  * Copyright 2020 Spotify AB
@@ -48,8 +48,6 @@ class Storage implements StorageBase {
   reindex = () => this.store!.reindex();
 }
 
-export const createStorage = (
-  storageConfig: StorageConfig,
-): StorageBase => {
+export const createStorage = (storageConfig: StorageConfig): StorageBase => {
   return new Storage(storageConfig);
 };

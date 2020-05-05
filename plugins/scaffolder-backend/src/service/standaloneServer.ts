@@ -37,7 +37,7 @@ export async function startStandaloneServer(
   const store = new DiskStorage({ logger });
   const templater = new CookieCutter();
   logger.debug('Creating application...');
-  
+
   const app = await createStandaloneApplication({
     enableCors: options.enableCors,
     storage: createStorage({ store, logger }),

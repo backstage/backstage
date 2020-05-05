@@ -44,6 +44,8 @@ class Templater implements TemplaterBase {
   }
 }
 
-export const createTemplater = (templaterConfig: TemplaterConfig): TemplaterBase => {
+export const createTemplater = (
+  templaterConfig: TemplaterConfig,
+): TemplaterBase => {
   return new Templater(templaterConfig);
 };

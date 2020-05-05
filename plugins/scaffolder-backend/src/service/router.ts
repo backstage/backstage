@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
@@ -22,7 +21,7 @@ import { StorageBase, TemplaterBase } from '../scaffolder';
 
 export interface RouterOptions {
   storage: StorageBase;
-  templater: TemplaterBase,
+  templater: TemplaterBase;
   logger: Logger;
 }
 
@@ -30,21 +29,22 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const {storage, templater, logger: parentLogger} = options;
+  const { storage, templater, logger: parentLogger } = options;
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
   router
     .get('/v1/templates', async (_, res) => {
       const templates = await storage.list();
       res.status(200).json(templates);
-    }).post('/v1/job/create', async (_, res) => {
+    })
+    .post('/v1/jobs', async (_, res) => {
       // TODO(blam): Actually make this function work
       const mock = 'templateid';
       res.status(201).json({ accepted: true });
 
       const path = await storage.prepare(mock);
       await templater.run({ directory: path, values: { componentId: 'test' } });
-  });
+    });
 
   const app = express();
   app.set('logger', logger);

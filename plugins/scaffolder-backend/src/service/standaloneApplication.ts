@@ -30,7 +30,7 @@ import { createRouter } from './router';
 export interface ApplicationOptions {
   enableCors: boolean;
   storage: StorageBase;
-  templater: TemplaterBase; 
+  templater: TemplaterBase;
   logger: Logger;
 }
 

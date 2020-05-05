@@ -30,7 +30,13 @@ export class DiskStorage implements Base {
 
   private repoDir: string;
   private logger?: Logger;
-  constructor({ directory = `${__dirname}/../../../sample-templates`, logger }: { directory?: string, logger?: Logger }) {
+  constructor({
+    directory = `${__dirname}/../../../sample-templates`,
+    logger,
+  }: {
+    directory?: string;
+    logger?: Logger;
+  }) {
     this.repoDir = directory;
     this.logger = logger;
   }
@@ -75,26 +81,19 @@ export class DiskStorage implements Base {
       })),
     );
 
-    const validFiles = fileContents.reduce(
-      (diskIndexEntries: DiskIndexEntry[], currentFile) => {
-        try {
-          const parsed: Template = JSON.parse(currentFile.contents);
-          return [
-            ...diskIndexEntries,
-            { location: currentFile.location, contents: parsed },
-          ];
-        } catch (ex) {
-          this.logger?.error('Failure parsing JSON for template', {
-            path: currentFile.location,
-          });
-        }
+    const validFiles: DiskIndexEntry[] = [];
 
-        return diskIndexEntries;
-      },
-      [],
-    );
-  
+    for (const file of fileContents) {
+      try {
+        const contents: Template = JSON.parse(file.contents);
+        validFiles.push({ location: file.location, contents });
+      } catch (ex) {
+        this.logger?.error('Failure parsing JSON for template', {
+          path: file.location,
+        });
+      }
+    }
+
     return validFiles;
-
   }
 }
