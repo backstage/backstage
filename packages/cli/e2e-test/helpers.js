@@ -106,7 +106,7 @@ async function waitForPageWithText(
     } catch (error) {
       if (error.message.match(EXPECTED_LOAD_ERRORS)) {
         loadAttempts++;
-        if (loadAttempts > maxLoadAttempts) {
+        if (loadAttempts >= maxLoadAttempts) {
           throw new Error(
             `Failed to load page '${path}', max number of attempts reached`,
           );
