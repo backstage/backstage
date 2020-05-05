@@ -16,51 +16,25 @@
 
 import React, { FC } from 'react';
 import { Route } from 'react-router';
-import { Link as RouterLink } from 'react-router-dom';
-import { Grid, Button } from '@material-ui/core';
-import { Settings as SettingsIcon } from '@material-ui/icons';
 import {
-  InfoCard,
   Header,
   Page,
   pageTheme,
-  Content,
-  ContentHeader,
   HeaderLabel,
-  SupportButton,
 } from '@backstage/core';
-import { CircleCIFetch } from '../CircleCIFetch';
 import { SettingsPage } from '../SettingsPage';
+import { BuildsPage } from '../BuildsPage/BuildsPage';
 export const CircleCIPage: FC<{}> = () => {
   return (
     <>
-      <Route path="/circleci/settings" component={SettingsPage} />
       <Page theme={pageTheme.tool}>
         <Header title="Welcome to circleci!" subtitle="Optional subtitle">
           <HeaderLabel label="Owner" value="Team X" />
           <HeaderLabel label="Lifecycle" value="Alpha" />
         </Header>
-        <Content>
-          <ContentHeader title="Circle CI">
-            <Button
-              component={RouterLink}
-              to="/circleci/settings"
-              startIcon={<SettingsIcon />}
-            >
-              Settings
-            </Button>
-            <SupportButton>
-              A description of your plugin goes here.
-            </SupportButton>
-          </ContentHeader>
-          <Grid container spacing={3} direction="column">
-            <Grid item>
-              <InfoCard title="Pipelines">
-                <CircleCIFetch />
-              </InfoCard>
-            </Grid>
-          </Grid>
-        </Content>
+        <Route path="/circleci/settings" component={SettingsPage} />
+        <Route exact path="/circleci" component={BuildsPage}>
+        </Route>
       </Page>
     </>
   );

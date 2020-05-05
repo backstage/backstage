@@ -4,12 +4,10 @@ import { circleCIApiRef } from 'api';
 import {
   InfoCard,
   useApi,
-  Header,
   Page,
   pageTheme,
   Content,
   ContentHeader,
-  HeaderLabel,
   SupportButton,
 } from '@backstage/core';
 import { ProjectInput } from 'components/ProjectInput/ProjectInput';
@@ -30,10 +28,6 @@ export const SettingsPage = () => {
 
   return (
     <Page theme={pageTheme.tool}>
-      <Header title="Circle CI" subtitle="Settings">
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
       <Content>
         <ContentHeader title="Settings">
           <Button component={RouterLink} to="/circleci">
@@ -41,7 +35,7 @@ export const SettingsPage = () => {
           </Button>
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} >
           <Grid item xs={6}>
             <InfoCard title="Authentication">
               <List>

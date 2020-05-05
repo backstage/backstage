@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { createPlugin } from '@backstage/core';
-import { CircleCIPage } from './components/CircleCIPage';
-
+import { CircleCIPage } from './pages/CircleCIPage';
 export const plugin = createPlugin({
   id: 'circleci',
   register({ router }) {
