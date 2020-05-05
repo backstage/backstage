@@ -128,6 +128,7 @@ async function waitForPageWithText(
         true,
         `expected to find text ${text}`,
       );
+      break;
     } catch (error) {
       if (error instanceof browser.assert.AssertionError) {
         attemptsToSearchText++;
