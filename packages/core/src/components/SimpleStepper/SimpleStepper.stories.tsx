@@ -16,33 +16,33 @@
 
 import React, { useState } from 'react';
 import { TextField } from '@material-ui/core';
-import { BasicVerticalStepper, BasicVerticalStep } from '.';
+import { SimpleStepper, SimpleStepperStep } from '.';
 
 export default {
-  title: 'BasicVerticalStepper',
-  component: BasicVerticalStepper,
+  title: 'SimpleStepper',
+  component: SimpleStepper,
 };
 
-export const Basic = () => (
-  <BasicVerticalStepper>
-    <BasicVerticalStep title="Step 1">
+export const Default = () => (
+  <SimpleStepper>
+    <SimpleStepperStep title="Step 1">
       <div>This is the content for step 1</div>
-    </BasicVerticalStep>
-    <BasicVerticalStep title="Step 2">
+    </SimpleStepperStep>
+    <SimpleStepperStep title="Step 2">
       <div>This is the content for step 2</div>
-    </BasicVerticalStep>
-    <BasicVerticalStep title="Step 3">
+    </SimpleStepperStep>
+    <SimpleStepperStep title="Step 3">
       <div>This is the content for step 3</div>
-    </BasicVerticalStep>
-  </BasicVerticalStepper>
+    </SimpleStepperStep>
+  </SimpleStepper>
 );
 
 export const ConditionalButtons = () => {
   const [required, setRequired] = useState(false);
 
   return (
-    <BasicVerticalStepper>
-      <BasicVerticalStep
+    <SimpleStepper>
+      <SimpleStepperStep
         title="Step 1 with required field"
         actions={{
           canNext: () => required,
@@ -51,31 +51,31 @@ export const ConditionalButtons = () => {
         <TextField
           variant="outlined"
           placeholder="Required*"
-          onChange={e => setRequired(!!e.target.value)}
+          onChange={(e) => setRequired(!!e.target.value)}
         />
-      </BasicVerticalStep>
-      <BasicVerticalStep title="Step 2">
+      </SimpleStepperStep>
+      <SimpleStepperStep title="Step 2">
         <div>This is the content for step 2</div>
-      </BasicVerticalStep>
-      <BasicVerticalStep title="Step 3">
+      </SimpleStepperStep>
+      <SimpleStepperStep title="Step 3">
         <div>This is the content for step 3</div>
-      </BasicVerticalStep>
-    </BasicVerticalStepper>
+      </SimpleStepperStep>
+    </SimpleStepper>
   );
 };
 
 export const CompletionStep = () => {
   return (
-    <BasicVerticalStepper>
-      <BasicVerticalStep title="Step 1">
+    <SimpleStepper>
+      <SimpleStepperStep title="Step 1">
         <div>This is the content for step 1</div>
-      </BasicVerticalStep>
-      <BasicVerticalStep title="Step 2">
+      </SimpleStepperStep>
+      <SimpleStepperStep title="Step 2">
         <div>This is the content for step 2</div>
-      </BasicVerticalStep>
-      <BasicVerticalStep title="Success!" end>
+      </SimpleStepperStep>
+      <SimpleStepperStep title="Success!" end>
         <div>You've completed the Stepper</div>
-      </BasicVerticalStep>
-    </BasicVerticalStepper>
+      </SimpleStepperStep>
+    </SimpleStepper>
   );
 };

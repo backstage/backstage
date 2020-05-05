@@ -15,10 +15,10 @@
  */
 import React, { useContext, FC, ReactNode } from 'react';
 import { Button, makeStyles } from '@material-ui/core';
-import { StepActions } from './BasicVerticalStep';
-import { VerticalStepperContext } from './BasicVerticalStepper';
+import { StepActions } from './SimpleStepperStep';
+import { VerticalStepperContext } from './SimpleStepper';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(3),
     '& button': {
@@ -66,12 +66,12 @@ const BackBtn: FC<{
   </Button>
 );
 
-export type BasicStepperFooterProps = {
+export type SimpleStepperFooterProps = {
   actions?: StepActions;
   children?: ReactNode;
 };
 
-const BasicStepperFooter: FC<BasicStepperFooterProps> = ({
+const SimpleStepperFooter: FC<SimpleStepperFooterProps> = ({
   actions = {},
   children,
 }) => {
@@ -146,4 +146,4 @@ const BasicStepperFooter: FC<BasicStepperFooterProps> = ({
   );
 };
 
-export default BasicStepperFooter;
+export default SimpleStepperFooter;

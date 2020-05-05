@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import BasicVerticalStepper from './BasicVerticalStepper';
-import BasicVerticalStep from './BasicVerticalStep';
+import SimpleStepper from './SimpleStepper';
+import SimpleStepperStep from './SimpleStepperStep';
 
-export { BasicVerticalStepper, BasicVerticalStep };
+export { SimpleStepper, SimpleStepperStep };

@@ -46,7 +46,7 @@ const Stepper: FC<StepperProps> = ({ children, elevated, onStepChange }) => {
 
   const steps: React.ReactNode[] = [];
   let endStep;
-  Children.forEach(children, child => {
+  Children.forEach(children, (child) => {
     if (isValidElement(child)) {
       if (child.props.end) {
         endStep = child;
