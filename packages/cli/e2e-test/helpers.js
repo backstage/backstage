@@ -130,15 +130,14 @@ async function waitForPageWithText(
       );
       break;
     } catch (error) {
-      if (error instanceof browser.assert.AssertionError) {
-        findTextAttempts++;
-        if (findTextAttempts <= maxFindTextAttempts) {
-          await browser.visit(path);
-          await new Promise(resolve => setTimeout(resolve, intervalMs));
-          continue
-        }
+      findTextAttempts++;
+      if (findTextAttempts <= maxFindTextAttempts) {
+        await browser.visit(path);
+        await new Promise(resolve => setTimeout(resolve, intervalMs));
+        continue
+      } else {
+        throw error;
       }
-      throw error;
     }
   }
 }
