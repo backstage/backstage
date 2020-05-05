@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Content, InfoCard, useApi } from '@backstage/core';
-import { Grid, List, ListItem } from '@material-ui/core';
+import { Grid, Box } from '@material-ui/core';
 import { PluginHeader } from 'components/PluginHeader';
 import { BuildWithSteps, BuildStepAction } from 'circleci-api';
 import { circleCIApiRef } from 'api';
@@ -37,8 +37,9 @@ export const DetailedViewPage: FC<{}> = () => {
       ) : (
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <InfoCard title="Pipelines"></InfoCard>
+            <InfoCard title="Pipelines">
             <BuildsList build={build} />
+            </InfoCard>
           </Grid>
         </Grid>
       )}
@@ -47,27 +48,21 @@ export const DetailedViewPage: FC<{}> = () => {
 };
 
 const BuildsList: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
-  <List key={build?.build_num}>
+  <Box>
     {build &&
       build.steps &&
       build.steps.map(
         ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
-          <ListItem>
-            {name}
-            <br />
-            <ActionsList actions={actions} />
-          </ListItem>
+            <ActionsList name={name} actions={actions} />
         ),
       )}
-  </List>
+  </Box>
 );
 
-const ActionsList: FC<{ actions: BuildStepAction[] }> = ({ actions }) => (
-  <List>
+const ActionsList: FC<{ actions: BuildStepAction[], name: string }> = ({ actions, name }) => (
+  <Box key={name}>
     {actions.map((action: BuildStepAction) => (
-      <ListItem>
-        <ActionOutput url={action.output_url || ''} />
-      </ListItem>
+        <ActionOutput action={action} name={action.name} url={action.output_url || ''} />
     ))}
-  </List>
+  </Box>
 );
