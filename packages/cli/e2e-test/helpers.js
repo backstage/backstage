@@ -95,9 +95,9 @@ async function waitForPageWithText(
   browser,
   path,
   text,
-  { intervalMs = 1000, maxAttempts = 240 } = {},
+  { intervalMs = 1000, maxLoadAttempts = 240 } = {},
 ) {
-  let attemptsToLoad = 0;
+  let loadAttempts = 0;
   for (;;) {
     try {
       await new Promise(resolve => setTimeout(resolve, intervalMs));
@@ -105,8 +105,8 @@ async function waitForPageWithText(
       break;
     } catch (error) {
       if (error.message.match(EXPECTED_LOAD_ERRORS)) {
-        attemptsToLoad++;
-        if (attemptsToLoad > maxAttempts) {
+        loadAttempts++;
+        if (loadAttempts > maxLoadAttempts) {
           throw new Error(
             `Failed to load page '${path}', max number of attempts reached`,
           );
@@ -118,8 +118,8 @@ async function waitForPageWithText(
   }
 
   // The page may not be fully loaded and hence we need to retry.
-  const maxAttemptsToSearchText = 3;
-  let attemptsToSearchText = 0;
+  const maxFindTextAttempts = 3;
+  let findTextAttempts = 0;
   const escapedText = text.replace(/"/g, '\\"');
   for (;;) {
     try {
@@ -131,8 +131,8 @@ async function waitForPageWithText(
       break;
     } catch (error) {
       if (error instanceof browser.assert.AssertionError) {
-        attemptsToSearchText++;
-        if (attemptsToSearchText <= maxAttemptsToSearchText) {
+        findTextAttempts++;
+        if (findTextAttempts <= maxFindTextAttempts) {
           await new Promise(resolve => setTimeout(resolve, intervalMs));
           continue
         }
