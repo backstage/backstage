@@ -95,7 +95,7 @@ async function waitForPageWithText(
   browser,
   path,
   text,
-  { intervalMs = 1000, maxLoadAttempts = 240 } = {},
+  { intervalMs = 1000, maxLoadAttempts = 240, maxFindTextAttempts = 3 } = {},
 ) {
   let loadAttempts = 0;
   for (;;) {
@@ -118,7 +118,6 @@ async function waitForPageWithText(
   }
 
   // The page may not be fully loaded and hence we need to retry.
-  const maxFindTextAttempts = 3;
   let findTextAttempts = 0;
   const escapedText = text.replace(/"/g, '\\"');
   for (;;) {
