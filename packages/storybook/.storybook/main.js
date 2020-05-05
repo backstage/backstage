@@ -1,4 +1,5 @@
 const path = require('path');
+const WebpackPluginFailBuildOnWarning = require('./webpack-plugin-fail-build-on-warning');
 
 module.exports = {
   stories: [
@@ -52,6 +53,9 @@ module.exports = {
     config.plugins = config.plugins.filter(
       ({ constructor }) => constructor.name !== 'ProgressPlugin',
     );
+
+    // Fail storybook build if there are webpack warnings
+    config.plugins.push(new WebpackPluginFailBuildOnWarning())
 
     return config;
   },
