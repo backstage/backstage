@@ -23,7 +23,8 @@ import {
   HeaderLabel,
 } from '@backstage/core';
 import { SettingsPage } from '../SettingsPage';
-import { BuildsPage } from '../BuildsPage/BuildsPage';
+import { BuildsPage } from '../BuildsPage';
+import { DetailedViewPage } from '../DetailedViewPage';
 export const CircleCIPage: FC<{}> = () => {
   return (
     <>
@@ -33,8 +34,8 @@ export const CircleCIPage: FC<{}> = () => {
           <HeaderLabel label="Lifecycle" value="Alpha" />
         </Header>
         <Route path="/circleci/settings" component={SettingsPage} />
-        <Route exact path="/circleci" component={BuildsPage}>
-        </Route>
+        <Route path="/circleci/build/:buildId" component={DetailedViewPage} />
+        <Route exact path="/circleci" component={BuildsPage} />
       </Page>
     </>
   );

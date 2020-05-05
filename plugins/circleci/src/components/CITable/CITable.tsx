@@ -9,10 +9,10 @@ import {
   TableHead,
   TableContainer,
   TableRow,
-  Link,
   CircularProgress,
 } from '@material-ui/core';
 import { Replay as RetryIcon } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
 import {
   StatusFailed,
   StatusOK,
@@ -94,7 +94,7 @@ export const CITable: FC<{
             <TableRow key={build.id}>
               <TableCell>{build.id}</TableCell>
               <TableCell>
-                <Link href={build.buildUrl} target="_blank">
+                <Link to={`/circleci/build/${build.id}`}>
                   {build.buildName}
                 </Link>
               </TableCell>
