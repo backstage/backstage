@@ -24,7 +24,7 @@ import {
   StatusRunning,
   StatusWarning,
 } from './Status';
-import SortableTable from 'components/SortableTable';
+import Table from 'components/Table';
 import InfoCard from 'layout/InfoCard';
 
 export default {
@@ -71,9 +71,9 @@ const data = [
 ];
 
 const columns = [
-  { id: 'status', label: 'Status' },
-  { id: 'label', label: 'Label' },
-  { id: 'usage', label: 'Example usage' },
+  { field: 'status', title: 'Status' },
+  { field: 'label', title: 'Label' },
+  { field: 'usage', title: 'Example usage' },
 ];
 
 const containerStyle = { width: 600 };
@@ -81,7 +81,15 @@ const containerStyle = { width: 600 };
 export const Default = () => (
   <div style={containerStyle}>
     <InfoCard title="Available status types">
-      <SortableTable data={data} columns={columns} />
+      <Table
+        options={{
+          search: false,
+          paging: false,
+          toolbar: false,
+        }}
+        data={data}
+        columns={columns}
+      />
     </InfoCard>
   </div>
 );

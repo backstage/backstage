@@ -16,7 +16,7 @@
 
 import React from 'react';
 import TrendLine from '.';
-import SortableTable from 'components/SortableTable';
+import Table from 'components/Table';
 import InfoCard from 'layout/InfoCard';
 
 export default {
@@ -58,17 +58,25 @@ const data = [
 ];
 
 const columns = [
-  { id: 'stock', label: 'Stock' },
-  { id: 'day', label: 'Day' },
-  { id: 'week', label: 'Week' },
-  { id: 'month', label: 'Month' },
-  { id: 'year', label: 'Year' },
+  { field: 'stock', title: 'Stock' },
+  { field: 'day', title: 'Day' },
+  { field: 'week', title: 'Week' },
+  { field: 'month', title: 'Month' },
+  { field: 'year', title: 'Year' },
 ];
 
 export const Default = () => (
   <div style={containerStyle}>
     <InfoCard title="Trends over time">
-      <SortableTable data={data} columns={columns} />
+      <Table
+        options={{
+          search: false,
+          paging: false,
+          toolbar: false,
+        }}
+        data={data}
+        columns={columns}
+      />
     </InfoCard>
   </div>
 );
