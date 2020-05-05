@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { FC, useState } from 'react';
-import { Table, TableColumn } from '@backstage/core';
+import { Table, TableColumn, TrendLine, useApi } from '@backstage/core';
 import { Website, lighthouseApiRef } from '../../api';
 import { useInterval } from 'react-use';
 import {
@@ -23,7 +23,6 @@ import {
   CATEGORY_LABELS,
   buildSparklinesDataForItem,
 } from '../../utils';
-import { TrendLine, useApi } from '@backstage/core';
 import { Link } from '@material-ui/core';
 import AuditStatusIcon from '../AuditStatusIcon';
 
