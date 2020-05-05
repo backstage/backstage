@@ -15,15 +15,37 @@
  */
 
 class WebpackPluginFailBuildOnWarning {
+  // Ignore the following warnings in the Webpack build.
+  warningsWhitelist = new Set([
+    'AssetsOverSizeLimitWarning',
+    'EntrypointsOverSizeLimitWarning',
+    'NoAsyncChunksWarning',
+  ]);
+
+  /* Entry point for the Webpack plugin. */
   apply(compiler) {
-    compiler.hooks.done.tap('FailBuildOnWarning', stats => {
-      if (stats.compilation.warnings.length > 0) {
-        process.on('beforeExit', () => {
-          console.log(`You have ${stats.compilation.warnings.length} warning(s) in your webpack build. Exiting process as error.`)
-          process.exit(1);
-        });
+    // Invoke plugin logic when Webpack build is 'done'.
+    compiler.hooks.done.tap('FailBuildOnWarning', this.execute.bind(this));
+  }
+
+  execute(stats) {
+    // All the compilation warnings are stored in stats.compilation.warnings
+    let warnings = stats.compilation.warnings;
+    if (warnings.length > 0) {
+      // Throw error if there are unexpected warnings.
+      for (let warning of warnings) {
+        if (warning.name in this.warningsWhitelist) {
+          process.on('beforeExit', () => {
+            console.log(
+              `You have some unexpected warning(s) in your webpack build. Exiting process as error.`,
+            );
+            process.exit(1);
+          });
+          // No need to go over the rest of warnings from here.
+          break;
+        }
       }
-    })
+    }
   }
 }
 
