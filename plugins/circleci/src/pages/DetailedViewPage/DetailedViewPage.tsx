@@ -2,20 +2,16 @@ import React, { FC } from 'react';
 import { Content, InfoCard, useApi } from '@backstage/core';
 import { Grid, List, ListItem } from '@material-ui/core';
 import { PluginHeader } from 'components/PluginHeader';
-import { BuildWithSteps, BuildStep } from 'circleci-api';
+import { BuildWithSteps, BuildStepAction } from 'circleci-api';
 import { circleCIApiRef } from 'api';
-// import { LazyLog } from 'react-lazylog';
 import { useParams } from 'react-router-dom';
+import { ActionOutput } from '../../components/ActionOutput/ActionOutput';
 
 export const DetailedViewPage: FC<{}> = () => {
   let { buildId = '' } = useParams();
 
-  console.log(useParams());
-
   const [authed, setAuthed] = React.useState(false);
-
-  //@ts-ignore
-  const [build, setBuild] = React.useState<BuildWithSteps>({});
+  const [build, setBuild] = React.useState<BuildWithSteps | null>(null);
   const api = useApi(circleCIApiRef);
 
   React.useEffect(() => {
@@ -33,19 +29,45 @@ export const DetailedViewPage: FC<{}> = () => {
     };
     getBuildAsync();
   }, [authed, buildId]);
-
   return (
     <Content>
       <PluginHeader />
-      <Grid container spacing={3} direction="column">
-        <Grid item>
-          <InfoCard title="Pipelines">
-            <List>
-                {build.steps && build.steps.map<BuildStep>(({name}: {name: string}) => (<ListItem>{name}</ListItem>))}
-            </List>
-          </InfoCard>
+      {!api.authed ? (
+        <div>Not authenticated</div>
+      ) : (
+        <Grid container spacing={3} direction="column">
+          <Grid item>
+            <InfoCard title="Pipelines"></InfoCard>
+            <BuildsList build={build} />
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </Content>
   );
 };
+
+const BuildsList: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
+  <List key={build?.build_num}>
+    {build &&
+      build.steps &&
+      build.steps.map(
+        ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
+          <ListItem>
+            {name}
+            <br />
+            <ActionsList actions={actions} />
+          </ListItem>
+        ),
+      )}
+  </List>
+);
+
+const ActionsList: FC<{ actions: BuildStepAction[] }> = ({ actions }) => (
+  <List>
+    {actions.map((action: BuildStepAction) => (
+      <ListItem>
+        <ActionOutput url={action.output_url || ''} />
+      </ListItem>
+    ))}
+  </List>
+);
