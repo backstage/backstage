@@ -34,7 +34,7 @@ class WebpackPluginFailBuildOnWarning {
     if (warnings.length > 0) {
       // Throw error if there are unexpected warnings.
       for (let warning of warnings) {
-        if (!(warning.name in this.warningsWhitelist)) {
+        if (!this.warningsWhitelist.has(warning.name)) {
           process.on('beforeExit', () => {
             console.log(
               `You have some unexpected warning(s) in your webpack build. Exiting process as error.`,
