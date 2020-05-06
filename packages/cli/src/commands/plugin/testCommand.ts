@@ -15,7 +15,7 @@
  */
 
 import { Command } from 'commander';
-import { run } from 'lib/run';
+import { run } from '../../lib/run';
 
 export default async (cmd: Command) => {
   const args = ['test'];

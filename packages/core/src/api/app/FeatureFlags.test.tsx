@@ -18,7 +18,7 @@ import { FeatureFlags as FeatureFlagsImpl } from './FeatureFlags';
 import {
   FeatureFlagState,
   FeatureFlagsApi,
-} from 'api/apis/definitions/featureFlags';
+} from '../apis/definitions/featureFlags';
 
 describe('FeatureFlags', () => {
   beforeEach(() => {
@@ -150,7 +150,7 @@ describe('FeatureFlags', () => {
 
     it('should get the correct values', () => {
       const getByName = (name: string) =>
-        featureFlags.getRegisteredFlags().find(flag => flag.name === name);
+        featureFlags.getRegisteredFlags().find((flag) => flag.name === name);
 
       expect(getByName('registered-flag-0')).toBeUndefined();
       expect(getByName('registered-flag-1')).toEqual({

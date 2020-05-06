@@ -16,8 +16,8 @@
 
 import program from 'commander';
 import chalk from 'chalk';
-import { exitWithError } from 'lib/errors';
-import { version } from 'lib/version';
+import { exitWithError } from './lib/errors';
+import { version } from './lib/version';
 
 const main = (argv: string[]) => {
   program.name('backstage-cli').version(version);
@@ -25,68 +25,68 @@ const main = (argv: string[]) => {
   program
     .command('create-app')
     .description('Creates a new app in a new directory')
-    .action(actionHandler(() => require('commands/create-app/createApp')));
+    .action(actionHandler(() => require('./commands/create-app/createApp')));
 
   program
     .command('app:build')
     .description('Build an app for a production release')
-    .action(actionHandler(() => require('commands/app/build')));
+    .action(actionHandler(() => require('./commands/app/build')));
 
   program
     .command('app:serve')
     .description('Serve an app for local development')
-    .action(actionHandler(() => require('commands/app/serve')));
+    .action(actionHandler(() => require('./commands/app/serve')));
 
   program
     .command('create-plugin')
     .description('Creates a new plugin in the current repository')
     .action(
-      actionHandler(() => require('commands/create-plugin/createPlugin')),
+      actionHandler(() => require('./commands/create-plugin/createPlugin')),
     );
 
   program
     .command('remove-plugin')
     .description('Removes plugin in the current repository')
     .action(
-      actionHandler(() => require('commands/remove-plugin/removePlugin')),
+      actionHandler(() => require('./commands/remove-plugin/removePlugin')),
     );
 
   program
     .command('plugin:build')
     .option('--watch', 'Enable watch mode')
     .description('Build a plugin')
-    .action(actionHandler(() => require('commands/plugin/build')));
+    .action(actionHandler(() => require('./commands/plugin/build')));
 
   program
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
-    .action(actionHandler(() => require('commands/plugin/serve')));
+    .action(actionHandler(() => require('./commands/plugin/serve')));
 
   program
     .command('plugin:diff')
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')
     .description('Diff an existing plugin with the creation template')
-    .action(actionHandler(() => require('commands/plugin/diff')));
+    .action(actionHandler(() => require('./commands/plugin/diff')));
 
   program
     .command('lint')
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint a package')
-    .action(actionHandler(() => require('commands/lint')));
+    .action(actionHandler(() => require('./commands/lint')));
 
   program
     .command('test')
     .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(actionHandler(() => require('commands/testCommand')));
+    .action(actionHandler(() => require('./commands/testCommand')));
 
   program
     .command('watch-deps')
     .option('--build', 'Build all dependencies on startup')
     .description('Watch all dependencies while running another command')
-    .action(actionHandler(() => require('commands/watch-deps')));
+    .action(actionHandler(() => require('./commands/watch-deps')));
 
   program
     .command('build-cache')
@@ -103,12 +103,12 @@ const main = (argv: string[]) => {
       'Cache dir',
       '<repoRoot>/node_modules/.cache/backstage-builds',
     )
-    .action(actionHandler(() => require('commands/build-cache')));
+    .action(actionHandler(() => require('./commands/build-cache')));
 
   program
     .command('clean')
     .description('Delete cache directories')
-    .action(actionHandler(() => require('commands/clean/clean')));
+    .action(actionHandler(() => require('./commands/clean/clean')));
 
   program.on('command:*', () => {
     console.log();
@@ -142,7 +142,7 @@ function actionHandler<T extends readonly any[]>(
   };
 }
 
-process.on('unhandledRejection', rejection => {
+process.on('unhandledRejection', (rejection) => {
   if (rejection instanceof Error) {
     exitWithError(rejection);
   } else {

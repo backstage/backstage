@@ -16,8 +16,8 @@
 
 import React from 'react';
 import TrendLine from '.';
-import Table from 'components/Table';
-import InfoCard from 'layout/InfoCard';
+import Table from '../Table';
+import InfoCard from '../../layout/InfoCard';
 
 export default {
   title: 'TrendLine',

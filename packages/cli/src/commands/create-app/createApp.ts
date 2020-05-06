@@ -21,9 +21,9 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
-import { Task, templatingTask } from 'lib/tasks';
-import { paths } from 'lib/paths';
-import { version } from 'lib/version';
+import { Task, templatingTask } from '../../lib/tasks';
+import { paths } from '../../lib/paths';
+import { version } from '../../lib/version';
 const exec = promisify(execCb);
 
 async function checkExists(rootDir: string, name: string) {
@@ -63,7 +63,7 @@ async function buildApp(appFolder: string) {
     await Task.forItem('executing', command, async () => {
       process.chdir(appFolder);
 
-      await exec(command).catch(error => {
+      await exec(command).catch((error) => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
         throw new Error(`Could not execute command ${chalk.cyan(command)}`);
@@ -78,7 +78,7 @@ export async function moveApp(
   id: string,
 ) {
   await Task.forItem('moving', id, async () => {
-    await fs.move(tempDir, destination).catch(error => {
+    await fs.move(tempDir, destination).catch((error) => {
       throw new Error(
         `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
       );
@@ -101,7 +101,7 @@ async function addPackageResolutions(appDir: string) {
       packageFileJson.resolutions[`@backstage/${pkg}`] = `file:${pkgPath}`;
       const newContents = `${JSON.stringify(packageFileJson, null, 2)}\n`;
 
-      await fs.writeFile(pkgJsonPath, newContents, 'utf-8').catch(error => {
+      await fs.writeFile(pkgJsonPath, newContents, 'utf-8').catch((error) => {
         throw new Error(
           `Failed to add resolutions to package.json: ${error.message}`,
         );

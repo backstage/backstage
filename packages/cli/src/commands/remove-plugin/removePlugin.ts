@@ -17,9 +17,9 @@ import fse from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
-import { getCodeownersFilePath } from 'lib/codeowners';
-import { paths } from 'lib/paths';
-import { Task } from 'lib/tasks';
+import { getCodeownersFilePath } from '../../lib/codeowners';
+import { paths } from '../../lib/paths';
+import { Task } from '../../lib/tasks';
 // import os from 'os';
 
 const BACKSTAGE = '@backstage';
@@ -85,7 +85,7 @@ const removeAllStatementsContainingID = async (file: string, ID: string) => {
   const contentAfterRemoval = originalContent
     .split('\n')
     .filter(Boolean) // get rid of empty lines
-    .filter(statement => {
+    .filter((statement) => {
       return !statement.includes(`${ID}`);
     }) // get rid of lines with pluginName
     .concat(['']) // newline at end of line
@@ -105,7 +105,7 @@ export const removeReferencesFromPluginsFile = async (
 ) => {
   const pluginNameCapitalized = pluginName
     .split('-')
-    .map(name => capitalize(name))
+    .map((name) => capitalize(name))
     .join('');
 
   await Task.forItem('removing', 'export references', async () => {

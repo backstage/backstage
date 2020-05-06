@@ -17,8 +17,8 @@
 import React, { FC, useState, Suspense } from 'react';
 import { Tabs, Tab, makeStyles, Typography, Divider } from '@material-ui/core';
 import 'graphiql/graphiql.css';
-import { StorageBucket } from 'lib/storage';
-import { GraphQLEndpoint } from 'lib/api';
+import { StorageBucket } from '../../lib/storage';
+import { GraphQLEndpoint } from '../../lib/api';
 import { Progress } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 

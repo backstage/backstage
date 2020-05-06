@@ -16,7 +16,7 @@
 
 import React from 'react';
 import CopyTextButton from '.';
-import { ApiProvider, errorApiRef, ApiRegistry, ErrorApi } from 'api';
+import { ApiProvider, errorApiRef, ApiRegistry, ErrorApi } from '../../api';
 
 export default {
   title: 'CopyTextButton',

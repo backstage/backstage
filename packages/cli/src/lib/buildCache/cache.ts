@@ -16,11 +16,11 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, relative as relativePath } from 'path';
-import { runPlain, runCheck } from 'lib/run';
+import { runPlain, runCheck } from '../run';
 import { Options } from './options';
 import { extractArchive, createArchive } from './archive';
-import { paths } from 'lib/paths';
-import { version, isDev } from 'lib/version';
+import { paths } from '../paths';
+import { version, isDev } from '../version';
 
 const INFO_FILE = '.backstage-build-cache';
 
@@ -127,9 +127,7 @@ export class Cache {
       await writeCacheInfo(outputDir, { key });
 
       const timestamp = new Date().toISOString().replace(/-|:|\..*/g, '');
-      const rand = Math.random()
-        .toString(36)
-        .slice(2, 6);
+      const rand = Math.random().toString(36).slice(2, 6);
       const archiveName = `cache-${timestamp}-${rand}.tgz`;
       const archivePath = resolvePath(location, archiveName);
 
@@ -137,7 +135,7 @@ export class Cache {
       const { entries = [] } = (await readCacheInfo(location)) ?? {};
 
       // Check if there's already aan entry for this key, in that case we just wanna bump it
-      const entryIndex = entries.findIndex(e => compareKeys(e.key, key));
+      const entryIndex = entries.findIndex((e) => compareKeys(e.key, key));
       if (entryIndex !== -1) {
         const [existingEntry] = entries.splice(entryIndex, 1);
         entries.unshift(existingEntry);
@@ -167,7 +165,7 @@ export class Cache {
       return { hit: true, archive };
     }
 
-    const matchingEntry = this.entries.find(e => compareKeys(e.key, key));
+    const matchingEntry = this.entries.find((e) => compareKeys(e.key, key));
     if (!matchingEntry) {
       return { hit: false, archive };
     }

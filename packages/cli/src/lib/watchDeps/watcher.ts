@@ -18,7 +18,7 @@ import { resolve as resolvePath } from 'path';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import { Package } from './packages';
-import { createLogFunc } from 'lib/logging';
+import { createLogFunc } from '../logging';
 
 export type Watcher = {
   update(newPackages: Package[]): Promise<void>;
@@ -42,7 +42,7 @@ export async function startWatcher(
     let signalled = false;
     watchedPackageLocations.add(pkg.location);
 
-    const watchLocations = paths.map(path => resolvePath(pkg.location, path));
+    const watchLocations = paths.map((path) => resolvePath(pkg.location, path));
     const watcher = chokidar
       .watch(watchLocations, {
         cwd: pkg.location,

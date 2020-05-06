@@ -45,7 +45,6 @@
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
     "ts-node": "^8.6.2",
-    "tsconfig-paths": "^3.9.0",
     "zombie": "^6.1.4"
   },
   "dependencies": {

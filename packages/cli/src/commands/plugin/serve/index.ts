@@ -15,7 +15,7 @@
  */
 
 import { startDevServer } from './server';
-import { watchDeps } from 'lib/watchDeps';
+import { watchDeps } from '../../../lib/watchDeps';
 
 export default async () => {
   await watchDeps({ build: true });

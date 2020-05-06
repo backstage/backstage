@@ -16,7 +16,7 @@
 
 import { resolve as resolvePath } from 'path';
 import { Command } from 'commander';
-import { paths } from 'lib/paths';
+import { paths } from '../paths';
 
 const DEFAULT_CACHE_DIR = '<repoRoot>/node_modules/.cache/backstage-builds';
 const DEFAULT_MAX_ENTRIES = 10;

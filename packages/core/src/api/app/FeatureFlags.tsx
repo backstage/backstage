@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { FeatureFlagName } from 'api/plugin/types';
+import { FeatureFlagName } from '../plugin/types';
 import {
   FeatureFlagState,
   FeatureFlagsApi,
-} from 'api/apis/definitions/featureFlags';
+} from '../apis/definitions/featureFlags';
 
 /**
  * Helper method for validating compatibility and flag name.
@@ -130,12 +130,12 @@ export interface FeatureFlagsRegistryItem {
 
 export class FeatureFlagsRegistry extends Array<FeatureFlagsRegistryItem> {
   static from(entries: FeatureFlagsRegistryItem[]) {
-    Array.from(entries).forEach(entry => validateFlagName(entry.name));
+    Array.from(entries).forEach((entry) => validateFlagName(entry.name));
     return new FeatureFlagsRegistry(...entries);
   }
 
   push(...entries: FeatureFlagsRegistryItem[]): number {
-    Array.from(entries).forEach(entry => validateFlagName(entry.name));
+    Array.from(entries).forEach((entry) => validateFlagName(entry.name));
     return super.push(...entries);
   }
 
@@ -146,7 +146,7 @@ export class FeatureFlagsRegistry extends Array<FeatureFlagsRegistryItem> {
     )[]
   ): FeatureFlagsRegistryItem[] {
     const _concat = super.concat(...entries);
-    Array.from(_concat).forEach(entry => validateFlagName(entry.name));
+    Array.from(_concat).forEach((entry) => validateFlagName(entry.name));
     return _concat;
   }
 

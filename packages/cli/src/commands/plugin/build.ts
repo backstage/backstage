@@ -17,8 +17,8 @@
 import { rollup, watch, OutputOptions } from 'rollup';
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { withCache, getDefaultCacheOptions } from 'lib/buildCache';
-import { paths } from 'lib/paths';
+import { withCache, getDefaultCacheOptions } from '../../lib/buildCache';
+import { paths } from '../../lib/paths';
 import conf from './rollup.config';
 
 function logError(error: any) {
@@ -62,7 +62,7 @@ export default async (cmd: Command) => {
     // Instead we just wait until the user sends an interrupt signal.
     await new Promise(() => {
       const watcher = watch(conf);
-      watcher.on('event', event => {
+      watcher.on('event', (event) => {
         //   START        — the watcher is (re)starting
         //   BUNDLE_START — building an individual bundle
         //   BUNDLE_END   — finished building a bundle

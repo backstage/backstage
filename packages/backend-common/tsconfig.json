@@ -1,7 +1,6 @@
 {
   "include": ["src"],
   "compilerOptions": {
-    "baseUrl": "src",
     "outDir": "dist",
     "incremental": true,
     "sourceMap": true,

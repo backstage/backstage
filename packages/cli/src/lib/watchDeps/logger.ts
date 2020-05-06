@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createLogPipe } from 'lib/logging';
+import { createLogPipe } from '../logging';
 
 export type ColorFunc = (msg: string) => string;
 
