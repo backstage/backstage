@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FC } from 'react';
+import React, { useEffect, useState, FC, Suspense } from 'react';
 import {
   ExpansionPanel,
   ExpansionPanelSummary,
@@ -8,6 +8,8 @@ import {
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { BuildStepAction } from 'circleci-api';
+
+const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 
 export const ActionOutput: FC<{
   url: string;
@@ -25,22 +27,25 @@ export const ActionOutput: FC<{
           );
       });
   }, [url]);
-  console.log(messages);
   return (
-    <ExpansionPanel>
+    <ExpansionPanel TransitionProps={{ unmountOnExit: true }}>
       <ExpansionPanelSummary
         expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
+        aria-controls={`panel-${name}-content`}
+        id={`panel-${name}-header`}
       >
         <Typography>{name}</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        {messages.length === 0
-          ? 'Nothing here...'
-          : messages.map(message => (
-              <p style={{ whiteSpace: 'pre-wrap' }}>{message}</p>
-            ))}
+        {messages.length === 0 ? (
+          'Nothing here...'
+        ) : (
+          <Suspense fallback="...">
+            <div style={{ height: '200px', width: '100%' }}>
+              <LazyLog text={messages.join('\n')} extraLines={1} enableSearch />
+            </div>
+          </Suspense>
+        )}
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );

@@ -64,9 +64,8 @@ const BuildsList: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
 
 const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
   actions,
-  name,
 }) => (
-  <Box key={name}>
+  <>
     {actions.map((action: BuildStepAction) => (
       <ActionOutput
         action={action}
@@ -74,5 +73,5 @@ const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
         url={action.output_url || ''}
       />
     ))}
-  </Box>
+  </>
 );
