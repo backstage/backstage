@@ -15,4 +15,5 @@
  */
 
 export { default } from './Page';
-export { gradients, pageTheme, PageTheme } from './PageThemeProvider';
+export { gradients, pageTheme } from './PageThemeProvider';
+export type { PageTheme } from './PageThemeProvider';

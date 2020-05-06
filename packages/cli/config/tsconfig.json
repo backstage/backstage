@@ -6,9 +6,11 @@
     "noEmit": false,
     "declarationMap": true,
     "incremental": true,
-    "module": "es6",
+    "target": "ES2019",
+    "module": "ESNext",
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "lib": ["DOM", "DOM.Iterable", "ScriptHost", "ES2019"],
     "types": ["node", "jest"]
   }
 }

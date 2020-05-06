@@ -16,12 +16,14 @@
 
 export * from './api';
 export { default as Page } from './layout/Page';
-export { gradients, pageTheme, PageTheme } from './layout/Page';
+export { gradients, pageTheme } from './layout/Page';
+export type { PageTheme } from './layout/Page';
 export { default as Content } from './layout/Content/Content';
 export { default as ContentHeader } from './layout/ContentHeader/ContentHeader';
 export { default as Header } from './layout/Header/Header';
 export { default as HeaderLabel } from './layout/HeaderLabel';
 export { default as InfoCard } from './layout/InfoCard';
+export { CardTab, TabbedCard } from './layout/TabbedCard';
 export { default as ErrorBoundary } from './layout/ErrorBoundary';
 export * from './layout/Sidebar';
 export { default as HorizontalScrollGrid } from './components/HorizontalScrollGrid';
@@ -30,10 +32,11 @@ export { default as CircleProgress } from './components/ProgressBars/CircleProgr
 export { default as HorizontalProgress } from './components/ProgressBars/HorizontalProgress';
 export { default as CopyTextButton } from './components/CopyTextButton';
 export { default as Progress } from './components/Progress';
-export { default as Sequence } from './components/Sequence';
+export * from './components/SimpleStepper';
 export { AlphaLabel, BetaLabel } from './components/Lifecycle';
 export { default as SupportButton } from './components/SupportButton';
-export { default as SortableTable } from './components/SortableTable';
+export { default as Table, SubvalueCell } from './components/Table';
+export type { TableColumn } from './components/Table/Table';
 export { default as StructuredMetadataTable } from './components/StructuredMetadataTable';
 export { default as TrendLine } from './components/TrendLine';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';

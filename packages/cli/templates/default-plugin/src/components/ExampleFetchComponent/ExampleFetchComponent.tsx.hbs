@@ -16,20 +16,11 @@
 
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { Table, TableColumn, Progress } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
-import { Progress } from '@backstage/core';
 
 const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
   avatar: {
     height: 32,
     width: 32,
@@ -66,37 +57,35 @@ type DenseTableProps = {
 export const DenseTable: FC<DenseTableProps> = ({ users }) => {
   const classes = useStyles();
 
+  const columns: TableColumn[] = [
+    { title: 'Avatar', field: 'avatar' },
+    { title: 'Name', field: 'name' },
+    { title: 'Email', field: 'email' },
+    { title: 'Nationality', field: 'nationality' },
+  ];
+
+  const data = users.map((user) => {
+    return {
+      avatar: (
+        <img
+          src={user.picture.medium}
+          className={classes.avatar}
+          alt={user.name.first}
+        />
+      ),
+      name: `${user.name.first} ${user.name.last}`,
+      email: user.email,
+      nationality: user.nat,
+    };
+  });
+
   return (
-    <TableContainer>
-      <Table className={classes.table} size="small" aria-label="a dense table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Avatar</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Nationality</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map(user => (
-            <TableRow key={user.email}>
-              <TableCell>
-                <img
-                  src={user.picture.medium}
-                  className={classes.avatar}
-                  alt={user.name.first}
-                />
-              </TableCell>
-              <TableCell>
-                {user.name.first} {user.name.last}
-              </TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.nat}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Table
+      title="Example User List (fetching data from randomuser.me)"
+      options=\{{ search: false, paging: false }}
+      columns={columns}
+      data={data}
+    />
   );
 };
 
