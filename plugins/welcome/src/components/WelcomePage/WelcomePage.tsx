@@ -33,9 +33,8 @@ import {
   pageTheme,
   ContentHeader,
   SupportButton,
+  WarningPanel,
 } from '@backstage/core';
-import ErrorButton from './ErrorButton';
-import ToggleFeatureFlagButton from './ToggleFeatureFlagButton';
 
 const WelcomePage: FC<{}> = () => {
   const profile = { givenName: '' };
@@ -44,7 +43,7 @@ const WelcomePage: FC<{}> = () => {
     <Page theme={pageTheme.home}>
       <Header
         title={`Welcome ${profile.givenName || 'to Backstage'}`}
-        subtitle="Some quick intro and links."
+        subtitle="Let's start building a better developer experience"
       >
         <Timer />
       </Header>
@@ -52,16 +51,37 @@ const WelcomePage: FC<{}> = () => {
         <ContentHeader title="Getting Started">
           <SupportButton />
         </ContentHeader>
+
         <Grid container>
+          <Grid item xs={12}>
+            <WarningPanel
+              title="Backstage is in early development"
+              message={
+                <>
+                  We created Backstage about 4 years ago. While Spotify's
+                  internal version of Backstage has had the benefit of time to
+                  mature and evolve, the first iteration of our open source
+                  version is still nascent. We are envisioning three phases of
+                  the project and we have already begun work on various aspects
+                  of these phases. The best way to keep track of the progress is
+                  through the&nbsp;
+                  <Link href="https://github.com/spotify/backstage/milestones">
+                    Milestones
+                  </Link>
+                  .
+                </>
+              }
+            />
+          </Grid>
           <Grid item xs={12} md={6}>
-            <InfoCard>
+            <InfoCard title="What Now?">
               <Typography variant="body1" gutterBottom>
-                You now have a running instance of Backstage!
+                You now have a running instance of Backstage!&nbsp;
                 <span role="img" aria-label="confetti">
                   🎉
                 </span>
-                Let's make sure you get the most out of this platform by walking
-                you through the basics.
+                &nbsp;Let's make sure you get the most out of this platform by
+                walking you through the basics.
               </Typography>
               <Typography variant="h6" gutterBottom>
                 The Setup
@@ -85,7 +105,7 @@ const WelcomePage: FC<{}> = () => {
                 </ListItem>
               </List>
               <Typography variant="h6" gutterBottom>
-                Try It Out
+                Build Your Plugins
               </Typography>
               <Typography variant="body1" paragraph>
                 We suggest you either check out the documentation for{' '}
@@ -94,15 +114,18 @@ const WelcomePage: FC<{}> = () => {
                 </Link>{' '}
                 or have a look in the code for the{' '}
                 <Link component={RouterLink} to="/home">
-                  Home Page
+                  existing plugins
                 </Link>{' '}
-                in the directory "plugins/home-page/src".
+                in the directory{' '}
+                <Link href="https://github.com/spotify/backstage/tree/master/plugins">
+                  <code>plugins/</code>
+                </Link>
+                .
               </Typography>
             </InfoCard>
           </Grid>
           <Grid item>
-            <InfoCard>
-              <Typography variant="h5">Quick Links</Typography>
+            <InfoCard title="Quick Links">
               <List>
                 <ListItem>
                   <Link href="https://backstage.io">backstage.io</Link>
@@ -112,19 +135,10 @@ const WelcomePage: FC<{}> = () => {
                     Create a plugin
                   </Link>
                 </ListItem>
+                <ListItem>
+                  <Link href="/explore">Plugin gallery</Link>
+                </ListItem>
               </List>
-            </InfoCard>
-          </Grid>
-          <Grid item>
-            <InfoCard title="APIs">
-              <Typography>
-                The button below is an example of how to consume APIs.
-              </Typography>
-              <br />
-              <ErrorButton />
-              <br />
-              <br />
-              <ToggleFeatureFlagButton />
             </InfoCard>
           </Grid>
         </Grid>
