@@ -15,19 +15,14 @@
  */
 
 import express from 'express';
-import { PassThrough } from 'stream';
 import request from 'supertest';
 import winston from 'winston';
 import { requestLoggingHandler } from './requestLoggingHandler';
 
 describe('requestLoggingHandler', () => {
   it('emits logs for each request', async () => {
-    const logger = winston.createLogger({
-      transports: [
-        new winston.transports.Stream({ stream: new PassThrough() }),
-      ],
-    });
-    jest.spyOn(logger, 'info');
+    const logger = winston.createLogger();
+    jest.spyOn(logger, 'info').mockReturnValue(logger);
 
     const app = express();
     app.use(requestLoggingHandler(logger));

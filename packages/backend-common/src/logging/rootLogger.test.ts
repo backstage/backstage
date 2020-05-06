@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
 import winston from 'winston';
 import { getRootLogger, setRootLogger } from './rootLogger';
 
 describe('rootLogger', () => {
   it('can replace the default logger', () => {
-    const logger = winston.createLogger({
-      transports: [
-        new winston.transports.Stream({ stream: new PassThrough() }),
-      ],
-    });
-    jest.spyOn(logger, 'info');
+    const logger = winston.createLogger();
+    jest.spyOn(logger, 'info').mockReturnValue(logger);
 
     setRootLogger(logger);
     getRootLogger().info('testing');
