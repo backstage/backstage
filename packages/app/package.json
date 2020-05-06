@@ -14,7 +14,6 @@
     "cross-env": "^7.0.0",
     "cypress": "^4.2.0",
     "eslint-plugin-cypress": "^2.10.3",
-    "http-proxy-middleware": "^1.0.3",
     "start-server-and-test": "^1.10.11"
   },
   "dependencies": {
