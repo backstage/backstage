@@ -51,7 +51,7 @@ const transform = (
   buildsData: BuildSummary[],
   api: typeof circleCIApiRef.T,
 ): CITableBuildInfo[] => {
-  return buildsData.map(buildData => {
+  return buildsData.map((buildData) => {
     const tableBuildInfo: CITableBuildInfo = {
       id: String(buildData.build_num),
       buildName: buildData.subject
