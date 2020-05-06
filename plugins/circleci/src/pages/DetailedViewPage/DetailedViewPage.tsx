@@ -6,6 +6,7 @@ import { BuildWithSteps, BuildStepAction } from 'circleci-api';
 import { circleCIApiRef } from 'api';
 import { useParams } from 'react-router-dom';
 import { ActionOutput } from '../../components/ActionOutput/ActionOutput';
+import { Layout } from 'components/Layout';
 
 export const DetailedViewPage: FC<{}> = () => {
   let { buildId = '' } = useParams();
@@ -30,20 +31,22 @@ export const DetailedViewPage: FC<{}> = () => {
     getBuildAsync();
   }, [authed, buildId]);
   return (
-    <Content>
-      <PluginHeader />
-      {!api.authed ? (
-        <div>Not authenticated</div>
-      ) : (
-        <Grid container spacing={3} direction="column">
-          <Grid item>
-            <InfoCard title="Pipelines">
-            <BuildsList build={build} />
-            </InfoCard>
+    <Layout>
+      <Content>
+        <PluginHeader />
+        {!api.authed ? (
+          <div>Not authenticated</div>
+        ) : (
+          <Grid container spacing={3} direction="column">
+            <Grid item>
+              <InfoCard title="Pipelines">
+                <BuildsList build={build} />
+              </InfoCard>
+            </Grid>
           </Grid>
-        </Grid>
-      )}
-    </Content>
+        )}
+      </Content>
+    </Layout>
   );
 };
 
@@ -53,16 +56,23 @@ const BuildsList: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
       build.steps &&
       build.steps.map(
         ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
-            <ActionsList name={name} actions={actions} />
+          <ActionsList name={name} actions={actions} />
         ),
       )}
   </Box>
 );
 
-const ActionsList: FC<{ actions: BuildStepAction[], name: string }> = ({ actions, name }) => (
+const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
+  actions,
+  name,
+}) => (
   <Box key={name}>
     {actions.map((action: BuildStepAction) => (
-        <ActionOutput action={action} name={action.name} url={action.output_url || ''} />
+      <ActionOutput
+        action={action}
+        name={action.name}
+        url={action.output_url || ''}
+      />
     ))}
   </Box>
 );
