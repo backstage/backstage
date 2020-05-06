@@ -1,4 +1,5 @@
 const path = require('path');
+const WebpackPluginFailBuildOnWarning = require('./webpack-plugin-fail-build-on-warning');
 
 module.exports = {
   stories: [
@@ -11,37 +12,52 @@ module.exports = {
     '@storybook/addon-storysource',
     'storybook-dark-mode/register',
   ],
-  webpackFinal: async config => {
+  webpackFinal: async (config) => {
+    const coreSrc = path.resolve(__dirname, '../../core/src');
+
     config.resolve.alias = {
       ...config.resolve.alias,
+      // Resolves imports of @backstage/core inside the storybook config, pointing to src
+      '@backstage/core': coreSrc,
+      // Point to dist version of theme and any other packages that might be needed in the future
       '@backstage/theme': path.resolve(__dirname, '../../theme'),
     };
-    config.resolve.modules.push(path.resolve(__dirname, '../../core/src'));
-    config.module.rules.push(
-      {
-        test: /\.(ts|tsx)$/,
-        use: [
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              transpileOnly: true,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.(js|jsx)$/,
-        loader: 'babel-loader',
-        options: {
-          presets: ['@babel/preset-react'],
-          plugins: ['@babel/plugin-proposal-class-properties'],
-        },
-      },
-    );
+    config.resolve.modules.push(coreSrc);
+
+    // Remove the default babel-loader for js files, we're using ts-loader instead
+    const [jsLoader] = config.module.rules.splice(0, 1);
+    if (jsLoader.use[0].loader !== 'babel-loader') {
+      throw new Error(
+        `Unexpected loader removed from storybook config, ${jsonLoader.use[0].loader}`,
+      );
+    }
+
     config.resolve.extensions.push('.ts', '.tsx');
 
+    // Use ts-loader for all JS/TS files
+    config.module.rules.push({
+      test: /\.(ts|tsx|mjs|js|jsx)$/,
+      include: [__dirname, coreSrc],
+      exclude: /node_modules/,
+      use: [
+        {
+          loader: require.resolve('ts-loader'),
+          options: {
+            transpileOnly: true,
+          },
+        },
+      ],
+    });
+
     // Disable ProgressPlugin which logs verbose webpack build progress. Warnings and Errors are still logged.
-    config.plugins = config.plugins.filter(({ constructor }) => constructor.name !== "ProgressPlugin")
+    config.plugins = config.plugins.filter(
+      ({ constructor }) => constructor.name !== 'ProgressPlugin',
+    );
+
+    // Fail storybook build on CI if there are webpack warnings.
+    if (process.env.CI) {
+      config.plugins.push(new WebpackPluginFailBuildOnWarning())
+    }
 
     return config;
   },

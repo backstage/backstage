@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { router } from './plugin';
+export * from './inventory';
+export * from './service/router';

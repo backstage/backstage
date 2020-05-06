@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useLocation } from 'react-router-dom';
-import {Website, Audit, LighthouseCategoryId, AuditCompleted} from './api'
+import { Website, Audit, LighthouseCategoryId, AuditCompleted } from './api';
 export function useQuery(): URLSearchParams {
   return new URLSearchParams(useLocation().search);
 }
@@ -45,7 +45,9 @@ export const CATEGORY_LABELS: Record<LighthouseCategoryId, string> = {
 };
 
 export type SparklinesDataByCategory = Record<LighthouseCategoryId, number[]>;
-export function buildSparklinesDataForItem(item: Website): SparklinesDataByCategory {
+export function buildSparklinesDataForItem(
+  item: Website,
+): SparklinesDataByCategory {
   return item.audits
     .filter(
       (audit: Audit): audit is AuditCompleted => audit.status === 'COMPLETED',

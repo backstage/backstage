@@ -22,25 +22,60 @@
  * Happy hacking!
  */
 
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
+import {
+  errorHandler,
+  getRootLogger,
+  notFoundHandler,
+  requestLoggingHandler,
+} from '@backstage/backend-common';
+import {
+  AggregatorInventory,
+  createRouter as inventoryRouter,
+  StaticInventory,
+} from '@backstage/plugin-inventory-backend';
+import {
+  createRouter as scaffolderRouter,
+  DiskStorage,
+  CookieCutter,
+} from '@backstage/plugin-scaffolder-backend';
 import compression from 'compression';
-import { testRouter } from './test';
-import { router as inventoryRouter } from '@backstage/plugin-inventory-backend';
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
 
 const DEFAULT_PORT = 7000;
-
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
-const app = express();
+const logger = getRootLogger().child({ type: 'plugin' });
 
-app.use(helmet());
-app.use(cors());
-app.use(compression());
-app.use(express.json());
-app.use('/test', testRouter);
-app.use('/inventory', inventoryRouter);
+async function main() {
+  const inventory = new AggregatorInventory();
+  inventory.enlist(
+    new StaticInventory([
+      { id: 'component1' },
+      { id: 'component2' },
+      { id: 'component3' },
+      { id: 'component4' },
+    ]),
+  );
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
+  const storage = new DiskStorage({ logger });
+  const templater = new CookieCutter();
+
+  const app = express();
+
+  app.use(helmet());
+  app.use(cors());
+  app.use(compression());
+  app.use(express.json());
+  app.use(requestLoggingHandler());
+  app.use('/inventory', await inventoryRouter({ inventory, logger }));
+  app.use('/scaffolder', await scaffolderRouter({ storage, templater, logger }));
+  app.use(notFoundHandler());
+  app.use(errorHandler());
+
+  app.listen(PORT, () => {
+    getRootLogger().info(`Listening on port ${PORT}`);
+  });
+}
+
+main();

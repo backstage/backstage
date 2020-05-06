@@ -20,10 +20,12 @@
   "dependencies": {
     "@backstage/cli": "^0.1.1-alpha.4",
     "@backstage/core": "^0.1.1-alpha.4",
+    "@backstage/plugin-explore": "^0.1.1-alpha.4",
     "@backstage/plugin-circleci": "^0.1.1-alpha.4",
     "@backstage/plugin-home-page": "^0.1.1-alpha.4",
     "@backstage/plugin-inventory": "^0.1.1-alpha.4",
     "@backstage/plugin-lighthouse": "^0.1.1-alpha.4",
+    "@backstage/plugin-scaffolder": "^0.1.1-alpha.4",
     "@backstage/plugin-tech-radar": "^0.1.1-alpha.4",
     "@backstage/plugin-welcome": "^0.1.1-alpha.4",
     "@backstage/theme": "^0.1.1-alpha.4",

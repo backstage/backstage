@@ -5,18 +5,31 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
+    "start": "tsc-watch --onFirstSuccess \"cross-env NODE_ENV=development nodemon dist/run.js\"",
     "build": "tsc",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "clean": "backstage-cli clean"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.4"
+    "@backstage/cli": "^0.1.1-alpha.4",
+    "jest-fetch-mock": "^3.0.3",
+    "tsc-watch": "^4.2.3"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "@backstage/backend-common": "0.1.1-alpha.4",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-promise-router": "^3.0.3",
+    "helmet": "^3.22.0",
+    "morgan": "^1.10.0",
+    "winston": "^3.2.1"
   },
   "files": [
     "dist"
-  ]
+  ],
+  "nodemonConfig": {
+    "watch": "./dist"
+  }
 }

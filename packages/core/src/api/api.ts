@@ -16,7 +16,6 @@
 
 import ApiRef, { ApiRefConfig } from './apis/ApiRef';
 import AppBuilder from './app/AppBuilder';
-import WidgetViewBuilder from './widgetView/WidgetViewBuilder';
 import BackstagePlugin, { PluginConfig } from './plugin/Plugin';
 
 export function createApp() {
@@ -25,10 +24,6 @@ export function createApp() {
 
 export function createApiRef<T>(config: ApiRefConfig) {
   return new ApiRef<T>(config);
-}
-
-export function createWidgetView() {
-  return new WidgetViewBuilder();
 }
 
 export function createPlugin(config: PluginConfig): BackstagePlugin {

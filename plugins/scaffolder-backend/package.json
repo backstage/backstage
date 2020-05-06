@@ -1,0 +1,32 @@
+{
+  "name": "@backstage/plugin-scaffolder-backend",
+  "version": "0.1.1-alpha.4",
+  "main": "dist",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.4",
+    "@types/fs-extra": "^8.1.0",
+    "@types/supertest": "^2.0.8",
+    "supertest": "^4.0.2"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "0.1.1-alpha.4",
+    "dockerode": "^3.2.0",
+    "express": "^4.17.1",
+    "fs-extra": "^9.0.0",
+    "globby": "^11.0.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express-promise-router": "^3.0.3",
+    "helmet": "^3.22.0",
+    "morgan": "^1.10.0",
+    "winston": "^3.2.1"
+  }
+}
