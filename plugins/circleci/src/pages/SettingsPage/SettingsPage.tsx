@@ -4,16 +4,13 @@ import { circleCIApiRef } from 'api';
 import {
   InfoCard,
   useApi,
-  Header,
-  Page,
-  pageTheme,
   Content,
   ContentHeader,
-  HeaderLabel,
   SupportButton,
 } from '@backstage/core';
 import { ProjectInput } from 'components/ProjectInput/ProjectInput';
 import { Link as RouterLink } from 'react-router-dom';
+import { Layout } from 'components/Layout';
 
 export const SettingsPage = () => {
   const api = useApi(circleCIApiRef);
@@ -29,11 +26,7 @@ export const SettingsPage = () => {
   }, []);
 
   return (
-    <Page theme={pageTheme.tool}>
-      <Header title="Circle CI" subtitle="Settings">
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
+    <Layout>
       <Content>
         <ContentHeader title="Settings">
           <Button component={RouterLink} to="/circleci">
@@ -90,6 +83,6 @@ export const SettingsPage = () => {
           </Grid>
         </Grid>
       </Content>
-    </Page>
+    </Layout>
   );
 };

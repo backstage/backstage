@@ -31,6 +31,7 @@ export const circleCIApiRef = new ApiRef<CircleCIApi>({
 });
 
 export class CircleCIApi {
+
   private token: string = '';
   options: Partial<CircleCIOptions>;
 
@@ -103,5 +104,9 @@ export class CircleCIApi {
 
   async getUser() {
     return this.api.me();
+  }
+
+  async getBuild(buildId: string) {
+    return this.api.build(parseInt(buildId, 10));
   }
 }
