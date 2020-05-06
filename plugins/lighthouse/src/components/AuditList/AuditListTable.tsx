@@ -26,55 +26,59 @@ import {
 import { Link } from '@material-ui/core';
 import AuditStatusIcon from '../AuditStatusIcon';
 
+const columns: TableColumn[] = [
+  {
+    title: 'Website URL',
+    field: 'websiteUrl',
+  },
+  ...CATEGORIES.map((category) => ({
+    title: CATEGORY_LABELS[category],
+    field: category,
+  })),
+  {
+    title: 'Last Report',
+    field: 'lastReport',
+    cellStyle: {
+      whiteSpace: 'nowrap',
+    },
+  },
+  {
+    title: 'Last Audit Triggered',
+    field: 'lastAuditTriggered',
+    cellStyle: {
+      minWidth: 120,
+    },
+  },
+];
+
 export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
   const [websiteState, setWebsiteState] = useState(items);
   const lighthouseApi = useApi(lighthouseApiRef);
 
-  const runRefresh = async (website: Website) => {
-    const response = await lighthouseApi.getWebsiteForAuditId(
-      website.lastAudit.id,
-    );
-    const auditStatus = response.lastAudit.status;
-    if (auditStatus === 'COMPLETED' || auditStatus === 'FAILED') {
-      const newWebsiteData = websiteState.slice(0);
-      newWebsiteData[
-        newWebsiteData.findIndex((w) => w.url === response.url)
-      ] = response;
-      setWebsiteState(newWebsiteData);
-    }
+  const runRefresh = (websites: Website[]) => {
+    websites.forEach(async (website) => {
+      const response = await lighthouseApi.getWebsiteForAuditId(
+        website.lastAudit.id,
+      );
+      const auditStatus = response.lastAudit.status;
+      if (auditStatus === 'COMPLETED' || auditStatus === 'FAILED') {
+        const newWebsiteData = websiteState.slice(0);
+        newWebsiteData[
+          newWebsiteData.findIndex((w) => w.url === response.url)
+        ] = response;
+        setWebsiteState(newWebsiteData);
+      }
+    });
   };
 
-  websiteState.forEach((website) => {
-    useInterval(
-      () => runRefresh(website),
-      website?.lastAudit.status === 'RUNNING' ? 5000 : null,
-    );
-  });
+  const runningWebsiteAudits = websiteState
+    ? websiteState.filter((website) => website.lastAudit.status === 'RUNNING')
+    : [];
 
-  const columns: TableColumn[] = [
-    {
-      title: 'Website URL',
-      field: 'websiteUrl',
-    },
-    ...CATEGORIES.map((category) => ({
-      title: CATEGORY_LABELS[category],
-      field: category,
-    })),
-    {
-      title: 'Last Report',
-      field: 'lastReport',
-      cellStyle: {
-        whiteSpace: 'nowrap',
-      },
-    },
-    {
-      title: 'Last Audit Triggered',
-      field: 'lastAuditTriggered',
-      cellStyle: {
-        minWidth: 120,
-      },
-    },
-  ];
+  useInterval(
+    () => runRefresh(runningWebsiteAudits),
+    runningWebsiteAudits.length > 0 ? 5000 : null,
+  );
 
   const data = websiteState.map((website) => {
     const trendlineData = buildSparklinesDataForItem(website);
