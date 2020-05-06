@@ -15,9 +15,12 @@
  */
 import { createPlugin } from '@backstage/core';
 import { CircleCIPage } from './pages/CircleCIPage';
+import { SettingsPage } from './pages/SettingsPage';
+
 export const plugin = createPlugin({
   id: 'circleci',
   register({ router }) {
-    router.registerRoute('/circleci', CircleCIPage, { exact: false });
+    router.registerRoute('/circleci', CircleCIPage);
+    router.registerRoute('/circleci/settings', SettingsPage);
   },
 });

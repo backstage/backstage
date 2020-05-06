@@ -18,7 +18,7 @@ import { CircleCI, GitType, CircleCIOptions } from 'circleci-api';
 import { ApiRef } from '@backstage/core';
 
 const defaultOptions: Partial<CircleCIOptions> = {
-  circleHost: 'http://backstage.localhost:7000/circleci/api',
+  circleHost: '/circleci/api',
   vcs: {
     type: GitType.GITHUB,
     owner: 'CircleCITest3',

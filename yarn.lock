@@ -4072,13 +4072,6 @@
   dependencies:
     "@types/sizzle" "*"
 
-"@types/jquery@^3.3.34":
-  version "3.3.34"
-  resolved "https://registry.npmjs.org/@types/jquery/-/jquery-3.3.34.tgz#0d3b94057063d3854adaeb579652048fec07ba6c"
-  integrity sha512-lW9vsVL53Xu/Nj4gi2hNmHGc4u3KKghjqTkAlO0kF5GIOPxbqqnQpgqJBzmn3yXLrPqHb6cmNJ6URnS23Vtvbg==
-  dependencies:
-    "@types/sizzle" "*"
-
 "@types/js-cookie@2.2.5":
   version "2.2.5"
   resolved "https://registry.npmjs.org/@types/js-cookie/-/js-cookie-2.2.5.tgz#38dfaacae8623b37cc0b0d27398e574e3fc28b1e"
