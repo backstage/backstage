@@ -4,14 +4,13 @@ import { circleCIApiRef } from 'api';
 import {
   InfoCard,
   useApi,
-  Page,
-  pageTheme,
   Content,
   ContentHeader,
   SupportButton,
 } from '@backstage/core';
 import { ProjectInput } from 'components/ProjectInput/ProjectInput';
 import { Link as RouterLink } from 'react-router-dom';
+import { Layout } from 'components/Layout';
 
 export const SettingsPage = () => {
   const api = useApi(circleCIApiRef);
@@ -27,7 +26,7 @@ export const SettingsPage = () => {
   }, []);
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Layout>
       <Content>
         <ContentHeader title="Settings">
           <Button component={RouterLink} to="/circleci">
@@ -35,7 +34,7 @@ export const SettingsPage = () => {
           </Button>
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
-        <Grid container spacing={3} >
+        <Grid container spacing={3}>
           <Grid item xs={6}>
             <InfoCard title="Authentication">
               <List>
@@ -84,6 +83,6 @@ export const SettingsPage = () => {
           </Grid>
         </Grid>
       </Content>
-    </Page>
+    </Layout>
   );
 };
