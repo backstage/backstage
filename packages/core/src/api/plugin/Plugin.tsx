@@ -21,7 +21,7 @@ import {
   RouteOptions,
   FeatureFlagName,
 } from './types';
-import { validateBrowserCompat, validateFlagName } from 'api/app/FeatureFlags';
+import { validateBrowserCompat, validateFlagName } from '../app/FeatureFlags';
 
 export type PluginConfig = {
   id: string;

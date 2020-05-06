@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { dirname } from 'path';
 import { diffLines } from 'diff';
-import { paths } from 'lib/paths';
+import { paths } from '../../../lib/paths';
 import { TemplateFile, PromptFunc, FileHandler } from './types';
 
 export async function writeTargetFile(targetPath: string, contents: string) {
@@ -193,8 +193,8 @@ export async function handleAllFiles(
 ) {
   for (const file of files) {
     const { targetPath } = file;
-    const fileHandler = fileHandlers.find(handler =>
-      handler.patterns.some(pattern =>
+    const fileHandler = fileHandlers.find((handler) =>
+      handler.patterns.some((pattern) =>
         typeof pattern === 'string'
           ? pattern === targetPath
           : pattern.test(targetPath),

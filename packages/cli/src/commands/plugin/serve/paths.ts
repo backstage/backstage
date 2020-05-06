@@ -15,7 +15,7 @@
  */
 
 import { existsSync } from 'fs';
-import { paths } from 'lib/paths';
+import { paths } from '../../../lib/paths';
 
 export function getPaths() {
   const resolveTargetModule = (path: string) => {

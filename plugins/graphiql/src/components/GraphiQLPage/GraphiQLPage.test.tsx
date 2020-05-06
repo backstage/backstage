@@ -20,7 +20,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { renderWithEffects } from '@backstage/test-utils';
-import { GraphQLBrowseApi, graphQlBrowseApiRef } from 'lib/api';
+import { GraphQLBrowseApi, graphQlBrowseApiRef } from '../../lib/api';
 
 jest.mock('components/GraphiQLBrowser', () => ({
   GraphiQLBrowser: () => '<GraphiQLBrowser />',

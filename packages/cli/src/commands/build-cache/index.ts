@@ -15,8 +15,8 @@
  */
 
 import { Command } from 'commander';
-import { run } from 'lib/run';
-import { withCache, parseOptions } from 'lib/buildCache';
+import { run } from '../../lib/run';
+import { withCache, parseOptions } from '../../lib/buildCache';
 
 /*
  * The build-cache command is used to make builds a no-op if there are no changes to the package.

@@ -16,7 +16,7 @@
 
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core';
-import InfoCard from 'layout/InfoCard';
+import InfoCard from '../../layout/InfoCard';
 import { Props as BottomLinkProps } from '../../layout/BottomLink';
 import CircleProgress from './CircleProgress';
 
@@ -36,7 +36,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ProgressCard: FC<Props> = props => {
+const ProgressCard: FC<Props> = (props) => {
   const classes = useStyles(props);
   const { title, subheader, progress, deepLink, variant } = props;
 

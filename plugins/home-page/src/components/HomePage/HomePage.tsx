@@ -16,7 +16,7 @@
 
 import React, { FC } from 'react';
 import { Typography, Link, Grid } from '@material-ui/core';
-import HomePageTimer from 'components/HomepageTimer';
+import HomePageTimer from '../HomepageTimer';
 import { Content, InfoCard, Header, Page, pageTheme } from '@backstage/core';
 import SquadTechHealth from './SquadTechHealth';
 import Table from '@material-ui/core/Table';
@@ -68,7 +68,7 @@ const HomePage: FC<{}> = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {data.map(d => (
+                    {data.map((d) => (
                       <TableRow key={d.id}>
                         <TableCell>{d.entity}</TableCell>
                         <TableCell>{d.kind}</TableCell>

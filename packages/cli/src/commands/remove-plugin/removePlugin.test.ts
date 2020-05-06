@@ -17,13 +17,13 @@
 import fse from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import { paths } from 'lib/paths';
+import { paths } from '../../lib/paths';
 import {
   addExportStatement,
   capitalize,
   createTemporaryPluginFolder,
 } from '../create-plugin/createPlugin';
-import { addCodeownersEntry } from 'lib/codeowners';
+import { addCodeownersEntry } from '../../lib/codeowners';
 import {
   removeReferencesFromAppPackage,
   removeReferencesFromPluginsFile,
@@ -39,10 +39,7 @@ const testPluginPackage = `${BACKSTAGE}/plugin-${testPluginName}`;
 const tempDir = path.join(os.tmpdir(), 'remove-plugin-test');
 
 const removeEmptyLines = (file: string): string =>
-  file
-    .split('\n')
-    .filter(Boolean)
-    .join('\n');
+  file.split('\n').filter(Boolean).join('\n');
 
 const createTestPackageFile = async (
   testFilePath: string,
@@ -69,7 +66,7 @@ const createTestPluginFile = async (
   fse.copyFileSync(pluginsFilePath, testFilePath);
   const pluginNameCapitalized = testPluginName
     .split('-')
-    .map(name => capitalize(name))
+    .map((name) => capitalize(name))
     .join('');
   const exportStatement = `export { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
   addExportStatement(testFilePath, exportStatement);

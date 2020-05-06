@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { run } from 'lib/run';
+import { run } from '../../lib/run';
 
 export default async () => {
   const args = ['build'];

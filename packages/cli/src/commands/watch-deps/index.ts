@@ -15,9 +15,9 @@
  */
 
 import { Command } from 'commander';
-import { run } from 'lib/run';
-import { createLogPipe } from 'lib/logging';
-import { watchDeps, Options } from 'lib/watchDeps';
+import { run } from '../../lib/run';
+import { createLogPipe } from '../../lib/logging';
+import { watchDeps, Options } from '../../lib/watchDeps';
 
 /*
  * The watch-deps command is meant to improve iteration speed while working in a large monorepo
