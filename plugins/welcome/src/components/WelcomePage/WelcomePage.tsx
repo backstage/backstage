@@ -36,9 +36,6 @@ import {
   WarningPanel,
 } from '@backstage/core';
 
-// import ErrorButton from './ErrorButton';
-// import ToggleFeatureFlagButton from './ToggleFeatureFlagButton';
-
 const WelcomePage: FC<{}> = () => {
   const profile = { givenName: '' };
 
@@ -46,7 +43,7 @@ const WelcomePage: FC<{}> = () => {
     <Page theme={pageTheme.home}>
       <Header
         title={`Welcome ${profile.givenName || 'to Backstage'}`}
-        subtitle="Let's start build a better developer experience"
+        subtitle="Let's start building a better developer experience"
       >
         <Timer />
       </Header>
@@ -77,7 +74,7 @@ const WelcomePage: FC<{}> = () => {
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <InfoCard title="What now?">
+            <InfoCard title="What Now?">
               <Typography variant="body1" gutterBottom>
                 You now have a running instance of Backstage!&nbsp;
                 <span role="img" aria-label="confetti">
@@ -108,7 +105,7 @@ const WelcomePage: FC<{}> = () => {
                 </ListItem>
               </List>
               <Typography variant="h6" gutterBottom>
-                Build your plugins
+                Build Your Plugins
               </Typography>
               <Typography variant="body1" paragraph>
                 We suggest you either check out the documentation for{' '}
