@@ -30,11 +30,7 @@ import {
   LighthouseRestApi,
 } from '@backstage/plugin-lighthouse';
 
-import {
-  techRadarApiRef,
-  TechRadar,
-  loadSampleData,
-} from '@backstage/plugin-tech-radar';
+import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
 
 const builder = ApiRegistry.builder();
 
@@ -47,6 +43,13 @@ builder.add(errorApiRef, errorApiForwarder);
 builder.add(featureFlagsApiRef, new FeatureFlags());
 
 builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
-builder.add(techRadarApiRef, new TechRadar(1800, 800, loadSampleData));
+
+builder.add(
+  techRadarApiRef,
+  new TechRadar({
+    width: 1500,
+    height: 800,
+  }),
+);
 
 export default builder.build() as ApiHolder;

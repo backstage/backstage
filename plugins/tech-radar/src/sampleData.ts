@@ -98,7 +98,7 @@ entries.push({
   quadrant: 'infrastructure',
 });
 
-export default function loadSampleData(): Promise<TechRadarLoaderResponse> {
+export default function getSampleData(): Promise<TechRadarLoaderResponse> {
   return Promise.resolve({
     rings,
     quadrants,

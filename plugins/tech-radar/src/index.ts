@@ -17,15 +17,11 @@
 export { plugin } from './plugin';
 
 /**
- * The API for configuring the Tech Radar in a Backstage deployment.
+ * The TypeScript API for configuring Tech Radar.
  */
 export * from './api';
 
 /**
- * Load sample data for Backstage users to get setup quickly.
- *
- * @example
- *   import { techRadarApiRef, TechRadar, loadSampleData } from '@backstage/plugin-tech-radar';
- *   builder.add(techRadarApiRef, new TechRadar(800, 500, loadSampleData));
+ * The React component for more advanced use cases.
  */
-export { default as loadSampleData } from './sampleData';
+export { default as TechRadarComponent } from './components/RadarComponent';
