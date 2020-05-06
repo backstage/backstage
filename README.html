@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+
+</head>
+
+<body>
+
+<figure>
+<img src="docs/headline.png" alt="headline" />
+<figcaption>headline</figcaption>
+</figure>
+
+<h1 id="backstagehttps:backstage.io"><a href="https://backstage.io">Backstage</a></h1>
+
+<p><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+<img src="https://github.com/spotify/backstage/workflows/Frontend%20CI/badge.svg" alt="" />
+<a href="https://discord.gg/EBHEGzX"><img src="https://img.shields.io/discord/687207715902193673" alt="Discord" /></a>
+<img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg" alt="Code style" />
+<a href="https://github.com/spotify/backstage/releases"><img src="https://img.shields.io/npm/v/@backstage/core?label=Version" alt="" /></a></p>
+
+<h2 id="whatisbackstage">What is Backstage?</h2>
+
+<p>Backstage is an open platform for building developer portals.</p>
+
+<p>The philosophy behind Backstage is simple: Don&#8217;t expose your engineers to the full complexity of your infrastructure tooling. Engineers should be shipping code — not figuring out a whole new toolset every time they want to implement the basics. Backstage allows you add &#8220;stuff&#8221; (tooling, services, features, etc.) by adding a plugin, instead of building a new tool. This saves you work and avoids the need of your team to learn how to use and support yet another tool.</p>
+
+<p>For more information go to <a href="https://backstage.io">backstage.io</a> or join our <a href="https://discord.gg/EBHEGzX">Discord chatroom</a>.</p>
+
+<h2 id="whatproblemdoesbackstagesolve">What problem does Backstage solve?</h2>
+
+<p>As companies grow, their infrastructure systems get messier. Backstage unifies all your infrastructure tooling, services, and documentation with a single, consistent UI.</p>
+
+<p>This blog post provides more examples of how Backstage is used inside Spotify:</p>
+
+<p>https://labs.spotify.com/2020/03/17/what-the-heck-is-backstage-anyway/</p>
+
+<h2 id="projectroadmap">Project roadmap</h2>
+
+<p>We created Backstage about 4 years ago. While our internal version of Backstage has had the benefit of time to mature and evolve, the first iteration of our open source version is still nascent. We are envisioning three phases of the project and we have already begun work on various aspects of these phases:</p>
+
+<ul>
+<li><p>🐣 <strong>Phase 1:</strong> Extensible frontend platform (now) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable UX patterns and components help ensure a consistent experience between tools.</p></li>
+<li><p>🐢 <strong>Phase 2:</strong> Manage your stuff (next 2&#8211;3 months) - Manage anything from microservices to software components to infrastructure and your service catalog. Regardless of whether you want to create a new library, view service deployment status in Kubernetes, or check the test coverage for a website &#8211; Backstage will provide all of those tools - and many more - in a single developer portal.</p></li>
+<li><p>🐇 <strong>Phase 3:</strong> Ecosystem (later) - Everyone&#8217;s infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.</p></li>
+</ul>
+
+<p>Check out our <a href="https://github.com/spotify/backstage/milestones">Milestones</a> and open <a href="https://github.com/spotify/backstage/labels/rfc">RFCs</a> how they relate to the three Phases outlined above.</p>
+
+<p>Our vision for Backstage is for it to become the trusted standard toolbox (read: UX layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone. If this sounds interesting or you&#8217;d like to help us shape our product vision, we&#8217;d love to talk. You can email me directly: <a href="mailto:alund@spotify.com">alund@spotify.com</a>.</p>
+
+<h2 id="overview">Overview</h2>
+
+<p>The Backstage platform consists of a number of different components:</p>
+
+<ul>
+<li><strong>app</strong> - Main web application that users interact with. It&#8217;s built up by a number of different <em>Plugins</em>. This repo contains an example implementation of an app (located in <code>packages/example-app</code>) and you can easily get started with your own app by <a href="docs/create-an-app.md">creating one</a>.</li>
+<li><a href="https://github.com/spotify/backstage/tree/master/plugins"><strong>plugins</strong></a> - Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform API&#8217;s and reusable UI components. Plugins can fetch data either from the <em>backend</em> or through any RESTful API exposed through the <em>proxy</em>.</li>
+<li><a href="https://github.com/spotify/backstage/tree/master/packages/backend"><strong>backend</strong></a> - GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.</li>
+<li><strong>proxy</strong> * - Terminates HTTPS and exposes any RESTful API to Plugins.</li>
+<li><strong>identity</strong> * - A backend service that holds your organisation&#8217;s metadata.</li>
+</ul>
+
+<p><em>* not yet released</em></p>
+
+<figure>
+<img src="backstage_overview.png" alt="overview" />
+<figcaption>overview</figcaption>
+</figure>
+
+<h2 id="gettingstarted">Getting started</h2>
+
+<p>To run a Backstage app, you will need to have the following installed:</p>
+
+<ul>
+<li><a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">git</a></li>
+<li><a href="https://nodejs.org/en/download/">NodeJS</a> - Active LTS Release, currently v12</li>
+<li><a href="https://classic.yarnpkg.com/en/docs/install">yarn</a></li>
+</ul>
+
+<p>After cloning this repo, open a terminal window and start the web app using the following commands from the project root:</p>
+
+<pre><code class="bash">yarn install
+yarn start
+</code></pre>
+
+<p>The final <code>yarn start</code> command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.</p>
+
+<p>And thats it! You are good to go 👍</p>
+
+<h3 id="nextstep">Next step</h3>
+
+<p>Take a look at the <a href="docs/getting-started/README.md">Getting Started</a> guide to learn more about how to extend the functionality with Plugins.</p>
+
+<h2 id="documentation">Documentation</h2>
+
+<ul>
+<li><a href="docs/getting-started/README.md">Getting Started</a></li>
+<li><a href="docs/create-an-app.md">Create a Backstage App</a></li>
+<li><a href="docs/architecture-terminology.md">Architecture</a></li>
+<li><a href="docs/reference/README.md">API references</a></li>
+<li><a href="docs/design.md">Designing for Backstage</a></li>
+<li><a href="http://storybook.backstage.io">Storybook - UI components</a> (<a href="https://github.com/spotify/backstage/milestone/9">WIP</a>)</li>
+<li><a href="docs/getting-started/contributing-to-storybook.md">Contributing to Storybook</a></li>
+<li>Using Backstage components (TODO)</li>
+</ul>
+
+<h2 id="contributing">Contributing</h2>
+
+<p>We would love your help in building Backstage! See <a href="CONTRIBUTING.md">CONTRIBUTING</a> for more information.</p>
+
+<h2 id="community">Community</h2>
+
+<ul>
+<li><a href="https://discord.gg/MUpMjP2">Discord chatroom</a> - Get support or discuss the project</li>
+<li><a href="https://github.com/spotify/backstage/labels/good%20first%20issue">Good First Issues</a> - Start here if you want to contribute</li>
+<li><a href="https://github.com/spotify/backstage/labels/rfc">RFCs</a> - Help shape the technical direction</li>
+<li><a href="docs/FAQ.md">FAQ</a> - Frequently Asked Questions</li>
+<li><a href="CODE_OF_CONDUCT.md">Code of Conduct</a> - This is how we roll</li>
+<li><a href="https://backstage.io/blog/">Blog</a> - Announcements and updates</li>
+<li>Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️</li>
+</ul>
+
+<p>Or, if you are an open source developer and are interested in joining our team, please reach out to <a href="mailto:foss-opportunities@spotify.com">foss-opportunities@spotify.com </a></p>
+
+<h2 id="license">License</h2>
+
+<p>Copyright 2020 Spotify AB.</p>
+
+<p>Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0</p>
+
+</body>
+</html>

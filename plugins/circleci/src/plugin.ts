@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as InventoryPlugin } from '@backstage/plugin-inventory';
-export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
-export { plugin as Explore } from '@backstage/plugin-explore';
-export { plugin as Circleci } from '@backstage/plugin-circleci';
+import { createPlugin } from '@backstage/core';
+import { BuildsPage } from './pages/BuildsPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { DetailedViewPage } from './pages/DetailedViewPage';
+
+export const plugin = createPlugin({
+  id: 'circleci',
+  register({ router }) {
+    router.registerRoute('/circleci', BuildsPage);
+    router.registerRoute('/circleci/build/:buildId', DetailedViewPage);
+    router.registerRoute('/circleci/settings', SettingsPage);
+  },
+});
