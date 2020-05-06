@@ -1,7 +1,8 @@
 {
   "name": "@backstage/plugin-circleci",
   "version": "0.1.1-alpha.4",
-  "main": "dist/index.cjs.js",
+  "main": "dist/index.esm.js",
+  "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
   "private": true,

@@ -26,7 +26,7 @@ export const BuildsPage: FC<{}> = () => (
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>
-          <InfoCard title="Pipelines">
+          <InfoCard>
             <CircleCIFetch />
           </InfoCard>
         </Grid>
