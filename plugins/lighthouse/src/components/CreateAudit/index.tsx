@@ -40,7 +40,7 @@ import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   input: {
     minWidth: 300,
   },
@@ -113,7 +113,7 @@ const CreateAudit: FC<{}> = () => {
           <Grid item xs={12} sm={6}>
             <InfoCard>
               <form
-                onSubmit={ev => {
+                onSubmit={(ev) => {
                   ev.preventDefault();
                   triggerAudit();
                 }}
@@ -128,7 +128,7 @@ const CreateAudit: FC<{}> = () => {
                       helperText="The target URL for Lighthouse to use."
                       required
                       disabled={submitting}
-                      onChange={ev => setUrl(ev.target.value)}
+                      onChange={(ev) => setUrl(ev.target.value)}
                       value={url}
                       inputProps={{ 'aria-label': 'URL' }}
                     />
@@ -142,7 +142,7 @@ const CreateAudit: FC<{}> = () => {
                       select
                       required
                       disabled={submitting}
-                      onChange={ev => setEmulatedFormFactor(ev.target.value)}
+                      onChange={(ev) => setEmulatedFormFactor(ev.target.value)}
                       value={emulatedFormFactor}
                       inputProps={{ 'aria-label': 'Emulated form factor' }}
                     >

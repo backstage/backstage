@@ -53,7 +53,7 @@ const useTechRadarLoader = (props: TechRadarComponentProps) => {
   return state;
 };
 
-const RadarComponent: FC<TechRadarComponentProps> = props => {
+const RadarComponent: FC<TechRadarComponentProps> = (props) => {
   const errorApi = useApi<ErrorApi>(errorApiRef);
   const { loading, error, data } = useTechRadarLoader(props);
 
