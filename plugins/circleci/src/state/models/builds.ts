@@ -22,6 +22,9 @@ export const builds = {
   },
   reducers: {
     setBuilds(state: BuildsState, payload: BuildSummary[]) {
+      if (state.pollingState !== PollingState.Polling) {
+        return state;
+      }
       return { ...state, builds: payload };
     },
     setPollingIntervalId(state: BuildsState, payload: number | null) {

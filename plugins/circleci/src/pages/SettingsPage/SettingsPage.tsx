@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, TextField, List, Grid, ListItem } from '@material-ui/core';
+import {
+  Button,
+  TextField,
+  List,
+  Grid,
+  ListItem,
+  Snackbar,
+} from '@material-ui/core';
 import {
   InfoCard,
   Content,
@@ -14,6 +21,7 @@ import { Layout } from 'components/Layout';
 import { SettingsState } from 'state/models/settings';
 import { iRootState } from 'state/store';
 import { Dispatch } from '../../state/store';
+import { Alert } from '@material-ui/lab';
 
 export const SettingsPage = () => {
   const {
@@ -46,6 +54,8 @@ export const SettingsPage = () => {
     }
   }, [ownerFromStore, repoFromStore, tokenFromStore]);
 
+  const [saved, setSaved] = useState(false);
+
   return (
     <Layout>
       <Content>
@@ -62,6 +72,9 @@ export const SettingsPage = () => {
                 <>
                   Project Credentials
                   {/*{authed ? <StatusOK /> : <StatusFailed />} */}
+                  <Snackbar autoHideDuration={3000} open={saved}>
+                    <Alert severity="success">Credentials saved.</Alert>
+                  </Snackbar>
                 </>
               }
             >
@@ -71,23 +84,26 @@ export const SettingsPage = () => {
                     name="circleci-token"
                     label="Token"
                     value={token}
-                    onChange={(e) => setToken(e.target.value)}
+                    variant="outlined"
+                    onChange={e => setToken(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
                   <TextField
                     name="circleci-owner"
                     label="Owner"
+                    variant="outlined"
                     value={owner}
-                    onChange={(e) => setOwner(e.target.value)}
+                    onChange={e => setOwner(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
                   <TextField
                     name="circleci-repo"
                     label="Repo"
+                    variant="outlined"
                     value={repo}
-                    onChange={(e) => setRepo(e.target.value)}
+                    onChange={e => setRepo(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -95,13 +111,14 @@ export const SettingsPage = () => {
                     data-testid="github-auth-button"
                     variant="outlined"
                     color="primary"
-                    onClick={() =>
+                    onClick={() => {
+                      setSaved(true);
                       dispatch.settings.setCredentials({
                         owner,
                         repo,
                         token,
-                      })
-                    }
+                      });
+                    }}
                   >
                     Save credentials
                   </Button>
