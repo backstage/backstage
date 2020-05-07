@@ -7,6 +7,7 @@ import {
   Grid,
   ListItem,
   Snackbar,
+  Box,
 } from '@material-ui/core';
 import {
   InfoCard,
@@ -66,13 +67,17 @@ export const SettingsPage = () => {
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
         <Grid container spacing={3}>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={3}>
             <InfoCard
               title={
                 <>
                   Project Credentials
                   {/*{authed ? <StatusOK /> : <StatusFailed />} */}
-                  <Snackbar autoHideDuration={3000} open={saved}>
+                  <Snackbar
+                    autoHideDuration={1000}
+                    open={saved}
+                    onClose={() => setSaved(false)}
+                  >
                     <Alert severity="success">Credentials saved.</Alert>
                   </Snackbar>
                 </>
@@ -84,44 +89,54 @@ export const SettingsPage = () => {
                     name="circleci-token"
                     label="Token"
                     value={token}
+                    fullWidth
                     variant="outlined"
-                    onChange={e => setToken(e.target.value)}
+                    onChange={(e) => setToken(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
                   <TextField
                     name="circleci-owner"
+                    fullWidth
                     label="Owner"
                     variant="outlined"
                     value={owner}
-                    onChange={e => setOwner(e.target.value)}
+                    onChange={(e) => setOwner(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
                   <TextField
                     name="circleci-repo"
                     label="Repo"
+                    fullWidth
                     variant="outlined"
                     value={repo}
-                    onChange={e => setRepo(e.target.value)}
+                    onChange={(e) => setRepo(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
-                  <Button
-                    data-testid="github-auth-button"
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => {
-                      setSaved(true);
-                      dispatch.settings.setCredentials({
-                        owner,
-                        repo,
-                        token,
-                      });
-                    }}
+                  <Box
+                    mt={2}
+                    display="flex"
+                    width="100%"
+                    justifyContent="center"
                   >
-                    Save credentials
-                  </Button>
+                    <Button
+                      data-testid="github-auth-button"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => {
+                        setSaved(true);
+                        dispatch.settings.setCredentials({
+                          owner,
+                          repo,
+                          token,
+                        });
+                      }}
+                    >
+                      Save credentials
+                    </Button>
+                  </Box>
                 </ListItem>
               </List>
             </InfoCard>
