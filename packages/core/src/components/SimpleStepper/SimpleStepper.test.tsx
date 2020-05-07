@@ -23,6 +23,33 @@ const getTextInSlide = (rendered: any, index: number) =>
   within(rendered.getByTestId(`step${index}`)).getByText;
 
 describe('Stepper', () => {
+  it('Maintains state history', async () => {
+    const rendered = render(
+      wrapInTestApp(
+        <Stepper>
+          <Step title="Step 0" data-testid="step0">
+            <div>step0</div>
+          </Step>
+          <Step title="Step 1" data-testid="step1">
+            <div>step1</div>
+          </Step>
+          <Step title="Step 2" data-testid="step2">
+            <div>step2</div>
+          </Step>
+        </Stepper>,
+      ),
+    );
+
+    fireEvent.click(getTextInSlide(rendered, 0)('Next') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 1)('Back') as Node);
+    expect(rendered.getByText('step0')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 0)('Next') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+  });
+
   it('Handles nextStep property', async () => {
     const rendered = render(
       wrapInTestApp(
