@@ -71,7 +71,7 @@ export const SettingsPage = () => {
                     name="circleci-token"
                     label="Token"
                     value={token}
-                    onChange={(e) => setToken(e.target.value)}
+                    onChange={e => setToken(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -79,7 +79,7 @@ export const SettingsPage = () => {
                     name="circleci-owner"
                     label="Owner"
                     value={owner}
-                    onChange={(e) => setOwner(e.target.value)}
+                    onChange={e => setOwner(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -87,7 +87,7 @@ export const SettingsPage = () => {
                     name="circleci-repo"
                     label="Repo"
                     value={repo}
-                    onChange={(e) => setRepo(e.target.value)}
+                    onChange={e => setRepo(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -96,7 +96,7 @@ export const SettingsPage = () => {
                     variant="outlined"
                     color="primary"
                     onClick={() =>
-                      dispatch.settings.setCredentialsEffect({
+                      dispatch.settings.setCredentials({
                         owner,
                         repo,
                         token,

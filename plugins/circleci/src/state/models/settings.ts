@@ -22,7 +22,7 @@ export const settings = {
     },
   },
   effects: (dispatch: Dispatch) => ({
-    setCredentialsEffect(
+    setCredentials(
       {
         credentials,
         doPersist = true,
@@ -32,7 +32,7 @@ export const settings = {
       const newState = { ...state.settings, ...credentials };
 
       if (doPersist) dispatch.settings.persist(newState);
-      dispatch.settings.setCredentials(newState);
+      // dispatch.settings.setCredentials(newState);
     },
     persist(payload: RootModel) {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -47,13 +47,14 @@ export const settings = {
         if (
           stateFromStorage &&
           Object.keys(stateFromStorage).some(
-            (k) => (state as any).settings[k] !== stateFromStorage[k],
+            k => (state as any).settings[k] !== stateFromStorage[k],
           )
         )
-          dispatch.settings.setCredentialsEffect({
-            credentials: stateFromStorage,
-            doPersist: false,
-          });
+          // dispatch.settings.setCredentialsEffect({
+          //   credentials: stateFromStorage,
+          //   doPersist: false,
+          // });
+          dispatch.settings.setCredentials(stateFromStorage);
       } catch (e) {
         console.log(e);
       }
