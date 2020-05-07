@@ -1,6 +1,5 @@
-import { Dispatch } from '../store';
+import { Dispatch, iRootState } from '../store';
 import { circleCIApiRef } from '../../api';
-import { RootModel } from '.';
 
 const STORAGE_KEY = `${circleCIApiRef.id}.settings`;
 
@@ -17,53 +16,41 @@ export const settings = {
     repo: '',
   }, // initial state
   reducers: {
-    setCredentials(state: SettingsState, payload: SettingsState) {
-      return { ...state, ...payload };
+    setCredentials(
+      state: SettingsState,
+      { doPersist, ...credentials }: SettingsState & { doPersist: boolean },
+    ) {
+      return { ...state, ...credentials };
     },
   },
   effects: (dispatch: Dispatch) => ({
-    setCredentials(
-      {
-        credentials,
-        doPersist = true,
-      }: { credentials: SettingsState; doPersist?: boolean },
-      state: RootModel,
-    ) {
-      const newState = { ...state.settings, ...credentials };
-
-      if (doPersist) dispatch.settings.persist(newState);
-      // dispatch.settings.setCredentials(newState);
+    setCredentials({
+      doPersist = true,
+      ...credentials
+    }: SettingsState & { doPersist: boolean }) {
+      if (doPersist) dispatch.settings.persist(credentials);
     },
-    persist(payload: RootModel) {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    persist(credentials: SettingsState) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(credentials));
     },
-    rehydrate(_: any, state: RootModel) {
+    rehydrate(_: any, state: iRootState) {
       try {
         const stateFromStorage = JSON.parse(
           sessionStorage.getItem(STORAGE_KEY)!,
         );
-        console.log({ stateFromStorage, state });
-        console.log(Object.keys(stateFromStorage));
         if (
           stateFromStorage &&
           Object.keys(stateFromStorage).some(
-            k => (state as any).settings[k] !== stateFromStorage[k],
+            (k) => (state as any).settings[k] !== stateFromStorage[k],
           )
         )
-          // dispatch.settings.setCredentialsEffect({
-          //   credentials: stateFromStorage,
-          //   doPersist: false,
-          // });
-          dispatch.settings.setCredentials(stateFromStorage);
+          dispatch.settings.setCredentials({
+            ...stateFromStorage,
+            doPersist: false,
+          });
       } catch (e) {
         console.log(e);
       }
     },
-    // handle state changes with impure functions.
-    // use async/await for async actions
-    // async incrementAsync(payload, rootState) {
-    //     await new Promise(resolve => setTimeout(resolve, 1000))
-    //     dispatch.count.increment(payload)
-    // },
   }),
 };
