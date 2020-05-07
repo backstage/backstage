@@ -10,12 +10,6 @@
     "test": "backstage-cli test",
     "clean": "backstage-cli clean"
   },
-  "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.4",
-    "@types/fs-extra": "^8.1.0",
-    "@types/supertest": "^2.0.8",
-    "supertest": "^4.0.2"
-  },
   "dependencies": {
     "@backstage/backend-common": "0.1.1-alpha.4",
     "dockerode": "^3.2.0",
@@ -28,5 +22,11 @@
     "helmet": "^3.22.0",
     "morgan": "^1.10.0",
     "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.4",
+    "@types/fs-extra": "^8.1.0",
+    "@types/supertest": "^2.0.8",
+    "supertest": "^4.0.2"
   }
 }
