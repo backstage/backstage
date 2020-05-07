@@ -4,6 +4,7 @@ Website: [https://circleci.com/](https://circleci.com/)
 
 <img src="./src/assets/screenshot-1.png" />
 <img src="./src/assets/screenshot-2.png" />
+
 ## Setup
 
 0. If you have standalone app (you didn't clone this repo), then do
@@ -33,7 +34,7 @@ export { plugin as Circleci } from '@backstage/plugin-circleci';
 ```
 
 3. Run app with `yarn start` and navigate to `/circleci/settings`
-4. Enter project credentials and **project** token, acquired according to [https://circleci.com/docs/2.0/managing-api-tokens/](https://circleci.com/docs/2.0/managing-api-tokens/)
+4. Enter project settings and **project** token, acquired according to [https://circleci.com/docs/2.0/managing-api-tokens/](https://circleci.com/docs/2.0/managing-api-tokens/)
 
 ## Features
 
