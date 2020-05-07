@@ -13,6 +13,9 @@
       "@storybook/addons/**"
     ]
   },
+  "dependencies": {
+    "@backstage/theme": "0.1.1-alpha.4"
+  },
   "devDependencies": {
     "@storybook/addon-actions": "^5.3.17",
     "@storybook/addon-links": "^5.3.17",
@@ -20,8 +23,5 @@
     "@storybook/addons": "^5.3.17",
     "@storybook/react": "^5.3.17",
     "storybook-dark-mode": "^0.4.1"
-  },
-  "dependencies": {
-    "@backstage/theme": "0.1.1-alpha.4"
   }
 }
