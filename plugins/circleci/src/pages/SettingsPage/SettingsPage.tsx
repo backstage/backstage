@@ -7,6 +7,8 @@ import {
   Content,
   ContentHeader,
   SupportButton,
+  // StatusOK,
+  StatusFailed,
 } from '@backstage/core';
 import { Link as RouterLink } from 'react-router-dom';
 import { Layout } from 'components/Layout';
@@ -46,7 +48,14 @@ export const SettingsPage = () => {
         </ContentHeader>
         <Grid container spacing={3}>
           <Grid item xs={6}>
-            <InfoCard title="Authentication">
+            <InfoCard
+              title="Project Credentials"
+              subheader={
+                <div>
+                  <StatusFailed />
+                </div>
+              }
+            >
               <List>
                 {authed ? (
                   <>Authenticated</>
@@ -80,20 +89,11 @@ export const SettingsPage = () => {
                     </ListItem>
                     <ListItem>
                       <Button
-                        data-testid="load-build-button"
-                        variant="outlined"
-                        color="primary"
-                        onClick={() => api.setVCSOptions({ owner, repo })}
-                      >
-                        Save
-                      </Button>
-                    </ListItem>
-                    <ListItem>
-                      <Button
                         data-testid="github-auth-button"
                         variant="outlined"
                         color="primary"
                         onClick={async () => {
+                          api.setVCSOptions({ owner, repo });
                           api.setToken(token);
                           api
                             .validateToken()
@@ -101,7 +101,7 @@ export const SettingsPage = () => {
                             .catch(() => setAuthed(false));
                         }}
                       >
-                        Authenticate
+                        Save credentials
                       </Button>
                     </ListItem>
                   </>
