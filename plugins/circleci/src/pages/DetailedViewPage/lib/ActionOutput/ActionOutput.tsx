@@ -5,13 +5,13 @@ import {
   Typography,
   ExpansionPanelDetails,
 } from '@material-ui/core';
-
+import moment from 'moment';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 import { BuildStepAction } from 'circleci-api';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
-
+moment.relativeTimeThreshold('ss', 0);
 const useStyles = makeStyles({
   expansionPanelDetails: {
     padding: 0,
@@ -29,7 +29,7 @@ export const ActionOutput: FC<{
   name: string;
   className?: string;
   action: BuildStepAction;
-}> = ({ url, name, className }) => {
+}> = ({ url, name, className, action }) => {
   const classes = useStyles();
 
   const [messages, setMessages] = useState([]);
@@ -43,6 +43,12 @@ export const ActionOutput: FC<{
           );
       });
   }, [url]);
+
+  const timeElapsed = moment
+    .duration(
+      moment(action.end_time || moment()).diff(moment(action.start_time)),
+    )
+    .humanize();
   return (
     <ExpansionPanel
       TransitionProps={{ unmountOnExit: true }}
@@ -56,7 +62,9 @@ export const ActionOutput: FC<{
           className: classes.button,
         }}
       >
-        <Typography variant="button">{name}</Typography>
+        <Typography variant="button">
+          {name} ({timeElapsed})
+        </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionPanelDetails}>
         {messages.length === 0 ? (

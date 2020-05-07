@@ -52,6 +52,24 @@ export const builds = {
         console.log(e);
       }
     },
+    async restartBuild(
+      { api, buildId }: { api: CircleCIApi; buildId: number },
+      state: iRootState,
+    ) {
+      try {
+        await api.retry(buildId, {
+          token: state.settings.token,
+          vcs: {
+            owner: state.settings.owner,
+            repo: state.settings.repo,
+            type: GitType.GITHUB,
+          },
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
     startPolling(api: CircleCIApi, state: iRootState) {
       if (state.builds.pollingIntervalId) return;
 

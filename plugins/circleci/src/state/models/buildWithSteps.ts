@@ -3,7 +3,7 @@ import { GitType, BuildWithSteps } from 'circleci-api';
 import { CircleCIApi } from 'api';
 
 export type BuildState = {
-  build: BuildWithSteps | null;
+  builds: Record<number, BuildWithSteps>;
   pollingIntervalId: number | null;
   pollingState: PollingState;
 };
@@ -16,7 +16,7 @@ export enum PollingState {
 }
 export const buildWithSteps = {
   state: {
-    build: null,
+    builds: {},
     pollingIntervalId: null,
     pollingState: PollingState.Idle,
   } as BuildState,
@@ -25,7 +25,10 @@ export const buildWithSteps = {
       if (state.pollingState !== PollingState.Polling) {
         return state;
       }
-      return { ...state, build: payload };
+      return {
+        ...state,
+        builds: { ...state.builds, [payload.build_num!]: payload },
+      };
     },
     setPollingIntervalId(state: BuildState, payload: number | null) {
       return {

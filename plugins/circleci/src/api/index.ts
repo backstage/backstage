@@ -36,12 +36,10 @@ export class CircleCIApi {
   }
 
   async retry(buildNumber: number, options: CircleCIOptions) {
-    return postBuildActions(
-      options.token,
-      buildNumber,
-      BuildAction.RETRY,
-      options,
-    );
+    return postBuildActions(options.token, buildNumber, BuildAction.RETRY, {
+      circleHost: this.apiUrl,
+      ...options.vcs,
+    });
   }
 
   async getBuilds(options: CircleCIOptions) {

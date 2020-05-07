@@ -12,11 +12,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
   <>
-    #{build?.build_num} - {build?.branch}
+    #{build?.build_num} - {build?.subject}
   </>
 );
 import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
+  neutral: {},
   failed: {
     position: 'relative',
     '&:after': {
@@ -28,6 +29,19 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       bottom: 0,
       boxShadow: `inset 4px 0px 0px ${theme.palette.error.main}`,
+    },
+  },
+  running: {
+    position: 'relative',
+    '&:after': {
+      pointerEvents: 'none',
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      left: 0,
+      bottom: 0,
+      boxShadow: `inset 4px 0px 0px ${theme.palette.info.main}`,
     },
   },
   cardContent: {
@@ -48,6 +62,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const pickClassName = (
+  classes: ReturnType<typeof useStyles>,
+  build: BuildWithSteps = {} as BuildWithSteps,
+) => {
+  switch (true) {
+    case build.failed:
+      return classes.failed;
+    case ['running', 'queued'].includes(build.status!):
+      return classes.running;
+    case build.status === 'success':
+      return classes.success;
+    default:
+      return classes.neutral;
+  }
+};
 export const DetailedViewPage: FC<{}> = () => {
   let { buildId = '' } = useParams();
   const classes = useStyles();
@@ -60,7 +89,8 @@ export const DetailedViewPage: FC<{}> = () => {
       dispatch.buildWithSteps.stopPolling();
     };
   }, []);
-  const { build } = useSelector((state: iRootState) => state.buildWithSteps);
+  const { builds } = useSelector((state: iRootState) => state.buildWithSteps);
+  const build = builds[parseInt(buildId, 10)];
 
   return (
     <Layout>
@@ -70,7 +100,7 @@ export const DetailedViewPage: FC<{}> = () => {
         <Grid container spacing={3} direction="column">
           <Grid item>
             <InfoCard
-              className={build?.failed ? classes.failed : classes.success}
+              className={pickClassName(classes, build)}
               title={<BuildName build={build} />}
               cardClassName={classes.cardContent}
             >

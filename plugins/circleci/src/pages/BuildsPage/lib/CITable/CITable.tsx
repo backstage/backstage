@@ -4,9 +4,9 @@ import React, { FC } from 'react';
 import {
   Link,
   CircularProgress,
-  Button,
   Typography,
   Box,
+  IconButton,
 } from '@material-ui/core';
 import { Replay as RetryIcon, GitHub as GithubIcon } from '@material-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
@@ -142,17 +142,19 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Status',
     render: (row: Partial<CITableBuildInfo>) => (
-      <>
-        {getStatusComponent(row.status)} {row.status}
-      </>
+      <Box display="flex" alignItems="center">
+        {getStatusComponent(row.status)}
+        <Box mr={1} />
+        <Typography variant="button">{row.status}</Typography>
+      </Box>
     ),
   },
   {
     title: 'Actions',
     render: (row: Partial<CITableBuildInfo>) => (
-      <Button onClick={row.onRetryClick}>
+      <IconButton onClick={row.onRetryClick}>
         <RetryIcon />
-      </Button>
+      </IconButton>
     ),
     // @ts-ignore
     width: '10%',

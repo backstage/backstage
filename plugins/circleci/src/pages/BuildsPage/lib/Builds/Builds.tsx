@@ -48,7 +48,11 @@ const makeReadableStatus = (status: string | undefined) => {
   } as Record<string, string>)[status];
 };
 
-const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
+const transform = (
+  buildsData: BuildSummary[],
+  dispatch: Dispatch,
+  api: typeof circleCIApiRef.T,
+): CITableBuildInfo[] => {
   return buildsData.map((buildData) => {
     const tableBuildInfo: CITableBuildInfo = {
       id: String(buildData.build_num),
@@ -56,7 +60,8 @@ const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
         ? buildData.subject +
           (buildData.retry_of ? ` (retry of #${buildData.retry_of})` : '')
         : '',
-      onRetryClick: () => {}, //api.retry(String(buildData.build_num)),
+      onRetryClick: () =>
+        dispatch.builds.restartBuild({ buildId: buildData.build_num, api }),
       source: {
         branchName: String(buildData.branch),
         commit: {
@@ -90,7 +95,7 @@ export const Builds: FC<{}> = () => {
   }, []);
   const { builds } = useSelector((state: iRootState) => state.builds);
   const { repo, owner } = useSelector((state: iRootState) => state.settings);
-  const transformedBuilds = transform(builds);
+  const transformedBuilds = transform(builds, dispatch, api);
 
   return (
     <CITable builds={transformedBuilds} projectName={`${owner}/${repo}`} />

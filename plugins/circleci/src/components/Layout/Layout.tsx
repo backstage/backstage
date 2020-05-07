@@ -1,11 +1,20 @@
 import React from 'react';
 import { Header, Page, pageTheme, HeaderLabel } from '@backstage/core';
 // @ts-ignore
-import logo from '../../assets/circle-logo-horizontal-white.png';
+import logo from '../../assets/circle-logo-badge-white-15.png';
+import { Box } from '@material-ui/core';
 
 export const Layout: React.FC = ({ children }) => (
   <Page theme={pageTheme.tool}>
-    <Header title={<img src={logo} style={{ height: '2em' }} />}>
+    <Header
+      pageTitleOverride="Circle CI Plugin"
+      title={
+        <Box display="flex" alignItems="center">
+          <img src={logo} style={{ height: '1em' }} />
+          <Box mr={1} /> Circle CI Plugin
+        </Box>
+      }
+    >
       <HeaderLabel label="Owner" value="Team X" />
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
