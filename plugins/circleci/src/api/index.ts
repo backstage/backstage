@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import { CircleCI, GitType, CircleCIOptions } from 'circleci-api';
+import { CircleCI, CircleCIOptions } from 'circleci-api';
 import { ApiRef } from '@backstage/core';
 
 const defaultOptions: Partial<CircleCIOptions> = {
   circleHost: '/circleci/api',
-  vcs: {
-    type: GitType.GITHUB,
-    owner: 'CircleCITest3',
-    repo: 'circleci-test',
-  },
+  vcs: {},
 };
 export const circleCIApiRef = new ApiRef<CircleCIApi>({
   id: 'plugin.circleci.service',
@@ -31,7 +27,6 @@ export const circleCIApiRef = new ApiRef<CircleCIApi>({
 });
 
 export class CircleCIApi {
-
   private token: string = '';
   options: Partial<CircleCIOptions>;
 
