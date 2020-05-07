@@ -1,8 +1,14 @@
 // Idea for this component to be somehow reusable representation of CI table view
 import React, { FC } from 'react';
 // import { makeStyles } from '@material-ui/core/styles';
-import { Link, CircularProgress, Button } from '@material-ui/core';
-import { Replay as RetryIcon } from '@material-ui/icons';
+import {
+  Link,
+  CircularProgress,
+  Button,
+  Typography,
+  Box,
+} from '@material-ui/core';
+import { Replay as RetryIcon, GitHub as GithubIcon } from '@material-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   StatusFailed,
@@ -111,7 +117,7 @@ const generatedColumns: TableColumn[] = [
     field: 'id',
     type: 'numeric',
     // @ts-ignore
-    width: '10%',
+    width: '80px',
   },
   {
     title: 'Build',
@@ -154,13 +160,21 @@ const generatedColumns: TableColumn[] = [
 ];
 export const CITable: FC<{
   builds: CITableBuildInfo[];
-}> = React.memo(({ builds = [] }) => {
+  projectName: string;
+}> = React.memo(({ builds = [], projectName }) => {
   // const classes = useStyles();
   // const isTestDataAvailable = builds.some(build => build.tests);
   return (
     <Table
       options={{ paging: false }}
       data={builds}
+      title={
+        <Box display="flex" alignItems="center">
+          <GithubIcon />
+          <Box mr={1} />
+          <Typography variant="h6">{projectName}</Typography>
+        </Box>
+      }
       columns={generatedColumns}
     />
   );

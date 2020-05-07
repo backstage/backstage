@@ -57,9 +57,10 @@ export class CircleCIApi {
   }
 
   async getBuild(buildNumber: number, options: CircleCIOptions) {
+    console.log({ buildNumber, options });
     return getFullBuild(options.token, buildNumber, {
       circleHost: this.apiUrl,
-      ...options,
+      ...options.vcs,
     });
   }
 }

@@ -1,6 +1,6 @@
 import { circleCIApiRef } from 'api';
 import { BuildSummary } from 'circleci-api';
-import { CITableBuildInfo } from 'components/CITable';
+import { CITableBuildInfo } from 'pages/BuildsPage/lib/CITable';
 
 const makeReadableStatus = (status: string | undefined) => {
   if (typeof status === 'undefined') return '';
@@ -22,7 +22,7 @@ const makeReadableStatus = (status: string | undefined) => {
 };
 
 export const transformBuildSummary = (
-  api: typeof circleCIApiRef.T,
+  _: typeof circleCIApiRef.T,
   buildData: BuildSummary,
 ) => {
   const tableBuildInfo: CITableBuildInfo = {
@@ -31,7 +31,7 @@ export const transformBuildSummary = (
       ? buildData.subject +
         (buildData.retry_of ? ` (retry of #${buildData.retry_of})` : '')
       : '',
-    onRetryClick: () => api.retry(String(buildData.build_num)),
+    onRetryClick: () => {}, //api.retry(String(buildData.build_num)),
     source: {
       branchName: String(buildData.branch),
       commit: {

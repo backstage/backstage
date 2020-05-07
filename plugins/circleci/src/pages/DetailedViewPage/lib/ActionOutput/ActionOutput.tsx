@@ -7,20 +7,36 @@ import {
 } from '@material-ui/core';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { makeStyles } from '@material-ui/core/styles';
 import { BuildStepAction } from 'circleci-api';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 
+const useStyles = makeStyles({
+  expansionPanelDetails: {
+    padding: 0,
+  },
+  button: {
+    order: -1,
+    marginRight: 0,
+    // FIXME: how not to hardcode this
+    marginLeft: '-20px',
+  },
+});
+
 export const ActionOutput: FC<{
   url: string;
   name: string;
+  className?: string;
   action: BuildStepAction;
-}> = ({ url, name }) => {
+}> = ({ url, name, className }) => {
+  const classes = useStyles();
+
   const [messages, setMessages] = useState([]);
   useEffect(() => {
     fetch(url)
-      .then(res => res.json())
-      .then(actionOutput => {
+      .then((res) => res.json())
+      .then((actionOutput) => {
         actionOutput &&
           setMessages(
             actionOutput.map(({ message }: { message: string }) => message),
@@ -28,20 +44,26 @@ export const ActionOutput: FC<{
       });
   }, [url]);
   return (
-    <ExpansionPanel TransitionProps={{ unmountOnExit: true }}>
+    <ExpansionPanel
+      TransitionProps={{ unmountOnExit: true }}
+      className={className}
+    >
       <ExpansionPanelSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
+        IconButtonProps={{
+          className: classes.button,
+        }}
       >
-        <Typography>{name}</Typography>
+        <Typography variant="button">{name}</Typography>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
+      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
         {messages.length === 0 ? (
           'Nothing here...'
         ) : (
           <Suspense fallback="...">
-            <div style={{ height: '200px', width: '100%' }}>
+            <div style={{ height: '20vh', width: '100%' }}>
               <LazyLog text={messages.join('\n')} extraLines={1} enableSearch />
             </div>
           </Suspense>

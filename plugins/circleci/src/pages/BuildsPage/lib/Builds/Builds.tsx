@@ -78,7 +78,7 @@ const transform = (buildsData: BuildSummary[]): CITableBuildInfo[] => {
   });
 };
 
-export const CircleCIFetch: FC<{}> = () => {
+export const Builds: FC<{}> = () => {
   const dispatch: Dispatch = useDispatch();
   const api = useApi(circleCIApiRef);
 
@@ -89,7 +89,10 @@ export const CircleCIFetch: FC<{}> = () => {
     };
   }, []);
   const { builds } = useSelector((state: iRootState) => state.builds);
+  const { repo, owner } = useSelector((state: iRootState) => state.settings);
   const transformedBuilds = transform(builds);
 
-  return <CITable builds={transformedBuilds} />;
+  return (
+    <CITable builds={transformedBuilds} projectName={`${owner}/${repo}`} />
+  );
 };

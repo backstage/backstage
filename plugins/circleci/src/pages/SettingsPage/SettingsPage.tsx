@@ -12,17 +12,15 @@ import {
 import {
   InfoCard,
   Content,
-  ContentHeader,
-  SupportButton,
   // StatusOK,
   // StatusFailed,
 } from '@backstage/core';
-import { Link as RouterLink } from 'react-router-dom';
 import { Layout } from 'components/Layout';
 import { SettingsState } from 'state/models/settings';
 import { iRootState } from 'state/store';
 import { Dispatch } from '../../state/store';
 import { Alert } from '@material-ui/lab';
+import { PluginHeader } from 'components/PluginHeader';
 
 export const SettingsPage = () => {
   const {
@@ -60,12 +58,8 @@ export const SettingsPage = () => {
   return (
     <Layout>
       <Content>
-        <ContentHeader title="Settings">
-          <Button component={RouterLink} to="/circleci">
-            Back
-          </Button>
-          <SupportButton>A description of your plugin goes here.</SupportButton>
-        </ContentHeader>
+        <PluginHeader title="Settings" />
+
         <Grid container spacing={3}>
           <Grid item xs={12} md={3}>
             <InfoCard
@@ -76,6 +70,7 @@ export const SettingsPage = () => {
                   <Snackbar
                     autoHideDuration={1000}
                     open={saved}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                     onClose={() => setSaved(false)}
                   >
                     <Alert severity="success">Credentials saved.</Alert>

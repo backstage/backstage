@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createPlugin } from '@backstage/core';
-import { App } from './components/App';
+import { App } from './App';
 
 export const plugin = createPlugin({
   id: 'circleci',
