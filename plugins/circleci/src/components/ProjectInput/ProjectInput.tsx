@@ -1,5 +1,5 @@
 import { useState, FC, useEffect } from 'react';
-import { List, ListItem, TextField, Button } from '@material-ui/core';
+import { ListItem, TextField, Button } from '@material-ui/core';
 import React from 'react';
 
 export const ProjectInput: FC<{
@@ -16,13 +16,13 @@ export const ProjectInput: FC<{
   }, [apiGitInfo]);
 
   return (
-    <List>
+    <>
       <ListItem>
         <TextField
           name="circleci-owner"
           label="Owner"
           value={owner}
-          onChange={e => setOwner(e.target.value)}
+          onChange={(e) => setOwner(e.target.value)}
         />
       </ListItem>
       <ListItem>
@@ -30,7 +30,7 @@ export const ProjectInput: FC<{
           name="circleci-repo"
           label="Repo"
           value={repo}
-          onChange={e => setRepo(e.target.value)}
+          onChange={(e) => setRepo(e.target.value)}
         />
       </ListItem>
       <ListItem>
@@ -43,6 +43,6 @@ export const ProjectInput: FC<{
           Save
         </Button>
       </ListItem>
-    </List>
+    </>
   );
 };

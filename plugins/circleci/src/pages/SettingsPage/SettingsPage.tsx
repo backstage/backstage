@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, TextField, List, Grid, ListItem } from '@material-ui/core';
 import { circleCIApiRef } from 'api';
 import {
@@ -8,12 +8,12 @@ import {
   ContentHeader,
   SupportButton,
 } from '@backstage/core';
-import { ProjectInput } from 'components/ProjectInput/ProjectInput';
 import { Link as RouterLink } from 'react-router-dom';
 import { Layout } from 'components/Layout';
 
 export const SettingsPage = () => {
   const api = useApi(circleCIApiRef);
+  const apiGitInfo = api.options.vcs;
   const [authed, setAuthed] = React.useState(api.authed);
   const [token, setToken] = React.useState('');
 
@@ -24,6 +24,16 @@ export const SettingsPage = () => {
       .then(() => setAuthed(true))
       .catch(() => setAuthed(false));
   }, []);
+
+  const [owner, setOwner] = useState('');
+  const [repo, setRepo] = useState('');
+
+  useEffect(() => {
+    if (apiGitInfo && apiGitInfo.owner !== owner && apiGitInfo.owner)
+      setOwner(apiGitInfo.owner);
+    if (apiGitInfo && apiGitInfo.repo !== repo && apiGitInfo.repo)
+      setRepo(apiGitInfo.repo);
+  }, [apiGitInfo]);
 
   return (
     <Layout>
@@ -53,6 +63,32 @@ export const SettingsPage = () => {
                     </ListItem>
 
                     <ListItem>
+                      <TextField
+                        name="circleci-owner"
+                        label="Owner"
+                        value={owner}
+                        onChange={(e) => setOwner(e.target.value)}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <TextField
+                        name="circleci-repo"
+                        label="Repo"
+                        value={repo}
+                        onChange={(e) => setRepo(e.target.value)}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <Button
+                        data-testid="load-build-button"
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => api.setVCSOptions({ owner, repo })}
+                      >
+                        Save
+                      </Button>
+                    </ListItem>
+                    <ListItem>
                       <Button
                         data-testid="github-auth-button"
                         variant="outlined"
@@ -71,14 +107,6 @@ export const SettingsPage = () => {
                   </>
                 )}
               </List>
-            </InfoCard>
-          </Grid>
-          <Grid item xs={6}>
-            <InfoCard title="Project configuration">
-              <ProjectInput
-                apiGitInfo={api.options.vcs}
-                setGitInfo={(info) => api.setVCSOptions(info)}
-              />
             </InfoCard>
           </Grid>
         </Grid>
