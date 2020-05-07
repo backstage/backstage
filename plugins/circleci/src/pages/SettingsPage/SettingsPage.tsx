@@ -39,7 +39,7 @@ export const SettingsPage = () => {
             <InfoCard title="Authentication">
               <List>
                 {authed ? (
-                  <>Already authed</>
+                  <>Authenticated</>
                 ) : (
                   <>
                     <ListItem>
@@ -48,7 +48,7 @@ export const SettingsPage = () => {
                         type="password"
                         label="Token"
                         value={token}
-                        onChange={e => setToken(e.target.value)}
+                        onChange={(e) => setToken(e.target.value)}
                       />
                     </ListItem>
 
@@ -77,7 +77,7 @@ export const SettingsPage = () => {
             <InfoCard title="Project configuration">
               <ProjectInput
                 apiGitInfo={api.options.vcs}
-                setGitInfo={info => api.setVCSOptions(info)}
+                setGitInfo={(info) => api.setVCSOptions(info)}
               />
             </InfoCard>
           </Grid>

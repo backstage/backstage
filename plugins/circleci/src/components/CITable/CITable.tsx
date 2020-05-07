@@ -110,6 +110,8 @@ const generatedColumns: TableColumn[] = [
     title: 'ID',
     field: 'id',
     type: 'numeric',
+    // @ts-ignore
+    width: '10%',
   },
   {
     title: 'Build',
@@ -146,6 +148,8 @@ const generatedColumns: TableColumn[] = [
         <RetryIcon />
       </Button>
     ),
+    // @ts-ignore
+    width: '10%',
   },
 ];
 export const CITable: FC<{
