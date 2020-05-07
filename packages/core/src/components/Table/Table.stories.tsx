@@ -22,7 +22,9 @@ export default {
   component: Table,
 };
 
-const generateTestData: (number: number) => Array<{}> = (rows = 20) => {
+const containerStyle = { width: 850 };
+
+const generateTestData: (number: number) => Array<{}> = (rows = 10) => {
   const data: Array<{}> = [];
   while (data.length <= rows) {
     data.push({
@@ -37,7 +39,7 @@ const generateTestData: (number: number) => Array<{}> = (rows = 20) => {
   return data;
 };
 
-const testData100 = generateTestData(100);
+const testData10 = generateTestData(10);
 
 export const DefaultTable = () => {
   const columns: TableColumn[] = [
@@ -63,12 +65,14 @@ export const DefaultTable = () => {
   ];
 
   return (
-    <Table
-      options={{ paging: false }}
-      data={testData100}
-      columns={columns}
-      title="Backstage Table"
-    />
+    <div style={containerStyle}>
+      <Table
+        options={{ paging: false }}
+        data={testData10}
+        columns={columns}
+        title="Backstage Table"
+      />
+    </div>
   );
 };
 
@@ -96,11 +100,13 @@ export const HiddenSearchTable = () => {
   ];
 
   return (
-    <Table
-      options={{ paging: false, search: false }}
-      data={testData100}
-      columns={columns}
-    />
+    <div style={containerStyle}>
+      <Table
+        options={{ paging: false, search: false }}
+        data={testData10}
+        columns={columns}
+      />
+    </div>
   );
 };
 
@@ -138,6 +144,8 @@ export const SubvalueTable = () => {
   ];
 
   return (
-    <Table options={{ paging: false }} data={testData100} columns={columns} />
+    <div style={containerStyle}>
+      <Table options={{ paging: false }} data={testData10} columns={columns} />
+    </div>
   );
 };
