@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, TextField, List, Grid, ListItem } from '@material-ui/core';
-import { circleCIApiRef } from 'api';
 import {
   InfoCard,
-  useApi,
   Content,
   ContentHeader,
   SupportButton,
@@ -12,30 +11,35 @@ import {
 } from '@backstage/core';
 import { Link as RouterLink } from 'react-router-dom';
 import { Layout } from 'components/Layout';
+import { SettingsState } from 'state/models/settings';
+import { iRootState } from 'state/store';
+import { Dispatch } from '../../state/store';
 
 export const SettingsPage = () => {
-  const api = useApi(circleCIApiRef);
-  const apiGitInfo = api.options.vcs;
-  const [authed, setAuthed] = React.useState(api.authed);
-  const [token, setToken] = React.useState(api.token);
+  const { token, owner, repo } = useSelector(
+    (state: iRootState): SettingsState => state.settings,
+  );
 
-  React.useEffect(() => {
-    api
-      .restorePersistedSettings()
-      .then(() => api.validateToken())
-      .then(() => setAuthed(true))
-      .catch(() => setAuthed(false));
-  }, []);
+  const dispatch: Dispatch = useDispatch();
 
-  const [owner, setOwner] = useState('');
-  const [repo, setRepo] = useState('');
+  // const api = useApi(circleCIApiRef);
+  // const apiGitInfo = api.options.vcs;
+  const [authed] = React.useState(false);
 
-  useEffect(() => {
-    if (apiGitInfo && apiGitInfo.owner !== owner && apiGitInfo.owner)
-      setOwner(apiGitInfo.owner);
-    if (apiGitInfo && apiGitInfo.repo !== repo && apiGitInfo.repo)
-      setRepo(apiGitInfo.repo);
-  }, [apiGitInfo]);
+  // React.useEffect(() => {
+  //   api
+  //     .restorePersistedSettings()
+  //     .then(() => api.validateToken())
+  //     .then(() => setAuthed(true))
+  //     .catch(() => setAuthed(false));
+  // }, []);
+
+  // useEffect(() => {
+  //   if (apiGitInfo && apiGitInfo.owner !== owner && apiGitInfo.owner)
+  //     setOwner(apiGitInfo.owner);
+  //   if (apiGitInfo && apiGitInfo.repo !== repo && apiGitInfo.repo)
+  //     setRepo(apiGitInfo.repo);
+  // }, [apiGitInfo]);
 
   return (
     <Layout>
@@ -59,10 +63,9 @@ export const SettingsPage = () => {
                 <ListItem>
                   <TextField
                     name="circleci-token"
-                    type="password"
                     label="Token"
                     value={token}
-                    onChange={(e) => setToken(e.target.value)}
+                    onChange={e => dispatch.settings.setToken(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -70,7 +73,7 @@ export const SettingsPage = () => {
                     name="circleci-owner"
                     label="Owner"
                     value={owner}
-                    onChange={(e) => setOwner(e.target.value)}
+                    // onChange={(e) => setOwner(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -78,7 +81,7 @@ export const SettingsPage = () => {
                     name="circleci-repo"
                     label="Repo"
                     value={repo}
-                    onChange={(e) => setRepo(e.target.value)}
+                    // onChange={(e) => setRepo(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -87,12 +90,12 @@ export const SettingsPage = () => {
                     variant="outlined"
                     color="primary"
                     onClick={async () => {
-                      api.setVCSOptions({ owner, repo });
-                      api.setToken(token);
-                      api
-                        .validateToken()
-                        .then(() => setAuthed(true))
-                        .catch(() => setAuthed(false));
+                      // api.setVCSOptions({ owner, repo });
+                      // api.setToken(token);
+                      // api
+                      //   .validateToken()
+                      //   .then(() => setAuthed(true))
+                      //   .catch(() => setAuthed(false));
                     }}
                   >
                     Save credentials
