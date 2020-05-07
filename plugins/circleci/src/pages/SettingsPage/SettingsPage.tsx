@@ -7,7 +7,7 @@ import {
   Content,
   ContentHeader,
   SupportButton,
-  // StatusOK,
+  StatusOK,
   StatusFailed,
 } from '@backstage/core';
 import { Link as RouterLink } from 'react-router-dom';
@@ -17,7 +17,7 @@ export const SettingsPage = () => {
   const api = useApi(circleCIApiRef);
   const apiGitInfo = api.options.vcs;
   const [authed, setAuthed] = React.useState(api.authed);
-  const [token, setToken] = React.useState('');
+  const [token, setToken] = React.useState(api.token);
 
   React.useEffect(() => {
     api
@@ -49,63 +49,55 @@ export const SettingsPage = () => {
         <Grid container spacing={3}>
           <Grid item xs={6}>
             <InfoCard
-              title="Project Credentials"
-              subheader={
-                <div>
-                  <StatusFailed />
-                </div>
+              title={
+                <>
+                  Project Credentials{authed ? <StatusOK /> : <StatusFailed />}
+                </>
               }
             >
               <List>
-                {authed ? (
-                  <>Authenticated</>
-                ) : (
-                  <>
-                    <ListItem>
-                      <TextField
-                        name="circleci-token"
-                        type="password"
-                        label="Token"
-                        value={token}
-                        onChange={(e) => setToken(e.target.value)}
-                      />
-                    </ListItem>
-
-                    <ListItem>
-                      <TextField
-                        name="circleci-owner"
-                        label="Owner"
-                        value={owner}
-                        onChange={(e) => setOwner(e.target.value)}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <TextField
-                        name="circleci-repo"
-                        label="Repo"
-                        value={repo}
-                        onChange={(e) => setRepo(e.target.value)}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <Button
-                        data-testid="github-auth-button"
-                        variant="outlined"
-                        color="primary"
-                        onClick={async () => {
-                          api.setVCSOptions({ owner, repo });
-                          api.setToken(token);
-                          api
-                            .validateToken()
-                            .then(() => setAuthed(true))
-                            .catch(() => setAuthed(false));
-                        }}
-                      >
-                        Save credentials
-                      </Button>
-                    </ListItem>
-                  </>
-                )}
+                <ListItem>
+                  <TextField
+                    name="circleci-token"
+                    type="password"
+                    label="Token"
+                    value={token}
+                    onChange={(e) => setToken(e.target.value)}
+                  />
+                </ListItem>
+                <ListItem>
+                  <TextField
+                    name="circleci-owner"
+                    label="Owner"
+                    value={owner}
+                    onChange={(e) => setOwner(e.target.value)}
+                  />
+                </ListItem>
+                <ListItem>
+                  <TextField
+                    name="circleci-repo"
+                    label="Repo"
+                    value={repo}
+                    onChange={(e) => setRepo(e.target.value)}
+                  />
+                </ListItem>
+                <ListItem>
+                  <Button
+                    data-testid="github-auth-button"
+                    variant="outlined"
+                    color="primary"
+                    onClick={async () => {
+                      api.setVCSOptions({ owner, repo });
+                      api.setToken(token);
+                      api
+                        .validateToken()
+                        .then(() => setAuthed(true))
+                        .catch(() => setAuthed(false));
+                    }}
+                  >
+                    Save credentials
+                  </Button>
+                </ListItem>
               </List>
             </InfoCard>
           </Grid>
