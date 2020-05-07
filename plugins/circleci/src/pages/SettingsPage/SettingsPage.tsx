@@ -20,20 +20,20 @@ export const SettingsPage = () => {
     token: tokenFromStore,
     owner: ownerFromStore,
     repo: repoFromStore,
-  } = useSelector((state: iRootState): SettingsState => state.settings);
+  } = useSelector(
+    (state: iRootState): SettingsState =>
+      (console.log({ state }) as any) || state.settings,
+  );
 
-  const dispatch: Dispatch = useDispatch();
-  // const api = useApi(circleCIApiRef);
   // const apiGitInfo = api.options.vcs;
   // const [authed] = React.useState(false);
-  const [token, setToken] = React.useState('');
-  const [owner, setOwner] = React.useState('');
-  const [repo, setRepo] = React.useState('');
+  const [token, setToken] = React.useState(() => tokenFromStore);
+  const [owner, setOwner] = React.useState(() => ownerFromStore);
+  const [repo, setRepo] = React.useState(() => repoFromStore);
 
-  React.useEffect(() => {
-    dispatch.settings.rehydrate();
-  }, []);
+  const dispatch: Dispatch = useDispatch();
 
+  React.useEffect(() => () => console.log('Settings unmounterd'), []);
   React.useEffect(() => {
     if (tokenFromStore !== token) {
       setToken(tokenFromStore);
@@ -71,7 +71,7 @@ export const SettingsPage = () => {
                     name="circleci-token"
                     label="Token"
                     value={token}
-                    onChange={e => setToken(e.target.value)}
+                    onChange={(e) => setToken(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -79,7 +79,7 @@ export const SettingsPage = () => {
                     name="circleci-owner"
                     label="Owner"
                     value={owner}
-                    onChange={e => setOwner(e.target.value)}
+                    onChange={(e) => setOwner(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -87,7 +87,7 @@ export const SettingsPage = () => {
                     name="circleci-repo"
                     label="Repo"
                     value={repo}
-                    onChange={e => setRepo(e.target.value)}
+                    onChange={(e) => setRepo(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>

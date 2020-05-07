@@ -45,14 +45,21 @@ export class CircleCIApi {
   }
 
   async getBuilds(options: CircleCIOptions) {
-    return getBuildSummaries(options.token, { vcs: {}, ...options });
+    return getBuildSummaries(options.token, {
+      vcs: {},
+      circleHost: this.apiUrl,
+      ...options,
+    });
   }
 
   async getUser(options: CircleCIOptions) {
-    return getMe(options.token, options);
+    return getMe(options.token, { circleHost: this.apiUrl, ...options });
   }
 
   async getBuild(buildNumber: number, options: CircleCIOptions) {
-    return getFullBuild(options.token, buildNumber, options);
+    return getFullBuild(options.token, buildNumber, {
+      circleHost: this.apiUrl,
+      ...options,
+    });
   }
 }

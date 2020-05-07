@@ -19,6 +19,6 @@ import { App } from './components/App';
 export const plugin = createPlugin({
   id: 'circleci',
   register({ router }) {
-    router.registerRoute('/circleci', App);
+    router.registerRoute('/circleci', App, { exact: false });
   },
 });
