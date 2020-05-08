@@ -84,16 +84,11 @@ const removeAllStatementsContainingID = async (file: string, ID: string) => {
   const originalContent = await fse.readFile(file, 'utf8');
   const contentAfterRemoval = originalContent
     .split('\n')
-    .filter(Boolean) // get rid of empty lines
-    .filter((statement) => {
-      return !statement.includes(`${ID}`);
-    }) // get rid of lines with pluginName
-    .concat(['']) // newline at end of line
+    .filter((statement) => !statement.includes(`${ID}`)) // get rid of lines with pluginName
     .join('\n');
-  await fse.writeFile(file, contentAfterRemoval, 'utf8');
-  const finalContent = await fse.readFile(file, 'utf8');
-  if (finalContent === originalContent)
-    throw new Error(`File was not modified.`);
+  if (originalContent !== contentAfterRemoval) {
+    await fse.writeFile(file, contentAfterRemoval, 'utf8');
+  }
 };
 
 const capitalize = (str: string): string =>
