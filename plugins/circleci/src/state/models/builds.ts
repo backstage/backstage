@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Dispatch, iRootState } from '../store';
 import { BuildSummary, GitType } from 'circleci-api';
 import { CircleCIApi } from '../../api';
@@ -6,6 +21,8 @@ export type BuildsState = {
   builds: BuildSummary[];
   pollingIntervalId: number | null;
   pollingState: PollingState;
+  restartBuildError: Error | null;
+  getBuildsError: Error | null;
 };
 
 const INTERVAL_AMOUNT = 1500;
@@ -19,6 +36,8 @@ export const builds = {
     builds: [] as BuildSummary[],
     pollingIntervalId: null,
     pollingState: PollingState.Idle,
+    restartBuildError: null,
+    getBuildsError: null,
   },
   reducers: {
     setBuilds(state: BuildsState, payload: BuildSummary[]) {
@@ -35,10 +54,17 @@ export const builds = {
           payload === null ? PollingState.Idle : PollingState.Polling,
       };
     },
+    setRestartBuildError(state: BuildsState, payload: Error | null) {
+      return { ...state, restartBuildError: payload };
+    },
+    setGetBuildsError(state: BuildsState, payload: Error | null) {
+      return { ...state, getBuildsError: payload };
+    },
   },
   effects: (dispatch: Dispatch) => ({
     async getBuilds(api: CircleCIApi, state: iRootState) {
       try {
+        dispatch.builds.setGetBuildsError(null);
         const builds = await api.getBuilds({
           token: state.settings.token,
           vcs: {
@@ -49,7 +75,7 @@ export const builds = {
         });
         dispatch.builds.setBuilds(builds);
       } catch (e) {
-        console.log(e);
+        dispatch.builds.setGetBuildsError(null);
       }
     },
     async restartBuild(
@@ -57,6 +83,7 @@ export const builds = {
       state: iRootState,
     ) {
       try {
+        dispatch.builds.setRestartBuildError(null);
         await api.retry(buildId, {
           token: state.settings.token,
           vcs: {
@@ -66,7 +93,7 @@ export const builds = {
           },
         });
       } catch (e) {
-        console.log(e);
+        dispatch.builds.setRestartBuildError(e);
       }
     },
 
