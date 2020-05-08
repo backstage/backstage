@@ -2,8 +2,8 @@ import React, { FC } from 'react';
 import { Content } from '@backstage/core';
 import { Grid } from '@material-ui/core';
 import { Builds } from './lib/Builds';
-import { Layout } from 'components/Layout';
-import { PluginHeader } from 'components/PluginHeader';
+import { Layout } from '../../components/Layout';
+import { PluginHeader } from '../../components/PluginHeader';
 
 export const BuildsPage: FC<{}> = () => (
   <Layout>

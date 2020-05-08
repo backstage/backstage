@@ -9,13 +9,12 @@ import {
   Snackbar,
   Box,
 } from '@material-ui/core';
-import { InfoCard, Content } from '@backstage/core';
-import { Layout } from 'components/Layout';
-import { SettingsState } from 'state/models/settings';
-import { iRootState } from 'state/store';
-import { Dispatch } from '../../state/store';
 import { Alert } from '@material-ui/lab';
-import { PluginHeader } from 'components/PluginHeader';
+import { InfoCard, Content } from '@backstage/core';
+import { Layout } from '../../components/Layout';
+import { PluginHeader } from '../../components/PluginHeader';
+import { SettingsState } from '../../state/models/settings';
+import { iRootState, Dispatch } from '../../state/store';
 
 export const SettingsPage = () => {
   const {

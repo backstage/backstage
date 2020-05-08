@@ -1,6 +1,6 @@
 import { Dispatch, iRootState } from '../store';
 import { GitType, BuildWithSteps } from 'circleci-api';
-import { CircleCIApi } from 'api';
+import { CircleCIApi } from '../../api';
 
 export type BuildState = {
   builds: Record<number, BuildWithSteps>;

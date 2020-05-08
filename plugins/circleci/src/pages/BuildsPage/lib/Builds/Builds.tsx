@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 
-import { BuildSummary } from 'circleci-api';
+import {} from 'circleci-api';
+import { useApi } from '@backstage/core';
 
 import { CITable, CITableBuildInfo } from '../CITable';
 import { useSelector, useDispatch } from 'react-redux';
-import { iRootState, Dispatch } from 'state/store';
-import { useApi } from '@backstage/core';
-import { circleCIApiRef } from 'api';
+import { iRootState, Dispatch } from '../../../../state/store';
+import { circleCIApiRef, BuildSummary } from '../../../../api';
 
 const makeReadableStatus = (status: string | undefined) => {
-  if (typeof status === 'undefined') return '';
+  if (!status) return '';
   return ({
     retried: 'Retried',
     canceled: 'Canceled',
@@ -75,12 +75,13 @@ export const Builds: FC<{}> = () => {
   const dispatch: Dispatch = useDispatch();
   const api = useApi(circleCIApiRef);
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch.builds.startPolling(api);
     return () => {
       dispatch.builds.stopPolling();
     };
   }, []);
+
   const { builds } = useSelector((state: iRootState) => state.builds);
   const { repo, owner } = useSelector((state: iRootState) => state.settings);
   const transformedBuilds = transform(builds, dispatch, api);

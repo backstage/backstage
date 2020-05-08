@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { ContentHeader, SupportButton } from '@backstage/core';
 import { Button, IconButton, Box, Typography } from '@material-ui/core';
 import { Settings as SettingsIcon, ArrowBack } from '@material-ui/icons';
-export const PluginHeader: React.FC<{ title?: string }> = ({
-  title = 'Circle CI',
-}) => {
+
+export type Props = { title?: string };
+export const PluginHeader: FC<Props> = ({ title = 'Circle CI' }) => {
   const location = useLocation();
   const notRoot = !location.pathname.match(/\/circleci\/?$/);
   const isSettingsPage = location.pathname.match(/\/circleci\/settings\/?/);

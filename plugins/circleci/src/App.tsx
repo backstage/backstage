@@ -1,11 +1,11 @@
-import { Route, Switch } from 'react-router';
 import React from 'react';
-import { BuildsPage } from 'pages/BuildsPage';
-import { DetailedViewPage } from 'pages/DetailedViewPage';
-import { SettingsPage } from 'pages/SettingsPage';
+import { Route, Switch } from 'react-router';
 import { Provider, useDispatch } from 'react-redux';
+import { BuildsPage } from './pages/BuildsPage';
+import { DetailedViewPage } from './pages/DetailedViewPage';
+import { SettingsPage } from './pages/SettingsPage';
 
-import store, { Dispatch } from 'state/store';
+import store, { Dispatch } from './state/store';
 
 const RehydrateSettings = () => {
   const dispatch: Dispatch = useDispatch();

@@ -4,6 +4,7 @@ import {
   ExpansionPanelSummary,
   Typography,
   ExpansionPanelDetails,
+  LinearProgress,
 } from '@material-ui/core';
 import moment from 'moment';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -70,7 +71,7 @@ export const ActionOutput: FC<{
         {messages.length === 0 ? (
           'Nothing here...'
         ) : (
-          <Suspense fallback="...">
+          <Suspense fallback={<LinearProgress />}>
             <div style={{ height: '20vh', width: '100%' }}>
               <LazyLog text={messages.join('\n')} extraLines={1} enableSearch />
             </div>

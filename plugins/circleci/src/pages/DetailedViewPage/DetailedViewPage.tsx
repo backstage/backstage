@@ -1,21 +1,20 @@
 import React, { FC } from 'react';
-import { Content, InfoCard, useApi } from '@backstage/core';
-import { Grid, Box } from '@material-ui/core';
-import { PluginHeader } from 'components/PluginHeader';
-import { BuildWithSteps, BuildStepAction } from 'circleci-api';
-import { circleCIApiRef } from 'api';
-import { useParams } from 'react-router-dom';
-import { ActionOutput } from './lib/ActionOutput/ActionOutput';
-import { Layout } from 'components/Layout';
-import { Dispatch, iRootState } from 'state/store';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { Content, InfoCard, useApi } from '@backstage/core';
+import { circleCIApiRef, BuildWithSteps, BuildStepAction } from '../../api';
+import { Grid, Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { PluginHeader } from '../../components/PluginHeader';
+import { ActionOutput } from './lib/ActionOutput/ActionOutput';
+import { Layout } from '../../components/Layout';
+import { Dispatch, iRootState } from '../../state/store';
 
 const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
   <>
     #{build?.build_num} - {build?.subject}
   </>
 );
-import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
   neutral: {},
   failed: {
@@ -66,16 +65,11 @@ const pickClassName = (
   classes: ReturnType<typeof useStyles>,
   build: BuildWithSteps = {} as BuildWithSteps,
 ) => {
-  switch (true) {
-    case build.failed:
-      return classes.failed;
-    case ['running', 'queued'].includes(build.status!):
-      return classes.running;
-    case build.status === 'success':
-      return classes.success;
-    default:
-      return classes.neutral;
-  }
+  if (build.failed) return classes.failed;
+  if (['running', 'queued'].includes(build.status!)) return classes.running;
+  if (build.status === 'success') return classes.success;
+
+  return classes.neutral;
 };
 export const DetailedViewPage: FC<{}> = () => {
   let { buildId = '' } = useParams();

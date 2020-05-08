@@ -9,8 +9,8 @@ import {
   StatusNA,
   StatusRunning,
   Table,
+  TableColumn,
 } from '@backstage/core';
-import type { TableColumn } from '@backstage/core/src/components/Table';
 
 export type CITableBuildInfo = {
   id: string;
@@ -57,7 +57,6 @@ const generatedColumns: TableColumn[] = [
     title: 'ID',
     field: 'id',
     type: 'numeric',
-    // @ts-ignore
     width: '80px',
   },
   {
@@ -97,7 +96,6 @@ const generatedColumns: TableColumn[] = [
         <RetryIcon />
       </IconButton>
     ),
-    // @ts-ignore
     width: '10%',
   },
 ];

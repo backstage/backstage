@@ -21,8 +21,13 @@ import {
   getFullBuild,
   postBuildActions,
   BuildAction,
+  BuildWithSteps,
+  BuildStepAction,
+  BuildSummary,
 } from 'circleci-api';
 import { ApiRef } from '@backstage/core';
+
+export { BuildWithSteps, BuildStepAction, BuildSummary };
 
 export const circleCIApiRef = new ApiRef<CircleCIApi>({
   id: 'plugin.circleci.service',

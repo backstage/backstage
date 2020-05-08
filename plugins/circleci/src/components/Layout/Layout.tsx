@@ -7,11 +7,11 @@ import { Box } from '@material-ui/core';
 export const Layout: React.FC = ({ children }) => (
   <Page theme={pageTheme.tool}>
     <Header
-      pageTitleOverride="Circle CI Plugin"
+      pageTitleOverride="Circle CI"
       title={
         <Box display="flex" alignItems="center">
           <img src={logo} style={{ height: '1em' }} />
-          <Box mr={1} /> Circle CI Plugin
+          <Box mr={1} /> Circle CI
         </Box>
       }
     >
