@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// eslint-disable-next-line
 const createProxyMiddleware = require('http-proxy-middleware');
 
 // FIXME: somehow get it from within the plugin itself?
