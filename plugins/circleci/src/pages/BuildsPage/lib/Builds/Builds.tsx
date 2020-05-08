@@ -16,9 +16,6 @@
 
 import React, { FC } from 'react';
 
-// import Alert from '@material-ui/lab/Alert';
-// import { Progress } from '@backstage/core';
-
 import { BuildSummary } from 'circleci-api';
 
 import { CITable, CITableBuildInfo } from '../CITable';
@@ -26,8 +23,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { iRootState, Dispatch } from 'state/store';
 import { useApi } from '@backstage/core';
 import { circleCIApiRef } from 'api';
-// "lifecycle" : "finished", // :queued, :scheduled, :not_run, :not_running, :running or :finished
-// "outcome" : "failed", // :canceled, :infrastructure_fail, :timedout, :failed, :no_tests or :success
 
 const makeReadableStatus = (status: string | undefined) => {
   if (typeof status === 'undefined') return '';
@@ -71,13 +66,6 @@ const transform = (
       },
       status: makeReadableStatus(buildData.status),
       buildUrl: buildData.build_url,
-      // tests: {
-      //   failed: 0,
-      //   passed: 10,
-      //   skipped: 3,
-      //   testUrl: 'nourlnow',
-      //   total: 13,
-      // },
     };
     return tableBuildInfo;
   });

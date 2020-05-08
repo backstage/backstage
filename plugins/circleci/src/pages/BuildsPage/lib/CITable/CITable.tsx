@@ -1,6 +1,4 @@
-// Idea for this component to be somehow reusable representation of CI table view
 import React, { FC } from 'react';
-// import { makeStyles } from '@material-ui/core/styles';
 import {
   Link,
   CircularProgress,
@@ -18,16 +16,6 @@ import {
   Table,
 } from '@backstage/core';
 import type { TableColumn } from '@backstage/core/src/components/Table';
-// const useStyles = makeStyles({
-//   table: {
-//     minWidth: 650,
-//   },
-//   avatar: {
-//     height: 32,
-//     width: 32,
-//     borderRadius: '50%',
-//   },
-// });
 
 export type CITableBuildInfo = {
   id: string;
@@ -51,7 +39,7 @@ export type CITableBuildInfo = {
   onRetryClick: () => void;
 };
 
-// :retried, :canceled, :infrastructure_fail, :timedout, :not_run, :running, :failed, :queued, :scheduled, :not_running, :no_tests, :fixed, :success
+// retried, canceled, infrastructure_fail, timedout, not_run, running, failed, queued, scheduled, not_running, no_tests, fixed, success
 const getStatusComponent = (status: string | undefined = '') => {
   switch (status.toLowerCase()) {
     case 'queued':
@@ -68,48 +56,6 @@ const getStatusComponent = (status: string | undefined = '') => {
       return <StatusNA />;
   }
 };
-
-// export const CITableBuildRow: FC<{ build: CITableBuildInfo }> = ({ build }) => (
-//   <TableRow key={build.id}>
-//     <TableCell>{build.id}</TableCell>
-//     <TableCell>
-//       <Link to={`/circleci/build/${build.id}`}>{build.buildName}</Link>
-//     </TableCell>
-//     <TableCell>
-//       {build.source.branchName}
-//       <br />
-//       {build.source.commit.hash}
-//     </TableCell>
-//     <TableCell align="center">{getStatusComponent(build.status)}</TableCell>
-//     {build.tests && (
-//       <TableCell>
-//         {
-//           <>
-//             {build.tests.passed}/{build.tests.total} (
-//             {build.tests.failed ? build.tests.failed + ', ' : ''}
-//             {build.tests.skipped ? build.tests.skipped : ''})
-//           </>
-//         }
-//       </TableCell>
-//     )}
-//     <TableCell align="center">
-//       <Button onClick={build.onRetryClick}>
-//         <RetryIcon />
-//       </Button>
-//     </TableCell>
-//   </TableRow>
-// );
-
-// export const CITableBuildHeadRow:FC<{isTestDataAvailable: boolean}> = ({isTestDataAvailable}) => (
-//   <TableRow>
-//     <TableCell>ID</TableCell>
-//     <TableCell>Build</TableCell>
-//     <TableCell>Source</TableCell>
-//     <TableCell align="center">Status</TableCell>
-//     {isTestDataAvailable && <TableCell>Tests</TableCell>}
-//     <TableCell align="center">Actions</TableCell>
-//   </TableRow>
-// );
 
 const generatedColumns: TableColumn[] = [
   {
@@ -164,8 +110,6 @@ export const CITable: FC<{
   builds: CITableBuildInfo[];
   projectName: string;
 }> = React.memo(({ builds = [], projectName }) => {
-  // const classes = useStyles();
-  // const isTestDataAvailable = builds.some(build => build.tests);
   return (
     <Table
       options={{ paging: false }}
