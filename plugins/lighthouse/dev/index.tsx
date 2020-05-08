@@ -16,5 +16,13 @@
 
 import { createDevApp } from '@backstage/dev-utils';
 import { plugin } from '../src/plugin';
+import { lighthouseApiRef, LighthouseRestApi } from '../src';
 
-createDevApp().registerPlugin(plugin).render();
+createDevApp()
+  .registerPlugin(plugin)
+  .registerApiFactory({
+    implements: lighthouseApiRef,
+    deps: {},
+    factory: () => new LighthouseRestApi('http://localhost:3003'),
+  })
+  .render();
