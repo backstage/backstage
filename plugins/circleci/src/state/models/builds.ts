@@ -65,7 +65,7 @@ export const builds = {
     async getBuilds(api: CircleCIApi, state: iRootState) {
       try {
         dispatch.builds.setGetBuildsError(null);
-        const builds = await api.getBuilds({
+        const newBuilds = await api.getBuilds({
           token: state.settings.token,
           vcs: {
             owner: state.settings.owner,
@@ -73,7 +73,7 @@ export const builds = {
             type: GitType.GITHUB,
           },
         });
-        dispatch.builds.setBuilds(builds);
+        dispatch.builds.setBuilds(newBuilds);
       } catch (e) {
         dispatch.builds.setGetBuildsError(null);
       }

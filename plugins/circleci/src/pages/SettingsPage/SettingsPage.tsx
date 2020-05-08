@@ -36,20 +36,14 @@ export const SettingsPage = () => {
     token: tokenFromStore,
     owner: ownerFromStore,
     repo: repoFromStore,
-  } = useSelector(
-    (state: iRootState): SettingsState =>
-      (console.log({ state }) as any) || state.settings,
-  );
+  } = useSelector((state: iRootState): SettingsState => state.settings);
 
-  // const apiGitInfo = api.options.vcs;
-  // const [authed] = React.useState(false);
   const [token, setToken] = React.useState(() => tokenFromStore);
   const [owner, setOwner] = React.useState(() => ownerFromStore);
   const [repo, setRepo] = React.useState(() => repoFromStore);
 
   const dispatch: Dispatch = useDispatch();
 
-  React.useEffect(() => () => console.log('Settings unmounterd'), []);
   React.useEffect(() => {
     if (tokenFromStore !== token) {
       setToken(tokenFromStore);
@@ -95,7 +89,7 @@ export const SettingsPage = () => {
                     value={token}
                     fullWidth
                     variant="outlined"
-                    onChange={(e) => setToken(e.target.value)}
+                    onChange={e => setToken(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -105,7 +99,7 @@ export const SettingsPage = () => {
                     label="Owner"
                     variant="outlined"
                     value={owner}
-                    onChange={(e) => setOwner(e.target.value)}
+                    onChange={e => setOwner(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -115,7 +109,7 @@ export const SettingsPage = () => {
                     fullWidth
                     variant="outlined"
                     value={repo}
-                    onChange={(e) => setRepo(e.target.value)}
+                    onChange={e => setRepo(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>

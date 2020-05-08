@@ -65,7 +65,7 @@ export const buildWithSteps = {
       state: iRootState,
     ) {
       try {
-        d; //ispatch.buildWithSteps.()
+        dispatch.buildWithSteps.setBuildError(null);
         const options = {
           token: state.settings.token,
           vcs: {
@@ -77,7 +77,7 @@ export const buildWithSteps = {
         const build = await api.getBuild(buildId, options);
         dispatch.buildWithSteps.setBuild(build);
       } catch (e) {
-        console.log(e);
+        dispatch.buildWithSteps.setBuildError(e);
       }
     },
     startPolling(

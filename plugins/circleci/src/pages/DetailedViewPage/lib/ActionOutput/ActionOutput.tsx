@@ -35,7 +35,6 @@ const useStyles = makeStyles({
   button: {
     order: -1,
     marginRight: 0,
-    // FIXME: how not to hardcode this
     marginLeft: '-20px',
   },
 });
@@ -51,12 +50,13 @@ export const ActionOutput: FC<{
   const [messages, setMessages] = useState([]);
   useEffect(() => {
     fetch(url)
-      .then((res) => res.json())
-      .then((actionOutput) => {
-        actionOutput &&
+      .then(res => res.json())
+      .then(actionOutput => {
+        if (typeof actionOutput !== 'undefined') {
           setMessages(
             actionOutput.map(({ message }: { message: string }) => message),
           );
+        }
       });
   }, [url]);
 
