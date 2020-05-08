@@ -10,7 +10,8 @@
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "diff": "backstage-cli plugin:diff",
-    "clean": "backstage-cli clean"
+    "clean": "backstage-cli clean",
+    "start": "backstage-cli plugin:serve"
   },
   "dependencies": {
     "@backstage/core": "^0.1.1-alpha.4",
@@ -36,7 +37,8 @@
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "@types/testing-library__jest-dom": "^5.0.4",
-    "jest-fetch-mock": "^3.0.3"
+    "jest-fetch-mock": "^3.0.3",
+    "@backstage/dev-utils": "^0.1.1-alpha.4"
   },
   "files": [
     "dist"
