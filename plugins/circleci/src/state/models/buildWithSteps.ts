@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { Dispatch, iRootState } from '../store';
 import { GitType, BuildWithSteps } from 'circleci-api';
 import { CircleCIApi } from '../../api';
@@ -6,6 +21,7 @@ export type BuildState = {
   builds: Record<number, BuildWithSteps>;
   pollingIntervalId: number | null;
   pollingState: PollingState;
+  getBuildError: Error | null;
 };
 
 const INTERVAL_AMOUNT = 1500;
@@ -19,6 +35,7 @@ export const buildWithSteps = {
     builds: {},
     pollingIntervalId: null,
     pollingState: PollingState.Idle,
+    getBuildError: null,
   } as BuildState,
   reducers: {
     setBuild(state: BuildState, payload: BuildWithSteps) {
@@ -29,6 +46,9 @@ export const buildWithSteps = {
         ...state,
         builds: { ...state.builds, [payload.build_num!]: payload },
       };
+    },
+    setBuildError(state: BuildState, payload: Error | null) {
+      return { ...state, getBuildError: payload };
     },
     setPollingIntervalId(state: BuildState, payload: number | null) {
       return {
@@ -45,6 +65,7 @@ export const buildWithSteps = {
       state: iRootState,
     ) {
       try {
+        dispatch.buildWithSteps.setBuildError(null);
         const options = {
           token: state.settings.token,
           vcs: {
@@ -56,7 +77,7 @@ export const buildWithSteps = {
         const build = await api.getBuild(buildId, options);
         dispatch.buildWithSteps.setBuild(build);
       } catch (e) {
-        console.log(e);
+        dispatch.buildWithSteps.setBuildError(e);
       }
     },
     startPolling(

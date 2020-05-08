@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import React, { useEffect, useState, FC, Suspense } from 'react';
 import {
   ExpansionPanel,
@@ -20,7 +35,6 @@ const useStyles = makeStyles({
   button: {
     order: -1,
     marginRight: 0,
-    // FIXME: how not to hardcode this
     marginLeft: '-20px',
   },
 });
@@ -36,12 +50,13 @@ export const ActionOutput: FC<{
   const [messages, setMessages] = useState([]);
   useEffect(() => {
     fetch(url)
-      .then((res) => res.json())
-      .then((actionOutput) => {
-        actionOutput &&
+      .then(res => res.json())
+      .then(actionOutput => {
+        if (typeof actionOutput !== 'undefined') {
           setMessages(
             actionOutput.map(({ message }: { message: string }) => message),
           );
+        }
       });
   }, [url]);
 

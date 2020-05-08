@@ -22,11 +22,13 @@
     "@types/react-lazylog": "^4.5.0",
     "@types/react-redux": "^7.1.8",
     "circleci-api": "^4.0.0",
+    "moment": "^2.25.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-lazylog": "^4.5.2",
     "react-redux": "^7.2.0",
     "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
     "react-use": "^13.0.0"
   },
   "devDependencies": {

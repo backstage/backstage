@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -21,20 +36,14 @@ export const SettingsPage = () => {
     token: tokenFromStore,
     owner: ownerFromStore,
     repo: repoFromStore,
-  } = useSelector(
-    (state: iRootState): SettingsState =>
-      (console.log({ state }) as any) || state.settings,
-  );
+  } = useSelector((state: iRootState): SettingsState => state.settings);
 
-  // const apiGitInfo = api.options.vcs;
-  // const [authed] = React.useState(false);
   const [token, setToken] = React.useState(() => tokenFromStore);
   const [owner, setOwner] = React.useState(() => ownerFromStore);
   const [repo, setRepo] = React.useState(() => repoFromStore);
 
   const dispatch: Dispatch = useDispatch();
 
-  React.useEffect(() => () => console.log('Settings unmounterd'), []);
   React.useEffect(() => {
     if (tokenFromStore !== token) {
       setToken(tokenFromStore);
@@ -60,7 +69,7 @@ export const SettingsPage = () => {
               title={
                 <>
                   Project Credentials
-                  {/*{authed ? <StatusOK /> : <StatusFailed />} */}
+                  {/* {authed ? <StatusOK /> : <StatusFailed />} */}
                   <Snackbar
                     autoHideDuration={1000}
                     open={saved}
@@ -80,7 +89,7 @@ export const SettingsPage = () => {
                     value={token}
                     fullWidth
                     variant="outlined"
-                    onChange={(e) => setToken(e.target.value)}
+                    onChange={e => setToken(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -90,7 +99,7 @@ export const SettingsPage = () => {
                     label="Owner"
                     variant="outlined"
                     value={owner}
-                    onChange={(e) => setOwner(e.target.value)}
+                    onChange={e => setOwner(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -100,7 +109,7 @@ export const SettingsPage = () => {
                     fullWidth
                     variant="outlined"
                     value={repo}
-                    onChange={(e) => setRepo(e.target.value)}
+                    onChange={e => setRepo(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
