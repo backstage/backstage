@@ -146,13 +146,13 @@ class DevAppBuilder {
     providedFactories: ApiFactory<any, any, any>[],
   ): ApiHolder {
     const providedApis = new Set(
-      providedFactories.map(factory => factory.implements),
+      providedFactories.map((factory) => factory.implements),
     );
 
     // Exlude any default API factory that we receive a factory for in the config
-    const defaultFactories = Object.values(
-      defaultApiFactories,
-    ).filter(factory => providedApis.has(factory.implements));
+    const defaultFactories = Object.values(defaultApiFactories).filter(
+      (factory) => !providedApis.has(factory.implements),
+    );
     const allFactories = [...defaultFactories, ...providedFactories];
 
     // Use a test registry with dependency injection so that the consumer
