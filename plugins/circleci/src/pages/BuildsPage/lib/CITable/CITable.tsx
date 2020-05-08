@@ -1,11 +1,5 @@
 import React, { FC } from 'react';
-import {
-  Link,
-  CircularProgress,
-  Typography,
-  Box,
-  IconButton,
-} from '@material-ui/core';
+import { Link, Typography, Box, IconButton } from '@material-ui/core';
 import { Replay as RetryIcon, GitHub as GithubIcon } from '@material-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -13,6 +7,7 @@ import {
   StatusOK,
   StatusPending,
   StatusNA,
+  StatusRunning,
   Table,
 } from '@backstage/core';
 import type { TableColumn } from '@backstage/core/src/components/Table';
@@ -46,7 +41,7 @@ const getStatusComponent = (status: string | undefined = '') => {
     case 'scheduled':
       return <StatusPending />;
     case 'running':
-      return <CircularProgress size={12} />;
+      return <StatusRunning />;
     case 'failed':
       return <StatusFailed />;
     case 'success':

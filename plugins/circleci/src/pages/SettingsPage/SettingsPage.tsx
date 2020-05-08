@@ -9,12 +9,7 @@ import {
   Snackbar,
   Box,
 } from '@material-ui/core';
-import {
-  InfoCard,
-  Content,
-  // StatusOK,
-  // StatusFailed,
-} from '@backstage/core';
+import { InfoCard, Content } from '@backstage/core';
 import { Layout } from 'components/Layout';
 import { SettingsState } from 'state/models/settings';
 import { iRootState } from 'state/store';
