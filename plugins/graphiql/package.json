@@ -34,9 +34,9 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "graphiql": "^1.0.0-alpha.8",
     "graphql": "15.0.0",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "react-use": "^13.0.0"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-use": "^13.24.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.4",
@@ -47,7 +47,7 @@
     "@testing-library/user-event": "^7.1.2",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
-    "@types/testing-library__jest-dom": "5.0.4",
+    "@types/testing-library__jest-dom": "^5.0.4",
     "jest-fetch-mock": "^3.0.3",
     "react-router-dom": "^5.1.2"
   },
