@@ -12,16 +12,6 @@
     "test": "backstage-cli test",
     "clean": "backstage-cli clean"
   },
-  "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.4",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^24.0.0",
-    "@types/node": "^12.0.0",
-    "@types/testing-library__jest-dom": "5.0.2",
-    "jest-fetch-mock": "^3.0.3"
-  },
   "dependencies": {
     "@backstage/core": "^0.1.1-alpha.4",
     "@backstage/theme": "^0.1.1-alpha.4",
@@ -38,6 +28,16 @@
     "react-redux": "^7.2.0",
     "react-router": "^5.1.2",
     "react-use": "^13.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.4",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^12.0.0",
+    "@types/testing-library__jest-dom": "5.0.2",
+    "jest-fetch-mock": "^3.0.3"
   },
   "files": [
     "dist"

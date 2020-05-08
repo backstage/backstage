@@ -32,7 +32,10 @@ export const PluginHeader: FC<Props> = ({ title = 'Circle CI' }) => {
           Settings
         </Button>
       )}
-      <SupportButton>A description of your plugin goes here.</SupportButton>
+      <SupportButton>
+        This plugin allows you to view and interact with your builds within the
+        Circle CI environment.
+      </SupportButton>
     </ContentHeader>
   );
 };
