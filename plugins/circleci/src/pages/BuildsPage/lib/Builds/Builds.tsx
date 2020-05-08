@@ -22,9 +22,10 @@ import React, { FC } from 'react';
 import { BuildSummary } from 'circleci-api';
 
 import { CITable, CITableBuildInfo } from '../CITable';
-import { circleCIApiRef } from 'api';
+import { useSelector, useDispatch } from 'react-redux';
+import { iRootState, Dispatch } from 'state/store';
 import { useApi } from '@backstage/core';
-
+import { circleCIApiRef } from 'api';
 // "lifecycle" : "finished", // :queued, :scheduled, :not_run, :not_running, :running or :finished
 // "outcome" : "failed", // :canceled, :infrastructure_fail, :timedout, :failed, :no_tests or :success
 
@@ -49,16 +50,18 @@ const makeReadableStatus = (status: string | undefined) => {
 
 const transform = (
   buildsData: BuildSummary[],
+  dispatch: Dispatch,
   api: typeof circleCIApiRef.T,
 ): CITableBuildInfo[] => {
-  return buildsData.map(buildData => {
+  return buildsData.map((buildData) => {
     const tableBuildInfo: CITableBuildInfo = {
       id: String(buildData.build_num),
       buildName: buildData.subject
         ? buildData.subject +
           (buildData.retry_of ? ` (retry of #${buildData.retry_of})` : '')
         : '',
-      onRetryClick: () => api.retry(String(buildData.build_num)),
+      onRetryClick: () =>
+        dispatch.builds.restartBuild({ buildId: buildData.build_num, api }),
       source: {
         branchName: String(buildData.branch),
         commit: {
@@ -80,36 +83,21 @@ const transform = (
   });
 };
 
-export const CircleCIFetch: FC<{}> = () => {
-  const [authed, setAuthed] = React.useState(false);
-  const [builds, setBuilds] = React.useState<BuildSummary[]>([]);
+export const Builds: FC<{}> = () => {
+  const dispatch: Dispatch = useDispatch();
   const api = useApi(circleCIApiRef);
 
   React.useEffect(() => {
-    const intervalId = setInterval(async () => {
-      if (!authed) {
-        await api.restorePersistedSettings();
-        await api
-          .validateToken()
-          .then(() => {
-            setAuthed(true);
-          })
-          .catch(() => setAuthed(false));
-      }
-      api.getBuilds().then(setBuilds);
-    }, 1500);
-    return () => clearInterval(intervalId);
-  }, [authed]);
+    dispatch.builds.startPolling(api);
+    return () => {
+      dispatch.builds.stopPolling();
+    };
+  }, []);
+  const { builds } = useSelector((state: iRootState) => state.builds);
+  const { repo, owner } = useSelector((state: iRootState) => state.settings);
+  const transformedBuilds = transform(builds, dispatch, api);
 
-  if (!authed) return <div>Not authenticated</div>;
-  const transformedBuilds = transform(builds || [], api);
   return (
-    <>
-      {!api.authed ? (
-        <div>Not authenticated</div>
-      ) : (
-        <CITable builds={transformedBuilds} />
-      )}
-    </>
+    <CITable builds={transformedBuilds} projectName={`${owner}/${repo}`} />
   );
 };

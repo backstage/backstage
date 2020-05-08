@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 import { createPlugin } from '@backstage/core';
-import { BuildsPage } from './pages/BuildsPage';
-import { SettingsPage } from './pages/SettingsPage';
-import { DetailedViewPage } from './pages/DetailedViewPage';
+import { App } from './App';
 
 export const plugin = createPlugin({
   id: 'circleci',
   register({ router }) {
-    router.registerRoute('/circleci', BuildsPage);
-    router.registerRoute('/circleci/build/:buildId', DetailedViewPage);
-    router.registerRoute('/circleci/settings', SettingsPage);
+    router.registerRoute('/circleci', App, { exact: false });
   },
 });

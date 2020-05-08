@@ -1,1 +1,0 @@
-export { CircleCIFetch } from './CirleCIFetch';
