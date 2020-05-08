@@ -28,6 +28,7 @@ if (fs.existsSync('jest.config.js')) {
     modulePaths: ['<rootDir>'],
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
+      '.+\\.(png|jpg|ttf|woff|woff2)$': 'identity-obj-proxy',
     },
     // We build .esm.js files with plugin:build, so to be able to load these in tests they need to be transformed
     // TODO: jest is working on module support, it's possible that we can remove this in the future
