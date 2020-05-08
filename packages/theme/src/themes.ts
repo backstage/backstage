@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createTheme } from 'baseTheme';
+import { createTheme } from './baseTheme';
 import { blue, yellow } from '@material-ui/core/colors';
 
 export const lightTheme = createTheme({

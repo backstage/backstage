@@ -23,11 +23,11 @@
     "lint": "backstage-cli lint",
     "clean": "backstage-cli clean"
   },
-  "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.4"
-  },
   "dependencies": {
     "@material-ui/core": "^4.9.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.4"
   },
   "files": [
     "dist"

@@ -11,11 +11,6 @@
     "test": "backstage-cli test",
     "clean": "backstage-cli clean"
   },
-  "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.4",
-    "jest-fetch-mock": "^3.0.3",
-    "tsc-watch": "^4.2.3"
-  },
   "dependencies": {
     "@backstage/backend-common": "0.1.1-alpha.4",
     "compression": "^1.7.4",
@@ -25,6 +20,11 @@
     "helmet": "^3.22.0",
     "morgan": "^1.10.0",
     "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.4",
+    "jest-fetch-mock": "^3.0.3",
+    "tsc-watch": "^4.2.3"
   },
   "files": [
     "dist"

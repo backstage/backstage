@@ -88,7 +88,7 @@ class RadarLegend extends React.PureComponent {
         <div className={classes.quadrant}>
           <h2 className={classes.quadrantHeading}>{quadrant.name}</h2>
           <div className={classes.rings}>
-            {rings.map(ring =>
+            {rings.map((ring) =>
               RadarLegend._renderRing(
                 ring,
                 RadarLegend._getSegment(segments, quadrant, ring),
@@ -117,7 +117,7 @@ class RadarLegend extends React.PureComponent {
           <p>(empty)</p>
         ) : (
           <ol className={classes.ringList}>
-            {entries.map(entry => {
+            {entries.map((entry) => {
               let node = <span className={classes.entry}>{entry.title}</span>;
 
               if (entry.url) {
@@ -175,7 +175,7 @@ class RadarLegend extends React.PureComponent {
 
     return (
       <g>
-        {quadrants.map(quadrant =>
+        {quadrants.map((quadrant) =>
           RadarLegend._renderQuadrant(
             segments,
             quadrant,

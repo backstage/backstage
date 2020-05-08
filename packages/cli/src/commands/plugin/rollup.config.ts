@@ -22,7 +22,7 @@ import postcss from 'rollup-plugin-postcss';
 import imageFiles from 'rollup-plugin-image-files';
 import json from '@rollup/plugin-json';
 import { RollupWatchOptions } from 'rollup';
-import { paths } from 'lib/paths';
+import { paths } from '../../lib/paths';
 
 export default {
   input: 'src/index.ts',

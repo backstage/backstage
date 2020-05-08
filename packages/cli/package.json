@@ -28,26 +28,6 @@
   "bin": {
     "backstage-cli": "bin/backstage-cli"
   },
-  "devDependencies": {
-    "@types/diff": "^4.0.2",
-    "@types/fs-extra": "^8.1.0",
-    "@types/html-webpack-plugin": "^3.2.2",
-    "@types/inquirer": "^6.5.0",
-    "@types/node": "^13.7.2",
-    "@types/ora": "^3.2.0",
-    "@types/react-dev-utils": "^9.0.4",
-    "@types/recursive-readdir": "^2.2.0",
-    "@types/rollup-plugin-peer-deps-external": "^2.2.0",
-    "@types/rollup-plugin-postcss": "^2.0.0",
-    "@types/tar": "^4.0.3",
-    "@types/webpack": "^4.41.7",
-    "@types/webpack-dev-server": "^3.10.0",
-    "del": "^5.1.0",
-    "nodemon": "^2.0.2",
-    "ts-node": "^8.6.2",
-    "tsconfig-paths": "^3.9.0",
-    "zombie": "^6.1.4"
-  },
   "dependencies": {
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -85,6 +65,25 @@
     "ts-loader": "^6.2.1",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3"
+  },
+  "devDependencies": {
+    "@types/diff": "^4.0.2",
+    "@types/fs-extra": "^8.1.0",
+    "@types/html-webpack-plugin": "^3.2.2",
+    "@types/inquirer": "^6.5.0",
+    "@types/node": "^13.7.2",
+    "@types/ora": "^3.2.0",
+    "@types/react-dev-utils": "^9.0.4",
+    "@types/recursive-readdir": "^2.2.0",
+    "@types/rollup-plugin-peer-deps-external": "^2.2.0",
+    "@types/rollup-plugin-postcss": "^2.0.0",
+    "@types/tar": "^4.0.3",
+    "@types/webpack": "^4.41.7",
+    "@types/webpack-dev-server": "^3.10.0",
+    "del": "^5.1.0",
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.6.2",
+    "zombie": "^6.1.4"
   },
   "files": [
     "templates",

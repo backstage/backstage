@@ -47,7 +47,7 @@ const InventoryPage: FC<{}> = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {STATIC_DATA.map(d => (
+                {STATIC_DATA.map((d) => (
                   <TableRow key={d.id}>
                     <TableCell>{d.id}</TableCell>
                     <TableCell>{d.kind}</TableCell>

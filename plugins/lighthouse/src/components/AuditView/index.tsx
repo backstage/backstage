@@ -68,7 +68,7 @@ const AuditLinkList: FC<AuditLinkListProps> = ({
     component="nav"
     aria-label="lighthouse audit history"
   >
-    {audits.map(audit => (
+    {audits.map((audit) => (
       <ListItem
         key={audit.id}
         selected={audit.id === selectedId}
@@ -136,7 +136,7 @@ const ConnectedAuditView: FC<{}> = () => {
           <AuditLinkList audits={value?.audits} selectedId={params.id} />
         </Grid>
         <Grid item xs={9}>
-          <AuditView audit={value?.audits.find(a => a.id === params.id)} />
+          <AuditView audit={value?.audits.find((a) => a.id === params.id)} />
         </Grid>
       </Grid>
     );

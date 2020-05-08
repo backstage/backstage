@@ -15,14 +15,14 @@
  */
 
 import { spawn } from 'child_process';
-import { LogPipe } from 'lib/logging';
+import { LogPipe } from '../logging';
 import chalk from 'chalk';
 import { Package } from './packages';
 
 export function startCompiler(pkg: Package, logPipe: LogPipe) {
   // First we figure out which yarn script is a available, falling back to "build --watch"
   const scriptName = ['build:watch', 'watch'].find(
-    script => script in pkg.scripts,
+    (script) => script in pkg.scripts,
   );
   const args = scriptName ? [scriptName] : ['build', '--watch'];
 
@@ -40,7 +40,7 @@ export function startCompiler(pkg: Package, logPipe: LogPipe) {
   watch.stderr.on('data', logErr);
 
   const promise = new Promise<void>((resolve, reject) => {
-    watch.on('error', error => {
+    watch.on('error', (error) => {
       reject(error);
     });
 

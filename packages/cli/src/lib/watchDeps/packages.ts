@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { paths } from 'lib/paths';
+import { paths } from '../paths';
 
 const LernaProject = require('@lerna/project');
 const PackageGraph = require('@lerna/package-graph');

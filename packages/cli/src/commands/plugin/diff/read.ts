@@ -18,8 +18,8 @@ import fs from 'fs-extra';
 import { relative as relativePath } from 'path';
 import handlebars from 'handlebars';
 import recursiveReadDir from 'recursive-readdir';
-import { paths } from 'lib/paths';
-import { version } from 'lib/version';
+import { paths } from '../../../lib/paths';
+import { version } from '../../../lib/version';
 import { PluginInfo, TemplateFile } from './types';
 
 // Reads info from the existing plugin
@@ -64,9 +64,11 @@ export async function readTemplate(
   templateDir: string,
   templateVars: any,
 ): Promise<TemplateFile[]> {
-  const templateFilePaths = await recursiveReadDir(templateDir).catch(error => {
-    throw new Error(`Failed to read template directory: ${error.message}`);
-  });
+  const templateFilePaths = await recursiveReadDir(templateDir).catch(
+    (error) => {
+      throw new Error(`Failed to read template directory: ${error.message}`);
+    },
+  );
 
   const templateFiles = new Array<TemplateFile>();
   for (const templateFile of templateFilePaths) {

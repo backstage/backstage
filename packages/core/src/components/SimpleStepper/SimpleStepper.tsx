@@ -42,7 +42,7 @@ export interface StepperProps {
 
 const Stepper: FC<StepperProps> = ({ children, elevated, onStepChange }) => {
   const [stepIndex, setStepIndex] = useState<number>(0);
-  const [stepHistory, setStepHistory] = useState<number[]>([]);
+  const [stepHistory, setStepHistory] = useState<number[]>([0]);
 
   const steps: React.ReactNode[] = [];
   let endStep;

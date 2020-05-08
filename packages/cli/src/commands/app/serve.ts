@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { run } from 'lib/run';
-import { createLogFunc } from 'lib/logging';
-import { watchDeps } from 'lib/watchDeps';
+import { run } from '../../lib/run';
+import { createLogFunc } from '../../lib/logging';
+import { watchDeps } from '../../lib/watchDeps';
 
 export default async () => {
   // Start dynamic watch and build of dependencies, then serve the app

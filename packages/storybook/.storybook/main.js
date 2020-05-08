@@ -22,7 +22,6 @@ module.exports = {
       // Point to dist version of theme and any other packages that might be needed in the future
       '@backstage/theme': path.resolve(__dirname, '../../theme'),
     };
-    config.resolve.modules.push(coreSrc);
 
     // Remove the default babel-loader for js files, we're using ts-loader instead
     const [jsLoader] = config.module.rules.splice(0, 1);
@@ -56,7 +55,7 @@ module.exports = {
 
     // Fail storybook build on CI if there are webpack warnings.
     if (process.env.CI) {
-      config.plugins.push(new WebpackPluginFailBuildOnWarning())
+      config.plugins.push(new WebpackPluginFailBuildOnWarning());
     }
 
     return config;

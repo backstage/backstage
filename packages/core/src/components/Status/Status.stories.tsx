@@ -24,8 +24,8 @@ import {
   StatusRunning,
   StatusWarning,
 } from './Status';
-import Table from 'components/Table';
-import InfoCard from 'layout/InfoCard';
+import Table from '../Table';
+import InfoCard from '../../layout/InfoCard';
 
 export default {
   title: 'Status',

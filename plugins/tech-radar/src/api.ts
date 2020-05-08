@@ -16,6 +16,10 @@
 
 import { ApiRef } from '@backstage/core';
 
+/**
+ * Types related to the Radar's visualization.
+ */
+
 export interface RadarRing {
   id: string;
   name: string;
@@ -37,42 +41,63 @@ export interface RadarEntry {
   url: string;
 }
 
+/**
+ * Types related to data collection for the Radar.
+ */
+
 export interface TechRadarLoaderResponse {
   quadrants: RadarQuadrant[];
   rings: RadarRing[];
   entries: RadarEntry[];
 }
 
-export interface TechRadarAdditionalOptions {
-  title?: string;
-  subtitle?: string;
+/**
+ * Set up the Radar as a Backstage component.
+ */
+
+export interface TechRadarComponentProps {
+  width: number;
+  height: number;
+  getData?: () => Promise<TechRadarLoaderResponse>;
   svgProps?: object;
 }
 
-export interface TechRadarApi {
-  width: number;
-  height: number;
-  load: () => Promise<TechRadarLoaderResponse>;
-  additionalOpts: TechRadarAdditionalOptions;
+/**
+ * Set up the Radar as a Backstage plugin.
+ */
+
+export interface TechRadarApi extends TechRadarComponentProps {
+  title?: string;
+  subtitle?: string;
 }
 
 export const techRadarApiRef = new ApiRef<TechRadarApi>({
   id: 'plugin.techradar',
-  description: 'Used by the Tech Radar to render the diagram',
+  description: 'Used by the Tech Radar to render the visualization',
 });
 
 export class TechRadar implements TechRadarApi {
-  private defaultAdditionalOpts: Partial<TechRadarAdditionalOptions> = {
-    title: 'Tech Radar',
-    subtitle: 'Welcome to the Tech Radar!',
-  };
+  // Default columns
+  public width: TechRadarApi['width'];
+  public height: TechRadarApi['height'];
+  public getData: TechRadarApi['getData'];
+  public svgProps: TechRadarApi['svgProps'];
+  public title: TechRadarApi['title'];
+  public subtitle: TechRadarApi['subtitle'];
 
-  constructor(
-    public width: number,
-    public height: number,
-    public load: () => Promise<TechRadarLoaderResponse>,
-    public additionalOpts: TechRadarAdditionalOptions = {},
-  ) {
-    this.additionalOpts = { ...this.defaultAdditionalOpts, ...additionalOpts };
+  constructor(overrideOptions: TechRadarApi) {
+    const defaultOptions: Partial<TechRadarApi> = {
+      title: 'Tech Radar',
+      subtitle: 'Welcome to the Tech Radar!',
+    };
+
+    const options = { ...defaultOptions, ...overrideOptions };
+
+    this.width = options.width;
+    this.height = options.height;
+    this.getData = options.getData;
+    this.svgProps = options.svgProps;
+    this.title = options.title;
+    this.subtitle = options.subtitle;
   }
 }

@@ -20,8 +20,8 @@ import { createLogPipeFactory } from './logger';
 import { findAllDeps } from './packages';
 import { startWatcher, startPackageWatcher } from './watcher';
 import { startCompiler } from './compiler';
-import { run } from 'lib/run';
-import { paths } from 'lib/paths';
+import { run } from '../run';
+import { paths } from '../paths';
 
 const PACKAGE_BLACKLIST = [
   // We never want to watch for changes in the cli, but all packages will depend on it.
@@ -66,8 +66,8 @@ export async function watchDeps(options: Options = {}) {
   }
 
   // We lazily watch all our deps, as in we don't start the actual watch compiler until a change is detected
-  const watcher = await startWatcher(deps, WATCH_LOCATIONS, pkg => {
-    startCompiler(pkg, createLogPipe(pkg.name)).promise.catch(error => {
+  const watcher = await startWatcher(deps, WATCH_LOCATIONS, (pkg) => {
+    startCompiler(pkg, createLogPipe(pkg.name)).promise.catch((error) => {
       process.stderr.write(`${error}\n`);
     });
   });
