@@ -131,7 +131,7 @@ const useToolbarStyles = makeStyles<BackstageTheme>((theme) => ({
 
 const convertColumns = (columns: TableColumn[]): TableColumn[] => {
   return columns.map((column) => {
-    const theme = useTheme();
+    const theme = useTheme<BackstageTheme>();
     const headerStyle: React.CSSProperties = {};
     const cellStyle: React.CSSProperties = {};
 
