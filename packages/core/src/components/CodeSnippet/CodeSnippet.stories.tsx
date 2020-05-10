@@ -38,6 +38,6 @@ export const Default = () => (
 
 export const LineNumbers = () => (
   <div style={containerStyle}>
-    <CodeSnippet text={javascript} language="javascript" />
+    <CodeSnippet text={javascript} language="javascript" showLineNumbers />
   </div>
 );

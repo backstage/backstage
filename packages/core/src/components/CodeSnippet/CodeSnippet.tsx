@@ -25,12 +25,15 @@ import { docco, dark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 type Props = {
   text: string;
   language: string;
+  showLineNumbers?: boolean;
 };
 
-const defaultProps = {};
+const defaultProps = {
+  showLineNumbers: false,
+};
 
 const CodeSnippet: FC<Props> = props => {
-  const { text, language } = {
+  const { text, language, showLineNumbers } = {
     ...defaultProps,
     ...props,
   };
@@ -44,7 +47,11 @@ const CodeSnippet: FC<Props> = props => {
   })();
 
   return (
-    <SyntaxHighlighter language={language} style={mode}>
+    <SyntaxHighlighter
+      language={language}
+      style={mode}
+      showLineNumbers={showLineNumbers}
+    >
       {text}
     </SyntaxHighlighter>
   );
