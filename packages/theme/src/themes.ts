@@ -60,7 +60,7 @@ export const lightTheme = createTheme({
 export const darkTheme = createTheme({
   type: 'dark',
   background: {
-    default: '#282828',
+    default: '#333333',
   },
   status: {
     ok: '#1db855',
@@ -83,7 +83,7 @@ export const darkTheme = createTheme({
   border: '#E6E6E6',
   textContrast: '#FFFFFF',
   textVerySubtle: '#DDD',
-  textSubtle: '#6E6E6E',
+  textSubtle: '#EEEEEE',
   highlight: '#FFFBCC',
   errorBackground: '#FFEBEE',
   warningBackground: '#F59B23',

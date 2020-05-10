@@ -24,7 +24,7 @@ import MTable, {
   Column,
 } from 'material-table';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import {
@@ -99,7 +99,7 @@ const tableIcons = {
   )),
 };
 
-const useCellStyles = makeStyles<BackstageTheme>(theme => ({
+const useCellStyles = makeStyles<BackstageTheme>((theme) => ({
   root: {
     color: theme.palette.grey[500],
     padding: theme.spacing(0, 2, 0, 2.5),
@@ -107,18 +107,18 @@ const useCellStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-const useHeaderStyles = makeStyles<BackstageTheme>(theme => ({
+const useHeaderStyles = makeStyles<BackstageTheme>((theme) => ({
   header: {
     padding: theme.spacing(1, 2, 1, 2.5),
     borderTop: `1px solid ${theme.palette.grey.A100}`,
     borderBottom: `1px solid ${theme.palette.grey.A100}`,
     color: theme.palette.textSubtle,
-    fontWeight: 'bold',
+    fontWeight: theme.typography.fontWeightBold,
     position: 'static',
   },
 }));
 
-const useToolbarStyles = makeStyles<BackstageTheme>(theme => ({
+const useToolbarStyles = makeStyles<BackstageTheme>((theme) => ({
   root: {
     padding: theme.spacing(3, 0, 2.5, 2.5),
   },
@@ -129,14 +129,17 @@ const useToolbarStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-const convertColumns = (columns: TableColumn[]): TableColumn[] => {
-  return columns.map(column => {
+const convertColumns = (
+  columns: TableColumn[],
+  theme: BackstageTheme,
+): TableColumn[] => {
+  return columns.map((column) => {
     const headerStyle: React.CSSProperties = {};
     const cellStyle: React.CSSProperties = {};
 
     if (column.highlight) {
-      headerStyle.color = '#000000';
-      cellStyle.fontWeight = 'bold';
+      headerStyle.color = theme.palette.textContrast;
+      cellStyle.fontWeight = theme.typography.fontWeightBold;
     }
 
     return {
@@ -159,8 +162,9 @@ const Table: FC<TableProps> = ({ columns, options, ...props }) => {
   const cellClasses = useCellStyles();
   const headerClasses = useHeaderStyles();
   const toolbarClasses = useToolbarStyles();
+  const theme = useTheme<BackstageTheme>();
 
-  const MTColumns = convertColumns(columns);
+  const MTColumns = convertColumns(columns, theme);
 
   const defaultOptions: Options = {
     headerStyle: {
@@ -171,13 +175,13 @@ const Table: FC<TableProps> = ({ columns, options, ...props }) => {
   return (
     <MTable
       components={{
-        Cell: cellProps => (
+        Cell: (cellProps) => (
           <MTableCell className={cellClasses.root} {...cellProps} />
         ),
-        Header: headerProps => (
+        Header: (headerProps) => (
           <MTableHeader classes={headerClasses} {...headerProps} />
         ),
-        Toolbar: toolbarProps => (
+        Toolbar: (toolbarProps) => (
           <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
         ),
       }}
