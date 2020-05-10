@@ -47,16 +47,14 @@ describe('<CodeSnippet />', () => {
     expect(queryByText('1')).not.toBeInTheDocument();
     expect(queryByText('2')).not.toBeInTheDocument();
     expect(queryByText('3')).not.toBeInTheDocument();
-    expect(queryByText('4')).not.toBeInTheDocument();
   });
 
   it('renders with line numbers', () => {
-    const { getByText } = render(
+    const { queryByText } = render(
       wrapInThemedTestApp(<CodeSnippet {...minProps} showLineNumbers />),
     );
-    expect(getByText(/1/)).toBeInTheDocument();
-    expect(getByText(/2/)).toBeInTheDocument();
-    expect(getByText(/3/)).toBeInTheDocument();
-    expect(getByText(/4/)).toBeInTheDocument();
+    expect(queryByText(/1/)).toBeInTheDocument();
+    expect(queryByText(/2/)).toBeInTheDocument();
+    expect(queryByText(/3/)).toBeInTheDocument();
   });
 });

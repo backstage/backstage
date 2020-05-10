@@ -22,22 +22,60 @@ export default {
   component: CodeSnippet,
 };
 
-const containerStyle = { width: 500 };
+const containerStyle = { width: 300 };
 
-const javascript = `const greeting = "Hello";
+const JAVASCRIPT = `const greeting = "Hello";
 const world = "World";
 
-const greet = person => gretting + " " + person + "!";
+const greet = person => greeting + " " + person + "!";
+
+greet(world);
+`;
+
+const TYPESCRIPT = `const greeting: string = "Hello";
+const world: string = "World";
+
+const greet = (person: string): string => greeting + " " + person + "!";
+
+greet(world);
+`;
+
+const PYTHON = `greeting = "Hello"
+world = "World"
+
+def greet(person):
+    return f"{greeting} {person}!"
+
+greet(world)
 `;
 
 export const Default = () => (
-  <div style={containerStyle}>
-    <CodeSnippet text={javascript} language="javascript" />
-  </div>
+  <CodeSnippet text={"const hello = 'World';"} language="javascript" />
+);
+
+export const MultipleLines = () => (
+  <CodeSnippet text={JAVASCRIPT} language="javascript" />
 );
 
 export const LineNumbers = () => (
-  <div style={containerStyle}>
-    <CodeSnippet text={javascript} language="javascript" showLineNumbers />
-  </div>
+  <CodeSnippet text={JAVASCRIPT} language="javascript" showLineNumbers />
+);
+
+export const Overflow = () => (
+  <>
+    <div style={containerStyle}>
+      <CodeSnippet text={JAVASCRIPT} language="javascript" />
+    </div>
+    <div style={containerStyle}>
+      <CodeSnippet text={JAVASCRIPT} language="javascript" showLineNumbers />
+    </div>
+  </>
+);
+
+export const Laguages = () => (
+  <>
+    <CodeSnippet text={JAVASCRIPT} language="javascript" showLineNumbers />
+    <CodeSnippet text={TYPESCRIPT} language="typescript" showLineNumbers />
+    <CodeSnippet text={PYTHON} language="python" showLineNumbers />
+  </>
 );
