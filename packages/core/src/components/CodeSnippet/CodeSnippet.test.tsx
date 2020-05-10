@@ -32,24 +32,25 @@ const minProps = {
 };
 
 describe('<CodeSnippet />', () => {
-  it('renders without exploding', () => {
+  it('renders text without exploding', () => {
     const { getByText } = render(
       wrapInThemedTestApp(<CodeSnippet {...minProps} />),
     );
-    expect(getByText(/const/)).toBeInTheDocument();
+    expect(getByText(/"Hello"/)).toBeInTheDocument();
+    expect(getByText(/"World"/)).toBeInTheDocument();
   });
 
   it('renders without line numbers', () => {
-    const { getByText } = render(
+    const { queryByText } = render(
       wrapInThemedTestApp(<CodeSnippet {...minProps} />),
     );
-    expect(getByText(/1/)).not.toBeInTheDocument();
-    expect(getByText(/2/)).not.toBeInTheDocument();
-    expect(getByText(/3/)).not.toBeInTheDocument();
-    expect(getByText(/4/)).not.toBeInTheDocument();
+    expect(queryByText('1')).not.toBeInTheDocument();
+    expect(queryByText('2')).not.toBeInTheDocument();
+    expect(queryByText('3')).not.toBeInTheDocument();
+    expect(queryByText('4')).not.toBeInTheDocument();
   });
 
-  it('renders line numbers', () => {
+  it('renders with line numbers', () => {
     const { getByText } = render(
       wrapInThemedTestApp(<CodeSnippet {...minProps} showLineNumbers />),
     );
@@ -57,12 +58,5 @@ describe('<CodeSnippet />', () => {
     expect(getByText(/2/)).toBeInTheDocument();
     expect(getByText(/3/)).toBeInTheDocument();
     expect(getByText(/4/)).toBeInTheDocument();
-  });
-
-  it('does not render deepLink', () => {
-    const { queryByText } = render(
-      wrapInThemedTestApp(<CodeSnippet {...minProps} />),
-    );
-    expect(queryByText('View more')).not.toBeInTheDocument();
   });
 });

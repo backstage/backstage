@@ -17,7 +17,7 @@
 import React, { FC } from 'react';
 import PropTypes from 'prop-types';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco, dark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { docco, dark } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import { useTheme } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
