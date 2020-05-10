@@ -15,12 +15,11 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import { BackstageTheme } from '@backstage/theme';
-
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco, dark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { useTheme } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 
 type Props = {
   text: string;
@@ -38,13 +37,8 @@ const CodeSnippet: FC<Props> = props => {
     ...props,
   };
 
-  // FIXME: There must be a better way of accessing the theme.
-  //        ThemeContext.Consumer looks promising but didn't cooperate
-  let mode = dark;
-  makeStyles<BackstageTheme>(theme => {
-    mode = theme.palette.type === 'dark' ? dark : docco;
-    return {};
-  })();
+  const theme = useTheme<BackstageTheme>();
+  const mode = theme.palette.type === 'dark' ? dark : docco;
 
   return (
     <SyntaxHighlighter

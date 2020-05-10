@@ -17,61 +17,52 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInThemedTestApp } from '@backstage/test-utils';
-import CopyTextButton from './CopyTextButton';
-import { ApiRegistry, errorApiRef, ApiProvider, ErrorApi } from '../../api';
 
-jest.mock('popper.js', () => {
-  const PopperJS = jest.requireActual('popper.js');
+import CodeSnippet from './CodeSnippet';
 
-  return class {
-    static placements = PopperJS.placements;
-    update() {}
-    destroy() {}
-    scheduleUpdate() {}
-  };
-});
+const javascript = `const greeting = "Hello";
+const world = "World";
 
-const props = {
-  text: 'mockText',
-  tooltipDelay: 2,
-  tooltipText: 'mockTooltip',
+const greet = person => gretting + " " + person + "!";
+`;
+
+const minProps = {
+  text: javascript,
+  language: 'javascript',
 };
 
-const apiRegistry = ApiRegistry.from([
-  [
-    errorApiRef,
-    {
-      post(error) {
-        throw error;
-      },
-    } as ErrorApi,
-  ],
-]);
-
-describe('<CopyTextButton />', () => {
+describe('<CodeSnippet />', () => {
   it('renders without exploding', () => {
-    const { getByDisplayValue } = render(
-      wrapInThemedTestApp(
-        <ApiProvider apis={apiRegistry}>
-          <CopyTextButton {...props} />
-        </ApiProvider>,
-      ),
+    const { getByText } = render(
+      wrapInThemedTestApp(<CodeSnippet {...minProps} />),
     );
-    getByDisplayValue('mockText');
+    expect(getByText(/const/)).toBeInTheDocument();
   });
 
-  it('displays tooltip on click', async () => {
-    document.execCommand = jest.fn();
-    const rendered = render(
-      wrapInThemedTestApp(
-        <ApiProvider apis={apiRegistry}>
-          <CopyTextButton {...props} />
-        </ApiProvider>,
-      ),
+  it('renders without line numbers', () => {
+    const { getByText } = render(
+      wrapInThemedTestApp(<CodeSnippet {...minProps} />),
     );
-    const button = rendered.getByTitle('mockTooltip');
-    button.click();
-    expect(document.execCommand).toHaveBeenCalled();
-    rendered.getByText('mockTooltip');
+    expect(getByText(/1/)).not.toBeInTheDocument();
+    expect(getByText(/2/)).not.toBeInTheDocument();
+    expect(getByText(/3/)).not.toBeInTheDocument();
+    expect(getByText(/4/)).not.toBeInTheDocument();
+  });
+
+  it('renders line numbers', () => {
+    const { getByText } = render(
+      wrapInThemedTestApp(<CodeSnippet {...minProps} showLineNumbers />),
+    );
+    expect(getByText(/1/)).toBeInTheDocument();
+    expect(getByText(/2/)).toBeInTheDocument();
+    expect(getByText(/3/)).toBeInTheDocument();
+    expect(getByText(/4/)).toBeInTheDocument();
+  });
+
+  it('does not render deepLink', () => {
+    const { queryByText } = render(
+      wrapInThemedTestApp(<CodeSnippet {...minProps} />),
+    );
+    expect(queryByText('View more')).not.toBeInTheDocument();
   });
 });
