@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey } from '../../icons';
+import {
+  CookieCutter,
+  createRouter,
+  DiskStorage,
+} from '@backstage/plugin-scaffolder-backend';
+import type { PluginEnvironment } from '../types';
 
-export type App = {
-  getSystemIcon(key: SystemIconKey): IconComponent;
-};
+export default async function ({ logger }: PluginEnvironment) {
+  const storage = new DiskStorage({ logger });
+  const templater = new CookieCutter();
 
-export class AppComponentBuilder<T = any> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  build(_app: App): ComponentType<T> {
-    throw new Error('Must override build() in AppComponentBuilder');
-  }
+  return await createRouter({ storage, templater, logger });
 }

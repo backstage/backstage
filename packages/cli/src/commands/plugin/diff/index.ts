@@ -41,7 +41,7 @@ const fileHandlers = [
   },
 ];
 
-const inquirerPromptFunc: PromptFunc = async msg => {
+const inquirerPromptFunc: PromptFunc = async (msg) => {
   const { result } = await inquirer.prompt({
     type: 'confirm',
     name: 'result',
@@ -50,23 +50,42 @@ const inquirerPromptFunc: PromptFunc = async msg => {
   return result;
 };
 
-const checkPromptFunc: PromptFunc = async msg => {
-  throw new Error(`Check failed, the following change was needed: ${msg}`);
+const makeCheck = () => {
+  let failed = false;
+
+  const promptFunc: PromptFunc = async (msg) => {
+    failed = true;
+    console.log(chalk.red(`[Check Failed] ${msg}`));
+    return false;
+  };
+
+  const finalize = () => {
+    if (failed) {
+      throw new Error(
+        'Check failed, the plugin is not in sync with the latest template',
+      );
+    }
+  };
+
+  return [promptFunc, finalize] as const;
 };
-const yesPromptFunc: PromptFunc = async msg => {
+
+const yesPromptFunc: PromptFunc = async (msg) => {
   console.log(`Accepting: "${msg}"`);
   return true;
 };
 
 export default async (cmd: Command) => {
   let promptFunc = inquirerPromptFunc;
+  let finalize = () => {};
 
   if (cmd.check) {
-    promptFunc = checkPromptFunc;
+    [promptFunc, finalize] = makeCheck();
   } else if (cmd.yes) {
     promptFunc = yesPromptFunc;
   }
 
   const templateFiles = await readTemplateFiles('default-plugin');
   await handleAllFiles(fileHandlers, templateFiles, promptFunc);
+  await finalize();
 };

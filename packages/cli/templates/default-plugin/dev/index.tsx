@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey } from '../../icons';
+import { createDevApp } from '@backstage/dev-utils';
+import { plugin } from '../src/plugin';
 
-export type App = {
-  getSystemIcon(key: SystemIconKey): IconComponent;
-};
-
-export class AppComponentBuilder<T = any> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  build(_app: App): ComponentType<T> {
-    throw new Error('Must override build() in AppComponentBuilder');
-  }
-}
+createDevApp().registerPlugin(plugin).render();

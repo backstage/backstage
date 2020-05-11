@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey } from '../../icons';
+import type { Logger } from 'winston';
 
-export type App = {
-  getSystemIcon(key: SystemIconKey): IconComponent;
+export type PluginEnvironment = {
+  logger: Logger;
 };
-
-export class AppComponentBuilder<T = any> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  build(_app: App): ComponentType<T> {
-    throw new Error('Must override build() in AppComponentBuilder');
-  }
-}

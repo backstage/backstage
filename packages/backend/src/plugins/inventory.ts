@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey } from '../../icons';
+import {
+  AggregatorInventory,
+  createRouter,
+  StaticInventory,
+} from '@backstage/plugin-inventory-backend';
+import type { PluginEnvironment } from '../types';
 
-export type App = {
-  getSystemIcon(key: SystemIconKey): IconComponent;
-};
+export default async function ({ logger }: PluginEnvironment) {
+  const inventory = new AggregatorInventory();
+  inventory.enlist(
+    new StaticInventory([
+      { id: 'component1' },
+      { id: 'component2' },
+      { id: 'component3' },
+      { id: 'component4' },
+    ]),
+  );
 
-export class AppComponentBuilder<T = any> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  build(_app: App): ComponentType<T> {
-    throw new Error('Must override build() in AppComponentBuilder');
-  }
+  return await createRouter({ inventory, logger });
 }

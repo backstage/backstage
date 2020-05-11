@@ -39,7 +39,6 @@ export function createConfig(paths: Paths): webpack.Configuration {
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
-      modules: ['node_modules', paths.targetSrc],
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],

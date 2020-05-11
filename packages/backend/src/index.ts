@@ -28,39 +28,21 @@ import {
   notFoundHandler,
   requestLoggingHandler,
 } from '@backstage/backend-common';
-import {
-  AggregatorInventory,
-  createRouter as inventoryRouter,
-  StaticInventory,
-} from '@backstage/plugin-inventory-backend';
-import {
-  createRouter as scaffolderRouter,
-  DiskStorage,
-  CookieCutter,
-} from '@backstage/plugin-scaffolder-backend';
+import inventory from './plugins/inventory';
+import scaffolder from './plugins/scaffolder';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
+import { PluginEnvironment } from './types';
 
 const DEFAULT_PORT = 7000;
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
-const logger = getRootLogger().child({ type: 'plugin' });
+const pluginEnvironment: PluginEnvironment = {
+  logger: getRootLogger().child({ type: 'plugin' }),
+};
 
 async function main() {
-  const inventory = new AggregatorInventory();
-  inventory.enlist(
-    new StaticInventory([
-      { id: 'component1' },
-      { id: 'component2' },
-      { id: 'component3' },
-      { id: 'component4' },
-    ]),
-  );
-
-  const storage = new DiskStorage({ logger });
-  const templater = new CookieCutter();
-
   const app = express();
 
   app.use(helmet());
@@ -68,8 +50,8 @@ async function main() {
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/inventory', await inventoryRouter({ inventory, logger }));
-  app.use('/scaffolder', await scaffolderRouter({ storage, templater, logger }));
+  app.use('/inventory', await inventory(pluginEnvironment));
+  app.use('/scaffolder', await scaffolder(pluginEnvironment));
   app.use(notFoundHandler());
   app.use(errorHandler());
 
