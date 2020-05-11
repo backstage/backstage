@@ -88,9 +88,8 @@ const generatedColumns: TableColumn[] = [
     title: 'Source',
     render: (row: Partial<CITableBuildInfo>) => (
       <>
-        {row.source?.branchName}
-        <br />
-        {row.source?.commit.hash}
+        <p>{row.source?.branchName}</p>
+        <p>{row.source?.commit.hash}</p>
       </>
     ),
   },
