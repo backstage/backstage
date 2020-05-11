@@ -15,10 +15,7 @@
  */
 
 import React, { FC, useEffect } from 'react';
-
-import {} from 'circleci-api';
 import { useApi } from '@backstage/core';
-
 import { CITable, CITableBuildInfo } from '../CITable';
 import { useSelector, useDispatch } from 'react-redux';
 import { iRootState, Dispatch } from '../../../../state/store';
