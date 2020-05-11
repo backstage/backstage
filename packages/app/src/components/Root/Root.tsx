@@ -34,6 +34,9 @@ import {
 } from '@backstage/core';
 import ToggleThemeSidebarItem from './ToggleThemeSidebarItem';
 
+const icon = require('./icon.svg') as string;
+const logo = require('./logo.svg') as string;
+
 const useSidebarLogoStyles = makeStyles({
   root: {
     height: sidebarConfig.drawerWidthClosed,
@@ -41,11 +44,13 @@ const useSidebarLogoStyles = makeStyles({
     flexFlow: 'row nowrap',
     alignItems: 'center',
   },
-  logoContainer: {
-    width: sidebarConfig.drawerWidthClosed,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+  icon: {
+    width: 'auto',
+    height: 28,
+  },
+  logo: {
+    width: 'auto',
+    height: 30,
   },
   title: {
     fontSize: 24,
@@ -54,21 +59,20 @@ const useSidebarLogoStyles = makeStyles({
     whiteSpace: 'nowrap',
     color: '#fff',
   },
-  titleDot: {
-    color: '#68c5b5',
-  },
 });
 
 const SidebarLogo: FC<{}> = () => {
   const classes = useSidebarLogoStyles();
   const isOpen = useContext(SidebarContext);
-
   return (
     <div className={classes.root}>
       <Link href="/" underline="none">
         <Typography variant="h6" color="inherit" className={classes.title}>
-          {isOpen ? 'Backstage' : 'B'}
-          <span className={classes.titleDot}>.</span>
+          {isOpen ? (
+            <img src={logo} alt="logo" className={classes.logo} />
+          ) : (
+            <img src={icon} alt="logo" className={classes.icon} />
+          )}
         </Typography>
       </Link>
     </div>
