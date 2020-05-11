@@ -24,6 +24,7 @@ import { PluginHeader } from '../../components/PluginHeader';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import { Layout } from '../../components/Layout';
 import { Dispatch, iRootState } from '../../state/store';
+import { withStore } from '../../components/Store';
 
 const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
   <>
@@ -86,7 +87,8 @@ const pickClassName = (
 
   return classes.neutral;
 };
-export const DetailedViewPage: FC<{}> = () => {
+
+const DetailedViewPage: FC<{}> = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
   const dispatch: Dispatch = useDispatch();
@@ -151,3 +153,5 @@ const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
     </>
   );
 };
+
+export default withStore(DetailedViewPage);
