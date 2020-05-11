@@ -55,6 +55,7 @@ const CodeSnippet: FC<Props> = props => {
 CodeSnippet.propTypes = {
   text: PropTypes.string.isRequired,
   language: PropTypes.string.isRequired,
+  showLineNumbers: PropTypes.bool,
 };
 
 export default CodeSnippet;

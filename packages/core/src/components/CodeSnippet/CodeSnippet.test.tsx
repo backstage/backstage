@@ -20,14 +20,14 @@ import { wrapInThemedTestApp } from '@backstage/test-utils';
 
 import CodeSnippet from './CodeSnippet';
 
-const javascript = `const greeting = "Hello";
+const JAVASCRIPT = `const greeting = "Hello";
 const world = "World";
 
 const greet = person => gretting + " " + person + "!";
 `;
 
 const minProps = {
-  text: javascript,
+  text: JAVASCRIPT,
   language: 'javascript',
 };
 
