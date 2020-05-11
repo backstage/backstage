@@ -15,11 +15,21 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
+import path from 'path';
 import Knex from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { AddLocationRequest, Component, Inventory, Location } from './types';
 
 export class DatabaseInventory implements Inventory {
+  static async create(database: Knex): Promise<DatabaseInventory> {
+    await database.migrate.latest({
+      directory: path.resolve(__dirname, '..', 'migrations'),
+      loadExtensions: ['.js'],
+    });
+
+    return new DatabaseInventory(database);
+  }
+
   constructor(private readonly database: Knex) {}
 
   async components(): Promise<Component[]> {

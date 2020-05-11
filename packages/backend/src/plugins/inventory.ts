@@ -21,6 +21,6 @@ import {
 import { PluginEnvironment } from '../types';
 
 export default async function({ logger, database }: PluginEnvironment) {
-  const inventory = new DatabaseInventory(database);
+  const inventory = await DatabaseInventory.create(database);
   return await createRouter({ inventory, logger });
 }
