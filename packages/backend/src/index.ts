@@ -28,12 +28,13 @@ import {
   notFoundHandler,
   requestLoggingHandler,
 } from '@backstage/backend-common';
-import inventory from './plugins/inventory';
-import scaffolder from './plugins/scaffolder';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
+import { buildDatabase } from './database';
+import inventory from './plugins/inventory';
+import scaffolder from './plugins/scaffolder';
 import { PluginEnvironment } from './types';
 
 const DEFAULT_PORT = 7000;
@@ -43,6 +44,9 @@ const pluginEnvironment: PluginEnvironment = {
 };
 
 async function main() {
+  const database = await buildDatabase(getRootLogger());
+  console.log(await database.select().from('locations'));
+
   const app = express();
 
   app.use(helmet());
