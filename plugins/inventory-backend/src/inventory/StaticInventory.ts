@@ -18,14 +18,18 @@ import { NotFoundError } from '@backstage/backend-common';
 import { Component, Inventory } from './types';
 
 export class StaticInventory implements Inventory {
-  constructor(private components: Component[]) {}
+  #components: Component[];
 
-  async list(): Promise<Component[]> {
-    return this.components.slice();
+  constructor(components: Component[]) {
+    this.#components = components;
   }
 
-  async item(id: string): Promise<Component> {
-    const item = this.components.find((i) => i.id === id);
+  async components(): Promise<Component[]> {
+    return this.#components.slice();
+  }
+
+  async component(id: string): Promise<Component> {
+    const item = this.#components.find((i) => i.id === id);
     if (!item) {
       throw new NotFoundError(`Found no component with ID ${id}`);
     }

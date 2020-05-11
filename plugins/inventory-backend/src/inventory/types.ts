@@ -19,6 +19,6 @@ export type Component = {
 };
 
 export type Inventory = {
-  list(): Promise<Component[]>;
-  item(id: string): Promise<Component>;
+  components(): Promise<Component[]>;
+  component(id: string): Promise<Component>;
 };

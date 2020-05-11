@@ -32,13 +32,13 @@ export async function createRouter(
 
   const router = Router();
   router
-    .get('/', async (req, res) => {
-      const components = await inventory.list();
+    .get('/components', async (req, res) => {
+      const components = await inventory.components();
       res.status(200).send(components);
     })
-    .get('/:id', async (req, res) => {
+    .get('/components/:id', async (req, res) => {
       const { id } = req.params;
-      const component = await inventory.item(id);
+      const component = await inventory.component(id);
       res.status(200).send(component);
     });
 

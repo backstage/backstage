@@ -18,17 +18,19 @@ import { NotFoundError } from '@backstage/backend-common';
 import { Component, Inventory } from './types';
 
 export class AggregatorInventory implements Inventory {
-  inventories: Inventory[] = [];
+  #inventories: Inventory[] = [];
 
-  async list(): Promise<Component[]> {
-    const lists = await Promise.all(this.inventories.map((i) => i.list()));
+  async components(): Promise<Component[]> {
+    const lists = await Promise.all(
+      this.#inventories.map((i) => i.components()),
+    );
     return lists.flat();
   }
 
-  item(id: string): Promise<Component> {
+  component(id: string): Promise<Component> {
     return new Promise((resolve, reject) => {
-      const promises = this.inventories.map((i) =>
-        i.item(id).then(resolve, () => {
+      const promises = this.#inventories.map((i) =>
+        i.component(id).then(resolve, () => {
           // For now, just swallow errors in individual inventories;
           // should handle partial errors better
         }),
@@ -40,6 +42,6 @@ export class AggregatorInventory implements Inventory {
   }
 
   enlist(inventory: Inventory) {
-    this.inventories.push(inventory);
+    this.#inventories.push(inventory);
   }
 }
