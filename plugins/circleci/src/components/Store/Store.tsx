@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Route, Switch } from 'react-router';
+import React, { FC } from 'react';
 import { Provider, useDispatch } from 'react-redux';
-import { BuildsPage } from './pages/BuildsPage';
-import { DetailedViewPage } from './pages/DetailedViewPage';
-import { SettingsPage } from './pages/SettingsPage';
 
-import store, { Dispatch } from './state/store';
+import store, { Dispatch } from '../../state/store';
 
 const RehydrateSettings = () => {
   const dispatch: Dispatch = useDispatch();
@@ -30,17 +26,20 @@ const RehydrateSettings = () => {
   }, []);
   return null;
 };
-export const App = () => {
+
+export const Store: FC = ({ children }) => {
   return (
     <Provider store={store}>
-      <>
+      <div>
         <RehydrateSettings />
-        <Switch>
-          <Route path="/circleci" component={BuildsPage} exact />
-          <Route path="/circleci/settings" component={SettingsPage} />
-          <Route path="/circleci/build/:buildId" component={DetailedViewPage} />
-        </Switch>
-      </>
+        {children}
+      </div>
     </Provider>
   );
 };
+
+export const withStore = (Component: React.ComponentType<any>) => () => (
+  <Store>
+    <Component />
+  </Store>
+);

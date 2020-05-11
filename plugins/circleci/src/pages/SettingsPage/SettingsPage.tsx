@@ -30,8 +30,9 @@ import { Layout } from '../../components/Layout';
 import { PluginHeader } from '../../components/PluginHeader';
 import { SettingsState } from '../../state/models/settings';
 import { iRootState, Dispatch } from '../../state/store';
+import { withStore } from '../../components/Store';
 
-export const SettingsPage = () => {
+const SettingsPage = () => {
   const {
     token: tokenFromStore,
     owner: ownerFromStore,
@@ -89,7 +90,7 @@ export const SettingsPage = () => {
                     value={token}
                     fullWidth
                     variant="outlined"
-                    onChange={e => setToken(e.target.value)}
+                    onChange={(e) => setToken(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -99,7 +100,7 @@ export const SettingsPage = () => {
                     label="Owner"
                     variant="outlined"
                     value={owner}
-                    onChange={e => setOwner(e.target.value)}
+                    onChange={(e) => setOwner(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -109,7 +110,7 @@ export const SettingsPage = () => {
                     fullWidth
                     variant="outlined"
                     value={repo}
-                    onChange={e => setRepo(e.target.value)}
+                    onChange={(e) => setRepo(e.target.value)}
                   />
                 </ListItem>
                 <ListItem>
@@ -144,3 +145,5 @@ export const SettingsPage = () => {
     </Layout>
   );
 };
+
+export default withStore(SettingsPage);
