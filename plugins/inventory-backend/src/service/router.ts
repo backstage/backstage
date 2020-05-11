@@ -14,14 +14,41 @@
  * limitations under the License.
  */
 
-import express from 'express';
-import { Logger } from 'winston';
+import { InputError } from '@backstage/backend-common';
+import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import { Inventory } from '../inventory';
+import { Logger } from 'winston';
+import yup from 'yup';
+import { addLocationRequestShape, Inventory } from '../inventory';
 
 export interface RouterOptions {
   inventory: Inventory;
   logger: Logger;
+}
+
+async function validateRequestBody<T>(
+  req: Request,
+  schema: yup.Schema<T>,
+): Promise<T> {
+  const contentType = req.header('content-type');
+  if (!contentType) {
+    throw new InputError('Content-Type missing');
+  } else if (!contentType.match(/^application\/json($|;)/)) {
+    throw new InputError('Illegal Content-Type');
+  }
+
+  const body = req.body;
+  if (!body) {
+    throw new InputError('Missing request body');
+  }
+
+  try {
+    await schema.validate(body, { strict: true });
+  } catch (e) {
+    throw new InputError(`Malformed request: ${e}`);
+  }
+
+  return body as T;
 }
 
 export async function createRouter(
@@ -29,8 +56,9 @@ export async function createRouter(
 ): Promise<express.Router> {
   const inventory = options.inventory;
   const logger = options.logger.child({ plugin: 'inventory' });
-
   const router = Router();
+
+  // Components
   router
     .get('/components', async (req, res) => {
       const components = await inventory.components();
@@ -40,6 +68,28 @@ export async function createRouter(
       const { id } = req.params;
       const component = await inventory.component(id);
       res.status(200).send(component);
+    });
+
+  // Locations
+  router
+    .post('/locations', async (req, res) => {
+      const input = await validateRequestBody(req, addLocationRequestShape);
+      const output = await inventory.addLocation(input);
+      res.status(201).send(output);
+    })
+    .get('/locations', async (req, res) => {
+      const output = await inventory.locations();
+      res.status(200).send(output);
+    })
+    .get('/locations/:id', async (req, res) => {
+      const { id } = req.params;
+      const output = await inventory.location(id);
+      res.status(200).send(output);
+    })
+    .delete('/locations/:id', async (req, res) => {
+      const { id } = req.params;
+      await inventory.removeLocation(id);
+      res.status(200).send();
     });
 
   const app = express();

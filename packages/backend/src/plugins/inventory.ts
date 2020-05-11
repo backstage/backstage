@@ -15,22 +15,12 @@
  */
 
 import {
-  AggregatorInventory,
+  DatabaseInventory,
   createRouter,
-  StaticInventory,
 } from '@backstage/plugin-inventory-backend';
-import type { PluginEnvironment } from '../types';
+import { PluginEnvironment } from '../types';
 
-export default async function ({ logger }: PluginEnvironment) {
-  const inventory = new AggregatorInventory();
-  inventory.enlist(
-    new StaticInventory([
-      { id: 'component1' },
-      { id: 'component2' },
-      { id: 'component3' },
-      { id: 'component4' },
-    ]),
-  );
-
+export default async function({ logger, database }: PluginEnvironment) {
+  const inventory = new DatabaseInventory(database);
   return await createRouter({ inventory, logger });
 }

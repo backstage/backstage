@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { Logger } from 'winston';
+import Knex from 'knex';
+import { Logger } from 'winston';
 
 export type PluginEnvironment = {
   logger: Logger;
+  database: Knex;
 };
