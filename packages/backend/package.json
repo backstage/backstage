@@ -12,7 +12,8 @@
     "start": "backstage-cli watch-deps --build -- tsc-watch --onFirstSuccess nodemon",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
-    "clean": "backstage-cli clean"
+    "clean": "backstage-cli clean",
+    "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
     "@backstage/backend-common": "0.1.1-alpha.4",
@@ -21,7 +22,10 @@
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "helmet": "^3.22.0"
+    "helmet": "^3.22.0",
+    "knex": "^0.21.1",
+    "sqlite3": "^4.2.0",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.4",
