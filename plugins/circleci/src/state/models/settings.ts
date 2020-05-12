@@ -18,12 +18,6 @@ import { circleCIApiRef } from '../../api';
 
 const STORAGE_KEY = `${circleCIApiRef.id}.settings`;
 
-export type SettingsState = {
-  token: string;
-  owner: string;
-  repo: string;
-};
-
 export const settings = {
   state: {
     token: '',

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   TextField,
@@ -27,68 +27,18 @@ import { Alert } from '@material-ui/lab';
 import { InfoCard, Content } from '@backstage/core';
 import { Layout } from '../../components/Layout';
 import { PluginHeader } from '../../components/PluginHeader';
-// import { SettingsState } from '../../state/models/settings';
-// import { iRootState, Dispatch } from '../../state/store';
-import {
-  withStore,
-  SettingsContext,
-  STORAGE_KEY,
-} from '../../components/Store';
+import { withStore } from '../../components/Store';
+import { useSettings } from './settings';
 
 const SettingsPage = () => {
-  // const {
-  //   token: tokenFromStore,
-  //   owner: ownerFromStore,
-  //   repo: repoFromStore,
-  // } = useSelector((state: iRootState): SettingsState => state.settings);
-
   const [
-    {
-      settings: {
-        repo: repoFromStore,
-        owner: ownerFromStore,
-        token: tokenFromStore,
-      },
-      settings,
-    },
-    dispatch,
-  ] = useContext(SettingsContext);
-
-  const rehydrate = () => {
-    try {
-      const stateFromStorage = JSON.parse(sessionStorage.getItem(STORAGE_KEY)!);
-      if (
-        stateFromStorage &&
-        Object.keys(stateFromStorage).some(
-          (k) => (settings as any)[k] !== stateFromStorage[k],
-        )
-      )
-        dispatch({
-          type: 'setCredentials',
-          payload: stateFromStorage,
-        });
-    } catch (e) {}
-  };
-  useEffect(() => {
-    rehydrate();
-  }, []);
+    { repo: repoFromStore, owner: ownerFromStore, token: tokenFromStore },
+    { saveSettings },
+  ] = useSettings();
 
   const [token, setToken] = React.useState(() => tokenFromStore);
   const [owner, setOwner] = React.useState(() => ownerFromStore);
   const [repo, setRepo] = React.useState(() => repoFromStore);
-
-  const persist = () => {
-    sessionStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        repo,
-        owner,
-        token,
-      }),
-    );
-  };
-
-  // const dispatch: Dispatch = useDispatch();
 
   React.useEffect(() => {
     if (tokenFromStore !== token) {
@@ -171,15 +121,7 @@ const SettingsPage = () => {
                       color="primary"
                       onClick={() => {
                         setSaved(true);
-                        persist();
-                        dispatch({
-                          type: 'setCredentials',
-                          payload: {
-                            repo: repo,
-                            owner: owner,
-                            token: token,
-                          },
-                        });
+                        saveSettings({ repo, owner, token });
                       }}
                     >
                       Save credentials
