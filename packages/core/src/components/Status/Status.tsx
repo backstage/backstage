@@ -54,7 +54,6 @@ const useStyles = makeStyles<BackstageTheme>((theme) => ({
   running: {
     '&::before': {
       backgroundColor: theme.palette.status.running,
-      animation: '$blink 0.8s step-start 0s infinite',
     },
   },
   aborted: {
