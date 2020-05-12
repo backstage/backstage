@@ -48,7 +48,7 @@ const CardActionsTopRight = withStyles((theme) => ({
 
 const CardContentNoPadding = withStyles((theme) => ({
   root: {
-    padding: 0,
+    padding: theme.spacing(0),
     '&:last-child': {
       paddingBottom: 0,
     },
