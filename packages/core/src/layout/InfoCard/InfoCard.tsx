@@ -46,6 +46,15 @@ const CardActionsTopRight = withStyles((theme) => ({
   },
 }))(CardActions);
 
+const CardContentNoPadding = withStyles((theme) => ({
+  root: {
+    padding: 0,
+    '&:last-child': {
+      paddingBottom: 0,
+    },
+  },
+}))(CardContent);
+
 const VARIANT_STYLES = {
   card: {
     flex: {
@@ -187,9 +196,12 @@ const InfoCard: FC<Props> = ({
           <CardActionsTopRight>{actionsTopRight}</CardActionsTopRight>
         )}
         {divider && <Divider />}
-        <CardContent className={cardClassName} style={calculatedCardStyle}>
+        <CardContentNoPadding
+          className={cardClassName}
+          style={calculatedCardStyle}
+        >
           {children}
-        </CardContent>
+        </CardContentNoPadding>
         {actions && (
           <CardActions className={actionsClassName}>{actions}</CardActions>
         )}
