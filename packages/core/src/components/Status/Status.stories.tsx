@@ -17,8 +17,7 @@
 import React from 'react';
 import {
   StatusError,
-  StatusFailed,
-  StatusNA,
+  StatusAborted,
   StatusOK,
   StatusPending,
   StatusRunning,
@@ -34,45 +33,34 @@ export default {
 
 const data = [
   {
-    status: <StatusOK />,
+    status: <StatusOK>OK</StatusOK>,
     label: 'OK',
     usage: 'Deployment successful',
   },
   {
-    status: <StatusWarning />,
-    label: 'Warning',
+    status: <StatusWarning>Warning</StatusWarning>,
     usage: 'CPU utilization at 90%',
   },
   {
-    status: <StatusError />,
-    label: 'Error',
+    status: <StatusError>Error</StatusError>,
     usage: 'Service could not be created',
   },
   {
-    status: <StatusFailed />,
-    label: 'Failed',
-    usage: 'Build for PR #34 failed',
+    status: <StatusAborted>Aborted</StatusAborted>,
+    usage: 'Build for PR #34 aborted',
   },
   {
-    status: <StatusPending />,
-    label: 'Pending',
+    status: <StatusPending>Pending</StatusPending>,
     usage: 'Job is waiting',
   },
   {
-    status: <StatusRunning />,
-    label: 'Running',
+    status: <StatusRunning>Running</StatusRunning>,
     usage: 'Job is running',
-  },
-  {
-    status: <StatusNA />,
-    label: 'N/A',
-    usage: 'Not sure what to do',
   },
 ];
 
 const columns = [
   { field: 'status', title: 'Status' },
-  { field: 'label', title: 'Label' },
   { field: 'usage', title: 'Example usage' },
 ];
 
@@ -97,7 +85,6 @@ export const Default = () => (
 export const statusOK = () => <StatusOK />;
 export const statusWarning = () => <StatusWarning />;
 export const statusError = () => <StatusError />;
-export const statusFailed = () => <StatusFailed />;
+export const statusAborted = () => <StatusAborted />;
 export const statusPending = () => <StatusPending />;
 export const statusRunning = () => <StatusRunning />;
-export const statusNA = () => <StatusNA />;
