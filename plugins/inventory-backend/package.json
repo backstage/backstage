@@ -18,11 +18,16 @@
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "helmet": "^3.22.0",
+    "knex": "^0.21.1",
     "morgan": "^1.10.0",
-    "winston": "^3.2.1"
+    "uuid": "^8.0.0",
+    "winston": "^3.2.1",
+    "yup": "^0.28.5"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.4",
+    "@types/uuid": "^7.0.3",
+    "@types/yup": "^0.28.2",
     "jest-fetch-mock": "^3.0.3",
     "tsc-watch": "^4.2.3"
   },

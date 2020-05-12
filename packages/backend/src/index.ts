@@ -39,13 +39,14 @@ import { PluginEnvironment } from './types';
 
 const DEFAULT_PORT = 7000;
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
-const pluginEnvironment: PluginEnvironment = {
-  logger: getRootLogger().child({ type: 'plugin' }),
-};
 
 async function main() {
   const database = await buildDatabase(getRootLogger());
-  console.log(await database.select().from('locations'));
+
+  const pluginEnvironment: PluginEnvironment = {
+    logger: getRootLogger().child({ type: 'plugin' }),
+    database,
+  };
 
   const app = express();
 

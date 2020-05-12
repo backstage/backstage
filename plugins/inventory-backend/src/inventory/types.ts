@@ -14,11 +14,35 @@
  * limitations under the License.
  */
 
+import * as yup from 'yup';
+
 export type Component = {
   id: string;
 };
 
+export type Location = {
+  id: string;
+  type: string;
+  target: string;
+};
+
+export type AddLocationRequest = {
+  type: string;
+  target: string;
+};
+
+export const addLocationRequestShape: yup.Schema<AddLocationRequest> = yup
+  .object({
+    type: yup.string().required(),
+    target: yup.string().required(),
+  })
+  .noUnknown();
+
 export type Inventory = {
-  list(): Promise<Component[]>;
-  item(id: string): Promise<Component>;
+  components(): Promise<Component[]>;
+  component(id: string): Promise<Component>;
+  addLocation(location: AddLocationRequest): Promise<Location>;
+  removeLocation(id: string): Promise<void>;
+  location(id: string): Promise<Location>;
+  locations(): Promise<Location[]>;
 };

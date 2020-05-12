@@ -6,7 +6,7 @@
     "sourceMap": true,
     "declaration": true,
     "strict": true,
-    "target": "es5",
+    "target": "es2019",
     "module": "commonjs",
     "esModuleInterop": true,
     "lib": ["es2019"],

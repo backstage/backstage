@@ -15,49 +15,50 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
+import Knex from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { AddLocationRequest, Component, Inventory, Location } from './types';
 
-export class StaticInventory implements Inventory {
-  private _components: Component[];
-  private _locations: Location[];
-
-  constructor(components: Component[], locations: Location[]) {
-    this._components = components;
-    this._locations = locations;
-  }
+export class DatabaseInventory implements Inventory {
+  constructor(private readonly database: Knex) {}
 
   async components(): Promise<Component[]> {
-    return this._components.slice();
+    throw new Error('Not supported');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async component(id: string): Promise<Component> {
-    const item = this._components.find(i => i.id === id);
-    if (!item) {
-      throw new NotFoundError(`Found no component with ID ${id}`);
-    }
-    return item;
+    throw new Error('Not supported');
   }
 
   async addLocation(location: AddLocationRequest): Promise<Location> {
-    const l = { id: uuidv4(), type: location.type, target: location.target };
-    this._locations.push(l);
-    return l;
+    const id = uuidv4();
+    const { type, target } = location;
+    await this.database('locations').insert({ id, type, target });
+    return await this.location(id);
   }
 
   async removeLocation(id: string): Promise<void> {
-    this._locations = this._locations.filter(l => l.id !== id);
+    const result = await this.database('locations')
+      .where({ id })
+      .del();
+
+    if (!result) {
+      throw new NotFoundError(`Found no location with ID ${id}`);
+    }
   }
 
   async location(id: string): Promise<Location> {
-    const location = this._locations.find(l => l.id === id);
-    if (!location) {
+    const items = await this.database('locations')
+      .where({ id })
+      .select();
+    if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
-    return location;
+    return items[0];
   }
 
   async locations(): Promise<Location[]> {
-    return this._locations;
+    return await this.database('locations').select();
   }
 }
