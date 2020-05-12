@@ -61,11 +61,6 @@ const useStyles = makeStyles<BackstageTheme>((theme) => ({
       backgroundColor: theme.palette.status.aborted,
     },
   },
-  '@keyframes blink': {
-    '50%': {
-      backgroundColor: theme.palette.status.background,
-    },
-  },
 }));
 
 export const StatusOK: FC<{}> = (props) => {

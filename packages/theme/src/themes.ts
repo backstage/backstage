@@ -29,7 +29,6 @@ export const lightTheme = createTheme({
     running: '#2E77D0',
     pending: '#FFED51',
     aborted: '#757575',
-    background: '#F8F8F8',
   },
   bursts: {
     fontColor: '#FEFEFE',
@@ -70,7 +69,6 @@ export const darkTheme = createTheme({
     running: '#2E77D0',
     pending: '#FFED51',
     aborted: '#757575',
-    background: '#F8F8F8',
   },
   bursts: {
     fontColor: '#FEFEFE',
