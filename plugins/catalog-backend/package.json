@@ -17,11 +17,13 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
+    "fs-extra": "^9.0.0",
     "helmet": "^3.22.0",
     "knex": "^0.21.1",
     "morgan": "^1.10.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
+    "yaml": "^1.9.2",
     "yup": "^0.28.5"
   },
   "devDependencies": {

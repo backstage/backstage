@@ -15,29 +15,79 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
-import path from 'path';
 import Knex from 'knex';
+import path from 'path';
+import fs from 'fs-extra';
 import { v4 as uuidv4 } from 'uuid';
-import { AddLocationRequest, Component, Catalog, Location } from './types';
+import { Logger } from 'winston';
+import {
+  AddLocationRequest,
+  Catalog,
+  Component,
+  Location,
+  componentShape,
+} from './types';
+import YAML from 'yaml';
+
+async function readLocation(location: Location): Promise<Component[]> {
+  switch (location.type) {
+    case 'file': {
+      let parsed;
+      try {
+        const raw = await fs.readFile(location.target, 'utf8');
+        parsed = YAML.parse(raw);
+      } catch (e) {
+        throw new Error(`Unable to read "${location.target}", ${e}`);
+      }
+
+      try {
+        return [await componentShape.validate(parsed, { strict: true })];
+      } catch (e) {
+        throw new Error(
+          `Malformed file contents at "${location.target}", ${e}`,
+        );
+      }
+    }
+
+    default:
+      throw new Error(`Unknown type "${location.type}"`);
+  }
+}
 
 export class DatabaseCatalog implements Catalog {
-  static async create(database: Knex): Promise<DatabaseCatalog> {
+  static async create(
+    database: Knex,
+    logger: Logger,
+  ): Promise<DatabaseCatalog> {
     await database.migrate.latest({
       directory: path.resolve(__dirname, '..', 'migrations'),
       loadExtensions: ['.js'],
     });
 
-    return new DatabaseCatalog(database);
+    const databaseCatalog = new DatabaseCatalog(database, logger);
+
+    const startRefresh = async () => {
+      for (;;) {
+        await databaseCatalog.refreshLocations();
+        await new Promise(r => setTimeout(r, 10000));
+      }
+    };
+    startRefresh();
+
+    return databaseCatalog;
   }
 
-  constructor(private readonly database: Knex) {}
+  constructor(
+    private readonly database: Knex,
+    private readonly logger: Logger,
+  ) {}
 
   async components(): Promise<Component[]> {
     throw new Error('Not supported');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async component(id: string): Promise<Component> {
+  async component(name: string): Promise<Component> {
     throw new Error('Not supported');
   }
 
@@ -49,15 +99,42 @@ export class DatabaseCatalog implements Catalog {
   }
 
   async removeLocation(id: string): Promise<void> {
-    const result = await this.database('locations').where({ id }).del();
+    const result = await this.database('locations')
+      .where({ id })
+      .del();
 
     if (!result) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
   }
 
+  async refreshLocations(): Promise<void> {
+    const locations = await this.locations();
+    for (const location of locations) {
+      try {
+        this.logger.debug(`Attempting refresh of location: ${location.id}`);
+        const components = await readLocation(location);
+        for (const component of components) {
+          await this.database.transaction(async tx => {
+            await tx('components')
+              .insert(component)
+              .catch(() =>
+                tx('components')
+                  .where({ name: component.name })
+                  .update(component),
+              );
+          });
+        }
+      } catch (e) {
+        this.logger.debug(`Failed to update location "${location.id}", ${e}`);
+      }
+    }
+  }
+
   async location(id: string): Promise<Location> {
-    const items = await this.database('locations').where({ id }).select();
+    const items = await this.database('locations')
+      .where({ id })
+      .select();
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }

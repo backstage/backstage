@@ -20,7 +20,7 @@ import {
 } from '@backstage/plugin-catalog-backend';
 import { PluginEnvironment } from '../types';
 
-export default async function ({ logger, database }: PluginEnvironment) {
-  const catalog = await DatabaseCatalog.create(database);
+export default async function({ logger, database }: PluginEnvironment) {
+  const catalog = await DatabaseCatalog.create(database, logger);
   return await createRouter({ catalog, logger });
 }

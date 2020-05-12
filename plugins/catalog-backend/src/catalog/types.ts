@@ -17,8 +17,14 @@
 import * as yup from 'yup';
 
 export type Component = {
-  id: string;
+  name: string;
 };
+
+export const componentShape: yup.Schema<Component> = yup
+  .object({
+    name: yup.string().required(),
+  })
+  .unknown();
 
 export type Location = {
   id: string;
