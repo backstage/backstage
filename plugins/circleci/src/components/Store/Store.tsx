@@ -13,28 +13,77 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { Provider, useDispatch } from 'react-redux';
+import React, { FC, useReducer, Dispatch } from 'react';
+// import { Provider, useDispatch } from 'react-redux';
 
-import store, { Dispatch } from '../../state/store';
+// import store from '../../state/store';
+import { circleCIApiRef } from '../../api';
 
-const RehydrateSettings = () => {
-  const dispatch: Dispatch = useDispatch();
+// const RehydrateSettings = () => {
+//   const dispatch: Dispatch = useDispatch();
 
-  React.useEffect(() => {
-    dispatch.settings.rehydrate();
-  }, []);
-  return null;
+//   React.useEffect(() => {
+//     dispatch.settings.rehydrate();
+//   }, []);
+//   return null;
+// };
+
+export const SettingsContext = React.createContext<
+  [RootState, Dispatch<Action>]
+>([] as any);
+
+type SettingsState = {
+  owner: string;
+  repo: string;
+  token: string;
+};
+
+export const STORAGE_KEY = `${circleCIApiRef.id}.settings`;
+
+type RootState = {
+  settings: SettingsState;
+};
+
+const initialState = {
+  settings: {
+    owner: '',
+    repo: '',
+    token: '',
+  },
+};
+
+type Action = {
+  type: 'setCredentials';
+  payload: {
+    repo: string;
+    owner: string;
+    token: string;
+  };
+};
+
+const reducer = (state: RootState, action: Action): RootState => {
+  switch (action.type) {
+    case 'setCredentials':
+      return {
+        ...state,
+        settings: { ...state.settings, ...action.payload },
+      };
+    default:
+      return state;
+  }
 };
 
 export const Store: FC = ({ children }) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
   return (
-    <Provider store={store}>
+    <SettingsContext.Provider value={[state, dispatch]}>
+      {/* <Provider store={store}> */}
       <div>
-        <RehydrateSettings />
+        {/* <RehydrateSettings /> */}
         {children}
       </div>
-    </Provider>
+      {/* </Provider> */}
+    </SettingsContext.Provider>
   );
 };
 
