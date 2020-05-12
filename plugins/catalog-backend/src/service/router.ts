@@ -19,10 +19,10 @@ import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yup from 'yup';
-import { addLocationRequestShape, Inventory } from '../inventory';
+import { addLocationRequestShape, Catalog } from '../catalog';
 
 export interface RouterOptions {
-  inventory: Inventory;
+  catalog: Catalog;
   logger: Logger;
 }
 
@@ -54,19 +54,19 @@ async function validateRequestBody<T>(
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const inventory = options.inventory;
-  const logger = options.logger.child({ plugin: 'inventory' });
+  const catalog = options.catalog;
+  const logger = options.logger.child({ plugin: 'catalog' });
   const router = Router();
 
   // Components
   router
     .get('/components', async (req, res) => {
-      const components = await inventory.components();
+      const components = await catalog.components();
       res.status(200).send(components);
     })
     .get('/components/:id', async (req, res) => {
       const { id } = req.params;
-      const component = await inventory.component(id);
+      const component = await catalog.component(id);
       res.status(200).send(component);
     });
 
@@ -74,21 +74,21 @@ export async function createRouter(
   router
     .post('/locations', async (req, res) => {
       const input = await validateRequestBody(req, addLocationRequestShape);
-      const output = await inventory.addLocation(input);
+      const output = await catalog.addLocation(input);
       res.status(201).send(output);
     })
     .get('/locations', async (req, res) => {
-      const output = await inventory.locations();
+      const output = await catalog.locations();
       res.status(200).send(output);
     })
     .get('/locations/:id', async (req, res) => {
       const { id } = req.params;
-      const output = await inventory.location(id);
+      const output = await catalog.location(id);
       res.status(200).send(output);
     })
     .delete('/locations/:id', async (req, res) => {
       const { id } = req.params;
-      await inventory.removeLocation(id);
+      await catalog.removeLocation(id);
       res.status(200).send();
     });
 

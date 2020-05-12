@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from './DatabaseInventory';
-export * from './StaticInventory';
+export * from './DatabaseCatalog';
+export * from './StaticCatalog';
 export * from './types';

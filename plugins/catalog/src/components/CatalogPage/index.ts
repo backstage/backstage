@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-import {
-  DatabaseInventory,
-  createRouter,
-} from '@backstage/plugin-inventory-backend';
-import { PluginEnvironment } from '../types';
-
-export default async function({ logger, database }: PluginEnvironment) {
-  const inventory = await DatabaseInventory.create(database);
-  return await createRouter({ inventory, logger });
-}
+export { default } from './CatalogPage';

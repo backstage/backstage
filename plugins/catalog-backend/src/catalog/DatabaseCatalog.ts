@@ -18,16 +18,16 @@ import { NotFoundError } from '@backstage/backend-common';
 import path from 'path';
 import Knex from 'knex';
 import { v4 as uuidv4 } from 'uuid';
-import { AddLocationRequest, Component, Inventory, Location } from './types';
+import { AddLocationRequest, Component, Catalog, Location } from './types';
 
-export class DatabaseInventory implements Inventory {
-  static async create(database: Knex): Promise<DatabaseInventory> {
+export class DatabaseCatalog implements Catalog {
+  static async create(database: Knex): Promise<DatabaseCatalog> {
     await database.migrate.latest({
       directory: path.resolve(__dirname, '..', 'migrations'),
       loadExtensions: ['.js'],
     });
 
-    return new DatabaseInventory(database);
+    return new DatabaseCatalog(database);
   }
 
   constructor(private readonly database: Knex) {}
@@ -49,9 +49,7 @@ export class DatabaseInventory implements Inventory {
   }
 
   async removeLocation(id: string): Promise<void> {
-    const result = await this.database('locations')
-      .where({ id })
-      .del();
+    const result = await this.database('locations').where({ id }).del();
 
     if (!result) {
       throw new NotFoundError(`Found no location with ID ${id}`);
@@ -59,9 +57,7 @@ export class DatabaseInventory implements Inventory {
   }
 
   async location(id: string): Promise<Location> {
-    const items = await this.database('locations')
-      .where({ id })
-      .select();
+    const items = await this.database('locations').where({ id }).select();
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }

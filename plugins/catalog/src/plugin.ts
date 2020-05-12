@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import mockFetch from 'jest-fetch-mock';
-import InventoryPage from './InventoryPage';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { createPlugin } from '@backstage/core';
+import CatalogPage from './components/CatalogPage';
 
-describe('InventoryPage', () => {
-  it('should render', async () => {
-    mockFetch.mockResponse(() => new Promise(() => {}));
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <InventoryPage />
-      </ThemeProvider>,
-    );
-    expect(await rendered.findByText('backstage-backend')).toBeInTheDocument();
-  });
+export const plugin = createPlugin({
+  id: 'catalog',
+  register({ router }) {
+    router.registerRoute('/catalog', CatalogPage);
+  },
 });

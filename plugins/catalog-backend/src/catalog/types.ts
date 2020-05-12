@@ -38,7 +38,7 @@ export const addLocationRequestShape: yup.Schema<AddLocationRequest> = yup
   })
   .noUnknown();
 
-export type Inventory = {
+export type Catalog = {
   components(): Promise<Component[]>;
   component(id: string): Promise<Component>;
   addLocation(location: AddLocationRequest): Promise<Location>;
