@@ -18,25 +18,16 @@ import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<any> {
   return knex.schema
-    .createTable('locations', table => {
-      table
-        .uuid('id')
-        .primary()
-        .comment('Auto-generated ID of the location');
-      table
-        .string('type')
-        .notNullable()
-        .comment('The type of location');
+    .createTable('locations', (table) => {
+      table.uuid('id').primary().comment('Auto-generated ID of the location');
+      table.string('type').notNullable().comment('The type of location');
       table
         .string('target')
         .notNullable()
         .comment('The actual target of the location');
     })
-    .createTable('components', table => {
-      table
-        .string('name')
-        .primary()
-        .comment('The name of the component');
+    .createTable('components', (table) => {
+      table.string('name').primary().comment('The name of the component');
     });
 }
 

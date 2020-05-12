@@ -16,7 +16,7 @@
 
 import { plugin } from './plugin';
 
-describe('inventory', () => {
+describe('scaffolder', () => {
   it('should export plugin', () => {
     expect(plugin).toBeDefined();
   });

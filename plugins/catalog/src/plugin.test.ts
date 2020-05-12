@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export { default } from './InventoryPage';
+import { plugin } from './plugin';
+
+describe('catalog', () => {
+  it('should export plugin', () => {
+    expect(plugin).toBeDefined();
+  });
+});

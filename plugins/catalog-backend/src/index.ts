@@ -14,10 +14,5 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
-
-describe('inventory', () => {
-  it('should export plugin', () => {
-    expect(plugin).toBeDefined();
-  });
-});
+export * from './catalog';
+export * from './service/router';

@@ -16,9 +16,9 @@
 
 import { NotFoundError } from '@backstage/backend-common';
 import { v4 as uuidv4 } from 'uuid';
-import { AddLocationRequest, Component, Inventory, Location } from './types';
+import { AddLocationRequest, Component, Catalog, Location } from './types';
 
-export class StaticInventory implements Inventory {
+export class StaticCatalog implements Catalog {
   private _components: Component[];
   private _locations: Location[];
 
@@ -32,7 +32,7 @@ export class StaticInventory implements Inventory {
   }
 
   async component(id: string): Promise<Component> {
-    const item = this._components.find(i => i.id === id);
+    const item = this._components.find((i) => i.id === id);
     if (!item) {
       throw new NotFoundError(`Found no component with ID ${id}`);
     }
@@ -46,11 +46,11 @@ export class StaticInventory implements Inventory {
   }
 
   async removeLocation(id: string): Promise<void> {
-    this._locations = this._locations.filter(l => l.id !== id);
+    this._locations = this._locations.filter((l) => l.id !== id);
   }
 
   async location(id: string): Promise<Location> {
-    const location = this._locations.find(l => l.id === id);
+    const location = this._locations.find((l) => l.id === id);
     if (!location) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }

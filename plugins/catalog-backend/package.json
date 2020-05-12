@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-inventory-backend",
+  "name": "@backstage/plugin-catalog-backend",
   "version": "0.1.1-alpha.4",
   "main": "dist",
   "license": "Apache-2.0",

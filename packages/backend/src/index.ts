@@ -33,7 +33,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import knex from 'knex';
-import inventory from './plugins/inventory';
+import catalog from './plugins/catalog';
 import scaffolder from './plugins/scaffolder';
 import { PluginEnvironment } from './types';
 
@@ -59,7 +59,7 @@ async function main() {
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/inventory', await inventory(createEnv('inventory')));
+  app.use('/catalog', await catalog(createEnv('catalog')));
   app.use('/scaffolder', await scaffolder(createEnv('scaffolder')));
   app.use(notFoundHandler());
   app.use(errorHandler());

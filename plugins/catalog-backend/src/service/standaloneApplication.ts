@@ -24,19 +24,19 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import { Logger } from 'winston';
-import { Inventory } from '../inventory';
+import { Catalog } from '../catalog';
 import { createRouter } from './router';
 
 export interface ApplicationOptions {
   enableCors: boolean;
-  inventory: Inventory;
+  catalog: Catalog;
   logger: Logger;
 }
 
 export async function createStandaloneApplication(
   options: ApplicationOptions,
 ): Promise<express.Application> {
-  const { enableCors, inventory, logger } = options;
+  const { enableCors, catalog, logger } = options;
   const app = express();
 
   app.use(helmet());
@@ -46,7 +46,7 @@ export async function createStandaloneApplication(
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ inventory, logger }));
+  app.use('/', await createRouter({ catalog, logger }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

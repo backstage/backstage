@@ -31,10 +31,10 @@ const STATIC_DATA = [
   { id: 'backstage-microsite', kind: 'website' },
 ];
 
-const InventoryPage: FC<{}> = () => {
+const CatalogPage: FC<{}> = () => {
   return (
     <Page theme={pageTheme.home}>
-      <Header title="Inventory" subtitle="All your stuff" />
+      <Header title="Catalog" subtitle="All your stuff" />
       <Content>
         <Typography variant="h3">All of it</Typography>
         <InfoCard>
@@ -62,4 +62,4 @@ const InventoryPage: FC<{}> = () => {
   );
 };
 
-export default InventoryPage;
+export default CatalogPage;

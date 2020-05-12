@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export * from './inventory';
-export * from './service/router';
+import {
+  DatabaseCatalog,
+  createRouter,
+} from '@backstage/plugin-catalog-backend';
+import { PluginEnvironment } from '../types';
+
+export default async function ({ logger, database }: PluginEnvironment) {
+  const catalog = await DatabaseCatalog.create(database);
+  return await createRouter({ catalog, logger });
+}
