@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-home-page",
-  "version": "0.1.1-alpha.4",
+  "version": "0.1.1-alpha.5",
   "main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -14,8 +14,8 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core": "^0.1.1-alpha.4",
-    "@backstage/theme": "^0.1.1-alpha.4",
+    "@backstage/core": "^0.1.1-alpha.5",
+    "@backstage/theme": "^0.1.1-alpha.5",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -24,16 +24,16 @@
     "react-use": "^13.24.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.4",
-    "@backstage/dev-utils": "^0.1.1-alpha.4",
+    "@backstage/cli": "^0.1.1-alpha.5",
+    "@backstage/dev-utils": "^0.1.1-alpha.5",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@types/jest": "^25.2.1",
     "@types/node": "^12.0.0",
     "@types/testing-library__jest-dom": "^5.0.4",
-    "react-router-dom": "^5.2.0",
-    "jest-fetch-mock": "^3.0.3"
+    "jest-fetch-mock": "^3.0.3",
+    "react-router-dom": "^5.2.0"
   },
   "files": [
     "dist"
