@@ -18491,14 +18491,14 @@ replace-ext@1.0.0:
   resolved "https://registry.npmjs.org/replace-ext/-/replace-ext-1.0.0.tgz#de63128373fcbf7c3ccfa4de5a480c45a67958eb"
   integrity sha1-3mMSg3P8v3w8z6TeWkgMRaZ5WOs=
 
-replace-in-file@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.npmjs.org/replace-in-file/-/replace-in-file-5.0.2.tgz#bd26203b66dfb5b8112ae36a2d2cf928ea4cfe12"
-  integrity sha512-1Vc7Sbr/rTuHgU1PZuBb7tGsFx3D4NKdhV4BpEF2MuN/6+SoXcFtx+dZ1Zz+5Dq4k5x9js87Y+gXQYPTQ9ppkA==
+replace-in-file@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/replace-in-file/-/replace-in-file-6.0.0.tgz#a583be911c4af3ecbf709ca97c48f3f9e7f2b626"
+  integrity sha512-vMmJekpRgju0GA0UvRxauDbQ645wGXxasVZfw5l5HKk58OlAI1tMmXNcV+YAUKrS/XFdBPla5qgvjI5Tqvshvg==
   dependencies:
-    chalk "^3.0.0"
+    chalk "^4.0.0"
     glob "^7.1.6"
-    yargs "^15.0.2"
+    yargs "^15.3.1"
 
 request-progress@3.0.0:
   version "3.0.0"
@@ -22254,7 +22254,7 @@ yargs@^14.2.2:
     y18n "^4.0.0"
     yargs-parser "^15.0.1"
 
-yargs@^15.0.0, yargs@^15.0.1, yargs@^15.0.2:
+yargs@^15.0.0, yargs@^15.0.1, yargs@^15.3.1:
   version "15.3.1"
   resolved "https://registry.npmjs.org/yargs/-/yargs-15.3.1.tgz#9505b472763963e54afe60148ad27a330818e98b"
   integrity sha512-92O1HWEjw27sBfgmXiixJWT5hRBp2eobqXicLtPBIDBhYB+1HpwZlXmbW2luivBJHBzki+7VyCLRtAkScbTBQA==
