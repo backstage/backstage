@@ -15,10 +15,11 @@
  */
 import React, { FC, useReducer, Dispatch } from 'react';
 import { circleCIApiRef } from '../../api';
+import { BuildSummary } from 'circleci-api';
 
-export const SettingsContext = React.createContext<
-  [RootState, Dispatch<Action>]
->([] as any);
+export const AppContext = React.createContext<[AppState, Dispatch<Action>]>(
+  [] as any,
+);
 
 type SettingsState = {
   owner: string;
@@ -26,10 +27,22 @@ type SettingsState = {
   token: string;
 };
 
+export enum PollingState {
+  Polling,
+  Idle,
+}
+
+export type BuildsState = {
+  builds: BuildSummary[];
+  pollingIntervalId: number | null;
+  pollingState: PollingState;
+};
+
 export const STORAGE_KEY = `${circleCIApiRef.id}.settings`;
 
-type RootState = {
+export type AppState = {
   settings: SettingsState;
+  builds: BuildsState;
 };
 
 const initialState = {
@@ -38,9 +51,14 @@ const initialState = {
     repo: '',
     token: '',
   },
+  builds: {
+    builds: [],
+    pollingIntervalId: null,
+    pollingState: PollingState.Idle,
+  },
 };
 
-type Action = {
+type SettingsAction = {
   type: 'setCredentials';
   payload: {
     repo: string;
@@ -49,12 +67,39 @@ type Action = {
   };
 };
 
-const reducer = (state: RootState, action: Action): RootState => {
+type BuildsAction =
+  | {
+      type: 'setBuilds';
+      payload: BuildSummary[];
+    }
+  | {
+      type: 'setPollingIntervalId';
+      payload: number | null;
+    };
+
+type Action = SettingsAction | BuildsAction;
+
+const reducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
     case 'setCredentials':
       return {
         ...state,
-        settings: { ...state.settings, ...action.payload },
+        settings: { ...state.settings, ...(action.payload as {}) },
+      };
+    case 'setBuilds':
+      return {
+        ...state,
+        builds: { ...state.builds, builds: action.payload },
+      };
+    case 'setPollingIntervalId':
+      return {
+        ...state,
+        builds: {
+          ...state.builds,
+          pollingIntervalId: action.payload,
+          pollingState:
+            action.payload === null ? PollingState.Idle : PollingState.Polling,
+        },
       };
     default:
       return state;
@@ -64,9 +109,9 @@ const reducer = (state: RootState, action: Action): RootState => {
 export const Store: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   return (
-    <SettingsContext.Provider value={[state, dispatch]}>
+    <AppContext.Provider value={[state, dispatch]}>
       <div>{children}</div>
-    </SettingsContext.Provider>
+    </AppContext.Provider>
   );
 };
 
