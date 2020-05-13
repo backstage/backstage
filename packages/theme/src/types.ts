@@ -28,7 +28,6 @@ type PaletteAdditions = {
     pending: string;
     running: string;
     aborted: string;
-    background: string;
   };
   border: string;
   textContrast: string;
