@@ -2245,10 +2245,28 @@
     npmlog "^4.1.2"
     upath "^1.2.0"
 
-"@lerna/project@3.18.0", "@lerna/project@^3.18.0":
+"@lerna/project@3.18.0":
   version "3.18.0"
   resolved "https://registry.npmjs.org/@lerna/project/-/project-3.18.0.tgz#56feee01daeb42c03cbdf0ed8a2a10cbce32f670"
   integrity sha512-+LDwvdAp0BurOAWmeHE3uuticsq9hNxBI0+FMHiIai8jrygpJGahaQrBYWpwbshbQyVLeQgx3+YJdW2TbEdFWA==
+  dependencies:
+    "@lerna/package" "3.16.0"
+    "@lerna/validation-error" "3.13.0"
+    cosmiconfig "^5.1.0"
+    dedent "^0.7.0"
+    dot-prop "^4.2.0"
+    glob-parent "^5.0.0"
+    globby "^9.2.0"
+    load-json-file "^5.3.0"
+    npmlog "^4.1.2"
+    p-map "^2.1.0"
+    resolve-from "^4.0.0"
+    write-json-file "^3.2.0"
+
+"@lerna/project@^3.18.0":
+  version "3.21.0"
+  resolved "https://registry.npmjs.org/@lerna/project/-/project-3.21.0.tgz#5d784d2d10c561a00f20320bcdb040997c10502d"
+  integrity sha512-xT1mrpET2BF11CY32uypV2GPtPVm6Hgtha7D81GQP9iAitk9EccrdNjYGt5UBYASl4CIDXBRxwmTTVGfrCx82A==
   dependencies:
     "@lerna/package" "3.16.0"
     "@lerna/validation-error" "3.13.0"
