@@ -24,6 +24,13 @@ import {
 import Observable from 'zen-observable';
 import { OAuthPendingRequests, PendingRequest } from './OAuthPendingRequests';
 
+/**
+ * The OAuthRequestManager is an implementation of the OAuthRequestApi.
+ *
+ * The purpose of this class and the API is to read a stream of incoming requests
+ * of OAuth access tokens from different providers with varying scope, and funnel
+ * them all together into a single requests for each OAuth provider.
+ */
 export class OAuthRequestManager implements OAuthRequestApi {
   private readonly requests$: Observable<AuthRequest[]>;
   private readonly observers = new Set<

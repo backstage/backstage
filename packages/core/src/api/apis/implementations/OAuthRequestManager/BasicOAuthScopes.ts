@@ -16,6 +16,10 @@
 
 import { OAuthScopes, OAuthScopeLike } from '../../definitions/oauthrequest';
 
+/**
+ * The BasicOAuthScopes class is an implementation of OAuthScopes that
+ * works for any simple comma- or space-separated format of scope.
+ */
 export class BasicOAuthScopes implements OAuthScopes {
   static from(scopes: OAuthScopeLike, normalizer?: (scope: string) => string) {
     const normalized = BasicOAuthScopes.asStrings(scopes, normalizer);
