@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 import React, { FC, useReducer, Dispatch } from 'react';
-// import { Provider, useDispatch } from 'react-redux';
-
-// import store from '../../state/store';
 import { circleCIApiRef } from '../../api';
-
-// const RehydrateSettings = () => {
-//   const dispatch: Dispatch = useDispatch();
-
-//   React.useEffect(() => {
-//     dispatch.settings.rehydrate();
-//   }, []);
-//   return null;
-// };
 
 export const SettingsContext = React.createContext<
   [RootState, Dispatch<Action>]
@@ -77,12 +65,7 @@ export const Store: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   return (
     <SettingsContext.Provider value={[state, dispatch]}>
-      {/* <Provider store={store}> */}
-      <div>
-        {/* <RehydrateSettings /> */}
-        {children}
-      </div>
-      {/* </Provider> */}
+      <div>{children}</div>
     </SettingsContext.Provider>
   );
 };
