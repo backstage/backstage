@@ -18,3 +18,4 @@ export * from './apis';
 export * from './app';
 export * from './navTargets';
 export * from './plugin';
+export * from './types';
