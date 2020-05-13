@@ -33,7 +33,7 @@
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
-    "@types/helmet": "^0.0.45",
+    "@types/helmet": "^0.0.47",
     "jest": "^25.1.0",
     "tsc-watch": "^4.2.3",
     "typescript": "^3.9.2",
