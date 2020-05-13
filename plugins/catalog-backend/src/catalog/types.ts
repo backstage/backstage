@@ -20,12 +20,6 @@ export type Component = {
   name: string;
 };
 
-export const componentShape: yup.Schema<Component> = yup
-  .object({
-    name: yup.string().required(),
-  })
-  .unknown();
-
 export type Location = {
   id: string;
   type: string;

@@ -34,6 +34,7 @@
     "@types/http-errors": "^1.6.3",
     "@types/morgan": "^1.9.0",
     "@types/supertest": "^2.0.8",
+    "@types/yaml": "^1.9.7",
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",
     "jest": "^25.1.0",
