@@ -84,6 +84,19 @@ export default class AppBuilder {
             );
             break;
           }
+          case 'nav-target-component': {
+            const { target, component, options = {} } = output;
+            const { exact = true } = options;
+            routes.push(
+              <Route
+                key={`${plugin.getId()}-${target.path}`}
+                path={target.path}
+                component={component}
+                exact={exact}
+              />,
+            );
+            break;
+          }
           case 'redirect-route': {
             const { path, target, options = {} } = output;
             const { exact = true } = options;

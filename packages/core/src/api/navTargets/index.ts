@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './lib/api';
-export * from './navTargets';
+export type { NavTarget, NavTargetConfig, NavTargetOverrideConfig  } from './types';
+export { createNavTarget } from './NavTarget';

@@ -16,5 +16,6 @@
 
 export * from './api';
 export * from './apis';
+export * from './navTargets';
 export { FeatureFlags } from './app/FeatureFlags';
 export { useApp } from './app/AppContext';

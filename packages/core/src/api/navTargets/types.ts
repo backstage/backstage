@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './lib/api';
-export * from './navTargets';
+import { IconComponent } from '../../icons';
+
+export type NavTarget = {
+  path: string;
+  icon: IconComponent;
+  title: string;
+};
+
+export type NavTargetConfig = {
+  path: string;
+  icon: IconComponent;
+  title: string;
+};
+
+export type NavTargetOverrideConfig = {
+  path?: string;
+  icon?: IconComponent;
+  title?: string;
+};

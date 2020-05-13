@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  Link,
-  makeStyles,
-  styled,
-  SvgIcon,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import { Link, makeStyles, styled, Theme, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import React, { FC, useContext } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
+import { IconComponent } from '../../icons';
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles<Theme>((theme) => ({
   root: {
     color: '#b5b5b5',
     display: 'flex',
@@ -59,7 +53,7 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 type SidebarItemProps = {
-  icon: typeof SvgIcon;
+  icon: IconComponent;
   text: string;
   to?: string;
   onClick?: () => void;

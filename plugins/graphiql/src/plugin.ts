@@ -16,10 +16,11 @@
 
 import { createPlugin } from '@backstage/core';
 import { GraphiQLPage } from './components';
+import { navTargetGraphiQL } from './navTargets';
 
 export const plugin = createPlugin({
   id: 'graphiql',
   register({ router }) {
-    router.registerRoute('/graphiql', GraphiQLPage);
+    router.addRoute(navTargetGraphiQL, GraphiQLPage);
   },
 });

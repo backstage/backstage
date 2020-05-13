@@ -22,6 +22,7 @@ import {
   FeatureFlagName,
 } from './types';
 import { validateBrowserCompat, validateFlagName } from '../app/FeatureFlags';
+import { NavTarget } from '../navTargets';
 
 export type PluginConfig = {
   id: string;
@@ -34,6 +35,12 @@ export type PluginHooks = {
 };
 
 export type RouterHooks = {
+  addRoute(
+    target: NavTarget,
+    Component: ComponentType<any>,
+    options?: RouteOptions,
+  ): void;
+
   registerRoute(
     path: RoutePath,
     Component: ComponentType<any>,
@@ -75,6 +82,14 @@ export default class Plugin {
 
     this.config.register({
       router: {
+        addRoute(target, component, options) {
+          outputs.push({
+            type: 'nav-target-component',
+            target,
+            component,
+            options,
+          });
+        },
         registerRoute(path, component, options) {
           outputs.push({ type: 'route', path, component, options });
         },
