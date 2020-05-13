@@ -24,12 +24,19 @@ import {
   withStyles,
   makeStyles,
 } from '@material-ui/core';
+import classNames from 'classnames';
 import ErrorBoundary from '../ErrorBoundary';
 import BottomLink, { Props as BottomLinkProps } from '../BottomLink';
 
 const useStyles = makeStyles((theme) => ({
   header: {
     padding: theme.spacing(2, 2, 2, 2.5),
+  },
+  noPadding: {
+    padding: 0,
+    '&:last-child': {
+      paddingBottom: 0,
+    },
   },
 }));
 
@@ -45,15 +52,6 @@ const CardActionsTopRight = withStyles((theme) => ({
     float: 'right',
   },
 }))(CardActions);
-
-const CardContentNoPadding = withStyles((theme) => ({
-  root: {
-    padding: theme.spacing(0),
-    '&:last-child': {
-      paddingBottom: 0,
-    },
-  },
-}))(CardContent);
 
 const VARIANT_STYLES = {
   card: {
@@ -135,6 +133,7 @@ type Props = {
   actions?: ReactNode;
   cardClassName?: string;
   actionsTopRight?: ReactNode;
+  noPadding?: boolean;
 };
 
 const InfoCard: FC<Props> = ({
@@ -151,6 +150,7 @@ const InfoCard: FC<Props> = ({
   actions,
   cardClassName,
   actionsTopRight,
+  noPadding = true,
 }) => {
   const classes = useStyles();
 
@@ -196,12 +196,14 @@ const InfoCard: FC<Props> = ({
           <CardActionsTopRight>{actionsTopRight}</CardActionsTopRight>
         )}
         {divider && <Divider />}
-        <CardContentNoPadding
-          className={cardClassName}
+        <CardContent
+          className={classNames(cardClassName, {
+            [classes.noPadding]: noPadding,
+          })}
           style={calculatedCardStyle}
         >
           {children}
-        </CardContentNoPadding>
+        </CardContent>
         {actions && (
           <CardActions className={actionsClassName}>{actions}</CardActions>
         )}
