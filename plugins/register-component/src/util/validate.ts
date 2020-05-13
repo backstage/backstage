@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
-export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as CatalogPlugin } from '@backstage/plugin-catalog';
-export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
-export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
-export { plugin as Explore } from '@backstage/plugin-explore';
-export { plugin as RegisterComponent } from '@backstage/plugin-register-component';
+
+export const ComponentIdValidators = {
+  httpsValidator: (value: any) =>
+    (typeof value === 'string' && value.match(/^https:\/\//) !== null) ||
+    'Must start with https://.',
+  masterValidator: (value: any) =>
+    (typeof value === 'string' && value.match(/\/blob\/master\//) !== null) ||
+    'Must reference a file on the master branch.',
+  yamlValidator: (value: any) =>
+    (typeof value === 'string' && value.match(/.yaml$/) !== null) ||
+    "Must end with '.yaml'.",
+};
