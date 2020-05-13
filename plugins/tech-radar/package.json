@@ -25,7 +25,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^13.24.0"
+    "react-use": "^14.2.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.5",

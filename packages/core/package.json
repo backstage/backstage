@@ -42,6 +42,7 @@
     "react-router-dom": "^5.2.0",
     "react-sparklines": "^1.7.0",
     "react-syntax-highlighter": "^12.2.1",
+    "react-use": "^14.2.0",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
