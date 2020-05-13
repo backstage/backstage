@@ -17,42 +17,10 @@
 import { NotFoundError } from '@backstage/backend-common';
 import Knex from 'knex';
 import path from 'path';
-import fs from 'fs-extra';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
-import {
-  AddLocationRequest,
-  Catalog,
-  Component,
-  Location,
-  componentShape,
-} from './types';
-import YAML from 'yaml';
-
-async function readLocation(location: Location): Promise<Component[]> {
-  switch (location.type) {
-    case 'file': {
-      let parsed;
-      try {
-        const raw = await fs.readFile(location.target, 'utf8');
-        parsed = YAML.parse(raw);
-      } catch (e) {
-        throw new Error(`Unable to read "${location.target}", ${e}`);
-      }
-
-      try {
-        return [await componentShape.validate(parsed, { strict: true })];
-      } catch (e) {
-        throw new Error(
-          `Malformed file contents at "${location.target}", ${e}`,
-        );
-      }
-    }
-
-    default:
-      throw new Error(`Unknown type "${location.type}"`);
-  }
-}
+import { readLocation } from '../ingestion';
+import { AddLocationRequest, Catalog, Component, Location } from './types';
 
 export class DatabaseCatalog implements Catalog {
   static async create(
