@@ -32,10 +32,10 @@ export async function startStandaloneServer(
 
   const catalog = new StaticCatalog(
     [
-      { id: 'component1' },
-      { id: 'component2' },
-      { id: 'component3' },
-      { id: 'component4' },
+      { name: 'component1' },
+      { name: 'component2' },
+      { name: 'component3' },
+      { name: 'component4' },
     ],
     [],
   );
