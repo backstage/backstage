@@ -57,3 +57,8 @@ export type PluginOutput =
   | RouteTargetOutput
   | RedirectRouteOutput
   | FeatureFlagOutput;
+
+export type BackstagePlugin = {
+  getId(): string;
+  output(): PluginOutput[];
+};

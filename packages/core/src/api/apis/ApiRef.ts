@@ -19,7 +19,7 @@ export type ApiRefConfig = {
   description: string;
 };
 
-export default class ApiRef<T> {
+export class ApiRef<T> {
   constructor(private readonly config: ApiRefConfig) {
     if (!config.id.match(/^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*$/)) {
       throw new Error(
@@ -44,4 +44,8 @@ export default class ApiRef<T> {
   toString() {
     return `apiRef{${this.config.id}}`;
   }
+}
+
+export function createApiRef<T>(config: ApiRefConfig) {
+  return new ApiRef<T>(config);
 }

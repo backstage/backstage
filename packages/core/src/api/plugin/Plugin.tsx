@@ -20,6 +20,7 @@ import {
   RoutePath,
   RouteOptions,
   FeatureFlagName,
+  BackstagePlugin,
 } from './types';
 import { validateBrowserCompat, validateFlagName } from '../app/FeatureFlags';
 import { NavTarget } from '../navTargets';
@@ -58,10 +59,7 @@ export type FeatureFlagsHooks = {
   register(name: FeatureFlagName): void;
 };
 
-export const registerSymbol = Symbol('plugin-register');
-export const outputSymbol = Symbol('plugin-output');
-
-export default class Plugin {
+export class PluginImpl {
   private storedOutput?: PluginOutput[];
 
   constructor(private readonly config: PluginConfig) {}
@@ -113,4 +111,8 @@ export default class Plugin {
   toString() {
     return `plugin{${this.config.id}}`;
   }
+}
+
+export function createPlugin(config: PluginConfig): BackstagePlugin {
+  return new PluginImpl(config);
 }

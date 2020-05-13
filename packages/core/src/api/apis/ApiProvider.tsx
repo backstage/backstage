@@ -16,7 +16,7 @@
 
 import React, { FC, createContext, useContext, ReactNode } from 'react';
 import PropTypes from 'prop-types';
-import ApiRef from './ApiRef';
+import { ApiRef } from './ApiRef';
 import { ApiHolder, TypesToApiRefs } from './types';
 
 type Props = {
@@ -26,7 +26,7 @@ type Props = {
 
 const Context = createContext<ApiHolder | undefined>(undefined);
 
-const ApiProvider: FC<Props> = ({ apis, children }) => {
+export const ApiProvider: FC<Props> = ({ apis, children }) => {
   return <Context.Provider value={apis} children={children} />;
 };
 
@@ -53,7 +53,7 @@ export function withApis<T>(apis: TypesToApiRefs<T>) {
   return function withApisWrapper<P extends T>(
     WrappedComponent: React.ComponentType<P>,
   ) {
-    const Hoc: FC<Omit<P, keyof T>> = props => {
+    const Hoc: FC<Omit<P, keyof T>> = (props) => {
       const apiHolder = useContext(Context);
 
       if (!apiHolder) {
@@ -84,5 +84,3 @@ export function withApis<T>(apis: TypesToApiRefs<T>) {
     return Hoc;
   };
 }
-
-export default ApiProvider;

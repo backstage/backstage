@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import ApiRef, { ApiRefConfig } from './apis/ApiRef';
-import AppBuilder from './app/AppBuilder';
-import BackstagePlugin, { PluginConfig } from './plugin/Plugin';
-
-export function createApp() {
-  return new AppBuilder();
-}
-
-export function createApiRef<T>(config: ApiRefConfig) {
-  return new ApiRef<T>(config);
-}
-
-export function createPlugin(config: PluginConfig): BackstagePlugin {
-  return new BackstagePlugin(config);
-}
+export { createApp } from './AppBuilder';
+export { FeatureFlags } from './FeatureFlags';
+export { useApp } from './AppContext';
+export * from './types';

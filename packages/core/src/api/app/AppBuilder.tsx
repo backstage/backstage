@@ -18,7 +18,7 @@ import React, { ComponentType } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { App } from './types';
-import BackstagePlugin from '../plugin/Plugin';
+import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import { featureFlagsApiRef } from '../apis/definitions/featureFlags';
 import ErrorPage from '../../layout/ErrorPage';
@@ -40,7 +40,7 @@ class AppImpl implements App {
   }
 }
 
-export default class AppBuilder {
+export class AppBuilder {
   private apis?: ApiHolder;
   private systemIcons = { ...defaultSystemIcons };
   private readonly plugins = new Set<BackstagePlugin>();
@@ -144,4 +144,8 @@ export default class AppBuilder {
 
     return () => <AppContextProvider app={app} children={rendered} />;
   }
+}
+
+export function createApp() {
+  return new AppBuilder();
 }

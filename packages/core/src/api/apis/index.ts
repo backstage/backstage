@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export { default as ApiProvider, useApi } from './ApiProvider';
-export { default as ApiRegistry } from './ApiRegistry';
-export { default as ApiTestRegistry } from './ApiTestRegistry';
-export { default as ApiRef } from './ApiRef';
+export { ApiProvider, useApi } from './ApiProvider';
+export { ApiRegistry } from './ApiRegistry';
+export { ApiTestRegistry } from './ApiTestRegistry';
+export * from './ApiRef';
 export * from './types';
 export * from './helpers';
 export * from './definitions';

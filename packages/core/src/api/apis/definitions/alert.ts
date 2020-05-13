@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ApiRef from '../ApiRef';
+import { ApiRef } from '../ApiRef';
 
 export type AlertMessage = {
   message: string;
