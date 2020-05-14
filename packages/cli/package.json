@@ -59,7 +59,7 @@
     "rollup": "^2.3.2",
     "rollup-plugin-image-files": "^1.4.2",
     "rollup-plugin-peer-deps-external": "^2.2.2",
-    "rollup-plugin-postcss": "^2.5.0",
+    "rollup-plugin-postcss": "^3.1.1",
     "rollup-plugin-typescript2": "^0.26.0",
     "tar": "^6.0.1",
     "ts-loader": "^7.0.4",
