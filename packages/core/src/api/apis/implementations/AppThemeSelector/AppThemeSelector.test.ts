@@ -45,4 +45,41 @@ describe('AppThemeSelector', () => {
     expect(selector.getInstalledThemes()).toEqual(themes);
     expect(selector.getInstalledThemes()).not.toBe(themes);
   });
+
+  it('should store theme in local storage', async () => {
+    expect(AppThemeSelector.createWithStorage([]).getActiveThemeId()).toBe(
+      undefined,
+    );
+    localStorage.setItem('theme', 'x');
+    expect(AppThemeSelector.createWithStorage([]).getActiveThemeId()).toBe('x');
+    localStorage.removeItem('theme');
+    expect(AppThemeSelector.createWithStorage([]).getActiveThemeId()).toBe(
+      undefined,
+    );
+
+    const addListenerSpy = jest.spyOn(window, 'addEventListener');
+    const selector = AppThemeSelector.createWithStorage([]);
+
+    expect(addListenerSpy).toHaveBeenCalledTimes(1);
+    expect(addListenerSpy).toHaveBeenCalledWith(
+      'storage',
+      expect.any(Function),
+    );
+
+    selector.setActiveThemeId('y');
+    await 'wait a tick';
+    expect(localStorage.getItem('theme')).toBe('y');
+
+    selector.setActiveThemeId(undefined);
+    await 'wait a tick';
+    expect(localStorage.getItem('theme')).toBe(null);
+
+    localStorage.setItem('theme', 'z');
+    expect(selector.getActiveThemeId()).toBe(undefined);
+
+    const listener = addListenerSpy.mock.calls[0][1] as EventListener;
+    listener({ key: 'theme' } as StorageEvent);
+
+    expect(selector.getActiveThemeId()).toBe('z');
+  });
 });

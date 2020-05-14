@@ -17,7 +17,35 @@
 import Observable from 'zen-observable';
 import { AppThemeApi, AppTheme } from '../../definitions';
 
+const STORAGE_KEY = 'theme';
+
 export class AppThemeSelector implements AppThemeApi {
+  static createWithStorage(themes: AppTheme[]) {
+    const selector = new AppThemeSelector(themes);
+
+    const initialThemeId =
+      window?.localStorage.getItem(STORAGE_KEY) ?? undefined;
+
+    selector.setActiveThemeId(initialThemeId);
+
+    selector.activeThemeId$().subscribe((themeId) => {
+      if (themeId) {
+        window?.localStorage.setItem(STORAGE_KEY, themeId);
+      } else {
+        window?.localStorage.removeItem(STORAGE_KEY);
+      }
+    });
+
+    window.addEventListener('storage', (event) => {
+      if (event.key === STORAGE_KEY) {
+        const themeId = localStorage.getItem(STORAGE_KEY) ?? undefined;
+        selector.setActiveThemeId(themeId);
+      }
+    });
+
+    return selector;
+  }
+
   private readonly themes: AppTheme[];
 
   private activeThemeId: string | undefined;
