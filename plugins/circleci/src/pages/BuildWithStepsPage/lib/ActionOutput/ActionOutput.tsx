@@ -50,8 +50,8 @@ export const ActionOutput: FC<{
   const [messages, setMessages] = useState([]);
   useEffect(() => {
     fetch(url)
-      .then(res => res.json())
-      .then(actionOutput => {
+      .then((res) => res.json())
+      .then((actionOutput) => {
         if (typeof actionOutput !== 'undefined') {
           setMessages(
             actionOutput.map(({ message }: { message: string }) => message),

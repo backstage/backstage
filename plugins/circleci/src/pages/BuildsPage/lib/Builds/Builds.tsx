@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 import React, { FC, useEffect } from 'react';
-import { useApi } from '@backstage/core';
-import { CITable, CITableBuildInfo } from '../CITable';
-import { useSelector, useDispatch } from 'react-redux';
-import { iRootState, Dispatch } from '../../../../state/store';
-import { circleCIApiRef, BuildSummary } from '../../../../api';
+import { CITableBuildInfo, CITable } from '../CITable';
+import { BuildSummary } from '../../../../api';
+import { useSettings, useBuilds } from '../../../../state';
 
 const makeReadableStatus = (status: string | undefined) => {
   if (!status) return '';
@@ -41,8 +39,7 @@ const makeReadableStatus = (status: string | undefined) => {
 
 const transform = (
   buildsData: BuildSummary[],
-  dispatch: Dispatch,
-  api: typeof circleCIApiRef.T,
+  restartBuild: { (buildId: number): Promise<void> },
 ): CITableBuildInfo[] => {
   return buildsData.map((buildData) => {
     const tableBuildInfo: CITableBuildInfo = {
@@ -51,8 +48,9 @@ const transform = (
         ? buildData.subject +
           (buildData.retry_of ? ` (retry of #${buildData.retry_of})` : '')
         : '',
-      onRetryClick: () =>
-        dispatch.builds.restartBuild({ buildId: buildData.build_num, api }),
+      onRestartClick: () =>
+        typeof buildData.build_num !== 'undefined' &&
+        restartBuild(buildData.build_num),
       source: {
         branchName: String(buildData.branch),
         commit: {
@@ -68,19 +66,18 @@ const transform = (
 };
 
 export const Builds: FC<{}> = () => {
-  const dispatch: Dispatch = useDispatch();
-  const api = useApi(circleCIApiRef);
+  const [
+    builds,
+    { restartBuild: handleRestartBuild, startPolling, stopPolling },
+  ] = useBuilds();
+  const [{ repo, owner }] = useSettings();
 
   useEffect(() => {
-    dispatch.builds.startPolling(api);
-    return () => {
-      dispatch.builds.stopPolling();
-    };
-  }, []);
+    startPolling();
+    return () => stopPolling();
+  }, [repo, owner]);
 
-  const { builds } = useSelector((state: iRootState) => state.builds);
-  const { repo, owner } = useSelector((state: iRootState) => state.settings);
-  const transformedBuilds = transform(builds, dispatch, api);
+  const transformedBuilds = transform(builds, handleRestartBuild);
 
   return (
     <CITable builds={transformedBuilds} projectName={`${owner}/${repo}`} />

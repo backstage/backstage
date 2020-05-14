@@ -13,19 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { settings } from './settings';
-import { builds } from './builds';
-import { buildWithSteps } from './buildWithSteps';
-
-// no need to extend from Models
-export interface RootModel {
-  settings: typeof settings;
-  builds: typeof builds;
-  buildWithSteps: typeof buildWithSteps;
-}
-
-export const models = {
-  settings,
-  builds,
-  buildWithSteps,
-};
+export { default as DetailedViewPage } from './BuildWithStepsPage';

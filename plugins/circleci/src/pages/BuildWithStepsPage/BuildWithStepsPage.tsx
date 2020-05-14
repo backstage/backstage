@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Content, InfoCard, useApi } from '@backstage/core';
-import { circleCIApiRef, BuildWithSteps, BuildStepAction } from '../../api';
+import { Content, InfoCard } from '@backstage/core';
+import { BuildWithSteps, BuildStepAction } from '../../api';
 import { Grid, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { PluginHeader } from '../../components/PluginHeader';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import { Layout } from '../../components/Layout';
-import { Dispatch, iRootState } from '../../state/store';
-import { withStore } from '../../components/Store';
+import { useBuildWithSteps, useSettings } from '../../state';
 
 const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
   <>
@@ -88,20 +86,18 @@ const pickClassName = (
   return classes.neutral;
 };
 
-const DetailedViewPage: FC<{}> = () => {
+const BuildWithStepsPage: FC<{}> = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
-  const dispatch: Dispatch = useDispatch();
-  const api = useApi(circleCIApiRef);
+  const [settings] = useSettings();
+  const [build, { startPolling, stopPolling }] = useBuildWithSteps(
+    parseInt(buildId, 10),
+  );
 
-  React.useEffect(() => {
-    dispatch.buildWithSteps.startPolling({ api, buildId: Number(buildId) });
-    return () => {
-      dispatch.buildWithSteps.stopPolling();
-    };
-  }, []);
-  const { builds } = useSelector((state: iRootState) => state.buildWithSteps);
-  const build = builds[parseInt(buildId, 10)];
+  useEffect(() => {
+    startPolling();
+    return () => stopPolling();
+  }, [buildId, settings]);
 
   return (
     <Layout>
@@ -154,4 +150,4 @@ const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
   );
 };
 
-export default withStore(DetailedViewPage);
+export default BuildWithStepsPage;

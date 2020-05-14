@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import {
   Button,
   TextField,
@@ -28,22 +27,17 @@ import { Alert } from '@material-ui/lab';
 import { InfoCard, Content } from '@backstage/core';
 import { Layout } from '../../components/Layout';
 import { PluginHeader } from '../../components/PluginHeader';
-import { SettingsState } from '../../state/models/settings';
-import { iRootState, Dispatch } from '../../state/store';
-import { withStore } from '../../components/Store';
+import { useSettings } from '../../state';
 
 const SettingsPage = () => {
-  const {
-    token: tokenFromStore,
-    owner: ownerFromStore,
-    repo: repoFromStore,
-  } = useSelector((state: iRootState): SettingsState => state.settings);
+  const [
+    { repo: repoFromStore, owner: ownerFromStore, token: tokenFromStore },
+    { saveSettings },
+  ] = useSettings();
 
   const [token, setToken] = React.useState(() => tokenFromStore);
   const [owner, setOwner] = React.useState(() => ownerFromStore);
   const [repo, setRepo] = React.useState(() => repoFromStore);
-
-  const dispatch: Dispatch = useDispatch();
 
   React.useEffect(() => {
     if (tokenFromStore !== token) {
@@ -126,11 +120,7 @@ const SettingsPage = () => {
                       color="primary"
                       onClick={() => {
                         setSaved(true);
-                        dispatch.settings.setCredentials({
-                          owner,
-                          repo,
-                          token,
-                        });
+                        saveSettings({ repo, owner, token });
                       }}
                     >
                       Save credentials
@@ -146,4 +136,4 @@ const SettingsPage = () => {
   );
 };
 
-export default withStore(SettingsPage);
+export default SettingsPage;
