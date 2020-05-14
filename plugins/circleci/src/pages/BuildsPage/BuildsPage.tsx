@@ -19,7 +19,6 @@ import { Grid } from '@material-ui/core';
 import { Builds } from './lib/Builds';
 import { Layout } from '../../components/Layout';
 import { PluginHeader } from '../../components/PluginHeader';
-import { withStore } from '../../components/Store';
 
 const BuildsPage: FC<{}> = () => (
   <Layout>
@@ -34,4 +33,4 @@ const BuildsPage: FC<{}> = () => (
   </Layout>
 );
 
-export default withStore(BuildsPage);
+export default BuildsPage;

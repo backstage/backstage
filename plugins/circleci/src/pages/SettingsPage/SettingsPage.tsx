@@ -27,7 +27,6 @@ import { Alert } from '@material-ui/lab';
 import { InfoCard, Content } from '@backstage/core';
 import { Layout } from '../../components/Layout';
 import { PluginHeader } from '../../components/PluginHeader';
-import { withStore } from '../../components/Store';
 import { useSettings } from './settings';
 
 const SettingsPage = () => {
@@ -137,4 +136,4 @@ const SettingsPage = () => {
   );
 };
 
-export default withStore(SettingsPage);
+export default SettingsPage;
