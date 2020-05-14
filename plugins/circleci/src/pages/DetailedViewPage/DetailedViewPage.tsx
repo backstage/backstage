@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Content, InfoCard, useApi } from '@backstage/core';
-import { circleCIApiRef, BuildWithSteps, BuildStepAction } from '../../api';
+import { Content, InfoCard } from '@backstage/core';
+import { BuildWithSteps, BuildStepAction } from '../../api';
 import { Grid, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { PluginHeader } from '../../components/PluginHeader';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import { Layout } from '../../components/Layout';
-import { Dispatch, iRootState } from '../../state/store';
 import { withStore } from '../../components/Store';
+import { useBuildWithSteps } from './hooks';
 
 const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
   <>
@@ -91,17 +90,8 @@ const pickClassName = (
 const DetailedViewPage: FC<{}> = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
-  const dispatch: Dispatch = useDispatch();
-  const api = useApi(circleCIApiRef);
 
-  React.useEffect(() => {
-    dispatch.buildWithSteps.startPolling({ api, buildId: Number(buildId) });
-    return () => {
-      dispatch.buildWithSteps.stopPolling();
-    };
-  }, []);
-  const { builds } = useSelector((state: iRootState) => state.buildWithSteps);
-  const build = builds[parseInt(buildId, 10)];
+  const [build] = useBuildWithSteps(parseInt(buildId, 10));
 
   return (
     <Layout>

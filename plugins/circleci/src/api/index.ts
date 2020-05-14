@@ -24,10 +24,11 @@ import {
   BuildWithSteps,
   BuildStepAction,
   BuildSummary,
+  GitType,
 } from 'circleci-api';
 import { ApiRef } from '@backstage/core';
 
-export { BuildWithSteps, BuildStepAction, BuildSummary };
+export { BuildWithSteps, BuildStepAction, BuildSummary, GitType };
 
 export const circleCIApiRef = new ApiRef<CircleCIApi>({
   id: 'plugin.circleci.service',

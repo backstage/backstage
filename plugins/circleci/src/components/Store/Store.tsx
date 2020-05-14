@@ -15,7 +15,7 @@
  */
 import React, { FC, useReducer, Dispatch } from 'react';
 import { circleCIApiRef } from '../../api';
-import { BuildSummary } from 'circleci-api';
+import { BuildSummary, BuildWithSteps } from 'circleci-api';
 
 export const AppContext = React.createContext<[AppState, Dispatch<Action>]>(
   [] as any,
@@ -43,9 +43,10 @@ export const STORAGE_KEY = `${circleCIApiRef.id}.settings`;
 export type AppState = {
   settings: SettingsState;
   builds: BuildsState;
+  buildsWithSteps: BuildsWithStepsState;
 };
 
-const initialState = {
+const initialState: AppState = {
   settings: {
     owner: '',
     repo: '',
@@ -55,6 +56,12 @@ const initialState = {
     builds: [],
     pollingIntervalId: null,
     pollingState: PollingState.Idle,
+  },
+  buildsWithSteps: {
+    builds: {},
+    pollingIntervalId: null,
+    pollingState: PollingState.Idle,
+    getBuildError: null,
   },
 };
 
@@ -77,7 +84,24 @@ type BuildsAction =
       payload: number | null;
     };
 
-type Action = SettingsAction | BuildsAction;
+type BuildsWithStepsAction =
+  | {
+      type: 'setBuildWithSteps';
+      payload: BuildWithSteps;
+    }
+  | {
+      type: 'setPollingIntervalIdForBuildsWithSteps';
+      payload: number | null;
+    };
+
+export type BuildsWithStepsState = {
+  builds: Record<number, BuildWithSteps>;
+  pollingIntervalId: number | null;
+  pollingState: PollingState;
+  getBuildError: Error | null;
+};
+
+type Action = SettingsAction | BuildsAction | BuildsWithStepsAction;
 
 const reducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
@@ -91,11 +115,37 @@ const reducer = (state: AppState, action: Action): AppState => {
         ...state,
         builds: { ...state.builds, builds: action.payload },
       };
+    case 'setBuildWithSteps': {
+      if (state.buildsWithSteps.pollingState !== PollingState.Polling) {
+        return state;
+      }
+      return {
+        ...state,
+        buildsWithSteps: {
+          ...state.buildsWithSteps,
+          builds: {
+            ...state.buildsWithSteps.builds,
+            [action.payload.build_num!]: action.payload,
+          },
+        },
+      };
+    }
     case 'setPollingIntervalId':
       return {
         ...state,
         builds: {
           ...state.builds,
+          pollingIntervalId: action.payload,
+          pollingState:
+            action.payload === null ? PollingState.Idle : PollingState.Polling,
+        },
+      };
+    case 'setPollingIntervalIdForBuildsWithSteps':
+      return {
+        ...state,
+        buildsWithSteps: {
+          ...state.buildsWithSteps,
+
           pollingIntervalId: action.payload,
           pollingState:
             action.payload === null ? PollingState.Idle : PollingState.Polling,
