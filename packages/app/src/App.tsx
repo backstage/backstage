@@ -25,10 +25,13 @@ import * as plugins from './plugins';
 import apis, { alertApiForwarder } from './apis';
 import { ThemeContextType, ThemeContext, useThemeType } from './ThemeContext';
 
-const app = createApp();
-app.registerApis(apis);
-app.registerPlugin(...Object.values(plugins));
-const AppComponent = app.build();
+const app = createApp({
+  apis,
+  plugins: Object.values(plugins),
+});
+
+const AppProvider = app.getProvider();
+const AppComponent = app.getRootComponent();
 
 const App: FC<{}> = () => {
   const [theme, toggleTheme] = useThemeType(
@@ -59,18 +62,20 @@ const App: FC<{}> = () => {
     toggleTheme,
   };
   return (
-    <ThemeContext.Provider value={themeContext}>
-      <ThemeProvider theme={backstageTheme}>
-        <CssBaseline>
-          <AlertDisplay forwarder={alertApiForwarder} />
-          <Router>
-            <Root>
-              <AppComponent />
-            </Root>
-          </Router>
-        </CssBaseline>
-      </ThemeProvider>
-    </ThemeContext.Provider>
+    <AppProvider>
+      <ThemeContext.Provider value={themeContext}>
+        <ThemeProvider theme={backstageTheme}>
+          <CssBaseline>
+            <AlertDisplay forwarder={alertApiForwarder} />
+            <Router>
+              <Root>
+                <AppComponent />
+              </Root>
+            </Router>
+          </CssBaseline>
+        </ThemeProvider>
+      </ThemeContext.Provider>
+    </AppProvider>
   );
 };
 

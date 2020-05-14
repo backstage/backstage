@@ -66,25 +66,29 @@ class DevAppBuilder {
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
-    const app = createApp();
-    app.registerApis(this.setupApiRegistry(this.factories));
-    app.registerPlugin(...this.plugins);
-    const AppComponent = app.build();
+    const app = createApp({
+      apis: this.setupApiRegistry(this.factories),
+      plugins: this.plugins,
+    });
+    const AppProvider = app.getProvider();
+    const AppComponent = app.getRootComponent();
 
     const sidebar = this.setupSidebar(this.plugins);
 
     const DevApp: FC<{}> = () => {
       return (
-        <ThemeProvider theme={lightTheme}>
-          <CssBaseline>
-            <BrowserRouter>
-              <SidebarPage>
-                {sidebar}
-                <AppComponent />
-              </SidebarPage>
-            </BrowserRouter>
-          </CssBaseline>
-        </ThemeProvider>
+        <AppProvider>
+          <ThemeProvider theme={lightTheme}>
+            <CssBaseline>
+              <BrowserRouter>
+                <SidebarPage>
+                  {sidebar}
+                  <AppComponent />
+                </SidebarPage>
+              </BrowserRouter>
+            </CssBaseline>
+          </ThemeProvider>
+        </AppProvider>
       );
     };
 

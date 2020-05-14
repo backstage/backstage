@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, FC } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
-import { App } from './types';
+import { BackstageApp, AppOptions, AppComponents } from './types';
 import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import { featureFlagsApiRef } from '../apis/definitions';
@@ -29,44 +29,46 @@ import {
   SystemIconKey,
   defaultSystemIcons,
 } from '../../icons';
-import { ApiHolder, ApiProvider } from '../apis';
+import { ApiHolder, ApiProvider, ApiRegistry } from '../apis';
 import LoginPage from './LoginPage';
 
-class AppImpl implements App {
-  constructor(private readonly systemIcons: SystemIcons) {}
+type FullAppOptions = {
+  apis: ApiHolder;
+  icons: SystemIcons;
+  plugins: BackstagePlugin[];
+  components: AppComponents;
+};
+
+class AppImpl implements BackstageApp {
+  private readonly apis: ApiHolder;
+  private readonly icons: SystemIcons;
+  private readonly plugins: BackstagePlugin[];
+  private readonly components: AppComponents;
+
+  constructor(options: FullAppOptions) {
+    this.apis = options.apis;
+    this.icons = options.icons;
+    this.plugins = options.plugins;
+    this.components = options.components;
+  }
+
+  getApis(): ApiHolder {
+    return this.apis;
+  }
+
+  getPlugins(): BackstagePlugin[] {
+    return this.plugins;
+  }
 
   getSystemIcon(key: SystemIconKey): IconComponent {
-    return this.systemIcons[key];
-  }
-}
-
-export class AppBuilder {
-  private apis?: ApiHolder;
-  private systemIcons = { ...defaultSystemIcons };
-  private readonly plugins = new Set<BackstagePlugin>();
-
-  registerApis(apis: ApiHolder) {
-    this.apis = apis;
+    return this.icons[key];
   }
 
-  registerIcons(icons: Partial<SystemIcons>) {
-    this.systemIcons = { ...this.systemIcons, ...icons };
-  }
-
-  registerPlugin(...plugin: BackstagePlugin[]) {
-    for (const p of plugin) {
-      if (this.plugins.has(p)) {
-        throw new Error(`Plugin '${p}' is already registered`);
-      }
-      this.plugins.add(p);
-    }
-  }
-
-  build(): ComponentType<{}> {
-    const app = new AppImpl(this.systemIcons);
-
+  getRootComponent(): ComponentType<{}> {
     const routes = new Array<JSX.Element>();
     const registeredFeatureFlags = new Array<FeatureFlagsRegistryItem>();
+
+    const { NotFoundErrorPage } = this.components;
 
     for (const plugin of this.plugins.values()) {
       for (const output of plugin.output()) {
@@ -130,11 +132,7 @@ export class AppBuilder {
     let rendered = (
       <Switch>
         {routes}
-        <Route
-          render={(props) => (
-            <ErrorPage {...props} status="404" statusMessage="PAGE NOT FOUND" />
-          )}
-        />
+        <Route component={NotFoundErrorPage} />
       </Switch>
     );
 
@@ -142,10 +140,48 @@ export class AppBuilder {
       rendered = <ApiProvider apis={this.apis} children={rendered} />;
     }
 
-    return () => <AppContextProvider app={app} children={rendered} />;
+    return () => rendered;
+  }
+
+  getProvider(): ComponentType<{}> {
+    const Provider: FC<{}> = ({ children }) => (
+      <AppContextProvider app={this}>{children}</AppContextProvider>
+    );
+    return Provider;
+  }
+
+  verify() {
+    const pluginIds = new Set<string>();
+
+    for (const plugin of this.plugins) {
+      const id = plugin.getId();
+      if (pluginIds.has(id)) {
+        throw new Error(`Duplicate plugin found '${id}'`);
+      }
+      pluginIds.add(id);
+    }
   }
 }
 
-export function createApp() {
-  return new AppBuilder();
+/**
+ * Creates a new Backstage App.
+ */
+export function createApp(options?: AppOptions) {
+  const DefaultNotFoundPage = () => (
+    <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
+  );
+
+  const apis = options?.apis ?? ApiRegistry.from([]);
+  const icons = { ...defaultSystemIcons, ...options?.icons };
+  const plugins = options?.plugins ?? [];
+  const components = {
+    NotFoundErrorPage: DefaultNotFoundPage,
+    ...options?.components,
+  };
+
+  const app = new AppImpl({ apis, icons, plugins, components });
+
+  app.verify();
+
+  return app;
 }
