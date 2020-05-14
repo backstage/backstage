@@ -15,48 +15,25 @@
  */
 
 import React, { FC } from 'react';
-import { Typography } from '@material-ui/core';
-import { Content, InfoCard, Header, Page, pageTheme } from '@backstage/core';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { Content, Header, Page, pageTheme } from '@backstage/core';
+import { useAsync } from 'react-use';
+import { ComponentFactory } from '../../data/component';
+import { MockComponentFactory } from '../../data/mock-factory';
+import CatalogTable from '../CatalogTable/CatalogTable';
 
-// TODO(freben): Connect to backend
-const STATIC_DATA = [
-  { id: 'backstage-frontend', kind: 'website' },
-  { id: 'backstage-backend', kind: 'service' },
-  { id: 'backstage-microsite', kind: 'website' },
-];
+const componentFactory: ComponentFactory = MockComponentFactory;
 
 const CatalogPage: FC<{}> = () => {
+  const { value, error, loading } = useAsync(componentFactory.getAllComponents);
   return (
     <Page theme={pageTheme.home}>
-      <Header title="Catalog" subtitle="All your stuff" />
+      <Header title="Catalog" subtitle="Your components" />
       <Content>
-        <Typography variant="h3">All of it</Typography>
-        <InfoCard>
-          <TableContainer>
-            <Table size="small" aria-label="a dense table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Kind</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {STATIC_DATA.map((d) => (
-                  <TableRow key={d.id}>
-                    <TableCell>{d.id}</TableCell>
-                    <TableCell>{d.kind}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </InfoCard>
+        <CatalogTable
+          components={value || []}
+          loading={loading}
+          error={error}
+        />
       </Content>
     </Page>
   );

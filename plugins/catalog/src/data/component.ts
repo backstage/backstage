@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export type Component = {
+  name: string;
+};
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import CatalogPage from './CatalogPage';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
-
-describe('CatalogPage', () => {
-  it('should render', async () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <CatalogPage />
-      </ThemeProvider>,
-    );
-    expect(await rendered.findByText('Your components')).toBeInTheDocument();
-  });
-});
+export interface ComponentFactory {
+  getAllComponents(): Promise<Component[]>;
+  getComponentByName(name: string): Promise<Component | undefined>;
+}
