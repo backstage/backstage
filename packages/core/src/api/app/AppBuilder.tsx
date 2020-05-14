@@ -20,7 +20,7 @@ import { AppContextProvider } from './AppContext';
 import { App } from './types';
 import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
-import { featureFlagsApiRef } from '../apis/definitions/featureFlags';
+import { featureFlagsApiRef } from '../apis/definitions';
 import ErrorPage from '../../layout/ErrorPage';
 
 import {

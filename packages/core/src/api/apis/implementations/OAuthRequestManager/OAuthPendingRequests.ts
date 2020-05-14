@@ -15,7 +15,7 @@
  */
 
 import Observable from 'zen-observable';
-import { OAuthScopes } from '../../definitions/oauthrequest';
+import { OAuthScopes } from '../../definitions';
 
 type RequestQueueEntry<ResultType> = {
   scopes: OAuthScopes;

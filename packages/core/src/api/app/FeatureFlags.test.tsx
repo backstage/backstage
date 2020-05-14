@@ -15,10 +15,7 @@
  */
 
 import { FeatureFlags as FeatureFlagsImpl } from './FeatureFlags';
-import {
-  FeatureFlagState,
-  FeatureFlagsApi,
-} from '../apis/definitions/featureFlags';
+import { FeatureFlagState, FeatureFlagsApi } from '../apis/definitions';
 
 describe('FeatureFlags', () => {
   beforeEach(() => {

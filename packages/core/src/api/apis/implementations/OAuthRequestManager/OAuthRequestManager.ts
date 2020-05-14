@@ -20,7 +20,7 @@ import {
   PendingAuthRequest,
   AuthRequester,
   AuthRequesterOptions,
-} from '../../definitions/oauthrequest';
+} from '../../definitions';
 import Observable from 'zen-observable';
 import { OAuthPendingRequests, PendingRequest } from './OAuthPendingRequests';
 

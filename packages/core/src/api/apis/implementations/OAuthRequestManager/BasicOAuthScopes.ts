@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OAuthScopes, OAuthScopeLike } from '../../definitions/oauthrequest';
+import { OAuthScopes, OAuthScopeLike } from '../../definitions';
 
 /**
  * The BasicOAuthScopes class is an implementation of OAuthScopes that
