@@ -62,7 +62,7 @@
     "rollup-plugin-postcss": "^2.5.0",
     "rollup-plugin-typescript2": "^0.26.0",
     "tar": "^6.0.1",
-    "ts-loader": "^6.2.1",
+    "ts-loader": "^7.0.4",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3"
   },
