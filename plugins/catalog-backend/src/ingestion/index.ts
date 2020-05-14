@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from './fileLocation';
+export * from './DescriptorParsers';
+export * from './LocationReaders';
 export * from './types';
-export * from './util';

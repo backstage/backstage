@@ -1,6 +1,6 @@
 apiVersion: catalog.backstage.io/v1
 kind: Component
 metadata:
-  name: component1
+  name: component3
 spec:
   type: service
