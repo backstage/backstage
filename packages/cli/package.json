@@ -16,7 +16,7 @@
     "backstage"
   ],
   "license": "Apache-2.0",
-  "main": "dist",
+  "main": "dist/index.js",
   "scripts": {
     "build": "backstage-cli build-cache -- tsc --project tsconfig.build.json",
     "lint": "backstage-cli lint",
@@ -89,7 +89,7 @@
     "templates",
     "config",
     "bin",
-    "dist"
+    "dist/**/*.js"
   ],
   "nodemonConfig": {
     "watch": "./src",
