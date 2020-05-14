@@ -15,10 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import { Component } from '../catalog/types';
-import { parseDescriptor } from '../descriptors';
+import { ComponentDescriptor, parseDescriptor } from '../descriptors';
 
-export async function readFileLocation(target: string): Promise<Component[]> {
+export async function readFileLocation(
+  target: string,
+): Promise<ComponentDescriptor[]> {
   let rawYaml;
   try {
     rawYaml = await fs.readFile(target, 'utf8');

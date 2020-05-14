@@ -15,6 +15,7 @@
  */
 
 import * as yup from 'yup';
+import { ComponentDescriptor } from '../descriptors';
 
 export type Component = {
   name: string;
@@ -39,7 +40,10 @@ export const addLocationRequestShape: yup.Schema<AddLocationRequest> = yup
   .noUnknown();
 
 export type Catalog = {
-  addOrUpdateComponent(component: Component): Promise<Component>;
+  addOrUpdateComponent(
+    locationId: string,
+    descriptor: ComponentDescriptor,
+  ): Promise<void>;
   components(): Promise<Component[]>;
   component(id: string): Promise<Component>;
   addLocation(location: AddLocationRequest): Promise<Location>;

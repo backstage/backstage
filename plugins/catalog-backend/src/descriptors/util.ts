@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { Component } from '../catalog/types';
-import { parseComponentDescriptor } from './component';
+import { ComponentDescriptor, parseComponentDescriptor } from './component';
 import { parseDescriptorEnvelope } from './envelope';
 
 // TODO(freben): Temporary helper that ignores the kind
-export async function parseDescriptor(rawYaml: string): Promise<Component[]> {
+export async function parseDescriptor(
+  rawYaml: string,
+): Promise<ComponentDescriptor[]> {
   const env = await parseDescriptorEnvelope(rawYaml);
   return await parseComponentDescriptor(env);
 }

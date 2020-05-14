@@ -15,7 +15,6 @@
  */
 
 import * as yup from 'yup';
-import { Component } from '../catalog/types';
 import { DescriptorEnvelope } from './envelope';
 
 export type ComponentDescriptor = {
@@ -28,6 +27,10 @@ export type ComponentDescriptor = {
 };
 
 const componentDescriptorSchema: yup.Schema<ComponentDescriptor> = yup.object({
+  kind: yup
+    .string()
+    .required()
+    .matches(/^Component$/),
   metadata: yup.object({
     name: yup.string().required(),
   }),
@@ -38,7 +41,7 @@ const componentDescriptorSchema: yup.Schema<ComponentDescriptor> = yup.object({
 
 export async function parseComponentDescriptor(
   envelope: DescriptorEnvelope,
-): Promise<Component[]> {
+): Promise<ComponentDescriptor[]> {
   let componentDescriptor;
   try {
     componentDescriptor = await componentDescriptorSchema.validate(envelope, {
@@ -48,9 +51,5 @@ export async function parseComponentDescriptor(
     throw new Error(`Malformed component, ${e}`);
   }
 
-  const component: Component = {
-    name: componentDescriptor.metadata.name,
-  };
-
-  return [component];
+  return [componentDescriptor];
 }

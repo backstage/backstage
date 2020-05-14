@@ -56,9 +56,9 @@ export class CatalogLogic {
     for (const location of locations) {
       try {
         logger.debug(`Attempting refresh of location: ${location.id}`);
-        const components = await reader(location);
-        for (const component of components) {
-          await catalog.addOrUpdateComponent(component);
+        const componentDescriptors = await reader(location);
+        for (const componentDescriptor of componentDescriptors) {
+          await catalog.addOrUpdateComponent(location.id, componentDescriptor);
         }
       } catch (e) {
         logger.debug(`Failed to update location "${location.id}", ${e}`);

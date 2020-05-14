@@ -26,6 +26,9 @@ describe('DatabaseCatalog', () => {
     connection: ':memory:',
     useNullAsDefault: true,
   });
+  database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+    resource.run('PRAGMA foreign_keys = ON', () => {});
+  });
 
   const logger = winston.createLogger({
     transports: [new winston.transports.Stream({ stream: new PassThrough() })],

@@ -41,14 +41,16 @@ const DEFAULT_PORT = 7000;
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
 
 function createEnv(plugin: string): PluginEnvironment {
-  return {
-    logger: getRootLogger().child({ type: 'plugin', plugin }),
-    database: knex({
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    }),
-  };
+  const logger = getRootLogger().child({ type: 'plugin', plugin });
+  const database = knex({
+    client: 'sqlite3',
+    connection: ':memory:',
+    useNullAsDefault: true,
+  });
+  database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+    resource.run('PRAGMA foreign_keys = ON', () => {});
+  });
+  return { logger, database };
 }
 
 async function main() {
