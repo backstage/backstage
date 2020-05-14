@@ -4495,9 +4495,9 @@
     "@types/node" "*"
 
 "@types/supertest@^2.0.8":
-  version "2.0.8"
-  resolved "https://registry.npmjs.org/@types/supertest/-/supertest-2.0.8.tgz#23801236e2b85204ed771a8e7c40febba7da2bda"
-  integrity sha512-wcax7/ip4XSSJRLbNzEIUVy2xjcBIZZAuSd2vtltQfRK7kxhx5WMHbLHkYdxN3wuQCrwpYrg86/9byDjPXoGMA==
+  version "2.0.9"
+  resolved "https://registry.npmjs.org/@types/supertest/-/supertest-2.0.9.tgz#049bddbcb0ee0d60a9b836ccc977d813a1c32325"
+  integrity sha512-0BTpWWWAO1+uXaP/oA0KW1eOZv4hc0knhrWowV06Gwwz3kqQxNO98fUFM2e15T+PdPRmOouNFrYvaBgdojPJ3g==
   dependencies:
     "@types/superagent" "*"
 
