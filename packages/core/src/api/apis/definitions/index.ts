@@ -21,6 +21,7 @@
 // If you think some API definition is missing, please open an Issue or send a PR!
 
 export * from './AlertApi';
+export * from './AppThemeApi';
 export * from './ErrorApi';
 export * from './FeatureFlagsApi';
 export * from './OAuthRequestApi';
