@@ -53,7 +53,7 @@ describe('DatabaseCatalog', () => {
     await catalog.removeLocation(locations[0].id);
 
     await expect(catalog.locations()).resolves.toEqual([]);
-    await expect(catalog.location(locations[0].id)).rejects.toThrowError(
+    await expect(catalog.location(locations[0].id)).rejects.toThrow(
       /Found no location/,
     );
   });

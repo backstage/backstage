@@ -24,19 +24,27 @@ export class CatalogLogic {
     reader: LocationReader,
     logger: Logger,
   ): () => void {
+    let cancel: () => void;
     let cancelled = false;
+    const cancellationPromise = new Promise((resolve) => {
+      cancel = () => {
+        resolve();
+        cancelled = true;
+      };
+    });
 
     const startRefresh = async () => {
       while (!cancelled) {
         await CatalogLogic.refreshLocations(catalog, reader, logger);
-        await new Promise((resolve) => setTimeout(resolve, 10000));
+        await Promise.race([
+          new Promise((resolve) => setTimeout(resolve, 10000)),
+          cancellationPromise,
+        ]);
       }
     };
     startRefresh();
 
-    return () => {
-      cancelled = true;
-    };
+    return cancel!;
   }
 
   public static async refreshLocations(

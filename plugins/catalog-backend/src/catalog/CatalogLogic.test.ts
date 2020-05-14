@@ -28,7 +28,7 @@ describe('CatalogLogic', () => {
     it('works with no locations added', async () => {
       const catalog = ({
         addOrUpdateComponent: jest.fn(),
-        locations: jest.fn(() => []),
+        locations: jest.fn().mockResolvedValue([]),
       } as unknown) as Catalog;
       const locationReader = jest.fn();
 
@@ -41,7 +41,7 @@ describe('CatalogLogic', () => {
     it('can update a single location', async () => {
       const catalog = ({
         addOrUpdateComponent: jest.fn(),
-        locations: jest.fn(() => [
+        locations: jest.fn().mockResolvedValue([
           {
             id: '123',
             type: 'some',
