@@ -51,7 +51,7 @@ export type AppThemeApi = {
   /**
    * Get a list of available themes.
    */
-  getThemeOptions(): AppTheme[];
+  getInstalledThemes(): AppTheme[];
 
   /**
    * Observe the currently selected theme. A value of undefined means no specific theme has been selected.
