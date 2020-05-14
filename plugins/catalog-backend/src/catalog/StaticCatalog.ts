@@ -16,6 +16,7 @@
 
 import { NotFoundError } from '@backstage/backend-common';
 import { v4 as uuidv4 } from 'uuid';
+import { ComponentDescriptor } from '../descriptors';
 import { AddLocationRequest, Catalog, Component, Location } from './types';
 
 export class StaticCatalog implements Catalog {
@@ -27,11 +28,13 @@ export class StaticCatalog implements Catalog {
     this._locations = locations;
   }
 
-  async addOrUpdateComponent(component: Component): Promise<Component> {
+  async addOrUpdateComponent(
+    locationId: string,
+    descriptor: ComponentDescriptor,
+  ): Promise<void> {
     this._components = this._components
-      .filter((c) => c.name !== component.name)
-      .concat([component]);
-    return component;
+      .filter((c) => c.name !== descriptor.metadata.name)
+      .concat([{ name: descriptor.metadata.name }]);
   }
 
   async components(): Promise<Component[]> {

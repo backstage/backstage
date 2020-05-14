@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Component, Location } from '../catalog/types';
+import { Location } from '../catalog/types';
+import { ComponentDescriptor } from '../descriptors';
 import { readFileLocation } from './fileLocation';
 
-export async function readLocation(location: Location): Promise<Component[]> {
+export async function readLocation(
+  location: Location,
+): Promise<ComponentDescriptor[]> {
   switch (location.type) {
     case 'file':
       return await readFileLocation(location.target);

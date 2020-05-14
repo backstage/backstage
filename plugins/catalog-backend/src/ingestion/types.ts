@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-import { Component, Location } from '../catalog';
+import { Location } from '../catalog';
+import { ComponentDescriptor } from '../descriptors';
 
-export type LocationReader = (location: Location) => Promise<Component[]>;
+export type LocationReader = (
+  location: Location,
+) => Promise<ComponentDescriptor[]>;

@@ -67,6 +67,7 @@ describe('CatalogLogic', () => {
       expect(catalog.addOrUpdateComponent).toHaveBeenCalledTimes(1);
       expect(catalog.addOrUpdateComponent).toHaveBeenNthCalledWith(
         1,
+        '123',
         expect.objectContaining({ name: 'c1' }),
       );
     });

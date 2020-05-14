@@ -19,6 +19,7 @@ import Knex from 'knex';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
+import { ComponentDescriptor } from '../descriptors';
 import { readLocation } from '../ingestion';
 import { CatalogLogic } from './CatalogLogic';
 import { AddLocationRequest, Catalog, Component, Location } from './types';
@@ -44,15 +45,27 @@ export class DatabaseCatalog implements Catalog {
     private readonly logger: Logger,
   ) {}
 
-  async addOrUpdateComponent(component: Component): Promise<Component> {
+  async addOrUpdateComponent(
+    locationId: string,
+    descriptor: ComponentDescriptor,
+  ): Promise<void> {
+    const component: Component = {
+      name: descriptor.metadata.name,
+    };
+
     await this.database.transaction(async (tx) => {
-      await tx('components')
-        .insert(component)
-        .catch(() =>
-          tx('components').where({ name: component.name }).update(component),
-        );
+      // TODO(freben): Currently, several locations can compete for the same component
+      const count = await tx('components')
+        .where({ name: component.name })
+        .update({ ...component, locationId });
+      if (!count) {
+        await tx('components').insert({
+          ...component,
+          id: uuidv4(),
+          locationId,
+        });
+      }
     });
-    return component;
   }
 
   async components(): Promise<Component[]> {
