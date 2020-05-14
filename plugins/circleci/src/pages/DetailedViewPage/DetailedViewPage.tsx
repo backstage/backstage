@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Content, InfoCard } from '@backstage/core';
 import { BuildWithSteps, BuildStepAction } from '../../api';
@@ -22,7 +22,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { PluginHeader } from '../../components/PluginHeader';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import { Layout } from '../../components/Layout';
-import { useBuildWithSteps } from './hooks';
+import { useBuildWithSteps, useSettings } from '../../state';
 
 const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
   <>
@@ -89,8 +89,15 @@ const pickClassName = (
 const DetailedViewPage: FC<{}> = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
+  const [settings] = useSettings();
+  const [build, { startPolling, stopPolling }] = useBuildWithSteps(
+    parseInt(buildId, 10),
+  );
 
-  const [build] = useBuildWithSteps(parseInt(buildId, 10));
+  useEffect(() => {
+    startPolling();
+    return () => stopPolling();
+  }, [buildId, settings]);
 
   return (
     <Layout>

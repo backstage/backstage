@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { CITableBuildInfo, CITable } from '../CITable';
 import { BuildSummary } from '../../../../api';
-import { useBuilds } from '../../builds';
-import { useSettings } from '../../../SettingsPage/settings';
+import { useSettings, useBuilds } from '../../../../state';
 
 const makeReadableStatus = (status: string | undefined) => {
   if (!status) return '';
@@ -49,7 +48,7 @@ const transform = (
         ? buildData.subject +
           (buildData.retry_of ? ` (retry of #${buildData.retry_of})` : '')
         : '',
-      onRetryClick: () =>
+      onRestartClick: () =>
         typeof buildData.build_num !== 'undefined' &&
         restartBuild(buildData.build_num),
       source: {
@@ -67,9 +66,18 @@ const transform = (
 };
 
 export const Builds: FC<{}> = () => {
-  const [{ builds }, { restartBuild }] = useBuilds();
+  const [
+    builds,
+    { restartBuild: handleRestartBuild, startPolling, stopPolling },
+  ] = useBuilds();
   const [{ repo, owner }] = useSettings();
-  const transformedBuilds = transform(builds, restartBuild);
+
+  useEffect(() => {
+    startPolling();
+    return () => stopPolling();
+  }, [repo, owner]);
+
+  const transformedBuilds = transform(builds, handleRestartBuild);
 
   return (
     <CITable builds={transformedBuilds} projectName={`${owner}/${repo}`} />

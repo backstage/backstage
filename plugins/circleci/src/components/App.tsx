@@ -3,10 +3,10 @@ import { Switch, Route } from 'react-router';
 import { BuildsPage } from '../pages/BuildsPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { DetailedViewPage } from '../pages/DetailedViewPage';
-import { Store } from './Store';
+import { AppStateProvider } from '../state';
 
 export const App = () => (
-  <Store>
+  <AppStateProvider>
     <Switch>
       <Route path="/circleci" exact component={BuildsPage} />
       <Route path="/circleci/settings" exact component={SettingsPage} />
@@ -16,5 +16,5 @@ export const App = () => (
         component={DetailedViewPage}
       />
     </Switch>
-  </Store>
+  </AppStateProvider>
 );

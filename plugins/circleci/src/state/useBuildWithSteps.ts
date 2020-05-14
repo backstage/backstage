@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { useContext, useEffect } from 'react';
-import { circleCIApiRef, GitType } from '../../api/index';
-import { AppContext } from '../../components/Store';
-import { useSettings } from '../SettingsPage/settings';
+import { useContext, useRef } from 'react';
+import { circleCIApiRef, GitType } from '../api/index';
+import { AppContext } from '.';
+import { useSettings } from './useSettings';
 
 const INTERVAL_AMOUNT = 3000;
 
 export function useBuildWithSteps(buildId: number) {
   const [settings] = useSettings();
   const [{ buildsWithSteps }, dispatch] = useContext(AppContext);
+  const intervalId = useRef<number | null>(null);
+  const isPolling = intervalId !== null;
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -38,7 +40,7 @@ export function useBuildWithSteps(buildId: number) {
         },
       };
       const build = await api.getBuild(buildId, options);
-      dispatch({ type: 'setBuildWithSteps', payload: build });
+      if (isPolling) dispatch({ type: 'setBuildWithSteps', payload: build });
     } catch (e) {
       errorApi.post(e);
     }
@@ -61,33 +63,18 @@ export function useBuildWithSteps(buildId: number) {
 
   const startPolling = () => {
     stopPolling();
-    const intervalId = (setInterval(
+    intervalId.current = (setInterval(
       () => getBuildWithSteps(),
       INTERVAL_AMOUNT,
     ) as any) as number;
-    dispatch({
-      type: 'setPollingIntervalIdForBuildsWithSteps',
-      payload: intervalId,
-    });
   };
 
   const stopPolling = () => {
-    const currentIntervalId = buildsWithSteps.pollingIntervalId;
+    const currentIntervalId = intervalId.current;
     if (currentIntervalId) clearInterval(currentIntervalId);
-    dispatch({
-      type: 'setPollingIntervalIdForBuildsWithSteps',
-      payload: null,
-    });
   };
 
-  useEffect(() => {
-    startPolling();
-    return () => {
-      stopPolling();
-    };
-  }, [buildId, settings]);
-
-  const build = buildsWithSteps.builds[buildId];
+  const build = buildsWithSteps[buildId];
 
   return [
     build,

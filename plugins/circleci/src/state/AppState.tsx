@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import React, { FC, useReducer, Dispatch, Reducer } from 'react';
-import { circleCIApiRef } from '../../api';
-import { State, PollingState, Action, SettingsState } from './types';
+import { circleCIApiRef } from '../api';
+import { State, Action, SettingsState } from './types';
 export { SettingsState };
 
 export const AppContext = React.createContext<[State, Dispatch<Action>]>(
@@ -29,17 +29,8 @@ const initialState: State = {
     repo: '',
     token: '',
   },
-  builds: {
-    builds: [],
-    pollingIntervalId: null,
-    pollingState: PollingState.Idle,
-  },
-  buildsWithSteps: {
-    builds: {},
-    pollingIntervalId: null,
-    pollingState: PollingState.Idle,
-    getBuildError: null,
-  },
+  builds: [],
+  buildsWithSteps: {},
 };
 
 const reducer: Reducer<State, Action> = (state, action) => {
@@ -47,55 +38,28 @@ const reducer: Reducer<State, Action> = (state, action) => {
     case 'setCredentials':
       return {
         ...state,
-        settings: { ...state.settings, ...(action.payload as {}) },
+        settings: { ...state.settings, ...action.payload },
       };
     case 'setBuilds':
       return {
         ...state,
-        builds: { ...state.builds, builds: action.payload },
+        builds: action.payload,
       };
     case 'setBuildWithSteps': {
-      if (state.buildsWithSteps.pollingState !== PollingState.Polling) {
-        return state;
-      }
       return {
         ...state,
         buildsWithSteps: {
           ...state.buildsWithSteps,
-          builds: {
-            ...state.buildsWithSteps.builds,
-            [action.payload.build_num!]: action.payload,
-          },
+          [action.payload.build_num!]: action.payload,
         },
       };
     }
-    case 'setPollingIntervalId':
-      return {
-        ...state,
-        builds: {
-          ...state.builds,
-          pollingIntervalId: action.payload,
-          pollingState:
-            action.payload === null ? PollingState.Idle : PollingState.Polling,
-        },
-      };
-    case 'setPollingIntervalIdForBuildsWithSteps':
-      return {
-        ...state,
-        buildsWithSteps: {
-          ...state.buildsWithSteps,
-
-          pollingIntervalId: action.payload,
-          pollingState:
-            action.payload === null ? PollingState.Idle : PollingState.Polling,
-        },
-      };
     default:
       return state;
   }
 };
 
-export const Store: FC = ({ children }) => {
+export const AppStateProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (

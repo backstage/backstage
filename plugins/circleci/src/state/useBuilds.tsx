@@ -15,18 +15,15 @@
  */
 import { errorApiRef, useApi } from '@backstage/core';
 import { GitType } from 'circleci-api';
-import { useContext, useEffect } from 'react';
-import { circleCIApiRef } from '../../api/index';
-import { AppContext } from '../../components/Store';
-
-export type BuildsDispatch = {
-  restartBuild: (buildId: number) => Promise<void>;
-};
+import { useContext, useRef } from 'react';
+import { circleCIApiRef } from '../api/index';
+import { AppContext } from '.';
 
 const INTERVAL_AMOUNT = 3000;
 
 export function useBuilds() {
   const [{ builds, settings }, dispatch] = useContext(AppContext);
+  const intervalId = useRef<number | null>(null);
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -67,36 +64,23 @@ export function useBuilds() {
 
   const startPolling = () => {
     stopPolling();
-    const intervalId = (setInterval(
+    intervalId.current = (setInterval(
       () => getBuilds(),
       INTERVAL_AMOUNT,
-    ) as any) as number;
-    dispatch({
-      type: 'setPollingIntervalId',
-      payload: intervalId,
-    });
+    ) as unknown) as number;
   };
 
   const stopPolling = () => {
-    const currentIntervalId = builds.pollingIntervalId;
+    const currentIntervalId = intervalId.current;
     if (currentIntervalId) clearInterval(currentIntervalId);
-    dispatch({
-      type: 'setPollingIntervalId',
-      payload: null,
-    });
   };
-
-  useEffect(() => {
-    startPolling();
-    return () => {
-      stopPolling();
-    };
-  }, [settings]);
 
   return [
     builds,
     {
       restartBuild,
+      startPolling,
+      stopPolling,
     },
   ] as const;
 }

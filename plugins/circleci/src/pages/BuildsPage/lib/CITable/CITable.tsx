@@ -46,7 +46,7 @@ export type CITableBuildInfo = {
     failed: number;
     testUrl: string; // fixme better name
   };
-  onRetryClick: () => void;
+  onRestartClick: () => void;
 };
 
 // retried, canceled, infrastructure_fail, timedout, not_run, running, failed, queued, scheduled, not_running, no_tests, fixed, success
@@ -106,7 +106,7 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Actions',
     render: (row: Partial<CITableBuildInfo>) => (
-      <IconButton onClick={row.onRetryClick}>
+      <IconButton onClick={row.onRestartClick}>
         <RetryIcon />
       </IconButton>
     ),

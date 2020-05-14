@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useContext, useEffect } from 'react';
-import { AppContext, STORAGE_KEY, SettingsState } from '../../components/Store';
+import { AppContext, STORAGE_KEY, SettingsState } from '.';
 import { useApi, errorApiRef } from '@backstage/core';
 
 // type Effect = {
