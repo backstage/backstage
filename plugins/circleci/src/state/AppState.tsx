@@ -17,6 +17,7 @@ import React, { FC, useReducer, Dispatch, Reducer } from 'react';
 import { circleCIApiRef } from '../api';
 import { State, Action, SettingsState } from './types';
 export { SettingsState };
+import equal from 'fast-deep-equal';
 
 export const AppContext = React.createContext<[State, Dispatch<Action>]>(
   [] as any,
@@ -41,6 +42,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         settings: { ...state.settings, ...action.payload },
       };
     case 'setBuilds':
+      if (equal(action.payload, state.builds)) return state;
       return {
         ...state,
         builds: action.payload,

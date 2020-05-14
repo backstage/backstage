@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { useContext, useRef } from 'react';
+import { useContext } from 'react';
 import { circleCIApiRef, GitType } from '../api/index';
 import { AppContext } from '.';
 import { useSettings } from './useSettings';
+
+import { useAsyncPolling } from './useAsyncPolling';
+
 
 const INTERVAL_AMOUNT = 3000;
 
 export function useBuildWithSteps(buildId: number) {
   const [settings] = useSettings();
   const [{ buildsWithSteps }, dispatch] = useContext(AppContext);
-  const intervalId = useRef<number | null>(null);
-  const isPolling = intervalId !== null;
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
+
+  const {isPolling, startPolling, stopPolling} = useAsyncPolling(() => getBuildWithSteps(), INTERVAL_AMOUNT);
+
 
   const getBuildWithSteps = async () => {
     try {
@@ -59,19 +63,6 @@ export function useBuildWithSteps(buildId: number) {
     } catch (e) {
       errorApi.post(e);
     }
-  };
-
-  const startPolling = () => {
-    stopPolling();
-    intervalId.current = (setInterval(
-      () => getBuildWithSteps(),
-      INTERVAL_AMOUNT,
-    ) as any) as number;
-  };
-
-  const stopPolling = () => {
-    const currentIntervalId = intervalId.current;
-    if (currentIntervalId) clearInterval(currentIntervalId);
   };
 
   const build = buildsWithSteps[buildId];

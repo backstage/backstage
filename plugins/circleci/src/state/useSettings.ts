@@ -17,28 +17,9 @@ import { useContext, useEffect } from 'react';
 import { AppContext, STORAGE_KEY, SettingsState } from '.';
 import { useApi, errorApiRef } from '@backstage/core';
 
-// type Effect = {
-//   type: 'rehydrate',
-//   payload: any
-// };
-
-// const effects = [];
-// pushEffect, popEffect
-
 export function useSettings() {
   const [{ settings }, dispatch] = useContext(AppContext);
 
-  // const interpret = eff => {
-  //   return {
-  //     async rehydrate() {},
-
-  //   }[eff.type](eff.payload)
-  // }
-  // useEffect(() => {
-  //   const effectToInterpret = effects[0];
-  //   removeEffect(0);
-  //   interpret(effectToInterpret)
-  // },[effects])
 
   const errorApi = useApi(errorApiRef);
 

@@ -15,17 +15,19 @@
  */
 import { errorApiRef, useApi } from '@backstage/core';
 import { GitType } from 'circleci-api';
-import { useContext, useRef } from 'react';
+import { useContext } from 'react';
 import { circleCIApiRef } from '../api/index';
 import { AppContext } from '.';
+import { useAsyncPolling } from './useAsyncPolling';
 
 const INTERVAL_AMOUNT = 3000;
 
 export function useBuilds() {
   const [{ builds, settings }, dispatch] = useContext(AppContext);
-  const intervalId = useRef<number | null>(null);
+
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
+  const {isPolling, startPolling, stopPolling} = useAsyncPolling(() => getBuilds(), INTERVAL_AMOUNT);
 
   const getBuilds = async () => {
     if (settings.owner === '' || settings.repo === '') return;
@@ -38,7 +40,7 @@ export function useBuilds() {
           type: GitType.GITHUB,
         },
       });
-      dispatch({
+      if (isPolling) dispatch({
         type: 'setBuilds',
         payload: newBuilds,
       });
@@ -62,18 +64,7 @@ export function useBuilds() {
     }
   };
 
-  const startPolling = () => {
-    stopPolling();
-    intervalId.current = (setInterval(
-      () => getBuilds(),
-      INTERVAL_AMOUNT,
-    ) as unknown) as number;
-  };
 
-  const stopPolling = () => {
-    const currentIntervalId = intervalId.current;
-    if (currentIntervalId) clearInterval(currentIntervalId);
-  };
 
   return [
     builds,
