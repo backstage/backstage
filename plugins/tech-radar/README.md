@@ -4,6 +4,8 @@
 
 The Backstage integration for the Tech Radar based on [Zalando's Tech Radar](https://opensource.zalando.com/tech-radar/) open sourced on [GitHub](https://github.com/zalando/tech-radar). This is used at [Spotify](https://spotify.github.io) for visualizing the official guidelines of different areas of software development such as languages, frameworks, infrastructure and processes.
 
+Read the [blog post on backstage.io about the Tech Radar](https://backstage.io/blog/2020/05/14/tech-radar-plugin).
+
 ## Purpose
 
 Zalando has a fantastic description [on their website](https://opensource.zalando.com/tech-radar/):
