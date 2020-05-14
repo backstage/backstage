@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useMemo, useEffect, useState } from 'react';
 import { ThemeProvider, CssBaseline } from '@material-ui/core';
 import { useApi, appThemeApiRef, AppTheme } from '../apis';
 import { useObservable } from 'react-use';
 
 // This tries to find the most accurate match, but also falls back to less
 // accurate results in order to avoid errors.
-function resolveTheme(themeId: string | undefined, themes: AppTheme[]) {
+function resolveTheme(
+  themeId: string | undefined,
+  preferDark: boolean,
+  themes: AppTheme[],
+) {
   if (themeId !== undefined) {
     const selectedTheme = themes.find((theme) => theme.id === themeId);
     if (selectedTheme) {
       return selectedTheme;
     }
   }
-
-  const preferDark = window?.matchMedia('(prefers-color-scheme: dark)')
-    ?.matches;
 
   if (preferDark) {
     const darkTheme = themes.find((theme) => theme.variant === 'dark');
@@ -47,14 +48,43 @@ function resolveTheme(themeId: string | undefined, themes: AppTheme[]) {
   return themes[0];
 }
 
+const usePrefersDarkTheme = () => {
+  if (!window.matchMedia) {
+    return false;
+  }
+
+  const mediaQuery = useMemo(
+    () => window.matchMedia('(prefers-color-scheme: dark)'),
+    [],
+  );
+  const [preferDark, setPrefersDark] = useState(mediaQuery.matches);
+
+  useEffect(() => {
+    const listener = (event: MediaQueryListEvent) => {
+      setPrefersDark(event.matches);
+    };
+    mediaQuery.addListener(listener);
+    return () => {
+      mediaQuery.removeListener(listener);
+    };
+  }, []);
+
+  return preferDark;
+};
+
 export const AppThemeProvider: FC<{}> = ({ children }) => {
   const appThemeApi = useApi(appThemeApiRef);
+  const preferDark = usePrefersDarkTheme();
   const themeId = useObservable(
     appThemeApi.activeThemeId$(),
     appThemeApi.getActiveThemeId(),
   );
 
-  const theme = resolveTheme(themeId, appThemeApi.getInstalledThemes());
+  const theme = resolveTheme(
+    themeId,
+    preferDark,
+    appThemeApi.getInstalledThemes(),
+  );
   if (!theme) {
     throw new Error('App has no themes');
   }
