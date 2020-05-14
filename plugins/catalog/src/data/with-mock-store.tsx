@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from 'react';
+import { ComponentFactory } from './component';
+import { MockComponentFactory } from './mock-factory';
 
-import { createPlugin } from '@backstage/core';
-import CatalogPage from './components/CatalogPage';
-import ComponentPage from './components/ComponentPage/ComponentPage';
-import { withMockStore } from './data/with-mock-store';
+const componentFactory: ComponentFactory = MockComponentFactory;
 
-export const plugin = createPlugin({
-  id: 'catalog',
-  register({ router }) {
-    router.registerRoute('/catalog', withMockStore(CatalogPage));
-    router.registerRoute('/catalog/:name/', withMockStore(ComponentPage));
-  },
-});
+export const withMockStore = (Component: React.ElementType) => {
+  return (props: any) => (
+    <Component {...props} componentFactory={componentFactory} />
+  );
+};
