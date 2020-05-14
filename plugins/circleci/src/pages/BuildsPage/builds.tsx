@@ -16,13 +16,10 @@
 import { errorApiRef, useApi } from '@backstage/core';
 import { GitType } from 'circleci-api';
 import { useContext, useEffect } from 'react';
-import { CircleCIApi } from '../../api';
 import { circleCIApiRef } from '../../api/index';
 import { AppContext, BuildsState } from '../../components/Store';
 
 export type BuildsDispatch = {
-  startPolling: (api: CircleCIApi) => void;
-  stopPolling: () => void;
   restartBuild: (buildId: number) => Promise<void>;
 };
 
@@ -34,7 +31,6 @@ export function useBuilds(): [BuildsState, BuildsDispatch] {
   const errorApi = useApi(errorApiRef);
 
   const getBuilds = async () => {
-    console.log(settings);
     if (settings.owner === '' || settings.repo === '') return;
     try {
       const newBuilds = await api.getBuilds({
@@ -70,7 +66,7 @@ export function useBuilds(): [BuildsState, BuildsDispatch] {
   };
 
   const startPolling = () => {
-    if (builds.pollingIntervalId) return;
+    stopPolling();
     const intervalId = (setInterval(
       () => getBuilds(),
       INTERVAL_AMOUNT,
@@ -95,14 +91,12 @@ export function useBuilds(): [BuildsState, BuildsDispatch] {
     return () => {
       stopPolling();
     };
-  }, []);
+  }, [settings]);
 
   return [
     builds,
     {
       restartBuild,
-      startPolling,
-      stopPolling,
     },
   ];
 }
