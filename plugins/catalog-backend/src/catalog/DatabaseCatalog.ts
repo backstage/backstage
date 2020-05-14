@@ -20,6 +20,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { readLocation } from '../ingestion';
+import { CatalogLogic } from './CatalogLogic';
 import { AddLocationRequest, Catalog, Component, Location } from './types';
 
 export class DatabaseCatalog implements Catalog {
@@ -33,14 +34,7 @@ export class DatabaseCatalog implements Catalog {
     });
 
     const databaseCatalog = new DatabaseCatalog(database, logger);
-
-    const startRefresh = async () => {
-      for (;;) {
-        await databaseCatalog.refreshLocations();
-        await new Promise(r => setTimeout(r, 10000));
-      }
-    };
-    startRefresh();
+    CatalogLogic.startRefreshLoop(databaseCatalog, readLocation, logger);
 
     return databaseCatalog;
   }
@@ -50,13 +44,28 @@ export class DatabaseCatalog implements Catalog {
     private readonly logger: Logger,
   ) {}
 
+  async addOrUpdateComponent(component: Component): Promise<Component> {
+    await this.database.transaction(async (tx) => {
+      await tx('components')
+        .insert(component)
+        .catch(() =>
+          tx('components').where({ name: component.name }).update(component),
+        );
+    });
+    return component;
+  }
+
   async components(): Promise<Component[]> {
-    throw new Error('Not supported');
+    return await this.database('components').select();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async component(name: string): Promise<Component> {
-    throw new Error('Not supported');
+    const items = await this.database('components').where({ name }).select();
+    if (!items.length) {
+      throw new NotFoundError(`Found no component with name ${name}`);
+    }
+    return items[0];
   }
 
   async addLocation(location: AddLocationRequest): Promise<Location> {
@@ -67,42 +76,15 @@ export class DatabaseCatalog implements Catalog {
   }
 
   async removeLocation(id: string): Promise<void> {
-    const result = await this.database('locations')
-      .where({ id })
-      .del();
+    const result = await this.database('locations').where({ id }).del();
 
     if (!result) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
   }
 
-  async refreshLocations(): Promise<void> {
-    const locations = await this.locations();
-    for (const location of locations) {
-      try {
-        this.logger.debug(`Attempting refresh of location: ${location.id}`);
-        const components = await readLocation(location);
-        for (const component of components) {
-          await this.database.transaction(async tx => {
-            await tx('components')
-              .insert(component)
-              .catch(() =>
-                tx('components')
-                  .where({ name: component.name })
-                  .update(component),
-              );
-          });
-        }
-      } catch (e) {
-        this.logger.debug(`Failed to update location "${location.id}", ${e}`);
-      }
-    }
-  }
-
   async location(id: string): Promise<Location> {
-    const items = await this.database('locations')
-      .where({ id })
-      .select();
+    const items = await this.database('locations').where({ id }).select();
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }

@@ -15,8 +15,8 @@
  */
 
 import * as yup from 'yup';
-import { DescriptorEnvelope } from './envelope';
 import { Component } from '../catalog/types';
+import { DescriptorEnvelope } from './envelope';
 
 export type ComponentDescriptor = {
   metadata: {

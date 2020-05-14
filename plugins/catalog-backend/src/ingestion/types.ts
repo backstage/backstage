@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { Component } from '../catalog/types';
-import { parseDescriptor } from '../descriptors';
+import { Component, Location } from '../catalog';
 
-export async function readFileLocation(target: string): Promise<Component[]> {
-  let rawYaml;
-  try {
-    rawYaml = await fs.readFile(target, 'utf8');
-  } catch (e) {
-    throw new Error(`Unable to read "${target}", ${e}`);
-  }
-
-  try {
-    return parseDescriptor(rawYaml);
-  } catch (e) {
-    throw new Error(`Malformed descriptor at "${target}", ${e}`);
-  }
-}
+export type LocationReader = (location: Location) => Promise<Component[]>;

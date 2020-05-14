@@ -15,4 +15,5 @@
  */
 
 export * from './fileLocation';
+export * from './types';
 export * from './util';

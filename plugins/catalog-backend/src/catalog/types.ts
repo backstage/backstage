@@ -39,10 +39,11 @@ export const addLocationRequestShape: yup.Schema<AddLocationRequest> = yup
   .noUnknown();
 
 export type Catalog = {
+  addOrUpdateComponent(component: Component): Promise<Component>;
   components(): Promise<Component[]>;
   component(id: string): Promise<Component>;
   addLocation(location: AddLocationRequest): Promise<Location>;
   removeLocation(id: string): Promise<void>;
-  location(id: string): Promise<Location>;
   locations(): Promise<Location[]>;
+  location(id: string): Promise<Location>;
 };

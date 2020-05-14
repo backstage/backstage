@@ -38,15 +38,23 @@ describe('DatabaseCatalog', () => {
     });
   });
 
-  it('instantiates', () => {
+  it('manages locations', async () => {
     const catalog = new DatabaseCatalog(database, logger);
-    expect(catalog).toBeDefined();
-  });
+    const input = { type: 'a', target: 'b' };
+    const output = { id: expect.anything(), type: 'a', target: 'b' };
 
-  describe(`refreshLocations`, () => {
-    it('works with no locations added', async () => {
-      const catalog = new DatabaseCatalog(database, logger);
-      await expect(catalog.refreshLocations()).resolves.toBeUndefined();
-    });
+    await catalog.addLocation(input);
+
+    const locations = await catalog.locations();
+    expect(locations).toEqual([output]);
+    const location = await catalog.location(locations[0].id);
+    expect(location).toEqual(output);
+
+    await catalog.removeLocation(locations[0].id);
+
+    await expect(catalog.locations()).resolves.toEqual([]);
+    await expect(catalog.location(locations[0].id)).rejects.toThrow(
+      /Found no location/,
+    );
   });
 });
