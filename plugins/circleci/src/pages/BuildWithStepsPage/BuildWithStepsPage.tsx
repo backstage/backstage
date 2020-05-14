@@ -86,7 +86,7 @@ const pickClassName = (
   return classes.neutral;
 };
 
-const DetailedViewPage: FC<{}> = () => {
+const BuildWithStepsPage: FC<{}> = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
   const [settings] = useSettings();
@@ -150,4 +150,4 @@ const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
   );
 };
 
-export default DetailedViewPage;
+export default BuildWithStepsPage;

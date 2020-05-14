@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router';
 import { BuildsPage } from '../pages/BuildsPage';
 import { SettingsPage } from '../pages/SettingsPage';
-import { DetailedViewPage } from '../pages/DetailedViewPage';
+import { DetailedViewPage } from '../pages/BuildWithStepsPage';
 import { AppStateProvider } from '../state';
 
 export const App = () => (
