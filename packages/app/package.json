@@ -21,7 +21,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.2.0",
-    "react-use": "^13.24.0",
+    "react-use": "^14.2.0",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {

@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export * from './apis';
-export * from './app';
-export * from './navTargets';
-export * from './plugin';
-export * from './types';
+export { OAuthRequestDialog } from './OAuthRequestDialog';
