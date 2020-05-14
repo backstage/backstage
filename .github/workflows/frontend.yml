@@ -56,6 +56,9 @@ jobs:
       - name: yarn install
         run: yarn install --frozen-lockfile
 
+      - name: verify plugin template
+        run: yarn lerna -- run diff -- --check
+
       - name: lint
         run: yarn lerna -- run lint --since origin/master
 
