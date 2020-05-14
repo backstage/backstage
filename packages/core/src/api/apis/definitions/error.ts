@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import ApiRef from '../ApiRef';
+import { ApiRef } from '../ApiRef';
 
 /**
  * Mirrors the javascript Error class, for the purpose of

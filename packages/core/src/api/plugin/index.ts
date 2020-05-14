@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export * from './apis';
-export * from './app';
-export * from './navTargets';
-export * from './plugin';
+export { createPlugin } from './Plugin';
+export * from './types';
