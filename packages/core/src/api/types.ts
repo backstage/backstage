@@ -32,7 +32,7 @@ export type Observer<T> = {
  */
 export type Subscription = {
   /**
-   * CAncels the subscription
+   * Cancels the subscription
    */
   unsubscribe(): void;
 

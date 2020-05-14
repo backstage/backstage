@@ -38,8 +38,8 @@ export type OAuthPendingRequestsApi<ResultType> = {
 
 /**
  * The OAuthPendingRequests class is a utility for managing and observing
- * a stream of requests for oauth scopes, and resolving them correctly once
- * requests are fulfilled.
+ * a stream of requests for oauth scopes for a single provider, and resolving
+ * them correctly once requests are fulfilled.
  */
 export class OAuthPendingRequests<ResultType>
   implements OAuthPendingRequestsApi<ResultType> {

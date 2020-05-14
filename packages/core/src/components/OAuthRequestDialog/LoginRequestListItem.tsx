@@ -23,7 +23,7 @@ import {
   Theme,
 } from '@material-ui/core';
 import React, { FC, useState } from 'react';
-import { AuthRequest } from '../../api';
+import { PendingAuthRequest } from '../../api';
 
 const useItemStyles = makeStyles<Theme>((theme) => ({
   root: {
@@ -32,7 +32,7 @@ const useItemStyles = makeStyles<Theme>((theme) => ({
 }));
 
 type RowProps = {
-  request: AuthRequest;
+  request: PendingAuthRequest;
   busy: boolean;
   setBusy: (busy: boolean) => void;
 };
@@ -44,7 +44,7 @@ const LoginRequestListItem: FC<RowProps> = ({ request, busy, setBusy }) => {
   const handleContinue = async () => {
     setBusy(true);
     try {
-      await request.triggerAuth();
+      await request.trigger();
     } catch (e) {
       setError(e);
     } finally {
@@ -52,7 +52,7 @@ const LoginRequestListItem: FC<RowProps> = ({ request, busy, setBusy }) => {
     }
   };
 
-  const IconComponent = request.info.icon;
+  const IconComponent = request.provider.icon;
 
   return (
     <ListItem
@@ -65,7 +65,7 @@ const LoginRequestListItem: FC<RowProps> = ({ request, busy, setBusy }) => {
         <IconComponent fontSize="large" />
       </ListItemAvatar>
       <ListItemText
-        primary={request.info.title}
+        primary={request.provider.title}
         secondary={
           error && (
             <Typography color="error">

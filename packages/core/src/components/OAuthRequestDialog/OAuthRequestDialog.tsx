@@ -48,7 +48,7 @@ export const OAuthRequestDialog: FC<OAuthRequestDialogProps> = () => {
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
   const requests = useObservable(
-    useMemo(() => oauthRequestApi.handleAuthRequests(), [oauthRequestApi]),
+    useMemo(() => oauthRequestApi.authRequest$(), [oauthRequestApi]),
     [],
   );
 
@@ -71,7 +71,7 @@ export const OAuthRequestDialog: FC<OAuthRequestDialogProps> = () => {
         <List>
           {requests.map((request) => (
             <LoginRequestListItem
-              key={request.info.title}
+              key={request.provider.title}
               request={request}
               busy={busy}
               setBusy={setBusy}

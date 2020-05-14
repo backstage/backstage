@@ -17,7 +17,7 @@
 import {
   OAuthRequestApi,
   LoginPopupOptions,
-  AuthRequest,
+  PendingAuthRequest,
   AuthRequester,
   AuthRequesterOptions,
 } from '../../definitions/oauthrequest';
@@ -29,18 +29,18 @@ import { OAuthPendingRequests, PendingRequest } from './OAuthPendingRequests';
  *
  * The purpose of this class and the API is to read a stream of incoming requests
  * of OAuth access tokens from different providers with varying scope, and funnel
- * them all together into a single requests for each OAuth provider.
+ * them all together into a single request for each OAuth provider.
  */
 export class OAuthRequestManager implements OAuthRequestApi {
-  private readonly requests$: Observable<AuthRequest[]>;
+  private readonly request$: Observable<PendingAuthRequest[]>;
   private readonly observers = new Set<
-    ZenObservable.SubscriptionObserver<AuthRequest[]>
+    ZenObservable.SubscriptionObserver<PendingAuthRequest[]>
   >();
-  private currentRequests: AuthRequest[] = [];
+  private currentRequests: PendingAuthRequest[] = [];
   private handlerCount = 0;
 
   constructor() {
-    this.requests$ = new Observable<AuthRequest[]>((observer) => {
+    this.request$ = new Observable<PendingAuthRequest[]>((observer) => {
       observer.next(this.currentRequests);
 
       this.observers.add(observer);
@@ -79,16 +79,16 @@ export class OAuthRequestManager implements OAuthRequestApi {
   private makeAuthRequest(
     request: PendingRequest<any>,
     options: AuthRequesterOptions<any>,
-  ): AuthRequest | undefined {
+  ): PendingAuthRequest | undefined {
     const { scopes } = request;
     if (!scopes) {
       return undefined;
     }
 
     return {
-      info: options.info,
-      triggerAuth: async () => {
-        const result = await options.authHandler(scopes);
+      provider: options.provider,
+      trigger: async () => {
+        const result = await options.onAuthRequest(scopes);
         request.resolve(result);
       },
       reject: () => {
@@ -99,8 +99,8 @@ export class OAuthRequestManager implements OAuthRequestApi {
     };
   }
 
-  handleAuthRequests(): Observable<AuthRequest[]> {
-    return this.requests$;
+  authRequest$(): Observable<PendingAuthRequest[]> {
+    return this.request$;
   }
 
   async showLoginPopup(options: LoginPopupOptions): Promise<any> {
