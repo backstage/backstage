@@ -13,40 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useReducer, Dispatch } from 'react';
+import React, { FC, useReducer, Dispatch, Reducer } from 'react';
 import { circleCIApiRef } from '../../api';
-import { BuildSummary, BuildWithSteps } from 'circleci-api';
+import { State, PollingState, Action, SettingsState } from './types';
+export { SettingsState };
 
-export const AppContext = React.createContext<[AppState, Dispatch<Action>]>(
+export const AppContext = React.createContext<[State, Dispatch<Action>]>(
   [] as any,
 );
-
-type SettingsState = {
-  owner: string;
-  repo: string;
-  token: string;
-};
-
-export enum PollingState {
-  Polling,
-  Idle,
-}
-
-export type BuildsState = {
-  builds: BuildSummary[];
-  pollingIntervalId: number | null;
-  pollingState: PollingState;
-};
-
 export const STORAGE_KEY = `${circleCIApiRef.id}.settings`;
 
-export type AppState = {
-  settings: SettingsState;
-  builds: BuildsState;
-  buildsWithSteps: BuildsWithStepsState;
-};
-
-const initialState: AppState = {
+const initialState: State = {
   settings: {
     owner: '',
     repo: '',
@@ -65,45 +42,7 @@ const initialState: AppState = {
   },
 };
 
-type SettingsAction = {
-  type: 'setCredentials';
-  payload: {
-    repo: string;
-    owner: string;
-    token: string;
-  };
-};
-
-type BuildsAction =
-  | {
-      type: 'setBuilds';
-      payload: BuildSummary[];
-    }
-  | {
-      type: 'setPollingIntervalId';
-      payload: number | null;
-    };
-
-type BuildsWithStepsAction =
-  | {
-      type: 'setBuildWithSteps';
-      payload: BuildWithSteps;
-    }
-  | {
-      type: 'setPollingIntervalIdForBuildsWithSteps';
-      payload: number | null;
-    };
-
-export type BuildsWithStepsState = {
-  builds: Record<number, BuildWithSteps>;
-  pollingIntervalId: number | null;
-  pollingState: PollingState;
-  getBuildError: Error | null;
-};
-
-type Action = SettingsAction | BuildsAction | BuildsWithStepsAction;
-
-const reducer = (state: AppState, action: Action): AppState => {
+const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case 'setCredentials':
       return {

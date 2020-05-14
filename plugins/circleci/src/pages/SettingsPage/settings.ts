@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 import { useContext, useEffect } from 'react';
-import { AppContext, STORAGE_KEY } from '../../components/Store';
+import { AppContext, STORAGE_KEY, SettingsState } from '../../components/Store';
 import { useApi, errorApiRef } from '@backstage/core';
-
-export type SettingsDispatch = {
-  saveSettings: (settings: SettingsState) => void;
-};
-
-export type SettingsState = {
-  token: string;
-  owner: string;
-  repo: string;
-};
 
 // type Effect = {
 //   type: 'rehydrate',
@@ -35,7 +25,7 @@ export type SettingsState = {
 // const effects = [];
 // pushEffect, popEffect
 
-export function useSettings(): [SettingsState, SettingsDispatch] {
+export function useSettings() {
   const [{ settings }, dispatch] = useContext(AppContext);
 
   // const interpret = eff => {
@@ -69,6 +59,7 @@ export function useSettings(): [SettingsState, SettingsDispatch] {
       errorApi.post(error);
     }
   };
+
   useEffect(() => {
     rehydrate();
   }, []);
@@ -88,5 +79,5 @@ export function useSettings(): [SettingsState, SettingsDispatch] {
         });
       },
     },
-  ];
+  ] as const;
 }

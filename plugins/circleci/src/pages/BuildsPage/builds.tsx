@@ -17,7 +17,7 @@ import { errorApiRef, useApi } from '@backstage/core';
 import { GitType } from 'circleci-api';
 import { useContext, useEffect } from 'react';
 import { circleCIApiRef } from '../../api/index';
-import { AppContext, BuildsState } from '../../components/Store';
+import { AppContext } from '../../components/Store';
 
 export type BuildsDispatch = {
   restartBuild: (buildId: number) => Promise<void>;
@@ -25,7 +25,7 @@ export type BuildsDispatch = {
 
 const INTERVAL_AMOUNT = 3000;
 
-export function useBuilds(): [BuildsState, BuildsDispatch] {
+export function useBuilds() {
   const [{ builds, settings }, dispatch] = useContext(AppContext);
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
@@ -98,5 +98,5 @@ export function useBuilds(): [BuildsState, BuildsDispatch] {
     {
       restartBuild,
     },
-  ];
+  ] as const;
 }
