@@ -40,6 +40,6 @@
     "react-router-dom": "^5.2.0"
   },
   "files": [
-    "dist"
+    "dist/**/*.{js,d.ts}"
   ]
 }

@@ -58,6 +58,6 @@
     "@types/react-sparklines": "^1.7.0"
   },
   "files": [
-    "dist"
+    "dist/**/*.{js,d.ts}"
   ]
 }

@@ -38,6 +38,6 @@
     "jest-fetch-mock": "^3.0.3"
   },
   "files": [
-    "dist"
+    "dist/**/*.{js,d.ts}"
   ]
 }
