@@ -22,6 +22,11 @@ import { BackstageTheme } from '@backstage/theme';
  */
 export type AppTheme = {
   /**
+   * ID used to remember theme selections.
+   */
+  id: string;
+
+  /**
    * Title of the theme
    */
   title: string;

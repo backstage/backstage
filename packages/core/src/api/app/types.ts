@@ -15,9 +15,11 @@
  */
 
 import { ComponentType } from 'react';
+import { BackstageTheme } from '@backstage/theme';
 import { IconComponent, SystemIconKey, SystemIcons } from '../../icons';
 import { BackstagePlugin } from '../plugin';
 import { ApiHolder } from '../apis';
+import { AppTheme } from '../apis/definitions';
 
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
@@ -45,6 +47,23 @@ export type AppOptions = {
    * Supply components to the app to override the default ones.
    */
   components?: Partial<AppComponents>;
+
+  /**
+   * Themes provided as a part of the app.
+   *
+   * The themes can be specified either as just default light and dark mode themes.
+   * If only one of then is specified then that theme will always be used.
+   * If both are provided the default theme will be set based on browser preferences.
+   *
+   * If an array of themes is provided, the first occurence of light and dark mode variants
+   * will be treated as the default for each variant.
+   */
+  themes?:
+    | {
+        light?: BackstageTheme;
+        dark?: BackstageTheme;
+      }
+    | AppTheme[];
 };
 
 export type BackstageApp = {

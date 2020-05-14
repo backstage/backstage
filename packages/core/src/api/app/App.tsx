@@ -29,14 +29,16 @@ import {
   SystemIconKey,
   defaultSystemIcons,
 } from '../../icons';
-import { ApiHolder, ApiProvider, ApiRegistry } from '../apis';
+import { ApiHolder, ApiProvider, ApiRegistry, AppTheme } from '../apis';
 import LoginPage from './LoginPage';
+import { lightTheme } from '@backstage/theme';
 
 type FullAppOptions = {
   apis: ApiHolder;
   icons: SystemIcons;
   plugins: BackstagePlugin[];
   components: AppComponents;
+  themes: AppTheme[];
 };
 
 class AppImpl implements BackstageApp {
@@ -44,12 +46,14 @@ class AppImpl implements BackstageApp {
   private readonly icons: SystemIcons;
   private readonly plugins: BackstagePlugin[];
   private readonly components: AppComponents;
+  private readonly themes: AppTheme[];
 
   constructor(options: FullAppOptions) {
     this.apis = options.apis;
     this.icons = options.icons;
     this.plugins = options.plugins;
     this.components = options.components;
+    this.themes = options.themes;
   }
 
   getApis(): ApiHolder {
@@ -178,8 +182,38 @@ export function createApp(options?: AppOptions) {
     NotFoundErrorPage: DefaultNotFoundPage,
     ...options?.components,
   };
+  const themes = new Array<AppTheme>();
 
-  const app = new AppImpl({ apis, icons, plugins, components });
+  if (Array.isArray(options?.themes)) {
+    themes.push(...options?.themes!);
+  } else {
+    if (options?.themes?.light) {
+      themes.push({
+        id: 'light',
+        title: 'Light Theme',
+        variant: 'light',
+        theme: options?.themes?.light,
+      });
+    }
+    if (options?.themes?.dark) {
+      themes.push({
+        id: 'dark',
+        title: 'Dark Theme',
+        variant: 'dark',
+        theme: options?.themes?.dark,
+      });
+    }
+  }
+  if (themes.length === 0) {
+    themes.push({
+      id: 'light',
+      title: 'Default Theme',
+      variant: 'light',
+      theme: lightTheme,
+    });
+  }
+
+  const app = new AppImpl({ apis, icons, plugins, components, themes });
 
   app.verify();
 
