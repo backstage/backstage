@@ -2,7 +2,7 @@
   "name": "@backstage/plugin-explore",
   "version": "0.1.1-alpha.5",
   "main": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "src/index.ts",
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
@@ -11,6 +11,8 @@
     "test": "backstage-cli test",
     "diff": "backstage-cli plugin:diff",
     "clean": "backstage-cli clean",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
     "start": "backstage-cli plugin:serve"
   },
   "dependencies": {

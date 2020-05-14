@@ -83,6 +83,16 @@ const main = (argv: string[]) => {
     .action(actionHandler(() => require('./commands/testCommand')));
 
   program
+    .command('prepack')
+    .description('Prepares a package for packaging before publishing')
+    .action(actionHandler(() => require('./commands/pack').pre));
+
+  program
+    .command('postpack')
+    .description('Restores the changes made by the prepack command')
+    .action(actionHandler(() => require('./commands/pack').post));
+
+  program
     .command('watch-deps')
     .option('--build', 'Build all dependencies on startup')
     .description('Watch all dependencies while running another command')
@@ -129,11 +139,14 @@ const main = (argv: string[]) => {
 
 // Wraps an action function so that it always exits and handles errors
 function actionHandler<T extends readonly any[]>(
-  actionRequireFunc: () => { default(...args: T): Promise<any> },
+  actionRequireFunc:
+    | (() => { default(...args: T): Promise<any> })
+    | (() => (...args: T) => Promise<any>),
 ): (...args: T) => Promise<never> {
   return async (...args: T) => {
     try {
-      const actionFunc = actionRequireFunc().default;
+      const ret = actionRequireFunc();
+      const actionFunc = typeof ret === 'function' ? ret : ret.default;
       await actionFunc(...args);
       process.exit(0);
     } catch (error) {

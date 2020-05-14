@@ -2,7 +2,7 @@
   "name": "@backstage/plugin-welcome",
   "version": "0.1.1-alpha.5",
   "main": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "src/index.ts",
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
@@ -10,6 +10,8 @@
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "diff": "backstage-cli plugin:diff",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean",
     "start": "backstage-cli plugin:serve"
   },
