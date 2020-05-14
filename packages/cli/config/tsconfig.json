@@ -4,7 +4,6 @@
   "compilerOptions": {
     "allowJs": true,
     "noEmit": false,
-    "declarationMap": true,
     "incremental": true,
     "target": "ES2019",
     "module": "ESNext",
