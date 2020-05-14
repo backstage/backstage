@@ -16,6 +16,7 @@
 
 import { ApiRef } from '../ApiRef';
 import { BackstageTheme } from '@backstage/theme';
+import { Observable } from '../../types';
 
 /**
  * Describes a theme provided by the app.
@@ -53,14 +54,21 @@ export type AppThemeApi = {
   getThemeOptions(): AppTheme[];
 
   /**
-   * Get the current theme. Returns undefined if the default theme is used.
+   * Observe the currently selected theme. A value of undefined means no specific theme has been selected.
    */
-  getTheme(): AppTheme | undefined;
+  activeThemeId$(): Observable<string | undefined>;
+
+  /**
+   * Get the current theme ID. Returns undefined if no specific theme is selected.
+   */
+  getActiveThemeId(): string | undefined;
 
   /**
    * Set a specific theme to use in the app, overriding the default theme selection.
+   *
+   * Clear the selection by passing in undefined.
    */
-  setTheme(theme?: AppTheme): void;
+  setActiveThemeId(themeId?: string): void;
 };
 
 export const appThemeApiRef = new ApiRef<AppThemeApi>({
