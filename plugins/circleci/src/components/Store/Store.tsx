@@ -97,15 +97,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 export const Store: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
   return (
     <AppContext.Provider value={[state, dispatch]}>
-      <div>{children}</div>
+      <>{children}</>
     </AppContext.Provider>
   );
 };
-
-export const withStore = (Component: React.ComponentType<any>) => () => (
-  <Store>
-    <Component />
-  </Store>
-);

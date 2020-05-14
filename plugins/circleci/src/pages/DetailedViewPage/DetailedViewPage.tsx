@@ -22,7 +22,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { PluginHeader } from '../../components/PluginHeader';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import { Layout } from '../../components/Layout';
-import { withStore } from '../../components/Store';
 import { useBuildWithSteps } from './hooks';
 
 const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
@@ -144,4 +143,4 @@ const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
   );
 };
 
-export default withStore(DetailedViewPage);
+export default DetailedViewPage;
