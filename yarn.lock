@@ -4635,9 +4635,9 @@
     "@types/yargs-parser" "*"
 
 "@types/yup@^0.28.2":
-  version "0.28.2"
-  resolved "https://registry.npmjs.org/@types/yup/-/yup-0.28.2.tgz#ea6597d7bd48ecea94b81f8de7fd60fba07a4628"
-  integrity sha512-VvXPMsvUnkDIWHFIalJROljLSv9m9TaXKng5sLFUkmuybgY64AeBbZ5tOPZ9sjSpqhJFeOXIc22JSQDO6SCONg==
+  version "0.28.3"
+  resolved "https://registry.npmjs.org/@types/yup/-/yup-0.28.3.tgz#387c35f9a6a36b8d3561f6601eb4e72518b92899"
+  integrity sha512-0Sir2LxOmupF8HBUvpJoZghLmOqKfZsBk1GYlMwSIccLDDUoN04LHvo0KzDp9qxt1IKf9Fudpj35SrJ8VqetkQ==
 
 "@types/zen-observable@^0.8.0":
   version "0.8.0"
