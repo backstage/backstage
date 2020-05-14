@@ -22537,6 +22537,11 @@ yn@3.1.1:
   resolved "https://registry.npmjs.org/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 
+yn@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/yn/-/yn-4.0.0.tgz#611480051ea43b510da1dfdbe177ed159f00a979"
+  integrity sha512-huWiiCS4TxKc4SfgmTwW1K7JmXPPAmuXWYy4j9qjQo4+27Kni8mGhAAi1cloRWmBe2EqcLgt3IGqQoRL/MtPgg==
+
 yup@^0.28.5:
   version "0.28.5"
   resolved "https://registry.npmjs.org/yup/-/yup-0.28.5.tgz#85cabb4000d3623ef69be81551190692e631a8a5"
