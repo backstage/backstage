@@ -18,10 +18,10 @@ import { Link, Typography, Box, IconButton } from '@material-ui/core';
 import { Replay as RetryIcon, GitHub as GithubIcon } from '@material-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
 import {
-  StatusFailed,
+  StatusError,
+  StatusWarning,
   StatusOK,
   StatusPending,
-  StatusNA,
   StatusRunning,
   Table,
   TableColumn,
@@ -58,12 +58,12 @@ const getStatusComponent = (status: string | undefined = '') => {
     case 'running':
       return <StatusRunning />;
     case 'failed':
-      return <StatusFailed />;
+      return <StatusError />;
     case 'success':
       return <StatusOK />;
     case 'canceled':
     default:
-      return <StatusNA />;
+      return <StatusWarning />;
   }
 };
 
