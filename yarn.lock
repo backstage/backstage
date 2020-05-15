@@ -20994,9 +20994,9 @@ ts-pnp@1.1.6, ts-pnp@^1.1.2, ts-pnp@^1.1.6:
   integrity sha512-CrG5GqAAzMT7144Cl+UIFP7mz/iIhiy+xQ6GGcnjTezhALT02uPMRw7tgDSESgB5MsfKt55+GPWw4ir1kVtMIQ==
 
 tsc-watch@^4.2.3:
-  version "4.2.3"
-  resolved "https://registry.npmjs.org/tsc-watch/-/tsc-watch-4.2.3.tgz#630aaf1ed8bbfb6fbcbddb9bef96054bed217c4b"
-  integrity sha512-M1Lo37+ggVfavGX3ObUVMz9QBH7moqq2RlmBdxnz6a6etwecetznZ/ZgYOi2c9HQ4Ki2qStj7V9J/gSf0rThig==
+  version "4.2.5"
+  resolved "https://registry.npmjs.org/tsc-watch/-/tsc-watch-4.2.5.tgz#3ee680cfd02087bb76cbecd2d5f290a0d6302454"
+  integrity sha512-scXpL5SFJevvtKOtQIRxJvyEwCKSIZS9bDrO/cy/dWlETTVwSlfRm2WmakdRPM0Rg90DbYyJjkUr2z74HXcxzQ==
   dependencies:
     cross-spawn "^5.1.0"
     node-cleanup "^2.1.2"
