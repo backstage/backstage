@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import yaml from 'yaml';
 import * as yup from 'yup';
 
 export type DescriptorEnvelope = {
@@ -24,6 +23,7 @@ export type DescriptorEnvelope = {
   spec?: object;
 };
 
+// The schema of the envelope that's common to all versions/kinds
 const descriptorEnvelopeSchema: yup.Schema<DescriptorEnvelope> = yup
   .object({
     apiVersion: yup.string().required(),
@@ -33,20 +33,12 @@ const descriptorEnvelopeSchema: yup.Schema<DescriptorEnvelope> = yup
   })
   .noUnknown();
 
+// Validate some raw structured data as a descriptor envelope
 export async function parseDescriptorEnvelope(
-  rawYaml: string,
+  data: object,
 ): Promise<DescriptorEnvelope> {
-  let descriptor;
   try {
-    descriptor = yaml.parse(rawYaml);
-  } catch (e) {
-    throw new Error(`Malformed YAML, ${e}`);
-  }
-
-  try {
-    return await descriptorEnvelopeSchema.validate(descriptor, {
-      strict: true,
-    });
+    return await descriptorEnvelopeSchema.validate(data, { strict: true });
   } catch (e) {
     throw new Error(`Malformed envelope, ${e}`);
   }

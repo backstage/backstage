@@ -15,15 +15,63 @@
  */
 
 import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey } from '../../icons';
+import { IconComponent, SystemIconKey, SystemIcons } from '../../icons';
+import { BackstagePlugin } from '../plugin';
+import { ApiHolder } from '../apis';
 
-export type App = {
-  getSystemIcon(key: SystemIconKey): IconComponent;
+export type AppComponents = {
+  NotFoundErrorPage: ComponentType<{}>;
 };
 
-export class AppComponentBuilder<T = any> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  build(_app: App): ComponentType<T> {
-    throw new Error('Must override build() in AppComponentBuilder');
-  }
-}
+export type AppOptions = {
+  /**
+   * A holder of all APIs available in the app.
+   *
+   * Use for example ApiRegistry or ApiTestRegistry.
+   */
+  apis?: ApiHolder;
+
+  /**
+   * Supply icons to override the default ones.
+   */
+  icons?: Partial<SystemIcons>;
+
+  /**
+   * A list of all plugins to include in the app.
+   */
+  plugins?: BackstagePlugin[];
+
+  /**
+   * Supply components to the app to override the default ones.
+   */
+  components?: Partial<AppComponents>;
+};
+
+export type BackstageApp = {
+  /**
+   * Get the holder for all APIs available in the app.
+   */
+  getApis(): ApiHolder;
+
+  /**
+   * Returns all plugins registered for the app.
+   */
+  getPlugins(): BackstagePlugin[];
+
+  /**
+   * Get a common icon for this app.
+   */
+  getSystemIcon(key: SystemIconKey): IconComponent;
+
+  /**
+   * Creates a root component for this app, including the App chrome
+   * and routes to all plugins.
+   */
+  getRootComponent(): ComponentType<{}>;
+
+  /**
+   * Provider component that should wrap the App's RootComponent and
+   * any other components that need to be within the app context.
+   */
+  getProvider(): ComponentType<{}>;
+};

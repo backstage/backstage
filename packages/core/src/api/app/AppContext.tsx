@@ -15,19 +15,19 @@
  */
 
 import React, { createContext, useContext, FC } from 'react';
-import { App } from './types';
+import { BackstageApp } from './types';
 
-const Context = createContext<App | undefined>(undefined);
+const Context = createContext<BackstageApp | undefined>(undefined);
 
 type Props = {
-  app: App;
+  app: BackstageApp;
 };
 
 export const AppContextProvider: FC<Props> = ({ app, children }) => (
   <Context.Provider value={app} children={children} />
 );
 
-export const useApp = (): App => {
+export const useApp = (): BackstageApp => {
   const app = useContext(Context);
   if (!app) {
     throw new Error('No app context available');

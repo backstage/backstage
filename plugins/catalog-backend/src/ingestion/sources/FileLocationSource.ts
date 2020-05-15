@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-import { Location } from '../catalog/types';
-import { ComponentDescriptor } from '../descriptors';
-import { readFileLocation } from './fileLocation';
+import fs from 'fs-extra';
+import { ReaderOutput } from '../types';
+import { LocationSource } from './types';
+import { readDescriptorYaml } from './util';
 
-export async function readLocation(
-  location: Location,
-): Promise<ComponentDescriptor[]> {
-  switch (location.type) {
-    case 'file':
-      return await readFileLocation(location.target);
-    default:
-      throw new Error(`Unknown type "${location.type}"`);
+export class FileLocationSource implements LocationSource {
+  async read(target: string): Promise<ReaderOutput[]> {
+    let rawYaml;
+    try {
+      rawYaml = await fs.readFile(target, 'utf8');
+    } catch (e) {
+      throw new Error(`Unable to read "${target}", ${e}`);
+    }
+
+    try {
+      return readDescriptorYaml(rawYaml);
+    } catch (e) {
+      throw new Error(`Malformed descriptor at "${target}", ${e}`);
+    }
   }
 }

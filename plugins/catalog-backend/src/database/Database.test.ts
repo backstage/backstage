@@ -16,11 +16,10 @@
 
 import knex from 'knex';
 import path from 'path';
-import { PassThrough } from 'stream';
-import winston from 'winston';
-import { DatabaseCatalog } from './DatabaseCatalog';
+import { Database } from './Database';
+import { AddDatabaseLocation, DatabaseLocation } from './types';
 
-describe('DatabaseCatalog', () => {
+describe('Database', () => {
   const database = knex({
     client: 'sqlite3',
     connection: ':memory:',
@@ -30,33 +29,33 @@ describe('DatabaseCatalog', () => {
     resource.run('PRAGMA foreign_keys = ON', () => {});
   });
 
-  const logger = winston.createLogger({
-    transports: [new winston.transports.Stream({ stream: new PassThrough() })],
-  });
-
   beforeEach(async () => {
     await database.migrate.latest({
-      directory: path.resolve(__dirname, '..', 'migrations'),
+      directory: path.resolve(__dirname, 'migrations'),
       loadExtensions: ['.ts'],
     });
   });
 
   it('manages locations', async () => {
-    const catalog = new DatabaseCatalog(database, logger);
-    const input = { type: 'a', target: 'b' };
-    const output = { id: expect.anything(), type: 'a', target: 'b' };
+    const db = new Database(database);
+    const input: AddDatabaseLocation = { type: 'a', target: 'b' };
+    const output: DatabaseLocation = {
+      id: expect.anything(),
+      type: 'a',
+      target: 'b',
+    };
 
-    await catalog.addLocation(input);
+    await db.addLocation(input);
 
-    const locations = await catalog.locations();
+    const locations = await db.locations();
     expect(locations).toEqual([output]);
-    const location = await catalog.location(locations[0].id);
+    const location = await db.location(locations[0].id);
     expect(location).toEqual(output);
 
-    await catalog.removeLocation(locations[0].id);
+    await db.removeLocation(locations[0].id);
 
-    await expect(catalog.locations()).resolves.toEqual([]);
-    await expect(catalog.location(locations[0].id)).rejects.toThrow(
+    await expect(db.locations()).resolves.toEqual([]);
+    await expect(db.location(locations[0].id)).rejects.toThrow(
       /Found no location/,
     );
   });

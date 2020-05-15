@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-describe('test', () => {
-  it('unbreaks the test runner', () => {
-    expect(true).toBeTruthy();
-  });
-});
+import { Database } from '../database';
+import { Component, ItemsCatalog } from './types';
+
+export class DatabaseItemsCatalog implements ItemsCatalog {
+  constructor(private readonly database: Database) {}
+
+  async components(): Promise<Component[]> {
+    const items = await this.database.components();
+    return items;
+  }
+
+  async component(name: string): Promise<Component> {
+    const item = await this.database.component(name);
+    return item;
+  }
+}
