@@ -53,7 +53,7 @@ export class DatabaseCatalog implements Catalog {
       name: descriptor.metadata.name,
     };
 
-    await this.database.transaction(async (tx) => {
+    await this.database.transaction(async tx => {
       // TODO(freben): Currently, several locations can compete for the same component
       const count = await tx('components')
         .where({ name: component.name })
@@ -74,7 +74,9 @@ export class DatabaseCatalog implements Catalog {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async component(name: string): Promise<Component> {
-    const items = await this.database('components').where({ name }).select();
+    const items = await this.database('components')
+      .where({ name })
+      .select();
     if (!items.length) {
       throw new NotFoundError(`Found no component with name ${name}`);
     }
@@ -82,6 +84,10 @@ export class DatabaseCatalog implements Catalog {
   }
 
   async addLocation(location: AddLocationRequest): Promise<Location> {
+    const existingLocation = await this.locationByTarget(location.target);
+    if (existingLocation) {
+      return existingLocation;
+    }
     const id = uuidv4();
     const { type, target } = location;
     await this.database('locations').insert({ id, type, target });
@@ -89,7 +95,9 @@ export class DatabaseCatalog implements Catalog {
   }
 
   async removeLocation(id: string): Promise<void> {
-    const result = await this.database('locations').where({ id }).del();
+    const result = await this.database('locations')
+      .where({ id })
+      .del();
 
     if (!result) {
       throw new NotFoundError(`Found no location with ID ${id}`);
@@ -97,11 +105,19 @@ export class DatabaseCatalog implements Catalog {
   }
 
   async location(id: string): Promise<Location> {
-    const items = await this.database('locations').where({ id }).select();
+    const items = await this.database('locations')
+      .where({ id })
+      .select();
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
     return items[0];
+  }
+
+  private async locationByTarget(
+    target: string,
+  ): Promise<Location | undefined> {
+    return (await this.locations()).find(l => l.target === target);
   }
 
   async locations(): Promise<Location[]> {
