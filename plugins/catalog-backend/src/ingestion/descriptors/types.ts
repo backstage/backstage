@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
-export * from './component';
-export * from './envelope';
-export * from './util';
+import { ParserOutput } from '../types';
+import { DescriptorEnvelope } from './DescriptorEnvelope';
+
+export type EnvelopeParser = {
+  /**
+   * Parses and validates a single envelope into its materialized type.
+   *
+   * @param envelope A descriptor envelope
+   * @returns A materialized type, or undefined if the given version/kind is
+   *          not handled by this parser
+   * @throws An Error if the type was not properly formatted
+   */
+  tryParse(envelope: DescriptorEnvelope): Promise<ParserOutput | undefined>;
+};
