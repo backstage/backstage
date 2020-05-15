@@ -17,17 +17,22 @@ import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Content, InfoCard } from '@backstage/core';
 import { BuildWithSteps, BuildStepAction } from '../../api';
-import { Grid, Box } from '@material-ui/core';
+import { Grid, Box, Link, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { PluginHeader } from '../../components/PluginHeader';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import { Layout } from '../../components/Layout';
 import { useBuildWithSteps, useSettings } from '../../state';
+import LaunchIcon from '@material-ui/icons/Launch';
 
+const IconLink = IconButton as typeof Link;
 const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
-  <>
+  <Box display="flex" alignItems="center">
     #{build?.build_num} - {build?.subject}
-  </>
+    <IconLink href={build?.build_url} target="_blank">
+      <LaunchIcon />
+    </IconLink>
+  </Box>
 );
 const useStyles = makeStyles((theme) => ({
   neutral: {},
