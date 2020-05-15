@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { ComponentDescriptor, parseDescriptor } from '../descriptors';
+import { NotFoundError } from '@backstage/backend-common';
+import { Component, ItemsCatalog } from './types';
 
-export async function readFileLocation(
-  target: string,
-): Promise<ComponentDescriptor[]> {
-  let rawYaml;
-  try {
-    rawYaml = await fs.readFile(target, 'utf8');
-  } catch (e) {
-    throw new Error(`Unable to read "${target}", ${e}`);
+export class StaticItemsCatalog implements ItemsCatalog {
+  private _components: Component[];
+
+  constructor(components: Component[]) {
+    this._components = components;
   }
 
-  try {
-    return parseDescriptor(rawYaml);
-  } catch (e) {
-    throw new Error(`Malformed descriptor at "${target}", ${e}`);
+  async components(): Promise<Component[]> {
+    return this._components.slice();
+  }
+
+  async component(name: string): Promise<Component> {
+    const item = this._components.find((i) => i.name === name);
+    if (!item) {
+      throw new NotFoundError(`Found no component with name ${name}`);
+    }
+    return item;
   }
 }

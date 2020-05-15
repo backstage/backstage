@@ -14,9 +14,39 @@
  * limitations under the License.
  */
 
-import { Location } from '../catalog';
-import { ComponentDescriptor } from '../descriptors';
+import { ComponentDescriptorV1 } from './descriptors/ComponentDescriptorV1Parser';
 
-export type LocationReader = (
-  location: Location,
-) => Promise<ComponentDescriptor[]>;
+export type ComponentDescriptor = ComponentDescriptorV1;
+
+export type ParserOutput = {
+  kind: 'Component';
+  component: ComponentDescriptor;
+};
+
+export type DescriptorParser = {
+  /**
+   * Parses and validates a single raw descriptor.
+   *
+   * @param descriptor A raw descriptor object
+   * @returns A structure describing the parsed and validated descriptor
+   * @throws An Error if the descriptor was malformed
+   */
+  parse(descriptor: object): Promise<ParserOutput>;
+};
+
+export type ReaderOutput =
+  | { type: 'error'; error: Error }
+  | { type: 'data'; data: object };
+
+export type LocationReader = {
+  /**
+   * Reads the contents of a single location.
+   *
+   * @param type The type of location to read
+   * @param target The location target (type-specific)
+   * @returns The parsed contents, as an array of unverified descriptors or
+   *          errors where the individual documents could not be parsed.
+   * @throws An error if the location as a whole could not be read
+   */
+  read(type: string, target: string): Promise<ReaderOutput[]>;
+};

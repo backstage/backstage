@@ -16,7 +16,7 @@
 
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { StaticCatalog } from '../catalog';
+import { StaticItemsCatalog } from '../catalog';
 import { createStandaloneApplication } from './standaloneApplication';
 
 export interface ServerOptions {
@@ -30,20 +30,15 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'catalog-backend' });
 
-  const catalog = new StaticCatalog(
-    [
-      { name: 'component1' },
-      { name: 'component2' },
-      { name: 'component3' },
-      { name: 'component4' },
-    ],
-    [],
-  );
+  const itemsCatalog = new StaticItemsCatalog([
+    { id: '1', name: 'component1' },
+    { id: '2', name: 'component2' },
+  ]);
 
   logger.debug('Creating application...');
   const app = await createStandaloneApplication({
     enableCors: options.enableCors,
-    catalog,
+    itemsCatalog,
     logger,
   });
 

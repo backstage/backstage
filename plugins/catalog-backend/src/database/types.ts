@@ -16,46 +16,38 @@
 
 import * as yup from 'yup';
 
-//
-// Items
-//
-
-export type Component = {
+export type DatabaseComponent = {
   id: string;
   locationId?: string;
   name: string;
 };
 
-export type ItemsCatalog = {
-  components(): Promise<Component[]>;
-  component(id: string): Promise<Component>;
+export type AddDatabaseComponent = {
+  locationId?: string;
+  name: string;
 };
 
-//
-// Locations
-//
+export const addDatabaseComponentSchema: yup.Schema<AddDatabaseComponent> = yup
+  .object({
+    locationId: yup.string().optional(),
+    name: yup.string().required(),
+  })
+  .noUnknown();
 
-export type Location = {
+export type DatabaseLocation = {
   id: string;
   type: string;
   target: string;
 };
 
-export type AddLocation = {
+export type AddDatabaseLocation = {
   type: string;
   target: string;
 };
 
-export const addLocationSchema: yup.Schema<AddLocation> = yup
+export const addDatabaseLocationSchema: yup.Schema<AddDatabaseLocation> = yup
   .object({
     type: yup.string().required(),
     target: yup.string().required(),
   })
   .noUnknown();
-
-export type LocationsCatalog = {
-  addLocation(location: AddLocation): Promise<Location>;
-  removeLocation(id: string): Promise<void>;
-  locations(): Promise<Location[]>;
-  location(id: string): Promise<Location>;
-};

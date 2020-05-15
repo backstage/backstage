@@ -16,65 +16,41 @@
 
 import { NotFoundError } from '@backstage/backend-common';
 import Knex from 'knex';
-import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { Logger } from 'winston';
-import { ComponentDescriptor } from '../descriptors';
-import { readLocation } from '../ingestion';
-import { CatalogLogic } from './CatalogLogic';
-import { AddLocationRequest, Catalog, Component, Location } from './types';
+import {
+  AddDatabaseComponent,
+  AddDatabaseLocation,
+  DatabaseComponent,
+  DatabaseLocation,
+} from './types';
 
-export class DatabaseCatalog implements Catalog {
-  static async create(
-    database: Knex,
-    logger: Logger,
-  ): Promise<DatabaseCatalog> {
-    await database.migrate.latest({
-      directory: path.resolve(__dirname, '..', 'migrations'),
-      loadExtensions: ['.js'],
-    });
+export class Database {
+  constructor(private readonly database: Knex) {}
 
-    const databaseCatalog = new DatabaseCatalog(database, logger);
-    CatalogLogic.startRefreshLoop(databaseCatalog, readLocation, logger);
-
-    return databaseCatalog;
-  }
-
-  constructor(
-    private readonly database: Knex,
-    private readonly logger: Logger,
-  ) {}
-
-  async addOrUpdateComponent(
-    locationId: string,
-    descriptor: ComponentDescriptor,
-  ): Promise<void> {
-    const component: Component = {
-      name: descriptor.metadata.name,
-    };
-
+  async addOrUpdateComponent(component: AddDatabaseComponent): Promise<void> {
     await this.database.transaction(async tx => {
       // TODO(freben): Currently, several locations can compete for the same component
-      const count = await tx('components')
+      // TODO(freben): If locationId is unset in the input, it won't be overwritten - should we instead replace with null?
+      const count = await tx<DatabaseComponent>('components')
         .where({ name: component.name })
-        .update({ ...component, locationId });
+        .update({ ...component });
       if (!count) {
-        await tx('components').insert({
+        await tx<DatabaseComponent>('components').insert({
           ...component,
           id: uuidv4(),
-          locationId,
         });
       }
     });
   }
 
-  async components(): Promise<Component[]> {
-    return await this.database('components').select();
+  async components(): Promise<DatabaseComponent[]> {
+    return await this.database<DatabaseComponent>('components')
+      .orderBy('name')
+      .select();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async component(name: string): Promise<Component> {
-    const items = await this.database('components')
+  async component(name: string): Promise<DatabaseComponent> {
+    const items = await this.database<DatabaseComponent>('components')
       .where({ name })
       .select();
     if (!items.length) {
@@ -83,19 +59,24 @@ export class DatabaseCatalog implements Catalog {
     return items[0];
   }
 
-  async addLocation(location: AddLocationRequest): Promise<Location> {
+  async addLocation(location: AddDatabaseLocation): Promise<DatabaseLocation> {
     const existingLocation = await this.locationByTarget(location.target);
     if (existingLocation) {
       return existingLocation;
     }
+
     const id = uuidv4();
     const { type, target } = location;
-    await this.database('locations').insert({ id, type, target });
+    await this.database<DatabaseLocation>('locations').insert({
+      id,
+      type,
+      target,
+    });
     return await this.location(id);
   }
 
   async removeLocation(id: string): Promise<void> {
-    const result = await this.database('locations')
+    const result = await this.database<DatabaseLocation>('locations')
       .where({ id })
       .del();
 
@@ -104,8 +85,8 @@ export class DatabaseCatalog implements Catalog {
     }
   }
 
-  async location(id: string): Promise<Location> {
-    const items = await this.database('locations')
+  async location(id: string): Promise<DatabaseLocation> {
+    const items = await this.database<DatabaseLocation>('locations')
       .where({ id })
       .select();
     if (!items.length) {
@@ -116,11 +97,11 @@ export class DatabaseCatalog implements Catalog {
 
   private async locationByTarget(
     target: string,
-  ): Promise<Location | undefined> {
+  ): Promise<DatabaseLocation | undefined> {
     return (await this.locations()).find(l => l.target === target);
   }
 
-  async locations(): Promise<Location[]> {
-    return await this.database('locations').select();
+  async locations(): Promise<DatabaseLocation[]> {
+    return await this.database<DatabaseLocation>('locations').select();
   }
 }
