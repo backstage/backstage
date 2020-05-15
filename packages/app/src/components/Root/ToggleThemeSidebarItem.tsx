@@ -15,42 +15,47 @@
  */
 
 import React, { FC } from 'react';
-import { SidebarItem } from '@backstage/core';
-import { ThemeContext } from '../../ThemeContext';
+import { useObservable } from 'react-use';
+import { SidebarItem, useApi, appThemeApiRef } from '@backstage/core';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import ToggleOnIcon from '@material-ui/icons/ToggleOn';
-const ToggleThemeSidebarItem: FC<{}> = () => {
-  return (
-    <ThemeContext.Consumer>
-      {themeContext => {
-        let text = 'Auto';
-        let icon = ToggleOnIcon;
-        switch (themeContext.theme) {
-          case 'dark':
-            text = 'Dark mode';
-            icon = Brightness2Icon;
-            break;
-          case 'light':
-            text = 'Light mode';
-            icon = WbSunnyIcon;
-            break;
-          default:
-            text = 'Auto';
-            icon = ToggleOnIcon;
-            break;
-        }
 
-        return (
-          <SidebarItem
-            text={text}
-            onClick={themeContext.toggleTheme}
-            icon={icon}
-          />
-        );
-      }}
-    </ThemeContext.Consumer>
+const ToggleThemeSidebarItem: FC<{}> = () => {
+  const appThemeApi = useApi(appThemeApiRef);
+  const themeId = useObservable(
+    appThemeApi.activeThemeId$(),
+    appThemeApi.getActiveThemeId(),
   );
+
+  let text = 'Auto';
+  let icon = ToggleOnIcon;
+  switch (themeId) {
+    case 'dark':
+      text = 'Dark mode';
+      icon = Brightness2Icon;
+      break;
+    case 'light':
+      text = 'Light mode';
+      icon = WbSunnyIcon;
+      break;
+    default:
+      text = 'Auto';
+      icon = ToggleOnIcon;
+      break;
+  }
+
+  const handleToggle = () => {
+    if (!themeId) {
+      appThemeApi.setActiveThemeId('light');
+    } else if (themeId === 'light') {
+      appThemeApi.setActiveThemeId('dark');
+    } else {
+      appThemeApi.setActiveThemeId(undefined);
+    }
+  };
+
+  return <SidebarItem text={text} onClick={handleToggle} icon={icon} />;
 };
 
 export default ToggleThemeSidebarItem;

@@ -22,6 +22,7 @@ import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import { featureFlagsApiRef } from '../apis/definitions';
 import ErrorPage from '../../layout/ErrorPage';
+import { AppThemeProvider } from './AppThemeProvider';
 
 import {
   IconComponent,
@@ -29,14 +30,24 @@ import {
   SystemIconKey,
   defaultSystemIcons,
 } from '../../icons';
-import { ApiHolder, ApiProvider, ApiRegistry } from '../apis';
+import {
+  ApiHolder,
+  ApiProvider,
+  ApiRegistry,
+  AppTheme,
+  AppThemeSelector,
+  appThemeApiRef,
+} from '../apis';
 import LoginPage from './LoginPage';
+import { lightTheme, darkTheme } from '@backstage/theme';
+import { ApiAggregator } from '../apis/ApiAggregator';
 
 type FullAppOptions = {
   apis: ApiHolder;
   icons: SystemIcons;
   plugins: BackstagePlugin[];
   components: AppComponents;
+  themes: AppTheme[];
 };
 
 class AppImpl implements BackstageApp {
@@ -44,12 +55,14 @@ class AppImpl implements BackstageApp {
   private readonly icons: SystemIcons;
   private readonly plugins: BackstagePlugin[];
   private readonly components: AppComponents;
+  private readonly themes: AppTheme[];
 
   constructor(options: FullAppOptions) {
     this.apis = options.apis;
     this.icons = options.icons;
     this.plugins = options.plugins;
     this.components = options.components;
+    this.themes = options.themes;
   }
 
   getApis(): ApiHolder {
@@ -129,23 +142,28 @@ class AppImpl implements BackstageApp {
       <Route key="login" path="/login" component={LoginPage} exact />,
     );
 
-    let rendered = (
+    const rendered = (
       <Switch>
         {routes}
         <Route component={NotFoundErrorPage} />
       </Switch>
     );
 
-    if (this.apis) {
-      rendered = <ApiProvider apis={this.apis} children={rendered} />;
-    }
-
     return () => rendered;
   }
 
   getProvider(): ComponentType<{}> {
+    const appApis = ApiRegistry.from([
+      [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
+    ]);
+    const apis = new ApiAggregator(this.apis, appApis);
+
     const Provider: FC<{}> = ({ children }) => (
-      <AppContextProvider app={this}>{children}</AppContextProvider>
+      <ApiProvider apis={apis}>
+        <AppContextProvider app={this}>
+          <AppThemeProvider>{children}</AppThemeProvider>
+        </AppContextProvider>
+      </ApiProvider>
     );
     return Provider;
   }
@@ -178,8 +196,22 @@ export function createApp(options?: AppOptions) {
     NotFoundErrorPage: DefaultNotFoundPage,
     ...options?.components,
   };
+  const themes = options?.themes ?? [
+    {
+      id: 'light',
+      title: 'Light Theme',
+      variant: 'light',
+      theme: lightTheme,
+    },
+    {
+      id: 'dark',
+      title: 'Dark Theme',
+      variant: 'dark',
+      theme: darkTheme,
+    },
+  ];
 
-  const app = new AppImpl({ apis, icons, plugins, components });
+  const app = new AppImpl({ apis, icons, plugins, components, themes });
 
   app.verify();
 

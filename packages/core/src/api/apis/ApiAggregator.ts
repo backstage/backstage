@@ -14,14 +14,27 @@
  * limitations under the License.
  */
 
-// This folder contains definitions for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-//
-// If you think some API definition is missing, please open an Issue or send a PR!
+import { ApiRef } from './ApiRef';
+import { ApiHolder } from './types';
 
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './OAuthRequestApi';
+/**
+ * An ApiHolder that queries multiple other holders from for
+ * an Api implementation, returning the first one encountered..
+ */
+export class ApiAggregator implements ApiHolder {
+  private readonly holders: ApiHolder[];
+
+  constructor(...holders: ApiHolder[]) {
+    this.holders = holders;
+  }
+
+  get<T>(apiRef: ApiRef<T>): T | undefined {
+    for (const holder of this.holders) {
+      const api = holder.get(apiRef);
+      if (api) {
+        return api;
+      }
+    }
+    return undefined;
+  }
+}
