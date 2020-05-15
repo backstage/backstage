@@ -21,12 +21,17 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import {
   BackstageTheme,
   BackstageThemeOptions,
-  BackstagePaletteOptions,
+  SimpleThemeOptions,
 } from './types';
 
+const DEFAULT_FONT_FAMILY =
+  '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
+
 export function createThemeOptions(
-  palette: BackstagePaletteOptions,
+  options: SimpleThemeOptions,
 ): BackstageThemeOptions {
+  const { palette, fontFamily = DEFAULT_FONT_FAMILY } = options;
+
   return {
     palette,
     props: {
@@ -38,7 +43,7 @@ export function createThemeOptions(
       },
     },
     typography: {
-      fontFamily: '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif',
+      fontFamily,
       h5: {
         fontWeight: 700,
       },
@@ -205,8 +210,8 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
 
 // Creates a Backstage MUI theme using a palette.
 // The theme is created with the common Backstage options and component styles.
-export function createTheme(palette: BackstagePaletteOptions): BackstageTheme {
-  const themeOptions = createThemeOptions(palette);
+export function createTheme(options: SimpleThemeOptions): BackstageTheme {
+  const themeOptions = createThemeOptions(options);
   const baseTheme = createMuiTheme(themeOptions) as BackstageTheme;
   const overrides = createThemeOverrides(baseTheme);
   const theme = { ...baseTheme, overrides };
