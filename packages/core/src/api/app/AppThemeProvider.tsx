@@ -23,7 +23,7 @@ import { useObservable } from 'react-use';
 // accurate results in order to avoid errors.
 function resolveTheme(
   themeId: string | undefined,
-  preferDark: boolean,
+  shouldPreferDark: boolean,
   themes: AppTheme[],
 ) {
   if (themeId !== undefined) {
@@ -33,7 +33,7 @@ function resolveTheme(
     }
   }
 
-  if (preferDark) {
+  if (shouldPreferDark) {
     const darkTheme = themes.find((theme) => theme.variant === 'dark');
     if (darkTheme) {
       return darkTheme;
@@ -48,7 +48,7 @@ function resolveTheme(
   return themes[0];
 }
 
-const usePrefersDarkTheme = () => {
+const useShouldPreferDarkTheme = () => {
   if (!window.matchMedia) {
     return false;
   }
@@ -57,7 +57,7 @@ const usePrefersDarkTheme = () => {
     () => window.matchMedia('(prefers-color-scheme: dark)'),
     [],
   );
-  const [preferDark, setPrefersDark] = useState(mediaQuery.matches);
+  const [shouldPreferDark, setPrefersDark] = useState(mediaQuery.matches);
 
   useEffect(() => {
     const listener = (event: MediaQueryListEvent) => {
@@ -67,14 +67,14 @@ const usePrefersDarkTheme = () => {
     return () => {
       mediaQuery.removeListener(listener);
     };
-  }, []);
+  }, [mediaQuery]);
 
-  return preferDark;
+  return shouldPreferDark;
 };
 
 export const AppThemeProvider: FC<{}> = ({ children }) => {
   const appThemeApi = useApi(appThemeApiRef);
-  const preferDark = usePrefersDarkTheme();
+  const shouldPreferDark = useShouldPreferDarkTheme();
   const themeId = useObservable(
     appThemeApi.activeThemeId$(),
     appThemeApi.getActiveThemeId(),
@@ -82,7 +82,7 @@ export const AppThemeProvider: FC<{}> = ({ children }) => {
 
   const appTheme = resolveTheme(
     themeId,
-    preferDark,
+    shouldPreferDark,
     appThemeApi.getInstalledThemes(),
   );
   if (!appTheme) {
