@@ -54,6 +54,7 @@ class PackageJsonHandler {
     await this.syncField('types');
     await this.syncField('files');
     await this.syncScripts();
+    await this.syncPublishConfig();
     await this.syncDependencies('dependencies');
     await this.syncDependencies('devDependencies');
   }
@@ -102,6 +103,33 @@ class PackageJsonHandler {
 
     for (const key of Object.keys(pkgScripts)) {
       await this.syncField(key, pkgScripts, targetScripts, 'scripts');
+    }
+  }
+
+  private async syncPublishConfig() {
+    const pkgPublishConf = this.pkg.publishConfig;
+    const targetPublishConf = this.targetPkg.publishConfig;
+
+    // If template doesn't have a publish config we're done
+    if (!pkgPublishConf) {
+      return;
+    }
+
+    // Publish config can be removed the the target, skip in that case
+    if (!targetPublishConf) {
+      return;
+    }
+
+    for (const key of Object.keys(pkgPublishConf)) {
+      // Don't want to mess with peoples internal setup
+      if (!['access', 'registry'].includes(key)) {
+        await this.syncField(
+          key,
+          pkgPublishConf,
+          targetPublishConf,
+          'publishConfig',
+        );
+      }
     }
   }
 
