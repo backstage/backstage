@@ -16,11 +16,28 @@
 
 import { createContext } from 'react';
 
+const drawerWidthClosed = 72;
+const iconPadding = 24;
+
 export const sidebarConfig = {
-  drawerWidthClosed: 64,
-  drawerWidthOpen: 220,
-  defaultOpenDelayMs: 400,
-  defaultCloseDelayMs: 200,
+  drawerWidthClosed,
+  drawerWidthOpen: 224,
+  // As per NN/g's guidance on timing for exposing hidden content
+  // See https://www.nngroup.com/articles/timing-exposing-content/
+  defaultOpenDelayMs: 300,
+  defaultCloseDelayMs: 0,
+  defaultFadeDuration: 200,
+  logoHeight: 32,
+  iconContainerWidth: drawerWidthClosed,
+  iconSize: drawerWidthClosed - iconPadding * 2,
+  selectedIndicatorWidth: 3,
 };
 
-export const SidebarContext = createContext<boolean>(false);
+type SidebarContextType = {
+  isOpen: boolean;
+  pathname?: string;
+};
+
+export const SidebarContext = createContext<SidebarContextType>({
+  isOpen: false,
+});
