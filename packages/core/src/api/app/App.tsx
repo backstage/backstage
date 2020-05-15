@@ -182,36 +182,20 @@ export function createApp(options?: AppOptions) {
     NotFoundErrorPage: DefaultNotFoundPage,
     ...options?.components,
   };
-  const themes = new Array<AppTheme>();
-
-  if (Array.isArray(options?.themes)) {
-    themes.push(...options?.themes!);
-  } else {
-    if (options?.themes?.light) {
-      themes.push({
-        id: 'light',
-        title: 'Light Theme',
-        variant: 'light',
-        theme: options?.themes?.light,
-      });
-    }
-    if (options?.themes?.dark) {
-      themes.push({
-        id: 'dark',
-        title: 'Dark Theme',
-        variant: 'dark',
-        theme: options?.themes?.dark,
-      });
-    }
-  }
-  if (themes.length === 0) {
-    themes.push({
+  const themes = options?.themes ?? [
+    {
       id: 'light',
-      title: 'Default Theme',
+      title: 'Light Theme',
       variant: 'light',
       theme: lightTheme,
-    });
-  }
+    },
+    {
+      id: 'dark',
+      title: 'Dark Theme',
+      variant: 'dark',
+      theme: darkTheme,
+    },
+  ];
 
   const app = new AppImpl({ apis, icons, plugins, components, themes });
 

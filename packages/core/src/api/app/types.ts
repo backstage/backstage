@@ -15,7 +15,6 @@
  */
 
 import { ComponentType } from 'react';
-import { BackstageTheme } from '@backstage/theme';
 import { IconComponent, SystemIconKey, SystemIcons } from '../../icons';
 import { BackstagePlugin } from '../plugin';
 import { ApiHolder } from '../apis';
@@ -49,21 +48,26 @@ export type AppOptions = {
   components?: Partial<AppComponents>;
 
   /**
-   * Themes provided as a part of the app.
+   * Themes provided as a part of the app. By default two themes are included, one
+   * light variant of the default backstage theme, and one dark.
    *
-   * The themes can be specified either as just default light and dark mode themes.
-   * If only one of then is specified then that theme will always be used.
-   * If both are provided the default theme will be set based on browser preferences.
+   * This is the default config:
    *
-   * If an array of themes is provided, the first occurence of light and dark mode variants
-   * will be treated as the default for each variant.
+   * ```
+   * [{
+   *   id: 'light',
+   *   title: 'Light Theme',
+   *   variant: 'light',
+   *   theme: lightTheme,
+   * }, {
+   *   id: 'dark',
+   *   title: 'Dark Theme',
+   *   variant: 'dark',
+   *   theme: darkTheme,
+   * }]
+   * ```
    */
-  themes?:
-    | {
-        light?: BackstageTheme;
-        dark?: BackstageTheme;
-      }
-    | AppTheme[];
+  themes?: AppTheme[];
 };
 
 export type BackstageApp = {
