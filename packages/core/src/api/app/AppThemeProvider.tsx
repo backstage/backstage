@@ -80,17 +80,17 @@ export const AppThemeProvider: FC<{}> = ({ children }) => {
     appThemeApi.getActiveThemeId(),
   );
 
-  const theme = resolveTheme(
+  const appTheme = resolveTheme(
     themeId,
     preferDark,
     appThemeApi.getInstalledThemes(),
   );
-  if (!theme) {
+  if (!appTheme) {
     throw new Error('App has no themes');
   }
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={appTheme.theme}>
       <CssBaseline>{children}</CssBaseline>
     </ThemeProvider>
   );

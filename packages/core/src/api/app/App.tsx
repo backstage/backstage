@@ -22,6 +22,7 @@ import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import { featureFlagsApiRef } from '../apis/definitions';
 import ErrorPage from '../../layout/ErrorPage';
+import { AppThemeProvider } from './AppThemeProvider';
 
 import {
   IconComponent,
@@ -29,9 +30,17 @@ import {
   SystemIconKey,
   defaultSystemIcons,
 } from '../../icons';
-import { ApiHolder, ApiProvider, ApiRegistry, AppTheme } from '../apis';
+import {
+  ApiHolder,
+  ApiProvider,
+  ApiRegistry,
+  AppTheme,
+  AppThemeSelector,
+  appThemeApiRef,
+} from '../apis';
 import LoginPage from './LoginPage';
-import { lightTheme } from '@backstage/theme';
+import { lightTheme, darkTheme } from '@backstage/theme';
+import { ApiAggregator } from '../apis/ApiAggregator';
 
 type FullAppOptions = {
   apis: ApiHolder;
@@ -133,23 +142,28 @@ class AppImpl implements BackstageApp {
       <Route key="login" path="/login" component={LoginPage} exact />,
     );
 
-    let rendered = (
+    const rendered = (
       <Switch>
         {routes}
         <Route component={NotFoundErrorPage} />
       </Switch>
     );
 
-    if (this.apis) {
-      rendered = <ApiProvider apis={this.apis} children={rendered} />;
-    }
-
     return () => rendered;
   }
 
   getProvider(): ComponentType<{}> {
+    const appApis = ApiRegistry.from([
+      [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
+    ]);
+    const apis = new ApiAggregator(this.apis, appApis);
+
     const Provider: FC<{}> = ({ children }) => (
-      <AppContextProvider app={this}>{children}</AppContextProvider>
+      <ApiProvider apis={apis}>
+        <AppContextProvider app={this}>
+          <AppThemeProvider>{children}</AppThemeProvider>
+        </AppContextProvider>
+      </ApiProvider>
     );
     return Provider;
   }
