@@ -23,16 +23,20 @@ export class AppThemeSelector implements AppThemeApi {
   static createWithStorage(themes: AppTheme[]) {
     const selector = new AppThemeSelector(themes);
 
+    if (!window.localStorage) {
+      return selector;
+    }
+
     const initialThemeId =
-      window?.localStorage.getItem(STORAGE_KEY) ?? undefined;
+      window.localStorage.getItem(STORAGE_KEY) ?? undefined;
 
     selector.setActiveThemeId(initialThemeId);
 
     selector.activeThemeId$().subscribe((themeId) => {
       if (themeId) {
-        window?.localStorage.setItem(STORAGE_KEY, themeId);
+        window.localStorage.setItem(STORAGE_KEY, themeId);
       } else {
-        window?.localStorage.removeItem(STORAGE_KEY);
+        window.localStorage.removeItem(STORAGE_KEY);
       }
     });
 
