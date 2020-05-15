@@ -3795,10 +3795,10 @@
     "@testing-library/dom" "^6.15.0"
     "@types/testing-library__react" "^9.1.2"
 
-"@testing-library/user-event@^7.1.2":
-  version "7.2.1"
-  resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-7.2.1.tgz#2ad4e844175a3738cb9e7064be5ea070b8863a1c"
-  integrity sha512-oZ0Ib5I4Z2pUEcoo95cT1cr6slco9WY7yiPpG+RGNkj8YcYgJnM7pXmYmorNOReh8MIGcKSqXyeGjxnr8YiZbA==
+"@testing-library/user-event@^10.2.4":
+  version "10.2.4"
+  resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-10.2.4.tgz#7a6969ae2904aaae85d80c0ff1c05862e6f71390"
+  integrity sha512-4Wr1C5Lp6RPva9EBsDfNFw6GDGYUPx/zu+8cgOZG4UqBEIiB6dlhFsDRowTxZr0iY2NlEiBVt2+t8xPaJx3SYw==
 
 "@theme-ui/color-modes@^0.3.1":
   version "0.3.1"
