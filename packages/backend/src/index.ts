@@ -28,19 +28,30 @@ import {
   notFoundHandler,
   requestLoggingHandler,
 } from '@backstage/backend-common';
-import inventory from './plugins/inventory';
-import scaffolder from './plugins/scaffolder';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
+import knex from 'knex';
+import catalog from './plugins/catalog';
+import scaffolder from './plugins/scaffolder';
 import { PluginEnvironment } from './types';
 
 const DEFAULT_PORT = 7000;
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
-const pluginEnvironment: PluginEnvironment = {
-  logger: getRootLogger().child({ type: 'plugin' }),
-};
+
+function createEnv(plugin: string): PluginEnvironment {
+  const logger = getRootLogger().child({ type: 'plugin', plugin });
+  const database = knex({
+    client: 'sqlite3',
+    connection: ':memory:',
+    useNullAsDefault: true,
+  });
+  database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+    resource.run('PRAGMA foreign_keys = ON', () => {});
+  });
+  return { logger, database };
+}
 
 async function main() {
   const app = express();
@@ -50,8 +61,8 @@ async function main() {
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/inventory', await inventory(pluginEnvironment));
-  app.use('/scaffolder', await scaffolder(pluginEnvironment));
+  app.use('/catalog', await catalog(createEnv('catalog')));
+  app.use('/scaffolder', await scaffolder(createEnv('scaffolder')));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

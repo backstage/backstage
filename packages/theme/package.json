@@ -1,7 +1,7 @@
 {
   "name": "@backstage/theme",
   "description": "material-ui theme for use with Backstage.",
-  "version": "0.1.1-alpha.4",
+  "version": "0.1.1-alpha.5",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -17,19 +17,21 @@
   ],
   "license": "Apache-2.0",
   "main": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "src/index.ts",
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.4"
+    "@backstage/cli": "^0.1.1-alpha.5"
   },
   "files": [
-    "dist"
+    "dist/**/*.{js,d.ts}"
   ]
 }

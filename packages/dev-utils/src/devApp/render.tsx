@@ -127,6 +127,18 @@ class DevAppBuilder {
             );
             break;
           }
+          case 'nav-target-component': {
+            const { target } = output;
+            sidebarItems.push(
+              <SidebarItem
+                key={target.path}
+                to={target.path}
+                text={target.title}
+                icon={target.icon}
+              />,
+            );
+            break;
+          }
           default:
             break;
         }

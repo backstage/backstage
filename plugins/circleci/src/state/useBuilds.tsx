@@ -27,7 +27,11 @@ export function useBuilds() {
 
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
-  const {isPolling, startPolling, stopPolling} = useAsyncPolling(() => getBuilds(), INTERVAL_AMOUNT);
+  // eslint-disable-line no-use-before-define
+  const { isPolling, startPolling, stopPolling } = useAsyncPolling(
+    () => getBuilds(),
+    INTERVAL_AMOUNT,
+  );
 
   const getBuilds = async () => {
     if (settings.owner === '' || settings.repo === '') return;
@@ -40,10 +44,11 @@ export function useBuilds() {
           type: GitType.GITHUB,
         },
       });
-      if (isPolling) dispatch({
-        type: 'setBuilds',
-        payload: newBuilds,
-      });
+      if (isPolling)
+        dispatch({
+          type: 'setBuilds',
+          payload: newBuilds,
+        });
     } catch (e) {
       errorApi.post(e);
     }
@@ -63,8 +68,6 @@ export function useBuilds() {
       errorApi.post(e);
     }
   };
-
-
 
   return [
     builds,

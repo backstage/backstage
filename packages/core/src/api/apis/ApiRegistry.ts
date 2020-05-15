@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import ApiRef from './ApiRef';
+import { ApiRef } from './ApiRef';
 import { ApiHolder } from './types';
 
 type ApiImpl<T = unknown> = readonly [ApiRef<T>, T];
@@ -33,7 +33,7 @@ class ApiRegistryBuilder {
   }
 }
 
-export default class ApiRegistry implements ApiHolder {
+export class ApiRegistry implements ApiHolder {
   static builder() {
     return new ApiRegistryBuilder();
   }

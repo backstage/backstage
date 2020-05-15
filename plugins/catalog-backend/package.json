@@ -1,0 +1,43 @@
+{
+  "name": "@backstage/plugin-catalog-backend",
+  "version": "0.1.1-alpha.5",
+  "main": "dist",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "start": "tsc-watch --onFirstSuccess \"cross-env NODE_ENV=development nodemon dist/run.js\"",
+    "build": "tsc",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.1.1-alpha.5",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-promise-router": "^3.0.3",
+    "fs-extra": "^9.0.0",
+    "helmet": "^3.22.0",
+    "knex": "^0.21.1",
+    "morgan": "^1.10.0",
+    "uuid": "^8.0.0",
+    "winston": "^3.2.1",
+    "yaml": "^1.9.2",
+    "yn": "^4.0.0",
+    "yup": "^0.28.5"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.5",
+    "@types/uuid": "^7.0.3",
+    "@types/yup": "^0.28.2",
+    "jest-fetch-mock": "^3.0.3",
+    "tsc-watch": "^4.2.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "nodemonConfig": {
+    "watch": "./dist"
+  }
+}

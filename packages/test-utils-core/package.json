@@ -1,7 +1,7 @@
 {
   "name": "@backstage/test-utils-core",
   "description": "Utilities to test Backstage core",
-  "version": "0.1.1-alpha.4",
+  "version": "0.1.1-alpha.5",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -17,22 +17,24 @@
   ],
   "license": "Apache-2.0",
   "main": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "src/index.ts",
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
-    "@types/jest": "^24.0.0",
+    "@types/jest": "^25.2.1",
     "@types/node": "^12.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   },
   "files": [
-    "dist"
+    "dist/**/*.{js,d.ts}"
   ]
 }

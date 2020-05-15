@@ -9,6 +9,7 @@
     "bundle": "yarn build && yarn workspace example-app bundle",
     "build": "lerna run build",
     "clean": "lerna run clean",
+    "diff": "lerna run diff --",
     "test": "yarn build && lerna run test --since origin/master -- --coverage",
     "test:all": "yarn build && lerna run test -- --coverage",
     "lint": "lerna run lint --since origin/master --",

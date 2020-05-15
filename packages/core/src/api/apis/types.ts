@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import ApiRef from './ApiRef';
+import { ApiRef } from './ApiRef';
 
 export type AnyApiRef = ApiRef<any>;
 

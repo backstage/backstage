@@ -15,10 +15,7 @@
  */
 
 import { FeatureFlagName } from '../plugin/types';
-import {
-  FeatureFlagState,
-  FeatureFlagsApi,
-} from '../apis/definitions/featureFlags';
+import { FeatureFlagState, FeatureFlagsApi } from '../apis/definitions';
 
 /**
  * Helper method for validating compatibility and flag name.

@@ -20,3 +20,4 @@
 
 export * from './AlertApiForwarder';
 export * from './ErrorApiForwarder';
+export * from './OAuthRequestManager';

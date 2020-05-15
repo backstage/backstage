@@ -88,25 +88,39 @@ export async function moveApp(
 
 async function addPackageResolutions(appDir: string) {
   const pkgJsonPath = resolvePath(appDir, 'package.json');
-  const packageFileContent = await fs.readFile(pkgJsonPath, 'utf-8');
-  const packageFileJson = JSON.parse(packageFileContent);
+  const pkgJson = await fs.readJson(pkgJsonPath);
 
-  packageFileJson.resolutions = packageFileJson.resolutions || {};
+  pkgJson.resolutions = pkgJson.resolutions || {};
+  pkgJson.dependencies = pkgJson.dependencies || {};
 
-  const packages = ['cli', 'core', 'test-utils', 'test-utils-core', 'theme'];
+  const depNames = [
+    'cli',
+    'core',
+    'dev-utils',
+    'test-utils',
+    'test-utils-core',
+    'theme',
+  ];
 
-  for (const pkg of packages) {
-    await Task.forItem('adding', `${pkg} link to package.json`, async () => {
-      const pkgPath = paths.resolveOwnRoot('packages', pkg);
-      packageFileJson.resolutions[`@backstage/${pkg}`] = `file:${pkgPath}`;
-      const newContents = `${JSON.stringify(packageFileJson, null, 2)}\n`;
+  for (const name of depNames) {
+    await Task.forItem(
+      'adding',
+      `@backstage/${name} link to package.json`,
+      async () => {
+        const pkgPath = paths.resolveOwnRoot('packages', name);
+        // Add to both resolutions and dependencies, or transitive dependencies will still be fetched from the registry.
+        pkgJson.dependencies[`@backstage/${name}`] = `file:${pkgPath}`;
+        pkgJson.resolutions[`@backstage/${name}`] = `file:${pkgPath}`;
 
-      await fs.writeFile(pkgJsonPath, newContents, 'utf-8').catch((error) => {
-        throw new Error(
-          `Failed to add resolutions to package.json: ${error.message}`,
-        );
-      });
-    });
+        await fs
+          .writeJSON(pkgJsonPath, pkgJson, { encoding: 'utf8', spaces: 2 })
+          .catch((error) => {
+            throw new Error(
+              `Failed to add resolutions to package.json: ${error.message}`,
+            );
+          });
+      },
+    );
   }
 }
 

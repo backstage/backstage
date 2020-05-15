@@ -48,8 +48,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: check for yarn.lock changes
+        id: yarn-lock
+        run: git diff --quiet origin/master HEAD -- yarn.lock
+        continue-on-error: true
+
       - name: yarn install
         run: yarn install --frozen-lockfile
+
+      - name: verify plugin template
+        run: yarn lerna -- run diff -- --check
 
       - name: lint
         run: yarn lerna -- run lint --since origin/master
@@ -57,8 +65,13 @@ jobs:
       - name: build
         run: yarn build
 
-      - name: test
+      - name: test changed packages
+        if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn lerna -- run test --since origin/master -- --coverage
+
+      - name: test all packages
+        if: ${{ steps.yarn-lock.outcome == 'failure' }}
+        run: yarn lerna -- run test -- --coverage
 
       - name: yarn bundle, if app was changed
         run: git diff --quiet origin/master HEAD -- yarn.lock packages/app packages/core || yarn bundle

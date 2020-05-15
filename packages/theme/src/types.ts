@@ -27,7 +27,7 @@ type PaletteAdditions = {
     error: string;
     pending: string;
     running: string;
-    background: string;
+    aborted: string;
   };
   border: string;
   textContrast: string;

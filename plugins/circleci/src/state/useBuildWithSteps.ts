@@ -21,7 +21,6 @@ import { useSettings } from './useSettings';
 
 import { useAsyncPolling } from './useAsyncPolling';
 
-
 const INTERVAL_AMOUNT = 3000;
 
 export function useBuildWithSteps(buildId: number) {
@@ -30,8 +29,11 @@ export function useBuildWithSteps(buildId: number) {
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const {isPolling, startPolling, stopPolling} = useAsyncPolling(() => getBuildWithSteps(), INTERVAL_AMOUNT);
-
+  /* eslint-disable-line no-use-before-define */
+  const { isPolling, startPolling, stopPolling } = useAsyncPolling(
+    () => getBuildWithSteps(),
+    INTERVAL_AMOUNT,
+  );
 
   const getBuildWithSteps = async () => {
     try {

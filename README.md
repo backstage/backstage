@@ -95,7 +95,7 @@ We would love your help in building Backstage! See [CONTRIBUTING](CONTRIBUTING.m
 ## Community
 
 - [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the project
-- [Good First Issues](https://github.com/spotify/backstage/labels/good%20first%20issue) - Start here if you want to contribute
+- [Good First Issues](https://github.com/spotify/backstage/contribute) - Start here if you want to contribute
 - [RFCs](https://github.com/spotify/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](docs/FAQ.md) - Frequently Asked Questions
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll

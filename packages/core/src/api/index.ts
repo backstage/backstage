@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-export * from './api';
 export * from './apis';
-export { FeatureFlags } from './app/FeatureFlags';
-export { useApp } from './app/AppContext';
+export * from './app';
+export * from './navTargets';
+export * from './plugin';
+export * from './types';

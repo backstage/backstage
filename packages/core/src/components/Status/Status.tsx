@@ -21,78 +21,66 @@ import React, { FC } from 'react';
 
 const useStyles = makeStyles<BackstageTheme>((theme) => ({
   status: {
-    width: 12,
-    height: 12,
-    display: 'inline-block',
-    marginRight: 1,
+    fontWeight: 500,
+    '&::before': {
+      width: '0.7em',
+      height: '0.7em',
+      display: 'inline-block',
+      marginRight: 8,
+      borderRadius: '50%',
+      content: '""',
+    },
   },
   ok: {
-    backgroundColor: theme.palette.status.ok,
-    borderRadius: '50%',
+    '&::before': {
+      backgroundColor: theme.palette.status.ok,
+    },
   },
   warning: {
-    backgroundColor: theme.palette.status.warning,
+    '&::before': {
+      backgroundColor: theme.palette.status.warning,
+    },
   },
   error: {
-    // Use same for Failed status.
-    width: '0',
-    height: '0',
-    borderLeft: '7px solid transparent',
-    borderRight: '7px solid transparent',
-    borderBottom: `14px solid ${theme.palette.status.error}`,
+    '&::before': {
+      backgroundColor: theme.palette.status.error,
+    },
   },
   pending: {
-    backgroundColor: theme.palette.status.pending,
+    '&::before': {
+      backgroundColor: theme.palette.status.pending,
+    },
   },
   running: {
-    animation: '$blink 0.8s step-start 0s infinite',
-    backgroundColor: theme.palette.status.running,
+    '&::before': {
+      backgroundColor: theme.palette.status.running,
+    },
   },
-  '@keyframes blink': {
-    '50%': {
-      backgroundColor: theme.palette.status.background,
+  aborted: {
+    '&::before': {
+      backgroundColor: theme.palette.status.aborted,
     },
   },
 }));
 
 export const StatusOK: FC<{}> = (props) => {
   const classes = useStyles(props);
-  return (
-    <span
-      className={classNames(classes.status, classes.ok)}
-      aria-label="Status OK"
-      {...props}
-    />
-  );
+  return <span className={classNames(classes.status, classes.ok)} {...props} />;
 };
 
 export const StatusWarning: FC<{}> = (props) => {
   const classes = useStyles(props);
   return (
-    <span
-      className={classNames(classes.status, classes.warning)}
-      aria-label="Status warning"
-      {...props}
-    />
+    <span className={classNames(classes.status, classes.warning)} {...props} />
   );
 };
 
 export const StatusError: FC<{}> = (props) => {
   const classes = useStyles(props);
   return (
-    <span
-      className={classNames(classes.status, classes.error)}
-      aria-label="Status error"
-      {...props}
-    />
+    <span className={classNames(classes.status, classes.error)} {...props} />
   );
 };
-
-export const StatusNA: FC<{}> = (props) => (
-  <span aria-label="Status N/A" {...props}>
-    N/A
-  </span>
-);
 
 export const StatusPending: FC<{}> = (props) => {
   const classes = useStyles(props);
@@ -116,12 +104,12 @@ export const StatusRunning: FC<{}> = (props) => {
   );
 };
 
-export const StatusFailed: FC<{}> = (props) => {
+export const StatusAborted: FC<{}> = (props) => {
   const classes = useStyles(props);
   return (
     <span
-      className={classNames(classes.status, classes.error)}
-      aria-label="Status failed"
+      className={classNames(classes.status, classes.aborted)}
+      aria-label="Status aborted"
       {...props}
     />
   );

@@ -16,8 +16,7 @@
 
 export {
   StatusError,
-  StatusFailed,
-  StatusNA,
+  StatusAborted,
   StatusOK,
   StatusPending,
   StatusRunning,
