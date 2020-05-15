@@ -16,13 +16,16 @@
 import React, { FC } from 'react';
 import { Component } from '../../data/component';
 import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
-import { Typography } from '@material-ui/core';
+import { Typography, Link } from '@material-ui/core';
 
 const columns: TableColumn[] = [
   {
     title: 'Name',
     field: 'name',
     highlight: true,
+    render: (componentData: any) => (
+      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
+    ),
   },
 ];
 
