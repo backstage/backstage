@@ -13,14 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
 import { ComponentFactory } from '../../data/component';
 import ComponentMetadataCard from '../ComponentMetadataCard/ComponentMetadataCard';
-import { Typography } from '@material-ui/core';
-import { InfoCard, Content, Header, pageTheme, Page } from '@backstage/core';
+import {
+  Content,
+  Header,
+  pageTheme,
+  Page,
+  useApi,
+  ErrorApi,
+  errorApiRef,
+} from '@backstage/core';
 import ComponentContextMenu from '../ComponentContextMenu/ComponentContextMenu';
 import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDialog';
+
+const REDIRECT_DELAY = 1000;
 
 type ComponentPageProps = {
   componentFactory: ComponentFactory;
@@ -44,6 +53,7 @@ const ComponentPage: FC<ComponentPageProps> = ({
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
   const hideRemovalDialog = () => setConfirmationDialogOpen(false);
   const componentName = match.params.name;
+  const errorApi = useApi<ErrorApi>(errorApiRef);
 
   if (componentName === '') {
     history.push('/catalog');
@@ -54,6 +64,15 @@ const ComponentPage: FC<ComponentPageProps> = ({
     componentFactory.getComponentByName(match.params.name),
   );
 
+  useEffect(() => {
+    if (catalogRequest.error) {
+      errorApi.post(new Error('Component not found!'));
+      setTimeout(() => {
+        history.push('/catalog');
+      }, REDIRECT_DELAY);
+    }
+  }, [catalogRequest.error]);
+
   const removeComponent = async () => {
     setConfirmationDialogOpen(false);
     setRemovingPending(true);
@@ -63,7 +82,7 @@ const ComponentPage: FC<ComponentPageProps> = ({
 
   return (
     <Page theme={pageTheme.home}>
-      <Header title="Catalog" subtitle="Your components">
+      <Header title={catalogRequest?.value?.name || 'Catalog'}>
         <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
       </Header>
       {confirmationDialogOpen && catalogRequest.value && (
@@ -75,18 +94,10 @@ const ComponentPage: FC<ComponentPageProps> = ({
         />
       )}
       <Content>
-        {catalogRequest.error ? (
-          <InfoCard>
-            <Typography variant="subtitle1" paragraph>
-              Error encountered while fetching component metadata.
-            </Typography>
-          </InfoCard>
-        ) : (
-          <ComponentMetadataCard
-            loading={catalogRequest.loading || removingPending}
-            component={catalogRequest.value}
-          />
-        )}
+        <ComponentMetadataCard
+          loading={catalogRequest.loading || removingPending}
+          component={catalogRequest.value}
+        />
       </Content>
     </Page>
   );
