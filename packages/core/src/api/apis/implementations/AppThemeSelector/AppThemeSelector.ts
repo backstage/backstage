@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import Observable from 'zen-observable';
 import { AppThemeApi, AppTheme } from '../../definitions';
+import { BehaviorSubject } from '../lib';
+import { Observable } from '../../../types';
 
 const STORAGE_KEY = 'theme';
 
@@ -50,34 +51,17 @@ export class AppThemeSelector implements AppThemeApi {
     return selector;
   }
 
-  private readonly themes: AppTheme[];
-
   private activeThemeId: string | undefined;
+  private readonly subject = new BehaviorSubject<string | undefined>(undefined);
 
-  private readonly observable: Observable<string | undefined>;
-  private readonly subscribers = new Set<
-    ZenObservable.SubscriptionObserver<string | undefined>
-  >();
-
-  constructor(themes: AppTheme[]) {
-    this.themes = themes;
-
-    this.observable = new Observable((subscriber) => {
-      subscriber.next(this.activeThemeId);
-
-      this.subscribers.add(subscriber);
-      return () => {
-        this.subscribers.delete(subscriber);
-      };
-    });
-  }
+  constructor(private readonly themes: AppTheme[]) {}
 
   getInstalledThemes(): AppTheme[] {
     return this.themes.slice();
   }
 
   activeThemeId$(): Observable<string | undefined> {
-    return this.observable;
+    return this.subject;
   }
 
   getActiveThemeId(): string | undefined {
@@ -86,6 +70,6 @@ export class AppThemeSelector implements AppThemeApi {
 
   setActiveThemeId(themeId?: string): void {
     this.activeThemeId = themeId;
-    this.subscribers.forEach((subscriber) => subscriber.next(themeId));
+    this.subject.next(themeId);
   }
 }
