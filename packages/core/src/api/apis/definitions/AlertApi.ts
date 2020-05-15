@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ApiRef } from '../ApiRef';
+import { Observable } from '../../types';
 
 export type AlertMessage = {
   message: string;
@@ -30,6 +31,11 @@ export type AlertApi = {
    * Post an alert for handling by the application.
    */
   post(alert: AlertMessage): void;
+
+  /**
+   * Observe all alert messages posted by other parts of the app.
+   */
+  alert$(): Observable<AlertMessage>;
 };
 
 export const alertApiRef = new ApiRef<AlertApi>({

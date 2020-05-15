@@ -34,11 +34,9 @@ import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
 
 const builder = ApiRegistry.builder();
 
-export const alertApiForwarder = new AlertApiForwarder();
-builder.add(alertApiRef, alertApiForwarder);
+const alertApiForwarder = builder.add(alertApiRef, new AlertApiForwarder());
 
-export const errorApiForwarder = new ErrorApiForwarder(alertApiForwarder);
-builder.add(errorApiRef, errorApiForwarder);
+builder.add(errorApiRef, new ErrorApiForwarder(alertApiForwarder));
 
 builder.add(featureFlagsApiRef, new FeatureFlags());
 

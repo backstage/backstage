@@ -15,25 +15,22 @@
  */
 
 import React, { FC, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { Snackbar, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
-import { AlertApiForwarder, AlertMessage } from '@backstage/core';
+import { alertApiRef, useApi, AlertMessage } from '../../api';
 
-type Props = {
-  forwarder: AlertApiForwarder;
-};
+type Props = {};
 
-// TODO: improve on this and promote to a shared component for use by all apps.
-const AlertDisplay: FC<Props> = ({ forwarder }) => {
+export const AlertDisplay: FC<Props> = () => {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
+  const alertApi = useApi(alertApiRef);
 
   useEffect(() => {
-    return forwarder.subscribe((message: AlertMessage) =>
-      setMessages(msgs => msgs.concat(message)),
-    );
-  }, [forwarder]);
+    alertApi.alert$().subscribe((message) => {
+      setMessages((msgs) => msgs.concat(message));
+    });
+  }, [alertApi]);
 
   if (messages.length === 0) {
     return null;
@@ -42,7 +39,7 @@ const AlertDisplay: FC<Props> = ({ forwarder }) => {
   const [firstMessage] = messages;
 
   const handleClose = () => {
-    setMessages(msgs => msgs.filter(msg => msg !== firstMessage));
+    setMessages((msgs) => msgs.filter((msg) => msg !== firstMessage));
   };
 
   return (
@@ -69,9 +66,3 @@ const AlertDisplay: FC<Props> = ({ forwarder }) => {
     </Snackbar>
   );
 };
-
-AlertDisplay.propTypes = {
-  forwarder: PropTypes.instanceOf(AlertApiForwarder).isRequired,
-};
-
-export default AlertDisplay;
