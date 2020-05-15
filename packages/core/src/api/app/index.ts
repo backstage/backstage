@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { createApp } from './AppBuilder';
+export { createApp } from './App';
 export { FeatureFlags } from './FeatureFlags';
 export { useApp } from './AppContext';
 export * from './types';

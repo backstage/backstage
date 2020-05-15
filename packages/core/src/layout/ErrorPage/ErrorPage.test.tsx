@@ -23,11 +23,7 @@ describe('<ErrorPage/>', () => {
   it('should render with status code, status message and go back link', () => {
     const rendered = render(
       wrapInThemedTestApp(
-        <ErrorPage
-          status="404"
-          statusMessage="PAGE NOT FOUND"
-          history={{ goBack: () => {} }}
-        />,
+        <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
       ),
     );
     rendered.getByText(/page not found/i);
