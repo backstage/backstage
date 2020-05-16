@@ -15,11 +15,8 @@
  */
 
 import { startDevServer } from '../../lib/bundle';
-import { watchDeps } from '../../lib/watchDeps';
 
 export default async () => {
-  await watchDeps({ build: true });
-
   await startDevServer();
 
   // Wait for interrupt signal

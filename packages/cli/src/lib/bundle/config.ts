@@ -45,6 +45,7 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
+      mainFields: ['main:src', 'browser', 'module', 'main'],
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
@@ -67,7 +68,6 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
         },
         {
           test: /\.(tsx?|jsx?|mjs)$/,
-          include: [paths.targetSrc, paths.targetDev],
           exclude: /node_modules/,
           loader: 'ts-loader',
           options: {
