@@ -81,8 +81,12 @@ export function createConfig(
       rules: loaders(),
     },
     output: {
+      path: paths.targetDist,
       publicPath: '/',
-      filename: 'bundle.js',
+      filename: isDev ? '[name].js' : '[name].[hash:8].js',
+      chunkFilename: isDev
+        ? '[name].chunk.js'
+        : '[name].[chunkhash:8].chunk.js',
     },
     optimization: optimization(options),
     plugins,
