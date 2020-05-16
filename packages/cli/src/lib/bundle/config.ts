@@ -15,11 +15,10 @@
  */
 
 import webpack from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { BundlingPaths } from './paths';
-import { loaders } from './loaders';
+import { transforms } from './transforms';
 import { optimization } from './optimization';
 import { BundlingOptions } from './types';
 // import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles';
@@ -34,12 +33,7 @@ export function createConfig(
 ): webpack.Configuration {
   const { checksEnabled, isDev } = options;
 
-  const plugins = [
-    new HtmlWebpackPlugin({
-      template: paths.targetHtml,
-    }),
-    new webpack.HotModuleReplacementPlugin(),
-  ];
+  const { plugins, loaders } = transforms(paths, options);
 
   if (checksEnabled) {
     plugins.push(
@@ -78,7 +72,7 @@ export function createConfig(
       },
     },
     module: {
-      rules: loaders(),
+      rules: loaders,
     },
     output: {
       path: paths.targetDist,

@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-import { Module } from 'webpack';
+import webpack, { Module, Plugin } from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { BundlingOptions } from './types';
+import { BundlingPaths } from './paths';
 
-export const loaders = (): Module['rules'] => {
-  return [
+type Transforms = {
+  loaders: Module['rules'];
+  plugins: Plugin[];
+};
+
+export const transforms = (
+  paths: BundlingPaths,
+  options: BundlingOptions,
+): Transforms => {
+  const { isDev } = options;
+
+  const loaders = [
     {
       test: /\.(tsx?)$/,
       exclude: /node_modules/,
@@ -55,4 +68,18 @@ export const loaders = (): Module['rules'] => {
       use: [require.resolve('style-loader'), require.resolve('css-loader')],
     },
   ];
+
+  const plugins = new Array<Plugin>();
+
+  plugins.push(
+    new HtmlWebpackPlugin({
+      template: paths.targetHtml,
+    }),
+  );
+
+  if (isDev) {
+    plugins.push(new webpack.HotModuleReplacementPlugin());
+  }
+
+  return { loaders, plugins };
 };
