@@ -2,6 +2,7 @@
   "name": "@backstage/plugin-home-page",
   "version": "0.1.1-alpha.5",
   "main": "dist/index.esm.js",
+  "main:src": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "private": true,
