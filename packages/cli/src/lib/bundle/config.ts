@@ -67,12 +67,19 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
           },
         },
         {
-          test: /\.(tsx?|jsx?|mjs)$/,
+          test: /\.(tsx?)$/,
           exclude: /node_modules/,
-          loader: 'ts-loader',
+          loader: '@sucrase/webpack-loader',
           options: {
-            // disable type checker - handled by ForkTsCheckerWebpackPlugin
-            transpileOnly: true,
+            transforms: ['typescript', 'jsx'],
+          },
+        },
+        {
+          test: /\.(jsx?|mjs)$/,
+          exclude: /node_modules/,
+          loader: '@sucrase/webpack-loader',
+          options: {
+            transforms: ['jsx'],
           },
         },
         {

@@ -15,5 +15,6 @@
  */
 
 export { default } from './Table';
-export type { TableColumn } from './Table';
+import type { TableColumn } from './Table';
+export type { TableColumn };
 export { default as SubvalueCell } from './SubvalueCell';
