@@ -73,7 +73,6 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
         {
           test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.frag/, /\.xml/],
           loader: 'url-loader',
-          include: paths.targetAssets,
           options: {
             limit: 10000,
             name: 'static/media/[name].[hash:8].[ext]',
