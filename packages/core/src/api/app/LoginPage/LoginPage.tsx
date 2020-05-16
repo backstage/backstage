@@ -15,7 +15,7 @@
  */
 
 import React, { FC, useState } from 'react';
-import { GitHub as GitHubIcon } from '@material-ui/icons';
+import GitHubIcon from '@material-ui/icons/GitHub';
 import Page from '../../../layout/Page';
 import Header from '../../../layout/Header';
 import Content from '../../../layout/Content/Content';
