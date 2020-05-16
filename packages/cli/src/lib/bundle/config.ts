@@ -55,17 +55,6 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
     module: {
       rules: [
         {
-          test: /\.(tsx?|jsx?|mjs)$/,
-          enforce: 'pre',
-          include: [paths.targetSrc, paths.targetDev],
-          use: {
-            loader: 'eslint-loader',
-            options: {
-              emitWarning: true,
-            },
-          },
-        },
-        {
           test: /\.(tsx?)$/,
           exclude: /node_modules/,
           loader: '@sucrase/webpack-loader',
