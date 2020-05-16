@@ -68,7 +68,8 @@
     "tar": "^6.0.1",
     "ts-loader": "^7.0.4",
     "webpack": "^4.41.6",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-dev-server": "^3.10.3",
+    "yn": "^4.0.0"
   },
   "devDependencies": {
     "@types/diff": "^4.0.2",

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import yn from 'yn';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import openBrowser from 'react-dev-utils/openBrowser';
@@ -30,7 +31,7 @@ export async function startDevServer() {
     return;
   }
 
-  const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
+  const protocol = yn(process.env.HTTPS, { default: false }) ? 'https' : 'http';
   const urls = prepareUrls(protocol, host, port);
 
   const paths = resolveBundlingPaths();
