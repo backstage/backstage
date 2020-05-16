@@ -16,6 +16,7 @@
 
 import webpack, { Module, Plugin } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { BundlingOptions } from './types';
 import { BundlingPaths } from './paths';
 
@@ -65,7 +66,25 @@ export const transforms = (
     },
     {
       test: /\.css$/i,
-      use: [require.resolve('style-loader'), require.resolve('css-loader')],
+      use: [
+        isDev
+          ? {
+              loader: require.resolve('style-loader'),
+              options: {
+                attrs: { origin: 'main' },
+              },
+            }
+          : {
+              loader: MiniCssExtractPlugin.loader,
+            },
+
+        {
+          loader: require.resolve('css-loader'),
+          options: {
+            sourceMap: true,
+          },
+        },
+      ],
     },
   ];
 
@@ -79,6 +98,13 @@ export const transforms = (
 
   if (isDev) {
     plugins.push(new webpack.HotModuleReplacementPlugin());
+  } else {
+    plugins.push(
+      new MiniCssExtractPlugin({
+        filename: '[name].[contenthash:8].css',
+        chunkFilename: '[name].[id].[contenthash:8].css',
+      }),
+    );
   }
 
   return { loaders, plugins };
