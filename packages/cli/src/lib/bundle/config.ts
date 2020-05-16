@@ -20,6 +20,7 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { BundlingPaths } from './paths';
 import { loaders } from './loaders';
+import { optimization } from './optimization';
 // import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles';
 // import ModuleNotFoundPlugin from 'react-dev-utils/ModuleNotFoundPlugin';
 // import errorOverlayMiddleware from 'react-dev-utils/errorOverlayMiddleware';
@@ -60,6 +61,7 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
       publicPath: '/',
       filename: 'bundle.js',
     },
+    optimization: optimization(),
     plugins: [
       new HtmlWebpackPlugin({
         template: paths.targetHtml,
