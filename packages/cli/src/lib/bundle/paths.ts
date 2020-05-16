@@ -15,9 +15,9 @@
  */
 
 import { existsSync } from 'fs';
-import { paths } from '../../../lib/paths';
+import { paths } from '../paths';
 
-export function getPaths() {
+export function resolveBundlingPaths() {
   const resolveTargetModule = (path: string) => {
     for (const ext of ['mjs', 'js', 'ts', 'tsx', 'jsx']) {
       const filePath = paths.resolveTarget(`${path}.${ext}`);
@@ -46,4 +46,4 @@ export function getPaths() {
   };
 }
 
-export type Paths = ReturnType<typeof getPaths>;
+export type BundlingPaths = ReturnType<typeof resolveBundlingPaths>;

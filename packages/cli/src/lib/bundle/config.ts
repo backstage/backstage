@@ -18,14 +18,20 @@ import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
-import { Paths } from './paths';
+import { BundlingPaths } from './paths';
 // import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles';
 // import ModuleNotFoundPlugin from 'react-dev-utils/ModuleNotFoundPlugin';
 // import errorOverlayMiddleware from 'react-dev-utils/errorOverlayMiddleware';
 // import evalSourceMapMiddleware from 'react-dev-utils/evalSourceMapMiddleware';
 // import WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin';
 
-export function createConfig(paths: Paths): webpack.Configuration {
+type BundlingOptions = {
+  paths: BundlingPaths;
+};
+
+export function createConfig(options: BundlingOptions): webpack.Configuration {
+  const { paths } = options;
+
   return {
     mode: 'development',
     profile: false,
