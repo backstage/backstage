@@ -43,6 +43,7 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
   return {
     targetHtml,
     targetPath: paths.resolveTarget('.'),
+    targetDist: paths.resolveTarget('dist'),
     targetAssets: paths.resolveTarget('assets'),
     targetSrc: paths.resolveTarget('src'),
     targetDev: paths.resolveTarget('dev'),

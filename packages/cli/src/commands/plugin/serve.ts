@@ -15,9 +15,13 @@
  */
 
 import { startDevServer } from '../../lib/bundle';
+import { Command } from 'commander';
 
-export default async () => {
-  await startDevServer({ entry: 'dev/index' });
+export default async (cmd: Command) => {
+  await startDevServer({
+    entry: 'dev/index',
+    checksEnabled: cmd.check,
+  });
 
   // Wait for interrupt signal
   await new Promise(() => {});

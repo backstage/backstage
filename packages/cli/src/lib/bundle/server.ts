@@ -21,6 +21,7 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import { choosePort, prepareUrls } from 'react-dev-utils/WebpackDevServerUtils';
 import { createConfig } from './config';
 import { BundlingOptions } from './types';
+import { resolveBundlingPaths } from './paths';
 
 export async function startDevServer(options: BundlingOptions) {
   const host = process.env.HOST ?? '0.0.0.0';
@@ -34,7 +35,8 @@ export async function startDevServer(options: BundlingOptions) {
   const protocol = yn(process.env.HTTPS, { default: false }) ? 'https' : 'http';
   const urls = prepareUrls(protocol, host, port);
 
-  const config = createConfig(options);
+  const paths = resolveBundlingPaths(options);
+  const config = createConfig(paths, options);
   const compiler = webpack(config);
 
   const server = new WebpackDevServer(compiler, {

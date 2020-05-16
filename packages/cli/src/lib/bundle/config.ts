@@ -18,7 +18,7 @@ import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
-import { resolveBundlingPaths } from './paths';
+import { BundlingPaths } from './paths';
 import { loaders } from './loaders';
 import { optimization } from './optimization';
 import { BundlingOptions } from './types';
@@ -28,8 +28,34 @@ import { BundlingOptions } from './types';
 // import evalSourceMapMiddleware from 'react-dev-utils/evalSourceMapMiddleware';
 // import WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin';
 
-export function createConfig(options: BundlingOptions): webpack.Configuration {
-  const paths = resolveBundlingPaths(options);
+export function createConfig(
+  paths: BundlingPaths,
+  options: BundlingOptions,
+): webpack.Configuration {
+  const { checksEnabled } = options;
+
+  const plugins = [
+    new HtmlWebpackPlugin({
+      template: paths.targetHtml,
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+  ];
+
+  if (checksEnabled) {
+    plugins.push(
+      new ForkTsCheckerWebpackPlugin({
+        tsconfig: paths.targetTsConfig,
+        eslint: true,
+        eslintOptions: {
+          parserOptions: {
+            project: paths.targetTsConfig,
+            tsconfigRootDir: paths.targetPath,
+          },
+        },
+        reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
+      }),
+    );
+  }
 
   return {
     mode: 'development',
@@ -59,23 +85,7 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
       filename: 'bundle.js',
     },
     optimization: optimization(),
-    plugins: [
-      new HtmlWebpackPlugin({
-        template: paths.targetHtml,
-      }),
-      new ForkTsCheckerWebpackPlugin({
-        tsconfig: paths.targetTsConfig,
-        eslint: true,
-        eslintOptions: {
-          parserOptions: {
-            project: paths.targetTsConfig,
-            tsconfigRootDir: paths.targetPath,
-          },
-        },
-        reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
-      }),
-      new webpack.HotModuleReplacementPlugin(),
-    ],
+    plugins,
     node: {
       module: 'empty',
       dgram: 'empty',

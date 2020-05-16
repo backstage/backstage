@@ -16,4 +16,6 @@
 
 import { BundlingPathsOptions } from './paths';
 
-export type BundlingOptions = BundlingPathsOptions & {};
+export type BundlingOptions = BundlingPathsOptions & {
+  checksEnabled: boolean;
+};

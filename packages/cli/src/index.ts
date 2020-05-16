@@ -35,6 +35,7 @@ const main = (argv: string[]) => {
   program
     .command('app:serve')
     .description('Serve an app for local development')
+    .option('--check', 'Enable type checking and linting')
     .action(actionHandler(() => require('./commands/app/serve')));
 
   program
@@ -60,6 +61,7 @@ const main = (argv: string[]) => {
   program
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
+    .option('--check', 'Enable type checking and linting')
     .action(actionHandler(() => require('./commands/plugin/serve')));
 
   program
@@ -155,7 +157,7 @@ function actionHandler<T extends readonly any[]>(
   };
 }
 
-process.on('unhandledRejection', (rejection) => {
+process.on('unhandledRejection', rejection => {
   if (rejection instanceof Error) {
     exitWithError(rejection);
   } else {
