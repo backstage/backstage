@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { run } from '../../lib/run';
+import { buildBundle } from '../../lib/bundle';
+import { Command } from 'commander';
 
-export default async () => {
-  const args = ['build'];
-
-  await run('react-scripts', args, {
-    env: {
-      EXTEND_ESLINT: 'true',
-      SKIP_PREFLIGHT_CHECK: 'true',
-    },
+export default async (cmd: Command) => {
+  await buildBundle({
+    entry: 'src/index',
+    statsJsonEnabled: cmd.stats,
   });
+
+  // Wait for interrupt signal
+  await new Promise(() => {});
 };

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { bundle } from './bundle';
+export { buildBundle } from './bundle';
 export { startDevServer } from './server';

@@ -30,6 +30,7 @@ const main = (argv: string[]) => {
   program
     .command('app:build')
     .description('Build an app for a production release')
+    .option('--stats', 'Write bundle stats to output directory')
     .action(actionHandler(() => require('./commands/app/build')));
 
   program

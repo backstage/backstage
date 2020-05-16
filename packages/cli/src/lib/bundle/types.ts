@@ -16,6 +16,14 @@
 
 import { BundlingPathsOptions } from './paths';
 
-export type BundlingOptions = BundlingPathsOptions & {
+export type BundlingOptions = {
   checksEnabled: boolean;
+};
+
+export type ServeOptions = BundlingPathsOptions & {
+  checksEnabled: boolean;
+};
+
+export type BuildOptions = BundlingPathsOptions & {
+  statsJsonEnabled: boolean;
 };

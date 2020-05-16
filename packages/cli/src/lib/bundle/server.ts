@@ -20,10 +20,10 @@ import WebpackDevServer from 'webpack-dev-server';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { choosePort, prepareUrls } from 'react-dev-utils/WebpackDevServerUtils';
 import { createConfig } from './config';
-import { BundlingOptions } from './types';
+import { ServeOptions } from './types';
 import { resolveBundlingPaths } from './paths';
 
-export async function startDevServer(options: BundlingOptions) {
+export async function startDevServer(options: ServeOptions) {
   const host = process.env.HOST ?? '0.0.0.0';
   const defaultPort = parseInt(process.env.PORT ?? '', 10) || 3000;
 
