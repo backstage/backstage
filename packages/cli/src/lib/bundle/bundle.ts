@@ -36,7 +36,11 @@ export async function buildBundle(options: BuildOptions) {
   const { statsJsonEnabled } = options;
 
   const paths = resolveBundlingPaths(options);
-  const config = createConfig(paths, { ...options, checksEnabled: false });
+  const config = createConfig(paths, {
+    ...options,
+    checksEnabled: false,
+    isDev: false,
+  });
   const compiler = webpack(config);
 
   const isCi = yn(process.env.CI, { default: false });

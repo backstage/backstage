@@ -15,9 +15,15 @@
  */
 
 import { Options } from 'webpack';
+import { BundlingOptions } from './types';
 
-export const optimization = (): Options.Optimization => {
+export const optimization = (
+  options: BundlingOptions,
+): Options.Optimization => {
+  const { isDev } = options;
+
   return {
+    minimize: !isDev,
     runtimeChunk: 'single',
     splitChunks: {
       automaticNameDelimiter: '-',
@@ -38,7 +44,9 @@ export const optimization = (): Options.Optimization => {
             // npm package names are URL-safe, but some servers don't like @ symbols
             return packageName.replace('@', '');
           },
-          filename: 'module-[name].[chunkhash:8].js',
+          filename: isDev
+            ? 'module-[name].js'
+            : 'module-[name].[chunkhash:8].js',
           priority: 10,
           minSize: 100000,
           minChunks: 1,

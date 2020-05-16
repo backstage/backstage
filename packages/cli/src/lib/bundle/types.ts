@@ -18,6 +18,7 @@ import { BundlingPathsOptions } from './paths';
 
 export type BundlingOptions = {
   checksEnabled: boolean;
+  isDev: boolean;
 };
 
 export type ServeOptions = BundlingPathsOptions & {

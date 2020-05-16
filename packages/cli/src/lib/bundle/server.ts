@@ -36,7 +36,7 @@ export async function startDevServer(options: ServeOptions) {
   const urls = prepareUrls(protocol, host, port);
 
   const paths = resolveBundlingPaths(options);
-  const config = createConfig(paths, options);
+  const config = createConfig(paths, { ...options, isDev: true });
   const compiler = webpack(config);
 
   const server = new WebpackDevServer(compiler, {

@@ -32,7 +32,7 @@ export function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): webpack.Configuration {
-  const { checksEnabled } = options;
+  const { checksEnabled, isDev } = options;
 
   const plugins = [
     new HtmlWebpackPlugin({
@@ -58,10 +58,10 @@ export function createConfig(
   }
 
   return {
-    mode: 'development',
+    mode: isDev ? 'development' : 'production',
     profile: false,
     bail: false,
-    devtool: 'cheap-module-eval-source-map',
+    devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
     resolve: {
@@ -84,7 +84,7 @@ export function createConfig(
       publicPath: '/',
       filename: 'bundle.js',
     },
-    optimization: optimization(),
+    optimization: optimization(options),
     plugins,
     node: {
       module: 'empty',
