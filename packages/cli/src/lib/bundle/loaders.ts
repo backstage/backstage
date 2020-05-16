@@ -21,7 +21,7 @@ export const loaders = (): Module['rules'] => {
     {
       test: /\.(tsx?)$/,
       exclude: /node_modules/,
-      loader: '@sucrase/webpack-loader',
+      loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['typescript', 'jsx', 'react-hot-loader'],
       },
@@ -29,14 +29,14 @@ export const loaders = (): Module['rules'] => {
     {
       test: /\.(jsx?|mjs)$/,
       exclude: /node_modules/,
-      loader: '@sucrase/webpack-loader',
+      loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['jsx', 'react-hot-loader'],
       },
     },
     {
       test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.frag/, /\.xml/],
-      loader: 'url-loader',
+      loader: require.resolve('url-loader'),
       options: {
         limit: 10000,
         name: 'static/media/[name].[hash:8].[ext]',
@@ -44,15 +44,15 @@ export const loaders = (): Module['rules'] => {
     },
     {
       test: /\.ya?ml$/,
-      use: 'yml-loader',
+      use: require.resolve('yml-loader'),
     },
     {
       include: /\.(md)$/,
-      use: 'raw-loader',
+      use: require.resolve('raw-loader'),
     },
     {
       test: /\.css$/i,
-      use: ['style-loader', 'css-loader'],
+      use: [require.resolve('style-loader'), require.resolve('css-loader')],
     },
   ];
 };
