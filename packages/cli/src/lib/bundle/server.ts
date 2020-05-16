@@ -41,7 +41,8 @@ export async function startDevServer() {
     hot: true,
     publicPath: '/',
     historyApiFallback: true,
-    quiet: true,
+    clientLogLevel: 'warning',
+    stats: 'errors-warnings',
     https: protocol === 'https',
     host,
     port,
@@ -52,6 +53,13 @@ export async function startDevServer() {
       if (err) {
         reject(err);
         return;
+      }
+
+      for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+        process.on(signal, () => {
+          server.close();
+          process.exit();
+        });
       }
 
       openBrowser(urls.localUrlForBrowser);
