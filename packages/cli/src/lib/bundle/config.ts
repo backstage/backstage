@@ -18,21 +18,18 @@ import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
-import { BundlingPaths } from './paths';
+import { resolveBundlingPaths } from './paths';
 import { loaders } from './loaders';
 import { optimization } from './optimization';
+import { BundlingOptions } from './types';
 // import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles';
 // import ModuleNotFoundPlugin from 'react-dev-utils/ModuleNotFoundPlugin';
 // import errorOverlayMiddleware from 'react-dev-utils/errorOverlayMiddleware';
 // import evalSourceMapMiddleware from 'react-dev-utils/evalSourceMapMiddleware';
 // import WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin';
 
-type BundlingOptions = {
-  paths: BundlingPaths;
-};
-
 export function createConfig(options: BundlingOptions): webpack.Configuration {
-  const { paths } = options;
+  const paths = resolveBundlingPaths(options);
 
   return {
     mode: 'development',
@@ -40,7 +37,7 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
     bail: false,
     devtool: 'cheap-module-eval-source-map',
     context: paths.targetPath,
-    entry: [require.resolve('react-hot-loader/patch'), paths.targetDevEntry],
+    entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['main:src', 'browser', 'module', 'main'],

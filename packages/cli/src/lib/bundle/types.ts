@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import { startDevServer } from '../../lib/bundle';
+import { BundlingPathsOptions } from './paths';
 
-export default async () => {
-  await startDevServer({ entry: 'dev/index' });
-
-  // Wait for interrupt signal
-  await new Promise(() => {});
-};
+export type BundlingOptions = BundlingPathsOptions & {};

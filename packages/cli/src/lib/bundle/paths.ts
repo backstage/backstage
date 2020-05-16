@@ -17,7 +17,14 @@
 import { existsSync } from 'fs';
 import { paths } from '../paths';
 
-export function resolveBundlingPaths() {
+export type BundlingPathsOptions = {
+  // bundle entrypoint, e.g. 'src/index'
+  entry: string;
+};
+
+export function resolveBundlingPaths(options: BundlingPathsOptions) {
+  const { entry } = options;
+
   const resolveTargetModule = (path: string) => {
     for (const ext of ['mjs', 'js', 'ts', 'tsx', 'jsx']) {
       const filePath = paths.resolveTarget(`${path}.${ext}`);
@@ -39,7 +46,7 @@ export function resolveBundlingPaths() {
     targetAssets: paths.resolveTarget('assets'),
     targetSrc: paths.resolveTarget('src'),
     targetDev: paths.resolveTarget('dev'),
-    targetDevEntry: resolveTargetModule('dev/index'),
+    targetEntry: resolveTargetModule(entry),
     targetTsConfig: paths.resolveTarget('tsconfig.json'),
     targetNodeModules: paths.resolveTarget('node_modules'),
     targetPackageJson: paths.resolveTarget('package.json'),
