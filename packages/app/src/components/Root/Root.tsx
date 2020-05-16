@@ -31,8 +31,8 @@ import {
   SidebarSpacer,
   SidebarDivider,
   SidebarSpace,
+  SidebarThemeToggle,
 } from '@backstage/core';
-import ToggleThemeSidebarItem from './ToggleThemeSidebarItem';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -89,7 +89,7 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarItem icon={AccountCircle} to="/login" text="Login" />
       <SidebarDivider />
       <SidebarSpace />
-      <ToggleThemeSidebarItem />
+      <SidebarThemeToggle />
     </Sidebar>
     {children}
   </SidebarPage>
