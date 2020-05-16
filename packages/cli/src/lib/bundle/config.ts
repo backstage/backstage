@@ -38,11 +38,7 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
     bail: false,
     devtool: 'cheap-module-eval-source-map',
     context: paths.targetPath,
-    entry: [
-      `${require.resolve('webpack-dev-server/client')}?/`,
-      require.resolve('webpack/hot/dev-server'),
-      paths.targetDevEntry,
-    ],
+    entry: [require.resolve('react-hot-loader/patch'), paths.targetDevEntry],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['main:src', 'browser', 'module', 'main'],
@@ -52,6 +48,9 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
           [paths.targetPackageJson],
         ),
       ],
+      alias: {
+        'react-dom': '@hot-loader/react-dom',
+      },
     },
     module: {
       rules: [
@@ -71,7 +70,7 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
           exclude: /node_modules/,
           loader: '@sucrase/webpack-loader',
           options: {
-            transforms: ['typescript', 'jsx'],
+            transforms: ['typescript', 'jsx', 'react-hot-loader'],
           },
         },
         {
@@ -79,7 +78,7 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
           exclude: /node_modules/,
           loader: '@sucrase/webpack-loader',
           options: {
-            transforms: ['jsx'],
+            transforms: ['jsx', 'react-hot-loader'],
           },
         },
         {

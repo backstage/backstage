@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { hot } from 'react-hot-loader/root';
 import React, { FC, ComponentType } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -90,10 +91,10 @@ class DevAppBuilder {
   }
 
   /**
-   * Build and render directory to #root element
+   * Build and render directory to #root element, with react hot loading.
    */
   render(): void {
-    const DevApp = this.build();
+    const DevApp = hot(this.build());
 
     const paths = this.findPluginPaths(this.plugins);
 
