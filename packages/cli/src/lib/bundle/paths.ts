@@ -35,7 +35,7 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     return paths.resolveTarget(`${path}.js`);
   };
 
-  let targetHtml = paths.resolveTarget('dev/index.html');
+  let targetHtml = paths.resolveTarget(`${entry}.html`);
   if (!existsSync(targetHtml)) {
     targetHtml = paths.resolveOwn('templates/serve_index.html');
   }
