@@ -19,6 +19,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { BundlingPaths } from './paths';
+import { loaders } from './loaders';
 // import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles';
 // import ModuleNotFoundPlugin from 'react-dev-utils/ModuleNotFoundPlugin';
 // import errorOverlayMiddleware from 'react-dev-utils/errorOverlayMiddleware';
@@ -53,44 +54,7 @@ export function createConfig(options: BundlingOptions): webpack.Configuration {
       },
     },
     module: {
-      rules: [
-        {
-          test: /\.(tsx?)$/,
-          exclude: /node_modules/,
-          loader: '@sucrase/webpack-loader',
-          options: {
-            transforms: ['typescript', 'jsx', 'react-hot-loader'],
-          },
-        },
-        {
-          test: /\.(jsx?|mjs)$/,
-          exclude: /node_modules/,
-          loader: '@sucrase/webpack-loader',
-          options: {
-            transforms: ['jsx', 'react-hot-loader'],
-          },
-        },
-        {
-          test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.frag/, /\.xml/],
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            name: 'static/media/[name].[hash:8].[ext]',
-          },
-        },
-        {
-          test: /\.ya?ml$/,
-          use: 'yml-loader',
-        },
-        {
-          include: /\.(md)$/,
-          use: 'raw-loader',
-        },
-        {
-          test: /\.css$/i,
-          use: ['style-loader', 'css-loader'],
-        },
-      ],
+      rules: loaders(),
     },
     output: {
       publicPath: '/',
