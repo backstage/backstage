@@ -5,6 +5,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "emitDeclarationOnly": false,
+    "removeComments": true,
     "module": "CommonJS"
   }
 }
