@@ -82,6 +82,6 @@ async function build(config: RollupOptions) {
 }
 
 export const buildPackage = async () => {
-  const configs = makeConfigs();
+  const configs = await makeConfigs();
   await Promise.all(configs.map(build));
 };

@@ -17475,6 +17475,13 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
+rollup-plugin-dts@^1.4.6:
+  version "1.4.6"
+  resolved "https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-1.4.6.tgz#26e3da11ec647cfffee9658b63fa41d67e7840b9"
+  integrity sha512-1o5+eI97Ne8zXJrgdasn/xGi0xKuovCQwZRtPI2Lfl/c6qa9jQTFbn60NwOx3gWJ89K265/6kpDuahnBbplyWA==
+  optionalDependencies:
+    "@babel/code-frame" "^7.8.3"
+
 rollup-plugin-esbuild@^1.4.1:
   version "1.4.1"
   resolved "https://registry.npmjs.org/rollup-plugin-esbuild/-/rollup-plugin-esbuild-1.4.1.tgz#b388ebd4cda1198208d7746feea7656d485019b0"
