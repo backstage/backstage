@@ -7,14 +7,17 @@
   },
   "scripts": {
     "start": "yarn workspace app start",
-    "bundle": "yarn build && yarn workspace app bundle",
+    "bundle": "yarn workspace app bundle",
     "build": "lerna run build",
-    "test": "yarn build && lerna run test --since origin/master -- --coverage",
-    "test:all": "yarn build && lerna run test -- --coverage",
+    "tsc": "tsc",
+    "clean": "backstage-cli clean && lerna run clean",
+    "diff": "lerna run diff --",
+    "test": "lerna run test --since origin/master -- --coverage",
+    "test:all": "lerna run test -- --coverage",
     "lint": "lerna run lint --since origin/master --",
     "lint:all": "lerna run lint --",
     "create-plugin": "backstage-cli create-plugin",
-    "clean": "lerna run clean"
+    "remove-plugin": "backstage-cli remove-plugin"
   },
   "workspaces": {
     "packages": [
