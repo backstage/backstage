@@ -68,7 +68,7 @@ jobs:
 
       - name: build all packages
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: yarn lerna -- run build -- --coverage
+        run: yarn lerna -- run build
 
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
