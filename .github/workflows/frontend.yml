@@ -56,14 +56,19 @@ jobs:
       - name: yarn install
         run: yarn install --frozen-lockfile
 
-      - name: verify plugin template
-        run: yarn lerna -- run diff -- --check
-
       - name: lint
         run: yarn lerna -- run lint --since origin/master
 
-      - name: build
-        run: yarn build
+      - name: type checking and declarations
+        run: yarn tsc --incremental false
+
+      - name: build changed packages
+        if: ${{ steps.yarn-lock.outcome == 'success' }}
+        run: yarn lerna -- run build --since origin/master
+
+      - name: build all packages
+        if: ${{ steps.yarn-lock.outcome == 'failure' }}
+        run: yarn lerna -- run build -- --coverage
 
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
@@ -73,8 +78,11 @@ jobs:
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: yarn lerna -- run test -- --coverage
 
-      - name: yarn bundle, if app was changed
-        run: git diff --quiet origin/master HEAD -- yarn.lock packages/app packages/core || yarn bundle
+      - name: verify plugin template
+        run: yarn lerna -- run diff -- --check
+
+      - name: bundle example app
+        run: yarn bundle
 
       - name: verify storybook
         run: yarn workspace storybook build-storybook
