@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { rollup, watch, OutputOptions } from 'rollup';
-import { Command } from 'commander';
+import { rollup, OutputOptions } from 'rollup';
 import chalk from 'chalk';
 import { withCache, getDefaultCacheOptions } from '../../lib/buildCache';
 import { paths } from '../../lib/paths';
@@ -56,32 +55,7 @@ function logError(error: any) {
   }
 }
 
-export default async (cmd: Command) => {
-  if (cmd.watch) {
-    // We're not resolving this promise because watch() doesn't have any exit event.
-    // Instead we just wait until the user sends an interrupt signal.
-    await new Promise(() => {
-      const watcher = watch(conf);
-      watcher.on('event', (event) => {
-        //   START        — the watcher is (re)starting
-        //   BUNDLE_START — building an individual bundle
-        //   BUNDLE_END   — finished building a bundle
-        //   END          — finished building all bundles
-        //   ERROR        — encountered an error while bundling
-
-        if (event.code === 'ERROR') {
-          logError(event.error);
-        } else if (event.code === 'BUNDLE_START') {
-          console.log(chalk.dim(`building ${event.input}`));
-        } else if (event.code === 'BUNDLE_END') {
-          const { input, duration } = event;
-          const s = (duration / 1000).toFixed(1);
-          console.log(chalk.green(`built ${input} in ${s}s`));
-        }
-      });
-    });
-  }
-
+export default async () => {
   await withCache(getDefaultCacheOptions(), async () => {
     try {
       const bundle = await rollup({

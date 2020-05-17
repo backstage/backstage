@@ -55,7 +55,6 @@ const main = (argv: string[]) => {
 
   program
     .command('plugin:build')
-    .option('--watch', 'Enable watch mode')
     .description('Build a plugin')
     .action(actionHandler(() => require('./commands/plugin/build')));
 
