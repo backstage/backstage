@@ -17,7 +17,8 @@
     "lint": "lerna run lint --since origin/master --",
     "lint:all": "lerna run lint --",
     "create-plugin": "backstage-cli create-plugin",
-    "remove-plugin": "backstage-cli remove-plugin"
+    "remove-plugin": "backstage-cli remove-plugin",
+    "postinstall": "patch-package"
   },
   "workspaces": {
     "packages": [
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@backstage/cli": "^{{version}}",
     "lerna": "^3.20.2",
+    "patch-package": "^6.2.2",
     "prettier": "^1.19.1"
   }
 }
