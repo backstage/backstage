@@ -14,5 +14,14 @@
  * limitations under the License.
  */
 
-export * from './runPeriodically';
-export * from './unindent';
+import { unindent } from './unindent';
+
+describe('unindent', () => {
+  it('handles the happy path', () => {
+    const data = unindent`
+        line1
+          line2
+        line3`;
+    expect(data).toBe('line1\n  line2\nline3');
+  });
+});

@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-import { ComponentDescriptorV1Parser } from './descriptors/ComponentDescriptorV1Parser';
-import { parseDescriptorEnvelope } from './descriptors/DescriptorEnvelope';
-import { EnvelopeParser } from './descriptors/types';
+import { DescriptorEnvelopeParser } from './descriptors/DescriptorEnvelopeParser';
+import { ComponentDescriptorV1beta1Parser } from './descriptors/ComponentDescriptorV1beta1Parser';
+import { KindParser } from './descriptors/types';
 import { DescriptorParser, ParserOutput } from './types';
+import { makeValidator } from '../validation';
 
 export class DescriptorParsers implements DescriptorParser {
   static create(): DescriptorParser {
-    return new DescriptorParsers([new ComponentDescriptorV1Parser()]);
+    const validators = makeValidator();
+    return new DescriptorParsers(new DescriptorEnvelopeParser(validators), [
+      new ComponentDescriptorV1beta1Parser(),
+    ]);
   }
 
-  constructor(private readonly parsers: EnvelopeParser[]) {}
+  constructor(
+    private readonly envelopeParser: DescriptorEnvelopeParser,
+    private readonly kindParsers: KindParser[],
+  ) {}
 
   async parse(descriptor: object): Promise<ParserOutput> {
-    const envelope = await parseDescriptorEnvelope(descriptor);
-
-    for (const parser of this.parsers) {
+    const envelope = await this.envelopeParser.parse(descriptor);
+    for (const parser of this.kindParsers) {
       const parsed = await parser.tryParse(envelope);
       if (parsed) {
         return parsed;

@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export * from './runPeriodically';
-export * from './unindent';
+export type Validators = {
+  isValidApiVersion(value: any): boolean;
+  isValidKind(value: any): boolean;
+  isValidEntityName(value: any): boolean;
+  normalizeEntityName(value: string): string;
+  isValidLabelKey(value: any): boolean;
+  isValidLabelValue(value: any): boolean;
+  isValidAnnotationKey(value: any): boolean;
+  isValidAnnotationValue(value: any): boolean;
+};
