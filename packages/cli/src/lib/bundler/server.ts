@@ -23,7 +23,7 @@ import { createConfig } from './config';
 import { ServeOptions } from './types';
 import { resolveBundlingPaths } from './paths';
 
-export async function startDevServer(options: ServeOptions) {
+export async function serveBundle(options: ServeOptions) {
   const host = process.env.HOST ?? '0.0.0.0';
   const defaultPort = parseInt(process.env.PORT ?? '', 10) || 3000;
 

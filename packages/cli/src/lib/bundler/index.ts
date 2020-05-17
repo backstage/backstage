@@ -15,4 +15,4 @@
  */
 
 export { buildBundle } from './bundle';
-export { startDevServer } from './server';
+export { serveBundle } from './server';

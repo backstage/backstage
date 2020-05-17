@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { buildBundle } from '../../lib/bundle';
+import { buildBundle } from '../../lib/bundler';
 import { Command } from 'commander';
 
 export default async (cmd: Command) => {

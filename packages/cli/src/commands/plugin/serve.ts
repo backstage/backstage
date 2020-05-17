@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { startDevServer } from '../../lib/bundle';
+import { serveBundle } from '../../lib/bundler';
 import { Command } from 'commander';
 
 export default async (cmd: Command) => {
-  await startDevServer({
+  await serveBundle({
     entry: 'dev/index',
     checksEnabled: cmd.check,
   });
