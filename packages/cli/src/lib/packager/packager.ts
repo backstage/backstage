@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { rollup, OutputOptions } from 'rollup';
+import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
 import { relative as relativePath } from 'path';
 import { paths } from '../paths';
-import { makeConfig } from './config';
+import { makeConfigs } from './config';
 
 function formatErrorMessage(error: any) {
   let msg = '';
@@ -67,13 +67,21 @@ function formatErrorMessage(error: any) {
   return msg;
 }
 
-export const buildPackage = async () => {
+async function build(config: RollupOptions) {
   try {
-    const config = makeConfig();
     const bundle = await rollup(config);
-    await bundle.generate(config.output as OutputOptions);
-    await bundle.write(config.output as OutputOptions);
+    if (config.output) {
+      for (const output of [config.output].flat()) {
+        await bundle.generate(output);
+        await bundle.write(output);
+      }
+    }
   } catch (error) {
     throw new Error(formatErrorMessage(error));
   }
+}
+
+export const buildPackage = async () => {
+  const configs = makeConfigs();
+  await Promise.all(configs.map(build));
 };

@@ -21,32 +21,34 @@ import postcss from 'rollup-plugin-postcss';
 import esbuild from 'rollup-plugin-esbuild';
 import imageFiles from 'rollup-plugin-image-files';
 import json from '@rollup/plugin-json';
-import { RollupWatchOptions } from 'rollup';
+import { RollupOptions } from 'rollup';
 
-export const makeConfig = (): RollupWatchOptions => {
-  return {
-    input: 'src/index.ts',
-    output: {
-      file: 'dist/index.esm.js',
-      format: 'module',
+export const makeConfigs = (): RollupOptions[] => {
+  return [
+    {
+      input: 'src/index.ts',
+      output: {
+        file: 'dist/index.esm.js',
+        format: 'module',
+      },
+      plugins: [
+        peerDepsExternal({
+          includeDependencies: true,
+        }),
+        resolve({
+          mainFields: ['browser', 'module', 'main'],
+        }),
+        commonjs({
+          include: ['node_modules/**', '../../node_modules/**'],
+          exclude: ['**/*.stories.*', '**/*.test.*'],
+        }),
+        postcss(),
+        imageFiles(),
+        json(),
+        esbuild({
+          target: 'es2019',
+        }),
+      ],
     },
-    plugins: [
-      peerDepsExternal({
-        includeDependencies: true,
-      }),
-      resolve({
-        mainFields: ['browser', 'module', 'main'],
-      }),
-      commonjs({
-        include: ['node_modules/**', '../../node_modules/**'],
-        exclude: ['**/*.stories.*', '**/*.test.*'],
-      }),
-      postcss(),
-      imageFiles(),
-      json(),
-      esbuild({
-        target: 'es2019',
-      }),
-    ],
-  };
+  ];
 };
