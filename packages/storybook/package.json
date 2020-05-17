@@ -4,8 +4,8 @@
   "description": "Storybook build for core package",
   "private": true,
   "scripts": {
-    "start": "backstage-cli watch-deps --build -- start-storybook -p 6006",
-    "build-storybook": "backstage-cli watch-deps --build -- build-storybook --output-dir dist"
+    "start": "start-storybook -p 6006",
+    "build-storybook": "build-storybook --output-dir dist"
   },
   "workspaces": {
     "nohoist": [
