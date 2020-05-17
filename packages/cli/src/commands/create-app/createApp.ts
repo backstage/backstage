@@ -21,20 +21,10 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
-import { Task, templatingTask } from '../../lib/tasks';
+import { Task, templatingTask, installWithLocalDeps } from '../../lib/tasks';
 import { paths } from '../../lib/paths';
 import { version } from '../../lib/version';
 const exec = promisify(execCb);
-
-// List of local packages that we need to modify as a part of an E2E test
-const PATCH_PACKAGES = [
-  'cli',
-  'core',
-  'dev-utils',
-  'test-utils',
-  'test-utils-core',
-  'theme',
-];
 
 async function checkExists(rootDir: string, name: string) {
   await Task.forItem('checking', name, async () => {
@@ -80,19 +70,7 @@ async function buildApp(appDir: string) {
     });
   };
 
-  // e2e testing needs special treatment
-  if (process.env.BACKSTAGE_E2E_CLI_TEST) {
-    Task.section('Linking packages locally for e2e tests');
-    await patchPackageResolutions(appDir);
-  }
-
-  await runCmd('yarn install');
-
-  if (process.env.BACKSTAGE_E2E_CLI_TEST) {
-    Task.section('Patchling local dependencies for e2e tests');
-    await patchLocalDependencies(appDir);
-  }
-
+  await installWithLocalDeps(appDir);
   await runCmd('yarn tsc');
   await runCmd('yarn build');
 }
@@ -109,65 +87,6 @@ export async function moveApp(
       );
     });
   });
-}
-
-async function patchPackageResolutions(appDir: string) {
-  const pkgJsonPath = resolvePath(appDir, 'package.json');
-  const pkgJson = await fs.readJson(pkgJsonPath);
-
-  pkgJson.resolutions = pkgJson.resolutions || {};
-  pkgJson.dependencies = pkgJson.dependencies || {};
-
-  for (const name of PATCH_PACKAGES) {
-    await Task.forItem(
-      'adding',
-      `@backstage/${name} link to package.json`,
-      async () => {
-        const pkgPath = paths.resolveOwnRoot('packages', name);
-        // Add to both resolutions and dependencies, or transitive dependencies will still be fetched from the registry.
-        pkgJson.dependencies[`@backstage/${name}`] = `file:${pkgPath}`;
-        pkgJson.resolutions[`@backstage/${name}`] = `file:${pkgPath}`;
-
-        await fs
-          .writeJSON(pkgJsonPath, pkgJson, { encoding: 'utf8', spaces: 2 })
-          .catch((error) => {
-            throw new Error(
-              `Failed to add resolutions to package.json: ${error.message}`,
-            );
-          });
-      },
-    );
-  }
-}
-
-async function patchLocalDependencies(appDir: string) {
-  for (const name of PATCH_PACKAGES) {
-    await Task.forItem(
-      'patching',
-      `node_modules/@backstage/${name} package.json`,
-      async () => {
-        const depJsonPath = resolvePath(
-          appDir,
-          'node_modules/@backstage',
-          name,
-          'package.json',
-        );
-        const depJson = await fs.readJson(depJsonPath);
-
-        // We want dist to be used for e2e tests
-        delete depJson['main:src'];
-        depJson.types = 'dist/index.d.ts';
-
-        await fs
-          .writeJSON(depJsonPath, depJson, { encoding: 'utf8', spaces: 2 })
-          .catch((error) => {
-            throw new Error(
-              `Failed to add resolutions to package.json: ${error.message}`,
-            );
-          });
-      },
-    );
-  }
 }
 
 export default async () => {
