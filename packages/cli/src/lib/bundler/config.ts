@@ -55,6 +55,9 @@ export function createConfig(
     mode: isDev ? 'development' : 'production',
     profile: false,
     bail: false,
+    performance: {
+      hints: false, // we check the gzip size instead
+    },
     devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
