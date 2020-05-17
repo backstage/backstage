@@ -19,39 +19,40 @@ import chalk from 'chalk';
 import { paths } from '../paths';
 import { makeConfig } from './config';
 
-function logError(error: any) {
-  console.log('');
+function formatErrorMessage(error: any) {
+  let msg = '';
 
   if (error.code === 'PLUGIN_ERROR') {
     // typescript2 plugin has a complete message with all codeframes
     if (error.plugin === 'rpt2') {
-      console.log(error.message);
+      msg += `${error.message}\n`;
     } else {
       // Log which plugin is causing errors to make it easier to identity.
       // If we see these in logs we likely want to provide some custom error
       // output for those plugins too.
-      console.log(`(plugin ${error.plugin}) ${error}`);
+      msg += `(plugin ${error.plugin}) ${error}\n`;
     }
   } else {
     // Generic rollup errors, log what's available
     if (error.loc) {
       const file = `${paths.resolveTarget((error.loc.file || error.id)!)}`;
       const pos = `${error.loc.line}:${error.loc.column}`;
-      console.log(`${file} [${pos}]`);
+      msg += `${file} [${pos}]\n`;
     } else if (error.id) {
-      console.log(paths.resolveTarget(error.id));
+      msg += `${paths.resolveTarget(error.id)}\n`;
     }
 
-    console.log(String(error));
+    msg += `${error}\n`;
 
     if (error.url) {
-      console.log(chalk.cyan(error.url));
+      msg += `${chalk.cyan(error.url)}\n`;
     }
 
     if (error.frame) {
-      console.log(chalk.dim(error.frame));
+      msg += `${chalk.dim(error.frame)}\n`;
     }
   }
+  return msg;
 }
 
 export const buildPackage = async () => {
@@ -61,7 +62,6 @@ export const buildPackage = async () => {
     await bundle.generate(config.output as OutputOptions);
     await bundle.write(config.output as OutputOptions);
   } catch (error) {
-    logError(error);
-    process.exit(1);
+    throw new Error(formatErrorMessage(error));
   }
 };
