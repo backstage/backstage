@@ -16,6 +16,7 @@
 
 import { rollup, OutputOptions } from 'rollup';
 import chalk from 'chalk';
+import { relative as relativePath } from 'path';
 import { paths } from '../paths';
 import { makeConfig } from './config';
 
@@ -24,8 +25,19 @@ function formatErrorMessage(error: any) {
 
   if (error.code === 'PLUGIN_ERROR') {
     // typescript2 plugin has a complete message with all codeframes
-    if (error.plugin === 'rpt2') {
-      msg += `${error.message}\n`;
+    if (error.plugin === 'esbuild') {
+      msg += `${error.message}\n\n`;
+      for (const { text, location } of error.errors) {
+        const { line, column } = location;
+        const path = relativePath(paths.targetDir, error.id);
+        const loc = chalk.cyan(`${path}:${line}:${column}`);
+
+        if (text === 'Unexpected "<"' && error.id.endsWith('.js')) {
+          msg += `${loc}: ${text}, JavaScript files with JSX should use a .jsx extension`;
+        } else {
+          msg += `${loc}: ${text}`;
+        }
+      }
     } else {
       // Log which plugin is causing errors to make it easier to identity.
       // If we see these in logs we likely want to provide some custom error
