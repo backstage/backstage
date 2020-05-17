@@ -3395,13 +3395,6 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
-"@sucrase/jest-plugin@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@sucrase/jest-plugin/-/jest-plugin-2.0.0.tgz#bcca4d877f5013fd66d4092e4c8ba475b18228e4"
-  integrity sha512-UqmtOnj2OliwV1qKFCQsci41vPX665wGvf5YosRjL+l6jF69HrgB3T8gGnCcF4tAmRycYw8t59x+Dgz64szXWA==
-  dependencies:
-    sucrase "^3.0.0"
-
 "@sucrase/webpack-loader@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@sucrase/webpack-loader/-/webpack-loader-2.0.0.tgz#b8a70b8d3df3eeb570e6a3315e1a9c6b723e4a37"
@@ -18851,7 +18844,7 @@ stylis@3.5.0:
   resolved "https://registry.npmjs.org/stylis/-/stylis-3.5.0.tgz#016fa239663d77f868fef5b67cf201c4b7c701e1"
   integrity sha512-pP7yXN6dwMzAR29Q0mBrabPCe0/mNO1MSr93bhay+hcZondvMMTpeGyd8nbhYJdyperNT2DRxONQuUGcJr5iPw==
 
-sucrase@^3.0.0, sucrase@^3.14.0:
+sucrase@^3.14.0:
   version "3.14.0"
   resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.14.0.tgz#4364f4da5d57465acba364ef65b14ca78672d500"
   integrity sha512-sWyDtHMD0Q1wv4GpL3Jp10Pxi8ht4qrYeo1tAtHJ21BaMjl3PCrIM22FudoKRVY90r+lj3ytvIcf6WkYqt7TJg==

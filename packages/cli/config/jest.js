@@ -55,7 +55,7 @@ async function getConfig() {
     // TODO: jest is working on module support, it's possible that we can remove this in the future
     transform: {
       '\\.esm\\.js$': require.resolve('jest-esm-transformer'),
-      '\\.(js|jsx|ts|tsx)': require.resolve('@sucrase/jest-plugin'),
+      '\\.(js|jsx|ts|tsx)': require.resolve('ts-jest'),
     },
 
     // Default behaviour is to not apply transforms for node_modules, but we still want

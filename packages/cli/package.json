@@ -36,7 +36,6 @@
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@spotify/web-scripts": "^6.0.0",
-    "@sucrase/jest-plugin": "^2.0.0",
     "@sucrase/webpack-loader": "^2.0.0",
     "bfj": "^7.0.2",
     "chalk": "^4.0.0",
