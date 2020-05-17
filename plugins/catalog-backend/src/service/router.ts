@@ -36,7 +36,7 @@ export async function createRouter(
   if (itemsCatalog) {
     // Components
     router
-      .get('/components', async (req, res) => {
+      .get('/components', async (_req, res) => {
         const components = await itemsCatalog.components();
         res.status(200).send(components);
       })
@@ -55,7 +55,7 @@ export async function createRouter(
         const output = await locationsCatalog.addLocation(input);
         res.status(201).send(output);
       })
-      .get('/locations', async (req, res) => {
+      .get('/locations', async (_req, res) => {
         const output = await locationsCatalog.locations();
         res.status(200).send(output);
       })
