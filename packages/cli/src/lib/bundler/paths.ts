@@ -48,7 +48,7 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     targetSrc: paths.resolveTarget('src'),
     targetDev: paths.resolveTarget('dev'),
     targetEntry: resolveTargetModule(entry),
-    targetTsConfig: paths.resolveTarget('tsconfig.json'),
+    targetTsConfig: paths.resolveTargetRoot('tsconfig.json'),
     targetNodeModules: paths.resolveTarget('node_modules'),
     targetPackageJson: paths.resolveTarget('package.json'),
   };
