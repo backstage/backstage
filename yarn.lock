@@ -18844,10 +18844,10 @@ stylis@3.5.0:
   resolved "https://registry.npmjs.org/stylis/-/stylis-3.5.0.tgz#016fa239663d77f868fef5b67cf201c4b7c701e1"
   integrity sha512-pP7yXN6dwMzAR29Q0mBrabPCe0/mNO1MSr93bhay+hcZondvMMTpeGyd8nbhYJdyperNT2DRxONQuUGcJr5iPw==
 
-sucrase@^3.14.0:
-  version "3.14.0"
-  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.14.0.tgz#4364f4da5d57465acba364ef65b14ca78672d500"
-  integrity sha512-sWyDtHMD0Q1wv4GpL3Jp10Pxi8ht4qrYeo1tAtHJ21BaMjl3PCrIM22FudoKRVY90r+lj3ytvIcf6WkYqt7TJg==
+sucrase@^3.14.1:
+  version "3.14.1"
+  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.14.1.tgz#ae948ced2887696637606f8d8f405e9ac9b6936c"
+  integrity sha512-f6aomLv8u9kBfJvO06a93kYBvdYg0WxlrrbOCN31FI/hOzAvZMS9WFPj77hT2EMWsrPyxE1TdepkKiOarRlX/g==
   dependencies:
     commander "^4.0.0"
     glob "7.1.6"

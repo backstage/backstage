@@ -15,5 +15,4 @@
  */
 
 export { default } from './BottomLink';
-import type { Props } from './BottomLink';
-export type { Props };
+export type { Props } from './BottomLink';
