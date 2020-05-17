@@ -21,7 +21,9 @@ import {
   MenuItem,
   Typography,
 } from '@material-ui/core';
-import { Cancel, MoreVert, SwapHoriz } from '@material-ui/icons';
+import Cancel from '@material-ui/icons/Cancel';
+import MoreVert from '@material-ui/icons/MoreVert';
+import SwapHoriz from '@material-ui/icons/SwapHoriz';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
