@@ -26,6 +26,16 @@ import { paths } from '../../lib/paths';
 import { version } from '../../lib/version';
 const exec = promisify(execCb);
 
+// List of local packages that we need to modify as a part of an E2E test
+const PATCH_PACKAGES = [
+  'cli',
+  'core',
+  'dev-utils',
+  'test-utils',
+  'test-utils-core',
+  'theme',
+];
+
 async function checkExists(rootDir: string, name: string) {
   await Task.forItem('checking', name, async () => {
     const destination = resolvePath(rootDir, name);
@@ -57,19 +67,34 @@ async function cleanUp(tempDir: string) {
   });
 }
 
-async function buildApp(appFolder: string) {
-  const commands = ['yarn install', 'yarn build'];
-  for (const command of commands) {
-    await Task.forItem('executing', command, async () => {
-      process.chdir(appFolder);
+async function buildApp(appDir: string) {
+  const runCmd = async (cmd: string) => {
+    await Task.forItem('executing', cmd, async () => {
+      process.chdir(appDir);
 
-      await exec(command).catch((error) => {
+      await exec(cmd).catch((error) => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
-        throw new Error(`Could not execute command ${chalk.cyan(command)}`);
+        throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
       });
     });
+  };
+
+  // e2e testing needs special treatment
+  if (process.env.BACKSTAGE_E2E_CLI_TEST) {
+    Task.section('Linking packages locally for e2e tests');
+    await patchPackageResolutions(appDir);
   }
+
+  await runCmd('yarn install');
+
+  if (process.env.BACKSTAGE_E2E_CLI_TEST) {
+    Task.section('Patchling local dependencies for e2e tests');
+    await patchLocalDependencies(appDir);
+  }
+
+  await runCmd('yarn tsc');
+  await runCmd('yarn build');
 }
 
 export async function moveApp(
@@ -86,23 +111,14 @@ export async function moveApp(
   });
 }
 
-async function addPackageResolutions(appDir: string) {
+async function patchPackageResolutions(appDir: string) {
   const pkgJsonPath = resolvePath(appDir, 'package.json');
   const pkgJson = await fs.readJson(pkgJsonPath);
 
   pkgJson.resolutions = pkgJson.resolutions || {};
   pkgJson.dependencies = pkgJson.dependencies || {};
 
-  const depNames = [
-    'cli',
-    'core',
-    'dev-utils',
-    'test-utils',
-    'test-utils-core',
-    'theme',
-  ];
-
-  for (const name of depNames) {
+  for (const name of PATCH_PACKAGES) {
     await Task.forItem(
       'adding',
       `@backstage/${name} link to package.json`,
@@ -114,6 +130,36 @@ async function addPackageResolutions(appDir: string) {
 
         await fs
           .writeJSON(pkgJsonPath, pkgJson, { encoding: 'utf8', spaces: 2 })
+          .catch((error) => {
+            throw new Error(
+              `Failed to add resolutions to package.json: ${error.message}`,
+            );
+          });
+      },
+    );
+  }
+}
+
+async function patchLocalDependencies(appDir: string) {
+  for (const name of PATCH_PACKAGES) {
+    await Task.forItem(
+      'patching',
+      `node_modules/@backstage/${name} package.json`,
+      async () => {
+        const depJsonPath = resolvePath(
+          appDir,
+          'node_modules/@backstage',
+          name,
+          'package.json',
+        );
+        const depJson = await fs.readJson(depJsonPath);
+
+        // We want dist to be used for e2e tests
+        delete depJson['main:src'];
+        depJson.types = 'dist/index.d.ts';
+
+        await fs
+          .writeJSON(depJsonPath, depJson, { encoding: 'utf8', spaces: 2 })
           .catch((error) => {
             throw new Error(
               `Failed to add resolutions to package.json: ${error.message}`,
@@ -163,12 +209,6 @@ export default async () => {
 
     Task.section('Moving to final location');
     await moveApp(tempDir, appDir, answers.name);
-
-    // e2e testing needs special treatment
-    if (process.env.BACKSTAGE_E2E_CLI_TEST) {
-      Task.section('Linking packages locally for e2e tests');
-      await addPackageResolutions(appDir);
-    }
 
     Task.section('Building the app');
     await buildApp(appDir);
