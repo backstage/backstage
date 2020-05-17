@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { withCache, getDefaultCacheOptions } from '../../lib/buildCache';
 import { buildPackage } from '../../lib/packager';
 
 export default async () => {
-  await withCache(getDefaultCacheOptions(), async () => {
-    await buildPackage();
-  });
+  await buildPackage();
 };
