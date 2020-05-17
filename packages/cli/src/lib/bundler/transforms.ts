@@ -67,17 +67,7 @@ export const transforms = (
     {
       test: /\.css$/i,
       use: [
-        isDev
-          ? {
-              loader: require.resolve('style-loader'),
-              options: {
-                attrs: { origin: 'main' },
-              },
-            }
-          : {
-              loader: MiniCssExtractPlugin.loader,
-            },
-
+        isDev ? require.resolve('style-loader') : MiniCssExtractPlugin.loader,
         {
           loader: require.resolve('css-loader'),
           options: {
