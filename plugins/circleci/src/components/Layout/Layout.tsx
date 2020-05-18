@@ -24,7 +24,6 @@ export const Layout: React.FC = ({ children }) => {
         pageTitleOverride="Circle CI"
         title={
           <Box display="flex" alignItems="center">
-            <img src={logo} style={{ height: '1em' }} alt="Backstage Logo" />
             <Box mr={1} /> Circle CI
           </Box>
         }

@@ -66,10 +66,12 @@
   },
   "license": "Apache-2.0",
   "proxy": {
-      "/circleci/api": {
-        "target": "https://circleci.com/api/v1.1",
-        "changeOrigin": true,
-        "pathRewrite": {"^/circleci/api/": "/"}
+    "/circleci/api": {
+      "target": "https://circleci.com/api/v1.1",
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/circleci/api/": "/"
       }
     }
+  }
 }
