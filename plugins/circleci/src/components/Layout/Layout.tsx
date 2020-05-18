@@ -15,8 +15,6 @@
  */
 import React from 'react';
 import { Header, Page, pageTheme, HeaderLabel } from '@backstage/core';
-// @ts-ignore
-import logo from '../../assets/circle-logo-badge-white-15.png';
 import { Box } from '@material-ui/core';
 
 export const Layout: React.FC = ({ children }) => {
@@ -26,7 +24,6 @@ export const Layout: React.FC = ({ children }) => {
         pageTitleOverride="Circle CI"
         title={
           <Box display="flex" alignItems="center">
-            <img src={logo} style={{ height: '1em' }} alt="Backstage Logo" />
             <Box mr={1} /> Circle CI
           </Box>
         }
