@@ -17,7 +17,8 @@ import React, { FC } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { ContentHeader, SupportButton } from '@backstage/core';
 import { Button, IconButton, Box, Typography } from '@material-ui/core';
-import { Settings as SettingsIcon, ArrowBack } from '@material-ui/icons';
+import ArrowBack from '@material-ui/icons/ArrowBack';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 export type Props = { title?: string };
 export const PluginHeader: FC<Props> = ({ title = 'Circle CI' }) => {

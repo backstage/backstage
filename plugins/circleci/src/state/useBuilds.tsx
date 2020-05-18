@@ -27,7 +27,6 @@ export function useBuilds() {
 
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
-  // eslint-disable-line no-use-before-define
   const { isPolling, startPolling, stopPolling } = useAsyncPolling(
     () => getBuilds(),
     INTERVAL_AMOUNT,

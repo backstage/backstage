@@ -29,7 +29,6 @@ export function useBuildWithSteps(buildId: number) {
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 
-  /* eslint-disable-line no-use-before-define */
   const { isPolling, startPolling, stopPolling } = useAsyncPolling(
     () => getBuildWithSteps(),
     INTERVAL_AMOUNT,

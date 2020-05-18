@@ -15,7 +15,8 @@
  */
 import React, { FC } from 'react';
 import { Link, Typography, Box, IconButton } from '@material-ui/core';
-import { Replay as RetryIcon, GitHub as GithubIcon } from '@material-ui/icons';
+import RetryIcon from '@material-ui/icons/Replay';
+import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   StatusError,
@@ -123,7 +124,7 @@ export const CITable: FC<{
       data={builds}
       title={
         <Box display="flex" alignItems="center">
-          <GithubIcon />
+          <GitHubIcon />
           <Box mr={1} />
           <Typography variant="h6">{projectName}</Typography>
         </Box>
