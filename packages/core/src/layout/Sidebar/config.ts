@@ -40,7 +40,7 @@ export const sidebarConfig = {
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
   '@backstage/core/sidebar-intro-dismissed';
 
-type SidebarContextType = {
+export type SidebarContextType = {
   isOpen: boolean;
 };
 
