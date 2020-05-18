@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { NotFoundError } from '@backstage/backend-common';
 import Knex from 'knex';
 import { v4 as uuidv4 } from 'uuid';
+import { NotFoundError } from '../../../../packages/backend-common/src/errors';
 import {
   AddDatabaseComponent,
   AddDatabaseLocation,
