@@ -37,6 +37,7 @@ async function getConfig() {
 
     // To avoid having to build all deps inside the monorepo before running tests,
     // we point directory to src/ where applicable.
+    // For example, @backstage/core = <repo-root>/packages/core/src/index.ts is added to moduleNameMapper
     for (const pkg of packages) {
       const mainSrc = pkg.get('main:src');
       if (mainSrc) {
