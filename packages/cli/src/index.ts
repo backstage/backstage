@@ -30,11 +30,13 @@ const main = (argv: string[]) => {
   program
     .command('app:build')
     .description('Build an app for a production release')
+    .option('--stats', 'Write bundle stats to output directory')
     .action(actionHandler(() => require('./commands/app/build')));
 
   program
     .command('app:serve')
     .description('Serve an app for local development')
+    .option('--check', 'Enable type checking and linting')
     .action(actionHandler(() => require('./commands/app/serve')));
 
   program
@@ -53,13 +55,13 @@ const main = (argv: string[]) => {
 
   program
     .command('plugin:build')
-    .option('--watch', 'Enable watch mode')
     .description('Build a plugin')
     .action(actionHandler(() => require('./commands/plugin/build')));
 
   program
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
+    .option('--check', 'Enable type checking and linting')
     .action(actionHandler(() => require('./commands/plugin/serve')));
 
   program
@@ -155,7 +157,7 @@ function actionHandler<T extends readonly any[]>(
   };
 }
 
-process.on('unhandledRejection', (rejection) => {
+process.on('unhandledRejection', rejection => {
   if (rejection instanceof Error) {
     exitWithError(rejection);
   } else {

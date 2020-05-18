@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { CssBaseline, ThemeProvider } from '@material-ui/core';
-import { lightTheme, darkTheme } from '@backstage/theme';
 import { createApp } from '@backstage/core';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -23,7 +21,6 @@ import Root from './components/Root';
 import AlertDisplay from './components/AlertDisplay';
 import * as plugins from './plugins';
 import apis, { alertApiForwarder } from './apis';
-import { ThemeContextType, ThemeContext, useThemeType } from './ThemeContext';
 
 const app = createApp({
   apis,
@@ -33,50 +30,15 @@ const app = createApp({
 const AppProvider = app.getProvider();
 const AppComponent = app.getRootComponent();
 
-const App: FC<{}> = () => {
-  const [theme, toggleTheme] = useThemeType(
-    localStorage.getItem('theme') || 'auto',
-  );
-
-  let backstageTheme = lightTheme;
-  switch (theme) {
-    case 'light':
-      backstageTheme = lightTheme;
-      break;
-    case 'dark':
-      backstageTheme = darkTheme;
-      break;
-    default:
-      if (!window.matchMedia) {
-        backstageTheme = lightTheme;
-        break;
-      }
-      backstageTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? darkTheme
-        : lightTheme;
-      break;
-  }
-
-  const themeContext: ThemeContextType = {
-    theme,
-    toggleTheme,
-  };
-  return (
-    <AppProvider>
-      <ThemeContext.Provider value={themeContext}>
-        <ThemeProvider theme={backstageTheme}>
-          <CssBaseline>
-            <AlertDisplay forwarder={alertApiForwarder} />
-            <Router>
-              <Root>
-                <AppComponent />
-              </Root>
-            </Router>
-          </CssBaseline>
-        </ThemeProvider>
-      </ThemeContext.Provider>
-    </AppProvider>
-  );
-};
+const App: FC<{}> = () => (
+  <AppProvider>
+    <AlertDisplay forwarder={alertApiForwarder} />
+    <Router>
+      <Root>
+        <AppComponent />
+      </Root>
+    </Router>
+  </AppProvider>
+);
 
 export default App;

@@ -1,5 +1,7 @@
 # Development Environment
 
+## Serving the Example App
+
 Open a terminal window and start the web app using the following commands from the project root:
 
 ```bash
@@ -19,6 +21,40 @@ You can now view example-app in the browser.
 
   Local:            http://localhost:8080
   On Your Network:  http://192.168.1.224:8080
+```
+
+## Editor
+
+The Backstage development environment does not require any specific editor, but it is intended to be used with one that has built-in linting and type-checking. The development server does not include any checks by default, but they can be enabled using the `--check` flag. Note that using the flag may consume more system resources and slow things down.
+
+## Package Scripts
+
+There are many commands to be found in the root [package.json](package.json), here are some useful ones:
+
+```python
+yarn start # Start serving the example app, use --check to include type checks and linting
+
+yarn storybook # Start local storybook, useful for working on components in @backstage/core
+
+yarn workspace @backstage/plugin-welcome start # Serve welcome plugin only, also supports --check
+
+yarn tsc # Run typecheck, use --watch for watch mode
+
+yarn build # Build published versions of packages, depends on tsc
+
+yarn lint # lint packages that have changed since later commit on origin/master
+yarn lint:all # lint all packages
+
+yarn test # test packages that have changed since later commit on origin/master
+yarn test:all # test all packages
+
+yarn clean # Remove all output folders and @backstage/cli cache
+
+yarn bundle # Build a production bundle of the example app
+
+yarn diff # Make sure all plugins are up to date with the latest plugin template
+
+yarn create-plugin # Create a new plugin
 ```
 
 ### (Optional)Try on Docker

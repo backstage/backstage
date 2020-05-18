@@ -4,9 +4,11 @@
   "compilerOptions": {
     "allowJs": true,
     "noEmit": false,
+    "emitDeclarationOnly": true,
     "incremental": true,
     "target": "ES2019",
     "module": "ESNext",
+    "removeComments": false,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["DOM", "DOM.Iterable", "ScriptHost", "ES2019"],
