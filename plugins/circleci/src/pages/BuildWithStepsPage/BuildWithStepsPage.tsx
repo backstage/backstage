@@ -95,12 +95,12 @@ const pickClassName = (
 const Page = () => (
   <Layout>
     <Content>
-      <BuildWithSteps />
+      <BuildWithStepsView />
     </Content>
   </Layout>
 );
 
-const BuildWithSteps: FC<{}> = () => {
+const BuildWithStepsView: FC<{}> = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
   const [settings] = useSettings();
@@ -163,4 +163,4 @@ const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
 };
 
 export default Page;
-export { BuildWithSteps };
+export { BuildWithStepsView as BuildWithSteps };
