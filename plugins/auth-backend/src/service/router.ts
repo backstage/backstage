@@ -28,7 +28,7 @@ export async function createRouter(
   const logger = options.logger.child({ plugin: 'auth' });
   const router = Router();
 
-  router.get('/ping', async (req, res) => {
+  router.get('/ping', async (_req, res) => {
     res.status(200).send('pong');
   });
 

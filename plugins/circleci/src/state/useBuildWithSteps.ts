@@ -44,6 +44,11 @@ export function useBuildWithSteps(buildId: number) {
     }
   }, [token, owner, repo, buildId]);
 
+  const { startPolling, stopPolling } = useAsyncPolling(
+    getBuildWithSteps,
+    INTERVAL_AMOUNT,
+  );
+
   const restartBuild = async () => {
     try {
       await api.retry(buildId, {

@@ -28,9 +28,9 @@
   },
   "devDependencies": {
     "@testing-library/cypress": "^6.0.0",
-    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
+    "@testing-library/user-event": "^10.2.4",
     "@types/jest": "^25.2.1",
     "@types/jquery": "^3.3.34",
     "@types/node": "^12.0.0",
@@ -64,5 +64,12 @@
       "last 1 safari version"
     ]
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "proxy": {
+      "/circleci/api": {
+        "target": "https://circleci.com/api/v1.1",
+        "changeOrigin": true,
+        "pathRewrite": {"^/circleci/api/": "/"}
+      }
+    }
 }

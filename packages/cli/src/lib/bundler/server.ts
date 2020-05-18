@@ -14,36 +14,41 @@
  * limitations under the License.
  */
 
+import yn from 'yn';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { choosePort, prepareUrls } from 'react-dev-utils/WebpackDevServerUtils';
-import { getPaths } from './paths';
 import { createConfig } from './config';
+import { ServeOptions } from './types';
+import { resolveBundlingPaths } from './paths';
 
-export async function startDevServer() {
+export async function serveBundle(options: ServeOptions) {
   const host = process.env.HOST ?? '0.0.0.0';
   const defaultPort = parseInt(process.env.PORT ?? '', 10) || 3000;
 
   const port = await choosePort(host, defaultPort);
   if (!port) {
-    return;
+    throw new Error(`Invalid or no port set: '${port}'`);
   }
 
-  const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
+  const protocol = yn(process.env.HTTPS, { default: false }) ? 'https' : 'http';
   const urls = prepareUrls(protocol, host, port);
 
-  const paths = getPaths();
-  const config = createConfig(paths);
+  const paths = resolveBundlingPaths(options);
+  const config = createConfig(paths, { ...options, isDev: true });
   const compiler = webpack(config);
+
   const server = new WebpackDevServer(compiler, {
     hot: true,
     publicPath: '/',
     historyApiFallback: true,
-    quiet: true,
+    clientLogLevel: 'warning',
+    stats: 'errors-warnings',
     https: protocol === 'https',
     host,
     port,
+    proxy: options.proxy,
   });
 
   await new Promise((resolve, reject) => {
@@ -57,4 +62,19 @@ export async function startDevServer() {
       resolve();
     });
   });
+
+  const waitForExit = async () => {
+    for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+      process.on(signal, () => {
+        server.close();
+        // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
+        process.exit();
+      });
+    }
+
+    // Block indefinitely and wait for the interrupt signal
+    return new Promise(() => {});
+  };
+
+  return waitForExit;
 }

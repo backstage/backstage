@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { startDevServer } from './server';
-import { watchDeps } from '../../../lib/watchDeps';
+import { serveBundle } from '../../lib/bundler';
+import { Command } from 'commander';
 
-export default async () => {
-  await watchDeps({ build: true });
+export default async (cmd: Command) => {
+  const waitForExit = await serveBundle({
+    entry: 'dev/index',
+    checksEnabled: cmd.check,
+  });
 
-  await startDevServer();
-
-  // Wait for interrupt signal
-  await new Promise(() => {});
+  await waitForExit();
 };

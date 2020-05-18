@@ -21,8 +21,9 @@ import {
   AuthRequester,
   AuthRequesterOptions,
 } from '../../definitions';
-import Observable from 'zen-observable';
 import { OAuthPendingRequests, PendingRequest } from './OAuthPendingRequests';
+import { BehaviorSubject } from '../lib';
+import { Observable } from '../../../types';
 
 /**
  * The OAuthRequestManager is an implementation of the OAuthRequestApi.
@@ -32,23 +33,9 @@ import { OAuthPendingRequests, PendingRequest } from './OAuthPendingRequests';
  * them all together into a single request for each OAuth provider.
  */
 export class OAuthRequestManager implements OAuthRequestApi {
-  private readonly request$: Observable<PendingAuthRequest[]>;
-  private readonly observers = new Set<
-    ZenObservable.SubscriptionObserver<PendingAuthRequest[]>
-  >();
+  private readonly subject = new BehaviorSubject<PendingAuthRequest[]>([]);
   private currentRequests: PendingAuthRequest[] = [];
   private handlerCount = 0;
-
-  constructor() {
-    this.request$ = new Observable<PendingAuthRequest[]>((observer) => {
-      observer.next(this.currentRequests);
-
-      this.observers.add(observer);
-      return () => {
-        this.observers.delete(observer);
-      };
-    }).map((requests) => requests.filter(Boolean)); // Convert from sparse array to array of present items only
-  }
 
   createAuthRequester<T>(options: AuthRequesterOptions<T>): AuthRequester<T> {
     const handler = new OAuthPendingRequests<T>();
@@ -66,7 +53,8 @@ export class OAuthRequestManager implements OAuthRequestApi {
           newRequests[index] = request;
         }
         this.currentRequests = newRequests;
-        this.observers.forEach((observer) => observer.next(newRequests));
+        // Convert from sparse array to array of present items only
+        this.subject.next(newRequests.filter(Boolean));
       },
     });
 
@@ -100,7 +88,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
   }
 
   authRequest$(): Observable<PendingAuthRequest[]> {
-    return this.request$;
+    return this.subject;
   }
 
   async showLoginPopup(options: LoginPopupOptions): Promise<any> {

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { run } from '../../lib/run';
-import { createLogFunc } from '../../lib/logging';
-import { watchDeps } from '../../lib/watchDeps';
+import fs from 'fs-extra';
+import { Command } from 'commander';
+import { serveBundle } from '../../lib/bundler';
+import { paths } from '../../lib/paths';
 
-export default async () => {
-  // Start dynamic watch and build of dependencies, then serve the app
-  await watchDeps({ build: true });
+export default async (cmd: Command) => {
+  const pkgPath = paths.resolveTarget('package.json');
+  const pkg = await fs.readJson(pkgPath);
 
-  await run('react-scripts', ['start'], {
-    env: {
-      EXTEND_ESLINT: 'true',
-      SKIP_PREFLIGHT_CHECK: 'true',
-    },
-    // We need to avoid clearing the terminal, or the build feedback of dependencies will be lost
-    stdoutLogFunc: createLogFunc(process.stdout),
+  const waitForExit = await serveBundle({
+    entry: 'src/index',
+    checksEnabled: cmd.check,
+    proxy: pkg.proxy,
   });
+
+  await waitForExit();
 };

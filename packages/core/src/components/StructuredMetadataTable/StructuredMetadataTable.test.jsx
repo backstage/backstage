@@ -36,7 +36,7 @@ describe('<StructuredMetadataTable />', () => {
         <StructuredMetadataTable metadata={metadata} />,
       );
       const keys = Object.keys(metadata);
-      keys.forEach(value => {
+      keys.forEach((value) => {
         expect(getByText(startCase(value))).toBeInTheDocument();
         expect(getByText(metadata[value])).toBeInTheDocument();
       });
@@ -49,7 +49,7 @@ describe('<StructuredMetadataTable />', () => {
       );
 
       const keys = Object.keys(metadata);
-      keys.forEach(value => {
+      keys.forEach((value) => {
         expect(getByText(startCase(value))).toBeInTheDocument();
         expect(getByText(metadata[value].toString())).toBeInTheDocument();
       });
@@ -61,10 +61,10 @@ describe('<StructuredMetadataTable />', () => {
         <StructuredMetadataTable metadata={metadata} />,
       );
       const keys = Object.keys(metadata);
-      keys.forEach(value => {
+      keys.forEach((value) => {
         expect(getByText(startCase(value))).toBeInTheDocument();
       });
-      metadata.arrayField.forEach(value => {
+      metadata.arrayField.forEach((value) => {
         expect(getByText(value)).toBeInTheDocument();
       });
     });
@@ -85,7 +85,7 @@ describe('<StructuredMetadataTable />', () => {
       );
 
       const keys = Object.keys(metadata.config);
-      keys.forEach(value => {
+      keys.forEach((value) => {
         expect(
           getByText(startCase(value), { exact: false }),
         ).toBeInTheDocument();

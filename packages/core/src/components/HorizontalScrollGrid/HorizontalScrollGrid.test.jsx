@@ -25,7 +25,7 @@ describe('<HorizontalScrollGrid />', () => {
     jest.spyOn(window.performance, 'now').mockReturnValue(5);
     jest
       .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation(cb => cb(20));
+      .mockImplementation((cb) => cb(20));
   });
 
   afterEach(() => {

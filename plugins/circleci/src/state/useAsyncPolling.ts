@@ -33,5 +33,5 @@ export const useAsyncPolling = (
   const stopPolling = () => {
     isPolling.current = false;
   };
-  return { isPolling, startPolling, stopPolling };
+  return { startPolling, stopPolling };
 };

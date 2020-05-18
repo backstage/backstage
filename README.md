@@ -62,11 +62,12 @@ To run a Backstage app, you will need to have the following installed:
 - [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
 - [yarn](https://classic.yarnpkg.com/en/docs/install)
 
-After cloning this repo, open a terminal window and start the web app using the following commands from the project root:
+After cloning this repo, open a terminal window and start the example app using the following commands from the project root:
 
 ```bash
-yarn install
-yarn start
+yarn install # Install dependencies
+
+yarn start # Start dev server, use --check to enable linting and type-checks
 ```
 
 The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.

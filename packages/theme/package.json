@@ -17,6 +17,7 @@
   ],
   "license": "Apache-2.0",
   "main": "dist/index.esm.js",
+  "main:src": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
     "build": "backstage-cli plugin:build",
