@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { GitType, BuildSummary } from 'circleci-api';
-import { useState, useEffect, useCallback } from 'react';
-import { circleCIApiRef } from '../api/index';
+import { BuildSummary, GitType } from 'circleci-api';
+import { useCallback, useEffect, useState } from 'react';
 import { useAsyncRetry } from 'react-use';
+import { circleCIApiRef } from '../api/index';
 import { CITableBuildInfo } from '../pages/BuildsPage/lib/CITable';
 import { useSettings } from './useSettings';
 
@@ -80,9 +80,10 @@ export function useBuilds() {
 
   const getBuilds = useCallback(
     async ({ limit, offset }: { limit: number; offset: number }) => {
-      if (owner === '' || repo === '') {
-        return;
+      if (owner === '' || repo === '' || token === '') {
+        return Promise.reject('No credentials provided');
       }
+
       try {
         return await api.getBuilds(
           { limit, offset },

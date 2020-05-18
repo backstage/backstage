@@ -15,10 +15,10 @@
  */
 import { errorApiRef, useApi } from '@backstage/core';
 import { useCallback } from 'react';
-import { circleCIApiRef, GitType } from '../api/index';
-import { useSettings } from './useSettings';
-import { useAsyncPolling } from './useAsyncPolling';
 import { useAsyncRetry } from 'react-use';
+import { circleCIApiRef, GitType } from '../api/index';
+import { useAsyncPolling } from './useAsyncPolling';
+import { useSettings } from './useSettings';
 
 const INTERVAL_AMOUNT = 1500;
 export function useBuildWithSteps(buildId: number) {
@@ -28,8 +28,9 @@ export function useBuildWithSteps(buildId: number) {
 
   const getBuildWithSteps = useCallback(async () => {
     if (owner === '' || repo === '' || token === '') {
-      return;
+      return Promise.reject('No credentials provided');
     }
+
     try {
       const options = {
         token: token,
@@ -39,8 +40,8 @@ export function useBuildWithSteps(buildId: number) {
           type: GitType.GITHUB,
         },
       };
-      const b = await api.getBuild(buildId, options);
-      return Promise.resolve(b);
+      const build = await api.getBuild(buildId, options);
+      return Promise.resolve(build);
     } catch (e) {
       errorApi.post(e);
       return Promise.reject(e);
