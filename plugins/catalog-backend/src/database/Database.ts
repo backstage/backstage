@@ -28,7 +28,7 @@ export class Database {
   constructor(private readonly database: Knex) {}
 
   async addOrUpdateComponent(component: AddDatabaseComponent): Promise<void> {
-    await this.database.transaction(async tx => {
+    await this.database.transaction(async (tx) => {
       // TODO(freben): Currently, several locations can compete for the same component
       // TODO(freben): If locationId is unset in the input, it won't be overwritten - should we instead replace with null?
       const count = await tx<DatabaseComponent>('components')
@@ -60,7 +60,7 @@ export class Database {
   }
 
   async addLocation(location: AddDatabaseLocation): Promise<DatabaseLocation> {
-    return await this.database.transaction<DatabaseLocation>(async tx => {
+    return await this.database.transaction<DatabaseLocation>(async (tx) => {
       const existingLocation = await tx<DatabaseLocation>('locations')
         .where({
           target: location.target,
@@ -80,9 +80,7 @@ export class Database {
       });
 
       return (
-        await tx<DatabaseLocation>('locations')
-          .where({ id })
-          .select()
+        await tx<DatabaseLocation>('locations').where({ id }).select()
       )?.[0];
     });
   }
@@ -105,12 +103,6 @@ export class Database {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
     return items[0];
-  }
-
-  private async locationByTarget(
-    target: string,
-  ): Promise<DatabaseLocation | undefined> {
-    return (await this.locations()).find(l => l.target === target);
   }
 
   async locations(): Promise<DatabaseLocation[]> {
