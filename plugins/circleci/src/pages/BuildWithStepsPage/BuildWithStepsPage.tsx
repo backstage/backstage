@@ -92,7 +92,15 @@ const pickClassName = (
   return classes.neutral;
 };
 
-const BuildWithStepsPage: FC<{}> = () => {
+const Page = () => (
+  <Layout>
+    <Content>
+      <BuildWithStepsView />
+    </Content>
+  </Layout>
+);
+
+const BuildWithStepsView: FC<{}> = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
   const [settings] = useSettings();
@@ -106,23 +114,21 @@ const BuildWithStepsPage: FC<{}> = () => {
   }, [buildId, settings]);
 
   return (
-    <Layout>
-      <Content>
-        <PluginHeader title="Build info" />
+    <>
+      <PluginHeader title="Build info" />
 
-        <Grid container spacing={3} direction="column">
-          <Grid item>
-            <InfoCard
-              className={pickClassName(classes, value)}
-              title={<BuildName build={value} />}
-              cardClassName={classes.cardContent}
-            >
-              {loading ? <Progress /> : <BuildsList build={value} />}
-            </InfoCard>
-          </Grid>
+      <Grid container spacing={3} direction="column">
+        <Grid item>
+          <InfoCard
+            className={pickClassName(classes, value)}
+            title={<BuildName build={value} />}
+            cardClassName={classes.cardContent}
+          >
+            {loading ? <Progress /> : <BuildsList build={value} />}
+          </InfoCard>
         </Grid>
-      </Content>
-    </Layout>
+      </Grid>
+    </>
   );
 };
 
@@ -156,4 +162,5 @@ const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
   );
 };
 
-export default BuildWithStepsPage;
+export default Page;
+export { BuildWithStepsView as BuildWithSteps };

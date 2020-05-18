@@ -18,3 +18,4 @@ export { plugin } from './plugin';
 export * from './api';
 export * from './proxy';
 export * from './navTargets';
+export { CircleCIWidget } from './components/App';
