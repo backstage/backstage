@@ -13,41 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BuildSummary, BuildWithSteps } from '../api';
 
-export type SettingsState = {
-  owner: string;
-  repo: string;
-  token: string;
+export type Settings = { owner: string; repo: string; token: string };
+export type SettingsState = Settings & {
+  showSettings: boolean;
 };
 
-export type BuildsState = BuildSummary[];
+export type State = SettingsState;
 
-export type State = {
-  settings: SettingsState;
-  builds: BuildsState;
-  buildsWithSteps: BuildsWithStepsState;
-};
+type SettingsAction =
+  | {
+      type: 'setCredentials';
+      payload: {
+        repo: string;
+        owner: string;
+        token: string;
+      };
+    }
+  | { type: 'showSettings' }
+  | { type: 'hideSettings' };
 
-type SettingsAction = {
-  type: 'setCredentials';
-  payload: {
-    repo: string;
-    owner: string;
-    token: string;
-  };
-};
-
-type BuildsAction = {
-  type: 'setBuilds';
-  payload: BuildSummary[];
-};
-
-type BuildsWithStepsAction = {
-  type: 'setBuildWithSteps';
-  payload: BuildWithSteps;
-};
-
-export type BuildsWithStepsState = Record<number, BuildWithSteps>;
-
-export type Action = SettingsAction | BuildsAction | BuildsWithStepsAction;
+export type Action = SettingsAction;

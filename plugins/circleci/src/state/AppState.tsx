@@ -15,9 +15,8 @@
  */
 import React, { FC, useReducer, Dispatch, Reducer } from 'react';
 import { circleCIApiRef } from '../api';
-import type { SettingsState, State, Action } from './types';
-export type { SettingsState };
-import equal from 'fast-deep-equal';
+import type { State, Action, SettingsState } from './types';
+export { SettingsState };
 
 export const AppContext = React.createContext<[State, Dispatch<Action>]>(
   [] as any,
@@ -25,13 +24,10 @@ export const AppContext = React.createContext<[State, Dispatch<Action>]>(
 export const STORAGE_KEY = `${circleCIApiRef.id}.settings`;
 
 const initialState: State = {
-  settings: {
-    owner: '',
-    repo: '',
-    token: '',
-  },
-  builds: [],
-  buildsWithSteps: {},
+  owner: '',
+  repo: '',
+  token: '',
+  showSettings: false,
 };
 
 const reducer: Reducer<State, Action> = (state, action) => {
@@ -39,23 +35,12 @@ const reducer: Reducer<State, Action> = (state, action) => {
     case 'setCredentials':
       return {
         ...state,
-        settings: { ...state.settings, ...action.payload },
+        ...action.payload,
       };
-    case 'setBuilds':
-      if (equal(action.payload, state.builds)) return state;
-      return {
-        ...state,
-        builds: action.payload,
-      };
-    case 'setBuildWithSteps': {
-      return {
-        ...state,
-        buildsWithSteps: {
-          ...state.buildsWithSteps,
-          [action.payload.build_num!]: action.payload,
-        },
-      };
-    }
+    case 'showSettings':
+      return { ...state, showSettings: true };
+    case 'hideSettings':
+      return { ...state, showSettings: false };
     default:
       return state;
   }
@@ -63,7 +48,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 export const AppStateProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
   return (
     <AppContext.Provider value={[state, dispatch]}>
       <>{children}</>

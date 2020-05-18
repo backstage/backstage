@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { errorApiRef, useApi } from '@backstage/core';
 import { useContext, useEffect } from 'react';
-import { AppContext, STORAGE_KEY, SettingsState } from '.';
-import { useApi, errorApiRef } from '@backstage/core';
+import { AppContext, STORAGE_KEY } from './AppState';
+import { Settings } from './types';
 
 export function useSettings() {
-  const [{ settings }, dispatch] = useContext(AppContext);
+  const [settings, dispatch] = useContext(AppContext);
 
   const errorApi = useApi(errorApiRef);
 
@@ -44,20 +45,22 @@ export function useSettings() {
     rehydrate();
   }, []);
 
-  const persist = (state: SettingsState) => {
+  const persist = (state: Settings) => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   };
 
   return [
     settings,
     {
-      saveSettings: (state: SettingsState) => {
+      saveSettings: (state: Settings) => {
         persist(state);
         dispatch({
           type: 'setCredentials',
           payload: state,
         });
       },
+      showSettings: () => dispatch({ type: 'showSettings' }),
+      hideSettings: () => dispatch({ type: 'hideSettings' }),
     },
   ] as const;
 }

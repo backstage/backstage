@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import yn from 'yn';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -36,6 +37,8 @@ export async function serveBundle(options: ServeOptions) {
   const urls = prepareUrls(protocol, host, port);
 
   const paths = resolveBundlingPaths(options);
+  const pkgPath = paths.targetPackageJson;
+  const pkg = await fs.readJson(pkgPath);
   const config = createConfig(paths, { ...options, isDev: true });
   const compiler = webpack(config);
 
@@ -48,7 +51,7 @@ export async function serveBundle(options: ServeOptions) {
     https: protocol === 'https',
     host,
     port,
-    proxy: options.proxy,
+    proxy: pkg.proxy,
   });
 
   await new Promise((resolve, reject) => {

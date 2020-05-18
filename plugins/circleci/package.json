@@ -3,18 +3,31 @@
   "version": "0.1.1-alpha.4",
   "main": "dist/index.esm.js",
   "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "src/index.ts",
   "license": "Apache-2.0",
   "private": true,
+  "proxy": {
+    "/circleci/api": {
+      "target": "https://circleci.com/api/v1.1",
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/circleci/api/": "/"
+      }
+    }
+  },
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
-    "clean": "backstage-cli clean"
+    "clean": "backstage-cli clean",
+    "diff": "backstage-cli plugin:diff",
+    "start": "backstage-cli plugin:serve",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack"
   },
   "dependencies": {
-    "@backstage/core": "^0.1.1-alpha.4",
-    "@backstage/theme": "^0.1.1-alpha.4",
+    "@backstage/core": "^0.1.1-alpha.5",
+    "@backstage/theme": "^0.1.1-alpha.5",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -22,24 +35,25 @@
     "circleci-api": "^4.0.0",
     "fast-deep-equal": "^3.1.1",
     "moment": "^2.25.3",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-lazylog": "^4.5.2",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
-    "react-use": "^13.0.0"
+    "react-use": "^14.2.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.4",
-    "@testing-library/jest-dom": "^4.2.4",
+    "@backstage/cli": "^0.1.1-alpha.5",
+    "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^24.0.0",
+    "@testing-library/user-event": "^10.2.4",
+    "@types/jest": "^25.2.1",
     "@types/node": "^12.0.0",
-    "@types/testing-library__jest-dom": "5.0.2",
-    "jest-fetch-mock": "^3.0.3"
+    "@types/testing-library__jest-dom": "^5.0.4",
+    "jest-fetch-mock": "^3.0.3",
+    "@backstage/dev-utils": "^0.1.1-alpha.5"
   },
   "files": [
-    "dist"
+    "dist/**/*.{js,d.ts}"
   ]
 }

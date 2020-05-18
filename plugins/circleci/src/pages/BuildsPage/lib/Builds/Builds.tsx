@@ -13,74 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useEffect } from 'react';
-import { CITableBuildInfo, CITable } from '../CITable';
-import { BuildSummary } from '../../../../api';
-import { useBuilds } from '../../../../state/useBuilds';
-import { useSettings } from '../../../../state/useSettings';
-
-const makeReadableStatus = (status: string | undefined) => {
-  if (!status) return '';
-  return ({
-    retried: 'Retried',
-    canceled: 'Canceled',
-    infrastructure_fail: 'Infra fail',
-    timedout: 'Timedout',
-    not_run: 'Not run',
-    running: 'Running',
-    failed: 'Failed',
-    queued: 'Queued',
-    scheduled: 'Scheduled',
-    not_running: 'Not running',
-    no_tests: 'No tests',
-    fixed: 'Fixed',
-    success: 'Success',
-  } as Record<string, string>)[status];
-};
-
-const transform = (
-  buildsData: BuildSummary[],
-  restartBuild: { (buildId: number): Promise<void> },
-): CITableBuildInfo[] => {
-  return buildsData.map((buildData) => {
-    const tableBuildInfo: CITableBuildInfo = {
-      id: String(buildData.build_num),
-      buildName: buildData.subject
-        ? buildData.subject +
-          (buildData.retry_of ? ` (retry of #${buildData.retry_of})` : '')
-        : '',
-      onRestartClick: () =>
-        typeof buildData.build_num !== 'undefined' &&
-        restartBuild(buildData.build_num),
-      source: {
-        branchName: String(buildData.branch),
-        commit: {
-          hash: String(buildData.vcs_revision),
-          url: 'todo',
-        },
-      },
-      status: makeReadableStatus(buildData.status),
-      buildUrl: buildData.build_url,
-    };
-    return tableBuildInfo;
-  });
-};
+import React, { FC } from 'react';
+import { CITable } from '../CITable';
+import { useBuilds } from '../../../../state';
 
 export const Builds: FC<{}> = () => {
   const [
-    builds,
-    { restartBuild: handleRestartBuild, startPolling, stopPolling },
+    { total, loading, value, projectName, page, pageSize },
+    { setPage, retry, setPageSize },
   ] = useBuilds();
-  const [{ repo, owner }] = useSettings();
-
-  useEffect(() => {
-    startPolling();
-    return () => stopPolling();
-  }, [repo, owner]);
-
-  const transformedBuilds = transform(builds, handleRestartBuild);
-
   return (
-    <CITable builds={transformedBuilds} projectName={`${owner}/${repo}`} />
+    <CITable
+      total={total}
+      loading={loading}
+      retry={retry}
+      builds={value ?? []}
+      projectName={projectName}
+      page={page}
+      onChangePage={setPage}
+      pageSize={pageSize}
+      onChangePageSize={setPageSize}
+    />
   );
 };

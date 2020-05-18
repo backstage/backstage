@@ -48,8 +48,15 @@ export class CircleCIApi {
     });
   }
 
-  async getBuilds(options: CircleCIOptions) {
+  async getBuilds(
+    { limit = 10, offset = 0 }: { limit: number; offset: number },
+    options: CircleCIOptions,
+  ) {
     return getBuildSummaries(options.token, {
+      options: {
+        limit,
+        offset,
+      },
       vcs: {},
       circleHost: this.apiUrl,
       ...options,

@@ -19,9 +19,11 @@ import { ContentHeader, SupportButton } from '@backstage/core';
 import { Button, IconButton, Box, Typography } from '@material-ui/core';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { useSettings } from '../../state';
 
 export type Props = { title?: string };
 export const PluginHeader: FC<Props> = ({ title = 'Circle CI' }) => {
+  const [, { showSettings }] = useSettings();
   const location = useLocation();
   const notRoot = !location.pathname.match(/\/circleci\/?$/);
   const isSettingsPage = location.pathname.match(/\/circleci\/settings\/?/);
@@ -40,11 +42,7 @@ export const PluginHeader: FC<Props> = ({ title = 'Circle CI' }) => {
       )}
     >
       {!isSettingsPage && (
-        <Button
-          component={RouterLink}
-          to="/circleci/settings"
-          startIcon={<SettingsIcon />}
-        >
+        <Button onClick={showSettings} startIcon={<SettingsIcon />}>
           Settings
         </Button>
       )}

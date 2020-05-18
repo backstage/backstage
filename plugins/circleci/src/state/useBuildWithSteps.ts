@@ -14,50 +14,47 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { useContext } from 'react';
+import { useCallback } from 'react';
+import { useAsyncRetry } from 'react-use';
 import { circleCIApiRef, GitType } from '../api/index';
-import { AppContext } from '.';
+import { useAsyncPolling } from './useAsyncPolling';
 import { useSettings } from './useSettings';
 
-import { useAsyncPolling } from './useAsyncPolling';
-
-const INTERVAL_AMOUNT = 3000;
-
+const INTERVAL_AMOUNT = 1500;
 export function useBuildWithSteps(buildId: number) {
-  const [settings] = useSettings();
-  const [{ buildsWithSteps }, dispatch] = useContext(AppContext);
+  const [{ token, repo, owner }] = useSettings();
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const getBuildWithSteps = async () => {
+  const getBuildWithSteps = useCallback(async () => {
+    if (owner === '' || repo === '' || token === '') {
+      return Promise.reject('No credentials provided');
+    }
+
     try {
       const options = {
-        token: settings.token,
+        token: token,
         vcs: {
-          owner: settings.owner,
-          repo: settings.repo,
+          owner: owner,
+          repo: repo,
           type: GitType.GITHUB,
         },
       };
       const build = await api.getBuild(buildId, options);
-      dispatch({ type: 'setBuildWithSteps', payload: build });
+      return Promise.resolve(build);
     } catch (e) {
       errorApi.post(e);
+      return Promise.reject(e);
     }
-  };
-
-  const { startPolling, stopPolling } = useAsyncPolling(
-    getBuildWithSteps,
-    INTERVAL_AMOUNT,
-  );
+  }, [token, owner, repo, buildId]);
 
   const restartBuild = async () => {
     try {
       await api.retry(buildId, {
-        token: settings.token,
+        token: token,
         vcs: {
-          owner: settings.owner,
-          repo: settings.repo,
+          owner: owner,
+          repo: repo,
           type: GitType.GITHUB,
         },
       });
@@ -66,15 +63,22 @@ export function useBuildWithSteps(buildId: number) {
     }
   };
 
-  const build = buildsWithSteps[buildId];
+  const { loading, value, retry } = useAsyncRetry(() => getBuildWithSteps(), [
+    getBuildWithSteps,
+  ]);
+
+  const { startPolling, stopPolling } = useAsyncPolling(
+    getBuildWithSteps,
+    INTERVAL_AMOUNT,
+  );
 
   return [
-    build,
+    { loading, value, retry },
     {
       restartBuild,
+      getBuildWithSteps,
       startPolling,
       stopPolling,
-      getBuildWithSteps,
     },
   ] as const;
 }
