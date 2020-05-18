@@ -15,10 +15,11 @@
  */
 import { createPlugin } from '@backstage/core';
 import { App } from './components/App';
+import { navTargetCircleCI } from './navTargets';
 
 export const plugin = createPlugin({
   id: 'circleci',
   register({ router }) {
-    router.registerRoute('/circleci', App, { exact: false });
+    router.addRoute(navTargetCircleCI, App);
   },
 });
