@@ -2,6 +2,7 @@
   "name": "@backstage/plugin-auth-backend",
   "version": "0.1.1-alpha.5",
   "main": "dist",
+  "types": "src/index.ts",
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
@@ -9,6 +10,8 @@
     "build": "tsc",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean"
   },
   "dependencies": {

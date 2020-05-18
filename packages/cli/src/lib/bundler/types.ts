@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { startDevServer } from './server';
-import { watchDeps } from '../../../lib/watchDeps';
+import { BundlingPathsOptions } from './paths';
 
-export default async () => {
-  await watchDeps({ build: true });
+export type BundlingOptions = {
+  checksEnabled: boolean;
+  isDev: boolean;
+};
 
-  await startDevServer();
+export type ServeOptions = BundlingPathsOptions & {
+  checksEnabled: boolean;
+};
 
-  // Wait for interrupt signal
-  await new Promise(() => {});
+export type BuildOptions = BundlingPathsOptions & {
+  statsJsonEnabled: boolean;
 };

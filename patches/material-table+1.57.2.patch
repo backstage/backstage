@@ -1,0 +1,12 @@
+diff --git a/node_modules/material-table/types/index.d.ts b/node_modules/material-table/types/index.d.ts
+index 06b700b..5b3c765 100644
+--- a/node_modules/material-table/types/index.d.ts
++++ b/node_modules/material-table/types/index.d.ts
+@@ -228,7 +228,6 @@ export interface Options {
+   showTitle?: boolean;
+   showTextRowsSelected?: boolean;
+   search?: boolean;
+-  searchText?: string;
+   searchFieldAlignment?: 'left' | 'right';
+   searchFieldStyle?: React.CSSProperties;
+   searchText?: string;

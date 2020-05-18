@@ -17,6 +17,7 @@
   ],
   "license": "Apache-2.0",
   "main": "dist/index.esm.js",
+  "main:src": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
     "build": "backstage-cli plugin:build",
@@ -30,6 +31,13 @@
     "@backstage/theme": "^0.1.1-alpha.5",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
+    "@types/classnames": "^2.2.9",
+    "@types/google-protobuf": "^3.7.2",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^12.0.0",
+    "@types/react-helmet": "^5.0.15",
+    "@types/react-sparklines": "^1.7.0",
+    "@types/zen-observable": "^0.8.0",
     "classnames": "^2.2.6",
     "clsx": "^1.1.0",
     "lodash": "^4.17.15",
@@ -53,14 +61,7 @@
     "@backstage/test-utils-core": "^0.1.1-alpha.5",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/classnames": "^2.2.9",
-    "@types/google-protobuf": "^3.7.2",
-    "@types/jest": "^25.2.1",
-    "@types/node": "^12.0.0",
-    "@types/react-helmet": "^5.0.15",
-    "@types/react-sparklines": "^1.7.0",
-    "@types/zen-observable": "^0.8.0"
+    "@testing-library/user-event": "^10.2.4"
   },
   "files": [
     "dist/**/*.{js,d.ts}"

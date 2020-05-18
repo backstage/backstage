@@ -15,15 +15,10 @@ module.exports = {
   webpackFinal: async (config) => {
     const coreSrc = path.resolve(__dirname, '../../core/src');
 
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      // Resolves imports of @backstage/core inside the storybook config, pointing to src
-      '@backstage/core': coreSrc,
-      // Point to dist version of theme and any other packages that might be needed in the future
-      '@backstage/theme': path.resolve(__dirname, '../../theme'),
-    };
+    // Mirror config in packages/cli/src/lib/bundler
+    config.resolve.mainFields = ['main:src', 'browser', 'module', 'main'];
 
-    // Remove the default babel-loader for js files, we're using ts-loader instead
+    // Remove the default babel-loader for js files, we're using sucrase instead
     const [jsLoader] = config.module.rules.splice(0, 1);
     if (jsLoader.use[0].loader !== 'babel-loader') {
       throw new Error(
@@ -33,20 +28,24 @@ module.exports = {
 
     config.resolve.extensions.push('.ts', '.tsx');
 
-    // Use ts-loader for all JS/TS files
-    config.module.rules.push({
-      test: /\.(ts|tsx|mjs|js|jsx)$/,
-      include: [__dirname, coreSrc],
-      exclude: /node_modules/,
-      use: [
-        {
-          loader: require.resolve('ts-loader'),
-          options: {
-            transpileOnly: true,
-          },
+    config.module.rules.push(
+      {
+        test: /\.(tsx?)$/,
+        exclude: /node_modules/,
+        loader: require.resolve('@sucrase/webpack-loader'),
+        options: {
+          transforms: ['typescript', 'jsx', 'react-hot-loader'],
         },
-      ],
-    });
+      },
+      {
+        test: /\.(jsx?|mjs)$/,
+        exclude: /node_modules/,
+        loader: require.resolve('@sucrase/webpack-loader'),
+        options: {
+          transforms: ['jsx', 'react-hot-loader'],
+        },
+      },
+    );
 
     // Disable ProgressPlugin which logs verbose webpack build progress. Warnings and Errors are still logged.
     config.plugins = config.plugins.filter(
