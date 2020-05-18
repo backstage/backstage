@@ -8,13 +8,4 @@ export const providers = [
       passReqToCallback: true,
     },
   },
-  // {
-  //   provider: 'github',
-  //   options: {
-  //     clientID: process.env.GITHUB_CLIENT_ID!,
-  //     clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-  //     callbackURL: 'http://localhost:7000/auth/github/handler/frame',
-  //     passReqToCallback: true,
-  //   },
-  // },
 ];
