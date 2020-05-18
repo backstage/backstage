@@ -15,8 +15,6 @@
  */
 import React from 'react';
 import { Header, Page, pageTheme, HeaderLabel } from '@backstage/core';
-// @ts-ignore
-import logo from '../../assets/circle-logo-badge-white-15.png';
 import { Box } from '@material-ui/core';
 
 export const Layout: React.FC = ({ children }) => (
