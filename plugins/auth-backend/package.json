@@ -20,16 +20,22 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
+    "express-session": "1.17.1",
     "fs-extra": "^9.0.0",
     "helmet": "^3.22.0",
     "morgan": "^1.10.0",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^4.0.0",
+    "passport": "0.4.1",
+    "passport-google-oauth20": "2.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.5",
     "jest-fetch-mock": "^3.0.3",
-    "tsc-watch": "^4.2.3"
+    "tsc-watch": "^4.2.3",
+    "@types/passport": "1.0.3",
+    "@types/express-session": "1.17.0",
+    "@types/passport-google-oauth20": "2.0.3"
   },
   "files": [
     "dist"
