@@ -118,8 +118,11 @@ const PATCH_PACKAGES = [
   'theme',
 ];
 
+// This runs a `yarn install` task, but with special treatment for e2e tests
 export async function installWithLocalDeps(dir: string) {
-  // e2e testing needs special treatment
+  // This makes us install any package inside this repo as a local file dependency.
+  // For example, instead of trying to fetch @backstage/core from npm, we point it
+  // to <repo-root>/packages/core. This makes yarn use a simple file copy to install it instead.
   if (process.env.BACKSTAGE_E2E_CLI_TEST) {
     Task.section('Linking packages locally for e2e tests');
 
@@ -163,6 +166,11 @@ export async function installWithLocalDeps(dir: string) {
     });
   });
 
+  // This takes care of pointing all the installed packages from this repo to
+  // dist instead of the local src.
+  // For example node_modules/@backstage/core/packages.json is rewritten to point
+  // types to dist/index.d.ts and the main:src field is removed.
+  // Without this we get type checking errors in the e2e test
   if (process.env.BACKSTAGE_E2E_CLI_TEST) {
     Task.section('Patchling local dependencies for e2e tests');
 
@@ -177,7 +185,6 @@ export async function installWithLocalDeps(dir: string) {
             name,
             'package.json',
           );
-          console.log('DEBUG: depJsonPath =', depJsonPath);
           const depJson = await fs.readJson(depJsonPath);
 
           // We want dist to be used for e2e tests
