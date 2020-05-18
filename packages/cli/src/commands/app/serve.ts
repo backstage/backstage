@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import { serveBundle } from '../../lib/bundler';
+import fs from 'fs-extra';
 import { Command } from 'commander';
+import { serveBundle } from '../../lib/bundler';
+import { paths } from '../../lib/paths';
 
 export default async (cmd: Command) => {
+  const pkgPath = paths.resolveTarget('package.json');
+  const pkg = await fs.readJson(pkgPath);
+
   const waitForExit = await serveBundle({
     entry: 'src/index',
     checksEnabled: cmd.check,
+    proxy: pkg.proxy,
   });
 
   await waitForExit();
