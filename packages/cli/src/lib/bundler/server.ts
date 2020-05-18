@@ -29,7 +29,7 @@ export async function serveBundle(options: ServeOptions) {
 
   const port = await choosePort(host, defaultPort);
   if (!port) {
-    return;
+    throw new Error(`Invalid or no port set: '${port}'`);
   }
 
   const protocol = yn(process.env.HTTPS, { default: false }) ? 'https' : 'http';
@@ -57,15 +57,23 @@ export async function serveBundle(options: ServeOptions) {
         return;
       }
 
-      for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-        process.on(signal, () => {
-          server.close();
-          process.exit();
-        });
-      }
-
       openBrowser(urls.localUrlForBrowser);
       resolve();
     });
   });
+
+  const waitForExit = async () => {
+    for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+      process.on(signal, () => {
+        server.close();
+        // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
+        process.exit();
+      });
+    }
+
+    // Block indefinitely and wait for the interrupt signal
+    return new Promise(() => {});
+  };
+
+  return waitForExit;
 }
