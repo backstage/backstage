@@ -27,10 +27,6 @@ export function useBuilds() {
 
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
-  const { isPolling, startPolling, stopPolling } = useAsyncPolling(
-    () => getBuilds(),
-    INTERVAL_AMOUNT,
-  );
 
   const getBuilds = async () => {
     if (settings.owner === '' || settings.repo === '') return;
@@ -43,15 +39,19 @@ export function useBuilds() {
           type: GitType.GITHUB,
         },
       });
-      if (isPolling)
-        dispatch({
-          type: 'setBuilds',
-          payload: newBuilds,
-        });
+      dispatch({
+        type: 'setBuilds',
+        payload: newBuilds,
+      });
     } catch (e) {
       errorApi.post(e);
     }
   };
+
+  const { startPolling, stopPolling } = useAsyncPolling(
+    getBuilds,
+    INTERVAL_AMOUNT,
+  );
 
   const restartBuild = async (buildId: number) => {
     try {

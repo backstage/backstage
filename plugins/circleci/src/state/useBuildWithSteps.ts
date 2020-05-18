@@ -29,11 +29,6 @@ export function useBuildWithSteps(buildId: number) {
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const { isPolling, startPolling, stopPolling } = useAsyncPolling(
-    () => getBuildWithSteps(),
-    INTERVAL_AMOUNT,
-  );
-
   const getBuildWithSteps = async () => {
     try {
       const options = {
@@ -45,11 +40,16 @@ export function useBuildWithSteps(buildId: number) {
         },
       };
       const build = await api.getBuild(buildId, options);
-      if (isPolling) dispatch({ type: 'setBuildWithSteps', payload: build });
+      dispatch({ type: 'setBuildWithSteps', payload: build });
     } catch (e) {
       errorApi.post(e);
     }
   };
+
+  const { startPolling, stopPolling } = useAsyncPolling(
+    getBuildWithSteps,
+    INTERVAL_AMOUNT,
+  );
 
   const restartBuild = async () => {
     try {
