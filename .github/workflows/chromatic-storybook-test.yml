@@ -1,0 +1,22 @@
+name: 'test chromatic'
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/chromatic-storybook-test.yml'
+      - 'packages/storybook/**'
+      - 'packages/core/src/components/**'
+      - 'packages/core/src/layout/**'
+
+jobs:
+  chromatic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Required to retrieve git history
+      - run: yarn install
+      - uses: chromaui/action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: 'packages/storybook/dist'
