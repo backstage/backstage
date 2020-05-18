@@ -14,52 +14,102 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { GitType } from 'circleci-api';
-import { useContext } from 'react';
+import { GitType, BuildSummary } from 'circleci-api';
+import { useState, useEffect, useCallback } from 'react';
 import { circleCIApiRef } from '../api/index';
-import { AppContext } from '.';
-import { useAsyncPolling } from './useAsyncPolling';
+import { useAsyncRetry } from 'react-use';
+import { CITableBuildInfo } from '../pages/BuildsPage/lib/CITable';
+import { useSettings } from './useSettings';
 
-const INTERVAL_AMOUNT = 3000;
+const makeReadableStatus = (status: string | undefined) => {
+  if (!status) return '';
+  return ({
+    retried: 'Retried',
+    canceled: 'Canceled',
+    infrastructure_fail: 'Infra fail',
+    timedout: 'Timedout',
+    not_run: 'Not run',
+    running: 'Running',
+    failed: 'Failed',
+    queued: 'Queued',
+    scheduled: 'Scheduled',
+    not_running: 'Not running',
+    no_tests: 'No tests',
+    fixed: 'Fixed',
+    success: 'Success',
+  } as Record<string, string>)[status];
+};
+
+export const transform = (
+  buildsData: BuildSummary[],
+  restartBuild: { (buildId: number): Promise<void> },
+): CITableBuildInfo[] => {
+  return buildsData.map((buildData) => {
+    const tableBuildInfo: CITableBuildInfo = {
+      id: String(buildData.build_num),
+      buildName: buildData.subject
+        ? buildData.subject +
+          (buildData.retry_of ? ` (retry of #${buildData.retry_of})` : '')
+        : '',
+      onRestartClick: () =>
+        typeof buildData.build_num !== 'undefined' &&
+        restartBuild(buildData.build_num),
+      source: {
+        branchName: String(buildData.branch),
+        commit: {
+          hash: String(buildData.vcs_revision),
+          url: 'todo',
+        },
+      },
+      status: makeReadableStatus(buildData.status),
+      buildUrl: buildData.build_url,
+    };
+    return tableBuildInfo;
+  });
+};
 
 export function useBuilds() {
-  const [{ builds, settings }, dispatch] = useContext(AppContext);
+  const [{ repo, owner, token }] = useSettings();
 
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
-  const { isPolling, startPolling, stopPolling } = useAsyncPolling(
-    () => getBuilds(),
-    INTERVAL_AMOUNT,
-  );
 
-  const getBuilds = async () => {
-    if (settings.owner === '' || settings.repo === '') return;
-    try {
-      const newBuilds = await api.getBuilds({
-        token: settings.token,
-        vcs: {
-          owner: settings.owner,
-          repo: settings.repo,
-          type: GitType.GITHUB,
-        },
-      });
-      if (isPolling)
-        dispatch({
-          type: 'setBuilds',
-          payload: newBuilds,
-        });
-    } catch (e) {
-      errorApi.post(e);
-    }
-  };
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+
+  const getBuilds = useCallback(
+    async ({ limit, offset }: { limit: number; offset: number }) => {
+      if (owner === '' || repo === '') {
+        return;
+      }
+      try {
+        return await api.getBuilds(
+          { limit, offset },
+          {
+            token: token,
+            vcs: {
+              owner: owner,
+              repo: repo,
+              type: GitType.GITHUB,
+            },
+          },
+        );
+      } catch (e) {
+        errorApi.post(e);
+        return Promise.reject(e);
+      }
+    },
+    [repo, token, owner],
+  );
 
   const restartBuild = async (buildId: number) => {
     try {
       await api.retry(buildId, {
-        token: settings.token,
+        token: token,
         vcs: {
-          owner: settings.owner,
-          repo: settings.repo,
+          owner: owner,
+          repo: repo,
           type: GitType.GITHUB,
         },
       });
@@ -68,12 +118,35 @@ export function useBuilds() {
     }
   };
 
+  useEffect(() => {
+    getBuilds({ limit: 1, offset: 0 }).then((b) => setTotal(b?.[0].build_num!));
+  }, [repo]);
+
+  const { loading, value, retry } = useAsyncRetry(
+    () =>
+      getBuilds({
+        offset: page * pageSize,
+        limit: pageSize,
+      }).then((builds) => transform(builds ?? [], restartBuild)),
+    [page, pageSize, getBuilds],
+  );
+
+  const projectName = `${owner}/${repo}`;
   return [
-    builds,
     {
+      page,
+      pageSize,
+      loading,
+      value,
+      projectName,
+      total,
+    },
+    {
+      getBuilds,
+      setPage,
+      setPageSize,
       restartBuild,
-      startPolling,
-      stopPolling,
+      retry,
     },
   ] as const;
 }

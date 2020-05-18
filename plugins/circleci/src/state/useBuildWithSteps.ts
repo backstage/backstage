@@ -14,50 +14,43 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { useContext } from 'react';
+import { useCallback } from 'react';
 import { circleCIApiRef, GitType } from '../api/index';
-import { AppContext } from '.';
 import { useSettings } from './useSettings';
-
 import { useAsyncPolling } from './useAsyncPolling';
+import { useAsyncRetry } from 'react-use';
 
-const INTERVAL_AMOUNT = 3000;
-
+const INTERVAL_AMOUNT = 1500;
 export function useBuildWithSteps(buildId: number) {
-  const [settings] = useSettings();
-  const [{ buildsWithSteps }, dispatch] = useContext(AppContext);
+  const [{ token, repo, owner }] = useSettings();
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const { isPolling, startPolling, stopPolling } = useAsyncPolling(
-    () => getBuildWithSteps(),
-    INTERVAL_AMOUNT,
-  );
-
-  const getBuildWithSteps = async () => {
+  const getBuildWithSteps = useCallback(async () => {
     try {
       const options = {
-        token: settings.token,
+        token: token,
         vcs: {
-          owner: settings.owner,
-          repo: settings.repo,
+          owner: owner,
+          repo: repo,
           type: GitType.GITHUB,
         },
       };
-      const build = await api.getBuild(buildId, options);
-      if (isPolling) dispatch({ type: 'setBuildWithSteps', payload: build });
+      const b = await api.getBuild(buildId, options);
+      return Promise.resolve(b);
     } catch (e) {
       errorApi.post(e);
+      return Promise.reject(e);
     }
-  };
+  }, [token, owner, repo, buildId]);
 
   const restartBuild = async () => {
     try {
       await api.retry(buildId, {
-        token: settings.token,
+        token: token,
         vcs: {
-          owner: settings.owner,
-          repo: settings.repo,
+          owner: owner,
+          repo: repo,
           type: GitType.GITHUB,
         },
       });
@@ -66,15 +59,22 @@ export function useBuildWithSteps(buildId: number) {
     }
   };
 
-  const build = buildsWithSteps[buildId];
+  const { loading, value, retry } = useAsyncRetry(() => getBuildWithSteps(), [
+    getBuildWithSteps,
+  ]);
+
+  const { startPolling, stopPolling } = useAsyncPolling(
+    getBuildWithSteps,
+    INTERVAL_AMOUNT,
+  );
 
   return [
-    build,
+    { loading, value, retry },
     {
       restartBuild,
+      getBuildWithSteps,
       startPolling,
       stopPolling,
-      getBuildWithSteps,
     },
   ] as const;
 }

@@ -114,14 +114,46 @@ const generatedColumns: TableColumn[] = [
     width: '10%',
   },
 ];
-export const CITable: FC<{
+
+type Props = {
+  loading: boolean;
+  retry: () => void;
   builds: CITableBuildInfo[];
   projectName: string;
-}> = React.memo(({ builds = [], projectName }) => {
+  page: number;
+  onChangePage: (page: number) => void;
+  total: number;
+  pageSize: number;
+  onChangePageSize: (pageSize: number) => void;
+};
+export const CITable: FC<Props> = ({
+  projectName,
+  loading,
+  pageSize,
+  page,
+  retry,
+  builds,
+  onChangePage,
+  onChangePageSize,
+  total,
+}) => {
   return (
     <Table
-      options={{ paging: false }}
+      isLoading={loading}
+      options={{ paging: true, pageSize }}
+      totalCount={total}
+      page={page}
+      actions={[
+        {
+          icon: () => <RetryIcon />,
+          tooltip: 'Refresh Data',
+          isFreeAction: true,
+          onClick: () => retry(),
+        },
+      ]}
       data={builds}
+      onChangePage={onChangePage}
+      onChangeRowsPerPage={onChangePageSize}
       title={
         <Box display="flex" alignItems="center">
           <GitHubIcon />
@@ -132,4 +164,4 @@ export const CITable: FC<{
       columns={generatedColumns}
     />
   );
-});
+};

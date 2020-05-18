@@ -15,7 +15,7 @@
  */
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Content, InfoCard } from '@backstage/core';
+import { Content, InfoCard, Progress } from '@backstage/core';
 import { BuildWithSteps, BuildStepAction } from '../../api';
 import { Grid, Box, Link, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -26,7 +26,7 @@ import { useBuildWithSteps, useSettings } from '../../state';
 import LaunchIcon from '@material-ui/icons/Launch';
 
 const IconLink = IconButton as typeof Link;
-const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
+const BuildName: FC<{ build?: BuildWithSteps }> = ({ build }) => (
   <Box display="flex" alignItems="center">
     #{build?.build_num} - {build?.subject}
     <IconLink href={build?.build_url} target="_blank">
@@ -95,7 +95,7 @@ const BuildWithStepsPage: FC<{}> = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
   const [settings] = useSettings();
-  const [build, { startPolling, stopPolling }] = useBuildWithSteps(
+  const [{ loading, value }, { startPolling, stopPolling }] = useBuildWithSteps(
     parseInt(buildId, 10),
   );
 
@@ -112,11 +112,11 @@ const BuildWithStepsPage: FC<{}> = () => {
         <Grid container spacing={3} direction="column">
           <Grid item>
             <InfoCard
-              className={pickClassName(classes, build)}
-              title={<BuildName build={build} />}
+              className={pickClassName(classes, value)}
+              title={<BuildName build={value} />}
               cardClassName={classes.cardContent}
             >
-              <BuildsList build={build} />
+              {loading ? <Progress /> : <BuildsList build={value} />}
             </InfoCard>
           </Grid>
         </Grid>
@@ -125,7 +125,7 @@ const BuildWithStepsPage: FC<{}> = () => {
   );
 };
 
-const BuildsList: FC<{ build: BuildWithSteps | null }> = ({ build }) => (
+const BuildsList: FC<{ build?: BuildWithSteps }> = ({ build }) => (
   <Box>
     {build &&
       build.steps &&
