@@ -60,19 +60,31 @@ export class Database {
   }
 
   async addLocation(location: AddDatabaseLocation): Promise<DatabaseLocation> {
-    const existingLocation = await this.locationByTarget(location.target);
-    if (existingLocation) {
-      return existingLocation;
-    }
+    return await this.database.transaction<DatabaseLocation>(async tx => {
+      const existingLocation = await tx<DatabaseLocation>('locations')
+        .where({
+          target: location.target,
+        })
+        .select();
 
-    const id = uuidv4();
-    const { type, target } = location;
-    await this.database<DatabaseLocation>('locations').insert({
-      id,
-      type,
-      target,
+      if (existingLocation?.[0]) {
+        return existingLocation[0];
+      }
+
+      const id = uuidv4();
+      const { type, target } = location;
+      await tx<DatabaseLocation>('locations').insert({
+        id,
+        type,
+        target,
+      });
+
+      return (
+        await tx<DatabaseLocation>('locations')
+          .where({ id })
+          .select()
+      )?.[0];
     });
-    return await this.location(id);
   }
 
   async removeLocation(id: string): Promise<void> {
