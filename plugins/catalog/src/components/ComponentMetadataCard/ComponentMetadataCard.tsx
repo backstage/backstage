@@ -26,7 +26,11 @@ const ComponentMetadataCard: FC<ComponentMetadataCardProps> = ({
   component,
 }) => {
   if (loading) {
-    return <Progress />;
+    return (
+      <InfoCard title="Metadata">
+        <Progress />
+      </InfoCard>
+    );
   }
   if (!component) {
     return null;
