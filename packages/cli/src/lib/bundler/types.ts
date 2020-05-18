@@ -15,7 +15,6 @@
  */
 
 import { BundlingPathsOptions } from './paths';
-import { ProxyConfigMap } from 'webpack-dev-server';
 
 export type BundlingOptions = {
   checksEnabled: boolean;
@@ -24,7 +23,6 @@ export type BundlingOptions = {
 
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
-  proxy?: ProxyConfigMap;
 };
 
 export type BuildOptions = BundlingPathsOptions & {
