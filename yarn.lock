@@ -870,7 +870,7 @@
     core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.3.1", "@babel/runtime@^7.3.4", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.1", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.6.2", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2", "@babel/runtime@^7.9.6":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.3.1", "@babel/runtime@^7.3.4", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.6.2", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2", "@babel/runtime@^7.9.6":
   version "7.9.6"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.9.6.tgz#a9102eb5cadedf3f31d08a9ecf294af7827ea29f"
   integrity sha512-64AF1xY3OAkFHqOb9s4jpgk1Mm5vDZ4L3acHvAml+53nO1XbXLuDodsVpO4OIUsmemlUHMxNdYMNJmsvOwLrvQ==
@@ -3554,21 +3554,6 @@
     dom-accessibility-api "^0.4.2"
     pretty-format "^25.1.0"
 
-"@testing-library/jest-dom@^4.2.4":
-  version "4.2.4"
-  resolved "https://registry.npmjs.org/@testing-library/jest-dom/-/jest-dom-4.2.4.tgz#00dfa0cbdd837d9a3c2a7f3f0a248ea6e7b89742"
-  integrity sha512-j31Bn0rQo12fhCWOUWy9fl7wtqkp7In/YP2p5ZFyRuiiB9Qs3g+hS4gAmDWONbAHcRmVooNJ5eOHQDCOmUFXHg==
-  dependencies:
-    "@babel/runtime" "^7.5.1"
-    chalk "^2.4.1"
-    css "^2.2.3"
-    css.escape "^1.5.1"
-    jest-diff "^24.0.0"
-    jest-matcher-utils "^24.0.0"
-    lodash "^4.17.11"
-    pretty-format "^24.0.0"
-    redent "^3.0.0"
-
 "@testing-library/jest-dom@^5.7.0":
   version "5.7.0"
   resolved "https://registry.npmjs.org/@testing-library/jest-dom/-/jest-dom-5.7.0.tgz#b2e2acb4c088a293d52ba2cd1674b526282a2f87"
@@ -3597,11 +3582,6 @@
   version "10.3.1"
   resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-10.3.1.tgz#8ed6fbfa40fbb866fa4666c9a62d7f7ff151f93b"
   integrity sha512-HozvWlr/xHmkoJrrDdZBbUOXAC/STAeXGyNU+g5KgEwWBpLJi1RPCHJKbTjwz8hp2jDFsk/jjfD0530eZjcFEg==
-
-"@testing-library/user-event@^7.1.2":
-  version "7.2.1"
-  resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-7.2.1.tgz#2ad4e844175a3738cb9e7064be5ea070b8863a1c"
-  integrity sha512-oZ0Ib5I4Z2pUEcoo95cT1cr6slco9WY7yiPpG+RGNkj8YcYgJnM7pXmYmorNOReh8MIGcKSqXyeGjxnr8YiZbA==
 
 "@theme-ui/color-modes@^0.3.1":
   version "0.3.1"
@@ -3997,13 +3977,6 @@
     jest-diff "^25.2.1"
     pretty-format "^25.2.1"
 
-"@types/jest@^24.0.0":
-  version "24.9.1"
-  resolved "https://registry.npmjs.org/@types/jest/-/jest-24.9.1.tgz#02baf9573c78f1b9974a5f36778b366aa77bd534"
-  integrity sha512-Fb38HkXSVA4L8fGKEZ6le5bB8r6MRWlOCZbVuWZcmOMSCd2wCYOwN1ibj8daIoV9naq7aaOZjrLCoCMptKU/4Q==
-  dependencies:
-    jest-diff "^24.3.0"
-
 "@types/jquery@*", "@types/jquery@^3.3.34":
   version "3.3.38"
   resolved "https://registry.npmjs.org/@types/jquery/-/jquery-3.3.38.tgz#6385f1e1b30bd2bff55ae8ee75ea42a999cc3608"
@@ -4017,11 +3990,6 @@
   integrity sha512-Lz4BAJihoFw5nRzKvg4nawXPzutkv7wmfQ5121avptaSIXlDNJCUuxZxX/G+9EVidZGuO0UBlk+YjKbwRKJigg==
   dependencies:
     "@types/sizzle" "*"
-
-"@types/js-cookie@2.2.5":
-  version "2.2.5"
-  resolved "https://registry.npmjs.org/@types/js-cookie/-/js-cookie-2.2.5.tgz#38dfaacae8623b37cc0b0d27398e574e3fc28b1e"
-  integrity sha512-cpmwBRcHJmmZx0OGU7aPVwGWGbs4iKwVYchk9iuMtxNCA2zorwdaTz4GkLgs2WGxiRZRFKnV1k6tRUHX7tBMxg==
 
 "@types/js-cookie@2.2.6":
   version "2.2.6"
@@ -4372,13 +4340,6 @@
   integrity sha512-1TEPWyqQ6IQ7R1hCegZmFSA3KrBQjdzJW7yC9ybpRcFst5XuPOqBGNr0mTAKbxwI/TrTyc1skeyLJrpcvAf93w==
   dependencies:
     pretty-format "^25.1.0"
-
-"@types/testing-library__jest-dom@5.0.2":
-  version "5.0.2"
-  resolved "https://registry.npmjs.org/@types/testing-library__jest-dom/-/testing-library__jest-dom-5.0.2.tgz#89b782e0f187fe1e80d6375133da74182ba02065"
-  integrity sha512-dZP+/WHndgCSmdaImITy0KhjGAa9c0hlGGkzefbtrPFpnGEPZECDA0zyvfSp8RKhHECJJSKHFExjOwzo0rHyIA==
-  dependencies:
-    "@types/jest" "*"
 
 "@types/testing-library__jest-dom@^5.0.2":
   version "5.7.0"
@@ -7448,7 +7409,7 @@ css.escape@^1.5.1:
   resolved "https://registry.npmjs.org/css.escape/-/css.escape-1.5.1.tgz#42e27d4fa04ae32f931a4b4d4191fa9cddee97cb"
   integrity sha1-QuJ9T6BK4y+TGktNQZH6nN3ul8s=
 
-css@^2.2.3, css@^2.2.4:
+css@^2.2.4:
   version "2.2.4"
   resolved "https://registry.npmjs.org/css/-/css-2.2.4.tgz#c646755c73971f2bba6a601e2cf2fd71b1298929"
   integrity sha512-oUnjmWpy0niI3x/mPL8dVEI1l7MnG3+HHyRPHf+YFSbK+svOhXpmSOcDURUh2aOCgl2grzrOPt1nHLuCVFULLw==
@@ -8023,11 +7984,6 @@ diagnostics@^1.1.1:
     colorspace "1.1.x"
     enabled "1.0.x"
     kuler "1.0.x"
-
-diff-sequences@^24.9.0:
-  version "24.9.0"
-  resolved "https://registry.npmjs.org/diff-sequences/-/diff-sequences-24.9.0.tgz#5715d6244e2aa65f48bba0bc972db0b0b11e95b5"
-  integrity sha512-Dj6Wk3tWyTE+Fo1rW8v0Xhwk80um6yFYKbuAxc9c3EZxIHFDYwbi34Uk42u1CdnIiVorvt4RmlSDjIPyzGC2ew==
 
 diff-sequences@^25.2.6:
   version "25.2.6"
@@ -11970,16 +11926,6 @@ jest-css-modules@^2.1.0:
   dependencies:
     identity-obj-proxy "3.0.0"
 
-jest-diff@^24.0.0, jest-diff@^24.3.0, jest-diff@^24.9.0:
-  version "24.9.0"
-  resolved "https://registry.npmjs.org/jest-diff/-/jest-diff-24.9.0.tgz#931b7d0d5778a1baf7452cb816e325e3724055da"
-  integrity sha512-qMfrTs8AdJE2iqrTp0hzh7kTd2PQWrsFyj9tORoKmu32xjPjeE4NyjVRDz8ybYwqS2ik8N4hsIpiVTyFeo2lBQ==
-  dependencies:
-    chalk "^2.0.1"
-    diff-sequences "^24.9.0"
-    jest-get-type "^24.9.0"
-    pretty-format "^24.9.0"
-
 jest-diff@^25.1.0, jest-diff@^25.2.1:
   version "25.5.0"
   resolved "https://registry.npmjs.org/jest-diff/-/jest-diff-25.5.0.tgz#1dd26ed64f96667c068cef026b677dfa01afcfa9"
@@ -12121,16 +12067,6 @@ jest-leak-detector@^25.1.0:
   dependencies:
     jest-get-type "^25.1.0"
     pretty-format "^25.1.0"
-
-jest-matcher-utils@^24.0.0:
-  version "24.9.0"
-  resolved "https://registry.npmjs.org/jest-matcher-utils/-/jest-matcher-utils-24.9.0.tgz#f5b3661d5e628dffe6dd65251dfdae0e87c3a073"
-  integrity sha512-OZz2IXsu6eaiMAwe67c1T+5tUAtQyQx27/EMEkbFAGiw52tB9em+uGbzpcgYVpA8wl0hlxKPZxrly4CXU/GjHA==
-  dependencies:
-    chalk "^2.0.1"
-    jest-diff "^24.9.0"
-    jest-get-type "^24.9.0"
-    pretty-format "^24.9.0"
 
 jest-matcher-utils@^25.1.0:
   version "25.1.0"
@@ -16130,7 +16066,7 @@ pretty-error@^2.0.2, pretty-error@^2.1.1:
     renderkid "^2.0.1"
     utila "~0.4"
 
-pretty-format@^24.0.0, pretty-format@^24.3.0, pretty-format@^24.9.0:
+pretty-format@^24.3.0, pretty-format@^24.9.0:
   version "24.9.0"
   resolved "https://registry.npmjs.org/pretty-format/-/pretty-format-24.9.0.tgz#12fac31b37019a4eea3c11aa9a959eb7628aa7c9"
   integrity sha512-00ZMZUiHaJrNfk33guavqgvfJS30sLYf0f8+Srklv0AMPodGGHcoHgksZ3OThYnIvOd+8yMCn0YiEOogjlgsnA==
@@ -16625,7 +16561,7 @@ react-docgen@^5.0.0:
     node-dir "^0.1.10"
     strip-indent "^3.0.0"
 
-react-dom@16.13.1, react-dom@^16.12.0, react-dom@^16.13.1, react-dom@^16.8.3:
+react-dom@^16.12.0, react-dom@^16.13.1, react-dom@^16.8.3:
   version "16.13.1"
   resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.13.1.tgz#c1bd37331a0486c078ee54c4740720993b2e0e7f"
   integrity sha512-81PIMmVLnCNLO/fFOQxdQkvEq/+Hfpv24XNJfpyZhTRfO0QcmQIF/PgCa1zCOj2w1hrn12MFLyaJ/G0+Mxtfag==
@@ -16897,25 +16833,6 @@ react-transition-group@^4.0.0, react-transition-group@^4.3.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-use@^13.0.0:
-  version "13.27.1"
-  resolved "https://registry.npmjs.org/react-use/-/react-use-13.27.1.tgz#e2ae2b708dafc7893c4772628801589aab9de370"
-  integrity sha512-bAwdqDMXs5lovEanXnL1izledfrPEUUv1afoTVB59eUiYcDyKul+M/dT/2WcgHjoY/R6QlrTcZoW4R7ifwvBfw==
-  dependencies:
-    "@types/js-cookie" "2.2.5"
-    "@xobotyi/scrollbar-width" "1.9.5"
-    copy-to-clipboard "^3.2.0"
-    fast-deep-equal "^3.1.1"
-    fast-shallow-equal "^1.0.0"
-    js-cookie "^2.2.1"
-    nano-css "^5.2.1"
-    resize-observer-polyfill "^1.5.1"
-    screenfull "^5.0.0"
-    set-harmonic-interval "^1.0.1"
-    throttle-debounce "^2.1.0"
-    ts-easing "^0.2.0"
-    tslib "^1.10.0"
-
 react-use@^14.2.0:
   version "14.2.0"
   resolved "https://registry.npmjs.org/react-use/-/react-use-14.2.0.tgz#abac033fae5e358599b7e38084ff11b02e5d4868"
@@ -16947,7 +16864,7 @@ react-virtualized@^9.21.0:
     prop-types "^15.6.0"
     react-lifecycles-compat "^3.0.4"
 
-react@16.13.1, react@^16.0.0, react@^16.12.0, react@^16.13.1, react@^16.8.3:
+react@^16.0.0, react@^16.12.0, react@^16.13.1, react@^16.8.3:
   version "16.13.1"
   resolved "https://registry.npmjs.org/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
   integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==
