@@ -17,6 +17,8 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { router as googleAuthRouter } from './../providers/google/router';
+import { router as githubAuthRouter } from './../providers/google/router';
 
 export interface RouterOptions {
   logger: Logger;
@@ -32,9 +34,26 @@ export async function createRouter(
     res.status(200).send('pong');
   });
 
+  router.use('/:provider', authProviderSwitcher);
+
   const app = express();
   app.set('logger', logger);
   app.use(router);
 
   return app;
 }
+
+const authProviderSwitcher = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  const provider = req.params.provider;
+  if (provider === 'google') {
+    return googleAuthRouter(req, res, next);
+  } else if (provider === 'github') {
+    return githubAuthRouter(req, res, next);
+  } else {
+    res.send('No such provider');
+  }
+};
