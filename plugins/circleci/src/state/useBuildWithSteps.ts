@@ -27,6 +27,9 @@ export function useBuildWithSteps(buildId: number) {
   const errorApi = useApi(errorApiRef);
 
   const getBuildWithSteps = useCallback(async () => {
+    if (owner === '' || repo === '' || token === '') {
+      return;
+    }
     try {
       const options = {
         token: token,
@@ -43,11 +46,6 @@ export function useBuildWithSteps(buildId: number) {
       return Promise.reject(e);
     }
   }, [token, owner, repo, buildId]);
-
-  const { startPolling, stopPolling } = useAsyncPolling(
-    getBuildWithSteps,
-    INTERVAL_AMOUNT,
-  );
 
   const restartBuild = async () => {
     try {

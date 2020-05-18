@@ -48,7 +48,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 export const AppStateProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
   return (
     <AppContext.Provider value={[state, dispatch]}>
       <>{children}</>

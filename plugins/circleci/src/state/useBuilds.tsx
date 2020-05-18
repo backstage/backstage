@@ -103,11 +103,6 @@ export function useBuilds() {
     [repo, token, owner],
   );
 
-  const { startPolling, stopPolling } = useAsyncPolling(
-    getBuilds,
-    INTERVAL_AMOUNT,
-  );
-
   const restartBuild = async (buildId: number) => {
     try {
       await api.retry(buildId, {

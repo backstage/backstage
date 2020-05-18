@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './AppState';
-export * from './useSettings';
-export * from './useBuilds';
-export * from './useBuildWithSteps';
+
+import { createDevApp } from '@backstage/dev-utils';
+import { plugin } from '../src/plugin';
+import { circleCIApiRef, CircleCIApi } from '../src/api';
+
+createDevApp()
+  .registerPlugin(plugin)
+  .registerApiFactory({
+    deps: {},
+    factory: () => new CircleCIApi(),
+    implements: circleCIApiRef,
+  })
+  .render();

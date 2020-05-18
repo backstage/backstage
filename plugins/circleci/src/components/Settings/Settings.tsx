@@ -23,6 +23,7 @@ import {
   Box,
   Dialog,
   DialogTitle,
+  DialogContent,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useSettings } from '../../state';
@@ -71,54 +72,56 @@ const Settings = () => {
           Project Credentials
           {/* {authed ? <StatusOK /> : <StatusFailed />} */}
         </DialogTitle>
-        <List>
-          <ListItem>
-            <TextField
-              name="circleci-token"
-              label="Token"
-              value={token}
-              fullWidth
-              variant="outlined"
-              onChange={(e) => setToken(e.target.value)}
-            />
-          </ListItem>
-          <ListItem>
-            <TextField
-              name="circleci-owner"
-              fullWidth
-              label="Owner"
-              variant="outlined"
-              value={owner}
-              onChange={(e) => setOwner(e.target.value)}
-            />
-          </ListItem>
-          <ListItem>
-            <TextField
-              name="circleci-repo"
-              label="Repo"
-              fullWidth
-              variant="outlined"
-              value={repo}
-              onChange={(e) => setRepo(e.target.value)}
-            />
-          </ListItem>
-          <ListItem>
-            <Box mt={2} display="flex" width="100%" justifyContent="center">
-              <Button
-                data-testid="github-auth-button"
+        <Box minWidth="400px">
+          <List>
+            <ListItem>
+              <TextField
+                name="circleci-token"
+                label="Token"
+                value={token}
+                fullWidth
                 variant="outlined"
-                color="primary"
-                onClick={() => {
-                  setSaved(true);
-                  saveSettings({ repo, owner, token });
-                  hideSettings();
-                }}
-              >
-                Save credentials
-              </Button>
-            </Box>
-          </ListItem>
-        </List>
+                onChange={(e) => setToken(e.target.value)}
+              />
+            </ListItem>
+            <ListItem>
+              <TextField
+                name="circleci-owner"
+                fullWidth
+                label="Owner"
+                variant="outlined"
+                value={owner}
+                onChange={(e) => setOwner(e.target.value)}
+              />
+            </ListItem>
+            <ListItem>
+              <TextField
+                name="circleci-repo"
+                label="Repo"
+                fullWidth
+                variant="outlined"
+                value={repo}
+                onChange={(e) => setRepo(e.target.value)}
+              />
+            </ListItem>
+            <ListItem>
+              <Box mt={2} display="flex" width="100%" justifyContent="center">
+                <Button
+                  data-testid="github-auth-button"
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => {
+                    setSaved(true);
+                    saveSettings({ repo, owner, token });
+                    hideSettings();
+                  }}
+                >
+                  Save credentials
+                </Button>
+              </Box>
+            </ListItem>
+          </List>
+        </Box>
       </Dialog>
     </>
   );
