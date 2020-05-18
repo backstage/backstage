@@ -16,12 +16,13 @@
 
 import React, { FC } from 'react';
 import { useObservable } from 'react-use';
-import { SidebarItem, useApi, appThemeApiRef } from '@backstage/core';
-import WbSunnyIcon from '@material-ui/icons/WbSunny';
-import Brightness2Icon from '@material-ui/icons/Brightness2';
-import ToggleOnIcon from '@material-ui/icons/ToggleOn';
+import LightIcon from '@material-ui/icons/WbSunny';
+import DarkIcon from '@material-ui/icons/Brightness2';
+import AutoIcon from '@material-ui/icons/BrightnessAuto';
+import { appThemeApiRef, useApi } from '../../api';
+import { SidebarItem } from './Items';
 
-const ToggleThemeSidebarItem: FC<{}> = () => {
+export const SidebarThemeToggle: FC<{}> = () => {
   const appThemeApi = useApi(appThemeApiRef);
   const themeId = useObservable(
     appThemeApi.activeThemeId$(),
@@ -29,19 +30,17 @@ const ToggleThemeSidebarItem: FC<{}> = () => {
   );
 
   let text = 'Auto';
-  let icon = ToggleOnIcon;
+  let icon = AutoIcon;
   switch (themeId) {
     case 'dark':
       text = 'Dark mode';
-      icon = Brightness2Icon;
+      icon = DarkIcon;
       break;
     case 'light':
       text = 'Light mode';
-      icon = WbSunnyIcon;
+      icon = LightIcon;
       break;
     default:
-      text = 'Auto';
-      icon = ToggleOnIcon;
       break;
   }
 
@@ -57,5 +56,3 @@ const ToggleThemeSidebarItem: FC<{}> = () => {
 
   return <SidebarItem text={text} onClick={handleToggle} icon={icon} />;
 };
-
-export default ToggleThemeSidebarItem;

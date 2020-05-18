@@ -20,3 +20,4 @@ export * from './Items';
 export * from './Intro';
 export * from './UserBadge';
 export * from './config';
+export { SidebarThemeToggle } from './SidebarThemeToggle';

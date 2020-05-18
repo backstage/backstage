@@ -32,6 +32,7 @@ import {
   SidebarSearchField,
   SidebarSpace,
   SidebarUserBadge,
+  SidebarThemeToggle,
 } from '@backstage/core';
 
 const useSidebarLogoStyles = makeStyles({
@@ -99,6 +100,7 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarDivider />
       <SidebarSpace />
       <SidebarDivider />
+      <SidebarThemeToggle />
       <SidebarUserBadge />
     </Sidebar>
     {children}
