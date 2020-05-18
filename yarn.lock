@@ -4327,9 +4327,9 @@
     pretty-format "^25.1.0"
 
 "@types/testing-library__jest-dom@^5.0.4":
-  version "5.0.4"
-  resolved "https://registry.npmjs.org/@types/testing-library__jest-dom/-/testing-library__jest-dom-5.0.4.tgz#c7bfbafb920cd1ce40506474e70ee73637f33701"
-  integrity sha512-Ns69aaNvlxvXkPxIwsqeaWH5vJpwa/pdBIlf8LGkRnbV3tiqUgifs13moLXg1NQ2AM23qRR5CtHarNshvRyEdA==
+  version "5.6.0"
+  resolved "https://registry.npmjs.org/@types/testing-library__jest-dom/-/testing-library__jest-dom-5.6.0.tgz#325e97aacb7e4a66693e7face8a2c04f936f4a4b"
+  integrity sha512-VRl4kIzvtySjscCpMul3mz0UgEd40nG/jWluaXIYi5UG8cOOLD56u8IIgHZk+gSKmccRCsVv7AAg1HBmE7OQ2w==
   dependencies:
     "@types/jest" "*"
 

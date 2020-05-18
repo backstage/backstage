@@ -16,11 +16,34 @@
 
 import { createContext } from 'react';
 
+const drawerWidthClosed = 72;
+const iconPadding = 24;
+const userBadgePadding = 18;
+
 export const sidebarConfig = {
-  drawerWidthClosed: 64,
-  drawerWidthOpen: 220,
-  defaultOpenDelayMs: 400,
-  defaultCloseDelayMs: 200,
+  drawerWidthClosed,
+  drawerWidthOpen: 224,
+  // As per NN/g's guidance on timing for exposing hidden content
+  // See https://www.nngroup.com/articles/timing-exposing-content/
+  defaultOpenDelayMs: 300,
+  defaultCloseDelayMs: 0,
+  defaultFadeDuration: 200,
+  logoHeight: 32,
+  iconContainerWidth: drawerWidthClosed,
+  iconSize: drawerWidthClosed - iconPadding * 2,
+  iconPadding,
+  selectedIndicatorWidth: 3,
+  userBadgePadding,
+  userBadgeDiameter: drawerWidthClosed - userBadgePadding * 2,
 };
 
-export const SidebarContext = createContext<boolean>(false);
+export const SIDEBAR_INTRO_LOCAL_STORAGE =
+  '@backstage/core/sidebar-intro-dismissed';
+
+type SidebarContextType = {
+  isOpen: boolean;
+};
+
+export const SidebarContext = createContext<SidebarContextType>({
+  isOpen: false,
+});

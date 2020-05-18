@@ -20,7 +20,7 @@ import React, { FC, useRef, useState } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>((theme) => ({
   root: {
     zIndex: 1000,
     position: 'relative',
@@ -115,7 +115,7 @@ export const Sidebar: FC<Props> = ({
       onBlur={handleClose}
       data-testid="sidebar-root"
     >
-      <SidebarContext.Provider value={state === State.Open}>
+      <SidebarContext.Provider value={{ isOpen: state === State.Open }}>
         <div
           className={clsx(classes.drawer, {
             [classes.drawerPeek]: state === State.Peek,
