@@ -18,8 +18,6 @@ import { Server } from 'http';
 import { Logger } from 'winston';
 import { createStandaloneApplication } from './standaloneApplication';
 
-const PORT = 5009;
-
 export async function startStandaloneServer(
   parentLogger: Logger,
 ): Promise<Server> {
@@ -29,6 +27,7 @@ export async function startStandaloneServer(
   const app = await createStandaloneApplication(logger);
 
   logger.debug('Starting application server...');
+  const PORT = parseInt(process.env.PORT || '5001', 10);
   return await new Promise((resolve, reject) => {
     const server = app.listen(PORT, (err?: Error) => {
       if (err) {

@@ -18,7 +18,7 @@ import { MockSentryApi } from './mock-api';
 import { ProductionSentryApi } from './production-api';
 
 export function sentryApiFactory(organization: string): SentryApi {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV !== 'production') {
     return new ProductionSentryApi(organization);
   }
   return new MockSentryApi();

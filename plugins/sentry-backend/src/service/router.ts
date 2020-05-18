@@ -22,7 +22,12 @@ export async function createRouter(
   rootLogger: Logger,
 ): Promise<express.Router> {
   const router = Router();
-  const sentryForwarder = new SentryApiForwarder('');
+  const SENTRY_TOKEN = process.env.SENTRY_TOKEN;
+  if (!SENTRY_TOKEN) {
+    console.error('Sentry token must be provided in env to start the API.');
+    process.exit(1);
+  }
+  const sentryForwarder = new SentryApiForwarder(SENTRY_TOKEN);
   const logger = rootLogger.child({ plugin: 'sentry' });
 
   router.get('*', (req, res) => sentryForwarder.fowardRequest(req, res));
