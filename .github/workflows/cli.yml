@@ -41,6 +41,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: yarn install
         run: yarn install --frozen-lockfile
+      - run: yarn tsc
       - run: yarn build
       - name: verify app and plugin creation on Windows
         working-directory: ${{ runner.temp }}

@@ -19,7 +19,7 @@ import { Command } from 'commander';
 
 export default async (cmd: Command) => {
   await serveBundle({
-    entry: 'src/index',
+    entry: 'dev/index',
     checksEnabled: cmd.check,
   });
 

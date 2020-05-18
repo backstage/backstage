@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export type { NavTarget, NavTargetConfig, NavTargetOverrideConfig  } from './types';
+export * from './types';
 export { createNavTarget } from './NavTarget';

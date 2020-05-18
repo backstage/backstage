@@ -15,9 +15,16 @@
  */
 
 import { existsSync } from 'fs';
-import { paths } from '../../../lib/paths';
+import { paths } from '../paths';
 
-export function getPaths() {
+export type BundlingPathsOptions = {
+  // bundle entrypoint, e.g. 'src/index'
+  entry: string;
+};
+
+export function resolveBundlingPaths(options: BundlingPathsOptions) {
+  const { entry } = options;
+
   const resolveTargetModule = (path: string) => {
     for (const ext of ['mjs', 'js', 'ts', 'tsx', 'jsx']) {
       const filePath = paths.resolveTarget(`${path}.${ext}`);
@@ -28,7 +35,7 @@ export function getPaths() {
     return paths.resolveTarget(`${path}.js`);
   };
 
-  let targetHtml = paths.resolveTarget('dev/index.html');
+  let targetHtml = paths.resolveTarget(`${entry}.html`);
   if (!existsSync(targetHtml)) {
     targetHtml = paths.resolveOwn('templates/serve_index.html');
   }
@@ -36,14 +43,15 @@ export function getPaths() {
   return {
     targetHtml,
     targetPath: paths.resolveTarget('.'),
+    targetDist: paths.resolveTarget('dist'),
     targetAssets: paths.resolveTarget('assets'),
     targetSrc: paths.resolveTarget('src'),
     targetDev: paths.resolveTarget('dev'),
-    targetDevEntry: resolveTargetModule('dev/index'),
-    targetTsConfig: paths.resolveTarget('tsconfig.json'),
+    targetEntry: resolveTargetModule(entry),
+    targetTsConfig: paths.resolveTargetRoot('tsconfig.json'),
     targetNodeModules: paths.resolveTarget('node_modules'),
     targetPackageJson: paths.resolveTarget('package.json'),
   };
 }
 
-export type Paths = ReturnType<typeof getPaths>;
+export type BundlingPaths = ReturnType<typeof resolveBundlingPaths>;
