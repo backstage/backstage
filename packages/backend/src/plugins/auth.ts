@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-// This folder contains definitions for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-//
-// If you think some API definition is missing, please open an Issue or send a PR!
+import { createRouter } from '@backstage/plugin-auth-backend';
+import { PluginEnvironment } from '../types';
 
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './OAuthRequestApi';
+export default async function ({ logger }: PluginEnvironment) {
+  return await createRouter({ logger });
+}

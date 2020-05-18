@@ -18,12 +18,12 @@ import React, { FC } from 'react';
 import { Content, Header, Page, pageTheme } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { ComponentFactory } from '../../data/component';
-import { MockComponentFactory } from '../../data/mock-factory';
 import CatalogTable from '../CatalogTable/CatalogTable';
 
-const componentFactory: ComponentFactory = MockComponentFactory;
-
-const CatalogPage: FC<{}> = () => {
+type CatalogPageProps = {
+  componentFactory: ComponentFactory;
+};
+const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
   const { value, error, loading } = useAsync(componentFactory.getAllComponents);
   return (
     <Page theme={pageTheme.home}>

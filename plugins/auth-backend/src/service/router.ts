@@ -14,14 +14,27 @@
  * limitations under the License.
  */
 
-// This folder contains definitions for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-//
-// If you think some API definition is missing, please open an Issue or send a PR!
+import express from 'express';
+import Router from 'express-promise-router';
+import { Logger } from 'winston';
 
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './OAuthRequestApi';
+export interface RouterOptions {
+  logger: Logger;
+}
+
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const logger = options.logger.child({ plugin: 'auth' });
+  const router = Router();
+
+  router.get('/ping', async (req, res) => {
+    res.status(200).send('pong');
+  });
+
+  const app = express();
+  app.set('logger', logger);
+  app.use(router);
+
+  return app;
+}

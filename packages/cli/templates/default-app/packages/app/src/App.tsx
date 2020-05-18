@@ -1,6 +1,5 @@
-import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { createApp } from '@backstage/core';
-import { lightTheme } from '@backstage/theme';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import * as plugins from './plugins';
@@ -34,13 +33,9 @@ const App: FC<{}> = () => {
   useStyles();
   return (
     <AppProvider>
-      <ThemeProvider theme={lightTheme}>
-        <CssBaseline>
-          <Router>
-            <AppComponent />
-          </Router>
-        </CssBaseline>
-      </ThemeProvider>
+      <Router>
+        <AppComponent />
+      </Router>
     </AppProvider>
   );
 };

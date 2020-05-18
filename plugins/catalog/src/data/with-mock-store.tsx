@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from 'react';
+import { ComponentFactory } from './component';
+import { MockComponentFactory } from './mock-factory';
 
-// This folder contains definitions for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-//
-// If you think some API definition is missing, please open an Issue or send a PR!
+const componentFactory: ComponentFactory = MockComponentFactory;
 
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './OAuthRequestApi';
+export const withMockStore = (Component: React.ElementType) => {
+  return (props: any) => (
+    <Component {...props} componentFactory={componentFactory} />
+  );
+};
