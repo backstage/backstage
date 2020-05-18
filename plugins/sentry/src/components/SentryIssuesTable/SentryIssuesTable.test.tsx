@@ -18,7 +18,7 @@ import { render } from '@testing-library/react';
 import SentryIssuesTable from './SentryIssuesTable';
 import { SentryIssue } from '../../data/sentry-issue';
 import mockIssue from '../../data/sentry-issue-mock.json';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 
 describe('SentryIssuesTable', () => {

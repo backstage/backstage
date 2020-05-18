@@ -13,16 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SentryApiForwarder } from './sentry-api';
 
-describe('SentryApiForwarder', () => {
-  it('should generate headers based on token passed in constructor', () => {
-    const forwarder = new SentryApiForwarder('testtoken');
+import { createDevApp } from '@backstage/dev-utils';
+import { plugin } from '../src/plugin';
 
-    expect(forwarder.getRequestHeaders()).toEqual({
-      headers: {
-        Authorization: `Bearer testtoken`,
-      },
-    });
-  });
-});
+createDevApp().registerPlugin(plugin).render();

@@ -32,8 +32,7 @@ function getMockIssues(number: number): SentryIssue[] {
   return new Array(number).fill(0).map(getMockIssue);
 }
 export class MockSentryApi implements SentryApi {
-  fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]> {
-    console.info('Fetching mock responses for', project, statsFor);
+  fetchIssues(): Promise<SentryIssue[]> {
     return new Promise((resolve) => {
       setTimeout(() => resolve(getMockIssues(14)), 800);
     });

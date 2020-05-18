@@ -17,7 +17,7 @@ import { ErrorCell } from './ErrorCell';
 import React from 'react';
 import { render } from '@testing-library/react';
 import mockIssue from '../../data/sentry-issue-mock.json';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 
 describe('Sentry error cell component', () => {
