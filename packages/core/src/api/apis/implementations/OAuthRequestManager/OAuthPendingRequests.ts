@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import Observable from 'zen-observable';
 import { OAuthScopes } from '../../definitions';
+import { BehaviorSubject } from '../lib';
+import { Observable } from '../../../types';
 
 type RequestQueueEntry<ResultType> = {
   scopes: OAuthScopes;
@@ -44,16 +45,15 @@ export type OAuthPendingRequestsApi<ResultType> = {
 export class OAuthPendingRequests<ResultType>
   implements OAuthPendingRequestsApi<ResultType> {
   private requests: RequestQueueEntry<ResultType>[] = [];
-  private listeners: ZenObservable.SubscriptionObserver<
-    PendingRequest<ResultType>
-  >[] = [];
+  private subject = new BehaviorSubject<PendingRequest<ResultType>>(
+    this.getCurrentPending(),
+  );
 
   request(scopes: OAuthScopes): Promise<ResultType> {
     return new Promise((resolve, reject) => {
       this.requests.push({ scopes, resolve, reject });
 
-      const pending = this.getCurrentPending();
-      this.listeners.forEach((listener) => listener.next(pending));
+      this.subject.next(this.getCurrentPending());
     });
   }
 
@@ -66,26 +66,18 @@ export class OAuthPendingRequests<ResultType>
       return true;
     });
 
-    const pending = this.getCurrentPending();
-    this.listeners.forEach((listener) => listener.next(pending));
+    this.subject.next(this.getCurrentPending());
   }
 
   reject(error: Error) {
     this.requests.forEach((request) => request.reject(error));
     this.requests = [];
 
-    const pending = this.getCurrentPending();
-    this.listeners.forEach((listener) => listener.next(pending));
+    this.subject.next(this.getCurrentPending());
   }
 
   pending(): Observable<PendingRequest<ResultType>> {
-    return new Observable((subscriber) => {
-      this.listeners.push(subscriber);
-      subscriber.next(this.getCurrentPending());
-      return () => {
-        this.listeners = this.listeners.filter((l) => l !== subscriber);
-      };
-    });
+    return this.subject;
   }
 
   private getCurrentPending(): PendingRequest<ResultType> {
