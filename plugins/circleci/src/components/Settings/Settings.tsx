@@ -23,7 +23,6 @@ import {
   Box,
   Dialog,
   DialogTitle,
-  DialogContent,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useSettings } from '../../state';
