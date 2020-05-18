@@ -22,8 +22,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { PluginHeader } from '../../components/PluginHeader';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import { Layout } from '../../components/Layout';
-import { useBuildWithSteps, useSettings } from '../../state';
 import LaunchIcon from '@material-ui/icons/Launch';
+import { useSettings } from '../../state/useSettings';
+import { useBuildWithSteps } from '../../state/useBuildWithSteps';
 
 const IconLink = IconButton as typeof Link;
 const BuildName: FC<{ build: BuildWithSteps | null }> = ({ build }) => (

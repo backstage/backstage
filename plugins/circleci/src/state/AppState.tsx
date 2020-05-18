@@ -15,8 +15,8 @@
  */
 import React, { FC, useReducer, Dispatch, Reducer } from 'react';
 import { circleCIApiRef } from '../api';
-import { State, Action, SettingsState } from './types';
-export { SettingsState };
+import type { SettingsState, State, Action } from './types';
+export type { SettingsState };
 import equal from 'fast-deep-equal';
 
 export const AppContext = React.createContext<[State, Dispatch<Action>]>(

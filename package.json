@@ -32,6 +32,7 @@
   "version": "1.0.0",
   "devDependencies": {
     "@spotify/eslint-config-oss": "^1.0.1",
+    "file-loader": "^6.0.0",
     "husky": "^4.2.3",
     "identity-obj-proxy": "^3.0.0",
     "lerna": "^3.20.2",

@@ -16,7 +16,8 @@
 import React, { FC, useEffect } from 'react';
 import { CITableBuildInfo, CITable } from '../CITable';
 import { BuildSummary } from '../../../../api';
-import { useSettings, useBuilds } from '../../../../state';
+import { useBuilds } from '../../../../state/useBuilds';
+import { useSettings } from '../../../../state/useSettings';
 
 const makeReadableStatus = (status: string | undefined) => {
   if (!status) return '';

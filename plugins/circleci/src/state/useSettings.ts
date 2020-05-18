@@ -20,7 +20,6 @@ import { useApi, errorApiRef } from '@backstage/core';
 export function useSettings() {
   const [{ settings }, dispatch] = useContext(AppContext);
 
-
   const errorApi = useApi(errorApiRef);
 
   const rehydrate = () => {

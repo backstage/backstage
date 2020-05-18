@@ -48,6 +48,7 @@ export async function serveBundle(options: ServeOptions) {
     https: protocol === 'https',
     host,
     port,
+    proxy: options.proxy,
   });
 
   await new Promise((resolve, reject) => {

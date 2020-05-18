@@ -27,7 +27,7 @@ import { Alert } from '@material-ui/lab';
 import { InfoCard, Content } from '@backstage/core';
 import { Layout } from '../../components/Layout';
 import { PluginHeader } from '../../components/PluginHeader';
-import { useSettings } from '../../state';
+import { useSettings } from '../../state/useSettings';
 
 const SettingsPage = () => {
   const [
