@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SentryApi } from './sentry-api';
-import { MockSentryApi } from './mock-api';
-import { ProductionSentryApi } from './production-api';
+import { SentryApiForwarder } from './sentry-api';
+import axios from 'axios';
 
-export function sentryApiFactory(organization: string): SentryApi {
-  if (process.env.NODE_ENV === 'production') {
-    return new ProductionSentryApi(organization);
-  }
-  return new MockSentryApi();
-}
+jest.mock('axios', () => ({
+  default: {
+    post: jest.fn(),
+  },
+}));
+describe('SentryApiForwarder', () => {
+  it('should generate headers based on token passed in constructor', () => {
+    const forwarder = new SentryApiForwarder('testtoken');
+
+    expect(forwarder.getRequestHeaders()).toEqual({
+      headers: {
+        Authorization: `Bearer testtoken`,
+      },
+    });
+  });
+});

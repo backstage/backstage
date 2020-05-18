@@ -18,18 +18,23 @@ import axios from 'axios';
 
 export class SentryApiForwarder {
   constructor(private token: string) {}
+
+  // public for testing
+  public getRequestHeaders() {
+    return {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    };
+  }
   public fowardRequest(request: express.Request, response: express.Response) {
     const sentryUrl = request.path;
     axios
-      .get(`https://sentry.io/${sentryUrl}`, {
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-        },
-      })
-      .then(res => {
+      .get(`https://sentry.io/${sentryUrl}`, this.getRequestHeaders())
+      .then((res) => {
         response.send(res.data);
       })
-      .catch(err => {
+      .catch((err) => {
         return response.status(err.response.status).json({
           detail: err.response.statusText,
         });

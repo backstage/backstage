@@ -20,14 +20,19 @@ import mockFetch from 'jest-fetch-mock';
 import SentryPluginPage from './SentryPluginPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
+import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+
+const errorApi = { post: () => {} };
 
 describe('SentryPluginPage', () => {
   it('should render header and time switched', () => {
     mockFetch.mockResponse(() => new Promise(() => {}));
     const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <SentryPluginPage />
-      </ThemeProvider>,
+      <ApiProvider apis={ApiRegistry.from([[errorApiRef, errorApi]])}>
+        <ThemeProvider theme={lightTheme}>
+          <SentryPluginPage />
+        </ThemeProvider>
+      </ApiProvider>,
     );
     expect(rendered.getByText('Sentry issues')).toBeInTheDocument();
     expect(rendered.getByText('24H')).toBeInTheDocument();
