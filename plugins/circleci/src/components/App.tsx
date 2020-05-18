@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Switch, Route } from 'react-router';
-import { BuildsPage } from '../pages/BuildsPage';
-import { DetailedViewPage } from '../pages/BuildWithStepsPage';
+import { Switch, Route, MemoryRouter } from 'react-router';
+import { BuildsPage, Builds } from '../pages/BuildsPage';
+import { DetailedViewPage, BuildWithSteps } from '../pages/BuildWithStepsPage';
 import { AppStateProvider } from '../state';
 import { Settings } from './Settings';
 
@@ -37,3 +37,24 @@ export const App = () => {
     </AppStateProvider>
   );
 };
+
+// TODO: allow pass in settings as props
+// When some shared settings workflow
+// will be established
+export const CircleCIWidget = () => (
+  <MemoryRouter initialEntries={['/circleci']}>
+    <AppStateProvider>
+      <>
+        <Switch>
+          <Route path="/circleci" exact component={Builds} />
+          <Route
+            path="/circleci/build/:buildId"
+            exact
+            component={BuildWithSteps}
+          />
+        </Switch>
+        <Settings />
+      </>
+    </AppStateProvider>
+  </MemoryRouter>
+);
