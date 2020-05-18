@@ -18,11 +18,10 @@ import { serveBundle } from '../../lib/bundler';
 import { Command } from 'commander';
 
 export default async (cmd: Command) => {
-  await serveBundle({
+  const waitForExit = await serveBundle({
     entry: 'src/index',
     checksEnabled: cmd.check,
   });
 
-  // Wait for interrupt signal
-  await new Promise(() => {});
+  await waitForExit();
 };

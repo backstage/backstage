@@ -24,7 +24,6 @@ function formatErrorMessage(error: any) {
   let msg = '';
 
   if (error.code === 'PLUGIN_ERROR') {
-    // typescript2 plugin has a complete message with all codeframes
     if (error.plugin === 'esbuild') {
       msg += `${error.message}\n\n`;
       for (const { text, location } of error.errors) {

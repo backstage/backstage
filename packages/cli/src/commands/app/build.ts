@@ -22,7 +22,4 @@ export default async (cmd: Command) => {
     entry: 'src/index',
     statsJsonEnabled: cmd.stats,
   });
-
-  // Wait for interrupt signal
-  await new Promise(() => {});
 };
