@@ -20,6 +20,6 @@ import { navTargetCircleCI } from './navTargets';
 export const plugin = createPlugin({
   id: 'circleci',
   register({ router }) {
-    router.addRoute(navTargetCircleCI, App);
+    router.addRoute(navTargetCircleCI, App, { exact: false });
   },
 });
