@@ -17,15 +17,6 @@
 import { ApiRef } from '../ApiRef';
 
 /**
- * An array of scopes, or a scope string formatted according to the
- * auth provider, which is typically a space separated list.
- *
- * See the documentation for each auth provider for the list of scopes
- * supported by each provider.
- */
-export type OAuthScopeLike = string | string[];
-
-/**
  * This file contains declarations for common interfaces of auth-related APIs.
  * The declarations should be used to signal which type of authentication and
  * authorization methods each separate auth provider supports.
@@ -36,18 +27,35 @@ export type OAuthScopeLike = string | string[];
  * const googleAuthApiRef = new ApiRef<OAuthApi & OpenIDConnectApi>({ ... })
  */
 
+/**
+ * An array of scopes, or a scope string formatted according to the
+ * auth provider, which is typically a space separated list.
+ *
+ * See the documentation for each auth provider for the list of scopes
+ * supported by each provider.
+ */
+export type OAuthScope = string | string[];
+
 export type AccessTokenOptions = {
-  // If this is set to true, the user will not be prompted to log in,
-  // and an empty access token will be returned if there is no existing session.
-  //
-  // This can be used to perform a check whether the user is logged in with a set of scopes,
-  // or if you don't want to force a user to be logged in, but provide functionality if they already are.
+  /**
+   * If this is set to true, the user will not be prompted to log in,
+   * and an empty access token will be returned if there is no existing session.
+   *
+   * This can be used to perform a check whether the user is logged in with a set of scopes,
+   * or if you don't want to force a user to be logged in, but provide functionality if they already are.
+   *
+   * @default false
+   */
   optional?: boolean;
 
-  // If this is set to true, the request will bypass the regular oauth login modal
-  // and open the login popup directly.
-  //
-  // The method must be called synchronously from a user action for this to work in all browsers.
+  /**
+   * If this is set to true, the request will bypass the regular oauth login modal
+   * and open the login popup directly.
+   *
+   * The method must be called synchronously from a user action for this to work in all browsers.
+   *
+   * @default false
+   */
   instantPopup?: boolean;
 };
 
@@ -77,7 +85,7 @@ export type OAuthApi = {
    * will be prompted to log in. The returned promise will not resolve until the user has
    * successfully logged in. The returned promise can be rejected, but only if the user rejects the login request.
    */
-  getAccessToken(scope?: OAuthScopeLike): Promise<string>;
+  getAccessToken(scope?: OAuthScope): Promise<string>;
 
   /**
    * Log out the user's session. This will reload the page.
@@ -86,17 +94,25 @@ export type OAuthApi = {
 };
 
 export type IdTokenOptions = {
-  // If this is set to true, the user will not be prompted to log in,
-  // and an empty id token will be returned if there is no existing session.
-  //
-  // This can be used to perform a check whether the user is logged in, or if you don't
-  // want to force a user to be logged in, but provide functionality if they already are.
+  /**
+   * If this is set to true, the user will not be prompted to log in,
+   * and an empty id token will be returned if there is no existing session.
+   *
+   * This can be used to perform a check whether the user is logged in, or if you don't
+   * want to force a user to be logged in, but provide functionality if they already are.
+   *
+   * @default false
+   */
   optional?: boolean;
 
-  // If this is set to true, the request will bypass the regular oauth login modal
-  // and open the login popup directly.
-  //
-  // The method must be called synchronously from a user action for this to work in all browsers.
+  /**
+   * If this is set to true, the request will bypass the regular oauth login modal
+   * and open the login popup directly.
+   *
+   * The method must be called synchronously from a user action for this to work in all browsers.
+   *
+   * @default false
+   */
   instantPopup?: boolean;
 };
 
