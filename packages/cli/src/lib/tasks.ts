@@ -18,8 +18,12 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
 import ora from 'ora';
-import { basename, dirname } from 'path';
+import { resolve as resolvePath, basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
+import { promisify } from 'util';
+import { exec as execCb } from 'child_process';
+import { paths } from './paths';
+const exec = promisify(execCb);
 
 const TASK_NAME_MAX_LENGTH = 14;
 
@@ -69,7 +73,7 @@ export async function templatingTask(
   destinationDir: string,
   context: any,
 ) {
-  const files = await recursive(templateDir).catch(error => {
+  const files = await recursive(templateDir).catch((error) => {
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
 
@@ -85,7 +89,7 @@ export async function templatingTask(
         const compiled = handlebars.compile(template.toString());
         const contents = compiled({ name: basename(destination), ...context });
 
-        await fs.writeFile(destination, contents).catch(error => {
+        await fs.writeFile(destination, contents).catch((error) => {
           throw new Error(
             `Failed to create file: ${destination}: ${error.message}`,
           );
@@ -93,13 +97,109 @@ export async function templatingTask(
       });
     } else {
       await Task.forItem('copying', basename(file), async () => {
-        await fs.copyFile(file, destinationFile).catch(error => {
+        await fs.copyFile(file, destinationFile).catch((error) => {
           const destination = destinationFile;
           throw new Error(
             `Failed to copy file to ${destination} : ${error.message}`,
           );
         });
       });
+    }
+  }
+}
+
+// List of local packages that we need to modify as a part of an E2E test
+const PATCH_PACKAGES = [
+  'cli',
+  'core',
+  'dev-utils',
+  'test-utils',
+  'test-utils-core',
+  'theme',
+];
+
+// This runs a `yarn install` task, but with special treatment for e2e tests
+export async function installWithLocalDeps(dir: string) {
+  // This makes us install any package inside this repo as a local file dependency.
+  // For example, instead of trying to fetch @backstage/core from npm, we point it
+  // to <repo-root>/packages/core. This makes yarn use a simple file copy to install it instead.
+  if (process.env.BACKSTAGE_E2E_CLI_TEST) {
+    Task.section('Linking packages locally for e2e tests');
+
+    const pkgJsonPath = resolvePath(dir, 'package.json');
+    const pkgJson = await fs.readJson(pkgJsonPath);
+
+    pkgJson.resolutions = pkgJson.resolutions || {};
+    pkgJson.dependencies = pkgJson.dependencies || {};
+
+    if (!pkgJson.resolutions[`@backstage/${PATCH_PACKAGES[0]}`]) {
+      for (const name of PATCH_PACKAGES) {
+        await Task.forItem(
+          'adding',
+          `@backstage/${name} link to package.json`,
+          async () => {
+            const pkgPath = paths.resolveOwnRoot('packages', name);
+            // Add to both resolutions and dependencies, or transitive dependencies will still be fetched from the registry.
+            pkgJson.dependencies[`@backstage/${name}`] = `file:${pkgPath}`;
+            pkgJson.resolutions[`@backstage/${name}`] = `file:${pkgPath}`;
+
+            await fs
+              .writeJSON(pkgJsonPath, pkgJson, { encoding: 'utf8', spaces: 2 })
+              .catch((error) => {
+                throw new Error(
+                  `Failed to add resolutions to package.json: ${error.message}`,
+                );
+              });
+          },
+        );
+      }
+    }
+  }
+
+  await Task.forItem('executing', 'yarn install', async () => {
+    await exec('yarn install', { cwd: dir }).catch((error) => {
+      process.stdout.write(error.stderr);
+      process.stdout.write(error.stdout);
+      throw new Error(
+        `Could not execute command ${chalk.cyan('yarn install')}`,
+      );
+    });
+  });
+
+  // This takes care of pointing all the installed packages from this repo to
+  // dist instead of the local src.
+  // For example node_modules/@backstage/core/packages.json is rewritten to point
+  // types to dist/index.d.ts and the main:src field is removed.
+  // Without this we get type checking errors in the e2e test
+  if (process.env.BACKSTAGE_E2E_CLI_TEST) {
+    Task.section('Patchling local dependencies for e2e tests');
+
+    for (const name of PATCH_PACKAGES) {
+      await Task.forItem(
+        'patching',
+        `node_modules/@backstage/${name} package.json`,
+        async () => {
+          const depJsonPath = resolvePath(
+            dir,
+            'node_modules/@backstage',
+            name,
+            'package.json',
+          );
+          const depJson = await fs.readJson(depJsonPath);
+
+          // We want dist to be used for e2e tests
+          delete depJson['main:src'];
+          depJson.types = 'dist/index.d.ts';
+
+          await fs
+            .writeJSON(depJsonPath, depJson, { encoding: 'utf8', spaces: 2 })
+            .catch((error) => {
+              throw new Error(
+                `Failed to add resolutions to package.json: ${error.message}`,
+              );
+            });
+        },
+      );
     }
   }
 }

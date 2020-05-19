@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import ApiTestRegistry from './ApiTestRegistry';
-import ApiRef from './ApiRef';
+import { ApiTestRegistry } from './ApiTestRegistry';
+import { ApiRef } from './ApiRef';
 
 describe('ApiTestRegistry', () => {
   const aRef = new ApiRef<number>({ id: 'a', description: '' });

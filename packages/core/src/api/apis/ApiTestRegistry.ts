@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import ApiRef from './ApiRef';
+import { ApiRef } from './ApiRef';
 import { TypesToApiRefs, AnyApiRef, ApiHolder, ApiFactory } from './types';
 
-export default class ApiTestRegistry implements ApiHolder {
+export class ApiTestRegistry implements ApiHolder {
   private readonly apis = new Map<AnyApiRef, unknown>();
   private factories = new Map<
     AnyApiRef,

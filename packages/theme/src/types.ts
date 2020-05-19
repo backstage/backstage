@@ -28,7 +28,6 @@ type PaletteAdditions = {
     pending: string;
     running: string;
     aborted: string;
-    background: string;
   };
   border: string;
   textContrast: string;
@@ -64,3 +63,11 @@ export interface BackstageTheme extends Theme {
 export interface BackstageThemeOptions extends ThemeOptions {
   palette: BackstagePaletteOptions;
 }
+
+/**
+ * A simpler configuration for creating a new theme that just tweaks some parts of the backstage one.
+ */
+export type SimpleThemeOptions = {
+  palette: BackstagePaletteOptions;
+  fontFamily?: string;
+};

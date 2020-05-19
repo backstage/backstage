@@ -15,12 +15,11 @@
  */
 
 import { getRootLogger } from '@backstage/backend-common';
+import yn from 'yn';
 import { startStandaloneServer } from './service/standaloneServer';
 
 const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 3003;
-const enableCors = process.env.PLUGIN_CORS
-  ? Boolean(process.env.PLUGIN_CORS)
-  : false;
+const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
 const logger = getRootLogger();
 
 startStandaloneServer({ port, enableCors, logger }).catch((err) => {

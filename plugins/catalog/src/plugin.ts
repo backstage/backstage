@@ -16,10 +16,13 @@
 
 import { createPlugin } from '@backstage/core';
 import CatalogPage from './components/CatalogPage';
+import ComponentPage from './components/ComponentPage/ComponentPage';
+import { withMockStore } from './data/with-mock-store';
 
 export const plugin = createPlugin({
   id: 'catalog',
   register({ router }) {
-    router.registerRoute('/catalog', CatalogPage);
+    router.registerRoute('/catalog', withMockStore(CatalogPage));
+    router.registerRoute('/catalog/:name/', withMockStore(ComponentPage));
   },
 });

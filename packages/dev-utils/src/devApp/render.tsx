@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { hot } from 'react-hot-loader/root';
 import React, { FC, ComponentType } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import { ThemeProvider, CssBaseline } from '@material-ui/core';
 import {
   createApp,
   SidebarPage,
@@ -30,7 +30,6 @@ import {
   ApiTestRegistry,
   ApiHolder,
 } from '@backstage/core';
-import { lightTheme } from '@backstage/theme';
 import * as defaultApiFactories from './apiFactories';
 
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
@@ -66,25 +65,25 @@ class DevAppBuilder {
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
-    const app = createApp();
-    app.registerApis(this.setupApiRegistry(this.factories));
-    app.registerPlugin(...this.plugins);
-    const AppComponent = app.build();
+    const app = createApp({
+      apis: this.setupApiRegistry(this.factories),
+      plugins: this.plugins,
+    });
+    const AppProvider = app.getProvider();
+    const AppComponent = app.getRootComponent();
 
     const sidebar = this.setupSidebar(this.plugins);
 
     const DevApp: FC<{}> = () => {
       return (
-        <ThemeProvider theme={lightTheme}>
-          <CssBaseline>
-            <BrowserRouter>
-              <SidebarPage>
-                {sidebar}
-                <AppComponent />
-              </SidebarPage>
-            </BrowserRouter>
-          </CssBaseline>
-        </ThemeProvider>
+        <AppProvider>
+          <BrowserRouter>
+            <SidebarPage>
+              {sidebar}
+              <AppComponent />
+            </SidebarPage>
+          </BrowserRouter>
+        </AppProvider>
       );
     };
 
@@ -92,10 +91,10 @@ class DevAppBuilder {
   }
 
   /**
-   * Build and render directory to #root element
+   * Build and render directory to #root element, with react hot loading.
    */
   render(): void {
-    const DevApp = this.build();
+    const DevApp = hot(this.build());
 
     const paths = this.findPluginPaths(this.plugins);
 
@@ -123,6 +122,18 @@ class DevAppBuilder {
                 to={path}
                 text={path}
                 icon={BookmarkIcon}
+              />,
+            );
+            break;
+          }
+          case 'nav-target-component': {
+            const { target } = output;
+            sidebarItems.push(
+              <SidebarItem
+                key={target.path}
+                to={target.path}
+                text={target.title}
+                icon={target.icon}
               />,
             );
             break;

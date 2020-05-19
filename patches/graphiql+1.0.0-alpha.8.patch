@@ -1,0 +1,49 @@
+diff --git a/node_modules/graphiql/dist/components/HistoryQuery.d.ts b/node_modules/graphiql/dist/components/HistoryQuery.d.ts
+index c903bde..761b76b 100644
+--- a/node_modules/graphiql/dist/components/HistoryQuery.d.ts
++++ b/node_modules/graphiql/dist/components/HistoryQuery.d.ts
+@@ -1,5 +1,5 @@
+ import React from 'react';
+-import { QueryStoreItem } from 'src/utility/QueryStore';
++import { QueryStoreItem } from '../utility/QueryStore';
+ export declare type HandleEditLabelFn = (query?: string, variables?: string, operationName?: string, label?: string, favorite?: boolean) => void;
+ export declare type HandleToggleFavoriteFn = (query?: string, variables?: string, operationName?: string, label?: string, favorite?: boolean) => void;
+ export declare type HandleSelectQueryFn = (query?: string, variables?: string, operationName?: string, label?: string) => void;
+diff --git a/node_modules/graphiql/dist/components/QueryEditor.d.ts b/node_modules/graphiql/dist/components/QueryEditor.d.ts
+index b508e92..35e7fb7 100644
+--- a/node_modules/graphiql/dist/components/QueryEditor.d.ts
++++ b/node_modules/graphiql/dist/components/QueryEditor.d.ts
+@@ -1,7 +1,7 @@
+ import React from 'react';
+ import * as CM from 'codemirror';
+ import { GraphQLSchema, GraphQLType } from 'graphql';
+-import { SizerComponent } from 'src/utility/CodeMirrorSizer';
++import { SizerComponent } from '../utility/CodeMirrorSizer';
+ declare type QueryEditorProps = {
+     schema?: GraphQLSchema;
+     value?: string;
+diff --git a/node_modules/graphiql/dist/components/QueryHistory.d.ts b/node_modules/graphiql/dist/components/QueryHistory.d.ts
+index 409af29..9362657 100644
+--- a/node_modules/graphiql/dist/components/QueryHistory.d.ts
++++ b/node_modules/graphiql/dist/components/QueryHistory.d.ts
+@@ -1,7 +1,7 @@
+ import React from 'react';
+ import QueryStore, { QueryStoreItem } from '../utility/QueryStore';
+ import { HandleEditLabelFn, HandleToggleFavoriteFn, HandleSelectQueryFn } from './HistoryQuery';
+-import StorageAPI from 'src/utility/StorageAPI';
++import StorageAPI from '../utility/StorageAPI';
+ declare type QueryHistoryProps = {
+     query?: string;
+     variables?: string;
+diff --git a/node_modules/graphiql/dist/components/ResultViewer.d.ts b/node_modules/graphiql/dist/components/ResultViewer.d.ts
+index 55976f5..11b725a 100644
+--- a/node_modules/graphiql/dist/components/ResultViewer.d.ts
++++ b/node_modules/graphiql/dist/components/ResultViewer.d.ts
+@@ -1,6 +1,6 @@
+ import React, { Component, FunctionComponent } from 'react';
+ import * as CM from 'codemirror';
+-import { SizerComponent } from 'src/utility/CodeMirrorSizer';
++import { SizerComponent } from '../utility/CodeMirrorSizer';
+ import { ImagePreview as ImagePreviewComponent } from './ImagePreview';
+ declare type ResultViewerProps = {
+     value?: string;

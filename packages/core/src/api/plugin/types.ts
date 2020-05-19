@@ -15,6 +15,7 @@
  */
 
 import { ComponentType } from 'react';
+import { NavTarget } from '../navTargets';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
@@ -26,6 +27,13 @@ export type RoutePath = string;
 export type RouteOutput = {
   type: 'route';
   path: RoutePath;
+  component: ComponentType<{}>;
+  options?: RouteOptions;
+};
+
+export type RouteTargetOutput = {
+  type: 'nav-target-component';
+  target: NavTarget;
   component: ComponentType<{}>;
   options?: RouteOptions;
 };
@@ -46,5 +54,11 @@ export type FeatureFlagOutput = {
 
 export type PluginOutput =
   | RouteOutput
+  | RouteTargetOutput
   | RedirectRouteOutput
   | FeatureFlagOutput;
+
+export type BackstagePlugin = {
+  getId(): string;
+  output(): PluginOutput[];
+};

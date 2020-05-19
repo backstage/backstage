@@ -35,20 +35,23 @@ import helmet from 'helmet';
 import knex from 'knex';
 import catalog from './plugins/catalog';
 import scaffolder from './plugins/scaffolder';
+import auth from './plugins/auth';
 import { PluginEnvironment } from './types';
 
 const DEFAULT_PORT = 7000;
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
 
 function createEnv(plugin: string): PluginEnvironment {
-  return {
-    logger: getRootLogger().child({ type: 'plugin', plugin }),
-    database: knex({
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    }),
-  };
+  const logger = getRootLogger().child({ type: 'plugin', plugin });
+  const database = knex({
+    client: 'sqlite3',
+    connection: ':memory:',
+    useNullAsDefault: true,
+  });
+  database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+    resource.run('PRAGMA foreign_keys = ON', () => {});
+  });
+  return { logger, database };
 }
 
 async function main() {
@@ -61,6 +64,7 @@ async function main() {
   app.use(requestLoggingHandler());
   app.use('/catalog', await catalog(createEnv('catalog')));
   app.use('/scaffolder', await scaffolder(createEnv('scaffolder')));
+  app.use('/auth', await auth(createEnv('auth')));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

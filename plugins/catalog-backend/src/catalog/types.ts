@@ -16,9 +16,24 @@
 
 import * as yup from 'yup';
 
+//
+// Items
+//
+
 export type Component = {
   id: string;
+  locationId?: string;
+  name: string;
 };
+
+export type ItemsCatalog = {
+  components(): Promise<Component[]>;
+  component(id: string): Promise<Component>;
+};
+
+//
+// Locations
+//
 
 export type Location = {
   id: string;
@@ -26,23 +41,21 @@ export type Location = {
   target: string;
 };
 
-export type AddLocationRequest = {
+export type AddLocation = {
   type: string;
   target: string;
 };
 
-export const addLocationRequestShape: yup.Schema<AddLocationRequest> = yup
+export const addLocationSchema: yup.Schema<AddLocation> = yup
   .object({
     type: yup.string().required(),
     target: yup.string().required(),
   })
   .noUnknown();
 
-export type Catalog = {
-  components(): Promise<Component[]>;
-  component(id: string): Promise<Component>;
-  addLocation(location: AddLocationRequest): Promise<Location>;
+export type LocationsCatalog = {
+  addLocation(location: AddLocation): Promise<Location>;
   removeLocation(id: string): Promise<void>;
-  location(id: string): Promise<Location>;
   locations(): Promise<Location[]>;
+  location(id: string): Promise<Location>;
 };

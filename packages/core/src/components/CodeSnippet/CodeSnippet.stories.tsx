@@ -72,7 +72,7 @@ export const Overflow = () => (
   </>
 );
 
-export const Laguages = () => (
+export const Languages = () => (
   <>
     <CodeSnippet text={JAVASCRIPT} language="javascript" showLineNumbers />
     <CodeSnippet text={TYPESCRIPT} language="typescript" showLineNumbers />
