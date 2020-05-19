@@ -18,7 +18,7 @@ This ADR describes the default format of these descriptor files.
 
 ### Inspiration
 
-Internally at Spotify, a home grown software catalog system is used pervasively
+Internally at Spotify, a home grown software catalog system is used heavily
 and forms a core part of Backstage and other important pieces of the
 infrastructure. The user experience, learnings and certain pieces of metadata
 from that catalog are being carried over to the open source effort.
@@ -193,7 +193,7 @@ Their purpose is mainly, but not limited, to reference into external systems. Th
 for example be a reference to the git ref the entity was ingested from, to monitoring
 and logging systems, to pagerduty schedules, etc.
 
-The keys are strings and the values are free-form, subject to the following restrictions.
+Both the key and the value are strings, subject to the following restrictions.
 
 Keys have an optional prefix followed by a slash, and then the name part which is required.
 The prefix must be a valid lowercase domain name, at most 253 characters in total. The name
@@ -202,7 +202,7 @@ in total.
 
 The `backstage.io/` prefix is reserved for use by Backstage core components.
 
-Values can be of any JSON type.
+Values can be of any length, but are limited to being strings.
 
 ## Component
 
