@@ -27,7 +27,7 @@ export type AuthProviderHandlers = {
 export type AuthProvider = {
   [key: string]: {
     makeStrategy(options: any): passport.Strategy;
-    makeRouter(handlers: AuthProviderHandlers): express.Router;
+    makeRouter(): express.Router;
   };
 };
 

@@ -6,35 +6,54 @@ import { AuthProviderHandlers, AuthResponse } from './../types';
 
 export const provider = {
   makeStrategy(options: any): passport.Strategy {
-    return new GoogleStrategy(options, function (
-      _req: any,
-      accessToken: any,
-      refreshToken: any,
-      profile: any,
-      cb: any,
-    ) {
-      cb(undefined, { profile, accessToken, refreshToken });
-    });
+    return new GoogleStrategy(
+      { ...options, passReqToCallback: true },
+      function (
+        _req: any,
+        accessToken: any,
+        refreshToken: any,
+        profile: any,
+        cb: any,
+      ) {
+        cb(undefined, { profile, accessToken, refreshToken });
+      },
+    );
   },
-  makeRouter(handlers: AuthProviderHandlers): express.Router {
-    const router = Router();
-    router.get('/start', handlers.start);
-    router.get('/handler/frame', handlers.handle);
-    router.get('/logout', handlers.logout);
-    if (handlers.refresh) {
-      router.get('/refreshToken', handlers.refresh);
-    }
-    return router;
+  makeRouter(): express.Router {
+    return defaultRouter(GoogleAuthProviderHandler);
   },
 };
 
+const defaultRouter = (handlers: AuthProviderHandlers) => {
+  const router = Router();
+  router.get('/start', handlers.start);
+  router.get('/handler/frame', handlers.handle);
+  router.get('/logout', handlers.logout);
+  if (handlers.refresh) {
+    router.get('/refreshToken', handlers.refresh);
+  }
+  return router;
+};
+
+// Make this a class
+// add a getStrategy method
+// pass the config as a new constructor
+
+// class GoogleAuthProvider implements AuthProviderHandlers {
+//   config: any;
+//   constructor(config: any) {
+//     this.config = config;
+//   }
+
+// }
+
 export const GoogleAuthProviderHandler: AuthProviderHandlers = {
   start(req, res, next) {
+    const scopes = req.query.scopes?.toString().split(',');
     return passport.authenticate('google', {
-      scope: ['profile', 'email'],
+      scope: scopes,
       accessType: 'offline',
       prompt: 'consent',
-      state: '8745634875963',
     })(req, res, next);
   },
   handle(req, res, next) {
