@@ -74,7 +74,7 @@ export const Sidebar: FC<Props> = ({
 }) => {
   const classes = useStyles();
   const [state, setState] = useState(State.Closed);
-  const hoverTimerRef = useRef<NodeJS.Timer>();
+  const hoverTimerRef = useRef<number>();
 
   const handleOpen = () => {
     if (hoverTimerRef.current) {
@@ -82,7 +82,7 @@ export const Sidebar: FC<Props> = ({
       hoverTimerRef.current = undefined;
     }
     if (state !== State.Open) {
-      hoverTimerRef.current = setTimeout(() => {
+      hoverTimerRef.current = window.setTimeout(() => {
         hoverTimerRef.current = undefined;
         setState(State.Open);
       }, openDelayMs);
@@ -99,7 +99,7 @@ export const Sidebar: FC<Props> = ({
     if (state === State.Peek) {
       setState(State.Closed);
     } else if (state === State.Open) {
-      hoverTimerRef.current = setTimeout(() => {
+      hoverTimerRef.current = window.setTimeout(() => {
         hoverTimerRef.current = undefined;
         setState(State.Closed);
       }, closeDelayMs);

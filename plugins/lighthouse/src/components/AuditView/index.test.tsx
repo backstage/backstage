@@ -16,10 +16,13 @@
 
 /* eslint-disable jest/no-disabled-tests */
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(() => ({})),
-}));
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useParams: jest.fn(() => ({})),
+  };
+});
 
 import React from 'react';
 import mockFetch from 'jest-fetch-mock';
@@ -32,7 +35,7 @@ import { lighthouseApiRef, LighthouseRestApi, Audit, Website } from '../../api';
 import { formatTime } from '../../utils';
 import * as data from '../../__fixtures__/website-response.json';
 
-const { useParams }: { useParams: jest.Mock } = require.requireMock(
+const { useParams }: { useParams: jest.Mock } = jest.requireMock(
   'react-router-dom',
 );
 const websiteResponse = data as Website;
