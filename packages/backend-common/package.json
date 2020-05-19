@@ -40,7 +40,7 @@
     "@types/yaml": "^1.9.7",
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",
-    "jest": "^25.1.0",
+    "jest": "^26.0.1",
     "jest-fetch-mock": "^3.0.3",
     "supertest": "^4.0.2",
     "typescript": "^3.9.2"
