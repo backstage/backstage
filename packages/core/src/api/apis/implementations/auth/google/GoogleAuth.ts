@@ -16,10 +16,15 @@
 
 import { AuthHelper } from './GoogleAuthHelper';
 import GoogleScopes from './GoogleScopes';
-import { GoogleAuthApi, GoogleSession, IdTokenOptions } from './types';
+import { GoogleSession } from './types';
 import { OAuthScopes } from '../../..';
+import {
+  OAuthApi,
+  OpenIdConnectApi,
+  IdTokenOptions,
+} from '../../../definitions/auth';
 
-class GoogleAuth implements GoogleAuthApi {
+class GoogleAuth implements OAuthApi, OpenIdConnectApi {
   private currentSession: GoogleSession | undefined;
 
   constructor(private readonly helper: AuthHelper) {}
