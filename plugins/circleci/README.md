@@ -42,11 +42,11 @@ export { plugin as Circleci } from '@backstage/plugin-circleci';
 
 - List top 50 builds for a project
 - Dive into one build to see logs
-- Polling
+- Polling (logs only)
 - Retry builds
+- Works for both project and personal tokens
+- Pagination for builds
 
 ## Limitations
 
-- Currently working only with project token (personal credentials WIP)
-- Currently only top 50 builds in table view
 - CircleCI has pretty strict rate limits per token, be careful with opened tabs
