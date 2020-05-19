@@ -42,7 +42,7 @@ import { lighthouseApiRef, LighthouseRestApi, Audit } from '../../api';
 import CreateAudit from '.';
 import * as data from '../../__fixtures__/create-audit-response.json';
 
-const { useHistory }: { useHistory: jest.Mock } = require.requireMock(
+const { useHistory }: { useHistory: jest.Mock } = jest.requireMock(
   'react-router-dom',
 );
 const createAuditResponse = data as Audit;
