@@ -16,7 +16,6 @@
 
 import MockOAuthApi from './MockOAuthApi';
 import PowerIcon from '@material-ui/icons/Power';
-import { BasicOAuthScopes } from './BasicOAuthScopes';
 
 describe('MockOAuthApi', () => {
   it('should trigger all requests', async () => {
@@ -36,11 +35,11 @@ describe('MockOAuthApi', () => {
     });
 
     const promises = [
-      requester1(BasicOAuthScopes.from('a')),
-      requester1(BasicOAuthScopes.from('b')),
-      requester2(BasicOAuthScopes.from('a b')),
-      requester2(BasicOAuthScopes.from('b c')),
-      requester2(BasicOAuthScopes.from('c a')),
+      requester1(new Set(['a'])),
+      requester1(new Set(['b'])),
+      requester2(new Set(['a', 'b'])),
+      requester2(new Set(['b', 'c'])),
+      requester2(new Set(['c', 'a'])),
     ];
 
     await expect(
@@ -58,9 +57,9 @@ describe('MockOAuthApi', () => {
     ]);
 
     expect(authHandler1).toHaveBeenCalledTimes(1);
-    expect(authHandler1).toHaveBeenCalledWith(BasicOAuthScopes.from('a b'));
+    expect(authHandler1).toHaveBeenCalledWith(new Set(['a', 'b']));
     expect(authHandler2).toHaveBeenCalledTimes(1);
-    expect(authHandler2).toHaveBeenCalledWith(BasicOAuthScopes.from('a b c'));
+    expect(authHandler2).toHaveBeenCalledWith(new Set(['a', 'b', 'c']));
   });
 
   it('should reject all requests', async () => {
@@ -79,11 +78,11 @@ describe('MockOAuthApi', () => {
     });
 
     const promises = [
-      requester1(BasicOAuthScopes.from('a')),
-      requester1(BasicOAuthScopes.from('b')),
-      requester2(BasicOAuthScopes.from('a b')),
-      requester2(BasicOAuthScopes.from('b c')),
-      requester2(BasicOAuthScopes.from('c a')),
+      requester1(new Set(['a'])),
+      requester1(new Set(['b'])),
+      requester2(new Set(['a', 'b'])),
+      requester2(new Set(['b', 'c'])),
+      requester2(new Set(['c', 'a'])),
     ];
 
     await expect(

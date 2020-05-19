@@ -43,7 +43,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
     this.handlerCount++;
 
     handler.pending().subscribe({
-      next: (scopeRequest) => {
+      next: scopeRequest => {
         const newRequests = this.currentRequests.slice();
         const request = this.makeAuthRequest(scopeRequest, options);
         if (!request) {
@@ -57,7 +57,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
       },
     });
 
-    return (scopes) => {
+    return scopes => {
       return handler.request(scopes);
     };
   }

@@ -16,7 +16,6 @@
 
 import { wait } from '@testing-library/react';
 import { OAuthPendingRequests } from './OAuthPendingRequests';
-import { BasicOAuthScopes } from './BasicOAuthScopes';
 
 describe('OAuthPendingRequests', () => {
   it('notifies new observers about current state', async () => {
@@ -24,7 +23,7 @@ describe('OAuthPendingRequests', () => {
     const next = jest.fn();
     const error = jest.fn();
 
-    const input = BasicOAuthScopes.from('a b');
+    const input = new Set(['a', 'b']);
     target.pending().subscribe({ next, error });
     target.request(input);
 
@@ -39,11 +38,11 @@ describe('OAuthPendingRequests', () => {
     const next = jest.fn();
     const error = jest.fn();
 
-    const request1 = target.request(BasicOAuthScopes.from('a'));
-    const request2 = target.request(BasicOAuthScopes.from('a'));
+    const request1 = target.request(new Set(['a']));
+    const request2 = target.request(new Set(['a']));
     target.pending().subscribe({ next, error });
-    target.resolve(BasicOAuthScopes.from('a'), 'session1');
-    target.resolve(BasicOAuthScopes.from('a'), 'session2');
+    target.resolve(new Set(['a']), 'session1');
+    target.resolve(new Set(['a']), 'session2');
 
     await expect(request1).resolves.toBe('session1');
     await expect(request2).resolves.toBe('session1');
@@ -53,10 +52,10 @@ describe('OAuthPendingRequests', () => {
 
   it('can resolve through the observable', async () => {
     const target = new OAuthPendingRequests<string>();
-    const next = jest.fn((pendingRequest) => pendingRequest.resolve('done'));
+    const next = jest.fn(pendingRequest => pendingRequest.resolve('done'));
     const error = jest.fn();
 
-    const request1 = target.request(BasicOAuthScopes.from('a'));
+    const request1 = target.request(new Set(['a']));
     target.pending().subscribe({ next, error });
 
     await expect(request1).resolves.toBe('done');
@@ -70,11 +69,11 @@ describe('OAuthPendingRequests', () => {
     const error = jest.fn();
     const rejection = new Error('eek');
 
-    const request1 = target.request(BasicOAuthScopes.from('a'));
-    const request2 = target.request(BasicOAuthScopes.from('a'));
+    const request1 = target.request(new Set(['a']));
+    const request2 = target.request(new Set(['a']));
     target.pending().subscribe({ next, error });
     target.reject(rejection);
-    target.resolve(BasicOAuthScopes.from('a'), 'session');
+    target.resolve(new Set(['a']), 'session');
 
     await expect(request1).rejects.toBe(rejection);
     await expect(request2).rejects.toBe(rejection);
@@ -85,10 +84,10 @@ describe('OAuthPendingRequests', () => {
   it('can reject through the observable', async () => {
     const target = new OAuthPendingRequests<string>();
     const rejection = new Error('nope');
-    const next = jest.fn((pendingRequest) => pendingRequest.reject(rejection));
+    const next = jest.fn(pendingRequest => pendingRequest.reject(rejection));
     const error = jest.fn();
 
-    const request1 = target.request(BasicOAuthScopes.from('a'));
+    const request1 = target.request(new Set(['a']));
     target.pending().subscribe({ next, error });
 
     await expect(request1).rejects.toBe(rejection);

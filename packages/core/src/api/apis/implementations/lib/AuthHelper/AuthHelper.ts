@@ -15,11 +15,7 @@
  */
 
 import { AuthRequester } from '../../..';
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  OAuthScopes,
-} from '../../../definitions';
+import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { showLoginPopup } from '../loginPopup';
 
 const DEFAULT_BASE_PATH = '/api/auth/';
@@ -37,7 +33,7 @@ type Options<AuthSession> = {
 export type GenericAuthHelper<AuthSession> = {
   refreshSession(): Promise<AuthSession>;
   removeSession(): Promise<void>;
-  createSession(scope: OAuthScopes): Promise<AuthSession>;
+  createSession(scopes: Set<string>): Promise<AuthSession>;
 };
 
 export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
@@ -59,12 +55,12 @@ export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
       environment,
       provider,
       oauthRequestApi,
-      sessionTransform = (id) => id,
+      sessionTransform = id => id,
     } = options;
 
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
-      onAuthRequest: (scopes) => this.showPopup(scopes.toString()),
+      onAuthRequest: scopes => this.showPopup([...scopes].join(' ')),
     });
 
     this.apiOrigin = apiOrigin;
@@ -95,7 +91,7 @@ export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
         'x-requested-with': 'XMLHttpRequest',
       },
       credentials: 'include',
-    }).catch((error) => {
+    }).catch(error => {
       throw new Error(`Auth refresh request failed, ${error}`);
     });
 
@@ -133,8 +129,8 @@ export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
     }
   }
 
-  async createSession(scope: OAuthScopes): Promise<AuthSession> {
-    return this.authRequester(scope);
+  async createSession(scopes: Set<string>): Promise<AuthSession> {
+    return this.authRequester(scopes);
   }
 
   private async showPopup(scope: string): Promise<AuthSession> {

@@ -15,10 +15,11 @@
  */
 
 import GoogleAuth from './GoogleAuth';
-import GoogleScopes from './GoogleScopes';
 
 const theFuture = new Date(Date.now() + 3600000);
 const thePast = new Date(Date.now() - 10);
+
+const PREFIX = 'https://www.googleapis.com/auth/';
 
 describe('GoogleAuth', () => {
   it('should save result form createSession', async () => {
@@ -41,7 +42,7 @@ describe('GoogleAuth', () => {
     const googleAuth = new GoogleAuth({ createSession, refreshSession } as any);
 
     createSession.mockResolvedValue({
-      scopes: GoogleScopes.from('a'),
+      scopes: new Set([`${PREFIX}a`]),
       expiresAt: theFuture,
     });
     await googleAuth.getSession({ scope: 'a' });
@@ -59,11 +60,11 @@ describe('GoogleAuth', () => {
     const refreshSession = jest
       .fn()
       .mockRejectedValueOnce(new Error('NOPE'))
-      .mockResolvedValue({ scopes: GoogleScopes.from('a') });
+      .mockResolvedValue({ scopes: new Set([`${PREFIX}a`]) });
     const googleAuth = new GoogleAuth({ createSession, refreshSession } as any);
 
     createSession.mockResolvedValue({
-      scopes: GoogleScopes.from('a'),
+      scopes: new Set([`${PREFIX}a`]),
       expiresAt: thePast,
     });
 
@@ -150,7 +151,7 @@ describe('GoogleAuth', () => {
     const refreshSession = jest.fn().mockResolvedValue({
       accessToken: 'access-token',
       expiresAt: theFuture,
-      scopes: GoogleScopes.from('not-enough'),
+      scopes: new Set([`${PREFIX}not-enough`]),
     });
     const googleAuth = new GoogleAuth({ createSession, refreshSession } as any);
 
@@ -169,7 +170,7 @@ describe('GoogleAuth', () => {
     const initialSession = {
       idToken: 'token1',
       expiresAt: theFuture,
-      scopes: GoogleScopes.empty(),
+      scopes: new Set(),
     };
     const refreshSession = jest
       .fn()
@@ -177,7 +178,7 @@ describe('GoogleAuth', () => {
       .mockResolvedValue({
         idToken: 'token2',
         expiresAt: theFuture,
-        scopes: GoogleScopes.empty(),
+        scopes: new Set(),
       });
     const googleAuth = new GoogleAuth({ refreshSession } as any);
 

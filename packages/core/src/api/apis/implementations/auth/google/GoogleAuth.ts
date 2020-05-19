@@ -16,9 +16,7 @@
 
 import GoogleIcon from '@material-ui/icons/AcUnit';
 import { AuthHelper } from '../../lib/AuthHelper';
-import GoogleScopes from './GoogleScopes';
 import { GoogleSession } from './types';
-import { OAuthScopes } from '../../..';
 import {
   OAuthApi,
   OpenIdConnectApi,
@@ -26,6 +24,7 @@ import {
 } from '../../../definitions/auth';
 import { OAuthRequestApi } from '../../../definitions';
 import { GenericAuthHelper } from '../../lib/AuthHelper/AuthHelper';
+import { hasScopes } from '../../OAuthRequestManager/OAuthPendingRequests';
 
 export type GoogleAuthResponse = {
   accessToken: string;
@@ -33,6 +32,13 @@ export type GoogleAuthResponse = {
   scopes: string;
   expiresInSeconds: number;
 };
+
+const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
+const DEFAULT_SCOPES = [
+  'openid',
+  `${SCOPE_PREFIX}userinfo.email`,
+  `${SCOPE_PREFIX}userinfo.profile`,
+];
 
 class GoogleAuth implements OAuthApi, OpenIdConnectApi {
   private currentSession: GoogleSession | undefined;
@@ -50,7 +56,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
         return {
           idToken: res.idToken,
           accessToken: res.accessToken,
-          scopes: GoogleScopes.from(res.scopes),
+          scopes: GoogleAuth.normalizeScopes(res.scopes),
           expiresAt: new Date(Date.now() + res.expiresInSeconds * 1000),
         };
       },
@@ -86,14 +92,16 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
     optional?: boolean;
     scope?: string | string[];
   }): Promise<GoogleSession | undefined> {
-    if (this.sessionExistsAndHasScope(this.currentSession, options.scope)) {
+    const normalizedScope = GoogleAuth.normalizeScopes(options.scope);
+
+    if (this.sessionExistsAndHasScope(this.currentSession, normalizedScope)) {
       if (!this.sessionWillExpire(this.currentSession!)) {
         return this.currentSession!;
       }
 
       try {
         const refreshedSession = await this.helper.refreshSession();
-        if (refreshedSession.scopes.hasScopes(this.currentSession!.scopes)) {
+        if (hasScopes(refreshedSession.scopes, this.currentSession!.scopes)) {
           this.currentSession = refreshedSession;
         }
         return refreshedSession;
@@ -125,7 +133,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
 
     // We can call authRequester multiple times, the returned session will contain all requested scopes.
     this.currentSession = await this.helper.createSession(
-      this.getExtendedScope(options.scope),
+      this.getExtendedScope(normalizedScope),
     );
     return this.currentSession;
   }
@@ -137,7 +145,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
 
   private sessionExistsAndHasScope(
     session: GoogleSession | undefined,
-    scope?: string | string[],
+    scope?: Set<string>,
   ): boolean {
     if (!session) {
       return false;
@@ -145,7 +153,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
     if (!scope) {
       return true;
     }
-    return session.scopes.hasScopes(scope);
+    return hasScopes(session.scopes, scope);
   }
 
   private sessionWillExpire(session: GoogleSession) {
@@ -153,15 +161,45 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
     return expiresInSec < 60 * 5;
   }
 
-  private getExtendedScope(scope?: string | string[]) {
-    let newScope: OAuthScopes = GoogleScopes.default();
+  private getExtendedScope(scopes: Set<string>) {
+    const newScope = new Set(DEFAULT_SCOPES);
     if (this.currentSession) {
-      newScope = this.currentSession.scopes;
+      for (const scope of this.currentSession.scopes) {
+        newScope.add(scope);
+      }
     }
-    if (scope) {
-      newScope = newScope.extend(scope);
+    for (const scope of scopes) {
+      newScope.add(scope);
     }
     return newScope;
+  }
+
+  private static normalizeScopes(scopes?: string | string[]): Set<string> {
+    if (!scopes) {
+      return new Set();
+    }
+
+    const scopeList = Array.isArray(scopes)
+      ? scopes
+      : scopes.split(' ').filter(Boolean);
+
+    const normalizedScopes = scopeList.map(scope => {
+      if (scope === 'openid') {
+        return scope;
+      }
+
+      if (scope === 'profile' || scope === 'email') {
+        return `${SCOPE_PREFIX}userinfo.${scope}`;
+      }
+
+      if (scope.startsWith(SCOPE_PREFIX)) {
+        return scope;
+      }
+
+      return `${SCOPE_PREFIX}${scope}`;
+    });
+
+    return new Set(normalizedScopes);
   }
 }
 export default GoogleAuth;

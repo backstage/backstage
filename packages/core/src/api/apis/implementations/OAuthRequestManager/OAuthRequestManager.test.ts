@@ -16,7 +16,6 @@
 
 import ProviderIcon from '@material-ui/icons/AcUnit';
 import { OAuthRequestManager } from './OAuthRequestManager';
-import { BasicOAuthScopes } from './BasicOAuthScopes';
 
 describe('OAuthRequestManager', () => {
   it('should forward a requests', async () => {
@@ -38,7 +37,7 @@ describe('OAuthRequestManager', () => {
     expect(reqSpy).toHaveBeenCalledTimes(2);
     expect(reqSpy).toHaveBeenLastCalledWith([]);
 
-    const req = requester(BasicOAuthScopes.from('my-scope'));
+    const req = requester(new Set(['my-scope']));
 
     expect(reqSpy).toHaveBeenCalledTimes(3);
     expect(reqSpy).toHaveBeenLastCalledWith([

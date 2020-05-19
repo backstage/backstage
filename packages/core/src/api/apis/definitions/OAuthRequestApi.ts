@@ -18,18 +18,6 @@ import { IconComponent } from '../../../icons';
 import { Observable } from '../../types';
 import { ApiRef } from '../ApiRef';
 
-export type OAuthScopes = {
-  extend(scopes: OAuthScopeLike): OAuthScopes;
-  hasScopes(scopes: OAuthScopeLike): boolean;
-  toSet(): Set<string>;
-  toString(): string;
-};
-
-export type OAuthScopeLike =
-  | string /** Space separated scope strings */
-  | string[] /** Array of individual scope strings */
-  | OAuthScopes;
-
 /**
  * Information about the auth provider that we're requesting a login towards.
  *
@@ -62,7 +50,7 @@ export type AuthRequesterOptions<AuthResponse> = {
    * Implementation of the auth flow, which will be called synchronously when
    * trigger() is called on an auth requests.
    */
-  onAuthRequest(scope: OAuthScopes): Promise<AuthResponse>;
+  onAuthRequest(scopes: Set<string>): Promise<AuthResponse>;
 };
 
 /**
@@ -76,7 +64,7 @@ export type AuthRequesterOptions<AuthResponse> = {
  * union of all requested scopes.
  */
 export type AuthRequester<AuthResponse> = (
-  scope: OAuthScopes,
+  scopes: Set<string>,
 ) => Promise<AuthResponse>;
 
 /**

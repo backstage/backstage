@@ -14,21 +14,49 @@
  * limitations under the License.
  */
 
-import { OAuthScopes } from '../../definitions';
 import { BehaviorSubject } from '../lib';
 import { Observable } from '../../../types';
 
 type RequestQueueEntry<ResultType> = {
-  scopes: OAuthScopes;
+  scopes: Set<string>;
   resolve: (value?: ResultType | PromiseLike<ResultType> | undefined) => void;
   reject: (reason: Error) => void;
 };
 
 export type PendingRequest<ResultType> = {
-  scopes: OAuthScopes | undefined;
+  scopes: Set<string> | undefined;
   resolve: (value: ResultType) => void;
   reject: (reason: Error) => void;
 };
+
+export function hasScopes(
+  searched: Set<string>,
+  searchFor: Set<string>,
+): boolean {
+  for (const scope of searchFor) {
+    if (!searched.has(scope)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function joinScopes(
+  scopes: Set<string>,
+  ...moreScopess: Set<string>[]
+): Set<string> {
+  const result = new Set(scopes);
+
+  for (const moreScopes of moreScopess) {
+    for (const scope of moreScopes) {
+      if (!result.has(scope)) {
+        result.add(scope);
+      }
+    }
+  }
+
+  return result;
+}
 
 /**
  * The OAuthPendingRequests class is a utility for managing and observing
@@ -41,7 +69,7 @@ export class OAuthPendingRequests<ResultType> {
     this.getCurrentPending(),
   );
 
-  request(scopes: OAuthScopes): Promise<ResultType> {
+  request(scopes: Set<string>): Promise<ResultType> {
     return new Promise((resolve, reject) => {
       this.requests.push({ scopes, resolve, reject });
 
@@ -49,9 +77,9 @@ export class OAuthPendingRequests<ResultType> {
     });
   }
 
-  resolve(scopes: OAuthScopes, result: ResultType): void {
-    this.requests = this.requests.filter((request) => {
-      if (scopes.hasScopes(request.scopes)) {
+  resolve(scopes: Set<string>, result: ResultType): void {
+    this.requests = this.requests.filter(request => {
+      if (hasScopes(scopes, request.scopes)) {
         request.resolve(result);
         return false;
       }
@@ -62,7 +90,7 @@ export class OAuthPendingRequests<ResultType> {
   }
 
   reject(error: Error) {
-    this.requests.forEach((request) => request.reject(error));
+    this.requests.forEach(request => request.reject(error));
     this.requests = [];
 
     this.subject.next(this.getCurrentPending());
@@ -79,7 +107,7 @@ export class OAuthPendingRequests<ResultType> {
         : this.requests
             .slice(1)
             .reduce(
-              (acc, current) => acc.extend(current.scopes),
+              (acc, current) => joinScopes(acc, current.scopes),
               this.requests[0].scopes,
             );
 

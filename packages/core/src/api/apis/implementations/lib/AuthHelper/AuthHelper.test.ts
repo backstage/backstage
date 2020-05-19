@@ -17,7 +17,6 @@
 import ProviderIcon from '@material-ui/icons/AcUnit';
 import { AuthHelper } from './AuthHelper';
 import MockOAuthApi from '../../OAuthRequestManager/MockOAuthApi';
-import { BasicOAuthScopes } from '../../OAuthRequestManager/BasicOAuthScopes';
 import * as loginPopup from '../loginPopup';
 
 const anyFetch = fetch as any;
@@ -33,7 +32,7 @@ const defaultOptions = {
   oauthRequestApi: new MockOAuthApi(),
   sessionTransform: ({ expiresInSeconds, ...res }: any) => ({
     ...res,
-    scopes: BasicOAuthScopes.from(res.scopes),
+    scopes: new Set(res.scopes.split(' ')),
     expiresAt: new Date(Date.now() + expiresInSeconds * 1000),
   }),
 };
@@ -58,7 +57,7 @@ describe('AuthHelper', () => {
     const session = await helper.refreshSession();
     expect(session.idToken).toBe('mock-id-token');
     expect(session.accessToken).toBe('mock-access-token');
-    expect(session.scopes.hasScopes('a b c')).toBe(true);
+    expect(session.scopes).toEqual(new Set(['a', 'b', 'c']));
     expect(session.expiresAt.getTime()).toBeLessThan(Date.now() + 70000);
     expect(session.expiresAt.getTime()).toBeGreaterThan(Date.now() + 50000);
   });
@@ -87,7 +86,7 @@ describe('AuthHelper', () => {
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });
-    const promise = helper.createSession(BasicOAuthScopes.from('a b'));
+    const promise = helper.createSession(new Set(['a', 'b']));
     await mockOauth.rejectAll();
     await expect(promise).rejects.toMatchObject({ name: 'RejectedError' });
   });
@@ -107,7 +106,7 @@ describe('AuthHelper', () => {
       oauthRequestApi: mockOauth,
     });
 
-    const sessionPromise = helper.createSession(BasicOAuthScopes.from('a b'));
+    const sessionPromise = helper.createSession(new Set(['a', 'b']));
 
     await mockOauth.triggerAll();
 
@@ -119,7 +118,7 @@ describe('AuthHelper', () => {
     await expect(sessionPromise).resolves.toEqual({
       idToken: 'my-id-token',
       accessToken: 'my-access-token',
-      scopes: expect.any(BasicOAuthScopes),
+      scopes: expect.any(Set),
       expiresAt: expect.any(Date),
     });
   });

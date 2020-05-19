@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import GoogleScopes from './GoogleScopes';
-
 export type GoogleSession = {
   idToken: string;
   accessToken: string;
-  scopes: GoogleScopes;
+  scopes: Set<string>;
   expiresAt: Date;
 };
