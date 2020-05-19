@@ -2710,6 +2710,11 @@
   resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-6.0.0.tgz#f3a72cf290af8f5b57e89fc65e6eaff8178a6e83"
   integrity sha512-lO/ykZ/GNtzH63mFzs1VeqOVNCZwQJyZm/PBNBZuYk3hnWOfDC8XA5G/D4opV/gxqkED5+Ek7LSAnPcQNv/wUA==
 
+"@spotify/prettier-config@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-7.0.0.tgz#47750979d1282197295108b6958360660a955c16"
+  integrity sha512-lIMcx/2oDqTtW84iHKkRJe+8U6HK6GPwWH5sJp9UEHcDpdXomOQYvwcGXy2I2zwPQQ14gYYE6nEJuSnnYqsYRw==
+
 "@spotify/tsconfig@^6.0.0":
   version "6.0.0"
   resolved "https://registry.npmjs.org/@spotify/tsconfig/-/tsconfig-6.0.0.tgz#bf9fd0b8188494d87ba6c172f0030376d2aa5dd8"
