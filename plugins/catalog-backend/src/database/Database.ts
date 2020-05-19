@@ -81,7 +81,7 @@ export class Database {
 
       return (
         await tx<DatabaseLocation>('locations').where({ id }).select()
-      )?.[0];
+      )![0];
     });
   }
 
