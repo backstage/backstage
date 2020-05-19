@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import Router from 'express-promise-router';
 import { AuthProviderRouteHandlers, AuthProviderFactories } from './types';
 
@@ -5,18 +21,6 @@ import { GoogleAuthProvider } from './google/provider';
 
 const providerFactories: AuthProviderFactories = {
   google: GoogleAuthProvider,
-};
-
-export const makeProvider = (config: any) => {
-  const provider = config.provider;
-  const providerImpl = providerFactories[provider];
-  if (!providerImpl) {
-    throw Error(`Provider Implementation missing for provider: ${provider}`);
-  }
-  const providerInstance = new providerImpl(config);
-  const strategy = providerInstance.strategy();
-  const providerRouter = defaultRouter(providerInstance);
-  return { provider, strategy, providerRouter };
 };
 
 export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
@@ -28,4 +32,16 @@ export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
     router.get('/refreshToken', provider.refresh);
   }
   return router;
+};
+
+export const makeProvider = (config: any) => {
+  const provider = config.provider;
+  const ProviderImpl = providerFactories[provider];
+  if (!ProviderImpl) {
+    throw Error(`Provider Implementation missing for provider: ${provider}`);
+  }
+  const providerInstance = new ProviderImpl(config);
+  const strategy = providerInstance.strategy();
+  const providerRouter = defaultRouter(providerInstance);
+  return { provider, strategy, providerRouter };
 };

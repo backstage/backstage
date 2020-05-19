@@ -29,19 +29,21 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
+  const logger = options.logger.child({ plugin: 'auth' });
 
   // configure all the providers
   for (const providerConfig of providers) {
+    logger.info('Configuring providers');
     const { provider, strategy, providerRouter } = makeProvider(providerConfig);
     passport.use(strategy);
     router.use(`/${provider}`, providerRouter);
   }
 
-  passport.serializeUser(function (user, done) {
+  passport.serializeUser((user, done) => {
     done(null, user);
   });
 
-  passport.deserializeUser(function (user, done) {
+  passport.deserializeUser((user, done) => {
     done(null, user);
   });
 
