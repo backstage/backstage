@@ -126,6 +126,7 @@ type Props = {
   actions?: ReactNode;
   cardClassName?: string;
   actionsTopRight?: ReactNode;
+  className?: string;
 };
 
 const InfoCard: FC<Props> = ({
@@ -142,6 +143,7 @@ const InfoCard: FC<Props> = ({
   actions,
   cardClassName,
   actionsTopRight,
+  className,
 }) => {
   const classes = useStyles();
 
@@ -169,7 +171,7 @@ const InfoCard: FC<Props> = ({
   }
 
   return (
-    <Card style={calculatedStyle}>
+    <Card style={calculatedStyle} className={className}>
       <ErrorBoundary slackChannel={slackChannel}>
         {title && (
           <>

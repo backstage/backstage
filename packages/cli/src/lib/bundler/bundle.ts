@@ -48,7 +48,7 @@ export async function buildBundle(options: BuildOptions) {
   const previousFileSizes = await measureFileSizesBeforeBuild(paths.targetDist);
   await fs.emptyDir(paths.targetDist);
 
-  const { stats } = await build(compiler, isCi).catch(error => {
+  const { stats } = await build(compiler, isCi).catch((error) => {
     console.log(chalk.red('Failed to compile.\n'));
     throw new Error(`Failed to compile.\n${error.message || error}`);
   });

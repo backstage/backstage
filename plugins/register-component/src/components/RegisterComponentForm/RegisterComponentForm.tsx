@@ -28,7 +28,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { Progress } from '@backstage/core';
 import { ComponentIdValidators } from '../../util/validate';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>((theme) => ({
   form: {
     alignItems: 'flex-start',
     display: 'flex',

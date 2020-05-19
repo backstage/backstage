@@ -150,6 +150,7 @@ const convertColumns = (
 
 export interface TableColumn extends Column<{}> {
   highlight?: boolean;
+  width?: string;
 }
 
 export interface TableProps extends MaterialTableProps<{}> {

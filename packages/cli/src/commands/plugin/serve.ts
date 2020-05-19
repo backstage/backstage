@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { serveBundle } from '../../lib/bundler';
 import { Command } from 'commander';
+import { serveBundle } from '../../lib/bundler';
 
 export default async (cmd: Command) => {
   const waitForExit = await serveBundle({

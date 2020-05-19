@@ -157,7 +157,7 @@ function actionHandler<T extends readonly any[]>(
   };
 }
 
-process.on('unhandledRejection', rejection => {
+process.on('unhandledRejection', (rejection) => {
   if (rejection instanceof Error) {
     exitWithError(rejection);
   } else {

@@ -18,7 +18,7 @@ import React, { FC } from 'react';
 import { createNavTarget } from '@backstage/core';
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
-const GraphiQLIcon: FC<SvgIconProps> = props => (
+const GraphiQLIcon: FC<SvgIconProps> = (props) => (
   <SvgIcon {...props}>
     <g id="surface1">
       <path

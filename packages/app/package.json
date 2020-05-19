@@ -5,6 +5,7 @@
   "dependencies": {
     "@backstage/cli": "^0.1.1-alpha.5",
     "@backstage/core": "^0.1.1-alpha.5",
+    "@backstage/plugin-circleci": "^0.1.1-alpha.4",
     "@backstage/plugin-catalog": "^0.1.1-alpha.5",
     "@backstage/plugin-explore": "^0.1.1-alpha.5",
     "@backstage/plugin-home-page": "^0.1.1-alpha.5",
@@ -62,5 +63,14 @@
       "last 1 safari version"
     ]
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "proxy": {
+    "/circleci/api": {
+      "target": "https://circleci.com/api/v1.1",
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/circleci/api/": "/"
+      }
+    }
+  }
 }
