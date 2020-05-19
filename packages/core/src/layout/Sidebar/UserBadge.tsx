@@ -15,58 +15,73 @@
  */
 
 import React, { FC, useContext } from 'react';
-import { Avatar, makeStyles, Theme, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import People from '@material-ui/icons/People';
-import { sidebarConfig, SidebarContext } from './config';
+import { SidebarContext } from './config';
 import { SidebarItem } from './Items';
+import { LoggedUserBadge } from './LoggedUserBadge';
+import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
+import { BackstageTheme } from '@backstage/theme';
+import { SidebarPinStateContext } from './Page';
 
-const useStyles = makeStyles<Theme>(() => {
-  const { drawerWidthOpen, userBadgeDiameter } = sidebarConfig;
+const ARROW_BUTTON_SIZE = 20;
+const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(theme => {
   return {
     root: {
-      width: drawerWidthOpen,
+      position: 'relative',
+    },
+    arrowButtonWrapper: {
+      position: 'absolute',
+      right: 0,
+      width: ARROW_BUTTON_SIZE,
+      height: ARROW_BUTTON_SIZE,
+      top: `calc(50% - ${ARROW_BUTTON_SIZE / 2}px)`,
       display: 'flex',
       alignItems: 'center',
-      color: '#b5b5b5',
-      paddingLeft: 18,
-      paddingTop: 14,
-      paddingBottom: 14,
+      justifyContent: 'center',
+      borderRadius: '2px 0px 0px 2px',
+      background: theme.palette.pinSidebarButton.icon,
+      color: theme.palette.pinSidebarButton.background,
+      border: 'none',
+      outline: 'none',
+      cursor: 'pointer',
     },
-    avatar: {
-      width: userBadgeDiameter,
-      height: userBadgeDiameter,
-      marginRight: 8,
+    arrowButtonIcon: {
+      transform: ({ isPinned }) => (isPinned ? 'rotate(180deg)' : 'none'),
     },
   };
 });
 
-type Props = {
-  imageUrl: string;
-  name: string;
-  hideName?: boolean;
-};
+export const SidebarUserBadge: FC<{}> = () => {
+  const { isOpen } = useContext(SidebarContext);
+  const { isPinned, toggleSidebarPinState } = useContext(
+    SidebarPinStateContext,
+  );
+  const classes = useStyles({ isPinned });
 
-export const UserBadge: FC<Props> = ({ imageUrl, name, hideName = false }) => {
-  const classes = useStyles();
-
+  const isUserLoggedIn = false;
   return (
     <div className={classes.root}>
-      <Avatar alt={name} src={imageUrl} className={classes.avatar} />
-      {!hideName && <Typography variant="subtitle2">{name}</Typography>}
+      {isUserLoggedIn ? (
+        <LoggedUserBadge
+          imageUrl="https://via.placeholder.com/200/200"
+          name="Victor Viale"
+          hideName={!isOpen}
+        />
+      ) : (
+        <SidebarItem icon={People} text="Log in" to="/login" disableSelected />
+      )}
+      {isOpen && (
+        <button
+          className={classes.arrowButtonWrapper}
+          onClick={toggleSidebarPinState}
+        >
+          <DoubleArrowIcon
+            className={classes.arrowButtonIcon}
+            style={{ fontSize: 14 }}
+          />
+        </button>
+      )}
     </div>
-  );
-};
-
-export const SidebarUserBadge: FC = () => {
-  const { isOpen } = useContext(SidebarContext);
-  const isUserLoggedIn = false;
-  return isUserLoggedIn ? (
-    <UserBadge
-      imageUrl="https://via.placeholder.com/200/200"
-      name="Victor Viale"
-      hideName={!isOpen}
-    />
-  ) : (
-    <SidebarItem icon={People} text="Log in" to="/login" disableSelected />
   );
 };
