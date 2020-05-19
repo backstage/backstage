@@ -31,8 +31,8 @@ const generateTestData: (number: number) => Array<{}> = (rows = 10) => {
       col1: `Some value ${data.length}`,
       col2: `More data ${data.length}`,
       subvalue: `Subvalue ${data.length}`,
-      number: Math.floor(Math.random() * 1000),
-      date: new Date(Math.random() * 10000000000000),
+      number: Math.round(Math.abs(Math.sin(data.length)) * 1000),
+      date: new Date(Math.abs(Math.sin(data.length)) * 10000000000000),
     });
   }
 
