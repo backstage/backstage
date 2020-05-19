@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   TextField,
@@ -38,11 +38,11 @@ const Settings = () => {
     { saveSettings, hideSettings },
   ] = useSettings();
 
-  const [token, setToken] = React.useState(() => tokenFromStore);
-  const [owner, setOwner] = React.useState(() => ownerFromStore);
-  const [repo, setRepo] = React.useState(() => repoFromStore);
+  const [token, setToken] = useState(() => tokenFromStore);
+  const [owner, setOwner] = useState(() => ownerFromStore);
+  const [repo, setRepo] = useState(() => repoFromStore);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (tokenFromStore !== token) {
       setToken(tokenFromStore);
     }
