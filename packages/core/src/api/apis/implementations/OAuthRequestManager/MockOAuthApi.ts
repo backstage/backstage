@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  OAuthRequestApi,
-  AuthRequesterOptions,
-  LoginPopupOptions,
-} from '../../definitions';
+import { OAuthRequestApi, AuthRequesterOptions } from '../../definitions';
 import { OAuthRequestManager } from './OAuthRequestManager';
 
 export default class MockOAuthApi implements OAuthRequestApi {
   private readonly real = new OAuthRequestManager();
-
-  constructor(private readonly popupResult = {}) {}
 
   createAuthRequester<T>(options: AuthRequesterOptions<T>) {
     return this.real.createAuthRequester(options);
@@ -37,10 +31,10 @@ export default class MockOAuthApi implements OAuthRequestApi {
   async triggerAll() {
     await Promise.resolve(); // Wait a tick to allow new requests to get forwarded
 
-    return new Promise((resolve) => {
-      const subscription = this.authRequest$().subscribe((requests) => {
+    return new Promise(resolve => {
+      const subscription = this.authRequest$().subscribe(requests => {
         subscription.unsubscribe();
-        Promise.all(requests.map((request) => request.trigger())).then(() =>
+        Promise.all(requests.map(request => request.trigger())).then(() =>
           resolve(),
         );
       });
@@ -50,17 +44,12 @@ export default class MockOAuthApi implements OAuthRequestApi {
   async rejectAll() {
     await Promise.resolve(); // Wait a tick to allow new requests to get forwarded
 
-    return new Promise((resolve) => {
-      const subscription = this.authRequest$().subscribe((requests) => {
+    return new Promise(resolve => {
+      const subscription = this.authRequest$().subscribe(requests => {
         subscription.unsubscribe();
-        requests.map((request) => request.reject());
+        requests.map(request => request.reject());
         resolve();
       });
     });
-  }
-
-  async showLoginPopup(options?: LoginPopupOptions): Promise<any> {
-    // Working around linter complaints, can't remove options since we want correct mock types
-    return options ? this.popupResult : this.popupResult;
   }
 }

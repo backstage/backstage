@@ -18,6 +18,7 @@ import ProviderIcon from '@material-ui/icons/AcUnit';
 import { AuthHelper } from './AuthHelper';
 import MockOAuthApi from '../../OAuthRequestManager/MockOAuthApi';
 import { BasicOAuthScopes } from '../../OAuthRequestManager/BasicOAuthScopes';
+import * as loginPopup from '../loginPopup';
 
 const anyFetch = fetch as any;
 
@@ -92,13 +93,15 @@ describe('AuthHelper', () => {
   });
 
   it('should create a session', async () => {
-    const mockOauth = new MockOAuthApi({
-      idToken: 'my-id-token',
-      accessToken: 'my-access-token',
-      scopes: 'a b',
-      expiresInSeconds: 3600,
-    });
-    const popupSpy = jest.spyOn(mockOauth, 'showLoginPopup');
+    const mockOauth = new MockOAuthApi();
+    const popupSpy = jest
+      .spyOn(loginPopup, 'showLoginPopup')
+      .mockResolvedValue({
+        idToken: 'my-id-token',
+        accessToken: 'my-access-token',
+        scopes: 'a b',
+        expiresInSeconds: 3600,
+      });
     const helper = new AuthHelper({
       ...defaultOptions,
       oauthRequestApi: mockOauth,

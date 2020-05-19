@@ -20,6 +20,7 @@ import {
   AuthProvider,
   OAuthScopes,
 } from '../../../definitions';
+import { showLoginPopup } from '../loginPopup';
 
 const DEFAULT_BASE_PATH = '/api/auth/';
 
@@ -45,7 +46,6 @@ export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
   private readonly providerPath: string;
   private readonly environment: string;
   private readonly provider: AuthProvider;
-  private readonly oauthRequestApi: OAuthRequestApi;
   private readonly authRequester: AuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
 
@@ -72,7 +72,6 @@ export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
     this.providerPath = providerPath;
     this.environment = environment;
     this.provider = provider;
-    this.oauthRequestApi = oauthRequestApi;
     this.sessionTransform = sessionTransform;
   }
 
@@ -141,7 +140,7 @@ export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
   private async showPopup(scope: string): Promise<AuthSession> {
     const popupUrl = this.buildUrl('/start', { scope });
 
-    const payload = await this.oauthRequestApi.showLoginPopup({
+    const payload = await showLoginPopup({
       url: popupUrl,
       name: `${this.provider.title} Login`,
       origin: this.apiOrigin,

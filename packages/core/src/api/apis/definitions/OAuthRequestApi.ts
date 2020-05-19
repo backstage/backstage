@@ -31,36 +31,6 @@ export type OAuthScopeLike =
   | OAuthScopes;
 
 /**
- * Options used to open a login popup.
- */
-export type LoginPopupOptions = {
-  /**
-   * The URL that the auth popup should point to
-   */
-  url: string;
-
-  /**
-   * The name of the popup, as in second argument to window.open
-   */
-  name: string;
-
-  /**
-   * The origin of the final popup page that will post a message to this window.
-   */
-  origin: string;
-
-  /**
-   * The width of the popup in pixels, defaults to 500
-   */
-  width?: number;
-
-  /**
-   * The height of the popup in pixels, defaults to 700
-   */
-  height?: number;
-};
-
-/**
  * Information about the auth provider that we're requesting a login towards.
  *
  * This should be shown to the user so that they can be informed about what login is being requested
@@ -139,16 +109,6 @@ export type PendingAuthRequest = {
  * Provides helpers for implemented OAuth login flows within Backstage.
  */
 export type OAuthRequestApi = {
-  /**
-   * Show a popup pointing to a URL that starts an OAuth flow.
-   *
-   * The redirect handler of the flow should use postMessage to communicate back
-   * to the app window.
-   *
-   * The returned promise resolves to the contents of the message that was posted from the auth popup.
-   */
-  showLoginPopup(options: LoginPopupOptions): Promise<any>;
-
   /**
    * A utility for showing login popups or similar things, and merging together multiple requests for
    * different scopes into one request that inclues all scopes.

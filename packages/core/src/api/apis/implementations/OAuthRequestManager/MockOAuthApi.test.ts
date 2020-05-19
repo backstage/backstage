@@ -20,12 +20,10 @@ import { BasicOAuthScopes } from './BasicOAuthScopes';
 
 describe('MockOAuthApi', () => {
   it('should trigger all requests', async () => {
-    const popupResult = { is: 'done' };
-    const mock = new MockOAuthApi(popupResult);
+    const authResult = { is: 'done' };
+    const mock = new MockOAuthApi();
 
-    const authHandler1 = jest
-      .fn()
-      .mockImplementation(() => mock.showLoginPopup());
+    const authHandler1 = jest.fn().mockImplementation(() => authResult);
     const requester1 = mock.createAuthRequester({
       provider: { icon: PowerIcon, title: 'Test' },
       onAuthRequest: authHandler1,
@@ -52,8 +50,8 @@ describe('MockOAuthApi', () => {
     await mock.triggerAll();
 
     await expect(Promise.all(promises)).resolves.toEqual([
-      popupResult,
-      popupResult,
+      authResult,
+      authResult,
       'other',
       'other',
       'other',
