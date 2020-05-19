@@ -1,13 +1,13 @@
 import express from 'express';
 import passport from 'passport';
 
-export type AuthProviderHandlers = {
+export interface AuthProviderRouteHandlers {
   start(
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ): Promise<any>;
-  handle(
+  frameHandler(
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
@@ -22,12 +22,15 @@ export type AuthProviderHandlers = {
     res: express.Response,
     next: express.NextFunction,
   ): express.Response<any>;
-};
+}
+export interface AuthProvider {
+  strategy(): passport.Strategy;
+  router?(): express.Router;
+}
 
-export type AuthProvider = {
+export type AuthProviderFactories = {
   [key: string]: {
-    makeStrategy(options: any): passport.Strategy;
-    makeRouter(): express.Router;
+    new (providerConfig: any): AuthProvider & AuthProviderRouteHandlers;
   };
 };
 
@@ -38,7 +41,12 @@ export type AuthInfo = {
   expiresAt?: number;
 };
 
-export type AuthResponse = {
-  type: string;
-  payload: AuthInfo;
-};
+export type AuthResponse =
+  | {
+      type: 'auth-result';
+      payload: AuthInfo;
+    }
+  | {
+      type: 'auth-result';
+      error: Error | undefined;
+    };

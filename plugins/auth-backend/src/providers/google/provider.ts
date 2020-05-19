@@ -1,13 +1,55 @@
 import passport from 'passport';
 import express from 'express';
-import Router from 'express-promise-router';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { AuthProviderHandlers, AuthResponse } from './../types';
+import {
+  AuthProvider,
+  AuthProviderRouteHandlers,
+  AuthResponse,
+} from './../types';
 
-export const provider = {
-  makeStrategy(options: any): passport.Strategy {
+export class GoogleAuthProvider
+  implements AuthProvider, AuthProviderRouteHandlers {
+  providerConfig: any;
+  constructor(providerConfig: any) {
+    this.providerConfig = providerConfig;
+  }
+
+  start(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) {
+    const scopes = req.query.scopes?.toString().split(',');
+    return passport.authenticate('google', {
+      scope: scopes,
+      accessType: 'offline',
+      prompt: 'consent',
+    })(req, res, next);
+  }
+  frameHandler(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) {
+    return passport.authenticate('google', function (_, user) {
+      postMessageResponse(res, {
+        type: 'auth-result',
+        payload: user,
+      });
+    })(req, res, next);
+  }
+
+  logout(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) {
+    return res.send('logout!');
+  }
+
+  strategy(): passport.Strategy {
     return new GoogleStrategy(
-      { ...options, passReqToCallback: true },
+      { ...this.providerConfig.options, passReqToCallback: true },
       function (
         _req: any,
         accessToken: any,
@@ -18,56 +60,8 @@ export const provider = {
         cb(undefined, { profile, accessToken, refreshToken });
       },
     );
-  },
-  makeRouter(): express.Router {
-    return defaultRouter(GoogleAuthProviderHandler);
-  },
-};
-
-const defaultRouter = (handlers: AuthProviderHandlers) => {
-  const router = Router();
-  router.get('/start', handlers.start);
-  router.get('/handler/frame', handlers.handle);
-  router.get('/logout', handlers.logout);
-  if (handlers.refresh) {
-    router.get('/refreshToken', handlers.refresh);
   }
-  return router;
-};
-
-// Make this a class
-// add a getStrategy method
-// pass the config as a new constructor
-
-// class GoogleAuthProvider implements AuthProviderHandlers {
-//   config: any;
-//   constructor(config: any) {
-//     this.config = config;
-//   }
-
-// }
-
-export const GoogleAuthProviderHandler: AuthProviderHandlers = {
-  start(req, res, next) {
-    const scopes = req.query.scopes?.toString().split(',');
-    return passport.authenticate('google', {
-      scope: scopes,
-      accessType: 'offline',
-      prompt: 'consent',
-    })(req, res, next);
-  },
-  handle(req, res, next) {
-    return passport.authenticate('google', function (_, user) {
-      postMessageResponse(res, {
-        type: 'oauth-result',
-        payload: user,
-      });
-    })(req, res, next);
-  },
-  logout(_req, res, _next) {
-    return res.send('logout!');
-  },
-};
+}
 
 const postMessageResponse = (res: express.Response, data: AuthResponse) => {
   const jsonData = JSON.stringify(data);
