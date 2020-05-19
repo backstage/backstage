@@ -170,7 +170,7 @@ describe('CommonValidatorFunctions', () => {
     ['a_b', 'ab'],
     [`${'a'.repeat(6000)}`, `${'a'.repeat(6000)}`],
     ['_:;>!"#€', ''],
-  ])('isValidDnsLabel', (value, result) => {
+  ])('normalizeToLowercaseAlphanum', (value, result) => {
     expect(CommonValidatorFunctions.normalizeToLowercaseAlphanum(value)).toBe(
       result,
     );
