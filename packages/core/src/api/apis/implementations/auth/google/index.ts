@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-import '@testing-library/jest-dom';
-require('jest-fetch-mock').enableMocks();
+export * from './types';
+export { default as GoogleAuth } from './GoogleAuth';
