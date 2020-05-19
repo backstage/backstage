@@ -13,4 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { CITable, CITableBuildInfo } from './CITable';
+export { CITable } from './CITable';
+export type { CITableBuildInfo } from './CITable';

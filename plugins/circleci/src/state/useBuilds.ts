@@ -18,7 +18,7 @@ import { BuildSummary, GitType } from 'circleci-api';
 import { useCallback, useEffect, useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { circleCIApiRef } from '../api/index';
-import { CITableBuildInfo } from '../pages/BuildsPage/lib/CITable';
+import type { CITableBuildInfo } from '../pages/BuildsPage/lib/CITable';
 import { useSettings } from './useSettings';
 
 const makeReadableStatus = (status: string | undefined) => {
@@ -44,7 +44,7 @@ export const transform = (
   buildsData: BuildSummary[],
   restartBuild: { (buildId: number): Promise<void> },
 ): CITableBuildInfo[] => {
-  return buildsData.map((buildData) => {
+  return buildsData.map(buildData => {
     const tableBuildInfo: CITableBuildInfo = {
       id: String(buildData.build_num),
       buildName: buildData.subject
@@ -120,7 +120,7 @@ export function useBuilds() {
   };
 
   useEffect(() => {
-    getBuilds({ limit: 1, offset: 0 }).then((b) => setTotal(b?.[0].build_num!));
+    getBuilds({ limit: 1, offset: 0 }).then(b => setTotal(b?.[0].build_num!));
   }, [repo]);
 
   const { loading, value, retry } = useAsyncRetry(
@@ -128,7 +128,7 @@ export function useBuilds() {
       getBuilds({
         offset: page * pageSize,
         limit: pageSize,
-      }).then((builds) => transform(builds ?? [], restartBuild)),
+      }).then(builds => transform(builds ?? [], restartBuild)),
     [page, pageSize, getBuilds],
   );
 
