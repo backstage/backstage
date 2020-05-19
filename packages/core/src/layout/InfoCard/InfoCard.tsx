@@ -28,7 +28,7 @@ import classNames from 'classnames';
 import ErrorBoundary from '../ErrorBoundary';
 import BottomLink, { Props as BottomLinkProps } from '../BottomLink';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   header: {
     padding: theme.spacing(2, 2, 2, 2.5),
   },
@@ -40,12 +40,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BoldHeader = withStyles((theme) => ({
+const BoldHeader = withStyles(theme => ({
   title: { fontWeight: 700 },
   subheader: { paddingTop: theme.spacing(1) },
 }))(CardHeader);
 
-const CardActionsTopRight = withStyles((theme) => ({
+const CardActionsTopRight = withStyles(theme => ({
   root: {
     display: 'inline-block',
     padding: theme.spacing(8, 8, 0, 0),
@@ -134,6 +134,7 @@ type Props = {
   cardClassName?: string;
   actionsTopRight?: ReactNode;
   className?: string;
+  noPadding?: boolean;
 };
 
 const InfoCard: FC<Props> = ({
@@ -151,6 +152,7 @@ const InfoCard: FC<Props> = ({
   cardClassName,
   actionsTopRight,
   className,
+  noPadding,
 }) => {
   const classes = useStyles();
 
@@ -163,7 +165,7 @@ const InfoCard: FC<Props> = ({
 
   if (variant) {
     const variants = variant.split(/[\s]+/g);
-    variants.forEach((name) => {
+    variants.forEach(name => {
       calculatedStyle = {
         ...calculatedStyle,
         ...VARIANT_STYLES.card[name as keyof typeof VARIANT_STYLES['card']],
