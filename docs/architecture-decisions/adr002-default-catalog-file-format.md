@@ -130,10 +130,8 @@ Names are required to follow a certain format. Entities that do not follow those
 will not be accepted for registration in the catalog. The ruleset is configurable to fit
 your organization's needs, but the default behavior is as follows.
 
-- Strings of length at least 1, and at most 253
-- Consist only of URL safe characters, e.g. ones that `encodeURIComponent` or similar would
-  leave unchanged
-- Must consist of sequences of `[a-z0-9A-Z]` possibly separated by other characters
+- Strings of length at least 1, and at most 63
+- Must consist of sequences of `[a-z0-9A-Z]` possibly separated by one of `[-_.]`
 
 Example: `visits-tracking-service`, `CircleciBuildsDs_avro_gcs`
 
