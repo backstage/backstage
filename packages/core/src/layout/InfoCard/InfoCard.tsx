@@ -150,7 +150,7 @@ const InfoCard: FC<Props> = ({
   actions,
   cardClassName,
   actionsTopRight,
-  noPadding = true,
+  noPadding,
 }) => {
   const classes = useStyles();
 

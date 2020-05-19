@@ -68,7 +68,7 @@ const containerStyle = { width: 600 };
 
 export const Default = () => (
   <div style={containerStyle}>
-    <InfoCard title="Available status types">
+    <InfoCard title="Available status types" noPadding>
       <Table
         options={{
           search: false,
