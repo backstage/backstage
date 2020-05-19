@@ -14,7 +14,50 @@
  * limitations under the License.
  */
 
+import ProviderIcon from '@material-ui/icons/AcUnit';
 import { OAuthRequestManager } from './OAuthRequestManager';
+import { BasicOAuthScopes } from './BasicOAuthScopes';
+
+describe('OAuthRequestManager', () => {
+  it('should forward a requests', async () => {
+    const manager = new OAuthRequestManager();
+
+    const reqSpy = jest.fn();
+    manager.authRequest$().subscribe(reqSpy);
+
+    const requester = manager.createAuthRequester({
+      provider: {
+        title: 'My Provider',
+        icon: ProviderIcon,
+      },
+      onAuthRequest: async () => 'hello',
+    });
+
+    expect(reqSpy).toHaveBeenCalledTimes(0);
+    await 'a tick';
+    expect(reqSpy).toHaveBeenCalledTimes(2);
+    expect(reqSpy).toHaveBeenLastCalledWith([]);
+
+    const req = requester(BasicOAuthScopes.from('my-scope'));
+
+    expect(reqSpy).toHaveBeenCalledTimes(3);
+    expect(reqSpy).toHaveBeenLastCalledWith([
+      expect.objectContaining({
+        reject: expect.any(Function),
+        trigger: expect.any(Function),
+      }),
+    ]);
+
+    await expect(Promise.race([req, Promise.resolve('not yet')])).resolves.toBe(
+      'not yet',
+    );
+
+    const [request] = reqSpy.mock.calls[2][0];
+    request.trigger();
+
+    await expect(req).resolves.toBe('hello');
+  });
+});
 
 describe('OAuthApi login popup', () => {
   afterEach(() => {
