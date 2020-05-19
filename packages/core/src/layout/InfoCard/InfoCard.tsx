@@ -133,7 +133,7 @@ type Props = {
   actions?: ReactNode;
   cardClassName?: string;
   actionsTopRight?: ReactNode;
-  noPadding?: boolean;
+  className?: string;
 };
 
 const InfoCard: FC<Props> = ({
@@ -150,7 +150,7 @@ const InfoCard: FC<Props> = ({
   actions,
   cardClassName,
   actionsTopRight,
-  noPadding,
+  className,
 }) => {
   const classes = useStyles();
 
