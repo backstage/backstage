@@ -23,8 +23,6 @@ import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import passport from 'passport';
-import session from 'express-session';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 
