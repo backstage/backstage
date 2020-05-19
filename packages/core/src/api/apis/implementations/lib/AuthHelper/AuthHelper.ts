@@ -14,59 +14,69 @@
  * limitations under the License.
  */
 
-import GoogleIcon from '@material-ui/icons/AcUnit';
-import GoogleScopes from './GoogleScopes';
-import { GoogleSession } from './types';
-import { AuthRequester, OAuthRequestApi } from '../../..';
+import { AuthRequester } from '../../..';
+import {
+  OAuthRequestApi,
+  AuthProvider,
+  OAuthScopes,
+} from '../../../definitions';
 
-const API_PATH = '/api/backend/auth';
+const DEFAULT_BASE_PATH = '/api/auth/';
 
-type Options = {
-  apiOrigin: string;
-  dev: boolean;
+type Options<AuthSession> = {
+  apiOrigin?: string;
+  basePath?: string;
+  providerPath: string;
+  environment: string;
+  provider: AuthProvider;
+  oauthRequestApi: OAuthRequestApi;
+  sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
 };
 
-export type GoogleAuthResponse = {
-  accessToken: string;
-  idToken: string;
-  scopes: string;
-  expiresInSeconds: number;
-};
-
-export type AuthHelper = {
-  refreshSession(): Promise<GoogleSession>;
+export type GenericAuthHelper<AuthSession> = {
+  refreshSession(): Promise<AuthSession>;
   removeSession(): Promise<void>;
-  createSession(scope: string): Promise<GoogleSession>;
+  createSession(scope: OAuthScopes): Promise<AuthSession>;
 };
 
-class GoogleAuthHelper implements AuthHelper {
-  private readonly authRequester: AuthRequester<GoogleSession>;
-  private refreshPromise?: Promise<GoogleSession>;
+export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
+  private readonly apiOrigin: string;
+  private readonly basePath: string;
+  private readonly providerPath: string;
+  private readonly environment: string;
+  private readonly provider: AuthProvider;
+  private readonly oauthRequestApi: OAuthRequestApi;
+  private readonly authRequester: AuthRequester<AuthSession>;
+  private readonly sessionTransform: (response: any) => Promise<AuthSession>;
 
-  static create(oauthRequest: OAuthRequestApi) {
-    return new GoogleAuthHelper(
-      {
-        apiOrigin: window.location.origin,
-        dev: process.env.NODE_ENV === 'development',
-      },
-      oauthRequest,
-    );
-  }
+  private refreshPromise?: Promise<AuthSession>;
 
-  constructor(
-    private readonly options: Options,
-    private readonly oauth: OAuthRequestApi,
-  ) {
-    this.authRequester = oauth.createAuthRequester({
-      provider: {
-        title: 'Google',
-        icon: GoogleIcon,
-      },
+  constructor(options: Options<AuthSession>) {
+    const {
+      apiOrigin = window.location.origin,
+      basePath = DEFAULT_BASE_PATH,
+      providerPath,
+      environment,
+      provider,
+      oauthRequestApi,
+      sessionTransform = (id) => id,
+    } = options;
+
+    this.authRequester = oauthRequestApi.createAuthRequester({
+      provider,
       onAuthRequest: (scopes) => this.showPopup(scopes.toString()),
     });
+
+    this.apiOrigin = apiOrigin;
+    this.basePath = basePath;
+    this.providerPath = providerPath;
+    this.environment = environment;
+    this.provider = provider;
+    this.oauthRequestApi = oauthRequestApi;
+    this.sessionTransform = sessionTransform;
   }
 
-  async refreshSession(): Promise<GoogleSession> {
+  async refreshSession(): Promise<AuthSession> {
     if (this.refreshPromise) {
       return this.refreshPromise;
     }
@@ -107,7 +117,7 @@ class GoogleAuthHelper implements AuthHelper {
       }
       throw error;
     }
-    return GoogleAuthHelper.convertAuthInfo(authInfo);
+    return await this.sessionTransform(authInfo);
   }
 
   async removeSession(): Promise<void> {
@@ -124,22 +134,22 @@ class GoogleAuthHelper implements AuthHelper {
     }
   }
 
-  async createSession(scope: string): Promise<GoogleSession> {
-    return this.authRequester(GoogleScopes.from(scope));
+  async createSession(scope: OAuthScopes): Promise<AuthSession> {
+    return this.authRequester(scope);
   }
 
-  private async showPopup(scope: string): Promise<GoogleSession> {
+  private async showPopup(scope: string): Promise<AuthSession> {
     const popupUrl = this.buildUrl('/start', { scope });
 
-    const payload = await this.oauth.showLoginPopup({
+    const payload = await this.oauthRequestApi.showLoginPopup({
       url: popupUrl,
-      name: 'google-login',
-      origin: this.options.apiOrigin,
+      name: `${this.provider.title} Login`,
+      origin: this.apiOrigin,
       width: 450,
       height: 730,
     });
 
-    return GoogleAuthHelper.convertAuthInfo(payload);
+    return await this.sessionTransform(payload);
   }
 
   private buildUrl(
@@ -148,10 +158,10 @@ class GoogleAuthHelper implements AuthHelper {
   ): string {
     const queryString = this.buildQueryString({
       ...query,
-      dev: this.options.dev,
+      env: this.environment,
     });
 
-    return `${this.options.apiOrigin}${API_PATH}${path}${queryString}`;
+    return `${this.apiOrigin}${this.basePath}${this.providerPath}${path}${queryString}`;
   }
 
   private buildQueryString(query?: {
@@ -178,15 +188,4 @@ class GoogleAuthHelper implements AuthHelper {
     }
     return `?${queryString}`;
   }
-
-  private static convertAuthInfo(authInfo: GoogleAuthResponse): GoogleSession {
-    return {
-      idToken: authInfo.idToken,
-      accessToken: authInfo.accessToken,
-      scopes: GoogleScopes.from(authInfo.scopes),
-      expiresAt: new Date(Date.now() + authInfo.expiresInSeconds * 1000),
-    };
-  }
 }
-
-export default GoogleAuthHelper;

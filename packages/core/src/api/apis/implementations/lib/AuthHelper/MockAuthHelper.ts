@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import GoogleScopes from './GoogleScopes';
-import { GoogleSession } from './types';
-import { AuthHelper } from './GoogleAuthHelper';
+import { GenericAuthHelper } from './AuthHelper';
 
-export const mockIdToken = 'mock-id-token';
 export const mockAccessToken = 'mock-access-token';
 
-const defaultMockSession: GoogleSession = {
-  idToken: mockIdToken,
-  accessToken: mockAccessToken,
-  expiresAt: new Date(),
-  scopes: GoogleScopes.default(),
+type MockSession = {
+  accessToken: string;
+  expiresAt: Date;
+  scopes: string;
 };
 
-export default class MockAuthHelper implements AuthHelper {
-  constructor(
-    private readonly mockSession: GoogleSession = defaultMockSession,
-  ) {}
+const defaultMockSession: MockSession = {
+  accessToken: mockAccessToken,
+  expiresAt: new Date(),
+  scopes: 'profile email',
+};
+
+export default class MockAuthHelper implements GenericAuthHelper<MockSession> {
+  constructor(private readonly mockSession: MockSession = defaultMockSession) {}
 
   async refreshSession() {
     return this.mockSession;
@@ -41,14 +41,5 @@ export default class MockAuthHelper implements AuthHelper {
 
   async createSession() {
     return this.mockSession;
-  }
-
-  async showPopup(scope: string) {
-    return {
-      scopes: GoogleScopes.from(scope),
-      idToken: 'i',
-      accessToken: 'a',
-      expiresAt: new Date(),
-    };
   }
 }

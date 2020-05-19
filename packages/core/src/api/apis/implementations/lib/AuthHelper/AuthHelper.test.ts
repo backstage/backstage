@@ -14,13 +14,30 @@
  * limitations under the License.
  */
 
-import GoogleAuthHelper from './GoogleAuthHelper';
-import GoogleScopes from './GoogleScopes';
+import ProviderIcon from '@material-ui/icons/AcUnit';
+import { AuthHelper } from './AuthHelper';
 import MockOAuthApi from '../../OAuthRequestManager/MockOAuthApi';
+import { BasicOAuthScopes } from '../../OAuthRequestManager/BasicOAuthScopes';
 
 const anyFetch = fetch as any;
 
-describe('GoogleAuthHelper', () => {
+const defaultOptions = {
+  apiOrigin: 'my-origin',
+  providerPath: 'my-provider',
+  environment: 'production',
+  provider: {
+    title: 'My Provider',
+    icon: ProviderIcon,
+  },
+  oauthRequestApi: new MockOAuthApi(),
+  sessionTransform: ({ expiresInSeconds, ...res }: any) => ({
+    ...res,
+    scopes: BasicOAuthScopes.from(res.scopes),
+    expiresAt: new Date(Date.now() + expiresInSeconds * 1000),
+  }),
+};
+
+describe('AuthHelper', () => {
   afterEach(() => {
     jest.resetAllMocks();
     anyFetch.resetMocks();
@@ -36,10 +53,7 @@ describe('GoogleAuthHelper', () => {
       }),
     );
 
-    const helper = new GoogleAuthHelper(
-      { apiOrigin: 'my-origin', dev: false },
-      new MockOAuthApi(),
-    );
+    const helper = new AuthHelper<any>(defaultOptions);
     const session = await helper.refreshSession();
     expect(session.idToken).toBe('mock-id-token');
     expect(session.accessToken).toBe('mock-access-token');
@@ -51,10 +65,7 @@ describe('GoogleAuthHelper', () => {
   it('should handle failure to refresh session', async () => {
     anyFetch.mockRejectOnce(new Error('Network NOPE'));
 
-    const helper = new GoogleAuthHelper(
-      { apiOrigin: 'my-origin', dev: true },
-      new MockOAuthApi(),
-    );
+    const helper = new AuthHelper(defaultOptions);
     await expect(helper.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, Error: Network NOPE',
     );
@@ -63,10 +74,7 @@ describe('GoogleAuthHelper', () => {
   it('should handle failure response when refreshing session', async () => {
     anyFetch.mockResponseOnce({}, { status: 401, statusText: 'NOPE' });
 
-    const helper = new GoogleAuthHelper(
-      { apiOrigin: 'my-origin', dev: false },
-      new MockOAuthApi(),
-    );
+    const helper = new AuthHelper(defaultOptions);
     await expect(helper.refreshSession()).rejects.toThrow(
       'Auth refresh request failed with status NOPE',
     );
@@ -74,11 +82,11 @@ describe('GoogleAuthHelper', () => {
 
   it('should fail if popup was rejected', async () => {
     const mockOauth = new MockOAuthApi();
-    const helper = new GoogleAuthHelper(
-      { apiOrigin: 'my-origin', dev: false },
-      mockOauth,
-    );
-    const promise = helper.createSession('a b');
+    const helper = new AuthHelper({
+      ...defaultOptions,
+      oauthRequestApi: mockOauth,
+    });
+    const promise = helper.createSession(BasicOAuthScopes.from('a b'));
     await mockOauth.rejectAll();
     await expect(promise).rejects.toMatchObject({ name: 'RejectedError' });
   });
@@ -91,25 +99,24 @@ describe('GoogleAuthHelper', () => {
       expiresInSeconds: 3600,
     });
     const popupSpy = jest.spyOn(mockOauth, 'showLoginPopup');
-    const helper = new GoogleAuthHelper(
-      { apiOrigin: 'my-origin', dev: false },
-      mockOauth,
-    );
+    const helper = new AuthHelper({
+      ...defaultOptions,
+      oauthRequestApi: mockOauth,
+    });
 
-    const sessionPromise = helper.createSession('a b');
+    const sessionPromise = helper.createSession(BasicOAuthScopes.from('a b'));
 
     await mockOauth.triggerAll();
 
     expect(popupSpy).toBeCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url:
-        'my-origin/api/backend/auth/start?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fa%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fb',
+      url: 'my-origin/api/auth/my-provider/start?scope=a%20b&env=production',
     });
 
     await expect(sessionPromise).resolves.toEqual({
       idToken: 'my-id-token',
       accessToken: 'my-access-token',
-      scopes: expect.any(GoogleScopes),
+      scopes: expect.any(BasicOAuthScopes),
       expiresAt: expect.any(Date),
     });
   });

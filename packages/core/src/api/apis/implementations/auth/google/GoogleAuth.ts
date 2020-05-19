@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AuthHelper } from './GoogleAuthHelper';
+import GoogleIcon from '@material-ui/icons/AcUnit';
+import { AuthHelper } from '../../lib/AuthHelper';
 import GoogleScopes from './GoogleScopes';
 import { GoogleSession } from './types';
 import { OAuthScopes } from '../../..';
@@ -23,11 +24,42 @@ import {
   OpenIdConnectApi,
   IdTokenOptions,
 } from '../../../definitions/auth';
+import { OAuthRequestApi } from '../../../definitions';
+import { GenericAuthHelper } from '../../lib/AuthHelper/AuthHelper';
+
+export type GoogleAuthResponse = {
+  accessToken: string;
+  idToken: string;
+  scopes: string;
+  expiresInSeconds: number;
+};
 
 class GoogleAuth implements OAuthApi, OpenIdConnectApi {
   private currentSession: GoogleSession | undefined;
 
-  constructor(private readonly helper: AuthHelper) {}
+  static create(oauthRequestApi: OAuthRequestApi) {
+    const helper = new AuthHelper({
+      providerPath: 'google/',
+      environment: 'dev',
+      provider: {
+        title: 'Google',
+        icon: GoogleIcon,
+      },
+      oauthRequestApi: oauthRequestApi,
+      sessionTransform(res: GoogleAuthResponse): GoogleSession {
+        return {
+          idToken: res.idToken,
+          accessToken: res.accessToken,
+          scopes: GoogleScopes.from(res.scopes),
+          expiresAt: new Date(Date.now() + res.expiresInSeconds * 1000),
+        };
+      },
+    });
+
+    return new GoogleAuth(helper);
+  }
+
+  constructor(private readonly helper: GenericAuthHelper<GoogleSession>) {}
 
   async getAccessToken(scope?: string | string[]) {
     const session = await this.getSession({ optional: false, scope });
@@ -129,7 +161,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
     if (scope) {
       newScope = newScope.extend(scope);
     }
-    return newScope.toString();
+    return newScope;
   }
 }
 export default GoogleAuth;
