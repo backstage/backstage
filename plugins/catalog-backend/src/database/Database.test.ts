@@ -59,4 +59,20 @@ describe('Database', () => {
       /Found no location/,
     );
   });
+
+  it('instead of adding second location with the same target, returns existing one', async () => {
+    // Prepare
+    const catalog = new Database(database);
+    const input: AddDatabaseLocation = { type: 'a', target: 'b' };
+    const output1: DatabaseLocation = await catalog.addLocation(input);
+
+    // Try to insert the same location
+    const output2: DatabaseLocation = await catalog.addLocation(input);
+    const locations = await catalog.locations();
+
+    // Output is the same
+    expect(output2).toEqual(output1);
+    // Locations contain only one record
+    expect(locations).toEqual([output1]);
+  });
 });

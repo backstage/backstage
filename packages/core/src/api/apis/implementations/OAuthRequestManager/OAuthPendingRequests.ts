@@ -30,20 +30,12 @@ export type PendingRequest<ResultType> = {
   reject: (reason: Error) => void;
 };
 
-export type OAuthPendingRequestsApi<ResultType> = {
-  request(scopes: OAuthScopes): Promise<ResultType>;
-  resolve(scopes: OAuthScopes, result: ResultType): void;
-  reject(error: Error): void;
-  pending(): Observable<PendingRequest<ResultType>>;
-};
-
 /**
  * The OAuthPendingRequests class is a utility for managing and observing
  * a stream of requests for oauth scopes for a single provider, and resolving
  * them correctly once requests are fulfilled.
  */
-export class OAuthPendingRequests<ResultType>
-  implements OAuthPendingRequestsApi<ResultType> {
+export class OAuthPendingRequests<ResultType> {
   private requests: RequestQueueEntry<ResultType>[] = [];
   private subject = new BehaviorSubject<PendingRequest<ResultType>>(
     this.getCurrentPending(),
