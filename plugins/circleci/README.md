@@ -1,9 +1,11 @@
-# <img src="./src/assets/circle-logo-badge-black.png" width="32" /> CircleCI Plugin
+# CircleCI Plugin
 
 Website: [https://circleci.com/](https://circleci.com/)
 
 <img src="./src/assets/screenshot-1.png" />
 <img src="./src/assets/screenshot-2.png" />
+<img src="./src/assets/screenshot-3.png" />
+<img src="./src/assets/screenshot-4.png" />
 
 ## Setup
 
