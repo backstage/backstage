@@ -53,7 +53,6 @@ export type AuthProviderFactories = {
 export type AuthInfo = {
   profile: passport.Profile;
   accessToken: string;
-  refreshToken?: string;
   expiresAt?: number;
 };
 
@@ -64,5 +63,5 @@ export type AuthResponse =
     }
   | {
       type: 'auth-result';
-      error: Error | undefined;
+      error: Error;
     };

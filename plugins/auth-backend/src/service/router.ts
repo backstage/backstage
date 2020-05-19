@@ -33,10 +33,12 @@ export async function createRouter(
 
   // configure all the providers
   for (const providerConfig of providers) {
-    logger.info('Configuring providers');
-    const { provider, strategy, providerRouter } = makeProvider(providerConfig);
+    const { providerId, strategy, providerRouter } = makeProvider(
+      providerConfig,
+    );
+    logger.info(`Configuring provider: ${providerId}`);
     passport.use(strategy);
-    router.use(`/${provider}`, providerRouter);
+    router.use(`/${providerId}`, providerRouter);
   }
 
   passport.serializeUser((user, done) => {

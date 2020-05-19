@@ -17,31 +17,12 @@
 import passport from 'passport';
 import express from 'express';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import {
-  AuthProvider,
-  AuthProviderRouteHandlers,
-  AuthResponse,
-} from './../types';
-
-const postMessageResponse = (res: express.Response, data: AuthResponse) => {
-  const jsonData = JSON.stringify(data);
-  const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
-
-  res.setHeader('X-Frame-Options', 'sameorigin');
-  res.end(`
-<html>
-<body>
-  <script>
-    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), location.origin)
-  </script>
-</body>
-</html>
-  `);
-};
+import { AuthProvider, AuthProviderRouteHandlers } from './../types';
+import { postMessageResponse } from './../utils';
 
 export class GoogleAuthProvider
   implements AuthProvider, AuthProviderRouteHandlers {
-  providerConfig: any;
+  private readonly providerConfig: any;
   constructor(providerConfig: any) {
     this.providerConfig = providerConfig;
   }
@@ -58,6 +39,7 @@ export class GoogleAuthProvider
       prompt: 'consent',
     })(req, res, next);
   }
+
   frameHandler(
     req: express.Request,
     res: express.Response,

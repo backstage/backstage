@@ -35,13 +35,13 @@ export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
 };
 
 export const makeProvider = (config: any) => {
-  const provider = config.provider;
-  const ProviderImpl = providerFactories[provider];
+  const providerId = config.provider;
+  const ProviderImpl = providerFactories[providerId];
   if (!ProviderImpl) {
-    throw Error(`Provider Implementation missing for provider: ${provider}`);
+    throw Error(`Provider Implementation missing for provider: ${providerId}`);
   }
   const providerInstance = new ProviderImpl(config);
   const strategy = providerInstance.strategy();
   const providerRouter = defaultRouter(providerInstance);
-  return { provider, strategy, providerRouter };
+  return { providerId, strategy, providerRouter };
 };
