@@ -27,7 +27,7 @@ import {
 import ExploreCard, { CardData } from './ExploreCard';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, 296px)',
@@ -37,6 +37,14 @@ const useStyles = makeStyles<BackstageTheme>((theme) => ({
 }));
 
 const toolsCards = [
+  {
+    title: 'CircleCI',
+    description:
+      'Provides builds overview, detailed build info and retriggering functionality for CircleCI.',
+    url: '/circleci',
+    image: 'https://miro.medium.com/max/1200/1*hkTBp22vLAqlIHkrkZHPnw.png',
+    tags: ['circleci', 'ci', 'dev'],
+  },
   {
     title: 'Lighthouse',
     description:
@@ -63,15 +71,6 @@ const toolsCards = [
     image:
       'https://camo.githubusercontent.com/517398c3fbe0687d3d4dcbe05da82970b882e75a/68747470733a2f2f64337676366c703535716a6171632e636c6f756466726f6e742e6e65742f6974656d732f33413061324e314c3346324f304c3377326e316a2f477261706869514c382e706e673f582d436c6f75644170702d56697369746f722d49643d3433363432',
     tags: ['graphql', 'dev'],
-  },
-  {
-    title: 'CircleCI',
-    description:
-      'Provides builds overview, detailed build info and retriggering functionality for CircleCI.',
-    url: '/circleci',
-    image:
-      'https://raw.githubusercontent.com/CircleCI-Public/cimg-base/master/img/circle-circleci.svg',
-    tags: ['circleci', 'ci', 'dev'],
   },
 ];
 
