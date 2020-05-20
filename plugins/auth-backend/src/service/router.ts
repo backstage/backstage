@@ -16,7 +16,10 @@
 
 import express from 'express';
 import Router from 'express-promise-router';
+import passport from 'passport';
 import { Logger } from 'winston';
+import { providers } from './../providers/config';
+import { makeProvider } from '../providers';
 
 export interface RouterOptions {
   logger: Logger;
@@ -25,16 +28,37 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const logger = options.logger.child({ plugin: 'auth' });
   const router = Router();
+  const logger = options.logger.child({ plugin: 'auth' });
+  const providerRouters: { [key: string]: express.Router } = {};
 
-  router.get('/ping', async (_req, res) => {
-    res.status(200).send('pong');
+  // configure all the providers
+  for (const providerConfig of providers) {
+    const { providerId, strategy, providerRouter } = makeProvider(
+      providerConfig,
+    );
+    logger.info(`Configuring provider: ${providerId}`);
+    passport.use(strategy);
+    providerRouters[providerId] = providerRouter;
+  }
+
+  passport.serializeUser((user, done) => {
+    done(null, user);
   });
 
-  const app = express();
-  app.set('logger', logger);
-  app.use(router);
+  passport.deserializeUser((user, done) => {
+    done(null, user);
+  });
 
-  return app;
+  router.use(passport.initialize());
+  router.use(passport.session());
+
+  for (const providerId in providerRouters) {
+    if (providerRouters.hasOwnProperty(providerId)) {
+      const providerRouter = providerRouters[providerId];
+      router.use(`/${providerId}`, providerRouter);
+    }
+  }
+
+  return router;
 }
