@@ -28,6 +28,8 @@ import {
 } from '@backstage/core';
 import ComponentContextMenu from '../ComponentContextMenu/ComponentContextMenu';
 import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDialog';
+import { SentryIssuesWidget } from '@backstage/plugin-sentry';
+import { Grid } from '@material-ui/core';
 
 const REDIRECT_DELAY = 1000;
 
@@ -94,10 +96,20 @@ const ComponentPage: FC<ComponentPageProps> = ({
         />
       )}
       <Content>
-        <ComponentMetadataCard
-          loading={catalogRequest.loading || removingPending}
-          component={catalogRequest.value}
-        />
+        <Grid container spacing={3} direction="column">
+          <Grid item>
+            <ComponentMetadataCard
+              loading={catalogRequest.loading || removingPending}
+              component={catalogRequest.value}
+            />
+          </Grid>
+          <Grid item>
+            <SentryIssuesWidget
+              sentryProjectId="sample-sentry-project-id"
+              statsFor="24h"
+            />
+          </Grid>
+        </Grid>
       </Content>
     </Page>
   );

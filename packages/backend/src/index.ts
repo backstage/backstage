@@ -35,6 +35,7 @@ import helmet from 'helmet';
 import knex from 'knex';
 import catalog from './plugins/catalog';
 import scaffolder from './plugins/scaffolder';
+import sentry from './plugins/sentry';
 import auth from './plugins/auth';
 import { PluginEnvironment } from './types';
 
@@ -64,6 +65,10 @@ async function main() {
   app.use(requestLoggingHandler());
   app.use('/catalog', await catalog(createEnv('catalog')));
   app.use('/scaffolder', await scaffolder(createEnv('scaffolder')));
+  app.use(
+    '/sentry',
+    await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
+  );
   app.use('/auth', await auth(createEnv('auth')));
   app.use(notFoundHandler());
   app.use(errorHandler());

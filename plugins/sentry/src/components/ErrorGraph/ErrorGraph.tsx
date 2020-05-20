@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { Component } from '../../data/component';
-import { Progress, InfoCard, StructuredMetadataTable } from '@backstage/core';
+import { SentryIssue } from '../../data/sentry-issue';
+import { Sparklines, SparklinesBars } from 'react-sparklines';
 
-type ComponentMetadataCardProps = {
-  loading: boolean;
-  component: Component | undefined;
-};
-const ComponentMetadataCard: FC<ComponentMetadataCardProps> = ({
-  loading,
-  component,
+export const ErrorGraph: FC<{ sentryIssue: SentryIssue }> = ({
+  sentryIssue,
 }) => {
-  if (loading) {
-    return (
-      <InfoCard title="Metadata">
-        <Progress />
-      </InfoCard>
-    );
-  }
-  if (!component) {
-    return null;
-  }
+  const data =
+    '12h' in sentryIssue.stats
+      ? sentryIssue.stats['12h']
+      : sentryIssue.stats['24h'];
+
   return (
-    <InfoCard title="Metadata">
-      <StructuredMetadataTable metadata={component} />
-    </InfoCard>
+    <Sparklines data={data?.map(([, val]) => val)} svgHeight={48} margin={4}>
+      <SparklinesBars />
+    </Sparklines>
   );
 };
-export default ComponentMetadataCard;

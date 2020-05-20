@@ -15,6 +15,7 @@
     "@backstage/plugin-tech-radar": "^0.1.1-alpha.6",
     "@backstage/plugin-welcome": "^0.1.1-alpha.6",
     "@backstage/theme": "^0.1.1-alpha.6",
+    "@backstage/plugin-sentry": "^0.1.1-alpha.6",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",

@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-catalog",
+  "name": "@backstage/plugin-sentry",
   "version": "0.1.1-alpha.6",
   "main": "dist/index.esm.js",
   "main:src": "src/index.ts",
@@ -22,15 +22,15 @@
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
-    "@backstage/plugin-sentry": "^0.1.1-alpha.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^14.2.0"
+    "react-sparklines": "^1.7.0",
+    "react-use": "^14.2.0",
+    "timeago.js": "^4.0.2"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.6",
     "@backstage/dev-utils": "^0.1.1-alpha.6",
-    "@backstage/test-utils": "^0.1.1-alpha.6",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^10.2.4",
