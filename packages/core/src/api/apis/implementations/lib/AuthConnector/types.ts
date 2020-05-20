@@ -24,7 +24,7 @@ export type BaseAuthSession = {
  * by for example communicating with a backend or interacting with the user.
  */
 export type AuthConnector<AuthSession> = {
+  createSession(scopes: Set<string>): Promise<AuthSession>;
   refreshSession(): Promise<AuthSession>;
   removeSession(): Promise<void>;
-  createSession(scopes: Set<string>): Promise<AuthSession>;
 };

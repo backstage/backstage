@@ -94,6 +94,10 @@ export class DefaultAuthConnector<AuthSession>
     this.sessionTransform = sessionTransform;
   }
 
+  async createSession(scopes: Set<string>): Promise<AuthSession> {
+    return this.authRequester(scopes);
+  }
+
   async refreshSession(): Promise<any> {
     const res = await fetch(this.buildUrl('/token', { optional: true }), {
       headers: {
@@ -136,10 +140,6 @@ export class DefaultAuthConnector<AuthSession>
     if (!res.ok) {
       throw new Error(`Logout request failed with status ${res.status}`);
     }
-  }
-
-  async createSession(scopes: Set<string>): Promise<AuthSession> {
-    return this.authRequester(scopes);
   }
 
   private async showPopup(scope: string): Promise<AuthSession> {
