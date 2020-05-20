@@ -105,4 +105,31 @@ describe('GoogleAuth', () => {
     await expect(promise3).resolves.toBe('token2');
     expect(getSession).toBeCalledTimes(4); // De-duping of session requests happens in client
   });
+
+  it.each([
+    ['email', [`${PREFIX}userinfo.email`]],
+    ['profile', [`${PREFIX}userinfo.profile`]],
+    ['openid', ['openid']],
+    ['userinfo.email', [`${PREFIX}userinfo.email`]],
+    [
+      'userinfo.profile email',
+      [`${PREFIX}userinfo.profile`, `${PREFIX}userinfo.email`],
+    ],
+    [
+      `profile        ${PREFIX}userinfo.email`,
+      [`${PREFIX}userinfo.profile`, `${PREFIX}userinfo.email`],
+    ],
+    [`${PREFIX}userinfo.profile`, [`${PREFIX}userinfo.profile`]],
+    ['a', [`${PREFIX}a`]],
+    ['a b\tc', [`${PREFIX}a`, `${PREFIX}b`, `${PREFIX}c`]],
+    [`${PREFIX}a b`, [`${PREFIX}a`, `${PREFIX}b`]],
+    [`${PREFIX}a`, [`${PREFIX}a`]],
+
+    // Some incorrect scopes that we don't try to fix
+    [`${PREFIX}email`, [`${PREFIX}email`]],
+    [`${PREFIX}profile`, [`${PREFIX}profile`]],
+    [`${PREFIX}openid`, [`${PREFIX}openid`]],
+  ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
+    expect(GoogleAuth.normalizeScopes(scope)).toEqual(new Set(scopes));
+  });
 });

@@ -97,14 +97,14 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
     await this.sessionManager.removeSession();
   }
 
-  private static normalizeScopes(scopes?: string | string[]): Set<string> {
+  static normalizeScopes(scopes?: string | string[]): Set<string> {
     if (!scopes) {
       return new Set();
     }
 
     const scopeList = Array.isArray(scopes)
       ? scopes
-      : scopes.split(' ').filter(Boolean);
+      : scopes.split(/[\s]/).filter(Boolean);
 
     const normalizedScopes = scopeList.map(scope => {
       if (scope === 'openid') {
