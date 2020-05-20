@@ -58,7 +58,7 @@ export class GitHubLocationSource implements LocationSource {
 
     let rawYaml;
     try {
-      rawYaml = await fetch(url.toString()).then(x => {
+      rawYaml = await fetch(url.toString()).then((x) => {
         return x.text();
       });
     } catch (e) {
