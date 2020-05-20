@@ -17,6 +17,16 @@
 import express from 'express';
 import passport from 'passport';
 
+export type AuthProviderConfig = {
+  provider: string;
+  options: any;
+};
+
+export interface AuthProvider {
+  strategy(): passport.Strategy;
+  router?(): express.Router;
+}
+
 export interface AuthProviderRouteHandlers {
   start(
     req: express.Request,
@@ -27,7 +37,7 @@ export interface AuthProviderRouteHandlers {
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
-  ): express.Response<any>;
+  ): Promise<any>;
   refresh?(
     req: express.Request,
     res: express.Response,
@@ -37,11 +47,7 @@ export interface AuthProviderRouteHandlers {
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
-  ): express.Response<any>;
-}
-export interface AuthProvider {
-  strategy(): passport.Strategy;
-  router?(): express.Router;
+  ): Promise<any>;
 }
 
 export type AuthProviderFactories = {
@@ -53,7 +59,7 @@ export type AuthProviderFactories = {
 export type AuthInfo = {
   profile: passport.Profile;
   accessToken: string;
-  expiresAt?: number;
+  expiresInSeconds?: number;
 };
 
 export type AuthResponse =

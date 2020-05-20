@@ -17,13 +17,17 @@
 import passport from 'passport';
 import express from 'express';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { AuthProvider, AuthProviderRouteHandlers } from './../types';
+import {
+  AuthProvider,
+  AuthProviderRouteHandlers,
+  AuthProviderConfig,
+} from './../types';
 import { postMessageResponse } from './../utils';
 
 export class GoogleAuthProvider
   implements AuthProvider, AuthProviderRouteHandlers {
-  private readonly providerConfig: any;
-  constructor(providerConfig: any) {
+  private readonly providerConfig: AuthProviderConfig;
+  constructor(providerConfig: AuthProviderConfig) {
     this.providerConfig = providerConfig;
   }
 
@@ -54,7 +58,10 @@ export class GoogleAuthProvider
   }
 
   logout(_req: express.Request, res: express.Response) {
-    return res.send('logout!');
+    return new Promise((resolve) => {
+      res.send('logout!');
+      resolve();
+    });
   }
 
   strategy(): passport.Strategy {

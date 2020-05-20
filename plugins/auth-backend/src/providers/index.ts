@@ -15,7 +15,11 @@
  */
 
 import Router from 'express-promise-router';
-import { AuthProviderRouteHandlers, AuthProviderFactories } from './types';
+import {
+  AuthProviderRouteHandlers,
+  AuthProviderFactories,
+  AuthProviderConfig,
+} from './types';
 
 import { GoogleAuthProvider } from './google/provider';
 
@@ -34,7 +38,7 @@ export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
   return router;
 };
 
-export const makeProvider = (config: any) => {
+export const makeProvider = (config: AuthProviderConfig) => {
   const providerId = config.provider;
   const ProviderImpl = providerFactories[providerId];
   if (!ProviderImpl) {

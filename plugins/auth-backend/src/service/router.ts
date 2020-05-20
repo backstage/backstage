@@ -30,6 +30,7 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
+  const providerRouters: { [key: string]: express.Router } = {};
 
   // configure all the providers
   for (const providerConfig of providers) {
@@ -38,7 +39,7 @@ export async function createRouter(
     );
     logger.info(`Configuring provider: ${providerId}`);
     passport.use(strategy);
-    router.use(`/${providerId}`, providerRouter);
+    providerRouters[providerId] = providerRouter;
   }
 
   passport.serializeUser((user, done) => {
@@ -51,6 +52,13 @@ export async function createRouter(
 
   router.use(passport.initialize());
   router.use(passport.session());
+
+  for (const providerId in providerRouters) {
+    if (providerRouters.hasOwnProperty(providerId)) {
+      const providerRouter = providerRouters[providerId];
+      router.use(`/${providerId}`, providerRouter);
+    }
+  }
 
   return router;
 }

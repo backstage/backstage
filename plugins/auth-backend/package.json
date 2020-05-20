@@ -26,14 +26,14 @@
     "winston": "^3.2.1",
     "yn": "^4.0.0",
     "passport": "0.4.1",
-    "passport-google-oauth20": "2.0.0"
+    "passport-google-oauth20": "2.0.0",
+    "@types/passport": "1.0.3",
+    "@types/passport-google-oauth20": "2.0.3"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.5",
     "jest-fetch-mock": "^3.0.3",
-    "tsc-watch": "^4.2.3",
-    "@types/passport": "1.0.3",
-    "@types/passport-google-oauth20": "2.0.3"
+    "tsc-watch": "^4.2.3"
   },
   "files": [
     "dist"
