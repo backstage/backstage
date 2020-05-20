@@ -24,13 +24,13 @@ import {
   ContentHeader,
   SupportButton,
 } from '@backstage/core';
-import SentryPluginWidget from '../SentryPluginWidget/SentryPluginWidget';
+import { SentryPluginWidget } from '../SentryPluginWidget/SentryPluginWidget';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 
 const SentryPluginPage: FC<{}> = () => {
   const [statsFor, setStatsFor] = useState<'12h' | '24h'>('12h');
-  const toggleStatsFor = () =>
-    statsFor === '12h' ? setStatsFor('24h') : setStatsFor('12h');
+  const toggleStatsFor = () => setStatsFor(statsFor === '12h' ? '12h' : '24h');
+
   return (
     <Page theme={pageTheme.tool}>
       <Header title="Welcome to Sentry Plugin!">

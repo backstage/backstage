@@ -28,7 +28,7 @@ import { sentryApiFactory } from '../../data/api-factory';
 
 const api = sentryApiFactory('spotify');
 
-const SentryPluginWidget: FC<{
+export const SentryPluginWidget: FC<{
   sentryProjectId: string;
   statsFor: '24h' | '12h';
 }> = ({ sentryProjectId, statsFor }) => {
@@ -55,5 +55,3 @@ const SentryPluginWidget: FC<{
 
   return <SentryIssuesTable sentryIssues={value || []} />;
 };
-
-export default SentryPluginWidget;

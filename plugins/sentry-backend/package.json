@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-sentry-backend",
-  "version": "0.1.1-alpha.5",
+  "version": "0.1.1-alpha.6",
   "main": "dist",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -13,8 +13,8 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.5",
-    "@backstage/core": "^0.1.1-alpha.5",
+    "@backstage/backend-common": "^0.1.1-alpha.6",
+    "@backstage/core": "^0.1.1-alpha.6",
     "axios": "^0.19.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -23,8 +23,8 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.5",
-    "@backstage/dev-utils": "^0.1.1-alpha.5",
+    "@backstage/cli": "^0.1.1-alpha.6",
+    "@backstage/dev-utils": "^0.1.1-alpha.6",
     "@types/jest": "^25.2.1",
     "@types/node": "^12.0.0"
   },

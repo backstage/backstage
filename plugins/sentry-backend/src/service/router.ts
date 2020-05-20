@@ -16,25 +16,19 @@
 import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
-import { SentryApiForwarder } from './sentry-api';
+import { getSentryApiForwarder } from './sentry-api';
 
-export async function createRouter(
-  rootLogger: Logger,
-): Promise<express.Router> {
+export async function createRouter(logger: Logger): Promise<express.Router> {
   const router = Router();
   const SENTRY_TOKEN = process.env.SENTRY_TOKEN;
   if (!SENTRY_TOKEN) {
-    console.error('Sentry token must be provided in env to start the API.');
-    process.exit(1);
+    throw new Error(
+      'Sentry token must be provided in SENTRY_TOKEN environment variable to start the API.',
+    );
   }
-  const sentryForwarder = new SentryApiForwarder(SENTRY_TOKEN);
-  const logger = rootLogger.child({ plugin: 'sentry' });
+  const sentryForwarder = getSentryApiForwarder(SENTRY_TOKEN, logger);
 
-  router.get('*', (req, res) => sentryForwarder.fowardRequest(req, res));
+  router.use(sentryForwarder);
 
-  const app = express();
-  app.set('logger', logger);
-  app.use('/', router);
-
-  return app;
+  return router;
 }

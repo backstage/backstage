@@ -15,4 +15,4 @@
  */
 
 export { plugin } from './plugin';
-export { default as SentryIssuesWidget } from './components/SentryPluginWidget/SentryPluginWidget';
+export { SentryPluginWidget as SentryIssuesWidget } from './components/SentryPluginWidget/SentryPluginWidget';

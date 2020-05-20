@@ -16,7 +16,8 @@
 import { SentryIssue } from './sentry-issue';
 import { SentryApi } from './sentry-api';
 
-const API_BASE_URL = 'http://localhost:7000/sentry/api/0/projects/';
+const API_HOST = process.env.API_HOST || 'http://localhost:7000';
+const API_BASE_URL = `${API_HOST}/sentry/api/0/projects/`;
 
 export class ProductionSentryApi implements SentryApi {
   private organization: string;

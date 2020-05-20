@@ -26,7 +26,7 @@ const errorApi = { post: () => {} };
 
 describe('SentryPluginPage', () => {
   it('should render header and time switched', () => {
-    mockFetch.mockResponse(() => new Promise(() => {}));
+    mockFetch.mockResponse('{}');
     const rendered = render(
       <ApiProvider apis={ApiRegistry.from([[errorApiRef, errorApi]])}>
         <ThemeProvider theme={lightTheme}>

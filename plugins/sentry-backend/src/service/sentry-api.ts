@@ -15,29 +15,33 @@
  */
 import express from 'express';
 import axios from 'axios';
+import { Logger } from 'winston';
 
-export class SentryApiForwarder {
-  constructor(private token: string) {}
+export function getRequestHeaders(token: string) {
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+}
 
-  // public for testing
-  public getRequestHeaders() {
-    return {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-      },
-    };
-  }
-  public fowardRequest(request: express.Request, response: express.Response) {
+export function getSentryApiForwarder(token: string, logger: Logger) {
+  return function fowardRequest(
+    request: express.Request,
+    response: express.Response,
+  ) {
     const sentryUrl = request.path;
+    const effectiveUrl = `https://sentry.io/${sentryUrl}`;
+    logger.info(`Calling Sentry REST API, ${effectiveUrl}`);
     axios
-      .get(`https://sentry.io/${sentryUrl}`, this.getRequestHeaders())
-      .then((res) => {
+      .get(effectiveUrl, getRequestHeaders(token))
+      .then(res => {
         response.send(res.data);
       })
-      .catch((err) => {
+      .catch(err => {
         return response.status(err.response.status).json({
           detail: err.response.statusText,
         });
       });
-  }
+  };
 }

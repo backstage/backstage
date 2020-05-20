@@ -39,12 +39,12 @@ describe('SentryIssuesTable', () => {
         <SentryIssuesTable sentryIssues={issues} />
       </ThemeProvider>,
     );
-    expect(await table.findByText('Error')).toBeInTheDOM();
-    expect(await table.findByText('Graph')).toBeInTheDOM();
-    expect(await table.findByText('First seen')).toBeInTheDOM();
-    expect(await table.findByText('Last seen')).toBeInTheDOM();
-    expect(await table.findByText('Events')).toBeInTheDOM();
-    expect(await table.findByText('Users')).toBeInTheDOM();
+    expect(await table.findByText('Error')).toBeInTheDocument();
+    expect(await table.findByText('Graph')).toBeInTheDocument();
+    expect(await table.findByText('First seen')).toBeInTheDocument();
+    expect(await table.findByText('Last seen')).toBeInTheDocument();
+    expect(await table.findByText('Events')).toBeInTheDocument();
+    expect(await table.findByText('Users')).toBeInTheDocument();
   });
   it('should render values in a table', async () => {
     const issues: SentryIssue[] = [
@@ -63,9 +63,9 @@ describe('SentryIssuesTable', () => {
         <SentryIssuesTable sentryIssues={issues} />
       </ThemeProvider>,
     );
-    expect(await table.findByText('Exception')).toBeInTheDOM();
-    expect(await table.findByText('exception was thrown')).toBeInTheDOM();
-    expect(await table.findByText('101')).toBeInTheDOM();
-    expect(await table.findByText('202')).toBeInTheDOM();
+    expect(await table.findByText('Exception')).toBeInTheDocument();
+    expect(await table.findByText('exception was thrown')).toBeInTheDocument();
+    expect(await table.findByText('101')).toBeInTheDocument();
+    expect(await table.findByText('202')).toBeInTheDocument();
   });
 });
