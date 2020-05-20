@@ -65,6 +65,8 @@ describe('DatabaseManager', () => {
       } as unknown) as Database;
 
       const desc: ComponentDescriptor = {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
         metadata: { name: 'c1' },
         spec: { type: 'service' },
       };

@@ -18,7 +18,7 @@ import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<any> {
   return knex.schema
-    .createTable('locations', (table) => {
+    .createTable('locations', table => {
       table.comment(
         'Registered locations that shall be contiuously scanned for catalog item updates',
       );
@@ -29,7 +29,7 @@ export async function up(knex: Knex): Promise<any> {
         .notNullable()
         .comment('The actual target of the location');
     })
-    .createTable('components', (table) => {
+    .createTable('components', table => {
       table.comment('All components currently stored in the catalog');
       table.uuid('id').primary().comment('Auto-generated ID of the component');
       table

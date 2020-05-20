@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ComponentDescriptorV1 } from './descriptors/ComponentDescriptorV1Parser';
+import { ComponentDescriptorV1beta1 } from './descriptors/ComponentDescriptorV1beta1Parser';
 
-export type ComponentDescriptor = ComponentDescriptorV1;
+export type ComponentDescriptor = ComponentDescriptorV1beta1;
 
 export type ParserOutput = {
   kind: 'Component';

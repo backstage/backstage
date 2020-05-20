@@ -15,16 +15,20 @@
  */
 
 import { ParserOutput } from '../types';
-import { DescriptorEnvelope } from './DescriptorEnvelope';
+import { DescriptorEnvelope } from './DescriptorEnvelopeParser';
 
-export type EnvelopeParser = {
+export type KindParser = {
   /**
-   * Parses and validates a single envelope into its materialized type.
+   * Parses and validates a single envelope into its materialized kind.
    *
-   * @param envelope A descriptor envelope
+   * These parsers may assume that the envelope is already validated and
+   * well formed.
+   *
+   * @param envelope A valid descriptor envelope
    * @returns A materialized type, or undefined if the given version/kind is
    *          not handled by this parser
-   * @throws An Error if the type was not properly formatted
+   * @throws An Error if the type was handled and found to not be properly
+   *         formatted
    */
   tryParse(envelope: DescriptorEnvelope): Promise<ParserOutput | undefined>;
 };

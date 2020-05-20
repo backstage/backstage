@@ -1,12 +1,12 @@
 ---
-apiVersion: catalog.backstage.io/v1
+apiVersion: backstage.io/v1beta1
 kind: Component
 metadata:
   name: component1
 spec:
   type: service
 ---
-apiVersion: catalog.backstage.io/v1
+apiVersion: backstage.io/v1beta1
 kind: Component
 metadata:
   name: component2

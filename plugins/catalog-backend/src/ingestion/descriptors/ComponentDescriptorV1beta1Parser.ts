@@ -16,48 +16,53 @@
 
 import * as yup from 'yup';
 import { ParserOutput } from '../types';
-import { DescriptorEnvelope } from './DescriptorEnvelope';
-import { EnvelopeParser } from './types';
+import { DescriptorEnvelope } from './DescriptorEnvelopeParser';
+import { KindParser } from './types';
 
-export type ComponentDescriptorV1 = {
+export interface ComponentDescriptorV1beta1 extends DescriptorEnvelope {
   metadata: {
     name: string;
   };
   spec: {
     type: string;
   };
-};
+}
 
-const schema: yup.Schema<ComponentDescriptorV1> = yup.object({
-  metadata: yup.object({
-    name: yup.string().required(),
-  }),
-  spec: yup.object({
-    type: yup.string().required(),
-  }),
-});
+export class ComponentDescriptorV1beta1Parser implements KindParser {
+  private schema: yup.Schema<any>;
 
-export class ComponentDescriptorV1Parser implements EnvelopeParser {
+  constructor() {
+    this.schema = yup.object<Partial<ComponentDescriptorV1beta1>>({
+      metadata: yup
+        .object({
+          name: yup.string().required(),
+        })
+        .required(),
+      spec: yup
+        .object({
+          type: yup.string().required(),
+        })
+        .required(),
+    });
+  }
+
   async tryParse(
     envelope: DescriptorEnvelope,
   ): Promise<ParserOutput | undefined> {
     if (
-      envelope.apiVersion !== 'catalog.backstage.io/v1' ||
+      envelope.apiVersion !== 'backstage.io/v1beta1' ||
       envelope.kind !== 'Component'
     ) {
       return undefined;
     }
 
-    let component;
     try {
-      component = await schema.validate(envelope, { strict: true });
+      return {
+        kind: 'Component',
+        component: await this.schema.validate(envelope, { strict: true }),
+      };
     } catch (e) {
       throw new Error(`Malformed component, ${e}`);
     }
-
-    return {
-      kind: 'Component',
-      component,
-    };
   }
 }

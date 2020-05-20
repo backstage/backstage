@@ -29,7 +29,7 @@ export class StaticItemsCatalog implements ItemsCatalog {
   }
 
   async component(name: string): Promise<Component> {
-    const item = this._components.find((i) => i.name === name);
+    const item = this._components.find(i => i.name === name);
     if (!item) {
       throw new NotFoundError(`Found no component with name ${name}`);
     }
