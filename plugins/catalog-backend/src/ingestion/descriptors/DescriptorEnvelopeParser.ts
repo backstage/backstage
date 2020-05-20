@@ -17,7 +17,9 @@
 import * as yup from 'yup';
 import { Validators } from '../../validation';
 
-// The envelope that's common to all versions/kinds
+/**
+ * The format envelope that's common to all versions/kinds
+ */
 export type DescriptorEnvelope = {
   apiVersion: string;
   kind: string;
@@ -30,7 +32,9 @@ export type DescriptorEnvelope = {
   spec?: object;
 };
 
-// Parses some raw structured data as a descriptor envelope
+/**
+ * Parses some raw structured data as a descriptor envelope
+ */
 export class DescriptorEnvelopeParser {
   private schema: yup.Schema<DescriptorEnvelope>;
 
@@ -59,7 +63,7 @@ export class DescriptorEnvelopeParser {
       .test(
         'metadata.name',
         'The name is not formatted according to schema',
-        (value) => value === undefined || validators.isValidEntityName(value),
+        value => value === undefined || validators.isValidEntityName(value),
       );
 
     const namespaceSchema = yup
@@ -68,7 +72,7 @@ export class DescriptorEnvelopeParser {
       .test(
         'metadata.namespace',
         'The namespace is malformed',
-        (value) => value === undefined || validators.isValidEntityName(value),
+        value => value === undefined || validators.isValidEntityName(value),
       );
 
     const labelsSchema = yup
@@ -141,10 +145,43 @@ export class DescriptorEnvelopeParser {
   }
 
   async parse(data: any): Promise<DescriptorEnvelope> {
+    let result: DescriptorEnvelope;
     try {
-      return await this.schema.validate(data, { strict: true });
+      result = await this.schema.validate(data, { strict: true });
     } catch (e) {
       throw new Error(`Malformed envelope, ${e}`);
     }
+
+    // These are keys with specific semantic meaning in a document, that we do
+    // not want to appear in the root of the spec, or as labels or as
+    // annotations, because they will lead to confusion.
+    const reservedKeys = [
+      'apiVersion',
+      'kind',
+      'name',
+      'namespace',
+      'labels',
+      'annotations',
+      'spec',
+    ];
+    for (const key of reservedKeys) {
+      if (result.spec?.hasOwnProperty(key)) {
+        throw new Error(
+          `The spec may not contain the key ${key}, because it has reserved meaning`,
+        );
+      }
+      if (result.metadata?.labels?.hasOwnProperty(key)) {
+        throw new Error(
+          `A label may not have the key ${key}, because it has reserved meaning`,
+        );
+      }
+      if (result.metadata?.annotations?.hasOwnProperty(key)) {
+        throw new Error(
+          `An annotation may not have the key ${key}, because it has reserved meaning`,
+        );
+      }
+    }
+
+    return result;
   }
 }

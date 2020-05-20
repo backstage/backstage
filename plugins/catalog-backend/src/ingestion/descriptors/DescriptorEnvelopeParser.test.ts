@@ -15,7 +15,6 @@
  */
 
 import yaml from 'yaml';
-import { unindent } from '../../util';
 import { makeValidator } from '../../validation';
 import { DescriptorEnvelopeParser } from './DescriptorEnvelopeParser';
 
@@ -24,7 +23,7 @@ describe('DescriptorEnvelopeParser', () => {
   let parser: DescriptorEnvelopeParser;
 
   beforeEach(() => {
-    data = yaml.parse(unindent`
+    data = yaml.parse(`
       apiVersion: backstage.io/v1beta1
       kind: Component
       metadata:
@@ -44,9 +43,23 @@ describe('DescriptorEnvelopeParser', () => {
     await expect(parser.parse(data)).resolves.toBe(data);
   });
 
+  it('rejects missing apiVersion', async () => {
+    delete data.apiVersion;
+    await expect(parser.parse(data)).rejects.toThrow(/apiVersion/);
+  });
+
+  it('rejects wrong root type', async () => {
+    await expect(parser.parse(7)).rejects.toThrow(/object/);
+  });
+
   it('rejects bad apiVersion', async () => {
     data.apiVersion = 'a#b';
     await expect(parser.parse(data)).rejects.toThrow(/apiVersion/);
+  });
+
+  it('rejects missing kind', async () => {
+    delete data.kind;
+    await expect(parser.parse(data)).rejects.toThrow(/kind/);
   });
 
   it('rejects bad kind', async () => {
@@ -102,5 +115,25 @@ describe('DescriptorEnvelopeParser', () => {
   it('rejects bad annotation value', async () => {
     data.metadata.annotations.a = [];
     await expect(parser.parse(data)).rejects.toThrow(/annotation.*value/i);
+  });
+
+  it('rejects unknown root keys', async () => {
+    data.spec2 = {};
+    await expect(parser.parse(data)).rejects.toThrow(/spec2/i);
+  });
+
+  it('rejects reserved keys in the spec root', async () => {
+    data.spec.apiVersion = 'a/b';
+    await expect(parser.parse(data)).rejects.toThrow(/spec.*apiVersion/i);
+  });
+
+  it('rejects reserved keys in labels', async () => {
+    data.metadata.labels.apiVersion = 'a';
+    await expect(parser.parse(data)).rejects.toThrow(/label.*apiVersion/i);
+  });
+
+  it('rejects reserved keys in annotations', async () => {
+    data.metadata.annotations.apiVersion = 'a';
+    await expect(parser.parse(data)).rejects.toThrow(/annotation.*apiVersion/i);
   });
 });

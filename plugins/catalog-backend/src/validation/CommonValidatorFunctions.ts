@@ -58,7 +58,7 @@ export class CommonValidatorFunctions {
   static isJsonSafe(value: any): boolean {
     try {
       return lodash.isEqual(value, JSON.parse(JSON.stringify(value)));
-    } catch (e) {
+    } catch {
       return false;
     }
   }
@@ -101,7 +101,7 @@ export class CommonValidatorFunctions {
   static normalizeToLowercaseAlphanum(value: string): string {
     return value
       .split('')
-      .filter((x) => /[a-zA-Z0-9]/.test(x))
+      .filter(x => /[a-zA-Z0-9]/.test(x))
       .join('')
       .toLowerCase();
   }
