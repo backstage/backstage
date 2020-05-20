@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.1.1-alpha.5",
+  "version": "0.1.1-alpha.6",
   "main": "dist",
   "types": "src/index.ts",
   "private": false,
@@ -32,7 +32,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.5",
+    "@backstage/cli": "^0.1.1-alpha.6",
     "@types/express": "^4.17.6",
     "@types/http-errors": "^1.6.3",
     "@types/morgan": "^1.9.0",
