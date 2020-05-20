@@ -24,21 +24,28 @@ import {
   withStyles,
   makeStyles,
 } from '@material-ui/core';
+import classNames from 'classnames';
 import ErrorBoundary from '../ErrorBoundary';
 import BottomLink, { Props as BottomLinkProps } from '../BottomLink';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   header: {
     padding: theme.spacing(2, 2, 2, 2.5),
   },
+  noPadding: {
+    padding: 0,
+    '&:last-child': {
+      paddingBottom: 0,
+    },
+  },
 }));
 
-const BoldHeader = withStyles((theme) => ({
+const BoldHeader = withStyles(theme => ({
   title: { fontWeight: 700 },
   subheader: { paddingTop: theme.spacing(1) },
 }))(CardHeader);
 
-const CardActionsTopRight = withStyles((theme) => ({
+const CardActionsTopRight = withStyles(theme => ({
   root: {
     display: 'inline-block',
     padding: theme.spacing(8, 8, 0, 0),
@@ -127,6 +134,7 @@ type Props = {
   cardClassName?: string;
   actionsTopRight?: ReactNode;
   className?: string;
+  noPadding?: boolean;
 };
 
 const InfoCard: FC<Props> = ({
@@ -144,6 +152,7 @@ const InfoCard: FC<Props> = ({
   cardClassName,
   actionsTopRight,
   className,
+  noPadding,
 }) => {
   const classes = useStyles();
 
@@ -156,7 +165,7 @@ const InfoCard: FC<Props> = ({
 
   if (variant) {
     const variants = variant.split(/[\s]+/g);
-    variants.forEach((name) => {
+    variants.forEach(name => {
       calculatedStyle = {
         ...calculatedStyle,
         ...VARIANT_STYLES.card[name as keyof typeof VARIANT_STYLES['card']],
@@ -189,7 +198,12 @@ const InfoCard: FC<Props> = ({
           <CardActionsTopRight>{actionsTopRight}</CardActionsTopRight>
         )}
         {divider && <Divider />}
-        <CardContent className={cardClassName} style={calculatedCardStyle}>
+        <CardContent
+          className={classNames(cardClassName, {
+            [classes.noPadding]: noPadding,
+          })}
+          style={calculatedCardStyle}
+        >
           {children}
         </CardContent>
         {actions && (
