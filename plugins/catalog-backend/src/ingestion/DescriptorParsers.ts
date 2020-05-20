@@ -17,7 +17,7 @@
 import { DescriptorEnvelopeParser } from './descriptors/DescriptorEnvelopeParser';
 import { ComponentDescriptorV1beta1Parser } from './descriptors/ComponentDescriptorV1beta1Parser';
 import { KindParser } from './descriptors/types';
-import { DescriptorParser, ParserOutput } from './types';
+import { DescriptorParser, ParserError, ParserOutput } from './types';
 import { makeValidator } from '../validation';
 
 export class DescriptorParsers implements DescriptorParser {
@@ -41,9 +41,9 @@ export class DescriptorParsers implements DescriptorParser {
         return parsed;
       }
     }
-
-    throw new Error(
+    throw new ParserError(
       `Unsupported object ${envelope.apiVersion}, ${envelope.kind}`,
+      envelope.metadata?.name,
     );
   }
 }

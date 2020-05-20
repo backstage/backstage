@@ -15,7 +15,7 @@
  */
 
 import * as yup from 'yup';
-import { ParserOutput } from '../types';
+import { ParserError, ParserOutput } from '../types';
 import { DescriptorEnvelope } from './DescriptorEnvelopeParser';
 import { KindParser } from './types';
 
@@ -62,7 +62,10 @@ export class ComponentDescriptorV1beta1Parser implements KindParser {
         component: await this.schema.validate(envelope, { strict: true }),
       };
     } catch (e) {
-      throw new Error(`Malformed component, ${e}`);
+      throw new ParserError(
+        `Malformed component, ${e}`,
+        envelope.metadata?.name,
+      );
     }
   }
 }
