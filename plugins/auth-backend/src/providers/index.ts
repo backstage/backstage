@@ -21,12 +21,6 @@ import {
   AuthProviderConfig,
 } from './types';
 
-import { GoogleAuthProvider } from './google/provider';
-
-const providerFactories: AuthProviderFactories = {
-  google: GoogleAuthProvider,
-};
-
 export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
   const router = Router();
   router.get('/start', provider.start);
@@ -38,11 +32,16 @@ export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
   return router;
 };
 
-export const makeProvider = (config: AuthProviderConfig) => {
+export const makeProvider = (
+  providerFactories: AuthProviderFactories,
+  config: any,
+) => {
   const providerId = config.provider;
   const ProviderImpl = providerFactories[providerId];
   if (!ProviderImpl) {
-    throw Error(`Provider Implementation missing for provider: ${providerId}`);
+    throw Error(
+      `Provider Implementation missing for : ${providerId} auth provider`,
+    );
   }
   const providerInstance = new ProviderImpl(config);
   const strategy = providerInstance.strategy();
