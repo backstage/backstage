@@ -51,3 +51,17 @@ export const addDatabaseLocationSchema: yup.Schema<AddDatabaseLocation> = yup
     target: yup.string().required(),
   })
   .noUnknown();
+
+export enum DatabaseLocationUpdateLogStatus {
+  FAIL = 'fail',
+  SUCCESS = 'success',
+}
+
+export type DatabaseLocationUpdateLogEvent = {
+  id: string;
+  status: DatabaseLocationUpdateLogStatus;
+  location_id: string;
+  component_name: string;
+  created_at?: string;
+  message?: string;
+};

@@ -22,6 +22,8 @@ import {
   AddDatabaseLocation,
   DatabaseComponent,
   DatabaseLocation,
+  DatabaseLocationUpdateLogEvent,
+  DatabaseLocationUpdateLogStatus,
 } from './types';
 
 export class Database {
@@ -106,6 +108,23 @@ export class Database {
   }
 
   async locations(): Promise<DatabaseLocation[]> {
-    return await this.database<DatabaseLocation>('locations').select();
+    return this.database<DatabaseLocation>('locations').select();
+  }
+
+  async addLocationUpdateLogEvent(
+    locationId: string,
+    status: DatabaseLocationUpdateLogStatus,
+    componentName?: string,
+    message?: string,
+  ): Promise<void> {
+    return this.database<DatabaseLocationUpdateLogEvent>(
+      'location_update_log',
+    ).insert({
+      id: uuidv4(),
+      status: status,
+      location_id: locationId,
+      component_name: componentName,
+      message,
+    });
   }
 }

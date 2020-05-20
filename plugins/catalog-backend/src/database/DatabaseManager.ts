@@ -17,9 +17,9 @@
 import Knex from 'knex';
 import path from 'path';
 import { Logger } from 'winston';
-import { DescriptorParser, LocationReader } from '../ingestion';
+import { DescriptorParser, LocationReader, ParserError } from '../ingestion';
 import { Database } from './Database';
-import { AddDatabaseComponent } from './types';
+import { AddDatabaseComponent, DatabaseLocationUpdateLogStatus } from './types';
 
 export class DatabaseManager {
   public static async createDatabase(database: Knex): Promise<Database> {
@@ -28,6 +28,32 @@ export class DatabaseManager {
       loadExtensions: ['.js'],
     });
     return new Database(database);
+  }
+
+  private static async logUpdateSuccess(
+    database: Database,
+    locationId: string,
+    componentName?: string,
+  ) {
+    return database.addLocationUpdateLogEvent(
+      locationId,
+      DatabaseLocationUpdateLogStatus.SUCCESS,
+      componentName,
+    );
+  }
+
+  private static async logUpdateFailure(
+    database: Database,
+    locationId: string,
+    error?: Error,
+    componentName?: string,
+  ) {
+    return database.addLocationUpdateLogEvent(
+      locationId,
+      DatabaseLocationUpdateLogStatus.FAIL,
+      componentName,
+      error?.message,
+    );
   }
 
   public static async refreshLocations(
@@ -44,26 +70,45 @@ export class DatabaseManager {
         );
 
         const readerOutput = await reader.read(location.type, location.target);
+
         for (const readerItem of readerOutput) {
           if (readerItem.type === 'error') {
             logger.debug(readerItem.error);
             continue;
           }
-
-          const parserOutput = await parser.parse(readerItem.data);
-          if (parserOutput.kind === 'Component') {
-            const component = parserOutput.component;
-            const dbc: AddDatabaseComponent = {
-              locationId: location.id,
-              name: component.metadata.name,
-            };
-            await database.addOrUpdateComponent(dbc);
+          let parserOutput;
+          try {
+            parserOutput = await parser.parse(readerItem.data);
+            if (parserOutput.kind === 'Component') {
+              const component = parserOutput.component;
+              const dbc: AddDatabaseComponent = {
+                locationId: location.id,
+                name: component.metadata.name,
+              };
+              await database.addOrUpdateComponent(dbc);
+              await DatabaseManager.logUpdateSuccess(
+                database,
+                location.id,
+                component.metadata.name,
+              );
+            }
+          } catch (error) {
+            let componentName;
+            if (error instanceof ParserError) {
+              componentName = error.componentName;
+            }
+            await DatabaseManager.logUpdateFailure(
+              database,
+              location.id,
+              error,
+              componentName,
+            );
           }
         }
-      } catch (e) {
-        // TODO(freben): Store trace log of these events, or at least the
-        // latest status, per location
-        logger.debug(`Failed to refresh location ${location.id}, ${e}`);
+        await DatabaseManager.logUpdateSuccess(database, location.id);
+      } catch (error) {
+        logger.debug(`Failed to refresh location ${location.id}, ${error}`);
+        await DatabaseManager.logUpdateFailure(database, location.id, error);
       }
     }
   }

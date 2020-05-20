@@ -20,10 +20,11 @@ import {
   ComponentDescriptor,
   DescriptorParser,
   LocationReader,
+  ParserError,
 } from '../ingestion';
 import { Database } from './Database';
 import { DatabaseManager } from './DatabaseManager';
-import { DatabaseLocation } from './types';
+import { DatabaseLocation, DatabaseLocationUpdateLogStatus } from './types';
 
 describe('DatabaseManager', () => {
   const logger = winston.createLogger({
@@ -62,6 +63,7 @@ describe('DatabaseManager', () => {
             } as DatabaseLocation,
           ]),
         ),
+        addLocationUpdateLogEvent: jest.fn(),
       } as unknown) as Database;
 
       const desc: ComponentDescriptor = {
@@ -88,6 +90,144 @@ describe('DatabaseManager', () => {
       expect(db.addOrUpdateComponent).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({ locationId: '123', name: 'c1' }),
+      );
+    });
+
+    it('logs successful updates', async () => {
+      const db = ({
+        addOrUpdateComponent: jest.fn(),
+        locations: jest.fn(() =>
+          Promise.resolve([
+            {
+              id: '123',
+              type: 'some',
+              target: 'thing',
+            } as DatabaseLocation,
+          ]),
+        ),
+        addLocationUpdateLogEvent: jest.fn(),
+      } as unknown) as Database;
+
+      const desc: ComponentDescriptor = {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: { name: 'c1' },
+        spec: { type: 'service' },
+      };
+      const reader: LocationReader = {
+        read: jest.fn(() => Promise.resolve([{ type: 'data', data: desc }])),
+      };
+      const parser: DescriptorParser = {
+        parse: jest.fn(() =>
+          Promise.resolve({ kind: 'Component', component: desc }),
+        ),
+      };
+
+      await expect(
+        DatabaseManager.refreshLocations(db, reader, parser, logger),
+      ).resolves.toBeUndefined();
+
+      expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(
+        1,
+        '123',
+        DatabaseLocationUpdateLogStatus.SUCCESS,
+        'c1',
+      );
+
+      expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(
+        2,
+        '123',
+        DatabaseLocationUpdateLogStatus.SUCCESS,
+        undefined,
+      );
+    });
+
+    it('logs unsuccessful updates when parser fails', async () => {
+      const db = ({
+        addOrUpdateComponent: jest.fn(),
+        locations: jest.fn(() =>
+          Promise.resolve([
+            {
+              id: '123',
+              type: 'some',
+              target: 'thing',
+            } as DatabaseLocation,
+          ]),
+        ),
+        addLocationUpdateLogEvent: jest.fn(),
+      } as unknown) as Database;
+
+      const desc: ComponentDescriptor = {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: { name: 'c1' },
+        spec: { type: 'service' },
+      };
+      const reader: LocationReader = {
+        read: jest.fn(() => Promise.resolve([{ type: 'data', data: desc }])),
+      };
+      const parser: DescriptorParser = {
+        parse: jest.fn(() =>
+          Promise.reject(new ParserError('parser error message', 'c1')),
+        ),
+      };
+
+      await expect(
+        DatabaseManager.refreshLocations(db, reader, parser, logger),
+      ).resolves.toBeUndefined();
+
+      expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(
+        1,
+        '123',
+        DatabaseLocationUpdateLogStatus.FAIL,
+        'c1',
+        'parser error message',
+      );
+
+      expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(
+        2,
+        '123',
+        DatabaseLocationUpdateLogStatus.SUCCESS,
+        undefined,
+      );
+    });
+
+    it('logs unsuccessful updates when reader fails', async () => {
+      const db = ({
+        addOrUpdateComponent: jest.fn(),
+        locations: jest.fn(() =>
+          Promise.resolve([
+            {
+              id: '123',
+              type: 'some',
+              target: 'thing',
+            } as DatabaseLocation,
+          ]),
+        ),
+        addLocationUpdateLogEvent: jest.fn(),
+      } as unknown) as Database;
+
+      const reader: LocationReader = {
+        read: jest.fn(() =>
+          Promise.reject([{ type: 'error', error: new Error('test message') }]),
+        ),
+      };
+      const parser: DescriptorParser = {
+        parse: jest.fn(() =>
+          Promise.reject(new ParserError('parser error message', 'c1')),
+        ),
+      };
+
+      await expect(
+        DatabaseManager.refreshLocations(db, reader, parser, logger),
+      ).resolves.toBeUndefined();
+
+      expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(
+        1,
+        '123',
+        DatabaseLocationUpdateLogStatus.FAIL,
+        undefined,
+        undefined,
       );
     });
   });

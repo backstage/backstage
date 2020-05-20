@@ -34,6 +34,15 @@ export type DescriptorParser = {
   parse(descriptor: object): Promise<ParserOutput>;
 };
 
+export class ParserError extends Error {
+  constructor(message?: string, private _componentName?: string | undefined) {
+    super(message);
+  }
+  get componentName() {
+    return this._componentName;
+  }
+}
+
 export type ReaderOutput =
   | { type: 'error'; error: Error }
   | { type: 'data'; data: object };
