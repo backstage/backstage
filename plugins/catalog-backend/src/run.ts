@@ -22,7 +22,7 @@ const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 3003;
 const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
 const logger = getRootLogger();
 
-startStandaloneServer({ port, enableCors, logger }).catch((err) => {
+startStandaloneServer({ port, enableCors, logger }).catch(err => {
   logger.error(err);
   process.exit(1);
 });

@@ -30,7 +30,7 @@ export class KubernetesValidatorFunctions {
       value,
       '/',
       CommonValidatorFunctions.isValidDnsSubdomain,
-      (n) => n.length >= 1 && n.length <= 63 && /^[a-z0-9A-Z]+$/.test(n),
+      n => n.length >= 1 && n.length <= 63 && /^[a-z0-9A-Z]+$/.test(n),
     );
   }
 

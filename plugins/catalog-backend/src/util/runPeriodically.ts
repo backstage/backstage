@@ -27,7 +27,7 @@
 export function runPeriodically(fn: () => any, delayMs: number): () => void {
   let cancel: () => void;
   let cancelled = false;
-  const cancellationPromise = new Promise((resolve) => {
+  const cancellationPromise = new Promise(resolve => {
     cancel = () => {
       resolve();
       cancelled = true;
@@ -43,7 +43,7 @@ export function runPeriodically(fn: () => any, delayMs: number): () => void {
       }
 
       await Promise.race([
-        new Promise((resolve) => setTimeout(resolve, delayMs)),
+        new Promise(resolve => setTimeout(resolve, delayMs)),
         cancellationPromise,
       ]);
     }
