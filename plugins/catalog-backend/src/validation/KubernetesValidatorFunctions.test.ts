@@ -46,7 +46,7 @@ describe('KubernetesValidatorFunctions', () => {
     ],
     [`a/${'a'.repeat(63)}`, true],
     [`a/${'a'.repeat(64)}`, false],
-  ])('isValidApiVersion', (value, matches) => {
+  ])(`isValidApiVersion %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidApiVersion(value)).toBe(matches);
   });
 
@@ -60,7 +60,7 @@ describe('KubernetesValidatorFunctions', () => {
     ['a'.repeat(63), true],
     ['a'.repeat(64), false],
     ['a-b', false],
-  ])('isValidKind', (value, matches) => {
+  ])(`isValidKind %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidKind(value)).toBe(matches);
   });
 
@@ -79,7 +79,7 @@ describe('KubernetesValidatorFunctions', () => {
     ['a--b', false],
     ['a_b', true],
     ['a.b', true],
-  ])('isValidObjectName', (value, matches) => {
+  ])(`isValidObjectName %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidObjectName(value)).toBe(matches);
   });
 
@@ -98,7 +98,7 @@ describe('KubernetesValidatorFunctions', () => {
     ['a--b', false],
     ['a_b', false],
     ['a.b', false],
-  ])('isValidNamespace', (value, matches) => {
+  ])(`isValidNamespace %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidNamespace(value)).toBe(matches);
   });
 
@@ -134,7 +134,7 @@ describe('KubernetesValidatorFunctions', () => {
     ],
     [`a/${'a'.repeat(63)}`, true],
     [`a/${'a'.repeat(64)}`, false],
-  ])('isValidLabelKey', (value, matches) => {
+  ])(`isValidLabelKey %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidLabelKey(value)).toBe(matches);
   });
 
@@ -153,7 +153,7 @@ describe('KubernetesValidatorFunctions', () => {
     ['a--b', false],
     ['a_b', true],
     ['a.b', true],
-  ])('isValidLabelValue', (value, matches) => {
+  ])(`isValidLabelValue %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidLabelValue(value)).toBe(matches);
   });
 
@@ -189,7 +189,7 @@ describe('KubernetesValidatorFunctions', () => {
     ],
     [`a/${'a'.repeat(63)}`, true],
     [`a/${'a'.repeat(64)}`, false],
-  ])('isValidAnnotationKey', (value, matches) => {
+  ])(`isValidAnnotationKey %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidAnnotationKey(value)).toBe(
       matches,
     );
@@ -201,7 +201,7 @@ describe('KubernetesValidatorFunctions', () => {
     ['', true],
     ['a', true],
     ['/'.repeat(6000), true],
-  ])('isValidAnnotationValue', (value, matches) => {
+  ])(`isValidAnnotationValue %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidAnnotationValue(value)).toBe(
       matches,
     );
