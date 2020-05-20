@@ -44,10 +44,18 @@ type Options<AuthSession> = {
    */
   oauthRequestApi: OAuthRequestApi;
   /**
+   * Function used to join together a set of scopes, defaults to joining with whitespace.
+   */
+  joinScopes?: (scopes: Set<string>) => string;
+  /**
    * Function used to transform an auth response into the session type.
    */
   sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
 };
+
+function defaultJoinScopes(scopes: Set<string>) {
+  return [...scopes].join(' ');
+}
 
 /**
  * DefaultAuthConnector is the default auth connector in Backstage. It talks to the
@@ -69,13 +77,14 @@ export class DefaultAuthConnector<AuthSession>
       basePath = DEFAULT_BASE_PATH,
       environment,
       provider,
+      joinScopes = defaultJoinScopes,
       oauthRequestApi,
       sessionTransform = id => id,
     } = options;
 
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
-      onAuthRequest: scopes => this.showPopup([...scopes].join(' ')),
+      onAuthRequest: scopes => this.showPopup(joinScopes(scopes)),
     });
 
     this.apiOrigin = apiOrigin;

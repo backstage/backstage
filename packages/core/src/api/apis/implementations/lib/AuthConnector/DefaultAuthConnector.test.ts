@@ -122,4 +122,25 @@ describe('DefaultAuthConnector', () => {
       expiresAt: expect.any(Date),
     });
   });
+
+  it('should use join func to join scopes', async () => {
+    const mockOauth = new MockOAuthApi();
+    const popupSpy = jest
+      .spyOn(loginPopup, 'showLoginPopup')
+      .mockResolvedValue({ scopes: '' });
+    const helper = new DefaultAuthConnector({
+      ...defaultOptions,
+      joinScopes: scopes => `-${[...scopes].join('')}-`,
+      oauthRequestApi: mockOauth,
+    });
+
+    helper.createSession(new Set(['a', 'b']));
+
+    await mockOauth.triggerAll();
+
+    expect(popupSpy).toBeCalledTimes(1);
+    expect(popupSpy.mock.calls[0][0]).toMatchObject({
+      url: 'my-origin/api/auth/my-provider/start?scope=-ab-&env=production',
+    });
+  });
 });
