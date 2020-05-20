@@ -19718,9 +19718,9 @@ stylis@3.5.0:
   integrity sha512-pP7yXN6dwMzAR29Q0mBrabPCe0/mNO1MSr93bhay+hcZondvMMTpeGyd8nbhYJdyperNT2DRxONQuUGcJr5iPw==
 
 sucrase@^3.14.1:
-  version "3.14.1"
-  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.14.1.tgz#ae948ced2887696637606f8d8f405e9ac9b6936c"
-  integrity sha512-f6aomLv8u9kBfJvO06a93kYBvdYg0WxlrrbOCN31FI/hOzAvZMS9WFPj77hT2EMWsrPyxE1TdepkKiOarRlX/g==
+  version "3.15.0"
+  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.15.0.tgz#78596a78be7264a65b52ed8d873883413ef0220c"
+  integrity sha512-05TJOUfMgckH7wKqfk/1p4G6q16nIeW/GHQwD44vkT0mQMqqzgfHCwkX3whNmwyOo7nVF0jDLwVu/qOBTtsscw==
   dependencies:
     commander "^4.0.0"
     glob "7.1.6"
