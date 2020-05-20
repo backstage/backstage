@@ -15,6 +15,7 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
+import lodash from 'lodash';
 import { DescriptorEnvelope } from '../ingestion';
 import { EntitiesCatalog } from './types';
 
@@ -26,14 +27,23 @@ export class StaticEntitiesCatalog implements EntitiesCatalog {
   }
 
   async entities(): Promise<DescriptorEnvelope[]> {
-    return this._entities.slice();
+    return lodash.cloneDeep(this._entities);
   }
 
-  async entity(name: string): Promise<DescriptorEnvelope> {
-    const item = this._entities.find(e => e.metadata?.name === name);
+  async entity(
+    kind: string,
+    name: string,
+    namespace: string | undefined,
+  ): Promise<DescriptorEnvelope | undefined> {
+    const item = this._entities.find(
+      e =>
+        kind === e.kind &&
+        name === e.metadata?.name &&
+        namespace === e.metadata?.namespace,
+    );
     if (!item) {
-      throw new NotFoundError(`Found no entity with name ${name}`);
+      throw new NotFoundError('Entity cannot be found');
     }
-    return item;
+    return lodash.cloneDeep(item);
   }
 }
