@@ -88,6 +88,25 @@ describe('KubernetesValidatorFunctions', () => {
     [null, false],
     ['', false],
     ['a', true],
+    ['AZ09', false],
+    ['a'.repeat(63), true],
+    ['a'.repeat(64), false],
+    ['a/b', false],
+    ['a-b', true],
+    ['-a-b', false],
+    ['a-b-', false],
+    ['a--b', false],
+    ['a_b', false],
+    ['a.b', false],
+  ])('isValidNamespace', (value, matches) => {
+    expect(KubernetesValidatorFunctions.isValidNamespace(value)).toBe(matches);
+  });
+
+  it.each([
+    [7, false],
+    [null, false],
+    ['', false],
+    ['a', true],
     ['AZ09', true],
     ['a'.repeat(63), true],
     ['a'.repeat(64), false],

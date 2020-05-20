@@ -72,7 +72,7 @@ export class DescriptorEnvelopeParser {
       .test(
         'metadata.namespace',
         'The namespace is malformed',
-        value => value === undefined || validators.isValidEntityName(value),
+        value => value === undefined || validators.isValidNamespace(value),
       );
 
     const labelsSchema = yup

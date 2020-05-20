@@ -52,6 +52,10 @@ export class KubernetesValidatorFunctions {
     );
   }
 
+  static isValidNamespace(value: any): boolean {
+    return CommonValidatorFunctions.isValidDnsLabel(value);
+  }
+
   static isValidLabelKey(value: any): boolean {
     return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
       value,
