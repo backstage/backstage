@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import { DescriptorEnvelope } from './DescriptorEnvelopeParser';
+import { DescriptorEnvelope } from '../types';
 
+/**
+ * Parses and validates a single envelope into its materialized kind.
+ *
+ * These parsers may assume that the envelope is already validated and well
+ * formed.
+ */
 export type KindParser = {
   /**
-   * Parses and validates a single envelope into its materialized kind.
-   *
-   * These parsers may assume that the envelope is already validated and
-   * well formed.
+   * Try to parse an envelope into a materialized kind.
    *
    * @param envelope A valid descriptor envelope
    * @returns A materialized type, or undefined if the given version/kind is
-   *          not handled by this parser
+   *          not meant to be handled by this parser
    * @throws An Error if the type was handled and found to not be properly
    *         formatted
    */

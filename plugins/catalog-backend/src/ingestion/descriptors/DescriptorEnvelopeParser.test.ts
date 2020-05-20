@@ -27,6 +27,9 @@ describe('DescriptorEnvelopeParser', () => {
       apiVersion: backstage.io/v1beta1
       kind: Component
       metadata:
+        uid: e01199ab-08cc-44c2-8e19-5c29ded82521
+        etag: lsndfkjsndfkjnsdfkjnsd==
+        generation: 13
         name: my-component-yay
         namespace: the-namespace
         labels:
@@ -75,6 +78,36 @@ describe('DescriptorEnvelopeParser', () => {
   it('rejects non-object metadata', async () => {
     data.metadata = 7;
     await expect(parser.parse(data)).rejects.toThrow(/metadata/);
+  });
+
+  it('accepts missing uid', async () => {
+    delete data.metadata.uid;
+    await expect(parser.parse(data)).resolves.toBe(data);
+  });
+
+  it('rejects bad uid', async () => {
+    data.metadata.uid = 7;
+    await expect(parser.parse(data)).rejects.toThrow(/uid/);
+  });
+
+  it('accepts missing etag', async () => {
+    delete data.metadata.etag;
+    await expect(parser.parse(data)).resolves.toBe(data);
+  });
+
+  it('rejects bad etag', async () => {
+    data.metadata.etag = 7;
+    await expect(parser.parse(data)).rejects.toThrow(/etag/);
+  });
+
+  it('accepts missing generation', async () => {
+    delete data.metadata.generation;
+    await expect(parser.parse(data)).resolves.toBe(data);
+  });
+
+  it('rejects bad generation', async () => {
+    data.metadata.generation = 'a';
+    await expect(parser.parse(data)).rejects.toThrow(/generation/);
   });
 
   it('accepts missing spec', async () => {

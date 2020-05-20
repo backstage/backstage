@@ -16,12 +16,13 @@
 
 import { makeValidator } from '../validation';
 import { ComponentDescriptorV1beta1Parser } from './descriptors/ComponentDescriptorV1beta1Parser';
+import { DescriptorEnvelopeParser } from './descriptors/DescriptorEnvelopeParser';
 import {
   DescriptorEnvelope,
-  DescriptorEnvelopeParser,
-} from './descriptors/DescriptorEnvelopeParser';
-import { KindParser } from './descriptors/types';
-import { DescriptorParser, ParserError } from './types';
+  DescriptorParser,
+  KindParser,
+  ParserError,
+} from './types';
 
 export class DescriptorParsers implements DescriptorParser {
   static create(): DescriptorParser {

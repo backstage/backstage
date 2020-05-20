@@ -15,7 +15,7 @@
  */
 
 import { Database } from '../database';
-import { DescriptorEnvelope } from '../ingestion/descriptors/DescriptorEnvelopeParser';
+import { DescriptorEnvelope } from '../ingestion/types';
 import { EntitiesCatalog } from './types';
 
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
