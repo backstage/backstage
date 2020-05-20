@@ -82,7 +82,7 @@
   },
   "devDependencies": {
     "@types/diff": "^4.0.2",
-    "@types/fs-extra": "^8.1.0",
+    "@types/fs-extra": "^9.0.1",
     "@types/html-webpack-plugin": "^3.2.2",
     "@types/http-proxy": "^1.17.4",
     "@types/inquirer": "^6.5.0",
