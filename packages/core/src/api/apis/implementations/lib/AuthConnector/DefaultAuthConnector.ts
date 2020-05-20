@@ -22,12 +22,30 @@ import { AuthConnector } from './types';
 const DEFAULT_BASE_PATH = '/api/auth/';
 
 type Options<AuthSession> = {
+  /**
+   * Origin of auth requests, defaults to location.origin
+   */
   apiOrigin?: string;
+  /**
+   * Base path of the auth requests, defaults to /api/auth/
+   */
   basePath?: string;
-  providerPath: string;
+  /**
+   * Environment hint passed on to auth backend, for example 'production' or 'development'
+   */
   environment: string;
-  provider: AuthProvider;
+  /**
+   * Information about the auth provider to be shown to the user.
+   * The ID Must match the backend auth plugin configuration, for example 'google'.
+   */
+  provider: AuthProvider & { id: string };
+  /**
+   * API used to instanciate an auth requester.
+   */
   oauthRequestApi: OAuthRequestApi;
+  /**
+   * Function used to transform an auth response into the session type.
+   */
   sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
 };
 
@@ -40,9 +58,8 @@ export class DefaultAuthConnector<AuthSession>
   implements AuthConnector<AuthSession> {
   private readonly apiOrigin: string;
   private readonly basePath: string;
-  private readonly providerPath: string;
   private readonly environment: string;
-  private readonly provider: AuthProvider;
+  private readonly provider: AuthProvider & { id: string };
   private readonly authRequester: AuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
 
@@ -50,7 +67,6 @@ export class DefaultAuthConnector<AuthSession>
     const {
       apiOrigin = window.location.origin,
       basePath = DEFAULT_BASE_PATH,
-      providerPath,
       environment,
       provider,
       oauthRequestApi,
@@ -64,7 +80,6 @@ export class DefaultAuthConnector<AuthSession>
 
     this.apiOrigin = apiOrigin;
     this.basePath = basePath;
-    this.providerPath = providerPath;
     this.environment = environment;
     this.provider = provider;
     this.sessionTransform = sessionTransform;
@@ -141,7 +156,7 @@ export class DefaultAuthConnector<AuthSession>
       env: this.environment,
     });
 
-    return `${this.apiOrigin}${this.basePath}${this.providerPath}${path}${queryString}`;
+    return `${this.apiOrigin}${this.basePath}${this.provider.id}${path}${queryString}`;
   }
 
   private buildQueryString(query?: {

@@ -38,9 +38,9 @@ const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 class GoogleAuth implements OAuthApi, OpenIdConnectApi {
   static create(oauthRequestApi: OAuthRequestApi) {
     const connector = new DefaultAuthConnector({
-      providerPath: 'google/',
       environment: 'dev',
       provider: {
+        id: 'google',
         title: 'Google',
         icon: GoogleIcon,
       },

@@ -23,9 +23,9 @@ const anyFetch = fetch as any;
 
 const defaultOptions = {
   apiOrigin: 'my-origin',
-  providerPath: 'my-provider',
   environment: 'production',
   provider: {
+    id: 'my-provider',
     title: 'My Provider',
     icon: ProviderIcon,
   },
