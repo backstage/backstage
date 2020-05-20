@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-export type BaseAuthSession = {
-  scopes: Set<string>;
-  expiresAt: Date;
-};
-
 /**
  * An AuthConnector is responsible for realizing auth session actions
  * by for example communicating with a backend or interacting with the user.

@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { BaseAuthSession } from '../AuthHelper/types';
-
 /**
  * A sessions manager keeps track of the current session and makes sure that
  * multiple simultaneous requests for sessions with different scope are handled
  * in a correct way.
  */
-export type SessionManager<AuthSession extends BaseAuthSession> = {
+export type SessionManager<AuthSession> = {
   getSession(options: {
     optional: false;
     scope?: Set<string>;

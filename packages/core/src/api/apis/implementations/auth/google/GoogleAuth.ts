@@ -62,6 +62,11 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
         `${SCOPE_PREFIX}userinfo.email`,
         `${SCOPE_PREFIX}userinfo.profile`,
       ]),
+      sessionScopes: session => session.scopes,
+      sessionShouldRefresh: session => {
+        const expiresInSec = (session.expiresAt.getTime() - Date.now()) / 1000;
+        return expiresInSec < 60 * 5;
+      },
     });
 
     return new GoogleAuth(sessionManager);

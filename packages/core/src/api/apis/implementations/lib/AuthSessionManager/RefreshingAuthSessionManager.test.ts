@@ -16,15 +16,18 @@
 
 import { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
 
-const theFuture = new Date(Date.now() + 3600000);
-const thePast = new Date(Date.now() - 10);
+const defaultOptions = {
+  sessionScopes: (session: { scopes: Set<string> }) => session.scopes,
+  sessionShouldRefresh: (session: { expired: boolean }) => session.expired,
+};
 
 describe('RefreshingAuthSessionManager', () => {
   it('should save result form createSession', async () => {
-    const createSession = jest.fn().mockResolvedValue({ expiresAt: theFuture });
+    const createSession = jest.fn().mockResolvedValue({ expired: false });
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
+      ...defaultOptions,
     } as any);
 
     await manager.getSession({});
@@ -41,11 +44,12 @@ describe('RefreshingAuthSessionManager', () => {
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
+      ...defaultOptions,
     } as any);
 
     createSession.mockResolvedValue({
       scopes: new Set(['a']),
-      expiresAt: theFuture,
+      expired: false,
     });
     await manager.getSession({ scope: new Set(['a']) });
     expect(createSession).toBeCalledTimes(1);
@@ -65,11 +69,12 @@ describe('RefreshingAuthSessionManager', () => {
       .mockResolvedValue({ scopes: new Set(['a']) });
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
+      ...defaultOptions,
     } as any);
 
     createSession.mockResolvedValue({
       scopes: new Set(['a']),
-      expiresAt: thePast,
+      expired: true,
     });
 
     await manager.getSession({ scope: new Set(['a']) });
@@ -86,6 +91,7 @@ describe('RefreshingAuthSessionManager', () => {
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
+      ...defaultOptions,
     } as any);
 
     createSession.mockRejectedValueOnce(new Error('some error'));
@@ -99,6 +105,7 @@ describe('RefreshingAuthSessionManager', () => {
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
+      ...defaultOptions,
     } as any);
 
     expect(await manager.getSession({ optional: true })).toBe(undefined);
@@ -119,6 +126,7 @@ describe('RefreshingAuthSessionManager', () => {
     const removeSession = jest.fn();
     const manager = new RefreshingAuthSessionManager({
       connector: { removeSession },
+      ...defaultOptions,
     } as any);
 
     await manager.removeSession();
