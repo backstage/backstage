@@ -23,8 +23,8 @@ import {
   IdTokenOptions,
 } from '../../../definitions/auth';
 import { OAuthRequestApi } from '../../../definitions';
-import { GenericAuthHelper } from '../../lib/AuthHelper/AuthHelper';
-import { hasScopes } from '../../OAuthRequestManager/OAuthPendingRequests';
+import { SessionManager } from '../../lib/AuthSessionManager/types';
+import { RefreshingAuthSessionManager } from '../../lib/AuthSessionManager';
 
 export type GoogleAuthResponse = {
   accessToken: string;
@@ -34,15 +34,8 @@ export type GoogleAuthResponse = {
 };
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
-const DEFAULT_SCOPES = [
-  'openid',
-  `${SCOPE_PREFIX}userinfo.email`,
-  `${SCOPE_PREFIX}userinfo.profile`,
-];
 
 class GoogleAuth implements OAuthApi, OpenIdConnectApi {
-  private currentSession: GoogleSession | undefined;
-
   static create(oauthRequestApi: OAuthRequestApi) {
     const helper = new AuthHelper({
       providerPath: 'google/',
@@ -62,116 +55,41 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
       },
     });
 
-    return new GoogleAuth(helper);
+    const sessionManager = new RefreshingAuthSessionManager({
+      helper,
+      defaultScopes: new Set([
+        'openid',
+        `${SCOPE_PREFIX}userinfo.email`,
+        `${SCOPE_PREFIX}userinfo.profile`,
+      ]),
+    });
+
+    return new GoogleAuth(sessionManager);
   }
 
-  constructor(private readonly helper: GenericAuthHelper<GoogleSession>) {}
+  constructor(private readonly sessionManager: SessionManager<GoogleSession>) {}
 
   async getAccessToken(scope?: string | string[]) {
-    const session = await this.getSession({ optional: false, scope });
+    const normalizedScopes = GoogleAuth.normalizeScopes(scope);
+    const session = await this.sessionManager.getSession({
+      optional: false,
+      scope: normalizedScopes,
+    });
     return session.accessToken;
   }
 
   async getIdToken({ optional }: IdTokenOptions = {}) {
-    const session = await this.getSession({ optional: optional || false });
+    const session = await this.sessionManager.getSession({
+      optional: optional || false,
+    });
     if (session) {
       return session.idToken;
     }
     return '';
   }
 
-  async getSession(options: {
-    optional: false;
-    scope?: string | string[];
-  }): Promise<GoogleSession>;
-  async getSession(options: {
-    optional?: boolean;
-    scope?: string | string[];
-  }): Promise<GoogleSession | undefined>;
-  async getSession(options: {
-    optional?: boolean;
-    scope?: string | string[];
-  }): Promise<GoogleSession | undefined> {
-    const normalizedScope = GoogleAuth.normalizeScopes(options.scope);
-
-    if (this.sessionExistsAndHasScope(this.currentSession, normalizedScope)) {
-      if (!this.sessionWillExpire(this.currentSession!)) {
-        return this.currentSession!;
-      }
-
-      try {
-        const refreshedSession = await this.helper.refreshSession();
-        if (hasScopes(refreshedSession.scopes, this.currentSession!.scopes)) {
-          this.currentSession = refreshedSession;
-        }
-        return refreshedSession;
-      } catch (error) {
-        if (options.optional) {
-          return undefined;
-        }
-        throw error;
-      }
-    }
-
-    // The user may still have a valid refresh token in their cookies. Attempt to
-    // initiate a fresh session through the backend using that refresh token.
-    if (!this.currentSession) {
-      try {
-        const newSession = await this.helper.refreshSession();
-        this.currentSession = newSession;
-        // The session might not have the scopes requested so go back and check again
-        return this.getSession(options);
-      } catch {
-        // If the refresh attemp fails we assume we don't have a session, so continue to create one.
-      }
-    }
-
-    // If we continue here we will show a popup, so exit if this is an optional session request.
-    if (options.optional) {
-      return undefined;
-    }
-
-    // We can call authRequester multiple times, the returned session will contain all requested scopes.
-    this.currentSession = await this.helper.createSession(
-      this.getExtendedScope(normalizedScope),
-    );
-    return this.currentSession;
-  }
-
   async logout() {
-    await this.helper.removeSession();
-    window.location.reload();
-  }
-
-  private sessionExistsAndHasScope(
-    session: GoogleSession | undefined,
-    scope?: Set<string>,
-  ): boolean {
-    if (!session) {
-      return false;
-    }
-    if (!scope) {
-      return true;
-    }
-    return hasScopes(session.scopes, scope);
-  }
-
-  private sessionWillExpire(session: GoogleSession) {
-    const expiresInSec = (session.expiresAt.getTime() - Date.now()) / 1000;
-    return expiresInSec < 60 * 5;
-  }
-
-  private getExtendedScope(scopes: Set<string>) {
-    const newScope = new Set(DEFAULT_SCOPES);
-    if (this.currentSession) {
-      for (const scope of this.currentSession.scopes) {
-        newScope.add(scope);
-      }
-    }
-    for (const scope of scopes) {
-      newScope.add(scope);
-    }
-    return newScope;
+    await this.sessionManager.removeSession();
   }
 
   private static normalizeScopes(scopes?: string | string[]): Set<string> {

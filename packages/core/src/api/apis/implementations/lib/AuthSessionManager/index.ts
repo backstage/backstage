@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { AuthHelper } from './AuthHelper';
+export { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
 export * from './types';

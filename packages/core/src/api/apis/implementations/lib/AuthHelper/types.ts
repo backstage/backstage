@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export { AuthHelper } from './AuthHelper';
-export * from './types';
+export type BaseAuthSession = {
+  scopes: Set<string>;
+  expiresAt: Date;
+};
+
+export type GenericAuthHelper<AuthSession> = {
+  refreshSession(): Promise<AuthSession>;
+  removeSession(): Promise<void>;
+  createSession(scopes: Set<string>): Promise<AuthSession>;
+};

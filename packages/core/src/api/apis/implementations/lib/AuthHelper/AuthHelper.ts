@@ -30,12 +30,6 @@ type Options<AuthSession> = {
   sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
 };
 
-export type GenericAuthHelper<AuthSession> = {
-  refreshSession(): Promise<AuthSession>;
-  removeSession(): Promise<void>;
-  createSession(scopes: Set<string>): Promise<AuthSession>;
-};
-
 export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
   private readonly apiOrigin: string;
   private readonly basePath: string;
@@ -44,8 +38,6 @@ export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
   private readonly provider: AuthProvider;
   private readonly authRequester: AuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
-
-  private refreshPromise?: Promise<AuthSession>;
 
   constructor(options: Options<AuthSession>) {
     const {
@@ -71,21 +63,7 @@ export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
     this.sessionTransform = sessionTransform;
   }
 
-  async refreshSession(): Promise<AuthSession> {
-    if (this.refreshPromise) {
-      return this.refreshPromise;
-    }
-
-    this.refreshPromise = this.doAuthRefresh();
-
-    try {
-      return await this.refreshPromise;
-    } finally {
-      delete this.refreshPromise;
-    }
-  }
-
-  private async doAuthRefresh(): Promise<any> {
+  async refreshSession(): Promise<any> {
     const res = await fetch(this.buildUrl('/token', { optional: true }), {
       headers: {
         'x-requested-with': 'XMLHttpRequest',

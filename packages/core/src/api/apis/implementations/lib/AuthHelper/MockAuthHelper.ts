@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GenericAuthHelper } from './AuthHelper';
+import { GenericAuthHelper } from './types';
 
 export const mockAccessToken = 'mock-access-token';
 

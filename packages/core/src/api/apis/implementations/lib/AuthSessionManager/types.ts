@@ -14,5 +14,22 @@
  * limitations under the License.
  */
 
-export { AuthHelper } from './AuthHelper';
-export * from './types';
+import { BaseAuthSession } from '../AuthHelper/types';
+
+/**
+ * A sessions manager keeps track of the current session and makes sure that
+ * multiple simultaneous requests for sessions with different scope are handled
+ * in a correct way.
+ */
+export type SessionManager<AuthSession extends BaseAuthSession> = {
+  getSession(options: {
+    optional: false;
+    scope?: Set<string>;
+  }): Promise<AuthSession>;
+  getSession(options: {
+    optional?: boolean;
+    scope?: Set<string>;
+  }): Promise<AuthSession | undefined>;
+
+  removeSession(): Promise<void>;
+};
