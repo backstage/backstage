@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 jest.mock('node-fetch');
 
 import fs from 'fs-extra';
@@ -7,7 +23,7 @@ import { GitHubLocationSource } from '../GitHubLocationSource';
 
 const { Response } = jest.requireActual('node-fetch');
 
-const fixtures_dir = path.resolve(
+const FIXTURES_DIR = path.resolve(
   __dirname,
   '..',
   '..',
@@ -15,8 +31,8 @@ const fixtures_dir = path.resolve(
   '..',
   'fixtures',
 );
-const fixtures = fs.readdirSync(fixtures_dir).reduce((acc, filename) => {
-  acc[filename] = fs.readFileSync(path.resolve(fixtures_dir, filename), 'utf8');
+const fixtures = fs.readdirSync(FIXTURES_DIR).reduce((acc, filename) => {
+  acc[filename] = fs.readFileSync(path.resolve(FIXTURES_DIR, filename), 'utf8');
   return acc;
 }, {} as Record<string, string>);
 
@@ -42,7 +58,7 @@ describe('Unit: GitHubLocationSource', () => {
   it('changes the url to point to https://raw.githubusercontent.com', async () => {
     const gitHubUrl = `https://github.com`;
     const project = `spotify/backstage`;
-    const path = `master/plugins/catalog-backend/fixtures`;
+    const folderPath = `master/plugins/catalog-backend/fixtures`;
     const componentFilename = `one_component.yaml`;
     const rawGitHubUrl = `https://raw.githubusercontent.com`;
     const reader = new GitHubLocationSource();
@@ -51,11 +67,11 @@ describe('Unit: GitHubLocationSource', () => {
     );
 
     await reader.read(
-      `${gitHubUrl}/${project}/blob/${path}/${componentFilename}`,
+      `${gitHubUrl}/${project}/blob/${folderPath}/${componentFilename}`,
     );
 
     expect(fetch).toHaveBeenCalledWith(
-      `${rawGitHubUrl}/${project}/${path}/${componentFilename}`,
+      `${rawGitHubUrl}/${project}/${folderPath}/${componentFilename}`,
     );
   });
 
