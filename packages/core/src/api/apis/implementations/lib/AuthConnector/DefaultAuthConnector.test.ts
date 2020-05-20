@@ -15,7 +15,7 @@
  */
 
 import ProviderIcon from '@material-ui/icons/AcUnit';
-import { AuthHelper } from './AuthHelper';
+import { DefaultAuthConnector } from './DefaultAuthConnector';
 import MockOAuthApi from '../../OAuthRequestManager/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
 
@@ -37,7 +37,7 @@ const defaultOptions = {
   }),
 };
 
-describe('AuthHelper', () => {
+describe('DefaultAuthConnector', () => {
   afterEach(() => {
     jest.resetAllMocks();
     anyFetch.resetMocks();
@@ -53,7 +53,7 @@ describe('AuthHelper', () => {
       }),
     );
 
-    const helper = new AuthHelper<any>(defaultOptions);
+    const helper = new DefaultAuthConnector<any>(defaultOptions);
     const session = await helper.refreshSession();
     expect(session.idToken).toBe('mock-id-token');
     expect(session.accessToken).toBe('mock-access-token');
@@ -65,7 +65,7 @@ describe('AuthHelper', () => {
   it('should handle failure to refresh session', async () => {
     anyFetch.mockRejectOnce(new Error('Network NOPE'));
 
-    const helper = new AuthHelper(defaultOptions);
+    const helper = new DefaultAuthConnector(defaultOptions);
     await expect(helper.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, Error: Network NOPE',
     );
@@ -74,7 +74,7 @@ describe('AuthHelper', () => {
   it('should handle failure response when refreshing session', async () => {
     anyFetch.mockResponseOnce({}, { status: 401, statusText: 'NOPE' });
 
-    const helper = new AuthHelper(defaultOptions);
+    const helper = new DefaultAuthConnector(defaultOptions);
     await expect(helper.refreshSession()).rejects.toThrow(
       'Auth refresh request failed with status NOPE',
     );
@@ -82,7 +82,7 @@ describe('AuthHelper', () => {
 
   it('should fail if popup was rejected', async () => {
     const mockOauth = new MockOAuthApi();
-    const helper = new AuthHelper({
+    const helper = new DefaultAuthConnector({
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });
@@ -101,7 +101,7 @@ describe('AuthHelper', () => {
         scopes: 'a b',
         expiresInSeconds: 3600,
       });
-    const helper = new AuthHelper({
+    const helper = new DefaultAuthConnector({
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });

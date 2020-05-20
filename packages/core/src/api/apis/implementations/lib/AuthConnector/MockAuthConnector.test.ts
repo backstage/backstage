@@ -14,5 +14,22 @@
  * limitations under the License.
  */
 
-export { AuthHelper } from './AuthHelper';
-export * from './types';
+import { MockAuthConnector, mockAccessToken } from './MockAuthConnector';
+
+describe('MockAuthConnector', () => {
+  it('should return mock tokens', async () => {
+    const helper = new MockAuthConnector();
+
+    await expect(helper.createSession()).resolves.toEqual({
+      accessToken: mockAccessToken,
+      expiresAt: expect.any(Date),
+      scopes: expect.any(String),
+    });
+
+    await expect(helper.refreshSession()).resolves.toEqual({
+      accessToken: mockAccessToken,
+      expiresAt: expect.any(Date),
+      scopes: expect.any(String),
+    });
+  });
+});

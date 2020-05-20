@@ -14,13 +14,32 @@
  * limitations under the License.
  */
 
-export type BaseAuthSession = {
-  scopes: Set<string>;
+import { AuthConnector } from './types';
+
+export const mockAccessToken = 'mock-access-token';
+
+type MockSession = {
+  accessToken: string;
   expiresAt: Date;
+  scopes: string;
 };
 
-export type GenericAuthHelper<AuthSession> = {
-  refreshSession(): Promise<AuthSession>;
-  removeSession(): Promise<void>;
-  createSession(scopes: Set<string>): Promise<AuthSession>;
+const defaultMockSession: MockSession = {
+  accessToken: mockAccessToken,
+  expiresAt: new Date(),
+  scopes: 'profile email',
 };
+
+export class MockAuthConnector implements AuthConnector<MockSession> {
+  constructor(private readonly mockSession: MockSession = defaultMockSession) {}
+
+  async refreshSession() {
+    return this.mockSession;
+  }
+
+  async removeSession() {}
+
+  async createSession() {
+    return this.mockSession;
+  }
+}

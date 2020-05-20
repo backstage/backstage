@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-import MockAuthHelper, { mockAccessToken } from './MockAuthHelper';
+export type BaseAuthSession = {
+  scopes: Set<string>;
+  expiresAt: Date;
+};
 
-describe('MockAuthHelper', () => {
-  it('should return mock tokens', async () => {
-    const helper = new MockAuthHelper();
-
-    await expect(helper.createSession()).resolves.toEqual({
-      accessToken: mockAccessToken,
-      expiresAt: expect.any(Date),
-      scopes: expect.any(String),
-    });
-
-    await expect(helper.refreshSession()).resolves.toEqual({
-      accessToken: mockAccessToken,
-      expiresAt: expect.any(Date),
-      scopes: expect.any(String),
-    });
-  });
-});
+/**
+ * An AuthConnector is responsible for realizing auth session actions
+ * by for example communicating with a backend or interacting with the user.
+ */
+export type AuthConnector<AuthSession> = {
+  refreshSession(): Promise<AuthSession>;
+  removeSession(): Promise<void>;
+  createSession(scopes: Set<string>): Promise<AuthSession>;
+};

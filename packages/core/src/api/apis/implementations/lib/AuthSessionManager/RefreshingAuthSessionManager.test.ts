@@ -24,7 +24,7 @@ describe('RefreshingAuthSessionManager', () => {
     const createSession = jest.fn().mockResolvedValue({ expiresAt: theFuture });
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
-      helper: { createSession, refreshSession },
+      connector: { createSession, refreshSession },
     } as any);
 
     await manager.getSession({});
@@ -40,7 +40,7 @@ describe('RefreshingAuthSessionManager', () => {
     const createSession = jest.fn();
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
-      helper: { createSession, refreshSession },
+      connector: { createSession, refreshSession },
     } as any);
 
     createSession.mockResolvedValue({
@@ -64,7 +64,7 @@ describe('RefreshingAuthSessionManager', () => {
       .mockRejectedValueOnce(new Error('NOPE'))
       .mockResolvedValue({ scopes: new Set(['a']) });
     const manager = new RefreshingAuthSessionManager({
-      helper: { createSession, refreshSession },
+      connector: { createSession, refreshSession },
     } as any);
 
     createSession.mockResolvedValue({
@@ -85,7 +85,7 @@ describe('RefreshingAuthSessionManager', () => {
     const createSession = jest.fn();
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
-      helper: { createSession, refreshSession },
+      connector: { createSession, refreshSession },
     } as any);
 
     createSession.mockRejectedValueOnce(new Error('some error'));
@@ -98,7 +98,7 @@ describe('RefreshingAuthSessionManager', () => {
     const createSession = jest.fn();
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
-      helper: { createSession, refreshSession },
+      connector: { createSession, refreshSession },
     } as any);
 
     expect(await manager.getSession({ optional: true })).toBe(undefined);
@@ -118,7 +118,7 @@ describe('RefreshingAuthSessionManager', () => {
 
     const removeSession = jest.fn();
     const manager = new RefreshingAuthSessionManager({
-      helper: { removeSession },
+      connector: { removeSession },
     } as any);
 
     await manager.removeSession();

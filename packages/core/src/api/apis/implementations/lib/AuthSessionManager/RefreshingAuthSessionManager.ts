@@ -16,10 +16,10 @@
 
 import { hasScopes } from '../../OAuthRequestManager/OAuthPendingRequests';
 import { SessionManager } from './types';
-import { BaseAuthSession, GenericAuthHelper } from '../AuthHelper';
+import { BaseAuthSession, AuthConnector } from '../AuthConnector';
 
 type Options<AuthSession extends BaseAuthSession> = {
-  helper: GenericAuthHelper<AuthSession>;
+  connector: AuthConnector<AuthSession>;
   defaultScopes?: Set<string>;
 };
 
@@ -29,16 +29,16 @@ type Options<AuthSession extends BaseAuthSession> = {
  */
 export class RefreshingAuthSessionManager<AuthSession extends BaseAuthSession>
   implements SessionManager<AuthSession> {
-  private readonly helper: GenericAuthHelper<AuthSession>;
+  private readonly connector: AuthConnector<AuthSession>;
   private readonly defaultScopes?: Set<string>;
 
   private refreshPromise?: Promise<AuthSession>;
   private currentSession: AuthSession | undefined;
 
   constructor(options: Options<AuthSession>) {
-    const { helper, defaultScopes = new Set() } = options;
+    const { connector, defaultScopes = new Set() } = options;
 
-    this.helper = helper;
+    this.connector = connector;
     this.defaultScopes = defaultScopes;
   }
 
@@ -92,14 +92,14 @@ export class RefreshingAuthSessionManager<AuthSession extends BaseAuthSession>
     }
 
     // We can call authRequester multiple times, the returned session will contain all requested scopes.
-    this.currentSession = await this.helper.createSession(
+    this.currentSession = await this.connector.createSession(
       this.getExtendedScope(options.scope),
     );
     return this.currentSession;
   }
 
   async removeSession() {
-    await this.helper.removeSession();
+    await this.connector.removeSession();
     window.location.reload(); // TODO(Rugvip): make this work without reload?
   }
 
@@ -141,7 +141,7 @@ export class RefreshingAuthSessionManager<AuthSession extends BaseAuthSession>
       return this.refreshPromise;
     }
 
-    this.refreshPromise = this.helper.refreshSession();
+    this.refreshPromise = this.connector.refreshSession();
 
     try {
       return await this.refreshPromise;

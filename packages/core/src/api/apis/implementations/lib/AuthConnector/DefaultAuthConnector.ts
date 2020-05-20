@@ -17,6 +17,7 @@
 import { AuthRequester } from '../../..';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { showLoginPopup } from '../loginPopup';
+import { AuthConnector } from './types';
 
 const DEFAULT_BASE_PATH = '/api/auth/';
 
@@ -30,7 +31,13 @@ type Options<AuthSession> = {
   sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
 };
 
-export class AuthHelper<AuthSession> implements AuthHelper<AuthSession> {
+/**
+ * DefaultAuthConnector is the default auth connector in Backstage. It talks to the
+ * backend auth plugin through the standardized API, and requests user permission
+ * via the OAuthRequestApi.
+ */
+export class DefaultAuthConnector<AuthSession>
+  implements AuthConnector<AuthSession> {
   private readonly apiOrigin: string;
   private readonly basePath: string;
   private readonly providerPath: string;

@@ -15,7 +15,7 @@
  */
 
 import GoogleIcon from '@material-ui/icons/AcUnit';
-import { AuthHelper } from '../../lib/AuthHelper';
+import { DefaultAuthConnector } from '../../lib/AuthConnector';
 import { GoogleSession } from './types';
 import {
   OAuthApi,
@@ -37,7 +37,7 @@ const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
 class GoogleAuth implements OAuthApi, OpenIdConnectApi {
   static create(oauthRequestApi: OAuthRequestApi) {
-    const helper = new AuthHelper({
+    const connector = new DefaultAuthConnector({
       providerPath: 'google/',
       environment: 'dev',
       provider: {
@@ -56,7 +56,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
     });
 
     const sessionManager = new RefreshingAuthSessionManager({
-      helper,
+      connector,
       defaultScopes: new Set([
         'openid',
         `${SCOPE_PREFIX}userinfo.email`,
