@@ -23,43 +23,12 @@ import {
 import handlebars from 'handlebars';
 import recursiveReadDir from 'recursive-readdir';
 import { paths } from '../paths';
-import { version } from '../version';
 import { FileDiff } from './types';
-
-export type PluginInfo = {
-  id: string;
-  name: string;
-};
 
 export type TemplatedFile = {
   path: string;
   contents: string;
 };
-
-// Reads info from the existing plugin
-async function readPluginInfo(): Promise<PluginInfo> {
-  let name: string;
-  try {
-    const pkg = require(paths.resolveTarget('package.json'));
-    name = pkg.name;
-  } catch (error) {
-    throw new Error(`Failed to read target package, ${error}`);
-  }
-
-  const pluginTsContents = await fs.readFile(
-    paths.resolveTarget('src/plugin.ts'),
-    'utf8',
-  );
-  // TODO: replace with some proper parsing logic or plugin metadata file
-  const pluginIdMatch = pluginTsContents.match(/id: ['"`](.+?)['"`]/);
-  if (!pluginIdMatch) {
-    throw new Error(`Failed to parse plugin.ts, no plugin ID found`);
-  }
-
-  const id = pluginIdMatch[1];
-
-  return { id, name };
-}
 
 async function readTemplateFile(
   templateFile: string,
@@ -131,13 +100,10 @@ async function diffTemplatedFiles(
 }
 
 // Read all template files for a given template, along with all matching files in the target dir
-export async function diffTemplateFiles(template: string) {
-  const pluginInfo = await readPluginInfo();
-  const templateVars = { version, ...pluginInfo };
-
+export async function diffTemplateFiles(template: string, templateData: any) {
   const templateDir = paths.resolveOwn('templates', template);
 
-  const templatedFiles = await readTemplate(templateDir, templateVars);
+  const templatedFiles = await readTemplate(templateDir, templateData);
   const fileDiffs = await diffTemplatedFiles(paths.targetDir, templatedFiles);
   return fileDiffs;
 }
