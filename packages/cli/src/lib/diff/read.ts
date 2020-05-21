@@ -15,15 +15,29 @@
  */
 
 import fs from 'fs-extra';
-import { relative as relativePath } from 'path';
+import {
+  dirname,
+  resolve as resolvePath,
+  relative as relativePath,
+} from 'path';
 import handlebars from 'handlebars';
 import recursiveReadDir from 'recursive-readdir';
 import { paths } from '../paths';
 import { version } from '../version';
-import { PluginInfo, TemplateFile } from './types';
+import { FileDiff } from './types';
+
+export type PluginInfo = {
+  id: string;
+  name: string;
+};
+
+export type TemplatedFile = {
+  path: string;
+  contents: string;
+};
 
 // Reads info from the existing plugin
-export async function readPluginInfo(): Promise<PluginInfo> {
+async function readPluginInfo(): Promise<PluginInfo> {
   let name: string;
   try {
     const pkg = require(paths.resolveTarget('package.json'));
@@ -47,7 +61,7 @@ export async function readPluginInfo(): Promise<PluginInfo> {
   return { id, name };
 }
 
-export async function readTemplateFile(
+async function readTemplateFile(
   templateFile: string,
   templateVars: any,
 ): Promise<string> {
@@ -60,51 +74,70 @@ export async function readTemplateFile(
   return handlebars.compile(contents)(templateVars);
 }
 
-export async function readTemplate(
+async function readTemplate(
   templateDir: string,
   templateVars: any,
-): Promise<TemplateFile[]> {
+): Promise<TemplatedFile[]> {
   const templateFilePaths = await recursiveReadDir(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
 
-  const templateFiles = new Array<TemplateFile>();
+  const templatedFiles = new Array<TemplatedFile>();
   for (const templateFile of templateFilePaths) {
-    // Target file inside the target dir without template extension
-    const targetFile = templateFile
-      .replace(templateDir, paths.targetDir)
-      .replace(/\.hbs$/, '');
-    const targetPath = relativePath(paths.targetDir, targetFile);
+    const path = relativePath(templateDir, templateFile).replace(/\.hbs$/, '');
+    const contents = await readTemplateFile(templateFile, templateVars);
 
-    const templateContents = await readTemplateFile(templateFile, templateVars);
+    templatedFiles.push({ path, contents });
+  }
 
-    const targetExists = await fs.pathExists(targetFile);
+  return templatedFiles;
+}
+
+async function diffTemplatedFiles(
+  targetDir: string,
+  templatedFiles: TemplatedFile[],
+): Promise<FileDiff[]> {
+  const fileDiffs = new Array<FileDiff>();
+  for (const { path, contents: templateContents } of templatedFiles) {
+    const targetPath = resolvePath(targetDir, path);
+    const targetExists = await fs.pathExists(targetPath);
+
+    const write = async (contents: string) => {
+      await fs.ensureDir(dirname(targetPath));
+      await fs.writeFile(targetPath, contents, 'utf8');
+    };
+
     if (targetExists) {
-      const targetContents = await fs.readFile(targetFile, 'utf8');
-      templateFiles.push({
-        targetPath,
-        targetExists,
+      const targetContents = await fs.readFile(targetPath, 'utf8');
+      fileDiffs.push({
+        path,
+        write,
+        missing: false,
         targetContents,
         templateContents,
       });
     } else {
-      templateFiles.push({
-        targetPath,
-        targetExists,
+      fileDiffs.push({
+        path,
+        write,
+        missing: true,
+        targetContents: '',
         templateContents,
       });
     }
   }
 
-  return templateFiles;
+  return fileDiffs;
 }
 
 // Read all template files for a given template, along with all matching files in the target dir
-export async function readTemplateFiles(template: string) {
+export async function diffTemplateFiles(template: string) {
   const pluginInfo = await readPluginInfo();
   const templateVars = { version, ...pluginInfo };
 
   const templateDir = paths.resolveOwn('templates', template);
 
-  return await readTemplate(templateDir, templateVars);
+  const templatedFiles = await readTemplate(templateDir, templateVars);
+  const fileDiffs = await diffTemplatedFiles(paths.targetDir, templatedFiles);
+  return fileDiffs;
 }

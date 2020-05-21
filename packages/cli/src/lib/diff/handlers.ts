@@ -14,36 +14,30 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import chalk from 'chalk';
-import { dirname } from 'path';
 import { diffLines } from 'diff';
-import { paths } from '../paths';
-import { TemplateFile, PromptFunc, FileHandler } from './types';
-
-export async function writeTargetFile(targetPath: string, contents: string) {
-  const path = paths.resolveTarget(targetPath);
-  await fs.ensureDir(dirname(path));
-  await fs.writeFile(path, contents, 'utf8');
-}
+import { FileDiff, PromptFunc, FileHandler, WriteFileFunc } from './types';
 
 class PackageJsonHandler {
-  static async handler(file: TemplateFile, prompt: PromptFunc) {
+  static async handler(
+    { path, write, missing, targetContents, templateContents }: FileDiff,
+    prompt: PromptFunc,
+  ) {
     console.log('Checking package.json');
 
-    if (!file.targetExists) {
-      throw new Error(`${file.targetPath} doesn't exist`);
+    if (missing) {
+      throw new Error(`${path} doesn't exist`);
     }
 
-    const pkg = JSON.parse(file.templateContents);
-    const targetPkg = JSON.parse(file.targetContents);
+    const pkg = JSON.parse(templateContents);
+    const targetPkg = JSON.parse(targetContents);
 
-    const handler = new PackageJsonHandler(file, prompt, pkg, targetPkg);
+    const handler = new PackageJsonHandler(write, prompt, pkg, targetPkg);
     await handler.handle();
   }
 
   constructor(
-    private readonly file: TemplateFile,
+    private readonly writeFunc: WriteFileFunc,
     private readonly prompt: PromptFunc,
     private readonly pkg: any,
     private readonly targetPkg: any,
@@ -144,31 +138,29 @@ class PackageJsonHandler {
   }
 
   private async write() {
-    await fs.writeFile(
-      paths.resolveTarget(this.file.targetPath),
-      `${JSON.stringify(this.targetPkg, null, 2)}\n`,
-    );
+    await this.writeFunc(`${JSON.stringify(this.targetPkg, null, 2)}\n`);
   }
 }
 
 // Make sure the file is an exact match of the template
-async function exactMatchHandler(file: TemplateFile, prompt: PromptFunc) {
-  console.log(`Checking ${file.targetPath}`);
+async function exactMatchHandler(
+  { path, write, missing, targetContents, templateContents }: FileDiff,
+  prompt: PromptFunc,
+) {
+  console.log(`Checking ${path}`);
+  const coloredPath = chalk.cyan(path);
 
-  const { targetPath, templateContents } = file;
-  const coloredPath = chalk.cyan(targetPath);
-
-  if (!file.targetExists) {
+  if (missing) {
     if (await prompt(`Missing ${coloredPath}, do you want to add it?`)) {
-      await writeTargetFile(targetPath, templateContents);
+      await write(templateContents);
     }
     return;
   }
-  if (file.targetContents === templateContents) {
+  if (targetContents === templateContents) {
     return;
   }
 
-  const diffs = diffLines(file.targetContents, templateContents);
+  const diffs = diffLines(targetContents, templateContents);
   for (const diff of diffs) {
     if (diff.added) {
       process.stdout.write(chalk.green(`+${diff.value}`));
@@ -184,27 +176,29 @@ async function exactMatchHandler(file: TemplateFile, prompt: PromptFunc) {
       `Outdated ${coloredPath}, do you want to apply the above patch?`,
     )
   ) {
-    await writeTargetFile(targetPath, templateContents);
+    await write(templateContents);
   }
 }
 
 // Adds the file if it is missing, but doesn't check existing files
-async function existsHandler(file: TemplateFile, prompt: PromptFunc) {
-  console.log(`Making sure ${file.targetPath} exists`);
+async function existsHandler(
+  { path, write, missing, templateContents }: FileDiff,
+  prompt: PromptFunc,
+) {
+  console.log(`Making sure ${path} exists`);
 
-  const { targetPath, templateContents } = file;
-  const coloredPath = chalk.cyan(targetPath);
+  const coloredPath = chalk.cyan(path);
 
-  if (!file.targetExists) {
+  if (missing) {
     if (await prompt(`Missing ${coloredPath}, do you want to add it?`)) {
-      await writeTargetFile(targetPath, templateContents);
+      await write(templateContents);
     }
     return;
   }
 }
 
-async function skipHandler(file: TemplateFile) {
-  console.log(`Skipping ${file.targetPath}`);
+async function skipHandler({ path }: FileDiff) {
+  console.log(`Skipping ${path}`);
 }
 
 export const handlers = {
@@ -216,22 +210,20 @@ export const handlers = {
 
 export async function handleAllFiles(
   fileHandlers: FileHandler[],
-  files: TemplateFile[],
+  files: FileDiff[],
   promptFunc: PromptFunc,
 ) {
   for (const file of files) {
-    const { targetPath } = file;
+    const { path } = file;
     const fileHandler = fileHandlers.find(handler =>
       handler.patterns.some(pattern =>
-        typeof pattern === 'string'
-          ? pattern === targetPath
-          : pattern.test(targetPath),
+        typeof pattern === 'string' ? pattern === path : pattern.test(path),
       ),
     );
     if (fileHandler) {
       await fileHandler.handler(file, promptFunc);
     } else {
-      throw new Error(`No template file handler found for ${targetPath}`);
+      throw new Error(`No template file handler found for ${path}`);
     }
   }
 }

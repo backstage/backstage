@@ -16,7 +16,7 @@
 
 import { Command } from 'commander';
 import {
-  readTemplateFiles,
+  diffTemplateFiles,
   handlers,
   handleAllFiles,
   inquirerPromptFunc,
@@ -54,7 +54,7 @@ export default async (cmd: Command) => {
     promptFunc = yesPromptFunc;
   }
 
-  const templateFiles = await readTemplateFiles('default-plugin');
+  const templateFiles = await diffTemplateFiles('default-plugin');
   await handleAllFiles(fileHandlers, templateFiles, promptFunc);
   await finalize();
 };
