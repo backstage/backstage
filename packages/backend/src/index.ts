@@ -37,6 +37,7 @@ import catalog from './plugins/catalog';
 import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
 import auth from './plugins/auth';
+import identity from './plugins/identity';
 import { PluginEnvironment } from './types';
 
 const DEFAULT_PORT = 7000;
@@ -70,6 +71,7 @@ async function main() {
     await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
   );
   app.use('/auth', await auth(createEnv('auth')));
+  app.use('/identity', await identity(createEnv('identity')));
   app.use(notFoundHandler());
   app.use(errorHandler());
 
