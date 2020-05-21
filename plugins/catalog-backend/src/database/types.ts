@@ -15,26 +15,30 @@
  */
 
 import * as yup from 'yup';
+import { DescriptorEnvelope } from '../ingestion/descriptors/DescriptorEnvelopeParser';
 
-export type DatabaseEntity = {
+export type DbEntitiesRow = {
   id: string;
-  locationId?: string;
-  name: string;
+  location_id: string | null;
+  api_version: string;
+  kind: string;
+  name: string | null;
+  namespace: string | null;
+  metadata: string | null;
+  spec: string | null;
 };
 
-export type AddDatabaseEntity = {
+export type DbEntityRequest = {
   locationId?: string;
-  name: string;
+  entity: DescriptorEnvelope;
 };
 
-export const addDatabaseEntitySchema: yup.Schema<AddDatabaseEntity> = yup
-  .object({
-    locationId: yup.string().optional(),
-    name: yup.string().required(),
-  })
-  .noUnknown();
+export type DbEntityResponse = {
+  locationId?: string;
+  entity: DescriptorEnvelope;
+};
 
-export type DatabaseLocation = {
+export type DbLocationsRow = {
   id: string;
   type: string;
   target: string;

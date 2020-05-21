@@ -15,21 +15,22 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
-import { EntitiesCatalog, Entity } from './types';
+import { EntitiesCatalog } from './types';
+import { DescriptorEnvelope } from '../ingestion/descriptors/DescriptorEnvelopeParser';
 
 export class StaticEntitiesCatalog implements EntitiesCatalog {
-  private _entities: Entity[];
+  private _entities: DescriptorEnvelope[];
 
-  constructor(entities: Entity[]) {
+  constructor(entities: DescriptorEnvelope[]) {
     this._entities = entities;
   }
 
-  async entities(): Promise<Entity[]> {
+  async entities(): Promise<DescriptorEnvelope[]> {
     return this._entities.slice();
   }
 
-  async entity(name: string): Promise<Entity> {
-    const item = this._entities.find(e => e.name === name);
+  async entity(name: string): Promise<DescriptorEnvelope> {
+    const item = this._entities.find(e => e.metadata?.name === name);
     if (!item) {
       throw new NotFoundError(`Found no entity with name ${name}`);
     }

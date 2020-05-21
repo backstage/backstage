@@ -15,20 +15,15 @@
  */
 
 import * as yup from 'yup';
+import { DescriptorEnvelope } from '../ingestion/descriptors/DescriptorEnvelopeParser';
 
 //
 // Items
 //
 
-export type Entity = {
-  id: string;
-  locationId?: string;
-  name: string;
-};
-
 export type EntitiesCatalog = {
-  entities(): Promise<Entity[]>;
-  entity(id: string): Promise<Entity>;
+  entities(): Promise<DescriptorEnvelope[]>;
+  entity(id: string): Promise<DescriptorEnvelope>;
 };
 
 //

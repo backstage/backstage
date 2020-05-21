@@ -31,8 +31,18 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'catalog-backend' });
 
   const entitiesCatalog = new StaticEntitiesCatalog([
-    { id: '1', name: 'entity1' },
-    { id: '2', name: 'entity2' },
+    {
+      apiVersion: 'backstage.io/v1beta1',
+      kind: 'Component',
+      metadata: { name: 'c1' },
+      spec: { type: 'service' },
+    },
+    {
+      apiVersion: 'backstage.io/v1beta1',
+      kind: 'Component',
+      metadata: { name: 'c2' },
+      spec: { type: 'service' },
+    },
   ]);
 
   logger.debug('Creating application...');

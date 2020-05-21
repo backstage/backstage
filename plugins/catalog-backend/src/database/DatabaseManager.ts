@@ -19,7 +19,7 @@ import path from 'path';
 import { Logger } from 'winston';
 import { DescriptorParser, LocationReader, ParserError } from '../ingestion';
 import { Database } from './Database';
-import { AddDatabaseEntity, DatabaseLocationUpdateLogStatus } from './types';
+import { DatabaseLocationUpdateLogStatus, DbEntityRequest } from './types';
 
 export class DatabaseManager {
   public static async createDatabase(database: Knex): Promise<Database> {
@@ -78,10 +78,7 @@ export class DatabaseManager {
           }
           try {
             const entity = await parser.parse(readerItem.data);
-            const dbc: AddDatabaseEntity = {
-              locationId: location.id,
-              name: entity.metadata!.name!,
-            };
+            const dbc: DbEntityRequest = { locationId: location.id, entity };
             await database.addOrUpdateEntity(dbc);
             await DatabaseManager.logUpdateSuccess(
               database,
