@@ -14,20 +14,30 @@
  * limitations under the License.
  */
 import React from 'react';
-import { AlphaLabel } from './Lifecycle';
+import { Lifecycle } from './Lifecycle';
 
 export default {
-  title: 'Lifecycle - Alpha',
-  component: AlphaLabel,
+  title: 'Lifecycle',
+  component: Lifecycle,
 };
 
-export const Default = () => (
+export const AlphaDefault = () => (
   <>
-    This feature is in <AlphaLabel />
+    This feature is in <Lifecycle isAlpha />
   </>
 );
-export const Shorthand = () => (
+export const AlphaShorthand = () => (
   <>
-    This feature is in <AlphaLabel isShorthand />
+    This feature is in <Lifecycle isAlpha isShorthand />
+  </>
+);
+export const BetaDefault = () => (
+  <>
+    This feature is in <Lifecycle />
+  </>
+);
+export const BetaShorthand = () => (
+  <>
+    This feature is in <Lifecycle isShorthand />
   </>
 );
