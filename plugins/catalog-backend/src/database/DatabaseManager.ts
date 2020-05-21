@@ -19,7 +19,7 @@ import path from 'path';
 import { Logger } from 'winston';
 import { DescriptorParser, LocationReader, ParserError } from '../ingestion';
 import { Database } from './Database';
-import { AddDatabaseComponent, DatabaseLocationUpdateLogStatus } from './types';
+import { AddDatabaseEntity, DatabaseLocationUpdateLogStatus } from './types';
 
 export class DatabaseManager {
   public static async createDatabase(database: Knex): Promise<Database> {
@@ -33,12 +33,12 @@ export class DatabaseManager {
   private static async logUpdateSuccess(
     database: Database,
     locationId: string,
-    componentName?: string,
+    entityName?: string,
   ) {
     return database.addLocationUpdateLogEvent(
       locationId,
       DatabaseLocationUpdateLogStatus.SUCCESS,
-      componentName,
+      entityName,
     );
   }
 
@@ -46,12 +46,12 @@ export class DatabaseManager {
     database: Database,
     locationId: string,
     error?: Error,
-    componentName?: string,
+    entityName?: string,
   ) {
     return database.addLocationUpdateLogEvent(
       locationId,
       DatabaseLocationUpdateLogStatus.FAIL,
-      componentName,
+      entityName,
       error?.message,
     );
   }
@@ -76,32 +76,28 @@ export class DatabaseManager {
             logger.debug(readerItem.error);
             continue;
           }
-          let parserOutput;
           try {
-            parserOutput = await parser.parse(readerItem.data);
-            if (parserOutput.kind === 'Component') {
-              const component = parserOutput.component;
-              const dbc: AddDatabaseComponent = {
-                locationId: location.id,
-                name: component.metadata.name,
-              };
-              await database.addOrUpdateComponent(dbc);
-              await DatabaseManager.logUpdateSuccess(
-                database,
-                location.id,
-                component.metadata.name,
-              );
-            }
+            const entity = await parser.parse(readerItem.data);
+            const dbc: AddDatabaseEntity = {
+              locationId: location.id,
+              name: entity.metadata!.name!,
+            };
+            await database.addOrUpdateEntity(dbc);
+            await DatabaseManager.logUpdateSuccess(
+              database,
+              location.id,
+              entity.metadata!.name,
+            );
           } catch (error) {
-            let componentName;
+            let entityName;
             if (error instanceof ParserError) {
-              componentName = error.componentName;
+              entityName = error.entityName;
             }
             await DatabaseManager.logUpdateFailure(
               database,
               location.id,
               error,
-              componentName,
+              entityName,
             );
           }
         }

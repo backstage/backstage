@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { DescriptorEnvelopeParser } from './descriptors/DescriptorEnvelopeParser';
-import { ComponentDescriptorV1beta1Parser } from './descriptors/ComponentDescriptorV1beta1Parser';
-import { KindParser } from './descriptors/types';
-import { DescriptorParser, ParserError, ParserOutput } from './types';
 import { makeValidator } from '../validation';
+import { ComponentDescriptorV1beta1Parser } from './descriptors/ComponentDescriptorV1beta1Parser';
+import {
+  DescriptorEnvelope,
+  DescriptorEnvelopeParser,
+} from './descriptors/DescriptorEnvelopeParser';
+import { KindParser } from './descriptors/types';
+import { DescriptorParser, ParserError } from './types';
 
 export class DescriptorParsers implements DescriptorParser {
   static create(): DescriptorParser {
@@ -33,7 +36,7 @@ export class DescriptorParsers implements DescriptorParser {
     private readonly kindParsers: KindParser[],
   ) {}
 
-  async parse(descriptor: object): Promise<ParserOutput> {
+  async parse(descriptor: object): Promise<DescriptorEnvelope> {
     const envelope = await this.envelopeParser.parse(descriptor);
     for (const parser of this.kindParsers) {
       const parsed = await parser.tryParse(envelope);

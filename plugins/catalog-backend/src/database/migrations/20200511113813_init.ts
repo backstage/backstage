@@ -29,23 +29,23 @@ export async function up(knex: Knex): Promise<any> {
         .notNullable()
         .comment('The actual target of the location');
     })
-    .createTable('components', table => {
-      table.comment('All components currently stored in the catalog');
-      table.uuid('id').primary().comment('Auto-generated ID of the component');
+    .createTable('entities', table => {
+      table.comment('All entities currently stored in the catalog');
+      table.uuid('id').primary().comment('Auto-generated ID of the entity');
       table
         .uuid('locationId')
         .references('id')
         .inTable('locations')
         .nullable()
-        .comment('The location that originated the component');
+        .comment('The location that originated the entity');
       table
         .string('name')
         .unique()
         .notNullable()
-        .comment('The external name of the component, as used in references');
+        .comment('The external name of the entity, as used in references');
     });
 }
 
 export async function down(knex: Knex): Promise<any> {
-  return knex.schema.dropTable('components').dropTable('locations');
+  return knex.schema.dropTable('entities').dropTable('locations');
 }

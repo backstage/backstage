@@ -15,18 +15,18 @@
  */
 
 import { Database } from '../database';
-import { Component, ItemsCatalog } from './types';
+import { EntitiesCatalog, Entity } from './types';
 
-export class DatabaseItemsCatalog implements ItemsCatalog {
+export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Database) {}
 
-  async components(): Promise<Component[]> {
-    const items = await this.database.components();
+  async entities(): Promise<Entity[]> {
+    const items = await this.database.entities();
     return items;
   }
 
-  async component(name: string): Promise<Component> {
-    const item = await this.database.component(name);
+  async entity(name: string): Promise<Entity> {
+    const item = await this.database.entity(name);
     return item;
   }
 }

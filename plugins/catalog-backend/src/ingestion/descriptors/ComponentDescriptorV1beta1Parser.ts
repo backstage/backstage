@@ -15,7 +15,7 @@
  */
 
 import * as yup from 'yup';
-import { ParserError, ParserOutput } from '../types';
+import { ParserError } from '../types';
 import { DescriptorEnvelope } from './DescriptorEnvelopeParser';
 import { KindParser } from './types';
 
@@ -48,7 +48,7 @@ export class ComponentDescriptorV1beta1Parser implements KindParser {
 
   async tryParse(
     envelope: DescriptorEnvelope,
-  ): Promise<ParserOutput | undefined> {
+  ): Promise<DescriptorEnvelope | undefined> {
     if (
       envelope.apiVersion !== 'backstage.io/v1beta1' ||
       envelope.kind !== 'Component'
@@ -57,10 +57,7 @@ export class ComponentDescriptorV1beta1Parser implements KindParser {
     }
 
     try {
-      return {
-        kind: 'Component',
-        component: await this.schema.validate(envelope, { strict: true }),
-      };
+      return await this.schema.validate(envelope, { strict: true });
     } catch (e) {
       throw new ParserError(
         `Malformed component, ${e}`,

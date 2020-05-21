@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { NotFoundError } from '@backstage/backend-common';
 import Knex from 'knex';
 import { v4 as uuidv4 } from 'uuid';
-import { NotFoundError } from '@backstage/backend-common';
 import {
-  AddDatabaseComponent,
+  AddDatabaseEntity,
   AddDatabaseLocation,
-  DatabaseComponent,
+  DatabaseEntity,
   DatabaseLocation,
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
@@ -29,34 +29,34 @@ import {
 export class Database {
   constructor(private readonly database: Knex) {}
 
-  async addOrUpdateComponent(component: AddDatabaseComponent): Promise<void> {
+  async addOrUpdateEntity(entity: AddDatabaseEntity): Promise<void> {
     await this.database.transaction(async tx => {
-      // TODO(freben): Currently, several locations can compete for the same component
+      // TODO(freben): Currently, several locations can compete for the same entity
       // TODO(freben): If locationId is unset in the input, it won't be overwritten - should we instead replace with null?
-      const count = await tx<DatabaseComponent>('components')
-        .where({ name: component.name })
-        .update({ ...component });
+      const count = await tx<DatabaseEntity>('entities')
+        .where({ name: entity.name })
+        .update({ ...entity });
       if (!count) {
-        await tx<DatabaseComponent>('components').insert({
-          ...component,
+        await tx<DatabaseEntity>('entities').insert({
+          ...entity,
           id: uuidv4(),
         });
       }
     });
   }
 
-  async components(): Promise<DatabaseComponent[]> {
-    return await this.database<DatabaseComponent>('components')
+  async entities(): Promise<DatabaseEntity[]> {
+    return await this.database<DatabaseEntity>('entities')
       .orderBy('name')
       .select();
   }
 
-  async component(name: string): Promise<DatabaseComponent> {
-    const items = await this.database<DatabaseComponent>('components')
+  async entity(name: string): Promise<DatabaseEntity> {
+    const items = await this.database<DatabaseEntity>('entities')
       .where({ name })
       .select();
     if (!items.length) {
-      throw new NotFoundError(`Found no component with name ${name}`);
+      throw new NotFoundError(`Found no entity with name ${name}`);
     }
     return items[0];
   }
@@ -114,7 +114,7 @@ export class Database {
   async addLocationUpdateLogEvent(
     locationId: string,
     status: DatabaseLocationUpdateLogStatus,
-    componentName?: string,
+    entityName?: string,
     message?: string,
   ): Promise<void> {
     return this.database<DatabaseLocationUpdateLogEvent>(
@@ -123,7 +123,7 @@ export class Database {
       id: uuidv4(),
       status: status,
       location_id: locationId,
-      component_name: componentName,
+      entity_name: entityName,
       message,
     });
   }

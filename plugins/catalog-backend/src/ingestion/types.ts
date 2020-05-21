@@ -15,13 +15,9 @@
  */
 
 import { ComponentDescriptorV1beta1 } from './descriptors/ComponentDescriptorV1beta1Parser';
+import { DescriptorEnvelope } from './descriptors/DescriptorEnvelopeParser';
 
 export type ComponentDescriptor = ComponentDescriptorV1beta1;
-
-export type ParserOutput = {
-  kind: 'Component';
-  component: ComponentDescriptor;
-};
 
 export type DescriptorParser = {
   /**
@@ -31,15 +27,15 @@ export type DescriptorParser = {
    * @returns A structure describing the parsed and validated descriptor
    * @throws An Error if the descriptor was malformed
    */
-  parse(descriptor: object): Promise<ParserOutput>;
+  parse(descriptor: object): Promise<DescriptorEnvelope>;
 };
 
 export class ParserError extends Error {
-  constructor(message?: string, private _componentName?: string | undefined) {
+  constructor(message?: string, private _entityName?: string | undefined) {
     super(message);
   }
-  get componentName() {
-    return this._componentName;
+  get entityName() {
+    return this._entityName;
   }
 }
 

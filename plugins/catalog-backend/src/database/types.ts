@@ -16,18 +16,18 @@
 
 import * as yup from 'yup';
 
-export type DatabaseComponent = {
+export type DatabaseEntity = {
   id: string;
   locationId?: string;
   name: string;
 };
 
-export type AddDatabaseComponent = {
+export type AddDatabaseEntity = {
   locationId?: string;
   name: string;
 };
 
-export const addDatabaseComponentSchema: yup.Schema<AddDatabaseComponent> = yup
+export const addDatabaseEntitySchema: yup.Schema<AddDatabaseEntity> = yup
   .object({
     locationId: yup.string().optional(),
     name: yup.string().required(),
@@ -61,7 +61,7 @@ export type DatabaseLocationUpdateLogEvent = {
   id: string;
   status: DatabaseLocationUpdateLogStatus;
   location_id: string;
-  component_name: string;
+  entity_name: string;
   created_at?: string;
   message?: string;
 };

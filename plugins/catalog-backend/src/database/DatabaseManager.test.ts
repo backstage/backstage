@@ -34,7 +34,7 @@ describe('DatabaseManager', () => {
   describe('refreshLocations', () => {
     it('works with no locations added', async () => {
       const db = ({
-        addOrUpdateComponent: jest.fn(),
+        addOrUpdateEntity: jest.fn(),
         locations: jest.fn().mockResolvedValue([]),
       } as unknown) as Database;
       const reader: LocationReader = {
@@ -53,7 +53,7 @@ describe('DatabaseManager', () => {
 
     it('can update a single location', async () => {
       const db = ({
-        addOrUpdateComponent: jest.fn(),
+        addOrUpdateEntity: jest.fn(),
         locations: jest.fn(() =>
           Promise.resolve([
             {
@@ -76,9 +76,7 @@ describe('DatabaseManager', () => {
         read: jest.fn(() => Promise.resolve([{ type: 'data', data: desc }])),
       };
       const parser: DescriptorParser = {
-        parse: jest.fn(() =>
-          Promise.resolve({ kind: 'Component', component: desc }),
-        ),
+        parse: jest.fn(() => Promise.resolve(desc)),
       };
 
       await expect(
@@ -86,8 +84,8 @@ describe('DatabaseManager', () => {
       ).resolves.toBeUndefined();
       expect(reader.read).toHaveBeenCalledTimes(1);
       expect(reader.read).toHaveBeenNthCalledWith(1, 'some', 'thing');
-      expect(db.addOrUpdateComponent).toHaveBeenCalledTimes(1);
-      expect(db.addOrUpdateComponent).toHaveBeenNthCalledWith(
+      expect(db.addOrUpdateEntity).toHaveBeenCalledTimes(1);
+      expect(db.addOrUpdateEntity).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({ locationId: '123', name: 'c1' }),
       );
@@ -95,7 +93,7 @@ describe('DatabaseManager', () => {
 
     it('logs successful updates', async () => {
       const db = ({
-        addOrUpdateComponent: jest.fn(),
+        addOrUpdateEntity: jest.fn(),
         locations: jest.fn(() =>
           Promise.resolve([
             {
@@ -118,9 +116,7 @@ describe('DatabaseManager', () => {
         read: jest.fn(() => Promise.resolve([{ type: 'data', data: desc }])),
       };
       const parser: DescriptorParser = {
-        parse: jest.fn(() =>
-          Promise.resolve({ kind: 'Component', component: desc }),
-        ),
+        parse: jest.fn(() => Promise.resolve(desc)),
       };
 
       await expect(
@@ -144,7 +140,7 @@ describe('DatabaseManager', () => {
 
     it('logs unsuccessful updates when parser fails', async () => {
       const db = ({
-        addOrUpdateComponent: jest.fn(),
+        addOrUpdateEntity: jest.fn(),
         locations: jest.fn(() =>
           Promise.resolve([
             {
@@ -194,7 +190,7 @@ describe('DatabaseManager', () => {
 
     it('logs unsuccessful updates when reader fails', async () => {
       const db = ({
-        addOrUpdateComponent: jest.fn(),
+        addOrUpdateEntity: jest.fn(),
         locations: jest.fn(() =>
           Promise.resolve([
             {

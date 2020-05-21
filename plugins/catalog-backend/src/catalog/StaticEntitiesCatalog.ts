@@ -15,23 +15,23 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
-import { Component, ItemsCatalog } from './types';
+import { EntitiesCatalog, Entity } from './types';
 
-export class StaticItemsCatalog implements ItemsCatalog {
-  private _components: Component[];
+export class StaticEntitiesCatalog implements EntitiesCatalog {
+  private _entities: Entity[];
 
-  constructor(components: Component[]) {
-    this._components = components;
+  constructor(entities: Entity[]) {
+    this._entities = entities;
   }
 
-  async components(): Promise<Component[]> {
-    return this._components.slice();
+  async entities(): Promise<Entity[]> {
+    return this._entities.slice();
   }
 
-  async component(name: string): Promise<Component> {
-    const item = this._components.find(i => i.name === name);
+  async entity(name: string): Promise<Entity> {
+    const item = this._entities.find(e => e.name === name);
     if (!item) {
-      throw new NotFoundError(`Found no component with name ${name}`);
+      throw new NotFoundError(`Found no entity with name ${name}`);
     }
     return item;
   }

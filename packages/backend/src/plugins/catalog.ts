@@ -15,13 +15,13 @@
  */
 
 import {
-  DatabaseItemsCatalog,
+  createRouter,
+  DatabaseEntitiesCatalog,
   DatabaseLocationsCatalog,
   DatabaseManager,
-  createRouter,
-  runPeriodically,
-  LocationReaders,
   DescriptorParsers,
+  LocationReaders,
+  runPeriodically,
 } from '@backstage/plugin-catalog-backend';
 import { PluginEnvironment } from '../types';
 
@@ -35,8 +35,8 @@ export default async function ({ logger, database }: PluginEnvironment) {
     10000,
   );
 
-  const itemsCatalog = new DatabaseItemsCatalog(db);
+  const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
 
-  return await createRouter({ itemsCatalog, locationsCatalog, logger });
+  return await createRouter({ entitiesCatalog, locationsCatalog, logger });
 }

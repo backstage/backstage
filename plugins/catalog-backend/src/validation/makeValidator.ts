@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Validators } from './types';
 import { CommonValidatorFunctions } from './CommonValidatorFunctions';
 import { KubernetesValidatorFunctions } from './KubernetesValidatorFunctions';
+import { Validators } from './types';
 
 const defaultValidators: Validators = {
   isValidApiVersion: KubernetesValidatorFunctions.isValidApiVersion,

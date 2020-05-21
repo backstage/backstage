@@ -27,7 +27,7 @@ export async function up(knex: Knex): Promise<any> {
       .inTable('locations')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
-    table.string('component_name').notNullable();
+    table.string('entity_name').notNullable();
   });
 }
 
