@@ -17,6 +17,18 @@
 import { AuthProviderFactories } from './types';
 import { GoogleAuthProvider } from './google/provider';
 
-export const providerFactories: AuthProviderFactories = {
-  google: GoogleAuthProvider,
-};
+export class ProviderFactories {
+  private static readonly providerFactories: AuthProviderFactories = {
+    google: GoogleAuthProvider,
+  };
+
+  public static getProviderFactory(providerId: string) {
+    const ProviderImpl = ProviderFactories.providerFactories.providerId;
+    if (!ProviderImpl) {
+      throw Error(
+        `Provider Implementation missing for : ${providerId} auth provider`,
+      );
+    }
+    return ProviderImpl;
+  }
+}

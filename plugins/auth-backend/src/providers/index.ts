@@ -15,11 +15,8 @@
  */
 
 import Router from 'express-promise-router';
-import {
-  AuthProviderRouteHandlers,
-  AuthProviderFactories,
-  AuthProviderConfig,
-} from './types';
+import { AuthProviderRouteHandlers, AuthProviderConfig } from './types';
+import { ProviderFactories } from './factories';
 
 export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
   const router = Router();
@@ -32,17 +29,9 @@ export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
   return router;
 };
 
-export const makeProvider = (
-  providerFactories: AuthProviderFactories,
-  config: any,
-) => {
+export const makeProvider = (config: AuthProviderConfig) => {
   const providerId = config.provider;
-  const ProviderImpl = providerFactories[providerId];
-  if (!ProviderImpl) {
-    throw Error(
-      `Provider Implementation missing for : ${providerId} auth provider`,
-    );
-  }
+  const ProviderImpl = ProviderFactories.getProviderFactory(providerId);
   const providerInstance = new ProviderImpl(config);
   const strategy = providerInstance.strategy();
   const providerRouter = defaultRouter(providerInstance);

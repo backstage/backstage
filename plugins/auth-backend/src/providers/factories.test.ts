@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import passport from 'passport';
 import express from 'express';
-import { makeProvider, defaultRouter } from '.';
-import {
-  AuthProvider,
-  AuthProviderRouteHandlers,
-  AuthProviderConfig,
-} from './types';
+import passport from 'passport';
+import { AuthProvider, AuthProviderRouteHandlers } from './types';
 import { ProviderFactories } from './factories';
 
 class MyAuthProvider implements AuthProvider, AuthProviderRouteHandlers {
-  private readonly providerConfig: AuthProviderConfig;
-  constructor(providerConfig: AuthProviderConfig) {
-    this.providerConfig = providerConfig;
-  }
-
   strategy(): passport.Strategy {
     return new passport.Strategy();
   }
@@ -65,63 +55,18 @@ class MyAuthProvider implements AuthProvider, AuthProviderRouteHandlers {
   }
 }
 
-class MyAuthProviderWithRefresh extends MyAuthProvider {
-  refresh(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any> {
-    return new Promise(resolve => {
-      res.send('logout');
-      resolve();
-    });
-  }
-}
-
-const providerConfig = {
-  provider: 'a',
-  options: {
-    somekey: 'somevalue',
-  },
-};
-
-const providerConfigInvalid = {
-  provider: 'b',
-  options: {
-    somekey: 'somevalue',
-  },
-};
-
-describe('makeProvider', () => {
-  it('makes a provider for Myauthprovider', () => {
+describe('getProviderFactory', () => {
+  it('makes a provider for MyAuthProvider', () => {
     jest
       .spyOn(ProviderFactories, 'getProviderFactory')
       .mockReturnValueOnce(MyAuthProvider);
-    const provider = makeProvider(providerConfig);
-    expect(provider.providerId).toEqual('a');
-    expect(provider.strategy).toBeDefined();
-    expect(provider.providerRouter).toBeDefined();
+    const provider = ProviderFactories.getProviderFactory('a');
+    expect(provider).toBeDefined();
   });
 
   it('throws an error when provider implementation does not exist', () => {
     expect(() => {
-      makeProvider(providerConfigInvalid);
+      ProviderFactories.getProviderFactory('b');
     }).toThrow('Provider Implementation missing for : b auth provider');
-  });
-});
-
-describe('defaultRouter', () => {
-  it('make router for auth provider without refresh', () => {
-    expect(
-      defaultRouter(new MyAuthProvider({ provider: 'a', options: {} })),
-    ).toBeDefined();
-  });
-
-  it('make router for auth provider with refresh', () => {
-    expect(
-      defaultRouter(
-        new MyAuthProviderWithRefresh({ provider: 'b', options: {} }),
-      ),
-    ).toBeDefined();
   });
 });

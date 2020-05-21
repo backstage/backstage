@@ -62,7 +62,7 @@ export class GoogleAuthProvider
   }
 
   logout(_req: express.Request, res: express.Response) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       res.send('logout!');
       resolve();
     });

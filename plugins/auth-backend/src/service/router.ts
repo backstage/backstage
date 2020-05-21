@@ -19,7 +19,6 @@ import Router from 'express-promise-router';
 import passport from 'passport';
 import { Logger } from 'winston';
 import { providers } from './../providers/config';
-import { providerFactories } from './../providers/factories';
 import { makeProvider } from '../providers';
 
 export interface RouterOptions {
@@ -36,7 +35,6 @@ export async function createRouter(
   // configure all the providers
   for (const providerConfig of providers) {
     const { providerId, strategy, providerRouter } = makeProvider(
-      providerFactories,
       providerConfig,
     );
     logger.info(`Configuring provider: ${providerId}`);
