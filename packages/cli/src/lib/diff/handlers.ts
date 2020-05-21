@@ -22,6 +22,7 @@ class PackageJsonHandler {
   static async handler(
     { path, write, missing, targetContents, templateContents }: FileDiff,
     prompt: PromptFunc,
+    variant?: string,
   ) {
     console.log('Checking package.json');
 
@@ -32,8 +33,18 @@ class PackageJsonHandler {
     const pkg = JSON.parse(templateContents);
     const targetPkg = JSON.parse(targetContents);
 
-    const handler = new PackageJsonHandler(write, prompt, pkg, targetPkg);
+    const handler = new PackageJsonHandler(
+      write,
+      prompt,
+      pkg,
+      targetPkg,
+      variant,
+    );
     await handler.handle();
+  }
+
+  static async appHandler(file: FileDiff, prompt: PromptFunc) {
+    return PackageJsonHandler.handler(file, prompt, 'app');
   }
 
   constructor(
@@ -41,10 +52,14 @@ class PackageJsonHandler {
     private readonly prompt: PromptFunc,
     private readonly pkg: any,
     private readonly targetPkg: any,
+    private readonly variant?: string,
   ) {}
 
   async handle() {
     await this.syncField('main');
+    if (this.variant !== 'app') {
+      await this.syncField('main:src');
+    }
     await this.syncField('types');
     await this.syncField('files');
     await this.syncScripts();
@@ -78,7 +93,7 @@ class PackageJsonHandler {
         targetObj[fieldName] = newValue;
         await this.write();
       }
-    } else {
+    } else if (fieldName in obj) {
       if (
         await this.prompt(
           `package.json is missing field ${fullFieldName}, set to ${coloredNewValue}?`,
@@ -94,6 +109,10 @@ class PackageJsonHandler {
     const pkgScripts = this.pkg.scripts;
     const targetScripts = (this.targetPkg.scripts =
       this.targetPkg.scripts || {});
+
+    if (!pkgScripts) {
+      return;
+    }
 
     for (const key of Object.keys(pkgScripts)) {
       await this.syncField(key, pkgScripts, targetScripts, 'scripts');
@@ -132,7 +151,14 @@ class PackageJsonHandler {
     const targetDeps = (this.targetPkg[fieldName] =
       this.targetPkg[fieldName] || {});
 
+    if (!pkgDeps) {
+      return;
+    }
+
     for (const key of Object.keys(pkgDeps)) {
+      if (this.variant === 'app' && key.startsWith('plugin-')) {
+        continue;
+      }
       await this.syncField(key, pkgDeps, targetDeps, fieldName);
     }
   }
@@ -206,6 +232,7 @@ export const handlers = {
   exists: existsHandler,
   exactMatch: exactMatchHandler,
   packageJson: PackageJsonHandler.handler,
+  appPackageJson: PackageJsonHandler.appHandler,
 };
 
 export async function handleAllFiles(
