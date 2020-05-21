@@ -69,6 +69,7 @@ export class GoogleAuthProvider
   }
 
   strategy(): passport.Strategy {
+    // TODO: throw error if env variables not set?
     return new GoogleStrategy(
       { ...this.providerConfig.options },
       (

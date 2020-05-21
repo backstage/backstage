@@ -15,3 +15,5 @@
  */
 
 require('jest-fetch-mock').enableMocks();
+process.env.AUTH_GOOGLE_CLIENT_ID = 'a';
+process.env.AUTH_GOOGLE_CLIENT_SECRET = 'b';
