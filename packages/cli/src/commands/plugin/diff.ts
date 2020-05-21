@@ -15,13 +15,14 @@
  */
 
 import { Command } from 'commander';
-import { readTemplateFiles } from './read';
-import { handlers, handleAllFiles } from './handlers';
 import {
+  readTemplateFiles,
+  handlers,
+  handleAllFiles,
   inquirerPromptFunc,
   makeCheckPromptFunc,
   yesPromptFunc,
-} from './prompts';
+} from '../../lib/diff';
 
 const fileHandlers = [
   {
