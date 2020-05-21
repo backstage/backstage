@@ -42,10 +42,15 @@ export const Lifecycle: FC<Props> = props => {
   const classes = useStyles(props);
   const { isShorthand, isAlpha } = props;
   return isShorthand ? (
-    <span className={classes.beta} style={{ fontSize: '120%' }}>
+    <span
+      className={classes[isAlpha ? 'alpha' : 'beta']}
+      style={{ fontSize: '120%' }}
+    >
       {isAlpha ? <>&alpha;</> : <>&beta;</>}
     </span>
   ) : (
-    <span className={classes.beta}>{isAlpha ? 'Alpha' : 'Beta'}</span>
+    <span className={classes[isAlpha ? 'alpha' : 'beta']}>
+      {isAlpha ? 'Alpha' : 'Beta'}
+    </span>
   );
 };
