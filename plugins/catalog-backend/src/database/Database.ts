@@ -14,56 +14,131 @@
  * limitations under the License.
  */
 
-import { NotFoundError } from '@backstage/backend-common';
+import { InputError, NotFoundError } from '@backstage/backend-common';
 import Knex from 'knex';
 import { v4 as uuidv4 } from 'uuid';
+import { DescriptorEnvelope } from '../ingestion/descriptors/DescriptorEnvelopeParser';
 import {
-  AddDatabaseEntity,
   AddDatabaseLocation,
-  DatabaseEntity,
-  DatabaseLocation,
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
+  DbEntitiesRow,
+  DbEntityRequest,
+  DbEntityResponse,
+  DbLocationsRow,
 } from './types';
+
+function serializeMetadata(
+  metadata: DescriptorEnvelope['metadata'],
+): DbEntitiesRow['metadata'] {
+  if (!metadata) {
+    return null;
+  }
+
+  const output = { ...metadata };
+  // TODO: delete output.uid;
+  // TODO: delete output.generation;
+
+  return JSON.stringify(output);
+}
+
+function serializeSpec(
+  spec: DescriptorEnvelope['spec'],
+): DbEntitiesRow['spec'] {
+  if (!spec) {
+    return null;
+  }
+
+  return JSON.stringify(spec);
+}
+
+function entityRequestToDb(request: DbEntityRequest): DbEntitiesRow {
+  return {
+    id: '',
+    location_id: request.locationId || null,
+    api_version: request.entity.apiVersion,
+    kind: request.entity.kind,
+    name: request.entity.metadata?.name || null,
+    namespace: request.entity.metadata?.namespace || null,
+    metadata: serializeMetadata(request.entity.metadata),
+    spec: serializeSpec(request.entity.spec),
+  };
+}
+
+function entityDbToResponse(row: DbEntitiesRow): DbEntityResponse {
+  const entity: DescriptorEnvelope = {
+    apiVersion: row.api_version,
+    kind: row.kind,
+    metadata: {
+      // TODO: uid: row.id,
+      // TODO: generation: row.generation,
+    },
+  };
+
+  if (row.metadata) {
+    const metadata = JSON.parse(row.metadata) as DescriptorEnvelope['metadata'];
+    entity.metadata = { ...entity.metadata, ...metadata };
+  }
+
+  if (row.spec) {
+    const spec = JSON.parse(row.spec);
+    entity.spec = spec;
+  }
+
+  return {
+    locationId: row.location_id || undefined,
+    entity,
+  };
+}
 
 export class Database {
   constructor(private readonly database: Knex) {}
 
-  async addOrUpdateEntity(entity: AddDatabaseEntity): Promise<void> {
+  async addOrUpdateEntity(request: DbEntityRequest): Promise<void> {
+    if (!request.entity.metadata?.name) {
+      throw new InputError(`Entities without names are not yet supported`);
+    }
+
+    const newRow = entityRequestToDb(request);
+
     await this.database.transaction(async tx => {
       // TODO(freben): Currently, several locations can compete for the same entity
       // TODO(freben): If locationId is unset in the input, it won't be overwritten - should we instead replace with null?
-      const count = await tx<DatabaseEntity>('entities')
-        .where({ name: entity.name })
-        .update({ ...entity });
+      const count = await tx<DbEntitiesRow>('entities')
+        .where({ name: request.entity.metadata?.name })
+        .update({
+          ...newRow,
+          id: undefined,
+        });
       if (!count) {
-        await tx<DatabaseEntity>('entities').insert({
-          ...entity,
+        await tx<DbEntitiesRow>('entities').insert({
+          ...newRow,
           id: uuidv4(),
         });
       }
     });
   }
 
-  async entities(): Promise<DatabaseEntity[]> {
-    return await this.database<DatabaseEntity>('entities')
+  async entities(): Promise<DbEntityResponse[]> {
+    const items = await this.database<DbEntitiesRow>('entities')
       .orderBy('name')
       .select();
+    return items.map(entityDbToResponse);
   }
 
-  async entity(name: string): Promise<DatabaseEntity> {
-    const items = await this.database<DatabaseEntity>('entities')
+  async entity(name: string): Promise<DbEntityResponse> {
+    const items = await this.database<DbEntitiesRow>('entities')
       .where({ name })
       .select();
     if (!items.length) {
       throw new NotFoundError(`Found no entity with name ${name}`);
     }
-    return items[0];
+    return entityDbToResponse(items[0]);
   }
 
-  async addLocation(location: AddDatabaseLocation): Promise<DatabaseLocation> {
-    return await this.database.transaction<DatabaseLocation>(async tx => {
-      const existingLocation = await tx<DatabaseLocation>('locations')
+  async addLocation(location: AddDatabaseLocation): Promise<DbLocationsRow> {
+    return await this.database.transaction<DbLocationsRow>(async tx => {
+      const existingLocation = await tx<DbLocationsRow>('locations')
         .where({
           target: location.target,
         })
@@ -75,20 +150,18 @@ export class Database {
 
       const id = uuidv4();
       const { type, target } = location;
-      await tx<DatabaseLocation>('locations').insert({
+      await tx<DbLocationsRow>('locations').insert({
         id,
         type,
         target,
       });
 
-      return (await tx<DatabaseLocation>('locations')
-        .where({ id })
-        .select())![0];
+      return (await tx<DbLocationsRow>('locations').where({ id }).select())![0];
     });
   }
 
   async removeLocation(id: string): Promise<void> {
-    const result = await this.database<DatabaseLocation>('locations')
+    const result = await this.database<DbLocationsRow>('locations')
       .where({ id })
       .del();
 
@@ -97,8 +170,8 @@ export class Database {
     }
   }
 
-  async location(id: string): Promise<DatabaseLocation> {
-    const items = await this.database<DatabaseLocation>('locations')
+  async location(id: string): Promise<DbLocationsRow> {
+    const items = await this.database<DbLocationsRow>('locations')
       .where({ id })
       .select();
     if (!items.length) {
@@ -107,8 +180,8 @@ export class Database {
     return items[0];
   }
 
-  async locations(): Promise<DatabaseLocation[]> {
-    return this.database<DatabaseLocation>('locations').select();
+  async locations(): Promise<DbLocationsRow[]> {
+    return this.database<DbLocationsRow>('locations').select();
   }
 
   async addLocationUpdateLogEvent(

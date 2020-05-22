@@ -17,7 +17,7 @@
 import knex from 'knex';
 import path from 'path';
 import { Database } from './Database';
-import { AddDatabaseLocation, DatabaseLocation } from './types';
+import { AddDatabaseLocation, DbLocationsRow } from './types';
 
 describe('Database', () => {
   const database = knex({
@@ -39,7 +39,7 @@ describe('Database', () => {
   it('manages locations', async () => {
     const db = new Database(database);
     const input: AddDatabaseLocation = { type: 'a', target: 'b' };
-    const output: DatabaseLocation = {
+    const output: DbLocationsRow = {
       id: expect.anything(),
       type: 'a',
       target: 'b',
@@ -64,10 +64,10 @@ describe('Database', () => {
     // Prepare
     const catalog = new Database(database);
     const input: AddDatabaseLocation = { type: 'a', target: 'b' };
-    const output1: DatabaseLocation = await catalog.addLocation(input);
+    const output1: DbLocationsRow = await catalog.addLocation(input);
 
     // Try to insert the same location
-    const output2: DatabaseLocation = await catalog.addLocation(input);
+    const output2: DbLocationsRow = await catalog.addLocation(input);
     const locations = await catalog.locations();
 
     // Output is the same

@@ -15,18 +15,19 @@
  */
 
 import { Database } from '../database';
-import { EntitiesCatalog, Entity } from './types';
+import { DescriptorEnvelope } from '../ingestion/descriptors/DescriptorEnvelopeParser';
+import { EntitiesCatalog } from './types';
 
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Database) {}
 
-  async entities(): Promise<Entity[]> {
+  async entities(): Promise<DescriptorEnvelope[]> {
     const items = await this.database.entities();
-    return items;
+    return items.map(i => i.entity);
   }
 
-  async entity(name: string): Promise<Entity> {
+  async entity(name: string): Promise<DescriptorEnvelope> {
     const item = await this.database.entity(name);
-    return item;
+    return item.entity;
   }
 }

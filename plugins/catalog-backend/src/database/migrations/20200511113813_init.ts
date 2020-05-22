@@ -17,33 +17,60 @@
 import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<any> {
-  return knex.schema
-    .createTable('locations', table => {
-      table.comment(
-        'Registered locations that shall be contiuously scanned for catalog item updates',
-      );
-      table.uuid('id').primary().comment('Auto-generated ID of the location');
-      table.string('type').notNullable().comment('The type of location');
-      table
-        .string('target')
-        .notNullable()
-        .comment('The actual target of the location');
-    })
-    .createTable('entities', table => {
-      table.comment('All entities currently stored in the catalog');
-      table.uuid('id').primary().comment('Auto-generated ID of the entity');
-      table
-        .uuid('locationId')
-        .references('id')
-        .inTable('locations')
-        .nullable()
-        .comment('The location that originated the entity');
-      table
-        .string('name')
-        .unique()
-        .notNullable()
-        .comment('The external name of the entity, as used in references');
-    });
+  return (
+    knex.schema
+      //
+      // locations
+      //
+      .createTable('locations', table => {
+        table.comment(
+          'Registered locations that shall be contiuously scanned for catalog item updates',
+        );
+        table.uuid('id').primary().comment('Auto-generated ID of the location');
+        table.string('type').notNullable().comment('The type of location');
+        table
+          .string('target')
+          .notNullable()
+          .comment('The actual target of the location');
+      })
+      //
+      // entities
+      //
+      .createTable('entities', table => {
+        table.comment('All entities currently stored in the catalog');
+        table.uuid('id').primary().comment('Auto-generated ID of the entity');
+        table
+          .uuid('location_id')
+          .references('id')
+          .inTable('locations')
+          .nullable()
+          .comment('The location that originated the entity');
+        table
+          .string('api_version')
+          .notNullable()
+          .comment('The apiVersion field of the entity');
+        table
+          .string('kind')
+          .notNullable()
+          .comment('The kind field of the entity');
+        table
+          .string('name')
+          .nullable()
+          .comment('The metadata.name field of the entity');
+        table
+          .string('namespace')
+          .nullable()
+          .comment('The metadata.namespace field of the entity');
+        table
+          .string('metadata')
+          .nullable()
+          .comment('The entire metadata JSON blob of the entity');
+        table
+          .string('spec')
+          .nullable()
+          .comment('The entire spec JSON blob of the entity');
+      })
+  );
 }
 
 export async function down(knex: Knex): Promise<any> {
