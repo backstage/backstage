@@ -22,20 +22,18 @@ import { Lifecycle } from './Lifecycle';
 describe('<Lifecycle />', () => {
   it('renders Alpha with shorthand', async () => {
     const { getByText } = render(
-      wrapInThemedTestApp(<Lifecycle isAlpha isShorthand />),
+      wrapInThemedTestApp(<Lifecycle alpha shorthand />),
     );
     expect(getByText('α')).toBeInTheDocument();
   });
 
   it('renders Alpha without shorthand', async () => {
-    const { getByText } = render(wrapInThemedTestApp(<Lifecycle isAlpha />));
+    const { getByText } = render(wrapInThemedTestApp(<Lifecycle alpha />));
     expect(getByText('Alpha')).toBeInTheDocument();
   });
 
   it('renders Beta with shorthand', async () => {
-    const { getByText } = render(
-      wrapInThemedTestApp(<Lifecycle isShorthand />),
-    );
+    const { getByText } = render(wrapInThemedTestApp(<Lifecycle shorthand />));
     expect(getByText('β')).toBeInTheDocument();
   });
 

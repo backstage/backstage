@@ -23,12 +23,12 @@ export default {
 
 export const AlphaDefault = () => (
   <>
-    This feature is in <Lifecycle isAlpha />
+    This feature is in <Lifecycle alpha />
   </>
 );
 export const AlphaShorthand = () => (
   <>
-    This feature is in <Lifecycle isAlpha isShorthand />
+    This feature is in <Lifecycle alpha shorthand />
   </>
 );
 export const BetaDefault = () => (
@@ -38,6 +38,6 @@ export const BetaDefault = () => (
 );
 export const BetaShorthand = () => (
   <>
-    This feature is in <Lifecycle isShorthand />
+    This feature is in <Lifecycle shorthand />
   </>
 );

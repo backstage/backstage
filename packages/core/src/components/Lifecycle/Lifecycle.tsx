@@ -19,8 +19,8 @@ import CSS from 'csstype';
 import { makeStyles } from '@material-ui/core';
 
 type Props = CSS.Properties & {
-  isShorthand?: boolean;
-  isAlpha?: boolean;
+  shorthand?: boolean;
+  alpha?: boolean;
 };
 
 const useStyles = makeStyles({
@@ -40,17 +40,17 @@ const useStyles = makeStyles({
 
 export const Lifecycle: FC<Props> = props => {
   const classes = useStyles(props);
-  const { isShorthand, isAlpha } = props;
-  return isShorthand ? (
+  const { shorthand, alpha } = props;
+  return shorthand ? (
     <span
-      className={classes[isAlpha ? 'alpha' : 'beta']}
+      className={classes[alpha ? 'alpha' : 'beta']}
       style={{ fontSize: '120%' }}
     >
-      {isAlpha ? <>&alpha;</> : <>&beta;</>}
+      {alpha ? <>&alpha;</> : <>&beta;</>}
     </span>
   ) : (
-    <span className={classes[isAlpha ? 'alpha' : 'beta']}>
-      {isAlpha ? 'Alpha' : 'Beta'}
+    <span className={classes[alpha ? 'alpha' : 'beta']}>
+      {alpha ? 'Alpha' : 'Beta'}
     </span>
   );
 };

@@ -42,7 +42,7 @@ const ScaffolderPage: React.FC<{}> = () => {
       <Header
         title={
           <>
-            Create a new component <Lifecycle isAlpha isShorthand />{' '}
+            Create a new component <Lifecycle alpha shorthand />{' '}
           </>
         }
         subtitle="Create new software components using standard templates"
