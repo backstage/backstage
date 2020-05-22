@@ -15,7 +15,7 @@
  */
 
 import * as yup from 'yup';
-import { DescriptorEnvelope } from '../ingestion/descriptors/DescriptorEnvelopeParser';
+import { DescriptorEnvelope } from '../ingestion';
 
 //
 // Items

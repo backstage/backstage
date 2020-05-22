@@ -15,14 +15,10 @@
  */
 
 import * as yup from 'yup';
-import { ParserError } from '../types';
-import { DescriptorEnvelope } from './DescriptorEnvelopeParser';
+import { DescriptorEnvelope, ParserError } from '../types';
 import { KindParser } from './types';
 
 export interface ComponentDescriptorV1beta1 extends DescriptorEnvelope {
-  metadata: {
-    name: string;
-  };
   spec: {
     type: string;
   };

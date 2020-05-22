@@ -15,8 +15,8 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
+import { DescriptorEnvelope } from '../ingestion';
 import { EntitiesCatalog } from './types';
-import { DescriptorEnvelope } from '../ingestion/descriptors/DescriptorEnvelopeParser';
 
 export class StaticEntitiesCatalog implements EntitiesCatalog {
   private _entities: DescriptorEnvelope[];

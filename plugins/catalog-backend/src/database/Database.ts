@@ -17,7 +17,7 @@
 import { InputError, NotFoundError } from '@backstage/backend-common';
 import Knex from 'knex';
 import { v4 as uuidv4 } from 'uuid';
-import { DescriptorEnvelope } from '../ingestion/descriptors/DescriptorEnvelopeParser';
+import { DescriptorEnvelope } from '../ingestion';
 import {
   AddDatabaseLocation,
   DatabaseLocationUpdateLogEvent,
