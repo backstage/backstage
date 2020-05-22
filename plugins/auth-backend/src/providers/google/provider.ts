@@ -23,6 +23,7 @@ import {
   AuthProviderConfig,
 } from './../types';
 import { postMessageResponse } from './../utils';
+import { InputError } from '@backstage/backend-common';
 
 export class GoogleAuthProvider
   implements AuthProvider, AuthProviderRouteHandlers {
@@ -36,9 +37,12 @@ export class GoogleAuthProvider
     res: express.Response,
     next: express.NextFunction,
   ) {
-    const scopes = req.query.scopes?.toString().split(',');
+    const scope = req.query.scope?.toString() ?? '';
+    if (!scope) {
+      throw new InputError('missing scope parameter');
+    }
     return passport.authenticate('google', {
-      scope: scopes,
+      scope,
       accessType: 'offline',
       prompt: 'consent',
     })(req, res, next);
