@@ -20,15 +20,15 @@ import * as yup from 'yup';
 // Items
 //
 
-export type Component = {
+export type Entity = {
   id: string;
   locationId?: string;
   name: string;
 };
 
-export type ItemsCatalog = {
-  components(): Promise<Component[]>;
-  component(id: string): Promise<Component>;
+export type EntitiesCatalog = {
+  entities(): Promise<Entity[]>;
+  entity(id: string): Promise<Entity>;
 };
 
 //

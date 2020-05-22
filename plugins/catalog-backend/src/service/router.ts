@@ -17,11 +17,15 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { addLocationSchema, ItemsCatalog, LocationsCatalog } from '../catalog';
+import {
+  addLocationSchema,
+  EntitiesCatalog,
+  LocationsCatalog,
+} from '../catalog';
 import { validateRequestBody } from './util';
 
 export interface RouterOptions {
-  itemsCatalog?: ItemsCatalog;
+  entitiesCatalog?: EntitiesCatalog;
   locationsCatalog?: LocationsCatalog;
   logger: Logger;
 }
@@ -29,21 +33,20 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { itemsCatalog, locationsCatalog } = options;
-  const logger = options.logger.child({ plugin: 'catalog' });
+  const { entitiesCatalog, locationsCatalog } = options;
   const router = Router();
 
-  if (itemsCatalog) {
-    // Components
+  if (entitiesCatalog) {
+    // Entities
     router
-      .get('/components', async (_req, res) => {
-        const components = await itemsCatalog.components();
-        res.status(200).send(components);
+      .get('/entities', async (_req, res) => {
+        const entities = await entitiesCatalog.entities();
+        res.status(200).send(entities);
       })
-      .get('/components/:id', async (req, res) => {
+      .get('/entities/:id', async (req, res) => {
         const { id } = req.params;
-        const component = await itemsCatalog.component(id);
-        res.status(200).send(component);
+        const entity = await entitiesCatalog.entity(id);
+        res.status(200).send(entity);
       });
   }
 
@@ -71,9 +74,5 @@ export async function createRouter(
       });
   }
 
-  const app = express();
-  app.set('logger', logger);
-  app.use('/', router);
-
-  return app;
+  return router;
 }

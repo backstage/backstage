@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ParserOutput } from '../types';
 import { DescriptorEnvelope } from './DescriptorEnvelopeParser';
 
 export type KindParser = {
@@ -30,5 +29,7 @@ export type KindParser = {
    * @throws An Error if the type was handled and found to not be properly
    *         formatted
    */
-  tryParse(envelope: DescriptorEnvelope): Promise<ParserOutput | undefined>;
+  tryParse(
+    envelope: DescriptorEnvelope,
+  ): Promise<DescriptorEnvelope | undefined>;
 };
