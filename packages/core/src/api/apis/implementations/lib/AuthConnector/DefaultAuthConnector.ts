@@ -40,11 +40,11 @@ type Options<AuthSession> = {
    */
   provider: AuthProvider & { id: string };
   /**
-   * API used to instanciate an auth requester.
+   * API used to instantiate an auth requester.
    */
   oauthRequestApi: OAuthRequestApi;
   /**
-   * Function used to join together a set of scopes, defaults to joining with whitespace.
+   * Function used to join together a set of scopes, defaults to joining with a space character.
    */
   joinScopes?: (scopes: Set<string>) => string;
   /**

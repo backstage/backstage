@@ -49,9 +49,7 @@ export function joinScopes(
 
   for (const moreScopes of moreScopess) {
     for (const scope of moreScopes) {
-      if (!result.has(scope)) {
-        result.add(scope);
-      }
+      result.add(scope);
     }
   }
 
