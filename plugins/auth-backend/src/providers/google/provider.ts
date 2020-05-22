@@ -70,15 +70,20 @@ export class GoogleAuthProvider
 
   strategy(): passport.Strategy {
     return new GoogleStrategy(
-      { ...this.providerConfig.options, passReqToCallback: true },
+      { ...this.providerConfig.options },
       (
-        _req: any,
         accessToken: any,
         refreshToken: any,
+        params: any,
         profile: any,
         cb: any,
       ) => {
-        cb(undefined, { profile, accessToken, refreshToken });
+        cb(undefined, {
+          profile,
+          idToken: params.id_token,
+          accessToken,
+          refreshToken,
+        });
       },
     );
   }
