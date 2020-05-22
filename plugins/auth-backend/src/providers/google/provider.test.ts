@@ -18,7 +18,7 @@ import { GoogleAuthProvider } from './provider';
 import passport from 'passport';
 import express from 'express';
 import * as passportGoogleAuth20 from 'passport-google-oauth20';
-// import * as utils from './../utils';
+import * as utils from './../utils';
 
 const googleAuthProviderConfig = {
   provider: 'google',
@@ -76,7 +76,7 @@ describe('GoogleAuthProvider', () => {
     it('should initiate authenticate request with provided scopes', () => {
       const mockRequest = ({
         query: {
-          scopes: 'a,b',
+          scope: 'a,b',
         },
       } as unknown) as express.Request;
 
@@ -90,7 +90,7 @@ describe('GoogleAuthProvider', () => {
       googleAuthProvider.start(mockRequest, mockResponse, mockNext);
       expect(spyPassport).toBeCalledTimes(1);
       expect(spyPassport).toBeCalledWith('google', {
-        scope: ['a', 'b'],
+        scope: 'a,b',
         accessType: 'offline',
         prompt: 'consent',
       });
@@ -106,7 +106,7 @@ describe('GoogleAuthProvider', () => {
       );
       expect(() => {
         googleAuthProvider.start(mockRequest, mockResponse, mockNext);
-      }).toThrowError('Scopes should be specified');
+      }).toThrowError('missing scope parameter');
     });
   });
 
@@ -140,10 +140,9 @@ describe('GoogleAuthProvider', () => {
     const mockNext: express.NextFunction = jest.fn();
 
     it('should call authenticate and post a response ', () => {
-      // TODO: Unable to verify if post message is being called
-      // const spyPostMessage = jest
-      //   .spyOn(utils, 'postMessageResponse')
-      //   .mockImplementation(() => jest.fn());
+      const spyPostMessage = jest
+        .spyOn(utils, 'postMessageResponse')
+        .mockImplementation(() => jest.fn());
 
       const spyPassport = jest
         .spyOn(passport, 'authenticate')
@@ -154,8 +153,10 @@ describe('GoogleAuthProvider', () => {
       );
 
       googleAuthProvider.frameHandler(mockRequest, mockResponse, mockNext);
+      const callbackFunc = spyPassport.mock.calls[0][1] as Function;
+      callbackFunc();
       expect(spyPassport).toBeCalledTimes(1);
-      // expect(spyPostMessage).toBeCalledTimes(1);
+      expect(spyPostMessage).toBeCalledTimes(1);
     });
   });
 
@@ -165,27 +166,7 @@ describe('GoogleAuthProvider', () => {
         googleAuthProviderConfig,
       );
 
-      // TODO: how to test the callback function?
       expect(googleAuthProvider.strategy()).toBeInstanceOf(passport.Strategy);
-    });
-
-    it('should return a valid passport strategy if secrets in env', () => {
-      const googleAuthProvider = new GoogleAuthProvider(
-        googleAuthProviderConfigFromEnv,
-      );
-
-      expect(googleAuthProvider.strategy()).toBeInstanceOf(passport.Strategy);
-    });
-
-    // TODO: The two tests below should throw errors because either
-    // the options are missing in env or not present at all
-    // but they aren't throwing errors
-    it('should throw an error if secrets missing in env', () => {
-      expect(() => {
-        const googleAuthProvider = new GoogleAuthProvider(
-          googleAuthProviderConfigMissingInEnv,
-        );
-      });
     });
 
     it('should throw an error for invalid options', () => {
@@ -193,7 +174,8 @@ describe('GoogleAuthProvider', () => {
         const googleAuthProvider = new GoogleAuthProvider(
           googleAuthProviderConfigInvalidOptions,
         );
-      });
+        googleAuthProvider.strategy();
+      }).toThrow();
     });
   });
 });

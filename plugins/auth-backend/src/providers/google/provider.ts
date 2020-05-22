@@ -77,9 +77,9 @@ export class GoogleAuthProvider
         refreshToken: any,
         params: any,
         profile: any,
-        cb: any,
+        done: any,
       ) => {
-        cb(undefined, {
+        done(undefined, {
           profile,
           idToken: params.id_token,
           accessToken,
