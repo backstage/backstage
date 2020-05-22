@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
+import { MockAuthConnector, mockAccessToken } from './MockAuthConnector';
 
-export * from './auth';
-export * from './AppThemeSelector';
-export * from './AlertApiForwarder';
-export * from './ErrorApiForwarder';
-export * from './OAuthRequestManager';
+describe('MockAuthConnector', () => {
+  it('should return mock tokens', async () => {
+    const helper = new MockAuthConnector();
+
+    await expect(helper.createSession()).resolves.toEqual({
+      accessToken: mockAccessToken,
+      expiresAt: expect.any(Date),
+      scopes: expect.any(String),
+    });
+
+    await expect(helper.refreshSession()).resolves.toEqual({
+      accessToken: mockAccessToken,
+      expiresAt: expect.any(Date),
+      scopes: expect.any(String),
+    });
+  });
+});

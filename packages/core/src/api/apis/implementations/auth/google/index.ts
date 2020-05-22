@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-
-export * from './auth';
-export * from './AppThemeSelector';
-export * from './AlertApiForwarder';
-export * from './ErrorApiForwarder';
-export * from './OAuthRequestManager';
+export * from './types';
+export { default as GoogleAuth } from './GoogleAuth';

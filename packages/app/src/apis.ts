@@ -23,6 +23,10 @@ import {
   ErrorApiForwarder,
   featureFlagsApiRef,
   FeatureFlags,
+  GoogleAuth,
+  oauthRequestApiRef,
+  OAuthRequestManager,
+  googleAuthApiRef,
 } from '@backstage/core';
 
 import {
@@ -45,6 +49,20 @@ builder.add(circleCIApiRef, new CircleCIApi());
 builder.add(featureFlagsApiRef, new FeatureFlags());
 
 builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
+
+const oauthRequestApi = builder.add(
+  oauthRequestApiRef,
+  new OAuthRequestManager(),
+);
+
+builder.add(
+  googleAuthApiRef,
+  GoogleAuth.create({
+    apiOrigin: 'http://localhost:7000',
+    basePath: '/auth/',
+    oauthRequestApi,
+  }),
+);
 
 builder.add(
   techRadarApiRef,

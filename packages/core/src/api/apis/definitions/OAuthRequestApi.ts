@@ -18,48 +18,6 @@ import { IconComponent } from '../../../icons';
 import { Observable } from '../../types';
 import { ApiRef } from '../ApiRef';
 
-export type OAuthScopes = {
-  extend(scopes: OAuthScopeLike): OAuthScopes;
-  hasScopes(scopes: OAuthScopeLike): boolean;
-  toSet(): Set<string>;
-  toString(): string;
-};
-
-export type OAuthScopeLike =
-  | string /** Space separated scope strings */
-  | string[] /** Array of individual scope strings */
-  | OAuthScopes;
-
-/**
- * Options used to open a login popup.
- */
-export type LoginPopupOptions = {
-  /**
-   * The URL that the auth popup should point to
-   */
-  url: string;
-
-  /**
-   * The name of the popup, as in second argument to window.open
-   */
-  name: string;
-
-  /**
-   * The origin of the final popup page that will post a message to this window.
-   */
-  origin: string;
-
-  /**
-   * The width of the popup in pixels, defaults to 500
-   */
-  width?: number;
-
-  /**
-   * The height of the popup in pixels, defaults to 700
-   */
-  height?: number;
-};
-
 /**
  * Information about the auth provider that we're requesting a login towards.
  *
@@ -92,7 +50,7 @@ export type AuthRequesterOptions<AuthResponse> = {
    * Implementation of the auth flow, which will be called synchronously when
    * trigger() is called on an auth requests.
    */
-  onAuthRequest(scope: OAuthScopes): Promise<AuthResponse>;
+  onAuthRequest(scopes: Set<string>): Promise<AuthResponse>;
 };
 
 /**
@@ -106,7 +64,7 @@ export type AuthRequesterOptions<AuthResponse> = {
  * union of all requested scopes.
  */
 export type AuthRequester<AuthResponse> = (
-  scope: OAuthScopes,
+  scopes: Set<string>,
 ) => Promise<AuthResponse>;
 
 /**
@@ -139,16 +97,6 @@ export type PendingAuthRequest = {
  * Provides helpers for implemented OAuth login flows within Backstage.
  */
 export type OAuthRequestApi = {
-  /**
-   * Show a popup pointing to a URL that starts an OAuth flow.
-   *
-   * The redirect handler of the flow should use postMessage to communicate back
-   * to the app window.
-   *
-   * The returned promise resolves to the contents of the message that was posted from the auth popup.
-   */
-  showLoginPopup(options: LoginPopupOptions): Promise<any>;
-
   /**
    * A utility for showing login popups or similar things, and merging together multiple requests for
    * different scopes into one request that inclues all scopes.

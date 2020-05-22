@@ -61,7 +61,8 @@
     "@backstage/test-utils-core": "^0.1.1-alpha.6",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^10.2.4"
+    "@testing-library/user-event": "^10.2.4",
+    "jest-fetch-mock": "^3.0.3"
   },
   "files": [
     "dist/**/*.{js,d.ts}"

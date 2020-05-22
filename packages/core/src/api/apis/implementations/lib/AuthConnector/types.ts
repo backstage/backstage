@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-
-export * from './auth';
-export * from './AppThemeSelector';
-export * from './AlertApiForwarder';
-export * from './ErrorApiForwarder';
-export * from './OAuthRequestManager';
+/**
+ * An AuthConnector is responsible for realizing auth session actions
+ * by for example communicating with a backend or interacting with the user.
+ */
+export type AuthConnector<AuthSession> = {
+  createSession(scopes: Set<string>): Promise<AuthSession>;
+  refreshSession(): Promise<AuthSession>;
+  removeSession(): Promise<void>;
+};

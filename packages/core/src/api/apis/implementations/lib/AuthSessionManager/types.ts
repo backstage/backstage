@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
+/**
+ * A sessions manager keeps track of the current session and makes sure that
+ * multiple simultaneous requests for sessions with different scope are handled
+ * in a correct way.
+ */
+export type SessionManager<AuthSession> = {
+  getSession(options: {
+    optional: false;
+    scope?: Set<string>;
+  }): Promise<AuthSession>;
+  getSession(options: {
+    optional?: boolean;
+    scope?: Set<string>;
+  }): Promise<AuthSession | undefined>;
 
-export * from './auth';
-export * from './AppThemeSelector';
-export * from './AlertApiForwarder';
-export * from './ErrorApiForwarder';
-export * from './OAuthRequestManager';
+  removeSession(): Promise<void>;
+};

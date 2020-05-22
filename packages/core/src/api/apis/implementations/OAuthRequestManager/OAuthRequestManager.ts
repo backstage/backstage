@@ -16,7 +16,6 @@
 
 import {
   OAuthRequestApi,
-  LoginPopupOptions,
   PendingAuthRequest,
   AuthRequester,
   AuthRequesterOptions,
@@ -44,7 +43,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
     this.handlerCount++;
 
     handler.pending().subscribe({
-      next: (scopeRequest) => {
+      next: scopeRequest => {
         const newRequests = this.currentRequests.slice();
         const request = this.makeAuthRequest(scopeRequest, options);
         if (!request) {
@@ -58,7 +57,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
       },
     });
 
-    return (scopes) => {
+    return scopes => {
       return handler.request(scopes);
     };
   }
@@ -89,65 +88,5 @@ export class OAuthRequestManager implements OAuthRequestApi {
 
   authRequest$(): Observable<PendingAuthRequest[]> {
     return this.subject;
-  }
-
-  async showLoginPopup(options: LoginPopupOptions): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const width = options.width || 500;
-      const height = options.height || 700;
-      const left = window.screen.width / 2 - width / 2;
-      const top = window.screen.height / 2 - height / 2;
-
-      const popup = window.open(
-        options.url,
-        options.name,
-        `menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=${width},height=${height},top=${top},left=${left}`,
-      );
-
-      if (!popup || typeof popup.closed === 'undefined' || popup.closed) {
-        reject(new Error('Failed to open auth popup.'));
-        return;
-      }
-
-      const messageListener = (event: MessageEvent) => {
-        if (event.source !== popup) {
-          return;
-        }
-        if (event.origin !== options.origin) {
-          return;
-        }
-        const { data } = event;
-        if (data.type !== 'oauth-result') {
-          return;
-        }
-
-        if (data.payload.error) {
-          const error = new Error(data.payload.error.message);
-          error.name = data.payload.error.name;
-          // TODO: proper error type
-          // error.extra = data.payload.error.extra;
-          reject(error);
-        } else {
-          resolve(data.payload);
-        }
-        done();
-      };
-
-      const intervalId = setInterval(() => {
-        if (popup.closed) {
-          const error = new Error('Login failed, popup was closed');
-          error.name = 'PopupClosedError';
-          reject(error);
-          done();
-        }
-      }, 100);
-
-      function done() {
-        window.removeEventListener('message', messageListener);
-        clearInterval(intervalId);
-      }
-
-      window.addEventListener('message', messageListener);
-    });
   }
 }
