@@ -14,7 +14,9 @@ Needs AUTH_GOOGLE_CLIENT_ID and AUTH_GOOGLE_CLIENT_SECRET set in the environment
 ## Local development
 
 export AUTH_GOOGLE_CLIENT_ID=<INSERT_CLIENT_ID_HERE>
-read -r AUTH_GOOGLE_CLIENT_SECRET=<INSERT_CLIENT_ID_HERE>
+read -r AUTH_GOOGLE_CLIENT_SECRET
+<COPY_PASTE_CLIENT_SECRET_HERE>
+export AUTH_GOOGLE_CLIENT_SECRET
 run `yarn start` in packages/backend folder
 
 ## Links
