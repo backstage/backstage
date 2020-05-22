@@ -22,6 +22,7 @@ import {
   AuthProviderRouteHandlers,
   AuthProviderConfig,
 } from './types';
+import * as passportGoogleOAuth20 from 'passport-google-oauth20';
 import { ProviderFactories } from './factories';
 
 class MyAuthProvider implements AuthProvider, AuthProviderRouteHandlers {
@@ -31,33 +32,24 @@ class MyAuthProvider implements AuthProvider, AuthProviderRouteHandlers {
   }
 
   strategy(): passport.Strategy {
-    return new passport.Strategy();
+    return new passportGoogleOAuth20.Strategy(
+      this.providerConfig.options,
+      () => {},
+    );
   }
-  start(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any> {
+  start(_: express.Request, res: express.Response): Promise<any> {
     return new Promise(resolve => {
       res.send('start');
       resolve();
     });
   }
-  frameHandler(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any> {
+  frameHandler(_: express.Request, res: express.Response): Promise<any> {
     return new Promise(resolve => {
       res.send('frameHandler');
       resolve();
     });
   }
-  logout(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any> {
+  logout(_: express.Request, res: express.Response): Promise<any> {
     return new Promise(resolve => {
       res.send('logout');
       resolve();
@@ -66,11 +58,7 @@ class MyAuthProvider implements AuthProvider, AuthProviderRouteHandlers {
 }
 
 class MyAuthProviderWithRefresh extends MyAuthProvider {
-  refresh(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any> {
+  refresh(_: express.Request, res: express.Response): Promise<any> {
     return new Promise(resolve => {
       res.send('logout');
       resolve();
@@ -81,14 +69,14 @@ class MyAuthProviderWithRefresh extends MyAuthProvider {
 const providerConfig = {
   provider: 'a',
   options: {
-    somekey: 'somevalue',
+    clientID: 'somevalue',
   },
 };
 
 const providerConfigInvalid = {
   provider: 'b',
   options: {
-    somekey: 'somevalue',
+    clientID: 'somevalue',
   },
 };
 

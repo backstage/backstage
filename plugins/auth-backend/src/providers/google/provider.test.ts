@@ -17,7 +17,6 @@
 import { GoogleAuthProvider } from './provider';
 import passport from 'passport';
 import express from 'express';
-import * as passportGoogleAuth20 from 'passport-google-oauth20';
 import * as utils from './../utils';
 
 const googleAuthProviderConfig = {
@@ -25,24 +24,6 @@ const googleAuthProviderConfig = {
   options: {
     clientID: 'a',
     clientSecret: 'b',
-    callbackURL: 'c',
-  },
-};
-
-const googleAuthProviderConfigFromEnv = {
-  provider: 'google',
-  options: {
-    clientID: process.env.AUTH_GOOGLE_CLIENT_ID,
-    clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET,
-    callbackURL: 'c',
-  },
-};
-
-const googleAuthProviderConfigMissingInEnv = {
-  provider: 'google',
-  options: {
-    clientID: process.env.MISSING_CLIENT_ID,
-    clientSecret: process.env.MISSING_CLIENT_SECRET,
     callbackURL: 'c',
   },
 };

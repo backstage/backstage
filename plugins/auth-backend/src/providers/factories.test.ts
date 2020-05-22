@@ -23,31 +23,19 @@ class MyAuthProvider implements AuthProvider, AuthProviderRouteHandlers {
   strategy(): passport.Strategy {
     return new passport.Strategy();
   }
-  start(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any> {
+  start(_: express.Request, res: express.Response): Promise<any> {
     return new Promise(resolve => {
       res.send('start');
       resolve();
     });
   }
-  frameHandler(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any> {
+  frameHandler(_: express.Request, res: express.Response): Promise<any> {
     return new Promise(resolve => {
       res.send('frameHandler');
       resolve();
     });
   }
-  logout(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any> {
+  logout(_: express.Request, res: express.Response): Promise<any> {
     return new Promise(resolve => {
       res.send('logout');
       resolve();
