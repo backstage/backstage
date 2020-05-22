@@ -22,9 +22,20 @@ import {
   OpenIdConnectApi,
   IdTokenOptions,
 } from '../../../definitions/auth';
-import { OAuthRequestApi } from '../../../definitions';
+import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../lib/AuthSessionManager';
+
+type CreateOptions = {
+  // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
+  apiOrigin: string;
+  basePath: string;
+
+  oauthRequestApi: OAuthRequestApi;
+
+  environment?: string;
+  provider?: AuthProvider & { id: string };
+};
 
 export type GoogleAuthResponse = {
   accessToken: string;
@@ -33,17 +44,27 @@ export type GoogleAuthResponse = {
   expiresInSeconds: number;
 };
 
+const DEFAULT_PROVIDER = {
+  id: 'google',
+  title: 'Google',
+  icon: GoogleIcon,
+};
+
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
 class GoogleAuth implements OAuthApi, OpenIdConnectApi {
-  static create(oauthRequestApi: OAuthRequestApi) {
+  static create({
+    apiOrigin,
+    basePath,
+    environment = 'dev',
+    provider = DEFAULT_PROVIDER,
+    oauthRequestApi,
+  }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      environment: 'dev',
-      provider: {
-        id: 'google',
-        title: 'Google',
-        icon: GoogleIcon,
-      },
+      apiOrigin,
+      basePath,
+      environment,
+      provider,
       oauthRequestApi: oauthRequestApi,
       sessionTransform(res: GoogleAuthResponse): GoogleSession {
         return {
