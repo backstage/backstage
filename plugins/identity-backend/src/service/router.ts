@@ -26,7 +26,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const logger = options.logger.child({ plugin: 'identity' });
+  const logger = options.logger;
 
   router.use('/ping', (_, res) => {
     logger.info('heartbeat for identity service');
