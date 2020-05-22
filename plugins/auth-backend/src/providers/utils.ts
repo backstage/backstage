@@ -24,12 +24,16 @@ export const postMessageResponse = (
   const jsonData = JSON.stringify(data);
   const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
 
+  res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Frame-Options', 'sameorigin');
+
+  // TODO: Make target app origin configurable globally
   res.end(`
 <html>
 <body>
   <script>
-    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), location.origin)
+    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), 'http://localhost:3000')
+    window.close()
   </script>
 </body>
 </html>
