@@ -36,8 +36,9 @@ function serializeMetadata(
   }
 
   const output = { ...metadata };
-  // TODO: delete output.uid;
-  // TODO: delete output.generation;
+  delete output.uid;
+  delete output.etag;
+  delete output.generation;
 
   return JSON.stringify(output);
 }
@@ -56,6 +57,8 @@ function entityRequestToDb(request: DbEntityRequest): DbEntitiesRow {
   return {
     id: '',
     location_id: request.locationId || null,
+    etag: uuidv4(), // TODO(freben): Atomicity isn't checked using these yet
+    generation: 1, // TODO(freben): These aren't updated yet
     api_version: request.entity.apiVersion,
     kind: request.entity.kind,
     name: request.entity.metadata?.name || null,
@@ -70,8 +73,9 @@ function entityDbToResponse(row: DbEntitiesRow): DbEntityResponse {
     apiVersion: row.api_version,
     kind: row.kind,
     metadata: {
-      // TODO: uid: row.id,
-      // TODO: generation: row.generation,
+      uid: row.id,
+      etag: row.etag,
+      generation: row.generation,
     },
   };
 
@@ -121,7 +125,7 @@ export class Database {
 
   async entities(): Promise<DbEntityResponse[]> {
     const items = await this.database<DbEntitiesRow>('entities')
-      .orderBy('name')
+      .orderBy('namespace', 'name')
       .select();
     return items.map(entityDbToResponse);
   }
