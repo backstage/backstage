@@ -51,9 +51,11 @@ export interface AuthProviderRouteHandlers {
 }
 
 export type AuthProviderFactories = {
-  [key: string]: {
-    new (providerConfig: any): AuthProvider & AuthProviderRouteHandlers;
-  };
+  [key: string]: AuthProviderFactory;
+};
+
+export type AuthProviderFactory = {
+  new (providerConfig: any): AuthProvider & AuthProviderRouteHandlers;
 };
 
 export type AuthInfo = {

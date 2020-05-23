@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthProviderFactories } from './types';
+import { AuthProviderFactories, AuthProviderFactory } from './types';
 import { GoogleAuthProvider } from './google/provider';
 
 export class ProviderFactories {
@@ -22,8 +22,8 @@ export class ProviderFactories {
     google: GoogleAuthProvider,
   };
 
-  public static getProviderFactory(providerId: string) {
-    const ProviderImpl = ProviderFactories.providerFactories.providerId;
+  public static getProviderFactory(providerId: string): AuthProviderFactory {
+    const ProviderImpl = ProviderFactories.providerFactories[providerId];
     if (!ProviderImpl) {
       throw Error(
         `Provider Implementation missing for : ${providerId} auth provider`,
