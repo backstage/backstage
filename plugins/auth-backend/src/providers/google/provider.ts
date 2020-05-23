@@ -61,14 +61,12 @@ export class GoogleAuthProvider
     })(req, res, next);
   }
 
-  logout(_req: express.Request, res: express.Response) {
-    return new Promise((resolve) => {
-      res.send('logout!');
-      resolve();
-    });
+  async logout(_req: express.Request, res: express.Response) {
+    res.send('logout!');
   }
 
   strategy(): passport.Strategy {
+    // TODO: throw error if env variables not set?
     return new GoogleStrategy(
       { ...this.providerConfig.options },
       (
@@ -76,9 +74,9 @@ export class GoogleAuthProvider
         refreshToken: any,
         params: any,
         profile: any,
-        cb: any,
+        done: any,
       ) => {
-        cb(undefined, {
+        done(undefined, {
           profile,
           idToken: params.id_token,
           accessToken,
