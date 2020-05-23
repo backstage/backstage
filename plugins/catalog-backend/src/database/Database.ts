@@ -27,6 +27,7 @@ import {
   DbEntityResponse,
   DbLocationsRow,
 } from './types';
+import { buildEntitySearch } from './search';
 
 function serializeMetadata(
   metadata: DescriptorEnvelope['metadata'],
