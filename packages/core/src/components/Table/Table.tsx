@@ -97,7 +97,7 @@ const tableIcons = {
   )),
 };
 
-const useCellStyles = makeStyles<BackstageTheme>((theme) => ({
+const useCellStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     color: theme.palette.grey[500],
     padding: theme.spacing(0, 2, 0, 2.5),
@@ -105,7 +105,7 @@ const useCellStyles = makeStyles<BackstageTheme>((theme) => ({
   },
 }));
 
-const useHeaderStyles = makeStyles<BackstageTheme>((theme) => ({
+const useHeaderStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
     padding: theme.spacing(1, 2, 1, 2.5),
     borderTop: `1px solid ${theme.palette.grey.A100}`,
@@ -116,7 +116,7 @@ const useHeaderStyles = makeStyles<BackstageTheme>((theme) => ({
   },
 }));
 
-const useToolbarStyles = makeStyles<BackstageTheme>((theme) => ({
+const useToolbarStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     padding: theme.spacing(3, 0, 2.5, 2.5),
   },
@@ -125,13 +125,16 @@ const useToolbarStyles = makeStyles<BackstageTheme>((theme) => ({
       fontWeight: 'bold',
     },
   },
+  searchField: {
+    paddingRight: theme.spacing(2),
+  },
 }));
 
 const convertColumns = (
   columns: TableColumn[],
   theme: BackstageTheme,
 ): TableColumn[] => {
-  return columns.map((column) => {
+  return columns.map(column => {
     const headerStyle: React.CSSProperties = {};
     const cellStyle: React.CSSProperties = {};
 
@@ -174,13 +177,13 @@ const Table: FC<TableProps> = ({ columns, options, ...props }) => {
   return (
     <MTable
       components={{
-        Cell: (cellProps) => (
+        Cell: cellProps => (
           <MTableCell className={cellClasses.root} {...cellProps} />
         ),
-        Header: (headerProps) => (
+        Header: headerProps => (
           <MTableHeader classes={headerClasses} {...headerProps} />
         ),
-        Toolbar: (toolbarProps) => (
+        Toolbar: toolbarProps => (
           <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
         ),
       }}
