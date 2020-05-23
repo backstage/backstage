@@ -57,7 +57,7 @@ function entityRequestToDb(request: DbEntityRequest): DbEntitiesRow {
   return {
     id: '',
     location_id: request.locationId || null,
-    etag: uuidv4(), // TODO(freben): Atomicity isn't checked using these yet
+    etag: new Buffer(uuidv4()).toString('base64').replace(/[^\w]/g, ''), // TODO(freben): Atomicity isn't checked using these yet
     generation: 1, // TODO(freben): These aren't updated yet
     api_version: request.entity.apiVersion,
     kind: request.entity.kind,
