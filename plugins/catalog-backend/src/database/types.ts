@@ -24,6 +24,8 @@ export type DbEntitiesRow = {
   kind: string;
   name: string | null;
   namespace: string | null;
+  etag: string;
+  generation: number;
   metadata: string | null;
   spec: string | null;
 };

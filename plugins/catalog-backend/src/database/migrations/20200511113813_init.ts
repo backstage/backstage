@@ -46,6 +46,19 @@ export async function up(knex: Knex): Promise<any> {
           .nullable()
           .comment('The location that originated the entity');
         table
+          .string('etag')
+          .notNullable()
+          .comment(
+            'An opaque string that changes for each update operation to any part of the entity, including metadata.',
+          );
+        table
+          .string('generation')
+          .notNullable()
+          .unsigned()
+          .comment(
+            'A positive nonzero number that indicates the current generation of data for this entity; the value is incremented each time the spec changes.',
+          );
+        table
           .string('api_version')
           .notNullable()
           .comment('The apiVersion field of the entity');
