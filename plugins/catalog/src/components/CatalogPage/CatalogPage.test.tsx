@@ -34,6 +34,8 @@ describe('CatalogPage', () => {
         <CatalogPage componentFactory={testComponentFactory} />
       </ThemeProvider>,
     );
-    expect(await rendered.findByText('Your components')).toBeInTheDocument();
+    expect(
+      await rendered.findByText('Keep track of your software'),
+    ).toBeInTheDocument();
   });
 });
