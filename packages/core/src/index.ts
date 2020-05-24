@@ -34,7 +34,7 @@ export { default as CopyTextButton } from './components/CopyTextButton';
 export { default as Progress } from './components/Progress';
 export * from './components/SimpleStepper';
 export { OAuthRequestDialog } from './components/OAuthRequestDialog';
-export { AlphaLabel, BetaLabel } from './components/Lifecycle';
+export { Lifecycle } from './components/Lifecycle';
 export { default as SupportButton } from './components/SupportButton';
 export { default as Table, SubvalueCell } from './components/Table';
 export type { TableColumn } from './components/Table/Table';
