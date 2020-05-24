@@ -16,14 +16,14 @@
 
 import React from 'react';
 import { ApiProvider, useApi, withApis } from './ApiProvider';
-import { ApiRef } from './ApiRef';
+import { createApiRef } from './ApiRef';
 import { ApiRegistry } from './ApiRegistry';
 import { render } from '@testing-library/react';
 import { withLogCollector } from '@backstage/test-utils-core';
 
 describe('ApiProvider', () => {
   type Api = () => string;
-  const apiRef = new ApiRef<Api>({ id: 'x', description: '' });
+  const apiRef = createApiRef<Api>({ id: 'x', description: '' });
   const registry = ApiRegistry.from([[apiRef, () => 'hello']]);
 
   const MyHookConsumer = () => {
@@ -53,7 +53,7 @@ describe('ApiProvider', () => {
 
   it('should ignore deps in prototype', () => {
     // 100% coverage + happy typescript = hasOwnProperty + this atrocity
-    const xRef = new ApiRef<number>({ id: 'x', description: '' });
+    const xRef = createApiRef<number>({ id: 'x', description: '' });
 
     const proto = { x: xRef };
     const props = { getMessage: { enumerable: true, value: apiRef } };

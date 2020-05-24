@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef } from '../ApiRef';
+import { createApiRef } from '../ApiRef';
 import {
   UserFlags,
   FeatureFlagsRegistry,
@@ -55,7 +55,7 @@ export interface FeatureFlagsApi {
   getRegisteredFlags(): FeatureFlagsRegistry;
 }
 
-export const featureFlagsApiRef = new ApiRef<FeatureFlagsApi>({
+export const featureFlagsApiRef = createApiRef<FeatureFlagsApi>({
   id: 'core.featureflags',
   description: 'Used to toggle functionality in features across Backstage',
 });

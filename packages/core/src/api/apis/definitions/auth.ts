@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef } from '../ApiRef';
+import { createApiRef } from '../ApiRef';
 
 /**
  * This file contains declarations for common interfaces of auth-related APIs.
@@ -24,7 +24,7 @@ import { ApiRef } from '../ApiRef';
  * For example, a Google OAuth provider that supports OAuth 2 and OpenID Connect,
  * would be declared as follows:
  *
- * const googleAuthApiRef = new ApiRef<OAuthApi & OpenIDConnectApi>({ ... })
+ * const googleAuthApiRef = createApiRef<OAuthApi & OpenIDConnectApi>({ ... })
  */
 
 /**
@@ -148,7 +148,7 @@ export type OpenIdConnectApi = {
  * Note that the ID token payload is only guaranteed to contain the user's numerical Google ID,
  * email and expiration information. Do not rely on any other fields, as they might not be present.
  */
-export const googleAuthApiRef = new ApiRef<OAuthApi & OpenIdConnectApi>({
+export const googleAuthApiRef = createApiRef<OAuthApi & OpenIdConnectApi>({
   id: 'core.auth.google',
   description: 'Provides authentication towards Google APIs and identities',
 });
@@ -159,7 +159,7 @@ export const googleAuthApiRef = new ApiRef<OAuthApi & OpenIdConnectApi>({
  * See https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
  * for a full list of supported scopes.
  */
-export const githubAuthApiRef = new ApiRef<OAuthApi>({
+export const githubAuthApiRef = createApiRef<OAuthApi>({
   id: 'core.auth.github',
   description: 'Provides authentication towards Github APIs',
 });

@@ -15,12 +15,12 @@
  */
 
 import { ApiTestRegistry } from './ApiTestRegistry';
-import { ApiRef } from './ApiRef';
+import { createApiRef } from './ApiRef';
 
 describe('ApiTestRegistry', () => {
-  const aRef = new ApiRef<number>({ id: 'a', description: '' });
-  const bRef = new ApiRef<string>({ id: 'b', description: '' });
-  const cRef = new ApiRef<string>({ id: 'c', description: '' });
+  const aRef = createApiRef<number>({ id: 'a', description: '' });
+  const bRef = createApiRef<string>({ id: 'b', description: '' });
+  const cRef = createApiRef<string>({ id: 'c', description: '' });
 
   it('should be created', () => {
     const registry = new ApiTestRegistry();
@@ -31,7 +31,7 @@ describe('ApiTestRegistry', () => {
 
   it('should register a factory', () => {
     const registry = new ApiTestRegistry();
-    registry.register(aRef, () => 3);
+    registry.register({ implements: aRef, deps: {}, factory: () => 3 });
     expect(registry.get(aRef)).toBe(3);
     expect(registry.get(bRef)).toBe(undefined);
     expect(registry.get(cRef)).toBe(undefined);
@@ -39,7 +39,7 @@ describe('ApiTestRegistry', () => {
 
   it('should remove factories when resetting', () => {
     const registry = new ApiTestRegistry();
-    registry.register(aRef, () => 3);
+    registry.register({ implements: aRef, deps: {}, factory: () => 3 });
     expect(registry.get(aRef)).toBe(3);
     registry.reset();
     expect(registry.get(aRef)).toBe(undefined);
@@ -47,9 +47,9 @@ describe('ApiTestRegistry', () => {
 
   it('should keep saved factories when resetting', () => {
     const registry = new ApiTestRegistry();
-    registry.register(aRef, () => 3);
+    registry.register({ implements: aRef, deps: {}, factory: () => 3 });
     registry.save();
-    registry.register(bRef, () => 'x');
+    registry.register({ implements: bRef, deps: {}, factory: () => 'x' });
     expect(registry.get(aRef)).toBe(3);
     expect(registry.get(bRef)).toBe('x');
     registry.reset();
@@ -127,7 +127,7 @@ describe('ApiTestRegistry', () => {
   it('should only call factory func once', () => {
     const registry = new ApiTestRegistry();
     const factory = jest.fn().mockReturnValue(2);
-    registry.register(aRef, factory);
+    registry.register({ implements: aRef, deps: {}, factory });
 
     expect(factory).toHaveBeenCalledTimes(0);
     expect(registry.get(aRef)).toBe(2);
@@ -139,7 +139,7 @@ describe('ApiTestRegistry', () => {
   it('should call factory again after reset', () => {
     const registry = new ApiTestRegistry();
     const factory = jest.fn().mockReturnValue(2);
-    registry.register(aRef, factory);
+    registry.register({ implements: aRef, deps: {}, factory });
     registry.save();
 
     expect(factory).toHaveBeenCalledTimes(0);

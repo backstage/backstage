@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ApiRef } from './ApiRef';
+import { createApiRef } from './ApiRef';
 
 describe('ApiRef', () => {
   it('should be created', () => {
-    const ref = new ApiRef({ id: 'abc', description: '123' });
+    const ref = createApiRef({ id: 'abc', description: '123' });
     expect(ref.id).toBe('abc');
     expect(ref.description).toBe('123');
     expect(String(ref)).toBe('apiRef{abc}');
@@ -26,13 +26,13 @@ describe('ApiRef', () => {
   });
 
   it('should reject invalid ids', () => {
-    for (const id of ['a', 'abc', 'a.b.c', 'ab.c', 'abc.abc.abc3']) {
-      expect(new ApiRef({ id, description: '123' }).id).toBe(id);
+    for (const id of ['a', 'abc', 'ab-c', 'a.b.c', 'a-b.c', 'abc.a-b-c.abc3']) {
+      expect(createApiRef({ id, description: '123' }).id).toBe(id);
     }
 
     for (const id of [
       '123',
-      'ab-c',
+      'ab-3',
       'ab_c',
       '.',
       '2ac',
@@ -43,8 +43,8 @@ describe('ApiRef', () => {
       '',
       '_',
     ]) {
-      expect(() => new ApiRef({ id, description: '123' }).id).toThrow(
-        `API id must only contain lowercase alphanums separated by dots, got '${id}'`,
+      expect(() => createApiRef({ id, description: '123' }).id).toThrow(
+        `API id must only contain period separated lowercase alphanum tokens with dashes, got '${id}'`,
       );
     }
   });

@@ -16,7 +16,7 @@
 
 import { IconComponent } from '../../../icons';
 import { Observable } from '../../types';
-import { ApiRef } from '../ApiRef';
+import { createApiRef } from '../ApiRef';
 
 /**
  * Information about the auth provider that we're requesting a login towards.
@@ -127,7 +127,7 @@ export type OAuthRequestApi = {
   authRequest$(): Observable<PendingAuthRequest[]>;
 };
 
-export const oauthRequestApiRef = new ApiRef<OAuthRequestApi>({
+export const oauthRequestApiRef = createApiRef<OAuthRequestApi>({
   id: 'core.oauthrequest',
   description: 'An API for implementing unified OAuth flows in Backstage',
 });

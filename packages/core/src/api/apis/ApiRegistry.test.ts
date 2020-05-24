@@ -15,11 +15,11 @@
  */
 
 import { ApiRegistry } from './ApiRegistry';
-import { ApiRef } from './ApiRef';
+import { createApiRef } from './ApiRef';
 
 describe('ApiRegistry', () => {
-  const x1Ref = new ApiRef<number>({ id: 'x', description: '' });
-  const x2Ref = new ApiRef<string>({ id: 'x', description: '' });
+  const x1Ref = createApiRef<number>({ id: 'x', description: '' });
+  const x2Ref = createApiRef<string>({ id: 'x', description: '' });
 
   it('should be created', () => {
     const registry = ApiRegistry.from([]);
