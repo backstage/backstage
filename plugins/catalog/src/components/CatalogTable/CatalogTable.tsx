@@ -15,7 +15,13 @@
  */
 import React, { FC } from 'react';
 import { Component } from '../../data/component';
-import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
+import {
+  InfoCard,
+  Progress,
+  Table,
+  TableColumn,
+  StatusOK,
+} from '@backstage/core';
 import { Typography, Link } from '@material-ui/core';
 
 const columns: TableColumn[] = [
@@ -30,41 +36,28 @@ const columns: TableColumn[] = [
   {
     title: 'System',
     field: 'system',
-    /*
-    render: (componentData: any) => (
-      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
-    ),
-    */
   },
   {
     title: 'Owner',
     field: 'owner',
-    /*
-    highlight: true,
-    render: (componentData: any) => (
-      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
-    ),
-    */
   },
   {
     title: 'Lifecycle',
     field: 'lifecycle',
-    /*
-    highlight: true,
+  },
+  {
+    title: 'Status',
+    field: 'status',
     render: (componentData: any) => (
-      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
+      <>
+        <StatusOK />
+        {componentData.status || 'Up and running'}
+      </>
     ),
-    */
   },
   {
     title: 'Description',
     field: 'description',
-    /*
-    highlight: true,
-    render: (componentData: any) => (
-      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
-    ),
-    */
   },
 ];
 
