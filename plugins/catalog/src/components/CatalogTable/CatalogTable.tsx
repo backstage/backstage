@@ -87,7 +87,7 @@ const CatalogTable: FC<CatalogTableProps> = ({
     <Table
       columns={columns}
       options={{ paging: false }}
-      title={`Owned (${components.length})`}
+      title={`Owned (${(components && components.length) || 0})`}
       data={components}
     />
   );
