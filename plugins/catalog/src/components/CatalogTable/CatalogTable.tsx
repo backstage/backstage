@@ -87,7 +87,7 @@ const CatalogTable: FC<CatalogTableProps> = ({
     <Table
       columns={columns}
       options={{ paging: false }}
-      title="Your Services"
+      title={`Owned (${components.length})`}
       data={components}
     />
   );

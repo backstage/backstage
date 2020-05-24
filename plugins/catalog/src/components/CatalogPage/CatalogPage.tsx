@@ -17,14 +17,17 @@
 import React, { FC } from 'react';
 import {
   Content,
+  ContentHeader,
   Header,
   HomepageTimer,
+  SupportButton,
   Page,
   pageTheme,
 } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { ComponentFactory } from '../../data/component';
 import CatalogTable from '../CatalogTable/CatalogTable';
+import { Button } from '@material-ui/core';
 
 type CatalogPageProps = {
   componentFactory: ComponentFactory;
@@ -37,6 +40,12 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
         <HomepageTimer />
       </Header>
       <Content>
+        <ContentHeader title="Services">
+          <Button variant="contained" color="primary" href="/create">
+            Create Service
+          </Button>
+          <SupportButton>All your components</SupportButton>
+        </ContentHeader>
         <CatalogTable
           components={value || []}
           loading={loading}
