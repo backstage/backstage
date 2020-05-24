@@ -20,7 +20,6 @@
     "remove-plugin": "backstage-cli remove-plugin",
     "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push; fi",
     "lerna": "lerna",
-    "postinstall": "patch-package",
     "storybook": "yarn workspace storybook start",
     "build-storybook": "yarn workspace storybook build-storybook"
   },
@@ -37,7 +36,6 @@
     "husky": "^4.2.3",
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.0",
-    "patch-package": "^6.2.2",
     "prettier": "^2.0.5"
   },
   "husky": {
