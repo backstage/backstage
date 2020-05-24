@@ -178,6 +178,36 @@ const RadarLegend: FC<Props> = props => {
     );
   };
 
+  const _setupSegments = (entries: Entry[]) => {
+    const segments: Segments = {};
+
+    for (const entry of entries) {
+      const qidx = entry.quadrant.idx;
+      const ridx = entry.ring.idx;
+      let quadrantData: { [k: number]: Entry[] } = {};
+      if (qidx !== undefined) {
+        if (segments[qidx] === undefined) {
+          segments[qidx] = {};
+        }
+
+        quadrantData = segments[qidx];
+      }
+
+      let ringData = [];
+      if (ridx !== undefined) {
+        if (quadrantData[ridx] === undefined) {
+          quadrantData[ridx] = [];
+        }
+
+        ringData = quadrantData[ridx];
+      }
+
+      ringData.push(entry);
+    }
+
+    return segments;
+  };
+
   const {
     quadrants,
     rings,
@@ -186,15 +216,7 @@ const RadarLegend: FC<Props> = props => {
     onEntryMouseLeave,
   } = props;
 
-  const segments: Segments = {};
-
-  for (const entry of entries) {
-    const qidx = entry.quadrant.idx;
-    const ridx = entry.ring.idx;
-    const quadrantData = qidx === undefined ? {} : segments[qidx] || {};
-    const ringData = ridx === undefined ? [] : quadrantData[ridx] || [];
-    ringData.push(entry);
-  }
+  const segments: Segments = _setupSegments(entries);
 
   return (
     <g>
