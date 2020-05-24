@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import { makeStyles, Theme } from '@material-ui/core';
-import * as CommonPropTypes from '../../utils/prop-types';
+// import * as CommonPropTypes from '../../utils/prop-types';
 import { Quadrant, Ring, Entry } from '../../utils/types';
+
+// TODO: Remove this once segment.js has been typed
+type Segment = {
+  [k: number]: any[];
+};
+
+type Segments = {
+  [k: number]: Segment;
+};
 
 type Props = {
   quadrants: Quadrant[];
   rings: Ring[];
   entries: Entry[];
-  onEntryMouseEnter?: Function;
-  onEntryMouseLeave?: Function;
+  onEntryMouseEnter?: (entry: Entry) => any;
+  onEntryMouseLeave?: (entry: Entry) => any;
 };
 
 const useStyles = makeStyles<Theme>(() => ({
@@ -81,15 +90,23 @@ const RadarLegend: FC<Props> = props => {
   const classes = useStyles(props);
 
   const _getSegment = (
-    segmented,
+    segmented: Segments,
     quadrant: Quadrant,
     ring: Ring,
     ringOffset = 0,
   ) => {
-    return (segmented[quadrant.idx] || {})[ring.idx + ringOffset] || [];
+    const qidx = quadrant.idx;
+    const ridx = ring.idx;
+    const segmentedData = qidx === undefined ? {} : segmented[qidx] || {};
+    return ridx === undefined ? [] : segmentedData[ridx + ringOffset] || [];
   };
 
-  const _renderRing = (ring, entries, onEntryMouseEnter, onEntryMouseLeave) => {
+  const _renderRing = (
+    ring: Ring,
+    entries: Entry[],
+    onEntryMouseEnter?: Props['onEntryMouseEnter'],
+    onEntryMouseLeave?: Props['onEntryMouseEnter'],
+  ) => {
     return (
       <div key={ring.id} className={classes.ring}>
         <h3 className={classes.ringHeading}>{ring.name}</h3>
@@ -111,12 +128,12 @@ const RadarLegend: FC<Props> = props => {
               return (
                 <li
                   key={entry.id}
-                  value={entry.idx + 1}
+                  value={(entry.idx || 0) + 1}
                   onMouseEnter={
                     onEntryMouseEnter && (() => onEntryMouseEnter(entry))
                   }
                   onMouseLeave={
-                    onEntryMouseEnter && (() => onEntryMouseLeave(entry))
+                    onEntryMouseLeave && (() => onEntryMouseLeave(entry))
                   }
                 >
                   {node}
@@ -130,11 +147,11 @@ const RadarLegend: FC<Props> = props => {
   };
 
   const _renderQuadrant = (
-    segments,
-    quadrant,
-    rings,
-    onEntryMouseEnter,
-    onEntryMouseLeave,
+    segments: Segments,
+    quadrant: Quadrant,
+    rings: Ring[],
+    onEntryMouseEnter: Props['onEntryMouseEnter'],
+    onEntryMouseLeave: Props['onEntryMouseLeave'],
   ) => {
     return (
       <foreignObject
@@ -169,13 +186,13 @@ const RadarLegend: FC<Props> = props => {
     onEntryMouseLeave,
   } = props;
 
-  const segments = {};
+  const segments: Segments = {};
 
   for (const entry of entries) {
     const qidx = entry.quadrant.idx;
     const ridx = entry.ring.idx;
-    const quadrantData = segments[qidx] || (segments[qidx] = {});
-    const ringData = quadrantData[ridx] || (quadrantData[ridx] = []);
+    const quadrantData = qidx === undefined ? {} : segments[qidx] || {};
+    const ringData = ridx === undefined ? [] : quadrantData[ridx] || [];
     ringData.push(entry);
   }
 
@@ -194,13 +211,14 @@ const RadarLegend: FC<Props> = props => {
   );
 };
 
-RadarLegend.propTypes = {
+// FIXME: Why does it say these are null | undefined?
+/* RadarLegend.propTypes = {
   quadrants: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.QUADRANT))
     .isRequired,
   rings: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.RING)).isRequired,
   entries: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.ENTRY)).isRequired,
   onEntryMouseEnter: PropTypes.func,
   onEntryMouseLeave: PropTypes.func,
-};
+}; */
 
 export default RadarLegend;

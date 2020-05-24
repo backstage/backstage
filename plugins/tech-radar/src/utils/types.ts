@@ -27,6 +27,10 @@ export type Quadrant = {
   id: string;
   idx?: number;
   name: string;
+  legendX?: number;
+  legendY?: number;
+  legendWidth?: number;
+  legendHeight?: number;
 };
 
 export type Entry = {
