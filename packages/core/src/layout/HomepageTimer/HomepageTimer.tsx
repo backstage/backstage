@@ -15,7 +15,7 @@
  */
 
 import React, { FC } from 'react';
-import { HeaderLabel } from '@backstage/core';
+import HeaderLabel from '../HeaderLabel';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
 const utcOptions = { timeZone: 'UTC', ...timeFormat };

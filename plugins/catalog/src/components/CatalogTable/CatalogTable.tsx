@@ -27,6 +27,45 @@ const columns: TableColumn[] = [
       <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
     ),
   },
+  {
+    title: 'System',
+    field: 'system',
+    /*
+    render: (componentData: any) => (
+      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
+    ),
+    */
+  },
+  {
+    title: 'Owner',
+    field: 'owner',
+    /*
+    highlight: true,
+    render: (componentData: any) => (
+      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
+    ),
+    */
+  },
+  {
+    title: 'Lifecycle',
+    field: 'lifecycle',
+    /*
+    highlight: true,
+    render: (componentData: any) => (
+      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
+    ),
+    */
+  },
+  {
+    title: 'Description',
+    field: 'description',
+    /*
+    highlight: true,
+    render: (componentData: any) => (
+      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
+    ),
+    */
+  },
 ];
 
 type CatalogTableProps = {

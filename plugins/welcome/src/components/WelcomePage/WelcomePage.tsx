@@ -24,11 +24,11 @@ import {
   ListItemText,
   Link,
 } from '@material-ui/core';
-import Timer from '../Timer';
 import {
   Content,
   InfoCard,
   Header,
+  HomepageTimer,
   Page,
   pageTheme,
   ContentHeader,
@@ -45,7 +45,7 @@ const WelcomePage: FC<{}> = () => {
         title={`Welcome ${profile.givenName || 'to Backstage'}`}
         subtitle="Let's start building a better developer experience"
       >
-        <Timer />
+        <HomepageTimer />
       </Header>
       <Content>
         <ContentHeader title="Getting Started">
