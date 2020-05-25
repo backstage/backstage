@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 import { AlertApi, AlertMessage } from '../../../';
-
-type SubscriberFunc = (message: AlertMessage) => void;
-type Unsubscribe = () => void;
+import { PublishSubject } from './lib';
+import { Observable } from '../../types';
 
 export class AlertApiForwarder implements AlertApi {
-  private readonly subscribers = new Set<SubscriberFunc>();
+  private readonly subject = new PublishSubject<AlertMessage>();
 
   post(alert: AlertMessage) {
-    this.subscribers.forEach(subscriber => subscriber(alert));
+    this.subject.next(alert);
   }
 
-  subscribe(func: SubscriberFunc): Unsubscribe {
-    this.subscribers.add(func);
-
-    return () => {
-      this.subscribers.delete(func);
-    };
+  alert$(): Observable<AlertMessage> {
+    return this.subject;
   }
 }
