@@ -89,7 +89,7 @@ export class DescriptorEnvelopeParser {
       );
 
     const labelsSchema = yup
-      .object()
+      .object<Record<string, string>>()
       .notRequired()
       .test({
         name: 'metadata.labels.keys',
@@ -113,7 +113,7 @@ export class DescriptorEnvelopeParser {
       });
 
     const annotationsSchema = yup
-      .object()
+      .object<Record<string, string>>()
       .notRequired()
       .test({
         name: 'metadata.annotations.keys',

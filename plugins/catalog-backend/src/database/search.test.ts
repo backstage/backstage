@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { DescriptorEnvelope } from '../ingestion';
 import { buildEntitySearch, visitEntityPart } from './search';
 import { DbEntitiesSearchRow } from './types';
-import { DescriptorEnvelope } from '../ingestion';
 
 describe('search', () => {
   describe('visitEntityPart', () => {

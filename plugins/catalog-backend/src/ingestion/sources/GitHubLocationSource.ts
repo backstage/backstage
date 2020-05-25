@@ -15,10 +15,9 @@
  */
 
 import fetch from 'node-fetch';
-import { ReaderOutput } from '../types';
-import { LocationSource } from './types';
-import { readDescriptorYaml } from './util';
 import { URL } from 'url';
+import { LocationSource, ReaderOutput } from '../types';
+import { readDescriptorYaml } from './util';
 
 // Pointing to raw.githubusercontent.com for now
 // to be changed in the future, after auth and tokens are done
@@ -58,7 +57,7 @@ export class GitHubLocationSource implements LocationSource {
 
     let rawYaml;
     try {
-      rawYaml = await fetch(url.toString()).then((x) => {
+      rawYaml = await fetch(url.toString()).then(x => {
         return x.text();
       });
     } catch (e) {

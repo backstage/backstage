@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NotFoundError } from '@backstage/backend-common';
 import { Database } from '../database';
 import { DescriptorEnvelope } from '../ingestion/types';
 import { EntitiesCatalog } from './types';
@@ -22,12 +23,23 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Database) {}
 
   async entities(): Promise<DescriptorEnvelope[]> {
-    const items = await this.database.entities();
+    const items = await this.database.transaction(tx =>
+      this.database.entities(tx),
+    );
     return items.map(i => i.entity);
   }
 
-  async entity(name: string): Promise<DescriptorEnvelope> {
-    const item = await this.database.entity(name);
+  async entity(
+    kind: string,
+    name: string,
+    namespace: string | undefined,
+  ): Promise<DescriptorEnvelope | undefined> {
+    const item = await this.database.transaction(tx =>
+      this.database.entity(tx, kind, name, namespace),
+    );
+    if (!item) {
+      throw new NotFoundError('Entity cannot be found');
+    }
     return item.entity;
   }
 }

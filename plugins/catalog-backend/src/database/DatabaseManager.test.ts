@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
-import winston from 'winston';
+import { getVoidLogger } from '@backstage/backend-common';
 import {
   ComponentDescriptor,
   DescriptorParser,
@@ -25,16 +24,12 @@ import {
 import { Database } from './Database';
 import { DatabaseManager } from './DatabaseManager';
 import { DatabaseLocationUpdateLogStatus, DbLocationsRow } from './types';
+import Knex from 'knex';
 
 describe('DatabaseManager', () => {
-  const logger = winston.createLogger({
-    transports: [new winston.transports.Stream({ stream: new PassThrough() })],
-  });
-
   describe('refreshLocations', () => {
     it('works with no locations added', async () => {
       const db = ({
-        addOrUpdateEntity: jest.fn(),
         locations: jest.fn().mockResolvedValue([]),
       } as unknown) as Database;
       const reader: LocationReader = {
@@ -45,33 +40,34 @@ describe('DatabaseManager', () => {
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, logger),
+        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
       ).resolves.toBeUndefined();
       expect(reader.read).not.toHaveBeenCalled();
       expect(parser.parse).not.toHaveBeenCalled();
     });
 
     it('can update a single location', async () => {
-      const db = ({
-        addOrUpdateEntity: jest.fn(),
-        locations: jest.fn(() =>
-          Promise.resolve([
-            {
-              id: '123',
-              type: 'some',
-              target: 'thing',
-            } as DbLocationsRow,
-          ]),
-        ),
-        addLocationUpdateLogEvent: jest.fn(),
-      } as unknown) as Database;
-
+      const location: DbLocationsRow = {
+        id: '123',
+        type: 'some',
+        target: 'thing',
+      };
       const desc: ComponentDescriptor = {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
         metadata: { name: 'c1' },
         spec: { type: 'service' },
       };
+      const tx = (undefined as unknown) as Knex.Transaction<any, any>;
+
+      const db = ({
+        transaction: jest.fn(f => f(tx)),
+        entity: jest.fn(() => Promise.resolve(undefined)),
+        addEntity: jest.fn(),
+        locations: jest.fn(() => Promise.resolve([location])),
+        addLocationUpdateLogEvent: jest.fn(),
+      } as Partial<Database>) as Database;
+
       const reader: LocationReader = {
         read: jest.fn(() => Promise.resolve([{ type: 'data', data: desc }])),
       };
@@ -80,12 +76,12 @@ describe('DatabaseManager', () => {
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, logger),
+        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
       ).resolves.toBeUndefined();
       expect(reader.read).toHaveBeenCalledTimes(1);
       expect(reader.read).toHaveBeenNthCalledWith(1, 'some', 'thing');
-      expect(db.addOrUpdateEntity).toHaveBeenCalledTimes(1);
-      expect(db.addOrUpdateEntity).toHaveBeenNthCalledWith(1, {
+      expect(db.addEntity).toHaveBeenCalledTimes(1);
+      expect(db.addEntity).toHaveBeenNthCalledWith(1, undefined, {
         locationId: '123',
         entity: expect.objectContaining({
           metadata: expect.objectContaining({ name: 'c1' }),
@@ -94,8 +90,12 @@ describe('DatabaseManager', () => {
     });
 
     it('logs successful updates', async () => {
+      const tx = (undefined as unknown) as Knex.Transaction<any, any>;
+
       const db = ({
-        addOrUpdateEntity: jest.fn(),
+        transaction: jest.fn(f => f(tx)),
+        addEntity: jest.fn(),
+        entity: jest.fn(() => Promise.resolve(undefined)),
         locations: jest.fn(() =>
           Promise.resolve([
             {
@@ -122,7 +122,7 @@ describe('DatabaseManager', () => {
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, logger),
+        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
       ).resolves.toBeUndefined();
 
       expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(
@@ -141,8 +141,11 @@ describe('DatabaseManager', () => {
     });
 
     it('logs unsuccessful updates when parser fails', async () => {
+      const tx = (undefined as unknown) as Knex.Transaction<any, any>;
+
       const db = ({
-        addOrUpdateEntity: jest.fn(),
+        transaction: jest.fn(f => f(tx)),
+        addEntity: jest.fn(),
         locations: jest.fn(() =>
           Promise.resolve([
             {
@@ -171,7 +174,7 @@ describe('DatabaseManager', () => {
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, logger),
+        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
       ).resolves.toBeUndefined();
 
       expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(
@@ -191,8 +194,11 @@ describe('DatabaseManager', () => {
     });
 
     it('logs unsuccessful updates when reader fails', async () => {
+      const tx = (undefined as unknown) as Knex.Transaction<any, any>;
+
       const db = ({
-        addOrUpdateEntity: jest.fn(),
+        transaction: jest.fn(f => f(tx)),
+        addEntity: jest.fn(),
         locations: jest.fn(() =>
           Promise.resolve([
             {
@@ -217,7 +223,7 @@ describe('DatabaseManager', () => {
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, logger),
+        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
       ).resolves.toBeUndefined();
 
       expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(

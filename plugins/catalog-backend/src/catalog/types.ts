@@ -23,7 +23,11 @@ import { DescriptorEnvelope } from '../ingestion';
 
 export type EntitiesCatalog = {
   entities(): Promise<DescriptorEnvelope[]>;
-  entity(id: string): Promise<DescriptorEnvelope>;
+  entity(
+    kind: string,
+    name: string,
+    namespace: string | undefined,
+  ): Promise<DescriptorEnvelope | undefined>;
 };
 
 //

@@ -15,8 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { ReaderOutput } from '../types';
-import { LocationSource } from './types';
+import { LocationSource, ReaderOutput } from '../types';
 import { readDescriptorYaml } from './util';
 
 export class FileLocationSource implements LocationSource {
