@@ -20,6 +20,7 @@ import knex from 'knex';
 import path from 'path';
 
 import { Database } from '../database';
+import { getVoidLogger } from '../../../../packages/backend-common/src/logging/voidLogger';
 
 describe('DatabaseLocationsCatalog', () => {
   const database = knex({
@@ -38,7 +39,7 @@ describe('DatabaseLocationsCatalog', () => {
       directory: path.resolve(__dirname, '../database/migrations'),
       loadExtensions: ['.ts'],
     });
-    db = new Database(database);
+    db = new Database(database, getVoidLogger());
     catalog = new DatabaseLocationsCatalog(db);
   });
   it('resolves to location with id', async () => {

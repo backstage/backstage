@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { LocationSource } from '../sources/types';
-import { LocationReader, ReaderOutput } from '../types';
+import { LocationSource, LocationReader, ReaderOutput } from '../types';
 
 export class LocationReaders implements LocationReader {
   static create(): LocationReader {
