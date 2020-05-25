@@ -15,6 +15,7 @@
  */
 import * as React from 'react';
 import { render } from '@testing-library/react';
+import { wrapInThemedTestApp } from '@backstage/test-utils';
 import CatalogTable from './CatalogTable';
 import { Component } from '../../data/component';
 
@@ -26,18 +27,22 @@ const components: Component[] = [
 
 describe('CatalogTable component', () => {
   it('should render loading when loading prop it set to true', async () => {
-    const rendered = render(<CatalogTable components={[]} loading />);
+    const rendered = render(
+      wrapInThemedTestApp(<CatalogTable components={[]} loading />),
+    );
     const progress = await rendered.findByTestId('progress');
     expect(progress).toBeInTheDOM();
   });
 
   it('should render error message when error is passed in props', async () => {
     const rendered = render(
-      <CatalogTable
-        components={[]}
-        loading={false}
-        error={{ code: 'error' }}
-      />,
+      wrapInThemedTestApp(
+        <CatalogTable
+          components={[]}
+          loading={false}
+          error={{ code: 'error' }}
+        />,
+      ),
     );
     const errorMessage = await rendered.findByText(
       'Error encountered while fetching components.',
@@ -47,7 +52,9 @@ describe('CatalogTable component', () => {
 
   it('should display component names when loading has finished and no error occurred', async () => {
     const rendered = render(
-      <CatalogTable components={components} loading={false} />,
+      wrapInThemedTestApp(
+        <CatalogTable components={components} loading={false} />,
+      ),
     );
     expect(await rendered.findByText('component1')).toBeInTheDOM();
     expect(await rendered.findByText('component2')).toBeInTheDOM();
