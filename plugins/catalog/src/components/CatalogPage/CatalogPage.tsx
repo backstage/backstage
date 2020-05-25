@@ -27,13 +27,59 @@ import {
 import { useAsync } from 'react-use';
 import { ComponentFactory } from '../../data/component';
 import CatalogTable from '../CatalogTable/CatalogTable';
-import { Button } from '@material-ui/core';
+import CatalogFilter, {
+  CatalogFilterGroup,
+} from '../CatalogFilter/CatalogFilter';
+import { Button, makeStyles } from '@material-ui/core';
+import StarIcon from '@material-ui/icons/Star';
+import SettingsIcon from '@material-ui/icons/Settings';
+
+const useStyles = makeStyles({
+  contentWrapper: {
+    display: 'grid',
+    gridTemplateAreas: '"filters" "table"',
+    gridTemplateColumns: '250px 1fr',
+    gridColumnGap: '16px',
+  },
+});
 
 type CatalogPageProps = {
   componentFactory: ComponentFactory;
 };
+
+const filterGroups: CatalogFilterGroup[] = [
+  {
+    name: 'Personal',
+    items: [
+      {
+        id: 'owned',
+        label: 'Owned',
+        count: 123,
+        icon: <SettingsIcon fontSize="small" />,
+      },
+      {
+        id: 'starred',
+        label: 'Starred',
+        count: 10,
+        icon: <StarIcon fontSize="small" />,
+      },
+    ],
+  },
+  {
+    name: 'Spotify',
+    items: [
+      {
+        id: 'all',
+        label: 'All Services',
+        count: 123,
+      },
+    ],
+  },
+];
+
 const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
   const { value, error, loading } = useAsync(componentFactory.getAllComponents);
+  const styles = useStyles();
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
@@ -46,11 +92,16 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
           </Button>
           <SupportButton>All your components</SupportButton>
         </ContentHeader>
-        <CatalogTable
-          components={value || []}
-          loading={loading}
-          error={error}
-        />
+        <div className={styles.contentWrapper}>
+          <div>
+            <CatalogFilter groups={filterGroups} />
+          </div>
+          <CatalogTable
+            components={value || []}
+            loading={loading}
+            error={error}
+          />
+        </div>
       </Content>
     </Page>
   );
