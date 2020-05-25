@@ -92,14 +92,15 @@ export class GoogleAuthProvider
       'google',
       refreshToken,
       params,
-      (err, accessToken) => {
+      (err, accessToken, _, params) => {
         if (err || !accessToken) {
           return res.status(401).send('Failed to refresh access token');
         }
-
         return res.send({
           accessToken,
-          expiresInSeconds: 36000,
+          idToken: params.id_token,
+          expiresInSeconds: params.expires_in,
+          scope: params.scope,
         });
       },
     );
@@ -121,6 +122,7 @@ export class GoogleAuthProvider
           idToken: params.id_token,
           accessToken,
           refreshToken,
+          scope: params.scope,
         });
       },
     );
