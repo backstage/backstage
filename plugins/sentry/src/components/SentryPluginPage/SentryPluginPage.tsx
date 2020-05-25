@@ -33,23 +33,22 @@ const SentryPluginPage: FC<{}> = () => {
 
   return (
     <Page theme={pageTheme.tool}>
-      <Header title="Welcome to Sentry Plugin!">
-        <ToggleButtonGroup
-          value={statsFor}
-          exclusive
-          onChange={toggleStatsFor}
-          aria-label="text alignment"
-        >
-          <ToggleButton value="24h" aria-label="left aligned">
-            24H
-          </ToggleButton>
-          <ToggleButton value="12h" aria-label="left aligned">
-            12H
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Header>
+      <Header title="Sentry" />
       <Content>
         <ContentHeader title="Issue on Sentry">
+          <ToggleButtonGroup
+            value={statsFor}
+            exclusive
+            onChange={toggleStatsFor}
+            aria-label="text alignment"
+          >
+            <ToggleButton value="24h" aria-label="left aligned">
+              24H
+            </ToggleButton>
+            <ToggleButton value="12h" aria-label="left aligned">
+              12H
+            </ToggleButton>
+          </ToggleButtonGroup>
           <SupportButton>
             Sentry plugin allows you to preview issues and navigate to sentry.
           </SupportButton>
