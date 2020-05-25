@@ -113,7 +113,7 @@ const WelcomePage: FC<{}> = () => {
                   creating a plugin
                 </Link>{' '}
                 or have a look in the code for the{' '}
-                <Link component={RouterLink} to="/home">
+                <Link component={RouterLink} to="/explore">
                   existing plugins
                 </Link>{' '}
                 in the directory{' '}
