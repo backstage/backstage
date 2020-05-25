@@ -45,7 +45,7 @@ export class GitHubLocationSource implements LocationSource {
         blobKeyword !== 'blob' ||
         !restOfPath.join('/').match(/\.yaml$/)
       ) {
-        throw new Error();
+        throw new Error('Wrong GitHub URL');
       }
 
       // Removing the "blob" part
