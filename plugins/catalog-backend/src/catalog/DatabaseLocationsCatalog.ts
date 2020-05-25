@@ -16,11 +16,24 @@
 
 import { Database } from '../database';
 import { AddLocation, Location, LocationsCatalog } from './types';
+import { LocationReaders } from '../ingestion';
 
 export class DatabaseLocationsCatalog implements LocationsCatalog {
   constructor(private readonly database: Database) {}
 
   async addLocation(location: AddLocation): Promise<Location> {
+    const outputs = await LocationReaders.create().read(
+      location.type,
+      location.target,
+    );
+    outputs.forEach(output => {
+      if (output.type === 'error') {
+        throw new Error(
+          `Can't read location at ${location.target} with error: ${output.error.message}`,
+        );
+      }
+    });
+
     const added = await this.database.addLocation(location);
     return added;
   }
