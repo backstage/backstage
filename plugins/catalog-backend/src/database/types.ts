@@ -40,6 +40,12 @@ export type DbEntityResponse = {
   entity: DescriptorEnvelope;
 };
 
+export type DbEntitiesSearchRow = {
+  entity_id: string;
+  key: string;
+  value: string | null;
+};
+
 export type DbLocationsRow = {
   id: string;
   type: string;

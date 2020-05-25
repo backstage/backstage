@@ -204,4 +204,16 @@ export class Database {
       message,
     });
   }
+
+  /*
+  private async updateEntitiesSearch(
+    tx: Knex.Transaction<any, any>,
+    entityId: string,
+    data: DescriptorEnvelope,
+  ): Promise<void> {
+    const entries = buildEntitySearch(entityId, data);
+    await tx('entities_search').where({ entity_id: entityId }).del();
+    await tx('entities_search').insert(entries);
+  }
+  */
 }
