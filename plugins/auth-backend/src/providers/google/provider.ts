@@ -98,7 +98,7 @@ export class GoogleAuthProvider
         if (err || !accessToken) {
           return res.status(401).send('Failed to refresh access token');
         }
-        res.send({
+        return res.send({
           accessToken,
           idToken: params.id_token,
           expiresInSeconds: params.expires_in,
