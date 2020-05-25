@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef } from '../ApiRef';
+import { createApiRef } from '../ApiRef';
 import { BackstageTheme } from '@backstage/theme';
 import { Observable } from '../../types';
 
@@ -71,7 +71,7 @@ export type AppThemeApi = {
   setActiveThemeId(themeId?: string): void;
 };
 
-export const appThemeApiRef = new ApiRef<AppThemeApi>({
+export const appThemeApiRef = createApiRef<AppThemeApi>({
   id: 'core.apptheme',
   description: 'API Used to configure the app theme, and enumerate options',
 });

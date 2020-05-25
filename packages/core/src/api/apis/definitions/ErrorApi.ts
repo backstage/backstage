@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef } from '../ApiRef';
+import { createApiRef } from '../ApiRef';
 
 /**
  * Mirrors the javascript Error class, for the purpose of
@@ -56,7 +56,7 @@ export type ErrorApi = {
   post(error: Error, context?: ErrorContext): void;
 };
 
-export const errorApiRef = new ApiRef<ErrorApi>({
+export const errorApiRef = createApiRef<ErrorApi>({
   id: 'core.error',
   description: 'Used to report errors and forward them to the app',
 });

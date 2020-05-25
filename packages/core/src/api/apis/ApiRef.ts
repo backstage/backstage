@@ -19,11 +19,21 @@ export type ApiRefConfig = {
   description: string;
 };
 
-export class ApiRef<T> {
+export type ApiRef<T> = {
+  id: string;
+  description: string;
+  T: T;
+};
+
+class ApiRefImpl<T> implements ApiRef<T> {
   constructor(private readonly config: ApiRefConfig) {
-    if (!config.id.match(/^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*$/)) {
+    const valid = config.id
+      .split('.')
+      .flatMap(part => part.split('-'))
+      .every(part => part.match(/^[a-z][a-z0-9]*$/));
+    if (!valid) {
       throw new Error(
-        `API id must only contain lowercase alphanums separated by dots, got '${config.id}'`,
+        `API id must only contain period separated lowercase alphanum tokens with dashes, got '${config.id}'`,
       );
     }
   }
@@ -46,6 +56,6 @@ export class ApiRef<T> {
   }
 }
 
-export function createApiRef<T>(config: ApiRefConfig) {
-  return new ApiRef<T>(config);
+export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> {
+  return new ApiRefImpl<T>(config);
 }

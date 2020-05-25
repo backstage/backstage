@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiRef } from '../ApiRef';
+import { createApiRef } from '../ApiRef';
 
 export type AlertMessage = {
   message: string;
@@ -32,7 +32,7 @@ export type AlertApi = {
   post(alert: AlertMessage): void;
 };
 
-export const alertApiRef = new ApiRef<AlertApi>({
+export const alertApiRef = createApiRef<AlertApi>({
   id: 'core.alert',
   description: 'Used to report alerts and forward them to the app',
 });

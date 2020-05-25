@@ -15,12 +15,12 @@
  */
 
 import { ApiAggregator } from './ApiAggregator';
-import { ApiRef } from './ApiRef';
+import { createApiRef } from './ApiRef';
 import { ApiRegistry } from './ApiRegistry';
 
 describe('ApiAggregator', () => {
-  const apiARef = new ApiRef<number>({ id: 'a', description: '' });
-  const apiBRef = new ApiRef<number>({ id: 'b', description: '' });
+  const apiARef = createApiRef<number>({ id: 'a', description: '' });
+  const apiBRef = createApiRef<number>({ id: 'b', description: '' });
 
   it('should forward implementations', () => {
     const agg = new ApiAggregator(

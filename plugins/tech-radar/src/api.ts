@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef } from '@backstage/core';
+import { createApiRef } from '@backstage/core';
 
 /**
  * Types related to the Radar's visualization.
@@ -71,7 +71,7 @@ export interface TechRadarApi extends TechRadarComponentProps {
   subtitle?: string;
 }
 
-export const techRadarApiRef = new ApiRef<TechRadarApi>({
+export const techRadarApiRef = createApiRef<TechRadarApi>({
   id: 'plugin.techradar',
   description: 'Used by the Tech Radar to render the visualization',
 });
