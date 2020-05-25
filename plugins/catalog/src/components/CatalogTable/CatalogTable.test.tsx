@@ -31,7 +31,7 @@ describe('CatalogTable component', () => {
       wrapInThemedTestApp(<CatalogTable components={[]} loading />),
     );
     const progress = await rendered.findByTestId('progress');
-    expect(progress).toBeInTheDOM();
+    expect(progress).toBeInTheDocument();
   });
 
   it('should render error message when error is passed in props', async () => {
@@ -47,7 +47,7 @@ describe('CatalogTable component', () => {
     const errorMessage = await rendered.findByText(
       'Error encountered while fetching components.',
     );
-    expect(errorMessage).toBeInTheDOM();
+    expect(errorMessage).toBeInTheDocument();
   });
 
   it('should display component names when loading has finished and no error occurred', async () => {
@@ -56,8 +56,8 @@ describe('CatalogTable component', () => {
         <CatalogTable components={components} loading={false} />,
       ),
     );
-    expect(await rendered.findByText('component1')).toBeInTheDOM();
-    expect(await rendered.findByText('component2')).toBeInTheDOM();
-    expect(await rendered.findByText('component3')).toBeInTheDOM();
+    expect(await rendered.findByText('component1')).toBeInTheDocument();
+    expect(await rendered.findByText('component2')).toBeInTheDocument();
+    expect(await rendered.findByText('component3')).toBeInTheDocument();
   });
 });
