@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ErrorApi, ErrorContext, AlertApi } from '../../../';
+import { ErrorApi, ErrorContext } from '../../../';
 import { PublishSubject } from './lib';
 import { Observable } from '../../types';
 
@@ -23,13 +23,7 @@ export class ErrorApiForwarder implements ErrorApi {
     context?: ErrorContext;
   }>();
 
-  constructor(private readonly alertApi: AlertApi) {}
-
   post(error: Error, context?: ErrorContext) {
-    if (!context?.hidden) {
-      this.alertApi.post({ message: error.message, severity: 'error' });
-    }
-
     this.subject.next({ error, context });
   }
 
