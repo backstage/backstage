@@ -3,8 +3,8 @@
 ## Introduction
 
 Backstage Plugins strive to be self-contained, with as much functionality
-as possible residing withing the plugin itself and its backend APIs. There will however
-always be a need for plugins to communicate outside of it's boundaries, both with other
+as possible residing within the plugin itself and its backend APIs. There will however
+always be a need for plugins to communicate outside of its boundaries, both with other
 plugins and the app itself.
 
 Backstage provides two primary methods for plugins to communication across
@@ -39,7 +39,7 @@ export const MyComponent: FC<{}> = () => {
 };
 ```
 
-Note that there is not explicit type given for the `ErrorApi`, this is because the `errorApiRef` has the type embedded, and `useApi` is able to infer the type.
+Note that there is no explicit type given for `ErrorApi`. This is because the `errorApiRef` has the type embedded, and `useApi` is able to infer the type.
 
 Also note that consuming Utility APIs is not limited to plugins, it can be done from any component inside Backstage, including the ones in `@backstage/core`. The only requirement is that they are beneath the `AppProvider` in the react tree.
 
@@ -101,13 +101,13 @@ implement the `ErrorApi`, as it is checked by the type embedded in the `errorApi
 
 ## Defining custom Utility APIs
 
-The pattern for plugins defining their own Utility APIs is not fully established yet. The current way is for the plugin to export it's own `ApiRef` and type for the API, along with one or more implementations. It is then up to the app to import, and register those APIs. See for example the lighthouse or graphiql plugins for examples of this.
+The pattern for plugins defining their own Utility APIs is not fully established yet. The current way is for the plugin to export its own `ApiRef` and type for the API, along with one or more implementations. It is then up to the app to import, and register those APIs. See for example the [lighthouse](/plugins/lighthouse/src/api.ts) or [graphiql](/plugins/graphiql/src/lib/api/types.ts) plugins for examples of this.
 
-The goal is to make this process a bit smoother, but that requires work in other parts of Backstage, like configuration management. So it remains as a TODO. If you have more questions regarding this, or have an idea for and API that you want to share outside your plugin, hit us up in GitHub issues or the Backstage Discord server.
+The goal is to make this process a bit smoother, but that requires work in other parts of Backstage, like configuration management. So it remains as a TODO. If you have more questions regarding this, or have an idea for an API that you want to share outside your plugin, hit us up in [GitHub issues](https://github.com/spotify/backstage/issues/new/choose) or the [Backstage Discord server](https://discord.gg/EBHEGzX).
 
 ## Architecture
 
-The `ApiRef` instances mentioned above provide a point of indirection between consumers and producers
+The `ApiRef` instances mentioned above provide a point of indirection between consumers and producers of
 Utility APIs. It allows for plugins and components to depend on APIs in a type-safe way, without
 having a direct reference to a concrete implementation of the APIs. The Apps are also given a lot
 of flexibility in what implementations to provide. As long as they adhere to the contract established
@@ -131,7 +131,7 @@ The indirection provided by Utility APIs also makes it straightforward to test c
 on APIs, and to provide a standard common development environment for plugins. A proper test wrapper
 with mocked API implementations is not yet ready, but it will provided as a part of
 `@backstage/test-utils`. It will provide mocked variants of APIs, with additional methods for asserting
-a components interaction with the API.
+a component's interaction with the API.
 
 The common development environment for plugins is included in `@backstage/dev-utils`, where the exported
 `createDevApp` function creates an application with implementations for all core APIs already present.
