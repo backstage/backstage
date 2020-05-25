@@ -16,6 +16,7 @@
 
 import React from 'react';
 import CodeSnippet from './CodeSnippet';
+import InfoCard from '../../layout/InfoCard';
 
 export default {
   title: 'CodeSnippet',
@@ -50,32 +51,38 @@ greet(world)
 `;
 
 export const Default = () => (
-  <CodeSnippet text={"const hello = 'World';"} language="javascript" />
+  <InfoCard title="JavaScript example">
+    <CodeSnippet text={"const hello = 'World';"} language="javascript" />
+  </InfoCard>
 );
 
 export const MultipleLines = () => (
-  <CodeSnippet text={JAVASCRIPT} language="javascript" />
+  <InfoCard title="JavaScript multi-line example">
+    <CodeSnippet text={JAVASCRIPT} language="javascript" />
+  </InfoCard>
 );
 
 export const LineNumbers = () => (
-  <CodeSnippet text={JAVASCRIPT} language="javascript" showLineNumbers />
+  <InfoCard title="Show line numbers">
+    <CodeSnippet text={JAVASCRIPT} language="javascript" showLineNumbers />
+  </InfoCard>
 );
 
 export const Overflow = () => (
-  <>
+  <InfoCard title="Overflow">
     <div style={containerStyle}>
       <CodeSnippet text={JAVASCRIPT} language="javascript" />
     </div>
     <div style={containerStyle}>
       <CodeSnippet text={JAVASCRIPT} language="javascript" showLineNumbers />
     </div>
-  </>
+  </InfoCard>
 );
 
 export const Languages = () => (
-  <>
+  <InfoCard title="Multiple languages">
     <CodeSnippet text={JAVASCRIPT} language="javascript" showLineNumbers />
     <CodeSnippet text={TYPESCRIPT} language="typescript" showLineNumbers />
     <CodeSnippet text={PYTHON} language="python" showLineNumbers />
-  </>
+  </InfoCard>
 );
