@@ -40,6 +40,13 @@ const main = (argv: string[]) => {
     .action(actionHandler(() => require('./commands/app/serve')));
 
   program
+    .command('app:diff')
+    .option('--check', 'Fail if changes are required')
+    .option('--yes', 'Apply all changes')
+    .description('Diff an existing app with the creation template')
+    .action(actionHandler(() => require('./commands/app/diff')));
+
+  program
     .command('create-plugin')
     .description('Creates a new plugin in the current repository')
     .action(
@@ -157,7 +164,7 @@ function actionHandler<T extends readonly any[]>(
   };
 }
 
-process.on('unhandledRejection', (rejection) => {
+process.on('unhandledRejection', rejection => {
   if (rejection instanceof Error) {
     exitWithError(rejection);
   } else {
