@@ -15,18 +15,53 @@
  */
 
 import { makeStyles } from '@material-ui/core';
-import React, { FC } from 'react';
+import React, { createContext, FC, useEffect, useState } from 'react';
 import { sidebarConfig } from './config';
+import { BackstageTheme } from '@backstage/theme';
+import { LocalStorage } from '../../data/localStorage';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>({
   root: {
     width: '100%',
     minHeight: '100%',
-    paddingLeft: sidebarConfig.drawerWidthClosed,
+    transition: 'padding-left 0.1s ease-out',
+    paddingLeft: ({ isPinned }) =>
+      isPinned
+        ? sidebarConfig.drawerWidthOpen
+        : sidebarConfig.drawerWidthClosed,
   },
 });
 
-export const SidebarPage: FC<{}> = ({ children }) => {
-  const classes = useStyles();
-  return <div className={classes.root}>{children}</div>;
+export type SidebarPinStateContextType = {
+  isPinned: boolean;
+  toggleSidebarPinState: () => any;
+};
+
+export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
+  {
+    isPinned: false,
+    toggleSidebarPinState: () => {},
+  },
+);
+
+export const SidebarPage: FC<{}> = (props) => {
+  const [isPinned, setIsPinned] = useState(LocalStorage.getSidebarPinState());
+
+  useEffect(() => {
+    LocalStorage.setSidebarPinState(isPinned);
+  }, [isPinned]);
+
+  const toggleSidebarPinState = () => setIsPinned(!isPinned);
+
+  const classes = useStyles({ isPinned });
+  return (
+    <SidebarPinStateContext.Provider
+      value={{
+        isPinned,
+        toggleSidebarPinState,
+      }}
+    >
+      <div className={classes.root}>{props.children}</div>
+    </SidebarPinStateContext.Provider>
+  );
 };

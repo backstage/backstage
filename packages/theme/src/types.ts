@@ -51,6 +51,10 @@ type PaletteAdditions = {
       default: string;
     };
   };
+  pinSidebarButton: {
+    icon: string;
+    background: string;
+  };
 };
 
 export type BackstagePalette = Palette & PaletteAdditions;

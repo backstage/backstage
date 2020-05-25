@@ -110,7 +110,6 @@ class DevAppBuilder {
   // Create a sidebar that exposes the touchpoints of a plugin
   private setupSidebar(plugins: BackstagePlugin[]): JSX.Element {
     const sidebarItems = new Array<JSX.Element>();
-
     for (const plugin of plugins) {
       for (const output of plugin.output()) {
         switch (output.type) {
