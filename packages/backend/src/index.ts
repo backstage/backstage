@@ -58,9 +58,13 @@ function createEnv(plugin: string): PluginEnvironment {
 
 async function main() {
   const app = express();
+  const corsOptions: cors.CorsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+  };
 
   app.use(helmet());
-  app.use(cors());
+  app.use(cors(corsOptions));
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());

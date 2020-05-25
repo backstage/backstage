@@ -63,7 +63,8 @@ export class GoogleAuthProvider
         maxAge: THOUSAND_DAYS_MS,
         secure: false,
         sameSite: 'none',
-        path: 'localhost:3000/auth/google',
+        domain: 'localhost',
+        path: '/auth/google',
         httpOnly: true,
       };
 
@@ -123,6 +124,7 @@ export class GoogleAuthProvider
           accessToken,
           refreshToken,
           scope: params.scope,
+          expiresInSeconds: params.expires_in,
         });
       },
     );

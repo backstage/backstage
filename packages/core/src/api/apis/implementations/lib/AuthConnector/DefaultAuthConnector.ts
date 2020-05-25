@@ -99,7 +99,7 @@ export class DefaultAuthConnector<AuthSession>
   }
 
   async refreshSession(): Promise<any> {
-    const res = await fetch(this.buildUrl('/token', { optional: true }), {
+    const res = await fetch(this.buildUrl('/refresh', { optional: true }), {
       headers: {
         'x-requested-with': 'XMLHttpRequest',
       },
