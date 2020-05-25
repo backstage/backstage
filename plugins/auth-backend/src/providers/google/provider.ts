@@ -15,8 +15,9 @@
  */
 
 import passport from 'passport';
-import express from 'express';
+import express, { CookieOptions } from 'express';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import refresh from 'passport-oauth2-refresh';
 import {
   AuthProvider,
   AuthProviderRouteHandlers,
@@ -25,6 +26,7 @@ import {
 import { postMessageResponse } from './../utils';
 import { InputError } from '@backstage/backend-common';
 
+const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export class GoogleAuthProvider
   implements AuthProvider, AuthProviderRouteHandlers {
   private readonly providerConfig: AuthProviderConfig;
@@ -54,6 +56,18 @@ export class GoogleAuthProvider
     next: express.NextFunction,
   ) {
     return passport.authenticate('google', (_, user) => {
+      const { refreshToken } = user;
+      delete user.refreshToken;
+
+      const options: CookieOptions = {
+        maxAge: THOUSAND_DAYS_MS,
+        secure: false,
+        sameSite: 'none',
+        path: 'localhost:3000/auth/google',
+        httpOnly: true,
+      };
+
+      res.cookie('grtoken', refreshToken, options);
       postMessageResponse(res, {
         type: 'auth-result',
         payload: user,
@@ -62,7 +76,33 @@ export class GoogleAuthProvider
   }
 
   async logout(_req: express.Request, res: express.Response) {
-    res.send('logout!');
+    return res.send('logout!');
+  }
+
+  async refresh(req: express.Request, res: express.Response) {
+    const refreshToken = req.cookies['grtoken'];
+    const scope = req.query.scope?.toString() ?? '';
+    const params = scope ? { scope } : {};
+
+    if (!refreshToken) {
+      return res.status(401).send('Missing session cookie');
+    }
+
+    refresh.requestNewAccessToken(
+      'google',
+      refreshToken,
+      params,
+      (err, accessToken) => {
+        if (err || !accessToken) {
+          return res.status(401).send('Failed to refresh access token');
+        }
+
+        return res.send({
+          accessToken,
+          expiresInSeconds: 36000,
+        });
+      },
+    );
   }
 
   strategy(): passport.Strategy {
