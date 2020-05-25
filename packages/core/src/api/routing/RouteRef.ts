@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { NavTargetConfig, NavTargetOverrideConfig } from './types';
+import type { RouteRefConfig, RouteRefOverrideConfig } from './types';
 
-export class MutableNavTarget {
-  private effectiveConfig: NavTargetConfig = this.config;
+export class MutableRouteRef {
+  private effectiveConfig: RouteRefConfig = this.config;
 
-  constructor(private readonly config: NavTargetConfig) {}
+  constructor(private readonly config: RouteRefConfig) {}
 
-  override(overrideConfig: NavTargetOverrideConfig) {
+  override(overrideConfig: RouteRefOverrideConfig) {
     this.effectiveConfig = { ...this.config, ...overrideConfig };
   }
 
@@ -38,6 +38,6 @@ export class MutableNavTarget {
   }
 }
 
-export function createNavTarget(config: NavTargetConfig): MutableNavTarget {
-  return new MutableNavTarget(config);
+export function createRouteRef(config: RouteRefConfig): MutableRouteRef {
+  return new MutableRouteRef(config);
 }

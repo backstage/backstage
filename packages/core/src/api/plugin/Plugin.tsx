@@ -23,7 +23,7 @@ import {
   BackstagePlugin,
 } from './types';
 import { validateBrowserCompat, validateFlagName } from '../app/FeatureFlags';
-import { NavTarget } from '../navTargets';
+import { RouteRef } from '../routing';
 
 export type PluginConfig = {
   id: string;
@@ -37,7 +37,7 @@ export type PluginHooks = {
 
 export type RouterHooks = {
   addRoute(
-    target: NavTarget,
+    target: RouteRef,
     Component: ComponentType<any>,
     options?: RouteOptions,
   ): void;
@@ -82,14 +82,14 @@ export class PluginImpl {
       router: {
         addRoute(target, component, options) {
           outputs.push({
-            type: 'nav-target-component',
+            type: 'route',
             target,
             component,
             options,
           });
         },
         registerRoute(path, component, options) {
-          outputs.push({ type: 'route', path, component, options });
+          outputs.push({ type: 'legacy-route', path, component, options });
         },
         registerRedirect(path, target, options) {
           outputs.push({ type: 'redirect-route', path, target, options });

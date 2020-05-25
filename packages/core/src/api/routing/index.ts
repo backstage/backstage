@@ -15,4 +15,4 @@
  */
 
 export * from './types';
-export { createNavTarget } from './NavTarget';
+export { createRouteRef } from './RouteRef';

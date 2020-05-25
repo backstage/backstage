@@ -16,19 +16,19 @@
 
 import { IconComponent } from '../../icons';
 
-export type NavTarget = {
+export type RouteRef = {
   path: string;
   icon: IconComponent;
   title: string;
 };
 
-export type NavTargetConfig = {
+export type RouteRefConfig = {
   path: string;
   icon: IconComponent;
   title: string;
 };
 
-export type NavTargetOverrideConfig = {
+export type RouteRefOverrideConfig = {
   path?: string;
   icon?: IconComponent;
   title?: string;
