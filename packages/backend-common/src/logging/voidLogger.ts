@@ -14,5 +14,14 @@
  * limitations under the License.
  */
 
-export * from './rootLogger';
-export * from './voidLogger';
+import { PassThrough } from 'stream';
+import winston, { Logger } from 'winston';
+
+/**
+ * A logger that just throws away all messages.
+ */
+export function getVoidLogger(): Logger {
+  return winston.createLogger({
+    transports: [new winston.transports.Stream({ stream: new PassThrough() })],
+  });
+}

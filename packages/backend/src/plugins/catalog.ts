@@ -29,7 +29,7 @@ export default async function ({ logger, database }: PluginEnvironment) {
   const reader = LocationReaders.create();
   const parser = DescriptorParsers.create();
 
-  const db = await DatabaseManager.createDatabase(database);
+  const db = await DatabaseManager.createDatabase(database, logger);
   runPeriodically(
     () => DatabaseManager.refreshLocations(db, reader, parser, logger),
     10000,

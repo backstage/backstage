@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import { ReaderOutput } from '../types';
-
-export type LocationSource = {
-  /**
-   * Reads the contents of a single location.
-   *
-   * @param target The location target to read
-   * @returns The parsed contents, as an array of unverified descriptors
-   * @throws An error if the location target could not be read
-   */
-  read(target: string): Promise<ReaderOutput[]>;
-};
+export * from './handlers';
+export * from './prompts';
+export * from './read';
+export * from './types';

@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import inquirer from 'inquirer';
+import fs from 'fs-extra';
 import { Command } from 'commander';
-import { readTemplateFiles } from './read';
-import { handlers, handleAllFiles } from './handlers';
-import { PromptFunc } from './types';
+import {
+  diffTemplateFiles,
+  handlers,
+  handleAllFiles,
+  inquirerPromptFunc,
+  makeCheckPromptFunc,
+  yesPromptFunc,
+} from '../../lib/diff';
+import { paths } from '../../lib/paths';
+import { version } from '../../lib/version';
+
+export type PluginData = {
+  id: string;
+  name: string;
+};
 
 const fileHandlers = [
   {
@@ -41,51 +52,46 @@ const fileHandlers = [
   },
 ];
 
-const inquirerPromptFunc: PromptFunc = async (msg) => {
-  const { result } = await inquirer.prompt({
-    type: 'confirm',
-    name: 'result',
-    message: chalk.blue(msg),
-  });
-  return result;
-};
-
-const makeCheck = () => {
-  let failed = false;
-
-  const promptFunc: PromptFunc = async (msg) => {
-    failed = true;
-    console.log(chalk.red(`[Check Failed] ${msg}`));
-    return false;
-  };
-
-  const finalize = () => {
-    if (failed) {
-      throw new Error(
-        'Check failed, the plugin is not in sync with the latest template',
-      );
-    }
-  };
-
-  return [promptFunc, finalize] as const;
-};
-
-const yesPromptFunc: PromptFunc = async (msg) => {
-  console.log(`Accepting: "${msg}"`);
-  return true;
-};
-
 export default async (cmd: Command) => {
   let promptFunc = inquirerPromptFunc;
   let finalize = () => {};
 
   if (cmd.check) {
-    [promptFunc, finalize] = makeCheck();
+    [promptFunc, finalize] = makeCheckPromptFunc();
   } else if (cmd.yes) {
     promptFunc = yesPromptFunc;
   }
 
-  const templateFiles = await readTemplateFiles('default-plugin');
+  const data = await readPluginData();
+  const templateFiles = await diffTemplateFiles('default-plugin', {
+    version,
+    ...data,
+  });
   await handleAllFiles(fileHandlers, templateFiles, promptFunc);
   await finalize();
 };
+
+// Reads templating data from the existing plugin
+async function readPluginData(): Promise<PluginData> {
+  let name: string;
+  try {
+    const pkg = require(paths.resolveTarget('package.json'));
+    name = pkg.name;
+  } catch (error) {
+    throw new Error(`Failed to read target package, ${error}`);
+  }
+
+  const pluginTsContents = await fs.readFile(
+    paths.resolveTarget('src/plugin.ts'),
+    'utf8',
+  );
+  // TODO: replace with some proper parsing logic or plugin metadata file
+  const pluginIdMatch = pluginTsContents.match(/id: ['"`](.+?)['"`]/);
+  if (!pluginIdMatch) {
+    throw new Error(`Failed to parse plugin.ts, no plugin ID found`);
+  }
+
+  const id = pluginIdMatch[1];
+
+  return { id, name };
+}
