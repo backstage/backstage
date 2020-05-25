@@ -70,17 +70,17 @@ export class RefreshingAuthSessionManager<AuthSession>
 
   async getSession(options: {
     optional: false;
-    scope?: Set<string>;
+    scopes?: Set<string>;
   }): Promise<AuthSession>;
   async getSession(options: {
     optional?: boolean;
-    scope?: Set<string>;
+    scopes?: Set<string>;
   }): Promise<AuthSession | undefined>;
   async getSession(options: {
     optional?: boolean;
-    scope?: Set<string>;
+    scopes?: Set<string>;
   }): Promise<AuthSession | undefined> {
-    if (this.sessionExistsAndHasScope(this.currentSession, options.scope)) {
+    if (this.sessionExistsAndHasScope(this.currentSession, options.scopes)) {
       const shouldRefresh = this.sessionShouldRefreshFunc(this.currentSession!);
       if (!shouldRefresh) {
         return this.currentSession!;
@@ -122,7 +122,7 @@ export class RefreshingAuthSessionManager<AuthSession>
 
     // We can call authRequester multiple times, the returned session will contain all requested scopes.
     this.currentSession = await this.connector.createSession(
-      this.getExtendedScope(options.scope),
+      this.getExtendedScope(options.scopes),
     );
     return this.currentSession;
   }
@@ -134,16 +134,16 @@ export class RefreshingAuthSessionManager<AuthSession>
 
   private sessionExistsAndHasScope(
     session: AuthSession | undefined,
-    scope?: Set<string>,
+    scopes?: Set<string>,
   ): boolean {
     if (!session) {
       return false;
     }
-    if (!scope) {
+    if (!scopes) {
       return true;
     }
     const sessionScopes = this.sessionScopesFunc(session);
-    return hasScopes(sessionScopes, scope);
+    return hasScopes(sessionScopes, scopes);
   }
 
   private getExtendedScope(scopes?: Set<string>) {

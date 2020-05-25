@@ -51,13 +51,13 @@ describe('RefreshingAuthSessionManager', () => {
       scopes: new Set(['a']),
       expired: false,
     });
-    await manager.getSession({ scope: new Set(['a']) });
+    await manager.getSession({ scopes: new Set(['a']) });
     expect(createSession).toBeCalledTimes(1);
 
-    await manager.getSession({ scope: new Set(['a']) });
+    await manager.getSession({ scopes: new Set(['a']) });
     expect(createSession).toBeCalledTimes(1);
 
-    await manager.getSession({ scope: new Set(['b']) });
+    await manager.getSession({ scopes: new Set(['b']) });
     expect(createSession).toBeCalledTimes(2);
   });
 
@@ -77,11 +77,11 @@ describe('RefreshingAuthSessionManager', () => {
       expired: true,
     });
 
-    await manager.getSession({ scope: new Set(['a']) });
+    await manager.getSession({ scopes: new Set(['a']) });
     expect(createSession).toBeCalledTimes(1);
     expect(refreshSession).toBeCalledTimes(1);
 
-    await manager.getSession({ scope: new Set(['a']) });
+    await manager.getSession({ scopes: new Set(['a']) });
     expect(createSession).toBeCalledTimes(1);
     expect(refreshSession).toBeCalledTimes(2);
   });
@@ -95,9 +95,9 @@ describe('RefreshingAuthSessionManager', () => {
     } as any);
 
     createSession.mockRejectedValueOnce(new Error('some error'));
-    await expect(manager.getSession({ scope: new Set(['a']) })).rejects.toThrow(
-      'some error',
-    );
+    await expect(
+      manager.getSession({ scopes: new Set(['a']) }),
+    ).rejects.toThrow('some error');
   });
 
   it('should not get optional session', async () => {

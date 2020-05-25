@@ -22,11 +22,11 @@
 export type SessionManager<AuthSession> = {
   getSession(options: {
     optional: false;
-    scope?: Set<string>;
+    scopes?: Set<string>;
   }): Promise<AuthSession>;
   getSession(options: {
     optional?: boolean;
-    scope?: Set<string>;
+    scopes?: Set<string>;
   }): Promise<AuthSession | undefined>;
 
   removeSession(): Promise<void>;
