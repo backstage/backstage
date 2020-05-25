@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 import { ErrorApi, ErrorContext, AlertApi } from '../../../';
-
-type SubscriberFunc = (error: Error) => void;
-type Unsubscribe = () => void;
+import { PublishSubject } from './lib';
+import { Observable } from '../../types';
 
 export class ErrorApiForwarder implements ErrorApi {
-  private readonly subscribers = new Set<SubscriberFunc>();
-  private alertApi: AlertApi;
+  private readonly subject = new PublishSubject<{
+    error: Error;
+    context?: ErrorContext;
+  }>();
 
-  constructor(alertApi: AlertApi) {
-    this.alertApi = alertApi;
-  }
+  constructor(private readonly alertApi: AlertApi) {}
 
   post(error: Error, context?: ErrorContext) {
-    if (context?.hidden) {
-      return;
+    if (!context?.hidden) {
+      this.alertApi.post({ message: error.message, severity: 'error' });
     }
 
-    this.alertApi.post({ message: error.message, severity: 'error' });
-    this.subscribers.forEach(subscriber => subscriber(error));
+    this.subject.next({ error, context });
   }
 
-  subscribe(func: SubscriberFunc): Unsubscribe {
-    this.subscribers.add(func);
-
-    return () => {
-      this.subscribers.delete(func);
-    };
+  error$(): Observable<{ error: Error; context?: ErrorContext }> {
+    return this.subject;
   }
 }
