@@ -81,23 +81,24 @@ export class GoogleAuthProvider
   }
 
   async refresh(req: express.Request, res: express.Response) {
-    const refreshToken = req.cookies['grtoken'];
-    const scope = req.query.scope?.toString() ?? '';
-    const params = scope ? { scope } : {};
+    const refreshToken = req.cookies.grtoken;
 
     if (!refreshToken) {
       return res.status(401).send('Missing session cookie');
     }
 
-    refresh.requestNewAccessToken(
+    const scope = req.query.scope?.toString() ?? '';
+    const refreshTokenRequestParams = scope ? { scope } : {};
+
+    return refresh.requestNewAccessToken(
       'google',
       refreshToken,
-      params,
+      refreshTokenRequestParams,
       (err, accessToken, _, params) => {
         if (err || !accessToken) {
           return res.status(401).send('Failed to refresh access token');
         }
-        return res.send({
+        res.send({
           accessToken,
           idToken: params.id_token,
           expiresInSeconds: params.expires_in,
