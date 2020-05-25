@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { GoogleAuthProvider } from './provider';
+import { GoogleAuthProvider, THOUSAND_DAYS_MS } from './provider';
 import passport from 'passport';
 import express from 'express';
 import * as utils from './../utils';
+import refresh from 'passport-oauth2-refresh';
 
 const googleAuthProviderConfig = {
   provider: 'google',
@@ -51,7 +52,7 @@ describe('GoogleAuthProvider', () => {
   });
 
   describe('start authentication handler', () => {
-    const mockResponse: any = ({} as unknown) as express.Response;
+    const mockResponse = ({} as unknown) as express.Response;
     const mockNext: express.NextFunction = jest.fn();
 
     it('should initiate authenticate request with provided scopes', () => {
@@ -116,28 +117,64 @@ describe('GoogleAuthProvider', () => {
   describe('redirect frame handler', () => {
     const mockRequest = ({} as unknown) as express.Request;
     const mockResponse: any = ({
-      send: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
+      cookie: jest.fn().mockReturnThis(),
     } as unknown) as express.Response;
     const mockNext: express.NextFunction = jest.fn();
 
-    it('should call authenticate and post a response ', () => {
+    it('should call authenticate and post a response', () => {
       const spyPostMessage = jest
         .spyOn(utils, 'postMessageResponse')
         .mockImplementation(() => jest.fn());
 
       const spyPassport = jest
         .spyOn(passport, 'authenticate')
-        .mockImplementation(() => jest.fn());
+        .mockImplementation((_x, callbackFunc) => {
+          const cb = callbackFunc as Function;
+          cb(null, { refreshToken: 'REFRESH_TOKEN' });
+          return jest.fn();
+        });
 
       const googleAuthProvider = new GoogleAuthProvider(
         googleAuthProviderConfig,
       );
 
       googleAuthProvider.frameHandler(mockRequest, mockResponse, mockNext);
-      const callbackFunc = spyPassport.mock.calls[0][1] as Function;
-      callbackFunc();
       expect(spyPassport).toBeCalledTimes(1);
       expect(spyPostMessage).toBeCalledTimes(1);
+      expect(mockResponse.cookie).toBeCalledTimes(1);
+      expect(mockResponse.cookie).toBeCalledWith(
+        'grtoken',
+        'REFRESH_TOKEN',
+        expect.objectContaining({
+          path: '/auth/google',
+          sameSite: 'none',
+          httpOnly: true,
+          maxAge: THOUSAND_DAYS_MS,
+        }),
+      );
+    });
+
+    it('should respond with a 401 if no refresh token returned', () => {
+      const spyPassport = jest
+        .spyOn(passport, 'authenticate')
+        .mockImplementation((_x, callbackFunc) => {
+          const cb = callbackFunc as Function;
+          cb(null, {});
+          return jest.fn();
+        });
+
+      const googleAuthProvider = new GoogleAuthProvider(
+        googleAuthProviderConfig,
+      );
+
+      googleAuthProvider.frameHandler(mockRequest, mockResponse, mockNext);
+      expect(spyPassport).toBeCalledTimes(1);
+      expect(mockResponse.send).toBeCalledTimes(1);
+      expect(mockResponse.send).toBeCalledWith('Failed to fetch refresh token');
+      expect(mockResponse.status).toBeCalledTimes(1);
+      expect(mockResponse.status).toBeCalledWith(401);
     });
   });
 
@@ -157,6 +194,161 @@ describe('GoogleAuthProvider', () => {
         );
         googleAuthProvider.strategy();
       }).toThrow();
+    });
+  });
+
+  describe('refresh token handler', () => {
+    const mockResponse = ({
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
+    } as unknown) as express.Response;
+
+    describe('no refresh token cookie', () => {
+      it('should respond with a 401', () => {
+        const mockRequest = ({
+          cookies: jest.fn(),
+        } as unknown) as express.Request;
+
+        const googleAuthProvider = new GoogleAuthProvider(
+          googleAuthProviderConfig,
+        );
+
+        googleAuthProvider.refresh(mockRequest, mockResponse);
+        expect(mockResponse.send).toBeCalledTimes(1);
+        expect(mockResponse.send).toBeCalledWith('Missing session cookie');
+
+        expect(mockResponse.status).toBeCalledTimes(1);
+        expect(mockResponse.status).toBeCalledWith(401);
+      });
+    });
+
+    describe('refresh token cookie, no scope', () => {
+      const mockRequest = ({
+        cookies: { grtoken: 'REFRESH_TOKEN' },
+        query: {},
+      } as unknown) as express.Request;
+
+      const googleAuthProvider = new GoogleAuthProvider(
+        googleAuthProviderConfig,
+      );
+
+      it('should request for a new access token and fail if no access token returned', () => {
+        const spyRefresh = jest
+          .spyOn(refresh, 'requestNewAccessToken')
+          .mockImplementation((_x, _y, _z, callbackFunc) => {
+            const cb = callbackFunc as Function;
+            cb(undefined, undefined, undefined, {});
+          });
+
+        googleAuthProvider.refresh(mockRequest, mockResponse);
+        expect(spyRefresh).toBeCalledTimes(1);
+        expect(spyRefresh).toBeCalledWith(
+          'google',
+          'REFRESH_TOKEN',
+          {},
+          expect.any(Function),
+        );
+        expect(mockResponse.status).toBeCalledTimes(1);
+        expect(mockResponse.status).toBeCalledWith(401);
+        expect(mockResponse.send).toBeCalledTimes(1);
+        expect(mockResponse.send).toBeCalledWith(
+          'Failed to refresh access token',
+        );
+      });
+
+      it('should request for a new access token and return 401 if any error', () => {
+        const spyRefresh = jest
+          .spyOn(refresh, 'requestNewAccessToken')
+          .mockImplementation((_x, _y, _z, callbackFunc) => {
+            const cb = callbackFunc as Function;
+            cb({ error: 'ERROR' }, undefined, undefined, {});
+          });
+
+        googleAuthProvider.refresh(mockRequest, mockResponse);
+        expect(spyRefresh).toBeCalledTimes(1);
+        expect(spyRefresh).toBeCalledWith(
+          'google',
+          'REFRESH_TOKEN',
+          {},
+          expect.any(Function),
+        );
+        expect(mockResponse.status).toBeCalledTimes(1);
+        expect(mockResponse.status).toBeCalledWith(401);
+        expect(mockResponse.send).toBeCalledTimes(1);
+        expect(mockResponse.send).toBeCalledWith(
+          'Failed to refresh access token',
+        );
+      });
+
+      it('should fetch and return a new access token', () => {
+        const spyRefresh = jest
+          .spyOn(refresh, 'requestNewAccessToken')
+          .mockImplementation((_x, _y, _z, callbackFunc) => {
+            const cb = callbackFunc as Function;
+            cb(undefined, 'ACCESS_TOKEN', undefined, {
+              expires_in: 'EXPIRES_IN',
+              id_token: 'ID_TOKEN',
+            });
+          });
+
+        googleAuthProvider.refresh(mockRequest, mockResponse);
+        expect(spyRefresh).toBeCalledTimes(1);
+        expect(spyRefresh).toBeCalledWith(
+          'google',
+          'REFRESH_TOKEN',
+          {},
+          expect.any(Function),
+        );
+        expect(mockResponse.send).toBeCalledTimes(1);
+        expect(mockResponse.send).toBeCalledWith({
+          accessToken: 'ACCESS_TOKEN',
+          idToken: 'ID_TOKEN',
+          expiresInSeconds: 'EXPIRES_IN',
+          scope: undefined,
+        });
+      });
+    });
+
+    describe('refresh token cookie and scope', () => {
+      const mockRequest = ({
+        cookies: { grtoken: 'REFRESH_TOKEN' },
+        query: {
+          scope: 'a,b',
+        },
+      } as unknown) as express.Request;
+
+      const googleAuthProvider = new GoogleAuthProvider(
+        googleAuthProviderConfig,
+      );
+
+      it('should fetch and return a new access token with scopes', () => {
+        const spyRefresh = jest
+          .spyOn(refresh, 'requestNewAccessToken')
+          .mockImplementation((_x, _y, _z, callbackFunc) => {
+            const cb = callbackFunc as Function;
+            cb(undefined, 'ACCESS_TOKEN', undefined, {
+              expires_in: 'EXPIRES_IN',
+              id_token: 'ID_TOKEN',
+              scope: 'a,b',
+            });
+          });
+
+        googleAuthProvider.refresh(mockRequest, mockResponse);
+        expect(spyRefresh).toBeCalledTimes(1);
+        expect(spyRefresh).toBeCalledWith(
+          'google',
+          'REFRESH_TOKEN',
+          { scope: 'a,b' },
+          expect.any(Function),
+        );
+        expect(mockResponse.send).toBeCalledTimes(1);
+        expect(mockResponse.send).toBeCalledWith({
+          accessToken: 'ACCESS_TOKEN',
+          idToken: 'ID_TOKEN',
+          expiresInSeconds: 'EXPIRES_IN',
+          scope: 'a,b',
+        });
+      });
     });
   });
 });

@@ -26,7 +26,7 @@ import {
 import { postMessageResponse } from './../utils';
 import { InputError } from '@backstage/backend-common';
 
-const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
+export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export class GoogleAuthProvider
   implements AuthProvider, AuthProviderRouteHandlers {
   private readonly providerConfig: AuthProviderConfig;
@@ -57,6 +57,11 @@ export class GoogleAuthProvider
   ) {
     return passport.authenticate('google', (_, user) => {
       const { refreshToken } = user;
+
+      if (!refreshToken) {
+        return res.status(401).send('Failed to fetch refresh token');
+      }
+
       delete user.refreshToken;
 
       const options: CookieOptions = {
@@ -69,7 +74,7 @@ export class GoogleAuthProvider
       };
 
       res.cookie('grtoken', refreshToken, options);
-      postMessageResponse(res, {
+      return postMessageResponse(res, {
         type: 'auth-result',
         payload: user,
       });
@@ -94,7 +99,7 @@ export class GoogleAuthProvider
       'google',
       refreshToken,
       refreshTokenRequestParams,
-      (err, accessToken, _, params) => {
+      (err, accessToken, _refreshToken, params) => {
         if (err || !accessToken) {
           return res.status(401).send('Failed to refresh access token');
         }
