@@ -15,10 +15,10 @@
  */
 
 import React, { FC } from 'react';
-import { createNavTarget } from '@backstage/core';
+import { createRouteRef } from '@backstage/core';
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
-const CircleCIIcon: FC<SvgIconProps> = (props) => (
+const CircleCIIcon: FC<SvgIconProps> = props => (
   <SvgIcon
     {...props}
     enableBackground="new 0 0 200 200"
@@ -31,7 +31,7 @@ const CircleCIIcon: FC<SvgIconProps> = (props) => (
   </SvgIcon>
 );
 
-export const navTargetCircleCI = createNavTarget({
+export const circleCIRouteRef = createRouteRef({
   icon: CircleCIIcon,
   path: '/circleci',
   title: 'CircleCI',

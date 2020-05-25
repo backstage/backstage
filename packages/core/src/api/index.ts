@@ -16,6 +16,6 @@
 
 export * from './apis';
 export * from './app';
-export * from './navTargets';
+export * from './routing';
 export * from './plugin';
 export * from './types';

@@ -15,10 +15,10 @@
  */
 
 import React, { FC } from 'react';
-import { createNavTarget } from '@backstage/core';
+import { createRouteRef } from '@backstage/core';
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
-const GraphiQLIcon: FC<SvgIconProps> = (props) => (
+const GraphiQLIcon: FC<SvgIconProps> = props => (
   <SvgIcon {...props}>
     <g id="surface1">
       <path
@@ -85,7 +85,7 @@ const GraphiQLIcon: FC<SvgIconProps> = (props) => (
   </SvgIcon>
 );
 
-export const navTargetGraphiQL = createNavTarget({
+export const graphiQLRouteRef = createRouteRef({
   icon: GraphiQLIcon,
   path: '/graphiql',
   title: 'GraphiQL',

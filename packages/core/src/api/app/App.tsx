@@ -86,7 +86,7 @@ class AppImpl implements BackstageApp {
     for (const plugin of this.plugins.values()) {
       for (const output of plugin.output()) {
         switch (output.type) {
-          case 'route': {
+          case 'legacy-route': {
             const { path, component, options = {} } = output;
             const { exact = true } = options;
             routes.push(
@@ -99,7 +99,7 @@ class AppImpl implements BackstageApp {
             );
             break;
           }
-          case 'nav-target-component': {
+          case 'route': {
             const { target, component, options = {} } = output;
             const { exact = true } = options;
             routes.push(

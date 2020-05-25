@@ -15,7 +15,7 @@
  */
 
 import { ComponentType } from 'react';
-import { NavTarget } from '../navTargets';
+import { RouteRef } from '../routing';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
@@ -24,16 +24,17 @@ export type RouteOptions = {
 
 export type RoutePath = string;
 
-export type RouteOutput = {
-  type: 'route';
+// Replace with using RouteRefs
+export type LegacyRouteOutput = {
+  type: 'legacy-route';
   path: RoutePath;
   component: ComponentType<{}>;
   options?: RouteOptions;
 };
 
-export type RouteTargetOutput = {
-  type: 'nav-target-component';
-  target: NavTarget;
+export type RouteOutput = {
+  type: 'route';
+  target: RouteRef;
   component: ComponentType<{}>;
   options?: RouteOptions;
 };
@@ -53,8 +54,8 @@ export type FeatureFlagOutput = {
 };
 
 export type PluginOutput =
+  | LegacyRouteOutput
   | RouteOutput
-  | RouteTargetOutput
   | RedirectRouteOutput
   | FeatureFlagOutput;
 
