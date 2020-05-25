@@ -26,12 +26,12 @@ describe('ComponentMetadataCard component', () => {
     const rendered = await render(
       <ComponentMetadataCard loading={false} component={testComponent} />,
     );
-    expect(await rendered.findByText('test')).toBeInTheDOM();
+    expect(await rendered.findByText('test')).toBeInTheDocument();
   });
   it('should display loader when loading is set to true', async () => {
     const rendered = await render(
       <ComponentMetadataCard loading component={undefined} />,
     );
-    expect(await rendered.findByRole('progressbar')).toBeInTheDOM();
+    expect(await rendered.findByRole('progressbar')).toBeInTheDocument();
   });
 });

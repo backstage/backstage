@@ -28,7 +28,7 @@ describe('ComponentContextMenu', () => {
       const button = await menu.findByTestId('menu-button');
       button.click();
       const unregister = await menu.findByText('Unregister component');
-      expect(unregister).toBeInTheDOM();
+      expect(unregister).toBeInTheDocument();
     });
   });
 });

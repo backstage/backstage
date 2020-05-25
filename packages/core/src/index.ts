@@ -23,6 +23,7 @@ export { default as Content } from './layout/Content/Content';
 export { default as ContentHeader } from './layout/ContentHeader/ContentHeader';
 export { default as Header } from './layout/Header/Header';
 export { default as HeaderLabel } from './layout/HeaderLabel';
+export { default as HomepageTimer } from './layout/HomepageTimer';
 export { default as InfoCard } from './layout/InfoCard';
 export { CardTab, TabbedCard } from './layout/TabbedCard';
 export { default as ErrorBoundary } from './layout/ErrorBoundary';

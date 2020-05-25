@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     justifyContent: 'flex-end',
     alignItems: 'center',
+    marginBottom: theme.spacing(1),
   },
   leftItemsBox: {
     flex: '1 1 auto',

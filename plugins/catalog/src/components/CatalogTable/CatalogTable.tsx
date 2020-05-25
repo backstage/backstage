@@ -15,7 +15,13 @@
  */
 import React, { FC } from 'react';
 import { Component } from '../../data/component';
-import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
+import {
+  InfoCard,
+  Progress,
+  Table,
+  TableColumn,
+  StatusOK,
+} from '@backstage/core';
 import { Typography, Link } from '@material-ui/core';
 
 const columns: TableColumn[] = [
@@ -26,6 +32,32 @@ const columns: TableColumn[] = [
     render: (componentData: any) => (
       <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
     ),
+  },
+  {
+    title: 'System',
+    field: 'system',
+  },
+  {
+    title: 'Owner',
+    field: 'owner',
+  },
+  {
+    title: 'Lifecycle',
+    field: 'lifecycle',
+  },
+  {
+    title: 'Status',
+    field: 'status',
+    render: (componentData: any) => (
+      <>
+        <StatusOK />
+        {componentData.status || 'Up and running'}
+      </>
+    ),
+  },
+  {
+    title: 'Description',
+    field: 'description',
   },
 ];
 
@@ -55,7 +87,7 @@ const CatalogTable: FC<CatalogTableProps> = ({
     <Table
       columns={columns}
       options={{ paging: false }}
-      title="Your Services"
+      title={`Owned (${(components && components.length) || 0})`}
       data={components}
     />
   );

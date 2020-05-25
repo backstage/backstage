@@ -15,10 +15,19 @@
  */
 
 import React, { FC } from 'react';
-import { Content, Header, Page, pageTheme } from '@backstage/core';
+import {
+  Content,
+  ContentHeader,
+  Header,
+  HomepageTimer,
+  SupportButton,
+  Page,
+  pageTheme,
+} from '@backstage/core';
 import { useAsync } from 'react-use';
 import { ComponentFactory } from '../../data/component';
 import CatalogTable from '../CatalogTable/CatalogTable';
+import { Button } from '@material-ui/core';
 
 type CatalogPageProps = {
   componentFactory: ComponentFactory;
@@ -27,8 +36,16 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
   const { value, error, loading } = useAsync(componentFactory.getAllComponents);
   return (
     <Page theme={pageTheme.home}>
-      <Header title="Catalog" subtitle="Your components" />
+      <Header title="Service Catalog" subtitle="Keep track of your software">
+        <HomepageTimer />
+      </Header>
       <Content>
+        <ContentHeader title="Services">
+          <Button variant="contained" color="primary" href="/create">
+            Create Service
+          </Button>
+          <SupportButton>All your components</SupportButton>
+        </ContentHeader>
         <CatalogTable
           components={value || []}
           loading={loading}
