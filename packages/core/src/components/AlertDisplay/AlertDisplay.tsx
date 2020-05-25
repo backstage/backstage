@@ -19,14 +19,14 @@ import PropTypes from 'prop-types';
 import { Snackbar, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
-import { AlertApiForwarder, AlertMessage } from '@backstage/core';
+import { AlertApiForwarder, AlertMessage } from '../../api';
 
 type Props = {
   forwarder: AlertApiForwarder;
 };
 
 // TODO: improve on this and promote to a shared component for use by all apps.
-const AlertDisplay: FC<Props> = ({ forwarder }) => {
+export const AlertDisplay: FC<Props> = ({ forwarder }) => {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
 
   useEffect(() => {
@@ -73,5 +73,3 @@ const AlertDisplay: FC<Props> = ({ forwarder }) => {
 AlertDisplay.propTypes = {
   forwarder: PropTypes.instanceOf(AlertApiForwarder).isRequired,
 };
-
-export default AlertDisplay;
