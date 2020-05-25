@@ -99,7 +99,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
     const normalizedScopes = GoogleAuth.normalizeScopes(scope);
     const session = await this.sessionManager.getSession({
       optional: false,
-      scope: normalizedScopes,
+      scopes: normalizedScopes,
     });
     return session.accessToken;
   }

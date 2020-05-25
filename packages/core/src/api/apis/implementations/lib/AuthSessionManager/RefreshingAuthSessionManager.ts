@@ -14,29 +14,23 @@
  * limitations under the License.
  */
 
-import { hasScopes } from '../../OAuthRequestManager/OAuthPendingRequests';
-import { SessionManager } from './types';
+import {
+  SessionManager,
+  SessionScopesFunc,
+  SessionShouldRefreshFunc,
+} from './types';
 import { AuthConnector } from '../AuthConnector';
+import { SessionScopeHelper } from './common';
+import { hasScopes } from '../../OAuthRequestManager/OAuthPendingRequests';
 
-type Options<AuthSession> = {
-  /**
-   * The connector used for acting on the auth session.
-   */
-  connector: AuthConnector<AuthSession>;
-  /**
-   * A function called to determine the scopes of the session.
-   */
-  sessionScopes: (session: AuthSession) => Set<string>;
-  /**
-   * A function called to determine whether it's time for a session to refresh.
-   *
-   * This should return true before the session expires, for example, if a session
-   * expires after 60 minutes, you could return true if the session is older than 45 minutes.
-   */
-  sessionShouldRefresh: (session: AuthSession) => boolean;
-  /**
-   * The default scopes that should always be present in a session, defaults to none.
-   */
+type Options<T> = {
+  /** The connector used for acting on the auth session */
+  connector: AuthConnector<T>;
+  /** Used to get the scope of the session */
+  sessionScopes: SessionScopesFunc<T>;
+  /** Used to check if the session needs to be refreshed */
+  sessionShouldRefresh: SessionShouldRefreshFunc<T>;
+  /** The default scopes that should always be present in a session, defaults to none. */
   defaultScopes?: Set<string>;
 };
 
@@ -44,17 +38,16 @@ type Options<AuthSession> = {
  * RefreshingAuthSessionManager manages an underlying session that has
  * and expiration time and needs to be refreshed periodically.
  */
-export class RefreshingAuthSessionManager<AuthSession>
-  implements SessionManager<AuthSession> {
-  private readonly connector: AuthConnector<AuthSession>;
-  private readonly defaultScopes?: Set<string>;
-  private readonly sessionScopesFunc: (session: AuthSession) => Set<string>;
-  private readonly sessionShouldRefreshFunc: (session: AuthSession) => boolean;
+export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
+  private readonly connector: AuthConnector<T>;
+  private readonly helper: SessionScopeHelper<T>;
+  private readonly sessionScopesFunc: SessionScopesFunc<T>;
+  private readonly sessionShouldRefreshFunc: SessionShouldRefreshFunc<T>;
 
-  private refreshPromise?: Promise<AuthSession>;
-  private currentSession: AuthSession | undefined;
+  private refreshPromise?: Promise<T>;
+  private currentSession: T | undefined;
 
-  constructor(options: Options<AuthSession>) {
+  constructor(options: Options<T>) {
     const {
       connector,
       defaultScopes = new Set(),
@@ -63,24 +56,26 @@ export class RefreshingAuthSessionManager<AuthSession>
     } = options;
 
     this.connector = connector;
-    this.defaultScopes = defaultScopes;
     this.sessionScopesFunc = sessionScopes;
     this.sessionShouldRefreshFunc = sessionShouldRefresh;
+    this.helper = new SessionScopeHelper({ sessionScopes, defaultScopes });
   }
 
   async getSession(options: {
     optional: false;
-    scope?: Set<string>;
-  }): Promise<AuthSession>;
+    scopes?: Set<string>;
+  }): Promise<T>;
   async getSession(options: {
     optional?: boolean;
-    scope?: Set<string>;
-  }): Promise<AuthSession | undefined>;
+    scopes?: Set<string>;
+  }): Promise<T | undefined>;
   async getSession(options: {
     optional?: boolean;
-    scope?: Set<string>;
-  }): Promise<AuthSession | undefined> {
-    if (this.sessionExistsAndHasScope(this.currentSession, options.scope)) {
+    scopes?: Set<string>;
+  }): Promise<T | undefined> {
+    if (
+      this.helper.sessionExistsAndHasScope(this.currentSession, options.scopes)
+    ) {
       const shouldRefresh = this.sessionShouldRefreshFunc(this.currentSession!);
       if (!shouldRefresh) {
         return this.currentSession!;
@@ -111,7 +106,7 @@ export class RefreshingAuthSessionManager<AuthSession>
         // The session might not have the scopes requested so go back and check again
         return this.getSession(options);
       } catch {
-        // If the refresh attemp fails we assume we don't have a session, so continue to create one.
+        // If the refresh attempt fails we assume we don't have a session, so continue to create one.
       }
     }
 
@@ -122,7 +117,7 @@ export class RefreshingAuthSessionManager<AuthSession>
 
     // We can call authRequester multiple times, the returned session will contain all requested scopes.
     this.currentSession = await this.connector.createSession(
-      this.getExtendedScope(options.scope),
+      this.helper.getExtendedScope(this.currentSession, options.scopes),
     );
     return this.currentSession;
   }
@@ -132,37 +127,7 @@ export class RefreshingAuthSessionManager<AuthSession>
     window.location.reload(); // TODO(Rugvip): make this work without reload?
   }
 
-  private sessionExistsAndHasScope(
-    session: AuthSession | undefined,
-    scope?: Set<string>,
-  ): boolean {
-    if (!session) {
-      return false;
-    }
-    if (!scope) {
-      return true;
-    }
-    const sessionScopes = this.sessionScopesFunc(session);
-    return hasScopes(sessionScopes, scope);
-  }
-
-  private getExtendedScope(scopes?: Set<string>) {
-    const newScope = new Set(this.defaultScopes);
-    if (this.currentSession) {
-      const sessionScopes = this.sessionScopesFunc(this.currentSession);
-      for (const scope of sessionScopes) {
-        newScope.add(scope);
-      }
-    }
-    if (scopes) {
-      for (const scope of scopes) {
-        newScope.add(scope);
-      }
-    }
-    return newScope;
-  }
-
-  private async collapsedSessionRefresh(): Promise<AuthSession> {
+  private async collapsedSessionRefresh(): Promise<T> {
     if (this.refreshPromise) {
       return this.refreshPromise;
     }
