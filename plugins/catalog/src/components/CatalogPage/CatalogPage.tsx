@@ -34,14 +34,14 @@ import { Button, makeStyles } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
 import SettingsIcon from '@material-ui/icons/Settings';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   contentWrapper: {
     display: 'grid',
     gridTemplateAreas: '"filters" "table"',
     gridTemplateColumns: '250px 1fr',
-    gridColumnGap: '16px',
+    gridColumnGap: theme.spacing(2),
   },
-});
+}));
 
 type CatalogPageProps = {
   componentFactory: ComponentFactory;

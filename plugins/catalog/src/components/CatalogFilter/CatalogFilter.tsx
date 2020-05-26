@@ -21,13 +21,15 @@ import {
   ListItemText,
   MenuItem,
   Typography,
+  Theme,
   makeStyles,
 } from '@material-ui/core';
+import { IconComponent } from '@backstage/shared/icons';
 
 export type CatalogFeatureItem = {
   id: string;
   label: string;
-  icon?: React.ReactElement;
+  icon?: IconComponent;
   count?: number;
 };
 
@@ -40,28 +42,31 @@ export type CatalogFilterProps = {
   groups: CatalogFilterGroup[];
 };
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<Theme>(theme => ({
   root: {
     backgroundColor: 'rgba(0, 0, 0, .11)',
     boxShadow: 'none',
   },
   title: {
-    margin: '10px 0 0 10px',
+    margin: theme.spacing(1, 0, 0, 1),
     textTransform: 'uppercase',
     fontSize: 12,
     fontWeight: 'bold',
   },
   listIcon: {
     minWidth: 30,
-    color: '#000',
+    color: theme.palette.text.primary,
   },
-  selected: {
-    backgroundColor: '#eee !important',
+  menuItem: {
+    minHeight: theme.spacing(6),
+  },
+  groupWrapper: {
+    margin: theme.spacing(1, 1, 2, 1),
   },
   menuTitle: {
     fontWeight: 500,
   },
-});
+}));
 
 export const CatalogFilter: React.FC<CatalogFilterProps> = ({ groups }) => {
   const classes = useStyles();
@@ -73,15 +78,15 @@ export const CatalogFilter: React.FC<CatalogFilterProps> = ({ groups }) => {
           <Typography variant="subtitle2" className={classes.title}>
             {group.name}
           </Typography>
-          <Card style={{ margin: 10, marginBottom: 15, boxShadow: 'none' }}>
+          <Card className={classes.groupWrapper}>
             <List disablePadding dense>
               {group.items.map(item => (
                 <MenuItem
                   key={item.id}
                   button
                   divider
+                  className={classes.menuItem}
                   classes={{ selected: classes.selected }}
-                  style={{ minHeight: '48px' }}
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>
