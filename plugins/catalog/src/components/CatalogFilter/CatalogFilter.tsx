@@ -24,7 +24,7 @@ import {
   Theme,
   makeStyles,
 } from '@material-ui/core';
-import { IconComponent } from '@backstage/core';
+import type { IconComponent } from '@backstage/core';
 
 export type CatalogFeatureItem = {
   id: string;
@@ -40,6 +40,8 @@ export type CatalogFilterGroup = {
 
 export type CatalogFilterProps = {
   groups: CatalogFilterGroup[];
+  selectedId?: string;
+  onSelectedChange?: (id: string) => void;
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -68,9 +70,12 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const CatalogFilter: React.FC<CatalogFilterProps> = ({ groups }) => {
+export const CatalogFilter: React.FC<CatalogFilterProps> = ({
+  groups,
+  selectedId,
+  onSelectedChange,
+}) => {
   const classes = useStyles();
-
   return (
     <Card className={classes.root}>
       {groups.map(group => (
@@ -85,8 +90,9 @@ export const CatalogFilter: React.FC<CatalogFilterProps> = ({ groups }) => {
                   key={item.id}
                   button
                   divider
+                  onClick={() => onSelectedChange?.(item.id)}
+                  selected={item.id === selectedId}
                   className={classes.menuItem}
-                  classes={{ selected: classes.selected }}
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>

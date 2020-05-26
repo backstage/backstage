@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { wrapInThemedTestApp } from '@backstage/test-utils';
 import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
 
@@ -88,5 +88,44 @@ describe('Catalog Filter', () => {
     for (const item of group.items) {
       expect(await findByText(item.count!.toString())).toBeInTheDocument();
     }
+  });
+
+  it('should fire the callback when an item is clicked', async () => {
+    const mockGroups: CatalogFilterGroup[] = [
+      {
+        name: 'Test Group 1',
+        items: [
+          {
+            id: 'first',
+            label: 'First Label',
+            count: 100,
+          },
+          {
+            id: 'second',
+            label: 'Second Label',
+            count: 400,
+          },
+        ],
+      },
+    ];
+
+    const onSelectedChangeHandler = jest.fn();
+
+    const { findByText } = render(
+      wrapInThemedTestApp(
+        <CatalogFilter
+          groups={mockGroups}
+          onSelectedChange={onSelectedChangeHandler}
+        />,
+      ),
+    );
+
+    const item = mockGroups[0].items[0];
+
+    const element = await findByText(item.label);
+
+    fireEvent.click(element);
+
+    expect(onSelectedChangeHandler).toHaveBeenCalledWith(item.id);
   });
 });
