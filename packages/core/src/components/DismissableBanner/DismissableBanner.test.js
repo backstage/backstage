@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line jest/no-commented-out-tests
-/*
 import React from 'react';
-import { fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
-import { renderWithEffects, wrapInThemedTestApp } from 'test-utils';
-import { createSetting } from 'shared/apis/settings';
-import DismissableBanner from 'shared/components/DismissableBanner';
+// import { fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
+import { renderWithEffects, wrapInThemedTestApp } from '@backstage/test-utils';
+// import { createSetting } from 'shared/apis/settings';
+import DismissableBanner from './DismissableBanner';
 
 describe('<DismissableBanner />', () => {
   it('renders the message and the popover', async () => {
+    /*
     const mockSetting = createSetting({
       id: 'mockSetting',
       defaultValue: true,
     });
+    */
 
     const rendered = await renderWithEffects(
       wrapInThemedTestApp(
         <DismissableBanner
           variant="info"
-          setting={mockSetting}
+          // setting={mockSetting}
           message="test message"
         />,
       ),
     );
     rendered.getByText('test message');
 
-    fireEvent.click(rendered.getByTitle('Permanently dismiss this message'));
-    await waitForElementToBeRemoved(rendered.queryByText('test message'));
+    // fireEvent.click(rendered.getByTitle('Permanently dismiss this message'));
+    // await waitForElementToBeRemoved(rendered.queryByText('test message'));
   });
 });
-*/
