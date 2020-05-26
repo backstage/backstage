@@ -23,7 +23,7 @@ import {
   AuthProviderRouteHandlers,
   AuthProviderConfig,
 } from './../types';
-import { postMessageResponse } from './../utils';
+import { postMessageResponse, ensuresXRequestedWith } from './../utils';
 import { InputError } from '@backstage/backend-common';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
@@ -95,7 +95,11 @@ export class GoogleAuthProvider
     })(req, res, next);
   }
 
-  async logout(_req: express.Request, res: express.Response) {
+  async logout(req: express.Request, res: express.Response) {
+    if (!ensuresXRequestedWith(req)) {
+      return res.status(401).send('Invalid X-Requested-With header');
+    }
+
     const options: CookieOptions = {
       maxAge: 0,
       secure: false,
@@ -110,6 +114,10 @@ export class GoogleAuthProvider
   }
 
   async refresh(req: express.Request, res: express.Response) {
+    if (!ensuresXRequestedWith(req)) {
+      return res.status(401).send('Invalid X-Requested-With header');
+    }
+
     const refreshToken =
       req.cookies[`${this.providerConfig.provider}-refresh-token`];
 

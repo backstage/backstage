@@ -52,11 +52,15 @@ describe('GoogleAuthProvider', () => {
   });
 
   describe('start authentication handler', () => {
-    const mockResponse = ({} as unknown) as express.Response;
+    const mockResponse = ({
+      send: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown) as express.Response;
     const mockNext: express.NextFunction = jest.fn();
 
     it('should initiate authenticate request with provided scopes', () => {
       const mockRequest = ({
+        header: () => 'XMLHttpRequest',
         query: {
           scope: 'a,b',
         },
@@ -80,6 +84,7 @@ describe('GoogleAuthProvider', () => {
 
     it('should throw error if no scopes provided', () => {
       const mockRequest = ({
+        header: () => 'XMLHttpRequest',
         query: {},
       } as unknown) as express.Request;
 
@@ -93,7 +98,9 @@ describe('GoogleAuthProvider', () => {
   });
 
   describe('logout handler', () => {
-    const mockRequest = ({} as unknown) as express.Request;
+    const mockRequest = ({
+      header: () => 'XMLHttpRequest',
+    } as unknown) as express.Request;
 
     it('should perform logout and respond with 200', () => {
       const mockResponse: any = ({
@@ -122,7 +129,9 @@ describe('GoogleAuthProvider', () => {
   });
 
   describe('redirect frame handler', () => {
-    const mockRequest = ({} as unknown) as express.Request;
+    const mockRequest = ({
+      header: () => 'XMLHttpRequest',
+    } as unknown) as express.Request;
     const mockResponse: any = ({
       status: jest.fn().mockReturnThis(),
       send: jest.fn().mockReturnThis(),
@@ -245,6 +254,7 @@ describe('GoogleAuthProvider', () => {
       it('should respond with a 401', () => {
         const mockRequest = ({
           cookies: jest.fn(),
+          header: () => 'XMLHttpRequest',
         } as unknown) as express.Request;
 
         const googleAuthProvider = new GoogleAuthProvider(
@@ -262,6 +272,7 @@ describe('GoogleAuthProvider', () => {
 
     describe('refresh token cookie, no scope', () => {
       const mockRequest = ({
+        header: () => 'XMLHttpRequest',
         cookies: { 'google-refresh-token': 'REFRESH_TOKEN' },
         query: {},
       } as unknown) as express.Request;
@@ -349,6 +360,7 @@ describe('GoogleAuthProvider', () => {
 
     describe('refresh token cookie and scope', () => {
       const mockRequest = ({
+        header: () => 'XMLHttpRequest',
         cookies: { 'google-refresh-token': 'REFRESH_TOKEN' },
         query: {
           scope: 'a,b',
@@ -386,6 +398,20 @@ describe('GoogleAuthProvider', () => {
           expiresInSeconds: 'EXPIRES_IN',
           scope: 'a,b',
         });
+      });
+
+      it('ensures x-requested-with header', () => {
+        const mockHeaderRequest = ({
+          header: () => 'TEST',
+        } as unknown) as express.Request;
+
+        googleAuthProvider.refresh(mockHeaderRequest, mockResponse);
+        expect(mockResponse.send).toBeCalledTimes(1);
+        expect(mockResponse.send).toBeCalledWith(
+          'Invalid X-Requested-With header',
+        );
+        expect(mockResponse.status).toBeCalledTimes(1);
+        expect(mockResponse.status).toBeCalledWith(401);
       });
     });
   });
