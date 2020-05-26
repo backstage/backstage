@@ -257,12 +257,16 @@ describe('Database', () => {
         await catalog.addEntity(tx, { entity: e1 });
         await catalog.addEntity(tx, { entity: e2 });
       });
-      await expect(
-        catalog.transaction(async tx => catalog.entities(tx, [])),
-      ).resolves.toEqual([
-        { locationId: undefined, entity: expect.objectContaining(e1) },
-        { locationId: undefined, entity: expect.objectContaining(e2) },
-      ]);
+      const result = await catalog.transaction(async tx =>
+        catalog.entities(tx, []),
+      );
+      expect(result.length).toEqual(2);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          { locationId: undefined, entity: expect.objectContaining(e1) },
+          { locationId: undefined, entity: expect.objectContaining(e2) },
+        ]),
+      );
     });
 
     it('can get all specific entities for matching filters (naive case)', async () => {
