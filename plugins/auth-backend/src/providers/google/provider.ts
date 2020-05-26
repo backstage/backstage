@@ -16,6 +16,7 @@
 
 import passport from 'passport';
 import express, { CookieOptions } from 'express';
+import crypto from 'crypto';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import refresh from 'passport-oauth2-refresh';
 import {
@@ -27,6 +28,7 @@ import { postMessageResponse, ensuresXRequestedWith } from './../utils';
 import { InputError } from '@backstage/backend-common';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
+const TEN_MINUTES_MS = 600 * 1000;
 export class GoogleAuthProvider
   implements AuthProvider, AuthProviderRouteHandlers {
   private readonly providerConfig: AuthProviderConfig;
@@ -39,6 +41,19 @@ export class GoogleAuthProvider
     res: express.Response,
     next: express.NextFunction,
   ) {
+    const nonce = crypto.randomBytes(16).toString('base64');
+
+    const options: CookieOptions = {
+      maxAge: TEN_MINUTES_MS,
+      secure: false,
+      sameSite: 'none',
+      domain: 'localhost',
+      path: `/auth/google/handler`,
+      httpOnly: true,
+    };
+
+    res.cookie(`google-nonce`, nonce, options);
+
     const scope = req.query.scope?.toString() ?? '';
     if (!scope) {
       throw new InputError('missing scope parameter');
@@ -47,6 +62,7 @@ export class GoogleAuthProvider
       scope,
       accessType: 'offline',
       prompt: 'consent',
+      state: nonce,
     })(req, res, next);
   }
 
@@ -55,6 +71,17 @@ export class GoogleAuthProvider
     res: express.Response,
     next: express.NextFunction,
   ) {
+    const cookieNonce = req.cookies[`google-nonce`];
+    const stateNonce = req.query.state;
+
+    if (!cookieNonce || !stateNonce) {
+      return res.status(401).send('Missing nonce');
+    }
+
+    if (cookieNonce !== stateNonce) {
+      return res.status(401).send('Invalid nonce');
+    }
+
     return passport.authenticate('google', (err, user) => {
       if (err) {
         return postMessageResponse(res, {
@@ -79,15 +106,11 @@ export class GoogleAuthProvider
         secure: false,
         sameSite: 'none',
         domain: 'localhost',
-        path: `/auth/${this.providerConfig.provider}`,
+        path: `/auth/google`,
         httpOnly: true,
       };
 
-      res.cookie(
-        `${this.providerConfig.provider}-refresh-token`,
-        refreshToken,
-        options,
-      );
+      res.cookie(`google-refresh-token`, refreshToken, options);
       return postMessageResponse(res, {
         type: 'auth-result',
         payload: user,
@@ -105,11 +128,11 @@ export class GoogleAuthProvider
       secure: false,
       sameSite: 'none',
       domain: 'localhost',
-      path: `/auth/${this.providerConfig.provider}`,
+      path: `/auth/google`,
       httpOnly: true,
     };
 
-    res.cookie(`${this.providerConfig.provider}-refresh-token`, '', options);
+    res.cookie(`google-refresh-token`, '', options);
     return res.send('logout!');
   }
 
@@ -118,8 +141,7 @@ export class GoogleAuthProvider
       return res.status(401).send('Invalid X-Requested-With header');
     }
 
-    const refreshToken =
-      req.cookies[`${this.providerConfig.provider}-refresh-token`];
+    const refreshToken = req.cookies[`google-refresh-token`];
 
     if (!refreshToken) {
       return res.status(401).send('Missing session cookie');
