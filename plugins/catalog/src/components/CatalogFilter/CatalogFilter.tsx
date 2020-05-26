@@ -24,7 +24,7 @@ import {
   Theme,
   makeStyles,
 } from '@material-ui/core';
-import { IconComponent } from '@backstage/shared/icons';
+import { IconComponent } from '@backstage/core';
 
 export type CatalogFeatureItem = {
   id: string;
@@ -90,7 +90,7 @@ export const CatalogFilter: React.FC<CatalogFilterProps> = ({ groups }) => {
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>
-                      {item.icon}
+                      <item.icon fontSize="small" />
                     </ListItemIcon>
                   )}
                   <ListItemText>
@@ -108,5 +108,3 @@ export const CatalogFilter: React.FC<CatalogFilterProps> = ({ groups }) => {
     </Card>
   );
 };
-
-export default CatalogFilter;

@@ -27,7 +27,8 @@ import {
 import { useAsync } from 'react-use';
 import { ComponentFactory } from '../../data/component';
 import CatalogTable from '../CatalogTable/CatalogTable';
-import CatalogFilter, {
+import {
+  CatalogFilter,
   CatalogFilterGroup,
 } from '../CatalogFilter/CatalogFilter';
 import { Button, makeStyles } from '@material-ui/core';
@@ -37,7 +38,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
     display: 'grid',
-    gridTemplateAreas: '"filters" "table"',
+    gridTemplateAreas: "'filters' 'table'",
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
   },
@@ -55,13 +56,13 @@ const filterGroups: CatalogFilterGroup[] = [
         id: 'owned',
         label: 'Owned',
         count: 123,
-        icon: <SettingsIcon fontSize="small" />,
+        icon: SettingsIcon,
       },
       {
         id: 'starred',
         label: 'Starred',
         count: 10,
-        icon: <StarIcon fontSize="small" />,
+        icon: StarIcon,
       },
     ],
   },

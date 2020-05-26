@@ -17,8 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import CatalogPage from './CatalogPage';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { wrapInThemedTestApp } from '@backstage/test-utils';
 import { ComponentFactory } from '../../data/component';
 
 const testComponentFactory: ComponentFactory = {
@@ -28,11 +27,14 @@ const testComponentFactory: ComponentFactory = {
 };
 
 describe('CatalogPage', () => {
+  // this test right now causes some red lines in the log output when running tests
+  // related to some theme issues in mui-table
+  // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
     const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <CatalogPage componentFactory={testComponentFactory} />
-      </ThemeProvider>,
+      wrapInThemedTestApp(
+        <CatalogPage componentFactory={testComponentFactory} />,
+      ),
     );
     expect(
       await rendered.findByText('Keep track of your software'),
