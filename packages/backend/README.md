@@ -24,6 +24,31 @@ dummy values just to try out the backend without using the auth or sentry featur
 You may have to issue a `yarn build` command in the project root before doing
 this for the first time.
 
+The backend starts up on port 7000 per default.
+
+## Populating The Catalog
+
+If you want to use the catalog functionality, you need to add so called locations
+to the backend. These are places where the backend can find some entity descriptor
+data to consume and serve.
+
+To get started, you can issue the following after starting the backend:
+
+```bash
+curl -i \
+  -H "Content-Type: application/json"
+  -d '{"type":"github","target":"https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/fixtures/two_components.yaml"}' \
+  localhost:7000/catalog/locations
+```
+
+After a short while, you should start seeing data on `localhost:7000/catalog/entities`.
+
+If you changed the `type` to `file` in the command above, and set the `target`
+to the absolute path of a YAML file on disk, you could consume your own experimental data.
+
+The catalog currently runs in-memory only, so feel free to try it out, but it will
+need to be re-populated on next startup.
+
 ## Documentation
 
 - [Backstage Readme](https://github.com/spotify/backstage/blob/master/README.md)
