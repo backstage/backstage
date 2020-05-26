@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AddLocation, Location, LocationsCatalog } from './types';
 import { LocationReader } from '../ingestion';
 import { Database, DatabaseLocationUpdateLogEvent } from '../database';
 import {
