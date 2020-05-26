@@ -47,4 +47,11 @@ describe('<Table />', () => {
     const rendered = render(wrapInTestApp(<Table {...minProps} />));
     expect(rendered.getByText('second value, second row')).toBeInTheDocument();
   });
+
+  it('renders with subtitle', () => {
+    const rendered = render(
+      wrapInTestApp(<Table subtitle="subtitle" {...minProps} />),
+    );
+    expect(rendered.getByText('subtitle')).toBeInTheDocument();
+  });
 });
