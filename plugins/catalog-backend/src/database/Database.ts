@@ -187,11 +187,12 @@ export class Database {
     }
 
     const newEntity = lodash.cloneDeep(request.entity);
-    newEntity.metadata = Object.assign({}, newEntity.metadata, {
+    newEntity.metadata = {
+      ...newEntity.metadata,
       uid: generateUid(),
       etag: generateEtag(),
       generation: 1,
-    });
+    };
 
     const newRow = toEntityRow(request.locationId, newEntity);
     await tx<DbEntitiesRow>('entities').insert(newRow);
@@ -276,11 +277,12 @@ export class Database {
       ? oldRow.generation
       : oldRow.generation + 1;
     const newEntity = lodash.cloneDeep(request.entity);
-    newEntity.metadata = Object.assign({}, newEntity.metadata, {
+    newEntity.metadata = {
+      ...newEntity.metadata,
       uid: oldRow.id,
       etag: newEtag,
       generation: newGeneration,
-    });
+    };
 
     // Preserve annotations that were set on the old version of the entity,
     // unless the new version overwrites them
