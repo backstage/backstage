@@ -12,7 +12,17 @@ app. Until then, feel free to experiment here!
 
 ## Development
 
-To run the backend in watch mode, use `yarn start`.
+To run the example backend in watch mode, use
+
+```bash
+AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x SENTRY_TOKEN=x yarn start
+```
+
+in the backend directory. Substitute `x` for actual values, or leave them as
+dummy values just to try out the backend without using the auth or sentry features.
+
+You may have to issue a `yarn build` command in the project root before doing
+this for the first time.
 
 ## Documentation
 
