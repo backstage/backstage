@@ -18,11 +18,17 @@ import * as yup from 'yup';
 import { DescriptorEnvelope } from '../ingestion';
 
 //
-// Items
+// Entities
 //
 
+export type EntityFilter = {
+  key: string;
+  values: (string | null)[];
+};
+export type EntityFilters = EntityFilter[];
+
 export type EntitiesCatalog = {
-  entities(): Promise<DescriptorEnvelope[]>;
+  entities(filters?: EntityFilters): Promise<DescriptorEnvelope[]>;
   entity(
     kind: string,
     name: string,

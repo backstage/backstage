@@ -23,6 +23,7 @@ import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
+import { EntityFilters } from '../catalog';
 import { DescriptorEnvelope, EntityMeta } from '../ingestion';
 import { buildEntitySearch } from './search';
 import {
@@ -309,10 +310,30 @@ export class Database {
     return { locationId: request.locationId, entity: newEntity };
   }
 
-  async entities(tx: Knex.Transaction<any, any>): Promise<DbEntityResponse[]> {
-    const rows = await tx<DbEntitiesRow>('entities')
+  async entities(
+    tx: Knex.Transaction<any, any>,
+    filters?: EntityFilters,
+  ): Promise<DbEntityResponse[]> {
+    let builder = tx<DbEntitiesRow>('entities');
+    for (const [index, filter] of (filters ?? []).entries()) {
+      builder = builder
+        .leftOuterJoin(`entities_search as t${index}`, function join() {
+          this.on('entities.id', '=', `t${index}.entity_id`).onIn(
+            `t${index}.value`,
+            filter.values.filter(x => x),
+          );
+          if (filter.values.some(x => !x)) {
+            this.orOnNull(`t${index}.value`);
+          }
+        })
+        .where(`t${index}.key`, '=', filter.key);
+    }
+
+    const rows = await builder
       .orderBy('namespace', 'name')
-      .select();
+      .select('entities.*')
+      .groupBy('id');
+
     return rows.map(row => toEntityResponse(row));
   }
 

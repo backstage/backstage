@@ -17,14 +17,14 @@
 import { NotFoundError } from '@backstage/backend-common';
 import { Database } from '../database';
 import { DescriptorEnvelope } from '../ingestion/types';
-import { EntitiesCatalog } from './types';
+import { EntitiesCatalog, EntityFilters } from './types';
 
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Database) {}
 
-  async entities(): Promise<DescriptorEnvelope[]> {
+  async entities(filters?: EntityFilters): Promise<DescriptorEnvelope[]> {
     const items = await this.database.transaction(tx =>
-      this.database.entities(tx),
+      this.database.entities(tx, filters),
     );
     return items.map(i => i.entity);
   }

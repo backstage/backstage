@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
+import {
+  errorHandler,
+  getVoidLogger,
+  InputError,
+} from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
-import { createRouter } from './router';
-import { EntitiesCatalog, LocationsCatalog, Location } from '../catalog';
-import { getVoidLogger } from '@backstage/backend-common';
+import { EntitiesCatalog, Location, LocationsCatalog } from '../catalog';
 import { DescriptorEnvelope } from '../ingestion';
+import { createRouter } from './router';
 
 class MockEntitiesCatalog implements EntitiesCatalog {
   entities = jest.fn();
@@ -50,7 +54,26 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities');
 
       expect(response.status).toEqual(200);
-      expect(JSON.parse(response.text)).toEqual(entities);
+      expect(response.body).toEqual(entities);
+    });
+
+    it('parses single and multiple request parameters and passes them down', async () => {
+      const catalog = new MockEntitiesCatalog();
+
+      const router = await createRouter({
+        entitiesCatalog: catalog,
+        logger: getVoidLogger(),
+      });
+
+      const app = express().use(router);
+      const response = await request(app).get('/entities?a=1&a=&a=3&b=4&c=');
+
+      expect(response.status).toEqual(200);
+      expect(catalog.entities).toHaveBeenCalledWith([
+        { key: 'a', values: ['1', null, '3'] },
+        { key: 'b', values: ['4'] },
+        { key: 'c', values: [null] },
+      ]);
     });
   });
 
@@ -70,7 +93,26 @@ describe('createRouter', () => {
       const response = await request(app).get('/locations');
 
       expect(response.status).toEqual(200);
-      expect(JSON.parse(response.text)).toEqual(locations);
+      expect(response.body).toEqual(locations);
+    });
+
+    it('rejects malformed locations', async () => {
+      const location = ({
+        id: 'a',
+        typez: 'b',
+        target: 'c',
+      } as unknown) as Location;
+
+      const catalog = new MockLocationsCatalog();
+      const router = await createRouter({
+        locationsCatalog: catalog,
+        logger: getVoidLogger(),
+      });
+
+      const app = express().use(router);
+      const response = await request(app).post('/locations').send(location);
+
+      expect(response.status).toEqual(400);
     });
   });
 });

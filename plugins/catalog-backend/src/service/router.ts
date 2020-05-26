@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
   addLocationSchema,
   EntitiesCatalog,
+  EntityFilters,
   LocationsCatalog,
 } from '../catalog';
 import { validateRequestBody } from './util';
@@ -34,17 +36,33 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { entitiesCatalog, locationsCatalog } = options;
+
   const router = Router();
+  router.use(express.json());
 
   if (entitiesCatalog) {
-    // Entities
-    router.get('/entities', async (_req, res) => {
-      const entities = await entitiesCatalog.entities();
+    router.get('/entities', async (req, res) => {
+      const filters: EntityFilters = [];
+      for (const [key, valueOrValues] of Object.entries(req.query)) {
+        const values = Array.isArray(valueOrValues)
+          ? valueOrValues
+          : [valueOrValues];
+        if (values.some(v => typeof v !== 'string')) {
+          res.status(400).send('Complex query parameters are not supported');
+          return;
+        }
+        filters.push({
+          key,
+          values: values.map(v => v || null) as string[],
+        });
+      }
+
+      const entities = await entitiesCatalog.entities(filters);
+
       res.status(200).send(entities);
     });
   }
 
-  // Locations
   if (locationsCatalog) {
     router
       .post('/locations', async (req, res) => {
@@ -68,5 +86,6 @@ export async function createRouter(
       });
   }
 
+  router.use(errorHandler());
   return router;
 }
