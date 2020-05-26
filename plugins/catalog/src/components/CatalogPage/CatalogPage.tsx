@@ -27,13 +27,38 @@ import {
 import { useAsync } from 'react-use';
 import { ComponentFactory } from '../../data/component';
 import CatalogTable from '../CatalogTable/CatalogTable';
-import { Button } from '@material-ui/core';
+import {
+  CatalogFilter,
+  CatalogFilterItem,
+} from '../CatalogFilter/CatalogFilter';
+import { Button, makeStyles } from '@material-ui/core';
+import { filterGroups, defaultFilter } from '../../data/filters';
+
+const useStyles = makeStyles(theme => ({
+  contentWrapper: {
+    display: 'grid',
+    gridTemplateAreas: "'filters' 'table'",
+    gridTemplateColumns: '250px 1fr',
+    gridColumnGap: theme.spacing(2),
+  },
+}));
 
 type CatalogPageProps = {
   componentFactory: ComponentFactory;
 };
+
 const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
   const { value, error, loading } = useAsync(componentFactory.getAllComponents);
+  const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
+    defaultFilter,
+  );
+
+  const onFilterSelected = React.useCallback(
+    selected => setSelectedFilter(selected),
+    [],
+  );
+
+  const styles = useStyles();
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
@@ -46,11 +71,21 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
           </Button>
           <SupportButton>All your components</SupportButton>
         </ContentHeader>
-        <CatalogTable
-          components={value || []}
-          loading={loading}
-          error={error}
-        />
+        <div className={styles.contentWrapper}>
+          <div>
+            <CatalogFilter
+              groups={filterGroups}
+              selectedId={selectedFilter.id}
+              onSelectedChange={onFilterSelected}
+            />
+          </div>
+          <CatalogTable
+            titlePreamble={selectedFilter.label}
+            components={value || []}
+            loading={loading}
+            error={error}
+          />
+        </div>
       </Content>
     </Page>
   );
