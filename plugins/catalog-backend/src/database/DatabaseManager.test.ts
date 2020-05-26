@@ -23,7 +23,11 @@ import {
 } from '../ingestion';
 import { Database } from './Database';
 import { DatabaseManager } from './DatabaseManager';
-import { DatabaseLocationUpdateLogStatus, DbLocationsRow } from './types';
+import {
+  DatabaseLocationUpdateLogStatus,
+  DbLocationsRow,
+  DbLocationsRowWithStatus,
+} from './types';
 import Knex from 'knex';
 
 describe('DatabaseManager', () => {
@@ -47,10 +51,13 @@ describe('DatabaseManager', () => {
     });
 
     it('can update a single location', async () => {
-      const location: DbLocationsRow = {
+      const location: DbLocationsRowWithStatus = {
         id: '123',
         type: 'some',
         target: 'thing',
+        message: '',
+        status: DatabaseLocationUpdateLogStatus.SUCCESS,
+        timestamp: new Date(314159265).toISOString(),
       };
       const desc: ComponentDescriptor = {
         apiVersion: 'backstage.io/v1beta1',
@@ -58,6 +65,7 @@ describe('DatabaseManager', () => {
         metadata: { name: 'c1' },
         spec: { type: 'service' },
       };
+
       const tx = (undefined as unknown) as Knex.Transaction<any, any>;
 
       const db = ({

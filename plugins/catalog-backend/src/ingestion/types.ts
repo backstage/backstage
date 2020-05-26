@@ -79,7 +79,7 @@ export type EntityMeta = {
    * Key/value pairs of non-identifying auxiliary information attached to the
    * entity.
    */
-  annotations?: Record<string, string>;
+  annotations?: Record<string, string | undefined>;
 };
 
 /**

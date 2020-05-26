@@ -16,6 +16,7 @@
 
 import * as yup from 'yup';
 import { DescriptorEnvelope } from '../ingestion';
+import { DatabaseLocationUpdateLogEvent } from '../database';
 
 //
 // Items
@@ -34,10 +35,21 @@ export type EntitiesCatalog = {
 // Locations
 //
 
+export type status = {
+  timestamp: DatabaseLocationUpdateLogEvent['created_at'] | null;
+  status: DatabaseLocationUpdateLogEvent['status'] | null;
+  message: DatabaseLocationUpdateLogEvent['message'] | null;
+};
+
 export type Location = {
   id: string;
   type: string;
   target: string;
+};
+
+export type LocationEnvelope = {
+  data: Location;
+  lastUpdate: status;
 };
 
 export type AddLocation = {
@@ -55,6 +67,7 @@ export const addLocationSchema: yup.Schema<AddLocation> = yup
 export type LocationsCatalog = {
   addLocation(location: AddLocation): Promise<Location>;
   removeLocation(id: string): Promise<void>;
-  locations(): Promise<Location[]>;
-  location(id: string): Promise<Location>;
+  locations(): Promise<LocationEnvelope[]>;
+  location(id: string): Promise<LocationEnvelope>;
+  locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]>;
 };

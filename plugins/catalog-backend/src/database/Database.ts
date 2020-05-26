@@ -34,6 +34,7 @@ import {
   DbEntityRequest,
   DbEntityResponse,
   DbLocationsRow,
+  DbLocationsRowWithStatus,
 } from './types';
 
 function getStrippedMetadata(metadata: EntityMeta): EntityMeta {
@@ -190,6 +191,10 @@ export class Database {
       uid: generateUid(),
       etag: generateEtag(),
       generation: 1,
+      annotations: {
+        ...(newEntity.metadata?.annotations ?? {}),
+        'backstage.io/managed-by-location': request.locationId,
+      },
     });
 
     const newRow = toEntityRow(request.locationId, newEntity);
@@ -367,18 +372,65 @@ export class Database {
     }
   }
 
-  async location(id: string): Promise<DbLocationsRow> {
-    const items = await this.database<DbLocationsRow>('locations')
-      .where({ id })
-      .select();
+  async location(id: string): Promise<DbLocationsRowWithStatus> {
+    const items = await this.database<DbLocationsRowWithStatus>('locations')
+      .where('locations.id', id)
+      .leftJoin(
+        'location_update_log',
+        'locations.id',
+        'location_update_log.location_id',
+      )
+      .orderBy('location_update_log.created_at', 'desc')
+      .select({
+        status: 'location_update_log.status',
+        timestamp: 'location_update_log.created_at',
+        message: 'location_update_log.message',
+        id: 'locations.id',
+        type: 'locations.type',
+        target: 'locations.target',
+      });
+
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
     return items[0];
   }
 
-  async locations(): Promise<DbLocationsRow[]> {
-    return this.database<DbLocationsRow>('locations').select();
+  async locations(): Promise<DbLocationsRowWithStatus[]> {
+    const query = this.database
+      .select({
+        status: 'location_update_log.status',
+        timestamp: 'location_update_log.created_at',
+        message: 'location_update_log.message',
+        id: 'locations.id',
+        type: 'locations.type',
+        target: 'locations.target',
+      })
+      .from('locations')
+      .leftJoin(
+        'location_update_log',
+        'locations.id',
+        'location_update_log.location_id',
+      )
+      .orderBy('location_update_log.created_at', 'desc');
+
+    const result = await this.database<DbLocationsRowWithStatus>(query)
+      .select()
+      .groupBy('id');
+
+    return result;
+  }
+
+  async locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]> {
+    const result = await this.database<DatabaseLocationUpdateLogEvent>(
+      'location_update_log',
+    )
+      .where('location_id', id)
+      .orderBy('created_at', 'desc')
+      .limit(10)
+      .select();
+
+    return result;
   }
 
   async addLocationUpdateLogEvent(
@@ -391,7 +443,7 @@ export class Database {
       'location_update_log',
     ).insert({
       id: uuidv4(),
-      status: status,
+      status,
       location_id: locationId,
       entity_name: entityName,
       message,

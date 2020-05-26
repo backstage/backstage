@@ -52,6 +52,12 @@ export type DbLocationsRow = {
   target: string;
 };
 
+export type DbLocationsRowWithStatus = DbLocationsRow & {
+  status: DatabaseLocationUpdateLogEvent['status'] | null;
+  timestamp: DatabaseLocationUpdateLogEvent['created_at'] | null;
+  message: DatabaseLocationUpdateLogEvent['message'] | null;
+};
+
 export type AddDatabaseLocation = {
   type: string;
   target: string;

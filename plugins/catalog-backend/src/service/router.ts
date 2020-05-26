@@ -56,6 +56,11 @@ export async function createRouter(
         const output = await locationsCatalog.locations();
         res.status(200).send(output);
       })
+      .get('/locations/:id/history', async (req, res) => {
+        const { id } = req.params;
+        const output = await locationsCatalog.locationHistory(id);
+        res.status(200).send(output);
+      })
       .get('/locations/:id', async (req, res) => {
         const { id } = req.params;
         const output = await locationsCatalog.location(id);

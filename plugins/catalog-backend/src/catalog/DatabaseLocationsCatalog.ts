@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { Database } from '../database';
 import { AddLocation, Location, LocationsCatalog } from './types';
 import { LocationReader } from '../ingestion';
+import { Database, DatabaseLocationUpdateLogEvent } from '../database';
+import {
+  AddLocation,
+  LocationEnvelope,
+  Location,
+  LocationsCatalog,
+} from './types';
 
 export class DatabaseLocationsCatalog implements LocationsCatalog {
   constructor(
@@ -42,13 +48,36 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
     await this.database.removeLocation(id);
   }
 
-  async locations(): Promise<Location[]> {
+  async locations(): Promise<LocationEnvelope[]> {
     const items = await this.database.locations();
-    return items;
+    return items.map(({ message, status, timestamp, ...data }) => ({
+      lastUpdate: {
+        message,
+        status,
+        timestamp,
+      },
+      data,
+    }));
   }
 
-  async location(id: string): Promise<Location> {
-    const item = await this.location(id);
-    return item;
+  async locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]> {
+    return this.database.locationHistory(id);
+  }
+
+  async location(id: string): Promise<LocationEnvelope> {
+    const {
+      message,
+      status,
+      timestamp,
+      ...data
+    } = await this.database.location(id);
+    return {
+      lastUpdate: {
+        message,
+        status,
+        timestamp,
+      },
+      data,
+    };
   }
 }
