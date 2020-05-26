@@ -1,6 +1,5 @@
-import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { createApp } from '@backstage/core';
-import { lightTheme } from '@backstage/theme';
 import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import * as plugins from './plugins';
@@ -23,20 +22,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const app = createApp();
-app.registerPlugin(...Object.values(plugins));
-const AppComponent = app.build();
+const app = createApp({
+  plugins: Object.values(plugins),
+});
+
+const AppProvider = app.getProvider();
+const AppComponent = app.getRootComponent();
 
 const App: FC<{}> = () => {
   useStyles();
   return (
-    <CssBaseline>
-      <ThemeProvider theme={lightTheme}>
-        <Router>
-          <AppComponent />
-        </Router>
-      </ThemeProvider>
-    </CssBaseline>
+    <AppProvider>
+      <Router>
+        <AppComponent />
+      </Router>
+    </AppProvider>
   );
 };
 

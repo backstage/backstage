@@ -20,8 +20,10 @@ import {
   RoutePath,
   RouteOptions,
   FeatureFlagName,
+  BackstagePlugin,
 } from './types';
 import { validateBrowserCompat, validateFlagName } from '../app/FeatureFlags';
+import { RouteRef } from '../routing';
 
 export type PluginConfig = {
   id: string;
@@ -34,6 +36,12 @@ export type PluginHooks = {
 };
 
 export type RouterHooks = {
+  addRoute(
+    target: RouteRef,
+    Component: ComponentType<any>,
+    options?: RouteOptions,
+  ): void;
+
   registerRoute(
     path: RoutePath,
     Component: ComponentType<any>,
@@ -51,10 +59,7 @@ export type FeatureFlagsHooks = {
   register(name: FeatureFlagName): void;
 };
 
-export const registerSymbol = Symbol('plugin-register');
-export const outputSymbol = Symbol('plugin-output');
-
-export default class Plugin {
+export class PluginImpl {
   private storedOutput?: PluginOutput[];
 
   constructor(private readonly config: PluginConfig) {}
@@ -75,8 +80,16 @@ export default class Plugin {
 
     this.config.register({
       router: {
+        addRoute(target, component, options) {
+          outputs.push({
+            type: 'route',
+            target,
+            component,
+            options,
+          });
+        },
         registerRoute(path, component, options) {
-          outputs.push({ type: 'route', path, component, options });
+          outputs.push({ type: 'legacy-route', path, component, options });
         },
         registerRedirect(path, target, options) {
           outputs.push({ type: 'redirect-route', path, target, options });
@@ -98,4 +111,8 @@ export default class Plugin {
   toString() {
     return `plugin{${this.config.id}}`;
   }
+}
+
+export function createPlugin(config: PluginConfig): BackstagePlugin {
+  return new PluginImpl(config);
 }

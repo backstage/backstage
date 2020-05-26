@@ -15,12 +15,13 @@
  */
 
 jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   const mocks = {
     replace: jest.fn(),
     push: jest.fn(),
   };
   return {
-    ...jest.requireActual('react-router-dom'),
+    ...actual,
     useHistory: jest.fn(() => mocks),
   };
 });
@@ -41,7 +42,7 @@ import AuditList from '.';
 
 import * as data from '../../__fixtures__/website-list-response.json';
 
-const { useHistory } = require.requireMock('react-router-dom');
+const { useHistory } = jest.requireMock('react-router-dom');
 const websiteListResponse = data as WebsiteListResponse;
 
 describe('AuditList', () => {

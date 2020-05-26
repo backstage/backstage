@@ -32,30 +32,50 @@ import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import { buildDatabase } from './database';
-import inventory from './plugins/inventory';
+import knex from 'knex';
+import catalog from './plugins/catalog';
 import scaffolder from './plugins/scaffolder';
+import sentry from './plugins/sentry';
+import auth from './plugins/auth';
+import identity from './plugins/identity';
 import { PluginEnvironment } from './types';
 
 const DEFAULT_PORT = 7000;
 const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
-const pluginEnvironment: PluginEnvironment = {
-  logger: getRootLogger().child({ type: 'plugin' }),
-};
+
+function createEnv(plugin: string): PluginEnvironment {
+  const logger = getRootLogger().child({ type: 'plugin', plugin });
+  const database = knex({
+    client: 'sqlite3',
+    connection: ':memory:',
+    useNullAsDefault: true,
+  });
+  database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+    resource.run('PRAGMA foreign_keys = ON', () => {});
+  });
+  return { logger, database };
+}
 
 async function main() {
-  const database = await buildDatabase(getRootLogger());
-  console.log(await database.select().from('locations'));
-
   const app = express();
+  const corsOptions: cors.CorsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+  };
 
   app.use(helmet());
-  app.use(cors());
+  app.use(cors(corsOptions));
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/inventory', await inventory(pluginEnvironment));
-  app.use('/scaffolder', await scaffolder(pluginEnvironment));
+  app.use('/catalog', await catalog(createEnv('catalog')));
+  app.use('/scaffolder', await scaffolder(createEnv('scaffolder')));
+  app.use(
+    '/sentry',
+    await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
+  );
+  app.use('/auth', await auth(createEnv('auth')));
+  app.use('/identity', await identity(createEnv('identity')));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

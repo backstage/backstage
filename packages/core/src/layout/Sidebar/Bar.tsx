@@ -19,6 +19,7 @@ import clsx from 'clsx';
 import React, { FC, useRef, useState } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
+import { useSidebarPinState } from '../../hooks/useSidebarPinState';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
@@ -74,15 +75,19 @@ export const Sidebar: FC<Props> = ({
 }) => {
   const classes = useStyles();
   const [state, setState] = useState(State.Closed);
-  const hoverTimerRef = useRef<NodeJS.Timer>();
+  const hoverTimerRef = useRef<number>();
+  const { isPinned } = useSidebarPinState();
 
   const handleOpen = () => {
+    if (isPinned) {
+      return;
+    }
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = undefined;
     }
     if (state !== State.Open) {
-      hoverTimerRef.current = setTimeout(() => {
+      hoverTimerRef.current = window.setTimeout(() => {
         hoverTimerRef.current = undefined;
         setState(State.Open);
       }, openDelayMs);
@@ -92,6 +97,9 @@ export const Sidebar: FC<Props> = ({
   };
 
   const handleClose = () => {
+    if (isPinned) {
+      return;
+    }
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = undefined;
@@ -99,7 +107,7 @@ export const Sidebar: FC<Props> = ({
     if (state === State.Peek) {
       setState(State.Closed);
     } else if (state === State.Open) {
-      hoverTimerRef.current = setTimeout(() => {
+      hoverTimerRef.current = window.setTimeout(() => {
         hoverTimerRef.current = undefined;
         setState(State.Closed);
       }, closeDelayMs);
@@ -115,11 +123,15 @@ export const Sidebar: FC<Props> = ({
       onBlur={handleClose}
       data-testid="sidebar-root"
     >
-      <SidebarContext.Provider value={state === State.Open}>
+      <SidebarContext.Provider
+        value={{
+          isOpen: state === State.Open || isPinned,
+        }}
+      >
         <div
           className={clsx(classes.drawer, {
             [classes.drawerPeek]: state === State.Peek,
-            [classes.drawerOpen]: state === State.Open,
+            [classes.drawerOpen]: state === State.Open || isPinned,
           })}
         >
           {children}

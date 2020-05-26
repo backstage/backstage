@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { hot } from 'react-hot-loader/root';
 import React, { FC, ComponentType } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import { ThemeProvider, CssBaseline } from '@material-ui/core';
 import {
   createApp,
   SidebarPage,
@@ -29,8 +29,8 @@ import {
   createPlugin,
   ApiTestRegistry,
   ApiHolder,
+  AlertDisplay,
 } from '@backstage/core';
-import { lightTheme } from '@backstage/theme';
 import * as defaultApiFactories from './apiFactories';
 
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
@@ -66,25 +66,26 @@ class DevAppBuilder {
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
-    const app = createApp();
-    app.registerApis(this.setupApiRegistry(this.factories));
-    app.registerPlugin(...this.plugins);
-    const AppComponent = app.build();
+    const app = createApp({
+      apis: this.setupApiRegistry(this.factories),
+      plugins: this.plugins,
+    });
+    const AppProvider = app.getProvider();
+    const AppComponent = app.getRootComponent();
 
     const sidebar = this.setupSidebar(this.plugins);
 
     const DevApp: FC<{}> = () => {
       return (
-        <ThemeProvider theme={lightTheme}>
-          <CssBaseline>
-            <BrowserRouter>
-              <SidebarPage>
-                {sidebar}
-                <AppComponent />
-              </SidebarPage>
-            </BrowserRouter>
-          </CssBaseline>
-        </ThemeProvider>
+        <AppProvider>
+          <AlertDisplay />
+          <BrowserRouter>
+            <SidebarPage>
+              {sidebar}
+              <AppComponent />
+            </SidebarPage>
+          </BrowserRouter>
+        </AppProvider>
       );
     };
 
@@ -92,10 +93,10 @@ class DevAppBuilder {
   }
 
   /**
-   * Build and render directory to #root element
+   * Build and render directory to #root element, with react hot loading.
    */
   render(): void {
-    const DevApp = this.build();
+    const DevApp = hot(this.build());
 
     const paths = this.findPluginPaths(this.plugins);
 
@@ -111,11 +112,10 @@ class DevAppBuilder {
   // Create a sidebar that exposes the touchpoints of a plugin
   private setupSidebar(plugins: BackstagePlugin[]): JSX.Element {
     const sidebarItems = new Array<JSX.Element>();
-
     for (const plugin of plugins) {
       for (const output of plugin.output()) {
         switch (output.type) {
-          case 'route': {
+          case 'legacy-route': {
             const { path } = output;
             sidebarItems.push(
               <SidebarItem
@@ -123,6 +123,18 @@ class DevAppBuilder {
                 to={path}
                 text={path}
                 icon={BookmarkIcon}
+              />,
+            );
+            break;
+          }
+          case 'route': {
+            const { target } = output;
+            sidebarItems.push(
+              <SidebarItem
+                key={target.path}
+                to={target.path}
+                text={target.title}
+                icon={target.icon}
               />,
             );
             break;
@@ -146,12 +158,12 @@ class DevAppBuilder {
     providedFactories: ApiFactory<any, any, any>[],
   ): ApiHolder {
     const providedApis = new Set(
-      providedFactories.map((factory) => factory.implements),
+      providedFactories.map(factory => factory.implements),
     );
 
     // Exlude any default API factory that we receive a factory for in the config
     const defaultFactories = Object.values(defaultApiFactories).filter(
-      (factory) => !providedApis.has(factory.implements),
+      factory => !providedApis.has(factory.implements),
     );
     const allFactories = [...defaultFactories, ...providedFactories];
 
@@ -170,7 +182,7 @@ class DevAppBuilder {
 
     for (const plugin of plugins) {
       for (const output of plugin.output()) {
-        if (output.type === 'route') {
+        if (output.type === 'legacy-route') {
           paths.push(output.path);
         }
       }

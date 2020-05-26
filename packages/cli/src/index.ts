@@ -30,12 +30,21 @@ const main = (argv: string[]) => {
   program
     .command('app:build')
     .description('Build an app for a production release')
+    .option('--stats', 'Write bundle stats to output directory')
     .action(actionHandler(() => require('./commands/app/build')));
 
   program
     .command('app:serve')
     .description('Serve an app for local development')
+    .option('--check', 'Enable type checking and linting')
     .action(actionHandler(() => require('./commands/app/serve')));
+
+  program
+    .command('app:diff')
+    .option('--check', 'Fail if changes are required')
+    .option('--yes', 'Apply all changes')
+    .description('Diff an existing app with the creation template')
+    .action(actionHandler(() => require('./commands/app/diff')));
 
   program
     .command('create-plugin')
@@ -53,13 +62,13 @@ const main = (argv: string[]) => {
 
   program
     .command('plugin:build')
-    .option('--watch', 'Enable watch mode')
     .description('Build a plugin')
     .action(actionHandler(() => require('./commands/plugin/build')));
 
   program
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
+    .option('--check', 'Enable type checking and linting')
     .action(actionHandler(() => require('./commands/plugin/serve')));
 
   program
@@ -81,6 +90,16 @@ const main = (argv: string[]) => {
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
     .action(actionHandler(() => require('./commands/testCommand')));
+
+  program
+    .command('prepack')
+    .description('Prepares a package for packaging before publishing')
+    .action(actionHandler(() => require('./commands/pack').pre));
+
+  program
+    .command('postpack')
+    .description('Restores the changes made by the prepack command')
+    .action(actionHandler(() => require('./commands/pack').post));
 
   program
     .command('watch-deps')
@@ -129,11 +148,14 @@ const main = (argv: string[]) => {
 
 // Wraps an action function so that it always exits and handles errors
 function actionHandler<T extends readonly any[]>(
-  actionRequireFunc: () => { default(...args: T): Promise<any> },
+  actionRequireFunc:
+    | (() => { default(...args: T): Promise<any> })
+    | (() => (...args: T) => Promise<any>),
 ): (...args: T) => Promise<never> {
   return async (...args: T) => {
     try {
-      const actionFunc = actionRequireFunc().default;
+      const ret = actionRequireFunc();
+      const actionFunc = typeof ret === 'function' ? ret : ret.default;
       await actionFunc(...args);
       process.exit(0);
     } catch (error) {
@@ -142,7 +164,7 @@ function actionHandler<T extends readonly any[]>(
   };
 }
 
-process.on('unhandledRejection', (rejection) => {
+process.on('unhandledRejection', rejection => {
   if (rejection instanceof Error) {
     exitWithError(rejection);
   } else {

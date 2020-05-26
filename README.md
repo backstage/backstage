@@ -30,9 +30,9 @@ https://backstage.io/demos
 
 We created Backstage about 4 years ago. While our internal version of Backstage has had the benefit of time to mature and evolve, the first iteration of our open source version is still nascent. We are envisioning three phases of the project and we have already begun work on various aspects of these phases:
 
-- 🐣 **Phase 1:** Extensible frontend platform (now) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable UX patterns and components help ensure a consistent experience between tools.
+- 🐣 **Phase 1:** Extensible frontend platform (Done ✅) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable UX patterns and components help ensure a consistent experience between tools.
 
-- 🐢 **Phase 2:** Manage your stuff (next 2-3 months) - Manage anything from microservices to software components to infrastructure and your service catalog. Regardless of whether you want to create a new library, view service deployment status in Kubernetes, or check the test coverage for a website -- Backstage will provide all of those tools - and many more - in a single developer portal.
+- 🐢 **Phase 2:** Manage your stuff ([current focus](https://backstage.io/blog/2020/05/22/phase-2-service-catalog)) - Manage anything from microservices to software components to infrastructure and your service catalog. Regardless of whether you want to create a new library, view service deployment status in Kubernetes, or check the test coverage for a website -- Backstage will provide all of those tools - and many more - in a single developer portal.
 
 - 🐇 **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
 
@@ -62,11 +62,12 @@ To run a Backstage app, you will need to have the following installed:
 - [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
 - [yarn](https://classic.yarnpkg.com/en/docs/install)
 
-After cloning this repo, open a terminal window and start the web app using the following commands from the project root:
+After cloning this repo, open a terminal window and start the example app using the following commands from the project root:
 
 ```bash
-yarn install
-yarn start
+yarn install # Install dependencies
+
+yarn start # Start dev server, use --check to enable linting and type-checks
 ```
 
 The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
@@ -95,7 +96,7 @@ We would love your help in building Backstage! See [CONTRIBUTING](CONTRIBUTING.m
 ## Community
 
 - [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the project
-- [Good First Issues](https://github.com/spotify/backstage/labels/good%20first%20issue) - Start here if you want to contribute
+- [Good First Issues](https://github.com/spotify/backstage/contribute) - Start here if you want to contribute
 - [RFCs](https://github.com/spotify/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](docs/FAQ.md) - Frequently Asked Questions
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll

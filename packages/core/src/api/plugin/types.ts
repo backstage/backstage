@@ -15,6 +15,7 @@
  */
 
 import { ComponentType } from 'react';
+import { RouteRef } from '../routing';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
@@ -23,9 +24,17 @@ export type RouteOptions = {
 
 export type RoutePath = string;
 
+// Replace with using RouteRefs
+export type LegacyRouteOutput = {
+  type: 'legacy-route';
+  path: RoutePath;
+  component: ComponentType<{}>;
+  options?: RouteOptions;
+};
+
 export type RouteOutput = {
   type: 'route';
-  path: RoutePath;
+  target: RouteRef;
   component: ComponentType<{}>;
   options?: RouteOptions;
 };
@@ -45,6 +54,12 @@ export type FeatureFlagOutput = {
 };
 
 export type PluginOutput =
+  | LegacyRouteOutput
   | RouteOutput
   | RedirectRouteOutput
   | FeatureFlagOutput;
+
+export type BackstagePlugin = {
+  getId(): string;
+  output(): PluginOutput[];
+};

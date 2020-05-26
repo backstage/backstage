@@ -16,10 +16,13 @@
 
 /* eslint-disable jest/no-disabled-tests */
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(() => ({})),
-}));
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useParams: jest.fn(() => ({})),
+  };
+});
 
 import React from 'react';
 import mockFetch from 'jest-fetch-mock';
@@ -32,7 +35,7 @@ import { lighthouseApiRef, LighthouseRestApi, Audit, Website } from '../../api';
 import { formatTime } from '../../utils';
 import * as data from '../../__fixtures__/website-response.json';
 
-const { useParams }: { useParams: jest.Mock } = require.requireMock(
+const { useParams }: { useParams: jest.Mock } = jest.requireMock(
   'react-router-dom',
 );
 const websiteResponse = data as Website;
@@ -46,7 +49,7 @@ describe('AuditView', () => {
     apis = ApiRegistry.from([
       [lighthouseApiRef, new LighthouseRestApi('https://lighthouse')],
     ]);
-    id = websiteResponse.audits.find((a) => a.status === 'COMPLETED')
+    id = websiteResponse.audits.find(a => a.status === 'COMPLETED')
       ?.id as string;
     useParams.mockReturnValue({ id });
   });
@@ -98,7 +101,7 @@ describe('AuditView', () => {
 
       await rendered.findByTestId('audit-sidebar');
 
-      websiteResponse.audits.forEach((a) => {
+      websiteResponse.audits.forEach(a => {
         expect(
           rendered.queryByText(formatTime(a.timeCreated)),
         ).toBeInTheDocument();
@@ -116,14 +119,14 @@ describe('AuditView', () => {
 
       await rendered.findByTestId('audit-sidebar');
 
-      const audit = websiteResponse.audits.find((a) => a.id === id) as Audit;
+      const audit = websiteResponse.audits.find(a => a.id === id) as Audit;
       const auditElement = rendered.getByText(formatTime(audit.timeCreated));
       expect(auditElement.parentElement?.parentElement?.className).toContain(
         'selected',
       );
 
       const notSelectedAudit = websiteResponse.audits.find(
-        (a) => a.id !== id,
+        a => a.id !== id,
       ) as Audit;
       const notSelectedAuditElement = rendered.getByText(
         formatTime(notSelectedAudit.timeCreated),
@@ -144,7 +147,7 @@ describe('AuditView', () => {
 
       await rendered.findByTestId('audit-sidebar');
 
-      websiteResponse.audits.forEach((a) => {
+      websiteResponse.audits.forEach(a => {
         expect(
           rendered.getByText(formatTime(a.timeCreated)).parentElement
             ?.parentElement,
@@ -183,7 +186,7 @@ describe('AuditView', () => {
 
   describe.skip('when a loading audit is accessed', () => {
     it('shows a loading view', async () => {
-      id = websiteResponse.audits.find((a) => a.status === 'RUNNING')
+      id = websiteResponse.audits.find(a => a.status === 'RUNNING')
         ?.id as string;
       useParams.mockReturnValueOnce({ id });
 
@@ -203,7 +206,7 @@ describe('AuditView', () => {
 
   describe.skip('when a failed audit is accessed', () => {
     it('shows an error message', async () => {
-      id = websiteResponse.audits.find((a) => a.status === 'FAILED')
+      id = websiteResponse.audits.find(a => a.status === 'FAILED')
         ?.id as string;
       useParams.mockReturnValueOnce({ id });
 

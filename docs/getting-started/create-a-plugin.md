@@ -24,6 +24,15 @@ plugin directly by navigating to `http://localhost:3000/my-plugin`._
     <img src='https://github.com/spotify/backstage/raw/master/docs/getting-started/my-plugin_screenshot.png' width='600' alt='my plugin'>
 </p>
 
+You can also serve the plugin in isolation by running `yarn start` in the plugin directory. Or by using the yarn workspace command, for example:
+
+```bash
+yarn workspace @backstage/plugin-welcome start # Also supports --check
+```
+
+This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
+It is only meant for local development, and the setup for it can be found inside the plugin's `dev/` directory.
+
 [Next Step - Structure of a plugin](structure-of-a-plugin.md)
 
 [Back to Getting Started](README.md)

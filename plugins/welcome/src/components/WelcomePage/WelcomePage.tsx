@@ -24,11 +24,11 @@ import {
   ListItemText,
   Link,
 } from '@material-ui/core';
-import Timer from '../Timer';
 import {
   Content,
   InfoCard,
   Header,
+  HomepageTimer,
   Page,
   pageTheme,
   ContentHeader,
@@ -45,7 +45,7 @@ const WelcomePage: FC<{}> = () => {
         title={`Welcome ${profile.givenName || 'to Backstage'}`}
         subtitle="Let's start building a better developer experience"
       >
-        <Timer />
+        <HomepageTimer />
       </Header>
       <Content>
         <ContentHeader title="Getting Started">
@@ -113,7 +113,7 @@ const WelcomePage: FC<{}> = () => {
                   creating a plugin
                 </Link>{' '}
                 or have a look in the code for the{' '}
-                <Link component={RouterLink} to="/home">
+                <Link component={RouterLink} to="/explore">
                   existing plugins
                 </Link>{' '}
                 in the directory{' '}

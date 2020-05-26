@@ -19,30 +19,33 @@ import PropTypes from 'prop-types';
 import { Link, makeStyles, Typography } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
+
 import {
   Sidebar,
   SidebarPage,
   sidebarConfig,
   SidebarContext,
   SidebarItem,
-  SidebarSpacer,
   SidebarDivider,
+  SidebarSearchField,
   SidebarSpace,
+  SidebarUserBadge,
+  SidebarThemeToggle,
 } from '@backstage/core';
-import ToggleThemeSidebarItem from './ToggleThemeSidebarItem';
 
 const icon = require('./icon.svg') as string;
 const logo = require('./logo.svg') as string;
 
 const useSidebarLogoStyles = makeStyles({
   root: {
-    height: sidebarConfig.drawerWidthClosed,
+    width: sidebarConfig.drawerWidthClosed,
+    height: 3 * sidebarConfig.logoHeight,
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
+    marginBottom: -14,
   },
   icon: {
     width: 'auto',
@@ -53,9 +56,9 @@ const useSidebarLogoStyles = makeStyles({
     height: 30,
   },
   title: {
-    fontSize: 24,
+    fontSize: sidebarConfig.logoHeight,
     fontWeight: 'bold',
-    marginLeft: 22,
+    marginLeft: 20,
     whiteSpace: 'nowrap',
     color: '#fff',
   },
@@ -63,7 +66,8 @@ const useSidebarLogoStyles = makeStyles({
 
 const SidebarLogo: FC<{}> = () => {
   const classes = useSidebarLogoStyles();
-  const isOpen = useContext(SidebarContext);
+  const { isOpen } = useContext(SidebarContext);
+
   return (
     <div className={classes.root}>
       <Link href="/" underline="none">
@@ -79,21 +83,30 @@ const SidebarLogo: FC<{}> = () => {
   );
 };
 
+const handleSearch = (query: string): void => {
+  // XXX (@koroeskohr): for testing purposes
+  // eslint-disable-next-line no-console
+  console.log(query);
+};
+
 const Root: FC<{}> = ({ children }) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      <SidebarSpacer />
+      <SidebarSearchField onSearch={handleSearch} />
       <SidebarDivider />
+      {/* Global nav, not org-specific */}
       <SidebarItem icon={HomeIcon} to="/" text="Home" />
       <SidebarItem icon={ExploreIcon} to="/explore" text="Explore" />
       <SidebarItem icon={CreateComponentIcon} to="/create" text="Create..." />
+      {/* End global nav */}
       <SidebarDivider />
-      <SidebarItem icon={AccountTreeIcon} to="/inventory" text="Inventory" />
-      <SidebarItem icon={AccountCircle} to="/login" text="Login" />
+      <SidebarItem icon={AccountTreeIcon} to="/catalog" text="Catalog" />
       <SidebarDivider />
       <SidebarSpace />
-      <ToggleThemeSidebarItem />
+      <SidebarDivider />
+      <SidebarThemeToggle />
+      <SidebarUserBadge />
     </Sidebar>
     {children}
   </SidebarPage>

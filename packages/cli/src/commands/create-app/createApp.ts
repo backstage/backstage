@@ -21,7 +21,7 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
-import { Task, templatingTask } from '../../lib/tasks';
+import { Task, templatingTask, installWithLocalDeps } from '../../lib/tasks';
 import { paths } from '../../lib/paths';
 import { version } from '../../lib/version';
 const exec = promisify(execCb);
@@ -57,19 +57,22 @@ async function cleanUp(tempDir: string) {
   });
 }
 
-async function buildApp(appFolder: string) {
-  const commands = ['yarn install', 'yarn build'];
-  for (const command of commands) {
-    await Task.forItem('executing', command, async () => {
-      process.chdir(appFolder);
+async function buildApp(appDir: string) {
+  const runCmd = async (cmd: string) => {
+    await Task.forItem('executing', cmd, async () => {
+      process.chdir(appDir);
 
-      await exec(command).catch((error) => {
+      await exec(cmd).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
-        throw new Error(`Could not execute command ${chalk.cyan(command)}`);
+        throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
       });
     });
-  }
+  };
+
+  await installWithLocalDeps(appDir);
+  await runCmd('yarn tsc');
+  await runCmd('yarn build');
 }
 
 export async function moveApp(
@@ -78,36 +81,12 @@ export async function moveApp(
   id: string,
 ) {
   await Task.forItem('moving', id, async () => {
-    await fs.move(tempDir, destination).catch((error) => {
+    await fs.move(tempDir, destination).catch(error => {
       throw new Error(
         `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
       );
     });
   });
-}
-
-async function addPackageResolutions(appDir: string) {
-  const pkgJsonPath = resolvePath(appDir, 'package.json');
-  const packageFileContent = await fs.readFile(pkgJsonPath, 'utf-8');
-  const packageFileJson = JSON.parse(packageFileContent);
-
-  packageFileJson.resolutions = packageFileJson.resolutions || {};
-
-  const packages = ['cli', 'core', 'test-utils', 'test-utils-core', 'theme'];
-
-  for (const pkg of packages) {
-    await Task.forItem('adding', `${pkg} link to package.json`, async () => {
-      const pkgPath = paths.resolveOwnRoot('packages', pkg);
-      packageFileJson.resolutions[`@backstage/${pkg}`] = `file:${pkgPath}`;
-      const newContents = `${JSON.stringify(packageFileJson, null, 2)}\n`;
-
-      await fs.writeFile(pkgJsonPath, newContents, 'utf-8').catch((error) => {
-        throw new Error(
-          `Failed to add resolutions to package.json: ${error.message}`,
-        );
-      });
-    });
-  }
 }
 
 export default async () => {
@@ -149,12 +128,6 @@ export default async () => {
 
     Task.section('Moving to final location');
     await moveApp(tempDir, appDir, answers.name);
-
-    // e2e testing needs special treatment
-    if (process.env.BACKSTAGE_E2E_CLI_TEST) {
-      Task.section('Linking packages locally for e2e tests');
-      await addPackageResolutions(appDir);
-    }
 
     Task.section('Building the app');
     await buildApp(appDir);

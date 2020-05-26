@@ -15,12 +15,13 @@
  */
 
 jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   const mocks = {
     replace: jest.fn(),
     push: jest.fn(),
   };
   return {
-    ...jest.requireActual('react-router-dom'),
+    ...actual,
     useHistory: jest.fn(() => mocks),
   };
 });
@@ -41,7 +42,7 @@ import { lighthouseApiRef, LighthouseRestApi, Audit } from '../../api';
 import CreateAudit from '.';
 import * as data from '../../__fixtures__/create-audit-response.json';
 
-const { useHistory }: { useHistory: jest.Mock } = require.requireMock(
+const { useHistory }: { useHistory: jest.Mock } = jest.requireMock(
   'react-router-dom',
 );
 const createAuditResponse = data as Audit;
@@ -52,7 +53,7 @@ describe('CreateAudit', () => {
   let errorApi: ErrorApi;
 
   beforeEach(() => {
-    errorApi = { post: jest.fn() };
+    errorApi = { post: jest.fn(), error$: jest.fn() };
     apis = ApiRegistry.from([
       [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
       [errorApiRef, errorApi],
@@ -164,7 +165,7 @@ describe('CreateAudit', () => {
       fireEvent.click(rendered.getByText(/Create Audit/));
 
       await wait(() => expect(rendered.getByLabelText(/URL/)).toBeEnabled());
-      await new Promise((r) => setTimeout(r, 0));
+      await new Promise(r => setTimeout(r, 0));
 
       expect(errorApi.post).toHaveBeenCalledWith(expect.any(Error));
     });

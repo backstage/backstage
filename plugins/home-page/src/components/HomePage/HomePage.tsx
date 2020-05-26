@@ -16,8 +16,14 @@
 
 import React, { FC } from 'react';
 import { Typography, Link, Grid } from '@material-ui/core';
-import HomePageTimer from '../HomepageTimer';
-import { Content, InfoCard, Header, Page, pageTheme } from '@backstage/core';
+import {
+  Content,
+  InfoCard,
+  Header,
+  HomepageTimer,
+  Page,
+  pageTheme,
+} from '@backstage/core';
 import SquadTechHealth from './SquadTechHealth';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -52,7 +58,7 @@ const HomePage: FC<{}> = () => {
         title={profile ? `Hello, ${profile.givenName}` : 'Hello'}
         subtitle="Welcome to Backstage"
       >
-        <HomePageTimer />
+        <HomepageTimer />
       </Header>
       <Content>
         <Grid container direction="row" spacing={3}>
@@ -68,7 +74,7 @@ const HomePage: FC<{}> = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {data.map((d) => (
+                    {data.map(d => (
                       <TableRow key={d.id}>
                         <TableCell>{d.entity}</TableCell>
                         <TableCell>{d.kind}</TableCell>

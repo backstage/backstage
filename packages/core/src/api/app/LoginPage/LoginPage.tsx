@@ -15,7 +15,7 @@
  */
 
 import React, { FC, useState } from 'react';
-import { GitHub as GitHubIcon } from '@material-ui/icons';
+import GitHubIcon from '@material-ui/icons/GitHub';
 import Page from '../../../layout/Page';
 import Header from '../../../layout/Header';
 import Content from '../../../layout/Content/Content';
@@ -72,11 +72,11 @@ const LoginPage: FC<{}> = () => {
         'Content-Type': 'application/x-www-form-urlencoded',
       }),
     })
-      .then((response) => {
+      .then(response => {
         if (response.status === 200) return response.json();
         throw Error(`${response.status} ${response.statusText}`);
       })
-      .then((data) => {
+      .then(data => {
         const info = {
           username: username,
           token: token,

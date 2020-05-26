@@ -30,7 +30,7 @@
     "@types/styled-components": "^4.1.18",
     "husky": "^2.7.0",
     "jest-junit": "^8.0.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.9.2"
   },
   "husky": {
     "hooks": {

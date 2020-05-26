@@ -27,7 +27,7 @@ import {
 import ExploreCard, { CardData } from './ExploreCard';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, 296px)',
@@ -37,6 +37,22 @@ const useStyles = makeStyles<BackstageTheme>((theme) => ({
 }));
 
 const toolsCards = [
+  {
+    title: 'CircleCI',
+    description:
+      'Provides builds overview, detailed build info and retriggering functionality for CircleCI.',
+    url: '/circleci',
+    image: 'https://miro.medium.com/max/1200/1*hkTBp22vLAqlIHkrkZHPnw.png',
+    tags: ['circleci', 'ci', 'dev'],
+  },
+  {
+    title: 'Sentry',
+    description:
+      'Self-hosted and cloud-based error monitoring that helps software teams discover, triage, and prioritize errors in real-time.',
+    url: '/sentry',
+    image: 'https://sentry-brand.storage.googleapis.com/sentry-logo-black.png',
+    tags: ['sentry', 'monitoring', 'errors'],
+  },
   {
     title: 'Lighthouse',
     description:

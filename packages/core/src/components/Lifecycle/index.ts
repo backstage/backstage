@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { AlphaLabel, BetaLabel } from './Lifecycle';
+export { Lifecycle } from './Lifecycle';
