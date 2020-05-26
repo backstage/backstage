@@ -38,7 +38,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.6",
     "@types/lodash": "^4.14.151",
-    "@types/uuid": "^7.0.3",
+    "@types/uuid": "^8.0.0",
     "@types/yup": "^0.28.2",
     "jest-fetch-mock": "^3.0.3",
     "supertest": "^4.0.2",
