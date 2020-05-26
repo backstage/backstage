@@ -20,8 +20,7 @@ import {
   SessionShouldRefreshFunc,
 } from './types';
 import { AuthConnector } from '../AuthConnector';
-import { SessionScopeHelper } from './common';
-import { hasScopes } from '../../OAuthRequestManager/OAuthPendingRequests';
+import { SessionScopeHelper, hasScopes } from './common';
 
 type Options<T> = {
   /** The connector used for acting on the auth session */

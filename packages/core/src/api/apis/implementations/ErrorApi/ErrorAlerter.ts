@@ -13,14 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ErrorApi, ErrorContext, AlertApi } from '../../../..';
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
+/**
+ * Decorates an ErrorApi by also forwarding error messages
+ * to the alertApi with an 'error' severity.
+ */
+export class ErrorAlerter implements ErrorApi {
+  constructor(
+    private readonly alertApi: AlertApi,
+    private readonly errorApi: ErrorApi,
+  ) {}
 
-export * from './auth';
+  post(error: Error, context?: ErrorContext) {
+    if (!context?.hidden) {
+      this.alertApi.post({ message: error.message, severity: 'error' });
+    }
 
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ErrorApi';
-export * from './OAuthRequestApi';
+    return this.errorApi.post(error, context);
+  }
+
+  error$() {
+    return this.errorApi.error$();
+  }
+}

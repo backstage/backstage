@@ -16,7 +16,7 @@
 
 import ProviderIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from './DefaultAuthConnector';
-import MockOAuthApi from '../../OAuthRequestManager/MockOAuthApi';
+import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
 
 const anyFetch = fetch as any;
