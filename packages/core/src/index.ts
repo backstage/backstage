@@ -45,4 +45,4 @@ export { default as TrendLine } from './components/TrendLine';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
 export * from './components/Status';
 export { default as WarningPanel } from './components/WarningPanel';
-export { IconComponent } from './icons';
+export type { IconComponent } from './icons';

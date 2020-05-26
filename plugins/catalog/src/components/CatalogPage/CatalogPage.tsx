@@ -27,13 +27,9 @@ import {
 import { useAsync } from 'react-use';
 import { ComponentFactory } from '../../data/component';
 import CatalogTable from '../CatalogTable/CatalogTable';
-import {
-  CatalogFilter,
-  CatalogFilterGroup,
-} from '../CatalogFilter/CatalogFilter';
+import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
 import { Button, makeStyles } from '@material-ui/core';
-import StarIcon from '@material-ui/icons/Star';
-import SettingsIcon from '@material-ui/icons/Settings';
+import { getFilterGroups, defaultId } from '../../data/filters';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -48,38 +44,12 @@ type CatalogPageProps = {
   componentFactory: ComponentFactory;
 };
 
-const filterGroups: CatalogFilterGroup[] = [
-  {
-    name: 'Personal',
-    items: [
-      {
-        id: 'owned',
-        label: 'Owned',
-        count: 123,
-        icon: SettingsIcon,
-      },
-      {
-        id: 'starred',
-        label: 'Starred',
-        count: 10,
-        icon: StarIcon,
-      },
-    ],
-  },
-  {
-    name: 'Spotify',
-    items: [
-      {
-        id: 'all',
-        label: 'All Services',
-        count: 123,
-      },
-    ],
-  },
-];
-
 const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
   const { value, error, loading } = useAsync(componentFactory.getAllComponents);
+  const [selectedFilter, setSelectedFilter] = React.useState<string>(defaultId);
+  const onFilterSelected = React.useCallback(id => setSelectedFilter(id), []);
+  const filterGroups = getFilterGroups();
+
   const styles = useStyles();
   return (
     <Page theme={pageTheme.home}>
@@ -95,7 +65,11 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
         </ContentHeader>
         <div className={styles.contentWrapper}>
           <div>
-            <CatalogFilter groups={filterGroups} />
+            <CatalogFilter
+              groups={filterGroups}
+              selectedId={selectedFilter}
+              onSelectedChange={onFilterSelected}
+            />
           </div>
           <CatalogTable
             components={value || []}

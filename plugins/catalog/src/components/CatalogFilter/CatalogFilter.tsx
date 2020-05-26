@@ -31,6 +31,7 @@ export type CatalogFeatureItem = {
   label: string;
   icon?: IconComponent;
   count?: number;
+  loading?: boolean;
 };
 
 export type CatalogFilterGroup = {
