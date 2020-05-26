@@ -29,10 +29,11 @@ export type EntityFilters = EntityFilter[];
 
 export type EntitiesCatalog = {
   entities(filters?: EntityFilters): Promise<DescriptorEnvelope[]>;
-  entity(
+  entityByUid(uid: string): Promise<DescriptorEnvelope | undefined>;
+  entityByName(
     kind: string,
-    name: string,
     namespace: string | undefined,
+    name: string,
   ): Promise<DescriptorEnvelope | undefined>;
 };
 

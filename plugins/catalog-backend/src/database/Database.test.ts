@@ -21,6 +21,7 @@ import {
 } from '@backstage/backend-common';
 import Knex from 'knex';
 import path from 'path';
+import { DescriptorEnvelope } from '../ingestion';
 import { Database } from './Database';
 import {
   AddDatabaseLocation,
@@ -28,7 +29,6 @@ import {
   DbEntityResponse,
   DbLocationsRow,
 } from './types';
-import { DescriptorEnvelope } from '../ingestion';
 
 describe('Database', () => {
   let database: Knex;
@@ -264,6 +264,7 @@ describe('Database', () => {
         { locationId: undefined, entity: expect.objectContaining(e2) },
       ]);
     });
+
     it('can get all specific entities for matching filters (naive case)', async () => {
       const catalog = new Database(database, getVoidLogger());
       const entities: DescriptorEnvelope[] = [

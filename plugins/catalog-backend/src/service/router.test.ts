@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  errorHandler,
-  getVoidLogger,
-  InputError,
-} from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog, Location, LocationsCatalog } from '../catalog';
@@ -27,7 +23,8 @@ import { createRouter } from './router';
 
 class MockEntitiesCatalog implements EntitiesCatalog {
   entities = jest.fn();
-  entity = jest.fn();
+  entityByUid = jest.fn();
+  entityByName = jest.fn();
 }
 
 class MockLocationsCatalog implements LocationsCatalog {
@@ -74,6 +71,89 @@ describe('createRouter', () => {
         { key: 'b', values: ['4'] },
         { key: 'c', values: [null] },
       ]);
+    });
+  });
+
+  describe('entityByUid', () => {
+    it('can fetch entity by uid', async () => {
+      const entity: DescriptorEnvelope = {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: {
+          name: 'c',
+        },
+      };
+      const catalog = new MockEntitiesCatalog();
+      catalog.entityByUid.mockResolvedValue(entity);
+
+      const router = await createRouter({
+        entitiesCatalog: catalog,
+        logger: getVoidLogger(),
+      });
+
+      const app = express().use(router);
+      const response = await request(app).get('/entities/by-uid/zzz');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(expect.objectContaining(entity));
+    });
+
+    it('responds with a 404 for missing entities', async () => {
+      const catalog = new MockEntitiesCatalog();
+      catalog.entityByUid.mockResolvedValue(undefined);
+
+      const router = await createRouter({
+        entitiesCatalog: catalog,
+        logger: getVoidLogger(),
+      });
+
+      const app = express().use(router);
+      const response = await request(app).get('/entities/by-uid/zzz');
+
+      expect(response.status).toEqual(404);
+      expect(response.text).toMatch(/uid/);
+    });
+  });
+
+  describe('entityByName', () => {
+    it('can fetch entity by name', async () => {
+      const entity: DescriptorEnvelope = {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: {
+          name: 'c',
+          namespace: 'd',
+        },
+      };
+      const catalog = new MockEntitiesCatalog();
+      catalog.entityByName.mockResolvedValue(entity);
+
+      const router = await createRouter({
+        entitiesCatalog: catalog,
+        logger: getVoidLogger(),
+      });
+
+      const app = express().use(router);
+      const response = await request(app).get('/entities/by-name/b/d/c');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(expect.objectContaining(entity));
+    });
+
+    it('responds with a 404 for missing entities', async () => {
+      const catalog = new MockEntitiesCatalog();
+      catalog.entityByName.mockResolvedValue(undefined);
+
+      const router = await createRouter({
+        entitiesCatalog: catalog,
+        logger: getVoidLogger(),
+      });
+
+      const app = express().use(router);
+      const response = await request(app).get('/entities/by-name//b/d/c');
+
+      expect(response.status).toEqual(404);
+      expect(response.text).toMatch(/name/);
     });
   });
 

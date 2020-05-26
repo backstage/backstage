@@ -276,7 +276,7 @@ export class Database {
       ? oldRow.generation
       : oldRow.generation + 1;
     const newEntity = lodash.cloneDeep(request.entity);
-    newEntity.metadata = Object.assign({}, request.entity.metadata, {
+    newEntity.metadata = Object.assign({}, newEntity.metadata, {
       uid: oldRow.id,
       etag: newEtag,
       generation: newGeneration,
@@ -357,9 +357,7 @@ export class Database {
   async addLocation(location: AddDatabaseLocation): Promise<DbLocationsRow> {
     return await this.database.transaction<DbLocationsRow>(async tx => {
       const existingLocation = await tx<DbLocationsRow>('locations')
-        .where({
-          target: location.target,
-        })
+        .where({ target: location.target })
         .select();
 
       if (existingLocation?.[0]) {
