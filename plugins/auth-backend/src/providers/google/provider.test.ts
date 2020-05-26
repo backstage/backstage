@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { GoogleAuthProvider, THOUSAND_DAYS_MS } from './provider';
+import {
+  GoogleAuthProvider,
+  THOUSAND_DAYS_MS,
+  TEN_MINUTES_MS,
+} from './provider';
 import passport from 'passport';
 import express from 'express';
 import * as utils from './../utils';
@@ -55,6 +59,7 @@ describe('GoogleAuthProvider', () => {
     const mockResponse = ({
       send: jest.fn().mockReturnThis(),
       status: jest.fn().mockReturnThis(),
+      cookie: jest.fn().mockReturnThis(),
     } as unknown) as express.Response;
     const mockNext: express.NextFunction = jest.fn();
 
@@ -79,7 +84,31 @@ describe('GoogleAuthProvider', () => {
         scope: 'a,b',
         accessType: 'offline',
         prompt: 'consent',
+        state: expect.any(String),
       });
+    });
+
+    it('should set a nonce cookie', () => {
+      const mockRequest = ({
+        header: () => 'XMLHttpRequest',
+        query: {
+          scope: 'a,b',
+        },
+      } as unknown) as express.Request;
+
+      const googleAuthProvider = new GoogleAuthProvider(
+        googleAuthProviderConfig,
+      );
+      googleAuthProvider.start(mockRequest, mockResponse, mockNext);
+      expect(mockResponse.cookie).toBeCalledTimes(1);
+      expect(mockResponse.cookie).toBeCalledWith(
+        'google-nonce',
+        expect.any(String),
+        expect.objectContaining({
+          maxAge: TEN_MINUTES_MS,
+          path: `/auth/${googleAuthProviderConfig.provider}/handler`,
+        }),
+      );
     });
 
     it('should throw error if no scopes provided', () => {
@@ -129,9 +158,6 @@ describe('GoogleAuthProvider', () => {
   });
 
   describe('redirect frame handler', () => {
-    const mockRequest = ({
-      header: () => 'XMLHttpRequest',
-    } as unknown) as express.Request;
     const mockResponse: any = ({
       status: jest.fn().mockReturnThis(),
       send: jest.fn().mockReturnThis(),
@@ -140,6 +166,14 @@ describe('GoogleAuthProvider', () => {
     const mockNext: express.NextFunction = jest.fn();
 
     it('should call authenticate and post a response', () => {
+      const mockRequest = ({
+        header: () => 'XMLHttpRequest',
+        cookies: { 'google-nonce': 'NONCE' },
+        query: {
+          state: 'NONCE',
+        },
+      } as unknown) as express.Request;
+
       const spyPostMessage = jest
         .spyOn(utils, 'postMessageResponse')
         .mockImplementation(() => jest.fn());
@@ -173,6 +207,14 @@ describe('GoogleAuthProvider', () => {
     });
 
     it('should respond with a error message if no refresh token returned', () => {
+      const mockRequest = ({
+        header: () => 'XMLHttpRequest',
+        cookies: { 'google-nonce': 'NONCE' },
+        query: {
+          state: 'NONCE',
+        },
+      } as unknown) as express.Request;
+
       const spyPassport = jest
         .spyOn(passport, 'authenticate')
         .mockImplementation((_x, callbackFunc) => {
@@ -199,6 +241,14 @@ describe('GoogleAuthProvider', () => {
     });
 
     it('should respond with a error message if auth failed', () => {
+      const mockRequest = ({
+        header: () => 'XMLHttpRequest',
+        cookies: { 'google-nonce': 'NONCE' },
+        query: {
+          state: 'NONCE',
+        },
+      } as unknown) as express.Request;
+
       const spyPassport = jest
         .spyOn(passport, 'authenticate')
         .mockImplementation((_x, callbackFunc) => {
@@ -222,6 +272,60 @@ describe('GoogleAuthProvider', () => {
         type: 'auth-result',
         error: new Error('Google auth failed, Error: TokenError'),
       });
+    });
+
+    it('should respond with a error message if cookie nonce is missing', () => {
+      const mockRequest = ({
+        header: () => 'XMLHttpRequest',
+        cookies: {},
+        query: { state: 'NONCE' },
+      } as unknown) as express.Request;
+
+      const googleAuthProvider = new GoogleAuthProvider(
+        googleAuthProviderConfig,
+      );
+
+      googleAuthProvider.frameHandler(mockRequest, mockResponse, mockNext);
+      expect(mockResponse.send).toBeCalledTimes(1);
+      expect(mockResponse.send).toBeCalledWith('Missing nonce');
+      expect(mockResponse.status).toBeCalledTimes(1);
+      expect(mockResponse.status).toBeCalledWith(401);
+    });
+
+    it('should respond with a error message if state nonce is missing', () => {
+      const mockRequest = ({
+        header: () => 'XMLHttpRequest',
+        cookies: { 'google-nonce': 'NONCE' },
+        query: {},
+      } as unknown) as express.Request;
+
+      const googleAuthProvider = new GoogleAuthProvider(
+        googleAuthProviderConfig,
+      );
+
+      googleAuthProvider.frameHandler(mockRequest, mockResponse, mockNext);
+      expect(mockResponse.send).toBeCalledTimes(1);
+      expect(mockResponse.send).toBeCalledWith('Missing nonce');
+      expect(mockResponse.status).toBeCalledTimes(1);
+      expect(mockResponse.status).toBeCalledWith(401);
+    });
+
+    it('should respond with a error message if nonce mismatch', () => {
+      const mockRequest = ({
+        header: () => 'XMLHttpRequest',
+        cookies: { 'google-nonce': 'NONCA' },
+        query: { state: 'NONCEB' },
+      } as unknown) as express.Request;
+
+      const googleAuthProvider = new GoogleAuthProvider(
+        googleAuthProviderConfig,
+      );
+
+      googleAuthProvider.frameHandler(mockRequest, mockResponse, mockNext);
+      expect(mockResponse.send).toBeCalledTimes(1);
+      expect(mockResponse.send).toBeCalledWith('Invalid nonce');
+      expect(mockResponse.status).toBeCalledTimes(1);
+      expect(mockResponse.status).toBeCalledWith(401);
     });
   });
 

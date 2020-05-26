@@ -28,7 +28,7 @@ import { postMessageResponse, ensuresXRequestedWith } from './../utils';
 import { InputError } from '@backstage/backend-common';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
-const TEN_MINUTES_MS = 600 * 1000;
+export const TEN_MINUTES_MS = 600 * 1000;
 export class GoogleAuthProvider
   implements AuthProvider, AuthProviderRouteHandlers {
   private readonly providerConfig: AuthProviderConfig;
