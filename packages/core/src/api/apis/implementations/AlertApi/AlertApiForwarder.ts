@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AlertApi, AlertMessage } from '../../../..';
+import { PublishSubject } from '../lib';
+import { Observable } from '../../../types';
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
+/**
+ * Base implementation for the AlertApi that simply forwards alerts to consumers.
+ */
+export class AlertApiForwarder implements AlertApi {
+  private readonly subject = new PublishSubject<AlertMessage>();
 
-export * from './auth';
+  post(alert: AlertMessage) {
+    this.subject.next(alert);
+  }
 
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ErrorApi';
-export * from './OAuthRequestApi';
+  alert$(): Observable<AlertMessage> {
+    return this.subject;
+  }
+}
