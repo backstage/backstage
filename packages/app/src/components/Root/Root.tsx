@@ -21,7 +21,8 @@ import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
-
+import LogoFull from './LogoFull';
+import LogoIcon from './LogoIcon';
 import {
   Sidebar,
   SidebarPage,
@@ -35,9 +36,6 @@ import {
   SidebarThemeToggle,
 } from '@backstage/core';
 
-const icon = require('./icon.svg') as string;
-const logo = require('./logo.svg') as string;
-
 const useSidebarLogoStyles = makeStyles({
   root: {
     width: sidebarConfig.drawerWidthClosed,
@@ -47,20 +45,9 @@ const useSidebarLogoStyles = makeStyles({
     alignItems: 'center',
     marginBottom: -14,
   },
-  icon: {
-    width: 'auto',
-    height: 28,
-  },
-  logo: {
-    width: 'auto',
-    height: 30,
-  },
-  title: {
-    fontSize: sidebarConfig.logoHeight,
-    fontWeight: 'bold',
-    marginLeft: 20,
-    whiteSpace: 'nowrap',
-    color: '#fff',
+  link: {
+    width: sidebarConfig.drawerWidthClosed,
+    marginLeft: 24,
   },
 });
 
@@ -70,14 +57,8 @@ const SidebarLogo: FC<{}> = () => {
 
   return (
     <div className={classes.root}>
-      <Link href="/" underline="none">
-        <Typography variant="h6" color="inherit" className={classes.title}>
-          {isOpen ? (
-            <img src={logo} alt="logo" className={classes.logo} />
-          ) : (
-            <img src={icon} alt="logo" className={classes.icon} />
-          )}
-        </Typography>
+      <Link href="/" underline="none" className={classes.link}>
+        {isOpen ? <LogoFull /> : <LogoIcon />}
       </Link>
     </div>
   );
