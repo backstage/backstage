@@ -20,7 +20,6 @@ import { Link, makeStyles, Typography } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
 
 import {
   Sidebar,
@@ -95,8 +94,6 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarItem icon={ExploreIcon} to="/explore" text="Explore" />
       <SidebarItem icon={CreateComponentIcon} to="/create" text="Create..." />
       {/* End global nav */}
-      <SidebarDivider />
-      <SidebarItem icon={AccountTreeIcon} to="/catalog" text="Catalog" />
       <SidebarDivider />
       <SidebarSpace />
       <SidebarDivider />
