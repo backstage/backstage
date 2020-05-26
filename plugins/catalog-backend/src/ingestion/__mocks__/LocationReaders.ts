@@ -32,7 +32,7 @@ export class LocationReaders implements LocationReader {
       },
     };
   }
-
+  // eslint-disable-next-line
   constructor(private readonly sources: Record<string, LocationSource>) {}
 
   // eslint-disable-next-line
