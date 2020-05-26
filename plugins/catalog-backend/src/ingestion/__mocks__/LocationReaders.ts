@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// @ts-nocheck
 import { LocationSource, LocationReader, ReaderOutput } from '../types';
 
 export class LocationReaders implements LocationReader {
