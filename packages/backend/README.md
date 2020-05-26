@@ -12,17 +12,23 @@ app. Until then, feel free to experiment here!
 
 ## Development
 
-To run the example backend in watch mode, use
+To run the example backend, first go to the project root and run
+
+```bash
+yarn install
+yarn build
+```
+
+You should only need to do this once.
+
+After that, go to the `packages/backend` directory and run
 
 ```bash
 AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x SENTRY_TOKEN=x yarn start
 ```
 
-in the backend directory. Substitute `x` for actual values, or leave them as
+Substitute `x` for actual values, or leave them as
 dummy values just to try out the backend without using the auth or sentry features.
-
-You may have to issue a `yarn build` command in the project root before doing
-this for the first time.
 
 The backend starts up on port 7000 per default.
 
@@ -36,7 +42,7 @@ To get started, you can issue the following after starting the backend:
 
 ```bash
 curl -i \
-  -H "Content-Type: application/json"
+  -H "Content-Type: application/json" \
   -d '{"type":"github","target":"https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/fixtures/two_components.yaml"}' \
   localhost:7000/catalog/locations
 ```
