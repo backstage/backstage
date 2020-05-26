@@ -44,6 +44,7 @@ const apiRegistry = ApiRegistry.from([
       post(error) {
         throw error;
       },
+      error$: jest.fn(),
     } as ErrorApi,
   ],
 ]);

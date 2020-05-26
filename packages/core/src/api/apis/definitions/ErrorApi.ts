@@ -15,6 +15,7 @@
  */
 
 import { createApiRef } from '../ApiRef';
+import { Observable } from '../../types';
 
 /**
  * Mirrors the javascript Error class, for the purpose of
@@ -54,6 +55,11 @@ export type ErrorApi = {
    * Post an error for handling by the application.
    */
   post(error: Error, context?: ErrorContext): void;
+
+  /**
+   * Observe errors posted by other parts of the application.
+   */
+  error$(): Observable<{ error: Error; context?: ErrorContext }>;
 };
 
 export const errorApiRef = createApiRef<ErrorApi>({

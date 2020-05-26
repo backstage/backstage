@@ -19,6 +19,70 @@ import { ComponentDescriptorV1beta1 } from './descriptors/ComponentDescriptorV1b
 export type ComponentDescriptor = ComponentDescriptorV1beta1;
 
 /**
+ * Metadata fields common to all versions/kinds of entity.
+ *
+ * @see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
+ */
+export type EntityMeta = {
+  /**
+   * A globally unique ID for the entity.
+   *
+   * This field can not be set by the user at creation time, and the server
+   * will reject an attempt to do so. The field will be populated in read
+   * operations. The field can (optionally) be specified when performing
+   * update or delete operations, but the server is free to reject requests
+   * that do so in such a way that it breaks semantics.
+   */
+  uid?: string;
+
+  /**
+   * An opaque string that changes for each update operation to any part of
+   * the entity, including metadata.
+   *
+   * This field can not be set by the user at creation time, and the server
+   * will reject an attempt to do so. The field will be populated in read
+   * operations. The field can (optionally) be specified when performing
+   * update or delete operations, and the server will then reject the
+   * operation if it does not match the current stored value.
+   */
+  etag?: string;
+
+  /**
+   * A positive nonzero number that indicates the current generation of data
+   * for this entity; the value is incremented each time the spec changes.
+   *
+   * This field can not be set by the user at creation time, and the server
+   * will reject an attempt to do so. The field will be populated in read
+   * operations.
+   */
+  generation?: number;
+
+  /**
+   * The name of the entity.
+   *
+   * Must be uniqe within the catalog at any given point in time, for any
+   * given namespace, for any given kind.
+   */
+  name?: string;
+
+  /**
+   * The namespace that the entity belongs to.
+   */
+  namespace?: string;
+
+  /**
+   * Key/value pairs of identifying information attached to the entity.
+   */
+  labels?: Record<string, string>;
+
+  /**
+   * Key/value pairs of non-identifying auxiliary information attached to the
+   * entity.
+   */
+  annotations?: Record<string, string>;
+};
+
+/**
  * The format envelope that's common to all versions/kinds.
  *
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
@@ -37,67 +101,8 @@ export type DescriptorEnvelope = {
 
   /**
    * Optional metadata related to the entity.
-   *
-   * @see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
    */
-  metadata?: {
-    /**
-     * A globally unique ID for the entity.
-     *
-     * This field can not be set by the user at creation time, and the server
-     * will reject an attempt to do so. The field will be populated in read
-     * operations. The field can (optionally) be specified when performing
-     * update or delete operations, but the server is free to reject requests
-     * that do so in such a way that it breaks semantics.
-     */
-    uid?: string;
-
-    /**
-     * An opaque string that changes for each update operation to any part of
-     * the entity, including metadata.
-     *
-     * This field can not be set by the user at creation time, and the server
-     * will reject an attempt to do so. The field will be populated in read
-     * operations. The field can (optionally) be specified when performing
-     * update or delete operations, and the server will then reject the
-     * operation if it does not match the current stored value.
-     */
-    etag?: string;
-
-    /**
-     * A positive nonzero number that indicates the current generation of data
-     * for this entity; the value is incremented each time the spec changes.
-     *
-     * This field can not be set by the user at creation time, and the server
-     * will reject an attempt to do so. The field will be populated in read
-     * operations.
-     */
-    generation?: number;
-
-    /**
-     * The name of the entity.
-     *
-     * Must be uniqe within the catalog at any given point in time, for any
-     * given namespace, for any given kind.
-     */
-    name?: string;
-
-    /**
-     * The namespace that the entity belongs to.
-     */
-    namespace?: string;
-
-    /**
-     * Key/value pairs of identifying information attached to the entity.
-     */
-    labels?: object;
-
-    /**
-     * Key/value pairs of non-identifying auxiliary information attached to the
-     * entity.
-     */
-    annotations?: object;
-  };
+  metadata?: EntityMeta;
 
   /**
    * The specification data describing the entity itself.

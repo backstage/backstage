@@ -38,16 +38,10 @@ export async function createRouter(
 
   if (entitiesCatalog) {
     // Entities
-    router
-      .get('/entities', async (_req, res) => {
-        const entities = await entitiesCatalog.entities();
-        res.status(200).send(entities);
-      })
-      .get('/entities/:id', async (req, res) => {
-        const { id } = req.params;
-        const entity = await entitiesCatalog.entity(id);
-        res.status(200).send(entity);
-      });
+    router.get('/entities', async (_req, res) => {
+      const entities = await entitiesCatalog.entities();
+      res.status(200).send(entities);
+    });
   }
 
   // Locations

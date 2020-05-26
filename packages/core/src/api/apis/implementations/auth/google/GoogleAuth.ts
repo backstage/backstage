@@ -40,7 +40,7 @@ type CreateOptions = {
 export type GoogleAuthResponse = {
   accessToken: string;
   idToken: string;
-  scopes: string;
+  scope: string;
   expiresInSeconds: number;
 };
 
@@ -70,7 +70,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
         return {
           idToken: res.idToken,
           accessToken: res.accessToken,
-          scopes: GoogleAuth.normalizeScopes(res.scopes),
+          scopes: GoogleAuth.normalizeScopes(res.scope),
           expiresAt: new Date(Date.now() + res.expiresInSeconds * 1000),
         };
       },
@@ -99,7 +99,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
     const normalizedScopes = GoogleAuth.normalizeScopes(scope);
     const session = await this.sessionManager.getSession({
       optional: false,
-      scope: normalizedScopes,
+      scopes: normalizedScopes,
     });
     return session.accessToken;
   }

@@ -15,8 +15,7 @@
  */
 
 import * as yup from 'yup';
-import { DescriptorEnvelope, ParserError } from '../types';
-import { KindParser } from './types';
+import { DescriptorEnvelope, KindParser, ParserError } from '../types';
 
 export interface ComponentDescriptorV1beta1 extends DescriptorEnvelope {
   spec: {

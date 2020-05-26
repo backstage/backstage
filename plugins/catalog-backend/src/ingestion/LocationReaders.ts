@@ -16,8 +16,7 @@
 
 import { FileLocationSource } from './sources/FileLocationSource';
 import { GitHubLocationSource } from './sources/GitHubLocationSource';
-import { LocationSource } from './sources/types';
-import { LocationReader, ReaderOutput } from './types';
+import { LocationReader, LocationSource, ReaderOutput } from './types';
 
 export class LocationReaders implements LocationReader {
   static create(): LocationReader {

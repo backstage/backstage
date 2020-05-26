@@ -7,6 +7,7 @@ The value of Backstage grows with every new plugin that gets added. Here is a co
 - [Development Environment](development-environment.md)
 - [Create a Backstage plugin](create-a-plugin.md)
 - [Structure of a plugin](structure-of-a-plugin.md)
+- [Utility APIs](utility-apis.md)
 - Using Backstage components (TODO)
 
 [Back to Docs](../README.md)

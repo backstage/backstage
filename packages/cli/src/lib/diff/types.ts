@@ -14,35 +14,24 @@
  * limitations under the License.
  */
 
-export type PluginInfo = {
-  id: string;
-  name: string;
-};
+export type WriteFileFunc = (contents: string) => Promise<void>;
 
-export type TemplateFile = {
+export type FileDiff = {
   // Relative path within the target directory
-  targetPath: string;
+  path: string;
+  // Wether the target file exists in the target directory.
+  missing: boolean;
+  // Contents of the file in the target directory, or an empty string if the file is missing.
+  targetContents: string;
   // Contents of the compiled template file
   templateContents: string;
-} & (
-  | {
-      // Whether the template file exists in the target directory
-      targetExists: true;
-      // Contents of the file in the target directory, if it exists
-      targetContents: string;
-    }
-  | {
-      // Whether the template file exists in the target directory
-      targetExists: false;
-    }
-);
+  // Write new contents to the target file
+  write: WriteFileFunc;
+};
 
 export type PromptFunc = (msg: string) => Promise<boolean>;
 
-export type HandlerFunc = (
-  file: TemplateFile,
-  prompt: PromptFunc,
-) => Promise<void>;
+export type HandlerFunc = (file: FileDiff, prompt: PromptFunc) => Promise<void>;
 
 export type FileHandler = {
   patterns: Array<string | RegExp>;

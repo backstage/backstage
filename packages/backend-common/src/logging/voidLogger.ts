@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { ReaderOutput } from '../types';
+import { PassThrough } from 'stream';
+import winston, { Logger } from 'winston';
 
-export type LocationSource = {
-  /**
-   * Reads the contents of a single location.
-   *
-   * @param target The location target to read
-   * @returns The parsed contents, as an array of unverified descriptors
-   * @throws An error if the location target could not be read
-   */
-  read(target: string): Promise<ReaderOutput[]>;
-};
+/**
+ * A logger that just throws away all messages.
+ */
+export function getVoidLogger(): Logger {
+  return winston.createLogger({
+    transports: [new winston.transports.Stream({ stream: new PassThrough() })],
+  });
+}

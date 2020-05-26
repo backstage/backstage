@@ -19,15 +19,25 @@
  * multiple simultaneous requests for sessions with different scope are handled
  * in a correct way.
  */
-export type SessionManager<AuthSession> = {
-  getSession(options: {
-    optional: false;
-    scope?: Set<string>;
-  }): Promise<AuthSession>;
+export type SessionManager<T> = {
+  getSession(options: { optional: false; scopes?: Set<string> }): Promise<T>;
   getSession(options: {
     optional?: boolean;
-    scope?: Set<string>;
-  }): Promise<AuthSession | undefined>;
+    scopes?: Set<string>;
+  }): Promise<T | undefined>;
 
   removeSession(): Promise<void>;
 };
+
+/**
+ * A function called to determine the scopes of a session.
+ */
+export type SessionScopesFunc<T> = (session: T) => Set<string>;
+
+/**
+ * A function called to determine whether it's time for a session to refresh.
+ *
+ * This should return true before the session expires, for example, if a session
+ * expires after 60 minutes, you could return true if the session is older than 45 minutes.
+ */
+export type SessionShouldRefreshFunc<T> = (session: T) => boolean;
