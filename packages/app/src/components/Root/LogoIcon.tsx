@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   },
 });
 
-const LogoIcon: FC<Props> = () => {
+const LogoIcon: FC<{}> = () => {
   const classes = useStyles();
 
   return (

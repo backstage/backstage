@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     fill: '#7df3e1',
   },
 });
-const LogoFull: FC<Props> = () => {
+const LogoFull: FC<{}> = () => {
   const classes = useStyles();
 
   return (
