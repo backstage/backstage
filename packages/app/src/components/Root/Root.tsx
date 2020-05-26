@@ -16,7 +16,7 @@
 
 import React, { FC, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Link, makeStyles, Typography } from '@material-ui/core';
+import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
