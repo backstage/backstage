@@ -126,6 +126,6 @@ describe('Catalog Filter', () => {
 
     fireEvent.click(element);
 
-    expect(onSelectedChangeHandler).toHaveBeenCalledWith(item.id);
+    expect(onSelectedChangeHandler).toHaveBeenCalledWith(item);
   });
 });

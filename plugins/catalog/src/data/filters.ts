@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CatalogFilterGroup } from '../components/CatalogFilter/CatalogFilter';
+import {
+  CatalogFilterGroup,
+  CatalogFilterItem,
+} from '../components/CatalogFilter/CatalogFilter';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 
-export const defaultId = 'owned';
-export const getFilterGroups = (): CatalogFilterGroup[] => [
+export const filterGroups: CatalogFilterGroup[] = [
   {
     name: 'Personal',
     items: [
@@ -47,3 +49,5 @@ export const getFilterGroups = (): CatalogFilterGroup[] => [
     ],
   },
 ];
+
+export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];

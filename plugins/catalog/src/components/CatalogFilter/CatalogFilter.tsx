@@ -26,7 +26,7 @@ import {
 } from '@material-ui/core';
 import type { IconComponent } from '@backstage/core';
 
-export type CatalogFeatureItem = {
+export type CatalogFilterItem = {
   id: string;
   label: string;
   icon?: IconComponent;
@@ -36,13 +36,13 @@ export type CatalogFeatureItem = {
 
 export type CatalogFilterGroup = {
   name: string;
-  items: CatalogFeatureItem[];
+  items: CatalogFilterItem[];
 };
 
 export type CatalogFilterProps = {
   groups: CatalogFilterGroup[];
   selectedId?: string;
-  onSelectedChange?: (id: string) => void;
+  onSelectedChange?: (item: CatalogFilterItem) => void;
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -91,7 +91,7 @@ export const CatalogFilter: React.FC<CatalogFilterProps> = ({
                   key={item.id}
                   button
                   divider
-                  onClick={() => onSelectedChange?.(item.id)}
+                  onClick={() => onSelectedChange?.(item)}
                   selected={item.id === selectedId}
                   className={classes.menuItem}
                 >

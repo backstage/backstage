@@ -27,9 +27,12 @@ import {
 import { useAsync } from 'react-use';
 import { ComponentFactory } from '../../data/component';
 import CatalogTable from '../CatalogTable/CatalogTable';
-import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
+import {
+  CatalogFilter,
+  CatalogFilterItem,
+} from '../CatalogFilter/CatalogFilter';
 import { Button, makeStyles } from '@material-ui/core';
-import { getFilterGroups, defaultId } from '../../data/filters';
+import { filterGroups, defaultFilter } from '../../data/filters';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -46,9 +49,14 @@ type CatalogPageProps = {
 
 const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
   const { value, error, loading } = useAsync(componentFactory.getAllComponents);
-  const [selectedFilter, setSelectedFilter] = React.useState<string>(defaultId);
-  const onFilterSelected = React.useCallback(id => setSelectedFilter(id), []);
-  const filterGroups = getFilterGroups();
+  const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
+    defaultFilter,
+  );
+
+  const onFilterSelected = React.useCallback(
+    selected => setSelectedFilter(selected),
+    [],
+  );
 
   const styles = useStyles();
   return (
@@ -67,11 +75,12 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
           <div>
             <CatalogFilter
               groups={filterGroups}
-              selectedId={selectedFilter}
+              selectedId={selectedFilter.id}
               onSelectedChange={onFilterSelected}
             />
           </div>
           <CatalogTable
+            titlePreamble={selectedFilter.label}
             components={value || []}
             loading={loading}
             error={error}
