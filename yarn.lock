@@ -18370,9 +18370,9 @@ rollup@^0.63.4:
     "@types/node" "*"
 
 rollup@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.npmjs.org/rollup/-/rollup-2.3.2.tgz#afa68e4f3325bcef4e150d082056bef450bcac60"
-  integrity sha512-p66+fbfaUUOGE84sHXAOgfeaYQMslgAazoQMp//nlR519R61213EPFgrMZa48j31jNacJwexSAR1Q8V/BwGKBA==
+  version "2.10.9"
+  resolved "https://registry.npmjs.org/rollup/-/rollup-2.10.9.tgz#17dcc6753c619efcc1be2cf61d73a87827eebdf9"
+  integrity sha512-dY/EbjiWC17ZCUSyk14hkxATAMAShkMsD43XmZGWjLrgFj15M3Dw2kEkA9ns64BiLFm9PKN6vTQw8neHwK74eg==
   optionalDependencies:
     fsevents "~2.1.2"
 
