@@ -55,7 +55,9 @@ export const WithLink = () => (
       message={
         <>
           <span>This is a dismissable banner with a link: </span>
-          <Link href="http://example.com">example.com</Link>
+          <Link href="http://example.com" color="textSecondary">
+            example.com
+          </Link>
         </>
       }
       variant="info"

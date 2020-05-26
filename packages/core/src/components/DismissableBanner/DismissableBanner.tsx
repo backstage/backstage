@@ -26,8 +26,8 @@ import Close from '@material-ui/icons/Close';
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: 'relative',
-    padding: theme.spacing(0.5),
-    marginBottom: theme.spacing(3),
+    padding: theme.spacing(0),
+    marginBottom: theme.spacing(6),
     marginTop: -theme.spacing(3),
     zIndex: 'auto',
     display: 'flex',
