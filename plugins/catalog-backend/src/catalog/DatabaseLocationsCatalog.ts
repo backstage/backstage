@@ -29,7 +29,7 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
     outputs.forEach(output => {
       if (output.type === 'error') {
         throw new Error(
-          `Can't read location at ${location.target} with error: ${output.error.message}`,
+          `Can't read location at ${location.target}, ${output.error}`,
         );
       }
     });

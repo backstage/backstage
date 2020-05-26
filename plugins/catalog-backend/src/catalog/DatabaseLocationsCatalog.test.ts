@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
-jest.mock('../ingestion/LocationReaders');
-
 import knex from 'knex';
 import path from 'path';
 
 import { Database } from '../database';
-import { getVoidLogger } from '../../../../packages/backend-common/src/logging/voidLogger';
 import { ReaderOutput } from '../ingestion/types';
+import { getVoidLogger } from '@backstage/backend-common';
 
 describe('DatabaseLocationsCatalog', () => {
   const database = knex({
@@ -71,16 +69,14 @@ describe('DatabaseLocationsCatalog', () => {
     const type = 'invalid_type';
     return expect(
       catalog.addLocation({ type, target: 'valid_target' }),
-    ).rejects.toEqual(new Error(`Unknown location type ${type}`));
+    ).rejects.toThrow(/Unknown location type/);
   });
   it('rejects for unreadable target ', async () => {
     const target = 'invalid_target';
     return expect(
       catalog.addLocation({ type: 'valid_type', target }),
-    ).rejects.toEqual(
-      new Error(
-        `Can't read location at ${target} with error: Something is broken`,
-      ),
+    ).rejects.toThrow(
+      `Can't read location at ${target} with error: Something is broken`,
     );
   });
 });
