@@ -21,6 +21,7 @@ import path from 'path';
 
 import { Database } from '../database';
 import { getVoidLogger } from '../../../../packages/backend-common/src/logging/voidLogger';
+import { ReaderOutput } from '../ingestion/types';
 
 describe('DatabaseLocationsCatalog', () => {
   const database = knex({
@@ -34,14 +35,29 @@ describe('DatabaseLocationsCatalog', () => {
   let db: Database;
   let catalog: DatabaseLocationsCatalog;
 
+  const mockLocationReader = {
+    read: async (type: string, target: string): Promise<ReaderOutput[]> => {
+      if (type !== 'valid_type') {
+        throw new Error(`Unknown location type ${type}`);
+      }
+      if (target === 'valid_target') {
+        return Promise.resolve([{ type: 'data', data: {} }]);
+      }
+      throw new Error(
+        `Can't read location at ${target} with error: Something is broken`,
+      );
+    },
+  };
+
   beforeEach(async () => {
     await database.migrate.latest({
       directory: path.resolve(__dirname, '../database/migrations'),
       loadExtensions: ['.ts'],
     });
     db = new Database(database, getVoidLogger());
-    catalog = new DatabaseLocationsCatalog(db);
+    catalog = new DatabaseLocationsCatalog(db, mockLocationReader);
   });
+
   it('resolves to location with id', async () => {
     return expect(
       catalog.addLocation({ type: 'valid_type', target: 'valid_target' }),
