@@ -48,11 +48,11 @@ export class GoogleAuthProvider
       secure: false,
       sameSite: 'none',
       domain: 'localhost',
-      path: `/auth/google/handler`,
+      path: `/auth/${this.providerConfig.provider}/handler`,
       httpOnly: true,
     };
 
-    res.cookie(`google-nonce`, nonce, options);
+    res.cookie(`${this.providerConfig.provider}-nonce`, nonce, options);
 
     const scope = req.query.scope?.toString() ?? '';
     if (!scope) {
@@ -71,7 +71,7 @@ export class GoogleAuthProvider
     res: express.Response,
     next: express.NextFunction,
   ) {
-    const cookieNonce = req.cookies[`google-nonce`];
+    const cookieNonce = req.cookies[`${this.providerConfig.provider}-nonce`];
     const stateNonce = req.query.state;
 
     if (!cookieNonce || !stateNonce) {
@@ -106,11 +106,15 @@ export class GoogleAuthProvider
         secure: false,
         sameSite: 'none',
         domain: 'localhost',
-        path: `/auth/google`,
+        path: `/auth/${this.providerConfig.provider}`,
         httpOnly: true,
       };
 
-      res.cookie(`google-refresh-token`, refreshToken, options);
+      res.cookie(
+        `${this.providerConfig.provider}-refresh-token`,
+        refreshToken,
+        options,
+      );
       return postMessageResponse(res, {
         type: 'auth-result',
         payload: user,
@@ -128,11 +132,11 @@ export class GoogleAuthProvider
       secure: false,
       sameSite: 'none',
       domain: 'localhost',
-      path: `/auth/google`,
+      path: `/auth/${this.providerConfig.provider}`,
       httpOnly: true,
     };
 
-    res.cookie(`google-refresh-token`, '', options);
+    res.cookie(`${this.providerConfig.provider}-refresh-token`, '', options);
     return res.send('logout!');
   }
 
@@ -141,7 +145,8 @@ export class GoogleAuthProvider
       return res.status(401).send('Invalid X-Requested-With header');
     }
 
-    const refreshToken = req.cookies[`google-refresh-token`];
+    const refreshToken =
+      req.cookies[`${this.providerConfig.provider}-refresh-token`];
 
     if (!refreshToken) {
       return res.status(401).send('Missing session cookie');
