@@ -55,11 +55,21 @@ export class GoogleAuthProvider
     res: express.Response,
     next: express.NextFunction,
   ) {
-    return passport.authenticate('google', (_, user) => {
+    return passport.authenticate('google', (err, user) => {
+      if (err) {
+        return postMessageResponse(res, {
+          type: 'auth-result',
+          error: new Error(`Google auth failed, ${err}`),
+        });
+      }
+
       const { refreshToken } = user;
 
       if (!refreshToken) {
-        return res.status(401).send('Failed to fetch refresh token');
+        return postMessageResponse(res, {
+          type: 'auth-result',
+          error: new Error('Missing refresh token'),
+        });
       }
 
       delete user.refreshToken;
@@ -69,11 +79,15 @@ export class GoogleAuthProvider
         secure: false,
         sameSite: 'none',
         domain: 'localhost',
-        path: '/auth/google',
+        path: `/auth/${this.providerConfig.provider}`,
         httpOnly: true,
       };
 
-      res.cookie('grtoken', refreshToken, options);
+      res.cookie(
+        `${this.providerConfig.provider}-refresh-token`,
+        refreshToken,
+        options,
+      );
       return postMessageResponse(res, {
         type: 'auth-result',
         payload: user,
@@ -82,11 +96,22 @@ export class GoogleAuthProvider
   }
 
   async logout(_req: express.Request, res: express.Response) {
+    const options: CookieOptions = {
+      maxAge: 0,
+      secure: false,
+      sameSite: 'none',
+      domain: 'localhost',
+      path: `/auth/${this.providerConfig.provider}`,
+      httpOnly: true,
+    };
+
+    res.cookie(`${this.providerConfig.provider}-refresh-token`, '', options);
     return res.send('logout!');
   }
 
   async refresh(req: express.Request, res: express.Response) {
-    const refreshToken = req.cookies.grtoken;
+    const refreshToken =
+      req.cookies[`${this.providerConfig.provider}-refresh-token`];
 
     if (!refreshToken) {
       return res.status(401).send('Missing session cookie');
@@ -96,7 +121,7 @@ export class GoogleAuthProvider
     const refreshTokenRequestParams = scope ? { scope } : {};
 
     return refresh.requestNewAccessToken(
-      'google',
+      this.providerConfig.provider,
       refreshToken,
       refreshTokenRequestParams,
       (err, accessToken, _refreshToken, params) => {
