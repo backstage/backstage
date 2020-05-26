@@ -24,7 +24,7 @@ export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
   router.get('/handler/frame', provider.frameHandler);
   router.get('/logout', provider.logout);
   if (provider.refresh) {
-    router.get('/refreshToken', provider.refresh);
+    router.get('/refresh', provider.refresh);
   }
   return router;
 };
