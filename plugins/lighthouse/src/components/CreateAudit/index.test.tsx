@@ -53,7 +53,7 @@ describe('CreateAudit', () => {
   let errorApi: ErrorApi;
 
   beforeEach(() => {
-    errorApi = { post: jest.fn() };
+    errorApi = { post: jest.fn(), error$: jest.fn() };
     apis = ApiRegistry.from([
       [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
       [errorApiRef, errorApi],

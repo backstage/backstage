@@ -29,6 +29,7 @@ import {
   createPlugin,
   ApiTestRegistry,
   ApiHolder,
+  AlertDisplay,
 } from '@backstage/core';
 import * as defaultApiFactories from './apiFactories';
 
@@ -77,6 +78,7 @@ class DevAppBuilder {
     const DevApp: FC<{}> = () => {
       return (
         <AppProvider>
+          <AlertDisplay />
           <BrowserRouter>
             <SidebarPage>
               {sidebar}

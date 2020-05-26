@@ -55,15 +55,16 @@ import {
   errorApiRef,
   AlertApiForwarder,
   ErrorApiForwarder,
+  ErrorAlerter,
 } from '@backstage/core';
 
 const builder = ApiRegistry.builder();
 
 // The alert API is a self-contained implementation that shows alerts to the user.
-builder.add(alertApiRef, new AlertApiForwarder());
+const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 
 // The error API uses the alert API to send error notifications to the user.
-builder.add(errorApiRef, new ErrorApiForwarder(alertApiForwarder));
+builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
 
 const app = createApp({
   apis: apiBuilder.build(),

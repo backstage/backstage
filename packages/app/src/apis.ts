@@ -21,6 +21,7 @@ import {
   errorApiRef,
   AlertApiForwarder,
   ErrorApiForwarder,
+  ErrorAlerter,
   featureFlagsApiRef,
   FeatureFlags,
   GoogleAuth,
@@ -40,11 +41,9 @@ import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
 
 const builder = ApiRegistry.builder();
 
-export const alertApiForwarder = new AlertApiForwarder();
-builder.add(alertApiRef, alertApiForwarder);
+const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 
-export const errorApiForwarder = new ErrorApiForwarder(alertApiForwarder);
-builder.add(errorApiRef, errorApiForwarder);
+builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
 builder.add(circleCIApiRef, new CircleCIApi());
 builder.add(featureFlagsApiRef, new FeatureFlags());
 
