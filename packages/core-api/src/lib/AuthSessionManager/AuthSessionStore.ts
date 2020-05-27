@@ -18,6 +18,7 @@ import {
   SessionManager,
   SessionScopesFunc,
   SessionShouldRefreshFunc,
+  GetSessionOptions,
 } from './types';
 import { SessionScopeHelper } from './common';
 
@@ -59,18 +60,7 @@ export class AuthSessionStore<T> implements SessionManager<T> {
     });
   }
 
-  async getSession(options: {
-    optional: false;
-    scopes?: Set<string>;
-  }): Promise<T>;
-  async getSession(options: {
-    optional?: boolean;
-    scopes?: Set<string>;
-  }): Promise<T | undefined>;
-  async getSession(options: {
-    optional?: boolean;
-    scopes?: Set<string>;
-  }): Promise<T | undefined> {
+  async getSession(options: GetSessionOptions): Promise<T | undefined> {
     const { scopes } = options;
     const session = this.loadSession();
 

@@ -85,7 +85,10 @@ export type OAuthApi = {
    * will be prompted to log in. The returned promise will not resolve until the user has
    * successfully logged in. The returned promise can be rejected, but only if the user rejects the login request.
    */
-  getAccessToken(scope?: OAuthScope): Promise<string>;
+  getAccessToken(
+    scope?: OAuthScope,
+    options?: AccessTokenOptions,
+  ): Promise<string>;
 
   /**
    * Log out the user's session. This will reload the page.

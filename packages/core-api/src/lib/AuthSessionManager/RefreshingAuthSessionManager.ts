@@ -18,6 +18,7 @@ import {
   SessionManager,
   SessionScopesFunc,
   SessionShouldRefreshFunc,
+  GetSessionOptions,
 } from './types';
 import { AuthConnector } from '../AuthConnector';
 import { SessionScopeHelper, hasScopes } from './common';
@@ -60,18 +61,7 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     this.helper = new SessionScopeHelper({ sessionScopes, defaultScopes });
   }
 
-  async getSession(options: {
-    optional: false;
-    scopes?: Set<string>;
-  }): Promise<T>;
-  async getSession(options: {
-    optional?: boolean;
-    scopes?: Set<string>;
-  }): Promise<T | undefined>;
-  async getSession(options: {
-    optional?: boolean;
-    scopes?: Set<string>;
-  }): Promise<T | undefined> {
+  async getSession(options: GetSessionOptions): Promise<T | undefined> {
     if (
       this.helper.sessionExistsAndHasScope(this.currentSession, options.scopes)
     ) {
@@ -115,9 +105,10 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     }
 
     // We can call authRequester multiple times, the returned session will contain all requested scopes.
-    this.currentSession = await this.connector.createSession(
-      this.helper.getExtendedScope(this.currentSession, options.scopes),
-    );
+    this.currentSession = await this.connector.createSession({
+      ...options,
+      scopes: this.helper.getExtendedScope(this.currentSession, options.scopes),
+    });
     return this.currentSession;
   }
 

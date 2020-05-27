@@ -113,6 +113,23 @@ describe('RefreshingAuthSessionManager', () => {
     expect(refreshSession).toBeCalledTimes(1);
   });
 
+  it('should forward option to instantly show auth popup', async () => {
+    const createSession = jest.fn();
+    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    expect(await manager.getSession({ instantPopup: true })).toBe(undefined);
+    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledWith({
+      scopes: new Set(),
+      instantPopup: true,
+    });
+    expect(refreshSession).toBeCalledTimes(1);
+  });
+
   it('should remove session and reload', async () => {
     // This is a workaround that is used by Facebook and the Jest core team
     // It is a limitation with the newest versions of JSDOM, and newer browser standards
