@@ -83,8 +83,8 @@ const ComponentPage: FC<ComponentPageProps> = ({
   };
 
   return (
-    <Page theme={pageTheme.home}>
-      <Header title={catalogRequest?.value?.name || 'Catalog'}>
+    <Page theme={pageTheme.service}>
+      <Header title={catalogRequest?.value?.name || 'Catalog'} type="service">
         <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
       </Header>
       {confirmationDialogOpen && catalogRequest.value && (
