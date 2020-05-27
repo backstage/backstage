@@ -35,7 +35,7 @@ const BuildName: FC<{ build?: BuildWithSteps }> = ({ build }) => (
     </IconLink>
   </Box>
 );
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   neutral: {},
   failed: {
     position: 'relative',

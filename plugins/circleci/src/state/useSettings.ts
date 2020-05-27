@@ -29,7 +29,7 @@ export function useSettings() {
       if (
         stateFromStorage &&
         Object.keys(stateFromStorage).some(
-          (k) => (settings as any)[k] !== stateFromStorage[k],
+          k => (settings as any)[k] !== stateFromStorage[k],
         )
       )
         dispatch({

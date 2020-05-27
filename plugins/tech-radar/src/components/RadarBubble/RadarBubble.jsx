@@ -49,16 +49,16 @@ class RadarBubble extends React.PureComponent {
     this._updatePosition();
   }
 
-  _setRect = (rect) => {
+  _setRect = rect => {
     this.rect = rect;
   };
-  _setNode = (node) => {
+  _setNode = node => {
     this.node = node;
   };
-  _setText = (text) => {
+  _setText = text => {
     this.text = text;
   };
-  _setPath = (path) => {
+  _setPath = path => {
     this.path = path;
   };
 

@@ -44,7 +44,7 @@ export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
   },
 );
 
-export const SidebarPage: FC<{}> = (props) => {
+export const SidebarPage: FC<{}> = props => {
   const [isPinned, setIsPinned] = useState(LocalStorage.getSidebarPinState());
 
   useEffect(() => {
