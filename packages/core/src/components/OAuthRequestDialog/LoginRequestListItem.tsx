@@ -25,7 +25,7 @@ import {
 import React, { FC, useState } from 'react';
 import { PendingAuthRequest } from '../../api';
 
-const useItemStyles = makeStyles<Theme>((theme) => ({
+const useItemStyles = makeStyles<Theme>(theme => ({
   root: {
     paddingLeft: theme.spacing(3),
   },

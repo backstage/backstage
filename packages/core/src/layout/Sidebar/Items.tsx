@@ -29,7 +29,7 @@ import { NavLink } from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
 import { IconComponent } from '../../icons';
 
-const useStyles = makeStyles<Theme>((theme) => {
+const useStyles = makeStyles<Theme>(theme => {
   const {
     selectedIndicatorWidth,
     drawerWidthClosed,
@@ -139,7 +139,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
       <NavLink
         className={clsx(classes.root, classes.closed)}
         activeClassName={classes.selected}
-        isActive={(match) => Boolean(match && !disableSelected)}
+        isActive={match => Boolean(match && !disableSelected)}
         exact
         to={to}
         onClick={onClick}
@@ -153,7 +153,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     <NavLink
       className={clsx(classes.root, classes.open)}
       activeClassName={classes.selected}
-      isActive={(match) => Boolean(match && !disableSelected)}
+      isActive={match => Boolean(match && !disableSelected)}
       exact
       to={to}
       onClick={onClick}
@@ -175,11 +175,11 @@ type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
 };
 
-export const SidebarSearchField: FC<SidebarSearchFieldProps> = (props) => {
+export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
   const [input, setInput] = useState('');
   const classes = useStyles();
 
-  const handleEnter: KeyboardEventHandler = (ev) => {
+  const handleEnter: KeyboardEventHandler = ev => {
     if (ev.key === 'Enter') {
       props.onSearch(input);
     }

@@ -73,7 +73,7 @@ export async function templatingTask(
   destinationDir: string,
   context: any,
 ) {
-  const files = await recursive(templateDir).catch((error) => {
+  const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
 
@@ -89,7 +89,7 @@ export async function templatingTask(
         const compiled = handlebars.compile(template.toString());
         const contents = compiled({ name: basename(destination), ...context });
 
-        await fs.writeFile(destination, contents).catch((error) => {
+        await fs.writeFile(destination, contents).catch(error => {
           throw new Error(
             `Failed to create file: ${destination}: ${error.message}`,
           );
@@ -97,7 +97,7 @@ export async function templatingTask(
       });
     } else {
       await Task.forItem('copying', basename(file), async () => {
-        await fs.copyFile(file, destinationFile).catch((error) => {
+        await fs.copyFile(file, destinationFile).catch(error => {
           const destination = destinationFile;
           throw new Error(
             `Failed to copy file to ${destination} : ${error.message}`,
@@ -145,7 +145,7 @@ export async function installWithLocalDeps(dir: string) {
 
             await fs
               .writeJSON(pkgJsonPath, pkgJson, { encoding: 'utf8', spaces: 2 })
-              .catch((error) => {
+              .catch(error => {
                 throw new Error(
                   `Failed to add resolutions to package.json: ${error.message}`,
                 );
@@ -157,7 +157,7 @@ export async function installWithLocalDeps(dir: string) {
   }
 
   await Task.forItem('executing', 'yarn install', async () => {
-    await exec('yarn install', { cwd: dir }).catch((error) => {
+    await exec('yarn install', { cwd: dir }).catch(error => {
       process.stdout.write(error.stderr);
       process.stdout.write(error.stdout);
       throw new Error(
@@ -193,7 +193,7 @@ export async function installWithLocalDeps(dir: string) {
 
           await fs
             .writeJSON(depJsonPath, depJson, { encoding: 'utf8', spaces: 2 })
-            .catch((error) => {
+            .catch(error => {
               throw new Error(
                 `Failed to add resolutions to package.json: ${error.message}`,
               );

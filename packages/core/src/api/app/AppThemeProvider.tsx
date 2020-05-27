@@ -27,20 +27,20 @@ function resolveTheme(
   themes: AppTheme[],
 ) {
   if (themeId !== undefined) {
-    const selectedTheme = themes.find((theme) => theme.id === themeId);
+    const selectedTheme = themes.find(theme => theme.id === themeId);
     if (selectedTheme) {
       return selectedTheme;
     }
   }
 
   if (shouldPreferDark) {
-    const darkTheme = themes.find((theme) => theme.variant === 'dark');
+    const darkTheme = themes.find(theme => theme.variant === 'dark');
     if (darkTheme) {
       return darkTheme;
     }
   }
 
-  const lightTheme = themes.find((theme) => theme.variant === 'light');
+  const lightTheme = themes.find(theme => theme.variant === 'light');
   if (lightTheme) {
     return lightTheme;
   }

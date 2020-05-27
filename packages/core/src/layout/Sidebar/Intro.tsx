@@ -26,7 +26,7 @@ import {
 } from './config';
 import { SidebarDivider } from './Items';
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   introCard: {
     color: '#b5b5b5',
     // XXX (@koroeskohr): should I be using a Mui theme variable?
@@ -74,7 +74,7 @@ type IntroCardProps = {
   onClose: () => void;
 };
 
-export const IntroCard: FC<IntroCardProps> = (props) => {
+export const IntroCard: FC<IntroCardProps> = props => {
   const classes = useStyles();
   const { text, onClose } = props;
   const handleClose = () => onClose();
@@ -109,7 +109,7 @@ type SidebarIntroCardProps = {
   onDismiss: () => void;
 };
 
-const SidebarIntroCard: FC<SidebarIntroCardProps> = (props) => {
+const SidebarIntroCard: FC<SidebarIntroCardProps> = props => {
   const { text, onDismiss } = props;
   const [collapsing, setCollapsing] = useState(false);
   const startDismissing = () => {
@@ -138,10 +138,10 @@ export const SidebarIntro: FC = () => {
   });
 
   const dismissStarred = () => {
-    setDismissedIntro((state) => ({ ...state, starredItemsDismissed: true }));
+    setDismissedIntro(state => ({ ...state, starredItemsDismissed: true }));
   };
   const dismissRecentlyViewed = () => {
-    setDismissedIntro((state) => ({
+    setDismissedIntro(state => ({
       ...state,
       recentlyViewedItemsDismissed: true,
     }));

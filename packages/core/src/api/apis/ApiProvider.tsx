@@ -53,7 +53,7 @@ export function withApis<T>(apis: TypesToApiRefs<T>) {
   return function withApisWrapper<P extends T>(
     WrappedComponent: React.ComponentType<P>,
   ) {
-    const Hoc: FC<Omit<P, keyof T>> = (props) => {
+    const Hoc: FC<Omit<P, keyof T>> = props => {
       const apiHolder = useContext(Context);
 
       if (!apiHolder) {
