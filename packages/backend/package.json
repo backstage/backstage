@@ -40,8 +40,7 @@
     "@types/helmet": "^0.0.47",
     "jest": "^26.0.1",
     "tsc-watch": "^4.2.3",
-    "typescript": "^3.9.2",
-    "winston": "^3.2.1"
+    "typescript": "^3.9.2"
   },
   "nodemonConfig": {
     "watch": "./dist"
