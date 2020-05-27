@@ -15,15 +15,14 @@
  */
 
 import React, { Fragment, ReactNode, CSSProperties, FC } from 'react';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { Typography, Tooltip, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
 import { Theme } from '../Page/Page';
-// import { Link } from 'shared/components';
 import Waves from './Waves';
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
     gridArea: 'pageHeader',
     padding: theme.spacing(3),
@@ -175,7 +174,7 @@ export const Header: FC<Props> = ({
     <Fragment>
       <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
       <Theme.Consumer>
-        {(theme) => (
+        {theme => (
           <header style={style} className={classes.header}>
             <Waves theme={theme} />
             <div className={classes.leftItemsBox}>
