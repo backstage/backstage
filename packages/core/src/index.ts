@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export * from '@backstage/core-api';
+
 export * from './api';
 export { default as Page } from './layout/Page';
 export { gradients, pageTheme } from './layout/Page';

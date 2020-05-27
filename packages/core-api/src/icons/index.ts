@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { createApp } from './createApp';
+export * from './icons';
+export * from './types';

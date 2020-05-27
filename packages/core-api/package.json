@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/core",
+  "name": "@backstage/core-api",
   "description": "Core API used by Backstage plugins and apps",
   "version": "0.1.1-alpha.6",
   "private": false,
@@ -28,7 +28,6 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core-api": "^0.1.1-alpha.6",
     "@backstage/theme": "^0.1.1-alpha.6",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
@@ -49,7 +48,7 @@
     "react": "^16.12.0",
     "react-addons-text-content": "0.0.4",
     "react-dom": "^16.12.0",
-    "react-helmet": "6.0.0",
+    "react-helmet": "5.2.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-sparklines": "^1.7.0",

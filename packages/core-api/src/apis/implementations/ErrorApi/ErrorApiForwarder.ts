@@ -13,5 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ErrorApi, ErrorContext } from '../..';
+import { PublishSubject } from '../../../lib';
+import { Observable } from '../../../types';
 
-export { createApp } from './createApp';
+/**
+ * Base implementation for the ErrorApi that simply forwards errors to consumers.
+ */
+export class ErrorApiForwarder implements ErrorApi {
+  private readonly subject = new PublishSubject<{
+    error: Error;
+    context?: ErrorContext;
+  }>();
+
+  post(error: Error, context?: ErrorContext) {
+    this.subject.next({ error, context });
+  }
+
+  error$(): Observable<{ error: Error; context?: ErrorContext }> {
+    return this.subject;
+  }
+}

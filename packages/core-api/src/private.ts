@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { createApp } from './createApp';
+export { PrivateAppImpl } from './app/App';

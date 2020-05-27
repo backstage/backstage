@@ -19,7 +19,7 @@ import { useObservable } from 'react-use';
 import LightIcon from '@material-ui/icons/WbSunny';
 import DarkIcon from '@material-ui/icons/Brightness2';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
-import { appThemeApiRef, useApi } from '../../api';
+import { appThemeApiRef, useApi } from '@backstage/core-api';
 import { SidebarItem } from './Items';
 
 export const SidebarThemeToggle: FC<{}> = () => {

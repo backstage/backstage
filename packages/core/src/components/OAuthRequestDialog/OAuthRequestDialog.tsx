@@ -27,7 +27,7 @@ import {
 import React, { FC, useMemo, useState } from 'react';
 import { useObservable } from 'react-use';
 import LoginRequestListItem from './LoginRequestListItem';
-import { useApi, oauthRequestApiRef } from '../../api';
+import { useApi, oauthRequestApiRef } from '@backstage/core-api';
 
 const useStyles = makeStyles<Theme>(theme => ({
   dialog: {
