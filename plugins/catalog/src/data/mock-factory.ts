@@ -14,35 +14,33 @@
  * limitations under the License.
  */
 import { Component, ComponentFactory } from './component';
-import mock from './mock-factory-data.json';
+import { DescriptorEnvelope } from '../../../catalog-backend/src/ingestion/types';
 
-const ARTIFICIAL_TIMEOUT = 800;
-let inMemoryStore = [...mock];
+function transformEnvelopeToComponent(data: DescriptorEnvelope): Component {
+  return {
+    name: data.metadata?.name ?? '',
+    status: data.metadata?.labels?.status ?? 'Up and running',
+  };
+}
+
+let inMemoryStore: Promise<Component[]>;
+
 export const MockComponentFactory: ComponentFactory = {
   getAllComponents(): Promise<Component[]> {
-    return new Promise((resolve) =>
-      setTimeout(() => resolve(inMemoryStore), ARTIFICIAL_TIMEOUT),
-    );
+    inMemoryStore =
+      inMemoryStore ??
+      fetch('//localhost:3000/catalog/api/entities')
+        .then(response => response.json())
+        .then(data => data.map(transformEnvelopeToComponent));
+    return inMemoryStore;
   },
-  getComponentByName(name: string): Promise<Component | undefined> {
-    return new Promise((resolve, reject) =>
-      setTimeout(() => {
-        const mockComponent = inMemoryStore.find(
-          (component) => component.name === name,
-        );
-        if (mockComponent) return resolve(mockComponent);
-        return reject({ code: 'Component not found!' });
-      }, ARTIFICIAL_TIMEOUT),
-    );
+  async getComponentByName(name: string): Promise<Component | undefined> {
+    const components = await this.getAllComponents();
+    const mockComponent = components.find(component => component.name === name);
+    if (mockComponent) return mockComponent;
+    throw new Error(`'Component not found: ${name}`);
   },
-  removeComponentByName(name: string): Promise<boolean> {
-    return new Promise((resolve) =>
-      setTimeout(() => {
-        inMemoryStore = inMemoryStore.filter(
-          (component) => component.name !== name,
-        );
-        resolve(true);
-      }, ARTIFICIAL_TIMEOUT),
-    );
+  async removeComponentByName(_: string): Promise<boolean> {
+    return true;
   },
 };

@@ -72,6 +72,13 @@
       "pathRewrite": {
         "^/circleci/api/": "/"
       }
+    },
+    "/catalog/api": {
+      "target": "http://localhost:3003",
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/catalog/api/": "/"
+      }
     }
   }
 }

@@ -15,6 +15,7 @@
  */
 export type Component = {
   name: string;
+  status: string;
 };
 
 export interface ComponentFactory {
