@@ -23,17 +23,19 @@ import {
   SupportButton,
   Page,
   pageTheme,
+  useApi,
 } from '@backstage/core';
 import { useAsync } from 'react-use';
-import { ComponentFactory } from '../../data/component';
 import CatalogTable from '../CatalogTable/CatalogTable';
 import { Button } from '@material-ui/core';
 
-type CatalogPageProps = {
-  componentFactory: ComponentFactory;
-};
-const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
-  const { value, error, loading } = useAsync(componentFactory.getAllComponents);
+import { catalogApiRef } from '../..';
+import { envelopeToComponent } from '../../data/utils';
+
+const CatalogPage: FC<{}> = () => {
+  const catalogApi = useApi(catalogApiRef);
+  const { value, error, loading } = useAsync(() => catalogApi.getEntities());
+
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
@@ -47,7 +49,7 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
           <SupportButton>All your components</SupportButton>
         </ContentHeader>
         <CatalogTable
-          components={value || []}
+          components={(value && value.map(envelopeToComponent)) || []}
           loading={loading}
           error={error}
         />

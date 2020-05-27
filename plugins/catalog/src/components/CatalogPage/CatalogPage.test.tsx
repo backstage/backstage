@@ -19,19 +19,12 @@ import { render } from '@testing-library/react';
 import CatalogPage from './CatalogPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { ComponentFactory } from '../../data/component';
-
-const testComponentFactory: ComponentFactory = {
-  getAllComponents: jest.fn(() => Promise.resolve([{ name: 'test' }])),
-  getComponentByName: jest.fn(() => Promise.resolve({ name: 'test' })),
-  removeComponentByName: jest.fn(() => Promise.resolve(true)),
-};
 
 describe('CatalogPage', () => {
   it('should render', async () => {
     const rendered = render(
       <ThemeProvider theme={lightTheme}>
-        <CatalogPage componentFactory={testComponentFactory} />
+        <CatalogPage />
       </ThemeProvider>,
     );
     expect(

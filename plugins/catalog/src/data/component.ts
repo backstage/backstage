@@ -15,11 +15,6 @@
  */
 export type Component = {
   name: string;
-  status: string;
+  kind: string;
+  description: string;
 };
-
-export interface ComponentFactory {
-  getAllComponents(): Promise<Component[]>;
-  getComponentByName(name: string): Promise<Component | undefined>;
-  removeComponentByName(name: string): Promise<boolean>;
-}

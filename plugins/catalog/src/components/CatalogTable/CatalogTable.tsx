@@ -15,13 +15,7 @@
  */
 import React, { FC } from 'react';
 import { Component } from '../../data/component';
-import {
-  InfoCard,
-  Progress,
-  Table,
-  TableColumn,
-  StatusOK,
-} from '@backstage/core';
+import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
 import { Typography, Link } from '@material-ui/core';
 
 const columns: TableColumn[] = [
@@ -34,26 +28,8 @@ const columns: TableColumn[] = [
     ),
   },
   {
-    title: 'System',
-    field: 'system',
-  },
-  {
-    title: 'Owner',
-    field: 'owner',
-  },
-  {
-    title: 'Lifecycle',
-    field: 'lifecycle',
-  },
-  {
-    title: 'Status',
-    field: 'status',
-    render: (componentData: any) => (
-      <>
-        <StatusOK />
-        {componentData.status || 'Up and running'}
-      </>
-    ),
+    title: 'Kind',
+    field: 'kind',
   },
   {
     title: 'Description',
