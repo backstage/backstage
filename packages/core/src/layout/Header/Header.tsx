@@ -148,7 +148,7 @@ const SubtitleFragment: FC<SubtitleFragmentProps> = ({ classes, subtitle }) => {
   }
 
   return (
-    <Typography className={classes.subtitle} variant="subtitle1">
+    <Typography className={classes.subtitle} variant="subtitle2">
       {subtitle}
     </Typography>
   );
