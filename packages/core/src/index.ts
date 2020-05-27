@@ -28,6 +28,7 @@ export { default as InfoCard } from './layout/InfoCard';
 export { CardTab, TabbedCard } from './layout/TabbedCard';
 export { default as ErrorBoundary } from './layout/ErrorBoundary';
 export * from './layout/Sidebar';
+export * from './layout/LoginPage';
 export { AlertDisplay } from './components/AlertDisplay';
 export { default as HorizontalScrollGrid } from './components/HorizontalScrollGrid';
 export { default as ProgressCard } from './components/ProgressBars/ProgressCard';

@@ -38,7 +38,6 @@ import {
   AppThemeSelector,
   appThemeApiRef,
 } from '../apis';
-import LoginPage from './LoginPage';
 import { lightTheme, darkTheme } from '@backstage/theme';
 import { ApiAggregator } from '../apis/ApiAggregator';
 
@@ -137,10 +136,6 @@ class AppImpl implements BackstageApp {
     if (FeatureFlags) {
       FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
     }
-
-    routes.push(
-      <Route key="login" path="/login" component={LoginPage} exact />,
-    );
 
     const rendered = (
       <Switch>
