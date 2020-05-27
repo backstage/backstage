@@ -58,16 +58,25 @@ export type AuthProviderFactory = {
   new (providerConfig: any): AuthProvider & AuthProviderRouteHandlers;
 };
 
-export type AuthInfo = {
-  profile: passport.Profile;
+export type AuthInfoBase = {
   accessToken: string;
+  idToken?: string;
   expiresInSeconds?: number;
+  scope: string;
+};
+
+export type AuthInfoWithProfile = AuthInfoBase & {
+  profile: passport.Profile;
+};
+
+export type AuthInfoPrivate = AuthInfoWithProfile & {
+  refreshToken: string;
 };
 
 export type AuthResponse =
   | {
       type: 'auth-result';
-      payload: AuthInfo;
+      payload: AuthInfoBase | AuthInfoWithProfile;
     }
   | {
       type: 'auth-result';

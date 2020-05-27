@@ -19,8 +19,8 @@
 // Plugins should rely on these APIs for functionality as much as possible.
 
 export * from './auth';
-export * from './AppThemeSelector';
-export * from './AlertApiForwarder';
-export * from './ErrorAlerter';
-export * from './ErrorApiForwarder';
-export * from './OAuthRequestManager';
+
+export * from './AlertApi';
+export * from './AppThemeApi';
+export * from './ErrorApi';
+export * from './OAuthRequestApi';

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { errorHandler, InputError } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
   addLocationSchema,
   EntitiesCatalog,
+  EntityFilters,
   LocationsCatalog,
 } from '../catalog';
 import { validateRequestBody } from './util';
@@ -34,17 +36,43 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { entitiesCatalog, locationsCatalog } = options;
+
   const router = Router();
+  router.use(express.json());
 
   if (entitiesCatalog) {
-    // Entities
-    router.get('/entities', async (_req, res) => {
-      const entities = await entitiesCatalog.entities();
-      res.status(200).send(entities);
-    });
+    router
+      .get('/entities', async (req, res) => {
+        const filters = translateQueryToEntityFilters(req);
+        const entities = await entitiesCatalog.entities(filters);
+        res.status(200).send(entities);
+      })
+      .get('/entities/by-uid/:uid', async (req, res) => {
+        const { uid } = req.params;
+        const entity = await entitiesCatalog.entityByUid(uid);
+        if (!entity) {
+          res.status(404).send(`No entity with uid ${uid}`);
+        }
+        res.status(200).send(entity);
+      })
+      .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
+        const { kind, namespace, name } = req.params;
+        const entity = await entitiesCatalog.entityByName(
+          kind,
+          name,
+          namespace,
+        );
+        if (!entity) {
+          res
+            .status(404)
+            .send(
+              `No entity with kind ${kind} namespace ${namespace} name ${name}`,
+            );
+        }
+        res.status(200).send(entity);
+      });
   }
 
-  // Locations
   if (locationsCatalog) {
     router
       .post('/locations', async (req, res) => {
@@ -73,5 +101,29 @@ export async function createRouter(
       });
   }
 
+  router.use(errorHandler());
   return router;
+}
+
+function translateQueryToEntityFilters(
+  request: express.Request,
+): EntityFilters {
+  const filters: EntityFilters = [];
+
+  for (const [key, valueOrValues] of Object.entries(request.query)) {
+    const values = Array.isArray(valueOrValues)
+      ? valueOrValues
+      : [valueOrValues];
+
+    if (values.some(v => typeof v !== 'string')) {
+      throw new InputError('Complex query parameters are not supported');
+    }
+
+    filters.push({
+      key,
+      values: values.map(v => v || null) as string[],
+    });
+  }
+
+  return filters;
 }

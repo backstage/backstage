@@ -15,8 +15,9 @@
  */
 
 import passport from 'passport';
-import express from 'express';
+import express, { CookieOptions } from 'express';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import refresh from 'passport-oauth2-refresh';
 import {
   AuthProvider,
   AuthProviderRouteHandlers,
@@ -25,6 +26,7 @@ import {
 import { postMessageResponse } from './../utils';
 import { InputError } from '@backstage/backend-common';
 
+export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export class GoogleAuthProvider
   implements AuthProvider, AuthProviderRouteHandlers {
   private readonly providerConfig: AuthProviderConfig;
@@ -53,8 +55,40 @@ export class GoogleAuthProvider
     res: express.Response,
     next: express.NextFunction,
   ) {
-    return passport.authenticate('google', (_, user) => {
-      postMessageResponse(res, {
+    return passport.authenticate('google', (err, user) => {
+      if (err) {
+        return postMessageResponse(res, {
+          type: 'auth-result',
+          error: new Error(`Google auth failed, ${err}`),
+        });
+      }
+
+      const { refreshToken } = user;
+
+      if (!refreshToken) {
+        return postMessageResponse(res, {
+          type: 'auth-result',
+          error: new Error('Missing refresh token'),
+        });
+      }
+
+      delete user.refreshToken;
+
+      const options: CookieOptions = {
+        maxAge: THOUSAND_DAYS_MS,
+        secure: false,
+        sameSite: 'none',
+        domain: 'localhost',
+        path: `/auth/${this.providerConfig.provider}`,
+        httpOnly: true,
+      };
+
+      res.cookie(
+        `${this.providerConfig.provider}-refresh-token`,
+        refreshToken,
+        options,
+      );
+      return postMessageResponse(res, {
         type: 'auth-result',
         payload: user,
       });
@@ -62,7 +96,46 @@ export class GoogleAuthProvider
   }
 
   async logout(_req: express.Request, res: express.Response) {
-    res.send('logout!');
+    const options: CookieOptions = {
+      maxAge: 0,
+      secure: false,
+      sameSite: 'none',
+      domain: 'localhost',
+      path: `/auth/${this.providerConfig.provider}`,
+      httpOnly: true,
+    };
+
+    res.cookie(`${this.providerConfig.provider}-refresh-token`, '', options);
+    return res.send('logout!');
+  }
+
+  async refresh(req: express.Request, res: express.Response) {
+    const refreshToken =
+      req.cookies[`${this.providerConfig.provider}-refresh-token`];
+
+    if (!refreshToken) {
+      return res.status(401).send('Missing session cookie');
+    }
+
+    const scope = req.query.scope?.toString() ?? '';
+    const refreshTokenRequestParams = scope ? { scope } : {};
+
+    return refresh.requestNewAccessToken(
+      this.providerConfig.provider,
+      refreshToken,
+      refreshTokenRequestParams,
+      (err, accessToken, _refreshToken, params) => {
+        if (err || !accessToken) {
+          return res.status(401).send('Failed to refresh access token');
+        }
+        return res.send({
+          accessToken,
+          idToken: params.id_token,
+          expiresInSeconds: params.expires_in,
+          scope: params.scope,
+        });
+      },
+    );
   }
 
   strategy(): passport.Strategy {
@@ -81,6 +154,8 @@ export class GoogleAuthProvider
           idToken: params.id_token,
           accessToken,
           refreshToken,
+          scope: params.scope,
+          expiresInSeconds: params.expires_in,
         });
       },
     );

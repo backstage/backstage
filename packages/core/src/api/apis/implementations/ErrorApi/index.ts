@@ -13,18 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AlertApi, AlertMessage } from '../../../';
-import { PublishSubject } from './lib';
-import { Observable } from '../../types';
 
-export class AlertApiForwarder implements AlertApi {
-  private readonly subject = new PublishSubject<AlertMessage>();
-
-  post(alert: AlertMessage) {
-    this.subject.next(alert);
-  }
-
-  alert$(): Observable<AlertMessage> {
-    return this.subject;
-  }
-}
+export { ErrorAlerter } from './ErrorAlerter';
+export { ErrorApiForwarder } from './ErrorApiForwarder';

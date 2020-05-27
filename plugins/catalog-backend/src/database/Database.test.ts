@@ -21,6 +21,7 @@ import {
 } from '@backstage/backend-common';
 import Knex from 'knex';
 import path from 'path';
+import { DescriptorEnvelope } from '../ingestion';
 import { Database } from './Database';
 import {
   AddDatabaseLocation,
@@ -287,6 +288,114 @@ describe('Database', () => {
           catalog.updateEntity(tx, { entity: added.entity }),
         ),
       ).rejects.toThrow(ConflictError);
+    });
+  });
+
+  describe('entities', () => {
+    it('can get all entities with empty filters list', async () => {
+      const catalog = new Database(database, getVoidLogger());
+      const e1: DescriptorEnvelope = { apiVersion: 'a', kind: 'b' };
+      const e2: DescriptorEnvelope = {
+        apiVersion: 'a',
+        kind: 'b',
+        spec: { c: null },
+      };
+      await catalog.transaction(async tx => {
+        await catalog.addEntity(tx, { entity: e1 });
+        await catalog.addEntity(tx, { entity: e2 });
+      });
+      const result = await catalog.transaction(async tx =>
+        catalog.entities(tx, []),
+      );
+      expect(result.length).toEqual(2);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          { locationId: undefined, entity: expect.objectContaining(e1) },
+          { locationId: undefined, entity: expect.objectContaining(e2) },
+        ]),
+      );
+    });
+
+    it('can get all specific entities for matching filters (naive case)', async () => {
+      const catalog = new Database(database, getVoidLogger());
+      const entities: DescriptorEnvelope[] = [
+        { apiVersion: 'a', kind: 'b' },
+        {
+          apiVersion: 'a',
+          kind: 'b',
+          spec: { c: 'some' },
+        },
+        {
+          apiVersion: 'a',
+          kind: 'b',
+          spec: { c: null },
+        },
+      ];
+
+      await catalog.transaction(async tx => {
+        for (const entity of entities) {
+          await catalog.addEntity(tx, { entity });
+        }
+      });
+
+      await expect(
+        catalog.transaction(async tx =>
+          catalog.entities(tx, [
+            { key: 'kind', values: ['b'] },
+            { key: 'spec.c', values: ['some'] },
+          ]),
+        ),
+      ).resolves.toEqual([
+        { locationId: undefined, entity: expect.objectContaining(entities[1]) },
+      ]);
+    });
+
+    it('can get all specific entities for matching filters with nulls (both missing and literal null value)', async () => {
+      const catalog = new Database(database, getVoidLogger());
+      const entities: DescriptorEnvelope[] = [
+        { apiVersion: 'a', kind: 'b' },
+        {
+          apiVersion: 'a',
+          kind: 'b',
+          spec: { c: 'some' },
+        },
+        {
+          apiVersion: 'a',
+          kind: 'b',
+          spec: { c: null },
+        },
+      ];
+
+      await catalog.transaction(async tx => {
+        for (const entity of entities) {
+          await catalog.addEntity(tx, { entity });
+        }
+      });
+
+      const rows = await catalog.transaction(async tx =>
+        catalog.entities(tx, [
+          { key: 'kind', values: ['b'] },
+          { key: 'spec.c', values: [null, 'some'] },
+        ]),
+      );
+
+      expect(rows.length).toEqual(3);
+      expect(rows).toEqual(
+        expect.arrayContaining([
+          {
+            locationId: undefined,
+            entity: expect.objectContaining(entities[0]),
+          },
+          {
+            locationId: undefined,
+            entity: expect.objectContaining(entities[1]),
+          },
+          {
+            locationId: undefined,
+            entity: expect.objectContaining(entities[2]),
+          },
+        ]),
+      );
     });
   });
 });

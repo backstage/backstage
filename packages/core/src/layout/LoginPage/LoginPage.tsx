@@ -16,10 +16,10 @@
 
 import React, { FC, useState } from 'react';
 import GitHubIcon from '@material-ui/icons/GitHub';
-import Page from '../../../layout/Page';
-import Header from '../../../layout/Header';
-import Content from '../../../layout/Content/Content';
-import ContentHeader from '../../../layout/ContentHeader/ContentHeader';
+import Page from '../Page';
+import Header from '../Header';
+import Content from '../Content/Content';
+import ContentHeader from '../ContentHeader/ContentHeader';
 import {
   Grid,
   Typography,
@@ -29,13 +29,13 @@ import {
   ListItem,
   Link,
 } from '@material-ui/core';
-import InfoCard from '../../../layout/InfoCard/InfoCard';
+import InfoCard from '../InfoCard/InfoCard';
 
 enum AuthType {
   GitHub,
 }
 
-const LoginPage: FC<{}> = () => {
+export const LoginPage: FC<{}> = () => {
   const [githubUsername, setGithubUsername] = useState(String);
   const [githubPersonalAuthToken, setGithubPersonalAuthToken] = useState(
     String,
@@ -72,11 +72,11 @@ const LoginPage: FC<{}> = () => {
         'Content-Type': 'application/x-www-form-urlencoded',
       }),
     })
-      .then((response) => {
+      .then(response => {
         if (response.status === 200) return response.json();
         throw Error(`${response.status} ${response.statusText}`);
       })
-      .then((data) => {
+      .then(data => {
         const info = {
           username: username,
           token: token,
@@ -176,5 +176,3 @@ const LoginPage: FC<{}> = () => {
     </Page>
   );
 };
-
-export default LoginPage;

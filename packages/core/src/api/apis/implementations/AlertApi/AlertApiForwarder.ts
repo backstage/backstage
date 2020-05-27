@@ -13,9 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AlertApi, AlertMessage } from '../../../..';
+import { PublishSubject } from '../lib';
+import { Observable } from '../../../types';
 
-import { ComponentType } from 'react';
-import { SvgIconProps } from '@material-ui/core';
-export type IconComponent = ComponentType<SvgIconProps>;
-export type SystemIconKey = 'user' | 'group';
-export type SystemIcons = { [key in SystemIconKey]: IconComponent };
+/**
+ * Base implementation for the AlertApi that simply forwards alerts to consumers.
+ */
+export class AlertApiForwarder implements AlertApi {
+  private readonly subject = new PublishSubject<AlertMessage>();
+
+  post(alert: AlertMessage) {
+    this.subject.next(alert);
+  }
+
+  alert$(): Observable<AlertMessage> {
+    return this.subject;
+  }
+}

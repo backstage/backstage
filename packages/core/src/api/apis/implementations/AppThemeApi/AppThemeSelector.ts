@@ -33,7 +33,7 @@ export class AppThemeSelector implements AppThemeApi {
 
     selector.setActiveThemeId(initialThemeId);
 
-    selector.activeThemeId$().subscribe((themeId) => {
+    selector.activeThemeId$().subscribe(themeId => {
       if (themeId) {
         window.localStorage.setItem(STORAGE_KEY, themeId);
       } else {
@@ -41,7 +41,7 @@ export class AppThemeSelector implements AppThemeApi {
       }
     });
 
-    window.addEventListener('storage', (event) => {
+    window.addEventListener('storage', event => {
       if (event.key === STORAGE_KEY) {
         const themeId = localStorage.getItem(STORAGE_KEY) ?? undefined;
         selector.setActiveThemeId(themeId);

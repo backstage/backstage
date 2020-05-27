@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import Knex from 'knex';
 import {
   ComponentDescriptor,
   DescriptorParser,
@@ -28,7 +29,6 @@ import {
   DbLocationsRow,
   DbLocationsRowWithStatus,
 } from './types';
-import Knex from 'knex';
 
 describe('DatabaseManager', () => {
   describe('refreshLocations', () => {
