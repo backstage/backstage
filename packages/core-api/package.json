@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-api",
-  "description": "Core API used by Backstage plugins and apps",
+  "description": "Internal Core API used by Backstage plugins and apps",
   "version": "0.1.1-alpha.6",
   "private": false,
   "publishConfig": {
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/spotify/backstage",
-    "directory": "packages/core"
+    "directory": "packages/core-api"
   },
   "keywords": [
     "backstage"
