@@ -50,7 +50,19 @@ export { ComponentX } from './ComponentX';
 export type { ComponentXProps } from './ComponentX';
 ```
 
-Internal cross-directory imports are allowed, but discouraged, and no module should re-export a symbol across directories.
+Internal cross-directory imports are allowed from non-index modules to index modules, for example:
+
+```ts
+// in components/ComponentX/ComponentX.tsx
+import { UtilityX } from '../../lib/UtilityX';
+```
+
+Imports that bypass an index file are discouraged, but may sometimes be necessary, for example:
+
+```ts
+// in components/ComponentX/ComponentX.tsx
+import { helperFunc } from '../../lib/UtilityX/helper';
+```
 
 ## Consequences
 
