@@ -17169,11 +17169,6 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7, rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-addons-text-content@0.0.4:
-  version "0.0.4"
-  resolved "https://registry.npmjs.org/react-addons-text-content/-/react-addons-text-content-0.0.4.tgz#d2e259fdc951d1d8906c08902002108dce8792e5"
-  integrity sha1-0uJZ/clR0diQbAiQIAIQjc6HkuU=
-
 react-beautiful-dnd@11.0.3:
   version "11.0.3"
   resolved "https://registry.npmjs.org/react-beautiful-dnd/-/react-beautiful-dnd-11.0.3.tgz#5678bb3e725d8b56cb7cf57f56e952105fc4f2af"
