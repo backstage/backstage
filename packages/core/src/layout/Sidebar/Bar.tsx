@@ -16,10 +16,10 @@
 
 import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useRef, useState, useContext } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
-import { useSidebarPinState } from '../../hooks/useSidebarPinState';
+import { SidebarPinStateContext } from './Page';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
@@ -76,7 +76,7 @@ export const Sidebar: FC<Props> = ({
   const classes = useStyles();
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();
-  const { isPinned } = useSidebarPinState();
+  const { isPinned } = useContext(SidebarPinStateContext);
 
   const handleOpen = () => {
     if (isPinned) {
