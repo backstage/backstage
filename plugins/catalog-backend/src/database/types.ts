@@ -15,7 +15,7 @@
  */
 
 import * as yup from 'yup';
-import { DescriptorEnvelope } from '../ingestion';
+import { Entity } from '../ingestion';
 
 export type DbEntitiesRow = {
   id: string;
@@ -32,12 +32,12 @@ export type DbEntitiesRow = {
 
 export type DbEntityRequest = {
   locationId?: string;
-  entity: DescriptorEnvelope;
+  entity: Entity;
 };
 
 export type DbEntityResponse = {
   locationId?: string;
-  entity: DescriptorEnvelope;
+  entity: Entity;
 };
 
 export type DbEntitiesSearchRow = {

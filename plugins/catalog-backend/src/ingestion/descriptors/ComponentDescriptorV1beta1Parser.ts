@@ -15,9 +15,9 @@
  */
 
 import * as yup from 'yup';
-import { DescriptorEnvelope, KindParser, ParserError } from '../types';
+import { Entity, KindParser, ParserError } from '../types';
 
-export interface ComponentDescriptorV1beta1 extends DescriptorEnvelope {
+export interface ComponentDescriptorV1beta1 extends Entity {
   spec: {
     type: string;
   };
@@ -41,9 +41,7 @@ export class ComponentDescriptorV1beta1Parser implements KindParser {
     });
   }
 
-  async tryParse(
-    envelope: DescriptorEnvelope,
-  ): Promise<DescriptorEnvelope | undefined> {
+  async tryParse(envelope: Entity): Promise<Entity | undefined> {
     if (
       envelope.apiVersion !== 'backstage.io/v1beta1' ||
       envelope.kind !== 'Component'

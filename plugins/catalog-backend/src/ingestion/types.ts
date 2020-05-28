@@ -87,7 +87,7 @@ export type EntityMeta = {
  *
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
  */
-export type DescriptorEnvelope = {
+export type Entity = {
   /**
    * The version of specification format for this particular entity that
    * this is written against.
@@ -123,7 +123,7 @@ export type DescriptorParser = {
    * @returns A structure describing the parsed and validated descriptor
    * @throws An Error if the descriptor was malformed
    */
-  parse(descriptor: object): Promise<DescriptorEnvelope>;
+  parse(descriptor: object): Promise<Entity>;
 };
 
 /**
@@ -142,9 +142,7 @@ export type KindParser = {
    * @throws An Error if the type was handled and found to not be properly
    *         formatted
    */
-  tryParse(
-    envelope: DescriptorEnvelope,
-  ): Promise<DescriptorEnvelope | undefined>;
+  tryParse(envelope: Entity): Promise<Entity | undefined>;
 };
 
 export class ParserError extends Error {

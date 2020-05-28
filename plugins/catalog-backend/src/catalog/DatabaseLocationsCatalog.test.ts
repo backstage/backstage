@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
+import { getVoidLogger } from '@backstage/backend-common';
 import knex from 'knex';
 import path from 'path';
-
 import { Database } from '../database';
 import { ReaderOutput } from '../ingestion/types';
-import { getVoidLogger } from '@backstage/backend-common';
+import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
 
 describe('DatabaseLocationsCatalog', () => {
   const database = knex({

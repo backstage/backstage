@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DescriptorEnvelope } from '../ingestion';
+import { Entity } from '../ingestion';
 import { buildEntitySearch, visitEntityPart } from './search';
 import { DbEntitiesSearchRow } from './types';
 
@@ -99,7 +99,7 @@ describe('search', () => {
 
   describe('buildEntitySearch', () => {
     it('adds special keys even if missing', () => {
-      const input: DescriptorEnvelope = {
+      const input: Entity = {
         apiVersion: 'a',
         kind: 'b',
       };
@@ -116,7 +116,7 @@ describe('search', () => {
     });
 
     it('adds prefix-stripped versions', () => {
-      const input: DescriptorEnvelope = {
+      const input: Entity = {
         apiVersion: 'a',
         kind: 'b',
         metadata: {

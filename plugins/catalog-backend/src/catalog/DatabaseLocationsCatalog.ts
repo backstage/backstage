@@ -15,8 +15,8 @@
  */
 
 import { Database } from '../database';
-import { AddLocation, Location, LocationsCatalog } from './types';
 import { LocationReader } from '../ingestion';
+import { AddLocation, Location, LocationsCatalog } from './types';
 
 export class DatabaseLocationsCatalog implements LocationsCatalog {
   constructor(

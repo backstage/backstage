@@ -16,13 +16,13 @@
 
 import * as yup from 'yup';
 import { Validators } from '../../validation';
-import { DescriptorEnvelope } from '../types';
+import { Entity } from '../types';
 
 /**
  * Parses some raw structured data as a descriptor envelope
  */
 export class DescriptorEnvelopeParser {
-  private schema: yup.Schema<DescriptorEnvelope>;
+  private schema: yup.Schema<Entity>;
 
   constructor(validators: Validators) {
     const apiVersionSchema = yup
@@ -160,8 +160,8 @@ export class DescriptorEnvelopeParser {
       .noUnknown();
   }
 
-  async parse(data: any): Promise<DescriptorEnvelope> {
-    let result: DescriptorEnvelope;
+  async parse(data: any): Promise<Entity> {
+    let result: Entity;
     try {
       result = await this.schema.validate(data, { strict: true });
     } catch (e) {

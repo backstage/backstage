@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DescriptorEnvelope } from '../ingestion';
+import { Entity } from '../ingestion';
 import { DbEntitiesSearchRow } from './types';
 
 // Search entries that start with these prefixes, also get a shorthand without
@@ -119,7 +119,7 @@ export function visitEntityPart(
  */
 export function buildEntitySearch(
   entityId: string,
-  entity: DescriptorEnvelope,
+  entity: Entity,
 ): DbEntitiesSearchRow[] {
   // Start with some special keys that are always present because you want to
   // be able to easily search for null specifically

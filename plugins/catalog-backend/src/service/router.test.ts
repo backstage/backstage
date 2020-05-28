@@ -18,7 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog, Location, LocationsCatalog } from '../catalog';
-import { DescriptorEnvelope } from '../ingestion';
+import { Entity } from '../ingestion';
 import { createRouter } from './router';
 
 class MockEntitiesCatalog implements EntitiesCatalog {
@@ -37,7 +37,7 @@ class MockLocationsCatalog implements LocationsCatalog {
 describe('createRouter', () => {
   describe('entities', () => {
     it('happy path: lists entities', async () => {
-      const entities: DescriptorEnvelope[] = [{ apiVersion: 'a', kind: 'b' }];
+      const entities: Entity[] = [{ apiVersion: 'a', kind: 'b' }];
 
       const catalog = new MockEntitiesCatalog();
       catalog.entities.mockResolvedValueOnce(entities);
@@ -76,7 +76,7 @@ describe('createRouter', () => {
 
   describe('entityByUid', () => {
     it('can fetch entity by uid', async () => {
-      const entity: DescriptorEnvelope = {
+      const entity: Entity = {
         apiVersion: 'a',
         kind: 'b',
         metadata: {
@@ -117,7 +117,7 @@ describe('createRouter', () => {
 
   describe('entityByName', () => {
     it('can fetch entity by name', async () => {
-      const entity: DescriptorEnvelope = {
+      const entity: Entity = {
         apiVersion: 'a',
         kind: 'b',
         metadata: {
@@ -190,7 +190,9 @@ describe('createRouter', () => {
       });
 
       const app = express().use(router);
-      const response = await request(app).post('/locations').send(location);
+      const response = await request(app)
+        .post('/locations')
+        .send(location);
 
       expect(response.status).toEqual(400);
     });

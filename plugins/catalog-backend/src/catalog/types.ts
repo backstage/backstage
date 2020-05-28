@@ -15,7 +15,7 @@
  */
 
 import * as yup from 'yup';
-import { DescriptorEnvelope } from '../ingestion';
+import { Entity } from '../ingestion';
 
 //
 // Entities
@@ -28,13 +28,13 @@ export type EntityFilter = {
 export type EntityFilters = EntityFilter[];
 
 export type EntitiesCatalog = {
-  entities(filters?: EntityFilters): Promise<DescriptorEnvelope[]>;
-  entityByUid(uid: string): Promise<DescriptorEnvelope | undefined>;
+  entities(filters?: EntityFilters): Promise<Entity[]>;
+  entityByUid(uid: string): Promise<Entity | undefined>;
   entityByName(
     kind: string,
     namespace: string | undefined,
     name: string,
-  ): Promise<DescriptorEnvelope | undefined>;
+  ): Promise<Entity | undefined>;
 };
 
 //

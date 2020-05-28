@@ -19,8 +19,8 @@ import lodash from 'lodash';
 import path from 'path';
 import { Logger } from 'winston';
 import {
-  DescriptorEnvelope,
   DescriptorParser,
+  Entity,
   LocationReader,
   ParserError,
 } from '../ingestion';
@@ -129,7 +129,7 @@ export class DatabaseManager {
   private static async refreshSingleEntity(
     database: Database,
     locationId: string,
-    entity: DescriptorEnvelope,
+    entity: Entity,
     logger: Logger,
   ): Promise<void> {
     const { kind } = entity;
@@ -163,10 +163,7 @@ export class DatabaseManager {
     });
   }
 
-  private static entitiesAreEqual(
-    first: DescriptorEnvelope,
-    second: DescriptorEnvelope,
-  ) {
+  private static entitiesAreEqual(first: Entity, second: Entity) {
     const firstClone = lodash.cloneDeep(first);
     const secondClone = lodash.cloneDeep(second);
 

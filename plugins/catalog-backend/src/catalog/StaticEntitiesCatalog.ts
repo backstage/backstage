@@ -16,21 +16,21 @@
 
 import { NotFoundError } from '@backstage/backend-common';
 import lodash from 'lodash';
-import { DescriptorEnvelope } from '../ingestion';
+import { Entity } from '../ingestion';
 import { EntitiesCatalog } from './types';
 
 export class StaticEntitiesCatalog implements EntitiesCatalog {
-  private _entities: DescriptorEnvelope[];
+  private _entities: Entity[];
 
-  constructor(entities: DescriptorEnvelope[]) {
+  constructor(entities: Entity[]) {
     this._entities = entities;
   }
 
-  async entities(): Promise<DescriptorEnvelope[]> {
+  async entities(): Promise<Entity[]> {
     return lodash.cloneDeep(this._entities);
   }
 
-  async entityByUid(uid: string): Promise<DescriptorEnvelope | undefined> {
+  async entityByUid(uid: string): Promise<Entity | undefined> {
     const item = this._entities.find(e => uid === e.metadata?.uid);
     if (!item) {
       throw new NotFoundError('Entity cannot be found');
@@ -42,7 +42,7 @@ export class StaticEntitiesCatalog implements EntitiesCatalog {
     kind: string,
     name: string,
     namespace: string | undefined,
-  ): Promise<DescriptorEnvelope | undefined> {
+  ): Promise<Entity | undefined> {
     const item = this._entities.find(
       e =>
         kind === e.kind &&

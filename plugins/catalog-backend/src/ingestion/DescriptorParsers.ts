@@ -17,12 +17,7 @@
 import { makeValidator } from '../validation';
 import { ComponentDescriptorV1beta1Parser } from './descriptors/ComponentDescriptorV1beta1Parser';
 import { DescriptorEnvelopeParser } from './descriptors/DescriptorEnvelopeParser';
-import {
-  DescriptorEnvelope,
-  DescriptorParser,
-  KindParser,
-  ParserError,
-} from './types';
+import { DescriptorParser, Entity, KindParser, ParserError } from './types';
 
 export class DescriptorParsers implements DescriptorParser {
   static create(): DescriptorParser {
@@ -37,7 +32,7 @@ export class DescriptorParsers implements DescriptorParser {
     private readonly kindParsers: KindParser[],
   ) {}
 
-  async parse(descriptor: object): Promise<DescriptorEnvelope> {
+  async parse(descriptor: object): Promise<Entity> {
     const envelope = await this.envelopeParser.parse(descriptor);
     for (const parser of this.kindParsers) {
       const parsed = await parser.tryParse(envelope);
