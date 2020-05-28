@@ -24,6 +24,7 @@ import privateExports, {
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import { ErrorPage } from '../layout/ErrorPage';
+import Progress from '../components/Progress';
 import { lightTheme, darkTheme } from '@backstage/theme';
 
 const { PrivateAppImpl } = privateExports;
@@ -59,6 +60,7 @@ export function createApp(options?: AppOptions) {
   const components = {
     NotFoundErrorPage: DefaultNotFoundPage,
     BootErrorPage: DefaultBootErrorPage,
+    Progress: Progress,
     ...options?.components,
   };
   const themes = options?.themes ?? [

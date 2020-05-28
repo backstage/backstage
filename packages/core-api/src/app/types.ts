@@ -28,6 +28,7 @@ export type BootErrorPageProps = {
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
+  Progress: ComponentType<{}>;
 };
 
 /**

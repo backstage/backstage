@@ -149,14 +149,15 @@ export class PrivateAppImpl implements BackstageApp {
   getProvider(): ComponentType<{}> {
     const Provider: FC<{}> = ({ children }) => {
       const config = useAsync(this.configLoader);
-      if (config.loading) {
-        return null;
-      }
 
-      let errorPage = undefined;
-      if (config.error) {
+      let childNode = children;
+
+      if (config.loading) {
+        const { Progress } = this.components;
+        childNode = <Progress />;
+      } else if (config.error) {
         const { BootErrorPage } = this.components;
-        errorPage = <BootErrorPage step="load-config" error={config.error} />;
+        childNode = <BootErrorPage step="load-config" error={config.error} />;
       }
 
       const appApis = ApiRegistry.from([
@@ -168,7 +169,7 @@ export class PrivateAppImpl implements BackstageApp {
       return (
         <ApiProvider apis={apis}>
           <AppContextProvider app={this}>
-            <AppThemeProvider>{errorPage ?? children}</AppThemeProvider>
+            <AppThemeProvider>{childNode}</AppThemeProvider>
           </AppContextProvider>
         </ApiProvider>
       );
