@@ -17,15 +17,26 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import CatalogPage from './CatalogPage';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
+import { wrapInTheme } from '@backstage/test-utils';
+import { catalogApiRef } from '../..';
+
+const errorApi = { post: () => {} };
+const catalogApi = { getEntities: () => Promise.resolve([{ kind: '' }]) };
 
 describe('CatalogPage', () => {
   it('should render', async () => {
     const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <CatalogPage />
-      </ThemeProvider>,
+      wrapInTheme(
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [errorApiRef, errorApi],
+            [catalogApiRef, catalogApi],
+          ])}
+        >
+          <CatalogPage />
+        </ApiProvider>,
+      ),
     );
     expect(
       await rendered.findByText('Keep track of your software'),
