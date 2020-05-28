@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '../ingestion';
+import { Entity } from '@backstage/catalog-model';
 import { buildEntitySearch, visitEntityPart } from './search';
 import { DbEntitiesSearchRow } from './types';
 

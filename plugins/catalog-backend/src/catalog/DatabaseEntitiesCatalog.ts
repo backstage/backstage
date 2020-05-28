@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { Database } from '../database';
-import { Entity } from '../ingestion/types';
 import { EntitiesCatalog, EntityFilters } from './types';
 
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {

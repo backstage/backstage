@@ -19,9 +19,9 @@ import {
   getVoidLogger,
   NotFoundError,
 } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import Knex from 'knex';
 import path from 'path';
-import { Entity } from '../ingestion';
 import { Database } from './Database';
 import {
   AddDatabaseLocation,

@@ -15,10 +15,10 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog, Location, LocationsCatalog } from '../catalog';
-import { Entity } from '../ingestion';
 import { createRouter } from './router';
 
 class MockEntitiesCatalog implements EntitiesCatalog {
