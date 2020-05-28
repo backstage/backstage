@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import express, { CookieOptions } from 'express';
 import crypto from 'crypto';
 import { AuthProviderRouteHandlers, OAuthProviderHandlers } from './types';
@@ -6,6 +22,69 @@ import { postMessageResponse, ensuresXRequestedWith } from './utils';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
+
+export const verifyNonce = (req: express.Request, provider: string) => {
+  const cookieNonce = req.cookies[`${provider}-nonce`];
+  const stateNonce = req.query.state;
+
+  if (!cookieNonce || !stateNonce) {
+    throw new Error('Missing nonce');
+  }
+
+  if (cookieNonce !== stateNonce) {
+    throw new Error('Invalid nonce');
+  }
+};
+
+export const setNonceCookie = (res: express.Response, provider: string) => {
+  const nonce = crypto.randomBytes(16).toString('base64');
+
+  const options: CookieOptions = {
+    maxAge: TEN_MINUTES_MS,
+    secure: false,
+    sameSite: 'none',
+    domain: 'localhost',
+    path: `/auth/${provider}/handler`,
+    httpOnly: true,
+  };
+
+  res.cookie(`${provider}-nonce`, nonce, options);
+
+  return nonce;
+};
+
+export const setRefreshTokenCookie = (
+  res: express.Response,
+  provider: string,
+  refreshToken: string,
+) => {
+  const options: CookieOptions = {
+    maxAge: THOUSAND_DAYS_MS,
+    secure: false,
+    sameSite: 'none',
+    domain: 'localhost',
+    path: `/auth/${provider}`,
+    httpOnly: true,
+  };
+
+  res.cookie(`${provider}-refresh-token`, refreshToken, options);
+};
+
+export const removeRefreshTokenCookie = (
+  res: express.Response,
+  provider: string,
+) => {
+  const options: CookieOptions = {
+    maxAge: 0,
+    secure: false,
+    sameSite: 'none',
+    domain: 'localhost',
+    path: `/auth/${provider}`,
+    httpOnly: true,
+  };
+
+  res.cookie(`${provider}-refresh-token`, '', options);
+};
 
 export class OAuthProvider implements AuthProviderRouteHandlers {
   private readonly provider: string;
@@ -106,72 +185,9 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
         refreshToken,
         scope,
       );
-      res.send(refreshInfo);
+      return res.send(refreshInfo);
     } catch (error) {
-      res.status(401).send(`${error.message}`);
+      return res.status(401).send(`${error.message}`);
     }
   }
 }
-
-export const verifyNonce = (req: express.Request, provider: string) => {
-  const cookieNonce = req.cookies[`${provider}-nonce`];
-  const stateNonce = req.query.state;
-
-  if (!cookieNonce || !stateNonce) {
-    throw new Error('Missing nonce');
-  }
-
-  if (cookieNonce !== stateNonce) {
-    throw new Error('Invalid nonce');
-  }
-};
-
-export const setNonceCookie = (res: express.Response, provider: string) => {
-  const nonce = crypto.randomBytes(16).toString('base64');
-
-  const options: CookieOptions = {
-    maxAge: TEN_MINUTES_MS,
-    secure: false,
-    sameSite: 'none',
-    domain: 'localhost',
-    path: `/auth/${provider}/handler`,
-    httpOnly: true,
-  };
-
-  res.cookie(`${provider}-nonce`, nonce, options);
-
-  return nonce;
-};
-
-export const setRefreshTokenCookie = (
-  res: express.Response,
-  provider: string,
-  refreshToken: string,
-) => {
-  const options: CookieOptions = {
-    maxAge: THOUSAND_DAYS_MS,
-    secure: false,
-    sameSite: 'none',
-    domain: 'localhost',
-    path: `/auth/${provider}`,
-    httpOnly: true,
-  };
-
-  res.cookie(`${provider}-refresh-token`, refreshToken, options);
-};
-
-export const removeRefreshTokenCookie = (
-  res: express.Response,
-  provider: string,
-) => {
-  const options: CookieOptions = {
-    maxAge: 0,
-    secure: false,
-    sameSite: 'none',
-    domain: 'localhost',
-    path: `/auth/${provider}`,
-    httpOnly: true,
-  };
-
-  res.cookie(`${provider}-refresh-token`, '', options);
-};

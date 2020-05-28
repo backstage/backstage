@@ -36,6 +36,7 @@ export async function createRouter(
   // configure all the providers
   for (const providerConfig of providers) {
     const { providerId, providerRouter } = makeProvider(providerConfig);
+    logger.info(`Configuring provider, ${providerId}`);
     router.use(`/${providerId}`, providerRouter);
   }
 

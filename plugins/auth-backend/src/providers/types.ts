@@ -73,3 +73,8 @@ export type RedirectInfo = {
   url: string;
   status?: number;
 };
+
+export type RefreshTokenResponse = {
+  accessToken: string;
+  params: any;
+};

@@ -1,6 +1,22 @@
-import express, { CookieOptions } from 'express';
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import express from 'express';
 import passport from 'passport';
-import { RedirectInfo, AuthInfoBase } from './types';
+import { RedirectInfo, RefreshTokenResponse } from './types';
 
 export const executeRedirectStrategy = async (
   req: express.Request,
@@ -28,7 +44,7 @@ export const executeFrameHandlerStrategy = async (
     };
     strategy.fail = (
       info: { type: 'success' | 'error'; message?: string },
-      _status?: number,
+      // _status: number,
     ) => {
       reject(new Error(`Authentication rejected, ${info.message ?? ''}`));
     };
@@ -47,7 +63,7 @@ export const executeRefreshTokenStrategy = async (
   providerstrategy: passport.Strategy,
   refreshToken: string,
   scope: string,
-): Promise<AuthInfoBase> => {
+): Promise<RefreshTokenResponse> => {
   return new Promise((resolve, reject) => {
     const anyStrategy = providerstrategy as any;
     const OAuth2 = anyStrategy._oauth2.constructor;
@@ -84,9 +100,7 @@ export const executeRefreshTokenStrategy = async (
         }
         resolve({
           accessToken,
-          idToken: params.id_token,
-          expiresInSeconds: 10,
-          scope: params.scope,
+          params,
         });
       },
     );
