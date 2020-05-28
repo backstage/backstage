@@ -24,16 +24,16 @@ import { ErrorGraph } from '../ErrorGraph/ErrorGraph';
 const columns: TableColumn[] = [
   {
     title: 'Error',
-    render: (data) => <ErrorCell sentryIssue={data as SentryIssue} />,
+    render: data => <ErrorCell sentryIssue={data as SentryIssue} />,
   },
   {
     title: 'Graph',
-    render: (data) => <ErrorGraph sentryIssue={data as SentryIssue} />,
+    render: data => <ErrorGraph sentryIssue={data as SentryIssue} />,
   },
   {
     title: 'First seen',
     field: 'firstSeen',
-    render: (data) => {
+    render: data => {
       const { firstSeen } = data as SentryIssue;
       return format(firstSeen);
     },
@@ -41,7 +41,7 @@ const columns: TableColumn[] = [
   {
     title: 'Last seen',
     field: 'lastSeen',
-    render: (data) => {
+    render: data => {
       const { lastSeen } = data as SentryIssue;
       return format(lastSeen);
     },

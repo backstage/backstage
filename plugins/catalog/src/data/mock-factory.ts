@@ -20,7 +20,7 @@ const ARTIFICIAL_TIMEOUT = 800;
 let inMemoryStore = [...mock];
 export const MockComponentFactory: ComponentFactory = {
   getAllComponents(): Promise<Component[]> {
-    return new Promise((resolve) =>
+    return new Promise(resolve =>
       setTimeout(() => resolve(inMemoryStore), ARTIFICIAL_TIMEOUT),
     );
   },
@@ -28,7 +28,7 @@ export const MockComponentFactory: ComponentFactory = {
     return new Promise((resolve, reject) =>
       setTimeout(() => {
         const mockComponent = inMemoryStore.find(
-          (component) => component.name === name,
+          component => component.name === name,
         );
         if (mockComponent) return resolve(mockComponent);
         return reject({ code: 'Component not found!' });
@@ -36,10 +36,10 @@ export const MockComponentFactory: ComponentFactory = {
     );
   },
   removeComponentByName(name: string): Promise<boolean> {
-    return new Promise((resolve) =>
+    return new Promise(resolve =>
       setTimeout(() => {
         inMemoryStore = inMemoryStore.filter(
-          (component) => component.name !== name,
+          component => component.name !== name,
         );
         resolve(true);
       }, ARTIFICIAL_TIMEOUT),

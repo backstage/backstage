@@ -62,7 +62,7 @@ async function buildApp(appDir: string) {
     await Task.forItem('executing', cmd, async () => {
       process.chdir(appDir);
 
-      await exec(cmd).catch((error) => {
+      await exec(cmd).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
         throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
@@ -81,7 +81,7 @@ export async function moveApp(
   id: string,
 ) {
   await Task.forItem('moving', id, async () => {
-    await fs.move(tempDir, destination).catch((error) => {
+    await fs.move(tempDir, destination).catch(error => {
       throw new Error(
         `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
       );

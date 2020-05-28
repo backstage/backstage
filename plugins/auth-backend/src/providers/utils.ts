@@ -39,3 +39,12 @@ export const postMessageResponse = (
 </html>
   `);
 };
+
+export const ensuresXRequestedWith = (req: express.Request) => {
+  const requiredHeader = req.header('X-Requested-With');
+
+  if (!requiredHeader || requiredHeader !== 'XMLHttpRequest') {
+    return false;
+  }
+  return true;
+};

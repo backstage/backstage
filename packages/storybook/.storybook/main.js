@@ -12,7 +12,7 @@ module.exports = {
     '@storybook/addon-storysource',
     'storybook-dark-mode/register',
   ],
-  webpackFinal: async (config) => {
+  webpackFinal: async config => {
     const coreSrc = path.resolve(__dirname, '../../core/src');
 
     // Mirror config in packages/cli/src/lib/bundler

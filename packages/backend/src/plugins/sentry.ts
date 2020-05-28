@@ -17,6 +17,6 @@
 import { createRouter } from '@backstage/plugin-sentry-backend';
 import { Logger } from 'winston';
 
-export default async function(logger: Logger) {
+export default async function (logger: Logger) {
   return await createRouter(logger);
 }

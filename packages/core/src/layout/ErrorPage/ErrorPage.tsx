@@ -26,7 +26,7 @@ interface IErrorPageProps {
   statusMessage: string;
 }
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {
     padding: theme.spacing(8),
   },

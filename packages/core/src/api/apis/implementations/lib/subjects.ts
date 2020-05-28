@@ -33,7 +33,7 @@ export class PublishSubject<T>
   private isClosed = false;
   private terminatingError?: Error;
 
-  private readonly observable = new ObservableImpl<T>((subscriber) => {
+  private readonly observable = new ObservableImpl<T>(subscriber => {
     if (this.isClosed) {
       if (this.terminatingError) {
         subscriber.error(this.terminatingError);
@@ -61,7 +61,7 @@ export class PublishSubject<T>
     if (this.isClosed) {
       throw new Error('PublishSubject is closed');
     }
-    this.subscribers.forEach((subscriber) => subscriber.next(value));
+    this.subscribers.forEach(subscriber => subscriber.next(value));
   }
 
   error(error: Error) {
@@ -70,7 +70,7 @@ export class PublishSubject<T>
     }
     this.isClosed = true;
     this.terminatingError = error;
-    this.subscribers.forEach((subscriber) => subscriber.error(error));
+    this.subscribers.forEach(subscriber => subscriber.error(error));
   }
 
   complete() {
@@ -78,7 +78,7 @@ export class PublishSubject<T>
       throw new Error('PublishSubject is closed');
     }
     this.isClosed = true;
-    this.subscribers.forEach((subscriber) => subscriber.complete());
+    this.subscribers.forEach(subscriber => subscriber.complete());
   }
 
   subscribe(observer: ZenObservable.Observer<T>): ZenObservable.Subscription;
@@ -126,7 +126,7 @@ export class BehaviorSubject<T>
     this.currentValue = value;
   }
 
-  private readonly observable = new ObservableImpl<T>((subscriber) => {
+  private readonly observable = new ObservableImpl<T>(subscriber => {
     if (this.isClosed) {
       if (this.terminatingError) {
         subscriber.error(this.terminatingError);
@@ -157,7 +157,7 @@ export class BehaviorSubject<T>
       throw new Error('BehaviorSubject is closed');
     }
     this.currentValue = value;
-    this.subscribers.forEach((subscriber) => subscriber.next(value));
+    this.subscribers.forEach(subscriber => subscriber.next(value));
   }
 
   error(error: Error) {
@@ -166,7 +166,7 @@ export class BehaviorSubject<T>
     }
     this.isClosed = true;
     this.terminatingError = error;
-    this.subscribers.forEach((subscriber) => subscriber.error(error));
+    this.subscribers.forEach(subscriber => subscriber.error(error));
   }
 
   complete() {
@@ -174,7 +174,7 @@ export class BehaviorSubject<T>
       throw new Error('BehaviorSubject is closed');
     }
     this.isClosed = true;
-    this.subscribers.forEach((subscriber) => subscriber.complete());
+    this.subscribers.forEach(subscriber => subscriber.complete());
   }
 
   subscribe(observer: ZenObservable.Observer<T>): ZenObservable.Subscription;

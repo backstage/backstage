@@ -46,16 +46,16 @@ export default class RadarPlot extends React.PureComponent {
           rings={rings}
           entries={entries}
           onEntryMouseEnter={
-            onEntryMouseEnter && ((entry) => onEntryMouseEnter(entry))
+            onEntryMouseEnter && (entry => onEntryMouseEnter(entry))
           }
           onEntryMouseLeave={
-            onEntryMouseLeave && ((entry) => onEntryMouseLeave(entry))
+            onEntryMouseLeave && (entry => onEntryMouseLeave(entry))
           }
         />
         <g transform={`translate(${width / 2}, ${height / 2})`}>
           <RadarGrid radius={radius} rings={rings} />
           <RadarFooter x={-0.5 * width} y={0.5 * height} />
-          {entries.map((entry) => (
+          {entries.map(entry => (
             <RadarEntry
               key={entry.id}
               x={entry.x}

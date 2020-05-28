@@ -48,7 +48,7 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
   }
 
   async location(id: string): Promise<Location> {
-    const item = await this.location(id);
+    const item = await this.database.location(id);
     return item;
   }
 }

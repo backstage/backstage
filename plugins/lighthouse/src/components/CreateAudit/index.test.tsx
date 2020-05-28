@@ -165,7 +165,7 @@ describe('CreateAudit', () => {
       fireEvent.click(rendered.getByText(/Create Audit/));
 
       await wait(() => expect(rendered.getByLabelText(/URL/)).toBeEnabled());
-      await new Promise((r) => setTimeout(r, 0));
+      await new Promise(r => setTimeout(r, 0));
 
       expect(errorApi.post).toHaveBeenCalledWith(expect.any(Error));
     });
