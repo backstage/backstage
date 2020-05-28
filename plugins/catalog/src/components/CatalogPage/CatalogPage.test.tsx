@@ -25,6 +25,9 @@ const errorApi = { post: () => {} };
 const catalogApi = { getEntities: () => Promise.resolve([{ kind: '' }]) };
 
 describe('CatalogPage', () => {
+  // this test right now causes some red lines in the log output when running tests
+  // related to some theme issues in mui-table
+  // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
     const rendered = render(
       wrapInTheme(

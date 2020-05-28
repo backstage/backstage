@@ -30,7 +30,15 @@ export class StaticEntitiesCatalog implements EntitiesCatalog {
     return lodash.cloneDeep(this._entities);
   }
 
-  async entity(
+  async entityByUid(uid: string): Promise<DescriptorEnvelope | undefined> {
+    const item = this._entities.find(e => uid === e.metadata?.uid);
+    if (!item) {
+      throw new NotFoundError('Entity cannot be found');
+    }
+    return lodash.cloneDeep(item);
+  }
+
+  async entityByName(
     kind: string,
     name: string,
     namespace: string | undefined,

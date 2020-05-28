@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import { createApp, OAuthRequestDialog } from '@backstage/core';
+import {
+  createApp,
+  AlertDisplay,
+  OAuthRequestDialog,
+  LoginPage,
+} from '@backstage/core';
 import React, { FC } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Root from './components/Root';
-import AlertDisplay from './components/AlertDisplay';
 import * as plugins from './plugins';
-import apis, { alertApiForwarder } from './apis';
+import apis from './apis';
 
 const app = createApp({
   apis,
@@ -32,10 +36,11 @@ const AppComponent = app.getRootComponent();
 
 const App: FC<{}> = () => (
   <AppProvider>
-    <AlertDisplay forwarder={alertApiForwarder} />
+    <AlertDisplay />
     <OAuthRequestDialog />
     <Router>
       <Root>
+        <Route key="login" path="/login" component={LoginPage} exact />
         <AppComponent />
       </Root>
     </Router>

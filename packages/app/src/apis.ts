@@ -21,6 +21,7 @@ import {
   errorApiRef,
   AlertApiForwarder,
   ErrorApiForwarder,
+  ErrorAlerter,
   featureFlagsApiRef,
   FeatureFlags,
   GoogleAuth,
@@ -41,11 +42,9 @@ import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog';
 
 const builder = ApiRegistry.builder();
 
-export const alertApiForwarder = new AlertApiForwarder();
-builder.add(alertApiRef, alertApiForwarder);
+const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 
-export const errorApiForwarder = new ErrorApiForwarder(alertApiForwarder);
-builder.add(errorApiRef, errorApiForwarder);
+builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
 builder.add(circleCIApiRef, new CircleCIApi());
 builder.add(featureFlagsApiRef, new FeatureFlags());
 

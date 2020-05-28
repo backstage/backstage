@@ -53,7 +53,7 @@ describe('CreateAudit', () => {
   let errorApi: ErrorApi;
 
   beforeEach(() => {
-    errorApi = { post: jest.fn() };
+    errorApi = { post: jest.fn(), error$: jest.fn() };
     apis = ApiRegistry.from([
       [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
       [errorApiRef, errorApi],
@@ -165,7 +165,7 @@ describe('CreateAudit', () => {
       fireEvent.click(rendered.getByText(/Create Audit/));
 
       await wait(() => expect(rendered.getByLabelText(/URL/)).toBeEnabled());
-      await new Promise((r) => setTimeout(r, 0));
+      await new Promise(r => setTimeout(r, 0));
 
       expect(errorApi.post).toHaveBeenCalledWith(expect.any(Error));
     });

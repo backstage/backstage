@@ -15,12 +15,14 @@
  */
 
 import * as apiFactories from './apiFactories';
-import { ApiTestRegistry } from '@backstage/core';
+import { ApiTestRegistry, ApiFactory } from '@backstage/core';
 
 describe('apiFactories', () => {
   it('should be possible to get an instance of each API', () => {
     const registry = new ApiTestRegistry();
-    const factories = Object.values(apiFactories);
+    const factories: ApiFactory<unknown, unknown, unknown>[] = Object.values(
+      apiFactories,
+    );
 
     for (const factory of factories) {
       registry.register(factory);

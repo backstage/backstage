@@ -18,6 +18,7 @@ import React, { FC } from 'react';
 import {
   Content,
   ContentHeader,
+  DismissableBanner,
   Header,
   HomepageTimer,
   SupportButton,
@@ -27,7 +28,21 @@ import {
 } from '@backstage/core';
 import { useAsync } from 'react-use';
 import CatalogTable from '../CatalogTable/CatalogTable';
-import { Button } from '@material-ui/core';
+import {
+  CatalogFilter,
+  CatalogFilterItem,
+} from '../CatalogFilter/CatalogFilter';
+import { Button, makeStyles, Typography, Link } from '@material-ui/core';
+import { filterGroups, defaultFilter } from '../../data/filters';
+
+const useStyles = makeStyles(theme => ({
+  contentWrapper: {
+    display: 'grid',
+    gridTemplateAreas: "'filters' 'table'",
+    gridTemplateColumns: '250px 1fr',
+    gridColumnGap: theme.spacing(2),
+  },
+}));
 
 import { catalogApiRef } from '../..';
 import { envelopeToComponent } from '../../data/utils';
@@ -35,6 +50,15 @@ import { envelopeToComponent } from '../../data/utils';
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const { value, error, loading } = useAsync(() => catalogApi.getEntities());
+  const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
+    defaultFilter,
+  );
+
+  const onFilterSelected = React.useCallback(
+    selected => setSelectedFilter(selected),
+    [],
+  );
+  const styles = useStyles();
 
   return (
     <Page theme={pageTheme.home}>
@@ -42,17 +66,43 @@ const CatalogPage: FC<{}> = () => {
         <HomepageTimer />
       </Header>
       <Content>
+        <DismissableBanner
+          variant="info"
+          message={
+            <Typography>
+              <span role="img" aria-label="wave" style={{ fontSize: '125%' }}>
+                👋🏼
+              </span>{' '}
+              Welcome to Backstage, we are happy to have you. Start by checking
+              out our{' '}
+              <Link href="/welcome" color="textSecondary">
+                getting started
+              </Link>{' '}
+              page.
+            </Typography>
+          }
+        />
         <ContentHeader title="Services">
           <Button variant="contained" color="primary" href="/create">
             Create Service
           </Button>
           <SupportButton>All your components</SupportButton>
         </ContentHeader>
-        <CatalogTable
-          components={(value && value.map(envelopeToComponent)) || []}
-          loading={loading}
-          error={error}
-        />
+        <div className={styles.contentWrapper}>
+          <div>
+            <CatalogFilter
+              groups={filterGroups}
+              selectedId={selectedFilter.id}
+              onSelectedChange={onFilterSelected}
+            />
+          </div>
+          <CatalogTable
+            titlePreamble={selectedFilter.label}
+            components={(value && value.map(envelopeToComponent)) || []}
+            loading={loading}
+            error={error}
+          />
+        </div>
       </Content>
     </Page>
   );

@@ -105,14 +105,14 @@ export default class Radar extends React.Component {
   static adjustEntries(entries, activeEntry, quadrants, rings, radius) {
     let seed = 42;
     entries.forEach((entry, idx) => {
-      const quadrant = quadrants.find((q) => {
+      const quadrant = quadrants.find(q => {
         const match =
           typeof entry.quadrant === 'object'
             ? entry.quadrant.id
             : entry.quadrant;
         return q.id === match;
       });
-      const ring = rings.find((r) => {
+      const ring = rings.find(r => {
         const match =
           typeof entry.ring === 'object' ? entry.ring.id : entry.ring;
         return r.id === match;
@@ -190,7 +190,7 @@ export default class Radar extends React.Component {
 
     return (
       <svg
-        ref={(node) => {
+        ref={node => {
           this.node = node;
         }}
         width={width}
@@ -205,7 +205,7 @@ export default class Radar extends React.Component {
           quadrants={quadrants}
           rings={rings}
           activeEntry={activeEntry}
-          onEntryMouseEnter={(entry) => this._setActiveEntry(entry)}
+          onEntryMouseEnter={entry => this._setActiveEntry(entry)}
           onEntryMouseLeave={() => this._clearActiveEntry()}
         />
       </svg>

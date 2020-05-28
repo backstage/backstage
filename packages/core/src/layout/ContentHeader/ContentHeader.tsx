@@ -20,7 +20,7 @@
 
 import React, { ComponentType, Fragment, FC } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 
 const useStyles = makeStyles(theme => ({
   container: {

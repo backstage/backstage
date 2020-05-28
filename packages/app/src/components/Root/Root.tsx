@@ -16,12 +16,12 @@
 
 import React, { FC, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Link, makeStyles, Typography } from '@material-ui/core';
+import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
-
+import LogoFull from './LogoFull';
+import LogoIcon from './LogoIcon';
 import {
   Sidebar,
   SidebarPage,
@@ -44,21 +44,9 @@ const useSidebarLogoStyles = makeStyles({
     alignItems: 'center',
     marginBottom: -14,
   },
-  logoContainer: {
+  link: {
     width: sidebarConfig.drawerWidthClosed,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: sidebarConfig.logoHeight,
-    fontWeight: 'bold',
-    marginLeft: 20,
-    whiteSpace: 'nowrap',
-    color: '#fff',
-  },
-  titleDot: {
-    color: '#68c5b5',
+    marginLeft: 24,
   },
 });
 
@@ -68,11 +56,8 @@ const SidebarLogo: FC<{}> = () => {
 
   return (
     <div className={classes.root}>
-      <Link href="/" underline="none">
-        <Typography variant="h6" color="inherit" className={classes.title}>
-          {isOpen ? 'Backstage' : 'B'}
-          <span className={classes.titleDot}>.</span>
-        </Typography>
+      <Link href="/" underline="none" className={classes.link}>
+        {isOpen ? <LogoFull /> : <LogoIcon />}
       </Link>
     </div>
   );
@@ -95,8 +80,6 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarItem icon={ExploreIcon} to="/explore" text="Explore" />
       <SidebarItem icon={CreateComponentIcon} to="/create" text="Create..." />
       {/* End global nav */}
-      <SidebarDivider />
-      <SidebarItem icon={AccountTreeIcon} to="/catalog" text="Catalog" />
       <SidebarDivider />
       <SidebarSpace />
       <SidebarDivider />

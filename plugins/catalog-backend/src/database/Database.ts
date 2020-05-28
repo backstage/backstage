@@ -23,6 +23,7 @@ import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
+import { EntityFilters } from '../catalog';
 import { DescriptorEnvelope, EntityMeta } from '../ingestion';
 import { buildEntitySearch } from './search';
 import {
@@ -186,11 +187,12 @@ export class Database {
     }
 
     const newEntity = lodash.cloneDeep(request.entity);
-    newEntity.metadata = Object.assign({}, newEntity.metadata, {
+    newEntity.metadata = {
+      ...newEntity.metadata,
       uid: generateUid(),
       etag: generateEtag(),
       generation: 1,
-    });
+    };
 
     const newRow = toEntityRow(request.locationId, newEntity);
     await tx<DbEntitiesRow>('entities').insert(newRow);
@@ -275,11 +277,12 @@ export class Database {
       ? oldRow.generation
       : oldRow.generation + 1;
     const newEntity = lodash.cloneDeep(request.entity);
-    newEntity.metadata = Object.assign({}, request.entity.metadata, {
+    newEntity.metadata = {
+      ...newEntity.metadata,
       uid: oldRow.id,
       etag: newEtag,
       generation: newGeneration,
-    });
+    };
 
     // Preserve annotations that were set on the old version of the entity,
     // unless the new version overwrites them
@@ -309,10 +312,30 @@ export class Database {
     return { locationId: request.locationId, entity: newEntity };
   }
 
-  async entities(tx: Knex.Transaction<any, any>): Promise<DbEntityResponse[]> {
-    const rows = await tx<DbEntitiesRow>('entities')
+  async entities(
+    tx: Knex.Transaction<any, any>,
+    filters?: EntityFilters,
+  ): Promise<DbEntityResponse[]> {
+    let builder = tx<DbEntitiesRow>('entities');
+    for (const [index, filter] of (filters ?? []).entries()) {
+      builder = builder
+        .leftOuterJoin(`entities_search as t${index}`, function join() {
+          this.on('entities.id', '=', `t${index}.entity_id`).onIn(
+            `t${index}.value`,
+            filter.values.filter(x => x),
+          );
+          if (filter.values.some(x => !x)) {
+            this.orOnNull(`t${index}.value`);
+          }
+        })
+        .where(`t${index}.key`, '=', filter.key);
+    }
+
+    const rows = await builder
       .orderBy('namespace', 'name')
-      .select();
+      .select('entities.*')
+      .groupBy('id');
+
     return rows.map(row => toEntityResponse(row));
   }
 
@@ -336,9 +359,7 @@ export class Database {
   async addLocation(location: AddDatabaseLocation): Promise<DbLocationsRow> {
     return await this.database.transaction<DbLocationsRow>(async tx => {
       const existingLocation = await tx<DbLocationsRow>('locations')
-        .where({
-          target: location.target,
-        })
+        .where({ target: location.target })
         .select();
 
       if (existingLocation?.[0]) {

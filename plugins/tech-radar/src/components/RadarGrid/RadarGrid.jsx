@@ -84,7 +84,7 @@ class RadarGrid extends React.PureComponent {
       />,
     ];
 
-    const ringNodes = rings.map((r) => r.outerRadius).map(makeRingNode);
+    const ringNodes = rings.map(r => r.outerRadius).map(makeRingNode);
 
     return axisNodes.concat(ringNodes);
   }

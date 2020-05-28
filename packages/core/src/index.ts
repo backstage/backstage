@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export * from '@backstage/core-api';
+
 export * from './api';
 export { default as Page } from './layout/Page';
 export { gradients, pageTheme } from './layout/Page';
@@ -21,6 +23,7 @@ export type { PageTheme } from './layout/Page';
 export { default as CodeSnippet } from './components/CodeSnippet';
 export { default as Content } from './layout/Content/Content';
 export { default as ContentHeader } from './layout/ContentHeader/ContentHeader';
+export { default as DismissableBanner } from './components/DismissableBanner';
 export { default as Header } from './layout/Header/Header';
 export { default as HeaderLabel } from './layout/HeaderLabel';
 export { default as HomepageTimer } from './layout/HomepageTimer';
@@ -28,6 +31,8 @@ export { default as InfoCard } from './layout/InfoCard';
 export { CardTab, TabbedCard } from './layout/TabbedCard';
 export { default as ErrorBoundary } from './layout/ErrorBoundary';
 export * from './layout/Sidebar';
+export * from './layout/LoginPage';
+export { AlertDisplay } from './components/AlertDisplay';
 export { default as HorizontalScrollGrid } from './components/HorizontalScrollGrid';
 export { default as ProgressCard } from './components/ProgressBars/ProgressCard';
 export { default as CircleProgress } from './components/ProgressBars/CircleProgress';
@@ -45,3 +50,4 @@ export { default as TrendLine } from './components/TrendLine';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
 export * from './components/Status';
 export { default as WarningPanel } from './components/WarningPanel';
+export type { IconComponent } from './icons';

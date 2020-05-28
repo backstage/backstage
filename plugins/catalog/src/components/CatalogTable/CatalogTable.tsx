@@ -39,6 +39,7 @@ const columns: TableColumn[] = [
 
 type CatalogTableProps = {
   components: Component[];
+  titlePreamble: string;
   loading: boolean;
   error?: any;
 };
@@ -46,6 +47,7 @@ const CatalogTable: FC<CatalogTableProps> = ({
   components,
   loading,
   error,
+  titlePreamble,
 }) => {
   if (loading) {
     return <Progress />;
@@ -63,7 +65,7 @@ const CatalogTable: FC<CatalogTableProps> = ({
     <Table
       columns={columns}
       options={{ paging: false }}
-      title={`Owned (${(components && components.length) || 0})`}
+      title={`${titlePreamble} (${(components && components.length) || 0})`}
       data={components}
     />
   );

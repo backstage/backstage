@@ -89,4 +89,19 @@ export const pageTheme: Record<string, PageTheme> = {
   tool: {
     gradient: gradients.purpleBlue,
   },
+  service: {
+    gradient: gradients.green,
+  },
+  website: {
+    gradient: gradients.purple,
+  },
+  library: {
+    gradient: gradients.sunset,
+  },
+  other: {
+    gradient: gradients.brown,
+  },
+  app: {
+    gradient: gradients.redOrange,
+  },
 };

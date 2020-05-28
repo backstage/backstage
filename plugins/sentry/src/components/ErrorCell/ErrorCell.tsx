@@ -22,7 +22,7 @@ import { BackstageTheme } from '@backstage/theme';
 function stripText(text: string, maxLength: number) {
   return text.length > maxLength ? `${text.substr(0, maxLength)}...` : text;
 }
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     minWidth: 260,
     position: 'relative',

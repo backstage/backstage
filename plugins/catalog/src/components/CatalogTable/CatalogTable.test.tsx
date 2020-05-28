@@ -20,15 +20,17 @@ import CatalogTable from './CatalogTable';
 import { Component } from '../../data/component';
 
 const components: Component[] = [
-  { name: 'component1' },
-  { name: 'component2' },
-  { name: 'component3' },
+  { name: 'component1', kind: 'Component', description: 'Placeholder' },
+  { name: 'component2', kind: 'Component', description: 'Placeholder' },
+  { name: 'component3', kind: 'Component', description: 'Placeholder' },
 ];
 
 describe('CatalogTable component', () => {
   it('should render loading when loading prop it set to true', async () => {
     const rendered = render(
-      wrapInThemedTestApp(<CatalogTable components={[]} loading />),
+      wrapInThemedTestApp(
+        <CatalogTable titlePreamble="Owned" components={[]} loading />,
+      ),
     );
     const progress = await rendered.findByTestId('progress');
     expect(progress).toBeInTheDocument();
@@ -38,6 +40,7 @@ describe('CatalogTable component', () => {
     const rendered = render(
       wrapInThemedTestApp(
         <CatalogTable
+          titlePreamble="Owned"
           components={[]}
           loading={false}
           error={{ code: 'error' }}
@@ -53,9 +56,16 @@ describe('CatalogTable component', () => {
   it('should display component names when loading has finished and no error occurred', async () => {
     const rendered = render(
       wrapInThemedTestApp(
-        <CatalogTable components={components} loading={false} />,
+        <CatalogTable
+          titlePreamble="Owned"
+          components={components}
+          loading={false}
+        />,
       ),
     );
+    expect(
+      await rendered.findByText(`Owned (${components.length})`),
+    ).toBeInTheDocument();
     expect(await rendered.findByText('component1')).toBeInTheDocument();
     expect(await rendered.findByText('component2')).toBeInTheDocument();
     expect(await rendered.findByText('component3')).toBeInTheDocument();

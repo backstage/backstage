@@ -24,7 +24,7 @@ import MTable, {
   Column,
 } from 'material-table';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, useTheme } from '@material-ui/core';
+import { makeStyles, useTheme, Typography } from '@material-ui/core';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import AddBox from '@material-ui/icons/AddBox';
@@ -158,9 +158,16 @@ export interface TableColumn extends Column<{}> {
 
 export interface TableProps extends MaterialTableProps<{}> {
   columns: TableColumn[];
+  subtitle?: string;
 }
 
-const Table: FC<TableProps> = ({ columns, options, ...props }) => {
+const Table: FC<TableProps> = ({
+  columns,
+  options,
+  title,
+  subtitle,
+  ...props
+}) => {
   const cellClasses = useCellStyles();
   const headerClasses = useHeaderStyles();
   const toolbarClasses = useToolbarStyles();
@@ -190,6 +197,16 @@ const Table: FC<TableProps> = ({ columns, options, ...props }) => {
       options={{ ...defaultOptions, ...options }}
       columns={MTColumns}
       icons={tableIcons}
+      title={
+        <>
+          <Typography variant="h5">{title}</Typography>
+          {subtitle && (
+            <Typography color="textSecondary" variant="body1">
+              {subtitle}
+            </Typography>
+          )}
+        </>
+      }
       {...props}
     />
   );

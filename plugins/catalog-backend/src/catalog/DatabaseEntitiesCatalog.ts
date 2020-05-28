@@ -14,32 +14,47 @@
  * limitations under the License.
  */
 
-import { NotFoundError } from '@backstage/backend-common';
 import { Database } from '../database';
 import { DescriptorEnvelope } from '../ingestion/types';
-import { EntitiesCatalog } from './types';
+import { EntitiesCatalog, EntityFilters } from './types';
 
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Database) {}
 
-  async entities(): Promise<DescriptorEnvelope[]> {
+  async entities(filters?: EntityFilters): Promise<DescriptorEnvelope[]> {
     const items = await this.database.transaction(tx =>
-      this.database.entities(tx),
+      this.database.entities(tx, filters),
     );
     return items.map(i => i.entity);
   }
 
-  async entity(
+  async entityByUid(uid: string): Promise<DescriptorEnvelope | undefined> {
+    const matches = await this.database.transaction(tx =>
+      this.database.entities(tx, [{ key: 'uid', values: [uid] }]),
+    );
+
+    return matches.length ? matches[0].entity : undefined;
+  }
+
+  async entityByName(
     kind: string,
     name: string,
     namespace: string | undefined,
   ): Promise<DescriptorEnvelope | undefined> {
-    const item = await this.database.transaction(tx =>
-      this.database.entity(tx, kind, name, namespace),
+    const matches = await this.database.transaction(tx =>
+      this.database.entities(tx, [
+        { key: 'kind', values: [kind] },
+        { key: 'name', values: [name] },
+        {
+          key: 'namespace',
+          values:
+            !namespace || namespace === 'default'
+              ? [null, 'default']
+              : [namespace],
+        },
+      ]),
     );
-    if (!item) {
-      throw new NotFoundError('Entity cannot be found');
-    }
-    return item.entity;
+
+    return matches.length ? matches[0].entity : undefined;
   }
 }

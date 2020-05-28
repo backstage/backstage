@@ -21,7 +21,7 @@ import ComponentPage from './components/ComponentPage/ComponentPage';
 export const plugin = createPlugin({
   id: 'catalog',
   register({ router }) {
-    router.registerRoute('/catalog', CatalogPage);
+    router.registerRoute('/', CatalogPage);
     router.registerRoute('/catalog/:name/', ComponentPage);
   },
 });
