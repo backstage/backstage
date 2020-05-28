@@ -15,8 +15,8 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import lodash from 'lodash';
-import { Entity } from '../ingestion';
 import { EntitiesCatalog } from './types';
 
 export class StaticEntitiesCatalog implements EntitiesCatalog {

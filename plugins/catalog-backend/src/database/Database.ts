@@ -19,12 +19,12 @@ import {
   InputError,
   NotFoundError,
 } from '@backstage/backend-common';
+import { Entity, EntityMeta } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntityFilters } from '../catalog';
-import { Entity, EntityMeta } from '../ingestion';
 import { buildEntitySearch } from './search';
 import {
   AddDatabaseLocation,

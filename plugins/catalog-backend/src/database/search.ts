@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '../ingestion';
+import { Entity } from '@backstage/catalog-model';
 import { DbEntitiesSearchRow } from './types';
 
 // Search entries that start with these prefixes, also get a shorthand without

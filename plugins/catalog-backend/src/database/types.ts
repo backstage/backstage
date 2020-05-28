@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import * as yup from 'yup';
-import { Entity } from '../ingestion';
 
 export type DbEntitiesRow = {
   id: string;
