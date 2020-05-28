@@ -70,6 +70,13 @@ export type EntityMeta = {
   name: string;
 
   /**
+   * The short description of the entity.
+   *
+   * A a human readable string.
+   */
+  description: string;
+
+  /**
    * The namespace that the entity belongs to.
    */
   namespace?: string;

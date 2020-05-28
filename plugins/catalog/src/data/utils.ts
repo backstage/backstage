@@ -20,6 +20,6 @@ export function envelopeToComponent(envelope: DescriptorEnvelope): Component {
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
-    description: 'placeholder',
+    description: envelope.metadata?.description ?? 'placeholder',
   };
 }
