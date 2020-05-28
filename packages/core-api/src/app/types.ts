@@ -20,9 +20,25 @@ import { BackstagePlugin } from '../plugin';
 import { ApiHolder } from '../apis';
 import { AppTheme } from '../apis/definitions';
 
+export type BootErrorPageProps = {
+  step: 'load-config';
+  error: Error;
+};
+
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
+  BootErrorPage: ComponentType<BootErrorPageProps>;
 };
+
+/**
+ * TBD
+ */
+export type AppConfig = any;
+
+/**
+ * A function that loads in the App config that will be accessible via the ConfigApi.
+ */
+export type AppConfigLoader = () => Promise<AppConfig>;
 
 export type AppOptions = {
   /**
@@ -68,6 +84,17 @@ export type AppOptions = {
    * ```
    */
   themes?: AppTheme[];
+
+  /**
+   * A function that loads in App configuration that will be accessible via
+   * the ConfigApi.
+   *
+   * Defaults to an empty config.
+   *
+   * TODO(Rugvip): Omitting this should instead default to loading in configuration
+   *  that was packaged by the backstage-cli and default docker container boot script.
+   */
+  configLoader?: AppConfigLoader;
 };
 
 export type BackstageApp = {
