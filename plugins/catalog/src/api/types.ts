@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { ComponentDescriptorV1beta1 } from './descriptors/ComponentDescriptorV1beta1Parser';
+export interface ComponentDescriptorV1beta1 extends DescriptorEnvelope {
+  spec: {
+    type: string;
+  };
+}
 
 export type ComponentDescriptor = ComponentDescriptorV1beta1;
 
