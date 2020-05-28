@@ -37,7 +37,9 @@ class MockLocationsCatalog implements LocationsCatalog {
 describe('createRouter', () => {
   describe('entities', () => {
     it('happy path: lists entities', async () => {
-      const entities: Entity[] = [{ apiVersion: 'a', kind: 'b' }];
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
 
       const catalog = new MockEntitiesCatalog();
       catalog.entities.mockResolvedValueOnce(entities);
@@ -190,9 +192,7 @@ describe('createRouter', () => {
       });
 
       const app = express().use(router);
-      const response = await request(app)
-        .post('/locations')
-        .send(location);
+      const response = await request(app).post('/locations').send(location);
 
       expect(response.status).toEqual(400);
     });

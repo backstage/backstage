@@ -50,12 +50,12 @@ export class ReservedFieldsEntityPolicy implements EntityPolicy {
           `The spec may not contain the field ${field}, because it has reserved meaning`,
         );
       }
-      if (entity.metadata?.labels?.hasOwnProperty(field)) {
+      if (entity.metadata.labels?.hasOwnProperty(field)) {
         throw new Error(
           `A label may not have the field ${field}, because it has reserved meaning`,
         );
       }
-      if (entity.metadata?.annotations?.hasOwnProperty(field)) {
+      if (entity.metadata.annotations?.hasOwnProperty(field)) {
         throw new Error(
           `An annotation may not have the field ${field}, because it has reserved meaning`,
         );

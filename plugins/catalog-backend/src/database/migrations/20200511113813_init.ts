@@ -76,7 +76,7 @@ export async function up(knex: Knex): Promise<any> {
           .comment('The metadata.namespace field of the entity');
         table
           .string('metadata')
-          .nullable()
+          .notNullable()
           .comment('The entire metadata JSON blob of the entity');
         table
           .string('spec')

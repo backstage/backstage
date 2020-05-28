@@ -102,14 +102,15 @@ describe('search', () => {
       const input: Entity = {
         apiVersion: 'a',
         kind: 'b',
+        metadata: { name: 'n' },
       };
       expect(buildEntitySearch('eid', input)).toEqual([
-        { entity_id: 'eid', key: 'metadata.name', value: null },
+        { entity_id: 'eid', key: 'metadata.name', value: 'n' },
         { entity_id: 'eid', key: 'metadata.namespace', value: null },
         { entity_id: 'eid', key: 'metadata.uid', value: null },
         { entity_id: 'eid', key: 'apiVersion', value: 'a' },
         { entity_id: 'eid', key: 'kind', value: 'b' },
-        { entity_id: 'eid', key: 'name', value: null },
+        { entity_id: 'eid', key: 'name', value: 'n' },
         { entity_id: 'eid', key: 'namespace', value: null },
         { entity_id: 'eid', key: 'uid', value: null },
       ]);

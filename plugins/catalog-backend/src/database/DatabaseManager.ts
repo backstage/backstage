@@ -96,14 +96,14 @@ export class DatabaseManager {
             await DatabaseManager.logUpdateSuccess(
               database,
               location.id,
-              entity.metadata!.name,
+              entity.metadata.name,
             );
           } catch (error) {
             await DatabaseManager.logUpdateFailure(
               database,
               location.id,
               error,
-              readerItem.data.metadata?.name,
+              readerItem.data.metadata.name,
             );
           }
         }
