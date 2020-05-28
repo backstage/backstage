@@ -53,14 +53,12 @@ export const WithLink = () => (
   <div style={containerStyle}>
     <DismissableBanner
       message={
-        <>
-          <Typography>
-            This is a dismissable banner with a link:{' '}
-            <Link href="http://example.com" color="textSecondary">
-              example.com
-            </Link>
-          </Typography>
-        </>
+        <Typography>
+          This is a dismissable banner with a link:{' '}
+          <Link href="http://example.com" color="textSecondary">
+            example.com
+          </Link>
+        </Typography>
       }
       variant="info"
     />
