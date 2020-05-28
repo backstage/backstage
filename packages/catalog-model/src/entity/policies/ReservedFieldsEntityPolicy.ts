@@ -43,7 +43,7 @@ export class ReservedFieldsEntityPolicy implements EntityPolicy {
     ];
   }
 
-  async apply(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity> {
     for (const field of this.reservedFields) {
       if (entity.spec?.hasOwnProperty(field)) {
         throw new Error(

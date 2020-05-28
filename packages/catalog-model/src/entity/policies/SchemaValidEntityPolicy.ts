@@ -70,7 +70,7 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
     this.schema = schema;
   }
 
-  async apply(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity> {
     try {
       return await this.schema.validate(entity, { strict: true });
     } catch (e) {

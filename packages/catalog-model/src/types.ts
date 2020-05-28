@@ -28,5 +28,5 @@ export type EntityPolicy = {
    * @returns The incoming entity, or a mutated version of the same
    * @throws An error if the entity should be rejected
    */
-  apply(entity: Entity): Promise<Entity>;
+  enforce(entity: Entity): Promise<Entity>;
 };

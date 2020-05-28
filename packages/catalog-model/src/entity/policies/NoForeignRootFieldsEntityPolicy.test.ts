@@ -42,11 +42,11 @@ describe('NoForeignRootFieldsEntityPolicy', () => {
   });
 
   it('works for the happy path', async () => {
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects unknown root fields', async () => {
     data.spec2 = {};
-    await expect(policy.apply(data)).rejects.toThrow(/spec2/i);
+    await expect(policy.enforce(data)).rejects.toThrow(/spec2/i);
   });
 });

@@ -86,7 +86,7 @@ export class DatabaseManager {
           }
 
           try {
-            const entity = await entityPolicy.apply(readerItem.data);
+            const entity = await entityPolicy.enforce(readerItem.data);
             await DatabaseManager.refreshSingleEntity(
               database,
               location.id,
