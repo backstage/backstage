@@ -22,7 +22,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { useSettings } from '../../state';
 
 export type Props = { title?: string };
-export const PluginHeader: FC<Props> = ({ title = 'Circle CI' }) => {
+export const PluginHeader: FC<Props> = ({ title = 'CircleCI' }) => {
   const [, { showSettings }] = useSettings();
   const location = useLocation();
   const notRoot = !location.pathname.match(/\/circleci\/?$/);

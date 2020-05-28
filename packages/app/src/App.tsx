@@ -40,7 +40,7 @@ const App: FC<{}> = () => (
     <OAuthRequestDialog />
     <Router>
       <Root>
-        <Route key="login" path="/login" component={LoginPage} exact />,
+        <Route key="login" path="/login" component={LoginPage} exact />
         <AppComponent />
       </Root>
     </Router>

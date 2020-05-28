@@ -18,6 +18,7 @@ import React, { FC } from 'react';
 import {
   Content,
   ContentHeader,
+  DismissableBanner,
   Header,
   HomepageTimer,
   SupportButton,
@@ -31,7 +32,7 @@ import {
   CatalogFilter,
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
-import { Button, makeStyles } from '@material-ui/core';
+import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import { filterGroups, defaultFilter } from '../../data/filters';
 
 const useStyles = makeStyles(theme => ({
@@ -65,6 +66,22 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
         <HomepageTimer />
       </Header>
       <Content>
+        <DismissableBanner
+          variant="info"
+          message={
+            <Typography>
+              <span role="img" aria-label="wave" style={{ fontSize: '125%' }}>
+                👋🏼
+              </span>{' '}
+              Welcome to Backstage, we are happy to have you. Start by checking
+              out our{' '}
+              <Link href="/welcome" color="textSecondary">
+                getting started
+              </Link>{' '}
+              page.
+            </Typography>
+          }
+        />
         <ContentHeader title="Services">
           <Button variant="contained" color="primary" href="/create">
             Create Service

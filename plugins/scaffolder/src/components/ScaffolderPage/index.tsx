@@ -40,6 +40,7 @@ const ScaffolderPage: React.FC<{}> = () => {
   return (
     <Page theme={pageTheme.home}>
       <Header
+        pageTitleOverride="Create a new component"
         title={
           <>
             Create a new component <Lifecycle alpha shorthand />{' '}

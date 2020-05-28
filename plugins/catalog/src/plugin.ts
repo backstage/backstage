@@ -22,7 +22,7 @@ import { withMockStore } from './data/with-mock-store';
 export const plugin = createPlugin({
   id: 'catalog',
   register({ router }) {
-    router.registerRoute('/catalog', withMockStore(CatalogPage));
+    router.registerRoute('/', withMockStore(CatalogPage));
     router.registerRoute('/catalog/:name/', withMockStore(ComponentPage));
   },
 });

@@ -19,7 +19,7 @@ import { BackstageTheme } from '@backstage/theme';
 import classNames from 'classnames';
 import React, { FC } from 'react';
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   status: {
     fontWeight: 500,
     '&::before': {
@@ -63,26 +63,26 @@ const useStyles = makeStyles<BackstageTheme>((theme) => ({
   },
 }));
 
-export const StatusOK: FC<{}> = (props) => {
+export const StatusOK: FC<{}> = props => {
   const classes = useStyles(props);
   return <span className={classNames(classes.status, classes.ok)} {...props} />;
 };
 
-export const StatusWarning: FC<{}> = (props) => {
+export const StatusWarning: FC<{}> = props => {
   const classes = useStyles(props);
   return (
     <span className={classNames(classes.status, classes.warning)} {...props} />
   );
 };
 
-export const StatusError: FC<{}> = (props) => {
+export const StatusError: FC<{}> = props => {
   const classes = useStyles(props);
   return (
     <span className={classNames(classes.status, classes.error)} {...props} />
   );
 };
 
-export const StatusPending: FC<{}> = (props) => {
+export const StatusPending: FC<{}> = props => {
   const classes = useStyles(props);
   return (
     <span
@@ -93,7 +93,7 @@ export const StatusPending: FC<{}> = (props) => {
   );
 };
 
-export const StatusRunning: FC<{}> = (props) => {
+export const StatusRunning: FC<{}> = props => {
   const classes = useStyles(props);
   return (
     <span
@@ -104,7 +104,7 @@ export const StatusRunning: FC<{}> = (props) => {
   );
 };
 
-export const StatusAborted: FC<{}> = (props) => {
+export const StatusAborted: FC<{}> = props => {
   const classes = useStyles(props);
   return (
     <span

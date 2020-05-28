@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export * from '@backstage/core-api';
+
 export * from './api';
 export { default as Page } from './layout/Page';
 export { gradients, pageTheme } from './layout/Page';
@@ -21,6 +23,7 @@ export type { PageTheme } from './layout/Page';
 export { default as CodeSnippet } from './components/CodeSnippet';
 export { default as Content } from './layout/Content/Content';
 export { default as ContentHeader } from './layout/ContentHeader/ContentHeader';
+export { default as DismissableBanner } from './components/DismissableBanner';
 export { default as Header } from './layout/Header/Header';
 export { default as HeaderLabel } from './layout/HeaderLabel';
 export { default as HomepageTimer } from './layout/HomepageTimer';

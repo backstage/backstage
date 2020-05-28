@@ -80,7 +80,7 @@ const Settings = () => {
                 value={token}
                 fullWidth
                 variant="outlined"
-                onChange={(e) => setToken(e.target.value)}
+                onChange={e => setToken(e.target.value)}
               />
             </ListItem>
             <ListItem>
@@ -90,7 +90,7 @@ const Settings = () => {
                 label="Owner"
                 variant="outlined"
                 value={owner}
-                onChange={(e) => setOwner(e.target.value)}
+                onChange={e => setOwner(e.target.value)}
               />
             </ListItem>
             <ListItem>
@@ -100,7 +100,7 @@ const Settings = () => {
                 fullWidth
                 variant="outlined"
                 value={repo}
-                onChange={(e) => setRepo(e.target.value)}
+                onChange={e => setRepo(e.target.value)}
               />
             </ListItem>
             <ListItem>

@@ -20,7 +20,9 @@ import { wrapInThemedTestApp } from '@backstage/test-utils';
 import Header from './Header';
 
 jest.mock('react-helmet', () => {
-  return ({ defaultTitle }: any) => <div>defaultTitle: {defaultTitle}</div>;
+  return {
+    Helmet: ({ defaultTitle }: any) => <div>defaultTitle: {defaultTitle}</div>,
+  };
 });
 
 describe('<Header/>', () => {
