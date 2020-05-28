@@ -27,3 +27,4 @@ export * from './AppThemeApi';
 export * from './ErrorApi';
 export * from './FeatureFlagsApi';
 export * from './OAuthRequestApi';
+export * from './UserSettingsApi';
