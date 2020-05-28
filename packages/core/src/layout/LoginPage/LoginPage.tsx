@@ -16,10 +16,11 @@
 
 import React, { FC, useState } from 'react';
 import GitHubIcon from '@material-ui/icons/GitHub';
-import Page from '../Page';
-import Header from '../Header';
-import Content from '../Content/Content';
-import ContentHeader from '../ContentHeader/ContentHeader';
+import { Page } from '../Page';
+import { Header } from '../Header';
+import { Content } from '../Content';
+import { ContentHeader } from '../ContentHeader';
+import { InfoCard } from '../InfoCard/InfoCard';
 import {
   Grid,
   Typography,
@@ -29,7 +30,6 @@ import {
   ListItem,
   Link,
 } from '@material-ui/core';
-import InfoCard from '../InfoCard/InfoCard';
 
 enum AuthType {
   GitHub,

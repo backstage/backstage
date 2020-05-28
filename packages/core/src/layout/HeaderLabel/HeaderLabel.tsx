@@ -56,7 +56,7 @@ type HeaderLabelProps = {
   url?: string;
 };
 
-const HeaderLabel: FC<HeaderLabelProps> = ({ label, value, url }) => {
+export const HeaderLabel: FC<HeaderLabelProps> = ({ label, value, url }) => {
   const classes = useStyles();
   const content = (
     <HeaderLabelContent
@@ -71,5 +71,3 @@ const HeaderLabel: FC<HeaderLabelProps> = ({ label, value, url }) => {
     </span>
   );
 };
-
-export default HeaderLabel;

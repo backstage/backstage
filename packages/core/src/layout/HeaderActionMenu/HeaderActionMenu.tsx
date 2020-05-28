@@ -24,7 +24,7 @@ import {
   Popover,
   ListItemTextProps,
 } from '@material-ui/core';
-import { default as KebabMenuIcon } from './MenuVertical';
+import { VerticalMenuIcon } from './VerticalMenuIcon';
 
 type ActionItemProps = {
   label?: ListItemTextProps['primary'];
@@ -66,7 +66,9 @@ export type HeaderActionMenuProps = {
   actionItems: ActionItemProps[];
 };
 
-const HeaderActionMenu: FC<HeaderActionMenuProps> = ({ actionItems }) => {
+export const HeaderActionMenu: FC<HeaderActionMenuProps> = ({
+  actionItems,
+}) => {
   const [open, setOpen] = React.useState(false);
   const anchorElRef = React.useRef(null);
 
@@ -84,7 +86,7 @@ const HeaderActionMenu: FC<HeaderActionMenuProps> = ({ actionItems }) => {
           padding: 0,
         }}
       >
-        <KebabMenuIcon titleAccess="menu" style={{ fontSize: 40 }} />
+        <VerticalMenuIcon titleAccess="menu" style={{ fontSize: 40 }} />
       </IconButton>
       <Popover
         open={open}
@@ -104,5 +106,3 @@ const HeaderActionMenu: FC<HeaderActionMenuProps> = ({ actionItems }) => {
     </Fragment>
   );
 };
-
-export default HeaderActionMenu;

@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import InfoCard from './InfoCard';
+import { InfoCard } from './InfoCard';
 
 const minProps = {
   title: 'Some title',

@@ -26,7 +26,7 @@ type State = {
   errorInfo?: ErrorInfo;
 };
 
-const ErrorBoundary: ComponentClass<
+export const ErrorBoundary: ComponentClass<
   Props,
   State
 > = class ErrorBoundary extends Component<Props, State> {
@@ -56,8 +56,6 @@ const ErrorBoundary: ComponentClass<
     return <Error error={error} slackChannel={slackChannel} />;
   }
 };
-
-export default ErrorBoundary;
 
 type EProps = {
   error?: Error;

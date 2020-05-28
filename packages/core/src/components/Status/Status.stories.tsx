@@ -24,7 +24,7 @@ import {
   StatusWarning,
 } from './Status';
 import Table from '../Table';
-import InfoCard from '../../layout/InfoCard';
+import { InfoCard } from '../../layout/InfoCard';
 
 export default {
   title: 'Status',

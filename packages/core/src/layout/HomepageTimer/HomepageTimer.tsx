@@ -15,7 +15,7 @@
  */
 
 import React, { FC } from 'react';
-import HeaderLabel from '../HeaderLabel';
+import { HeaderLabel } from '../HeaderLabel';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
 const utcOptions = { timeZone: 'UTC', ...timeFormat };
@@ -44,7 +44,7 @@ function getTimes() {
   return { timeNY, timeUTC, timeTYO, timeSTO };
 }
 
-const HomePageTimer: FC<{}> = () => {
+export const HomepageTimer: FC<{}> = () => {
   const [{ timeNY, timeUTC, timeTYO, timeSTO }, setTimes] = React.useState(
     defaultTimes,
   );
@@ -70,5 +70,3 @@ const HomePageTimer: FC<{}> = () => {
     </>
   );
 };
-
-export default HomePageTimer;

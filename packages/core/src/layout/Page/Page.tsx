@@ -35,7 +35,7 @@ type Props = {
   theme?: PageTheme;
 };
 
-const Page: FC<Props> = ({ theme = pageTheme.home, children }) => {
+export const Page: FC<Props> = ({ theme = pageTheme.home, children }) => {
   const classes = useStyles();
   return (
     <Theme.Provider value={theme}>
@@ -43,5 +43,3 @@ const Page: FC<Props> = ({ theme = pageTheme.home, children }) => {
     </Theme.Provider>
   );
 };
-
-export default Page;
