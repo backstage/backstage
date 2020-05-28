@@ -75,7 +75,7 @@ type ContentHeaderProps = {
   description?: string;
 };
 
-const ContentHeader: FC<ContentHeaderProps> = ({
+export const ContentHeader: FC<ContentHeaderProps> = ({
   description,
   title,
   titleComponent: TitleComponent = undefined,
@@ -105,5 +105,3 @@ const ContentHeader: FC<ContentHeaderProps> = ({
     </Fragment>
   );
 };
-
-export default ContentHeader;

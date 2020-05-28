@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import ErrorPage from './ErrorPage';
+import { ErrorPage } from './ErrorPage';
 import { wrapInThemedTestApp } from '@backstage/test-utils';
 
 describe('<ErrorPage/>', () => {

@@ -41,13 +41,13 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export type Props = {
+export type BottomLinkProps = {
   link: string;
   title: string;
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-const BottomLink: FC<Props> = ({ link, title, onClick }) => {
+export const BottomLink: FC<BottomLinkProps> = ({ link, title, onClick }) => {
   const classes = useStyles();
 
   return (
@@ -68,5 +68,3 @@ const BottomLink: FC<Props> = ({ link, title, onClick }) => {
     </div>
   );
 };
-
-export default BottomLink;

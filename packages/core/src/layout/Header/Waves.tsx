@@ -35,7 +35,7 @@ type Props = {
   theme: PageTheme;
 };
 
-const Waves: FC<Props> = ({ theme }) => {
+export const Waves: FC<Props> = ({ theme }) => {
   const classes = useStyles();
   const [color1, color2] = theme.gradient.colors;
 
@@ -139,5 +139,3 @@ const Waves: FC<Props> = ({ theme }) => {
     </svg>
   );
 };
-
-export default Waves;
