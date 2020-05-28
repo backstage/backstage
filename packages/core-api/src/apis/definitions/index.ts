@@ -24,6 +24,7 @@ export * from './auth';
 
 export * from './AlertApi';
 export * from './AppThemeApi';
+export * from './ConfigApi';
 export * from './ErrorApi';
 export * from './FeatureFlagsApi';
 export * from './OAuthRequestApi';
