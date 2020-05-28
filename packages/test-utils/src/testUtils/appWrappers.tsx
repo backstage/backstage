@@ -15,15 +15,52 @@
  */
 
 import React, { ComponentType, ReactNode, FunctionComponent } from 'react';
-import { ThemeProvider } from '@material-ui/core';
 import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
+import privateExports, {
+  defaultSystemIcons,
+  ApiTestRegistry,
+} from '@backstage/core-api';
+const { PrivateAppImpl } = privateExports;
+
+const NotFoundErrorPage = () => {
+  throw new Error('Reached NotFound Page');
+};
+
+/**
+ * Options to customize the behavior of the test app wrapper.
+ */
+type TestAppOptions = {
+  /**
+   * Initial route entries to pass along as `initialEntries` to the router.
+   */
+  routeEntries?: string[];
+};
 
 export function wrapInTestApp(
   Component: ComponentType | ReactNode,
-  initialRouterEntries: string[] = ['/'],
+  options: TestAppOptions = {},
 ) {
+  const { routeEntries = ['/'] } = options;
+
+  const app = new PrivateAppImpl({
+    apis: new ApiTestRegistry(),
+    components: {
+      NotFoundErrorPage,
+    },
+    icons: defaultSystemIcons,
+    plugins: [],
+    themes: [
+      {
+        id: 'light',
+        theme: lightTheme,
+        title: 'Test App Theme',
+        variant: 'light',
+      },
+    ],
+  });
+
   let Wrapper: ComponentType;
   if (Component instanceof Function) {
     Wrapper = Component;
@@ -31,21 +68,13 @@ export function wrapInTestApp(
     Wrapper = (() => Component) as FunctionComponent;
   }
 
+  const AppProvider = app.getProvider();
+
   return (
-    <MemoryRouter initialEntries={initialRouterEntries}>
-      <Route component={Wrapper} />
-    </MemoryRouter>
+    <AppProvider>
+      <MemoryRouter initialEntries={routeEntries}>
+        <Route component={Wrapper} />
+      </MemoryRouter>
+    </AppProvider>
   );
 }
-
-export function wrapInThemedTestApp(
-  component: ReactNode,
-  initialRouterEntries: string[] = ['/'],
-) {
-  const themed = <ThemeProvider theme={lightTheme}>{component}</ThemeProvider>;
-  return wrapInTestApp(themed, initialRouterEntries);
-}
-
-export const wrapInTheme = (component: ReactNode, theme = lightTheme) => (
-  <ThemeProvider theme={theme}>{component}</ThemeProvider>
-);

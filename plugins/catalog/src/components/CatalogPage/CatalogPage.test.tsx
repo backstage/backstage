@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import CatalogPage from './CatalogPage';
 import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
-import { wrapInTheme } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../..';
 
 const errorApi = { post: () => {} };
@@ -30,7 +30,7 @@ describe('CatalogPage', () => {
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
     const rendered = render(
-      wrapInTheme(
+      wrapInTestApp(
         <ApiProvider
           apis={ApiRegistry.from([
             [errorApiRef, errorApi],

@@ -29,14 +29,13 @@ jest.mock('react-router-dom', () => {
 import React from 'react';
 import mockFetch from 'jest-fetch-mock';
 import { wait, render, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import {
   ApiRegistry,
   ApiProvider,
   ErrorApi,
   errorApiRef,
 } from '@backstage/core';
-import { wrapInThemedTestApp, wrapInTheme } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 
 import { lighthouseApiRef, LighthouseRestApi, Audit } from '../../api';
 import CreateAudit from '.';
@@ -62,7 +61,7 @@ describe('CreateAudit', () => {
 
   it('renders the form', () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <ApiProvider apis={apis}>
           <CreateAudit />
         </ApiProvider>,
@@ -77,16 +76,15 @@ describe('CreateAudit', () => {
     it('prefills the url into the form', () => {
       const url = 'https://spotify.com';
       const rendered = render(
-        wrapInTheme(
-          <MemoryRouter
-            initialEntries={[
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <CreateAudit />
+          </ApiProvider>,
+          {
+            routeEntries: [
               `/lighthouse/create-audit?url=${encodeURIComponent(url)}`,
-            ]}
-          >
-            <ApiProvider apis={apis}>
-              <CreateAudit />
-            </ApiProvider>
-          </MemoryRouter>,
+            ],
+          },
         ),
       );
       expect(rendered.getByLabelText(/URL/)).toHaveAttribute('value', url);
@@ -98,7 +96,7 @@ describe('CreateAudit', () => {
       mockFetch.mockResponseOnce(() => new Promise(() => {}));
 
       const rendered = render(
-        wrapInThemedTestApp(
+        wrapInTestApp(
           <ApiProvider apis={apis}>
             <CreateAudit />
           </ApiProvider>,
@@ -121,7 +119,7 @@ describe('CreateAudit', () => {
       mockFetch.mockResponseOnce(JSON.stringify(createAuditResponse));
 
       const rendered = render(
-        wrapInThemedTestApp(
+        wrapInTestApp(
           <ApiProvider apis={apis}>
             <CreateAudit />
           </ApiProvider>,
@@ -152,7 +150,7 @@ describe('CreateAudit', () => {
       mockFetch.mockRejectOnce(new Error('failed to post'));
 
       const rendered = render(
-        wrapInThemedTestApp(
+        wrapInTestApp(
           <ApiProvider apis={apis}>
             <CreateAudit />
           </ApiProvider>,

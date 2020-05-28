@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 import { Header } from './Header';
 
 jest.mock('react-helmet', () => {
@@ -27,19 +27,19 @@ jest.mock('react-helmet', () => {
 
 describe('<Header/>', () => {
   it('should render with title', () => {
-    const rendered = render(wrapInThemedTestApp(<Header title="Title" />));
+    const rendered = render(wrapInTestApp(<Header title="Title" />));
     rendered.getByText('Title');
   });
 
   it('should set document title', () => {
-    const rendered = render(wrapInThemedTestApp(<Header title="Title1" />));
+    const rendered = render(wrapInTestApp(<Header title="Title1" />));
     rendered.getByText('Title1');
     rendered.getByText('defaultTitle: Title1 | Backstage');
   });
 
   it('should override document title', () => {
     const rendered = render(
-      wrapInThemedTestApp(<Header title="Title1" pageTitleOverride="Title2" />),
+      wrapInTestApp(<Header title="Title1" pageTitleOverride="Title2" />),
     );
     rendered.getByText('Title1');
     rendered.getByText('defaultTitle: Title2 | Backstage');
@@ -47,14 +47,14 @@ describe('<Header/>', () => {
 
   it('should have subtitle', () => {
     const rendered = render(
-      wrapInThemedTestApp(<Header title="Title" subtitle="Subtitle" />),
+      wrapInTestApp(<Header title="Title" subtitle="Subtitle" />),
     );
     rendered.getByText('Subtitle');
   });
 
   it('should have type rendered', () => {
     const rendered = render(
-      wrapInThemedTestApp(<Header title="Title" type="tool" />),
+      wrapInTestApp(<Header title="Title" type="tool" />),
     );
     rendered.getByText('tool');
   });

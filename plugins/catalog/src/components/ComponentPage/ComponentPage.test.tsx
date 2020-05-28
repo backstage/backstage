@@ -16,7 +16,7 @@
 import ComponentPage from './ComponentPage';
 import { render } from '@testing-library/react';
 import * as React from 'react';
-import { wrapInTheme } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 
 const getTestProps = (componentName: string) => {
@@ -38,7 +38,7 @@ describe('ComponentPage', () => {
   it('should redirect to component table page when name is not provided', async () => {
     const props = getTestProps('');
     await render(
-      wrapInTheme(
+      wrapInTestApp(
         <ApiProvider apis={ApiRegistry.from([[errorApiRef, errorApi]])}>
           <ComponentPage {...props} />
         </ApiProvider>,
