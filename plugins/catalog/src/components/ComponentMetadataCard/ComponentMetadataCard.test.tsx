@@ -22,6 +22,8 @@ describe('ComponentMetadataCard component', () => {
   it('should display component name if provided', async () => {
     const testComponent: Component = {
       name: 'test',
+      kind: 'Component',
+      description: 'Placeholder',
     };
     const rendered = await render(
       <ComponentMetadataCard loading={false} component={testComponent} />,
