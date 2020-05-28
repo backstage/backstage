@@ -19,9 +19,9 @@ import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import { BackstageTheme } from '@backstage/theme';
-import { errorApiRef, useApi } from '../../api';
+import { errorApiRef, useApi } from '@backstage/core-api';
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   button: {
     '&:hover': {
       backgroundColor: theme.palette.highlight,
@@ -56,7 +56,7 @@ const defaultProps = {
   tooltipText: 'Text copied to clipboard',
 };
 
-const CopyTextButton: FC<Props> = (props) => {
+const CopyTextButton: FC<Props> = props => {
   const { text, tooltipDelay, tooltipText } = {
     ...defaultProps,
     ...props,
@@ -66,7 +66,7 @@ const CopyTextButton: FC<Props> = (props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
 
-  const handleCopyClick: MouseEventHandler = (e) => {
+  const handleCopyClick: MouseEventHandler = e => {
     e.stopPropagation();
     setOpen(true);
 

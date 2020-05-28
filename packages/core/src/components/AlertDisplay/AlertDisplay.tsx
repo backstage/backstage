@@ -18,7 +18,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Snackbar, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
-import { AlertMessage, useApi, alertApiRef } from '../../api';
+import { AlertMessage, useApi, alertApiRef } from '@backstage/core-api';
 
 type Props = {};
 

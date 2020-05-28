@@ -112,6 +112,7 @@ export async function templatingTask(
 const PATCH_PACKAGES = [
   'cli',
   'core',
+  'core-api',
   'dev-utils',
   'test-utils',
   'test-utils-core',
