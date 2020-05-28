@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-export * from './DescriptorParsers';
-export * from './LocationReaders';
-export * from './types';
+export * from './descriptor';
+export { IngestionModels } from './IngestionModels';
+export * from './source';
+export type { IngestionModel } from './types';

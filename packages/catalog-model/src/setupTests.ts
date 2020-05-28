@@ -13,9 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ReaderOutput } from './descriptor/parsers/types';
-
-export type IngestionModel = {
-  readLocation(type: string, target: string): Promise<ReaderOutput[]>;
-};
