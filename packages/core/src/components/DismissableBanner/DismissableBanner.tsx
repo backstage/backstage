@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: theme.spacing(0),
     marginBottom: theme.spacing(6),
     marginTop: -theme.spacing(3),
-    zIndex: 'auto',
     display: 'flex',
     flexFlow: 'row nowrap',
   },

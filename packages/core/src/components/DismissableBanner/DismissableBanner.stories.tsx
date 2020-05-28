@@ -16,7 +16,7 @@
 
 import React from 'react';
 import DismissableBanner from './DismissableBanner';
-import { Link } from '@material-ui/core';
+import { Link, Typography } from '@material-ui/core';
 
 export default {
   title: 'DismissableBanner',
@@ -54,10 +54,12 @@ export const WithLink = () => (
     <DismissableBanner
       message={
         <>
-          <span>This is a dismissable banner with a link: </span>
-          <Link href="http://example.com" color="textSecondary">
-            example.com
-          </Link>
+          <Typography>
+            This is a dismissable banner with a link:{' '}
+            <Link href="http://example.com" color="textSecondary">
+              example.com
+            </Link>
+          </Typography>
         </>
       }
       variant="info"
