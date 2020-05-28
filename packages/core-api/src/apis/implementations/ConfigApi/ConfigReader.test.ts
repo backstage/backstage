@@ -36,6 +36,59 @@ const DATA = {
   nestlings: [{ boolean: true }, { string: 'string' }, { number: 42 }] as {}[],
 };
 
+function expectValidValues(config: ConfigReader) {
+  expect(config.getNumber('zero')).toBe(0);
+  expect(config.getNumber('one')).toBe(1);
+  expect(config.getBoolean('true')).toBe(true);
+  expect(config.getBoolean('false')).toBe(false);
+  expect(config.getString('string')).toBe('string');
+  expect(config.getStringArray('strings')).toEqual(['string1', 'string2']);
+  expect(config.getConfig('nested').getNumber('one')).toBe(1);
+  expect(config.getConfig('nested').getString('string')).toBe('string');
+  expect(config.getConfig('nested').getStringArray('strings')).toEqual([
+    'string1',
+    'string2',
+  ]);
+
+  const [config1, config2, config3] = config.getConfigArray('nestlings');
+  expect(config1.getBoolean('boolean')).toBe(true);
+  expect(config2.getString('string')).toBe('string');
+  expect(config3.getNumber('number')).toBe(42);
+}
+
+function expectInvalidValues(config: ConfigReader) {
+  expect(() => config.getNumber('string')).toThrow(
+    'Invalid type in config for key string, got string, wanted number',
+  );
+  expect(() => config.getString('one')).toThrow(
+    'Invalid type in config for key one, got number, wanted string',
+  );
+  expect(() => config.getNumber('true')).toThrow(
+    'Invalid type in config for key true, got boolean, wanted number',
+  );
+  expect(() => config.getStringArray('null')).toThrow(
+    'Invalid type in config for key null, got null, wanted string-array',
+  );
+  expect(() => config.getString('emptyString')).toThrow(
+    'Invalid type in config for key emptyString, got empty-string, wanted string',
+  );
+  expect(() => config.getStringArray('badStrings')).toThrow(
+    'Invalid type in config for key badStrings[1], got empty-string, wanted string',
+  );
+  expect(() => config.getStringArray('worseStrings')).toThrow(
+    'Invalid type in config for key worseStrings[1], got number, wanted string',
+  );
+  expect(() => config.getStringArray('worstStrings')).toThrow(
+    'Invalid type in config for key worstStrings[2], got object, wanted string',
+  );
+  expect(() => config.getConfig('one')).toThrow(
+    'Invalid type in config for key one, got number, wanted object',
+  );
+  expect(() => config.getConfigArray('one')).toThrow(
+    'Invalid type in config for key one, got number, wanted object-array',
+  );
+}
+
 describe('ConfigReader', () => {
   it('should read empty config with valid keys', () => {
     const config = new ConfigReader({});
@@ -70,57 +123,41 @@ describe('ConfigReader', () => {
 
   it('should read valid values', () => {
     const config = new ConfigReader(DATA);
-    expect(config.getNumber('zero')).toBe(0);
-    expect(config.getNumber('one')).toBe(1);
-    expect(config.getBoolean('true')).toBe(true);
-    expect(config.getBoolean('false')).toBe(false);
-    expect(config.getString('string')).toBe('string');
-    expect(config.getStringArray('strings')).toEqual(['string1', 'string2']);
-    expect(config.getConfig('nested').getNumber('one')).toBe(1);
-    expect(config.getConfig('nested').getString('string')).toBe('string');
-    expect(config.getConfig('nested').getStringArray('strings')).toEqual([
-      'string1',
-      'string2',
-    ]);
-
-    const [config1, config2, config3] = config.getConfigArray('nestlings');
-    expect(config1.getBoolean('boolean')).toBe(true);
-    expect(config2.getString('string')).toBe('string');
-    expect(config3.getNumber('number')).toBe(42);
+    expectValidValues(config);
   });
 
   it('should fail to read invalid values', () => {
     const config = new ConfigReader(DATA);
+    expectInvalidValues(config);
+  });
+});
 
-    expect(() => config.getNumber('string')).toThrow(
-      'Invalid type in config for key string, got string, wanted number',
+describe('ConfigReader with fallback', () => {
+  it('should behave as if without fallback', () => {
+    const config = new ConfigReader({}, new ConfigReader(DATA));
+    expect(config.getString('x')).toBeUndefined();
+    expect(() => config.getString('.')).toThrow(/^Invalid config key/);
+    expect(() => config.getString('a.')).toThrow(/^Invalid config key/);
+  });
+
+  it('should read values from itself', () => {
+    const config = new ConfigReader(DATA, new ConfigReader({}));
+    expectValidValues(config);
+    expectInvalidValues(config);
+  });
+
+  it('should read values from a fallback', () => {
+    const config = new ConfigReader({}, new ConfigReader(DATA));
+    expectValidValues(config);
+    expectInvalidValues(config);
+  });
+
+  it('should read values from multiple levels of fallbacks', () => {
+    const config = new ConfigReader(
+      {},
+      new ConfigReader({}, new ConfigReader({}, new ConfigReader(DATA))),
     );
-    expect(() => config.getString('one')).toThrow(
-      'Invalid type in config for key one, got number, wanted string',
-    );
-    expect(() => config.getNumber('true')).toThrow(
-      'Invalid type in config for key true, got boolean, wanted number',
-    );
-    expect(() => config.getStringArray('null')).toThrow(
-      'Invalid type in config for key null, got null, wanted string-array',
-    );
-    expect(() => config.getString('emptyString')).toThrow(
-      'Invalid type in config for key emptyString, got empty-string, wanted string',
-    );
-    expect(() => config.getStringArray('badStrings')).toThrow(
-      'Invalid type in config for key badStrings[1], got empty-string, wanted string',
-    );
-    expect(() => config.getStringArray('worseStrings')).toThrow(
-      'Invalid type in config for key worseStrings[1], got number, wanted string',
-    );
-    expect(() => config.getStringArray('worstStrings')).toThrow(
-      'Invalid type in config for key worstStrings[2], got object, wanted string',
-    );
-    expect(() => config.getConfig('one')).toThrow(
-      'Invalid type in config for key one, got number, wanted object',
-    );
-    expect(() => config.getConfigArray('one')).toThrow(
-      'Invalid type in config for key one, got number, wanted object-array',
-    );
+    expectValidValues(config);
+    expectInvalidValues(config);
   });
 });

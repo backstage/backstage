@@ -62,17 +62,21 @@ function validateString(
 export class ConfigReader implements ConfigApi {
   static nullReader = new ConfigReader({});
 
-  constructor(private readonly data: JsonObject) {}
+  constructor(
+    private readonly data: JsonObject,
+    private readonly fallback?: ConfigApi,
+  ) {}
 
   getConfig(key: string): Config {
     const value = this.readValue(key);
+    const fallbackConfig = this.fallback?.getConfig(key);
     if (isObject(value)) {
-      return new ConfigReader(value);
+      return new ConfigReader(value, fallbackConfig);
     }
     if (value !== undefined) {
       throw new TypeError(typeErrorMessage(key, typeOf(value), 'object'));
     }
-    return ConfigReader.nullReader;
+    return fallbackConfig ?? ConfigReader.nullReader;
   }
 
   getConfigArray(key: string): Config[] {
@@ -92,7 +96,7 @@ export class ConfigReader implements ConfigApi {
         typeErrorMessage(key, typeOf(values), 'object-array'),
       );
     }
-    return [];
+    return this.fallback?.getConfigArray(key) ?? [];
   }
 
   getNumber(key: string): number | undefined {
@@ -103,7 +107,7 @@ export class ConfigReader implements ConfigApi {
     if (value !== undefined) {
       throw new TypeError(typeErrorMessage(key, typeOf(value), 'number'));
     }
-    return undefined;
+    return this.fallback?.getNumber(key);
   }
 
   getBoolean(key: string): boolean | undefined {
@@ -114,7 +118,7 @@ export class ConfigReader implements ConfigApi {
     if (value !== undefined) {
       throw new TypeError(typeErrorMessage(key, typeOf(value), 'boolean'));
     }
-    return undefined;
+    return this.fallback?.getBoolean(key);
   }
 
   getString(key: string): string | undefined {
@@ -122,7 +126,7 @@ export class ConfigReader implements ConfigApi {
     if (validateString(key, value)) {
       return value;
     }
-    return undefined;
+    return this.fallback?.getString(key);
   }
 
   getStringArray(key: string): string[] | undefined {
@@ -141,7 +145,7 @@ export class ConfigReader implements ConfigApi {
         typeErrorMessage(key, typeOf(values), 'string-array'),
       );
     }
-    return undefined;
+    return this.fallback?.getStringArray(key);
   }
 
   private readValue(key: string): JsonValue | undefined {
