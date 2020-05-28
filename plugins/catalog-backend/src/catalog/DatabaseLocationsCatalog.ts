@@ -18,7 +18,7 @@ import { LocationReader } from '../ingestion';
 import { Database, DatabaseLocationUpdateLogEvent } from '../database';
 import {
   AddLocation,
-  LocationEnvelope,
+  LocationResponse,
   Location,
   LocationsCatalog,
 } from './types';
@@ -47,10 +47,10 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
     await this.database.removeLocation(id);
   }
 
-  async locations(): Promise<LocationEnvelope[]> {
+  async locations(): Promise<LocationResponse[]> {
     const items = await this.database.locations();
     return items.map(({ message, status, timestamp, ...data }) => ({
-      lastUpdate: {
+      currentStatus: {
         message,
         status,
         timestamp,
@@ -63,7 +63,7 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
     return this.database.locationHistory(id);
   }
 
-  async location(id: string): Promise<LocationEnvelope> {
+  async location(id: string): Promise<LocationResponse> {
     const {
       message,
       status,
@@ -71,7 +71,7 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
       ...data
     } = await this.database.location(id);
     return {
-      lastUpdate: {
+      currentStatus: {
         message,
         status,
         timestamp,

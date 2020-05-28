@@ -78,7 +78,6 @@ describe('Database', () => {
           labels: { e: 'f' },
           annotations: {
             g: 'h',
-            'backstage.io/managed-by-location': undefined,
           },
         },
         spec: { i: 'j' },

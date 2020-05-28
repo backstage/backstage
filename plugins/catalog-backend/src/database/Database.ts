@@ -195,7 +195,9 @@ export class Database {
       generation: 1,
       annotations: {
         ...(newEntity.metadata?.annotations ?? {}),
-        'backstage.io/managed-by-location': request.locationId,
+        ...(request.locationId
+          ? { 'backstage.io/managed-by-location': request.locationId }
+          : {}),
       },
     };
 
@@ -396,19 +398,15 @@ export class Database {
   async location(id: string): Promise<DbLocationsRowWithStatus> {
     const items = await this.database<DbLocationsRowWithStatus>('locations')
       .where('locations.id', id)
-      .leftJoin(
-        'location_update_log',
+      .leftOuterJoin(
+        'location_update_log_latest',
         'locations.id',
-        'location_update_log.location_id',
+        'location_update_log_latest.location_id',
       )
-      .orderBy('location_update_log.created_at', 'desc')
-      .select({
-        status: 'location_update_log.status',
-        timestamp: 'location_update_log.created_at',
-        message: 'location_update_log.message',
-        id: 'locations.id',
-        type: 'locations.type',
-        target: 'locations.target',
+      .select('locations.*', {
+        status: 'location_update_log_latest.status',
+        timestamp: 'location_update_log_latest.created_at',
+        message: 'location_update_log_latest.message',
       });
 
     if (!items.length) {
@@ -418,28 +416,19 @@ export class Database {
   }
 
   async locations(): Promise<DbLocationsRowWithStatus[]> {
-    const query = this.database
-      .select({
-        status: 'location_update_log.status',
-        timestamp: 'location_update_log.created_at',
-        message: 'location_update_log.message',
-        id: 'locations.id',
-        type: 'locations.type',
-        target: 'locations.target',
-      })
-      .from('locations')
-      .leftJoin(
-        'location_update_log',
+    const locations = await this.database('locations')
+      .leftOuterJoin(
+        'location_update_log_latest',
         'locations.id',
-        'location_update_log.location_id',
+        'location_update_log_latest.location_id',
       )
-      .orderBy('location_update_log.created_at', 'desc');
+      .select('locations.*', {
+        status: 'location_update_log_latest.status',
+        timestamp: 'location_update_log_latest.created_at',
+        message: 'location_update_log_latest.message',
+      });
 
-    const result = await this.database<DbLocationsRowWithStatus>(query)
-      .select()
-      .groupBy('id');
-
-    return result;
+    return locations;
   }
 
   async locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]> {
