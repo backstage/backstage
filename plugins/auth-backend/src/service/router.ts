@@ -16,10 +16,7 @@
 
 import express from 'express';
 import Router from 'express-promise-router';
-import passport from 'passport';
 import cookieParser from 'cookie-parser';
-import refresh from 'passport-oauth2-refresh';
-import OAuth2Strategy from 'passport-oauth2';
 import { Logger } from 'winston';
 import { providers } from './../providers/config';
 import { makeProvider } from '../providers';
@@ -33,38 +30,13 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
-  const providerRouters: { [key: string]: express.Router } = {};
+
+  router.use(cookieParser());
 
   // configure all the providers
   for (const providerConfig of providers) {
-    const { providerId, strategy, providerRouter } = makeProvider(
-      providerConfig,
-    );
-    logger.info(`Configuring provider: ${providerId}`);
-    passport.use(strategy);
-    if (strategy instanceof OAuth2Strategy) {
-      refresh.use(strategy);
-    }
-    providerRouters[providerId] = providerRouter;
-  }
-
-  passport.serializeUser((user, done) => {
-    done(null, user);
-  });
-
-  passport.deserializeUser((user, done) => {
-    done(null, user);
-  });
-
-  router.use(passport.initialize());
-  router.use(passport.session());
-  router.use(cookieParser());
-
-  for (const providerId in providerRouters) {
-    if (providerRouters.hasOwnProperty(providerId)) {
-      const providerRouter = providerRouters[providerId];
-      router.use(`/${providerId}`, providerRouter);
-    }
+    const { providerId, providerRouter } = makeProvider(providerConfig);
+    router.use(`/${providerId}`, providerRouter);
   }
 
   return router;
