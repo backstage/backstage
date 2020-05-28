@@ -16,7 +16,7 @@
 
 export * from '@backstage/core-api';
 
-export * from './api';
+export * from './api-wrappers';
 export * from './layout';
 
 export { default as CodeSnippet } from './components/CodeSnippet';
