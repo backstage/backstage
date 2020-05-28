@@ -23,6 +23,7 @@ import {
 } from './entity';
 import { ComponentV1beta1Policy } from './kinds';
 import { EntityPolicy } from './types';
+import { DefaultNamespaceEntityPolicy } from './entity/policies/DefaultNamespaceEntityPolicy';
 
 // Helper that requires that all of a set of policies can be successfully
 // applied
@@ -62,6 +63,7 @@ export class EntityPolicies implements EntityPolicy {
     return EntityPolicies.allOf([
       EntityPolicies.allOf([
         new SchemaValidEntityPolicy(),
+        new DefaultNamespaceEntityPolicy(),
         new NoForeignRootFieldsEntityPolicy(),
         new FieldFormatEntityPolicy(),
         new ReservedFieldsEntityPolicy(),
