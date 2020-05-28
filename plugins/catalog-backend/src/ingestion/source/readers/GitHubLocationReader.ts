@@ -16,17 +16,31 @@
 
 import fetch from 'node-fetch';
 import { URL } from 'url';
-import { LocationSource, ReaderOutput } from '../types';
-import { readDescriptorYaml } from './util';
+import { LocationReader } from './types';
 
-// Pointing to raw.githubusercontent.com for now
-// to be changed in the future, after auth and tokens are done
-export class GitHubLocationSource implements LocationSource {
-  async read(target: string): Promise<ReaderOutput[]> {
-    let url: URL;
+/**
+ * Reads a file whose target is a GitHub URL.
+ *
+ * Uses raw.githubusercontent.com for now, but this will probably change in the
+ * future when token auth is implemented.
+ */
+export class GitHubLocationReader implements LocationReader {
+  async tryRead(type: string, target: string): Promise<Buffer | undefined> {
+    if (type !== 'github') {
+      return undefined;
+    }
 
+    const url = this.buildRawUrl(target);
     try {
-      url = new URL(target);
+      return await fetch(url.toString()).then(x => x.buffer());
+    } catch (e) {
+      throw new Error(`Unable to read "${target}", ${e}`);
+    }
+  }
+
+  private buildRawUrl(target: string): URL {
+    try {
+      const url = new URL(target);
 
       const [
         empty,
@@ -51,23 +65,10 @@ export class GitHubLocationSource implements LocationSource {
       url.pathname = [empty, userOrOrg, repoName, ...restOfPath].join('/');
       url.hostname = 'raw.githubusercontent.com';
       url.protocol = 'https';
+
+      return url;
     } catch (e) {
       throw new Error(`Incorrect url: ${target}, ${e}`);
-    }
-
-    let rawYaml;
-    try {
-      rawYaml = await fetch(url.toString()).then(x => {
-        return x.text();
-      });
-    } catch (e) {
-      throw new Error(`Unable to read "${target}", ${e}`);
-    }
-
-    try {
-      return readDescriptorYaml(rawYaml);
-    } catch (e) {
-      throw new Error(`Malformed descriptor at "${target}", ${e}`);
     }
   }
 }

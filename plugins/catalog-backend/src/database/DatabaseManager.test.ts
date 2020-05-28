@@ -15,13 +15,9 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { Entity, EntityPolicy } from '@backstage/catalog-model';
 import Knex from 'knex';
-import {
-  ComponentDescriptor,
-  DescriptorParser,
-  LocationReader,
-  ParserError,
-} from '../ingestion';
+import { IngestionModel } from '../ingestion/types';
 import { Database } from './Database';
 import { DatabaseManager } from './DatabaseManager';
 import {
@@ -36,18 +32,18 @@ describe('DatabaseManager', () => {
       const db = ({
         locations: jest.fn().mockResolvedValue([]),
       } as unknown) as Database;
-      const reader: LocationReader = {
-        read: jest.fn(),
+      const reader: IngestionModel = {
+        readLocation: jest.fn(),
       };
-      const parser: DescriptorParser = {
-        parse: jest.fn(),
+      const policy: EntityPolicy = {
+        apply: jest.fn(),
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
+        DatabaseManager.refreshLocations(db, reader, policy, getVoidLogger()),
       ).resolves.toBeUndefined();
-      expect(reader.read).not.toHaveBeenCalled();
-      expect(parser.parse).not.toHaveBeenCalled();
+      expect(reader.readLocation).not.toHaveBeenCalled();
+      expect(policy.apply).not.toHaveBeenCalled();
     });
 
     it('can update a single location', async () => {
@@ -59,7 +55,7 @@ describe('DatabaseManager', () => {
         status: DatabaseLocationUpdateLogStatus.SUCCESS,
         timestamp: new Date(314159265).toISOString(),
       };
-      const desc: ComponentDescriptor = {
+      const desc: Entity = {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
         metadata: { name: 'c1' },
@@ -76,18 +72,20 @@ describe('DatabaseManager', () => {
         addLocationUpdateLogEvent: jest.fn(),
       } as Partial<Database>) as Database;
 
-      const reader: LocationReader = {
-        read: jest.fn(() => Promise.resolve([{ type: 'data', data: desc }])),
+      const reader: IngestionModel = {
+        readLocation: jest.fn(() =>
+          Promise.resolve([{ type: 'data', data: desc }]),
+        ),
       };
-      const parser: DescriptorParser = {
-        parse: jest.fn(() => Promise.resolve(desc)),
+      const policy: EntityPolicy = {
+        apply: jest.fn(() => Promise.resolve(desc)),
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
+        DatabaseManager.refreshLocations(db, reader, policy, getVoidLogger()),
       ).resolves.toBeUndefined();
-      expect(reader.read).toHaveBeenCalledTimes(1);
-      expect(reader.read).toHaveBeenNthCalledWith(1, 'some', 'thing');
+      expect(reader.readLocation).toHaveBeenCalledTimes(1);
+      expect(reader.readLocation).toHaveBeenNthCalledWith(1, 'some', 'thing');
       expect(db.addEntity).toHaveBeenCalledTimes(1);
       expect(db.addEntity).toHaveBeenNthCalledWith(1, undefined, {
         locationId: '123',
@@ -116,21 +114,23 @@ describe('DatabaseManager', () => {
         addLocationUpdateLogEvent: jest.fn(),
       } as unknown) as Database;
 
-      const desc: ComponentDescriptor = {
+      const desc: Entity = {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
         metadata: { name: 'c1' },
         spec: { type: 'service' },
       };
-      const reader: LocationReader = {
-        read: jest.fn(() => Promise.resolve([{ type: 'data', data: desc }])),
+      const reader: IngestionModel = {
+        readLocation: jest.fn(() =>
+          Promise.resolve([{ type: 'data', data: desc }]),
+        ),
       };
-      const parser: DescriptorParser = {
-        parse: jest.fn(() => Promise.resolve(desc)),
+      const policy: EntityPolicy = {
+        apply: jest.fn(() => Promise.resolve(desc)),
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
+        DatabaseManager.refreshLocations(db, reader, policy, getVoidLogger()),
       ).resolves.toBeUndefined();
 
       expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(
@@ -166,23 +166,23 @@ describe('DatabaseManager', () => {
         addLocationUpdateLogEvent: jest.fn(),
       } as unknown) as Database;
 
-      const desc: ComponentDescriptor = {
+      const desc: Entity = {
         apiVersion: 'backstage.io/v1beta1',
         kind: 'Component',
         metadata: { name: 'c1' },
         spec: { type: 'service' },
       };
-      const reader: LocationReader = {
-        read: jest.fn(() => Promise.resolve([{ type: 'data', data: desc }])),
-      };
-      const parser: DescriptorParser = {
-        parse: jest.fn(() =>
-          Promise.reject(new ParserError('parser error message', 'c1')),
+      const reader: IngestionModel = {
+        readLocation: jest.fn(() =>
+          Promise.resolve([{ type: 'data', data: desc }]),
         ),
+      };
+      const policy: EntityPolicy = {
+        apply: jest.fn(() => Promise.reject(new Error('parser error message'))),
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
+        DatabaseManager.refreshLocations(db, reader, policy, getVoidLogger()),
       ).resolves.toBeUndefined();
 
       expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(
@@ -219,19 +219,17 @@ describe('DatabaseManager', () => {
         addLocationUpdateLogEvent: jest.fn(),
       } as unknown) as Database;
 
-      const reader: LocationReader = {
-        read: jest.fn(() =>
+      const reader: IngestionModel = {
+        readLocation: jest.fn(() =>
           Promise.reject([{ type: 'error', error: new Error('test message') }]),
         ),
       };
-      const parser: DescriptorParser = {
-        parse: jest.fn(() =>
-          Promise.reject(new ParserError('parser error message', 'c1')),
-        ),
+      const policy: EntityPolicy = {
+        apply: jest.fn(() => Promise.reject(new Error('parser error message'))),
       };
 
       await expect(
-        DatabaseManager.refreshLocations(db, reader, parser, getVoidLogger()),
+        DatabaseManager.refreshLocations(db, reader, policy, getVoidLogger()),
       ).resolves.toBeUndefined();
 
       expect(db.addLocationUpdateLogEvent).toHaveBeenNthCalledWith(

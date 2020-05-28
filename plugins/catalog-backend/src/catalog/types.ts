@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import * as yup from 'yup';
-import { DescriptorEnvelope } from '../ingestion';
-import { DatabaseLocationUpdateLogEvent } from '../database';
 
 //
 // Entities
@@ -29,13 +28,13 @@ export type EntityFilter = {
 export type EntityFilters = EntityFilter[];
 
 export type EntitiesCatalog = {
-  entities(filters?: EntityFilters): Promise<DescriptorEnvelope[]>;
-  entityByUid(uid: string): Promise<DescriptorEnvelope | undefined>;
+  entities(filters?: EntityFilters): Promise<Entity[]>;
+  entityByUid(uid: string): Promise<Entity | undefined>;
   entityByName(
     kind: string,
     namespace: string | undefined,
     name: string,
-  ): Promise<DescriptorEnvelope | undefined>;
+  ): Promise<Entity | undefined>;
 };
 
 //
@@ -46,6 +45,14 @@ export type LocationUpdateStatus = {
   timestamp: string | null;
   status: string | null;
   message: string | null;
+};
+export type LocationUpdateLogEvent = {
+  id: string;
+  status: 'fail' | 'success';
+  location_id: string;
+  entity_name: string;
+  created_at?: string;
+  message?: string;
 };
 
 export type Location = {
@@ -76,5 +83,5 @@ export type LocationsCatalog = {
   removeLocation(id: string): Promise<void>;
   locations(): Promise<LocationResponse[]>;
   location(id: string): Promise<LocationResponse>;
-  locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]>;
+  locationHistory(id: string): Promise<LocationUpdateLogEvent[]>;
 };

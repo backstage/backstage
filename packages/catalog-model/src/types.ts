@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-import { ReaderOutput } from './descriptor/parsers/types';
+import type { Entity } from './entity/Entity';
 
-export type IngestionModel = {
-  readLocation(type: string, target: string): Promise<ReaderOutput[]>;
+/**
+ * A policy for validation or mutation to be applied to entities as they are
+ * entering the system.
+ */
+export type EntityPolicy = {
+  /**
+   * Applies validation or mutation on an entity.
+   *
+   * @param entity The entity, as validated/mutated so far in the policy tree
+   * @returns The incoming entity, or a mutated version of the same
+   * @throws An error if the entity should be rejected
+   */
+  apply(entity: Entity): Promise<Entity>;
 };

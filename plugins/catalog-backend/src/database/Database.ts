@@ -19,12 +19,12 @@ import {
   InputError,
   NotFoundError,
 } from '@backstage/backend-common';
+import { Entity, EntityMeta } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntityFilters } from '../catalog';
-import { DescriptorEnvelope, EntityMeta } from '../ingestion';
 import { buildEntitySearch } from './search';
 import {
   AddDatabaseLocation,
@@ -55,9 +55,7 @@ function serializeMetadata(metadata: EntityMeta | undefined): string | null {
   return JSON.stringify(getStrippedMetadata(metadata));
 }
 
-function serializeSpec(
-  spec: DescriptorEnvelope['spec'],
-): DbEntitiesRow['spec'] {
+function serializeSpec(spec: Entity['spec']): DbEntitiesRow['spec'] {
   if (!spec) {
     return null;
   }
@@ -67,7 +65,7 @@ function serializeSpec(
 
 function toEntityRow(
   locationId: string | undefined,
-  entity: DescriptorEnvelope,
+  entity: Entity,
 ): DbEntitiesRow {
   return {
     id: entity.metadata!.uid!,
@@ -84,7 +82,7 @@ function toEntityRow(
 }
 
 function toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
-  const entity: DescriptorEnvelope = {
+  const entity: Entity = {
     apiVersion: row.api_version,
     kind: row.kind,
     metadata: {
@@ -95,7 +93,7 @@ function toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
   };
 
   if (row.metadata) {
-    const metadata = JSON.parse(row.metadata) as DescriptorEnvelope['metadata'];
+    const metadata = JSON.parse(row.metadata) as Entity['metadata'];
     entity.metadata = { ...entity.metadata, ...metadata };
   }
 
@@ -463,7 +461,7 @@ export class Database {
   private async updateEntitiesSearch(
     tx: Knex.Transaction<any, any>,
     entityId: string,
-    data: DescriptorEnvelope,
+    data: Entity,
   ): Promise<void> {
     try {
       const entries = buildEntitySearch(entityId, data);

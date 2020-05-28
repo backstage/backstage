@@ -21,22 +21,28 @@ import {
   DatabaseManager,
   DescriptorParsers,
   LocationReaders,
+  IngestionModels,
   runPeriodically,
 } from '@backstage/plugin-catalog-backend';
 import { PluginEnvironment } from '../types';
+import { EntityPolicies } from '@backstage/catalog-model';
 
 export default async function ({ logger, database }: PluginEnvironment) {
-  const reader = LocationReaders.create();
-  const parser = DescriptorParsers.create();
+  const policy = new EntityPolicies();
+  const ingestion = new IngestionModels(
+    new LocationReaders(),
+    new DescriptorParsers(),
+    new EntityPolicies(),
+  );
 
   const db = await DatabaseManager.createDatabase(database, logger);
   runPeriodically(
-    () => DatabaseManager.refreshLocations(db, reader, parser, logger),
+    () => DatabaseManager.refreshLocations(db, ingestion, policy, logger),
     10000,
   );
 
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
-  const locationsCatalog = new DatabaseLocationsCatalog(db, reader);
+  const locationsCatalog = new DatabaseLocationsCatalog(db, ingestion);
 
   return await createRouter({ entitiesCatalog, locationsCatalog, logger });
 }

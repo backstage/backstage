@@ -19,7 +19,10 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable('location_update_log', table => {
     table.uuid('id').primary();
     table.enum('status', ['success', 'fail']).notNullable();
-    table.dateTime('created_at').defaultTo(knex.fn.now()).notNullable();
+    table
+      .dateTime('created_at')
+      .defaultTo(knex.fn.now())
+      .notNullable();
     table.string('message');
     table
       .uuid('location_id')

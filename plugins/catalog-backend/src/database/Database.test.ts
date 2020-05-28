@@ -19,9 +19,9 @@ import {
   getVoidLogger,
   NotFoundError,
 } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import Knex from 'knex';
 import path from 'path';
-import { DescriptorEnvelope } from '../ingestion';
 import { Database } from './Database';
 import {
   AddDatabaseLocation,
@@ -293,8 +293,8 @@ describe('Database', () => {
   describe('entities', () => {
     it('can get all entities with empty filters list', async () => {
       const catalog = new Database(database, getVoidLogger());
-      const e1: DescriptorEnvelope = { apiVersion: 'a', kind: 'b' };
-      const e2: DescriptorEnvelope = {
+      const e1: Entity = { apiVersion: 'a', kind: 'b' };
+      const e2: Entity = {
         apiVersion: 'a',
         kind: 'b',
         spec: { c: null },
@@ -317,7 +317,7 @@ describe('Database', () => {
 
     it('can get all specific entities for matching filters (naive case)', async () => {
       const catalog = new Database(database, getVoidLogger());
-      const entities: DescriptorEnvelope[] = [
+      const entities: Entity[] = [
         { apiVersion: 'a', kind: 'b' },
         {
           apiVersion: 'a',
@@ -351,7 +351,7 @@ describe('Database', () => {
 
     it('can get all specific entities for matching filters with nulls (both missing and literal null value)', async () => {
       const catalog = new Database(database, getVoidLogger());
-      const entities: DescriptorEnvelope[] = [
+      const entities: Entity[] = [
         { apiVersion: 'a', kind: 'b' },
         {
           apiVersion: 'a',

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ReaderOutput } from './descriptor/parsers/types';
-
-export type IngestionModel = {
-  readLocation(type: string, target: string): Promise<ReaderOutput[]>;
-};
+export * from './entity';
+export { EntityPolicies } from './EntityPolicies';
+export * from './kinds';
+export type { EntityPolicy } from './types';
+export * from './validation';
