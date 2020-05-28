@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import * as yup from 'yup';
 
 export type DbEntitiesRow = {
@@ -82,4 +82,83 @@ export type DatabaseLocationUpdateLogEvent = {
   entity_name: string;
   created_at?: string;
   message?: string;
+};
+
+export type EntityFilter = {
+  key: string;
+  values: (string | null)[];
+};
+export type EntityFilters = EntityFilter[];
+
+/**
+ * An abstraction on top of the underlying database, wrapping the basic CRUD
+ * needs.
+ */
+export type Database = {
+  /**
+   * Runs a transaction.
+   *
+   * The callback is expected to make calls back into this class. When it
+   * completes, the transaction is closed.
+   *
+   * @param fn The callback that implements the transaction
+   */
+  transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T>;
+
+  /**
+   * Adds a new entity to the catalog.
+   *
+   * @param tx An ongoing transaction
+   * @param request The entity being added
+   * @returns The added entity, with uid, etag and generation set
+   */
+  addEntity(tx: unknown, request: DbEntityRequest): Promise<DbEntityResponse>;
+
+  /**
+   * Updates an existing entity in the catalog.
+   *
+   * The given entity must contain enough information to identify an already
+   * stored entity in the catalog - either by uid, or by kind + namespace +
+   * name. If no matching entity is found, the operation fails.
+   *
+   * If etag or generation are given, they are taken into account. Attempts to
+   * update a matching entity, but where the etag and/or generation are not
+   * equal to the passed values, will fail.
+   *
+   * @param tx An ongoing transaction
+   * @param request The entity being updated
+   * @returns The updated entity
+   */
+  updateEntity(
+    tx: unknown,
+    request: DbEntityRequest,
+  ): Promise<DbEntityResponse>;
+
+  entities(tx: unknown, filters?: EntityFilters): Promise<DbEntityResponse[]>;
+
+  entity(
+    tx: unknown,
+    kind: string,
+    name: string,
+    namespace?: string,
+  ): Promise<DbEntityResponse | undefined>;
+
+  removeEntity(tx: unknown, uid: string): Promise<void>;
+
+  addLocation(location: AddDatabaseLocation): Promise<DbLocationsRow>;
+
+  removeLocation(id: string): Promise<void>;
+
+  location(id: string): Promise<DbLocationsRowWithStatus>;
+
+  locations(): Promise<DbLocationsRowWithStatus[]>;
+
+  locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]>;
+
+  addLocationUpdateLogEvent(
+    locationId: string,
+    status: DatabaseLocationUpdateLogStatus,
+    entityName?: string,
+    message?: string,
+  ): Promise<void>;
 };

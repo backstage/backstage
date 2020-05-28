@@ -19,33 +19,33 @@ import {
   getVoidLogger,
   NotFoundError,
 } from '@backstage/backend-common';
+import type { Entity } from '@backstage/catalog-model';
 import Knex from 'knex';
 import path from 'path';
-import {
+import { CommonDatabase } from './CommonDatabase';
+import { DatabaseLocationUpdateLogStatus } from './types';
+import type {
+  AddDatabaseLocation,
   DbEntityRequest,
   DbEntityResponse,
-  Database,
-  AddDatabaseLocation,
   DbLocationsRow,
   DbLocationsRowWithStatus,
-  DatabaseLocationUpdateLogStatus,
-} from '.';
-import { Entity } from '@backstage/catalog-model';
+} from './types';
 
-describe('Database', () => {
-  let database: Knex;
+describe('CommonDatabase', () => {
+  let knex: Knex;
   let entityRequest: DbEntityRequest;
   let entityResponse: DbEntityResponse;
 
   beforeEach(async () => {
-    database = Knex({
+    knex = Knex({
       client: 'sqlite3',
       connection: ':memory:',
       useNullAsDefault: true,
     });
 
-    await database.raw('PRAGMA foreign_keys = ON');
-    await database.migrate.latest({
+    await knex.raw('PRAGMA foreign_keys = ON');
+    await knex.migrate.latest({
       directory: path.resolve(__dirname, 'migrations'),
       loadExtensions: ['.ts'],
     });
@@ -86,7 +86,7 @@ describe('Database', () => {
   });
 
   it('manages locations', async () => {
-    const db = new Database(database, getVoidLogger());
+    const db = new CommonDatabase(knex, getVoidLogger());
     const input: AddDatabaseLocation = { type: 'a', target: 'b' };
     const output: DbLocationsRowWithStatus = {
       id: expect.anything(),
@@ -114,7 +114,7 @@ describe('Database', () => {
 
   it('instead of adding second location with the same target, returns existing one', async () => {
     // Prepare
-    const catalog = new Database(database, getVoidLogger());
+    const catalog = new CommonDatabase(knex, getVoidLogger());
     const input: AddDatabaseLocation = { type: 'a', target: 'b' };
     const output1: DbLocationsRow = await catalog.addLocation(input);
 
@@ -130,7 +130,7 @@ describe('Database', () => {
 
   describe('addEntity', () => {
     it('happy path: adds entity to empty database', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
@@ -139,7 +139,7 @@ describe('Database', () => {
     });
 
     it('rejects adding the same-named entity twice', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       await catalog.transaction(tx => catalog.addEntity(tx, entityRequest));
       await expect(
         catalog.transaction(tx => catalog.addEntity(tx, entityRequest)),
@@ -147,7 +147,7 @@ describe('Database', () => {
     });
 
     it('accepts adding the same-named entity twice if on different namespaces', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       entityRequest.entity.metadata.namespace = 'namespace1';
       await catalog.transaction(tx => catalog.addEntity(tx, entityRequest));
       entityRequest.entity.metadata.namespace = 'namespace2';
@@ -159,7 +159,7 @@ describe('Database', () => {
 
   describe('locationHistory', () => {
     it('outputs the history correctly', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const location: AddDatabaseLocation = { type: 'a', target: 'b' };
       const { id: locationId } = await catalog.addLocation(location);
 
@@ -198,7 +198,7 @@ describe('Database', () => {
 
   describe('updateEntity', () => {
     it('can read and no-op-update an entity', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
@@ -220,7 +220,7 @@ describe('Database', () => {
     });
 
     it('can update name if uid matches', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
@@ -232,7 +232,7 @@ describe('Database', () => {
     });
 
     it('can update fields if kind, name, and namespace match', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
@@ -246,7 +246,7 @@ describe('Database', () => {
     });
 
     it('rejects if kind, name, but not namespace match', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
@@ -262,7 +262,7 @@ describe('Database', () => {
     });
 
     it('fails to update an entity if etag does not match', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
@@ -275,7 +275,7 @@ describe('Database', () => {
     });
 
     it('fails to update an entity if generation does not match', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
@@ -290,7 +290,7 @@ describe('Database', () => {
 
   describe('entities', () => {
     it('can get all entities with empty filters list', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const e1: Entity = {
         apiVersion: 'a',
         kind: 'k1',
@@ -325,7 +325,7 @@ describe('Database', () => {
     });
 
     it('can get all specific entities for matching filters (naive case)', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const entities: Entity[] = [
         { apiVersion: 'a', kind: 'k1', metadata: { name: 'n' } },
         {
@@ -364,7 +364,7 @@ describe('Database', () => {
     });
 
     it('can get all specific entities for matching filters with nulls (both missing and literal null value)', async () => {
-      const catalog = new Database(database, getVoidLogger());
+      const catalog = new CommonDatabase(knex, getVoidLogger());
       const entities: Entity[] = [
         { apiVersion: 'a', kind: 'k1', metadata: { name: 'n' } },
         {

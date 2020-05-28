@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 import { getVoidLogger } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
-import knex from 'knex';
+import type { Entity } from '@backstage/catalog-model';
+import Knex from 'knex';
 import path from 'path';
-import { Database } from '../database';
-import { IngestionModel } from '../ingestion/types';
+import { CommonDatabase } from '../database';
+import type { Database } from '../database';
+import type { IngestionModel } from '../ingestion/types';
 import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
 
 class MockIngestionModel implements IngestionModel {
@@ -36,12 +37,12 @@ class MockIngestionModel implements IngestionModel {
 }
 
 describe('DatabaseLocationsCatalog', () => {
-  const database = knex({
+  const knex = Knex({
     client: 'sqlite3',
     connection: ':memory:',
     useNullAsDefault: true,
   });
-  database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+  knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
     resource.run('PRAGMA foreign_keys = ON', () => {});
   });
   let db: Database;
@@ -49,11 +50,11 @@ describe('DatabaseLocationsCatalog', () => {
   let ingestionModel: IngestionModel;
 
   beforeEach(async () => {
-    await database.migrate.latest({
+    await knex.migrate.latest({
       directory: path.resolve(__dirname, '../database/migrations'),
       loadExtensions: ['.ts'],
     });
-    db = new Database(database, getVoidLogger());
+    db = new CommonDatabase(knex, getVoidLogger());
     ingestionModel = new MockIngestionModel();
     catalog = new DatabaseLocationsCatalog(db, ingestionModel);
   });

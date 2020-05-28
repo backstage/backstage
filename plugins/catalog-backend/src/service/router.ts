@@ -15,16 +15,17 @@
  */
 
 import { errorHandler, InputError } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
   addLocationSchema,
   EntitiesCatalog,
-  EntityFilters,
   LocationsCatalog,
 } from '../catalog';
-import { validateRequestBody } from './util';
+import { EntityFilters } from '../database';
+import { requireRequestBody, validateRequestBody } from './util';
 
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -47,6 +48,11 @@ export async function createRouter(
         const entities = await entitiesCatalog.entities(filters);
         res.status(200).send(entities);
       })
+      .post('/entities', async (req, res) => {
+        const body = await requireRequestBody(req);
+        const result = await entitiesCatalog.addOrUpdateEntity(body as Entity);
+        res.status(200).send(result);
+      })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
         const entity = await entitiesCatalog.entityByUid(uid);
@@ -54,6 +60,11 @@ export async function createRouter(
           res.status(404).send(`No entity with uid ${uid}`);
         }
         res.status(200).send(entity);
+      })
+      .delete('/entities/by-uid/:uid', async (req, res) => {
+        const { uid } = req.params;
+        await entitiesCatalog.removeEntityByUid(uid);
+        res.status(204).send();
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
