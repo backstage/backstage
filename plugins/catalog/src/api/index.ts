@@ -41,8 +41,10 @@ export class CatalogApi {
     return await response.json();
   }
   async getEntityByName(name: string): Promise<DescriptorEnvelope> {
-    const entities = await this.getEntities();
-    const entity = entities.find(e => e.metadata.name === name);
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/entities/by-name/Component/default/${name}`,
+    );
+    const entity = await response.json();
     if (entity) return entity;
     throw new Error(`'Entity not found: ${name}`);
   }
