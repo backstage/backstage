@@ -86,7 +86,7 @@ describe('DefaultAuthConnector', () => {
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });
-    const promise = helper.createSession(new Set(['a', 'b']));
+    const promise = helper.createSession({ scopes: new Set(['a', 'b']) });
     await mockOauth.rejectAll();
     await expect(promise).rejects.toMatchObject({ name: 'RejectedError' });
   });
@@ -106,7 +106,9 @@ describe('DefaultAuthConnector', () => {
       oauthRequestApi: mockOauth,
     });
 
-    const sessionPromise = helper.createSession(new Set(['a', 'b']));
+    const sessionPromise = helper.createSession({
+      scopes: new Set(['a', 'b']),
+    });
 
     await mockOauth.triggerAll();
 
@@ -123,6 +125,26 @@ describe('DefaultAuthConnector', () => {
     });
   });
 
+  it('should instantly show popup if option is set', async () => {
+    const popupSpy = jest
+      .spyOn(loginPopup, 'showLoginPopup')
+      .mockResolvedValue('my-session');
+    const helper = new DefaultAuthConnector({
+      ...defaultOptions,
+      oauthRequestApi: new MockOAuthApi(),
+      sessionTransform: str => str,
+    });
+
+    const sessionPromise = helper.createSession({
+      scopes: new Set(),
+      instantPopup: true,
+    });
+
+    expect(popupSpy).toBeCalledTimes(1);
+
+    await expect(sessionPromise).resolves.toBe('my-session');
+  });
+
   it('should use join func to join scopes', async () => {
     const mockOauth = new MockOAuthApi();
     const popupSpy = jest
@@ -134,7 +156,7 @@ describe('DefaultAuthConnector', () => {
       oauthRequestApi: mockOauth,
     });
 
-    helper.createSession(new Set(['a', 'b']));
+    helper.createSession({ scopes: new Set(['a', 'b']) });
 
     await mockOauth.triggerAll();
 

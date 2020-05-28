@@ -17,7 +17,7 @@
 import { AuthRequester } from '../../apis';
 import { OAuthRequestApi, AuthProvider } from '../../apis/definitions';
 import { showLoginPopup } from '../loginPopup';
-import { AuthConnector } from './types';
+import { AuthConnector, CreateSessionOptions } from './types';
 
 const DEFAULT_BASE_PATH = '/api/auth/';
 
@@ -68,6 +68,7 @@ export class DefaultAuthConnector<AuthSession>
   private readonly basePath: string;
   private readonly environment: string;
   private readonly provider: AuthProvider & { id: string };
+  private readonly joinScopesFunc: (scopes: Set<string>) => string;
   private readonly authRequester: AuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
 
@@ -84,18 +85,22 @@ export class DefaultAuthConnector<AuthSession>
 
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
-      onAuthRequest: scopes => this.showPopup(joinScopes(scopes)),
+      onAuthRequest: scopes => this.showPopup(scopes),
     });
 
     this.apiOrigin = apiOrigin;
     this.basePath = basePath;
     this.environment = environment;
     this.provider = provider;
+    this.joinScopesFunc = joinScopes;
     this.sessionTransform = sessionTransform;
   }
 
-  async createSession(scopes: Set<string>): Promise<AuthSession> {
-    return this.authRequester(scopes);
+  async createSession(options: CreateSessionOptions): Promise<AuthSession> {
+    if (options.instantPopup) {
+      return this.showPopup(options.scopes);
+    }
+    return this.authRequester(options.scopes);
   }
 
   async refreshSession(): Promise<any> {
@@ -142,7 +147,8 @@ export class DefaultAuthConnector<AuthSession>
     }
   }
 
-  private async showPopup(scope: string): Promise<AuthSession> {
+  private async showPopup(scopes: Set<string>): Promise<AuthSession> {
+    const scope = this.joinScopesFunc(scopes);
     const popupUrl = this.buildUrl('/start', { scope });
 
     const payload = await showLoginPopup({

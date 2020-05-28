@@ -62,7 +62,7 @@ describe('StaticAuthSessionManager', () => {
   it('should only request auth once for same scopes', async () => {
     const createSession = jest
       .fn()
-      .mockImplementation(scopes => [...scopes].join(' '));
+      .mockImplementation(({ scopes }) => [...scopes].join(' '));
     const manager = new StaticAuthSessionManager({
       connector: { createSession, ...baseConnector },
       ...defaultOptions,

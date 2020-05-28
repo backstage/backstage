@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+export type GetSessionOptions = {
+  optional?: boolean;
+  instantPopup?: boolean;
+  scopes?: Set<string>;
+};
+
 /**
  * A sessions manager keeps track of the current session and makes sure that
  * multiple simultaneous requests for sessions with different scope are handled
  * in a correct way.
  */
 export type SessionManager<T> = {
-  getSession(options: { optional: false; scopes?: Set<string> }): Promise<T>;
-  getSession(options: {
-    optional?: boolean;
-    scopes?: Set<string>;
-  }): Promise<T | undefined>;
+  getSession(options: GetSessionOptions): Promise<T | undefined>;
 
   removeSession(): Promise<void>;
 };

@@ -21,6 +21,7 @@ import {
   OAuthApi,
   OpenIdConnectApi,
   IdTokenOptions,
+  AccessTokenOptions,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
@@ -95,19 +96,23 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
 
   constructor(private readonly sessionManager: SessionManager<GoogleSession>) {}
 
-  async getAccessToken(scope?: string | string[]) {
+  async getAccessToken(
+    scope?: string | string[],
+    options?: AccessTokenOptions,
+  ) {
     const normalizedScopes = GoogleAuth.normalizeScopes(scope);
     const session = await this.sessionManager.getSession({
-      optional: false,
+      ...options,
       scopes: normalizedScopes,
     });
-    return session.accessToken;
+    if (session) {
+      return session.accessToken;
+    }
+    return '';
   }
 
-  async getIdToken({ optional }: IdTokenOptions = {}) {
-    const session = await this.sessionManager.getSession({
-      optional: optional || false,
-    });
+  async getIdToken(options: IdTokenOptions = {}) {
+    const session = await this.sessionManager.getSession(options);
     if (session) {
       return session.idToken;
     }
