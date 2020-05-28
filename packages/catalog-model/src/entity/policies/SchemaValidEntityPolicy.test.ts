@@ -80,9 +80,9 @@ describe('SchemaValidEntityPolicy', () => {
   // metadata
   //
 
-  it('rejects missing metadata', async () => {
+  it('accepts missing metadata', async () => {
     delete data.metadata;
-    await expect(policy.enforce(data)).rejects.toThrow(/metadata/);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects bad metadata type', async () => {
