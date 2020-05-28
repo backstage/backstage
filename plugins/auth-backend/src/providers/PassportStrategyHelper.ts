@@ -85,7 +85,7 @@ export const executeRefreshTokenStrategy = async (
         resolve({
           accessToken,
           idToken: params.id_token,
-          expiresInSeconds: params.expires_in,
+          expiresInSeconds: 10,
           scope: params.scope,
         });
       },

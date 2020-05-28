@@ -1,1 +1,1 @@
-// export { GoogleAuthProvider } from './provider';
+export { GoogleAuthProvider } from './provider';

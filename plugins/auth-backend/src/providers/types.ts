@@ -26,34 +26,14 @@ export interface OAuthProviderHandlers {
   start(req: express.Request, options: any): Promise<any>;
   handler(req: express.Request): Promise<any>;
   refresh(refreshToken: string, scope: string): Promise<any>;
-  logout(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any>;
+  logout?(): Promise<any>;
 }
 
 export interface AuthProviderRouteHandlers {
-  start(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any>;
-  frameHandler(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any>;
-  refresh?(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any>;
-  logout(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any>;
+  start(req: express.Request, res: express.Response): Promise<any>;
+  frameHandler(req: express.Request, res: express.Response): Promise<any>;
+  refresh?(req: express.Request, res: express.Response): Promise<any>;
+  logout(req: express.Request, res: express.Response): Promise<any>;
 }
 
 export type AuthProviderFactories = {
