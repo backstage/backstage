@@ -15,11 +15,11 @@
  */
 
 import yaml from 'yaml';
-import { ForeignRootFieldsEntityPolicy } from './ForeignRootFieldsEntityPolicy';
+import { NoForeignRootFieldsEntityPolicy } from './NoForeignRootFieldsEntityPolicy';
 
-describe('ForeignRootFieldsEntityPolicy', () => {
+describe('NoForeignRootFieldsEntityPolicy', () => {
   let data: any;
-  let policy: ForeignRootFieldsEntityPolicy;
+  let policy: NoForeignRootFieldsEntityPolicy;
 
   beforeEach(() => {
     data = yaml.parse(`
@@ -38,7 +38,7 @@ describe('ForeignRootFieldsEntityPolicy', () => {
       spec:
         custom: stuff
     `);
-    policy = new ForeignRootFieldsEntityPolicy();
+    policy = new NoForeignRootFieldsEntityPolicy();
   });
 
   it('works for the happy path', async () => {

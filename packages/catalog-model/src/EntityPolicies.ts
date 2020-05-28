@@ -17,7 +17,7 @@
 import {
   Entity,
   FieldFormatEntityPolicy,
-  ForeignRootFieldsEntityPolicy,
+  NoForeignRootFieldsEntityPolicy,
   ReservedFieldsEntityPolicy,
   SchemaValidEntityPolicy,
 } from './entity';
@@ -62,7 +62,7 @@ export class EntityPolicies implements EntityPolicy {
     return EntityPolicies.allOf([
       EntityPolicies.allOf([
         new SchemaValidEntityPolicy(),
-        new ForeignRootFieldsEntityPolicy(),
+        new NoForeignRootFieldsEntityPolicy(),
         new FieldFormatEntityPolicy(),
         new ReservedFieldsEntityPolicy(),
       ]),
