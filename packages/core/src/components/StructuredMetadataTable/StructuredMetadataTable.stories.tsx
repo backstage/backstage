@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import InfoCard from '../../layout/InfoCard';
+import { InfoCard } from '../../layout/InfoCard';
 import { Grid } from '@material-ui/core';
 import StructuredMetadataTable from '.';
 

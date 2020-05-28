@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { pageTheme } from '../Page/PageThemeProvider';
-import Waves from './Waves';
+import { Waves } from './Waves';
 
 describe('<Waves/>', () => {
   it('should render svg', () => {

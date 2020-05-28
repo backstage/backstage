@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default } from './ErrorPage';
+export { ErrorPage } from './ErrorPage';

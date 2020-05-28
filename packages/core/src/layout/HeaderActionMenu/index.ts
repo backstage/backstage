@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { BottomLink } from './BottomLink';
-export type { BottomLinkProps } from './BottomLink';
+export { HeaderActionMenu } from './HeaderActionMenu';

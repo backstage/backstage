@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default } from './ErrorBoundary';
+export { ErrorBoundary } from './ErrorBoundary';

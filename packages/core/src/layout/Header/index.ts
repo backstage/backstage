@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default } from './Header';
+export { Header } from './Header';

@@ -42,7 +42,7 @@ type Props = {
   className?: string;
 };
 
-const Content: FC<Props> = ({
+export const Content: FC<Props> = ({
   className,
   stretch,
   noPadding,
@@ -62,5 +62,3 @@ const Content: FC<Props> = ({
     </article>
   );
 };
-
-export default Content;

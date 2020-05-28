@@ -25,8 +25,8 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import classNames from 'classnames';
-import ErrorBoundary from '../ErrorBoundary';
-import BottomLink, { Props as BottomLinkProps } from '../BottomLink';
+import { ErrorBoundary } from '../ErrorBoundary';
+import { BottomLink, BottomLinkProps } from '../BottomLink';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -137,7 +137,7 @@ type Props = {
   noPadding?: boolean;
 };
 
-const InfoCard: FC<Props> = ({
+export const InfoCard: FC<Props> = ({
   title,
   subheader,
   divider,
@@ -214,5 +214,3 @@ const InfoCard: FC<Props> = ({
     </Card>
   );
 };
-
-export default InfoCard;
