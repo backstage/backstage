@@ -160,4 +160,67 @@ describe('ConfigReader with fallback', () => {
     expectValidValues(config);
     expectInvalidValues(config);
   });
+
+  it('should read merged objects', () => {
+    const a = {
+      merged: {
+        x: 'x',
+        z: 'z1',
+        arr: ['a', 'b'],
+        config: { d: 'd' },
+        configs: [{ a: 'a' }],
+      },
+    };
+    const b = {
+      merged: {
+        y: 'y',
+        z: 'z2',
+        arr: ['c'],
+        config: { e: 'e' },
+        configs: [{ b: 'b' }],
+      },
+    };
+
+    const config = new ConfigReader(a, new ConfigReader(b));
+
+    expect(config.getString('merged.x')).toBe('x');
+    expect(config.getString('merged.y')).toBe('y');
+    expect(config.getString('merged.z')).toBe('z1');
+    expect(config.getConfig('merged').getString('x')).toBe('x');
+    expect(config.getConfig('merged').getString('y')).toBe('y');
+    expect(config.getConfig('merged').getString('z')).toBe('z1');
+    expect(config.getString('merged.config.d')).toBe('d');
+    expect(config.getString('merged.config.e')).toBe('e');
+    expect(config.getConfig('merged').getString('config.d')).toBe('d');
+    expect(config.getConfig('merged').getString('config.e')).toBe('e');
+    expect(config.getConfig('merged').getConfig('config').getString('d')).toBe(
+      'd',
+    );
+    expect(config.getConfig('merged').getConfig('config').getString('e')).toBe(
+      'e',
+    );
+
+    // Arrays are not merged
+    expect(config.getStringArray('merged.arr')).toEqual(['a', 'b']);
+    expect(config.getConfig('merged').getStringArray('arr')).toEqual([
+      'a',
+      'b',
+    ]);
+
+    // Config arrays aren't merged either
+    expect(config.getConfigArray('merged.configs').length).toBe(1);
+    expect(config.getConfigArray('merged.configs')[0].getString('a')).toBe('a');
+    expect(
+      config.getConfigArray('merged.configs')[0].getString('b'),
+    ).toBeUndefined();
+
+    // Config arrays aren't merged either
+    expect(config.getConfig('merged').getConfigArray('configs').length).toBe(1);
+    expect(
+      config.getConfig('merged').getConfigArray('configs')[0].getString('a'),
+    ).toBe('a');
+    expect(
+      config.getConfig('merged').getConfigArray('configs')[0].getString('b'),
+    ).toBeUndefined();
+  });
 });
