@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createApiRef } from '@backstage/core';
-import { DescriptorEnvelope } from '../types';
+import { Entity } from '@backstage/catalog-model';
 
 export const catalogApiRef = createApiRef<CatalogApi>({
   id: 'plugin.catalog.service',
@@ -23,6 +23,6 @@ export const catalogApiRef = createApiRef<CatalogApi>({
 });
 
 export interface CatalogApi {
-  getEntities(): Promise<DescriptorEnvelope[]>;
-  getEntityByName(name: string): Promise<DescriptorEnvelope>;
+  getEntities(): Promise<Entity[]>;
+  getEntityByName(name: string): Promise<Entity>;
 }

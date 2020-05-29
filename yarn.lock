@@ -4290,15 +4290,7 @@
     "@types/passport" "*"
     "@types/passport-oauth2" "*"
 
-"@types/passport-oauth2-refresh@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/@types/passport-oauth2-refresh/-/passport-oauth2-refresh-1.1.1.tgz#cbe466d4fcac36182fd75bf55279c0b1e953c382"
-  integrity sha512-Tw0JvfDPv9asgFPACd9oOGCaD/0/Uyi+QF7fmrJC74cJKC6I8N8wwhJJHyfd1N2E/qaLgTh431lhOa9jicpNdg==
-  dependencies:
-    "@types/oauth" "*"
-    "@types/passport-oauth2" "*"
-
-"@types/passport-oauth2@*", "@types/passport-oauth2@^1.4.9":
+"@types/passport-oauth2@*":
   version "1.4.9"
   resolved "https://registry.npmjs.org/@types/passport-oauth2/-/passport-oauth2-1.4.9.tgz#134007c4b505a82548c9cb19094c5baeb2205c92"
   integrity sha512-QP0q+NVQOaIu2r0e10QWkiUA0Ya5mOBHRJN0UrI+LolMLOP1/VN4EVIpJ3xVwFo+xqNFRoFvFwJhBvKnk7kpUA==
@@ -16110,12 +16102,7 @@ passport-google-oauth20@^2.0.0:
   dependencies:
     passport-oauth2 "1.x.x"
 
-passport-oauth2-refresh@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/passport-oauth2-refresh/-/passport-oauth2-refresh-2.0.0.tgz#7b19c77ff3cc000819c69f6ad9e318450f57b85e"
-  integrity sha512-yXvCB6nem/O+WThhiyI3TlPXpzSGY+9+hy9OTx9QF8e9GInplyRHxHaaOhFylKvnof9UmWHAufQFZk8cO1Fb2g==
-
-passport-oauth2@1.x.x, passport-oauth2@^1.5.0:
+passport-oauth2@1.x.x:
   version "1.5.0"
   resolved "https://registry.npmjs.org/passport-oauth2/-/passport-oauth2-1.5.0.tgz#64babbb54ac46a4dcab35e7f266ed5294e3c4108"
   integrity sha512-kqBt6vR/5VlCK8iCx1/KpY42kQ+NEHZwsSyt4Y6STiNjU+wWICG1i8ucc1FapXDGO15C5O5VZz7+7vRzrDPXXQ==

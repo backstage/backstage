@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DescriptorEnvelope } from '../api/types';
 import { Component } from './component';
+import { Entity } from '@backstage/catalog-model';
 
-export function envelopeToComponent(envelope: DescriptorEnvelope): Component {
+export function envelopeToComponent(envelope: Entity): Component {
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
-    description: envelope.metadata?.description ?? 'placeholder',
+    description: envelope.metadata?.annotations?.description ?? 'placeholder',
   };
 }

@@ -19,16 +19,16 @@ import {
   getVoidLogger,
   NotFoundError,
 } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
 import Knex from 'knex';
 import path from 'path';
-import { Database } from './Database';
 import {
-  AddDatabaseLocation,
   DbEntityRequest,
   DbEntityResponse,
+  Database,
+  AddDatabaseLocation,
   DbLocationsRow,
-} from './types';
+} from '.';
+import { Entity } from '@backstage/catalog-model';
 
 describe('Database', () => {
   let database: Knex;
