@@ -15,17 +15,25 @@
  */
 
 import { Database } from '../database';
+import { IngestionModel } from '../ingestion/types';
 import { AddLocation, Location, LocationsCatalog } from './types';
-import { LocationReader } from '../ingestion';
 
 export class DatabaseLocationsCatalog implements LocationsCatalog {
   constructor(
     private readonly database: Database,
-    private readonly reader: LocationReader,
+    private readonly ingestionModel: IngestionModel,
   ) {}
 
   async addLocation(location: AddLocation): Promise<Location> {
-    const outputs = await this.reader.read(location.type, location.target);
+    const outputs = await this.ingestionModel.readLocation(
+      location.type,
+      location.target,
+    );
+    if (!outputs) {
+      throw new Error(
+        `Unknown location type ${location.type} ${location.target}`,
+      );
+    }
     outputs.forEach(output => {
       if (output.type === 'error') {
         throw new Error(

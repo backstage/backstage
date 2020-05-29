@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export * from './CommonValidatorFunctions';
-export * from './KubernetesValidatorFunctions';
-export * from './makeValidator';
-export * from './types';
+export { DescriptorParsers } from './DescriptorParsers';
+export { YamlDescriptorParser } from './parsers/YamlDescriptorParser';

@@ -13,13 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
+import { getVoidLogger } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import knex from 'knex';
 import path from 'path';
-
 import { Database } from '../database';
-import { ReaderOutput } from '../ingestion/types';
-import { getVoidLogger } from '@backstage/backend-common';
+import { IngestionModel } from '../ingestion/types';
+import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
+
+class MockIngestionModel implements IngestionModel {
+  readLocation = jest.fn(async (type: string, target: string) => {
+    if (type !== 'valid_type') {
+      throw new Error(`Unknown location type ${type}`);
+    }
+    if (target === 'valid_target') {
+      return [{ type: 'data', data: {} as Entity } as const];
+    }
+    throw new Error(
+      `Can't read location at ${target} with error: Something is broken`,
+    );
+  });
+}
 
 describe('DatabaseLocationsCatalog', () => {
   const database = knex({
@@ -32,20 +46,7 @@ describe('DatabaseLocationsCatalog', () => {
   });
   let db: Database;
   let catalog: DatabaseLocationsCatalog;
-
-  const mockLocationReader = {
-    read: async (type: string, target: string): Promise<ReaderOutput[]> => {
-      if (type !== 'valid_type') {
-        throw new Error(`Unknown location type ${type}`);
-      }
-      if (target === 'valid_target') {
-        return Promise.resolve([{ type: 'data', data: {} }]);
-      }
-      throw new Error(
-        `Can't read location at ${target} with error: Something is broken`,
-      );
-    },
-  };
+  let ingestionModel: IngestionModel;
 
   beforeEach(async () => {
     await database.migrate.latest({
@@ -53,7 +54,8 @@ describe('DatabaseLocationsCatalog', () => {
       loadExtensions: ['.ts'],
     });
     db = new Database(database, getVoidLogger());
-    catalog = new DatabaseLocationsCatalog(db, mockLocationReader);
+    ingestionModel = new MockIngestionModel();
+    catalog = new DatabaseLocationsCatalog(db, ingestionModel);
   });
 
   it('resolves to location with id', async () => {

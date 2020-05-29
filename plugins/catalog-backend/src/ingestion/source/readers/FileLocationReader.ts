@@ -15,22 +15,21 @@
  */
 
 import fs from 'fs-extra';
-import { LocationSource, ReaderOutput } from '../types';
-import { readDescriptorYaml } from './util';
+import { LocationReader } from './types';
 
-export class FileLocationSource implements LocationSource {
-  async read(target: string): Promise<ReaderOutput[]> {
-    let rawYaml;
-    try {
-      rawYaml = await fs.readFile(target, 'utf8');
-    } catch (e) {
-      throw new Error(`Unable to read "${target}", ${e}`);
+/**
+ * Reads a file from the local file system.
+ */
+export class FileLocationReader implements LocationReader {
+  async tryRead(type: string, target: string): Promise<Buffer | undefined> {
+    if (type !== 'file') {
+      return undefined;
     }
 
     try {
-      return readDescriptorYaml(rawYaml);
+      return await fs.readFile(target);
     } catch (e) {
-      throw new Error(`Malformed descriptor at "${target}", ${e}`);
+      throw new Error(`Unable to read "${target}", ${e}`);
     }
   }
 }

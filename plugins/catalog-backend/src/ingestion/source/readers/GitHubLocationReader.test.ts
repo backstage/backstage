@@ -16,43 +16,26 @@
 
 jest.mock('node-fetch');
 
-import fs from 'fs-extra';
 import fetch from 'node-fetch';
-import path from 'path';
-import { GitHubLocationSource } from '../GitHubLocationSource';
+import { GitHubLocationReader } from './GitHubLocationReader';
 
 const { Response } = jest.requireActual('node-fetch');
 
-const FIXTURES_DIR = path.resolve(
-  __dirname,
-  '..',
-  '..',
-  '..',
-  '..',
-  'fixtures',
-);
-const fixtures = fs.readdirSync(FIXTURES_DIR).reduce((acc, filename) => {
-  acc[filename] = fs.readFileSync(path.resolve(FIXTURES_DIR, filename), 'utf8');
-  return acc;
-}, {} as Record<string, string>);
-
-describe('Unit: GitHubLocationSource', () => {
+describe('Unit: GitHubLocationReader', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('fetches the file and parses it correctly', async () => {
-    (fetch as any).mockReturnValueOnce(
-      Promise.resolve(new Response(fixtures['one_component.yaml'])),
-    );
-    const reader = new GitHubLocationSource();
+    (fetch as any).mockResolvedValueOnce(new Response('hello'));
 
-    const result = await reader.read(
+    const reader = new GitHubLocationReader();
+    const buffer = await reader.tryRead(
+      'github',
       'https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/fixtures/one_component.yaml',
     );
 
-    expect(result[0].type).toBe('data');
-    expect((result[0] as any).data.metadata.name).toBe('component3');
+    expect(buffer?.toString('utf8')).toBe('hello');
   });
 
   it('changes the url to point to https://raw.githubusercontent.com', async () => {
@@ -61,12 +44,12 @@ describe('Unit: GitHubLocationSource', () => {
     const folderPath = `master/plugins/catalog-backend/fixtures`;
     const componentFilename = `one_component.yaml`;
     const rawGitHubUrl = `https://raw.githubusercontent.com`;
-    const reader = new GitHubLocationSource();
-    (fetch as any).mockReturnValueOnce(
-      Promise.resolve(new Response(fixtures[componentFilename])),
-    );
 
-    await reader.read(
+    const reader = new GitHubLocationReader();
+    (fetch as any).mockResolvedValueOnce(new Response('hello'));
+
+    await reader.tryRead(
+      'github',
       `${gitHubUrl}/${project}/blob/${folderPath}/${componentFilename}`,
     );
 
@@ -76,7 +59,7 @@ describe('Unit: GitHubLocationSource', () => {
   });
 
   describe('rejects wrong urls', () => {
-    const reader = new GitHubLocationSource();
+    const reader = new GitHubLocationReader();
 
     it.each([
       ['http://example.com/one_component.yaml'],
@@ -87,7 +70,7 @@ describe('Unit: GitHubLocationSource', () => {
     ])(
       '%p',
       async (url: string) =>
-        await expect(reader.read(url)).rejects.toThrow(/url/),
+        await expect(reader.tryRead('github', url)).rejects.toThrow(/url/),
     );
   });
 });
@@ -100,11 +83,10 @@ describe('Integration: GitHubLocationSource', () => {
   it('fetches the fixture from backstage repo', async () => {
     const PERMANENT_LINK =
       'https://github.com/spotify/backstage/blob/ee84a874f8e37f87940cbe515a86c07a2db29541/plugins/catalog-backend/fixtures/one_component.yaml';
-    const reader = new GitHubLocationSource();
 
-    const result = await reader.read(PERMANENT_LINK);
+    const reader = new GitHubLocationReader();
+    const result = await reader.tryRead('github', PERMANENT_LINK);
 
-    expect(result[0].type).toBe('data');
-    expect((result[0] as any).data.metadata.name).toBe('component3');
+    expect(result?.toString('utf8')).toContain('component3');
   });
 });

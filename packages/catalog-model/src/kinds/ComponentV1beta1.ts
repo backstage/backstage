@@ -15,19 +15,28 @@
  */
 
 import * as yup from 'yup';
-import { DescriptorEnvelope, KindParser, ParserError } from '../types';
+import type { Entity, EntityMeta } from '../entity/Entity';
+import type { EntityPolicy } from '../types';
 
-export interface ComponentDescriptorV1beta1 extends DescriptorEnvelope {
+const API_VERSION = 'backstage.io/v1beta1';
+const KIND = 'Component';
+
+export interface ComponentV1beta1 extends Entity {
+  apiVersion: typeof API_VERSION;
+  kind: typeof KIND;
+  metadata: EntityMeta & {
+    name: string;
+  };
   spec: {
     type: string;
   };
 }
 
-export class ComponentDescriptorV1beta1Parser implements KindParser {
+export class ComponentV1beta1Policy implements EntityPolicy {
   private schema: yup.Schema<any>;
 
   constructor() {
-    this.schema = yup.object<Partial<ComponentDescriptorV1beta1>>({
+    this.schema = yup.object<Partial<ComponentV1beta1>>({
       metadata: yup
         .object({
           name: yup.string().required(),
@@ -41,23 +50,14 @@ export class ComponentDescriptorV1beta1Parser implements KindParser {
     });
   }
 
-  async tryParse(
-    envelope: DescriptorEnvelope,
-  ): Promise<DescriptorEnvelope | undefined> {
+  async enforce(envelope: Entity): Promise<Entity> {
     if (
       envelope.apiVersion !== 'backstage.io/v1beta1' ||
       envelope.kind !== 'Component'
     ) {
-      return undefined;
+      throw new Error('Unsupported apiVersion / kind');
     }
 
-    try {
-      return await this.schema.validate(envelope, { strict: true });
-    } catch (e) {
-      throw new ParserError(
-        `Malformed component, ${e}`,
-        envelope.metadata?.name,
-      );
-    }
+    return await this.schema.validate(envelope, { strict: true });
   }
 }
