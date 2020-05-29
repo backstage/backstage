@@ -20,8 +20,7 @@ import { paths } from '../lib/paths';
 
 export default async (cmd: Command) => {
   const args = [
-    '--ext',
-    'js,jsx,ts,tsx',
+    '--ext=js,jsx,ts,tsx',
     '--max-warnings=0',
     '--format=codeframe',
     paths.targetDir,

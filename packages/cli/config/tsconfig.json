@@ -9,7 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "importHelpers": false,
     "incremental": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "jsx": "react",
     "lib": ["DOM", "DOM.Iterable", "ScriptHost", "ES2019"],
     "module": "ESNext",
