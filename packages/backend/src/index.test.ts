@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import { PluginEnvironment } from './types';
+
 describe('test', () => {
   it('unbreaks the test runner', () => {
-    expect(true).toBeTruthy();
+    const unbreaker = {} as PluginEnvironment;
+    expect(unbreaker).toBeTruthy();
   });
 });

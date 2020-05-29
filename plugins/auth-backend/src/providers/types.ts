@@ -22,32 +22,18 @@ export type AuthProviderConfig = {
   options: any;
 };
 
-export interface AuthProvider {
-  strategy(): passport.Strategy;
-  router?(): express.Router;
+export interface OAuthProviderHandlers {
+  start(req: express.Request, options: any): Promise<any>;
+  handler(req: express.Request): Promise<any>;
+  refresh(refreshToken: string, scope: string): Promise<any>;
+  logout?(): Promise<any>;
 }
 
 export interface AuthProviderRouteHandlers {
-  start(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any>;
-  frameHandler(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any>;
-  refresh?(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any>;
-  logout(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ): Promise<any>;
+  start(req: express.Request, res: express.Response): Promise<any>;
+  frameHandler(req: express.Request, res: express.Response): Promise<any>;
+  refresh?(req: express.Request, res: express.Response): Promise<any>;
+  logout(req: express.Request, res: express.Response): Promise<any>;
 }
 
 export type AuthProviderFactories = {
@@ -55,7 +41,7 @@ export type AuthProviderFactories = {
 };
 
 export type AuthProviderFactory = {
-  new (providerConfig: any): AuthProvider & AuthProviderRouteHandlers;
+  new (providerConfig: any): OAuthProviderHandlers;
 };
 
 export type AuthInfoBase = {
@@ -69,7 +55,7 @@ export type AuthInfoWithProfile = AuthInfoBase & {
   profile: passport.Profile;
 };
 
-export type AuthInfoPrivate = AuthInfoWithProfile & {
+export type AuthInfoPrivate = {
   refreshToken: string;
 };
 
@@ -82,3 +68,13 @@ export type AuthResponse =
       type: 'auth-result';
       error: Error;
     };
+
+export type RedirectInfo = {
+  url: string;
+  status?: number;
+};
+
+export type RefreshTokenResponse = {
+  accessToken: string;
+  params: any;
+};

@@ -15,7 +15,7 @@
  */
 
 import { AuthProviderFactories, AuthProviderFactory } from './types';
-import { GoogleAuthProvider } from './google/provider';
+import { GoogleAuthProvider } from './google';
 
 export class ProviderFactories {
   private static readonly providerFactories: AuthProviderFactories = {

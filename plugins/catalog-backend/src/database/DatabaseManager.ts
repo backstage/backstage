@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
+import { Entity, EntityPolicy } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import path from 'path';
 import { Logger } from 'winston';
-import {
-  DescriptorEnvelope,
-  DescriptorParser,
-  LocationReader,
-  ParserError,
-} from '../ingestion';
+import { IngestionModel } from '../ingestion/types';
 import { Database } from './Database';
 import { DatabaseLocationUpdateLogStatus, DbEntityRequest } from './types';
 
@@ -67,8 +63,8 @@ export class DatabaseManager {
 
   public static async refreshLocations(
     database: Database,
-    reader: LocationReader,
-    parser: DescriptorParser,
+    ingestionModel: IngestionModel,
+    entityPolicy: EntityPolicy,
     logger: Logger,
   ): Promise<void> {
     const locations = await database.locations();
@@ -78,7 +74,10 @@ export class DatabaseManager {
           `Refreshing location id="${location.id}" type="${location.type}" target="${location.target}"`,
         );
 
-        const readerOutput = await reader.read(location.type, location.target);
+        const readerOutput = await ingestionModel.readLocation(
+          location.type,
+          location.target,
+        );
 
         for (const readerItem of readerOutput) {
           if (readerItem.type === 'error') {
@@ -87,7 +86,7 @@ export class DatabaseManager {
           }
 
           try {
-            const entity = await parser.parse(readerItem.data);
+            const entity = await entityPolicy.enforce(readerItem.data);
             await DatabaseManager.refreshSingleEntity(
               database,
               location.id,
@@ -97,18 +96,14 @@ export class DatabaseManager {
             await DatabaseManager.logUpdateSuccess(
               database,
               location.id,
-              entity.metadata!.name,
+              entity.metadata.name,
             );
           } catch (error) {
-            let entityName;
-            if (error instanceof ParserError) {
-              entityName = error.entityName;
-            }
             await DatabaseManager.logUpdateFailure(
               database,
               location.id,
               error,
-              entityName,
+              readerItem.data.metadata.name,
             );
           }
         }
@@ -129,7 +124,7 @@ export class DatabaseManager {
   private static async refreshSingleEntity(
     database: Database,
     locationId: string,
-    entity: DescriptorEnvelope,
+    entity: Entity,
     logger: Logger,
   ): Promise<void> {
     const { kind } = entity;
@@ -163,10 +158,7 @@ export class DatabaseManager {
     });
   }
 
-  private static entitiesAreEqual(
-    first: DescriptorEnvelope,
-    second: DescriptorEnvelope,
-  ) {
+  private static entitiesAreEqual(first: Entity, second: Entity) {
     const firstClone = lodash.cloneDeep(first);
     const secondClone = lodash.cloneDeep(second);
 

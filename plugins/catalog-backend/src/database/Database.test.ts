@@ -19,9 +19,9 @@ import {
   getVoidLogger,
   NotFoundError,
 } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import Knex from 'knex';
 import path from 'path';
-import { DescriptorEnvelope } from '../ingestion';
 import { Database } from './Database';
 import {
   AddDatabaseLocation,
@@ -128,7 +128,7 @@ describe('Database', () => {
         catalog.addEntity(tx, entityRequest),
       );
       expect(added).toStrictEqual(entityResponse);
-      expect(added.entity.metadata!.generation).toBe(1);
+      expect(added.entity.metadata.generation).toBe(1);
     });
 
     it('rejects adding the same-named entity twice', async () => {
@@ -141,9 +141,9 @@ describe('Database', () => {
 
     it('accepts adding the same-named entity twice if on different namespaces', async () => {
       const catalog = new Database(database, getVoidLogger());
-      entityRequest.entity.metadata!.namespace = 'namespace1';
+      entityRequest.entity.metadata.namespace = 'namespace1';
       await catalog.transaction(tx => catalog.addEntity(tx, entityRequest));
-      entityRequest.entity.metadata!.namespace = 'namespace2';
+      entityRequest.entity.metadata.namespace = 'namespace2';
       await expect(
         catalog.transaction(tx => catalog.addEntity(tx, entityRequest)),
       ).resolves.toBeDefined();
@@ -161,17 +161,15 @@ describe('Database', () => {
       );
       expect(updated.entity.apiVersion).toEqual(added.entity.apiVersion);
       expect(updated.entity.kind).toEqual(added.entity.kind);
-      expect(updated.entity.metadata!.etag).not.toEqual(
-        added.entity.metadata!.etag,
+      expect(updated.entity.metadata.etag).not.toEqual(
+        added.entity.metadata.etag,
       );
-      expect(updated.entity.metadata!.generation).toEqual(
-        added.entity.metadata!.generation,
+      expect(updated.entity.metadata.generation).toEqual(
+        added.entity.metadata.generation,
       );
-      expect(updated.entity.metadata!.name).toEqual(
-        added.entity.metadata!.name,
-      );
-      expect(updated.entity.metadata!.namespace).toEqual(
-        added.entity.metadata!.namespace,
+      expect(updated.entity.metadata.name).toEqual(added.entity.metadata.name);
+      expect(updated.entity.metadata.namespace).toEqual(
+        added.entity.metadata.namespace,
       );
     });
 
@@ -180,11 +178,11 @@ describe('Database', () => {
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
-      added.entity.metadata!.name! = 'new!';
+      added.entity.metadata.name! = 'new!';
       const updated = await catalog.transaction(tx =>
         catalog.updateEntity(tx, { entity: added.entity }),
       );
-      expect(updated.entity.metadata!.name).toEqual('new!');
+      expect(updated.entity.metadata.name).toEqual('new!');
     });
 
     it('can update fields if kind, name, and namespace match', async () => {
@@ -193,8 +191,8 @@ describe('Database', () => {
         catalog.addEntity(tx, entityRequest),
       );
       added.entity.apiVersion = 'something.new';
-      delete added.entity.metadata!.uid;
-      delete added.entity.metadata!.generation;
+      delete added.entity.metadata.uid;
+      delete added.entity.metadata.generation;
       const updated = await catalog.transaction(tx =>
         catalog.updateEntity(tx, { entity: added.entity }),
       );
@@ -207,9 +205,9 @@ describe('Database', () => {
         catalog.addEntity(tx, entityRequest),
       );
       added.entity.apiVersion = 'something.new';
-      delete added.entity.metadata!.uid;
-      delete added.entity.metadata!.generation;
-      added.entity.metadata!.namespace = 'something.wrong';
+      delete added.entity.metadata.uid;
+      delete added.entity.metadata.generation;
+      added.entity.metadata.namespace = 'something.wrong';
       await expect(
         catalog.transaction(tx =>
           catalog.updateEntity(tx, { entity: added.entity }),
@@ -222,7 +220,7 @@ describe('Database', () => {
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
-      added.entity.metadata!.etag = 'garbage';
+      added.entity.metadata.etag = 'garbage';
       await expect(
         catalog.transaction(tx =>
           catalog.updateEntity(tx, { entity: added.entity }),
@@ -235,7 +233,7 @@ describe('Database', () => {
       const added = await catalog.transaction(tx =>
         catalog.addEntity(tx, entityRequest),
       );
-      added.entity.metadata!.generation! += 100;
+      added.entity.metadata.generation! += 100;
       await expect(
         catalog.transaction(tx =>
           catalog.updateEntity(tx, { entity: added.entity }),
@@ -247,10 +245,15 @@ describe('Database', () => {
   describe('entities', () => {
     it('can get all entities with empty filters list', async () => {
       const catalog = new Database(database, getVoidLogger());
-      const e1: DescriptorEnvelope = { apiVersion: 'a', kind: 'b' };
-      const e2: DescriptorEnvelope = {
+      const e1: Entity = {
         apiVersion: 'a',
-        kind: 'b',
+        kind: 'k1',
+        metadata: { name: 'n' },
+      };
+      const e2: Entity = {
+        apiVersion: 'c',
+        kind: 'k2',
+        metadata: { name: 'n' },
         spec: { c: null },
       };
       await catalog.transaction(async tx => {
@@ -263,24 +266,32 @@ describe('Database', () => {
       expect(result.length).toEqual(2);
       expect(result).toEqual(
         expect.arrayContaining([
-          { locationId: undefined, entity: expect.objectContaining(e1) },
-          { locationId: undefined, entity: expect.objectContaining(e2) },
+          {
+            locationId: undefined,
+            entity: expect.objectContaining({ kind: 'k1' }),
+          },
+          {
+            locationId: undefined,
+            entity: expect.objectContaining({ kind: 'k2' }),
+          },
         ]),
       );
     });
 
     it('can get all specific entities for matching filters (naive case)', async () => {
       const catalog = new Database(database, getVoidLogger());
-      const entities: DescriptorEnvelope[] = [
-        { apiVersion: 'a', kind: 'b' },
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'k1', metadata: { name: 'n' } },
         {
           apiVersion: 'a',
-          kind: 'b',
+          kind: 'k2',
+          metadata: { name: 'n' },
           spec: { c: 'some' },
         },
         {
           apiVersion: 'a',
-          kind: 'b',
+          kind: 'k3',
+          metadata: { name: 'n' },
           spec: { c: null },
         },
       ];
@@ -294,27 +305,32 @@ describe('Database', () => {
       await expect(
         catalog.transaction(async tx =>
           catalog.entities(tx, [
-            { key: 'kind', values: ['b'] },
+            { key: 'kind', values: ['k2'] },
             { key: 'spec.c', values: ['some'] },
           ]),
         ),
       ).resolves.toEqual([
-        { locationId: undefined, entity: expect.objectContaining(entities[1]) },
+        {
+          locationId: undefined,
+          entity: expect.objectContaining({ kind: 'k2' }),
+        },
       ]);
     });
 
     it('can get all specific entities for matching filters with nulls (both missing and literal null value)', async () => {
       const catalog = new Database(database, getVoidLogger());
-      const entities: DescriptorEnvelope[] = [
-        { apiVersion: 'a', kind: 'b' },
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'k1', metadata: { name: 'n' } },
         {
           apiVersion: 'a',
-          kind: 'b',
+          kind: 'k2',
+          metadata: { name: 'n' },
           spec: { c: 'some' },
         },
         {
           apiVersion: 'a',
-          kind: 'b',
+          kind: 'k3',
+          metadata: { name: 'n' },
           spec: { c: null },
         },
       ];
@@ -327,7 +343,7 @@ describe('Database', () => {
 
       const rows = await catalog.transaction(async tx =>
         catalog.entities(tx, [
-          { key: 'kind', values: ['b'] },
+          { key: 'apiVersion', values: ['a'] },
           { key: 'spec.c', values: [null, 'some'] },
         ]),
       );
@@ -337,15 +353,15 @@ describe('Database', () => {
         expect.arrayContaining([
           {
             locationId: undefined,
-            entity: expect.objectContaining(entities[0]),
+            entity: expect.objectContaining({ kind: 'k1' }),
           },
           {
             locationId: undefined,
-            entity: expect.objectContaining(entities[1]),
+            entity: expect.objectContaining({ kind: 'k2' }),
           },
           {
             locationId: undefined,
-            entity: expect.objectContaining(entities[2]),
+            entity: expect.objectContaining({ kind: 'k3' }),
           },
         ]),
       );

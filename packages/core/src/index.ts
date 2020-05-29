@@ -16,7 +16,7 @@
 
 export * from '@backstage/core-api';
 
-export * from './api';
+export * from './api-wrappers';
 export * from './layout';
 
 export { default as CodeSnippet } from './components/CodeSnippet';
@@ -39,4 +39,3 @@ export { default as TrendLine } from './components/TrendLine';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
 export * from './components/Status';
 export { default as WarningPanel } from './components/WarningPanel';
-export type { IconComponent } from './icons';

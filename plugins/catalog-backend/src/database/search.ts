@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DescriptorEnvelope } from '../ingestion';
+import { Entity } from '@backstage/catalog-model';
 import { DbEntitiesSearchRow } from './types';
 
 // Search entries that start with these prefixes, also get a shorthand without
@@ -119,7 +119,7 @@ export function visitEntityPart(
  */
 export function buildEntitySearch(
   entityId: string,
-  entity: DescriptorEnvelope,
+  entity: Entity,
 ): DbEntitiesSearchRow[] {
   // Start with some special keys that are always present because you want to
   // be able to easily search for null specifically
@@ -127,17 +127,17 @@ export function buildEntitySearch(
     {
       entity_id: entityId,
       key: 'metadata.name',
-      value: toValue(entity.metadata?.name),
+      value: toValue(entity.metadata.name),
     },
     {
       entity_id: entityId,
       key: 'metadata.namespace',
-      value: toValue(entity.metadata?.namespace),
+      value: toValue(entity.metadata.namespace),
     },
     {
       entity_id: entityId,
       key: 'metadata.uid',
-      value: toValue(entity.metadata?.uid),
+      value: toValue(entity.metadata.uid),
     },
   ];
 

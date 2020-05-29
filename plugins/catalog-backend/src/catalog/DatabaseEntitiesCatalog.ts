@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { Database } from '../database';
-import { DescriptorEnvelope } from '../ingestion/types';
 import { EntitiesCatalog, EntityFilters } from './types';
 
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Database) {}
 
-  async entities(filters?: EntityFilters): Promise<DescriptorEnvelope[]> {
+  async entities(filters?: EntityFilters): Promise<Entity[]> {
     const items = await this.database.transaction(tx =>
       this.database.entities(tx, filters),
     );
     return items.map(i => i.entity);
   }
 
-  async entityByUid(uid: string): Promise<DescriptorEnvelope | undefined> {
+  async entityByUid(uid: string): Promise<Entity | undefined> {
     const matches = await this.database.transaction(tx =>
       this.database.entities(tx, [{ key: 'uid', values: [uid] }]),
     );
@@ -40,7 +40,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     kind: string,
     name: string,
     namespace: string | undefined,
-  ): Promise<DescriptorEnvelope | undefined> {
+  ): Promise<Entity | undefined> {
     const matches = await this.database.transaction(tx =>
       this.database.entities(tx, [
         { key: 'kind', values: [kind] },

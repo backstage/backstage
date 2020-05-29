@@ -16,33 +16,10 @@
 
 import React from 'react';
 import CopyTextButton from '.';
-import {
-  ApiProvider,
-  errorApiRef,
-  ApiRegistry,
-  ErrorApi,
-} from '@backstage/core-api';
 
 export default {
   title: 'CopyTextButton',
   component: CopyTextButton,
-  decorators: [
-    (storyFn: () => JSX.Element) => {
-      // TODO: move this to common storybook config, requires core package to be separate from components
-      const registry = ApiRegistry.from([
-        [
-          errorApiRef,
-          {
-            post(error) {
-              // eslint-disable-next-line no-alert
-              window.alert(`Component posted error, ${error}`);
-            },
-          } as ErrorApi,
-        ],
-      ]);
-      return <ApiProvider apis={registry} children={storyFn()} />;
-    },
-  ],
 };
 
 export const Default = () => (

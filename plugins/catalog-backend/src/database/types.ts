@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import * as yup from 'yup';
-import { DescriptorEnvelope } from '../ingestion';
 
 export type DbEntitiesRow = {
   id: string;
@@ -26,18 +26,18 @@ export type DbEntitiesRow = {
   namespace: string | null;
   etag: string;
   generation: number;
-  metadata: string | null;
+  metadata: string;
   spec: string | null;
 };
 
 export type DbEntityRequest = {
   locationId?: string;
-  entity: DescriptorEnvelope;
+  entity: Entity;
 };
 
 export type DbEntityResponse = {
   locationId?: string;
-  entity: DescriptorEnvelope;
+  entity: Entity;
 };
 
 export type DbEntitiesSearchRow = {
