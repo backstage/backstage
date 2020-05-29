@@ -52,6 +52,12 @@ export type DbLocationsRow = {
   target: string;
 };
 
+export type DbLocationsRowWithStatus = DbLocationsRow & {
+  status: string | null;
+  timestamp: string | null;
+  message: string | null;
+};
+
 export type AddDatabaseLocation = {
   type: string;
   target: string;

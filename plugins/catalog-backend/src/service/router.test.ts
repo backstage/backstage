@@ -32,6 +32,7 @@ class MockLocationsCatalog implements LocationsCatalog {
   removeLocation = jest.fn();
   locations = jest.fn();
   location = jest.fn();
+  locationHistory = jest.fn();
 }
 
 describe('createRouter', () => {

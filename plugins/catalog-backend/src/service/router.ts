@@ -22,7 +22,7 @@ import {
   addLocationSchema,
   EntitiesCatalog,
   EntityFilters,
-  LocationsCatalog
+  LocationsCatalog,
 } from '../catalog';
 import { validateRequestBody } from './util';
 
@@ -82,6 +82,11 @@ export async function createRouter(
       })
       .get('/locations', async (_req, res) => {
         const output = await locationsCatalog.locations();
+        res.status(200).send(output);
+      })
+      .get('/locations/:id/history', async (req, res) => {
+        const { id } = req.params;
+        const output = await locationsCatalog.locationHistory(id);
         res.status(200).send(output);
       })
       .get('/locations/:id', async (req, res) => {

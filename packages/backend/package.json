@@ -45,6 +45,9 @@
     "typescript": "^3.9.2"
   },
   "nodemonConfig": {
-    "watch": "./dist"
+    "watch": [
+      "./dist",
+      "node_modules/@backstage*"
+    ]
   }
 }

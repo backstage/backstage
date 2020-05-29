@@ -41,10 +41,29 @@ export type EntitiesCatalog = {
 // Locations
 //
 
+export type LocationUpdateStatus = {
+  timestamp: string | null;
+  status: string | null;
+  message: string | null;
+};
+export type LocationUpdateLogEvent = {
+  id: string;
+  status: 'fail' | 'success';
+  location_id: string;
+  entity_name: string;
+  created_at?: string;
+  message?: string;
+};
+
 export type Location = {
   id: string;
   type: string;
   target: string;
+};
+
+export type LocationResponse = {
+  data: Location;
+  currentStatus: LocationUpdateStatus;
 };
 
 export type AddLocation = {
@@ -62,6 +81,7 @@ export const addLocationSchema: yup.Schema<AddLocation> = yup
 export type LocationsCatalog = {
   addLocation(location: AddLocation): Promise<Location>;
   removeLocation(id: string): Promise<void>;
-  locations(): Promise<Location[]>;
-  location(id: string): Promise<Location>;
+  locations(): Promise<LocationResponse[]>;
+  location(id: string): Promise<LocationResponse>;
+  locationHistory(id: string): Promise<LocationUpdateLogEvent[]>;
 };
