@@ -2540,11 +2540,6 @@
   resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-7.0.0.tgz#47750979d1282197295108b6958360660a955c16"
   integrity sha512-lIMcx/2oDqTtW84iHKkRJe+8U6HK6GPwWH5sJp9UEHcDpdXomOQYvwcGXy2I2zwPQQ14gYYE6nEJuSnnYqsYRw==
 
-"@spotify/tsconfig@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.npmjs.org/@spotify/tsconfig/-/tsconfig-7.0.0.tgz#41c402f4eb6d3147bc18427a35205151cbb32cd5"
-  integrity sha512-MeRFUPMXWBSm6yaUWiESaQsF9B+9Rn1F/w5hbHHzcunc45teXBcgsOrJu1uDOEkhP/9lP0fefuodpP+TYWM1LQ==
-
 "@spotify/web-scripts-utils@^7.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/@spotify/web-scripts-utils/-/web-scripts-utils-7.0.0.tgz#8c6b8039fc645a36ac48629eb9ba06600f4d828a"
