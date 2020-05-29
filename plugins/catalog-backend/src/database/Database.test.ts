@@ -28,6 +28,8 @@ import {
   DbEntityRequest,
   DbEntityResponse,
   DbLocationsRow,
+  DbLocationsRowWithStatus,
+  DatabaseLocationUpdateLogStatus,
 } from './types';
 
 describe('Database', () => {
@@ -74,7 +76,9 @@ describe('Database', () => {
           name: 'c',
           namespace: 'd',
           labels: { e: 'f' },
-          annotations: { g: 'h' },
+          annotations: {
+            g: 'h',
+          },
         },
         spec: { i: 'j' },
       },
@@ -84,10 +88,13 @@ describe('Database', () => {
   it('manages locations', async () => {
     const db = new Database(database, getVoidLogger());
     const input: AddDatabaseLocation = { type: 'a', target: 'b' };
-    const output: DbLocationsRow = {
+    const output: DbLocationsRowWithStatus = {
       id: expect.anything(),
       type: 'a',
       target: 'b',
+      message: null,
+      status: null,
+      timestamp: null,
     };
 
     await db.addLocation(input);
@@ -118,7 +125,7 @@ describe('Database', () => {
     // Output is the same
     expect(output2).toEqual(output1);
     // Locations contain only one record
-    expect(locations).toEqual([output1]);
+    expect(locations[0]).toMatchObject(output1);
   });
 
   describe('addEntity', () => {
@@ -147,6 +154,45 @@ describe('Database', () => {
       await expect(
         catalog.transaction(tx => catalog.addEntity(tx, entityRequest)),
       ).resolves.toBeDefined();
+    });
+  });
+
+  describe('locationHistory', () => {
+    it('outputs the history correctly', async () => {
+      const catalog = new Database(database, getVoidLogger());
+      const location: AddDatabaseLocation = { type: 'a', target: 'b' };
+      const { id: locationId } = await catalog.addLocation(location);
+
+      await catalog.addLocationUpdateLogEvent(
+        locationId,
+        DatabaseLocationUpdateLogStatus.SUCCESS,
+      );
+      await catalog.addLocationUpdateLogEvent(
+        locationId,
+        DatabaseLocationUpdateLogStatus.FAIL,
+        undefined,
+        'Something went wrong',
+      );
+
+      const result = await catalog.locationHistory(locationId);
+      expect(result).toEqual([
+        {
+          created_at: expect.anything(),
+          entity_name: null,
+          id: expect.anything(),
+          location_id: locationId,
+          message: null,
+          status: DatabaseLocationUpdateLogStatus.SUCCESS,
+        },
+        {
+          created_at: expect.anything(),
+          entity_name: null,
+          id: expect.anything(),
+          location_id: locationId,
+          message: 'Something went wrong',
+          status: DatabaseLocationUpdateLogStatus.FAIL,
+        },
+      ]);
     });
   });
 
