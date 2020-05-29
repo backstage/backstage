@@ -23,22 +23,23 @@ import {
   Content,
   ContentHeader,
   SupportButton,
+  useApi,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
+import { catalogApiRef } from '@backstage/plugin-catalog';
 
 const RegisterComponentPage: FC<{}> = () => {
+  const catalogApi = useApi(catalogApiRef);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (isSubmitting) {
-      setTimeout(() => {
-        setIsSubmitting(false);
-      }, 4000);
-    }
-  }, [isSubmitting]);
-
-  const onSubmit = () => {
+  const onSubmit = async (formData: { componentIdInput: string }) => {
     setIsSubmitting(true);
+
+    const { componentIdInput: target } = formData;
+
+    const location = await catalogApi.addLocation('github', target);
+
+    setIsSubmitting(false);
   };
 
   return (
