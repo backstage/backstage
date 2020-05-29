@@ -17,6 +17,6 @@
 import { createRouter } from '@backstage/plugin-auth-backend';
 import { PluginEnvironment } from '../types';
 
-export default async function ({ logger }: PluginEnvironment) {
+export default async function createPlugin({ logger }: PluginEnvironment) {
   return await createRouter({ logger });
 }

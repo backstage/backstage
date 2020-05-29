@@ -29,6 +29,7 @@ type Props = {
 };
 
 const HorizontalProgress: FC<Props> = ({ value }) => {
+  const theme = useTheme<BackstageTheme>();
   if (isNaN(value)) {
     return null;
   }
@@ -36,7 +37,6 @@ const HorizontalProgress: FC<Props> = ({ value }) => {
   if (percent > 100) {
     percent = 100;
   }
-  const theme = useTheme<BackstageTheme>();
   const strokeColor = getProgressColor(theme.palette, percent, false, 100);
   return (
     <Tooltip title={`${percent}%`}>

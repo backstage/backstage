@@ -51,27 +51,30 @@ function addRootElement(rootElem: Element): void {
 export function usePortal(id: string): HTMLElement {
   const rootElemRef = useRef<HTMLElement | null>(null);
 
-  useEffect(function setupElement() {
-    // Look for existing target dom element to append to
-    const existingParent = document.querySelector(`#${id}`);
-    // Parent is either a new root or the existing dom element
-    const parentElem = existingParent || createRootElement(id);
+  useEffect(
+    function setupElement() {
+      // Look for existing target dom element to append to
+      const existingParent = document.querySelector(`#${id}`);
+      // Parent is either a new root or the existing dom element
+      const parentElem = existingParent || createRootElement(id);
 
-    // If there is no existing DOM element, add a new one.
-    if (!existingParent) {
-      addRootElement(parentElem);
-    }
-
-    // Add the detached element to the parent
-    parentElem.appendChild(rootElemRef.current!);
-
-    return function removeElement() {
-      rootElemRef.current!.remove();
-      if (parentElem.childNodes.length === -1) {
-        parentElem.remove();
+      // If there is no existing DOM element, add a new one.
+      if (!existingParent) {
+        addRootElement(parentElem);
       }
-    };
-  }, []);
+
+      // Add the detached element to the parent
+      parentElem.appendChild(rootElemRef.current!);
+
+      return function removeElement() {
+        rootElemRef.current!.remove();
+        if (parentElem.childNodes.length === -1) {
+          parentElem.remove();
+        }
+      };
+    },
+    [id],
+  );
 
   /**
    * It's important we evaluate this lazily:
