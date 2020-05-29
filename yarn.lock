@@ -14189,9 +14189,9 @@ marked@^0.8.0:
   integrity sha512-tZfJS8uE0zpo7xpTffwFwYRfW9AzNcdo04Qcjs+C9+oCy8MSRD2reD5iDVtYx8mtLaqsGughw/YLlcwNxAHA1g==
 
 material-table@^1.58.0:
-  version "1.58.0"
-  resolved "https://registry.npmjs.org/material-table/-/material-table-1.58.0.tgz#1902f88b74436ce880b234c7c713f0e34a7e2f9d"
-  integrity sha512-5xiiKERNZv9Zai2TMT5d9LRLrKlofAFe2YZZzxP7cJ9DIZC8HcaflunyIVHYTzK1yFS51TqjDvHIqxYLIqdahQ==
+  version "1.58.2"
+  resolved "https://registry.npmjs.org/material-table/-/material-table-1.58.2.tgz#dc0d19652848e6bb92f747d122bd7d4681cca6dc"
+  integrity sha512-s/m6ebyXFXmg07zxv1Fl6qPySKaiQhASXaOB3ubRKUFA1DkryUy3PGSEVWTjUYnRyi63kGq+N6b5nsokLR6m5A==
   dependencies:
     "@date-io/date-fns" "^1.1.0"
     "@material-ui/pickers" "^3.2.2"
