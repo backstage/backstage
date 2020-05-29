@@ -22,7 +22,7 @@ import {
   addLocationSchema,
   EntitiesCatalog,
   EntityFilters,
-  LocationsCatalog
+  LocationsCatalog,
 } from '../catalog';
 import { validateRequestBody } from './util';
 

@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const proxySettings = {
-  '/circleci/api': {
-    target: 'https://circleci.com/api/v1.1',
-    changeOrigin: true,
-    logLevel: 'debug',
-    pathRewrite: {
-      '^/circleci/api/': '/',
-    },
-  },
-};
+import { createApiRef } from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
+
+export const catalogApiRef = createApiRef<CatalogApi>({
+  id: 'plugin.catalog.service',
+  description:
+    'Used by the Catalog plugin to make requests to accompanying backend',
+});
+
+export interface CatalogApi {
+  getEntities(): Promise<Entity[]>;
+  getEntityByName(name: string): Promise<Entity>;
+}

@@ -20,9 +20,9 @@ import CatalogTable from './CatalogTable';
 import { Component } from '../../data/component';
 
 const components: Component[] = [
-  { name: 'component1' },
-  { name: 'component2' },
-  { name: 'component3' },
+  { name: 'component1', kind: 'Component', description: 'Placeholder' },
+  { name: 'component2', kind: 'Component', description: 'Placeholder' },
+  { name: 'component3', kind: 'Component', description: 'Placeholder' },
 ];
 
 describe('CatalogTable component', () => {

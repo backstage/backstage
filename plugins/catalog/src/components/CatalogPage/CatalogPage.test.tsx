@@ -17,14 +17,12 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import CatalogPage from './CatalogPage';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
-import { ComponentFactory } from '../../data/component';
+import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
+import { wrapInTheme } from '@backstage/test-utils';
+import { catalogApiRef } from '../..';
 
-const testComponentFactory: ComponentFactory = {
-  getAllComponents: jest.fn(() => Promise.resolve([{ name: 'test' }])),
-  getComponentByName: jest.fn(() => Promise.resolve({ name: 'test' })),
-  removeComponentByName: jest.fn(() => Promise.resolve(true)),
-};
+const errorApi = { post: () => {} };
+const catalogApi = { getEntities: () => Promise.resolve([{ kind: '' }]) };
 
 describe('CatalogPage', () => {
   // this test right now causes some red lines in the log output when running tests
@@ -32,8 +30,15 @@ describe('CatalogPage', () => {
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
-        <CatalogPage componentFactory={testComponentFactory} />,
+      wrapInTheme(
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [errorApiRef, errorApi],
+            [catalogApiRef, catalogApi],
+          ])}
+        >
+          <CatalogPage />
+        </ApiProvider>,
       ),
     );
     expect(

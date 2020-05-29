@@ -15,9 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { Entity, EntityPolicy } from '@backstage/catalog-model';
 import Knex from 'knex';
-import { IngestionModel } from '../ingestion/types';
 import { Database } from './Database';
 import { DatabaseManager } from './DatabaseManager';
 import {
@@ -25,6 +23,8 @@ import {
   DbLocationsRow,
   DbLocationsRowWithStatus,
 } from './types';
+import { EntityPolicy, Entity } from '@backstage/catalog-model';
+import { IngestionModel } from '..';
 
 describe('DatabaseManager', () => {
   describe('refreshLocations', () => {

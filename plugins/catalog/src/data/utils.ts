@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from 'react';
-import { ComponentFactory } from './component';
-import { MockComponentFactory } from './mock-factory';
+import { Component } from './component';
+import { Entity } from '@backstage/catalog-model';
 
-const componentFactory: ComponentFactory = MockComponentFactory;
-
-export const withMockStore = (Component: React.ElementType) => {
-  return (props: any) => (
-    <Component {...props} componentFactory={componentFactory} />
-  );
-};
+export function envelopeToComponent(envelope: Entity): Component {
+  return {
+    name: envelope.metadata?.name ?? '',
+    kind: envelope.kind ?? 'unknown',
+    description: envelope.metadata?.annotations?.description ?? 'placeholder',
+  };
+}

@@ -38,6 +38,7 @@ import {
 import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
 
 import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
+import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
 const builder = ApiRegistry.builder();
 
@@ -68,6 +69,14 @@ builder.add(
   new TechRadar({
     width: 1500,
     height: 800,
+  }),
+);
+
+builder.add(
+  catalogApiRef,
+  new CatalogClient({
+    apiOrigin: 'http://localhost:3000',
+    basePath: '/catalog/api',
   }),
 );
 

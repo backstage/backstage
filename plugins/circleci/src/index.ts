@@ -16,6 +16,5 @@
 
 export { plugin } from './plugin';
 export * from './api';
-export * from './proxy';
 export * from './route-refs';
 export { CircleCIWidget } from './components/App';
