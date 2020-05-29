@@ -55,6 +55,9 @@ export class CatalogClient implements CatalogApi {
         body: JSON.stringify({ type, target }),
       },
     );
+    if (response.status !== 201) {
+      throw new Error(`Location wasn't added: ${target}`);
+    }
     const location = await response.json();
     if (location) return location;
     throw new Error(`'Location wasn't added: ${target}`);

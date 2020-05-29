@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import {
   InfoCard,
@@ -24,6 +24,8 @@ import {
   ContentHeader,
   SupportButton,
   useApi,
+  alertApiRef,
+  errorApiRef,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
 import { catalogApiRef } from '@backstage/plugin-catalog';
@@ -32,12 +34,22 @@ const RegisterComponentPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const alertApi = useApi(alertApiRef);
+  const errorApi = useApi(errorApiRef);
+
   const onSubmit = async (formData: { componentIdInput: string }) => {
     setIsSubmitting(true);
 
     const { componentIdInput: target } = formData;
-
-    const location = await catalogApi.addLocation('github', target);
+    try {
+      await catalogApi.addLocation('github', target);
+      alertApi.post({
+        message: 'Successfully added the location',
+        severity: 'success',
+      });
+    } catch (e) {
+      errorApi.post(e);
+    }
 
     setIsSubmitting(false);
   };
