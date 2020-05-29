@@ -4583,10 +4583,10 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@types/yup@^0.28.2":
-  version "0.28.3"
-  resolved "https://registry.npmjs.org/@types/yup/-/yup-0.28.3.tgz#387c35f9a6a36b8d3561f6601eb4e72518b92899"
-  integrity sha512-0Sir2LxOmupF8HBUvpJoZghLmOqKfZsBk1GYlMwSIccLDDUoN04LHvo0KzDp9qxt1IKf9Fudpj35SrJ8VqetkQ==
+"@types/yup@^0.29.0":
+  version "0.29.0"
+  resolved "https://registry.npmjs.org/@types/yup/-/yup-0.29.0.tgz#0918ec503dfacb19d0b3cca0195b9f3441f46685"
+  integrity sha512-E9RTXPD4x44qBOvY6TjUqdkR9FNV9cACWlnAsooUInDqtLZz9M9oYXKn/w1GHNxRvyYyHuG6Bfjbg3QlK+SgXw==
 
 "@types/zen-observable@^0.8.0":
   version "0.8.0"
