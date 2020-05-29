@@ -46,11 +46,7 @@ function getStrippedMetadata(metadata: EntityMeta): EntityMeta {
   return output;
 }
 
-function serializeMetadata(metadata: EntityMeta | undefined): string | null {
-  if (!metadata) {
-    return null;
-  }
-
+function serializeMetadata(metadata: EntityMeta): string {
   return JSON.stringify(getStrippedMetadata(metadata));
 }
 
@@ -67,14 +63,14 @@ function toEntityRow(
   entity: Entity,
 ): DbEntitiesRow {
   return {
-    id: entity.metadata!.uid!,
+    id: entity.metadata.uid!,
     location_id: locationId || null,
-    etag: entity.metadata!.etag!,
-    generation: entity.metadata!.generation!,
+    etag: entity.metadata.etag!,
+    generation: entity.metadata.generation!,
     api_version: entity.apiVersion,
     kind: entity.kind,
-    name: entity.metadata!.name || null,
-    namespace: entity.metadata!.namespace || null,
+    name: entity.metadata.name || null,
+    namespace: entity.metadata.namespace || null,
     metadata: serializeMetadata(entity.metadata),
     spec: serializeSpec(entity.spec),
   };
@@ -85,16 +81,12 @@ function toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
     apiVersion: row.api_version,
     kind: row.kind,
     metadata: {
+      ...(JSON.parse(row.metadata) as Entity['metadata']),
       uid: row.id,
       etag: row.etag,
       generation: Number(row.generation), // cast because of sqlite
     },
   };
-
-  if (row.metadata) {
-    const metadata = JSON.parse(row.metadata) as Entity['metadata'];
-    entity.metadata = { ...entity.metadata, ...metadata };
-  }
 
   if (row.spec) {
     const spec = JSON.parse(row.spec);
@@ -125,9 +117,7 @@ function generateUid(): string {
 }
 
 function generateEtag(): string {
-  return Buffer.from(uuidv4(), 'utf8')
-    .toString('base64')
-    .replace(/[^\w]/g, '');
+  return Buffer.from(uuidv4(), 'utf8').toString('base64').replace(/[^\w]/g, '');
 }
 
 /**
@@ -178,11 +168,11 @@ export class Database {
     tx: Knex.Transaction<any, any>,
     request: DbEntityRequest,
   ): Promise<DbEntityResponse> {
-    if (request.entity.metadata?.uid !== undefined) {
+    if (request.entity.metadata.uid !== undefined) {
       throw new InputError('May not specify uid for new entities');
-    } else if (request.entity.metadata?.etag !== undefined) {
+    } else if (request.entity.metadata.etag !== undefined) {
       throw new InputError('May not specify etag for new entities');
-    } else if (request.entity.metadata?.generation !== undefined) {
+    } else if (request.entity.metadata.generation !== undefined) {
       throw new InputError('May not specify generation for new entities');
     }
 
@@ -289,9 +279,9 @@ export class Database {
     if (oldRow.metadata) {
       const oldMetadata = JSON.parse(oldRow.metadata) as EntityMeta;
       if (oldMetadata.annotations) {
-        newEntity.metadata!.annotations = {
+        newEntity.metadata.annotations = {
           ...oldMetadata.annotations,
-          ...newEntity.metadata!.annotations,
+          ...newEntity.metadata.annotations,
         };
       }
     }
@@ -374,9 +364,7 @@ export class Database {
         target,
       });
 
-      return (await tx<DbLocationsRow>('locations')
-        .where({ id })
-        .select())![0];
+      return (await tx<DbLocationsRow>('locations').where({ id }).select())![0];
     });
   }
 

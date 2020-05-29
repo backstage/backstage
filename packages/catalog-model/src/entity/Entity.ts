@@ -32,9 +32,9 @@ export type Entity = {
   kind: string;
 
   /**
-   * Optional metadata related to the entity.
+   * Metadata related to the entity.
    */
-  metadata?: EntityMeta;
+  metadata: EntityMeta;
 
   /**
    * The specification data describing the entity itself.
@@ -86,9 +86,9 @@ export type EntityMeta = {
    * The name of the entity.
    *
    * Must be uniqe within the catalog at any given point in time, for any
-   * given namespace, for any given kind.
+   * given namespace + kind pair.
    */
-  name?: string;
+  name: string;
 
   /**
    * The namespace that the entity belongs to.

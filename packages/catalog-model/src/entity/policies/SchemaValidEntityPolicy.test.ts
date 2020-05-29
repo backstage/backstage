@@ -80,9 +80,9 @@ describe('SchemaValidEntityPolicy', () => {
   // metadata
   //
 
-  it('accepts missing metadata', async () => {
+  it('rejects missing metadata', async () => {
     delete data.metadata;
-    await expect(policy.enforce(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).rejects.toThrow(/metadata/);
   });
 
   it('rejects bad metadata type', async () => {
@@ -120,9 +120,9 @@ describe('SchemaValidEntityPolicy', () => {
     await expect(policy.enforce(data)).rejects.toThrow(/generation/);
   });
 
-  it('accepts missing name', async () => {
+  it('rejects missing name', async () => {
     delete data.metadata.name;
-    await expect(policy.enforce(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).rejects.toThrow(/name/);
   });
 
   it('rejects bad name type', async () => {
