@@ -16,10 +16,12 @@
 
 import { AuthProviderFactories, AuthProviderFactory } from './types';
 import { GoogleAuthProvider } from './google';
+import { GithubAuthProvider } from './github';
 
 export class ProviderFactories {
   private static readonly providerFactories: AuthProviderFactories = {
     google: GoogleAuthProvider,
+    github: GithubAuthProvider,
   };
 
   public static getProviderFactory(providerId: string): AuthProviderFactory {
