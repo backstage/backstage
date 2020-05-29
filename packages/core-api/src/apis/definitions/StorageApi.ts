@@ -16,14 +16,22 @@
 
 import { createApiRef } from '../ApiRef';
 
-type setValue<T> = (value: T | null) => void;
-type removeValue = () => void;
-export type UserSettingsApi = {
+type UnsubscribeFromStore = () => void;
+type SubscribeToStoreHandler<T> = ({
+  storeName,
+  key,
+  oldValue,
+  newValue,
+}: {
+  storeName: string;
+  key: string;
+  oldValue?: T;
+  newValue?: T;
+}) => void;
+
+export type StorageApi = {
   /**
    * Get persistent data.
-   *
-   * TODO: Replace with something less volatile than LocalStorage
-   *
    * @param {String} storeName Name of the store.
    * @param {String?} key (Optional) Unique key associated with the data.
    * If not key is specified,the whole store is returned.
@@ -33,45 +41,50 @@ export type UserSettingsApi = {
   getFromStore<T>(
     storeName: string,
     key: string,
-    defaultValue: T | null,
-  ): T | null;
+    defaultValue?: T,
+  ): Promise<T | undefined>;
+
   /**
    * Remove persistent data.
-   *
-   * TODO: Replace with something less volatile than LocalStorage
    *
    * @param {String} storeName Name of the store.
    * @param {String} key Unique key associated with the data.
    */
-  removeFromStore(storeName: string, key: string): void;
+  removeFromStore(storeName: string, key: string): Promise<void>;
 
   /**
-   * Save persistent data.
-   *
-   * TODO: Replace with something less volatile than LocalStorage
+   * Save persiswtent data.
    *
    * @param {String} storeName Name of the store.
    * @param {String} key Unique key associated with the data.
    * @param {Object} data The data that should be stored.
    */
-  saveToStore(storeName: string, key: string, data: any): void;
+  saveToStore(storeName: string, key: string, data: any): Promise<void>;
 
   /**
-   * React hook that observes a single store value and provides functions for updating the value.
+   * Callback for Changes in the store
+   * @callback subscribeHandler
+   * @param {String} storeName Name of the store.
+   * @param {String} key Unique key associated with the data.
+   * @param {Object} oldValue The old value that was in the store.
+   * @param {Object} newValue The new value that has been set in the store.
+   */
+  /**
+   * Subscribe to Key changes in a store and get the new and old value
    *
    * @param {String} storeName Name of the store.
    * @param {String} key Unique key associated with the data.
-   * @return {[value, setValue(value), removeValue()]} An array to be deconstructed,
-   * The first element is the value, the second is a function to call to update the value,
-   * and the third is a function to call to clear the value.
+   * @param {subscribeHandler} handler Handler which is called with the old value and new value in the store.
+   * @returns {Function} Unsubscribe to changes in the store.
    */
-  useStoreValue<T>(
+  subscribeToChange<T>(
     storeName: string,
     key: string,
-  ): [T | null, setValue<T | null>, removeValue];
+    handler: SubscribeToStoreHandler<T>,
+  ): UnsubscribeFromStore;
 };
 
-export const userSettingsApiRef = createApiRef<UserSettingsApi>({
+export const storageApiRef = createApiRef<StorageApi>({
   id: 'core.user.settings',
   description:
     'Provides the ability to modify settings that are personalised to the user',
