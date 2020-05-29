@@ -15,4 +15,6 @@
  */
 
 export { plugin } from './plugin';
-export * from './api';
+export * from './api/CatalogClient';
+export * from './api/types';
+export * from './types';
