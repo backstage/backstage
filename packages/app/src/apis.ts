@@ -25,9 +25,11 @@ import {
   featureFlagsApiRef,
   FeatureFlags,
   GoogleAuth,
+  GithubAuth,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
+  githubAuthApiRef,
 } from '@backstage/core';
 
 import {
@@ -57,6 +59,15 @@ const oauthRequestApi = builder.add(
 builder.add(
   googleAuthApiRef,
   GoogleAuth.create({
+    apiOrigin: 'http://localhost:7000',
+    basePath: '/auth/',
+    oauthRequestApi,
+  }),
+);
+
+builder.add(
+  githubAuthApiRef,
+  GithubAuth.create({
     apiOrigin: 'http://localhost:7000',
     basePath: '/auth/',
     oauthRequestApi,

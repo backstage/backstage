@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './google';
-export * from './github';
+export * from './types';
+export { default as GithubAuth } from './GithubAuth';

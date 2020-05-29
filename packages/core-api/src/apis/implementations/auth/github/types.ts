@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export * from './google';
-export * from './github';
+export type GithubSession = {
+  accessToken: string;
+  scopes: Set<string>;
+  expiresAt: Date;
+};

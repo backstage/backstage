@@ -14,5 +14,18 @@
  * limitations under the License.
  */
 
-export * from './google';
-export * from './github';
+import GithubAuth from './GithubAuth';
+
+const theFuture = new Date(Date.now() + 3600000);
+
+describe('GithubAuth', () => {
+  it('should get refreshed access token', async () => {
+    const getSession = jest
+      .fn()
+      .mockResolvedValue({ accessToken: 'access-token', expiresAt: theFuture });
+    const githubAuth = new GithubAuth({ getSession } as any);
+
+    expect(await githubAuth.getAccessToken()).toBe('access-token');
+    expect(getSession).toBeCalledTimes(1);
+  });
+});
