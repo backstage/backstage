@@ -16,6 +16,7 @@
 
 import { CatalogApi } from './types';
 import { DescriptorEnvelope } from '../types';
+import {} from '@backstage/catalog-model';
 
 export class CatalogClient implements CatalogApi {
   private apiOrigin: string;
@@ -41,5 +42,21 @@ export class CatalogClient implements CatalogApi {
     const entity = await response.json();
     if (entity) return entity;
     throw new Error(`'Entity not found: ${name}`);
+  }
+
+  async addLocation(type: string, target: string): Promise<{}> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ type, target }),
+      },
+    );
+    const location = await response.json();
+    if (location) return location;
+    throw new Error(`'Location wasn't added: ${target}`);
   }
 }
