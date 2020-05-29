@@ -60,7 +60,7 @@ export class IngestionModels implements IngestionModel {
         result.push(item);
       } else {
         try {
-          const output = await this.entityPolicy.apply(item.data);
+          const output = await this.entityPolicy.enforce(item.data);
           result.push({ type: 'data', data: output });
         } catch (e) {
           result.push({ type: 'error', error: e });

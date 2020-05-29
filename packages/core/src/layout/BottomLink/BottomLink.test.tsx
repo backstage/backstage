@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import BottomLink from './BottomLink';
+import { BottomLink } from './BottomLink';
 
 const minProps = {
   title: 'A deepLink title',

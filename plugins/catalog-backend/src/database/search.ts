@@ -127,17 +127,17 @@ export function buildEntitySearch(
     {
       entity_id: entityId,
       key: 'metadata.name',
-      value: toValue(entity.metadata?.name),
+      value: toValue(entity.metadata.name),
     },
     {
       entity_id: entityId,
       key: 'metadata.namespace',
-      value: toValue(entity.metadata?.namespace),
+      value: toValue(entity.metadata.namespace),
     },
     {
       entity_id: entityId,
       key: 'metadata.uid',
-      value: toValue(entity.metadata?.uid),
+      value: toValue(entity.metadata.uid),
     },
   ];
 

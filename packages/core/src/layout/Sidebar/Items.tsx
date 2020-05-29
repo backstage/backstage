@@ -22,12 +22,12 @@ import {
   Typography,
   Badge,
 } from '@material-ui/core';
+import { IconComponent } from '@backstage/core-api';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
 import React, { FC, useContext, useState, KeyboardEventHandler } from 'react';
 import { NavLink } from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
-import { IconComponent } from '../../icons';
 
 const useStyles = makeStyles<Theme>(theme => {
   const {

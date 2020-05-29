@@ -22,14 +22,14 @@ const defaultKnownFields = ['apiVersion', 'kind', 'metadata', 'spec'];
 /**
  * Ensures that there are no foreign root fields in the entity.
  */
-export class ForeignRootFieldsEntityPolicy implements EntityPolicy {
+export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
   private readonly knownFields: string[];
 
   constructor(knownFields: string[] = defaultKnownFields) {
     this.knownFields = knownFields;
   }
 
-  async apply(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity> {
     for (const field of Object.keys(entity)) {
       if (!this.knownFields.includes(field)) {
         throw new Error(`Unknown field ${field}`);

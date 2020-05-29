@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import InfoCard from '.';
+import { InfoCard } from '.';
 import { Grid } from '@material-ui/core';
 
 const cardContentStyle = { height: 200, width: 500 };

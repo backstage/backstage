@@ -32,7 +32,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
     this.validators = validators;
   }
 
-  async apply(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity> {
     function require(
       field: string,
       value: any,
@@ -65,23 +65,20 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
     require('apiVersion', entity.apiVersion, this.validators.isValidApiVersion);
     require('kind', entity.kind, this.validators.isValidKind);
 
-    optional(
-      'metadata.name',
-      entity.metadata?.name,
-      this.validators.isValidEntityName,
-    );
+    require('metadata.name', entity.metadata.name, this.validators
+      .isValidEntityName);
     optional(
       'metadata.namespace',
-      entity.metadata?.namespace,
+      entity.metadata.namespace,
       this.validators.isValidNamespace,
     );
 
-    for (const [k, v] of Object.entries(entity.metadata?.labels ?? [])) {
+    for (const [k, v] of Object.entries(entity.metadata.labels ?? [])) {
       require(`labels.${k}`, k, this.validators.isValidLabelKey);
       require(`labels.${k}`, v, this.validators.isValidLabelValue);
     }
 
-    for (const [k, v] of Object.entries(entity.metadata?.annotations ?? [])) {
+    for (const [k, v] of Object.entries(entity.metadata.annotations ?? [])) {
       require(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
       require(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
     }

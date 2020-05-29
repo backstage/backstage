@@ -20,7 +20,7 @@ import { Typography, Tooltip, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
 import { Theme } from '../Page/Page';
-import Waves from './Waves';
+import { Waves } from './Waves';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
@@ -193,5 +193,3 @@ export const Header: FC<Props> = ({
     </Fragment>
   );
 };
-
-export default Header;

@@ -15,11 +15,11 @@
  */
 
 import yaml from 'yaml';
-import { ForeignRootFieldsEntityPolicy } from './ForeignRootFieldsEntityPolicy';
+import { NoForeignRootFieldsEntityPolicy } from './NoForeignRootFieldsEntityPolicy';
 
-describe('ForeignRootFieldsEntityPolicy', () => {
+describe('NoForeignRootFieldsEntityPolicy', () => {
   let data: any;
-  let policy: ForeignRootFieldsEntityPolicy;
+  let policy: NoForeignRootFieldsEntityPolicy;
 
   beforeEach(() => {
     data = yaml.parse(`
@@ -38,15 +38,15 @@ describe('ForeignRootFieldsEntityPolicy', () => {
       spec:
         custom: stuff
     `);
-    policy = new ForeignRootFieldsEntityPolicy();
+    policy = new NoForeignRootFieldsEntityPolicy();
   });
 
   it('works for the happy path', async () => {
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects unknown root fields', async () => {
     data.spec2 = {};
-    await expect(policy.apply(data)).rejects.toThrow(/spec2/i);
+    await expect(policy.enforce(data)).rejects.toThrow(/spec2/i);
   });
 });

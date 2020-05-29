@@ -43,7 +43,7 @@ describe('SchemaValidEntityPolicy', () => {
   });
 
   it('works for the happy path', async () => {
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   //
@@ -51,113 +51,113 @@ describe('SchemaValidEntityPolicy', () => {
   //
 
   it('rejects wrong root type', async () => {
-    await expect(policy.apply((7 as unknown) as Entity)).rejects.toThrow(
+    await expect(policy.enforce((7 as unknown) as Entity)).rejects.toThrow(
       /object/,
     );
   });
 
   it('rejects missing apiVersion', async () => {
     delete data.apiVersion;
-    await expect(policy.apply(data)).rejects.toThrow(/apiVersion/);
+    await expect(policy.enforce(data)).rejects.toThrow(/apiVersion/);
   });
 
   it('rejects bad apiVersion type', async () => {
     data.apiVersion = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/apiVersion/);
+    await expect(policy.enforce(data)).rejects.toThrow(/apiVersion/);
   });
 
   it('rejects missing kind', async () => {
     delete data.kind;
-    await expect(policy.apply(data)).rejects.toThrow(/kind/);
+    await expect(policy.enforce(data)).rejects.toThrow(/kind/);
   });
 
   it('rejects bad kind type', async () => {
     data.kind = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/kind/);
+    await expect(policy.enforce(data)).rejects.toThrow(/kind/);
   });
 
   //
   // metadata
   //
 
-  it('accepts missing metadata', async () => {
-    delete data.medatata;
-    await expect(policy.apply(data)).resolves.toBe(data);
+  it('rejects missing metadata', async () => {
+    delete data.metadata;
+    await expect(policy.enforce(data)).rejects.toThrow(/metadata/);
   });
 
   it('rejects bad metadata type', async () => {
     data.metadata = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/metadata/);
+    await expect(policy.enforce(data)).rejects.toThrow(/metadata/);
   });
 
   it('accepts missing uid', async () => {
     delete data.metadata.uid;
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects bad uid type', async () => {
     data.metadata.uid = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/uid/);
+    await expect(policy.enforce(data)).rejects.toThrow(/uid/);
   });
 
   it('accepts missing etag', async () => {
     delete data.metadata.etag;
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects bad etag type', async () => {
     data.metadata.etag = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/etag/);
+    await expect(policy.enforce(data)).rejects.toThrow(/etag/);
   });
 
   it('accepts missing generation', async () => {
     delete data.metadata.generation;
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects bad generation type', async () => {
     data.metadata.generation = 'a';
-    await expect(policy.apply(data)).rejects.toThrow(/generation/);
+    await expect(policy.enforce(data)).rejects.toThrow(/generation/);
   });
 
-  it('accepts missing name', async () => {
+  it('rejects missing name', async () => {
     delete data.metadata.name;
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).rejects.toThrow(/name/);
   });
 
   it('rejects bad name type', async () => {
     data.metadata.name = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/name/);
+    await expect(policy.enforce(data)).rejects.toThrow(/name/);
   });
 
   it('accepts missing namespace', async () => {
     delete data.metadata.namespace;
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects bad namespace type', async () => {
     data.metadata.namespace = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/namespace/);
+    await expect(policy.enforce(data)).rejects.toThrow(/namespace/);
   });
 
   it('accepts missing labels', async () => {
     delete data.metadata.labels;
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects bad labels type', async () => {
     data.metadata.labels = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/labels/);
+    await expect(policy.enforce(data)).rejects.toThrow(/labels/);
   });
 
   it('accepts missing annotations', async () => {
     delete data.metadata.annotations;
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects bad annotations type', async () => {
     data.metadata.annotations = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/annotations/);
+    await expect(policy.enforce(data)).rejects.toThrow(/annotations/);
   });
 
   //
@@ -166,11 +166,11 @@ describe('SchemaValidEntityPolicy', () => {
 
   it('accepts missing spec', async () => {
     delete data.spec;
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects non-object spec', async () => {
     data.spec = 7;
-    await expect(policy.apply(data)).rejects.toThrow(/spec/);
+    await expect(policy.enforce(data)).rejects.toThrow(/spec/);
   });
 });

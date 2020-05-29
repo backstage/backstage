@@ -17,4 +17,4 @@
 export { LocationReaders } from './LocationReaders';
 export { FileLocationReader } from './readers/FileLocationReader';
 export { GitHubLocationReader } from './readers/GitHubLocationReader';
-export { LocationReader } from './readers/types';
+export type { LocationReader } from './readers/types';

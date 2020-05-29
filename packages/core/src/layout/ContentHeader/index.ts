@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-describe('dummy', () => {
-  it('dummy', () => {
-    expect(1).toBe(1);
-  });
-});
+export { ContentHeader } from './ContentHeader';

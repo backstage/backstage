@@ -27,14 +27,10 @@
     "yn": "^4.0.0",
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0",
-    "passport-oauth2-refresh": "^2.0.0",
-    "passport-oauth2": "^1.5.0",
     "cookie-parser": "^1.4.5",
-    "@types/passport-oauth2-refresh": "^1.1.1",
     "@types/passport": "^1.0.3",
     "@types/passport-google-oauth20": "^2.0.3",
-    "@types/cookie-parser": "^1.4.2",
-    "@types/passport-oauth2": "^1.4.9"
+    "@types/cookie-parser": "^1.4.2"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.6",

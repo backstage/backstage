@@ -18,7 +18,7 @@ import { makeStyles } from '@material-ui/core';
 import React, { createContext, FC, useEffect, useState } from 'react';
 import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
-import { LocalStorage } from '../../data/localStorage';
+import { LocalStorage } from './localStorage';
 
 const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>({
   root: {

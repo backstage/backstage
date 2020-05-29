@@ -36,14 +36,14 @@ describe('DatabaseManager', () => {
         readLocation: jest.fn(),
       };
       const policy: EntityPolicy = {
-        apply: jest.fn(),
+        enforce: jest.fn(),
       };
 
       await expect(
         DatabaseManager.refreshLocations(db, reader, policy, getVoidLogger()),
       ).resolves.toBeUndefined();
       expect(reader.readLocation).not.toHaveBeenCalled();
-      expect(policy.apply).not.toHaveBeenCalled();
+      expect(policy.enforce).not.toHaveBeenCalled();
     });
 
     it('can update a single location', async () => {
@@ -78,7 +78,7 @@ describe('DatabaseManager', () => {
         ),
       };
       const policy: EntityPolicy = {
-        apply: jest.fn(() => Promise.resolve(desc)),
+        enforce: jest.fn(() => Promise.resolve(desc)),
       };
 
       await expect(
@@ -126,7 +126,7 @@ describe('DatabaseManager', () => {
         ),
       };
       const policy: EntityPolicy = {
-        apply: jest.fn(() => Promise.resolve(desc)),
+        enforce: jest.fn(() => Promise.resolve(desc)),
       };
 
       await expect(
@@ -178,7 +178,9 @@ describe('DatabaseManager', () => {
         ),
       };
       const policy: EntityPolicy = {
-        apply: jest.fn(() => Promise.reject(new Error('parser error message'))),
+        enforce: jest.fn(() =>
+          Promise.reject(new Error('parser error message')),
+        ),
       };
 
       await expect(
@@ -225,7 +227,9 @@ describe('DatabaseManager', () => {
         ),
       };
       const policy: EntityPolicy = {
-        apply: jest.fn(() => Promise.reject(new Error('parser error message'))),
+        enforce: jest.fn(() =>
+          Promise.reject(new Error('parser error message')),
+        ),
       };
 
       await expect(

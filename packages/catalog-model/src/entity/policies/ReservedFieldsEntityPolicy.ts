@@ -43,19 +43,19 @@ export class ReservedFieldsEntityPolicy implements EntityPolicy {
     ];
   }
 
-  async apply(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity> {
     for (const field of this.reservedFields) {
       if (entity.spec?.hasOwnProperty(field)) {
         throw new Error(
           `The spec may not contain the field ${field}, because it has reserved meaning`,
         );
       }
-      if (entity.metadata?.labels?.hasOwnProperty(field)) {
+      if (entity.metadata.labels?.hasOwnProperty(field)) {
         throw new Error(
           `A label may not have the field ${field}, because it has reserved meaning`,
         );
       }
-      if (entity.metadata?.annotations?.hasOwnProperty(field)) {
+      if (entity.metadata.annotations?.hasOwnProperty(field)) {
         throw new Error(
           `An annotation may not have the field ${field}, because it has reserved meaning`,
         );

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import ContentHeader from './ContentHeader';
+import { ContentHeader } from './ContentHeader';
 import { wrapInThemedTestApp } from '@backstage/test-utils';
 
 jest.mock('react-helmet', () => {

@@ -42,21 +42,23 @@ describe('ReservedFieldsEntityPolicy', () => {
   });
 
   it('works for the happy path', async () => {
-    await expect(policy.apply(data)).resolves.toBe(data);
+    await expect(policy.enforce(data)).resolves.toBe(data);
   });
 
   it('rejects reserved keys in the spec root', async () => {
     data.spec.apiVersion = 'a/b';
-    await expect(policy.apply(data)).rejects.toThrow(/spec.*apiVersion/i);
+    await expect(policy.enforce(data)).rejects.toThrow(/spec.*apiVersion/i);
   });
 
   it('rejects reserved keys in labels', async () => {
     data.metadata.labels.apiVersion = 'a';
-    await expect(policy.apply(data)).rejects.toThrow(/label.*apiVersion/i);
+    await expect(policy.enforce(data)).rejects.toThrow(/label.*apiVersion/i);
   });
 
   it('rejects reserved keys in annotations', async () => {
     data.metadata.annotations.apiVersion = 'a';
-    await expect(policy.apply(data)).rejects.toThrow(/annotation.*apiVersion/i);
+    await expect(policy.enforce(data)).rejects.toThrow(
+      /annotation.*apiVersion/i,
+    );
   });
 });

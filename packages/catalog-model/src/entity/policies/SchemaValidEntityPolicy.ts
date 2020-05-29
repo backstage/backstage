@@ -47,12 +47,12 @@ const DEFAULT_ENTITY_SCHEMA = yup.object({
           'The generation must be an integer greater than zero',
           value => value === undefined || (value === (value | 0) && value > 0),
         ),
-      name: yup.string().notRequired(),
+      name: yup.string().required(),
       namespace: yup.string().notRequired(),
       labels: yup.object<Record<string, string>>().notRequired(),
       annotations: yup.object<Record<string, string>>().notRequired(),
     })
-    .notRequired(),
+    .required(),
   spec: yup.object({}).notRequired(),
 });
 
@@ -70,7 +70,7 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
     this.schema = schema;
   }
 
-  async apply(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity> {
     try {
       return await this.schema.validate(entity, { strict: true });
     } catch (e) {

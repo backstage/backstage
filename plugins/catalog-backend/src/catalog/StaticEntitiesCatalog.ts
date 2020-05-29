@@ -31,7 +31,7 @@ export class StaticEntitiesCatalog implements EntitiesCatalog {
   }
 
   async entityByUid(uid: string): Promise<Entity | undefined> {
-    const item = this._entities.find(e => uid === e.metadata?.uid);
+    const item = this._entities.find(e => uid === e.metadata.uid);
     if (!item) {
       throw new NotFoundError('Entity cannot be found');
     }
@@ -46,8 +46,8 @@ export class StaticEntitiesCatalog implements EntitiesCatalog {
     const item = this._entities.find(
       e =>
         kind === e.kind &&
-        name === e.metadata?.name &&
-        namespace === e.metadata?.namespace,
+        name === e.metadata.name &&
+        namespace === e.metadata.namespace,
     );
     if (!item) {
       throw new NotFoundError('Entity cannot be found');

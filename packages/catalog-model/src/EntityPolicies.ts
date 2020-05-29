@@ -17,7 +17,7 @@
 import {
   Entity,
   FieldFormatEntityPolicy,
-  ForeignRootFieldsEntityPolicy,
+  NoForeignRootFieldsEntityPolicy,
   ReservedFieldsEntityPolicy,
   SchemaValidEntityPolicy,
 } from './entity';
@@ -29,10 +29,10 @@ import { EntityPolicy } from './types';
 class AllEntityPolicies implements EntityPolicy {
   constructor(private readonly policies: EntityPolicy[]) {}
 
-  async apply(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity> {
     let result = entity;
     for (const policy of this.policies) {
-      result = await policy.apply(entity);
+      result = await policy.enforce(entity);
     }
     return result;
   }
@@ -43,10 +43,10 @@ class AllEntityPolicies implements EntityPolicy {
 class AnyEntityPolicy implements EntityPolicy {
   constructor(private readonly policies: EntityPolicy[]) {}
 
-  async apply(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity> {
     for (const policy of this.policies) {
       try {
-        return await policy.apply(entity);
+        return await policy.enforce(entity);
       } catch {
         continue;
       }
@@ -62,7 +62,7 @@ export class EntityPolicies implements EntityPolicy {
     return EntityPolicies.allOf([
       EntityPolicies.allOf([
         new SchemaValidEntityPolicy(),
-        new ForeignRootFieldsEntityPolicy(),
+        new NoForeignRootFieldsEntityPolicy(),
         new FieldFormatEntityPolicy(),
         new ReservedFieldsEntityPolicy(),
       ]),
@@ -82,7 +82,7 @@ export class EntityPolicies implements EntityPolicy {
     this.policy = policy;
   }
 
-  apply(entity: Entity): Promise<Entity> {
-    return this.policy.apply(entity);
+  enforce(entity: Entity): Promise<Entity> {
+    return this.policy.enforce(entity);
   }
 }

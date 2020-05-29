@@ -26,7 +26,7 @@ const useStyles = makeStyles({
   },
 });
 
-const MicDrop = () => {
+export const MicDrop = () => {
   const classes = useStyles();
   return (
     <svg
@@ -158,5 +158,3 @@ const MicDrop = () => {
     </svg>
   );
 };
-
-export default MicDrop;

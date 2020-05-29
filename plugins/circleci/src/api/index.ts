@@ -28,7 +28,8 @@ import {
 } from 'circleci-api';
 import { createApiRef } from '@backstage/core';
 
-export { BuildWithSteps, BuildStepAction, BuildSummary, GitType };
+export { GitType };
+export type { BuildWithSteps, BuildStepAction, BuildSummary };
 
 export const circleCIApiRef = createApiRef<CircleCIApi>({
   id: 'plugin.circleci.service',

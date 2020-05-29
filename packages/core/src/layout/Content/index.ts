@@ -13,16 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext } from 'react';
-import { SidebarPinStateContext } from '../layout/Sidebar';
 
-export function useSidebarPinState() {
-  const { isPinned, toggleSidebarPinState } = useContext(
-    SidebarPinStateContext,
-  );
-
-  return {
-    isPinned,
-    toggleSidebarPinState,
-  };
-}
+export { Content } from './Content';

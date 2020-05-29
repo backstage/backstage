@@ -15,6 +15,6 @@
  */
 
 export { FieldFormatEntityPolicy } from './FieldFormatEntityPolicy';
-export { ForeignRootFieldsEntityPolicy } from './ForeignRootFieldsEntityPolicy';
+export { NoForeignRootFieldsEntityPolicy } from './NoForeignRootFieldsEntityPolicy';
 export { ReservedFieldsEntityPolicy } from './ReservedFieldsEntityPolicy';
 export { SchemaValidEntityPolicy } from './SchemaValidEntityPolicy';

@@ -19,9 +19,9 @@ import Knex from 'knex';
 import lodash from 'lodash';
 import path from 'path';
 import { Logger } from 'winston';
+import { IngestionModel } from '../ingestion/types';
 import { Database } from './Database';
 import { DatabaseLocationUpdateLogStatus, DbEntityRequest } from './types';
-import { IngestionModel } from '../ingestion/types';
 
 export class DatabaseManager {
   public static async createDatabase(
@@ -86,7 +86,7 @@ export class DatabaseManager {
           }
 
           try {
-            const entity = await entityPolicy.apply(readerItem.data);
+            const entity = await entityPolicy.enforce(readerItem.data);
             await DatabaseManager.refreshSingleEntity(
               database,
               location.id,
@@ -96,14 +96,14 @@ export class DatabaseManager {
             await DatabaseManager.logUpdateSuccess(
               database,
               location.id,
-              entity.metadata!.name,
+              entity.metadata.name,
             );
           } catch (error) {
             await DatabaseManager.logUpdateFailure(
               database,
               location.id,
               error,
-              readerItem.data.metadata?.name,
+              readerItem.data.metadata.name,
             );
           }
         }

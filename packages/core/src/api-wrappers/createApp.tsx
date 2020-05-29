@@ -21,7 +21,7 @@ import privateExports, {
   defaultSystemIcons,
 } from '@backstage/core-api';
 
-import ErrorPage from '../layout/ErrorPage';
+import { ErrorPage } from '../layout/ErrorPage';
 import { lightTheme, darkTheme } from '@backstage/theme';
 
 const { PrivateAppImpl } = privateExports;

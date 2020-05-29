@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './icons';
-export * from './types';
+export { HeaderActionMenu } from './HeaderActionMenu';

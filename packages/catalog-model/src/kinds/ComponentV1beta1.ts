@@ -50,7 +50,7 @@ export class ComponentV1beta1Policy implements EntityPolicy {
     });
   }
 
-  async apply(envelope: Entity): Promise<Entity> {
+  async enforce(envelope: Entity): Promise<Entity> {
     if (
       envelope.apiVersion !== 'backstage.io/v1beta1' ||
       envelope.kind !== 'Component'
