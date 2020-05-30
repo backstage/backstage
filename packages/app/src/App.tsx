@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  createApp,
-  AlertDisplay,
-  OAuthRequestDialog,
-  LoginPage,
-} from '@backstage/core';
+import { createApp, AlertDisplay, OAuthRequestDialog } from '@backstage/core';
 import React, { FC } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import apis from './apis';
@@ -40,7 +35,6 @@ const App: FC<{}> = () => (
     <OAuthRequestDialog />
     <Router>
       <Root>
-        <Route key="login" path="/login" component={LoginPage} exact />
         <AppComponent />
       </Root>
     </Router>
