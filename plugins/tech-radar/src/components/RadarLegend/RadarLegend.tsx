@@ -227,8 +227,6 @@ const RadarLegend: FC<Props> = props => {
   );
 };
 
-// FIXME: Would prefer to leverage CommonPropTypes here, but they caused
-//        null | undefined warnings
 RadarLegend.propTypes = {
   quadrants: PropTypes.array.isRequired,
   rings: PropTypes.array.isRequired,
