@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { makeStyles, Theme } from '@material-ui/core';
-// import * as CommonPropTypes from '../../utils/prop-types';
 import { Quadrant, Ring, Entry } from '../../utils/types';
 
-// TODO: Remove this once segment.js has been typed
-type Segment = {
-  [k: number]: any[];
-};
-
 type Segments = {
-  [k: number]: Segment;
+  [k: number]: { [k: number]: Entry[] };
 };
 
 type Props = {
@@ -233,14 +227,14 @@ const RadarLegend: FC<Props> = props => {
   );
 };
 
-// FIXME: Why does it say these are null | undefined?
-/* RadarLegend.propTypes = {
-  quadrants: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.QUADRANT))
-    .isRequired,
-  rings: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.RING)).isRequired,
-  entries: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.ENTRY)).isRequired,
+// FIXME: Would prefer to leverage CommonPropTypes here, but they caused
+//        null | undefined warnings
+RadarLegend.propTypes = {
+  quadrants: PropTypes.array.isRequired,
+  rings: PropTypes.array.isRequired,
+  entries: PropTypes.array.isRequired,
   onEntryMouseEnter: PropTypes.func,
   onEntryMouseLeave: PropTypes.func,
-}; */
+};
 
 export default RadarLegend;
