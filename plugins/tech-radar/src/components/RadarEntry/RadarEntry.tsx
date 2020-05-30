@@ -15,7 +15,6 @@
  */
 
 import React, { FC } from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles, Theme } from '@material-ui/core';
 
 type Props = {
@@ -91,18 +90,6 @@ const RadarEntry: FC<Props> = props => {
       </text>
     </g>
   );
-};
-
-RadarEntry.propTypes = {
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired,
-  number: PropTypes.number.isRequired,
-  color: PropTypes.string.isRequired,
-  url: PropTypes.string,
-  moved: PropTypes.number,
-  onMouseEnter: PropTypes.func,
-  onMouseLeave: PropTypes.func,
-  onClick: PropTypes.func,
 };
 
 export default RadarEntry;

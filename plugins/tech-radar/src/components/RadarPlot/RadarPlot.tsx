@@ -15,8 +15,6 @@
  */
 
 import React, { FC } from 'react';
-import PropTypes from 'prop-types';
-import * as CommonPropTypes from '../../utils/prop-types';
 import { Quadrant, Ring, Entry } from '../../utils/types';
 
 import RadarGrid from '../RadarGrid';
@@ -89,22 +87,6 @@ const RadarPlot: FC<Props> = props => {
       </g>
     </g>
   );
-};
-
-RadarPlot.propTypes = {
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
-  radius: PropTypes.number.isRequired,
-  rings: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.RING).isRequired)
-    .isRequired,
-  quadrants: PropTypes.arrayOf(
-    PropTypes.shape(CommonPropTypes.QUADRANT).isRequired,
-  ).isRequired,
-  entries: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.ENTRY).isRequired)
-    .isRequired,
-  activeEntry: PropTypes.shape(CommonPropTypes.ENTRY),
-  onEntryMouseEnter: PropTypes.func,
-  onEntryMouseLeave: PropTypes.func,
 };
 
 export default RadarPlot;

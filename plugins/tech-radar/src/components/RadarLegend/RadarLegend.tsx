@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles, Theme } from '@material-ui/core';
-import * as CommonPropTypes from '../../utils/prop-types';
 import { Quadrant, Ring, Entry } from '../../utils/types';
 
 type Segments = {
@@ -226,18 +224,6 @@ const RadarLegend: FC<Props> = props => {
       )}
     </g>
   );
-};
-
-RadarLegend.propTypes = {
-  quadrants: PropTypes.arrayOf(
-    PropTypes.shape(CommonPropTypes.QUADRANT).isRequired,
-  ).isRequired,
-  rings: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.RING).isRequired)
-    .isRequired,
-  entries: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.ENTRY).isRequired)
-    .isRequired,
-  onEntryMouseEnter: PropTypes.func,
-  onEntryMouseLeave: PropTypes.func,
 };
 
 export default RadarLegend;

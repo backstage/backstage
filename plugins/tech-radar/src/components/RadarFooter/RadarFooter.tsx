@@ -15,7 +15,6 @@
  */
 
 import React, { FC } from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles, Theme } from '@material-ui/core';
 
 type Props = {
@@ -41,11 +40,6 @@ const RadarFooter: FC<Props> = props => {
       {'▲ moved up\u00a0\u00a0\u00a0\u00a0\u00a0▼ moved down'}
     </text>
   );
-};
-
-RadarFooter.propTypes = {
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired,
 };
 
 export default RadarFooter;
