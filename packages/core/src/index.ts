@@ -39,3 +39,4 @@ export { default as TrendLine } from './components/TrendLine';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
 export * from './components/Status';
 export { default as WarningPanel } from './components/WarningPanel';
+export { default as Tabs } from './components/Tabs';
