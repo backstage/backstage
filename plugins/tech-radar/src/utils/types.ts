@@ -20,6 +20,7 @@ export type Ring = {
   idx?: number;
   name: string;
   color: string;
+  outerRadius: number;
 };
 
 // Parameters for a quadrant (there should be exactly 4 of course)
@@ -46,6 +47,9 @@ export type Entry = {
   url?: string;
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
   moved?: number;
+  x: number;
+  y: number;
+  color: string;
 };
 
 // The same as ENTRY except quadrant/ring are declared by their string ID instead of being the actual objects

@@ -17,6 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, Theme } from '@material-ui/core';
+import * as CommonPropTypes from '../../utils/prop-types';
 import { Ring } from '../../utils/types';
 
 type Props = {
@@ -91,12 +92,13 @@ const RadarGrid = (props: Props) => {
 
   const ringNodes = rings.map(r => r.outerRadius).map(makeRingNode);
 
-  return axisNodes.concat(...ringNodes);
+  return <>{axisNodes.concat(...ringNodes)}</>;
 };
 
 RadarGrid.propTypes = {
   radius: PropTypes.number.isRequired,
-  rings: PropTypes.array.isRequired,
+  rings: PropTypes.arrayOf(PropTypes.shape(CommonPropTypes.RING).isRequired)
+    .isRequired,
 };
 
 export default RadarGrid;

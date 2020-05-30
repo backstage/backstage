@@ -19,21 +19,26 @@ import PropTypes from 'prop-types';
 // Parameters for a ring; its index in an array determines how close to the center this ring is.
 export const RING = {
   id: PropTypes.string.isRequired,
-  idx: PropTypes.number,
+  idx: PropTypes.oneOfType([PropTypes.number, null]),
   name: PropTypes.string.isRequired,
   color: PropTypes.string.isRequired,
+  outerRadius: PropTypes.number.isRequired,
 };
 
 // Parameters for a quadrant (there should be exactly 4 of course)
 export const QUADRANT = {
   id: PropTypes.string.isRequired,
-  idx: PropTypes.number,
+  idx: PropTypes.oneOfType([PropTypes.number, null]),
   name: PropTypes.string.isRequired,
+  legendX: PropTypes.number,
+  legendY: PropTypes.number,
+  legendWidth: PropTypes.number,
+  legendHeight: PropTypes.number,
 };
 
 export const ENTRY = {
   id: PropTypes.string.isRequired,
-  idx: PropTypes.number,
+  idx: PropTypes.oneOfType([PropTypes.number, null]),
   // The quadrant where this entry belongs
   quadrant: PropTypes.shape(QUADRANT).isRequired,
   // The ring where this entry belongs
@@ -41,9 +46,12 @@ export const ENTRY = {
   // The label that's shown in the legend and on hover
   title: PropTypes.string.isRequired,
   // An URL to a longer description as to why this entry is where it is
-  url: PropTypes.string,
+  url: PropTypes.oneOfType([PropTypes.string, null]),
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
-  moved: PropTypes.number,
+  moved: PropTypes.oneOfType([PropTypes.number, null]),
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+  color: PropTypes.string.isRequired,
 };
 
 // The same as ENTRY except quadrant/ring are declared by their string ID instead of being the actual objects
