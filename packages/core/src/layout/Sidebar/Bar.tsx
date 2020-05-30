@@ -23,7 +23,7 @@ import { SidebarPinStateContext } from './Page';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
-    zIndex: 1401,
+    zIndex: 1000,
     position: 'relative',
     overflow: 'visible',
     width: theme.spacing(7) + 1,
