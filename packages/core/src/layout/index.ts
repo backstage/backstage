@@ -21,7 +21,6 @@ export * from './Header';
 export * from './HeaderLabel';
 export * from './HomepageTimer';
 export * from './InfoCard';
-export * from './LoginPage';
 export * from './Page';
 export * from './Sidebar';
 export * from './TabbedCard';
