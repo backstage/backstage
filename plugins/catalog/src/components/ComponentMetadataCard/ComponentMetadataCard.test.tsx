@@ -22,16 +22,18 @@ describe('ComponentMetadataCard component', () => {
   it('should display component name if provided', async () => {
     const testComponent: Component = {
       name: 'test',
+      kind: 'Component',
+      description: 'Placeholder',
     };
     const rendered = await render(
       <ComponentMetadataCard loading={false} component={testComponent} />,
     );
-    expect(await rendered.findByText('test')).toBeInTheDOM();
+    expect(await rendered.findByText('test')).toBeInTheDocument();
   });
   it('should display loader when loading is set to true', async () => {
     const rendered = await render(
       <ComponentMetadataCard loading component={undefined} />,
     );
-    expect(await rendered.findByRole('progressbar')).toBeInTheDOM();
+    expect(await rendered.findByRole('progressbar')).toBeInTheDocument();
   });
 });

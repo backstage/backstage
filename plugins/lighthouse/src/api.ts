@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef } from '@backstage/core';
+import { createApiRef } from '@backstage/core';
 
 export type LighthouseCategoryId =
   | 'pwa'
@@ -105,7 +105,7 @@ export type LighthouseApi = {
   triggerAudit: (payload: TriggerAuditPayload) => Promise<Audit>;
 };
 
-export const lighthouseApiRef = new ApiRef<LighthouseApi>({
+export const lighthouseApiRef = createApiRef<LighthouseApi>({
   id: 'plugin.lighthouse.service',
   description: 'Used by the Lighthouse plugin to make requests',
 });

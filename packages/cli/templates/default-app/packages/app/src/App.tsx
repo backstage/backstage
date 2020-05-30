@@ -4,7 +4,7 @@ import React, { FC } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import * as plugins from './plugins';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   '@global': {
     html: {
       height: '100%',

@@ -17,7 +17,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { wrapInThemedTestApp, Keyboard } from '@backstage/test-utils';
-import HeaderActionMenu from './HeaderActionMenu';
+import { HeaderActionMenu } from './HeaderActionMenu';
 
 describe('<ComponentContextMenu />', () => {
   it('renders without any items and without exploding', () => {

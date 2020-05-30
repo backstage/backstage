@@ -21,6 +21,7 @@ import {
   errorApiRef,
   AlertApiForwarder,
   ErrorApiForwarder,
+  ErrorAlerter,
   featureFlagsApiRef,
   FeatureFlags,
   GoogleAuth,
@@ -37,14 +38,13 @@ import {
 import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
 
 import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
+import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
 const builder = ApiRegistry.builder();
 
-export const alertApiForwarder = new AlertApiForwarder();
-builder.add(alertApiRef, alertApiForwarder);
+const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 
-export const errorApiForwarder = new ErrorApiForwarder(alertApiForwarder);
-builder.add(errorApiRef, errorApiForwarder);
+builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
 builder.add(circleCIApiRef, new CircleCIApi());
 builder.add(featureFlagsApiRef, new FeatureFlags());
 
@@ -69,6 +69,14 @@ builder.add(
   new TechRadar({
     width: 1500,
     height: 800,
+  }),
+);
+
+builder.add(
+  catalogApiRef,
+  new CatalogClient({
+    apiOrigin: 'http://localhost:3000',
+    basePath: '/catalog/api',
   }),
 );
 

@@ -85,7 +85,7 @@ Take a look at the [Getting Started](docs/getting-started/README.md) guide to le
 - [Architecture](docs/architecture-terminology.md)
 - [API references](docs/reference/README.md)
 - [Designing for Backstage](docs/design.md)
-- [Storybook - UI components](http://storybook.backstage.io) ([WIP](https://github.com/spotify/backstage/milestone/9))
+- [Storybook - UI components](http://storybook.backstage.io)
 - [Contributing to Storybook](docs/getting-started/contributing-to-storybook.md)
 - Using Backstage components (TODO)
 

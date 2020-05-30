@@ -18,7 +18,7 @@ import React from 'react';
 import { Typography, Link, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
-import MicDrop from './MicDrop';
+import { MicDrop } from './MicDrop';
 import { useHistory } from 'react-router';
 
 interface IErrorPageProps {
@@ -26,7 +26,7 @@ interface IErrorPageProps {
   statusMessage: string;
 }
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {
     padding: theme.spacing(8),
   },
@@ -38,7 +38,7 @@ const useStyles = makeStyles<BackstageTheme>((theme) => ({
   },
 }));
 
-const ErrorPage = ({ status, statusMessage }: IErrorPageProps) => {
+export const ErrorPage = ({ status, statusMessage }: IErrorPageProps) => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -63,5 +63,3 @@ const ErrorPage = ({ status, statusMessage }: IErrorPageProps) => {
     </Grid>
   );
 };
-
-export default ErrorPage;

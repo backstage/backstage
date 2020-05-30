@@ -14,13 +14,39 @@
  * limitations under the License.
  */
 
-import { Database } from '../database';
-import { AddLocation, Location, LocationsCatalog } from './types';
+import { Database, DatabaseLocationUpdateLogEvent } from '../database';
+import { IngestionModel } from '../ingestion/types';
+import {
+  AddLocation,
+  Location,
+  LocationsCatalog,
+  LocationResponse,
+} from './types';
 
 export class DatabaseLocationsCatalog implements LocationsCatalog {
-  constructor(private readonly database: Database) {}
+  constructor(
+    private readonly database: Database,
+    private readonly ingestionModel: IngestionModel,
+  ) {}
 
   async addLocation(location: AddLocation): Promise<Location> {
+    const outputs = await this.ingestionModel.readLocation(
+      location.type,
+      location.target,
+    );
+    if (!outputs) {
+      throw new Error(
+        `Unknown location type ${location.type} ${location.target}`,
+      );
+    }
+    outputs.forEach(output => {
+      if (output.type === 'error') {
+        throw new Error(
+          `Can't read location at ${location.target}, ${output.error}`,
+        );
+      }
+    });
+
     const added = await this.database.addLocation(location);
     return added;
   }
@@ -29,13 +55,36 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
     await this.database.removeLocation(id);
   }
 
-  async locations(): Promise<Location[]> {
+  async locations(): Promise<LocationResponse[]> {
     const items = await this.database.locations();
-    return items;
+    return items.map(({ message, status, timestamp, ...data }) => ({
+      currentStatus: {
+        message,
+        status,
+        timestamp,
+      },
+      data,
+    }));
   }
 
-  async location(id: string): Promise<Location> {
-    const item = await this.location(id);
-    return item;
+  async locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]> {
+    return this.database.locationHistory(id);
+  }
+
+  async location(id: string): Promise<LocationResponse> {
+    const {
+      message,
+      status,
+      timestamp,
+      ...data
+    } = await this.database.location(id);
+    return {
+      currentStatus: {
+        message,
+        status,
+        timestamp,
+      },
+      data,
+    };
   }
 }

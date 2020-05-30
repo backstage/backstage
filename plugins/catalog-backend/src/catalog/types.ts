@@ -14,26 +14,56 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import * as yup from 'yup';
-import { DescriptorEnvelope } from '../ingestion';
 
 //
-// Items
+// Entities
 //
+
+export type EntityFilter = {
+  key: string;
+  values: (string | null)[];
+};
+export type EntityFilters = EntityFilter[];
 
 export type EntitiesCatalog = {
-  entities(): Promise<DescriptorEnvelope[]>;
-  entity(id: string): Promise<DescriptorEnvelope>;
+  entities(filters?: EntityFilters): Promise<Entity[]>;
+  entityByUid(uid: string): Promise<Entity | undefined>;
+  entityByName(
+    kind: string,
+    namespace: string | undefined,
+    name: string,
+  ): Promise<Entity | undefined>;
 };
 
 //
 // Locations
 //
 
+export type LocationUpdateStatus = {
+  timestamp: string | null;
+  status: string | null;
+  message: string | null;
+};
+export type LocationUpdateLogEvent = {
+  id: string;
+  status: 'fail' | 'success';
+  location_id: string;
+  entity_name: string;
+  created_at?: string;
+  message?: string;
+};
+
 export type Location = {
   id: string;
   type: string;
   target: string;
+};
+
+export type LocationResponse = {
+  data: Location;
+  currentStatus: LocationUpdateStatus;
 };
 
 export type AddLocation = {
@@ -51,6 +81,7 @@ export const addLocationSchema: yup.Schema<AddLocation> = yup
 export type LocationsCatalog = {
   addLocation(location: AddLocation): Promise<Location>;
   removeLocation(id: string): Promise<void>;
-  locations(): Promise<Location[]>;
-  location(id: string): Promise<Location>;
+  locations(): Promise<LocationResponse[]>;
+  location(id: string): Promise<LocationResponse>;
+  locationHistory(id: string): Promise<LocationUpdateLogEvent[]>;
 };

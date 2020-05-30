@@ -14,60 +14,29 @@
  * limitations under the License.
  */
 
-import passport from 'passport';
 import express from 'express';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import {
-  AuthProvider,
-  AuthProviderRouteHandlers,
+  executeFrameHandlerStrategy,
+  executeRedirectStrategy,
+  executeRefreshTokenStrategy,
+} from '../PassportStrategyHelper';
+import {
+  OAuthProviderHandlers,
+  AuthInfoBase,
+  AuthInfoPrivate,
+  RedirectInfo,
   AuthProviderConfig,
-} from './../types';
-import { postMessageResponse } from './../utils';
-import { InputError } from '@backstage/backend-common';
+} from '../types';
 
-export class GoogleAuthProvider
-  implements AuthProvider, AuthProviderRouteHandlers {
+export class GoogleAuthProvider implements OAuthProviderHandlers {
   private readonly providerConfig: AuthProviderConfig;
+  private readonly _strategy: GoogleStrategy;
+
   constructor(providerConfig: AuthProviderConfig) {
     this.providerConfig = providerConfig;
-  }
-
-  start(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) {
-    const scope = req.query.scope?.toString() ?? '';
-    if (!scope) {
-      throw new InputError('missing scope parameter');
-    }
-    return passport.authenticate('google', {
-      scope,
-      accessType: 'offline',
-      prompt: 'consent',
-    })(req, res, next);
-  }
-
-  frameHandler(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) {
-    return passport.authenticate('google', (_, user) => {
-      postMessageResponse(res, {
-        type: 'auth-result',
-        payload: user,
-      });
-    })(req, res, next);
-  }
-
-  async logout(_req: express.Request, res: express.Response) {
-    res.send('logout!');
-  }
-
-  strategy(): passport.Strategy {
     // TODO: throw error if env variables not set?
-    return new GoogleStrategy(
+    this._strategy = new GoogleStrategy(
       { ...this.providerConfig.options },
       (
         accessToken: any,
@@ -76,13 +45,45 @@ export class GoogleAuthProvider
         profile: any,
         done: any,
       ) => {
-        done(undefined, {
-          profile,
-          idToken: params.id_token,
-          accessToken,
-          refreshToken,
-        });
+        done(
+          undefined,
+          {
+            profile,
+            idToken: params.id_token,
+            accessToken,
+            scope: params.scope,
+            expiresInSeconds: params.expires_in,
+          },
+          {
+            refreshToken,
+          },
+        );
       },
     );
+  }
+
+  async start(req: express.Request, options: any): Promise<RedirectInfo> {
+    return await executeRedirectStrategy(req, this._strategy, options);
+  }
+
+  async handler(
+    req: express.Request,
+  ): Promise<{ user: AuthInfoBase; info: AuthInfoPrivate }> {
+    return await executeFrameHandlerStrategy(req, this._strategy);
+  }
+
+  async refresh(refreshToken: string, scope: string): Promise<AuthInfoBase> {
+    const { accessToken, params } = await executeRefreshTokenStrategy(
+      this._strategy,
+      refreshToken,
+      scope,
+    );
+
+    return {
+      accessToken,
+      idToken: params.id_token,
+      expiresInSeconds: params.expires_in,
+      scope: params.scope,
+    };
   }
 }

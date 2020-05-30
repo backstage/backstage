@@ -16,11 +16,13 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import ContentHeader from './ContentHeader';
+import { ContentHeader } from './ContentHeader';
 import { wrapInThemedTestApp } from '@backstage/test-utils';
 
 jest.mock('react-helmet', () => {
-  return ({ defaultTitle }: any) => <div>defaultTitle: {defaultTitle}</div>;
+  return {
+    Helmet: ({ defaultTitle }: any) => <div>defaultTitle: {defaultTitle}</div>,
+  };
 });
 
 describe('<ContentHeader/>', () => {

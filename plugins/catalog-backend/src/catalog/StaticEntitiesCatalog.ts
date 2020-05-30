@@ -15,25 +15,43 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
-import { DescriptorEnvelope } from '../ingestion';
+import { Entity } from '@backstage/catalog-model';
+import lodash from 'lodash';
 import { EntitiesCatalog } from './types';
 
 export class StaticEntitiesCatalog implements EntitiesCatalog {
-  private _entities: DescriptorEnvelope[];
+  private _entities: Entity[];
 
-  constructor(entities: DescriptorEnvelope[]) {
+  constructor(entities: Entity[]) {
     this._entities = entities;
   }
 
-  async entities(): Promise<DescriptorEnvelope[]> {
-    return this._entities.slice();
+  async entities(): Promise<Entity[]> {
+    return lodash.cloneDeep(this._entities);
   }
 
-  async entity(name: string): Promise<DescriptorEnvelope> {
-    const item = this._entities.find(e => e.metadata?.name === name);
+  async entityByUid(uid: string): Promise<Entity | undefined> {
+    const item = this._entities.find(e => uid === e.metadata.uid);
     if (!item) {
-      throw new NotFoundError(`Found no entity with name ${name}`);
+      throw new NotFoundError('Entity cannot be found');
     }
-    return item;
+    return lodash.cloneDeep(item);
+  }
+
+  async entityByName(
+    kind: string,
+    name: string,
+    namespace: string | undefined,
+  ): Promise<Entity | undefined> {
+    const item = this._entities.find(
+      e =>
+        kind === e.kind &&
+        name === e.metadata.name &&
+        namespace === e.metadata.namespace,
+    );
+    if (!item) {
+      throw new NotFoundError('Entity cannot be found');
+    }
+    return lodash.cloneDeep(item);
   }
 }

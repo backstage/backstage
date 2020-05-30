@@ -27,10 +27,19 @@ const columns: TableColumn[] = [
       <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
     ),
   },
+  {
+    title: 'Kind',
+    field: 'kind',
+  },
+  {
+    title: 'Description',
+    field: 'description',
+  },
 ];
 
 type CatalogTableProps = {
   components: Component[];
+  titlePreamble: string;
   loading: boolean;
   error?: any;
 };
@@ -38,6 +47,7 @@ const CatalogTable: FC<CatalogTableProps> = ({
   components,
   loading,
   error,
+  titlePreamble,
 }) => {
   if (loading) {
     return <Progress />;
@@ -55,7 +65,7 @@ const CatalogTable: FC<CatalogTableProps> = ({
     <Table
       columns={columns}
       options={{ paging: false }}
-      title="Your Services"
+      title={`${titlePreamble} (${(components && components.length) || 0})`}
       data={components}
     />
   );

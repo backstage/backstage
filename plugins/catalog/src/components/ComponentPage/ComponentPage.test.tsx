@@ -17,7 +17,6 @@ import ComponentPage from './ComponentPage';
 import { render } from '@testing-library/react';
 import * as React from 'react';
 import { wrapInTheme } from '@backstage/test-utils';
-import { act } from 'react-dom/test-utils';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 
 const getTestProps = (componentName: string) => {
@@ -29,11 +28,6 @@ const getTestProps = (componentName: string) => {
     },
     history: {
       push: jest.fn(),
-    },
-    componentFactory: {
-      getAllComponents: jest.fn(() => Promise.resolve([{ name: 'test' }])),
-      getComponentByName: jest.fn(() => Promise.resolve({ name: 'test' })),
-      removeComponentByName: jest.fn(() => Promise.resolve(true)),
     },
   };
 };
@@ -51,20 +45,5 @@ describe('ComponentPage', () => {
       ),
     );
     expect(props.history.push).toHaveBeenCalledWith('/catalog');
-  });
-  it('should use factory to fetch component by name and display it', async () => {
-    await act(async () => {
-      const props = getTestProps('test');
-      await render(
-        wrapInTheme(
-          <ApiProvider apis={ApiRegistry.from([[errorApiRef, errorApi]])}>
-            <ComponentPage {...props} />
-          </ApiProvider>,
-        ),
-      );
-      expect(props.componentFactory.getComponentByName).toHaveBeenCalledWith(
-        'test',
-      );
-    });
   });
 });

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { default } from './BottomLink';
-export type { Props } from './BottomLink';
+export { BottomLink } from './BottomLink';
+export type { BottomLinkProps } from './BottomLink';

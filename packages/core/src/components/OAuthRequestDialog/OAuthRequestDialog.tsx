@@ -27,9 +27,9 @@ import {
 import React, { FC, useMemo, useState } from 'react';
 import { useObservable } from 'react-use';
 import LoginRequestListItem from './LoginRequestListItem';
-import { useApi, oauthRequestApiRef } from '../../api';
+import { useApi, oauthRequestApiRef } from '@backstage/core-api';
 
-const useStyles = makeStyles<Theme>((theme) => ({
+const useStyles = makeStyles<Theme>(theme => ({
   dialog: {
     paddingTop: theme.spacing(1),
   },
@@ -53,7 +53,7 @@ export const OAuthRequestDialog: FC<OAuthRequestDialogProps> = () => {
   );
 
   const handleRejectAll = () => {
-    requests.forEach((request) => request.reject());
+    requests.forEach(request => request.reject());
   };
 
   return (
@@ -69,7 +69,7 @@ export const OAuthRequestDialog: FC<OAuthRequestDialogProps> = () => {
 
       <DialogContent classes={{ root: classes.contentList }}>
         <List>
-          {requests.map((request) => (
+          {requests.map(request => (
             <LoginRequestListItem
               key={request.provider.title}
               request={request}

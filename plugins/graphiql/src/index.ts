@@ -16,4 +16,4 @@
 
 export { plugin } from './plugin';
 export * from './lib/api';
-export * from './navTargets';
+export * from './route-refs';

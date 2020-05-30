@@ -11,4 +11,4 @@ kind: Component
 metadata:
   name: component2
 spec:
-  type: service
+  type: website

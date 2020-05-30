@@ -76,16 +76,48 @@ export async function up(knex: Knex): Promise<any> {
           .comment('The metadata.namespace field of the entity');
         table
           .string('metadata')
-          .nullable()
+          .notNullable()
           .comment('The entire metadata JSON blob of the entity');
         table
           .string('spec')
           .nullable()
           .comment('The entire spec JSON blob of the entity');
       })
+      .alterTable('entities', table => {
+        // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
+        table.unique(['kind', 'name', 'namespace'], 'entities_unique_name');
+      })
+      //
+      // entities_search
+      //
+      .createTable('entities_search', table => {
+        table.comment(
+          'Flattened key-values from the entities, used for quick filtering',
+        );
+        table
+          .uuid('entity_id')
+          .references('id')
+          .inTable('entities')
+          .onDelete('CASCADE')
+          .comment('The entity that matches this key/value');
+        table
+          .string('key')
+          .notNullable()
+          .comment('A key that occurs in the entity');
+        table
+          .string('value')
+          .nullable()
+          .comment('The corresponding value to match on');
+      })
   );
 }
 
 export async function down(knex: Knex): Promise<any> {
-  return knex.schema.dropTable('entities').dropTable('locations');
+  return knex.schema
+    .dropTable('entities_search')
+    .alterTable('entities', table => {
+      table.dropUnique([], 'entities_unique_name');
+    })
+    .dropTable('entities')
+    .dropTable('locations');
 }

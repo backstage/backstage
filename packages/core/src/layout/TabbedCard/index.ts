@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './TabbedCard';
+export { CardTab, TabbedCard } from './TabbedCard';

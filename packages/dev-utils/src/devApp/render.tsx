@@ -29,6 +29,7 @@ import {
   createPlugin,
   ApiTestRegistry,
   ApiHolder,
+  AlertDisplay,
 } from '@backstage/core';
 import * as defaultApiFactories from './apiFactories';
 
@@ -77,6 +78,7 @@ class DevAppBuilder {
     const DevApp: FC<{}> = () => {
       return (
         <AppProvider>
+          <AlertDisplay />
           <BrowserRouter>
             <SidebarPage>
               {sidebar}
@@ -110,11 +112,10 @@ class DevAppBuilder {
   // Create a sidebar that exposes the touchpoints of a plugin
   private setupSidebar(plugins: BackstagePlugin[]): JSX.Element {
     const sidebarItems = new Array<JSX.Element>();
-
     for (const plugin of plugins) {
       for (const output of plugin.output()) {
         switch (output.type) {
-          case 'route': {
+          case 'legacy-route': {
             const { path } = output;
             sidebarItems.push(
               <SidebarItem
@@ -126,7 +127,7 @@ class DevAppBuilder {
             );
             break;
           }
-          case 'nav-target-component': {
+          case 'route': {
             const { target } = output;
             sidebarItems.push(
               <SidebarItem
@@ -157,12 +158,12 @@ class DevAppBuilder {
     providedFactories: ApiFactory<any, any, any>[],
   ): ApiHolder {
     const providedApis = new Set(
-      providedFactories.map((factory) => factory.implements),
+      providedFactories.map(factory => factory.implements),
     );
 
     // Exlude any default API factory that we receive a factory for in the config
     const defaultFactories = Object.values(defaultApiFactories).filter(
-      (factory) => !providedApis.has(factory.implements),
+      factory => !providedApis.has(factory.implements),
     );
     const allFactories = [...defaultFactories, ...providedFactories];
 
@@ -181,7 +182,7 @@ class DevAppBuilder {
 
     for (const plugin of plugins) {
       for (const output of plugin.output()) {
-        if (output.type === 'route') {
+        if (output.type === 'legacy-route') {
           paths.push(output.path);
         }
       }

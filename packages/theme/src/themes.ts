@@ -56,6 +56,10 @@ export const lightTheme = createTheme({
     link: '#0A6EBE',
     gold: yellow.A700,
     sidebar: '#171717',
+    pinSidebarButton: {
+      icon: '#BDBDBD',
+      background: '#404040',
+    },
   },
 });
 
@@ -98,5 +102,9 @@ export const darkTheme = createTheme({
     link: '#0A6EBE',
     gold: yellow.A700,
     sidebar: '#424242',
+    pinSidebarButton: {
+      icon: '#181818',
+      background: '#BDBDBD',
+    },
   },
 });

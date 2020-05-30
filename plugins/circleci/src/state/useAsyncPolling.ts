@@ -26,7 +26,7 @@ export const useAsyncPolling = (
 
     while (isPolling.current === true) {
       await pollingFn();
-      await new Promise((resolve) => setTimeout(resolve, interval));
+      await new Promise(resolve => setTimeout(resolve, interval));
     }
   };
 

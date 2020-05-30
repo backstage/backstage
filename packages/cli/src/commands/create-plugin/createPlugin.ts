@@ -107,7 +107,7 @@ export async function addPluginDependencyToApp(
     packageFileJson.dependencies = sortObjectByKeys(dependencies);
     const newContents = `${JSON.stringify(packageFileJson, null, 2)}\n`;
 
-    await fs.writeFile(packageFile, newContents, 'utf-8').catch((error) => {
+    await fs.writeFile(packageFile, newContents, 'utf-8').catch(error => {
       throw new Error(
         `Failed to add plugin as dependency to app: ${packageFile}: ${error.message}`,
       );
@@ -119,14 +119,14 @@ export async function addPluginToApp(rootDir: string, pluginName: string) {
   const pluginPackage = `@backstage/plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
     .split('-')
-    .map((name) => capitalize(name))
+    .map(name => capitalize(name))
     .join('');
   const pluginExport = `export { plugin as ${pluginNameCapitalized} } from '${pluginPackage}';`;
   const pluginsFilePath = 'packages/app/src/plugins.ts';
   const pluginsFile = resolvePath(rootDir, pluginsFilePath);
 
   await Task.forItem('processing', pluginsFilePath, async () => {
-    await addExportStatement(pluginsFile, pluginExport).catch((error) => {
+    await addExportStatement(pluginsFile, pluginExport).catch(error => {
       throw new Error(
         `Failed to import plugin in app: ${pluginsFile}: ${error.message}`,
       );
@@ -148,7 +148,7 @@ async function buildPlugin(pluginFolder: string) {
     await Task.forItem('executing', command, async () => {
       process.chdir(pluginFolder);
 
-      await exec(command).catch((error) => {
+      await exec(command).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
         throw new Error(`Could not execute command ${chalk.cyan(command)}`);
@@ -163,7 +163,7 @@ export async function movePlugin(
   id: string,
 ) {
   await Task.forItem('moving', id, async () => {
-    await fs.move(tempDir, destination).catch((error) => {
+    await fs.move(tempDir, destination).catch(error => {
       throw new Error(
         `Failed to move plugin from ${tempDir} to ${destination}: ${error.message}`,
       );

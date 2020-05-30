@@ -46,6 +46,14 @@ const toolsCards = [
     tags: ['circleci', 'ci', 'dev'],
   },
   {
+    title: 'Sentry',
+    description:
+      'Self-hosted and cloud-based error monitoring that helps software teams discover, triage, and prioritize errors in real-time.',
+    url: '/sentry',
+    image: 'https://sentry-brand.storage.googleapis.com/sentry-logo-black.png',
+    tags: ['sentry', 'monitoring', 'errors'],
+  },
+  {
     title: 'Lighthouse',
     description:
       "Google's Lighthouse tool is a great resource for benchmarking and improving the accessibility, performance, SEO, and best practices of your website.",

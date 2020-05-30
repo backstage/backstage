@@ -15,3 +15,4 @@
  */
 
 export * from './rootLogger';
+export * from './voidLogger';

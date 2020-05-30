@@ -20,7 +20,7 @@
 
 import React, { ComponentType, Fragment, FC } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     justifyContent: 'flex-end',
     alignItems: 'center',
+    marginBottom: theme.spacing(1),
   },
   leftItemsBox: {
     flex: '1 1 auto',
@@ -74,7 +75,7 @@ type ContentHeaderProps = {
   description?: string;
 };
 
-const ContentHeader: FC<ContentHeaderProps> = ({
+export const ContentHeader: FC<ContentHeaderProps> = ({
   description,
   title,
   titleComponent: TitleComponent = undefined,
@@ -104,5 +105,3 @@ const ContentHeader: FC<ContentHeaderProps> = ({
     </Fragment>
   );
 };
-
-export default ContentHeader;

@@ -20,6 +20,8 @@ import {
   ErrorApiForwarder,
   AlertApi,
   createApiFactory,
+  ErrorAlerter,
+  AlertApiForwarder,
 } from '@backstage/core';
 
 // TODO(rugvip): We should likely figure out how to reuse all of these between apps
@@ -30,18 +32,12 @@ import {
 export const alertApiFactory = createApiFactory({
   implements: alertApiRef,
   deps: {},
-  factory: (): AlertApi => ({
-    // TODO: Figure out how to ship a nicer implementation without having
-    // to export any external references.
-    post(alertConfig) {
-      // eslint-disable-next-line no-alert
-      alert(`Alert[${alertConfig.severity}]: ${alertConfig.message}`);
-    },
-  }),
+  factory: (): AlertApi => new AlertApiForwarder(),
 });
 
 export const errorApiFactory = createApiFactory({
   implements: errorApiRef,
   deps: { alertApi: alertApiRef },
-  factory: ({ alertApi }) => new ErrorApiForwarder(alertApi),
+  factory: ({ alertApi }) =>
+    new ErrorAlerter(alertApi, new ErrorApiForwarder()),
 });
