@@ -40,6 +40,8 @@ import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
 import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
 import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
+import { gitOpsApiRef, GitOpsRestApi } from '@backstage/plugin-gitops-profiles';
+
 const builder = ApiRegistry.builder();
 
 const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
@@ -79,5 +81,7 @@ builder.add(
     basePath: '/catalog/api',
   }),
 );
+
+builder.add(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008'));
 
 export default builder.build() as ApiHolder;
