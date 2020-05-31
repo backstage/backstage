@@ -17,7 +17,7 @@
 import React, { ComponentType, FC } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
-import { BackstageApp, AppComponents } from './types';
+import { BackstageApp, AppComponents, AppConfigLoader } from './types';
 import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import { featureFlagsApiRef } from '../apis/definitions';
@@ -31,8 +31,11 @@ import {
   AppTheme,
   AppThemeSelector,
   appThemeApiRef,
+  configApiRef,
+  ConfigReader,
 } from '../apis';
 import { ApiAggregator } from '../apis/ApiAggregator';
+import { useAsync } from 'react-use';
 
 type FullAppOptions = {
   apis: ApiHolder;
@@ -40,6 +43,7 @@ type FullAppOptions = {
   plugins: BackstagePlugin[];
   components: AppComponents;
   themes: AppTheme[];
+  configLoader: AppConfigLoader;
 };
 
 export class PrivateAppImpl implements BackstageApp {
@@ -48,6 +52,7 @@ export class PrivateAppImpl implements BackstageApp {
   private readonly plugins: BackstagePlugin[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
+  private readonly configLoader: AppConfigLoader;
 
   constructor(options: FullAppOptions) {
     this.apis = options.apis;
@@ -55,6 +60,7 @@ export class PrivateAppImpl implements BackstageApp {
     this.plugins = options.plugins;
     this.components = options.components;
     this.themes = options.themes;
+    this.configLoader = options.configLoader;
   }
 
   getApis(): ApiHolder {
@@ -141,18 +147,33 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getProvider(): ComponentType<{}> {
-    const appApis = ApiRegistry.from([
-      [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
-    ]);
-    const apis = new ApiAggregator(this.apis, appApis);
+    const Provider: FC<{}> = ({ children }) => {
+      const config = useAsync(this.configLoader);
 
-    const Provider: FC<{}> = ({ children }) => (
-      <ApiProvider apis={apis}>
-        <AppContextProvider app={this}>
-          <AppThemeProvider>{children}</AppThemeProvider>
-        </AppContextProvider>
-      </ApiProvider>
-    );
+      let childNode = children;
+
+      if (config.loading) {
+        const { Progress } = this.components;
+        childNode = <Progress />;
+      } else if (config.error) {
+        const { BootErrorPage } = this.components;
+        childNode = <BootErrorPage step="load-config" error={config.error} />;
+      }
+
+      const appApis = ApiRegistry.from([
+        [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
+        [configApiRef, new ConfigReader(config.value ?? {})],
+      ]);
+      const apis = new ApiAggregator(this.apis, appApis);
+
+      return (
+        <ApiProvider apis={apis}>
+          <AppContextProvider app={this}>
+            <AppThemeProvider>{childNode}</AppThemeProvider>
+          </AppContextProvider>
+        </ApiProvider>
+      );
+    };
     return Provider;
   }
 

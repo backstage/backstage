@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createApiRef } from '../ApiRef';
 
-// This folder contains definitions for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-//
-// If you think some API definition is missing, please open an Issue or send a PR!
+export type Config = {
+  getConfig(key: string): Config;
 
-export * from './auth';
+  getConfigArray(key: string): Config[];
 
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ConfigApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './OAuthRequestApi';
+  getNumber(key: string): number | undefined;
+
+  getBoolean(key: string): boolean | undefined;
+
+  getString(key: string): string | undefined;
+
+  getStringArray(key: string): string[] | undefined;
+};
+
+// Using interface to make the ConfigApi name show up in docs
+export interface ConfigApi extends Config {}
+
+export const configApiRef = createApiRef<ConfigApi>({
+  id: 'core.config',
+  description: 'Used to access runtime configuration',
+});

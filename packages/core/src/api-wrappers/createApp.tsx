@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { FC } from 'react';
 import privateExports, {
   AppOptions,
   ApiRegistry,
   defaultSystemIcons,
+  BootErrorPageProps,
 } from '@backstage/core-api';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 import { ErrorPage } from '../layout/ErrorPage';
+import Progress from '../components/Progress';
 import { lightTheme, darkTheme } from '@backstage/theme';
 
 const { PrivateAppImpl } = privateExports;
@@ -38,12 +41,26 @@ export function createApp(options?: AppOptions) {
   const DefaultNotFoundPage = () => (
     <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
   );
+  const DefaultBootErrorPage: FC<BootErrorPageProps> = ({ step, error }) => {
+    let message = '';
+    if (step === 'load-config') {
+      message = `The configuration failed to load, someone should have a look at this error: ${error.message}`;
+    }
+    // TODO: figure out a nicer way to handle routing on the error page, when it can be done.
+    return (
+      <Router>
+        <ErrorPage status="501" statusMessage={message} />
+      </Router>
+    );
+  };
 
   const apis = options?.apis ?? ApiRegistry.from([]);
   const icons = { ...defaultSystemIcons, ...options?.icons };
   const plugins = options?.plugins ?? [];
   const components = {
     NotFoundErrorPage: DefaultNotFoundPage,
+    BootErrorPage: DefaultBootErrorPage,
+    Progress: Progress,
     ...options?.components,
   };
   const themes = options?.themes ?? [
@@ -60,8 +77,16 @@ export function createApp(options?: AppOptions) {
       theme: darkTheme,
     },
   ];
+  const configLoader = options?.configLoader ?? (async () => ({}));
 
-  const app = new PrivateAppImpl({ apis, icons, plugins, components, themes });
+  const app = new PrivateAppImpl({
+    apis,
+    icons,
+    plugins,
+    components,
+    themes,
+    configLoader,
+  });
 
   app.verify();
 
