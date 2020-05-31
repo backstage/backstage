@@ -14,10 +14,93 @@
  * limitations under the License.
  */
 
-import { defaultRouter } from '.';
+import express from 'express';
+import { makeProvider, defaultRouter } from '.';
+import {
+  AuthProviderRouteHandlers,
+  AuthProviderConfig,
+  OAuthProviderHandlers,
+} from './types';
+import { ProviderFactories } from './factories';
 
-describe('test', () => {
-  it('unbreaks the test runner', () => {
-    expect(defaultRouter).toBeDefined();
+class MyOAuthProvider implements AuthProviderRouteHandlers {
+  // @ts-ignore
+  private readonly providerConfig: AuthProviderConfig;
+  constructor(providerConfig: AuthProviderConfig) {
+    this.providerConfig = providerConfig;
+  }
+  async start(_: express.Request, res: express.Response): Promise<any> {
+    res.send('start');
+  }
+  async frameHandler(_: express.Request, res: express.Response): Promise<any> {
+    res.send('frameHandler');
+  }
+  async logout(_: express.Request, res: express.Response): Promise<any> {
+    res.send('logout');
+  }
+}
+
+class MyOAuthProviderWithRefresh extends MyOAuthProvider {
+  async refresh(_: express.Request, res: express.Response): Promise<any> {
+    res.send('logout');
+  }
+}
+
+class MyCustomAuthProvider implements OAuthProviderHandlers {
+  start(): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+  handler(): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+  refresh(): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+}
+
+const providerConfig = {
+  provider: 'a',
+  options: {
+    clientID: 'somevalue',
+  },
+};
+
+const providerConfigInvalid = {
+  provider: 'b',
+  options: {
+    clientID: 'somevalue',
+  },
+};
+
+describe('makeProvider', () => {
+  it('makes a provider for MyOAuthProvider', () => {
+    jest
+      .spyOn(ProviderFactories, 'getProviderFactory')
+      .mockReturnValueOnce(MyCustomAuthProvider);
+    const provider = makeProvider(providerConfig);
+    expect(provider.providerId).toEqual('a');
+    expect(provider.providerRouter).toBeDefined();
+  });
+
+  it('throws an error when provider implementation does not exist', () => {
+    expect(() => {
+      makeProvider(providerConfigInvalid);
+    }).toThrow('Provider Implementation missing for : b auth provider');
+  });
+});
+
+describe('defaultRouter', () => {
+  it('make router for auth provider without refresh', () => {
+    expect(
+      defaultRouter(new MyOAuthProvider({ provider: 'a', options: {} })),
+    ).toBeDefined();
+  });
+
+  it('make router for auth provider with refresh', () => {
+    expect(
+      defaultRouter(
+        new MyOAuthProviderWithRefresh({ provider: 'b', options: {} }),
+      ),
+    ).toBeDefined();
   });
 });
