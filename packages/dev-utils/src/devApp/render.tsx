@@ -30,6 +30,7 @@ import {
   ApiTestRegistry,
   ApiHolder,
   AlertDisplay,
+  OAuthRequestDialog,
 } from '@backstage/core';
 import * as defaultApiFactories from './apiFactories';
 
@@ -90,6 +91,7 @@ class DevAppBuilder {
       return (
         <AppProvider>
           <AlertDisplay />
+          <OAuthRequestDialog />
           {this.rootChildren}
           <BrowserRouter>
             <SidebarPage>
