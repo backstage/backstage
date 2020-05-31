@@ -31,8 +31,8 @@ type Props = {
   quadrants: Quadrant[];
   entries: Entry[];
   activeEntry?: Entry;
-  onEntryMouseEnter?: (entry: Entry) => any;
-  onEntryMouseLeave?: (entry: Entry) => any;
+  onEntryMouseEnter?: (entry: Entry) => void;
+  onEntryMouseLeave?: (entry: Entry) => void;
 };
 
 // A component that draws the radar circle.

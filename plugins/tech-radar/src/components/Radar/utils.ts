@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import color from 'color';
 import { forceCollide, forceSimulation } from 'd3-force';
 import Segment from '../../utils/segment';

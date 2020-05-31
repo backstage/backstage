@@ -25,8 +25,8 @@ type Props = {
   quadrants: Quadrant[];
   rings: Ring[];
   entries: Entry[];
-  onEntryMouseEnter?: (entry: Entry) => any;
-  onEntryMouseLeave?: (entry: Entry) => any;
+  onEntryMouseEnter?: (entry: Entry) => void;
+  onEntryMouseLeave?: (entry: Entry) => void;
 };
 
 const useStyles = makeStyles<Theme>(() => ({
