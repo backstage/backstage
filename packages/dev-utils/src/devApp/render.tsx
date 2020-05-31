@@ -15,7 +15,7 @@
  */
 
 import { hot } from 'react-hot-loader/root';
-import React, { FC, ComponentType } from 'react';
+import React, { FC, ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
@@ -43,6 +43,7 @@ type BackstagePlugin = ReturnType<typeof createPlugin>;
 class DevAppBuilder {
   private readonly plugins = new Array<BackstagePlugin>();
   private readonly factories = new Array<ApiFactory<any, any, any>>();
+  private readonly rootChildren = new Array<ReactNode>();
 
   /**
    * Register one or more plugins to render in the dev app
@@ -63,6 +64,16 @@ class DevAppBuilder {
   }
 
   /**
+   * Adds a React node to place just inside the App Provider.
+   *
+   * Useful for adding more global components like the AlertDisplay.
+   */
+  addRootChild(node: ReactNode): DevAppBuilder {
+    this.rootChildren.push(node);
+    return this;
+  }
+
+  /**
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
@@ -79,6 +90,7 @@ class DevAppBuilder {
       return (
         <AppProvider>
           <AlertDisplay />
+          {this.rootChildren}
           <BrowserRouter>
             <SidebarPage>
               {sidebar}
