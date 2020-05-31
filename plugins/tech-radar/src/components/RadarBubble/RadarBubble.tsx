@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useRef, useEffect, useLayoutEffect } from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 
 type Props = {
@@ -50,10 +50,10 @@ const RadarBubble: FC<Props> = props => {
   const classes = useStyles(props);
   const { visible, text } = props;
 
-  const textElem = React.useRef<SVGTextElement>(null);
-  const svgElem = React.useRef<SVGGElement>(null);
-  const rectElem = React.useRef<SVGRectElement>(null);
-  const pathElem = React.useRef<SVGPathElement>(null);
+  const textElem = useRef<SVGTextElement>(null);
+  const svgElem = useRef<SVGGElement>(null);
+  const rectElem = useRef<SVGRectElement>(null);
+  const pathElem = useRef<SVGPathElement>(null);
 
   const updatePosition = () => {
     if (textElem.current) {
@@ -88,11 +88,11 @@ const RadarBubble: FC<Props> = props => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     updatePosition();
   }, []);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     updatePosition();
   });
 

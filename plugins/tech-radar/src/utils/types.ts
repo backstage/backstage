@@ -21,6 +21,7 @@ export type Ring = {
   name: string;
   color: string;
   outerRadius: number;
+  innerRadius: number;
 };
 
 // Parameters for a quadrant (there should be exactly 4 of course)
@@ -32,11 +33,25 @@ export type Quadrant = {
   legendY?: number;
   legendWidth?: number;
   legendHeight?: number;
+  radialMin?: number;
+  radialMax?: number;
+  offsetX?: number;
+  offsetY?: number;
+};
+
+export type Segment = {
+  clipx: Function;
+  clipy: Function;
+  random: Function;
 };
 
 export type Entry = {
   id: string;
   idx?: number;
+  x: number;
+  y: number;
+  color: string;
+  segment: Segment;
   // The quadrant where this entry belongs
   quadrant: Quadrant;
   // The ring where this entry belongs
@@ -47,12 +62,10 @@ export type Entry = {
   url?: string;
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
   moved?: number;
-  x: number;
-  y: number;
-  color: string;
+  active?: boolean;
 };
 
-// The same as ENTRY except quadrant/ring are declared by their string ID instead of being the actual objects
+// The same as Entry except quadrant/ring are declared by their string ID instead of being the actual objects
 export type DeclaredEntry = Entry & {
   quadrant: string;
   ring: string;
