@@ -20,13 +20,20 @@ import mockFetch from 'jest-fetch-mock';
 import ProfileCatalog from './ProfileCatalog';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
+import { ApiProvider, ApiRegistry } from '@backstage/core-api';
+import { gitOpsApiRef, GitOpsRestApi } from '../../api';
 
 describe('ProfileCatalog', () => {
   it('should render', () => {
+    const apis = ApiRegistry.from([
+      [gitOpsApiRef, new GitOpsRestApi('http://localhost:3008')],
+    ]);
     mockFetch.mockResponse(() => new Promise(() => {}));
     const rendered = render(
       <ThemeProvider theme={lightTheme}>
-        <ProfileCatalog />
+        <ApiProvider apis={apis}>
+          <ProfileCatalog />
+        </ApiProvider>
       </ThemeProvider>,
     );
     expect(
