@@ -154,8 +154,10 @@ export const adjustEntries = (
     simulation.tick();
 
     for (const entry of entries) {
-      entry.x = entry.segment.clipx(entry);
-      entry.y = entry.segment.clipy(entry);
+      if (entry.segment) {
+        entry.x = entry.segment.clipx(entry);
+        entry.y = entry.segment.clipy(entry);
+      }
     }
   }
 };

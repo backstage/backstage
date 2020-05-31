@@ -20,8 +20,8 @@ export type Ring = {
   idx?: number;
   name: string;
   color: string;
-  outerRadius: number;
-  innerRadius: number;
+  outerRadius?: number;
+  innerRadius?: number;
 };
 
 // Parameters for a quadrant (there should be exactly 4 of course)
@@ -48,10 +48,10 @@ export type Segment = {
 export type Entry = {
   id: string;
   idx?: number;
-  x: number;
-  y: number;
-  color: string;
-  segment: Segment;
+  x?: number;
+  y?: number;
+  color?: string;
+  segment?: Segment;
   // The quadrant where this entry belongs
   quadrant: Quadrant;
   // The ring where this entry belongs

@@ -49,7 +49,7 @@ const RadarGrid = (props: Props) => {
   const { radius, rings } = props;
   const classes = useStyles(props);
 
-  const makeRingNode = (ringRadius: number, ringIndex: number) => [
+  const makeRingNode = (ringRadius: number | undefined, ringIndex: number) => [
     <circle
       key={`c${ringIndex}`}
       cx={0}
@@ -59,7 +59,7 @@ const RadarGrid = (props: Props) => {
     />,
     <text
       key={`t${ringIndex}`}
-      y={-ringRadius + 42}
+      y={ringRadius !== undefined ? -ringRadius + 42 : undefined}
       textAnchor="middle"
       className={classes.text}
     >

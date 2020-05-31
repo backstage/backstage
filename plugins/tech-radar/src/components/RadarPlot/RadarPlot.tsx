@@ -68,9 +68,9 @@ const RadarPlot: FC<Props> = props => {
         {entries.map(entry => (
           <RadarEntry
             key={entry.id}
-            x={entry.x}
-            y={entry.y}
-            color={entry.color}
+            x={entry.x || 0}
+            y={entry.y || 0}
+            color={entry.color || ''}
             number={((entry && entry.idx) || 0) + 1}
             url={entry.url}
             moved={entry.moved}
@@ -81,8 +81,8 @@ const RadarPlot: FC<Props> = props => {
         <RadarBubble
           visible={!!activeEntry}
           text={activeEntry ? activeEntry.title : ''}
-          x={activeEntry ? activeEntry.x : 0}
-          y={activeEntry ? activeEntry.y : 0}
+          x={activeEntry ? activeEntry.x || 0 : 0}
+          y={activeEntry ? activeEntry.y || 0 : 0}
         />
       </g>
     </g>
