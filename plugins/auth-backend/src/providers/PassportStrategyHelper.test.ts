@@ -1,19 +1,3 @@
-/*
- * Copyright 2020 Spotify AB
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import express from 'express';
 import passport from 'passport';
 import {
@@ -21,18 +5,19 @@ import {
   executeFrameHandlerStrategy,
   executeRefreshTokenStrategy,
 } from './PassportStrategyHelper';
+import { RedirectInfo } from './types';
 
 const mockRequest = ({} as unknown) as express.Request;
 
 describe('PassportStrategyHelper', () => {
   class MyCustomRedirectStrategy extends passport.Strategy {
-    authenticate() {
+    authenticate(_req: express.Request, options: any) {
       this.redirect('a', 302);
     }
   }
 
   describe('executeRedirectStrategy', () => {
-    it('should call authenticate and resolve with RedirectInfo', async () => {
+    it('should call authenticate and resolve with RedirectInfo', () => {
       const mockStrategy = new MyCustomRedirectStrategy();
       const spyAuthenticate = jest.spyOn(mockStrategy, 'authenticate');
       const redirectStrategyPromise = executeRedirectStrategy(
@@ -41,7 +26,7 @@ describe('PassportStrategyHelper', () => {
         {},
       );
       expect(spyAuthenticate).toBeCalledTimes(1);
-      await expect(redirectStrategyPromise).resolves.toStrictEqual(
+      expect(redirectStrategyPromise).resolves.toStrictEqual(
         expect.objectContaining({ url: 'a', status: 302 }),
       );
     });
@@ -49,7 +34,7 @@ describe('PassportStrategyHelper', () => {
 
   describe('executeFrameHandlerStrategy', () => {
     class MyCustomAuthSuccessStrategy extends passport.Strategy {
-      authenticate() {
+      authenticate(_req: express.Request, options: any) {
         this.success(
           { accessToken: 'ACCESS_TOKEN' },
           { refreshToken: 'REFRESH_TOKEN' },
@@ -57,22 +42,22 @@ describe('PassportStrategyHelper', () => {
       }
     }
     class MyCustomAuthErrorStrategy extends passport.Strategy {
-      authenticate() {
+      authenticate(_req: express.Request, options: any) {
         this.error(new Error('MyCustomAuth error'));
       }
     }
     class MyCustomAuthRedirectStrategy extends passport.Strategy {
-      authenticate() {
+      authenticate(_req: express.Request, options: any) {
         this.redirect('URL', 302);
       }
     }
     class MyCustomAuthFailStrategy extends passport.Strategy {
-      authenticate() {
+      authenticate(_req: express.Request, options: any) {
         this.fail('challenge', 302);
       }
     }
 
-    it('should resolve with user and info on success', async () => {
+    it('should resolve with user and info on success', () => {
       const mockStrategy = new MyCustomAuthSuccessStrategy();
       const spyAuthenticate = jest.spyOn(mockStrategy, 'authenticate');
       const frameHandlerStrategyPromise = executeFrameHandlerStrategy(
@@ -80,7 +65,7 @@ describe('PassportStrategyHelper', () => {
         mockStrategy,
       );
       expect(spyAuthenticate).toBeCalledTimes(1);
-      await expect(frameHandlerStrategyPromise).resolves.toStrictEqual(
+      expect(frameHandlerStrategyPromise).resolves.toStrictEqual(
         expect.objectContaining({
           user: { accessToken: 'ACCESS_TOKEN' },
           info: { refreshToken: 'REFRESH_TOKEN' },
@@ -88,7 +73,7 @@ describe('PassportStrategyHelper', () => {
       );
     });
 
-    it('should reject on error', async () => {
+    it('should reject on error', () => {
       const mockStrategy = new MyCustomAuthErrorStrategy();
       const spyAuthenticate = jest.spyOn(mockStrategy, 'authenticate');
       const frameHandlerStrategyPromise = executeFrameHandlerStrategy(
@@ -96,12 +81,12 @@ describe('PassportStrategyHelper', () => {
         mockStrategy,
       );
       expect(spyAuthenticate).toBeCalledTimes(1);
-      await expect(frameHandlerStrategyPromise).rejects.toThrow(
+      expect(frameHandlerStrategyPromise).rejects.toThrowError(
         'Authentication failed, Error: MyCustomAuth error',
       );
     });
 
-    it('should reject on redirect', async () => {
+    it('should reject on redirect', () => {
       const mockStrategy = new MyCustomAuthRedirectStrategy();
       const spyAuthenticate = jest.spyOn(mockStrategy, 'authenticate');
       const frameHandlerStrategyPromise = executeFrameHandlerStrategy(
@@ -109,12 +94,12 @@ describe('PassportStrategyHelper', () => {
         mockStrategy,
       );
       expect(spyAuthenticate).toBeCalledTimes(1);
-      await expect(frameHandlerStrategyPromise).rejects.toThrow(
+      expect(frameHandlerStrategyPromise).rejects.toThrowError(
         'Unexpected redirect',
       );
     });
 
-    it('should reject on fail', async () => {
+    it('should reject on fail', () => {
       const mockStrategy = new MyCustomAuthFailStrategy();
       const spyAuthenticate = jest.spyOn(mockStrategy, 'authenticate');
       const frameHandlerStrategyPromise = executeFrameHandlerStrategy(
@@ -122,13 +107,14 @@ describe('PassportStrategyHelper', () => {
         mockStrategy,
       );
       expect(spyAuthenticate).toBeCalledTimes(1);
-      await expect(frameHandlerStrategyPromise).rejects.toThrow();
+      expect(frameHandlerStrategyPromise).rejects.toThrow();
     });
   });
 
   describe('executeRefreshTokenStrategy', () => {
-    it('should resolve with a new access token, scope and expiry', async () => {
+    it('should resolve with a new access token, scope and expiry', () => {
       class MyCustomOAuth2Success {
+        constructor() {}
         getOAuthAccessToken(
           _refreshToken: string,
           _options: any,
@@ -141,7 +127,6 @@ describe('PassportStrategyHelper', () => {
         }
       }
       class MyCustomRefreshTokenSuccess extends passport.Strategy {
-        // @ts-ignore
         private _oauth2 = new MyCustomOAuth2Success();
       }
 
@@ -151,7 +136,7 @@ describe('PassportStrategyHelper', () => {
         'REFRESH_TOKEN',
         'a',
       );
-      await expect(refreshTokenPromise).resolves.toStrictEqual(
+      expect(refreshTokenPromise).resolves.toStrictEqual(
         expect.objectContaining({
           accessToken: 'ACCESS_TOKEN',
           params: expect.objectContaining({ scope: 'a', expires_in: 10 }),
@@ -159,8 +144,9 @@ describe('PassportStrategyHelper', () => {
       );
     });
 
-    it('should reject with an error if refresh failed', async () => {
+    it('should reject with an error if refresh failed', () => {
       class MyCustomOAuth2Error {
+        constructor() {}
         getOAuthAccessToken(
           _refreshToken: string,
           _options: any,
@@ -170,7 +156,6 @@ describe('PassportStrategyHelper', () => {
         }
       }
       class MyCustomRefreshTokenSuccess extends passport.Strategy {
-        // @ts-ignore
         private _oauth2 = new MyCustomOAuth2Error();
       }
 
@@ -180,13 +165,14 @@ describe('PassportStrategyHelper', () => {
         'REFRESH_TOKEN',
         'a',
       );
-      await expect(refreshTokenPromise).rejects.toThrow(
+      expect(refreshTokenPromise).rejects.toThrow(
         'Failed to refresh access token Error: Unknown error',
       );
     });
 
-    it('should reject with an error if access token missing in refresh callback', async () => {
+    it('should reject with an error if access token missing in refresh callback', () => {
       class MyCustomOAuth2AccessTokenMissing {
+        constructor() {}
         getOAuthAccessToken(
           _refreshToken: string,
           _options: any,
@@ -196,7 +182,6 @@ describe('PassportStrategyHelper', () => {
         }
       }
       class MyCustomRefreshTokenSuccess extends passport.Strategy {
-        // @ts-ignore
         private _oauth2 = new MyCustomOAuth2AccessTokenMissing();
       }
 
@@ -206,7 +191,7 @@ describe('PassportStrategyHelper', () => {
         'REFRESH_TOKEN',
         'a',
       );
-      await expect(refreshTokenPromise).rejects.toThrow(
+      expect(refreshTokenPromise).rejects.toThrow(
         'Failed to refresh access token, no access token received',
       );
     });

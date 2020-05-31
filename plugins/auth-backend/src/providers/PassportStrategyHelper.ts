@@ -23,7 +23,7 @@ export const executeRedirectStrategy = async (
   providerStrategy: passport.Strategy,
   options: any,
 ): Promise<RedirectInfo> => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const strategy = Object.create(providerStrategy);
     strategy.redirect = (url: string, status?: number) => {
       resolve({ url, status: status ?? undefined });
