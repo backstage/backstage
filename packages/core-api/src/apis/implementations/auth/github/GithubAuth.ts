@@ -20,7 +20,7 @@ import { GithubSession } from './types';
 import { OAuthApi, AccessTokenOptions } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
+import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GithubAuth
@@ -63,20 +63,16 @@ class GithubAuth implements OAuthApi {
       sessionTransform(res: GithubAuthResponse): GithubSession {
         return {
           accessToken: res.accessToken,
-          scopes: GithubAuth.normalizeScopes(res.scope),
+          scopes: GithubAuth.normalizeScope(res.scope),
           expiresAt: new Date(Date.now() + res.expiresInSeconds * 1000),
         };
       },
     });
 
-    const sessionManager = new RefreshingAuthSessionManager({
+    const sessionManager = new StaticAuthSessionManager({
       connector,
       defaultScopes: new Set(['user']),
       sessionScopes: session => session.scopes,
-      sessionShouldRefresh: session => {
-        const expiresInSec = (session.expiresAt.getTime() - Date.now()) / 1000;
-        return expiresInSec < 60 * 5;
-      },
     });
 
     return new GithubAuth(sessionManager);
@@ -84,11 +80,8 @@ class GithubAuth implements OAuthApi {
 
   constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
 
-  async getAccessToken(
-    scope?: string | string[],
-    options?: AccessTokenOptions,
-  ) {
-    const normalizedScopes = GithubAuth.normalizeScopes(scope);
+  async getAccessToken(scope?: string, options?: AccessTokenOptions) {
+    const normalizedScopes = GithubAuth.normalizeScope(scope);
     const session = await this.sessionManager.getSession({
       ...options,
       scopes: normalizedScopes,
@@ -103,14 +96,14 @@ class GithubAuth implements OAuthApi {
     await this.sessionManager.removeSession();
   }
 
-  static normalizeScopes(scopes?: string | string[]): Set<string> {
-    if (!scopes) {
+  static normalizeScope(scope?: string): Set<string> {
+    if (!scope) {
       return new Set();
     }
 
-    const scopeList = Array.isArray(scopes)
-      ? scopes
-      : scopes.split(/[\s]/).filter(Boolean);
+    const scopeList = Array.isArray(scope)
+      ? scope
+      : scope.split(/[\s|,]/).filter(Boolean);
 
     return new Set(scopeList);
   }

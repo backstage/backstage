@@ -19,7 +19,6 @@ import { Strategy as GithubStrategy } from 'passport-github2';
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
-  executeRefreshTokenStrategy,
 } from '../PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
@@ -37,23 +36,13 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
     this.providerConfig = providerConfig;
     this._strategy = new GithubStrategy(
       { ...this.providerConfig.options },
-      (
-        accessToken: any,
-        refreshToken: any,
-        params: any,
-        profile: any,
-        done: any,
-      ) => {
-        done(
-          undefined,
-          {
-            profile,
-            accessToken,
-            scope: 'user', // params.scope is an empty string here for some reason, so hardcoding for now
-            expiresInSeconds: params.expires_in,
-          },
-          { refreshToken },
-        );
+      (accessToken: any, _: any, params: any, profile: any, done: any) => {
+        done(undefined, {
+          profile,
+          accessToken,
+          scope: params.scope,
+          expiresInSeconds: params.expires_in,
+        });
       },
     );
   }
@@ -66,19 +55,5 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
     req: express.Request,
   ): Promise<{ user: AuthInfoBase; info: AuthInfoPrivate }> {
     return await executeFrameHandlerStrategy(req, this._strategy);
-  }
-
-  async refresh(refreshToken: string, scope: string): Promise<AuthInfoBase> {
-    const { accessToken, params } = await executeRefreshTokenStrategy(
-      this._strategy,
-      refreshToken,
-      scope,
-    );
-
-    return {
-      accessToken,
-      expiresInSeconds: params.expires_in,
-      scope: params.scope,
-    };
   }
 }
