@@ -69,7 +69,11 @@ async function main() {
 }
 
 function shouldCheckTypes(pkg) {
-  return !pkg.private && pkg.get('types');
+  return (
+    !pkg.private &&
+    pkg.get('types') &&
+    fs.existsSync(resolvePath(pkg.location, 'dist/index.d.ts'))
+  );
 }
 
 /**
