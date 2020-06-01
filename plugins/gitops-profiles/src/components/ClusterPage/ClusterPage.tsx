@@ -17,9 +17,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import {
   Content,
-  ContentHeader,
   Header,
-  SupportButton,
   Page,
   pageTheme,
   Table,
@@ -27,11 +25,11 @@ import {
   HeaderLabel,
   useApi,
 } from '@backstage/core';
-import ClusterTable from '../ClusterTable/ClusterTable';
-import { Button, Link, Typography } from '@material-ui/core';
+
+import { Link } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
-import { useAsync, useLocalStorage } from 'react-use';
-import { gitOpsApiRef, ListClusterStatusesResponse, Status } from '../../api';
+import { useLocalStorage } from 'react-use';
+import { gitOpsApiRef, Status } from '../../api';
 import { transformRunStatus } from '../ProfileCatalog';
 
 const ClusterPage: FC<{}> = () => {
@@ -42,6 +40,7 @@ const ClusterPage: FC<{}> = () => {
     username: string;
     name: string;
   }>('githubLoginDetails');
+
   const [pollingLog, setPollingLog] = useState(true);
   const [runStatus, setRunStatus] = useState<Status[]>([]);
   const [runLink, setRunLink] = useState<string>('');
@@ -76,61 +75,6 @@ const ClusterPage: FC<{}> = () => {
     return () => {};
   }, [pollingLog]);
 
-  if (params.owner === undefined || params.repo === undefined) {
-    const { loading, error, value } = useAsync<ListClusterStatusesResponse>(
-      () => {
-        setPollingLog(false);
-        return api.listClusters({
-          gitHubToken: loginInfo.token,
-          gitHubUser: loginInfo.username,
-        });
-      },
-    );
-    let content: JSX.Element;
-    if (loading) {
-      content = (
-        <Content>
-          <Progress />
-        </Content>
-      );
-    } else if (error) {
-      content = (
-        <Content>
-          <Typography variant="h4" color="error">
-            Failed to load cluster, {String(error)}
-          </Typography>
-        </Content>
-      );
-    } else {
-      content = (
-        <Content>
-          <ContentHeader title="Clusters">
-            <Button
-              variant="contained"
-              color="primary"
-              href="/gitops-cluster-create"
-            >
-              Create GitOps-managed Cluster
-            </Button>
-            <SupportButton>All clusters</SupportButton>
-          </ContentHeader>
-          <ClusterTable components={value!.result} />
-        </Content>
-      );
-    }
-
-    return (
-      <Page theme={pageTheme.home}>
-        <Header
-          title="GitOps-managed Clusters"
-          subtitle="Keep track of your software"
-        >
-          <HeaderLabel label="Welcome" value={loginInfo.name} />
-        </Header>
-        {content}
-      </Page>
-    );
-  }
   return (
     <Page theme={pageTheme.home}>
       <Header title={`Cluster ${params.owner}/${params.repo}`}>

@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
-import ProfileCatalog from './components/ProfileCatalog';
-import ClusterPage from './components/ClusterPage';
-import ClusterList from './components/ClusterList';
-
-export const plugin = createPlugin({
-  id: 'gitops-profiles',
-  register({ router }) {
-    router.registerRoute('/gitops-clusters', ClusterList);
-    router.registerRoute('/gitops-cluster/:owner/:repo', ClusterPage);
-    router.registerRoute('/gitops-cluster-create', ProfileCatalog);
-  },
-});
+export { default } from './ClusterList';
