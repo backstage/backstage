@@ -10,13 +10,15 @@ We want to standardize on a few core entities that we are tracking in the Backst
 
 ## Decision
 
-We maintain a catalog of the following core entities:
+Backstage should eventually support the following core entities:
 
 * **Components** are individual pieces of software
 * **APIs** are the boundaries between different components
 * **Resources** are physical or virtual infrastructure needed to operate a component
 
 ![Catalog Core Entities][catalog-core-entities]
+
+For now, we'll start by only implementing support for the Component entity in the Backstage catalog. This can later be extended to APIs, Resources and other potentially useful entities.
 
 ### Component
 A component is a piece of software, for example a mobile application feature, web site, backend service or data pipeline (list not exhaustive). A component can be tracked in source control, or use some existing open source or commercial software. It can implement APIs for other components to consume. In turn it might depend on APIs implemented by other components, or resources that are attached to it at runtime.
@@ -72,4 +74,4 @@ spec:
 
 ## Consequences
 
-We will start with fleshing out support for the Component entity in the catalog, and expand to APIs and Resources later down the line.
+We will continue fleshing out support for the Component entity in the Backstage catalog.
