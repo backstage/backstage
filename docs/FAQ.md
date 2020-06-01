@@ -44,7 +44,7 @@ The original decision was based on Google's Material Design being a thorough, we
 
 It strikes a good balance between power, customizability, and ease of use. A core focus of Backstage is to make plugin developers productive with as few hurdles as possible. Material-UI lets plugin makers get going easily with both well-known tech and a large flora of components.
 ​
-### What framework does Backstage use?
+### What technology does Backstage use?
 ​
 The code base is a large-scale React application that uses TypeScript. For [Phase 2](https://github.com/spotify/backstage#project-roadmap), we plan to use Node.js and GraphQL.
 ​
@@ -131,4 +131,3 @@ See all the ways you can [contribute here](https://github.com/spotify/backstage/
 ### Can I join the Backstage team?
 ​
 If you're interested in being part of the Backstage team, reach out to [fossopportunities@spotify.com](mailto:fossopportunities@spotify.com)
-
