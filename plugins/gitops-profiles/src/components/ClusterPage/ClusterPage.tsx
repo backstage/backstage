@@ -73,7 +73,7 @@ const ClusterPage: FC<{}> = () => {
       return () => clearInterval(interval);
     }
     return () => {};
-  }, [pollingLog]);
+  }, [pollingLog, api, loginInfo, params]);
 
   return (
     <Page theme={pageTheme.home}>

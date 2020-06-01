@@ -150,7 +150,7 @@ const ProfileCatalog: FC<{}> = () => {
       return () => clearInterval(interval);
     }
     return () => {};
-  }, [pollingLog]);
+  }, [pollingLog, api, gitHubOrg, gitHubRepo, loginInfo]);
 
   const showFailureMessage = (msg: string) => {
     setRunStatus(
