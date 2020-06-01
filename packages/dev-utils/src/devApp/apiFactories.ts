@@ -22,6 +22,8 @@ import {
   createApiFactory,
   ErrorAlerter,
   AlertApiForwarder,
+  oauthRequestApiRef,
+  OAuthRequestManager,
 } from '@backstage/core';
 
 // TODO(rugvip): We should likely figure out how to reuse all of these between apps
@@ -40,4 +42,10 @@ export const errorApiFactory = createApiFactory({
   deps: { alertApi: alertApiRef },
   factory: ({ alertApi }) =>
     new ErrorAlerter(alertApi, new ErrorApiForwarder()),
+});
+
+export const oauthRequestApiFactory = createApiFactory({
+  implements: oauthRequestApiRef,
+  deps: {},
+  factory: () => new OAuthRequestManager(),
 });
