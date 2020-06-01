@@ -71,6 +71,9 @@ jobs:
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: yarn lerna -- run build
 
+      - name: verify type dependencies
+        run: yarn lint:type-deps
+
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn lerna -- run test --since origin/master -- --coverage
