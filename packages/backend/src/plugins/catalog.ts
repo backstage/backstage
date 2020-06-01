@@ -41,7 +41,7 @@ export default async function ({ logger, database }: PluginEnvironment) {
     10000,
   );
 
-  const entitiesCatalog = new DatabaseEntitiesCatalog(db);
+  const entitiesCatalog = new DatabaseEntitiesCatalog(db, policy);
   const locationsCatalog = new DatabaseLocationsCatalog(db, ingestion);
 
   return await createRouter({ entitiesCatalog, locationsCatalog, logger });

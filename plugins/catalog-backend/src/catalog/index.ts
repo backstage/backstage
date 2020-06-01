@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-export * from './DatabaseEntitiesCatalog';
-export * from './DatabaseLocationsCatalog';
-export * from './StaticEntitiesCatalog';
-export * from './types';
+export { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
+export { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
+export { StaticEntitiesCatalog } from './StaticEntitiesCatalog';
+export { addLocationSchema } from './types';
+export type {
+  AddLocation,
+  EntitiesCatalog,
+  Location,
+  LocationsCatalog,
+} from './types';

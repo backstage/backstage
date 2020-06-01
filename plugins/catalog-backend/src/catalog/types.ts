@@ -16,16 +16,11 @@
 
 import { Entity } from '@backstage/catalog-model';
 import * as yup from 'yup';
+import type { EntityFilters } from '../database';
 
 //
 // Entities
 //
-
-export type EntityFilter = {
-  key: string;
-  values: (string | null)[];
-};
-export type EntityFilters = EntityFilter[];
 
 export type EntitiesCatalog = {
   entities(filters?: EntityFilters): Promise<Entity[]>;
@@ -35,6 +30,8 @@ export type EntitiesCatalog = {
     namespace: string | undefined,
     name: string,
   ): Promise<Entity | undefined>;
+  addOrUpdateEntity(entity: Entity): Promise<Entity>;
+  removeEntityByUid(uid: string): Promise<void>;
 };
 
 //

@@ -16,12 +16,10 @@
 
 import { InputError } from '@backstage/backend-common';
 import { Request } from 'express';
+import lodash from 'lodash';
 import yup from 'yup';
 
-export async function validateRequestBody<T>(
-  req: Request,
-  schema: yup.Schema<T>,
-): Promise<T> {
+export async function requireRequestBody(req: Request): Promise<unknown> {
   const contentType = req.header('content-type');
   if (!contentType) {
     throw new InputError('Content-Type missing');
@@ -32,7 +30,21 @@ export async function validateRequestBody<T>(
   const body = req.body;
   if (!body) {
     throw new InputError('Missing request body');
+  } else if (!lodash.isPlainObject(body)) {
+    throw new InputError('Expected body to be a JSON object');
+  } else if (Object.keys(body).length === 0) {
+    // Because of how express.json() translates the empty body to {}
+    throw new InputError('Empty request body');
   }
+
+  return body;
+}
+
+export async function validateRequestBody<T>(
+  req: Request,
+  schema: yup.Schema<T>,
+): Promise<T> {
+  const body = await requireRequestBody(req);
 
   try {
     await schema.validate(body, { strict: true });
@@ -40,5 +52,5 @@ export async function validateRequestBody<T>(
     throw new InputError(`Malformed request: ${e}`);
   }
 
-  return body as T;
+  return (body as unknown) as T;
 }

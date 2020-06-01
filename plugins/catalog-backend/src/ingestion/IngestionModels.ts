@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { EntityPolicy, EntityPolicies } from '@backstage/catalog-model';
+import { EntityPolicies, EntityPolicy } from '@backstage/catalog-model';
+import { DescriptorParsers } from './descriptor';
 import { DescriptorParser, ReaderOutput } from './descriptor/parsers/types';
 import { LocationReader, LocationReaders } from './source';
 import { IngestionModel } from './types';
-import { DescriptorParsers } from './descriptor';
 
 export class IngestionModels implements IngestionModel {
   private readonly reader: LocationReader;

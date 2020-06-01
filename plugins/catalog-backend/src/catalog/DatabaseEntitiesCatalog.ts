@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { Database } from '../database';
-import { EntitiesCatalog, EntityFilters } from './types';
+import type { Entity, EntityPolicy } from '@backstage/catalog-model';
+import type { Database, DbEntityResponse, EntityFilters } from '../database';
+import type { EntitiesCatalog } from './types';
 
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
-  constructor(private readonly database: Database) {}
+  constructor(
+    private readonly database: Database,
+    private readonly policy: EntityPolicy,
+  ) {}
 
   async entities(filters?: EntityFilters): Promise<Entity[]> {
     const items = await this.database.transaction(tx =>
@@ -41,19 +44,59 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     name: string,
     namespace: string | undefined,
   ): Promise<Entity | undefined> {
-    const matches = await this.database.transaction(tx =>
-      this.database.entities(tx, [
-        { key: 'kind', values: [kind] },
-        { key: 'name', values: [name] },
-        {
-          key: 'namespace',
-          values:
-            !namespace || namespace === 'default'
-              ? [null, 'default']
-              : [namespace],
-        },
-      ]),
+    return await this.database.transaction(tx =>
+      this.entityByNameInternal(tx, kind, name, namespace),
     );
+  }
+
+  async addOrUpdateEntity(entity: Entity): Promise<Entity> {
+    await this.policy.enforce(entity);
+    return await this.database.transaction(async tx => {
+      let response: DbEntityResponse;
+
+      if (entity.metadata.uid) {
+        response = await this.database.updateEntity(tx, { entity });
+      } else {
+        const existing = await this.entityByNameInternal(
+          tx,
+          entity.kind,
+          entity.metadata.name,
+          entity.metadata.namespace,
+        );
+        if (existing) {
+          response = await this.database.updateEntity(tx, { entity });
+        } else {
+          response = await this.database.addEntity(tx, { entity });
+        }
+      }
+
+      return response.entity;
+    });
+  }
+
+  async removeEntityByUid(uid: string): Promise<void> {
+    return await this.database.transaction(async tx => {
+      await this.database.removeEntity(tx, uid);
+    });
+  }
+
+  private async entityByNameInternal(
+    tx: unknown,
+    kind: string,
+    name: string,
+    namespace: string | undefined,
+  ): Promise<Entity | undefined> {
+    const matches = await this.database.entities(tx, [
+      { key: 'kind', values: [kind] },
+      { key: 'name', values: [name] },
+      {
+        key: 'namespace',
+        values:
+          !namespace || namespace === 'default'
+            ? [null, 'default']
+            : [namespace],
+      },
+    ]);
 
     return matches.length ? matches[0].entity : undefined;
   }

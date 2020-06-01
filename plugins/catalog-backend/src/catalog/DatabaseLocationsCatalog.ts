@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { Database, DatabaseLocationUpdateLogEvent } from '../database';
+import type { Database } from '../database';
+import { DatabaseLocationUpdateLogEvent } from '../database/types';
 import { IngestionModel } from '../ingestion/types';
 import {
   AddLocation,
   Location,
-  LocationsCatalog,
   LocationResponse,
+  LocationsCatalog,
 } from './types';
 
 export class DatabaseLocationsCatalog implements LocationsCatalog {
