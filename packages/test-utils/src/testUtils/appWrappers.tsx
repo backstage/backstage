@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, FunctionComponent } from 'react';
+import React, { ComponentType, ReactNode, FunctionComponent, FC } from 'react';
 import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
 import privateExports, {
   defaultSystemIcons,
   ApiTestRegistry,
+  BootErrorPageProps,
 } from '@backstage/core-api';
 const { PrivateAppImpl } = privateExports;
 
 const NotFoundErrorPage = () => {
   throw new Error('Reached NotFound Page');
 };
+const BootErrorPage: FC<BootErrorPageProps> = ({ step, error }) => {
+  throw new Error(`Reached BootError Page at step ${step} with error ${error}`);
+};
+const Progress = () => <div data-testid="progress" />;
 
 /**
  * Options to customize the behavior of the test app wrapper.
@@ -48,6 +53,8 @@ export function wrapInTestApp(
     apis: new ApiTestRegistry(),
     components: {
       NotFoundErrorPage,
+      BootErrorPage,
+      Progress,
     },
     icons: defaultSystemIcons,
     plugins: [],
@@ -59,6 +66,7 @@ export function wrapInTestApp(
         variant: 'light',
       },
     ],
+    configLoader: async () => ({}),
   });
 
   let Wrapper: ComponentType;
