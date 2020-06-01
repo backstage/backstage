@@ -18,6 +18,7 @@ import { render } from '@testing-library/react';
 import * as React from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import { catalogApiRef, CatalogApi } from '../../api/types';
 
 const getTestProps = (componentName: string) => {
   return {
@@ -39,7 +40,17 @@ describe('ComponentPage', () => {
     const props = getTestProps('');
     await render(
       wrapInTestApp(
-        <ApiProvider apis={ApiRegistry.from([[errorApiRef, errorApi]])}>
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [errorApiRef, errorApi],
+            [
+              catalogApiRef,
+              ({
+                async getEntityByName() {},
+              } as unknown) as CatalogApi,
+            ],
+          ])}
+        >
           <ComponentPage {...props} />
         </ApiProvider>,
       ),

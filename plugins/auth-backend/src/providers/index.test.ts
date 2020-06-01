@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { defaultRouter } from '.';
+
 describe('test', () => {
   it('unbreaks the test runner', () => {
-    expect(true).toBeTruthy();
+    expect(defaultRouter).toBeDefined();
   });
 });

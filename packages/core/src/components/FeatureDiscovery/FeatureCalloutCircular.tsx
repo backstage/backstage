@@ -141,9 +141,9 @@ export const FeatureCalloutCircular: FC<Props> = ({
       window.removeEventListener('resize', update);
       window.removeEventListener('scroll', update);
     };
-  }, []);
+  }, [update]);
 
-  useLayoutEffect(update, [wrapperRef.current]);
+  useLayoutEffect(update, [wrapperRef.current, update]);
 
   if (!show) {
     return <>{children}</>;

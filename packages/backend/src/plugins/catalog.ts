@@ -27,7 +27,10 @@ import {
 import { PluginEnvironment } from '../types';
 import { EntityPolicies } from '@backstage/catalog-model';
 
-export default async function ({ logger, database }: PluginEnvironment) {
+export default async function createPlugin({
+  logger,
+  database,
+}: PluginEnvironment) {
   const policy = new EntityPolicies();
   const ingestion = new IngestionModels(
     new LocationReaders(),
