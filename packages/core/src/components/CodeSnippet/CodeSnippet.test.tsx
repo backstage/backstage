@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 
 import CodeSnippet from './CodeSnippet';
 
@@ -33,16 +33,14 @@ const minProps = {
 
 describe('<CodeSnippet />', () => {
   it('renders text without exploding', () => {
-    const { getByText } = render(
-      wrapInThemedTestApp(<CodeSnippet {...minProps} />),
-    );
+    const { getByText } = render(wrapInTestApp(<CodeSnippet {...minProps} />));
     expect(getByText(/"Hello"/)).toBeInTheDocument();
     expect(getByText(/"World"/)).toBeInTheDocument();
   });
 
   it('renders without line numbers', () => {
     const { queryByText } = render(
-      wrapInThemedTestApp(<CodeSnippet {...minProps} />),
+      wrapInTestApp(<CodeSnippet {...minProps} />),
     );
     expect(queryByText('1')).not.toBeInTheDocument();
     expect(queryByText('2')).not.toBeInTheDocument();
@@ -51,7 +49,7 @@ describe('<CodeSnippet />', () => {
 
   it('renders with line numbers', () => {
     const { queryByText } = render(
-      wrapInThemedTestApp(<CodeSnippet {...minProps} showLineNumbers />),
+      wrapInTestApp(<CodeSnippet {...minProps} showLineNumbers />),
     );
     expect(queryByText(/1/)).toBeInTheDocument();
     expect(queryByText(/2/)).toBeInTheDocument();

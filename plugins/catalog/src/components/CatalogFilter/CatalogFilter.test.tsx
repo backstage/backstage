@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
 
 describe('Catalog Filter', () => {
@@ -26,7 +26,7 @@ describe('Catalog Filter', () => {
       { name: 'Test Group 2', items: [] },
     ];
     const { findByText } = render(
-      wrapInThemedTestApp(<CatalogFilter groups={mockGroups} />),
+      wrapInTestApp(<CatalogFilter groups={mockGroups} />),
     );
 
     for (const group of mockGroups) {
@@ -52,7 +52,7 @@ describe('Catalog Filter', () => {
     ];
 
     const { findByText } = render(
-      wrapInThemedTestApp(<CatalogFilter groups={mockGroups} />),
+      wrapInTestApp(<CatalogFilter groups={mockGroups} />),
     );
 
     const [group] = mockGroups;
@@ -81,7 +81,7 @@ describe('Catalog Filter', () => {
     ];
 
     const { findByText } = render(
-      wrapInThemedTestApp(<CatalogFilter groups={mockGroups} />),
+      wrapInTestApp(<CatalogFilter groups={mockGroups} />),
     );
 
     const [group] = mockGroups;
@@ -112,7 +112,7 @@ describe('Catalog Filter', () => {
     const onSelectedChangeHandler = jest.fn();
 
     const { findByText } = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <CatalogFilter
           groups={mockGroups}
           onSelectedChange={onSelectedChangeHandler}

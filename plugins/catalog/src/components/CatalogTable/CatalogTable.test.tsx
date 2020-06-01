@@ -15,7 +15,7 @@
  */
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 import CatalogTable from './CatalogTable';
 import { Component } from '../../data/component';
 
@@ -28,7 +28,7 @@ const components: Component[] = [
 describe('CatalogTable component', () => {
   it('should render loading when loading prop it set to true', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <CatalogTable titlePreamble="Owned" components={[]} loading />,
       ),
     );
@@ -38,7 +38,7 @@ describe('CatalogTable component', () => {
 
   it('should render error message when error is passed in props', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <CatalogTable
           titlePreamble="Owned"
           components={[]}
@@ -55,7 +55,7 @@ describe('CatalogTable component', () => {
 
   it('should display component names when loading has finished and no error occurred', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <CatalogTable
           titlePreamble="Owned"
           components={components}

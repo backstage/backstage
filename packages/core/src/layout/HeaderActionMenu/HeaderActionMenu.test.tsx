@@ -16,18 +16,18 @@
 
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { wrapInThemedTestApp, Keyboard } from '@backstage/test-utils';
+import { wrapInTestApp, Keyboard } from '@backstage/test-utils';
 import { HeaderActionMenu } from './HeaderActionMenu';
 
 describe('<ComponentContextMenu />', () => {
   it('renders without any items and without exploding', () => {
-    render(wrapInThemedTestApp(<HeaderActionMenu actionItems={[]} />));
+    render(wrapInTestApp(<HeaderActionMenu actionItems={[]} />));
   });
 
   it('can open the menu and click menu items', () => {
     const onClickFunction = jest.fn();
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <HeaderActionMenu
           actionItems={[{ label: 'Some label', onClick: onClickFunction }]}
         />,
@@ -49,7 +49,7 @@ describe('<ComponentContextMenu />', () => {
 
   it('Disabled', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <HeaderActionMenu
           actionItems={[{ label: 'Some label', disabled: true }]}
         />,
@@ -66,7 +66,7 @@ describe('<ComponentContextMenu />', () => {
   it('Test wrapper, and secondary label', () => {
     const onClickFunction = jest.fn();
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <HeaderActionMenu
           actionItems={[
             {
@@ -92,7 +92,7 @@ describe('<ComponentContextMenu />', () => {
 
   it('should close when hitting escape', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <HeaderActionMenu actionItems={[{ label: 'Some label' }]} />,
       ),
     );
