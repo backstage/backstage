@@ -44,7 +44,7 @@ export class CatalogClient implements CatalogApi {
   }
 
   // TODO: Types for the type param
-  async addLocation(type: string, target: string): Promise<{}> {
+  async addLocation(type: string, target: string) {
     const response = await fetch(
       `${this.apiOrigin}${this.basePath}/locations`,
       {
@@ -59,7 +59,46 @@ export class CatalogClient implements CatalogApi {
       throw new Error(`Location wasn't added: ${target}`);
     }
     const location = await response.json();
-    if (location) return location;
+
+    // TODO(shmidt-i): remove mocks
+    if (location)
+      return {
+        location,
+        entities: [
+          {
+            apiVersion: 'backstage.io/v1beta1',
+            kind: 'Component',
+            metadata: {
+              name: 'component-website',
+              annotations: {
+                'backstage.io/managed-by-location': location.id,
+              },
+              uid: 'uid1',
+              etag: 'YTQzMmNmNjctMGZmMC00YWM5LWFjYWQtZDg1NjBjNDFlYWM4',
+              generation: 1,
+            },
+            spec: {
+              type: 'website',
+            },
+          },
+          {
+            apiVersion: 'backstage.io/v1beta1',
+            kind: 'Component',
+            metadata: {
+              name: 'component-service',
+              annotations: {
+                'backstage.io/managed-by-location': location.id,
+              },
+              uid: 'uid2',
+              etag: 'YTQzMmNmNjctMGZmMC00YWM5LWFjYWQtZDg1NjBjNDFlYWM4',
+              generation: 1,
+            },
+            spec: {
+              type: 'service',
+            },
+          },
+        ],
+      };
     throw new Error(`'Location wasn't added: ${target}`);
   }
 }
