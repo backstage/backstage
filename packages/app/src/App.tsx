@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  createApp,
-  AlertDisplay,
-  OAuthRequestDialog,
-  LoginPage,
-} from '@backstage/core';
+import { createApp, AlertDisplay, OAuthRequestDialog } from '@backstage/core';
 import React, { FC } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import apis from './apis';
@@ -29,6 +24,18 @@ import apis from './apis';
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
+  configLoader: async () => ({
+    app: {
+      title: 'Backstage Example App',
+      baseUrl: 'http://localhost:3000',
+    },
+    backend: {
+      baseUrl: 'http://localhost:7000',
+    },
+    organization: {
+      name: 'Spotify',
+    },
+  }),
 });
 
 const AppProvider = app.getProvider();
@@ -40,7 +47,6 @@ const App: FC<{}> = () => (
     <OAuthRequestDialog />
     <Router>
       <Root>
-        <Route key="login" path="/login" component={LoginPage} exact />
         <AppComponent />
       </Root>
     </Router>

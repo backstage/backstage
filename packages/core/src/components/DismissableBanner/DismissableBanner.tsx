@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: -theme.spacing(3),
     display: 'flex',
     flexFlow: 'row nowrap',
+    zIndex: 'unset',
   },
   icon: {
     fontSize: 20,
