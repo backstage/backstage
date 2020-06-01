@@ -16,9 +16,12 @@
 
 import express, { CookieOptions } from 'express';
 import crypto from 'crypto';
-import { AuthProviderRouteHandlers, OAuthProviderHandlers } from './types';
+import {
+  AuthResponse,
+  AuthProviderRouteHandlers,
+  OAuthProviderHandlers,
+} from './types';
 import { InputError } from '@backstage/backend-common';
-import { postMessageResponse, ensuresXRequestedWith } from './utils';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -84,6 +87,38 @@ export const removeRefreshTokenCookie = (
   };
 
   res.cookie(`${provider}-refresh-token`, '', options);
+};
+
+export const postMessageResponse = (
+  res: express.Response,
+  data: AuthResponse,
+) => {
+  const jsonData = JSON.stringify(data);
+  const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
+
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('X-Frame-Options', 'sameorigin');
+
+  // TODO: Make target app origin configurable globally
+  res.end(`
+<html>
+<body>
+  <script>
+    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), 'http://localhost:3000')
+    window.close()
+  </script>
+</body>
+</html>
+  `);
+};
+
+export const ensuresXRequestedWith = (req: express.Request) => {
+  const requiredHeader = req.header('X-Requested-With');
+
+  if (!requiredHeader || requiredHeader !== 'XMLHttpRequest') {
+    return false;
+  }
+  return true;
 };
 
 export class OAuthProvider implements AuthProviderRouteHandlers {
