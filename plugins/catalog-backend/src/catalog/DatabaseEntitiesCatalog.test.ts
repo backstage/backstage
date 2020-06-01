@@ -14,20 +14,31 @@
  * limitations under the License.
  */
 
+import type { MockedMemberFunctions } from '@backstage/backend-common';
 import type { Entity, EntityPolicy } from '@backstage/catalog-model';
 import type { Database } from '../database';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
 
 describe('DatabaseEntitiesCatalog', () => {
-  let db: Database;
+  let db: MockedMemberFunctions<Database>;
   let policy: EntityPolicy;
 
   beforeEach(() => {
-    // Since the database has a large API surface, we just leave it empty and
-    // let the tests insert whatever methods they need to call
-    db = ({
-      transaction: jest.fn(async f => f('mock_tx')),
-    } as unknown) as Database;
+    db = {
+      transaction: jest.fn(),
+      addEntity: jest.fn(),
+      updateEntity: jest.fn(),
+      entities: jest.fn(),
+      entity: jest.fn(),
+      removeEntity: jest.fn(),
+      addLocation: jest.fn(),
+      removeLocation: jest.fn(),
+      location: jest.fn(),
+      locations: jest.fn(),
+      locationHistory: jest.fn(),
+      addLocationUpdateLogEvent: jest.fn(),
+    };
+    db.transaction.mockImplementation(async f => f('tx'));
     policy = { enforce: jest.fn(async x => x) };
   });
 
@@ -42,8 +53,8 @@ describe('DatabaseEntitiesCatalog', () => {
         },
       };
 
-      db.entities = jest.fn().mockResolvedValue([]);
-      db.addEntity = jest.fn().mockResolvedValue({ entity });
+      db.entities.mockResolvedValue([]);
+      db.addEntity.mockResolvedValue({ entity });
 
       const catalog = new DatabaseEntitiesCatalog(db, policy);
       const result = await catalog.addOrUpdateEntity(entity);
@@ -65,8 +76,8 @@ describe('DatabaseEntitiesCatalog', () => {
         },
       };
 
-      db.entities = jest.fn().mockResolvedValue([]);
-      db.updateEntity = jest.fn().mockResolvedValue({ entity });
+      db.entities.mockResolvedValue([]);
+      db.updateEntity.mockResolvedValue({ entity });
 
       const catalog = new DatabaseEntitiesCatalog(db, policy);
       const result = await catalog.addOrUpdateEntity(entity);
@@ -95,8 +106,8 @@ describe('DatabaseEntitiesCatalog', () => {
         },
       };
 
-      db.entities = jest.fn().mockResolvedValue([{ entity: existing }]);
-      db.updateEntity = jest.fn().mockResolvedValue({ entity: added });
+      db.entities.mockResolvedValue([{ entity: existing }]);
+      db.updateEntity.mockResolvedValue({ entity: added });
 
       const catalog = new DatabaseEntitiesCatalog(db, policy);
       const result = await catalog.addOrUpdateEntity(added);
