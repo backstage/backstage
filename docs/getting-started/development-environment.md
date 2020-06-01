@@ -44,6 +44,7 @@ yarn build # Build published versions of packages, depends on tsc
 
 yarn lint # lint packages that have changed since later commit on origin/master
 yarn lint:all # lint all packages
+yarn lint:type-deps # verify that @types/* dependencies are placed correctly in packages
 
 yarn test # test packages that have changed since later commit on origin/master
 yarn test:all # test all packages
