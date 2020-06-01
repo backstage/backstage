@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { MockedMemberFunctions } from '@backstage/backend-common';
 import type { Entity, EntityPolicy } from '@backstage/catalog-model';
 import type { Database } from '../database';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
 
 describe('DatabaseEntitiesCatalog', () => {
-  let db: MockedMemberFunctions<Database>;
+  let db: jest.Mocked<Database>;
   let policy: EntityPolicy;
 
   beforeEach(() => {
