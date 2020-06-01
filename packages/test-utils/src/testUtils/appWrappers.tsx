@@ -66,7 +66,6 @@ export function wrapInTestApp(
         variant: 'light',
       },
     ],
-    configLoader: async () => ({}),
   });
 
   let Wrapper: ComponentType;
