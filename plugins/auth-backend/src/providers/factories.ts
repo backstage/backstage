@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { AuthProviderFactories, AuthProviderFactory } from './types';
+import {
+  AuthProviderFactories,
+  AuthProviderRouteHandlers,
+  AuthProviderConfig,
+} from './types';
 import { GoogleAuthProvider } from './google';
 import { GithubAuthProvider } from './github';
+import { OAuthProvider } from './OAuthProvider';
 
 export class ProviderFactories {
   private static readonly providerFactories: AuthProviderFactories = {
@@ -24,13 +29,22 @@ export class ProviderFactories {
     github: GithubAuthProvider,
   };
 
-  public static getProviderFactory(providerId: string): AuthProviderFactory {
+  public static getProviderFactory(
+    config: AuthProviderConfig,
+  ): AuthProviderRouteHandlers {
+    const providerId = config.provider;
     const ProviderImpl = ProviderFactories.providerFactories[providerId];
     if (!ProviderImpl) {
       throw Error(
         `Provider Implementation missing for : ${providerId} auth provider`,
       );
     }
-    return ProviderImpl;
+    const providerInstance = new ProviderImpl(config);
+    const oauthProvider = new OAuthProvider(
+      providerInstance,
+      providerId,
+      config.disableRefresh,
+    );
+    return oauthProvider;
   }
 }

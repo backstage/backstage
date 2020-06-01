@@ -89,9 +89,15 @@ export const removeRefreshTokenCookie = (
 export class OAuthProvider implements AuthProviderRouteHandlers {
   private readonly provider: string;
   private readonly providerHandlers: OAuthProviderHandlers;
-  constructor(providerHandlers: OAuthProviderHandlers, provider: string) {
+  private readonly disableRefresh: boolean;
+  constructor(
+    providerHandlers: OAuthProviderHandlers,
+    provider: string,
+    disableRefresh?: boolean,
+  ) {
     this.provider = provider;
     this.providerHandlers = providerHandlers;
+    this.disableRefresh = disableRefresh ?? false;
   }
 
   async start(req: express.Request, res: express.Response): Promise<any> {
@@ -129,14 +135,16 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
 
       const { user, info } = await this.providerHandlers.handler(req);
 
-      // throw error if missing refresh token
-      const { refreshToken } = info;
-      if (!refreshToken) {
-        throw new Error('Missing refresh token');
-      }
+      if (!this.disableRefresh) {
+        // throw error if missing refresh token
+        const { refreshToken } = info;
+        if (!refreshToken) {
+          throw new Error('Missing refresh token');
+        }
 
-      // set new refresh token
-      setRefreshTokenCookie(res, this.provider, refreshToken);
+        // set new refresh token
+        setRefreshTokenCookie(res, this.provider, refreshToken);
+      }
 
       // post message back to popup if successful
       return postMessageResponse(res, {
@@ -160,14 +168,22 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       return res.status(401).send('Invalid X-Requested-With header');
     }
 
-    // remove refresh token cookie before logout
-    removeRefreshTokenCookie(res, this.provider);
+    if (!this.disableRefresh) {
+      // remove refresh token cookie before logout
+      removeRefreshTokenCookie(res, this.provider);
+    }
     return res.send('logout!');
   }
 
   async refresh(req: express.Request, res: express.Response): Promise<any> {
     if (!ensuresXRequestedWith(req)) {
       return res.status(401).send('Invalid X-Requested-With header');
+    }
+
+    if (!this.providerHandlers.refresh || this.disableRefresh) {
+      return res.send(
+        `Refresh token not supported for provider: ${this.provider}`,
+      );
     }
 
     try {

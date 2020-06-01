@@ -30,5 +30,6 @@ export const providers = [
       clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET!,
       callbackURL: 'http://localhost:7000/auth/github/handler/frame',
     },
+    disableRefresh: true,
   },
 ];

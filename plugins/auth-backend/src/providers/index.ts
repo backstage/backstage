@@ -17,7 +17,6 @@
 import Router from 'express-promise-router';
 import { AuthProviderRouteHandlers, AuthProviderConfig } from './types';
 import { ProviderFactories } from './factories';
-import { OAuthProvider } from './OAuthProvider';
 
 export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
   const router = Router();
@@ -32,10 +31,7 @@ export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
 
 export const makeProvider = (config: AuthProviderConfig) => {
   const providerId = config.provider;
-  const ProviderImpl = ProviderFactories.getProviderFactory(providerId);
-  const providerInstance = new ProviderImpl(config);
-
-  const oauthProvider = new OAuthProvider(providerInstance, providerId);
+  const oauthProvider = ProviderFactories.getProviderFactory(config);
   const providerRouter = defaultRouter(oauthProvider);
   return { providerId, providerRouter };
 };

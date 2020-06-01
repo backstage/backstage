@@ -20,12 +20,13 @@ import passport from 'passport';
 export type AuthProviderConfig = {
   provider: string;
   options: any;
+  disableRefresh?: boolean;
 };
 
 export interface OAuthProviderHandlers {
   start(req: express.Request, options: any): Promise<any>;
   handler(req: express.Request): Promise<any>;
-  refresh(refreshToken: string, scope: string): Promise<any>;
+  refresh?(refreshToken: string, scope: string): Promise<any>;
   logout?(): Promise<any>;
 }
 
