@@ -2924,10 +2924,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@spotify/eslint-config-base@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-6.1.0.tgz#b48d2764049d56a7d83a95709ec1e6733cb19f2a"
-  integrity sha512-oxR3OBBrms09Ih6yPrqcaeKgwchdw9XgRvKsF6x6uPiMy0OVYald/+GkBtyQy+IChD14WStV/XosqNxEZeTJ4Q==
+"@spotify/eslint-config-base@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-7.0.0.tgz#36804ae09ec938f1aa5f9464ea993f3f151cfaa8"
+  integrity sha512-XRTrTRyRRYBxPYINKNHw4B8QWlA3p4I+id/Po2sMdejtXH3LZgDgIjdschUZSdQ6J6dVYDdaVykdizRM9I+G6Q==
 
 "@spotify/eslint-config-oss@^1.0.1":
   version "1.0.2"
@@ -2936,84 +2936,79 @@
   dependencies:
     eslint-plugin-notice "^0.9.10"
 
-"@spotify/eslint-config-react@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-6.0.0.tgz#9cfc88362c7ffcd14e4dde73c196d1bc8583051d"
-  integrity sha512-Tb88Yvu9lAjT/isKbebmOoxBAmjreDFH4lQfXxoFcW56Wl78l2yvLo0LkPV8lOx5+lKfX0BbFiBBpwl+jCaflg==
+"@spotify/eslint-config-react@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-7.0.1.tgz#2e70de9d7911ea9aeaa55a83a332220a28f6c431"
+  integrity sha512-HNDHvm19EaBXiDgsg52mjMgKWZTeA0hO2Q75ACNwb8UtjIKkANqyyuzyDGo8jiGMbWIm6wJjShlRtT95emNlqQ==
 
-"@spotify/eslint-config-typescript@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-6.0.0.tgz#8ae8469d2a0e219d71abaf2da14f8659c3912a34"
-  integrity sha512-cK1iHhfMgvZFPANqLoChhgUQ1oqH+qTWILGvcsc6HylzVt9/kM0SyjGcDuZKj+CP6TecJODdyHgb5U6U+O5gKw==
+"@spotify/eslint-config-typescript@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-7.0.0.tgz#fc5227e3344f74b41ac3a530df24a95ac13254e4"
+  integrity sha512-28I/SAf68NKbWZ5IY0WYMa0D18PxWdC9DP9gRbOTlZufmsS8jEgqf3zBUWmP6XOf1nihpKWcqvbFUG5H7/JYXA==
 
-"@spotify/eslint-config@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config/-/eslint-config-6.1.0.tgz#67ef537c4419ecf275f790a79ce988820b3f5a95"
-  integrity sha512-pRfRFkW9XMHrzSErzzUxMRs/e+IL0i0o8crgMJJgk0J56+f0rQaXWkeDrI9HCw1uCkXLEwUoNPe+Rdd6cDk/lA==
+"@spotify/eslint-config@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config/-/eslint-config-7.0.1.tgz#07a21cfd7fce89cfc2c6dd5ea5d747e741201b66"
+  integrity sha512-8GI/TZGUhS4pr7oipT2MjrZFRgXcKzk9YImEusUdD2f5vlCniRFIBQNrvTMkyjfdQqvIVqJPLcdVPXeAgprsMw==
   dependencies:
-    "@spotify/eslint-config-base" "^6.1.0"
-    "@spotify/eslint-config-react" "^6.0.0"
-    "@spotify/eslint-config-typescript" "^6.0.0"
-    "@spotify/web-scripts-utils" "^6.0.0"
+    "@spotify/eslint-config-base" "^7.0.0"
+    "@spotify/eslint-config-react" "^7.0.1"
+    "@spotify/eslint-config-typescript" "^7.0.0"
+    "@spotify/web-scripts-utils" "^7.0.0"
     "@typescript-eslint/eslint-plugin" "^2.14.0"
     "@typescript-eslint/parser" "^2.14.0"
     eslint-config-prettier "^6.0.0"
     eslint-plugin-jest "^23.6.0"
     eslint-plugin-jsx-a11y "^6.2.1"
     eslint-plugin-react "^7.12.4"
-
-"@spotify/prettier-config@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-6.0.0.tgz#f3a72cf290af8f5b57e89fc65e6eaff8178a6e83"
-  integrity sha512-lO/ykZ/GNtzH63mFzs1VeqOVNCZwQJyZm/PBNBZuYk3hnWOfDC8XA5G/D4opV/gxqkED5+Ek7LSAnPcQNv/wUA==
+    eslint-plugin-react-hooks "^4.0.0"
 
 "@spotify/prettier-config@^7.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-7.0.0.tgz#47750979d1282197295108b6958360660a955c16"
   integrity sha512-lIMcx/2oDqTtW84iHKkRJe+8U6HK6GPwWH5sJp9UEHcDpdXomOQYvwcGXy2I2zwPQQ14gYYE6nEJuSnnYqsYRw==
 
-"@spotify/tsconfig@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/@spotify/tsconfig/-/tsconfig-6.0.0.tgz#bf9fd0b8188494d87ba6c172f0030376d2aa5dd8"
-  integrity sha512-B+T6fcDRJg3x1G8wrqUQ+xgu6JYWBwPHeVxKybRGHLt4ciDmzJUvtWthXt8Fg3DqvaKnLnfXLcGOp8TiG+f0kA==
+"@spotify/tsconfig@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/@spotify/tsconfig/-/tsconfig-7.0.0.tgz#41c402f4eb6d3147bc18427a35205151cbb32cd5"
+  integrity sha512-MeRFUPMXWBSm6yaUWiESaQsF9B+9Rn1F/w5hbHHzcunc45teXBcgsOrJu1uDOEkhP/9lP0fefuodpP+TYWM1LQ==
 
-"@spotify/web-scripts-utils@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/@spotify/web-scripts-utils/-/web-scripts-utils-6.0.0.tgz#64642e79a894058510b0b4a239b117323080e853"
-  integrity sha512-o3htse1lyhLCabmYoQcI2qCsYV0PW6dpnYHhKAF/iycIglzz4/tXOk3EA/MQVlo6bo7crdr++3OeU4Dyk2CsWw==
+"@spotify/web-scripts-utils@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/@spotify/web-scripts-utils/-/web-scripts-utils-7.0.0.tgz#8c6b8039fc645a36ac48629eb9ba06600f4d828a"
+  integrity sha512-McMy0j60lxOHjgDjegthZqEWN/PabphiM30A/mI/Y7xh9+JFnYWBTSm/wgn6EW2BsPpV631xSYYkk6B1Ph14Fw==
   dependencies:
     glob "^7.1.4"
     read-pkg-up "^7.0.1"
 
-"@spotify/web-scripts@^6.0.0":
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/@spotify/web-scripts/-/web-scripts-6.1.0.tgz#3fb52aa9c77c4724e056a33e5b5994b327594278"
-  integrity sha512-1QVbd7HtIlYLIuNwR7Er/S9p3HLmXOFZAwmRLQ0xe67G1/gqIQOXpuMuembWLyTqi15efMrpNBlmvH64eW7nsw==
+"@spotify/web-scripts@^7.0.2":
+  version "7.0.2"
+  resolved "https://registry.npmjs.org/@spotify/web-scripts/-/web-scripts-7.0.2.tgz#2f45920b404b24cde1b181414ecfe404c297adea"
+  integrity sha512-4Hf8+dy8/b5s3hB1mzW79sa+B81K0zWLLhG/e+fxNtejU/sSPYz1nB1G9IjIDlHpf7SNsR53tcKevXei1OoVxg==
   dependencies:
     "@commitlint/cli" "^8.3.3"
     "@commitlint/config-conventional" "^8.3.3"
-    "@spotify/eslint-config" "^6.1.0"
-    "@spotify/prettier-config" "^6.0.0"
-    "@spotify/tsconfig" "^6.0.0"
-    "@spotify/web-scripts-utils" "^6.0.0"
+    "@spotify/eslint-config" "^7.0.1"
+    "@spotify/prettier-config" "^7.0.0"
+    "@spotify/tsconfig" "^7.0.0"
+    "@spotify/web-scripts-utils" "^7.0.0"
     "@types/cross-spawn" "^6.0.0"
     "@types/debug" "^4.1.2"
     "@types/jest" "^25.1.0"
     "@types/react" "^16.8.19"
     "@types/react-dom" "^16.8.4"
-    commander "^4.0.1"
+    commander "^5.1.0"
     commitizen "^4.0.3"
     cross-spawn-promise "^0.10.1"
     cz-conventional-changelog "^3.0.2"
     debug "^4.1.1"
     eslint "^6.8.0"
     jest "^25.1.0"
-    jest-config "^25.1.0"
     jest-junit "^10.0.0"
     lint-staged "^10.0.4"
-    prettier "^1.18.2"
+    prettier "^2.0.5"
     semantic-release "^17.0.1"
-    ts-jest "^25.2.1"
+    ts-jest "^25.4.0"
     typescript "^3.7.4"
 
 "@storybook/addon-actions@^5.3.17":
@@ -4165,15 +4160,7 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@*", "@types/jest@^25.1.0":
-  version "25.2.1"
-  resolved "https://registry.npmjs.org/@types/jest/-/jest-25.2.1.tgz#9544cd438607955381c1bdbdb97767a249297db5"
-  integrity sha512-msra1bCaAeEdkSyA0CZ6gW1ukMIvZ5YoJkdXw/qhQdsuuDlFTcEUrUw8CLCPt2rVRUfXlClVvK2gvPs9IokZaA==
-  dependencies:
-    jest-diff "^25.2.1"
-    pretty-format "^25.2.1"
-
-"@types/jest@^25.2.2":
+"@types/jest@*", "@types/jest@^25.1.0", "@types/jest@^25.2.2":
   version "25.2.3"
   resolved "https://registry.npmjs.org/@types/jest/-/jest-25.2.3.tgz#33d27e4c4716caae4eced355097a47ad363fdcaf"
   integrity sha512-JXc1nK/tXHiDhV55dvfzqtmP4S3sy3T3ouV2tkViZgxY/zeUkcpQcQPGRlgF4KmWzWW5oiWYSZwtCB+2RsE4Fw==
@@ -9020,6 +9007,11 @@ eslint-plugin-notice@^0.9.10:
     lodash "^4.17.15"
     metric-lcs "^0.1.2"
 
+eslint-plugin-react-hooks@^4.0.0:
+  version "4.0.4"
+  resolved "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.0.4.tgz#aed33b4254a41b045818cacb047b81e6df27fa58"
+  integrity sha512-equAdEIsUETLFNCmmCkiCGq6rkSK5MoJhXFPFYeUebcjKgBmWWcgVOqZyQC8Bv1BwVCnTq9tBxgJFgAJTWoJtA==
+
 eslint-plugin-react@^7.12.4:
   version "7.19.0"
   resolved "https://registry.npmjs.org/eslint-plugin-react/-/eslint-plugin-react-7.19.0.tgz#6d08f9673628aa69c5559d33489e855d83551666"
@@ -13661,26 +13653,7 @@ linkify-it@^2.0.0:
   dependencies:
     uc.micro "^1.0.1"
 
-lint-staged@^10.0.4:
-  version "10.0.8"
-  resolved "https://registry.npmjs.org/lint-staged/-/lint-staged-10.0.8.tgz#0f7849cdc336061f25f5d4fcbcfa385701ff4739"
-  integrity sha512-Oa9eS4DJqvQMVdywXfEor6F4vP+21fPHF8LUXgBbVWUSWBddjqsvO6Bv1LwMChmgQZZqwUvgJSHlu8HFHAPZmA==
-  dependencies:
-    chalk "^3.0.0"
-    commander "^4.0.1"
-    cosmiconfig "^6.0.0"
-    debug "^4.1.1"
-    dedent "^0.7.0"
-    execa "^3.4.0"
-    listr "^0.14.3"
-    log-symbols "^3.0.0"
-    micromatch "^4.0.2"
-    normalize-path "^3.0.0"
-    please-upgrade-node "^3.2.0"
-    string-argv "0.3.1"
-    stringify-object "^3.3.0"
-
-lint-staged@^10.1.0:
+lint-staged@^10.0.4, lint-staged@^10.1.0:
   version "10.1.0"
   resolved "https://registry.npmjs.org/lint-staged/-/lint-staged-10.1.0.tgz#18785bb005d5ed404f1c1db6563e082f7a7baac2"
   integrity sha512-WzZ/T+O/aEaaT679sMgI4JqK5mnG69V5KQSouzVsShzZ8wGWte39HT3z61LsxjVNeCf8m/ChhvWJa2wTiQLy5A==
@@ -16822,7 +16795,7 @@ prepend-http@^2.0.0:
   resolved "https://registry.npmjs.org/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=
 
-prettier@^1.16.4, prettier@^1.18.2:
+prettier@^1.16.4:
   version "1.19.1"
   resolved "https://registry.npmjs.org/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
@@ -18243,7 +18216,7 @@ resolve@1.15.1:
   dependencies:
     path-parse "^1.0.6"
 
-resolve@1.x, resolve@^1.1.6, resolve@^1.1.7, resolve@^1.10.0, resolve@^1.11.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.15.1, resolve@^1.16.1, resolve@^1.17.0, resolve@^1.3.2:
+resolve@^1.1.6, resolve@^1.1.7, resolve@^1.10.0, resolve@^1.11.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.15.1, resolve@^1.16.1, resolve@^1.17.0, resolve@^1.3.2:
   version "1.17.0"
   resolved "https://registry.npmjs.org/resolve/-/resolve-1.17.0.tgz#b25941b54968231cc2d1bb76a79cb7f2c0bf8444"
   integrity sha512-ic+7JYiV8Vi2yzQGFWOkiZD5Z9z7O2Zhm9XMaTxdJExKasieFCr+yXZ/WmXsckHiKl12ar0y6XiXDx3m4RHn1w==
@@ -18665,12 +18638,12 @@ semver-regex@^2.0.0:
   resolved "https://registry.npmjs.org/semver-regex/-/semver-regex-2.0.0.tgz#a93c2c5844539a770233379107b38c7b4ac9d338"
   integrity sha512-mUdIBBvdn0PLOeP3TEkMH7HHeUP3GjsXCwKarjv/kGmUFOYg1VqEemKhoQpWMu6X2I8kHeuVdGibLGkVK+/5Qw==
 
-"semver@2 || 3 || 4 || 5", "semver@2.x || 3.x || 4 || 5", "semver@^2.3.0 || 3.x || 4 || 5", semver@^5.0.3, semver@^5.1.0, semver@^5.3.0, semver@^5.4.1, semver@^5.5, semver@^5.5.0, semver@^5.5.1, semver@^5.6.0, semver@^5.7.0, semver@^5.7.1:
+"semver@2 || 3 || 4 || 5", "semver@2.x || 3.x || 4 || 5", "semver@^2.3.0 || 3.x || 4 || 5", semver@^5.0.3, semver@^5.1.0, semver@^5.3.0, semver@^5.4.1, semver@^5.5.0, semver@^5.5.1, semver@^5.6.0, semver@^5.7.0, semver@^5.7.1:
   version "5.7.1"
   resolved "https://registry.npmjs.org/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
   integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
 
-semver@6.3.0, semver@^6.0.0, semver@^6.1.2, semver@^6.2.0, semver@^6.3.0:
+semver@6.3.0, semver@6.x, semver@^6.0.0, semver@^6.1.2, semver@^6.2.0, semver@^6.3.0:
   version "6.3.0"
   resolved "https://registry.npmjs.org/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
@@ -20359,10 +20332,10 @@ ts-invariant@^0.4.0:
   dependencies:
     tslib "^1.9.3"
 
-ts-jest@^25.2.1:
-  version "25.2.1"
-  resolved "https://registry.npmjs.org/ts-jest/-/ts-jest-25.2.1.tgz#49bf05da26a8b7fbfbc36b4ae2fcdc2fef35c85d"
-  integrity sha512-TnntkEEjuXq/Gxpw7xToarmHbAafgCaAzOpnajnFC6jI7oo1trMzAHA04eWpc3MhV6+yvhE8uUBAmN+teRJh0A==
+ts-jest@^25.4.0:
+  version "25.5.1"
+  resolved "https://registry.npmjs.org/ts-jest/-/ts-jest-25.5.1.tgz#2913afd08f28385d54f2f4e828be4d261f4337c7"
+  integrity sha512-kHEUlZMK8fn8vkxDjwbHlxXRB9dHYpyzqKIGDNxbzs+Rz+ssNDSDNusEK8Fk/sDd4xE6iKoQLfFkFVaskmTJyw==
   dependencies:
     bs-logger "0.x"
     buffer-from "1.x"
@@ -20370,10 +20343,10 @@ ts-jest@^25.2.1:
     json5 "2.x"
     lodash.memoize "4.x"
     make-error "1.x"
+    micromatch "4.x"
     mkdirp "0.x"
-    resolve "1.x"
-    semver "^5.5"
-    yargs-parser "^16.1.0"
+    semver "6.x"
+    yargs-parser "18.x"
 
 ts-jest@^26.0.0:
   version "26.0.0"
@@ -21681,14 +21654,6 @@ yargs-parser@^15.0.1:
   version "15.0.1"
   resolved "https://registry.npmjs.org/yargs-parser/-/yargs-parser-15.0.1.tgz#54786af40b820dcb2fb8025b11b4d659d76323b3"
   integrity sha512-0OAMV2mAZQrs3FkNpDQcBk1x5HXb8X4twADss4S0Iuk+2dGnLOE/fRHrsYm542GduMveyA77OF4wrNJuanRCWw==
-  dependencies:
-    camelcase "^5.0.0"
-    decamelize "^1.2.0"
-
-yargs-parser@^16.1.0:
-  version "16.1.0"
-  resolved "https://registry.npmjs.org/yargs-parser/-/yargs-parser-16.1.0.tgz#73747d53ae187e7b8dbe333f95714c76ea00ecf1"
-  integrity sha512-H/V41UNZQPkUMIT5h5hiwg4QKIY1RPvoBV4XcjUbRM8Bk2oKqqyZ0DIEbTFZB0XjbtSPG8SAa/0DxCQmiRgzKg==
   dependencies:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
