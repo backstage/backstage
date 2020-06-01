@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Theme } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/styles';
+import { Theme, createStyles, makeStyles } from '@material-ui/core';
 import React, { FC } from 'react';
 
 type Props = {
