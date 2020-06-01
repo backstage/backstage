@@ -16,7 +16,6 @@
 import React, { FC, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import ProfileCard from '../ProfileCard';
-import { useLocalStorage } from 'react-use';
 
 interface Props {
   profileTemplates: {
@@ -30,9 +29,6 @@ interface Props {
 const ProfileCardList: FC<Props> = props => {
   const [selections, setSelections] = useState<Set<number>>(new Set<number>());
   const [profiles, setProfiles] = useState<Set<string>>(new Set<string>());
-  const [gitopsProfiles, setGitopsProfiles] = useLocalStorage<string[]>(
-    'gitops-profiles',
-  );
 
   const handleClicked = (index: number, repository: string) => {
     if (selections.has(index)) {
@@ -46,13 +42,10 @@ const ProfileCardList: FC<Props> = props => {
     setSelections(selections);
     setProfiles(profiles);
 
-    setGitopsProfiles(Array.from(profiles));
-    // eslint-disable-next-line no-console
-    console.log(profiles);
-    // eslint-disable-next-line no-console
-    console.log(gitopsProfiles);
-    // eslint-disable-next-line no-console
-    console.log(gitopsProfiles);
+    window.localStorage.setItem(
+      'gitops-profiles',
+      JSON.stringify(Array.from(profiles)),
+    );
   };
 
   return (

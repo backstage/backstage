@@ -177,9 +177,6 @@ const ProfileCatalog: FC<{}> = () => {
   };
 
   const doCreateCluster = async () => {
-    // eslint-disable-next-line no-console
-    console.log(gitopsProfiles);
-
     setShowProgress(true);
     setRunStatus([]);
 

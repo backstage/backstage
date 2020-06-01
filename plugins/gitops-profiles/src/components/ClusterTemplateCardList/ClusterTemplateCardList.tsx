@@ -17,7 +17,6 @@
 import React, { FC } from 'react';
 import { Grid } from '@material-ui/core';
 import ClusterTemplateCard from '../ClusterTemplateCard';
-import { useLocalStorage } from 'react-use';
 
 interface Props {
   template: {
@@ -30,16 +29,10 @@ interface Props {
 
 const ClusterTemplateCardList: FC<Props> = props => {
   const [activeIndex, setActiveIndex] = React.useState(-1);
-  const [templateRepo, setTemplateRepo] = useLocalStorage<string>(
-    'gitops-template-repo',
-  );
 
   const handleClicked = (index: number, repository: string) => {
-    // eslint-disable-next-line no-console
-    console.log(templateRepo);
-
     setActiveIndex(index);
-    setTemplateRepo(repository);
+    window.localStorage.setItem('gitops-template-repo', repository);
   };
 
   return (
