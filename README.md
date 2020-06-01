@@ -85,7 +85,6 @@ Take a look at the [Getting Started](docs/getting-started/README.md) guide to le
 - [Architecture](docs/architecture-terminology.md) ([Decisions](docs/architecture-decisions))
 - [API references](docs/reference/README.md)
 - [Designing for Backstage](docs/design.md)
-- [Architecture Decisions (ADRs)](docs/architecture-decisions)
 - [Storybook - UI components](http://storybook.backstage.io)
 - [Contributing to Storybook](docs/getting-started/contributing-to-storybook.md)
 
