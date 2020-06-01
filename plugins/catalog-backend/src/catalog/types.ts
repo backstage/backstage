@@ -30,7 +30,7 @@ export type EntitiesCatalog = {
     namespace: string | undefined,
     name: string,
   ): Promise<Entity | undefined>;
-  addOrUpdateEntity(entity: Entity): Promise<Entity>;
+  addOrUpdateEntity(entity: Entity, locationId?: string): Promise<Entity>;
   removeEntityByUid(uid: string): Promise<void>;
 };
 

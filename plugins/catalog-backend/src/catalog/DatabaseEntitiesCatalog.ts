@@ -49,13 +49,16 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     );
   }
 
-  async addOrUpdateEntity(entity: Entity): Promise<Entity> {
+  async addOrUpdateEntity(
+    entity: Entity,
+    locationId?: string,
+  ): Promise<Entity> {
     await this.policy.enforce(entity);
     return await this.database.transaction(async tx => {
       let response: DbEntityResponse;
 
       if (entity.metadata.uid) {
-        response = await this.database.updateEntity(tx, { entity });
+        response = await this.database.updateEntity(tx, { locationId, entity });
       } else {
         const existing = await this.entityByNameInternal(
           tx,
@@ -64,9 +67,12 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
           entity.metadata.namespace,
         );
         if (existing) {
-          response = await this.database.updateEntity(tx, { entity });
+          response = await this.database.updateEntity(tx, {
+            locationId,
+            entity,
+          });
         } else {
-          response = await this.database.addEntity(tx, { entity });
+          response = await this.database.addEntity(tx, { locationId, entity });
         }
       }
 
