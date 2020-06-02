@@ -16282,10 +16282,10 @@ rollup@0.64.1:
     "@types/estree" "0.0.39"
     "@types/node" "*"
 
-rollup@2.10.x:
-  version "2.10.9"
-  resolved "https://registry.npmjs.org/rollup/-/rollup-2.10.9.tgz#17dcc6753c619efcc1be2cf61d73a87827eebdf9"
-  integrity sha512-dY/EbjiWC17ZCUSyk14hkxATAMAShkMsD43XmZGWjLrgFj15M3Dw2kEkA9ns64BiLFm9PKN6vTQw8neHwK74eg==
+rollup@2.12.x:
+  version "2.12.0"
+  resolved "https://registry.npmjs.org/rollup/-/rollup-2.12.0.tgz#12d49d1db23020f75184da725d064d3db5245678"
+  integrity sha512-vKwc/xFkZGM9DRai3Eztpr/4g0yYDgNKVq8tLXhq/aSLbR+/EVL6rTjEW9bgWgeYEIKoN66/5w2Bjv1gzyHR/w==
   optionalDependencies:
     fsevents "~2.1.2"
 
