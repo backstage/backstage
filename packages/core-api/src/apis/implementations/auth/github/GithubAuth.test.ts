@@ -16,13 +16,11 @@
 
 import GithubAuth from './GithubAuth';
 
-const theFuture = new Date(Date.now() + 3600000);
-
 describe('GithubAuth', () => {
-  it('should get refreshed access token', async () => {
+  it('should get access token', async () => {
     const getSession = jest
       .fn()
-      .mockResolvedValue({ accessToken: 'access-token', expiresAt: theFuture });
+      .mockResolvedValue({ accessToken: 'access-token' });
     const githubAuth = new GithubAuth({ getSession } as any);
 
     expect(await githubAuth.getAccessToken()).toBe('access-token');
