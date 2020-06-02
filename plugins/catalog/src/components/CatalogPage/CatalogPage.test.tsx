@@ -22,7 +22,10 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../..';
 
 const errorApi = { post: () => {} };
-const catalogApi = { getEntities: () => Promise.resolve([{ kind: '' }]) };
+const catalogApi = {
+  getEntities: () => Promise.resolve([{ kind: '', metadata: {} }]),
+  getLocationByEntity: () => Promise.resolve({ data: {} }),
+};
 
 describe('CatalogPage', () => {
   // this test right now causes some red lines in the log output when running tests

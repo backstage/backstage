@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 
 export function envelopeToComponent(
   envelope: Entity,
-  location: any,
+  location?: any,
 ): Component {
   return {
     name: envelope.metadata?.name ?? '',

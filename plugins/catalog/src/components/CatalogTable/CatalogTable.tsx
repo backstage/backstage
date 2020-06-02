@@ -42,7 +42,7 @@ type CatalogTableProps = {
   titlePreamble: string;
   loading: boolean;
   error?: any;
-  actions: any;
+  actions?: any;
 };
 const CatalogTable: FC<CatalogTableProps> = ({
   components,
