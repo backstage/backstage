@@ -16,11 +16,13 @@
 
 import { Command } from 'commander';
 import { serveBundle } from '../../lib/bundler';
+import { loadConfig } from '../../lib/app-config';
 
 export default async (cmd: Command) => {
   const waitForExit = await serveBundle({
     entry: 'src/index',
     checksEnabled: cmd.check,
+    appConfig: await loadConfig(),
   });
 
   await waitForExit();

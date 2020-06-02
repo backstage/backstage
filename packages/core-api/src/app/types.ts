@@ -38,8 +38,11 @@ export type AppConfig = any;
 
 /**
  * A function that loads in the App config that will be accessible via the ConfigApi.
+ *
+ * If multiple config objects are returned in the array, values in the earlier configs
+ * will override later ones.
  */
-export type AppConfigLoader = () => Promise<AppConfig>;
+export type AppConfigLoader = () => Promise<AppConfig[]>;
 
 export type AppOptions = {
   /**

@@ -15,16 +15,20 @@
  */
 
 import { BundlingPathsOptions } from './paths';
+import { AppConfig } from '../app-config';
 
 export type BundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
+  appConfig: AppConfig[];
 };
 
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
+  appConfig: AppConfig[];
 };
 
 export type BuildOptions = BundlingPathsOptions & {
   statsJsonEnabled: boolean;
+  appConfig: AppConfig[];
 };

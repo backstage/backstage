@@ -24,18 +24,6 @@ import apis from './apis';
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
-  configLoader: async () => ({
-    app: {
-      title: 'Backstage Example App',
-      baseUrl: 'http://localhost:3000',
-    },
-    backend: {
-      baseUrl: 'http://localhost:7000',
-    },
-    organization: {
-      name: 'Spotify',
-    },
-  }),
 });
 
 const AppProvider = app.getProvider();
