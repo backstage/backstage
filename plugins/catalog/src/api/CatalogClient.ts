@@ -57,6 +57,7 @@ export class CatalogClient implements CatalogApi {
       const location = await response.json();
       if (location) return location.data;
     }
-    throw new Error(`'Location not found: ${locationId}`);
+
+    return undefined;
   }
 }

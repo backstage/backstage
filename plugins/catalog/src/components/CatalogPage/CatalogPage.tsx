@@ -72,7 +72,9 @@ const CatalogPage: FC<{}> = () => {
     };
 
     if (value) {
-      getLocationDataForEntities(value).then(setLocations);
+      getLocationDataForEntities(value)
+        .then(location => location.filter(l => !!l))
+        .then(setLocations);
     }
   }, [value, catalogApi]);
 
