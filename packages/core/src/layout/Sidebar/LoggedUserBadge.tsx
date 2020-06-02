@@ -58,8 +58,135 @@ const useStyles = makeStyles<Theme>(theme => {
       color: theme.palette.getContrastText(blueGrey[500]),
       backgroundColor: blueGrey[500],
     },
+    listItemText: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    },
   };
 });
+
+const SessionListItem: FC<{
+  classes: any;
+  loading: boolean;
+  title: string;
+  icon: any;
+  user: any;
+  onSignIn: Function;
+  onSignOut: Function;
+}> = ({
+  classes,
+  loading,
+  title,
+  icon,
+  user,
+  onSignIn,
+  onSignOut,
+  ...props
+}) => {
+  if (loading) {
+    return (
+      <ListItem {...props}>
+        <ListItemIcon style={{ marginRight: 0 }}>
+          <Skeleton variant="circle" width={40} height={40} />
+        </ListItemIcon>
+        <ListItemText
+          className={classes.listItemText}
+          primary={<Skeleton component="span" width={120} />}
+          secondary={<Skeleton component="span" width={60} />}
+        />
+        <ListItemSecondaryAction>
+          <IconButton>
+            <Skeleton variant="circle" width={24} height={24} />
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
+    );
+  }
+
+  if (!user) {
+    return (
+      <ListItem {...props}>
+        <ListItemIcon style={{ marginRight: 0 }}>{icon}</ListItemIcon>
+        <ListItemText
+          className={classes.listItemText}
+          primary="Sign In"
+          secondary={title}
+        />
+        <ListItemSecondaryAction>
+          <Tooltip
+            title={`Sign in with ${title}`}
+            placement="bottom-end"
+            PopperProps={{ style: { width: 120 } }}
+          >
+            <IconButton onClick={() => onSignIn()}>
+              <ControlPointIcon />
+            </IconButton>
+          </Tooltip>
+        </ListItemSecondaryAction>
+      </ListItem>
+    );
+  }
+
+  const { id, avatarUrl, avatarAlt } = user;
+
+  return (
+    <ListItem {...props}>
+      <ListItemAvatar>
+        <Avatar src={avatarUrl} alt={avatarAlt}>
+          {avatarAlt && avatarAlt[0].toUpperCase()}
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        className={classes.listItemText}
+        primary={id}
+        secondary={title}
+      />
+      <ListItemSecondaryAction style={{ marginLeft: '30px' }}>
+        <Tooltip
+          title={`Sign out from ${title}`}
+          placement="bottom-end"
+          PopperProps={{ style: { width: 120 } }}
+        >
+          <IconButton onClick={() => onSignOut()}>
+            <LogoutIcon />
+          </IconButton>
+        </Tooltip>
+      </ListItemSecondaryAction>
+    </ListItem>
+  );
+};
+
+const useGoogleLoginState = (open: boolean) => {
+  const googleAuth = useApi(googleAuthApiRef);
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<ProfileInfo>();
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    let didCancel = false;
+
+    googleAuth.getProfile().then(profile => {
+      if (didCancel) {
+        return;
+      }
+
+      setProfile(profile);
+      setLoading(false);
+    });
+
+    return () => {
+      didCancel = true;
+    };
+  }, [open]);
+
+  if (loading) {
+    return { loading: true };
+  }
+  return { loading: false, isLoggedIn: !!profile, profile };
+};
 
 type Props = {
   email: string;
@@ -117,21 +244,28 @@ export const LoggedUserBadge: FC<Props> = ({
 
   return (
     <>
-      <ListItem className={classes.root} onClick={handleOpen}>
-        <ListItemAvatar>
-          {imageUrl ? (
-            <Avatar alt={name} src={imageUrl} className={classes.avatar} />
-          ) : (
-            <Avatar
-              alt={name}
-              className={`${classes.avatar} ${classes.purple}`}
-            >
-              {avatarFallback[0]}
-            </Avatar>
+      <List dense>
+        <ListItem className={classes.root} onClick={handleOpen}>
+          <ListItemAvatar>
+            {imageUrl ? (
+              <Avatar alt={name} src={imageUrl} className={classes.avatar} />
+            ) : (
+              <Avatar
+                alt={name}
+                className={`${classes.avatar} ${classes.purple}`}
+              >
+                {avatarFallback[0]}
+              </Avatar>
+            )}
+          </ListItemAvatar>
+          {!collapsedMode && (
+            <ListItemText
+              primary={displayName}
+              className={classes.listItemText}
+            />
           )}
-        </ListItemAvatar>
-        {!collapsedMode && <ListItemText primary={displayName} />}
-      </ListItem>
+        </ListItem>
+      </List>
       <Popover
         transitionDuration={0}
         open={state.open}
@@ -142,6 +276,7 @@ export const LoggedUserBadge: FC<Props> = ({
       >
         <List dense>
           <SessionListItem
+            classes={classes}
             loading={googleLogin.loading}
             title="Google"
             icon={AccountCircleIcon}
@@ -160,108 +295,4 @@ export const LoggedUserBadge: FC<Props> = ({
       </Popover>
     </>
   );
-};
-
-const SessionListItem: FC<{
-  loading: boolean;
-  title: string;
-  icon: any;
-  user: any;
-  onSignIn: Function;
-  onSignOut: Function;
-}> = ({ loading, title, icon, user, onSignIn, onSignOut, ...props }) => {
-  if (loading) {
-    return (
-      <ListItem {...props}>
-        <ListItemIcon style={{ marginRight: 0 }}>
-          <Skeleton variant="circle" width={40} height={40} />
-        </ListItemIcon>
-        <ListItemText
-          primary={<Skeleton component="span" width={120} />}
-          secondary={<Skeleton component="span" width={60} />}
-        />
-        <ListItemSecondaryAction>
-          <IconButton>
-            <Skeleton variant="circle" width={24} height={24} />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    );
-  }
-
-  if (!user) {
-    return (
-      <ListItem {...props}>
-        <ListItemIcon style={{ marginRight: 0 }}>{icon}</ListItemIcon>
-        <ListItemText primary="Sign In" secondary={title} />
-        <ListItemSecondaryAction>
-          <Tooltip
-            title={`Sign in with ${title}`}
-            placement="bottom-end"
-            PopperProps={{ style: { width: 120 } }}
-          >
-            <IconButton onClick={() => onSignIn()}>
-              <ControlPointIcon />
-            </IconButton>
-          </Tooltip>
-        </ListItemSecondaryAction>
-      </ListItem>
-    );
-  }
-
-  const { id, avatarUrl, avatarAlt } = user;
-
-  return (
-    <ListItem {...props}>
-      <ListItemAvatar>
-        <Avatar src={avatarUrl} alt={avatarAlt}>
-          {avatarAlt && avatarAlt[0].toUpperCase()}
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText primary={id} secondary={title} />
-      <ListItemSecondaryAction>
-        <Tooltip
-          title={`Sign out from ${title}`}
-          placement="bottom-end"
-          PopperProps={{ style: { width: 120 } }}
-        >
-          <IconButton onClick={() => onSignOut()}>
-            <LogoutIcon />
-          </IconButton>
-        </Tooltip>
-      </ListItemSecondaryAction>
-    </ListItem>
-  );
-};
-
-const useGoogleLoginState = (open: boolean) => {
-  const googleAuth = useApi(googleAuthApiRef);
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<ProfileInfo>();
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    let didCancel = false;
-
-    googleAuth.getProfile().then(profile => {
-      if (didCancel) {
-        return;
-      }
-
-      setProfile(profile);
-      setLoading(false);
-    });
-
-    return () => {
-      didCancel = true;
-    };
-  }, [open]);
-
-  if (loading) {
-    return { loading: true };
-  }
-  return { loading: false, isLoggedIn: !!profile, profile };
 };
