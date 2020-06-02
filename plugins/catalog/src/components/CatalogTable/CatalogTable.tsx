@@ -17,6 +17,8 @@ import React, { FC } from 'react';
 import { Component } from '../../data/component';
 import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
 import { Typography, Link } from '@material-ui/core';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { entityRoute } from '../../routes';
 
 const columns: TableColumn[] = [
   {
@@ -24,7 +26,12 @@ const columns: TableColumn[] = [
     field: 'name',
     highlight: true,
     render: (componentData: any) => (
-      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
+      <Link
+        component={RouterLink}
+        to={generatePath(entityRoute.path, { name: componentData.name })}
+      >
+        {componentData.name}
+      </Link>
     ),
   },
   {

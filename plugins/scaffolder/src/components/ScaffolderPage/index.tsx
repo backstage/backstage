@@ -57,7 +57,7 @@ const ScaffolderPage: React.FC<{}> = () => {
             component={RouterLink}
             to="/register-component"
           >
-            Register existing entity
+            Register existing component
           </Button>
         </ContentHeader>
         <Typography variant="body2" paragraph style={{ fontStyle: 'italic' }}>

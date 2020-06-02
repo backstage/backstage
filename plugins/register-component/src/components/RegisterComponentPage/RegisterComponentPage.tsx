@@ -41,9 +41,15 @@ import {
   useApi,
   errorApiRef,
   StructuredMetadataTable,
+  Header,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
 import { catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  entityRoute,
+  rootRoute as catalogRootRoute,
+} from '@backstage/plugin-catalog';
+import { generatePath } from 'react-router';
 
 const useStyles = makeStyles(theme => ({
   dialogPaper: {
@@ -100,10 +106,8 @@ const RegisterComponentPage: FC<{}> = () => {
 
   return (
     <Page theme={pageTheme.tool}>
+      <Header title="Register existing component" />
       <Content>
-        <ContentHeader title="Register existing component">
-          <SupportButton>Documentation</SupportButton>
-        </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
             <InfoCard title="Start tracking your component in Backstage">
@@ -139,9 +143,13 @@ const RegisterComponentPage: FC<{}> = () => {
                             link: (
                               <Link
                                 component={RouterLink}
-                                to={`/catalog/${entity.metadata.name}`}
+                                to={generatePath(entityRoute.path, {
+                                  name: entity.metadata.name,
+                                })}
                               >
-                                /catalog/{entity.metadata.name}
+                                {generatePath(entityRoute.path, {
+                                  name: entity.metadata.name,
+                                })}
                               </Link>
                             ),
                           }}
@@ -156,7 +164,11 @@ const RegisterComponentPage: FC<{}> = () => {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button component={RouterLink} to="/" color="default">
+              <Button
+                component={RouterLink}
+                to={catalogRootRoute.path}
+                color="default"
+              >
                 To Catalog
               </Button>
             </DialogActions>

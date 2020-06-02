@@ -34,6 +34,8 @@ import {
 } from '../CatalogFilter/CatalogFilter';
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import { filterGroups, defaultFilter } from '../../data/filters';
+import { Link as RouterLink } from 'react-router-dom';
+import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -72,18 +74,23 @@ const CatalogPage: FC<{}> = () => {
             <Typography>
               <span role="img" aria-label="wave" style={{ fontSize: '125%' }}>
                 👋🏼
-              </span>{' '}
+              </span>
               Welcome to Backstage, we are happy to have you. Start by checking
-              out our{' '}
+              out our
               <Link href="/welcome" color="textSecondary">
                 getting started
-              </Link>{' '}
+              </Link>
               page.
             </Typography>
           }
         />
         <ContentHeader title="Services">
-          <Button variant="contained" color="primary" href="/create">
+          <Button
+            component={RouterLink}
+            variant="contained"
+            color="primary"
+            to={scaffolderRootRoute.path}
+          >
             Create Service
           </Button>
           <SupportButton>All your components</SupportButton>
