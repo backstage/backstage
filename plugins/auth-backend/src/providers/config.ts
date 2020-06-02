@@ -32,4 +32,12 @@ export const providers = [
     },
     disableRefresh: true,
   },
+  {
+    provider: 'saml',
+    options: {
+      path: '/auth/saml/handler/frame',
+      entryPoint: 'http://localhost:7001/',
+      issuer: 'passport-saml',
+    },
+  },
 ];

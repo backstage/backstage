@@ -55,7 +55,7 @@ export const executeFrameHandlerStrategy = async (
       reject(new Error('Unexpected redirect'));
     };
 
-    strategy.authenticate(req);
+    strategy.authenticate(req, {});
   });
 };
 
