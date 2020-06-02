@@ -1,13 +1,12 @@
-name: CLI Test
+name: CLI Test Windows
 
+# Building on windows is really slow, so this workflow is separate from cli.yml and only builds on changes
+# to the cli itself. They're more likely to introduce issues on windows, compared to changes to core and yarn.lock.
 on:
   pull_request:
     paths:
-      - '.github/workflows/cli.yml'
+      - '.github/workflows/cli-win.yml'
       - 'packages/cli/**'
-      - 'packages/core/**'
-      - 'packages/core-api/**'
-      - 'yarn.lock'
 
 jobs:
   build:
@@ -15,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [windows-latest]
         node-version: [12.x]
 
     env:
@@ -45,9 +44,7 @@ jobs:
       - run: yarn build
       - name: verify app and plugin creation
         working-directory: ${{ runner.temp }}
-        run: |
-          sudo sysctl fs.inotify.max_user_watches=524288
-          node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
+        run: node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
         env:
           BACKSTAGE_E2E_CLI_TEST: true
       - name: lint newly created app and plugin
