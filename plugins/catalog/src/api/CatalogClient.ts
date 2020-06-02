@@ -58,46 +58,12 @@ export class CatalogClient implements CatalogApi {
     if (response.status !== 201) {
       throw new Error(`Location wasn't added: ${target}`);
     }
-    const location = await response.json();
+    const { location, entities } = await response.json();
 
-    // TODO(shmidt-i): remove mocks
-    if (location)
+    if (location && entities.length > 0)
       return {
         location,
-        entities: [
-          {
-            apiVersion: 'backstage.io/v1beta1',
-            kind: 'Component',
-            metadata: {
-              name: 'component-website',
-              annotations: {
-                'backstage.io/managed-by-location': location.id,
-              },
-              uid: 'uid1',
-              etag: 'YTQzMmNmNjctMGZmMC00YWM5LWFjYWQtZDg1NjBjNDFlYWM4',
-              generation: 1,
-            },
-            spec: {
-              type: 'website',
-            },
-          },
-          {
-            apiVersion: 'backstage.io/v1beta1',
-            kind: 'Component',
-            metadata: {
-              name: 'component-service',
-              annotations: {
-                'backstage.io/managed-by-location': location.id,
-              },
-              uid: 'uid2',
-              etag: 'YTQzMmNmNjctMGZmMC00YWM5LWFjYWQtZDg1NjBjNDFlYWM4',
-              generation: 1,
-            },
-            spec: {
-              type: 'service',
-            },
-          },
-        ],
+        entities,
       };
     throw new Error(`'Location wasn't added: ${target}`);
   }

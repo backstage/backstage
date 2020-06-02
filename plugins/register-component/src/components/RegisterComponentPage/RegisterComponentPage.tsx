@@ -26,12 +26,11 @@ import {
   DialogActions,
   Button,
   ListItem,
-  ListItemText,
   List,
   LinearProgress,
-  ListItemIcon,
+  Divider,
+  Link,
 } from '@material-ui/core';
-import LinkIcon from '@material-ui/icons/Link';
 import {
   InfoCard,
   Page,
@@ -40,8 +39,8 @@ import {
   ContentHeader,
   SupportButton,
   useApi,
-  alertApiRef,
   errorApiRef,
+  StructuredMetadataTable,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
 import { catalogApiRef } from '@backstage/plugin-catalog';
@@ -63,7 +62,6 @@ const useStyles = makeStyles(theme => ({
 const FormStates = {
   Idle: 'idle',
   Success: 'success',
-  Error: 'error',
   Submitting: 'submitting',
 } as const;
 
@@ -75,17 +73,14 @@ const RegisterComponentPage: FC<{}> = () => {
     FormStates.Idle,
   );
 
-  const alertApi = useApi(alertApiRef);
   const errorApi = useApi(errorApiRef);
 
   const [result, setResult] = useState<{
     data: any;
     error: null | Error;
-    loading: boolean;
   }>({
     data: null,
     error: null,
-    loading: false,
   });
 
   const handleSubmit = async (formData: Record<string, string>) => {
@@ -94,14 +89,11 @@ const RegisterComponentPage: FC<{}> = () => {
     try {
       const data = await catalogApi.addLocation('github', target);
 
-      alertApi.post({
-        message: 'Successfully added the location',
-        severity: 'success',
-      });
-      setResult({ error: null, loading: false, data });
+      setResult({ error: null, data });
       setFormState(FormStates.Success);
     } catch (e) {
-      setFormState(FormStates.Error);
+      setResult({ error: e, data: null });
+      setFormState(FormStates.Idle);
       errorApi.post(e);
     }
   };
@@ -125,28 +117,40 @@ const RegisterComponentPage: FC<{}> = () => {
         </Grid>
       </Content>
       <Dialog
-        open={
-          formState === FormStates.Error || formState === FormStates.Success
-        }
+        open={formState === FormStates.Success}
         onClose={() => setFormState(FormStates.Idle)}
         classes={{ paper: classes.dialogPaper }}
       >
         <DialogTitle>Component registration result</DialogTitle>
-        {result.data ? (
+        {formState === FormStates.Success && (
           <>
             <DialogContent>
               <DialogContentText>
                 Following components have been succefully created:
                 <List>
-                  {result.data.entities.map((entity: any) => (
-                    <ListItem button>
-                      <ListItemIcon>
-                        <LinkIcon />
-                      </ListItemIcon>
-                      <RouterLink to={`/catalog/${entity.metadata.name}`}>
-                        <ListItemText primary={entity.metadata.name} />
-                      </RouterLink>
-                    </ListItem>
+                  {result.data.entities.map((entity: any, index: number) => (
+                    <>
+                      <ListItem>
+                        <StructuredMetadataTable
+                          dense
+                          metadata={{
+                            name: entity.metadata.name,
+                            type: entity.spec.type,
+                            link: (
+                              <Link
+                                component={RouterLink}
+                                to={`/catalog/${entity.metadata.name}`}
+                              >
+                                /catalog/{entity.metadata.name}
+                              </Link>
+                            ),
+                          }}
+                        />
+                      </ListItem>
+                      {index < result.data.entities.length - 1 && (
+                        <Divider component="li" />
+                      )}
+                    </>
                   ))}
                 </List>
               </DialogContentText>
@@ -157,12 +161,6 @@ const RegisterComponentPage: FC<{}> = () => {
               </Button>
             </DialogActions>
           </>
-        ) : (
-          <DialogContent>
-            <DialogContentText className={classes.contentText}>
-              Your component is being created. Please wait.
-            </DialogContentText>
-          </DialogContent>
         )}
       </Dialog>
     </Page>
