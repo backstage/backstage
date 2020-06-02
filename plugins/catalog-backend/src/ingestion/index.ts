@@ -15,6 +15,7 @@
  */
 
 export * from './descriptor';
+export { HigherOrderOperations } from './HigherOrderOperations';
 export { IngestionModels } from './IngestionModels';
 export * from './source';
 export type { IngestionModel } from './types';

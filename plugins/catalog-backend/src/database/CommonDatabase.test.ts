@@ -19,16 +19,14 @@ import {
   getVoidLogger,
   NotFoundError,
 } from '@backstage/backend-common';
-import type { Entity } from '@backstage/catalog-model';
+import type { Entity, Location } from '@backstage/catalog-model';
 import Knex from 'knex';
 import path from 'path';
 import { CommonDatabase } from './CommonDatabase';
 import { DatabaseLocationUpdateLogStatus } from './types';
 import type {
-  AddDatabaseLocation,
   DbEntityRequest,
   DbEntityResponse,
-  DbLocationsRow,
   DbLocationsRowWithStatus,
 } from './types';
 
@@ -87,9 +85,13 @@ describe('CommonDatabase', () => {
 
   it('manages locations', async () => {
     const db = new CommonDatabase(knex, getVoidLogger());
-    const input: AddDatabaseLocation = { type: 'a', target: 'b' };
+    const input: Location = {
+      id: 'dd12620d-0436-422f-93bd-929aa0788123',
+      type: 'a',
+      target: 'b',
+    };
     const output: DbLocationsRowWithStatus = {
-      id: expect.anything(),
+      id: 'dd12620d-0436-422f-93bd-929aa0788123',
       type: 'a',
       target: 'b',
       message: null,
@@ -110,22 +112,6 @@ describe('CommonDatabase', () => {
     await expect(db.location(locations[0].id)).rejects.toThrow(
       /Found no location/,
     );
-  });
-
-  it('instead of adding second location with the same target, returns existing one', async () => {
-    // Prepare
-    const catalog = new CommonDatabase(knex, getVoidLogger());
-    const input: AddDatabaseLocation = { type: 'a', target: 'b' };
-    const output1: DbLocationsRow = await catalog.addLocation(input);
-
-    // Try to insert the same location
-    const output2: DbLocationsRow = await catalog.addLocation(input);
-    const locations = await catalog.locations();
-
-    // Output is the same
-    expect(output2).toEqual(output1);
-    // Locations contain only one record
-    expect(locations[0]).toMatchObject(output1);
   });
 
   describe('addEntity', () => {
@@ -160,27 +146,33 @@ describe('CommonDatabase', () => {
   describe('locationHistory', () => {
     it('outputs the history correctly', async () => {
       const catalog = new CommonDatabase(knex, getVoidLogger());
-      const location: AddDatabaseLocation = { type: 'a', target: 'b' };
-      const { id: locationId } = await catalog.addLocation(location);
+      const location: Location = {
+        id: 'dd12620d-0436-422f-93bd-929aa0788123',
+        type: 'a',
+        target: 'b',
+      };
+      await catalog.addLocation(location);
 
       await catalog.addLocationUpdateLogEvent(
-        locationId,
+        'dd12620d-0436-422f-93bd-929aa0788123',
         DatabaseLocationUpdateLogStatus.SUCCESS,
       );
       await catalog.addLocationUpdateLogEvent(
-        locationId,
+        'dd12620d-0436-422f-93bd-929aa0788123',
         DatabaseLocationUpdateLogStatus.FAIL,
         undefined,
         'Something went wrong',
       );
 
-      const result = await catalog.locationHistory(locationId);
+      const result = await catalog.locationHistory(
+        'dd12620d-0436-422f-93bd-929aa0788123',
+      );
       expect(result).toEqual([
         {
           created_at: expect.anything(),
           entity_name: null,
           id: expect.anything(),
-          location_id: locationId,
+          location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
           message: null,
           status: DatabaseLocationUpdateLogStatus.SUCCESS,
         },
@@ -188,7 +180,7 @@ describe('CommonDatabase', () => {
           created_at: expect.anything(),
           entity_name: null,
           id: expect.anything(),
-          location_id: locationId,
+          location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
           message: 'Something went wrong',
           status: DatabaseLocationUpdateLogStatus.FAIL,
         },

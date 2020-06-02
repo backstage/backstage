@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import type { Entity, Location, LocationSpec } from '@backstage/catalog-model';
-import type { ReaderOutput } from './descriptor/parsers/types';
+import * as yup from 'yup';
+import { LocationSpec, Location } from './types';
 
-export type AddLocationResult = {
-  location: Location;
-  entities: Entity[];
-};
+export const locationSpecSchema = yup
+  .object<LocationSpec>({
+    type: yup.string().required(),
+    target: yup.string().required(),
+  })
+  .noUnknown();
 
-export type IngestionModel = {
-  readLocation(type: string, target: string): Promise<ReaderOutput[]>;
-};
-
-export type HigherOrderOperation = {
-  addLocation(spec: LocationSpec): Promise<AddLocationResult>;
-};
+export const locationSchema = yup
+  .object<Location>({
+    id: yup.string().required(),
+    type: yup.string().required(),
+    target: yup.string().required(),
+  })
+  .noUnknown();
