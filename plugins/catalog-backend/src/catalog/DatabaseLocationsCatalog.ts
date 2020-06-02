@@ -16,7 +16,10 @@
 
 import { Location } from '@backstage/catalog-model';
 import type { Database } from '../database';
-import { DatabaseLocationUpdateLogEvent } from '../database/types';
+import {
+  DatabaseLocationUpdateLogEvent,
+  DatabaseLocationUpdateLogStatus,
+} from '../database/types';
 import { LocationResponse, LocationsCatalog } from './types';
 
 export class DatabaseLocationsCatalog implements LocationsCatalog {
@@ -62,5 +65,29 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
       },
       data,
     };
+  }
+
+  async logUpdateSuccess(
+    locationId: string,
+    entityName?: string,
+  ): Promise<void> {
+    await this.database.addLocationUpdateLogEvent(
+      locationId,
+      DatabaseLocationUpdateLogStatus.SUCCESS,
+      entityName,
+    );
+  }
+
+  async logUpdateFailure(
+    locationId: string,
+    error?: Error,
+    entityName?: string,
+  ): Promise<void> {
+    await this.database.addLocationUpdateLogEvent(
+      locationId,
+      DatabaseLocationUpdateLogStatus.FAIL,
+      entityName,
+      error?.message,
+    );
   }
 }

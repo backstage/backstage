@@ -38,8 +38,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
   async entityByName(
     kind: string,
-    name: string,
     namespace: string | undefined,
+    name: string,
   ): Promise<Entity | undefined> {
     return await this.database.transaction(tx =>
       this.entityByNameInternal(tx, kind, name, namespace),

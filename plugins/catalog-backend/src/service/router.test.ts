@@ -43,6 +43,8 @@ describe('createRouter', () => {
       locations: jest.fn(),
       location: jest.fn(),
       locationHistory: jest.fn(),
+      logUpdateSuccess: jest.fn(),
+      logUpdateFailure: jest.fn(),
     };
     higherOrderOperation = {
       addLocation: jest.fn(),
