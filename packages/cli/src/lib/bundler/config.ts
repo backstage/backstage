@@ -51,6 +51,12 @@ export function createConfig(
     );
   }
 
+  plugins.push(
+    new webpack.EnvironmentPlugin({
+      APP_CONFIG: [],
+    }),
+  );
+
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,

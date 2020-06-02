@@ -150,7 +150,7 @@ export class PrivateAppImpl implements BackstageApp {
     const Provider: FC<{}> = ({ children }) => {
       // Keeping this synchronous when a config loader isn't set simplifies tests a lot
       const hasConfig = Boolean(this.configLoader);
-      const config = useAsync(this.configLoader || (() => Promise.resolve({})));
+      const config = useAsync(this.configLoader || (() => Promise.resolve([])));
 
       let childNode = children;
 
@@ -164,7 +164,7 @@ export class PrivateAppImpl implements BackstageApp {
 
       const appApis = ApiRegistry.from([
         [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
-        [configApiRef, new ConfigReader(config.value ?? {})],
+        [configApiRef, ConfigReader.fromConfigs(config.value ?? [])],
       ]);
       const apis = new ApiAggregator(this.apis, appApis);
 

@@ -15,6 +15,7 @@
  */
 
 import { ConfigApi, Config } from '../../definitions/ConfigApi';
+import { AppConfig } from '../../../app';
 
 const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
 
@@ -61,6 +62,18 @@ function validateString(
 
 export class ConfigReader implements ConfigApi {
   static nullReader = new ConfigReader({});
+
+  static fromConfigs(configs: AppConfig[]): ConfigReader {
+    if (configs.length === 0) {
+      return new ConfigReader({});
+    }
+
+    // Merge together all configs info a single config with recursive fallback
+    // readers, giving the first config object in the array the highest priority.
+    return configs.reduceRight((previousReader, nextConfig) => {
+      return new ConfigReader(nextConfig, previousReader);
+    }, undefined);
+  }
 
   constructor(
     private readonly data: JsonObject,
