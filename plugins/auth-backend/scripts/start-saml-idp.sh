@@ -1,5 +1,9 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+cd "$DIR"
+
 if [[ ! -f idp-public-cert.pem ]]; then
   echo "Generating new SAML Certificates"
   openssl req \

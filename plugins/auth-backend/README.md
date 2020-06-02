@@ -19,6 +19,14 @@ read -r AUTH_GOOGLE_CLIENT_SECRET
 export AUTH_GOOGLE_CLIENT_SECRET
 run `yarn start` in packages/backend folder
 
+### SAML
+
+To try out SAML, you can use the mock identity provider:
+
+```bash
+./scripts/start-saml-idp.sh
+```
+
 ## Links
 
 - (The Backstage homepage)[https://backstage.io]
