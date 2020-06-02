@@ -15,77 +15,40 @@
  */
 
 import { createApiRef } from '../ApiRef';
-
-type UnsubscribeFromStore = () => void;
-type SubscribeToStoreHandler<T> = ({
-  storeName,
-  key,
-  oldValue,
-  newValue,
-}: {
-  storeName: string;
-  key: string;
-  oldValue?: T;
-  newValue?: T;
-}) => void;
+import { Observable } from '@backstage/core-api';
 
 export type StorageApi = {
   /**
    * Get persistent data.
-   * @param {String} storeName Name of the store.
-   * @param {String?} key (Optional) Unique key associated with the data.
-   * If not key is specified,the whole store is returned.
-   * @param {String} key (Optional) Empty value to return if there is not data.
+   *
+   * @param {String} key Unique key associated with the data.
    * @return {Object} data The data that should is stored.
    */
-  getFromStore<T>(
-    storeName: string,
-    key: string,
-    defaultValue?: T,
-  ): Promise<T | undefined>;
+  get<T>(key: string): T | undefined;
 
   /**
    * Remove persistent data.
    *
-   * @param {String} storeName Name of the store.
    * @param {String} key Unique key associated with the data.
    */
-  removeFromStore(storeName: string, key: string): Promise<void>;
+  remove(key: string): Promise<void>;
 
   /**
-   * Save persiswtent data.
+   * Save persistant data.
    *
-   * @param {String} storeName Name of the store.
    * @param {String} key Unique key associated with the data.
-   * @param {Object} data The data that should be stored.
+   * @return
    */
-  saveToStore(storeName: string, key: string, data: any): Promise<void>;
+  save(key: string, data: any): Promise<void>;
 
   /**
-   * Callback for Changes in the store
-   * @callback subscribeHandler
-   * @param {String} storeName Name of the store.
-   * @param {String} key Unique key associated with the data.
-   * @param {Object} oldValue The old value that was in the store.
-   * @param {Object} newValue The new value that has been set in the store.
-   */
-  /**
-   * Subscribe to Key changes in a store and get the new and old value
    *
-   * @param {String} storeName Name of the store.
-   * @param {String} key Unique key associated with the data.
-   * @param {subscribeHandler} handler Handler which is called with the old value and new value in the store.
-   * @returns {Function} Unsubscribe to changes in the store.
+   * @param {String} key Unique key associated with the data
    */
-  subscribeToChange<T>(
-    storeName: string,
-    key: string,
-    handler: SubscribeToStoreHandler<T>,
-  ): UnsubscribeFromStore;
+  observe$<T>(key: string): Observable<T>;
 };
 
 export const storageApiRef = createApiRef<StorageApi>({
-  id: 'core.user.settings',
-  description:
-    'Provides the ability to modify settings that are personalised to the user',
+  id: 'core.storage',
+  description: 'Provides the ability to store data which is unique to the user',
 });
