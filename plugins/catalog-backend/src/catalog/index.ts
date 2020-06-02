@@ -17,9 +17,4 @@
 export { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
 export { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
 export { StaticEntitiesCatalog } from './StaticEntitiesCatalog';
-export type {
-  EntitiesCatalog,
-  Location,
-  LocationsCatalog,
-  LocationSpec,
-} from './types';
+export type { EntitiesCatalog, LocationsCatalog } from './types';

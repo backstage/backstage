@@ -15,10 +15,10 @@
  */
 
 import { getVoidLogger, NotFoundError } from '@backstage/backend-common';
-import type { Entity } from '@backstage/catalog-model';
+import type { Entity, LocationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
-import { EntitiesCatalog, LocationsCatalog, LocationSpec } from '../catalog';
+import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { LocationResponse } from '../catalog/types';
 import { HigherOrderOperation } from '../ingestion/types';
 import { createRouter } from './router';
@@ -29,7 +29,7 @@ describe('createRouter', () => {
   let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
   let app: express.Express;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
       entityByUid: jest.fn(),
@@ -54,6 +54,10 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
     });
     app = express().use(router);
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
   });
 
   describe('GET /entities', () => {

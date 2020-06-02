@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { Location } from '@backstage/catalog-model';
 import type { Database } from '../database';
 import { DatabaseLocationUpdateLogEvent } from '../database/types';
-import { Location, LocationResponse, LocationsCatalog } from './types';
+import { LocationResponse, LocationsCatalog } from './types';
 
 export class DatabaseLocationsCatalog implements LocationsCatalog {
   constructor(private readonly database: Database) {}

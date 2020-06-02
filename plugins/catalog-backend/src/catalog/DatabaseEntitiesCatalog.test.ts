@@ -21,7 +21,7 @@ import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
 describe('DatabaseEntitiesCatalog', () => {
   let db: jest.Mocked<Database>;
 
-  beforeEach(() => {
+  beforeAll(() => {
     db = {
       transaction: jest.fn(),
       addEntity: jest.fn(),
@@ -36,6 +36,10 @@ describe('DatabaseEntitiesCatalog', () => {
       locationHistory: jest.fn(),
       addLocationUpdateLogEvent: jest.fn(),
     };
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
     db.transaction.mockImplementation(async f => f('tx'));
   });
 

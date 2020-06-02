@@ -15,14 +15,9 @@
  */
 
 import { InputError } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  EntitiesCatalog,
-  Location,
-  LocationsCatalog,
-  LocationSpec,
-} from '../catalog';
+import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { IngestionModel } from '../ingestion';
 import { AddLocationResult, HigherOrderOperation } from './types';
 

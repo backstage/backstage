@@ -19,7 +19,7 @@ import {
   InputError,
   NotFoundError,
 } from '@backstage/backend-common';
-import type { Entity, EntityMeta } from '@backstage/catalog-model';
+import type { Entity, EntityMeta, Location } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,7 +37,6 @@ import type {
   DbLocationsRowWithStatus,
   EntityFilters,
 } from './types';
-import { Location } from '../catalog';
 
 function getStrippedMetadata(metadata: EntityMeta): EntityMeta {
   const output = lodash.cloneDeep(metadata);

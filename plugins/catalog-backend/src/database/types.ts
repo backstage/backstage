@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { Entity } from '@backstage/catalog-model';
-import { Location } from '../catalog';
+import type { Entity, Location } from '@backstage/catalog-model';
 
 export type DbEntitiesRow = {
   id: string;

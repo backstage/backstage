@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, Location } from '@backstage/catalog-model';
 import type { EntityFilters } from '../database';
 
 //
@@ -50,15 +50,6 @@ export type LocationUpdateLogEvent = {
   created_at?: string;
   message?: string;
 };
-
-export type LocationSpec = {
-  type: string;
-  target: string;
-};
-
-export type Location = {
-  id: string;
-} & LocationSpec;
 
 export type LocationResponse = {
   data: Location;
