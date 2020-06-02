@@ -35,7 +35,7 @@ import {
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import { filterGroups, defaultFilter } from '../../data/filters';
 import GitHub from '@material-ui/icons/GitHub';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, Location } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -48,6 +48,7 @@ const useStyles = makeStyles(theme => ({
 
 import { catalogApiRef } from '../..';
 import { envelopeToComponent } from '../../data/utils';
+import { Component } from '../../data/component';
 
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
@@ -71,14 +72,12 @@ const CatalogPage: FC<{}> = () => {
     };
 
     if (value) {
-      getLocationDataForEntities(value)
-        .then(location => location.map(l => l.data))
-        .then(setLocations);
+      getLocationDataForEntities(value).then(setLocations);
     }
   }, [value, catalogApi]);
 
   const actions = [
-    (rowData: any) => ({
+    (rowData: Component) => ({
       icon: GitHub,
       tooltop: 'View on GitHub',
       onClick: () => {
@@ -92,7 +91,10 @@ const CatalogPage: FC<{}> = () => {
     }),
   ];
 
-  const findLocationForEntity = (entity: Entity, l: any) => {
+  const findLocationForEntity = (
+    entity: Entity,
+    l: Location[],
+  ): Location | undefined => {
     const entityLocationId =
       entity.metadata.annotations?.['backstage.io/managed-by-location'];
     return l.find((location: any) => location.id === entityLocationId);
