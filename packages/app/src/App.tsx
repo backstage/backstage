@@ -20,6 +20,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import apis from './apis';
+import { hot } from 'react-hot-loader/root';
 
 const app = createApp({
   apis,
@@ -53,4 +54,4 @@ const App: FC<{}> = () => (
   </AppProvider>
 );
 
-export default App;
+export default hot(App);
