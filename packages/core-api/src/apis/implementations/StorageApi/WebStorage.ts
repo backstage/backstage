@@ -13,39 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { StorageApi } from '../../definitions';
+import { StorageApi, ObservableMessage } from '../../definitions';
+import { Observable } from '../../../types';
+import ObservableImpl from 'zen-observable';
 
 export class WebStorage implements StorageApi {
-  async getFromStore<T>(
-    storeName: string,
-    key: string = '',
-    defaultValue?: T,
-  ): Promise<T | undefined> {
-    let store;
+  private readonly observable = new ObservableImpl<ObservableMessage>(() => {});
+  get<T>(key: string): T | undefined {
     try {
-      store = JSON.parse(localStorage.getItem(storeName)!) || {};
+      const storage = JSON.parse(localStorage.getItem(key)!);
+      return storage ?? undefined;
     } catch (e) {
       window.console.error(
-        `Error when parsing JSON config from storage for: ${storeName}`,
+        `Error when parsing JSON config from storage for: ${key}`,
+        e,
       );
-      return defaultValue;
     }
 
-    if (key) {
-      return store[key] ?? defaultValue;
-    }
-    return store;
+    return undefined;
   }
 
-  async saveToStore(storeName: string, key: string, data: any): Promise<void> {
-    const store = JSON.parse(localStorage.getItem(storeName)!) || {};
-    store[key] = data;
-    localStorage.setItem(storeName, JSON.stringify(store));
+  async set<T>(key: string, data: T): Promise<void> {
+    localStorage.setItem(key, JSON.stringify(data, null, 2));
   }
 
-  async removeFromStore(storeName: string, key: string): Promise<void> {
-    const store = JSON.parse(localStorage.getItem(storeName)!) || {};
-    delete store[key];
-    localStorage.setItem(storeName, JSON.stringify(store));
+  async remove(key: string): Promise<void> {
+    localStorage.removeItem(key);
+  }
+
+  observe$<T>(key: string): Observable<T> {
+    return this.observable.filter(
+      ({ key: messageKey }) => messageKey === key,
+    ) as Observable<T>;
   }
 }

@@ -17,6 +17,11 @@
 import { createApiRef } from '../ApiRef';
 import { Observable } from '@backstage/core-api';
 
+export type ObservableMessage<T extends object = {}> = {
+  key: string;
+  newValue?: T;
+};
+
 export type StorageApi = {
   /**
    * Get persistent data.
@@ -37,9 +42,8 @@ export type StorageApi = {
    * Save persistant data.
    *
    * @param {String} key Unique key associated with the data.
-   * @return
    */
-  save(key: string, data: any): Promise<void>;
+  set(key: string, data: any): Promise<void>;
 
   /**
    *
