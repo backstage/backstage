@@ -53,7 +53,7 @@ export function createConfig(
 
   plugins.push(
     new webpack.EnvironmentPlugin({
-      APP_CONFIG: [],
+      APP_CONFIG: options.appConfig,
     }),
   );
 
