@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { Entity, EntityPolicy } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import type { Database } from '../database';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
 
 describe('DatabaseEntitiesCatalog', () => {
   let db: jest.Mocked<Database>;
-  let policy: EntityPolicy;
 
   beforeEach(() => {
     db = {
@@ -38,7 +37,6 @@ describe('DatabaseEntitiesCatalog', () => {
       addLocationUpdateLogEvent: jest.fn(),
     };
     db.transaction.mockImplementation(async f => f('tx'));
-    policy = { enforce: jest.fn(async x => x) };
   });
 
   describe('addOrUpdateEntity', () => {
@@ -55,10 +53,9 @@ describe('DatabaseEntitiesCatalog', () => {
       db.entities.mockResolvedValue([]);
       db.addEntity.mockResolvedValue({ entity });
 
-      const catalog = new DatabaseEntitiesCatalog(db, policy);
+      const catalog = new DatabaseEntitiesCatalog(db);
       const result = await catalog.addOrUpdateEntity(entity);
 
-      expect(policy.enforce).toBeCalledWith(entity);
       expect(db.entities).toHaveBeenCalledTimes(1);
       expect(db.addEntity).toHaveBeenCalledTimes(1);
       expect(result).toBe(entity);
@@ -78,10 +75,9 @@ describe('DatabaseEntitiesCatalog', () => {
       db.entities.mockResolvedValue([]);
       db.updateEntity.mockResolvedValue({ entity });
 
-      const catalog = new DatabaseEntitiesCatalog(db, policy);
+      const catalog = new DatabaseEntitiesCatalog(db);
       const result = await catalog.addOrUpdateEntity(entity);
 
-      expect(policy.enforce).toBeCalledWith(entity);
       expect(db.entities).toHaveBeenCalledTimes(0);
       expect(db.updateEntity).toHaveBeenCalledTimes(1);
       expect(result).toBe(entity);
@@ -108,10 +104,9 @@ describe('DatabaseEntitiesCatalog', () => {
       db.entities.mockResolvedValue([{ entity: existing }]);
       db.updateEntity.mockResolvedValue({ entity: added });
 
-      const catalog = new DatabaseEntitiesCatalog(db, policy);
+      const catalog = new DatabaseEntitiesCatalog(db);
       const result = await catalog.addOrUpdateEntity(added);
 
-      expect(policy.enforce).toBeCalledWith(added);
       expect(db.entities).toHaveBeenCalledTimes(1);
       expect(db.updateEntity).toHaveBeenCalledTimes(1);
       expect(result).toEqual(existing);

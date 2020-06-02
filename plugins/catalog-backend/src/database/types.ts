@@ -15,7 +15,7 @@
  */
 
 import type { Entity } from '@backstage/catalog-model';
-import * as yup from 'yup';
+import { Location } from '../catalog';
 
 export type DbEntitiesRow = {
   id: string;
@@ -57,18 +57,6 @@ export type DbLocationsRowWithStatus = DbLocationsRow & {
   timestamp: string | null;
   message: string | null;
 };
-
-export type AddDatabaseLocation = {
-  type: string;
-  target: string;
-};
-
-export const addDatabaseLocationSchema: yup.Schema<AddDatabaseLocation> = yup
-  .object({
-    type: yup.string().required(),
-    target: yup.string().required(),
-  })
-  .noUnknown();
 
 export enum DatabaseLocationUpdateLogStatus {
   FAIL = 'fail',
@@ -145,7 +133,7 @@ export type Database = {
 
   removeEntity(tx: unknown, uid: string): Promise<void>;
 
-  addLocation(location: AddDatabaseLocation): Promise<DbLocationsRow>;
+  addLocation(location: Location): Promise<DbLocationsRow>;
 
   removeLocation(id: string): Promise<void>;
 

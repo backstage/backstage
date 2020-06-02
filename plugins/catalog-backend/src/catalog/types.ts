@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import * as yup from 'yup';
 import type { EntityFilters } from '../database';
 
 //
@@ -52,31 +51,22 @@ export type LocationUpdateLogEvent = {
   message?: string;
 };
 
-export type Location = {
-  id: string;
+export type LocationSpec = {
   type: string;
   target: string;
 };
+
+export type Location = {
+  id: string;
+} & LocationSpec;
 
 export type LocationResponse = {
   data: Location;
   currentStatus: LocationUpdateStatus;
 };
 
-export type AddLocation = {
-  type: string;
-  target: string;
-};
-
-export const addLocationSchema: yup.Schema<AddLocation> = yup
-  .object({
-    type: yup.string().required(),
-    target: yup.string().required(),
-  })
-  .noUnknown();
-
 export type LocationsCatalog = {
-  addLocation(location: AddLocation): Promise<Location>;
+  addLocation(location: Location): Promise<Location>;
   removeLocation(id: string): Promise<void>;
   locations(): Promise<LocationResponse[]>;
   location(id: string): Promise<LocationResponse>;

@@ -18,42 +18,52 @@ import { getVoidLogger, NotFoundError } from '@backstage/backend-common';
 import type { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
-import { EntitiesCatalog, Location, LocationsCatalog } from '../catalog';
+import { EntitiesCatalog, LocationsCatalog, LocationSpec } from '../catalog';
+import { LocationResponse } from '../catalog/types';
+import { HigherOrderOperation } from '../ingestion/types';
 import { createRouter } from './router';
 
-class MockEntitiesCatalog implements EntitiesCatalog {
-  entities = jest.fn();
-  entityByUid = jest.fn();
-  entityByName = jest.fn();
-  addEntity = jest.fn();
-  addOrUpdateEntity = jest.fn();
-  removeEntityByUid = jest.fn();
-}
-
-class MockLocationsCatalog implements LocationsCatalog {
-  addLocation = jest.fn();
-  removeLocation = jest.fn();
-  locations = jest.fn();
-  location = jest.fn();
-  locationHistory = jest.fn();
-}
-
 describe('createRouter', () => {
+  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
+  let locationsCatalog: jest.Mocked<LocationsCatalog>;
+  let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
+  let app: express.Express;
+
+  beforeEach(async () => {
+    entitiesCatalog = {
+      entities: jest.fn(),
+      entityByUid: jest.fn(),
+      entityByName: jest.fn(),
+      addOrUpdateEntity: jest.fn(),
+      removeEntityByUid: jest.fn(),
+    };
+    locationsCatalog = {
+      addLocation: jest.fn(),
+      removeLocation: jest.fn(),
+      locations: jest.fn(),
+      location: jest.fn(),
+      locationHistory: jest.fn(),
+    };
+    higherOrderOperation = {
+      addLocation: jest.fn(),
+    };
+    const router = await createRouter({
+      entitiesCatalog,
+      locationsCatalog,
+      higherOrderOperation,
+      logger: getVoidLogger(),
+    });
+    app = express().use(router);
+  });
+
   describe('GET /entities', () => {
     it('happy path: lists entities', async () => {
       const entities: Entity[] = [
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
       ];
 
-      const catalog = new MockEntitiesCatalog();
-      catalog.entities.mockResolvedValueOnce(entities);
+      entitiesCatalog.entities.mockResolvedValueOnce(entities);
 
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app).get('/entities');
 
       expect(response.status).toEqual(200);
@@ -61,18 +71,10 @@ describe('createRouter', () => {
     });
 
     it('parses single and multiple request parameters and passes them down', async () => {
-      const catalog = new MockEntitiesCatalog();
-
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app).get('/entities?a=1&a=&a=3&b=4&c=');
 
       expect(response.status).toEqual(200);
-      expect(catalog.entities).toHaveBeenCalledWith([
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
         { key: 'a', values: ['1', null, '3'] },
         { key: 'b', values: ['4'] },
         { key: 'c', values: [null] },
@@ -89,15 +91,8 @@ describe('createRouter', () => {
           name: 'c',
         },
       };
-      const catalog = new MockEntitiesCatalog();
-      catalog.entityByUid.mockResolvedValue(entity);
+      entitiesCatalog.entityByUid.mockResolvedValue(entity);
 
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app).get('/entities/by-uid/zzz');
 
       expect(response.status).toEqual(200);
@@ -105,15 +100,7 @@ describe('createRouter', () => {
     });
 
     it('responds with a 404 for missing entities', async () => {
-      const catalog = new MockEntitiesCatalog();
-      catalog.entityByUid.mockResolvedValue(undefined);
-
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
+      entitiesCatalog.entityByUid.mockResolvedValue(undefined);
       const response = await request(app).get('/entities/by-uid/zzz');
 
       expect(response.status).toEqual(404);
@@ -131,15 +118,8 @@ describe('createRouter', () => {
           namespace: 'd',
         },
       };
-      const catalog = new MockEntitiesCatalog();
-      catalog.entityByName.mockResolvedValue(entity);
+      entitiesCatalog.entityByName.mockResolvedValue(entity);
 
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app).get('/entities/by-name/b/d/c');
 
       expect(response.status).toEqual(200);
@@ -147,15 +127,8 @@ describe('createRouter', () => {
     });
 
     it('responds with a 404 for missing entities', async () => {
-      const catalog = new MockEntitiesCatalog();
-      catalog.entityByName.mockResolvedValue(undefined);
+      entitiesCatalog.entityByName.mockResolvedValue(undefined);
 
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app).get('/entities/by-name//b/d/c');
 
       expect(response.status).toEqual(404);
@@ -165,13 +138,6 @@ describe('createRouter', () => {
 
   describe('POST /entities', () => {
     it('requires a body', async () => {
-      const catalog = new MockEntitiesCatalog();
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app)
         .post('/entities')
         .set('Content-Type', 'application/json')
@@ -179,7 +145,7 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(400);
       expect(response.text).toMatch(/body/);
-      expect(catalog.addOrUpdateEntity).not.toHaveBeenCalled();
+      expect(entitiesCatalog.addOrUpdateEntity).not.toHaveBeenCalled();
     });
 
     it('passes the body down', async () => {
@@ -192,15 +158,8 @@ describe('createRouter', () => {
         },
       };
 
-      const catalog = new MockEntitiesCatalog();
-      catalog.addOrUpdateEntity.mockResolvedValue(entity);
+      entitiesCatalog.addOrUpdateEntity.mockResolvedValue(entity);
 
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app)
         .post('/entities')
         .send(entity)
@@ -208,58 +167,46 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(entity);
-      expect(catalog.addOrUpdateEntity).toHaveBeenCalledTimes(1);
-      expect(catalog.addOrUpdateEntity).toHaveBeenNthCalledWith(1, entity);
+      expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenNthCalledWith(
+        1,
+        entity,
+      );
     });
   });
 
   describe('DELETE /entities/by-uid/:uid', () => {
     it('can remove', async () => {
-      const catalog = new MockEntitiesCatalog();
-      catalog.removeEntityByUid.mockResolvedValue(undefined);
+      entitiesCatalog.removeEntityByUid.mockResolvedValue(undefined);
 
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app).delete('/entities/by-uid/apa');
 
       expect(response.status).toEqual(204);
-      expect(catalog.removeEntityByUid).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
     });
 
     it('responds with a 404 for missing entities', async () => {
-      const catalog = new MockEntitiesCatalog();
-      catalog.removeEntityByUid.mockRejectedValue(new NotFoundError('nope'));
+      entitiesCatalog.removeEntityByUid.mockRejectedValue(
+        new NotFoundError('nope'),
+      );
 
-      const router = await createRouter({
-        entitiesCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app).delete('/entities/by-uid/apa');
 
       expect(response.status).toEqual(404);
-      expect(catalog.removeEntityByUid).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('GET /locations', () => {
     it('happy path: lists locations', async () => {
-      const locations: Location[] = [{ id: 'a', type: 'b', target: 'c' }];
+      const locations: LocationResponse[] = [
+        {
+          currentStatus: { timestamp: '', status: '', message: '' },
+          data: { id: 'a', type: 'b', target: 'c' },
+        },
+      ];
+      locationsCatalog.locations.mockResolvedValueOnce(locations);
 
-      const catalog = new MockLocationsCatalog();
-      catalog.locations.mockResolvedValueOnce(locations);
-
-      const router = await createRouter({
-        locationsCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
       const response = await request(app).get('/locations');
 
       expect(response.status).toEqual(200);
@@ -269,22 +216,33 @@ describe('createRouter', () => {
 
   describe('POST /locations', () => {
     it('rejects malformed locations', async () => {
-      const location = ({
-        id: 'a',
+      const spec = ({
         typez: 'b',
         target: 'c',
-      } as unknown) as Location;
+      } as unknown) as LocationSpec;
 
-      const catalog = new MockLocationsCatalog();
-      const router = await createRouter({
-        locationsCatalog: catalog,
-        logger: getVoidLogger(),
-      });
-
-      const app = express().use(router);
-      const response = await request(app).post('/locations').send(location);
+      const response = await request(app).post('/locations').send(spec);
 
       expect(response.status).toEqual(400);
+      expect(higherOrderOperation.addLocation).not.toHaveBeenCalled();
+    });
+
+    it('passes the body down', async () => {
+      const spec: LocationSpec = {
+        type: 'b',
+        target: 'c',
+      };
+
+      higherOrderOperation.addLocation.mockResolvedValue({
+        location: { id: 'a', ...spec },
+        entities: [],
+      });
+
+      const response = await request(app).post('/locations').send(spec);
+
+      expect(response.status).toEqual(201);
+      expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
+      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec);
     });
   });
 });

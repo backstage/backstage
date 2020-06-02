@@ -19,24 +19,30 @@ import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import {
-  addLocationSchema,
-  EntitiesCatalog,
-  LocationsCatalog,
-} from '../catalog';
+import * as yup from 'yup';
+import { EntitiesCatalog, LocationsCatalog, LocationSpec } from '../catalog';
 import { EntityFilters } from '../database';
+import { HigherOrderOperation } from '../ingestion/types';
 import { requireRequestBody, validateRequestBody } from './util';
 
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationsCatalog?: LocationsCatalog;
+  higherOrderOperation?: HigherOrderOperation;
   logger: Logger;
 }
+
+const addLocationSchema = yup
+  .object<LocationSpec>({
+    type: yup.string().required(),
+    target: yup.string().required(),
+  })
+  .noUnknown();
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { entitiesCatalog, locationsCatalog } = options;
+  const { entitiesCatalog, locationsCatalog, higherOrderOperation } = options;
 
   const router = Router();
   router.use(express.json());
@@ -84,13 +90,16 @@ export async function createRouter(
       });
   }
 
+  if (higherOrderOperation) {
+    router.post('/locations', async (req, res) => {
+      const input = await validateRequestBody(req, addLocationSchema);
+      const output = await higherOrderOperation.addLocation(input);
+      res.status(201).send(output);
+    });
+  }
+
   if (locationsCatalog) {
     router
-      .post('/locations', async (req, res) => {
-        const input = await validateRequestBody(req, addLocationSchema);
-        const output = await locationsCatalog.addLocation(input);
-        res.status(201).send(output);
-      })
       .get('/locations', async (_req, res) => {
         const output = await locationsCatalog.locations();
         res.status(200).send(output);

@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
+import { Location, LocationSpec } from '../catalog';
 import { ReaderOutput } from './descriptor/parsers/types';
+
+export type AddLocationResult = {
+  location: Location;
+  entities: Entity[];
+};
 
 export type IngestionModel = {
   readLocation(type: string, target: string): Promise<ReaderOutput[]>;
+};
+
+export type HigherOrderOperation = {
+  addLocation(spec: LocationSpec): Promise<AddLocationResult>;
 };
