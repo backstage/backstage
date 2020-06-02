@@ -28,6 +28,7 @@ import {
   RedirectInfo,
   AuthProviderConfig,
 } from '../types';
+import { OAuthProvider } from '../OAuthProvider';
 
 export class GoogleAuthProvider implements OAuthProviderHandlers {
   private readonly providerConfig: AuthProviderConfig;
@@ -86,4 +87,10 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
       scope: params.scope,
     };
   }
+}
+
+export function createGoogleProvider(config: AuthProviderConfig) {
+  const provider = new GoogleAuthProvider(config);
+  const oauthProvider = new OAuthProvider(provider, config.provider);
+  return oauthProvider;
 }
