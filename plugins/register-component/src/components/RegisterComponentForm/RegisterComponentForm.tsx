@@ -20,12 +20,10 @@ import {
   FormControl,
   FormHelperText,
   TextField,
-  Typography,
 } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
-import { Progress } from '@backstage/core';
 import { ComponentIdValidators } from '../../util/validate';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -40,30 +38,17 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 }));
 
 type RegisterComponentProps = {
-  onSubmit: () => any;
-  submitting: boolean;
+  onSubmit: (formData: Record<string, string>) => Promise<void>;
 };
 
-const RegisterComponentForm: FC<RegisterComponentProps> = ({
-  onSubmit,
-  submitting,
-}) => {
+const RegisterComponentForm: FC<RegisterComponentProps> = ({ onSubmit }) => {
   const { register, handleSubmit, errors, formState } = useForm({
     mode: 'onChange',
   });
   const classes = useStyles();
-  const hasErrors = !!errors.componentIdInput;
+  const hasErrors = !!errors.componentLocation;
   const dirty = formState?.dirty;
-  if (submitting) {
-    return (
-      <>
-        <Typography variant="subtitle1" paragraph>
-          Your component is being registered. Please wait.
-        </Typography>
-        <Progress />
-      </>
-    );
-  }
+
   return (
     <form
       autoComplete="off"
@@ -77,7 +62,7 @@ const RegisterComponentForm: FC<RegisterComponentProps> = ({
           label="Component service file URL"
           error={hasErrors}
           placeholder="https://example.com/user/some-service/blob/master/service-info.yaml"
-          name="componentIdInput"
+          name="componentLocation"
           required
           margin="normal"
           helperText="Enter the full path to the service-info.yaml file in GHE to start tracking your component. It must be in a public repo, on the master branch."
@@ -87,9 +72,9 @@ const RegisterComponentForm: FC<RegisterComponentProps> = ({
           })}
         />
 
-        {errors.componentIdInput && (
+        {errors.componentLocation && (
           <FormHelperText error={hasErrors} id="register-component-helper-text">
-            {errors.componentIdInput.message}
+            {errors.componentLocation.message}
           </FormHelperText>
         )}
       </FormControl>

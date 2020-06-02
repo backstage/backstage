@@ -15,7 +15,7 @@
  */
 
 import React, { FC, useState } from 'react';
-import { useHistory, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Grid,
   makeStyles,
@@ -29,10 +29,9 @@ import {
   ListItemText,
   List,
   LinearProgress,
+  ListItemIcon,
 } from '@material-ui/core';
-import { GitHub as GitHubIcon } from '@material-ui/icons';
-import { Star as StarIcon } from '@material-ui/icons';
-
+import LinkIcon from '@material-ui/icons/Link';
 import {
   InfoCard,
   Page,
@@ -61,12 +60,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const RegisterComponentPage: FC<{}> = () => {
-  const history = useHistory();
-  const classes = useStyles();
+const FormStates = {
+  Idle: 'idle',
+  Success: 'success',
+  Error: 'error',
+  Submitting: 'submitting',
+} as const;
 
+type ValuesOf<T> = T extends Record<any, infer V> ? V : never;
+const RegisterComponentPage: FC<{}> = () => {
+  const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formState, setFormState] = useState<ValuesOf<typeof FormStates>>(
+    FormStates.Idle,
+  );
 
   const alertApi = useApi(alertApiRef);
   const errorApi = useApi(errorApiRef);
@@ -81,10 +88,9 @@ const RegisterComponentPage: FC<{}> = () => {
     loading: false,
   });
 
-  const onSubmit = async (formData: { componentIdInput: string }) => {
-    setIsSubmitting(true);
-
-    const { componentIdInput: target } = formData;
+  const handleSubmit = async (formData: Record<string, string>) => {
+    setFormState(FormStates.Submitting);
+    const { componentLocation: target } = formData;
     try {
       const data = await catalogApi.addLocation('github', target);
 
@@ -93,45 +99,50 @@ const RegisterComponentPage: FC<{}> = () => {
         severity: 'success',
       });
       setResult({ error: null, loading: false, data });
+      setFormState(FormStates.Success);
     } catch (e) {
+      setFormState(FormStates.Error);
       errorApi.post(e);
     }
-
-    setIsSubmitting(false);
   };
-  const gheUrl = 'some-url';
-  const showDialog = result.data && !result.error;
+
   return (
     <Page theme={pageTheme.tool}>
       <Content>
-        <ContentHeader title="Register Component">
+        <ContentHeader title="Register existing component">
           <SupportButton>Documentation</SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
             <InfoCard title="Start tracking your component in Backstage">
-              {result.loading ? (
+              {formState === FormStates.Submitting ? (
                 <LinearProgress />
               ) : (
-                <RegisterComponentForm
-                  onSubmit={onSubmit}
-                  submitting={isSubmitting}
-                />
+                <RegisterComponentForm onSubmit={handleSubmit} />
               )}
             </InfoCard>
           </Grid>
         </Grid>
       </Content>
-      <Dialog open={showDialog} classes={{ paper: classes.dialogPaper }}>
+      <Dialog
+        open={
+          formState === FormStates.Error || formState === FormStates.Success
+        }
+        onClose={() => setFormState(FormStates.Idle)}
+        classes={{ paper: classes.dialogPaper }}
+      >
         <DialogTitle>Component registration result</DialogTitle>
         {result.data ? (
           <>
             <DialogContent>
               <DialogContentText>
-                Following components have been succefully created.
+                Following components have been succefully created:
                 <List>
                   {result.data.entities.map((entity: any) => (
                     <ListItem button>
+                      <ListItemIcon>
+                        <LinkIcon />
+                      </ListItemIcon>
                       <RouterLink to={`/catalog/${entity.metadata.name}`}>
                         <ListItemText primary={entity.metadata.name} />
                       </RouterLink>
@@ -141,8 +152,8 @@ const RegisterComponentPage: FC<{}> = () => {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button href={gheUrl} color="default">
-                <GitHubIcon />
+              <Button component={RouterLink} to="/" color="default">
+                To Catalog
               </Button>
             </DialogActions>
           </>
