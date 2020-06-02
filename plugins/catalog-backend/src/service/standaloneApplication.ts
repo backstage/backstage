@@ -26,18 +26,26 @@ import helmet from 'helmet';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { createRouter } from './router';
+import { HigherOrderOperation } from '../ingestion/types';
 
 export interface ApplicationOptions {
   enableCors: boolean;
   entitiesCatalog: EntitiesCatalog;
   locationsCatalog?: LocationsCatalog;
+  higherOrderOperation?: HigherOrderOperation;
   logger: Logger;
 }
 
 export async function createStandaloneApplication(
   options: ApplicationOptions,
 ): Promise<express.Application> {
-  const { enableCors, entitiesCatalog, locationsCatalog, logger } = options;
+  const {
+    enableCors,
+    entitiesCatalog,
+    locationsCatalog,
+    logger,
+    higherOrderOperation,
+  } = options;
   const app = express();
 
   app.use(helmet());
@@ -49,7 +57,12 @@ export async function createStandaloneApplication(
   app.use(requestLoggingHandler());
   app.use(
     '/',
-    await createRouter({ entitiesCatalog, locationsCatalog, logger }),
+    await createRouter({
+      entitiesCatalog,
+      locationsCatalog,
+      higherOrderOperation,
+      logger,
+    }),
   );
   app.use(notFoundHandler());
   app.use(errorHandler());

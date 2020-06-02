@@ -14,26 +14,48 @@
  * limitations under the License.
  */
 
-import type { Entity, EntityPolicy } from '@backstage/catalog-model';
+import { Entity, EntityPolicy } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import path from 'path';
 import { Logger } from 'winston';
-import type { IngestionModel } from '../ingestion/types';
+import { IngestionModel } from '../ingestion/types';
 import { CommonDatabase } from './CommonDatabase';
-import { DatabaseLocationUpdateLogStatus } from './types';
-import type { Database, DbEntityRequest } from './types';
+import {
+  DatabaseLocationUpdateLogStatus,
+  Database,
+  DbEntityRequest,
+} from './types';
 
 export class DatabaseManager {
   public static async createDatabase(
-    knex: Knex,
+    database: Knex,
     logger: Logger,
   ): Promise<Database> {
-    await knex.migrate.latest({
+    await database.migrate.latest({
       directory: path.resolve(__dirname, 'migrations'),
       loadExtensions: ['.js'],
     });
-    return new CommonDatabase(knex, logger);
+    return new CommonDatabase(database, logger);
+  }
+
+  public static async createInMemoryDatabase(
+    logger: Logger,
+  ): Promise<Database> {
+    const database = Knex({
+      client: 'sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+    database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+      resource.run('PRAGMA foreign_keys = ON', () => {});
+    });
+
+    await database.migrate.latest({
+      directory: path.resolve(__dirname, 'migrations'),
+      loadExtensions: ['.js'],
+    });
+    return new CommonDatabase(database, logger);
   }
 
   private static async logUpdateSuccess(

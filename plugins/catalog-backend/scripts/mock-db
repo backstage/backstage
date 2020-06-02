@@ -1,0 +1,12 @@
+curl --location --request POST 'localhost:3003/locations' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "type": "github",
+    "target": "https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/fixtures/one_component.yaml"
+}'
+curl --location --request POST 'localhost:3003/locations' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "type": "github",
+    "target": "https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/fixtures/two_components.yaml"
+}'
