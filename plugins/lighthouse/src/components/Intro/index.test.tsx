@@ -18,13 +18,13 @@
 
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 
 import LighthouseIntro from '.';
 
 describe('LighthouseIntro', () => {
   it('renders successfully', () => {
-    const rendered = render(wrapInThemedTestApp(<LighthouseIntro />));
+    const rendered = render(wrapInTestApp(<LighthouseIntro />));
     expect(
       rendered.queryByText('Welcome to Lighthouse in Backstage!'),
     ).toBeInTheDocument();
@@ -35,13 +35,13 @@ describe('LighthouseIntro', () => {
     const secondTabRe = /you will need a running instance of/;
 
     it('selects the first text element', () => {
-      const rendered = render(wrapInThemedTestApp(<LighthouseIntro />));
+      const rendered = render(wrapInTestApp(<LighthouseIntro />));
       expect(rendered.queryByText(firstTabRe)).toBeInTheDocument();
       expect(rendered.queryByText(secondTabRe)).not.toBeInTheDocument();
     });
 
     it('shows the other text when the tab is clicked', () => {
-      const rendered = render(wrapInThemedTestApp(<LighthouseIntro />));
+      const rendered = render(wrapInTestApp(<LighthouseIntro />));
       fireEvent.click(rendered.getByText('Setup'));
       expect(rendered.queryByText(firstTabRe)).not.toBeInTheDocument();
       expect(rendered.queryByText(secondTabRe)).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe('LighthouseIntro', () => {
 
   describe('closing', () => {
     it('hides the content on click', () => {
-      const rendered = render(wrapInThemedTestApp(<LighthouseIntro />));
+      const rendered = render(wrapInTestApp(<LighthouseIntro />));
       const welcomeMessage = rendered.queryByText(
         'Welcome to Lighthouse in Backstage!',
       );

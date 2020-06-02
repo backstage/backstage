@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 
 import WarningPanel from './WarningPanel';
 
@@ -24,15 +24,13 @@ const minProps = { title: 'Mock title', message: 'Some more info' };
 
 describe('<WarningPanel />', () => {
   it('renders without exploding', () => {
-    const { getByText } = render(
-      wrapInThemedTestApp(<WarningPanel {...minProps} />),
-    );
+    const { getByText } = render(wrapInTestApp(<WarningPanel {...minProps} />));
     expect(getByText('Mock title')).toBeInTheDocument();
   });
 
   it('renders message and children', () => {
     const { getByText } = render(
-      wrapInThemedTestApp(<WarningPanel {...minProps}>children</WarningPanel>),
+      wrapInTestApp(<WarningPanel {...minProps}>children</WarningPanel>),
     );
     expect(getByText('Some more info')).toBeInTheDocument();
     expect(getByText('children')).toBeInTheDocument();

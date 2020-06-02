@@ -27,11 +27,10 @@ jest.mock('react-router-dom', () => {
 });
 
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import mockFetch from 'jest-fetch-mock';
 import { render, fireEvent } from '@testing-library/react';
 import { ApiRegistry, ApiProvider } from '@backstage/core';
-import { wrapInThemedTestApp, wrapInTheme } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 
 import {
   lighthouseApiRef,
@@ -57,7 +56,7 @@ describe('AuditList', () => {
 
   it('should render the table', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <ApiProvider apis={apis}>
           <AuditList />
         </ApiProvider>,
@@ -69,7 +68,7 @@ describe('AuditList', () => {
 
   it('renders a link to create a new audit', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <ApiProvider apis={apis}>
           <AuditList />
         </ApiProvider>,
@@ -87,12 +86,11 @@ describe('AuditList', () => {
     it('requests the correct limit and offset from the api based on the query', () => {
       mockFetch.mockClear();
       render(
-        wrapInTheme(
-          <MemoryRouter initialEntries={['/lighthouse?page=2']}>
-            <ApiProvider apis={apis}>
-              <AuditList />
-            </ApiProvider>
-          </MemoryRouter>,
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <AuditList />
+          </ApiProvider>,
+          { routeEntries: ['/lighthouse?page=2'] },
         ),
       );
       expect(mockFetch).toHaveBeenLastCalledWith(
@@ -104,7 +102,7 @@ describe('AuditList', () => {
     describe('when only one page is needed', () => {
       it('hides pagination elements', () => {
         const rendered = render(
-          wrapInThemedTestApp(
+          wrapInTestApp(
             <ApiProvider apis={apis}>
               <AuditList />
             </ApiProvider>,
@@ -125,7 +123,7 @@ describe('AuditList', () => {
 
       it('shows pagination elements', async () => {
         const rendered = render(
-          wrapInThemedTestApp(
+          wrapInTestApp(
             <ApiProvider apis={apis}>
               <AuditList />
             </ApiProvider>,
@@ -138,12 +136,11 @@ describe('AuditList', () => {
 
       it('changes the page on click', async () => {
         const rendered = render(
-          wrapInTheme(
-            <MemoryRouter initialEntries={['/lighthouse?page=2']}>
-              <ApiProvider apis={apis}>
-                <AuditList />
-              </ApiProvider>
-            </MemoryRouter>,
+          wrapInTestApp(
+            <ApiProvider apis={apis}>
+              <AuditList />
+            </ApiProvider>,
+            { routeEntries: ['/lighthouse?page=2'] },
           ),
         );
         const element = await rendered.findByLabelText(/Go to page 1/);
@@ -157,7 +154,7 @@ describe('AuditList', () => {
     it('should render the loader', async () => {
       mockFetch.mockResponseOnce(() => new Promise(() => {}));
       const rendered = render(
-        wrapInThemedTestApp(
+        wrapInTestApp(
           <ApiProvider apis={apis}>
             <AuditList />
           </ApiProvider>,
@@ -172,7 +169,7 @@ describe('AuditList', () => {
     it('should render an error', async () => {
       mockFetch.mockRejectOnce(new Error('failed to fetch'));
       const rendered = render(
-        wrapInThemedTestApp(
+        wrapInTestApp(
           <ApiProvider apis={apis}>
             <AuditList />
           </ApiProvider>,

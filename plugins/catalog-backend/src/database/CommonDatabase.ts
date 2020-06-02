@@ -19,15 +19,14 @@ import {
   InputError,
   NotFoundError,
 } from '@backstage/backend-common';
-import { Entity, EntityMeta } from '@backstage/catalog-model';
+import type { Entity, EntityMeta, Location } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { Logger } from 'winston';
-import { EntityFilters } from '../catalog';
+import type { Logger } from 'winston';
 import { buildEntitySearch } from './search';
-import {
-  AddDatabaseLocation,
+import type {
+  Database,
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
   DbEntitiesRow,
@@ -36,6 +35,7 @@ import {
   DbEntityResponse,
   DbLocationsRow,
   DbLocationsRowWithStatus,
+  EntityFilters,
 } from './types';
 
 function getStrippedMetadata(metadata: EntityMeta): EntityMeta {
@@ -121,27 +121,13 @@ function generateEtag(): string {
   return Buffer.from(uuidv4(), 'utf8').toString('base64').replace(/[^\w]/g, '');
 }
 
-/**
- * An abstraction on top of the underlying database, wrapping the basic CRUD
- * needs.
- */
-export class Database {
+export class CommonDatabase implements Database {
   constructor(
     private readonly database: Knex,
     private readonly logger: Logger,
   ) {}
 
-  /**
-   * Runs a transaction.
-   *
-   * The callback is expected to make calls back into this class. When it
-   * completes, the transaction is closed.
-   *
-   * @param fn The callback that implements the transaction
-   */
-  async transaction<T>(
-    fn: (tx: Knex.Transaction<any, any>) => Promise<T>,
-  ): Promise<T> {
+  async transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
     try {
       return await this.database.transaction<T>(fn);
     } catch (e) {
@@ -158,17 +144,12 @@ export class Database {
     }
   }
 
-  /**
-   * Adds a new entity to the catalog.
-   *
-   * @param tx An ongoing transaction
-   * @param request The entity being added
-   * @returns The added entity, with uid, etag and generation set
-   */
   async addEntity(
-    tx: Knex.Transaction<any, any>,
+    txOpaque: unknown,
     request: DbEntityRequest,
   ): Promise<DbEntityResponse> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
     if (request.entity.metadata.uid !== undefined) {
       throw new InputError('May not specify uid for new entities');
     } else if (request.entity.metadata.etag !== undefined) {
@@ -198,25 +179,12 @@ export class Database {
     return { locationId: request.locationId, entity: newEntity };
   }
 
-  /**
-   * Updates an existing entity in the catalog.
-   *
-   * The given entity must contain enough information to identify an already
-   * stored entity in the catalog - either by uid, or by kind + namespace +
-   * name. If no matching entity is found, the operation fails.
-   *
-   * If etag or generation are given, they are taken into account. Attempts to
-   * update a matching entity, but where the etag and/or generation are not
-   * equal to the passed values, will fail.
-   *
-   * @param tx An ongoing transaction
-   * @param request The entity being updated
-   * @returns The updated entity
-   */
   async updateEntity(
-    tx: Knex.Transaction<any, any>,
+    txOpaque: unknown,
     request: DbEntityRequest,
   ): Promise<DbEntityResponse> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
     const { kind } = request.entity;
     const {
       uid,
@@ -310,9 +278,11 @@ export class Database {
   }
 
   async entities(
-    tx: Knex.Transaction<any, any>,
+    txOpaque: unknown,
     filters?: EntityFilters,
   ): Promise<DbEntityResponse[]> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
     let builder = tx<DbEntitiesRow>('entities');
     for (const [index, filter] of (filters ?? []).entries()) {
       builder = builder
@@ -337,11 +307,13 @@ export class Database {
   }
 
   async entity(
-    tx: Knex.Transaction<any, any>,
+    txOpaque: unknown,
     kind: string,
     name: string,
     namespace?: string,
   ): Promise<DbEntityResponse | undefined> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
     const rows = await tx<DbEntitiesRow>('entities')
       .where({ kind, name, namespace: namespace || null })
       .select();
@@ -353,25 +325,25 @@ export class Database {
     return toEntityResponse(rows[0]);
   }
 
-  async addLocation(location: AddDatabaseLocation): Promise<DbLocationsRow> {
+  async removeEntity(txOpaque: unknown, uid: string): Promise<void> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();
+
+    if (!result) {
+      throw new NotFoundError(`Found no entity with ID ${uid}`);
+    }
+  }
+
+  async addLocation(location: Location): Promise<DbLocationsRow> {
     return await this.database.transaction<DbLocationsRow>(async tx => {
-      const existingLocation = await tx<DbLocationsRow>('locations')
-        .where({ target: location.target })
-        .select();
-
-      if (existingLocation?.[0]) {
-        return existingLocation[0];
-      }
-
-      const id = uuidv4();
-      const { type, target } = location;
-      await tx<DbLocationsRow>('locations').insert({
-        id,
-        type,
-        target,
-      });
-
-      return (await tx<DbLocationsRow>('locations').where({ id }).select())![0];
+      const row: DbLocationsRow = {
+        id: location.id,
+        type: location.type,
+        target: location.target,
+      };
+      await tx<DbLocationsRow>('locations').insert(row);
+      return row;
     });
   }
 

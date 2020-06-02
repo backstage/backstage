@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-import { Entity, EntityPolicy } from '@backstage/catalog-model';
+import type { Entity, EntityPolicy } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import path from 'path';
 import { Logger } from 'winston';
-import { IngestionModel } from '../ingestion/types';
-import { Database } from './Database';
-import { DatabaseLocationUpdateLogStatus, DbEntityRequest } from './types';
+import type { IngestionModel } from '../ingestion/types';
+import { CommonDatabase } from './CommonDatabase';
+import { DatabaseLocationUpdateLogStatus } from './types';
+import type { Database, DbEntityRequest } from './types';
 
 export class DatabaseManager {
   public static async createDatabase(
-    database: Knex,
+    knex: Knex,
     logger: Logger,
   ): Promise<Database> {
-    await database.migrate.latest({
+    await knex.migrate.latest({
       directory: path.resolve(__dirname, 'migrations'),
       loadExtensions: ['.js'],
     });
-    return new Database(database, logger);
+    return new CommonDatabase(knex, logger);
   }
 
   private static async logUpdateSuccess(
@@ -158,22 +159,58 @@ export class DatabaseManager {
     });
   }
 
-  private static entitiesAreEqual(first: Entity, second: Entity) {
-    const firstClone = lodash.cloneDeep(first);
-    const secondClone = lodash.cloneDeep(second);
+  private static entitiesAreEqual(previous: Entity, next: Entity) {
+    if (
+      previous.apiVersion !== next.apiVersion ||
+      previous.kind !== next.kind ||
+      !lodash.isEqual(previous.spec, next.spec) // Accept that {} !== undefined
+    ) {
+      return false;
+    }
+
+    // Since the next annotations get merged into the previous, extract only
+    // the overlapping keys and check if their values match.
+    if (next.metadata.annotations) {
+      if (!previous.metadata.annotations) {
+        return false;
+      }
+      if (
+        !lodash.isEqual(
+          next.metadata.annotations,
+          lodash.pick(
+            previous.metadata.annotations,
+            Object.keys(next.metadata.annotations),
+          ),
+        )
+      ) {
+        return false;
+      }
+    }
+
+    const e1 = lodash.cloneDeep(previous);
+    const e2 = lodash.cloneDeep(next);
+
+    if (!e1.metadata.labels) {
+      e1.metadata.labels = {};
+    }
+    if (!e2.metadata.labels) {
+      e2.metadata.labels = {};
+    }
 
     // Remove generated fields
-    if (firstClone.metadata) {
-      delete firstClone.metadata.uid;
-      delete firstClone.metadata.etag;
-      delete firstClone.metadata.generation;
-    }
-    if (secondClone.metadata) {
-      delete secondClone.metadata.uid;
-      delete secondClone.metadata.etag;
-      delete secondClone.metadata.generation;
-    }
+    delete e1.metadata.uid;
+    delete e1.metadata.etag;
+    delete e1.metadata.generation;
+    delete e2.metadata.uid;
+    delete e2.metadata.etag;
+    delete e2.metadata.generation;
 
-    return lodash.isEqual(firstClone, secondClone);
+    // Remove already compared things
+    delete e1.metadata.annotations;
+    delete e1.spec;
+    delete e2.metadata.annotations;
+    delete e2.spec;
+
+    return lodash.isEqual(e1, e2);
   }
 }

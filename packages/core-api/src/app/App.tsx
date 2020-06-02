@@ -43,7 +43,7 @@ type FullAppOptions = {
   plugins: BackstagePlugin[];
   components: AppComponents;
   themes: AppTheme[];
-  configLoader: AppConfigLoader;
+  configLoader?: AppConfigLoader;
 };
 
 export class PrivateAppImpl implements BackstageApp {
@@ -52,7 +52,7 @@ export class PrivateAppImpl implements BackstageApp {
   private readonly plugins: BackstagePlugin[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
-  private readonly configLoader: AppConfigLoader;
+  private readonly configLoader?: AppConfigLoader;
 
   constructor(options: FullAppOptions) {
     this.apis = options.apis;
@@ -148,11 +148,13 @@ export class PrivateAppImpl implements BackstageApp {
 
   getProvider(): ComponentType<{}> {
     const Provider: FC<{}> = ({ children }) => {
-      const config = useAsync(this.configLoader);
+      // Keeping this synchronous when a config loader isn't set simplifies tests a lot
+      const hasConfig = Boolean(this.configLoader);
+      const config = useAsync(this.configLoader || (() => Promise.resolve({})));
 
       let childNode = children;
 
-      if (config.loading) {
+      if (hasConfig && config.loading) {
         const { Progress } = this.components;
         childNode = <Progress />;
       } else if (config.error) {

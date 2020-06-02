@@ -45,7 +45,7 @@ function useCalloutHasBeenSeen(
 
   const markSeen = useCallback(() => {
     setState(featureId, true);
-  }, [featureId]);
+  }, [setState, featureId]);
 
   return { seen: states[featureId] === true, markSeen };
 }

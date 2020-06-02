@@ -46,7 +46,7 @@ export function useBuildWithSteps(buildId: number) {
       errorApi.post(e);
       return Promise.reject(e);
     }
-  }, [token, owner, repo, buildId]);
+  }, [token, owner, repo, buildId, api, errorApi]);
 
   const restartBuild = async () => {
     try {

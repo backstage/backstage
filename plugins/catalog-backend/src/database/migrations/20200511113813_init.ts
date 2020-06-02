@@ -26,7 +26,11 @@ export async function up(knex: Knex): Promise<any> {
         table.comment(
           'Registered locations that shall be contiuously scanned for catalog item updates',
         );
-        table.uuid('id').primary().comment('Auto-generated ID of the location');
+        table
+          .uuid('id')
+          .primary()
+          .notNullable()
+          .comment('Auto-generated ID of the location');
         table.string('type').notNullable().comment('The type of location');
         table
           .string('target')

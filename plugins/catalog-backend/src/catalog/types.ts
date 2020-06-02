@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import * as yup from 'yup';
+import { Entity, Location } from '@backstage/catalog-model';
+import type { EntityFilters } from '../database';
 
 //
 // Entities
 //
-
-export type EntityFilter = {
-  key: string;
-  values: (string | null)[];
-};
-export type EntityFilters = EntityFilter[];
 
 export type EntitiesCatalog = {
   entities(filters?: EntityFilters): Promise<Entity[]>;
@@ -35,6 +29,8 @@ export type EntitiesCatalog = {
     namespace: string | undefined,
     name: string,
   ): Promise<Entity | undefined>;
+  addOrUpdateEntity(entity: Entity, locationId?: string): Promise<Entity>;
+  removeEntityByUid(uid: string): Promise<void>;
 };
 
 //
@@ -55,31 +51,13 @@ export type LocationUpdateLogEvent = {
   message?: string;
 };
 
-export type Location = {
-  id: string;
-  type: string;
-  target: string;
-};
-
 export type LocationResponse = {
   data: Location;
   currentStatus: LocationUpdateStatus;
 };
 
-export type AddLocation = {
-  type: string;
-  target: string;
-};
-
-export const addLocationSchema: yup.Schema<AddLocation> = yup
-  .object({
-    type: yup.string().required(),
-    target: yup.string().required(),
-  })
-  .noUnknown();
-
 export type LocationsCatalog = {
-  addLocation(location: AddLocation): Promise<Location>;
+  addLocation(location: Location): Promise<Location>;
   removeLocation(id: string): Promise<void>;
   locations(): Promise<LocationResponse[]>;
   location(id: string): Promise<LocationResponse>;

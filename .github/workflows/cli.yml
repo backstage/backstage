@@ -6,7 +6,6 @@ on:
       - '.github/workflows/cli.yml'
       - 'packages/cli/**'
       - 'packages/core/**'
-      - 'scripts/**'
       - 'yarn.lock'
 
 jobs:

@@ -23,13 +23,17 @@ import {
   LocationReaders,
   IngestionModels,
   runPeriodically,
+  HigherOrderOperations,
 } from '@backstage/plugin-catalog-backend';
 import { PluginEnvironment } from '../types';
 import { EntityPolicies } from '@backstage/catalog-model';
 
-export default async function ({ logger, database }: PluginEnvironment) {
+export default async function createPlugin({
+  logger,
+  database,
+}: PluginEnvironment) {
   const policy = new EntityPolicies();
-  const ingestion = new IngestionModels(
+  const ingestionModel = new IngestionModels(
     new LocationReaders(),
     new DescriptorParsers(),
     new EntityPolicies(),
@@ -37,12 +41,22 @@ export default async function ({ logger, database }: PluginEnvironment) {
 
   const db = await DatabaseManager.createDatabase(database, logger);
   runPeriodically(
-    () => DatabaseManager.refreshLocations(db, ingestion, policy, logger),
+    () => DatabaseManager.refreshLocations(db, ingestionModel, policy, logger),
     10000,
   );
 
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
-  const locationsCatalog = new DatabaseLocationsCatalog(db, ingestion);
+  const locationsCatalog = new DatabaseLocationsCatalog(db);
+  const higherOrderOperation = new HigherOrderOperations(
+    entitiesCatalog,
+    locationsCatalog,
+    ingestionModel,
+  );
 
-  return await createRouter({ entitiesCatalog, locationsCatalog, logger });
+  return await createRouter({
+    entitiesCatalog,
+    locationsCatalog,
+    higherOrderOperation,
+    logger,
+  });
 }

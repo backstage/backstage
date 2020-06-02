@@ -16,7 +16,7 @@
 
 import React from 'react';
 // import { fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
-import { renderWithEffects, wrapInThemedTestApp } from '@backstage/test-utils';
+import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 // import { createSetting } from 'shared/apis/settings';
 import DismissableBanner from './DismissableBanner';
 
@@ -30,7 +30,7 @@ describe('<DismissableBanner />', () => {
     */
 
     const rendered = await renderWithEffects(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <DismissableBanner
           variant="info"
           // setting={mockSetting}

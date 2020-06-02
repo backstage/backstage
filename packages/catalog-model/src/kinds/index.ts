@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { ComponentV1beta1 } from './ComponentV1beta1';
+export type {
+  ComponentV1beta1,
+  ComponentV1beta1 as Component,
+} from './ComponentV1beta1';
 export { ComponentV1beta1Policy } from './ComponentV1beta1';
-export { ComponentV1beta1 as Component };
-export { ComponentV1beta1 };

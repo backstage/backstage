@@ -111,7 +111,7 @@ const BuildWithStepsView: FC<{}> = () => {
   useEffect(() => {
     startPolling();
     return () => stopPolling();
-  }, [buildId, settings]);
+  }, [buildId, settings, startPolling, stopPolling]);
 
   return (
     <>

@@ -52,7 +52,7 @@ const Settings = () => {
     if (repoFromStore !== repo) {
       setRepo(repoFromStore);
     }
-  }, [ownerFromStore, repoFromStore, tokenFromStore]);
+  }, [ownerFromStore, repoFromStore, tokenFromStore, token, owner, repo]);
 
   const [saved, setSaved] = useState(false);
 

@@ -23,27 +23,29 @@ export function useSettings() {
 
   const errorApi = useApi(errorApiRef);
 
-  const rehydrate = () => {
-    try {
-      const stateFromStorage = JSON.parse(sessionStorage.getItem(STORAGE_KEY)!);
-      if (
-        stateFromStorage &&
-        Object.keys(stateFromStorage).some(
-          k => (settings as any)[k] !== stateFromStorage[k],
-        )
-      )
-        dispatch({
-          type: 'setCredentials',
-          payload: stateFromStorage,
-        });
-    } catch (error) {
-      errorApi.post(error);
-    }
-  };
-
   useEffect(() => {
+    const rehydrate = () => {
+      try {
+        const stateFromStorage = JSON.parse(
+          sessionStorage.getItem(STORAGE_KEY)!,
+        );
+        if (
+          stateFromStorage &&
+          Object.keys(stateFromStorage).some(
+            k => (settings as any)[k] !== stateFromStorage[k],
+          )
+        )
+          dispatch({
+            type: 'setCredentials',
+            payload: stateFromStorage,
+          });
+      } catch (error) {
+        errorApi.post(error);
+      }
+    };
+
     rehydrate();
-  }, []);
+  }, [dispatch, errorApi, settings]);
 
   const persist = (state: Settings) => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));

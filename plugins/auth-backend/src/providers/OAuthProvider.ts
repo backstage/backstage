@@ -16,9 +16,12 @@
 
 import express, { CookieOptions } from 'express';
 import crypto from 'crypto';
-import { AuthProviderRouteHandlers, OAuthProviderHandlers } from './types';
+import {
+  AuthResponse,
+  AuthProviderRouteHandlers,
+  OAuthProviderHandlers,
+} from './types';
 import { InputError } from '@backstage/backend-common';
-import { postMessageResponse, ensuresXRequestedWith } from './utils';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -86,12 +89,50 @@ export const removeRefreshTokenCookie = (
   res.cookie(`${provider}-refresh-token`, '', options);
 };
 
+export const postMessageResponse = (
+  res: express.Response,
+  data: AuthResponse,
+) => {
+  const jsonData = JSON.stringify(data);
+  const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
+
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('X-Frame-Options', 'sameorigin');
+
+  // TODO: Make target app origin configurable globally
+  res.end(`
+<html>
+<body>
+  <script>
+    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), 'http://localhost:3000')
+    window.close()
+  </script>
+</body>
+</html>
+  `);
+};
+
+export const ensuresXRequestedWith = (req: express.Request) => {
+  const requiredHeader = req.header('X-Requested-With');
+
+  if (!requiredHeader || requiredHeader !== 'XMLHttpRequest') {
+    return false;
+  }
+  return true;
+};
+
 export class OAuthProvider implements AuthProviderRouteHandlers {
   private readonly provider: string;
   private readonly providerHandlers: OAuthProviderHandlers;
-  constructor(providerHandlers: OAuthProviderHandlers, provider: string) {
+  private readonly disableRefresh: boolean;
+  constructor(
+    providerHandlers: OAuthProviderHandlers,
+    provider: string,
+    disableRefresh?: boolean,
+  ) {
     this.provider = provider;
     this.providerHandlers = providerHandlers;
+    this.disableRefresh = disableRefresh ?? false;
   }
 
   async start(req: express.Request, res: express.Response): Promise<any> {
@@ -129,14 +170,16 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
 
       const { user, info } = await this.providerHandlers.handler(req);
 
-      // throw error if missing refresh token
-      const { refreshToken } = info;
-      if (!refreshToken) {
-        throw new Error('Missing refresh token');
-      }
+      if (!this.disableRefresh) {
+        // throw error if missing refresh token
+        const { refreshToken } = info;
+        if (!refreshToken) {
+          throw new Error('Missing refresh token');
+        }
 
-      // set new refresh token
-      setRefreshTokenCookie(res, this.provider, refreshToken);
+        // set new refresh token
+        setRefreshTokenCookie(res, this.provider, refreshToken);
+      }
 
       // post message back to popup if successful
       return postMessageResponse(res, {
@@ -160,14 +203,22 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       return res.status(401).send('Invalid X-Requested-With header');
     }
 
-    // remove refresh token cookie before logout
-    removeRefreshTokenCookie(res, this.provider);
+    if (!this.disableRefresh) {
+      // remove refresh token cookie before logout
+      removeRefreshTokenCookie(res, this.provider);
+    }
     return res.send('logout!');
   }
 
   async refresh(req: express.Request, res: express.Response): Promise<any> {
     if (!ensuresXRequestedWith(req)) {
       return res.status(401).send('Invalid X-Requested-With header');
+    }
+
+    if (!this.providerHandlers.refresh || this.disableRefresh) {
+      return res.send(
+        `Refresh token not supported for provider: ${this.provider}`,
+      );
     }
 
     try {

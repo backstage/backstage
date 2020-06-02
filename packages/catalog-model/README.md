@@ -7,6 +7,6 @@ as well as by others that want to consume catalog data.
 
 ## Links
 
-- (Default frontend part of the catalog)[https://github.com/spotify/backstage/tree/master/plugins/catalog]
-- (Default backend part of the catalog)[https://github.com/spotify/backstage/tree/master/plugins/catalog-backend]
-- (The Backstage homepage)[https://backstage.io]
+- [Default frontend part of the catalog](https://github.com/spotify/backstage/tree/master/plugins/catalog)
+- [Default backend part of the catalog](https://github.com/spotify/backstage/tree/master/plugins/catalog-backend)
+- [The Backstage homepage](https://backstage.io)

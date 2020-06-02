@@ -26,6 +26,7 @@
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
+    "@types/react": "^16.9",
     "color": "^3.1.2",
     "d3-force": "^2.0.1",
     "prop-types": "^15.7.2",

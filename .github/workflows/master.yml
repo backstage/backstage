@@ -60,6 +60,9 @@ jobs:
       - name: build
         run: yarn build
 
+      - name: verify type dependencies
+        run: yarn lint:type-deps
+
       - name: test
         run: yarn lerna -- run test -- --coverage
 
