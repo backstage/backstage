@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useCallback, useState, useEffect } from 'react';
 import {
   Content,
   ContentHeader,
@@ -34,6 +34,8 @@ import {
 } from '../CatalogFilter/CatalogFilter';
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import { filterGroups, defaultFilter } from '../../data/filters';
+import GitHub from '@material-ui/icons/GitHub';
+import { Entity } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -50,15 +52,51 @@ import { envelopeToComponent } from '../../data/utils';
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const { value, error, loading } = useAsync(() => catalogApi.getEntities());
-  const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
+  const [locations, setLocations] = useState<any>([]);
+  const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
 
-  const onFilterSelected = React.useCallback(
+  const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
     [],
   );
   const styles = useStyles();
+
+  useEffect(() => {
+    const getLocationDataForEntities = async (entities: Entity[]) => {
+      return Promise.all(
+        entities.map(entity => catalogApi.getLocationByEntity(entity)),
+      );
+    };
+
+    if (value) {
+      getLocationDataForEntities(value)
+        .then(location => location.map(l => l.data))
+        .then(setLocations);
+    }
+  }, [value, catalogApi]);
+
+  const actions = [
+    (rowData: any) => ({
+      icon: GitHub,
+      tooltop: 'View on GitHub',
+      onClick: () => {
+        if (!rowData || !rowData.location) return;
+        window.open(rowData.location.target, '_blank');
+      },
+      isHidden:
+        rowData && rowData.location
+          ? rowData.location.type === 'github'
+          : false,
+    }),
+  ];
+
+  const findLocationForEntity = (entity: Entity, l: any) => {
+    const entityLocationId =
+      entity.metadata.annotations?.['backstage.io/managed-by-location'];
+    return l.find((location: any) => location.id === entityLocationId);
+  };
 
   return (
     <Page theme={pageTheme.home}>
@@ -98,9 +136,19 @@ const CatalogPage: FC<{}> = () => {
           </div>
           <CatalogTable
             titlePreamble={selectedFilter.label}
-            components={(value && value.map(envelopeToComponent)) || []}
+            components={
+              (value &&
+                value.map(val =>
+                  envelopeToComponent(
+                    val,
+                    findLocationForEntity(val, locations),
+                  ),
+                )) ||
+              []
+            }
             loading={loading}
             error={error}
+            actions={actions}
           />
         </div>
       </Content>

@@ -17,4 +17,5 @@ export type Component = {
   name: string;
   kind: string;
   description: string;
+  location: any;
 };
