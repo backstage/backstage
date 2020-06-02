@@ -43,7 +43,6 @@ export class CatalogClient implements CatalogApi {
     throw new Error(`'Entity not found: ${name}`);
   }
 
-  // TODO: Types for the type param
   async addLocation(type: string, target: string) {
     const response = await fetch(
       `${this.apiOrigin}${this.basePath}/locations`,
@@ -55,16 +54,19 @@ export class CatalogClient implements CatalogApi {
         body: JSON.stringify({ type, target }),
       },
     );
+
     if (response.status !== 201) {
-      throw new Error(`Location wasn't added: ${target}`);
+      throw new Error(await response.text());
     }
+
     const { location, entities } = await response.json();
 
-    if (location && entities.length > 0)
-      return {
-        location,
-        entities,
-      };
-    throw new Error(`'Location wasn't added: ${target}`);
+    if (!location || entities.length === 0)
+      throw new Error(`'Location wasn't added: ${target}`);
+
+    return {
+      location,
+      entities,
+    };
   }
 }
