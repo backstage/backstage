@@ -17,6 +17,7 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 import { Logger } from 'winston';
 import { providers } from './../providers/config';
 import { createAuthProviderRouter } from '../providers';
@@ -32,6 +33,8 @@ export async function createRouter(
   const logger = options.logger.child({ plugin: 'auth' });
 
   router.use(cookieParser());
+  router.use(bodyParser.urlencoded({ extended: false }));
+  router.use(bodyParser.json());
 
   // configure all the providers
   for (const providerConfig of providers) {

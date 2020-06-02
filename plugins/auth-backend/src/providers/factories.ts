@@ -17,11 +17,13 @@
 import Router from 'express-promise-router';
 import { createGithubProvider } from './github';
 import { createGoogleProvider } from './google';
+import { createSamlProvider } from './saml';
 import { AuthProviderFactory, AuthProviderConfig } from './types';
 
 const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
   github: createGithubProvider,
+  saml: createSamlProvider,
 };
 
 export function createAuthProvider(providerId: string, config: any) {
@@ -39,6 +41,7 @@ export const createAuthProviderRouter = (config: AuthProviderConfig) => {
   const router = Router();
   router.get('/start', provider.start.bind(provider));
   router.get('/handler/frame', provider.frameHandler.bind(provider));
+  router.post('/handler/frame', provider.frameHandler.bind(provider));
   router.get('/logout', provider.logout.bind(provider));
   if (provider.refresh) {
     router.get('/refresh', provider.refresh.bind(provider));

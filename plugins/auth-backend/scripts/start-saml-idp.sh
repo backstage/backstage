@@ -14,4 +14,4 @@ fi
 
 echo "Downloading and starting SAML-IdP"
 export NPM_CONFIG_REGISTRY=https://registry.npmjs.org
-exec npx saml-idp --acsUrl "http://localhost:3003/auth/saml/handler/frame" --audience "http://localhost:3003"
+exec npx saml-idp --acsUrl "http://localhost:7000/auth/saml/handler/frame" --audience "http://localhost:7000" --port 7001
