@@ -70,12 +70,12 @@ async function main() {
   app.use(requestLoggingHandler());
   app.use('/catalog', await catalog(createEnv('catalog')));
   app.use('/scaffolder', await scaffolder(createEnv('scaffolder')));
-  // app.use(
-  //   '/sentry',
-  //   await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
-  // );
-  // app.use('/auth', await auth(createEnv('auth')));
-  // app.use('/identity', await identity(createEnv('identity')));
+  app.use(
+    '/sentry',
+    await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
+  );
+  app.use('/auth', await auth(createEnv('auth')));
+  app.use('/identity', await identity(createEnv('identity')));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

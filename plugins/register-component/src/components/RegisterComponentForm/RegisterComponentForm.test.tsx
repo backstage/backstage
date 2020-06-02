@@ -18,11 +18,10 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import RegisterComponentForm from './RegisterComponentForm';
 
+// TODO(ishmidt): rewrite tests
 describe('RegisterComponentForm', () => {
   it('should initially render a disabled button', async () => {
-    const rendered = render(
-      <RegisterComponentForm onSubmit={jest.fn()} submitting={false} />,
-    );
+    const rendered = render(<RegisterComponentForm onSubmit={jest.fn()} />);
     expect(
       await rendered.findByText(
         'Enter the full path to the service-info.yaml file in GHE to start tracking your component. It must be in a public repo, on the master branch.',
@@ -34,9 +33,7 @@ describe('RegisterComponentForm', () => {
   });
 
   it('should enable a submit form when data when component url is set ', async () => {
-    const rendered = render(
-      <RegisterComponentForm onSubmit={jest.fn()} submitting={false} />,
-    );
+    const rendered = render(<RegisterComponentForm onSubmit={jest.fn()} />);
     const input = (await rendered.getByRole('textbox')) as HTMLInputElement;
     fireEvent.change(input, {
       target: { value: 'https://example.com/blob/master/service.yaml' },
@@ -47,9 +44,7 @@ describe('RegisterComponentForm', () => {
   });
 
   it('should hide input on submission ', async () => {
-    const rendered = render(
-      <RegisterComponentForm onSubmit={jest.fn()} submitting />,
-    );
+    const rendered = render(<RegisterComponentForm onSubmit={jest.fn()} />);
 
     expect(
       await rendered.findByText(

@@ -36,18 +36,16 @@ import {
   Page,
   pageTheme,
   Content,
-  ContentHeader,
-  SupportButton,
   useApi,
   errorApiRef,
   StructuredMetadataTable,
   Header,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
-import { catalogApiRef } from '@backstage/plugin-catalog';
 import {
   entityRoute,
   rootRoute as catalogRootRoute,
+  catalogApiRef
 } from '@backstage/plugin-catalog';
 import { generatePath } from 'react-router';
 
