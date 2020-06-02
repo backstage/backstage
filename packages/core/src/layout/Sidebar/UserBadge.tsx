@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useContext } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core';
 import People from '@material-ui/icons/People';
 import { SidebarContext } from './config';
@@ -23,6 +23,7 @@ import { LoggedUserBadge } from './LoggedUserBadge';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
+import { useApi, googleAuthApiRef, ProfileInfo } from '@backstage/core';
 
 const ARROW_BUTTON_SIZE = 20;
 const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(theme => {
@@ -58,18 +59,30 @@ export const SidebarUserBadge: FC<{}> = () => {
     SidebarPinStateContext,
   );
   const classes = useStyles({ isPinned });
+  const googleAuth = useApi(googleAuthApiRef);
+  const [profile, setProfile] = useState<ProfileInfo>();
 
-  const isUserLoggedIn = false;
+  useEffect(() => {
+    //TODO(soapraj): How to observe if the user is logged in
+    //TODO(soapraj): Enumerate all the providers supported by the app and let user log in from here
+    googleAuth.getProfile({ optional: true }).then(googleProfile => {
+      setProfile(googleProfile);
+    });
+  }, [googleAuth]);
+
   return (
     <div className={classes.root}>
-      {isUserLoggedIn ? (
-        <LoggedUserBadge
-          imageUrl="https://via.placeholder.com/200/200"
-          name="Victor Viale"
-          hideName={!isOpen}
-        />
+      {profile ? (
+        <>
+          <LoggedUserBadge
+            email={profile.email}
+            imageUrl={profile.picture}
+            name={profile.name}
+            collapsedMode={!isOpen}
+          />
+        </>
       ) : (
-        <SidebarItem icon={People} text="Log in" to="/login" disableSelected />
+        <SidebarItem icon={People} text="" disableSelected />
       )}
       {isOpen && (
         <button

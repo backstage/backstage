@@ -22,6 +22,9 @@ import {
   OpenIdConnectApi,
   IdTokenOptions,
   AccessTokenOptions,
+  ProfileInfoApi,
+  ProfileInfoOptions,
+  ProfileInfo,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
@@ -39,6 +42,7 @@ type CreateOptions = {
 };
 
 export type GoogleAuthResponse = {
+  profile: any;
   accessToken: string;
   idToken: string;
   scope: string;
@@ -53,7 +57,7 @@ const DEFAULT_PROVIDER = {
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
-class GoogleAuth implements OAuthApi, OpenIdConnectApi {
+class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
   static create({
     apiOrigin,
     basePath,
@@ -69,6 +73,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
       oauthRequestApi: oauthRequestApi,
       sessionTransform(res: GoogleAuthResponse): GoogleSession {
         return {
+          profile: res.profile,
           idToken: res.idToken,
           accessToken: res.accessToken,
           scopes: GoogleAuth.normalizeScopes(res.scope),
@@ -121,6 +126,14 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
 
   async logout() {
     await this.sessionManager.removeSession();
+  }
+
+  async getProfile(options: ProfileInfoOptions = {}) {
+    const session = await this.sessionManager.getSession(options);
+    if (!session) {
+      return undefined;
+    }
+    return session.profile;
   }
 
   static normalizeScopes(scopes?: string | string[]): Set<string> {

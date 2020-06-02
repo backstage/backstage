@@ -26,7 +26,7 @@ export type AuthProviderConfig = {
 export interface OAuthProviderHandlers {
   start(req: express.Request, options: any): Promise<any>;
   handler(req: express.Request): Promise<any>;
-  refresh?(refreshToken: string, scope: string): Promise<any>;
+  refresh?(provider: string, refreshToken: string, scope: string): Promise<any>;
   logout?(): Promise<any>;
 }
 
@@ -49,7 +49,14 @@ export type AuthInfoBase = {
 };
 
 export type AuthInfoWithProfile = AuthInfoBase & {
-  profile: passport.Profile;
+  profile:
+    | {
+        provider: string;
+        email: string;
+        name?: string;
+        picture?: string;
+      }
+    | undefined;
 };
 
 export type AuthInfoPrivate = {

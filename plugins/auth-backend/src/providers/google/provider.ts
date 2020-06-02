@@ -15,6 +15,7 @@
  */
 
 import express from 'express';
+import jwtDecoder from 'jwt-decode';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import {
   executeFrameHandlerStrategy,
@@ -27,6 +28,7 @@ import {
   AuthInfoPrivate,
   RedirectInfo,
   AuthProviderConfig,
+  AuthInfoWithProfile,
 } from '../types';
 import { OAuthProvider } from '../OAuthProvider';
 
@@ -73,18 +75,37 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
     return await executeFrameHandlerStrategy(req, this._strategy);
   }
 
-  async refresh(refreshToken: string, scope: string): Promise<AuthInfoBase> {
+  async refresh(
+    provider: string,
+    refreshToken: string,
+    scope: string,
+  ): Promise<AuthInfoWithProfile> {
     const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
       scope,
     );
 
+    // TODO(soapraj): check what happens when you return undefined
+    let profile;
+    try {
+      const { email, name, picture } = jwtDecoder(params.id_token);
+      profile = {
+        provider,
+        email,
+        name,
+        picture,
+      };
+    } catch (e) {
+      console.error('Failed to parse id token and get profile info');
+    }
+
     return {
       accessToken,
       idToken: params.id_token,
       expiresInSeconds: params.expires_in,
       scope: params.scope,
+      profile,
     };
   }
 }
