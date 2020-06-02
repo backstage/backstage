@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-export { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
-export { StaticAuthSessionManager } from './StaticAuthSessionManager';
-export * from './types';
+import GithubAuth from './GithubAuth';
+
+describe('GithubAuth', () => {
+  it('should get access token', async () => {
+    const getSession = jest
+      .fn()
+      .mockResolvedValue({ accessToken: 'access-token' });
+    const githubAuth = new GithubAuth({ getSession } as any);
+
+    expect(await githubAuth.getAccessToken()).toBe('access-token');
+    expect(getSession).toBeCalledTimes(1);
+  });
+});

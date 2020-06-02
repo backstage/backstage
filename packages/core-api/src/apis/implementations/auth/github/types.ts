@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-export { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
-export { StaticAuthSessionManager } from './StaticAuthSessionManager';
-export * from './types';
+export type GithubSession = {
+  accessToken: string;
+  scopes: Set<string>;
+  expiresAt: Date;
+};

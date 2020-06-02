@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
-export { StaticAuthSessionManager } from './StaticAuthSessionManager';
 export * from './types';
+export { default as GithubAuth } from './GithubAuth';
