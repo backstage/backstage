@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "start": "tsc-watch --onFirstSuccess \"cross-env NODE_ENV=development nodemon dist/run.js\"",
+    "start:idp": "saml-idp --acsUrl=http://localhost:3003/auth/saml/handler/frame --audience http://localhost:3003",
     "build": "tsc",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
@@ -23,6 +24,7 @@
     "fs-extra": "^9.0.0",
     "helmet": "^3.22.0",
     "morgan": "^1.10.0",
+    "saml-idp": "^1.2.1",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
