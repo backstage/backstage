@@ -3902,7 +3902,7 @@
     "@types/react" "*"
     immutable ">=3.8.2"
 
-"@types/react-router-dom@^5.1.3":
+"@types/react-router-dom@^5.1.3", "@types/react-router-dom@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npmjs.org/@types/react-router-dom/-/react-router-dom-5.1.5.tgz#7c334a2ea785dbad2b2dcdd83d2cf3d9973da090"
   integrity sha512-ArBM4B1g3BWLGbaGvwBGO75GNFbLDUthrDojV2vHLih/Tq8M+tgvY1DSwkuNrPSwdp/GUL93WSEpTZs8nVyJLw==
