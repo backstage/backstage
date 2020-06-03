@@ -24,8 +24,9 @@ import {
   setNonceCookie,
   TEN_MINUTES_MS,
   verifyNonce,
+  OAuthProvider,
 } from './OAuthProvider';
-import { AuthResponse } from './types';
+import { AuthResponse, OAuthProviderHandlers } from './types';
 
 describe('OAuthProvider Utils', () => {
   describe('verifyNonce', () => {
@@ -194,5 +195,170 @@ describe('OAuthProvider Utils', () => {
       } as unknown) as express.Request;
       expect(ensuresXRequestedWith(mockRequest)).toBe(true);
     });
+  });
+});
+
+describe('OAuthProvider', () => {
+  class MyAuthProvider implements OAuthProviderHandlers {
+    async start() {
+      return {
+        url: '/url',
+        status: 301,
+      };
+    }
+    async handler() {
+      return {
+        user: {},
+        info: {
+          refreshToken: 'token',
+        },
+      };
+    }
+    async refresh() {
+      return {
+        accessToken: 'token',
+      };
+    }
+  }
+  const providerInstance = new MyAuthProvider();
+  const providerId = 'test-provider';
+
+  it('sets the correct headers in start', async () => {
+    const oauthProvider = new OAuthProvider(providerInstance, providerId);
+    const mockRequest = ({
+      query: {
+        scope: 'user',
+      },
+    } as unknown) as express.Request;
+
+    const mockResponse = ({
+      cookie: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      statusCode: jest.fn().mockReturnThis(),
+    } as unknown) as express.Response;
+
+    await oauthProvider.start(mockRequest, mockResponse);
+    expect(mockResponse.setHeader).toHaveBeenCalledTimes(2);
+    expect(mockResponse.setHeader).toHaveBeenCalledWith('Location', '/url');
+    expect(mockResponse.setHeader).toHaveBeenCalledWith('Content-Length', '0');
+    expect(mockResponse.statusCode).toEqual(301);
+    expect(mockResponse.end).toHaveBeenCalledTimes(1);
+  });
+
+  it('sets the refresh cookie if refresh is enabled', async () => {
+    const oauthProvider = new OAuthProvider(providerInstance, providerId);
+
+    const mockRequest = ({
+      cookies: {
+        'test-provider-nonce': 'nonce',
+      },
+      query: {
+        state: 'nonce',
+      },
+    } as unknown) as express.Request;
+
+    const mockResponse = ({
+      cookie: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+    } as unknown) as express.Response;
+
+    await oauthProvider.frameHandler(mockRequest, mockResponse);
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      expect.stringContaining('test-provider-refresh-token'),
+      expect.stringContaining('token'),
+      expect.objectContaining({ path: '/auth/test-provider' }),
+    );
+  });
+
+  it('does no set the refresh cookie if refresh is disabled', async () => {
+    const oauthProvider = new OAuthProvider(providerInstance, providerId, true);
+
+    const mockRequest = ({
+      cookies: {
+        'test-provider-nonce': 'nonce',
+      },
+      query: {
+        state: 'nonce',
+      },
+    } as unknown) as express.Request;
+
+    const mockResponse = ({
+      cookie: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+    } as unknown) as express.Response;
+
+    await oauthProvider.frameHandler(mockRequest, mockResponse);
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(0);
+  });
+
+  it('removes refresh cookie when logging out', async () => {
+    const oauthProvider = new OAuthProvider(providerInstance, providerId);
+
+    const mockRequest = ({
+      header: () => 'XMLHttpRequest',
+    } as unknown) as express.Request;
+
+    const mockResponse = ({
+      cookie: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
+    } as unknown) as express.Response;
+
+    await oauthProvider.logout(mockRequest, mockResponse);
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
+    expect(mockResponse.cookie).toHaveBeenCalledWith(
+      expect.stringContaining('test-provider-refresh-token'),
+      '',
+      expect.objectContaining({ path: '/auth/test-provider' }),
+    );
+  });
+
+  it('gets new access-token when refreshing', async () => {
+    const oauthProvider = new OAuthProvider(providerInstance, providerId);
+
+    const mockRequest = ({
+      header: () => 'XMLHttpRequest',
+      cookies: {
+        'test-provider-refresh-token': 'token',
+      },
+      query: {},
+    } as unknown) as express.Request;
+
+    const mockResponse = ({
+      send: jest.fn().mockReturnThis(),
+    } as unknown) as express.Response;
+
+    await oauthProvider.refresh(mockRequest, mockResponse);
+    expect(mockResponse.send).toHaveBeenCalledTimes(1);
+    expect(mockResponse.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        accessToken: 'token',
+      }),
+    );
+  });
+
+  it('handles refresh without capabilities', async () => {
+    const oauthProvider = new OAuthProvider(providerInstance, providerId, true);
+
+    const mockRequest = ({
+      header: () => 'XMLHttpRequest',
+      cookies: {
+        'test-provider-refresh-token': 'token',
+      },
+      query: {},
+    } as unknown) as express.Request;
+
+    const mockResponse = ({
+      send: jest.fn().mockReturnThis(),
+    } as unknown) as express.Response;
+
+    await oauthProvider.refresh(mockRequest, mockResponse);
+    expect(mockResponse.send).toHaveBeenCalledTimes(1);
+    expect(mockResponse.send).toHaveBeenCalledWith(
+      'Refresh token not supported for provider: test-provider',
+    );
   });
 });
