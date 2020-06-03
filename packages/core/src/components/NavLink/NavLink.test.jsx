@@ -29,7 +29,7 @@ describe('<NavLink />', () => {
       wrapInTestApp(
         <MemoryRouter>
           <NavLink to="/test">{linkText}</NavLink>
-          <Route path="/test">{testString}</Route>{' '}
+          <Route path="/test">{testString}</Route>
         </MemoryRouter>,
       ),
     );
