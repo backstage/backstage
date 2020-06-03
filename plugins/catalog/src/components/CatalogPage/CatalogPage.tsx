@@ -53,7 +53,7 @@ import { Component } from '../../data/component';
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const { value, error, loading } = useAsync(() => catalogApi.getEntities());
-  const [locations, setLocations] = useState<any>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
@@ -97,7 +97,7 @@ const CatalogPage: FC<{}> = () => {
   ): Location | undefined => {
     const entityLocationId =
       entity.metadata.annotations?.['backstage.io/managed-by-location'];
-    return l.find((location: any) => location.id === entityLocationId);
+    return l.find(location => location.id === entityLocationId);
   };
 
   return (
