@@ -27,7 +27,6 @@ describe('WebStorage Storage API', () => {
     await storage.set('myfakekey', 'helloimastring');
     await storage.set('mysecondfakekey', 1234);
     await storage.set('mythirdfakekey', true);
-
     expect(storage.get('myfakekey')).toBe('helloimastring');
     expect(storage.get('mysecondfakekey')).toBe(1234);
     expect(storage.get('mythirdfakekey')).toBe(true);
@@ -44,5 +43,63 @@ describe('WebStorage Storage API', () => {
     await storage.set('myfakekey', mockData);
 
     expect(storage.get('myfakekey')).toEqual(mockData);
+  });
+
+  it('should subscribe to key changes when setting a new value', async () => {
+    const storage = new WebStorage();
+
+    const wrongKeyNextHandler = jest.fn();
+    const selectedKeyNextHandler = jest.fn();
+    const mockData = { hello: 'im a great new value' };
+
+    await new Promise(resolve => {
+      storage.observe$('correctKey').subscribe({
+        next: (...args) => {
+          selectedKeyNextHandler(...args);
+          resolve();
+        },
+      });
+
+      storage.observe$('wrongKey').subscribe({ next: wrongKeyNextHandler });
+
+      storage.set('correctKey', mockData);
+    });
+
+    expect(wrongKeyNextHandler).not.toHaveBeenCalled();
+    expect(selectedKeyNextHandler).toHaveBeenCalledTimes(1);
+    expect(selectedKeyNextHandler).toHaveBeenCalledWith({
+      key: 'correctKey',
+      newValue: mockData,
+    });
+  });
+
+  it('should subscribe to key changes when deleting a value', async () => {
+    const storage = new WebStorage();
+
+    const wrongKeyNextHandler = jest.fn();
+    const selectedKeyNextHandler = jest.fn();
+    const mockData = { hello: 'im a great new value' };
+
+    storage.set('correctKey', mockData);
+
+    await new Promise(resolve => {
+      storage.observe$('correctKey').subscribe({
+        next: (...args) => {
+          selectedKeyNextHandler(...args);
+          resolve();
+        },
+      });
+
+      storage.observe$('wrongKey').subscribe({ next: wrongKeyNextHandler });
+
+      storage.remove('correctKey');
+    });
+
+    expect(wrongKeyNextHandler).not.toHaveBeenCalled();
+    expect(selectedKeyNextHandler).toHaveBeenCalledTimes(1);
+    expect(selectedKeyNextHandler).toHaveBeenCalledWith({
+      key: 'correctKey',
+      newValue: undefined,
+    });
   });
 });
