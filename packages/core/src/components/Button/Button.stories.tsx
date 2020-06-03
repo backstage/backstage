@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import React, { FunctionComponentFactory } from 'react';
-import { NavLink } from './NavLink';
+import { Button } from './Button';
 import {
   MemoryRouter,
   Route,
   useLocation,
-  NavLink as RouterNavLink,
+  Link as RouterLink,
 } from 'react-router-dom';
 import { createRouteRef } from '@backstage/core-api';
 
@@ -29,8 +29,8 @@ const Location = () => {
 };
 
 export default {
-  title: 'NavLink',
-  component: NavLink,
+  title: 'Button',
+  component: Button,
   decorators: [
     (storyFn: FunctionComponentFactory<{}>) => (
       <MemoryRouter>
@@ -47,14 +47,13 @@ export default {
 
 export const Default = () => {
   const routeRef = createRouteRef({
-    icon: () => null,
     path: '/hello',
     title: 'Hi there!',
   });
 
   return (
     <>
-      <NavLink to={routeRef.path}>This link</NavLink>&nbsp;will utilise the
+      <Button to={routeRef.path}>This button</Button>&nbsp;will utilise the
       react-router MemoryRouter's navigation
       <Route path={routeRef.path}>
         <h1>{routeRef.title}</h1>
@@ -65,22 +64,22 @@ export const Default = () => {
 
 export const PassProps = () => {
   const routeRef = createRouteRef({
-    icon: () => null,
     path: '/hello',
     title: 'Hi there!',
   });
 
   return (
     <>
-      <NavLink
+      <Button
         to={routeRef.path}
         /** react-router-dom related prop */
-        component={RouterNavLink}
+        component={RouterLink}
         /** material-ui related prop */
         color="secondary"
+        variant="outlined"
       >
         This link
-      </NavLink>
+      </Button>
       &nbsp;has props for both material-ui's component as well as for
       react-router-dom's
       <Route path={routeRef.path}>
@@ -90,5 +89,5 @@ export const PassProps = () => {
   );
 };
 PassProps.story = {
-  name: `Accepts material-ui Link's and react-router-dom Link's props`,
+  name: `Accepts material-ui Button's and react-router-dom Link's props`,
 };

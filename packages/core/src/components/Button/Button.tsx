@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-export { NavButton } from './NavButton';
+import React, { ComponentProps } from 'react';
+import { Button as MaterialButton } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
+
+type Props = ComponentProps<typeof MaterialButton> &
+  ComponentProps<typeof RouterLink>;
+
+/**
+ * Thin wrapper on top of material-ui's Button component
+ * Makes the Button to utilise react-router
+ */
+export const Button = React.forwardRef<any, Props>((props, ref) => (
+  <MaterialButton ref={ref} component={RouterLink} {...props} />
+));

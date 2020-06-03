@@ -17,24 +17,24 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { NavButton } from './NavButton';
+import { Link } from './Link';
 import { MemoryRouter, Route } from 'react-router';
 import { act } from 'react-dom/test-utils';
 
-describe('<NavButton />', () => {
+describe('<Link />', () => {
   it('navigates using react-router', async () => {
     const testString = 'This is test string';
-    const buttonLabel = 'Navigate!';
+    const linkText = 'Navigate!';
     const { getByText } = render(
       wrapInTestApp(
         <MemoryRouter>
-          <NavButton to="/test">{buttonLabel}</NavButton>
-          <Route path="/test">{testString}</Route>{' '}
+          <Link to="/test">{linkText}</Link>
+          <Route path="/test">{testString}</Route>
         </MemoryRouter>,
       ),
     );
     expect(() => getByText(testString)).toThrow();
-    await act(async () => fireEvent.click(getByText(buttonLabel)));
+    await act(async () => fireEvent.click(getByText(linkText)));
     expect(getByText(testString)).toBeInTheDocument();
   });
 });

@@ -10,8 +10,6 @@ addRoute(
   options?: RouteOptions,
 ): void;
 
-addRedirect(from: RouteRef, to: RouteRef, options?: RouteOptions): void;
-
 /**
  * @deprecated See the `addRoute` method
  */
@@ -20,26 +18,16 @@ registerRoute(
   Component: ComponentType<any>,
   options?: RouteOptions,
 ): void;
-
-/**
- * @deprecated See the `addRedirect` method
- */
-registerRedirect(
-  path: RoutePath,
-  target: RoutePath,
-  options?: RouteOptions,
-): void;
 ```
 
 ## RouteRef
 
-Both `addRoute` and `addRedirect` methods are using mutable RouteRefs, which can be created as following:
+`addRoute` method is using mutable RouteRefs, which can be created as following:
 
 ```ts
 import { createRouteRef } from '@backstage/core';
 
 const myPluginRouteRef = createRouteRef({
-  icon: () => null, // You can set an icon for your route
   path: '/my-plugin',
   title: 'My Plugin',
 });

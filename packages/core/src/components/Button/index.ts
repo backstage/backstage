@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { NavLink } from './NavLink';
+export { Button } from './Button';

@@ -15,15 +15,16 @@
  */
 
 import React, { ComponentProps } from 'react';
-import { Button } from '@material-ui/core';
+import { Link as MaterialLink } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 
-type Props = ComponentProps<typeof Button> & ComponentProps<typeof RouterLink>;
+type Props = ComponentProps<typeof MaterialLink> &
+  ComponentProps<typeof RouterLink>;
 
 /**
- * Thin wrapper on top of material-ui's Button component
- * Makes the Button to utilise react-router
+ * Thin wrapper on top of material-ui's Link component
+ * Makes the Link to utilise react-router
  */
-export const NavButton = React.forwardRef<any, Props>((props, ref) => (
-  <Button ref={ref} component={RouterLink} {...props} />
+export const Link = React.forwardRef<any, Props>((props, ref) => (
+  <MaterialLink ref={ref} component={RouterLink} {...props} />
 ));

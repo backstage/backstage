@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps } from 'react';
-import { Link } from '@material-ui/core';
-import { Link as RouterLink } from 'react-router-dom';
-
-type Props = ComponentProps<typeof Link> & ComponentProps<typeof RouterLink>;
-
-/**
- * Thin wrapper on top of material-ui's Link component
- * Makes the Link to utilise react-router
- */
-export const NavLink = React.forwardRef<any, Props>((props, ref) => (
-  <Link ref={ref} component={RouterLink} {...props} />
-));
+export { Link } from './Link';
