@@ -20,56 +20,27 @@ import {
   ExpansionPanelDetails,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Release, Status } from '../types';
-import useAxios from 'axios-hooks';
-import { baseUrl } from '../utils/config';
-import { LatestAppstoreBuildPane } from './LatestAppstoreBuildPane';
+import { Status } from '../types';
 import { findStatuses } from '../utils/status';
 
-export const ReleasePanel = ({ release }: { release: Release }) => {
+export const ReleasePanel = ({ release }: { release: any }) => {
   const [status, setStatus] = useState<Status>('loading');
 
-  const [
-    {
-      data: latestAppstoreData,
-      loading: latestAppstoreLoading,
-      error: latestAppstoreError,
-    },
-  ] = useAxios({
-    url: `${baseUrl}/latest-build/${release.platform}/${release.version}`,
-    params: {
-      check_store: true,
-    },
-  });
-
-  useEffect(() => {
-    if (latestAppstoreLoading) {
-      return;
-    }
-
-    findStatuses({
-      setStatus,
-      latestAppstoreData,
-      latestAppstoreError,
-      status,
-    });
-  }, [
-    setStatus,
-    status,
-    latestAppstoreData,
-    latestAppstoreLoading,
-    latestAppstoreError,
-  ]);
+  // useEffect(() => {
+  //   findStatuses({
+  //     setStatus,
+  //     status,
+  //   });
+  // }, [
+  //   setStatus,
+  //   status,
+  // ]);
 
   return (
     <ExpansionPanel>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} />
       <ExpansionPanelDetails style={{ flexDirection: 'column' }}>
-        <LatestAppstoreBuildPane
-          loading={latestAppstoreLoading}
-          error={latestAppstoreError}
-          build={latestAppstoreData}
-        />
+        <p>Placeholder</p>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );

@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type Release = {
-  platform: string;
-  version: string;
+
+export type AndroidRelease = {
+  name: string;
+  releaseNotes: [
+    {
+      language: string;
+      text: string;
+    },
+  ];
+  status: 'completed' | 'draft' | 'halted' | 'inProgress';
+  versionCodes: string[];
 };
 
-export type LatestBuild = {
-  version: string;
+export type AndroidTracks = {
+  releases: AndroidRelease[];
   track: string;
 };
 

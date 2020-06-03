@@ -13,4 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const baseUrl = `http://localhost:8080`;
+
+export const mode = 'development';
+export const stores = {
+  android: {
+    enabled: true,
+    baseUrl: {
+      development: 'http://localhost:8080/v1',
+      production: '',
+    },
+  },
+  ios: {
+    enabled: false,
+    baseUrl: {
+      development: '',
+      production: '',
+    },
+  },
+};

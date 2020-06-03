@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { LatestBuild, Maybe, Status } from '../types';
-import { AxiosError } from 'axios';
 
 const handleStatus = ({
   setStatus,
@@ -38,37 +38,22 @@ const handleStatus = ({
   if (statusMap[newStatus] > statusMap[status]) setStatus(newStatus);
 };
 
-export const latestBuildStatus = (
-  build: LatestBuild,
-  error?: AxiosError,
-): Maybe<Status> => {
-  if (error) {
-    if (error.request.status === 501 || error.request.status === 404)
-      return 'no-data';
-    return 'error';
-  }
-
-  if (build) {
-    return 'ok';
-  }
-
-  return null;
+export const androidBuildStatus = (build: LatestBuild): Maybe<Status> => {
+  return 'ok';
 };
 
 export const findStatuses = ({
   setStatus,
   status,
-  latestAppstoreData,
-  latestAppstoreError,
+  androidBuild,
 }: {
   setStatus: Function;
   status: Status;
-  latestAppstoreData: LatestBuild;
-  latestAppstoreError?: AxiosError;
+  androidBuild: LatestBuild;
 }) => {
   handleStatus({
     setStatus,
     status,
-    newStatus: latestBuildStatus(latestAppstoreData, latestAppstoreError),
+    newStatus: androidBuildStatus(androidBuild),
   });
 };

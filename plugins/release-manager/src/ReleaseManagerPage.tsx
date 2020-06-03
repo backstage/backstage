@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import useAxios from 'axios-hooks';
 import { SpacedProgress } from './components/SpacedProgress';
-import { baseUrl } from './utils/config';
+import { stores, mode } from './utils/config';
 import React, { FC } from 'react';
 import {
   Content,
@@ -26,51 +27,30 @@ import {
   pageTheme,
 } from '@backstage/core';
 import { ReleasePanel } from './components/ReleasePanel';
-import { Release } from './types';
+import { AndroidTracks, AndroidRelease } from './types';
 import { RmErrorMessage } from './components/RmErrorMessage';
 
-const Releases: FC<{
-  releases: Release[];
-}> = ({ releases }) => (
-  <>
-    {releases.map((release, i) => (
-      <ReleasePanel key={i} release={release} />
-    ))}
-  </>
-);
-
 const ReleaseManagerPage: FC<{}> = () => {
-  const [{ data: avData, loading: avLoading, error: avError }] = useAxios(
-    `${baseUrl}/com.spotify.music/tracks`,
-  );
-  // const [{ data: ubData, loading: ubLoading, error: ubError }] = useAxios(
-  //   `${baseUrl}/unowned-bugs`,
-  // );
+  const [
+    { data: androidData, loading: androidLoading, error: androidError },
+  ] = useAxios(`${stores.android.baseUrl[mode]}/com.spotify.music/tracks`);
 
-  const ActiveVersions = () => {
-    if (avError)
+  const AndroidReleases = () => {
+    if (androidError) {
       return (
         <RmErrorMessage
-          error={String(avError)}
-          message="Could not load releases."
+          error={String(androidError)}
+          message="Could not load Android releases."
         />
       );
+    }
 
-    return (
-      <>
-        <h2>Current</h2>
-        {avLoading ? (
-          <SpacedProgress />
-        ) : (
-          <Releases releases={avData.current} />
-        )}
-        <h2>Upcoming</h2>
-        {avLoading ? (
-          <SpacedProgress />
-        ) : (
-          <Releases releases={avData.upcoming} />
-        )}
-      </>
+    return androidLoading ? (
+      <SpacedProgress />
+    ) : (
+      androidData.tracks.map((track, i) => (
+        <ReleasePanel key={i} data={track} />
+      ))
     );
   };
 
@@ -82,7 +62,8 @@ const ReleaseManagerPage: FC<{}> = () => {
       </Header>
       <Content>
         <ContentHeader title="Overview" />
-        <ActiveVersions />
+        <h2>Android</h2>
+        <AndroidReleases />
       </Content>
     </Page>
   );

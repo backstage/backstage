@@ -13,34 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Table, TableRow, TableBody } from '@material-ui/core';
-import { LatestBuild } from '../types';
-import { latestBuildStatus } from '../utils/status';
-import { AxiosError } from 'axios';
-import { RmExpansionPanel } from './RmExpansionPanel';
 
+import { Table, TableBody, TableRow } from '@material-ui/core';
+import capitalize from 'lodash/capitalize';
+import React from 'react';
+import { LatestBuild } from '../types';
+import { InfoIcon } from './InfoIcon';
+import { RmExpansionPanel } from './RmExpansionPanel';
 import { StatusContainer } from './StatusContainer';
 import { StatusItem } from './StatusItem';
-import capitalize from 'lodash/capitalize';
-import { InfoIcon } from './InfoIcon';
-import { parseError } from '../utils/errors';
+import { androidBuildStatus } from '../utils/status';
 
-export const LatestAppstoreBuildPane = ({
-  build,
-  loading,
-  error,
-}: {
-  build: LatestBuild;
-  loading: boolean;
-  error?: AxiosError;
-}) => {
-  const status = latestBuildStatus(build, error) || 'loading';
+export const AndroidReleaseInfoPane = ({ build }: { build: LatestBuild }) => {
+  const status = androidBuildStatus(build);
 
   const Title = () => {
     const extraStatusItems = () => {
-      if (loading || error) return null;
-
       const statusItems = [];
 
       statusItems.push(
@@ -74,20 +62,12 @@ export const LatestAppstoreBuildPane = ({
   };
 
   return (
-    <RmExpansionPanel
-      status={status}
-      loading={loading}
-      title={<Title />}
-      expandable={!loading && !error}
-    >
-      {error && parseError(error)}
-      {!loading && !error && (
-        <Table size="medium">
-          <TableBody>
-            <TableRow />
-          </TableBody>
-        </Table>
-      )}
+    <RmExpansionPanel status={status} loading={false} title={<Title />}>
+      <Table size="medium">
+        <TableBody>
+          <TableRow />
+        </TableBody>
+      </Table>
     </RmExpansionPanel>
   );
 };
