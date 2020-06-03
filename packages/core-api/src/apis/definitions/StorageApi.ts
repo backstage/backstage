@@ -22,7 +22,14 @@ export type ObservableMessage<T extends object = {}> = {
   newValue?: T;
 };
 
-export type StorageApi = {
+export interface StorageApi {
+  /**
+   * The names
+   * @param {String} name Namespace for the storage to be stored under,
+   *                      will inherit previous namespaces too
+   */
+  forBucket(name: string): StorageApi;
+
   /**
    * Get persistent data.
    *
@@ -50,7 +57,7 @@ export type StorageApi = {
    * @param {String} key Unique key associated with the data
    */
   observe$<T>(key: string): Observable<T>;
-};
+}
 
 export const storageApiRef = createApiRef<StorageApi>({
   id: 'core.storage',

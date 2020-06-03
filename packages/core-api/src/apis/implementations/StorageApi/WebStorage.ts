@@ -18,13 +18,11 @@ import { Observable } from '../../../types';
 import ObservableImpl from 'zen-observable';
 
 export class WebStorage implements StorageApi {
-  subscribers: Set<
-    ZenObservable.SubscriptionObserver<ObservableMessage>
-  > = new Set();
+  constructor(private readonly namespace: string = '') {}
 
   get<T>(key: string): T | undefined {
     try {
-      const storage = JSON.parse(localStorage.getItem(key)!);
+      const storage = JSON.parse(localStorage.getItem(this.getKeyName(key))!);
       return storage ?? undefined;
     } catch (e) {
       window.console.error(
@@ -36,13 +34,17 @@ export class WebStorage implements StorageApi {
     return undefined;
   }
 
+  forBucket(name: string): WebStorage {
+    return new WebStorage(`${this.namespace}/${name}`);
+  }
+
   async set<T>(key: string, data: T): Promise<void> {
-    localStorage.setItem(key, JSON.stringify(data, null, 2));
+    localStorage.setItem(this.getKeyName(key), JSON.stringify(data, null, 2));
     this.notifyChanges({ key, newValue: data });
   }
 
   async remove(key: string): Promise<void> {
-    localStorage.removeItem(key);
+    localStorage.removeItem(this.getKeyName(key));
     this.notifyChanges({ key, newValue: undefined });
   }
 
@@ -52,11 +54,19 @@ export class WebStorage implements StorageApi {
     ) as Observable<T>;
   }
 
+  private getKeyName(key: string) {
+    return `${this.namespace}/${key}`;
+  }
+
   private notifyChanges(message: ObservableMessage) {
     for (const subscription of this.subscribers) {
       subscription.next(message);
     }
   }
+
+  private subscribers: Set<
+    ZenObservable.SubscriptionObserver<ObservableMessage>
+  > = new Set();
 
   private readonly observable = new ObservableImpl<ObservableMessage>(
     subscriber => {

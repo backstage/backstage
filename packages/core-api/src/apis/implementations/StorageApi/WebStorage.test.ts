@@ -102,4 +102,19 @@ describe('WebStorage Storage API', () => {
       newValue: undefined,
     });
   });
+
+  it('should be able to create different buckets for different uses', async () => {
+    const rootStorage = new WebStorage();
+
+    const firstStorage = rootStorage.forBucket('userSettings');
+    const secondStorage = rootStorage.forBucket('profileSettings');
+    const keyName = 'blobby';
+
+    await firstStorage.set(keyName, 'boop');
+    await secondStorage.set(keyName, 'deerp');
+
+    expect(firstStorage.get(keyName)).not.toBe(secondStorage.get(keyName));
+    expect(firstStorage.get(keyName)).toBe('boop');
+    expect(secondStorage.get(keyName)).toBe('deerp');
+  });
 });
