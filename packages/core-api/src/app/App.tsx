@@ -110,11 +110,24 @@ export class PrivateAppImpl implements BackstageApp {
             );
             break;
           }
-          case 'redirect-route': {
+          case 'legacy-redirect-route': {
             const { path, target, options = {} } = output;
             const { exact = true } = options;
             routes.push(
               <Redirect key={path} path={path} to={target} exact={exact} />,
+            );
+            break;
+          }
+          case 'redirect-route': {
+            const { from, to, options = {} } = output;
+            const { exact = true } = options;
+            routes.push(
+              <Redirect
+                key={from.path}
+                path={from.path}
+                to={to.path}
+                exact={exact}
+              />,
             );
             break;
           }
