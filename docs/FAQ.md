@@ -108,7 +108,9 @@ No, this is not a service offering. We build the piece of software, and someone 
 ​
 ### How secure is Backstage?
 ​
-It depends on what you do with Backstage and how you set up your environment. The security responsibility is placed on whomever deployed that instance of the Backstage app. We provide the code, but you take care of the security measures.
+We take security seriously. When it comes to packages and code we scan our repositories periodically and update our packages to the latest versions. When it comes to deployment of Backstage within an organisation it depends on the deployment and security setup in your organisation. Reach out to us on [Discord](https://discord.gg/MUpMjP2) if you have specific queries.
+
+Please report sensitive security issues via Spotify's [bug-bounty program](https://hackerone.com/spotify) rather than GitHub.
 ​
 ### Does Backstage collect any information that is shared with Spotify?
 ​
