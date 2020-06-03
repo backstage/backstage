@@ -175,7 +175,7 @@ export async function installWithLocalDeps(dir: string) {
   // types to dist/index.d.ts and the main:src field is removed.
   // Without this we get type checking errors in the e2e test
   if (process.env.BACKSTAGE_E2E_CLI_TEST) {
-    Task.section('Patchling local dependencies for e2e tests');
+    Task.section('Patching local dependencies for e2e tests');
 
     for (const name of PATCH_PACKAGES) {
       await Task.forItem(
@@ -192,11 +192,10 @@ export async function installWithLocalDeps(dir: string) {
 
           // We want dist to be used for e2e tests
           delete depJson['main:src'];
-          depJson.types = 'dist/index.d.ts';
-
-          // Ugly hack until backend packages can point straight to source
-          if (name === 'config' || name === 'config-loader') {
-            depJson.main = 'dist/index.cjs.js';
+          for (const key of Object.keys(depJson.publishConfig)) {
+            if (key !== 'access') {
+              depJson[key] = depJson.publishConfig[key];
+            }
           }
 
           await fs
