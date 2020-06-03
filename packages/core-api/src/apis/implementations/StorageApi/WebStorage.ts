@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { StorageApi, StorageValueChange } from '../../definitions';
+import {
+  StorageApi,
+  StorageValueChange,
+  ErrorApi,
+  CreateStorageApiOptions,
+} from '../../definitions';
 import { Observable } from '../../../types';
 import ObservableImpl from 'zen-observable';
 
 export class WebStorage implements StorageApi {
-  private readonly namespace: string;
+  constructor(
+    private readonly namespace: string,
+    private readonly errorApi: ErrorApi,
+  ) {}
 
-  constructor(namespace: string = '') {
-    this.namespace = namespace ? encodeURIComponent(namespace) : namespace;
+  static create(options: CreateStorageApiOptions): WebStorage {
+    return new WebStorage(options.namespace ?? '', options.errorApi);
   }
 
   get<T>(key: string): T | undefined {
@@ -29,9 +37,8 @@ export class WebStorage implements StorageApi {
       const storage = JSON.parse(localStorage.getItem(this.getKeyName(key))!);
       return storage ?? undefined;
     } catch (e) {
-      window.console.error(
-        `Error when parsing JSON config from storage for: ${key}`,
-        e,
+      this.errorApi.post(
+        new Error(`Error when parsing JSON config from storage for: ${key}`),
       );
     }
 
@@ -39,7 +46,7 @@ export class WebStorage implements StorageApi {
   }
 
   forBucket(name: string): WebStorage {
-    return new WebStorage(`${this.namespace}/${name}`);
+    return new WebStorage(`${this.namespace}/${name}`, this.errorApi);
   }
 
   async set<T>(key: string, data: T): Promise<void> {

@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 import { WebStorage } from './WebStorage';
+import { CreateStorageApiOptions, StorageApi } from '../../definitions';
 describe('WebStorage Storage API', () => {
+  const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
+  const createWebStorage = (
+    args?: Partial<CreateStorageApiOptions>,
+  ): StorageApi => {
+    return WebStorage.create({
+      errorApi: mockErrorApi,
+      ...args,
+    });
+  };
   it('should return undefined for values which are unset', async () => {
-    const storage = new WebStorage();
+    const storage = createWebStorage();
 
     expect(storage.get('myfakekey')).toBeUndefined();
   });
 
   it('should allow the setting and getting of the simple data structures', async () => {
-    const storage = new WebStorage();
+    const storage = createWebStorage();
 
     await storage.set('myfakekey', 'helloimastring');
     await storage.set('mysecondfakekey', 1234);
@@ -33,7 +43,7 @@ describe('WebStorage Storage API', () => {
   });
 
   it('should allow setting of complex datastructures', async () => {
-    const storage = new WebStorage();
+    const storage = createWebStorage();
 
     const mockData = {
       something: 'here',
@@ -46,14 +56,14 @@ describe('WebStorage Storage API', () => {
   });
 
   it('should subscribe to key changes when setting a new value', async () => {
-    const storage = new WebStorage();
+    const storage = createWebStorage();
 
     const wrongKeyNextHandler = jest.fn();
     const selectedKeyNextHandler = jest.fn();
     const mockData = { hello: 'im a great new value' };
 
     await new Promise(resolve => {
-      storage.observe$('correctKey').subscribe({
+      storage.observe$<String>('correctKey').subscribe({
         next: (...args) => {
           selectedKeyNextHandler(...args);
           resolve();
@@ -74,7 +84,7 @@ describe('WebStorage Storage API', () => {
   });
 
   it('should subscribe to key changes when deleting a value', async () => {
-    const storage = new WebStorage();
+    const storage = createWebStorage();
 
     const wrongKeyNextHandler = jest.fn();
     const selectedKeyNextHandler = jest.fn();
@@ -104,7 +114,7 @@ describe('WebStorage Storage API', () => {
   });
 
   it('should be able to create different buckets for different uses', async () => {
-    const rootStorage = new WebStorage();
+    const rootStorage = createWebStorage();
 
     const firstStorage = rootStorage.forBucket('userSettings');
     const secondStorage = rootStorage.forBucket('profileSettings');
@@ -119,7 +129,7 @@ describe('WebStorage Storage API', () => {
   });
 
   it('should not clash with other namesapces when creating buckets', async () => {
-    const rootStorage = new WebStorage();
+    const rootStorage = createWebStorage();
 
     // when getting key test2 it will translate to /profile/something/deep/test2
     const firstStorage = rootStorage
@@ -132,5 +142,23 @@ describe('WebStorage Storage API', () => {
     await firstStorage.set('test2', { error: true });
 
     expect(secondStorage.get('deep/test2')).toBe(undefined);
+  });
+
+  it('should call the error api when the json can not be parsed in local storage', async () => {
+    const rootStorage = createWebStorage({
+      namespace: '/Test/Mock/Thing',
+    });
+
+    localStorage.setItem('/Test/Mock/Thing/key', '{smd: asdouindA}');
+
+    const value = rootStorage.get('key');
+
+    expect(value).toBe(undefined);
+    expect(mockErrorApi.post).toHaveBeenCalledWith(expect.any(Error));
+    expect(mockErrorApi.post).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Error when parsing JSON config from storage for: key',
+      }),
+    );
   });
 });

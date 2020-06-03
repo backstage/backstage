@@ -16,10 +16,16 @@
 
 import { createApiRef } from '../ApiRef';
 import { Observable } from '../../types';
+import { ErrorApi } from './ErrorApi';
 
 export type StorageValueChange<T = any> = {
   key: string;
   newValue?: T;
+};
+
+export type CreateStorageApiOptions = {
+  errorApi: ErrorApi;
+  namespace?: string;
 };
 
 export interface StorageApi {
