@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { AppConfig } from './types';
 import fs from 'fs-extra';
 import yaml from 'yaml';
+import { AppConfig } from '@backstage/config';
 import { paths } from '../paths';
 
 type LoadConfigOptions = {

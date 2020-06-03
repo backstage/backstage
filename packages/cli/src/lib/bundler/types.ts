@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { AppConfig } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
-import { AppConfig } from '../app-config';
 
 export type BundlingOptions = {
   checksEnabled: boolean;

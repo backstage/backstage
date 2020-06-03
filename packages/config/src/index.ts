@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export { loadConfig } from './loaders';
+export type {
+  AppConfig,
+  Config,
+  JsonArray,
+  JsonObject,
+  JsonValue,
+} from './types';
+export { ConfigReader } from './reader';

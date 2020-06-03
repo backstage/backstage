@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from './ConfigReader';
+import { ConfigReader } from './reader';
 
 const DATA = {
   zero: 0,
