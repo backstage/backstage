@@ -6788,7 +6788,7 @@ cross-spawn@6.0.5, cross-spawn@^6.0.0:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-cross-spawn@7.0.1, cross-spawn@^7.0.0, cross-spawn@^7.0.1:
+cross-spawn@7.0.1:
   version "7.0.1"
   resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.1.tgz#0ab56286e0f7c24e153d04cc2aa027e43a9a5d14"
   integrity sha512-u7v4o84SwFpD32Z8IIcPZ6z1/ie24O6RU3RbtL5Y316l3KuHVPx9ItBgWQ6VlfAFnRnTtMUrsQ9MUUTuEZjogg==
@@ -6806,7 +6806,7 @@ cross-spawn@^5.1.0:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-cross-spawn@^7.0.2:
+cross-spawn@^7.0.0, cross-spawn@^7.0.1, cross-spawn@^7.0.2:
   version "7.0.3"
   resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
@@ -18127,9 +18127,9 @@ ts-pnp@^1.1.2:
   integrity sha512-CrG5GqAAzMT7144Cl+UIFP7mz/iIhiy+xQ6GGcnjTezhALT02uPMRw7tgDSESgB5MsfKt55+GPWw4ir1kVtMIQ==
 
 tsc-watch@^4.2.3:
-  version "4.2.5"
-  resolved "https://registry.npmjs.org/tsc-watch/-/tsc-watch-4.2.5.tgz#3ee680cfd02087bb76cbecd2d5f290a0d6302454"
-  integrity sha512-scXpL5SFJevvtKOtQIRxJvyEwCKSIZS9bDrO/cy/dWlETTVwSlfRm2WmakdRPM0Rg90DbYyJjkUr2z74HXcxzQ==
+  version "4.2.8"
+  resolved "https://registry.npmjs.org/tsc-watch/-/tsc-watch-4.2.8.tgz#cb8639bf507738dfa64590504f539a2f525d3a7b"
+  integrity sha512-EtWdmVZYFxTxSHqtmpowtvC/son28Hgl3qxYnD6sy+uGQXsWYDQxwmL8EneWca2kzAIYNZq3CGrUdK1jjbL4Vw==
   dependencies:
     cross-spawn "^5.1.0"
     node-cleanup "^2.1.2"
