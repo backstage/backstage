@@ -16,37 +16,33 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 import CircleProgress, { getProgressColor } from './CircleProgress';
 
 describe('<CircleProgress />', () => {
   it('renders without exploding', () => {
     const { getByText } = render(
-      wrapInThemedTestApp(<CircleProgress value={10} fractional={false} />),
+      wrapInTestApp(<CircleProgress value={10} fractional={false} />),
     );
     getByText('10%');
   });
   it('handles fractional prop', () => {
     const { getByText } = render(
-      wrapInThemedTestApp(<CircleProgress value={0.1} fractional />),
+      wrapInTestApp(<CircleProgress value={0.1} fractional />),
     );
     getByText('10%');
   });
 
   it('handles max prop', () => {
     const { getByText } = render(
-      wrapInThemedTestApp(
-        <CircleProgress value={1} max={10} fractional={false} />,
-      ),
+      wrapInTestApp(<CircleProgress value={1} max={10} fractional={false} />),
     );
     getByText('1%');
   });
 
   it('handles unit prop', () => {
     const { getByText } = render(
-      wrapInThemedTestApp(
-        <CircleProgress value={10} fractional={false} unit="m" />,
-      ),
+      wrapInTestApp(<CircleProgress value={10} fractional={false} unit="m" />),
     );
     getByText('10m');
   });

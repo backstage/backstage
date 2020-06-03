@@ -15,7 +15,6 @@
  */
 import React, { FC, useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
-import { ComponentFactory } from '../../data/component';
 import ComponentMetadataCard from '../ComponentMetadataCard/ComponentMetadataCard';
 import {
   Content,
@@ -30,11 +29,12 @@ import ComponentContextMenu from '../ComponentContextMenu/ComponentContextMenu';
 import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDialog';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
+import { catalogApiRef } from '../..';
+import { envelopeToComponent } from '../../data/utils';
 
 const REDIRECT_DELAY = 1000;
 
 type ComponentPageProps = {
-  componentFactory: ComponentFactory;
   match: {
     params: {
       name: string;
@@ -45,11 +45,7 @@ type ComponentPageProps = {
   };
 };
 
-const ComponentPage: FC<ComponentPageProps> = ({
-  match,
-  history,
-  componentFactory,
-}) => {
+const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const [removingPending, setRemovingPending] = useState(false);
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
@@ -57,13 +53,9 @@ const ComponentPage: FC<ComponentPageProps> = ({
   const componentName = match.params.name;
   const errorApi = useApi<ErrorApi>(errorApiRef);
 
-  if (componentName === '') {
-    history.push('/catalog');
-    return null;
-  }
-
+  const catalogApi = useApi(catalogApiRef);
   const catalogRequest = useAsync(() =>
-    componentFactory.getComponentByName(match.params.name),
+    catalogApi.getEntityByName(match.params.name),
   );
 
   useEffect(() => {
@@ -73,23 +65,30 @@ const ComponentPage: FC<ComponentPageProps> = ({
         history.push('/catalog');
       }, REDIRECT_DELAY);
     }
-  }, [catalogRequest.error]);
+  }, [catalogRequest.error, errorApi, history]);
+
+  if (componentName === '') {
+    history.push('/catalog');
+    return null;
+  }
 
   const removeComponent = async () => {
     setConfirmationDialogOpen(false);
     setRemovingPending(true);
-    await componentFactory.removeComponentByName(componentName);
+    // await componentFactory.removeComponentByName(componentName);
     history.push('/catalog');
   };
 
+  const component = envelopeToComponent(catalogRequest.value! ?? {});
+
   return (
-    <Page theme={pageTheme.service}>
-      <Header title={catalogRequest?.value?.name || 'Catalog'} type="service">
+    <Page theme={pageTheme.home}>
+      <Header title={component.name || 'Catalog'}>
         <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
       </Header>
       {confirmationDialogOpen && catalogRequest.value && (
         <ComponentRemovalDialog
-          component={catalogRequest.value}
+          component={component}
           onClose={hideRemovalDialog}
           onConfirm={removeComponent}
           onCancel={hideRemovalDialog}
@@ -100,7 +99,7 @@ const ComponentPage: FC<ComponentPageProps> = ({
           <Grid item>
             <ComponentMetadataCard
               loading={catalogRequest.loading || removingPending}
-              component={catalogRequest.value}
+              component={component}
             />
           </Grid>
           <Grid item>

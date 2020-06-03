@@ -26,7 +26,11 @@ export async function up(knex: Knex): Promise<any> {
         table.comment(
           'Registered locations that shall be contiuously scanned for catalog item updates',
         );
-        table.uuid('id').primary().comment('Auto-generated ID of the location');
+        table
+          .uuid('id')
+          .primary()
+          .notNullable()
+          .comment('Auto-generated ID of the location');
         table.string('type').notNullable().comment('The type of location');
         table
           .string('target')
@@ -76,7 +80,7 @@ export async function up(knex: Knex): Promise<any> {
           .comment('The metadata.namespace field of the entity');
         table
           .string('metadata')
-          .nullable()
+          .notNullable()
           .comment('The entire metadata JSON blob of the entity');
         table
           .string('spec')

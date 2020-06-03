@@ -14,54 +14,58 @@
  * limitations under the License.
  */
 
-import * as yup from 'yup';
-import { DescriptorEnvelope } from '../ingestion';
+import { Entity, Location } from '@backstage/catalog-model';
+import type { EntityFilters } from '../database';
 
 //
 // Entities
 //
 
-export type EntityFilter = {
-  key: string;
-  values: (string | null)[];
-};
-export type EntityFilters = EntityFilter[];
-
 export type EntitiesCatalog = {
-  entities(filters?: EntityFilters): Promise<DescriptorEnvelope[]>;
-  entityByUid(uid: string): Promise<DescriptorEnvelope | undefined>;
+  entities(filters?: EntityFilters): Promise<Entity[]>;
+  entityByUid(uid: string): Promise<Entity | undefined>;
   entityByName(
     kind: string,
     namespace: string | undefined,
     name: string,
-  ): Promise<DescriptorEnvelope | undefined>;
+  ): Promise<Entity | undefined>;
+  addOrUpdateEntity(entity: Entity, locationId?: string): Promise<Entity>;
+  removeEntityByUid(uid: string): Promise<void>;
 };
 
 //
 // Locations
 //
 
-export type Location = {
+export type LocationUpdateStatus = {
+  timestamp: string | null;
+  status: string | null;
+  message: string | null;
+};
+export type LocationUpdateLogEvent = {
   id: string;
-  type: string;
-  target: string;
+  status: 'fail' | 'success';
+  location_id: string;
+  entity_name: string;
+  created_at?: string;
+  message?: string;
 };
 
-export type AddLocation = {
-  type: string;
-  target: string;
+export type LocationResponse = {
+  data: Location;
+  currentStatus: LocationUpdateStatus;
 };
-
-export const addLocationSchema: yup.Schema<AddLocation> = yup
-  .object({
-    type: yup.string().required(),
-    target: yup.string().required(),
-  })
-  .noUnknown();
 
 export type LocationsCatalog = {
-  addLocation(location: AddLocation): Promise<Location>;
+  addLocation(location: Location): Promise<Location>;
   removeLocation(id: string): Promise<void>;
-  locations(): Promise<Location[]>;
-  location(id: string): Promise<Location>;
+  locations(): Promise<LocationResponse[]>;
+  location(id: string): Promise<LocationResponse>;
+  locationHistory(id: string): Promise<LocationUpdateLogEvent[]>;
+  logUpdateSuccess(locationId: string, entityName?: string): Promise<void>;
+  logUpdateFailure(
+    locationId: string,
+    error?: Error,
+    entityName?: string,
+  ): Promise<void>;
 };

@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { ContentHeader } from './ContentHeader';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 
 jest.mock('react-helmet', () => {
   return {
@@ -27,9 +27,7 @@ jest.mock('react-helmet', () => {
 
 describe('<ContentHeader/>', () => {
   it('should render with title', () => {
-    const rendered = render(
-      wrapInThemedTestApp(<ContentHeader title="Title" />),
-    );
+    const rendered = render(wrapInTestApp(<ContentHeader title="Title" />));
     rendered.getByText('Title');
   });
 
@@ -37,14 +35,14 @@ describe('<ContentHeader/>', () => {
     const title = 'Custom title';
     const titleComponent = () => <h1>{title}</h1>;
     const rendered = render(
-      wrapInThemedTestApp(<ContentHeader titleComponent={titleComponent} />),
+      wrapInTestApp(<ContentHeader titleComponent={titleComponent} />),
     );
     rendered.getByText(title);
   });
 
   it('should render with description', () => {
     const rendered = render(
-      wrapInThemedTestApp(<ContentHeader description="description" />),
+      wrapInTestApp(<ContentHeader description="description" />),
     );
     rendered.getByText('description');
   });

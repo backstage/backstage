@@ -25,9 +25,11 @@ import {
   featureFlagsApiRef,
   FeatureFlags,
   GoogleAuth,
+  GithubAuth,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
+  githubAuthApiRef,
 } from '@backstage/core';
 
 import {
@@ -38,6 +40,7 @@ import {
 import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
 
 import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
+import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
 const builder = ApiRegistry.builder();
 
@@ -64,10 +67,27 @@ builder.add(
 );
 
 builder.add(
+  githubAuthApiRef,
+  GithubAuth.create({
+    apiOrigin: 'http://localhost:7000',
+    basePath: '/auth/',
+    oauthRequestApi,
+  }),
+);
+
+builder.add(
   techRadarApiRef,
   new TechRadar({
     width: 1500,
     height: 800,
+  }),
+);
+
+builder.add(
+  catalogApiRef,
+  new CatalogClient({
+    apiOrigin: 'http://localhost:3000',
+    basePath: '/catalog/api',
   }),
 );
 

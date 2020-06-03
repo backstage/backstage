@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { renderWithEffects, wrapInThemedTestApp } from '@backstage/test-utils';
+import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import HorizontalScrollGrid from './HorizontalScrollGrid';
 import { Grid } from '@material-ui/core';
 
@@ -34,7 +34,7 @@ describe('<HorizontalScrollGrid />', () => {
 
   it('renders without exploding', () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <HorizontalScrollGrid>
           <Grid item>item1</Grid>
           <Grid item>item2</Grid>
@@ -69,7 +69,7 @@ describe('<HorizontalScrollGrid />', () => {
     };
 
     const rendered = await renderWithEffects(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <HorizontalScrollGrid style={{ maxWidth: 300 }}>
           <Grid item style={{ minWidth: 200 }}>
             item1

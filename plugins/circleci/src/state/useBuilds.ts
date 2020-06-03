@@ -101,7 +101,7 @@ export function useBuilds() {
         return Promise.reject(e);
       }
     },
-    [repo, token, owner],
+    [repo, token, owner, api, errorApi],
   );
 
   const restartBuild = async (buildId: number) => {
@@ -121,7 +121,7 @@ export function useBuilds() {
 
   useEffect(() => {
     getBuilds({ limit: 1, offset: 0 }).then(b => setTotal(b?.[0].build_num!));
-  }, [repo]);
+  }, [repo, getBuilds]);
 
   const { loading, value, retry } = useAsyncRetry(
     () =>

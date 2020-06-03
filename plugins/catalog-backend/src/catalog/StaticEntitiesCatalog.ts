@@ -14,44 +14,45 @@
  * limitations under the License.
  */
 
-import { NotFoundError } from '@backstage/backend-common';
+import type { Entity } from '@backstage/catalog-model';
 import lodash from 'lodash';
-import { DescriptorEnvelope } from '../ingestion';
-import { EntitiesCatalog } from './types';
+import type { EntitiesCatalog } from './types';
 
 export class StaticEntitiesCatalog implements EntitiesCatalog {
-  private _entities: DescriptorEnvelope[];
+  private _entities: Entity[];
 
-  constructor(entities: DescriptorEnvelope[]) {
+  constructor(entities: Entity[]) {
     this._entities = entities;
   }
 
-  async entities(): Promise<DescriptorEnvelope[]> {
+  async entities(): Promise<Entity[]> {
     return lodash.cloneDeep(this._entities);
   }
 
-  async entityByUid(uid: string): Promise<DescriptorEnvelope | undefined> {
-    const item = this._entities.find(e => uid === e.metadata?.uid);
-    if (!item) {
-      throw new NotFoundError('Entity cannot be found');
-    }
-    return lodash.cloneDeep(item);
+  async entityByUid(uid: string): Promise<Entity | undefined> {
+    const item = this._entities.find(e => uid === e.metadata.uid);
+    return item ? lodash.cloneDeep(item) : undefined;
   }
 
   async entityByName(
     kind: string,
     name: string,
     namespace: string | undefined,
-  ): Promise<DescriptorEnvelope | undefined> {
+  ): Promise<Entity | undefined> {
     const item = this._entities.find(
       e =>
         kind === e.kind &&
-        name === e.metadata?.name &&
-        namespace === e.metadata?.namespace,
+        name === e.metadata.name &&
+        namespace === e.metadata.namespace,
     );
-    if (!item) {
-      throw new NotFoundError('Entity cannot be found');
-    }
-    return lodash.cloneDeep(item);
+    return item ? lodash.cloneDeep(item) : undefined;
+  }
+
+  async addOrUpdateEntity(): Promise<Entity> {
+    throw new Error('Not supported');
+  }
+
+  async removeEntityByUid(): Promise<void> {
+    throw new Error('Not supported');
   }
 }

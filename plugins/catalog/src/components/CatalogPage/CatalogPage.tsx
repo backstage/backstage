@@ -24,9 +24,9 @@ import {
   SupportButton,
   Page,
   pageTheme,
+  useApi,
 } from '@backstage/core';
 import { useAsync } from 'react-use';
-import { ComponentFactory } from '../../data/component';
 import CatalogTable from '../CatalogTable/CatalogTable';
 import {
   CatalogFilter,
@@ -44,12 +44,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type CatalogPageProps = {
-  componentFactory: ComponentFactory;
-};
+import { catalogApiRef } from '../..';
+import { envelopeToComponent } from '../../data/utils';
 
-const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
-  const { value, error, loading } = useAsync(componentFactory.getAllComponents);
+const CatalogPage: FC<{}> = () => {
+  const catalogApi = useApi(catalogApiRef);
+  const { value, error, loading } = useAsync(() => catalogApi.getEntities());
   const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
     defaultFilter,
   );
@@ -58,8 +58,8 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
     selected => setSelectedFilter(selected),
     [],
   );
-
   const styles = useStyles();
+
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
@@ -98,7 +98,7 @@ const CatalogPage: FC<CatalogPageProps> = ({ componentFactory }) => {
           </div>
           <CatalogTable
             titlePreamble={selectedFilter.label}
-            components={value || []}
+            components={(value && value.map(envelopeToComponent)) || []}
             loading={loading}
             error={error}
           />

@@ -49,10 +49,6 @@ function resolveTheme(
 }
 
 const useShouldPreferDarkTheme = () => {
-  if (!window.matchMedia) {
-    return false;
-  }
-
   const mediaQuery = useMemo(
     () => window.matchMedia('(prefers-color-scheme: dark)'),
     [],
@@ -74,11 +70,15 @@ const useShouldPreferDarkTheme = () => {
 
 export const AppThemeProvider: FC<{}> = ({ children }) => {
   const appThemeApi = useApi(appThemeApiRef);
-  const shouldPreferDark = useShouldPreferDarkTheme();
   const themeId = useObservable(
     appThemeApi.activeThemeId$(),
     appThemeApi.getActiveThemeId(),
   );
+
+  // Browser feature detection won't change over time, so ignore lint rule
+  const shouldPreferDark = Boolean(window.matchMedia)
+    ? useShouldPreferDarkTheme() // eslint-disable-line react-hooks/rules-of-hooks
+    : false;
 
   const appTheme = resolveTheme(
     themeId,

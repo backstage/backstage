@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-export * from './Database';
-export * from './DatabaseManager';
-export * from './types';
+export { CommonDatabase } from './CommonDatabase';
+export { DatabaseManager } from './DatabaseManager';
+export type {
+  Database,
+  DbEntityRequest,
+  DbEntityResponse,
+  EntityFilter,
+  EntityFilters,
+} from './types';

@@ -21,6 +21,7 @@ import { TechRadarComponentProps, TechRadarLoaderResponse } from '../api';
 import getSampleData from '../sampleData';
 
 const useTechRadarLoader = (props: TechRadarComponentProps) => {
+  const errorApi = useApi<ErrorApi>(errorApiRef);
   const [state, setState] = useState<{
     loading: boolean;
     error?: Error;
@@ -31,37 +32,32 @@ const useTechRadarLoader = (props: TechRadarComponentProps) => {
     data: undefined,
   });
 
+  const { getData } = props;
+
   useEffect(() => {
-    if (!props.getData) {
+    if (!getData) {
       return;
     }
 
-    props
-      .getData()
+    getData()
       .then((payload: TechRadarLoaderResponse) => {
         setState({ loading: false, error: undefined, data: payload });
       })
       .catch((err: Error) => {
+        errorApi.post(err);
         setState({
           loading: false,
           error: err,
           data: undefined,
         });
       });
-  }, []);
+  }, [getData, errorApi]);
 
   return state;
 };
 
-const RadarComponent: FC<TechRadarComponentProps> = (props) => {
-  const errorApi = useApi<ErrorApi>(errorApiRef);
+const RadarComponent: FC<TechRadarComponentProps> = props => {
   const { loading, error, data } = useTechRadarLoader(props);
-
-  useEffect(() => {
-    if (error) {
-      errorApi.post(error);
-    }
-  }, [error && error.message]);
 
   return (
     <>

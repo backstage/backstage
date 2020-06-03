@@ -14,26 +14,4 @@
  * limitations under the License.
  */
 
-import Router from 'express-promise-router';
-import { AuthProviderRouteHandlers, AuthProviderConfig } from './types';
-import { ProviderFactories } from './factories';
-
-export const defaultRouter = (provider: AuthProviderRouteHandlers) => {
-  const router = Router();
-  router.get('/start', provider.start.bind(provider));
-  router.get('/handler/frame', provider.frameHandler.bind(provider));
-  router.get('/logout', provider.logout.bind(provider));
-  if (provider.refresh) {
-    router.get('/refresh', provider.refresh.bind(provider));
-  }
-  return router;
-};
-
-export const makeProvider = (config: AuthProviderConfig) => {
-  const providerId = config.provider;
-  const ProviderImpl = ProviderFactories.getProviderFactory(providerId);
-  const providerInstance = new ProviderImpl(config);
-  const strategy = providerInstance.strategy();
-  const providerRouter = defaultRouter(providerInstance);
-  return { providerId, strategy, providerRouter };
-};
+export { createAuthProviderRouter } from './factories';

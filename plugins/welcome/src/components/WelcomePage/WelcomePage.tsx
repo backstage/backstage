@@ -34,15 +34,18 @@ import {
   ContentHeader,
   SupportButton,
   WarningPanel,
+  useApi,
+  configApiRef,
 } from '@backstage/core';
 
 const WelcomePage: FC<{}> = () => {
+  const appTitle = useApi(configApiRef).getString('app.title') ?? 'Backstage';
   const profile = { givenName: '' };
 
   return (
     <Page theme={pageTheme.home}>
       <Header
-        title={`Welcome ${profile.givenName || 'to Backstage'}`}
+        title={`Welcome ${profile.givenName || `to ${appTitle}`}`}
         subtitle="Let's start building a better developer experience"
       >
         <HomepageTimer />

@@ -13,70 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
-import knex from 'knex';
-import path from 'path';
 
-import { Database } from '../database';
-import { ReaderOutput } from '../ingestion/types';
 import { getVoidLogger } from '@backstage/backend-common';
+import Knex from 'knex';
+import path from 'path';
+import { CommonDatabase } from '../database';
+import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
 
 describe('DatabaseLocationsCatalog', () => {
-  const database = knex({
-    client: 'sqlite3',
-    connection: ':memory:',
-    useNullAsDefault: true,
-  });
-  database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-    resource.run('PRAGMA foreign_keys = ON', () => {});
-  });
-  let db: Database;
   let catalog: DatabaseLocationsCatalog;
 
-  const mockLocationReader = {
-    read: async (type: string, target: string): Promise<ReaderOutput[]> => {
-      if (type !== 'valid_type') {
-        throw new Error(`Unknown location type ${type}`);
-      }
-      if (target === 'valid_target') {
-        return Promise.resolve([{ type: 'data', data: {} }]);
-      }
-      throw new Error(
-        `Can't read location at ${target} with error: Something is broken`,
-      );
-    },
-  };
-
   beforeEach(async () => {
-    await database.migrate.latest({
+    const knex = Knex({
+      client: 'sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+      resource.run('PRAGMA foreign_keys = ON', () => {});
+    });
+    await knex.migrate.latest({
       directory: path.resolve(__dirname, '../database/migrations'),
       loadExtensions: ['.ts'],
     });
-    db = new Database(database, getVoidLogger());
-    catalog = new DatabaseLocationsCatalog(db, mockLocationReader);
+    const db = new CommonDatabase(knex, getVoidLogger());
+    catalog = new DatabaseLocationsCatalog(db);
   });
 
-  it('resolves to location with id', async () => {
-    return expect(
-      catalog.addLocation({ type: 'valid_type', target: 'valid_target' }),
-    ).resolves.toEqual({
-      id: expect.anything(),
+  it('can add a location', async () => {
+    const location = {
+      id: 'dd12620d-0436-422f-93bd-929aa0788123',
       type: 'valid_type',
       target: 'valid_target',
-    });
-  });
-  it('rejects for invalid type', async () => {
-    const type = 'invalid_type';
-    return expect(
-      catalog.addLocation({ type, target: 'valid_target' }),
-    ).rejects.toThrow(/Unknown location type/);
-  });
-  it('rejects for unreadable target ', async () => {
-    const target = 'invalid_target';
-    return expect(
-      catalog.addLocation({ type: 'valid_type', target }),
-    ).rejects.toThrow(
-      `Can't read location at ${target} with error: Something is broken`,
-    );
+    };
+    await expect(catalog.addLocation(location)).resolves.toEqual(location);
+    await expect(
+      catalog.location('dd12620d-0436-422f-93bd-929aa0788123'),
+    ).resolves.toEqual(expect.objectContaining({ data: location }));
+    await expect(catalog.locations()).resolves.toEqual([
+      expect.objectContaining({ data: location }),
+    ]);
   });
 });

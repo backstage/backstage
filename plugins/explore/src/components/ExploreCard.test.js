@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
 
 import ExploreCard from './ExploreCard';
 
@@ -32,22 +32,18 @@ const minProps = {
 
 describe('<ExploreCard />', () => {
   it('renders without exploding', () => {
-    const { getByText } = render(
-      wrapInThemedTestApp(<ExploreCard {...minProps} />),
-    );
+    const { getByText } = render(wrapInTestApp(<ExploreCard {...minProps} />));
     expect(getByText('Explore')).toBeInTheDocument();
   });
 
   it('renders props correctly', () => {
-    const { getByText } = render(
-      wrapInThemedTestApp(<ExploreCard {...minProps} />),
-    );
+    const { getByText } = render(wrapInTestApp(<ExploreCard {...minProps} />));
     expect(getByText(minProps.card.title)).toBeInTheDocument();
     expect(getByText(minProps.card.description)).toBeInTheDocument();
   });
 
   it('should link out', () => {
-    const rendered = render(wrapInThemedTestApp(<ExploreCard {...minProps} />));
+    const rendered = render(wrapInTestApp(<ExploreCard {...minProps} />));
     const anchor = rendered.container.querySelector('a');
     expect(anchor.href).toBe(minProps.card.url);
   });
@@ -63,7 +59,7 @@ describe('<ExploreCard />', () => {
       },
     };
     const { getByText } = render(
-      wrapInThemedTestApp(<ExploreCard {...propsWithoutDescription} />),
+      wrapInTestApp(<ExploreCard {...propsWithoutDescription} />),
     );
     expect(getByText('Description missing')).toBeInTheDocument();
   });
@@ -78,15 +74,13 @@ describe('<ExploreCard />', () => {
       },
     };
     const { queryByText } = render(
-      wrapInThemedTestApp(<ExploreCard {...propsWithLifecycle} />),
+      wrapInTestApp(<ExploreCard {...propsWithLifecycle} />),
     );
     expect(queryByText('GA')).not.toBeInTheDocument();
   });
 
   it('renders tags correctly', () => {
-    const { getByText } = render(
-      wrapInThemedTestApp(<ExploreCard {...minProps} />),
-    );
+    const { getByText } = render(wrapInTestApp(<ExploreCard {...minProps} />));
     expect(getByText(minProps.card.tags[0])).toBeInTheDocument();
     expect(getByText(minProps.card.tags[1])).toBeInTheDocument();
   });

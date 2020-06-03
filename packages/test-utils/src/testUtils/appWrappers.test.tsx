@@ -27,7 +27,7 @@ describe('wrapInTestApp', () => {
           <Route path="/route1">Route 1</Route>
           <Route path="/route2">Route 2</Route>
         </>,
-        ['/route2'],
+        { routeEntries: ['/route2'] },
       ),
     );
     expect(rendered.getByText('Route 2')).toBeInTheDocument();
