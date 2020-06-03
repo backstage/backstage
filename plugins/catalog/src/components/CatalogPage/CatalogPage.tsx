@@ -81,7 +81,7 @@ const CatalogPage: FC<{}> = () => {
   const actions = [
     (rowData: Component) => ({
       icon: GitHub,
-      tooltop: 'View on GitHub',
+      tooltip: 'View on GitHub',
       onClick: () => {
         if (!rowData || !rowData.location) return;
         window.open(rowData.location.target, '_blank');

@@ -44,7 +44,7 @@ export class CatalogClient implements CatalogApi {
     throw new Error(`'Entity not found: ${name}`);
   }
   async getLocationByEntity(entity: Entity): Promise<Location | undefined> {
-    const findLocationIdInEntity = (e: Entity) =>
+    const findLocationIdInEntity = (e: Entity): string | undefined =>
       e.metadata.annotations?.['backstage.io/managed-by-location'];
 
     const locationId = findLocationIdInEntity(entity);
