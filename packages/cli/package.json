@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.1-alpha.6",
+    "@backstage/config-loader": "^0.1.1-alpha.6",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",

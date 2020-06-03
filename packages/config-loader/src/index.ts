@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { loadConfig } from './loaders';
+export { loadConfig } from './loader';
+export type { LoadConfigOptions } from './types';

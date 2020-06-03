@@ -16,7 +16,7 @@
 
 import { buildBundle } from '../../lib/bundler';
 import { Command } from 'commander';
-import { loadConfig } from '../../lib/app-config';
+import { loadConfig } from '@backstage/config-loader';
 
 export default async (cmd: Command) => {
   await buildBundle({

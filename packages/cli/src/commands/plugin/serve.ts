@@ -16,7 +16,7 @@
 
 import { Command } from 'commander';
 import { serveBundle } from '../../lib/bundler';
-import { loadConfig } from '../../lib/app-config';
+import { loadConfig } from '@backstage/config-loader';
 
 export default async (cmd: Command) => {
   const waitForExit = await serveBundle({

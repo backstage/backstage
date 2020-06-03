@@ -16,20 +16,23 @@
 
 import fs from 'fs-extra';
 import yaml from 'yaml';
+import { resolve as resolvePath } from 'path';
 import { AppConfig } from '@backstage/config';
-import { paths } from '../paths';
-
-type LoadConfigOptions = {
-  // Config path, defaults to app-config.yaml in project root
-  configPath?: string;
-};
+import { findRootPath } from './paths';
+import { LoadConfigOptions } from './types';
 
 export async function loadConfig(
   options: LoadConfigOptions = {},
 ): Promise<AppConfig[]> {
   // TODO: We'll want this to be a bit more elaborate, probably adding configs for
   //       specific env, and maybe local config for plugins.
-  const { configPath = paths.resolveTargetRoot('app-config.yaml') } = options;
+  let { configPath } = options;
+  if (!configPath) {
+    configPath = resolvePath(
+      findRootPath(fs.realpathSync(process.cwd())),
+      'app-config.yaml',
+    );
+  }
 
   try {
     const configYaml = await fs.readFile(configPath, 'utf8');
