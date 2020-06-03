@@ -32,27 +32,10 @@ function typeOf(value: JsonValue | undefined): string {
   if (type === 'number' && isNaN(value as number)) {
     return 'nan';
   }
+  if (type === 'string' && value === '') {
+    return 'empty-string';
+  }
   return type;
-}
-
-function typeErrorMessage(key: string, got: string, wanted: string) {
-  return `Invalid type in config for key ${key}, got ${got}, wanted ${wanted}`;
-}
-
-function validateString(
-  key: string,
-  value: JsonValue | undefined,
-): value is string {
-  if (typeof value === 'string' && value.length > 0) {
-    return true;
-  }
-  if (value === '') {
-    throw new TypeError(typeErrorMessage(key, 'empty-string', 'string'));
-  }
-  if (value !== undefined) {
-    throw new TypeError(typeErrorMessage(key, typeOf(value), 'string'));
-  }
-  return false;
 }
 
 export class ConfigReader implements Config {
@@ -72,91 +55,108 @@ export class ConfigReader implements Config {
 
   constructor(
     private readonly data: JsonObject,
-    private readonly fallback?: Config,
+    private readonly fallback?: ConfigReader,
   ) {}
 
-  getConfig(key: string): Config {
+  getConfig(key: string): ConfigReader {
     const value = this.readValue(key);
     const fallbackConfig = this.fallback?.getConfig(key);
     if (isObject(value)) {
       return new ConfigReader(value, fallbackConfig);
     }
     if (value !== undefined) {
-      throw new TypeError(typeErrorMessage(key, typeOf(value), 'object'));
+      throw new TypeError(
+        `Invalid type in config for key ${key}, got ${typeOf(
+          value,
+        )}, wanted object`,
+      );
     }
     return fallbackConfig ?? ConfigReader.nullReader;
   }
 
-  getConfigArray(key: string): Config[] {
-    const values = this.readValue(key);
-    if (Array.isArray(values)) {
-      return values.map((value, index) => {
-        if (isObject(value)) {
-          return new ConfigReader(value);
+  getConfigArray(key: string): ConfigReader[] {
+    const configs = this.readConfigValue<JsonObject[]>(key, values => {
+      if (!Array.isArray(values)) {
+        return { expected: 'object-array' };
+      }
+
+      for (const [index, value] of values.entries()) {
+        if (!isObject(value)) {
+          return { expected: 'object-array', value, key: `${key}[${index}]` };
         }
-        throw new TypeError(
-          typeErrorMessage(`${key}[${index}]`, typeOf(value), 'object'),
-        );
-      });
-    }
-    if (values !== undefined) {
-      throw new TypeError(
-        typeErrorMessage(key, typeOf(values), 'object-array'),
-      );
-    }
-    return this.fallback?.getConfigArray(key) ?? [];
+      }
+      return true;
+    });
+
+    return (configs ?? []).map(obj => new ConfigReader(obj));
   }
 
   getNumber(key: string): number | undefined {
-    const value = this.readValue(key);
-    if (typeof value === 'number' && !isNaN(value)) {
-      return value;
-    }
-    if (value !== undefined) {
-      throw new TypeError(typeErrorMessage(key, typeOf(value), 'number'));
-    }
-    return this.fallback?.getNumber(key);
+    return this.readConfigValue(
+      key,
+      value => typeof value === 'number' || { expected: 'number' },
+    );
   }
 
   getBoolean(key: string): boolean | undefined {
-    const value = this.readValue(key);
-    if (typeof value === 'boolean') {
-      return value;
-    }
-    if (value !== undefined) {
-      throw new TypeError(typeErrorMessage(key, typeOf(value), 'boolean'));
-    }
-    return this.fallback?.getBoolean(key);
+    return this.readConfigValue(
+      key,
+      value => typeof value === 'boolean' || { expected: 'boolean' },
+    );
   }
 
   getString(key: string): string | undefined {
-    const value = this.readValue(key);
-    if (validateString(key, value)) {
-      return value;
-    }
-    return this.fallback?.getString(key);
+    return this.readConfigValue(
+      key,
+      value =>
+        (typeof value === 'string' && value !== '') || { expected: 'string' },
+    );
   }
 
   getStringArray(key: string): string[] | undefined {
-    const values = this.readValue(key);
-    if (Array.isArray(values)) {
+    return this.readConfigValue(key, values => {
+      if (!Array.isArray(values)) {
+        return { expected: 'string-array' };
+      }
       for (const [index, value] of values.entries()) {
-        const iKey = `${key}[${index}]`;
-        if (!validateString(iKey, value)) {
-          throw new TypeError(typeErrorMessage(iKey, typeOf(value), 'string'));
+        if (typeof value !== 'string' || value === '') {
+          return { expected: 'string-array', value, key: `${key}[${index}]` };
         }
       }
-      return values as string[];
-    }
-    if (values !== undefined) {
-      throw new TypeError(
-        typeErrorMessage(key, typeOf(values), 'string-array'),
-      );
-    }
-    return this.fallback?.getStringArray(key);
+      return true;
+    });
   }
 
-  protected readValue(key: string): JsonValue | undefined {
+  private readConfigValue<T extends JsonValue>(
+    key: string,
+    validate: (
+      value: JsonValue,
+    ) => { expected: string; value?: JsonValue; key?: string } | true,
+  ): T | undefined {
+    const value = this.readValue(key);
+
+    if (value === undefined) {
+      return this.fallback?.readConfigValue(key, validate);
+    }
+    if (value !== undefined) {
+      const result = validate(value);
+      if (result !== true) {
+        const {
+          key: keyName = key,
+          value: theValue = value,
+          expected,
+        } = result;
+        const typeName = typeOf(theValue);
+        throw new TypeError(
+          `Invalid type in config for key ${keyName}, got ${typeName}, wanted ${expected}`,
+        );
+      }
+    }
+
+    return value as T;
+  }
+
+  private readValue(key: string): JsonValue | undefined {
     const parts = key.split('.');
 
     let value: JsonValue | undefined = this.data;
