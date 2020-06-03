@@ -86,10 +86,8 @@ const CatalogPage: FC<{}> = () => {
         if (!rowData || !rowData.location) return;
         window.open(rowData.location.target, '_blank');
       },
-      isHidden:
-        rowData && rowData.location
-          ? rowData.location.type === 'github'
-          : false,
+      hidden:
+        rowData && rowData.location ? rowData.location.type !== 'github' : true,
     }),
   ];
 
