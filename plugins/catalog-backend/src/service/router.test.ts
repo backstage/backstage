@@ -43,9 +43,12 @@ describe('createRouter', () => {
       locations: jest.fn(),
       location: jest.fn(),
       locationHistory: jest.fn(),
+      logUpdateSuccess: jest.fn(),
+      logUpdateFailure: jest.fn(),
     };
     higherOrderOperation = {
       addLocation: jest.fn(),
+      refreshAllLocations: jest.fn(),
     };
     const router = await createRouter({
       entitiesCatalog,
@@ -78,6 +81,7 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities?a=1&a=&a=3&b=4&c=');
 
       expect(response.status).toEqual(200);
+      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.entities).toHaveBeenCalledWith([
         { key: 'a', values: ['1', null, '3'] },
         { key: 'b', values: ['4'] },
@@ -99,14 +103,19 @@ describe('createRouter', () => {
 
       const response = await request(app).get('/entities/by-uid/zzz');
 
+      expect(entitiesCatalog.entityByUid).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entityByUid).toHaveBeenCalledWith('zzz');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(expect.objectContaining(entity));
     });
 
     it('responds with a 404 for missing entities', async () => {
       entitiesCatalog.entityByUid.mockResolvedValue(undefined);
+
       const response = await request(app).get('/entities/by-uid/zzz');
 
+      expect(entitiesCatalog.entityByUid).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entityByUid).toHaveBeenCalledWith('zzz');
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/uid/);
     });
@@ -116,16 +125,18 @@ describe('createRouter', () => {
     it('can fetch entity by name', async () => {
       const entity: Entity = {
         apiVersion: 'a',
-        kind: 'b',
+        kind: 'k',
         metadata: {
-          name: 'c',
-          namespace: 'd',
+          name: 'n',
+          namespace: 'ns',
         },
       };
       entitiesCatalog.entityByName.mockResolvedValue(entity);
 
-      const response = await request(app).get('/entities/by-name/b/d/c');
+      const response = await request(app).get('/entities/by-name/k/ns/n');
 
+      expect(entitiesCatalog.entityByName).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entityByName).toHaveBeenCalledWith('k', 'ns', 'n');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(expect.objectContaining(entity));
     });
@@ -133,8 +144,10 @@ describe('createRouter', () => {
     it('responds with a 404 for missing entities', async () => {
       entitiesCatalog.entityByName.mockResolvedValue(undefined);
 
-      const response = await request(app).get('/entities/by-name//b/d/c');
+      const response = await request(app).get('/entities/by-name/b/d/c');
 
+      expect(entitiesCatalog.entityByName).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entityByName).toHaveBeenCalledWith('b', 'd', 'c');
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/name/);
     });
@@ -147,9 +160,9 @@ describe('createRouter', () => {
         .set('Content-Type', 'application/json')
         .send();
 
+      expect(entitiesCatalog.addOrUpdateEntity).not.toHaveBeenCalled();
       expect(response.status).toEqual(400);
       expect(response.text).toMatch(/body/);
-      expect(entitiesCatalog.addOrUpdateEntity).not.toHaveBeenCalled();
     });
 
     it('passes the body down', async () => {
@@ -169,13 +182,13 @@ describe('createRouter', () => {
         .send(entity)
         .set('Content-Type', 'application/json');
 
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(entity);
       expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenNthCalledWith(
         1,
         entity,
       );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(entity);
     });
   });
 
@@ -185,8 +198,9 @@ describe('createRouter', () => {
 
       const response = await request(app).delete('/entities/by-uid/apa');
 
-      expect(response.status).toEqual(204);
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(response.status).toEqual(204);
     });
 
     it('responds with a 404 for missing entities', async () => {
@@ -196,8 +210,9 @@ describe('createRouter', () => {
 
       const response = await request(app).delete('/entities/by-uid/apa');
 
-      expect(response.status).toEqual(404);
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(response.status).toEqual(404);
     });
   });
 
@@ -227,8 +242,8 @@ describe('createRouter', () => {
 
       const response = await request(app).post('/locations').send(spec);
 
-      expect(response.status).toEqual(400);
       expect(higherOrderOperation.addLocation).not.toHaveBeenCalled();
+      expect(response.status).toEqual(400);
     });
 
     it('passes the body down', async () => {
@@ -244,9 +259,14 @@ describe('createRouter', () => {
 
       const response = await request(app).post('/locations').send(spec);
 
-      expect(response.status).toEqual(201);
       expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
       expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec);
+      expect(response.status).toEqual(201);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          location: { id: 'a', ...spec },
+        }),
+      );
     });
   });
 });

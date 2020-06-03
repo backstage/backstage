@@ -69,8 +69,8 @@ export async function createRouter(
         const { kind, namespace, name } = req.params;
         const entity = await entitiesCatalog.entityByName(
           kind,
-          name,
           namespace,
+          name,
         );
         if (!entity) {
           res

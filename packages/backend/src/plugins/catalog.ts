@@ -32,7 +32,6 @@ export default async function createPlugin({
   logger,
   database,
 }: PluginEnvironment) {
-  const policy = new EntityPolicies();
   const ingestionModel = new IngestionModels(
     new LocationReaders(),
     new DescriptorParsers(),
@@ -40,18 +39,16 @@ export default async function createPlugin({
   );
 
   const db = await DatabaseManager.createDatabase(database, logger);
-  runPeriodically(
-    () => DatabaseManager.refreshLocations(db, ingestionModel, policy, logger),
-    10000,
-  );
-
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
   const higherOrderOperation = new HigherOrderOperations(
     entitiesCatalog,
     locationsCatalog,
     ingestionModel,
+    logger,
   );
+
+  runPeriodically(() => higherOrderOperation.refreshAllLocations(), 10000);
 
   return await createRouter({
     entitiesCatalog,

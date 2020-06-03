@@ -16,10 +16,12 @@
 
 import { buildBundle } from '../../lib/bundler';
 import { Command } from 'commander';
+import { loadConfig } from '../../lib/app-config';
 
 export default async (cmd: Command) => {
   await buildBundle({
     entry: 'src/index',
     statsJsonEnabled: cmd.stats,
+    appConfig: await loadConfig(),
   });
 };

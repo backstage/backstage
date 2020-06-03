@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
+import { Entity, Location } from '@backstage/catalog-model';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { IngestionModel } from './types';
+import { LocationUpdateStatus } from '../catalog/types';
+import { DatabaseLocationUpdateLogStatus } from '../database/types';
 import { HigherOrderOperations } from './HigherOrderOperations';
-import { Entity } from '@backstage/catalog-model';
+import { IngestionModel } from './types';
 
 describe('HigherOrderOperations', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -39,6 +42,8 @@ describe('HigherOrderOperations', () => {
       locations: jest.fn(),
       location: jest.fn(),
       locationHistory: jest.fn(),
+      logUpdateSuccess: jest.fn(),
+      logUpdateFailure: jest.fn(),
     };
     ingestionModel = {
       readLocation: jest.fn(),
@@ -47,6 +52,7 @@ describe('HigherOrderOperations', () => {
       entitiesCatalog,
       locationsCatalog,
       ingestionModel,
+      getVoidLogger(),
     );
   });
 
@@ -138,6 +144,149 @@ describe('HigherOrderOperations', () => {
       expect(locationsCatalog.locations).toBeCalledTimes(1);
       expect(entitiesCatalog.addOrUpdateEntity).not.toBeCalled();
       expect(locationsCatalog.addLocation).not.toBeCalled();
+    });
+  });
+
+  describe('refreshLocations', () => {
+    it('works with no locations added', async () => {
+      locationsCatalog.locations.mockResolvedValue([]);
+
+      await expect(
+        higherOrderOperation.refreshAllLocations(),
+      ).resolves.toBeUndefined();
+
+      expect(locationsCatalog.locations).toHaveBeenCalledTimes(1);
+      expect(ingestionModel.readLocation).not.toHaveBeenCalled();
+      expect(entitiesCatalog.addOrUpdateEntity).not.toHaveBeenCalled();
+    });
+
+    it('can update a single location where a matching entity did not exist', async () => {
+      const locationStatus: LocationUpdateStatus = {
+        message: '',
+        status: DatabaseLocationUpdateLogStatus.SUCCESS,
+        timestamp: new Date(314159265).toISOString(),
+      };
+      const location: Location = {
+        id: '123',
+        type: 'some',
+        target: 'thing',
+      };
+      const desc: Entity = {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: { name: 'c1' },
+        spec: { type: 'service' },
+      };
+
+      locationsCatalog.locations.mockResolvedValue([
+        { currentStatus: locationStatus, data: location },
+      ]);
+      ingestionModel.readLocation.mockResolvedValue([
+        { type: 'data', data: desc },
+      ]);
+      entitiesCatalog.entityByName.mockResolvedValue(undefined);
+      entitiesCatalog.addOrUpdateEntity.mockResolvedValue(desc);
+
+      await expect(
+        higherOrderOperation.refreshAllLocations(),
+      ).resolves.toBeUndefined();
+
+      expect(locationsCatalog.locations).toHaveBeenCalledTimes(1);
+      expect(ingestionModel.readLocation).toHaveBeenCalledTimes(1);
+      expect(ingestionModel.readLocation).toHaveBeenNthCalledWith(
+        1,
+        'some',
+        'thing',
+      );
+      expect(entitiesCatalog.entityByName).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entityByName).toHaveBeenNthCalledWith(
+        1,
+        'Component',
+        undefined,
+        'c1',
+      );
+      expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          metadata: expect.objectContaining({ name: 'c1' }),
+        }),
+        '123',
+      );
+    });
+
+    it('logs successful updates', async () => {
+      const locationStatus: LocationUpdateStatus = {
+        message: '',
+        status: DatabaseLocationUpdateLogStatus.SUCCESS,
+        timestamp: new Date(314159265).toISOString(),
+      };
+      const location: Location = {
+        id: '123',
+        type: 'some',
+        target: 'thing',
+      };
+      const desc: Entity = {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: { name: 'c1' },
+        spec: { type: 'service' },
+      };
+
+      locationsCatalog.locations.mockResolvedValue([
+        { currentStatus: locationStatus, data: location },
+      ]);
+      ingestionModel.readLocation.mockResolvedValue([
+        { type: 'data', data: desc },
+      ]);
+      entitiesCatalog.entityByName.mockResolvedValue(undefined);
+      entitiesCatalog.addOrUpdateEntity.mockResolvedValue(desc);
+
+      await expect(
+        higherOrderOperation.refreshAllLocations(),
+      ).resolves.toBeUndefined();
+
+      expect(locationsCatalog.logUpdateSuccess).toHaveBeenCalledTimes(2);
+      expect(locationsCatalog.logUpdateSuccess).toHaveBeenCalledWith(
+        '123',
+        undefined,
+      );
+      expect(locationsCatalog.logUpdateSuccess).toHaveBeenCalledWith(
+        '123',
+        'c1',
+      );
+    });
+
+    it('logs unsuccessful updates when reader fails', async () => {
+      const locationStatus: LocationUpdateStatus = {
+        message: '',
+        status: DatabaseLocationUpdateLogStatus.SUCCESS,
+        timestamp: new Date(314159265).toISOString(),
+      };
+      const location: Location = {
+        id: '123',
+        type: 'some',
+        target: 'thing',
+      };
+
+      locationsCatalog.locations.mockResolvedValue([
+        { currentStatus: locationStatus, data: location },
+      ]);
+      ingestionModel.readLocation.mockRejectedValue(
+        new Error('reader error message'),
+      );
+
+      await expect(
+        higherOrderOperation.refreshAllLocations(),
+      ).resolves.toBeUndefined();
+
+      expect(ingestionModel.readLocation).toHaveBeenCalledTimes(1);
+      expect(locationsCatalog.logUpdateFailure).toHaveBeenCalledTimes(1);
+      expect(locationsCatalog.logUpdateSuccess).not.toHaveBeenCalled();
+      expect(locationsCatalog.logUpdateFailure).toHaveBeenCalledWith(
+        '123',
+        expect.objectContaining({ message: 'reader error message' }),
+      );
     });
   });
 });

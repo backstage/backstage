@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-import { defaultRouter } from '.';
-
-describe('test', () => {
-  it('unbreaks the test runner', () => {
-    expect(defaultRouter).toBeDefined();
-  });
-});
+export { createSamlProvider } from './provider';

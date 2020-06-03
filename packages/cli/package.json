@@ -79,6 +79,7 @@
     "url-loader": "^4.1.0",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3",
+    "yaml": "^1.10.0",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0"
   },

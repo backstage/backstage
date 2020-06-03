@@ -25,6 +25,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
+import { HigherOrderOperation } from '../ingestion';
 import { createRouter } from './router';
 import { HigherOrderOperation } from '../ingestion/types';
 
@@ -43,8 +44,8 @@ export async function createStandaloneApplication(
     enableCors,
     entitiesCatalog,
     locationsCatalog,
-    logger,
     higherOrderOperation,
+    logger,
   } = options;
   const app = express();
 
