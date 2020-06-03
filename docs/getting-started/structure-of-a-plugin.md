@@ -48,12 +48,12 @@ import ExampleComponent from './components/ExampleComponent';
 
 export const rootRouteRef = createRouteRef({
   icon: () => null,
-  path: '/{{ id }}',
-  title: '{{ id }}',
+  path: '/new-plugin',
+  title: 'New plugin',
 });
 
 export const plugin = createPlugin({
-  id: '{{ id }}',
+  id: 'new-plugin',
   register({ router }) {
     router.addRoute(rootRouteRef, ExampleComponent);
   },

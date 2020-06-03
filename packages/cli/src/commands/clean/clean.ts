@@ -24,6 +24,7 @@ export default async function clean() {
   const packagePath = getPackagePath(cacheOptions.cacheDir);
   await fs.remove(cacheOptions.output);
   await fs.remove(packagePath);
+  await fs.remove(paths.resolveTarget('coverage'));
 }
 
 function getPackagePath(cacheDir: string) {
