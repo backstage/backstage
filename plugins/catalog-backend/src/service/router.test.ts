@@ -48,6 +48,7 @@ describe('createRouter', () => {
     };
     higherOrderOperation = {
       addLocation: jest.fn(),
+      refreshAllLocations: jest.fn(),
     };
     const router = await createRouter({
       entitiesCatalog,
