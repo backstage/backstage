@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { StorageApi, ObservableMessage } from '../../definitions';
+import { StorageApi, StorageValueChange } from '../../definitions';
 import { Observable } from '../../../types';
 import ObservableImpl from 'zen-observable';
 
 export class WebStorage implements StorageApi {
-  constructor(private readonly namespace: string = '') {}
+  private readonly namespace: string;
+
+  constructor(namespace: string = '') {
+    this.namespace = namespace ? encodeURIComponent(namespace) : namespace;
+  }
 
   get<T>(key: string): T | undefined {
     try {
@@ -48,7 +52,7 @@ export class WebStorage implements StorageApi {
     this.notifyChanges({ key, newValue: undefined });
   }
 
-  observe$<T>(key: string): Observable<ObservableMessage<T>> {
+  observe$<T>(key: string): Observable<StorageValueChange<T>> {
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
   }
 
@@ -56,17 +60,17 @@ export class WebStorage implements StorageApi {
     return `${this.namespace}/${encodeURIComponent(key)}`;
   }
 
-  private notifyChanges<T>(message: ObservableMessage<T>) {
+  private notifyChanges<T>(message: StorageValueChange<T>) {
     for (const subscription of this.subscribers) {
       subscription.next(message);
     }
   }
 
   private subscribers = new Set<
-    ZenObservable.SubscriptionObserver<ObservableMessage>
+    ZenObservable.SubscriptionObserver<StorageValueChange>
   >();
 
-  private readonly observable = new ObservableImpl<ObservableMessage>(
+  private readonly observable = new ObservableImpl<StorageValueChange>(
     subscriber => {
       this.subscribers.add(subscriber);
       return () => {

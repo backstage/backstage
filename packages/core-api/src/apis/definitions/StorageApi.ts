@@ -17,7 +17,7 @@
 import { createApiRef } from '../ApiRef';
 import { Observable } from '../../types';
 
-export type ObservableMessage<T = any> = {
+export type StorageValueChange<T = any> = {
   key: string;
   newValue?: T;
 };
@@ -56,7 +56,7 @@ export interface StorageApi {
    * Observe changes on a particular key in the bucket
    * @param {String} key Unique key associated with the data
    */
-  observe$<T>(key: string): Observable<ObservableMessage<T>>;
+  observe$<T>(key: string): Observable<StorageValueChange<T>>;
 }
 
 export const storageApiRef = createApiRef<StorageApi>({

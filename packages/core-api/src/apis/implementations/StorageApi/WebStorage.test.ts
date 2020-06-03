@@ -122,7 +122,10 @@ describe('WebStorage Storage API', () => {
     const rootStorage = new WebStorage();
 
     // when getting key test2 it will translate to /profile/something/deep/test2
-    const firstStorage = rootStorage.forBucket('profile/something/deep');
+    const firstStorage = rootStorage
+      .forBucket('profile')
+      .forBucket('something')
+      .forBucket('deep');
     // when getting key deep/test2 it will translate to /profile/something/deep/test2
     const secondStorage = rootStorage.forBucket('profile/something');
 
