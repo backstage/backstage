@@ -17,21 +17,21 @@
 import { createApiRef } from '../ApiRef';
 import { Observable } from '../../types';
 
-export type ObservableMessage<T extends object = {}> = {
+export type ObservableMessage<T = any> = {
   key: string;
   newValue?: T;
 };
 
 export interface StorageApi {
   /**
-   * The names
+   * Create a bucket to store data in.
    * @param {String} name Namespace for the storage to be stored under,
    *                      will inherit previous namespaces too
    */
   forBucket(name: string): StorageApi;
 
   /**
-   * Get persistent data.
+   * Get the current value for persistent data, use observe$ to be notified of updates.
    *
    * @param {String} key Unique key associated with the data.
    * @return {Object} data The data that should is stored.
@@ -46,17 +46,17 @@ export interface StorageApi {
   remove(key: string): Promise<void>;
 
   /**
-   * Save persistant data.
+   * Save persistant data, and emit messages to anyone that is using observe$ for this key
    *
    * @param {String} key Unique key associated with the data.
    */
   set(key: string, data: any): Promise<void>;
 
   /**
-   *
+   * Observe changes on a particular key in the bucket
    * @param {String} key Unique key associated with the data
    */
-  observe$<T>(key: string): Observable<T>;
+  observe$<T>(key: string): Observable<ObservableMessage<T>>;
 }
 
 export const storageApiRef = createApiRef<StorageApi>({

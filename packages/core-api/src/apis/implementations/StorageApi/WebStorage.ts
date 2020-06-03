@@ -48,17 +48,15 @@ export class WebStorage implements StorageApi {
     this.notifyChanges({ key, newValue: undefined });
   }
 
-  observe$<T>(key: string): Observable<T> {
-    return this.observable.filter(
-      ({ key: messageKey }) => messageKey === key,
-    ) as Observable<T>;
+  observe$<T>(key: string): Observable<ObservableMessage<T>> {
+    return this.observable.filter(({ key: messageKey }) => messageKey === key);
   }
 
   private getKeyName(key: string) {
     return `${this.namespace}/${key}`;
   }
 
-  private notifyChanges(message: ObservableMessage) {
+  private notifyChanges<T>(message: ObservableMessage<T>) {
     for (const subscription of this.subscribers) {
       subscription.next(message);
     }
