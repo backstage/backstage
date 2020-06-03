@@ -117,4 +117,17 @@ describe('WebStorage Storage API', () => {
     expect(firstStorage.get(keyName)).toBe('boop');
     expect(secondStorage.get(keyName)).toBe('deerp');
   });
+
+  it('should not clash with other namesapces when creating buckets', async () => {
+    const rootStorage = new WebStorage();
+
+    // when getting key test2 it will translate to /profile/something/deep/test2
+    const firstStorage = rootStorage.forBucket('profile/something/deep');
+    // when getting key deep/test2 it will translate to /profile/something/deep/test2
+    const secondStorage = rootStorage.forBucket('profile/something');
+
+    await firstStorage.set('test2', { error: true });
+
+    expect(secondStorage.get('deep/test2')).toBe(undefined);
+  });
 });

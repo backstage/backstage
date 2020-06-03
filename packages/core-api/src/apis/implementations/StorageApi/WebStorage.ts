@@ -53,7 +53,7 @@ export class WebStorage implements StorageApi {
   }
 
   private getKeyName(key: string) {
-    return `${this.namespace}/${key}`;
+    return `${this.namespace}/${encodeURIComponent(key)}`;
   }
 
   private notifyChanges<T>(message: ObservableMessage<T>) {
@@ -62,9 +62,9 @@ export class WebStorage implements StorageApi {
     }
   }
 
-  private subscribers: Set<
+  private subscribers = new Set<
     ZenObservable.SubscriptionObserver<ObservableMessage>
-  > = new Set();
+  >();
 
   private readonly observable = new ObservableImpl<ObservableMessage>(
     subscriber => {
