@@ -38,4 +38,6 @@ export { default as StructuredMetadataTable } from './components/StructuredMetad
 export { default as TrendLine } from './components/TrendLine';
 export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
 export * from './components/Status';
+export * from './components/NavButton';
+export * from './components/NavLink';
 export { default as WarningPanel } from './components/WarningPanel';
