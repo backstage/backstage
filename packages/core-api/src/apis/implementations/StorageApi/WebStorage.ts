@@ -22,15 +22,6 @@ export class WebStorage implements StorageApi {
     ZenObservable.SubscriptionObserver<ObservableMessage>
   > = new Set();
 
-  private readonly observable = new ObservableImpl<ObservableMessage>(
-    subscriber => {
-      this.subscribers.add(subscriber);
-      return () => {
-        this.subscribers.delete(subscriber);
-      };
-    },
-  );
-
   get<T>(key: string): T | undefined {
     try {
       const storage = JSON.parse(localStorage.getItem(key)!);
@@ -55,15 +46,24 @@ export class WebStorage implements StorageApi {
     this.notifyChanges({ key, newValue: undefined });
   }
 
-  notifyChanges(message: ObservableMessage) {
-    for (const subscription of this.subscribers) {
-      subscription.next(message);
-    }
-  }
-
   observe$<T>(key: string): Observable<T> {
     return this.observable.filter(
       ({ key: messageKey }) => messageKey === key,
     ) as Observable<T>;
   }
+
+  private notifyChanges(message: ObservableMessage) {
+    for (const subscription of this.subscribers) {
+      subscription.next(message);
+    }
+  }
+
+  private readonly observable = new ObservableImpl<ObservableMessage>(
+    subscriber => {
+      this.subscribers.add(subscriber);
+      return () => {
+        this.subscribers.delete(subscriber);
+      };
+    },
+  );
 }

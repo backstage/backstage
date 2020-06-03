@@ -15,7 +15,7 @@
  */
 
 import { createApiRef } from '../ApiRef';
-import { Observable } from '@backstage/core-api';
+import { Observable } from '../../types';
 
 export type ObservableMessage<T extends object = {}> = {
   key: string;
