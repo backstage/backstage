@@ -25,6 +25,7 @@ import {
   Page,
   pageTheme,
   useApi,
+  storageApiRef,
 } from '@backstage/core';
 import { useAsync } from 'react-use';
 import CatalogTable from '../CatalogTable/CatalogTable';
@@ -33,7 +34,7 @@ import {
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
-import { filterGroups, defaultFilter } from '../../data/filters';
+import { filterGroups, defaultFilter, dataResolvers } from '../../data/filters';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -44,20 +45,37 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-import { catalogApiRef } from '../..';
 import { envelopeToComponent } from '../../data/utils';
+import { catalogApiRef } from '../../api/types';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
 
 const CatalogPage: FC<{}> = () => {
-  const catalogApi = useApi(catalogApiRef);
-  const { value, error, loading } = useAsync(() => catalogApi.getEntities());
   const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
     defaultFilter,
   );
+
+  // TODO(blam): When plugins can grab references to API's from the factory without
+  // having to use the context, this dependency injection should be moved to the data
+  // resolvers
+  const catalogApi = useApi(catalogApiRef);
+  const { starredEntities } = useStarredEntities();
+
+  const { value, error, loading } = useAsync(
+    () => dataResolvers[selectedFilter.id]({ catalogApi, starredEntities }),
+    [selectedFilter.id],
+  );
+
+  // TODO(blam): There's a better way with material to load remote data rather than
+  // doing it all in this component. But when we're moving away from this API approach to GraphQL soon,
+  // It doesn't seem like the best investment of time.
+  // https://material-table.com/#/docs/features/remote-data
+  const components = value?.map(envelopeToComponent) ?? [];
 
   const onFilterSelected = React.useCallback(
     selected => setSelectedFilter(selected),
     [],
   );
+
   const styles = useStyles();
 
   return (
@@ -98,7 +116,7 @@ const CatalogPage: FC<{}> = () => {
           </div>
           <CatalogTable
             titlePreamble={selectedFilter.label}
-            components={(value && value.map(envelopeToComponent)) || []}
+            components={components}
             loading={loading}
             error={error}
           />
