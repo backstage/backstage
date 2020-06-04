@@ -16,11 +16,10 @@
     "backstage"
   ],
   "license": "Apache-2.0",
-  "main": "dist/index.esm.js",
-  "main:src": "src/index.ts",
+  "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "build": "backstage-cli plugin:build",
+    "build": "backstage-cli build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",

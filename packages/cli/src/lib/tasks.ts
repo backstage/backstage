@@ -194,6 +194,11 @@ export async function installWithLocalDeps(dir: string) {
           delete depJson['main:src'];
           depJson.types = 'dist/index.d.ts';
 
+          // Ugly hack until backend packages can point straight to source
+          if (name === 'config' || name === 'config-loader') {
+            depJson.main = 'dist/index.cjs.js';
+          }
+
           await fs
             .writeJSON(depJsonPath, depJson, { encoding: 'utf8', spaces: 2 })
             .catch(error => {
