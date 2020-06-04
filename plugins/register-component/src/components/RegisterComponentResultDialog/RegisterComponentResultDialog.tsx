@@ -48,10 +48,10 @@ export const RegisterComponentResultDialog: FC<Props> = ({
   entities,
 }) => (
   <Dialog open onClose={onClose} classes={classes}>
-    <DialogTitle>Component registration result</DialogTitle>
+    <DialogTitle>Component Registration Result</DialogTitle>
     <DialogContent>
       <DialogContentText>
-        Following components have been succefully created:
+        The following components have been succefully created:
       </DialogContentText>
       <List>
         {entities.map((entity: any, index: number) => (

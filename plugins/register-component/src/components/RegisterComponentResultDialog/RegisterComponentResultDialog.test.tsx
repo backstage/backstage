@@ -43,7 +43,7 @@ describe('RegisterComponentResultDialog', () => {
   it('should render', () => {
     const { rendered } = setup();
     expect(
-      rendered.getByText('Component registration result'),
+      rendered.getByText('Component Registration Result'),
     ).toBeInTheDocument();
   });
 });
@@ -73,7 +73,9 @@ it('should show a list of components if success', async () => {
   });
 
   expect(
-    rendered.getByText('Following components have been succefully created:'),
+    rendered.getByText(
+      'The following components have been succefully created:',
+    ),
   ).toBeInTheDocument();
   expect(rendered.getByText('Component1')).toBeInTheDocument();
   expect(rendered.getByText('Component2')).toBeInTheDocument();

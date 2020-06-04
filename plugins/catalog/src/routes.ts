@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-/*
- * Hi!
- *
- * Note that this is an EXAMPLE Backstage backend. Please check the README.
- *
- * Happy hacking!
- */
-
- import { createRouteRef } from '@backstage/core';
+import { createRouteRef } from '@backstage/core';
 
 const NoIcon = () => null;
 
