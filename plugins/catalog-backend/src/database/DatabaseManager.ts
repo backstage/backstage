@@ -22,14 +22,14 @@ import { Database } from './types';
 
 export class DatabaseManager {
   public static async createDatabase(
-    database: Knex,
+    knex: Knex,
     logger: Logger,
   ): Promise<Database> {
-    await database.migrate.latest({
+    await knex.migrate.latest({
       directory: path.resolve(__dirname, 'migrations'),
       loadExtensions: ['.js'],
     });
-    return new CommonDatabase(database, logger);
+    return new CommonDatabase(knex, logger);
   }
 
   public static async createInMemoryDatabase(
