@@ -13,7 +13,7 @@
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean",
-    "mock-db": "sh ./scripts/mock-db"
+    "mock-data": "./scripts/mock-data"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.1.1-alpha.6",
