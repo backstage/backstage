@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { buildPackage } from './packager';
-export type { BuildOptions, OutputFormat } from './types';
+export type OutputFormat = 'esm' | 'cjs' | 'types';
+
+export type BuildOptions = {
+  outputs: Set<OutputFormat>;
+};

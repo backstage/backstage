@@ -19,6 +19,7 @@ import chalk from 'chalk';
 import { relative as relativePath } from 'path';
 import { paths } from '../paths';
 import { makeConfigs } from './config';
+import { BuildOptions } from './types';
 
 function formatErrorMessage(error: any) {
   let msg = '';
@@ -80,7 +81,7 @@ async function build(config: RollupOptions) {
   }
 }
 
-export const buildPackage = async () => {
-  const configs = await makeConfigs();
+export const buildPackage = async (options: BuildOptions) => {
+  const configs = await makeConfigs(options);
   await Promise.all(configs.map(build));
 };

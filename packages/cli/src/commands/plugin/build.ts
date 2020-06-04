@@ -17,5 +17,7 @@
 import { buildPackage } from '../../lib/packager';
 
 export default async () => {
-  await buildPackage();
+  await buildPackage({
+    outputs: new Set(['esm', 'types']),
+  });
 };

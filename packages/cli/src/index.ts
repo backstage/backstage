@@ -79,6 +79,11 @@ const main = (argv: string[]) => {
     .action(actionHandler(() => require('./commands/plugin/diff')));
 
   program
+    .command('build')
+    .description('Build a package for publishing')
+    .action(actionHandler(() => require('./commands/build')));
+
+  program
     .command('lint')
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint a package')

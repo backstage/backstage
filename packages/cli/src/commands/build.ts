@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-export { buildPackage } from './packager';
-export type { BuildOptions, OutputFormat } from './types';
+import { buildPackage } from '../lib/packager';
+
+export default async () => {
+  await buildPackage({
+    outputs: new Set(['types', 'esm', 'cjs']),
+  });
+};
