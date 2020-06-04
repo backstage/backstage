@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { AppConfig } from '@backstage/config';
+import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
 
 export type BundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
-  appConfig: AppConfig[];
+  config: Config;
+  appConfigs: AppConfig[];
 };
 
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
-  appConfig: AppConfig[];
+  config: Config;
+  appConfigs: AppConfig[];
 };
 
 export type BuildOptions = BundlingPathsOptions & {
   statsJsonEnabled: boolean;
-  appConfig: AppConfig[];
+  config: Config;
+  appConfigs: AppConfig[];
 };
