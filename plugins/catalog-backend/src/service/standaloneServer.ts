@@ -15,8 +15,7 @@
  */
 
 import { Server } from 'http';
-import { Logger, log } from 'winston';
-import knex from 'knex';
+import { Logger } from 'winston';
 import { createStandaloneApplication } from './standaloneApplication';
 import { DatabaseEntitiesCatalog } from '../catalog/DatabaseEntitiesCatalog';
 import { DatabaseManager } from '../database/DatabaseManager';
