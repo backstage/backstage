@@ -35,19 +35,19 @@ export class DatabaseManager {
   public static async createInMemoryDatabase(
     logger: Logger,
   ): Promise<Database> {
-    const database = Knex({
+    const knex = Knex({
       client: 'sqlite3',
       connection: ':memory:',
       useNullAsDefault: true,
     });
-    database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });
 
-    await database.migrate.latest({
+    await knex.migrate.latest({
       directory: path.resolve(__dirname, 'migrations'),
       loadExtensions: ['.js'],
     });
-    return new CommonDatabase(database, logger);
+    return new CommonDatabase(knex, logger);
   }
 }
