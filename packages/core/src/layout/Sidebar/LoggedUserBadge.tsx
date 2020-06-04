@@ -103,6 +103,7 @@ const SessionListItem: FC<{
     );
   }
 
+  //TODO: Not functional yet to sign in from the sidebar
   if (!user) {
     return (
       <ListItem {...props}>

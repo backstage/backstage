@@ -51,6 +51,7 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
         done(
           undefined,
           {
+            //TODO(soapraj): extract ProfileInfo from passport.Profile and send only that
             profile,
             idToken: params.id_token,
             accessToken,
