@@ -27,7 +27,6 @@ import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { HigherOrderOperation } from '../ingestion';
 import { createRouter } from './router';
-import { HigherOrderOperation } from '../ingestion/types';
 
 export interface ApplicationOptions {
   enableCors: boolean;

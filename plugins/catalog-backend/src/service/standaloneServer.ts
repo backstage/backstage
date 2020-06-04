@@ -15,7 +15,7 @@
  */
 
 import { Server } from 'http';
-import { Logger } from 'winston';
+import { Logger, log } from 'winston';
 import knex from 'knex';
 import { createStandaloneApplication } from './standaloneApplication';
 import { DatabaseEntitiesCatalog } from '../catalog/DatabaseEntitiesCatalog';
@@ -49,6 +49,7 @@ export async function startStandaloneServer(
     entitiesCatalog,
     locationsCatalog,
     ingestionModel,
+    logger,
   );
 
   logger.debug('Creating application...');
