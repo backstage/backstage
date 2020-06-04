@@ -44,7 +44,9 @@ export async function serveBundle(options: ServeOptions) {
 
   const server = new WebpackDevServer(compiler, {
     hot: true,
-    publicPath: '/',
+    contentBase: paths.targetPublic,
+    contentBasePublicPath: config.output?.publicPath,
+    publicPath: config.output?.publicPath,
     historyApiFallback: true,
     clientLogLevel: 'warning',
     stats: 'errors-warnings',
