@@ -111,6 +111,8 @@ export async function templatingTask(
 // List of local packages that we need to modify as a part of an E2E test
 const PATCH_PACKAGES = [
   'cli',
+  'config',
+  'config-loader',
   'core',
   'core-api',
   'dev-utils',
