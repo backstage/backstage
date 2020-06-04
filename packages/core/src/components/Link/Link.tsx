@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '../icons';
+import React, { ComponentProps } from 'react';
+import { Link as MaterialLink } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
 
-export type RouteRef = {
-  path: string;
-  icon?: IconComponent;
-  title: string;
-};
+type Props = ComponentProps<typeof MaterialLink> &
+  ComponentProps<typeof RouterLink>;
 
-export type RouteRefConfig = {
-  path: string;
-  icon?: IconComponent;
-  title: string;
-};
-
-export type RouteRefOverrideConfig = {
-  path?: string;
-  icon?: IconComponent;
-  title?: string;
-};
+/**
+ * Thin wrapper on top of material-ui's Link component
+ * Makes the Link to utilise react-router
+ */
+export const Link = React.forwardRef<any, Props>((props, ref) => (
+  <MaterialLink ref={ref} component={RouterLink} {...props} />
+));

@@ -39,14 +39,19 @@ Each plugin is responsible for registering its components to corresponding route
 The app will call the `createPlugin` method on each plugin, passing in a `router` object with a set
 of methods on it.
 
-```typescript
-import { createPlugin } from '@backstage/core';
+```jsx
+import { createPlugin, createRouteRef } from '@backstage/core';
 import ExampleComponent from './components/ExampleComponent';
 
-export default createPlugin({
-  id: 'my-plugin',
+export const rootRouteRef = createRouteRef({
+  path: '/new-plugin',
+  title: 'New plugin',
+});
+
+export const plugin = createPlugin({
+  id: 'new-plugin',
   register({ router }) {
-    router.registerRoute('/my-plugin', ExampleComponent);
+    router.addRoute(rootRouteRef, ExampleComponent);
   },
 });
 ```
@@ -54,17 +59,18 @@ export default createPlugin({
 #### `router` API
 
 ```typescript
-type RouterHooks = {
-  registerRoute(
-    path: RoutePath,
-    Component: ComponentType<any>,
-    options?: RouteOptions,
-  ): void;
+addRoute(
+  target: RouteRef,
+  Component: ComponentType<any>,
+  options?: RouteOptions,
+): void;
 
-  registerRedirect(
-    path: RoutePath,
-    target: RoutePath,
-    options?: RouteOptions,
-  ): void;
-};
+/**
+ * @deprecated See the `addRoute` method
+ */
+registerRoute(
+  path: RoutePath,
+  Component: ComponentType<any>,
+  options?: RouteOptions,
+): void;
 ```

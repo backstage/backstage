@@ -14,22 +14,4 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '../icons';
-
-export type RouteRef = {
-  path: string;
-  icon?: IconComponent;
-  title: string;
-};
-
-export type RouteRefConfig = {
-  path: string;
-  icon?: IconComponent;
-  title: string;
-};
-
-export type RouteRefOverrideConfig = {
-  path?: string;
-  icon?: IconComponent;
-  title?: string;
-};
+export { Button } from './Button';

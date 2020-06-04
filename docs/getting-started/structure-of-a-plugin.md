@@ -43,13 +43,18 @@ In the root folder you have some configuration for typescript and jest, the test
 In the `src` folder we get to the interesting bits. Check out the `plugin.ts`:
 
 ```jsx
-import { createPlugin } from '@backstage/core';
+import { createPlugin, createRouteRef } from '@backstage/core';
 import ExampleComponent from './components/ExampleComponent';
 
-export default createPlugin({
+export const rootRouteRef = createRouteRef({
+  path: '/new-plugin',
+  title: 'New plugin',
+});
+
+export const plugin = createPlugin({
   id: 'new-plugin',
   register({ router }) {
-    router.registerRoute('/new-plugin', ExampleComponent);
+    router.addRoute(rootRouteRef, ExampleComponent);
   },
 });
 ```

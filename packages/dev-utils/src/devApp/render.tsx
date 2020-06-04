@@ -33,6 +33,7 @@ import {
   OAuthRequestDialog,
 } from '@backstage/core';
 import * as defaultApiFactories from './apiFactories';
+import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
 
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
 type BackstagePlugin = ReturnType<typeof createPlugin>;
@@ -148,7 +149,7 @@ class DevAppBuilder {
                 key={target.path}
                 to={target.path}
                 text={target.title}
-                icon={target.icon}
+                icon={target.icon ?? SentimentDissatisfiedIcon}
               />,
             );
             break;
