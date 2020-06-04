@@ -72,6 +72,7 @@ export const makeConfigs = async (
       input: 'src/index.ts',
       output,
       preserveEntrySignatures: 'strict',
+      external: require('module').builtinModules,
       plugins: [
         peerDepsExternal({
           includeDependencies: true,
