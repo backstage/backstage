@@ -21,6 +21,7 @@ import {
   executeRedirectStrategy,
   executeRefreshTokenStrategy,
   makeProfileInfo,
+  executeFetchUserProfileStrategy,
 } from '../PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
@@ -81,10 +82,16 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
     refreshToken: string,
     scope: string,
   ): Promise<AuthInfoWithProfile> {
-    const { accessToken, params, profile } = await executeRefreshTokenStrategy(
+    const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
       scope,
+    );
+
+    const profile = await executeFetchUserProfileStrategy(
+      this._strategy,
+      accessToken,
+      params,
     );
 
     return {

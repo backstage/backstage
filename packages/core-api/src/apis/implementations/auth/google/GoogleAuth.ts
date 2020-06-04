@@ -24,6 +24,7 @@ import {
   AccessTokenOptions,
   ProfileInfoApi,
   ProfileInfoOptions,
+  ProfileInfo,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
@@ -41,7 +42,7 @@ type CreateOptions = {
 };
 
 export type GoogleAuthResponse = {
-  profile: any;
+  profile: ProfileInfo;
   accessToken: string;
   idToken: string;
   scope: string;

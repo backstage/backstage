@@ -87,5 +87,4 @@ export type ProfileInfo = {
 export type RefreshTokenResponse = {
   accessToken: string;
   params: any;
-  profile: ProfileInfo;
 };

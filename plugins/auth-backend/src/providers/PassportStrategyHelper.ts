@@ -135,21 +135,31 @@ export const executeRefreshTokenStrategy = async (
           );
         }
 
-        anyStrategy.userProfile(
+        resolve({
           accessToken,
-          (error: Error, passportProfile: passport.Profile) => {
-            if (error) {
-              reject(error);
-            }
+          params,
+        });
+      },
+    );
+  });
+};
 
-            const profile = makeProfileInfo(passportProfile, params);
-            resolve({
-              accessToken,
-              params,
-              profile,
-            });
-          },
-        );
+export const executeFetchUserProfileStrategy = async (
+  providerstrategy: passport.Strategy,
+  accessToken: string,
+  params: any,
+): Promise<ProfileInfo> => {
+  return new Promise((resolve, reject) => {
+    const anyStrategy = providerstrategy as any;
+    anyStrategy.userProfile(
+      accessToken,
+      (error: Error, passportProfile: passport.Profile) => {
+        if (error) {
+          reject(error);
+        }
+
+        const profile = makeProfileInfo(passportProfile, params);
+        resolve(profile);
       },
     );
   });
