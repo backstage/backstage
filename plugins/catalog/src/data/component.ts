@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Location } from '@backstage/catalog-model';
+
 export type Component = {
   name: string;
   kind: string;
   description: string;
+  location?: Location;
 };

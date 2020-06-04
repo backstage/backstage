@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 import { Component } from './component';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, Location } from '@backstage/catalog-model';
 
-export function envelopeToComponent(envelope: Entity): Component {
+export function envelopeToComponent(
+  envelope: Entity,
+  location?: Location,
+): Component {
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
     description: envelope.metadata?.annotations?.description ?? 'placeholder',
+    location,
   };
 }

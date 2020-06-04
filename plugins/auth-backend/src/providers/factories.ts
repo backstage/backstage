@@ -14,37 +14,37 @@
  * limitations under the License.
  */
 
-import {
-  AuthProviderFactories,
-  AuthProviderRouteHandlers,
-  AuthProviderConfig,
-} from './types';
-import { GoogleAuthProvider } from './google';
-import { GithubAuthProvider } from './github';
-import { OAuthProvider } from './OAuthProvider';
+import Router from 'express-promise-router';
+import { createGithubProvider } from './github';
+import { createGoogleProvider } from './google';
+import { createSamlProvider } from './saml';
+import { AuthProviderFactory, AuthProviderConfig } from './types';
 
-export class ProviderFactories {
-  private static readonly providerFactories: AuthProviderFactories = {
-    google: GoogleAuthProvider,
-    github: GithubAuthProvider,
-  };
+const factories: { [providerId: string]: AuthProviderFactory } = {
+  google: createGoogleProvider,
+  github: createGithubProvider,
+  saml: createSamlProvider,
+};
 
-  public static getProviderFactory(
-    config: AuthProviderConfig,
-  ): AuthProviderRouteHandlers {
-    const providerId = config.provider;
-    const ProviderImpl = ProviderFactories.providerFactories[providerId];
-    if (!ProviderImpl) {
-      throw Error(
-        `Provider Implementation missing for : ${providerId} auth provider`,
-      );
-    }
-    const providerInstance = new ProviderImpl(config);
-    const oauthProvider = new OAuthProvider(
-      providerInstance,
-      providerId,
-      config.disableRefresh,
-    );
-    return oauthProvider;
+export function createAuthProvider(providerId: string, config: any) {
+  const factory = factories[providerId];
+  if (!factory) {
+    throw Error(`No auth provider available for '${providerId}'`);
   }
+  return factory(config);
 }
+
+export const createAuthProviderRouter = (config: AuthProviderConfig) => {
+  const providerId = config.provider;
+  const provider = createAuthProvider(providerId, config);
+
+  const router = Router();
+  router.get('/start', provider.start.bind(provider));
+  router.get('/handler/frame', provider.frameHandler.bind(provider));
+  router.post('/handler/frame', provider.frameHandler.bind(provider));
+  router.post('/logout', provider.logout.bind(provider));
+  if (provider.refresh) {
+    router.get('/refresh', provider.refresh.bind(provider));
+  }
+  return router;
+};

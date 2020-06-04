@@ -76,7 +76,7 @@ describe('DefaultAuthConnector', () => {
 
     const helper = new DefaultAuthConnector(defaultOptions);
     await expect(helper.refreshSession()).rejects.toThrow(
-      'Auth refresh request failed with status NOPE',
+      'Auth refresh request failed, NOPE',
     );
   });
 

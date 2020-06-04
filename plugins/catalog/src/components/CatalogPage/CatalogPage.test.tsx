@@ -35,6 +35,8 @@ const catalogApi: Partial<CatalogApi> = {
         kind: 'Component',
       },
     ] as Entity[]),
+  getLocationByEntity: () =>
+    Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
 };
 
 describe('CatalogPage', () => {

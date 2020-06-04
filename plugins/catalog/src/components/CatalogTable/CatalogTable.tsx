@@ -49,12 +49,14 @@ type CatalogTableProps = {
   titlePreamble: string;
   loading: boolean;
   error?: any;
+  actions?: any;
 };
 const CatalogTable: FC<CatalogTableProps> = ({
   components,
   loading,
   error,
   titlePreamble,
+  actions,
 }) => {
   if (loading) {
     return <Progress />;
@@ -71,9 +73,10 @@ const CatalogTable: FC<CatalogTableProps> = ({
   return (
     <Table
       columns={columns}
-      options={{ paging: false }}
+      options={{ paging: false, actionsColumnIndex: -1 }}
       title={`${titlePreamble} (${(components && components.length) || 0})`}
       data={components}
+      actions={actions}
     />
   );
 };

@@ -6,6 +6,7 @@ on:
       - '.github/workflows/cli.yml'
       - 'packages/cli/**'
       - 'packages/core/**'
+      - 'packages/core-api/**'
       - 'yarn.lock'
 
 jobs:
@@ -14,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         node-version: [12.x]
 
     env:
@@ -28,7 +29,7 @@ jobs:
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - name: cache global yarn cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -42,15 +43,8 @@ jobs:
         run: yarn install --frozen-lockfile
       - run: yarn tsc
       - run: yarn build
-      - name: verify app and plugin creation on Windows
+      - name: verify app and plugin creation
         working-directory: ${{ runner.temp }}
-        if: runner.os == 'Windows'
-        run: node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
-        env:
-          BACKSTAGE_E2E_CLI_TEST: true
-      - name: verify app and plugin creation on Linux
-        working-directory: ${{ runner.temp }}
-        if: runner.os == 'Linux'
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
           node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js

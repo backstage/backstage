@@ -16,6 +16,7 @@
 
 import { CatalogApi } from './types';
 import { DescriptorEnvelope } from '../types';
+import { Entity, Location } from '@backstage/catalog-model';
 
 export class CatalogClient implements CatalogApi {
   private apiOrigin: string;
@@ -68,5 +69,23 @@ export class CatalogClient implements CatalogApi {
       location,
       entities,
     };
+  }
+
+  async getLocationByEntity(entity: Entity): Promise<Location | undefined> {
+    const findLocationIdInEntity = (e: Entity): string | undefined =>
+      e.metadata.annotations?.['backstage.io/managed-by-location'];
+
+    const locationId = findLocationIdInEntity(entity);
+    if (!locationId) return undefined;
+
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations/${locationId}`,
+    );
+    if (response.ok) {
+      const location = await response.json();
+      if (location) return location.data;
+    }
+
+    return undefined;
   }
 }

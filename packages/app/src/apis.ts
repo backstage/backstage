@@ -30,6 +30,8 @@ import {
   OAuthRequestManager,
   googleAuthApiRef,
   githubAuthApiRef,
+  storageApiRef,
+  WebStorage,
 } from '@backstage/core';
 
 import {
@@ -45,8 +47,12 @@ import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 const builder = ApiRegistry.builder();
 
 const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
+const errorApi = builder.add(
+  errorApiRef,
+  new ErrorAlerter(alertApi, new ErrorApiForwarder()),
+);
 
-builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
+builder.add(storageApiRef, WebStorage.create({ errorApi }));
 builder.add(circleCIApiRef, new CircleCIApi());
 builder.add(featureFlagsApiRef, new FeatureFlags());
 
