@@ -62,7 +62,7 @@ The **software engineer** uses the app's functionality and interacts with its pl
 ​
 Plugins are what provide the feature functionality in Backstage. They are used to integrate different systems into Backstage's frontend, so that the developer gets a consistent UX, no matter what tool or service is being accessed on the other side.
 ​
-Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform APIs and reusable UI components. Plugins can fetch data either from the backend or through any RESTful API exposed through the proxy_._
+Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform APIs and reusable UI components. Plugins can fetch data either from the backend or an API exposed through the proxy.
 ​
 Learn more about [the different components](https://github.com/spotify/backstage#overview) that make up Backstage.
 ​
@@ -122,7 +122,7 @@ Backstage is an open platform, but you are in control of your own data. You cont
 ​
 Yes. The core frontend framework could be used for building any large-scale web application where (1) multiple teams are building separate parts of the app, and (2) you want the overall experience to be consistent.
 ​
-## That being said, in [Phase 2](https://github.com/spotify/backstage#project-roadmap) of the project we will add features that are needed for developer portals and systems for managing software ecosystems. Our ambition will be to keep Backstage modular.
+That being said, in [Phase 2](https://github.com/spotify/backstage#project-roadmap) of the project we will add features that are needed for developer portals and systems for managing software ecosystems. Our ambition will be to keep Backstage modular.
 ​
 ### How can I get involved?
 ​
