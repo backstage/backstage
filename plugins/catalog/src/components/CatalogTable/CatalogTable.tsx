@@ -15,7 +15,7 @@
  */
 import React, { FC } from 'react';
 import { Component } from '../../data/component';
-import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
+import { InfoCard, Table, TableColumn } from '@backstage/core';
 import { Typography, Link } from '@material-ui/core';
 
 const columns: TableColumn[] = [
@@ -43,15 +43,13 @@ type CatalogTableProps = {
   loading: boolean;
   error?: any;
 };
+
 const CatalogTable: FC<CatalogTableProps> = ({
   components,
   loading,
   error,
   titlePreamble,
 }) => {
-  if (loading) {
-    return <Progress />;
-  }
   if (error) {
     return (
       <InfoCard>
@@ -63,8 +61,13 @@ const CatalogTable: FC<CatalogTableProps> = ({
   }
   return (
     <Table
+      isLoading={loading}
       columns={columns}
-      options={{ paging: false }}
+      options={{
+        paging: false,
+        loadingType: 'linear',
+        showEmptyDataSourceMessage: !loading,
+      }}
       title={`${titlePreamble} (${(components && components.length) || 0})`}
       data={components}
     />
