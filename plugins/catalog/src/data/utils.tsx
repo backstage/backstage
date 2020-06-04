@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 import { Component } from './component';
 import { Entity, Location } from '@backstage/catalog-model';
+import Edit from '@material-ui/icons/Edit';
 
 export function envelopeToComponent(
   envelope: Entity,
@@ -23,7 +25,12 @@ export function envelopeToComponent(
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
-    description: envelope.metadata?.annotations?.description ?? 'placeholder',
+    description: (
+      <span style={{ display: 'flex', alignItems: 'center' }}>
+        {envelope.metadata?.annotations?.description ?? 'placeholder'}
+        <Edit style={{ fontSize: 20, paddingLeft: '5px' }} />
+      </span>
+    ),
     location,
   };
 }
