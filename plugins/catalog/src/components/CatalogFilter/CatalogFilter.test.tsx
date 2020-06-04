@@ -128,4 +128,29 @@ describe('Catalog Filter', () => {
 
     expect(onSelectedChangeHandler).toHaveBeenCalledWith(item);
   });
+
+  it('should render a component when a function is passed to the count component', async () => {
+    const mockGroups: CatalogFilterGroup[] = [
+      {
+        name: 'Test Group 1',
+        items: [
+          {
+            id: 'first',
+            label: 'First Label',
+            count: () => <b>BACKSTAGE!</b>,
+          },
+          {
+            id: 'second',
+            label: 'Second Label',
+            count: 400,
+          },
+        ],
+      },
+    ];
+    const { findByText } = render(
+      wrapInTestApp(<CatalogFilter groups={mockGroups} />),
+    );
+
+    expect(await findByText('BACKSTAGE!')).toBeInTheDocument();
+  });
 });

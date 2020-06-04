@@ -30,7 +30,7 @@ export type CatalogFilterItem = {
   id: string;
   label: string;
   icon?: IconComponent;
-  count?: number;
+  count?: number | React.FC;
   loading?: boolean;
 };
 
@@ -105,7 +105,11 @@ export const CatalogFilter: React.FC<CatalogFilterProps> = ({
                       {item.label}
                     </Typography>
                   </ListItemText>
-                  {item.count}
+                  {typeof item.count === 'function' ? (
+                    <item.count />
+                  ) : (
+                    item.count
+                  )}
                 </MenuItem>
               ))}
             </List>
