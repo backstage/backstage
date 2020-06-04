@@ -15,7 +15,6 @@
  */
 
 import express from 'express';
-import jwtDecoder from 'jwt-decode';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import {
   executeFrameHandlerStrategy,
@@ -77,29 +76,14 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
   }
 
   async refresh(
-    provider: string,
     refreshToken: string,
     scope: string,
   ): Promise<AuthInfoWithProfile> {
-    const { accessToken, params } = await executeRefreshTokenStrategy(
+    const { accessToken, params, profile } = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
       scope,
     );
-
-    // TODO(soapraj): check what happens when you return undefined
-    let profile;
-    try {
-      const { email, name, picture } = jwtDecoder(params.id_token);
-      profile = {
-        provider,
-        email,
-        name,
-        picture,
-      };
-    } catch (e) {
-      console.error('Failed to parse id token and get profile info');
-    }
 
     return {
       accessToken,

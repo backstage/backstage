@@ -15,7 +15,6 @@
  */
 
 import express from 'express';
-import passport from 'passport';
 
 export type AuthProviderConfig = {
   provider: string;
@@ -26,7 +25,7 @@ export type AuthProviderConfig = {
 export interface OAuthProviderHandlers {
   start(req: express.Request, options: any): Promise<any>;
   handler(req: express.Request): Promise<any>;
-  refresh?(provider: string, refreshToken: string, scope: string): Promise<any>;
+  refresh?(refreshToken: string, scope: string): Promise<any>;
   logout?(): Promise<any>;
 }
 
@@ -78,7 +77,15 @@ export type RedirectInfo = {
   status?: number;
 };
 
+export type ProfileInfo = {
+  provider: string;
+  email: string;
+  name: string;
+  picture: string;
+};
+
 export type RefreshTokenResponse = {
   accessToken: string;
   params: any;
+  profile: ProfileInfo;
 };

@@ -16,7 +16,43 @@
 
 import express from 'express';
 import passport from 'passport';
-import { RedirectInfo, RefreshTokenResponse } from './types';
+import jwtDecoder from 'jwt-decode';
+import { RedirectInfo, RefreshTokenResponse, ProfileInfo } from './types';
+
+export const makeProfileInfo = (
+  profile: passport.Profile,
+  params: any,
+): ProfileInfo => {
+  const { provider, displayName: name } = profile;
+
+  let email = '';
+  if (profile.emails) {
+    const [firstEmail] = profile.emails;
+    email = firstEmail.value;
+  }
+
+  if (!email && params.id_token) {
+    try {
+      const decoded: { email: string } = jwtDecoder(params.id_token);
+      email = decoded.email;
+    } catch (e) {
+      console.error('Failed to parse id token and get profile info');
+    }
+  }
+
+  let picture = '';
+  if (profile.photos) {
+    const [firstPhoto] = profile.photos;
+    picture = firstPhoto.value;
+  }
+
+  return {
+    provider,
+    name,
+    email,
+    picture,
+  };
+};
 
 export const executeRedirectStrategy = async (
   req: express.Request,
@@ -98,10 +134,22 @@ export const executeRefreshTokenStrategy = async (
             ),
           );
         }
-        resolve({
+
+        anyStrategy.userProfile(
           accessToken,
-          params,
-        });
+          (err: Error, passportProfile: passport.Profile) => {
+            if (err) {
+              reject(err);
+            }
+
+            const profile = makeProfileInfo(passportProfile, params);
+            resolve({
+              accessToken,
+              params,
+              profile,
+            });
+          },
+        );
       },
     );
   });
