@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-import { buildPackage } from '../lib/packager';
+import { buildPackage, Output } from '../lib/packager';
+import { Command } from 'commander';
 
-export default async () => {
-  await buildPackage({
-    outputs: new Set(['types', 'esm', 'cjs']),
-  });
+export default async (cmd: Command) => {
+  let outputs = new Set<Output>();
+
+  const { outputs: outputsStr } = cmd as { outputs?: string };
+  if (outputsStr) {
+    for (const output of outputsStr.split(',') as (keyof typeof Output)[]) {
+      if (output in Output) {
+        outputs.add(Output[output]);
+      } else {
+        throw new Error(`Unknown output format: ${output}`);
+      }
+    }
+  } else {
+    outputs = new Set([Output.types, Output.esm, Output.cjs]);
+  }
+
+  await buildPackage({ outputs });
 };

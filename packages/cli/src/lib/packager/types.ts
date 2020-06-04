@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-export type OutputFormat = 'esm' | 'cjs' | 'types';
+export enum Output {
+  esm,
+  cjs,
+  types,
+}
 
 export type BuildOptions = {
-  outputs: Set<OutputFormat>;
+  outputs: Set<Output>;
 };

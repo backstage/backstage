@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { buildPackage } from '../../lib/packager';
+import { buildPackage, Output } from '../../lib/packager';
 
 export default async () => {
   await buildPackage({
-    outputs: new Set(['esm', 'types']),
+    outputs: new Set([Output.esm, Output.types]),
   });
 };

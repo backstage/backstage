@@ -81,6 +81,7 @@ const main = (argv: string[]) => {
   program
     .command('build')
     .description('Build a package for publishing')
+    .option('--outputs <formats>', 'List of formats to output [types,cjs,esm]')
     .action(actionHandler(() => require('./commands/build')));
 
   program

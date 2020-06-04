@@ -26,7 +26,7 @@ import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
 import { RollupOptions, OutputOptions } from 'rollup';
 
-import { BuildOptions } from './types';
+import { BuildOptions, Output } from './types';
 import { paths } from '../paths';
 
 export const makeConfigs = async (
@@ -48,16 +48,16 @@ export const makeConfigs = async (
 
   const configs = new Array<RollupOptions>();
 
-  if (options.outputs.has('cjs') || options.outputs.has('esm')) {
+  if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
     const output = new Array<OutputOptions>();
 
-    if (options.outputs.has('cjs')) {
+    if (options.outputs.has(Output.cjs)) {
       output.push({
         file: 'dist/index.cjs.js',
         format: 'commonjs',
       });
     }
-    if (options.outputs.has('esm')) {
+    if (options.outputs.has(Output.esm)) {
       output.push({
         file: 'dist/index.esm.js',
         format: 'module',
@@ -88,7 +88,7 @@ export const makeConfigs = async (
     });
   }
 
-  if (options.outputs.has('types')) {
+  if (options.outputs.has(Output.types)) {
     configs.push({
       input: typesInput,
       output: {
