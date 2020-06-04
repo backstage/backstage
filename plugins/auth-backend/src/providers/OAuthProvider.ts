@@ -199,7 +199,6 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
   }
 
   async logout(req: express.Request, res: express.Response): Promise<any> {
-    //TODO(soapraj): Logout doesnt work yet
     if (!ensuresXRequestedWith(req)) {
       return res.status(401).send('Invalid X-Requested-With header');
     }
@@ -234,7 +233,6 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
 
       // get new access_token
       const refreshInfo = await this.providerHandlers.refresh(
-        this.provider,
         refreshToken,
         scope,
       );

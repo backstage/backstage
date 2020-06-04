@@ -24,7 +24,6 @@ import {
   AccessTokenOptions,
   ProfileInfoApi,
   ProfileInfoOptions,
-  ProfileInfo,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';

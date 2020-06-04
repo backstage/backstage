@@ -28,11 +28,12 @@ import {
   ListItemSecondaryAction,
   IconButton,
   Tooltip,
+  Typography,
 } from '@material-ui/core';
 import { blueGrey } from '@material-ui/core/colors';
 import { useSetState } from 'react-use';
 import { Skeleton } from '@material-ui/lab';
-import { useApi, googleAuthApiRef, ProfileInfo } from '@backstage/core';
+import { useApi, googleAuthApiRef, ProfileInfo } from '@backstage/core-api';
 import LogoutIcon from '@material-ui/icons/PowerSettingsNew';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -90,7 +91,6 @@ const SessionListItem: FC<{
           <Skeleton variant="circle" width={40} height={40} />
         </ListItemIcon>
         <ListItemText
-          className={classes.listItemText}
           primary={<Skeleton component="span" width={120} />}
           secondary={<Skeleton component="span" width={60} />}
         />
@@ -103,16 +103,12 @@ const SessionListItem: FC<{
     );
   }
 
-  //TODO: Not functional yet to sign in from the sidebar
+  // TODO: Not functional yet to sign in from the sidebar
   if (!user) {
     return (
       <ListItem {...props}>
         <ListItemIcon style={{ marginRight: 0 }}>{icon}</ListItemIcon>
-        <ListItemText
-          className={classes.listItemText}
-          primary="Sign In"
-          secondary={title}
-        />
+        <ListItemText primary="Sign In" secondary={title} />
         <ListItemSecondaryAction>
           <Tooltip
             title={`Sign in with ${title}`}
@@ -139,7 +135,11 @@ const SessionListItem: FC<{
       </ListItemAvatar>
       <ListItemText
         className={classes.listItemText}
-        primary={id}
+        primary={
+          <Typography className={classes.listItemText} variant="body2">
+            {id}
+          </Typography>
+        }
         secondary={title}
       />
       <ListItemSecondaryAction style={{ marginLeft: '30px' }}>
@@ -163,25 +163,21 @@ const useGoogleLoginState = (open: boolean) => {
   const [profile, setProfile] = useState<ProfileInfo>();
 
   useEffect(() => {
-    if (!open) {
-      return;
-    }
-
     let didCancel = false;
 
-    googleAuth.getProfile().then(profile => {
-      if (didCancel) {
-        return;
-      }
-
-      setProfile(profile);
-      setLoading(false);
-    });
+    if (open) {
+      googleAuth.getProfile().then(_profile => {
+        if (!didCancel) {
+          setProfile(_profile);
+          setLoading(false);
+        }
+      });
+    }
 
     return () => {
       didCancel = true;
     };
-  }, [open]);
+  }, [open, googleAuth]);
 
   if (loading) {
     return { loading: true };
@@ -261,8 +257,11 @@ export const LoggedUserBadge: FC<Props> = ({
           </ListItemAvatar>
           {!collapsedMode && (
             <ListItemText
-              primary={displayName}
-              className={classes.listItemText}
+              primary={
+                <Typography className={classes.listItemText} variant="body2">
+                  {displayName}
+                </Typography>
+              }
             />
           )}
         </ListItem>

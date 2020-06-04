@@ -137,9 +137,9 @@ export const executeRefreshTokenStrategy = async (
 
         anyStrategy.userProfile(
           accessToken,
-          (err: Error, passportProfile: passport.Profile) => {
-            if (err) {
-              reject(err);
+          (error: Error, passportProfile: passport.Profile) => {
+            if (error) {
+              reject(error);
             }
 
             const profile = makeProfileInfo(passportProfile, params);

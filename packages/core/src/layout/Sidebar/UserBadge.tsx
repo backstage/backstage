@@ -16,14 +16,14 @@
 
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core';
-import People from '@material-ui/icons/People';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { SidebarContext } from './config';
 import { SidebarItem } from './Items';
 import { LoggedUserBadge } from './LoggedUserBadge';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
-import { useApi, googleAuthApiRef, ProfileInfo } from '@backstage/core';
+import { useApi, googleAuthApiRef, ProfileInfo } from '@backstage/core-api';
 
 const ARROW_BUTTON_SIZE = 20;
 const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(theme => {
@@ -63,8 +63,8 @@ export const SidebarUserBadge: FC<{}> = () => {
   const [profile, setProfile] = useState<ProfileInfo>();
 
   useEffect(() => {
-    //TODO(soapraj): How to observe if the user is logged in
-    //TODO(soapraj): Enumerate all the providers supported by the app and let user log in from here
+    // TODO(soapraj): How to observe if the user is logged in
+    // TODO(soapraj): List all the providers supported by the app and let user log in from here
     googleAuth.getProfile({ optional: true }).then(googleProfile => {
       setProfile(googleProfile);
     });
@@ -82,7 +82,7 @@ export const SidebarUserBadge: FC<{}> = () => {
           />
         </>
       ) : (
-        <SidebarItem icon={People} text="" disableSelected />
+        <SidebarItem icon={AccountCircleIcon} text="" disableSelected />
       )}
       {isOpen && (
         <button

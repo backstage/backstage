@@ -20,6 +20,7 @@ import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   executeRefreshTokenStrategy,
+  makeProfileInfo,
 } from '../PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
@@ -30,6 +31,7 @@ import {
   AuthInfoWithProfile,
 } from '../types';
 import { OAuthProvider } from '../OAuthProvider';
+import passport from 'passport';
 
 export class GoogleAuthProvider implements OAuthProviderHandlers {
   private readonly providerConfig: AuthProviderConfig;
@@ -44,14 +46,14 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
         accessToken: any,
         refreshToken: any,
         params: any,
-        profile: any,
+        profile: passport.Profile,
         done: any,
       ) => {
+        const profileInfo = makeProfileInfo(profile, params);
         done(
           undefined,
           {
-            //TODO(soapraj): extract ProfileInfo from passport.Profile and send only that
-            profile,
+            profile: profileInfo,
             idToken: params.id_token,
             accessToken,
             scope: params.scope,
