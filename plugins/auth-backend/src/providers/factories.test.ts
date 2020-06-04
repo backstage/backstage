@@ -14,17 +14,46 @@
  * limitations under the License.
  */
 
-import { ProviderFactories } from './factories';
+import * as factoryMethods from './factories';
+import { AuthProviderRouteHandlers } from './types';
 
-describe('getProviderFactory', () => {
-  it('returns a provider if exists', () => {
-    const provider = ProviderFactories.getProviderFactory('google');
-    expect(provider).toBeDefined();
-  });
+const providerConfig = {
+  provider: 'a',
+  options: {
+    clientID: 'TEST',
+  },
+};
 
-  it('throws an error when provider implementation does not exist', () => {
-    expect(() => {
-      ProviderFactories.getProviderFactory('b');
-    }).toThrow('Provider Implementation missing for : b auth provider');
+const providerConfigInvalid = {
+  provider: 'b',
+  options: {
+    clientID: 'TEST',
+  },
+};
+
+const authProviderRouteHandlersImpl = ({
+  start: jest.fn(),
+  frameHandler: jest.fn(),
+  logout: jest.fn(),
+  refresh: jest.fn(),
+} as unknown) as AuthProviderRouteHandlers;
+
+describe('factories', () => {
+  describe('createAuthProviderRouter', () => {
+    it('should create a router for auth provider', () => {
+      jest
+        .spyOn(factoryMethods, 'createAuthProvider')
+        .mockReturnValueOnce(authProviderRouteHandlersImpl);
+      const providerRouter = factoryMethods.createAuthProviderRouter(
+        providerConfig,
+      );
+      expect(providerRouter).toBeDefined();
+    });
+
+    it('should throw error if auth provider does not exist', () => {
+      expect(() => {
+        factoryMethods.createAuthProviderRouter(providerConfigInvalid);
+      }).toThrow("No auth provider available for 'b'");
+    });
   });
 });
