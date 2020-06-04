@@ -27,6 +27,10 @@ To try out SAML, you can use the mock identity provider:
 ./scripts/start-saml-idp.sh
 ```
 
+## Authentication providers
+
+[How to add a auth provider](auth-provider.md)
+
 ## Links
 
 - (The Backstage homepage)[https://backstage.io]
