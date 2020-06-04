@@ -25,7 +25,6 @@ import {
   Page,
   pageTheme,
   useApi,
-  storageApiRef,
 } from '@backstage/core';
 import { useAsync } from 'react-use';
 import CatalogTable from '../CatalogTable/CatalogTable';
