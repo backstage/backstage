@@ -14,30 +14,41 @@
  * limitations under the License.
  */
 
+import { NotFoundError } from '@backstage/backend-common';
+import { LocationSpec } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
-import { URL } from 'url';
-import { LocationReader } from './types';
+import { LocationProcessor, LocationProcessorResult } from './types';
 
-/**
- * Reads a file whose target is a GitHub URL.
- *
- * Uses raw.githubusercontent.com for now, but this will probably change in the
- * future when token auth is implemented.
- */
-export class GitHubLocationReader implements LocationReader {
-  async tryRead(type: string, target: string): Promise<Buffer | undefined> {
-    if (type !== 'github') {
+export class GithubReaderProcessor implements LocationProcessor {
+  async readLocation(
+    location: LocationSpec,
+  ): Promise<LocationProcessorResult[] | undefined> {
+    if (location.type !== 'github') {
       return undefined;
     }
 
-    const url = this.buildRawUrl(target);
+    const url = this.buildRawUrl(location.target);
+    const response = await fetch(url.toString()); // May also throw
+
+    if (!response.ok) {
+      const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
+      } else {
+        throw new Error(message);
+      }
+    }
+
     try {
-      return await fetch(url.toString()).then(x => x.buffer());
+      return [{ type: 'data', location, data: await response.buffer() }];
     } catch (e) {
-      throw new Error(`Unable to read "${target}", ${e}`);
+      throw new Error(`Unable to read body of ${location.target}, ${e}`);
     }
   }
 
+  // Converts
+  // from: https://github.com/a/b/blob/master/c.yaml
+  // to:   https://raw.githubusercontent.com/a/b/master/c.yaml
   private buildRawUrl(target: string): URL {
     try {
       const url = new URL(target);

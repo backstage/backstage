@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-export type LocationReader = {
-  /**
-   * Reads the contents of a single location.
-   *
-   * @param type The type of location to read
-   * @param target The location target (type-specific)
-   * @returns The target contents, as a raw Buffer, or undefined if this type
-   *          was not meant to be consumed by this reader
-   * @throws An error if the type was meant for this reader, but could not be
-   *         read
-   */
-  tryRead(type: string, target: string): Promise<Buffer | undefined>;
-};
+import { Entity, EntityPolicy } from '@backstage/catalog-model';
+import { LocationProcessor } from './types';
+
+export class EntityPolicyProcessor implements LocationProcessor {
+  private readonly policy: EntityPolicy;
+
+  constructor(policy: EntityPolicy) {
+    this.policy = policy;
+  }
+
+  async processEntity(entity: Entity): Promise<Entity> {
+    return this.policy.enforce(entity);
+  }
+}

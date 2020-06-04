@@ -24,8 +24,11 @@ import {
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { IngestionModel } from '../ingestion';
-import { AddLocationResult, HigherOrderOperation } from './types';
+import {
+  AddLocationResult,
+  HigherOrderOperation,
+  LocationReader,
+} from './types';
 import { Logger } from 'winston';
 
 /**
@@ -38,18 +41,18 @@ import { Logger } from 'winston';
 export class HigherOrderOperations implements HigherOrderOperation {
   private readonly entitiesCatalog: EntitiesCatalog;
   private readonly locationsCatalog: LocationsCatalog;
-  private readonly ingestionModel: IngestionModel;
+  private readonly locationReader: LocationReader;
   private readonly logger: Logger;
 
   constructor(
     entitiesCatalog: EntitiesCatalog,
     locationsCatalog: LocationsCatalog,
-    ingestionModel: IngestionModel,
+    locationReader: LocationReader,
     logger: Logger,
   ) {
     this.entitiesCatalog = entitiesCatalog;
     this.locationsCatalog = locationsCatalog;
-    this.ingestionModel = ingestionModel;
+    this.locationReader = locationReader;
     this.logger = logger;
   }
 
@@ -80,28 +83,16 @@ export class HigherOrderOperations implements HigherOrderOperation {
         };
 
     // Read the location fully, bailing on any errors
-    const readerOutput = await this.ingestionModel.readLocation(
-      location.type,
-      location.target,
-    );
-    const inputEntities: Entity[] = [];
-    for (const entry of readerOutput) {
-      if (entry.type === 'error') {
-        throw new InputError(
-          `Failed to read location ${location.type} ${location.target}, ${entry.error}`,
-        );
-      } else {
-        // Append the location reference annotation
-        entry.data.metadata.annotations = {
-          ...entry.data.metadata.annotations,
-          [LOCATION_ANNOTATION]: location.id,
-        };
-        inputEntities.push(entry.data);
-      }
+    const readerOutput = await this.locationReader.read(spec);
+    if (readerOutput.errors.length) {
+      const item = readerOutput.errors[0];
+      throw new InputError(
+        `Failed to read location ${item.location.type} ${item.location.target}, ${item.error}`,
+      );
     }
 
     // TODO(freben): At this point, we could detect orphaned entities, by way
-    // of having a LOCATION_ANNOTATION pointing to the location but not being
+    // of having a location annotation pointing to the location but not being
     // in the entities list. But we aren't sure what to do about those yet.
 
     // Write
@@ -109,9 +100,9 @@ export class HigherOrderOperations implements HigherOrderOperation {
       await this.locationsCatalog.addLocation(location);
     }
     const outputEntities: Entity[] = [];
-    for (const entity of inputEntities) {
+    for (const entity of readerOutput.entities) {
       const out = await this.entitiesCatalog.addOrUpdateEntity(
-        entity,
+        entity.entity,
         location.id,
       );
       outputEntities.push(out);
@@ -157,20 +148,20 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
   // Performs a full refresh of a single location
   private async refreshSingleLocation(location: Location) {
-    const readerOutput = await this.ingestionModel.readLocation(
-      location.type,
-      location.target,
-    );
+    const readerOutput = await this.locationReader.read({
+      type: location.type,
+      target: location.target,
+    });
 
-    for (const readerItem of readerOutput) {
-      if (readerItem.type === 'error') {
-        this.logger.debug(
-          `Failed item in location id="${location.id}" type="${location.type}" target="${location.target}", ${readerItem.error}`,
-        );
-        continue;
-      }
+    for (const item of readerOutput.errors) {
+      this.logger.debug(
+        `Failed item in location type="${item.location.type}" target="${item.location.target}", ${item.error}`,
+      );
+    }
 
-      const entity = readerItem.data;
+    for (const item of readerOutput.entities) {
+      const { entity } = item;
+
       this.logger.debug(
         `Read entity kind="${entity.kind}" name="${
           entity.metadata.name

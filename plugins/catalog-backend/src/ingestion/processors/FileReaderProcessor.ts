@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
+import { NotFoundError } from '@backstage/backend-common';
+import { LocationSpec } from '@backstage/catalog-model';
 import fs from 'fs-extra';
-import { LocationReader } from './types';
+import { LocationProcessor, LocationProcessorResult } from './types';
 
-/**
- * Reads a file from the local file system.
- */
-export class FileLocationReader implements LocationReader {
-  async tryRead(type: string, target: string): Promise<Buffer | undefined> {
-    if (type !== 'file') {
+export class FileReaderProcessor implements LocationProcessor {
+  async readLocation(
+    location: LocationSpec,
+  ): Promise<LocationProcessorResult[] | undefined> {
+    if (location.type !== 'file') {
       return undefined;
     }
 
+    if (!(await fs.pathExists(location.target))) {
+      throw new NotFoundError(`${location.target} does not exist`);
+    }
+
     try {
-      return await fs.readFile(target);
+      const data = await fs.readFile(location.target);
+      return [{ type: 'data', location, data }];
     } catch (e) {
-      throw new Error(`Unable to read "${target}", ${e}`);
+      throw new Error(`Unable to read ${location.target}, ${e}`);
     }
   }
 }

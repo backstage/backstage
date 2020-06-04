@@ -14,5 +14,15 @@
  * limitations under the License.
  */
 
-export { DescriptorParsers } from './DescriptorParsers';
-export { YamlDescriptorParser } from './parsers/YamlDescriptorParser';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
+import lodash from 'lodash';
+import { LocationProcessor } from './types';
+
+export class AnnotateLocationEntityProcessor implements LocationProcessor {
+  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
+    const annotations = {
+      'backstage.io/managed-by-location': `${location.type}:${location.target}`,
+    };
+    return lodash.merge({ metadata: { annotations } }, entity);
+  }
+}
