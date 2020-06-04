@@ -43,11 +43,6 @@ export class DatabaseManager {
     knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });
-
-    await knex.migrate.latest({
-      directory: path.resolve(__dirname, 'migrations'),
-      loadExtensions: ['.js'],
-    });
-    return new CommonDatabase(knex, logger);
+    return DatabaseManager.createDatabase(knex, logger);
   }
 }

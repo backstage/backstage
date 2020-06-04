@@ -17,7 +17,6 @@ import React, { FC } from 'react';
 import { Component } from '../../data/component';
 import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
 import { Typography, Link } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
 
 const columns: TableColumn[] = [
   {
@@ -67,18 +66,7 @@ const CatalogTable: FC<CatalogTableProps> = ({
       columns={columns}
       options={{ paging: false }}
       title={`${titlePreamble} (${(components && components.length) || 0})`}
-      data={components.map(({ kind, name, description }) => ({
-        kind,
-        name,
-        description: (
-          <div>
-            {description}
-            <Link href="" target="_blank" rel="noopener" color="inherit">
-              <EditIcon />
-            </Link>
-          </div>
-        ),
-      }))}
+      data={components}
     />
   );
 };
