@@ -26,7 +26,7 @@ import {
   pageTheme,
   useApi,
 } from '@backstage/core';
-import { useAsync } from 'react-use';
+import { useAsync, useMountedState } from 'react-use';
 import CatalogTable from '../CatalogTable/CatalogTable';
 import {
   CatalogFilter,
@@ -57,6 +57,7 @@ const CatalogPage: FC<{}> = () => {
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
+  const isMounted = useMountedState();
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
@@ -77,9 +78,11 @@ const CatalogPage: FC<{}> = () => {
           (location): Location[] =>
             location.filter(l => !!l) as Array<Location>,
         )
-        .then(setLocations);
+        .then(location => {
+          if (isMounted()) setLocations(location);
+        });
     }
-  }, [value, catalogApi]);
+  }, [value, catalogApi, isMounted]);
 
   const actions = [
     (rowData: Component) => ({
