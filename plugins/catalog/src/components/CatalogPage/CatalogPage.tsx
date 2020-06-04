@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useCallback, useState, useEffect } from 'react';
 import {
   Content,
   ContentHeader,
@@ -26,7 +26,7 @@ import {
   pageTheme,
   useApi,
 } from '@backstage/core';
-import { useAsync } from 'react-use';
+import { useAsync, useMountedState } from 'react-use';
 import CatalogTable from '../CatalogTable/CatalogTable';
 import {
   CatalogFilter,
@@ -34,6 +34,8 @@ import {
 } from '../CatalogFilter/CatalogFilter';
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import { filterGroups, defaultFilter } from '../../data/filters';
+import GitHub from '@material-ui/icons/GitHub';
+import { Entity, Location } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -46,19 +48,63 @@ const useStyles = makeStyles(theme => ({
 
 import { catalogApiRef } from '../..';
 import { envelopeToComponent } from '../../data/utils';
+import { Component } from '../../data/component';
 
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const { value, error, loading } = useAsync(() => catalogApi.getEntities());
-  const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
+  const isMounted = useMountedState();
 
-  const onFilterSelected = React.useCallback(
+  const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
     [],
   );
   const styles = useStyles();
+
+  useEffect(() => {
+    const getLocationDataForEntities = async (entities: Entity[]) => {
+      return Promise.all(
+        entities.map(entity => catalogApi.getLocationByEntity(entity)),
+      );
+    };
+
+    if (value) {
+      getLocationDataForEntities(value)
+        .then(
+          (location): Location[] =>
+            location.filter(l => !!l) as Array<Location>,
+        )
+        .then(location => {
+          if (isMounted()) setLocations(location);
+        });
+    }
+  }, [value, catalogApi, isMounted]);
+
+  const actions = [
+    (rowData: Component) => ({
+      icon: GitHub,
+      tooltip: 'View on GitHub',
+      onClick: () => {
+        if (!rowData || !rowData.location) return;
+        window.open(rowData.location.target, '_blank');
+      },
+      hidden:
+        rowData && rowData.location ? rowData.location.type !== 'github' : true,
+    }),
+  ];
+
+  const findLocationForEntity = (
+    entity: Entity,
+    l: Location[],
+  ): Location | undefined => {
+    const entityLocationId =
+      entity.metadata.annotations?.['backstage.io/managed-by-location'];
+    return l.find(location => location.id === entityLocationId);
+  };
 
   return (
     <Page theme={pageTheme.home}>
@@ -98,9 +144,19 @@ const CatalogPage: FC<{}> = () => {
           </div>
           <CatalogTable
             titlePreamble={selectedFilter.label}
-            components={(value && value.map(envelopeToComponent)) || []}
+            components={
+              (value &&
+                value.map(val =>
+                  envelopeToComponent(
+                    val,
+                    findLocationForEntity(val, locations),
+                  ),
+                )) ||
+              []
+            }
             loading={loading}
             error={error}
+            actions={actions}
           />
         </div>
       </Content>
