@@ -115,7 +115,7 @@ export class DefaultAuthConnector<AuthSession>
 
     if (!res.ok) {
       const error: any = new Error(
-        `Auth refresh request failed with status ${res.statusText}`,
+        `Auth refresh request failed, ${res.statusText}`,
       );
       error.status = res.status;
       throw error;
@@ -140,10 +140,14 @@ export class DefaultAuthConnector<AuthSession>
         'x-requested-with': 'XMLHttpRequest',
       },
       credentials: 'include',
+    }).catch(error => {
+      throw new Error(`Logout request failed, ${error}`);
     });
 
     if (!res.ok) {
-      throw new Error(`Logout request failed with status ${res.status}`);
+      const error: any = new Error(`Logout request failed, ${res.statusText}`);
+      error.status = res.status;
+      throw error;
     }
   }
 
