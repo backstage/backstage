@@ -20,6 +20,7 @@ import {
   FormControl,
   FormHelperText,
   TextField,
+  LinearProgress,
 } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { makeStyles } from '@material-ui/core/styles';
@@ -37,11 +38,12 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-type RegisterComponentProps = {
+export type Props = {
   onSubmit: (formData: Record<string, string>) => Promise<void>;
+  submitting: boolean;
 };
 
-const RegisterComponentForm: FC<RegisterComponentProps> = ({ onSubmit }) => {
+const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
   const { register, handleSubmit, errors, formState } = useForm({
     mode: 'onChange',
   });
@@ -49,23 +51,27 @@ const RegisterComponentForm: FC<RegisterComponentProps> = ({ onSubmit }) => {
   const hasErrors = !!errors.componentLocation;
   const dirty = formState?.dirty;
 
-  return (
+  return submitting ? (
+    <LinearProgress data-testid="loading-progress" />
+  ) : (
     <form
       autoComplete="off"
       onSubmit={handleSubmit(onSubmit)}
       className={classes.form}
+      data-testid="register-form"
     >
       <FormControl>
         <TextField
           id="registerComponentInput"
           variant="outlined"
           label="Component service file URL"
+          data-testid="componentLocationInput"
           error={hasErrors}
           placeholder="https://example.com/user/some-service/blob/master/service-info.yaml"
           name="componentLocation"
           required
           margin="normal"
-          helperText="Enter the full path to the service-info.yaml file in GHE to start tracking your component. It must be in a public repo, on the master branch."
+          helperText="Enter the full path to the service-info.yaml file in GitHub to start tracking your component. It must be in a public repo."
           inputRef={register({
             required: true,
             validate: ComponentIdValidators,

@@ -15,20 +15,45 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import mockFetch from 'jest-fetch-mock';
+import { render, cleanup } from '@testing-library/react';
 import RegisterComponentPage from './RegisterComponentPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
+import { errorApiRef, ApiProvider, ApiRegistry } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog';
+import { MemoryRouter } from 'react-router-dom';
 
+const errorApi = { post: () => {} };
+const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  addLocation: jest.fn((_a, _b) => new Promise(() => {})),
+  getEntities: jest.fn(),
+  getEntityByName: jest.fn(),
+};
+
+const setup = () => ({
+  rendered: render(
+    <MemoryRouter>
+      <ApiProvider
+        apis={ApiRegistry.from([
+          [errorApiRef, errorApi],
+          [catalogApiRef, catalogApi],
+        ])}
+      >
+        <ThemeProvider theme={lightTheme}>
+          <RegisterComponentPage />
+        </ThemeProvider>
+      </ApiProvider>
+    </MemoryRouter>,
+  ),
+});
 describe('RegisterComponentPage', () => {
+  afterEach(() => cleanup());
+
   it('should render', () => {
-    mockFetch.mockResponse(() => new Promise(() => {}));
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <RegisterComponentPage />
-      </ThemeProvider>,
-    );
-    expect(rendered.getByText('Register Component')).toBeInTheDocument();
+    const { rendered } = setup();
+    expect(
+      rendered.getByText('Register existing component'),
+    ).toBeInTheDocument();
   });
 });

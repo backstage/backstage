@@ -15,22 +15,7 @@
  */
 
 import React, { FC, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import {
-  Grid,
-  makeStyles,
-  DialogTitle,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-  ListItem,
-  List,
-  LinearProgress,
-  Divider,
-  Link,
-} from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 import {
   InfoCard,
   Page,
@@ -38,16 +23,13 @@ import {
   Content,
   useApi,
   errorApiRef,
-  StructuredMetadataTable,
   Header,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
-import {
-  entityRoute,
-  rootRoute as catalogRootRoute,
-  catalogApiRef
-} from '@backstage/plugin-catalog';
-import { generatePath } from 'react-router';
+import { catalogApiRef } from '@backstage/plugin-catalog';
+import { useMountedState } from 'react-use';
+import { Entity, Location } from '@backstage/catalog-model';
+import { RegisterComponentResultDialog } from '../RegisterComponentResultDialog';
 
 const useStyles = makeStyles(theme => ({
   dialogPaper: {
@@ -76,11 +58,15 @@ const RegisterComponentPage: FC<{}> = () => {
   const [formState, setFormState] = useState<ValuesOf<typeof FormStates>>(
     FormStates.Idle,
   );
+  const isMounted = useMountedState();
 
   const errorApi = useApi(errorApiRef);
 
   const [result, setResult] = useState<{
-    data: any;
+    data: {
+      entities: Entity[];
+      location: Location;
+    } | null;
     error: null | Error;
   }>({
     data: null,
@@ -93,12 +79,17 @@ const RegisterComponentPage: FC<{}> = () => {
     try {
       const data = await catalogApi.addLocation('github', target);
 
+      if (!isMounted()) return;
+
       setResult({ error: null, data });
       setFormState(FormStates.Success);
     } catch (e) {
+      errorApi.post(e);
+
+      if (!isMounted()) return;
+
       setResult({ error: e, data: null });
       setFormState(FormStates.Idle);
-      errorApi.post(e);
     }
   };
 
@@ -109,70 +100,21 @@ const RegisterComponentPage: FC<{}> = () => {
         <Grid container spacing={3} direction="column">
           <Grid item>
             <InfoCard title="Start tracking your component in Backstage">
-              {formState === FormStates.Submitting ? (
-                <LinearProgress />
-              ) : (
-                <RegisterComponentForm onSubmit={handleSubmit} />
-              )}
+              <RegisterComponentForm
+                onSubmit={handleSubmit}
+                submitting={formState === FormStates.Submitting}
+              />
             </InfoCard>
           </Grid>
         </Grid>
       </Content>
-      <Dialog
-        open={formState === FormStates.Success}
-        onClose={() => setFormState(FormStates.Idle)}
-        classes={{ paper: classes.dialogPaper }}
-      >
-        <DialogTitle>Component registration result</DialogTitle>
-        {formState === FormStates.Success && (
-          <>
-            <DialogContent>
-              <DialogContentText>
-                Following components have been succefully created:
-                <List>
-                  {result.data.entities.map((entity: any, index: number) => (
-                    <>
-                      <ListItem>
-                        <StructuredMetadataTable
-                          dense
-                          metadata={{
-                            name: entity.metadata.name,
-                            type: entity.spec.type,
-                            link: (
-                              <Link
-                                component={RouterLink}
-                                to={generatePath(entityRoute.path, {
-                                  name: entity.metadata.name,
-                                })}
-                              >
-                                {generatePath(entityRoute.path, {
-                                  name: entity.metadata.name,
-                                })}
-                              </Link>
-                            ),
-                          }}
-                        />
-                      </ListItem>
-                      {index < result.data.entities.length - 1 && (
-                        <Divider component="li" />
-                      )}
-                    </>
-                  ))}
-                </List>
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button
-                component={RouterLink}
-                to={catalogRootRoute.path}
-                color="default"
-              >
-                To Catalog
-              </Button>
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
+      {formState === FormStates.Success && (
+        <RegisterComponentResultDialog
+          entities={result.data!.entities}
+          onClose={() => setFormState(FormStates.Idle)}
+          classes={{ paper: classes.dialogPaper }}
+        />
+      )}
     </Page>
   );
 };
