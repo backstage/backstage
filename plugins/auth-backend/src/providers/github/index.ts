@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { GithubAuthProvider } from './provider';
+export { createGithubProvider } from './provider';

@@ -16,8 +16,13 @@
 
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { StaticEntitiesCatalog } from '../catalog';
 import { createStandaloneApplication } from './standaloneApplication';
+import { DatabaseEntitiesCatalog } from '../catalog/DatabaseEntitiesCatalog';
+import { DatabaseManager } from '../database/DatabaseManager';
+import { DatabaseLocationsCatalog } from '../catalog/DatabaseLocationsCatalog';
+import { LocationReaders } from '../ingestion/source/LocationReaders';
+import { IngestionModels, DescriptorParsers, HigherOrderOperations } from '..';
+import { EntityPolicies } from '@backstage/catalog-model';
 
 export interface ServerOptions {
   port: number;
@@ -30,25 +35,28 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'catalog-backend' });
 
-  const entitiesCatalog = new StaticEntitiesCatalog([
-    {
-      apiVersion: 'backstage.io/v1beta1',
-      kind: 'Component',
-      metadata: { name: 'c1' },
-      spec: { type: 'service' },
-    },
-    {
-      apiVersion: 'backstage.io/v1beta1',
-      kind: 'Component',
-      metadata: { name: 'c2' },
-      spec: { type: 'service' },
-    },
-  ]);
+  const db = await DatabaseManager.createInMemoryDatabase(logger);
+
+  const entitiesCatalog = new DatabaseEntitiesCatalog(db);
+  const locationsCatalog = new DatabaseLocationsCatalog(db);
+  const ingestionModel = new IngestionModels(
+    new LocationReaders(),
+    new DescriptorParsers(),
+    new EntityPolicies(),
+  );
+  const higherOrderOperation = new HigherOrderOperations(
+    entitiesCatalog,
+    locationsCatalog,
+    ingestionModel,
+    logger,
+  );
 
   logger.debug('Creating application...');
   const app = await createStandaloneApplication({
     enableCors: options.enableCors,
     entitiesCatalog,
+    locationsCatalog,
+    higherOrderOperation,
     logger,
   });
 

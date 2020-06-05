@@ -41,6 +41,13 @@ export type RouteOutput = {
 
 export type RedirectRouteOutput = {
   type: 'redirect-route';
+  from: RouteRef;
+  to: RouteRef;
+  options?: RouteOptions;
+};
+
+export type LegacyRedirectRouteOutput = {
+  type: 'legacy-redirect-route';
   path: RoutePath;
   target: RoutePath;
   options?: RouteOptions;
@@ -56,6 +63,7 @@ export type FeatureFlagOutput = {
 export type PluginOutput =
   | LegacyRouteOutput
   | RouteOutput
+  | LegacyRedirectRouteOutput
   | RedirectRouteOutput
   | FeatureFlagOutput;
 

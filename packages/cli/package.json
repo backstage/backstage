@@ -32,7 +32,7 @@
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
-    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-commonjs": "^12.0.0",
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@spotify/eslint-config": "^7.0.1",
@@ -79,6 +79,7 @@
     "url-loader": "^4.1.0",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3",
+    "yaml": "^1.10.0",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0"
   },

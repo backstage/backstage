@@ -37,13 +37,9 @@ export interface AuthProviderRouteHandlers {
   logout(req: express.Request, res: express.Response): Promise<any>;
 }
 
-export type AuthProviderFactories = {
-  [key: string]: AuthProviderFactory;
-};
-
-export type AuthProviderFactory = {
-  new (providerConfig: any): OAuthProviderHandlers;
-};
+export type AuthProviderFactory = (
+  config: AuthProviderConfig,
+) => AuthProviderRouteHandlers;
 
 export type AuthInfoBase = {
   accessToken: string;

@@ -27,6 +27,7 @@ import {
   AuthInfoBase,
   AuthInfoPrivate,
 } from '../types';
+import { OAuthProvider } from '../OAuthProvider';
 
 export class GithubAuthProvider implements OAuthProviderHandlers {
   private readonly providerConfig: AuthProviderConfig;
@@ -56,4 +57,10 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
   ): Promise<{ user: AuthInfoBase; info: AuthInfoPrivate }> {
     return await executeFrameHandlerStrategy(req, this._strategy);
   }
+}
+
+export function createGithubProvider(config: AuthProviderConfig) {
+  const provider = new GithubAuthProvider(config);
+  const oauthProvider = new OAuthProvider(provider, config.provider, true);
+  return oauthProvider;
 }

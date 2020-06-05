@@ -17,6 +17,13 @@ import React from 'react';
 import { Component } from './component';
 import { Entity, Location } from '@backstage/catalog-model';
 import Edit from '@material-ui/icons/Edit';
+import IconButton from '@material-ui/core/IconButton';
+import { styled } from '@material-ui/core/styles';
+
+const DescriptionWrapper = styled('span')({
+  display: 'flex',
+  alignItems: 'center',
+});
 
 export function envelopeToComponent(
   envelope: Entity,
@@ -26,10 +33,14 @@ export function envelopeToComponent(
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
     description: (
-      <span style={{ display: 'flex', alignItems: 'center' }}>
+      <DescriptionWrapper>
         {envelope.metadata?.annotations?.description ?? 'placeholder'}
-        <Edit style={{ fontSize: 20, paddingLeft: '5px' }} />
-      </span>
+        <a href={location?.target}>
+          <IconButton size="small">
+            <Edit fontSize="small" />
+          </IconButton>
+        </a>
+      </DescriptionWrapper>
     ),
     location,
   };

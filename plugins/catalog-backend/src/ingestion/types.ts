@@ -28,4 +28,5 @@ export type IngestionModel = {
 
 export type HigherOrderOperation = {
   addLocation(spec: LocationSpec): Promise<AddLocationResult>;
+  refreshAllLocations(): Promise<void>;
 };
