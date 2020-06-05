@@ -77,14 +77,13 @@ const CatalogPage: FC<{}> = () => {
           (location): Location[] =>
             location.filter(loc => !!loc) as Array<Location>,
         )
-        .then(location => {
-          if (isMounted()) return [location];
+        .then(locs => {
+          if (isMounted()) return locs;
           return [];
         });
     }
     return [];
-  }, [value, catalogApi, isMounted]);
-
+  }, [value, catalogApi, isMounted, catalogApi]);
   const actions = [
     (rowData: Component) => ({
       icon: GitHub,
@@ -139,12 +138,11 @@ const CatalogPage: FC<{}> = () => {
               titlePreamble={selectedFilter.label}
               components={
                 (value &&
-                  value.map(val =>
-                    envelopeToComponent(
-                      val,
-                      findLocationForEntity(val, locations) ?? undefined,
-                    ),
-                  )) ||
+                  value.map(val => {
+                    const loc =
+                      findLocationForEntity(val, locations) ?? undefined;
+                    return envelopeToComponent(val, loc);
+                  })) ||
                 []
               }
               loading={loading}
