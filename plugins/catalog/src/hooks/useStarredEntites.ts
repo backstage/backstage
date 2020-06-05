@@ -15,6 +15,7 @@
  */
 import { useState, useEffect } from 'react';
 import { useApi, storageApiRef } from '@backstage/core';
+import { useObservable } from 'react-use';
 
 export const useStarredEntities = () => {
   const storageApi = useApi(storageApiRef);
@@ -24,16 +25,14 @@ export const useStarredEntities = () => {
     new Set(rawStarredItems),
   );
 
-  useEffect(() => {
-    const subscription = settingsStore
-      .observe$<string[]>('starredEntities')
-      .subscribe(message => {
-        const newItems = message.newValue ?? [];
-        setStarredEntities(new Set(newItems));
-      });
+  const observedItems = useObservable(
+    settingsStore.observe$<string[]>('starredEntities'),
+  );
 
-    return () => subscription.unsubscribe();
-  }, [settingsStore]);
+  useEffect(() => {
+    const currentValue = observedItems?.newValue ?? [];
+    setStarredEntities(new Set(currentValue));
+  }, [observedItems?.newValue]);
 
   return {
     starredEntities,
