@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-export { buildPackage } from './packager';
-export { Output } from './types';
-export type { BuildOptions } from './types';
+export enum Output {
+  esm,
+  cjs,
+  types,
+}
+
+export type BuildOptions = {
+  outputs: Set<Output>;
+};
