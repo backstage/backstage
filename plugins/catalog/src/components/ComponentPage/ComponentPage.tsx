@@ -27,6 +27,7 @@ import {
 } from '@backstage/core';
 import ComponentContextMenu from '../ComponentContextMenu/ComponentContextMenu';
 import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDialog';
+import { HeaderTabs } from '@backstage/core/src/layout/HeaderTabs';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
 import { catalogApiRef } from '../..';
@@ -86,6 +87,7 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
       <Header title={component.name || 'Catalog'}>
         <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
       </Header>
+      <HeaderTabs />
       {confirmationDialogOpen && catalogRequest.value && (
         <ComponentRemovalDialog
           component={component}
