@@ -37,7 +37,7 @@ export async function startStandaloneServer(
 
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
-  const locationReader = new LocationReaders();
+  const locationReader = new LocationReaders(options.logger);
   const higherOrderOperation = new HigherOrderOperations(
     entitiesCatalog,
     locationsCatalog,

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import {
   EntityPolicies,
   EntityPolicy,
   LocationSpec,
 } from '@backstage/catalog-model';
+import { Logger } from 'winston';
 import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEntityProcessor';
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
@@ -38,6 +40,7 @@ const MAX_DEPTH = 10;
  * Implements the reading of a location through a series of processor tasks.
  */
 export class LocationReaders implements LocationReader {
+  private readonly logger: Logger;
   private readonly processors: LocationProcessor[];
 
   static defaultProcessors(
@@ -53,8 +56,10 @@ export class LocationReaders implements LocationReader {
   }
 
   constructor(
+    logger: Logger = getVoidLogger(),
     processors: LocationProcessor[] = LocationReaders.defaultProcessors(),
   ) {
+    this.logger = logger;
     this.processors = processors;
   }
 
@@ -76,15 +81,21 @@ export class LocationReaders implements LocationReader {
   ): Promise<void> {
     // Sanity check to break silly expansions / loops
     if (depth > MAX_DEPTH) {
+      const message = `Max recursion depth ${MAX_DEPTH} reached at ${item.location.type} ${item.location.target}`;
+      this.logger.warn(message);
       output.errors.push({
         location: item.location,
-        error: new Error(`Max recursion depth ${MAX_DEPTH} reached`),
+        error: new Error(message),
       });
       return;
     }
 
     if (item.type === 'location') {
+      this.logger.debug(
+        `Reading location ${item.location.type} ${item.location.target} optional=${item.optional}`,
+      );
       await this.runAll(
+        'fetch',
         processor => processor.readLocation?.(item.location, item.optional),
         emitted => this.handleResultItem(emitted, depth + 1, output),
         item.location,
@@ -92,7 +103,11 @@ export class LocationReaders implements LocationReader {
         true,
       );
     } else if (item.type === 'data') {
+      this.logger.debug(
+        `Parsing data from location ${item.location.type} ${item.location.target} (${item.data.byteLength} bytes)`,
+      );
       await this.runAll(
+        'parse',
         processor => processor.parseData?.(item.data, item.location),
         emitted => this.handleResultItem(emitted, depth + 1, output),
         item.location,
@@ -100,7 +115,11 @@ export class LocationReaders implements LocationReader {
         true,
       );
     } else if (item.type === 'error') {
+      this.logger.debug(
+        `Encountered error at location ${item.location.type} ${item.location.target}, ${item.error}`,
+      );
       await this.runAll(
+        'process error',
         processor => processor.handleError?.(item.error, item.location),
         emitted => this.handleResultItem(emitted, depth + 1, output),
         item.location,
@@ -112,8 +131,12 @@ export class LocationReaders implements LocationReader {
         error: item.error,
       });
     } else if (item.type === 'entity') {
+      this.logger.debug(
+        `Got entity at location ${item.location.type} ${item.location.target}, ${item.entity.apiVersion} ${item.entity.kind}`,
+      );
       const current = { entity: item.entity, location: item.location };
       await this.runAll(
+        'process entity',
         processor =>
           processor.processEntity?.(current.entity, current.location),
         async emitted => {
@@ -136,6 +159,7 @@ export class LocationReaders implements LocationReader {
   }
 
   async runAll(
+    what: string,
     start: (
       processor: LocationProcessor,
     ) => LocationProcessorResults | undefined,
@@ -157,6 +181,9 @@ export class LocationReaders implements LocationReader {
           if (item.done) {
             break;
           }
+          if (!item.value) {
+            continue;
+          }
 
           wasHandled = true;
           await emit(item.value);
@@ -166,15 +193,15 @@ export class LocationReaders implements LocationReader {
           return;
         }
       } catch (e) {
-        const message = `Processor ${processor.constructor.name} threw an error, ${e}`;
+        const message = `Processor ${processor.constructor.name} threw an error during ${what}, ${e}`;
         await emit({ type: 'error', location, error: new Error(message) });
         return;
       }
+    }
 
-      if (!wasHandled && failIfNotHandled) {
-        const message = `No processor was able to handle ${location.type} ${location.target}`;
-        await emit({ type: 'error', location, error: new Error(message) });
-      }
+    if (!wasHandled && failIfNotHandled) {
+      const message = `No processor was able to handle ${location.type} ${location.target} during ${what}`;
+      await emit({ type: 'error', location, error: new Error(message) });
     }
   }
 }
