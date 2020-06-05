@@ -24,8 +24,10 @@ if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
   require('..');
 } else {
   require('ts-node').register({
-    project: path.resolve(__dirname, '../tsconfig.build.json'),
     transpileOnly: true,
+    compilerOptions: {
+      module: 'CommonJS',
+    },
   });
 
   require('../src');
