@@ -2,7 +2,7 @@
 
 ## Passport
 
-We chose [Passport](http://www.passportjs.org/) as authentication platform due to its comprehensive set of supported authentication [strategies](http://www.passportjs.org/packages/).
+We chose [Passport](http://www.passportjs.org/) as our authentication platform due to its comprehensive set of supported authentication [strategies](http://www.passportjs.org/packages/).
 
 ## How to add a new strategy provider
 
@@ -25,7 +25,7 @@ plugins/auth-backend/src/providers/providerA
 
 **`plugins/auth-backend/src/providers/providerA/provider.ts`** defines the provider class which implements an handler for the chosen framework. If we're adding an `OAuth` based provider we would implement the [OAuthProviderHandlers](#OAuthProviderHandlers) interface for instance. An non `OAuth` based provider would implement [AuthProviderRouteHandlers](#AuthProviderRouteHandlers).
 
-The provider class takes the providers configuration as a class parameter. It also imports the `Strategy` from the passport package.
+The provider class takes the provider's configuration as a class parameter. It also imports the `Strategy` from the passport package.
 
 ```ts
 import { Strategy as ProviderAStrategy } from 'passport-provider-a';
@@ -62,7 +62,7 @@ export { createProviderAProvider } from './provider';
 
 ### Hook it up to the backend
 
-**`plugins/auth-backend/src/providers/config.ts`** The provider needs to be configured properly so you need to add it to the list of configured providers, all of which implements [AuthProviderConfig](#AuthProviderConfig):
+**`plugins/auth-backend/src/providers/config.ts`** The provider needs to be configured properly so you need to add it to the list of configured providers, all of which implement [AuthProviderConfig](#AuthProviderConfig):
 
 ```ts
 export const providers = [
@@ -82,7 +82,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
 };
 ```
 
-By doing this `auth-backend` automatically adds the these endpoints:
+By doing this `auth-backend` automatically adds these endpoints:
 
 ```ts
 router.get('/auth/providerA/start');

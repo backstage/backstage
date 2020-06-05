@@ -59,7 +59,7 @@ need to be re-populated on next startup.
 
 We chose [Passport](http://www.passportjs.org/) as authentication platform due to its comprehensive set of supported authentication [strategies](http://www.passportjs.org/packages/).
 
-Read more about the [auth-backend](https://github.com/spotify/backstage/blob/master/plugins/auth-backend/README.md) and [how to add a new provider](https://github.com/spotify/backstage/blob/master/plugins/auth-backend/add-auth-provider.md)
+Read more about the [auth-backend](https://github.com/spotify/backstage/blob/master/plugins/auth-backend/README.md) and [how to add a new provider](https://github.com/spotify/backstage/blob/master/docs/auth/add-auth-provider.md)
 
 ## Documentation
 
