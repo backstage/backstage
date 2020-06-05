@@ -23,7 +23,11 @@ plugins/auth-backend/src/providers/providerA
 └── provider.ts
 ```
 
-**`plugins/auth-backend/src/providers/providerA/provider.ts`** defines the provider class which implements an handler for the chosen framework. If we're adding an `OAuth` based provider we would implement the [OAuthProviderHandlers](#OAuthProviderHandlers) interface for instance. An non `OAuth` based provider would implement [AuthProviderRouteHandlers](#AuthProviderRouteHandlers).
+**`plugins/auth-backend/src/providers/providerA/provider.ts`** defines the provider class which implements a handler for the chosen framework.
+
+#### Adding an OAuth based provider
+
+If we're adding an `OAuth` based provider we would implement the [OAuthProviderHandlers](#OAuthProviderHandlers) interface.
 
 The provider class takes the provider's configuration as a class parameter. It also imports the `Strategy` from the passport package.
 
@@ -36,23 +40,71 @@ export class ProviderAAuthProvider implements OAuthProviderHandlers {
 
   constructor(providerConfig: AuthProviderConfig) {
     this.providerConfig = providerConfig;
-    this._strategy = new ProviderAStrategy({...})
+    this._strategy = new ProviderAStrategy(
+      { ...providerConfig.options },
+      verifyFunction, // See the "Verify Callback" section
+    );
   }
 
   async start() {}
   async handler() {}
 }
+```
 
-/*
-* Method that creates the provider instance, optionally extending a supported authorization framework.
-* This method exists to allow for flexibility if additional frameworks are supported in the future.
-*/
+#### Adding an non-OAuth based provider
+
+An non-`OAuth` based provider could implement [AuthProviderRouteHandlers](#AuthProviderRouteHandlers) instead.
+
+```ts
+export class ProviderAAuthProvider implements AuthProviderRouteHandlers {
+  private readonly providerConfig: AuthProviderConfig;
+  private readonly _strategy: ProviderAStrategy;
+
+  constructor(providerConfig: AuthProviderConfig) {
+    this.providerConfig = providerConfig;
+    this._strategy = new ProviderAStrategy(
+      { ...providerConfig.options },
+      verifyFunction, // See the "Verify Callback" section
+    );
+  }
+
+  async start() {}
+  async frameHandler() {}
+  async logout() {}
+  async refresh() {} // If supported
+}
+```
+
+#### Create method
+
+Each provider exports a create method that creates the provider instance, optionally extending a supported authorization framework. This method exists to allow for flexibility if additional frameworks are supported in the future.
+
+Implementing OAuth by returning an instance of `OAuthProvider` based of the provider's class:
+
+```ts
 export function createProviderAProvider(config: AuthProviderConfig) {
   const provider = new ProviderAAuthProvider(config);
   const oauthProvider = new OAuthProvider(provider, config.provider, true);
   return oauthProvider;
 }
 ```
+
+Not extending with OAuth, the main difference here is that the create method is returning a instance of the class without adding the OAuth authorization framework to it.
+
+```ts
+export function createProviderAProvider(config: AuthProviderConfig) {
+  return new ProviderAAuthProvider(config);
+}
+```
+
+#### Verify Callback
+
+> Strategies require what is known as a verify callback. The purpose of a verify callback is to find the user that possesses a set of credentials.
+> When Passport authenticates a request, it parses the credentials contained in the request. It then invokes the verify callback with those credentials as arguments [...]. If the credentials are valid, the verify callback invokes done to supply Passport with the user that authenticated.
+>
+> If the credentials are not valid (for example, if the password is incorrect), done should be invoked with false instead of a user to indicate an authentication failure.
+>
+> http://www.passportjs.org/docs/configure/
 
 **`plugins/auth-backend/src/providers/providerA/index.ts`** is simply re-exporting the create method to be used for hooking the provider up to the backend.
 
@@ -93,6 +145,10 @@ router.get('/auth/providerA/refresh'); // if supported
 ```
 
 As you can see each endpoint is prefixed with both `/auth` and its provider name.
+
+### Test the new provider
+
+You can `curl -i localhost:7000/auth/providerA/start` and which should provide a `302` redirect with a `Location` header. Paste the url from that header into a web browser and you should be able to trigger the authorization flow.
 
 ### To summarize
 
