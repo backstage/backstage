@@ -143,6 +143,30 @@ export type OpenIdConnectApi = {
   logout(): Promise<void>;
 };
 
+export type ProfileInfoOptions = {
+  /**
+   * If this is set to true, the user will not be prompted to log in,
+   * and an empty profile will be returned if there is no existing session.
+   *
+   * This can be used to perform a check whether the user is logged in, or if you don't
+   * want to force a user to be logged in, but provide functionality if they already are.
+   *
+   * @default false
+   */
+  optional?: boolean;
+};
+
+export type ProfileInfoApi = {
+  getProfile(options?: ProfileInfoOptions): Promise<ProfileInfo | undefined>;
+};
+
+export type ProfileInfo = {
+  provider: string;
+  email: string;
+  name?: string;
+  picture?: string;
+};
+
 /**
  * Provides authentication towards Google APIs and identities.
  *
@@ -151,7 +175,9 @@ export type OpenIdConnectApi = {
  * Note that the ID token payload is only guaranteed to contain the user's numerical Google ID,
  * email and expiration information. Do not rely on any other fields, as they might not be present.
  */
-export const googleAuthApiRef = createApiRef<OAuthApi & OpenIdConnectApi>({
+export const googleAuthApiRef = createApiRef<
+  OAuthApi & OpenIdConnectApi & ProfileInfoApi
+>({
   id: 'core.auth.google',
   description: 'Provides authentication towards Google APIs and identities',
 });

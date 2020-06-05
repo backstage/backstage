@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { buildPackage } from './packager';
-export { Output } from './types';
-export type { BuildOptions } from './types';
+export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';

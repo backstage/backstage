@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
+import { createPlugin, createRouteRef } from '@backstage/core';
 import ScaffolderPage from './components/ScaffolderPage';
+
+export const rootRoute = createRouteRef({
+  icon: () => null,
+  path: '/create',
+  title: 'Create entity',
+});
 
 export const plugin = createPlugin({
   id: 'scaffolder',
   register({ router }) {
-    router.registerRoute('/create', ScaffolderPage);
+    router.addRoute(rootRoute, ScaffolderPage);
   },
 });

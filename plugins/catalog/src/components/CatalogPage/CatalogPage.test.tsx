@@ -20,11 +20,23 @@ import CatalogPage from './CatalogPage';
 import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../..';
+import { CatalogApi } from '../../api/types';
+import { Entity } from '@backstage/catalog-model';
 
 const errorApi = { post: () => {} };
-const catalogApi = {
-  getEntities: () => Promise.resolve([{ kind: '', metadata: {} }]),
-  getLocationByEntity: () => Promise.resolve({ data: {} }),
+const catalogApi: Partial<CatalogApi> = {
+  getEntities: () =>
+    Promise.resolve([
+      {
+        metadata: {
+          name: 'Entity1',
+        },
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+      },
+    ] as Entity[]),
+  getLocationByEntity: () =>
+    Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
 };
 
 describe('CatalogPage', () => {

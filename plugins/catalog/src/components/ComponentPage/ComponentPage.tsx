@@ -30,7 +30,7 @@ import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDi
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
 import { catalogApiRef } from '../..';
-import { envelopeToComponent as entityToComponent } from '../../data/utils';
+import { entityToComponent } from '../../data/utils';
 import { Component } from '../../data/component';
 
 const REDIRECT_DELAY = 1000;

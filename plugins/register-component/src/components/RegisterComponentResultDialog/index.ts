@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { buildPackage } from './packager';
-export { Output } from './types';
-export type { BuildOptions } from './types';
+export { RegisterComponentResultDialog } from './RegisterComponentResultDialog';

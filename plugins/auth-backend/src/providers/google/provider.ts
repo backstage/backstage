@@ -20,6 +20,8 @@ import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   executeRefreshTokenStrategy,
+  makeProfileInfo,
+  executeFetchUserProfileStrategy,
 } from '../PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
@@ -27,8 +29,10 @@ import {
   AuthInfoPrivate,
   RedirectInfo,
   AuthProviderConfig,
+  AuthInfoWithProfile,
 } from '../types';
 import { OAuthProvider } from '../OAuthProvider';
+import passport from 'passport';
 
 export class GoogleAuthProvider implements OAuthProviderHandlers {
   private readonly providerConfig: AuthProviderConfig;
@@ -43,13 +47,14 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
         accessToken: any,
         refreshToken: any,
         params: any,
-        profile: any,
+        profile: passport.Profile,
         done: any,
       ) => {
+        const profileInfo = makeProfileInfo(profile, params);
         done(
           undefined,
           {
-            profile,
+            profile: profileInfo,
             idToken: params.id_token,
             accessToken,
             scope: params.scope,
@@ -73,11 +78,20 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
     return await executeFrameHandlerStrategy(req, this._strategy);
   }
 
-  async refresh(refreshToken: string, scope: string): Promise<AuthInfoBase> {
+  async refresh(
+    refreshToken: string,
+    scope: string,
+  ): Promise<AuthInfoWithProfile> {
     const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
       scope,
+    );
+
+    const profile = await executeFetchUserProfileStrategy(
+      this._strategy,
+      accessToken,
+      params,
     );
 
     return {
@@ -85,6 +99,7 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
       idToken: params.id_token,
       expiresInSeconds: params.expires_in,
       scope: params.scope,
+      profile,
     };
   }
 }
