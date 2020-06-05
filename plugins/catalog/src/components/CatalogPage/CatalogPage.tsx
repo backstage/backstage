@@ -32,7 +32,15 @@ import {
   CatalogFilter,
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
-import { Button, makeStyles, Typography, Link } from '@material-ui/core';
+import {
+  Button,
+  makeStyles,
+  Typography,
+  Link,
+  AppBar,
+  Tabs,
+  Tab,
+} from '@material-ui/core';
 import { filterGroups, defaultFilter } from '../../data/filters';
 import { Link as RouterLink } from 'react-router-dom';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
@@ -51,6 +59,7 @@ const useStyles = makeStyles(theme => ({
 import { catalogApiRef } from '../..';
 import { envelopeToComponent } from '../../data/utils';
 import { Component } from '../../data/component';
+import { HeaderTabs } from '@backstage/core/src/layout/HeaderTabs';
 
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
@@ -113,6 +122,7 @@ const CatalogPage: FC<{}> = () => {
       <Header title="Service Catalog" subtitle="Keep track of your software">
         <HomepageTimer />
       </Header>
+      <HeaderTabs />
       <Content>
         <DismissableBanner
           variant="info"
@@ -130,6 +140,7 @@ const CatalogPage: FC<{}> = () => {
             </Typography>
           }
         />
+
         <ContentHeader title="Services">
           <Button
             component={RouterLink}
