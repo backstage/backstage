@@ -99,7 +99,6 @@ const CatalogPage: FC<{}> = () => {
         rowData && rowData.location ? rowData.location.type !== 'github' : true,
     }),
   ];
-
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
