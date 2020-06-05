@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
-import CatalogPage from './components/CatalogPage';
-import ComponentPage from './components/ComponentPage/ComponentPage';
-import { rootRoute, entityRoute } from './routes';
+import { createRouteRef } from '@backstage/core';
 
-export const plugin = createPlugin({
-  id: 'catalog',
-  register({ router }) {
-    router.addRoute(rootRoute, CatalogPage);
-    router.addRoute(entityRoute, ComponentPage);
-  },
+const NoIcon = () => null;
+
+export const rootRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/',
+  title: 'Catalog',
+});
+export const entityRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/catalog/:name/',
+  title: 'Entity',
 });
