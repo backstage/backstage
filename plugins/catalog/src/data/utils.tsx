@@ -13,8 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 import { Component } from './component';
 import { Entity, Location } from '@backstage/catalog-model';
+import Edit from '@material-ui/icons/Edit';
+import IconButton from '@material-ui/core/IconButton';
+import { styled } from '@material-ui/core/styles';
+
+const DescriptionWrapper = styled('span')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+const createEditLink = (url: string): string => url.replace('blob', 'edit');
 
 export function envelopeToComponent(
   envelope: Entity,
@@ -23,7 +34,18 @@ export function envelopeToComponent(
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
-    description: envelope.metadata?.annotations?.description ?? 'placeholder',
+    description: (
+      <DescriptionWrapper>
+        {envelope.metadata?.annotations?.description ?? 'placeholder'}
+        {location?.target ? (
+          <a href={createEditLink(location?.target)}>
+            <IconButton size="small">
+              <Edit fontSize="small" />
+            </IconButton>
+          </a>
+        ) : null}
+      </DescriptionWrapper>
+    ),
     location,
   };
 }
