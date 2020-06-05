@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useCallback, useState, useEffect } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import {
   Content,
   ContentHeader,
@@ -47,13 +47,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 import { catalogApiRef } from '../..';
-import { envelopeToComponent } from '../../data/utils';
+import { envelopeToComponent, findLocationForEntity } from '../../data/utils';
 import { Component } from '../../data/component';
 
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const { value, error, loading } = useAsync(() => catalogApi.getEntities());
-  const [locations, setLocations] = useState<Location[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
@@ -65,7 +64,7 @@ const CatalogPage: FC<{}> = () => {
   );
   const styles = useStyles();
 
-  useEffect(() => {
+  const { value: locations = [] } = useAsync(async () => {
     const getLocationDataForEntities = async (entities: Entity[]) => {
       return Promise.all(
         entities.map(entity => catalogApi.getLocationByEntity(entity)),
@@ -76,12 +75,14 @@ const CatalogPage: FC<{}> = () => {
       getLocationDataForEntities(value)
         .then(
           (location): Location[] =>
-            location.filter(l => !!l) as Array<Location>,
+            location.filter(loc => !!loc) as Array<Location>,
         )
         .then(location => {
-          if (isMounted()) setLocations(location);
+          if (isMounted()) return [location];
+          return [];
         });
     }
+    return [];
   }, [value, catalogApi, isMounted]);
 
   const actions = [
@@ -96,15 +97,6 @@ const CatalogPage: FC<{}> = () => {
         rowData && rowData.location ? rowData.location.type !== 'github' : true,
     }),
   ];
-
-  const findLocationForEntity = (
-    entity: Entity,
-    l: Location[],
-  ): Location | undefined => {
-    const entityLocationId =
-      entity.metadata.annotations?.['backstage.io/managed-by-location'];
-    return l.find(location => location.id === entityLocationId);
-  };
 
   return (
     <Page theme={pageTheme.home}>
@@ -142,22 +134,24 @@ const CatalogPage: FC<{}> = () => {
               onSelectedChange={onFilterSelected}
             />
           </div>
-          <CatalogTable
-            titlePreamble={selectedFilter.label}
-            components={
-              (value &&
-                value.map(val =>
-                  envelopeToComponent(
-                    val,
-                    findLocationForEntity(val, locations),
-                  ),
-                )) ||
-              []
-            }
-            loading={loading}
-            error={error}
-            actions={actions}
-          />
+          {locations && (
+            <CatalogTable
+              titlePreamble={selectedFilter.label}
+              components={
+                (value &&
+                  value.map(val =>
+                    envelopeToComponent(
+                      val,
+                      findLocationForEntity(val, locations) ?? undefined,
+                    ),
+                  )) ||
+                []
+              }
+              loading={loading}
+              error={error}
+              actions={actions}
+            />
+          )}
         </div>
       </Content>
     </Page>

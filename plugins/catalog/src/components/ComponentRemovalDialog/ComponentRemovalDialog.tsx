@@ -25,6 +25,9 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { Component } from '../../data/component';
+import { useAsync } from 'react-use';
+import { useApi, Progress } from '@backstage/core';
+import { catalogApiRef } from '../../api/types';
 
 type ComponentRemovalDialogProps = {
   onConfirm: () => any;

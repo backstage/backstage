@@ -16,14 +16,22 @@
 import { Component } from './component';
 import { Entity, Location } from '@backstage/catalog-model';
 
-export function envelopeToComponent(
+export const envelopeToComponent = (
   envelope: Entity,
   location?: Location,
-): Component {
+): Component => {
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
     description: envelope.metadata?.annotations?.description ?? 'placeholder',
     location,
   };
-}
+};
+export const findLocationForEntity = (
+  entity: Entity,
+  l: Location[],
+): Location | undefined => {
+  const entityLocationId =
+    entity.metadata.annotations?.['backstage.io/managed-by-location'];
+  return l.find(location => location.id === entityLocationId);
+};

@@ -31,6 +31,22 @@ export class CatalogClient implements CatalogApi {
     this.apiOrigin = apiOrigin;
     this.basePath = basePath;
   }
+  async getLocationById(id: String): Promise<Location | undefined> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations/${id}`,
+    );
+    if (response.ok) {
+      const location = await response.json();
+      if (location) return location.data;
+    }
+    return undefined;
+  }
+  async getEntitiesByLocationId(id: string): Promise<Entity[]> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/entities?backstage.io/managed-by-location=${id}`,
+    );
+    return await response.json();
+  }
   async getEntities(): Promise<DescriptorEnvelope[]> {
     const response = await fetch(`${this.apiOrigin}${this.basePath}/entities`);
     return await response.json();
@@ -50,14 +66,8 @@ export class CatalogClient implements CatalogApi {
     const locationId = findLocationIdInEntity(entity);
     if (!locationId) return undefined;
 
-    const response = await fetch(
-      `${this.apiOrigin}${this.basePath}/locations/${locationId}`,
-    );
-    if (response.ok) {
-      const location = await response.json();
-      if (location) return location.data;
-    }
+    const location = this.getLocationById(locationId);
 
-    return undefined;
+    return location;
   }
 }
