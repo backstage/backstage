@@ -29,7 +29,7 @@ export default async function createPlugin({
   logger,
   database,
 }: PluginEnvironment) {
-  const ingestionModel = new LocationReaders();
+  const locationReader = new LocationReaders();
 
   const db = await DatabaseManager.createDatabase(database, logger);
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
@@ -37,7 +37,7 @@ export default async function createPlugin({
   const higherOrderOperation = new HigherOrderOperations(
     entitiesCatalog,
     locationsCatalog,
-    ingestionModel,
+    locationReader,
     logger,
   );
 

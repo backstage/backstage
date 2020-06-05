@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity, EntityPolicy } from '@backstage/catalog-model';
-import { LocationProcessor } from './types';
+import { Entity, EntityPolicy, LocationSpec } from '@backstage/catalog-model';
+import * as result from './results';
+import { LocationProcessor, LocationProcessorResults } from './types';
 
 export class EntityPolicyProcessor implements LocationProcessor {
   private readonly policy: EntityPolicy;
@@ -24,7 +25,15 @@ export class EntityPolicyProcessor implements LocationProcessor {
     this.policy = policy;
   }
 
-  async processEntity(entity: Entity): Promise<Entity> {
-    return this.policy.enforce(entity);
+  async *processEntity(
+    entity: Entity,
+    location: LocationSpec,
+  ): LocationProcessorResults {
+    try {
+      const updatedEntity = await this.policy.enforce(entity);
+      yield result.entity(location, updatedEntity);
+    } catch (e) {
+      yield result.generalError(location, e.toString());
+    }
   }
 }

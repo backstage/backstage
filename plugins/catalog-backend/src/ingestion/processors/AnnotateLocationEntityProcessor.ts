@@ -16,13 +16,24 @@
 
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
-import { LocationProcessor } from './types';
+import { LocationProcessor, LocationProcessorResults } from './types';
+import * as result from './results';
 
 export class AnnotateLocationEntityProcessor implements LocationProcessor {
-  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
-    const annotations = {
-      'backstage.io/managed-by-location': `${location.type}:${location.target}`,
-    };
-    return lodash.merge({ metadata: { annotations } }, entity);
+  async *processEntity(
+    entity: Entity,
+    location: LocationSpec,
+  ): LocationProcessorResults {
+    const merged = lodash.merge(
+      {
+        metadata: {
+          annotations: {
+            'backstage.io/managed-by-location': `${location.type}:${location.target}`,
+          },
+        },
+      },
+      entity,
+    );
+    yield result.entity(location, merged);
   }
 }

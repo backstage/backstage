@@ -17,38 +17,39 @@
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
-import { LocationProcessor, LocationProcessorResult } from './types';
+import { LocationProcessor, LocationProcessorResults } from './types';
+import * as result from './results';
 
 export class YamlProcessor implements LocationProcessor {
-  async parseData(
+  async *parseData(
     data: Buffer,
     location: LocationSpec,
-  ): Promise<LocationProcessorResult[] | undefined> {
+  ): LocationProcessorResults {
     if (!location.target.match(/\.ya?ml$/)) {
-      return undefined;
+      return;
     }
 
     let documents: yaml.Document.Parsed[];
     try {
       documents = yaml.parseAllDocuments(data.toString('utf8')).filter(d => d);
     } catch (e) {
-      const error = new Error(`Failed to parse YAML, ${e}`);
-      return [{ type: 'error', location, error }];
+      yield result.generalError(location, `Failed to parse YAML, ${e}`);
+      return;
     }
 
-    return documents.map(document => {
+    for (const document of documents) {
       if (document.errors?.length) {
-        const error = new Error(`YAML error, ${document.errors[0]}`);
-        return { type: 'error', location, error };
+        const message = `YAML error, ${document.errors[0]}`;
+        yield result.generalError(location, message);
+      } else {
+        const json = document.toJSON();
+        if (lodash.isPlainObject(json)) {
+          yield result.entity(location, json as Entity);
+        } else {
+          const message = `Expected object at root, got ${typeof json}`;
+          yield result.generalError(location, message);
+        }
       }
-
-      const json = document.toJSON();
-      if (lodash.isPlainObject(json)) {
-        return { type: 'entity', location, entity: json as Entity };
-      }
-
-      const error = new Error(`Expected object at root, got ${typeof json}`);
-      return { type: 'error', location, error };
-    });
+    }
   }
 }

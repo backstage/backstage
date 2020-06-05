@@ -21,26 +21,27 @@ export type LocationProcessor = {
    * Reads the contents of a location.
    *
    * @param location The location to read
-   * @returns The output if the location could be read successfully, or
-   *          undefined if the location is not to be handled by this processor
-   * @throws NotFoundError if the location is handled by this reader, and the
-   *         target did not exist
-   * @throws Any other Error if the location is handled by this reader, and it
-   *         could not be read successfully
    */
   readLocation?(
     location: LocationSpec,
-  ): Promise<LocationProcessorResult[] | undefined>;
+    optional: boolean,
+  ): LocationProcessorResults;
 
-  parseData?(
-    data: Buffer,
+  parseData?(data: Buffer, location: LocationSpec): LocationProcessorResults;
+
+  processEntity?(
+    entity: Entity,
     location: LocationSpec,
-  ): Promise<LocationProcessorResult[] | undefined>;
+  ): LocationProcessorResults;
 
-  processEntity?(entity: Entity, location: LocationSpec): Promise<Entity>;
-
-  handleError?(error: Error, location: LocationSpec): Promise<void>;
+  handleError?(error: Error, location: LocationSpec): LocationProcessorResults;
 };
+
+export type LocationProcessorResults = AsyncGenerator<
+  LocationProcessorResult,
+  void,
+  unknown
+>;
 
 export type LocationProcessorResult =
   | { type: 'error'; error: Error; location: LocationSpec } // An error occurred

@@ -14,35 +14,39 @@
  * limitations under the License.
  */
 
-import { NotFoundError } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
-import { LocationProcessor, LocationProcessorResult } from './types';
+import * as result from './results';
+import { LocationProcessor, LocationProcessorResults } from './types';
 
 export class GithubReaderProcessor implements LocationProcessor {
-  async readLocation(
-    location: LocationSpec,
-  ): Promise<LocationProcessorResult[] | undefined> {
+  async *readLocation(location: LocationSpec): LocationProcessorResults {
     if (location.type !== 'github') {
-      return undefined;
-    }
-
-    const url = this.buildRawUrl(location.target);
-    const response = await fetch(url.toString()); // May also throw
-
-    if (!response.ok) {
-      const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
-        throw new NotFoundError(message);
-      } else {
-        throw new Error(message);
-      }
+      return;
     }
 
     try {
-      return [{ type: 'data', location, data: await response.buffer() }];
+      const url = this.buildRawUrl(location.target);
+
+      // TODO(freben): Should "hard" errors thrown by this line be treated as
+      // notFound instead of fatal?
+      const response = await fetch(url.toString());
+
+      if (!response.ok) {
+        const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
+        if (response.status === 404) {
+          yield result.notFoundError(location, message);
+        } else {
+          yield result.generalError(location, message);
+        }
+        return;
+      }
+
+      const data = await response.buffer();
+      yield result.data(location, data);
     } catch (e) {
-      throw new Error(`Unable to read body of ${location.target}, ${e}`);
+      const message = `Unable to read ${location.type} ${location.target}, ${e}`;
+      yield result.generalError(location, message);
     }
   }
 

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { NotFoundError } from '@backstage/backend-common';
 import {
-  Entity,
   EntityPolicies,
   EntityPolicy,
   LocationSpec,
@@ -25,14 +23,16 @@ import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEn
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
-import { LocationProcessor, LocationProcessorResult } from './processors/types';
+import {
+  LocationProcessor,
+  LocationProcessorResult,
+  LocationProcessorResults,
+} from './processors/types';
 import { YamlProcessor } from './processors/YamlProcessor';
 import { LocationReader, ReadLocationResult } from './types';
 
 // The max amount of nesting depth of generated work items
-const MAX_DEPTH = 5;
-
-type QueueItem = LocationProcessorResult & { depth: number };
+const MAX_DEPTH = 10;
 
 /**
  * Implements the reading of a location through a series of processor tasks.
@@ -59,157 +59,122 @@ export class LocationReaders implements LocationReader {
   }
 
   async read(location: LocationSpec): Promise<ReadLocationResult> {
-    const result: ReadLocationResult = { entities: [], errors: [] };
-
-    const queue: QueueItem[] = [];
-    queue.push({ type: 'location', location, optional: false, depth: 0 });
-
-    while (queue.length) {
-      const entry = queue.shift()!;
-      const depth = entry.depth + 1;
-
-      if (depth > MAX_DEPTH) {
-        throw new Error(
-          `Failed to read ${location.type} ${location.target}, max depth exceeded`,
-        );
-      }
-
-      if (entry.type === 'location') {
-        await this.handleLocation(entry.location, entry.optional, depth, queue);
-      } else if (entry.type === 'data') {
-        await this.handleData(entry.data, entry.location, depth, queue);
-      } else if (entry.type === 'error') {
-        await this.handleError(entry.error, entry.location, depth, result);
-      } else if (entry.type === 'entity') {
-        await this.handleEntity(
-          entry.entity,
-          entry.location,
-          depth,
-          queue,
-          result,
-        );
-      }
-    }
-
-    return result;
-  }
-
-  async handleLocation(
-    location: LocationSpec,
-    optional: boolean,
-    depth: number,
-    queue: QueueItem[],
-  ): Promise<void> {
-    for (const processor of this.processors) {
-      try {
-        const processorOutput = await processor.readLocation?.(location);
-        if (processorOutput) {
-          processorOutput.forEach(r => queue.push({ ...r, depth }));
-          return;
-        }
-      } catch (e) {
-        if (!(e instanceof NotFoundError && optional)) {
-          queue.push({
-            type: 'error',
-            error: e,
-            location,
-            depth,
-          });
-        }
-      }
-    }
-
-    queue.push({
-      type: 'error',
+    const output: ReadLocationResult = { entities: [], errors: [] };
+    const initialItem: LocationProcessorResult = {
+      type: 'location',
       location,
-      depth,
-      error: new Error(
-        `No processor could read location ${location.type} ${location.target}`,
-      ),
-    });
+      optional: false,
+    };
+    await this.handleResultItem(initialItem, 0, output);
+    return output;
   }
 
-  async handleData(
-    data: Buffer,
-    location: LocationSpec,
+  async handleResultItem(
+    item: LocationProcessorResult,
     depth: number,
-    queue: QueueItem[],
+    output: ReadLocationResult,
   ): Promise<void> {
+    // Sanity check to break silly expansions / loops
+    if (depth > MAX_DEPTH) {
+      output.errors.push({
+        location: item.location,
+        error: new Error(`Max recursion depth ${MAX_DEPTH} reached`),
+      });
+      return;
+    }
+
+    if (item.type === 'location') {
+      await this.runAll(
+        processor => processor.readLocation?.(item.location, item.optional),
+        emitted => this.handleResultItem(emitted, depth + 1, output),
+        item.location,
+        true,
+        true,
+      );
+    } else if (item.type === 'data') {
+      await this.runAll(
+        processor => processor.parseData?.(item.data, item.location),
+        emitted => this.handleResultItem(emitted, depth + 1, output),
+        item.location,
+        true,
+        true,
+      );
+    } else if (item.type === 'error') {
+      await this.runAll(
+        processor => processor.handleError?.(item.error, item.location),
+        emitted => this.handleResultItem(emitted, depth + 1, output),
+        item.location,
+        false,
+        false,
+      );
+      output.errors.push({
+        location: item.location,
+        error: item.error,
+      });
+    } else if (item.type === 'entity') {
+      const current = { entity: item.entity, location: item.location };
+      await this.runAll(
+        processor =>
+          processor.processEntity?.(current.entity, current.location),
+        async emitted => {
+          if (emitted.type === 'entity') {
+            current.entity = emitted.entity;
+            current.location = emitted.location;
+          } else {
+            await this.handleResultItem(emitted, depth + 1, output);
+          }
+        },
+        item.location,
+        false,
+        false,
+      );
+      output.entities.push({
+        entity: current.entity,
+        location: current.location,
+      });
+    }
+  }
+
+  async runAll(
+    start: (
+      processor: LocationProcessor,
+    ) => LocationProcessorResults | undefined,
+    emit: (item: LocationProcessorResult) => Promise<void>,
+    location: LocationSpec,
+    stopAfterFirstHandled: boolean,
+    failIfNotHandled: boolean,
+  ): Promise<void> {
+    let wasHandled = false;
     for (const processor of this.processors) {
       try {
-        const processorOutput = await processor.parseData?.(data, location);
-        if (processorOutput) {
-          processorOutput.forEach(r => queue.push({ ...r, depth }));
+        const iterator = start(processor);
+        if (!iterator) {
+          continue;
+        }
+
+        for (;;) {
+          const item = await iterator.next();
+          if (item.done) {
+            break;
+          }
+
+          wasHandled = true;
+          await emit(item.value);
+        }
+
+        if (wasHandled && stopAfterFirstHandled) {
           return;
         }
       } catch (e) {
-        queue.push({ type: 'error', location, error: e, depth });
+        const message = `Processor ${processor.constructor.name} threw an error, ${e}`;
+        await emit({ type: 'error', location, error: new Error(message) });
         return;
       }
-    }
 
-    queue.push({
-      type: 'error',
-      location,
-      depth,
-      error: new Error(
-        `No processor could parse location ${location.type} ${location.target}`,
-      ),
-    });
-  }
-
-  async handleError(
-    error: Error,
-    location: LocationSpec,
-    _depth: number,
-    result: ReadLocationResult,
-  ): Promise<void> {
-    for (const processor of this.processors) {
-      try {
-        await processor.handleError?.(error, location);
-      } catch {
-        // ignore
+      if (!wasHandled && failIfNotHandled) {
+        const message = `No processor was able to handle ${location.type} ${location.target}`;
+        await emit({ type: 'error', location, error: new Error(message) });
       }
-    }
-
-    result.errors.push({ location, error });
-  }
-
-  async handleEntity(
-    entity: Entity,
-    location: LocationSpec,
-    depth: number,
-    queue: QueueItem[],
-    result: ReadLocationResult,
-  ): Promise<void> {
-    let resultingEntity = entity;
-    let foundErrors = false;
-
-    for (const processor of this.processors) {
-      try {
-        const processorOutput = await processor.processEntity?.(
-          entity,
-          location,
-        );
-        if (processorOutput) {
-          resultingEntity = processorOutput;
-        }
-      } catch (e) {
-        foundErrors = true;
-        queue.push({
-          type: 'error',
-          location,
-          error: e,
-          depth,
-        });
-      }
-    }
-
-    if (!foundErrors) {
-      result.entities.push({
-        location,
-        entity: resultingEntity,
-      });
     }
   }
 }
