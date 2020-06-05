@@ -117,6 +117,10 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     window.location.reload(); // TODO(Rugvip): make this work without reload?
   }
 
+  async getCurrentSession() {
+    return this.currentSession;
+  }
+
   private async collapsedSessionRefresh(): Promise<T> {
     if (this.refreshPromise) {
       return this.refreshPromise;

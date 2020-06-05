@@ -143,6 +143,14 @@ describe('PassportStrategyHelper', () => {
       class MyCustomRefreshTokenSuccess extends passport.Strategy {
         // @ts-ignore
         private _oauth2 = new MyCustomOAuth2Success();
+        userProfile(_accessToken: string, callback: Function) {
+          callback(null, {
+            provider: 'a',
+            email: 'b',
+            name: 'c',
+            picture: 'd',
+          });
+        }
       }
 
       const mockStrategy = new MyCustomRefreshTokenSuccess();
