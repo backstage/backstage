@@ -25,7 +25,7 @@ const DescriptionWrapper = styled('span')({
   alignItems: 'center',
 });
 
-const createEditLink = (url: string): string => url.replace('blob', 'edit');
+const createEditLink = (url: string): string => url.replace('/blob/', '/edit/');
 
 export function envelopeToComponent(
   envelope: Entity,
