@@ -56,7 +56,7 @@ export async function createStandaloneApplication(
   app.use(express.json());
   app.use(requestLoggingHandler());
   app.use(
-    '/',
+    '/catalog',
     await createRouter({
       entitiesCatalog,
       locationsCatalog,

@@ -30,7 +30,8 @@ import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDi
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
 import { catalogApiRef } from '../..';
-import { envelopeToComponent } from '../../data/utils';
+import { entityToComponent } from '../../data/utils';
+import { Component } from '../../data/component';
 
 const REDIRECT_DELAY = 1000;
 
@@ -54,18 +55,20 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   const errorApi = useApi<ErrorApi>(errorApiRef);
 
   const catalogApi = useApi(catalogApiRef);
-  const catalogRequest = useAsync(() =>
-    catalogApi.getEntityByName(match.params.name),
-  );
+  const { value: component, error, loading } = useAsync<Component>(async () => {
+    const entity = await catalogApi.getEntityByName(match.params.name);
+    const location = await catalogApi.getLocationByEntity(entity);
+    return { ...entityToComponent(entity), location };
+  });
 
   useEffect(() => {
-    if (catalogRequest.error) {
+    if (error) {
       errorApi.post(new Error('Component not found!'));
       setTimeout(() => {
         history.push('/catalog');
       }, REDIRECT_DELAY);
     }
-  }, [catalogRequest.error, errorApi, history]);
+  }, [error, errorApi, history]);
 
   if (componentName === '') {
     history.push('/catalog');
@@ -76,17 +79,16 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     setConfirmationDialogOpen(false);
     setRemovingPending(true);
     // await componentFactory.removeComponentByName(componentName);
+    await catalogApi;
     history.push('/catalog');
   };
 
-  const component = envelopeToComponent(catalogRequest.value! ?? {});
-
   return (
     <Page theme={pageTheme.home}>
-      <Header title={component.name || 'Catalog'}>
+      <Header title={component?.name || 'Catalog'}>
         <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
       </Header>
-      {confirmationDialogOpen && catalogRequest.value && (
+      {confirmationDialogOpen && component && (
         <ComponentRemovalDialog
           component={component}
           onClose={hideRemovalDialog}
@@ -98,7 +100,7 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
         <Grid container spacing={3} direction="column">
           <Grid item>
             <ComponentMetadataCard
-              loading={catalogRequest.loading || removingPending}
+              loading={loading || removingPending}
               component={component}
             />
           </Grid>
