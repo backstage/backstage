@@ -25,6 +25,7 @@ import {
   Page,
   pageTheme,
   useApi,
+  HeaderTabs,
 } from '@backstage/core';
 import { useAsync, useMountedState } from 'react-use';
 import CatalogTable from '../CatalogTable/CatalogTable';
@@ -32,15 +33,7 @@ import {
   CatalogFilter,
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
-import {
-  Button,
-  makeStyles,
-  Typography,
-  Link,
-  AppBar,
-  Tabs,
-  Tab,
-} from '@material-ui/core';
+import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import { filterGroups, defaultFilter } from '../../data/filters';
 import { Link as RouterLink } from 'react-router-dom';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
@@ -59,7 +52,6 @@ const useStyles = makeStyles(theme => ({
 import { catalogApiRef } from '../..';
 import { envelopeToComponent } from '../../data/utils';
 import { Component } from '../../data/component';
-import { HeaderTabs } from '@backstage/core/src/layout/HeaderTabs';
 
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
@@ -117,12 +109,32 @@ const CatalogPage: FC<{}> = () => {
     return l.find(location => location.id === entityLocationId);
   };
 
+  // TODO: replace me with the proper tabs implemntation
+  const tabs = [
+    {
+      id: 'services',
+      label: 'Services',
+    },
+    {
+      id: 'websites',
+      label: 'Websites',
+    },
+    {
+      id: 'libs',
+      label: 'Libraries',
+    },
+    {
+      id: 'documentation',
+      label: 'Documentation',
+    },
+  ];
+
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
         <HomepageTimer />
       </Header>
-      <HeaderTabs />
+      <HeaderTabs tabs={tabs} />
       <Content>
         <DismissableBanner
           variant="info"

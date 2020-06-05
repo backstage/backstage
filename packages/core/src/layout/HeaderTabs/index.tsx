@@ -13,35 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// TODO(blam): Remove this implementation when the Tabs are ready
+// This is just a temporary solution to implementing tabs for now
+
 import React from 'react';
 
 import { makeStyles, Tabs, Tab } from '@material-ui/core';
 
-const useStyles = makeStyles({
-  wrapper: {
+const useStyles = makeStyles(theme => ({
+  tabsWrapper: {
     gridArea: 'pageSubheader',
   },
-});
+  defaultTab: {
+    padding: theme.spacing(3, 3),
+    ...theme.typography.caption,
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    color: theme.palette.text.secondary,
+  },
+  selected: {
+    color: theme.palette.text.primary,
+  },
+}));
 
-export const HeaderTabs: React.FC<{}> = () => {
+export type Tab = {
+  id: string;
+  label: string;
+};
+export const HeaderTabs: React.FC<{ tabs: Tab[] }> = ({ tabs }) => {
   const styles = useStyles();
+
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.tabsWrapper}>
       <Tabs
         indicatorColor="primary"
-        textColor="primary"
+        textColor="background"
         variant="scrollable"
         scrollButtons="auto"
         aria-label="scrollable auto tabs example"
         value={0}
       >
-        <Tab label="Item One" />
-        <Tab label="Item Two" />
-        <Tab label="Item Three" />
-        <Tab label="Item Four" />
-        <Tab label="Item Five" />
-        <Tab label="Item Six" />
-        <Tab label="Item Seven" />
+        {tabs.map((tab, index) => (
+          <Tab
+            label={tab.label}
+            key={tab.id}
+            value={index}
+            className={styles.defaultTab}
+            classes={{ selected: styles.selected }}
+          />
+        ))}
       </Tabs>
     </div>
   );

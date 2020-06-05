@@ -24,10 +24,11 @@ import {
   useApi,
   ErrorApi,
   errorApiRef,
+  HeaderTabs,
 } from '@backstage/core';
 import ComponentContextMenu from '../ComponentContextMenu/ComponentContextMenu';
 import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDialog';
-import { HeaderTabs } from '@backstage/core/src/layout/HeaderTabs';
+
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
 import { catalogApiRef } from '../..';
@@ -63,7 +64,7 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     if (catalogRequest.error) {
       errorApi.post(new Error('Component not found!'));
       setTimeout(() => {
-        history.push('/catalog');
+        history.push('/');
       }, REDIRECT_DELAY);
     }
   }, [catalogRequest.error, errorApi, history]);
@@ -77,17 +78,44 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     setConfirmationDialogOpen(false);
     setRemovingPending(true);
     // await componentFactory.removeComponentByName(componentName);
-    history.push('/catalog');
+    history.push('/');
   };
 
   const component = envelopeToComponent(catalogRequest.value! ?? {});
 
+  // TODO: replace me with the proper tabs implemntation
+  const tabs = [
+    {
+      id: 'overview',
+      label: 'Overview',
+    },
+    {
+      id: 'ci',
+      label: 'CI/CD',
+    },
+    {
+      id: 'tests',
+      label: 'Tests',
+    },
+    {
+      id: 'api',
+      label: 'API',
+    },
+    {
+      id: 'monitoring',
+      label: 'Monitoring',
+    },
+    {
+      id: 'quality',
+      label: 'Quality',
+    },
+  ];
   return (
     <Page theme={pageTheme.home}>
       <Header title={component.name || 'Catalog'}>
         <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
       </Header>
-      <HeaderTabs />
+      <HeaderTabs tabs={tabs} />
       {confirmationDialogOpen && catalogRequest.value && (
         <ComponentRemovalDialog
           component={component}
