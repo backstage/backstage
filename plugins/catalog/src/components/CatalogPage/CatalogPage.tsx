@@ -26,7 +26,7 @@ import {
   pageTheme,
   useApi,
 } from '@backstage/core';
-import { useAsync, useMountedState } from 'react-use';
+import { useAsync } from 'react-use';
 import CatalogTable from '../CatalogTable/CatalogTable';
 import {
   CatalogFilter,
@@ -35,7 +35,11 @@ import {
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import { filterGroups, defaultFilter } from '../../data/filters';
 import GitHub from '@material-ui/icons/GitHub';
-import { Entity, Location } from '@backstage/catalog-model';
+import {
+  Entity,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -56,7 +60,6 @@ const CatalogPage: FC<{}> = () => {
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
-  const isMounted = useMountedState();
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
@@ -64,26 +67,26 @@ const CatalogPage: FC<{}> = () => {
   );
   const styles = useStyles();
 
-  const { value: locations = [] } = useAsync(async () => {
+  const { value: locations } = useAsync(async () => {
     const getLocationDataForEntities = async (entities: Entity[]) => {
       return Promise.all(
-        entities.map(entity => catalogApi.getLocationByEntity(entity)),
+        entities.map(entity => {
+          const locationId = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+          if (!locationId) return undefined;
+
+          return catalogApi.getLocationById(locationId);
+        }),
       );
     };
 
     if (value) {
-      getLocationDataForEntities(value)
-        .then(
-          (location): Location[] =>
-            location.filter(loc => !!loc) as Array<Location>,
-        )
-        .then(locs => {
-          if (isMounted()) return locs;
-          return [];
-        });
+      return getLocationDataForEntities(value).then(
+        (location): Location[] =>
+          location.filter(loc => !!loc) as Array<Location>,
+      );
     }
     return [];
-  }, [value, catalogApi, isMounted, catalogApi]);
+  }, [value, catalogApi, catalogApi]);
   const actions = [
     (rowData: Component) => ({
       icon: GitHub,
@@ -139,9 +142,10 @@ const CatalogPage: FC<{}> = () => {
               components={
                 (value &&
                   value.map(val => {
-                    const loc =
-                      findLocationForEntity(val, locations) ?? undefined;
-                    return envelopeToComponent(val, loc);
+                    return {
+                      ...envelopeToComponent(val),
+                      location: findLocationForEntity(val, locations),
+                    };
                   })) ||
                 []
               }

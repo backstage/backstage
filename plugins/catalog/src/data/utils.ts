@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 import { Component } from './component';
-import { Entity, Location } from '@backstage/catalog-model';
+import {
+  Entity,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 
-export const envelopeToComponent = (
-  envelope: Entity,
-  location?: Location,
-): Component => {
+export const envelopeToComponent = (envelope: Entity): Component => {
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
     description: envelope.metadata?.annotations?.description ?? 'placeholder',
-    location,
   };
 };
 export const findLocationForEntity = (
   entity: Entity,
-  l: Location[],
+  locations: Location[],
 ): Location | undefined => {
-  const entityLocationId =
-    entity.metadata.annotations?.['backstage.io/managed-by-location'];
-  return l.find(location => location.id === entityLocationId);
+  const entityLocationId = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+  return locations.find(location => location.id === entityLocationId);
 };

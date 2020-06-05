@@ -16,7 +16,11 @@
 
 import { CatalogApi } from './types';
 import { DescriptorEnvelope } from '../types';
-import { Entity, Location } from '@backstage/catalog-model';
+import {
+  Entity,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 
 export class CatalogClient implements CatalogApi {
   private apiOrigin: string;
@@ -43,7 +47,7 @@ export class CatalogClient implements CatalogApi {
   }
   async getEntitiesByLocationId(id: string): Promise<Entity[]> {
     const response = await fetch(
-      `${this.apiOrigin}${this.basePath}/entities?backstage.io/managed-by-location=${id}`,
+      `${this.apiOrigin}${this.basePath}/entities?${LOCATION_ANNOTATION}=${id}`,
     );
     return await response.json();
   }
@@ -60,10 +64,7 @@ export class CatalogClient implements CatalogApi {
     throw new Error(`'Entity not found: ${name}`);
   }
   async getLocationByEntity(entity: Entity): Promise<Location | undefined> {
-    const findLocationIdInEntity = (e: Entity): string | undefined =>
-      e.metadata.annotations?.['backstage.io/managed-by-location'];
-
-    const locationId = findLocationIdInEntity(entity);
+    const locationId = entity.metadata.annotations?.[LOCATION_ANNOTATION];
     if (!locationId) return undefined;
 
     const location = this.getLocationById(locationId);

@@ -26,8 +26,9 @@ import {
 } from '@material-ui/core';
 import { Component } from '../../data/component';
 import { useAsync } from 'react-use';
-import { useApi, Progress } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { catalogApiRef } from '../../api/types';
+import { Entity } from '@backstage/catalog-model';
 
 type ComponentRemovalDialogProps = {
   onConfirm: () => any;
@@ -41,18 +42,28 @@ const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
   onClose,
   component,
 }) => {
+  const catalogApi = useApi(catalogApiRef);
+  const { value } = useAsync(async () => {
+    let colocatedEntities: Array<Entity> = [];
+    const locationId = component.location?.id;
+    if (locationId) {
+      colocatedEntities = await catalogApi.getEntitiesByLocationId(locationId);
+    }
+    return colocatedEntities;
+  });
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const infoMessage = `This action will unregister ${
+    value ? value.map(e => e.metadata.name).join(', ') : ''
+  } from location with target ${component.location?.target}. To undo,
+  just re-register the component in Backstage.`;
   return (
     <Dialog fullScreen={fullScreen} open onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
         Are you sure you want to unregister this component?
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          This action will unregister {component.name}. To undo, just
-          re-register the component in Backstage.
-        </DialogContentText>
+        <DialogContentText>{infoMessage}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel} color="primary">

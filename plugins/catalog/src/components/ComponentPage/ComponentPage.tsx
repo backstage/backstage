@@ -54,9 +54,10 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   const errorApi = useApi<ErrorApi>(errorApiRef);
 
   const catalogApi = useApi(catalogApiRef);
-  const catalogRequest = useAsync(() =>
-    catalogApi.getEntityByName(match.params.name),
-  );
+  const catalogRequest = useAsync(async () => {
+    const entity = await catalogApi.getEntityByName(match.params.name);
+    return entity;
+  });
 
   useEffect(() => {
     if (catalogRequest.error) {
@@ -76,6 +77,7 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     setConfirmationDialogOpen(false);
     setRemovingPending(true);
     // await componentFactory.removeComponentByName(componentName);
+    await catalogApi;
     history.push('/catalog');
   };
 
