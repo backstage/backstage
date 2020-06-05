@@ -15,11 +15,14 @@
  */
 import React from 'react';
 import { Component } from './component';
-import { Entity, Location } from '@backstage/catalog-model';
+import {
+  Entity,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 import Edit from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import { styled } from '@material-ui/core/styles';
-import { LOCATION_ANNOTATION } from '../../../../packages/catalog-model/src/location/annotation';
 
 const DescriptionWrapper = styled('span')({
   display: 'flex',
