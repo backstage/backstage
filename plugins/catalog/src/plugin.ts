@@ -17,11 +17,12 @@
 import { createPlugin } from '@backstage/core';
 import CatalogPage from './components/CatalogPage';
 import ComponentPage from './components/ComponentPage/ComponentPage';
+import { rootRoute, entityRoute } from './routes';
 
 export const plugin = createPlugin({
   id: 'catalog',
   register({ router }) {
-    router.registerRoute('/', CatalogPage);
-    router.registerRoute('/catalog/:name/', ComponentPage);
+    router.addRoute(rootRoute, CatalogPage);
+    router.addRoute(entityRoute, ComponentPage);
   },
 });

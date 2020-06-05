@@ -43,6 +43,34 @@ export class CatalogClient implements CatalogApi {
     if (entity) return entity;
     throw new Error(`'Entity not found: ${name}`);
   }
+
+  async addLocation(type: string, target: string) {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ type, target }),
+      },
+    );
+
+    if (response.status !== 201) {
+      throw new Error(await response.text());
+    }
+
+    const { location, entities } = await response.json();
+
+    if (!location || entities.length === 0)
+      throw new Error(`Location wasn't added: ${target}`);
+
+    return {
+      location,
+      entities,
+    };
+  }
+
   async getLocationByEntity(entity: Entity): Promise<Location | undefined> {
     const findLocationIdInEntity = (e: Entity): string | undefined =>
       e.metadata.annotations?.['backstage.io/managed-by-location'];

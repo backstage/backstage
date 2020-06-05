@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
-export { buildPackage } from './packager';
-export { Output } from './types';
-export type { BuildOptions } from './types';
+import { createRouteRef } from '@backstage/core';
+
+const NoIcon = () => null;
+
+export const rootRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/',
+  title: 'Catalog',
+});
+export const entityRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/catalog/:name/',
+  title: 'Entity',
+});
