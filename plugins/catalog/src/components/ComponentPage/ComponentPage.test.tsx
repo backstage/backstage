@@ -20,11 +20,11 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { catalogApiRef, CatalogApi } from '../../api/types';
 
-const getTestProps = () => {
+const getTestProps = (name: string) => {
   return {
     match: {
       params: {
-        name: 'componentName',
+        name: name,
         kind: 'Component',
       },
     },
@@ -38,7 +38,7 @@ const errorApi = { post: () => {} };
 
 describe('ComponentPage', () => {
   it('should redirect to component table page when name is not provided', async () => {
-    const props = getTestProps();
+    const props = getTestProps('');
     await render(
       wrapInTestApp(
         <ApiProvider
@@ -47,7 +47,7 @@ describe('ComponentPage', () => {
             [
               catalogApiRef,
               ({
-                async getEntityByName() {},
+                async getEntity() {},
               } as unknown) as CatalogApi,
             ],
           ])}
