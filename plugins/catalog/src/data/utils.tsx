@@ -25,6 +25,8 @@ const DescriptionWrapper = styled('span')({
   alignItems: 'center',
 });
 
+const createEditLink = (url: string): string => url.replace('blob', 'edit');
+
 export function envelopeToComponent(
   envelope: Entity,
   location?: Location,
@@ -35,11 +37,13 @@ export function envelopeToComponent(
     description: (
       <DescriptionWrapper>
         {envelope.metadata?.annotations?.description ?? 'placeholder'}
-        <a href={location?.target}>
-          <IconButton size="small">
-            <Edit fontSize="small" />
-          </IconButton>
-        </a>
+        {location?.target ? (
+          <a href={createEditLink(location?.target)}>
+            <IconButton size="small">
+              <Edit fontSize="small" />
+            </IconButton>
+          </a>
+        ) : null}
       </DescriptionWrapper>
     ),
     location,
