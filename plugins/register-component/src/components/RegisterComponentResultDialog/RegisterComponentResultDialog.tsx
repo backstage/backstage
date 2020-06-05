@@ -69,10 +69,12 @@ export const RegisterComponentResultDialog: FC<Props> = ({
                       component={RouterLink}
                       to={generatePath(entityRoute.path, {
                         name: entity.metadata.name,
+                        kind: entity.kind,
                       })}
                     >
                       {generatePath(entityRoute.path, {
                         name: entity.metadata.name,
+                        kind: entity.kind,
                       })}
                     </Link>
                   ),

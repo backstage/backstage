@@ -25,6 +25,6 @@ export const rootRoute = createRouteRef({
 });
 export const entityRoute = createRouteRef({
   icon: NoIcon,
-  path: '/catalog/:name/',
+  path: '/catalog/:namespace?/:kind/:name/',
   title: 'Entity',
 });

@@ -35,9 +35,20 @@ export class CatalogClient implements CatalogApi {
     const response = await fetch(`${this.apiOrigin}${this.basePath}/entities`);
     return await response.json();
   }
-  async getEntityByName(name: string): Promise<DescriptorEnvelope> {
+
+  async getEntity({
+    name,
+    namespace,
+    kind,
+  }: {
+    name: string;
+    namespace?: string;
+    kind: string;
+  }): Promise<DescriptorEnvelope> {
     const response = await fetch(
-      `${this.apiOrigin}${this.basePath}/entities/by-name/Component/default/${name}`,
+      `${this.apiOrigin}${this.basePath}/entities/by-name/${kind}/${
+        namespace ?? 'default'
+      }/${name}`,
     );
     const entity = await response.json();
     if (entity) return entity;

@@ -38,6 +38,8 @@ type ComponentPageProps = {
   match: {
     params: {
       name: string;
+      namespace?: string;
+      kind: string;
     };
   };
   history: {
@@ -50,12 +52,12 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   const [removingPending, setRemovingPending] = useState(false);
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
   const hideRemovalDialog = () => setConfirmationDialogOpen(false);
-  const componentName = match.params.name;
+  const { name, namespace, kind } = match.params;
   const errorApi = useApi<ErrorApi>(errorApiRef);
 
   const catalogApi = useApi(catalogApiRef);
   const catalogRequest = useAsync(() =>
-    catalogApi.getEntityByName(match.params.name),
+    catalogApi.getEntity({ name, namespace, kind }),
   );
 
   useEffect(() => {
@@ -67,7 +69,7 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     }
   }, [catalogRequest.error, errorApi, history]);
 
-  if (componentName === '') {
+  if (name === '') {
     history.push('/catalog');
     return null;
   }
