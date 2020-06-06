@@ -15,15 +15,18 @@
  */
 
 import { InputError } from '@backstage/backend-common';
-import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
+import {
+  Entity,
+  Location,
+  LocationSpec,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { IngestionModel } from '../ingestion';
 import { AddLocationResult, HigherOrderOperation } from './types';
 import { Logger } from 'winston';
-
-const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
 
 /**
  * Placeholder for operations that span several catalogs and/or stretches out

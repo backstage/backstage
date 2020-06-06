@@ -19,7 +19,12 @@ import {
   InputError,
   NotFoundError,
 } from '@backstage/backend-common';
-import type { Entity, EntityMeta, Location } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityMeta,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -167,7 +172,7 @@ export class CommonDatabase implements Database {
       annotations: {
         ...(newEntity.metadata?.annotations ?? {}),
         ...(request.locationId
-          ? { 'backstage.io/managed-by-location': request.locationId }
+          ? { [LOCATION_ANNOTATION]: request.locationId }
           : {}),
       },
     };

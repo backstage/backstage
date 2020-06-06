@@ -143,6 +143,7 @@ export async function installWithLocalDeps(dir: string) {
             // Add to both resolutions and dependencies, or transitive dependencies will still be fetched from the registry.
             pkgJson.dependencies[`@backstage/${name}`] = `file:${pkgPath}`;
             pkgJson.resolutions[`@backstage/${name}`] = `file:${pkgPath}`;
+            delete pkgJson.devDependencies[`@backstage/${name}`];
 
             await fs
               .writeJSON(pkgJsonPath, pkgJson, { encoding: 'utf8', spaces: 2 })
