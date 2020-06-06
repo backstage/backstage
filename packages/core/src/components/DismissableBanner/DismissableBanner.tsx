@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import React, { FC, ReactNode, useState } from 'react';
+import React, { FC, ReactNode, useState, useEffect } from 'react';
+import ReactDOMServer from 'react-dom/server';
+import { useApi, storageApiRef } from '@backstage/core';
+import { useObservable } from 'react-use';
 import classNames from 'classnames';
 import { makeStyles, Theme } from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -60,17 +63,39 @@ type Props = {
 
 const DismissableBanner: FC<Props> = ({ variant, /* setting, */ message }) => {
   // const [show, setShown, loading] = useSetting(setting);
-  const [show, setShown] = useState(true);
   const classes = useStyles();
+  const storageApi = useApi(storageApiRef);
+  const settingsStore = storageApi.forBucket('settings');
+  const rawDismissedBanners =
+    settingsStore.get<string[]>('dismissedBanners') ?? [];
+
+  const [dismissedBanners, setDismissedBanners] = useState(
+    new Set(rawDismissedBanners),
+  );
+
+  const observedItems = useObservable(
+    settingsStore.observe$<string[]>('dismissedBanners'),
+  );
+
+  useEffect(() => {
+    // Only want to run on updates, not first time
+    if (observedItems?.newValue) {
+      const currentValue = observedItems?.newValue ?? [];
+      setDismissedBanners(new Set(currentValue));
+    }
+  }, [observedItems?.newValue]);
 
   const handleClick = () => {
-    setShown(false);
+    settingsStore.set('dismissedBanners', [
+      ...dismissedBanners,
+      ReactDOMServer.renderToString(message),
+    ]);
   };
 
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      open={show /* && !loading */}
+      open={!dismissedBanners.has(ReactDOMServer.renderToString(message))}
       classes={{ root: classes.root }}
     >
       <SnackbarContent
