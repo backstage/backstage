@@ -17,12 +17,16 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorResults } from './types';
+import { LocationProcessor, LocationProcessorSink } from './types';
 
 export class GithubReaderProcessor implements LocationProcessor {
-  async *readLocation(location: LocationSpec): LocationProcessorResults {
+  async readLocation(
+    location: LocationSpec,
+    optional: boolean,
+    emit: LocationProcessorSink,
+  ): Promise<boolean> {
     if (location.type !== 'github') {
-      return;
+      return false;
     }
 
     try {
@@ -32,22 +36,25 @@ export class GithubReaderProcessor implements LocationProcessor {
       // notFound instead of fatal?
       const response = await fetch(url.toString());
 
-      if (!response.ok) {
+      if (response.ok) {
+        const data = await response.buffer();
+        emit(result.data(location, data));
+      } else {
         const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
         if (response.status === 404) {
-          yield result.notFoundError(location, message);
+          if (!optional) {
+            emit(result.notFoundError(location, message));
+          }
         } else {
-          yield result.generalError(location, message);
+          emit(result.generalError(location, message));
         }
-        return;
       }
-
-      const data = await response.buffer();
-      yield result.data(location, data);
     } catch (e) {
       const message = `Unable to read ${location.type} ${location.target}, ${e}`;
-      yield result.generalError(location, message);
+      emit(result.generalError(location, message));
     }
+
+    return true;
   }
 
   // Converts

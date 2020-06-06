@@ -15,21 +15,16 @@
  */
 
 import { InputError } from '@backstage/backend-common';
-import {
-  Entity,
-  Location,
-  LocationSpec,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
+import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import {
   AddLocationResult,
   HigherOrderOperation,
   LocationReader,
 } from './types';
-import { Logger } from 'winston';
 
 /**
  * Placeholder for operations that span several catalogs and/or stretches out

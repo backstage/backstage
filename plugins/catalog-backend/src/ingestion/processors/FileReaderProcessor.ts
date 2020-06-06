@@ -17,32 +17,32 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import fs from 'fs-extra';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorResults } from './types';
+import { LocationProcessor, LocationProcessorSink } from './types';
 
 export class FileReaderProcessor implements LocationProcessor {
-  async *readLocation(
+  async readLocation(
     location: LocationSpec,
     optional: boolean,
-  ): LocationProcessorResults {
+    emit: LocationProcessorSink,
+  ): Promise<boolean> {
     if (location.type !== 'file') {
-      return;
+      return false;
     }
 
     try {
       const exists = await fs.pathExists(location.target);
-      if (!exists) {
-        if (!optional) {
-          const message = `${location.type} ${location.target} does not exist`;
-          yield result.notFoundError(location, message);
-        }
-        return;
+      if (exists) {
+        const data = await fs.readFile(location.target);
+        emit(result.data(location, data));
+      } else if (!optional) {
+        const message = `${location.type} ${location.target} does not exist`;
+        emit(result.notFoundError(location, message));
       }
-
-      const data = await fs.readFile(location.target);
-      yield result.data(location, data);
     } catch (e) {
       const message = `${location.type} ${location.target} could not be read, ${e}`;
-      yield result.generalError(location, message);
+      emit(result.generalError(location, message));
     }
+
+    return true;
   }
 }

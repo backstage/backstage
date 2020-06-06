@@ -21,30 +21,89 @@ export type LocationProcessor = {
    * Reads the contents of a location.
    *
    * @param location The location to read
+   * @param optional Whether a missing target should trigger an error
+   * @param emit A sink for items resulting from the read
+   * @returns True if handled by this processor, false otherwise
    */
   readLocation?(
     location: LocationSpec,
     optional: boolean,
-  ): LocationProcessorResults;
+    emit: LocationProcessorSink,
+  ): Promise<boolean>;
 
-  parseData?(data: Buffer, location: LocationSpec): LocationProcessorResults;
+  /**
+   * Parses a raw data buffer that was read from a location.
+   *
+   * @param data The data to parse
+   * @param location The location that the data came from
+   * @param emit A sink for items resulting from the parsing
+   * @returns True if handled by this processor, false otherwise
+   */
+  parseData?(
+    data: Buffer,
+    location: LocationSpec,
+    emit: LocationProcessorSink,
+  ): Promise<boolean>;
 
+  /**
+   * Processes an emitted entity, e.g. by validating or modifying it.
+   *
+   * @param entity The entity to process
+   * @param location The location that the entity came from
+   * @param emit A sink for auxiliary items resulting from the processing
+   * @returns The same entity or a modifid version of it
+   */
   processEntity?(
     entity: Entity,
     location: LocationSpec,
-  ): LocationProcessorResults;
+    emit: LocationProcessorSink,
+  ): Promise<Entity>;
 
-  handleError?(error: Error, location: LocationSpec): LocationProcessorResults;
+  /**
+   * Handles an emitted error.
+   *
+   * @param error The error
+   * @param location The location where the error occurred
+   * @param emit A sink for items resulting from this handilng
+   * @returns Nothing
+   */
+  handleError?(
+    error: Error,
+    location: LocationSpec,
+    emit: LocationProcessorSink,
+  ): Promise<void>;
 };
 
-export type LocationProcessorResults = AsyncGenerator<
-  LocationProcessorResult,
-  void,
-  unknown
->;
+export type LocationProcessorSink = (
+  generated: LocationProcessorResult,
+) => void;
+
+export type LocationProcessorLocationResult = {
+  type: 'location';
+  location: LocationSpec;
+  optional: boolean;
+};
+
+export type LocationProcessorDataResult = {
+  type: 'data';
+  data: Buffer;
+  location: LocationSpec;
+};
+
+export type LocationProcessorEntityResult = {
+  type: 'entity';
+  entity: Entity;
+  location: LocationSpec;
+};
+
+export type LocationProcessorErrorResult = {
+  type: 'error';
+  error: Error;
+  location: LocationSpec;
+};
 
 export type LocationProcessorResult =
-  | { type: 'error'; error: Error; location: LocationSpec } // An error occurred
-  | { type: 'location'; location: LocationSpec; optional: boolean } // A location to read
-  | { type: 'data'; data: Buffer; location: LocationSpec } // Some raw data was read
-  | { type: 'entity'; entity: Entity; location: LocationSpec }; // An entity was produced
+  | LocationProcessorLocationResult
+  | LocationProcessorDataResult
+  | LocationProcessorEntityResult
+  | LocationProcessorErrorResult;

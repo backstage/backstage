@@ -16,15 +16,11 @@
 
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
-import { LocationProcessor, LocationProcessorResults } from './types';
-import * as result from './results';
+import { LocationProcessor } from './types';
 
 export class AnnotateLocationEntityProcessor implements LocationProcessor {
-  async *processEntity(
-    entity: Entity,
-    location: LocationSpec,
-  ): LocationProcessorResults {
-    const merged = lodash.merge(
+  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
+    return lodash.merge(
       {
         metadata: {
           annotations: {
@@ -34,6 +30,5 @@ export class AnnotateLocationEntityProcessor implements LocationProcessor {
       },
       entity,
     );
-    yield result.entity(location, merged);
   }
 }
