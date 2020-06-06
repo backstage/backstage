@@ -46,7 +46,6 @@ type PaletteAdditions = {
   sidebar: string;
   tabbar: {
     indicator: string;
-    background: string;
   };
   bursts: {
     fontColor: string;

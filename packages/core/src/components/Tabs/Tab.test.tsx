@@ -17,11 +17,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import Tab from './Tab';
+import { StyledTab } from './Tab';
 
 describe('<Tab />', () => {
   it('renders without exploding', () => {
-    const rendered = render(wrapInTestApp(<Tab label="test" />));
+    const rendered = render(wrapInTestApp(<StyledTab label="test" />));
     expect(rendered.getByText('test')).toBeInTheDocument();
   });
 });

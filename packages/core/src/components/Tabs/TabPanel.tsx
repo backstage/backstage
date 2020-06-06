@@ -19,18 +19,17 @@ import Box from '@material-ui/core/Box';
 
 export interface TabPanelProps {
   children: any;
-  value: any;
-  index: number;
+  value?: any;
+  index?: number;
 }
 
-const TabPanel: FC<TabPanelProps> = props => {
+export const TabPanel: FC<TabPanelProps> = props => {
   const { children, value, index, ...other } = props;
 
   return (
     <div
       role="tabpanel"
       hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
       aria-labelledby={`scrollable-auto-tab-${index}`}
       {...other}
     >
@@ -38,5 +37,3 @@ const TabPanel: FC<TabPanelProps> = props => {
     </div>
   );
 };
-
-export default TabPanel;

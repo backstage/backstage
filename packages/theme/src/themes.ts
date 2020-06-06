@@ -62,7 +62,6 @@ export const lightTheme = createTheme({
     },
     tabbar: {
       indicator: '#9BF0E1',
-      background: '#FFFFFF',
     },
   },
 });
@@ -112,7 +111,6 @@ export const darkTheme = createTheme({
     },
     tabbar: {
       indicator: '#9BF0E1',
-      background: '#424242',
     },
   },
 });

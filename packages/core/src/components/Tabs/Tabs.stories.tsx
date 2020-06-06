@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import Tabs from './Tabs';
+import { Tabs } from './Tabs';
+import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 
 export default {
   title: 'Tabs',
@@ -39,6 +40,29 @@ export const Expandable = () => (
   <div style={containerStyle}>
     <Tabs
       tabs={[...Array(31)].map((_, index) => ({
+        label: `ANOTHER TAB`,
+        content: <div>Content {index}</div>,
+      }))}
+    />
+  </div>
+);
+
+export const Icons = () => (
+  <div style={containerStyle}>
+    <Tabs
+      tabs={[...Array(4)].map((_, index) => ({
+        icon: <AccessAlarmIcon />,
+        content: <div>Content {index}</div>,
+      }))}
+    />
+  </div>
+);
+
+export const IconsAndLabels = () => (
+  <div style={containerStyle}>
+    <Tabs
+      tabs={[...Array(4)].map((_, index) => ({
+        icon: <AccessAlarmIcon />,
         label: `ANOTHER TAB`,
         content: <div>Content {index}</div>,
       }))}

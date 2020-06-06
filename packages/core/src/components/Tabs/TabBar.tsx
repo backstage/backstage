@@ -19,7 +19,7 @@ import { Tabs, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
 interface StyledTabsProps {
-  value: number;
+  value: number | boolean;
   onChange: (event: React.ChangeEvent<{}>, newValue: number) => void;
 }
 
@@ -40,7 +40,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-const StyledTabs: FC<StyledTabsProps> = props => {
+export const StyledTabs: FC<StyledTabsProps> = props => {
   const classes = useStyles(props);
   return (
     <Tabs
@@ -50,5 +50,3 @@ const StyledTabs: FC<StyledTabsProps> = props => {
     />
   );
 };
-
-export default StyledTabs;

@@ -13,30 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect } from 'react';
+import { TabProps } from './Tabs';
 
-export const chunkArray = (myArray: any[], chunkSize: number) => {
+export const chunkArray = (
+  myArray: TabProps[],
+  chunkSize: number,
+): TabProps[][] => {
   const results = [];
   while (myArray.length) {
     results.push(myArray.splice(0, chunkSize));
   }
   return results;
-};
-
-export const useWindowWidth = () => {
-  const isClient = typeof window === 'object';
-  const getWidth = () => (isClient ? window.innerWidth : undefined);
-  const [windowWidth, setWindowWidth] = useState(getWidth);
-
-  useEffect((): any => {
-    if (!isClient) {
-      return false;
-    }
-
-    const handleResize = () => setWindowWidth(getWidth());
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  return windowWidth;
 };

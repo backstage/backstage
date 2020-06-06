@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
-import React, { FC, useRef, useEffect, MutableRefObject } from 'react';
+import React, {
+  FC,
+  useRef,
+  useEffect,
+  MutableRefObject,
+  useState,
+} from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { AppBar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { chunkArray, useWindowWidth } from './utils';
+import { chunkArray } from './utils';
+import { useWindowSize } from 'react-use';
 
 /* Import Components */
 
-import TabPanel from './TabPanel';
-import TabIcon from './TabIcon';
-import Tab from './Tab';
-import TabBar from './TabBar';
+import { TabPanel } from './TabPanel';
+import { StyledIcon } from './TabIcon';
+import { StyledTab } from './Tab';
+import { StyledTabs } from './TabBar';
 
 /* Props Types */
 
-interface TabProps {
-  label: string;
+export interface TabProps {
   content: any;
+  label?: string;
+  icon?: any; // TODO: define type for material-ui icons
 }
 
 export interface TabsProps {
@@ -46,36 +54,35 @@ const useStyles = makeStyles<BackstageTheme>((theme: BackstageTheme) => ({
     width: '100%',
   },
   styledTabs: {
-    backgroundColor: theme.palette.tabbar.background,
+    backgroundColor: theme.palette.background.paper,
   },
   appbar: {
     boxShadow: 'none',
-    backgroundColor: theme.palette.tabbar.background,
+    backgroundColor: theme.palette.background.paper,
     paddingLeft: '10px',
     paddingRight: '10px',
   },
 }));
 
-const Tabs: FC<TabsProps> = ({ tabs }) => {
+export const Tabs: FC<TabsProps> = ({ tabs }) => {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
-  const [navIndex, setNavIndex] = React.useState(0);
-  const [chunkedTabs, setChunkedTabs] = React.useState([[]] as TabProps[][]);
+  const [value, setValue] = useState([0, 0]); // [selectedChunckedNavIndex, selectedIndex]
+  const [navIndex, setNavIndex] = useState(0);
+  const [numberOfChunkedElement, setNumberOfChunkedElement] = useState(0);
+  const [chunkedTabs, setChunkedTabs] = useState<TabProps[][]>([[]]);
   const wrapper = useRef() as MutableRefObject<HTMLDivElement>;
 
-  const size = useWindowWidth();
+  const { width } = useWindowSize();
 
   const handleChange = (_: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
+    setValue([navIndex, newValue]);
   };
 
   const navigateToPrevChunk = () => {
-    setValue(navIndex - 1 === 0 ? 0 : 1);
     setNavIndex(navIndex - 1);
   };
 
   const navigateToNextChunk = () => {
-    setValue(1);
     setNavIndex(navIndex + 1);
   };
 
@@ -88,58 +95,70 @@ const Tabs: FC<TabsProps> = ({ tabs }) => {
     const numberOfTabIcons = navIndex === 0 ? 1 : 2;
     const wrapperWidth =
       wrapper.current.offsetWidth - padding - numberOfTabIcons * 30;
+    const flattenIndex = value[0] * numberOfChunkedElement + value[1];
+    const newChunkedElementSize = Math.floor(wrapperWidth / 170);
 
-    const numberOfChunkedElement = Math.floor(wrapperWidth / 170);
-    setChunkedTabs(
-      chunkArray([...tabs], numberOfChunkedElement) as TabProps[][],
-    );
-  }, [size]);
+    setNumberOfChunkedElement(newChunkedElementSize);
+    setChunkedTabs(chunkArray([...tabs], newChunkedElementSize));
+    setValue([
+      Math.floor(flattenIndex / newChunkedElementSize),
+      flattenIndex % newChunkedElementSize,
+    ]);
+  }, [width]);
+
+  const currentIndex = navIndex === value[0] ? value[1] : false;
 
   return (
     <div className={classes.root}>
       <AppBar ref={wrapper} className={classes.appbar} position="static">
-        <div className={classes.root2}>
-          <TabBar value={value} onChange={handleChange}>
+        <div>
+          <StyledTabs value={currentIndex} onChange={handleChange}>
             {navIndex !== 0 && (
-              <TabIcon
+              <StyledIcon
                 onClick={navigateToPrevChunk}
                 ariaLabel="navigate-before"
               >
                 <NavigateBeforeIcon />
-              </TabIcon>
+              </StyledIcon>
             )}
             {chunkedTabs[navIndex].map((tab, index) => (
-              <Tab
+              <StyledTab
+                value={index}
                 isFirstIndex={index === 0}
                 isFirstNav={navIndex === 0}
                 key={index}
-                label={tab.label}
+                icon={tab.icon || undefined}
+                label={tab.label || undefined}
               />
             ))}
             {hasNextNavIndex() && (
-              <TabIcon
+              <StyledIcon
                 isNext
                 onClick={navigateToNextChunk}
                 ariaLabel="navigate-next"
               >
                 <NavigateNextIcon />
-              </TabIcon>
+              </StyledIcon>
             )}
-          </TabBar>
+          </StyledTabs>
         </div>
       </AppBar>
-      {chunkedTabs[navIndex].map((tab, index) => (
+      {currentIndex !== false ? (
+        chunkedTabs[navIndex].map((tab, index) => (
+          <TabPanel key={index} value={index} index={currentIndex}>
+            {tab.content}
+          </TabPanel>
+        ))
+      ) : (
+        // Render if the selected tab index is outside the current rendered chunked array
         <TabPanel
-          key={index}
-          // Used to prevent issues with TabIcon inside the TabBar
-          value={navIndex === 0 ? value : value - 1}
-          index={index}
+          key="panel_outside_chunked_array"
+          value={value[1]}
+          index={value[1]}
         >
-          {tab.content}
+          {chunkedTabs[value[0]][value[1]].content}
         </TabPanel>
-      ))}
+      )}
     </div>
   );
 };
-
-export default Tabs;

@@ -15,24 +15,17 @@
  */
 
 import React from 'react';
-import { IconButton, withStyles, Theme } from '@material-ui/core';
-
-export const withStylesProps = (styles: any) => (Component: any) => (
-  props: any,
-) => {
-  const Comp = withStyles((theme: Theme) => styles(props, theme))(Component);
-  return <Comp {...props} />;
-};
+import { IconButton, makeStyles } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 
 interface StyledIconProps {
   ariaLabel: string;
   children: any;
-  classes: any;
   isNext?: boolean;
   onClick: any;
 }
 
-const iconStyles = (props: StyledIconProps) => ({
+const useStyles = makeStyles<BackstageTheme, StyledIconProps>(() => ({
   root: {
     color: '#6E6E6E',
     overflow: 'visible',
@@ -40,25 +33,22 @@ const iconStyles = (props: StyledIconProps) => ({
     textAlign: 'center',
     borderRadius: '50%',
     backgroundColor: '#E6E6E6',
-    marginLeft: props.isNext ? 'auto' : '0',
-    marginRight: props.isNext ? '0' : '10px',
+    marginLeft: props => (props.isNext ? 'auto' : '0'),
+    marginRight: props => (props.isNext ? '0' : '10px'),
     '&:hover': {
       backgroundColor: '#E6E6E6',
       opacity: '1',
     },
   },
-});
+}));
 
-const StyledIcon = withStylesProps(iconStyles)((props: StyledIconProps) => {
-  const {
-    classes: { root },
-    ariaLabel,
-    onClick,
-  } = props;
+export const StyledIcon = (props: StyledIconProps) => {
+  const classes = useStyles(props);
+  const { ariaLabel, onClick } = props;
   return (
     <IconButton
       onClick={onClick}
-      className={root}
+      className={classes.root}
       size="small"
       disableRipple
       disableFocusRipple
@@ -67,6 +57,4 @@ const StyledIcon = withStylesProps(iconStyles)((props: StyledIconProps) => {
       {props.children}
     </IconButton>
   );
-});
-
-export default StyledIcon;
+};

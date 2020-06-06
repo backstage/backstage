@@ -15,18 +15,15 @@
  */
 
 import React from 'react';
-import { Tab, withStyles, Theme } from '@material-ui/core';
+import { Tab, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
-const withStylesProps = (styles: any) => (Component: any) => (props: any) => {
-  const Comp = withStyles((theme: Theme) => styles(props, theme))(Component);
-  return <Comp {...props} />;
-};
-
 interface StyledTabProps {
-  label: string;
+  label?: string;
+  icon?: any; // TODO: define type for material-ui icons
   isFirstNav?: boolean;
   isFirstIndex?: boolean;
+  value?: any;
 }
 
 const tabMarginLeft = (isFirstNav: boolean, isFirstIndex: boolean) => {
@@ -39,14 +36,15 @@ const tabMarginLeft = (isFirstNav: boolean, isFirstIndex: boolean) => {
   return '40px';
 };
 
-const tabStyles = (props: any, theme: BackstageTheme) => ({
+const useStyles = makeStyles<BackstageTheme, StyledTabProps>(theme => ({
   root: {
     textTransform: 'none',
     height: '64px',
     fontWeight: theme.typography.fontWeightBold,
     fontSize: theme.typography.pxToRem(13),
     color: theme.palette.textSubtle,
-    marginLeft: tabMarginLeft(props.isFirstNav, props.isFirstIndex),
+    marginLeft: props =>
+      tabMarginLeft(props.isFirstNav as boolean, props.isFirstIndex as boolean),
     width: '130px',
     minWidth: '130px',
     '&:hover': {
@@ -55,11 +53,10 @@ const tabStyles = (props: any, theme: BackstageTheme) => ({
       color: theme.palette.textSubtle,
     },
   },
-});
+}));
 
-const StyledTab = withStylesProps(tabStyles)((props: StyledTabProps) => {
+export const StyledTab = (props: StyledTabProps) => {
+  const classes = useStyles(props);
   const { isFirstNav, isFirstIndex, ...rest } = props;
-  return <Tab disableRipple {...rest} />;
-});
-
-export default StyledTab;
+  return <Tab className={classes.root} disableRipple {...rest} />;
+};
