@@ -104,7 +104,7 @@ export const Tabs: FC<TabsProps> = ({ tabs }) => {
       Math.floor(flattenIndex / newChunkedElementSize),
       flattenIndex % newChunkedElementSize,
     ]);
-  }, [width]);
+  }, [width, navIndex, numberOfChunkedElement, tabs, value]);
 
   const currentIndex = navIndex === value[0] ? value[1] : false;
 
