@@ -25,6 +25,7 @@ import {
   Page,
   pageTheme,
   useApi,
+  HeaderTabs,
 } from '@backstage/core';
 import { useAsync } from 'react-use';
 import CatalogTable from '../CatalogTable/CatalogTable';
@@ -101,11 +102,33 @@ const CatalogPage: FC<{}> = () => {
         rowData && rowData.location ? rowData.location.type !== 'github' : true,
     }),
   ];
+
+  // TODO: replace me with the proper tabs implemntation
+  const tabs = [
+    {
+      id: 'services',
+      label: 'Services',
+    },
+    {
+      id: 'websites',
+      label: 'Websites',
+    },
+    {
+      id: 'libs',
+      label: 'Libraries',
+    },
+    {
+      id: 'documentation',
+      label: 'Documentation',
+    },
+  ];
+
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
         <HomepageTimer />
       </Header>
+      <HeaderTabs tabs={tabs} />
       <Content>
         <DismissableBanner
           variant="info"
@@ -123,6 +146,7 @@ const CatalogPage: FC<{}> = () => {
             </Typography>
           }
         />
+
         <ContentHeader title="Services">
           <Button
             component={RouterLink}
