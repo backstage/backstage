@@ -15,7 +15,6 @@
  */
 
 import React, { FC, ReactNode, useState, useEffect } from 'react';
-import ReactDOMServer from 'react-dom/server';
 import { useApi, storageApiRef } from '@backstage/core';
 import { useObservable } from 'react-use';
 import classNames from 'classnames';
@@ -24,7 +23,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
-// import { useSetting, Setting } from 'shared/apis/settings';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -57,28 +55,26 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   variant: 'info' | 'error';
-  // setting: Setting<boolean>;
   message: ReactNode;
+  id: string;
 };
 
-const DismissableBanner: FC<Props> = ({ variant, /* setting, */ message }) => {
-  // const [show, setShown, loading] = useSetting(setting);
+const DismissableBanner: FC<Props> = ({ variant, message, id }) => {
   const classes = useStyles();
   const storageApi = useApi(storageApiRef);
-  const settingsStore = storageApi.forBucket('settings');
+  const notificationsStore = storageApi.forBucket('notifications');
   const rawDismissedBanners =
-    settingsStore.get<string[]>('dismissedBanners') ?? [];
+    notificationsStore.get<string[]>('dismissedBanners') ?? [];
 
   const [dismissedBanners, setDismissedBanners] = useState(
     new Set(rawDismissedBanners),
   );
 
   const observedItems = useObservable(
-    settingsStore.observe$<string[]>('dismissedBanners'),
+    notificationsStore.observe$<string[]>('dismissedBanners'),
   );
 
   useEffect(() => {
-    // Only want to run on updates, not first time
     if (observedItems?.newValue) {
       const currentValue = observedItems?.newValue ?? [];
       setDismissedBanners(new Set(currentValue));
@@ -86,16 +82,13 @@ const DismissableBanner: FC<Props> = ({ variant, /* setting, */ message }) => {
   }, [observedItems?.newValue]);
 
   const handleClick = () => {
-    settingsStore.set('dismissedBanners', [
-      ...dismissedBanners,
-      ReactDOMServer.renderToString(message),
-    ]);
+    notificationsStore.set('dismissedBanners', [...dismissedBanners, id]);
   };
 
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      open={!dismissedBanners.has(ReactDOMServer.renderToString(message))}
+      open={!dismissedBanners.has(id)}
       classes={{ root: classes.root }}
     >
       <SnackbarContent

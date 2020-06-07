@@ -17,11 +17,21 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import CatalogPage from './CatalogPage';
-import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
+import {
+  ApiRegistry,
+  ApiProvider,
+  errorApiRef,
+  storageApiRef,
+} from '@backstage/core';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../..';
 import { CatalogApi } from '../../api/types';
 import { Entity } from '@backstage/catalog-model';
+import {
+  CreateStorageApiOptions,
+  StorageApi,
+} from '../../../../../packages/core-api/src/apis/definitions';
+import { WebStorage } from '../../../../../packages/core-api/src/apis/implementations/StorageApi/WebStorage';
 
 const errorApi = { post: () => {} };
 const catalogApi: Partial<CatalogApi> = {
@@ -39,6 +49,17 @@ const catalogApi: Partial<CatalogApi> = {
     Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
 };
 
+const mockWebStorageErrorApi = { post: jest.fn(), error$: jest.fn() };
+const createWebStorage = (
+  args?: Partial<CreateStorageApiOptions>,
+): StorageApi => {
+  return WebStorage.create({
+    errorApi: mockWebStorageErrorApi,
+    ...args,
+  });
+};
+const storageApi = createWebStorage();
+
 describe('CatalogPage', () => {
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
@@ -50,6 +71,7 @@ describe('CatalogPage', () => {
           apis={ApiRegistry.from([
             [errorApiRef, errorApi],
             [catalogApiRef, catalogApi],
+            [storageApiRef, storageApi],
           ])}
         >
           <CatalogPage />
