@@ -34,6 +34,7 @@ import { Grid } from '@material-ui/core';
 import { catalogApiRef } from '../..';
 import { entityToComponent } from '../../data/utils';
 import { Component } from '../../data/component';
+import { useParams, useNavigate } from 'react-router';
 
 const REDIRECT_DELAY = 1000;
 
@@ -48,17 +49,19 @@ type ComponentPageProps = {
   };
 };
 
-const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
+const ComponentPage: FC<ComponentPageProps> = () => {
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const [removingPending, setRemovingPending] = useState(false);
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
   const hideRemovalDialog = () => setConfirmationDialogOpen(false);
-  const componentName = match.params.name;
+  const params = useParams() as { name: string };
+  const componentName = params.name;
+  const navigate = useNavigate();
   const errorApi = useApi<ErrorApi>(errorApiRef);
 
   const catalogApi = useApi(catalogApiRef);
   const { value: component, error, loading } = useAsync<Component>(async () => {
-    const entity = await catalogApi.getEntityByName(match.params.name);
+    const entity = await catalogApi.getEntityByName(params.name);
     const location = await catalogApi.getLocationByEntity(entity);
     return { ...entityToComponent(entity), location };
   });
@@ -67,13 +70,13 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     if (error) {
       errorApi.post(new Error('Component not found!'));
       setTimeout(() => {
-        history.push('/');
+        navigate('/');
       }, REDIRECT_DELAY);
     }
-  }, [error, errorApi, history]);
+  }, [error, errorApi, navigate]);
 
   if (componentName === '') {
-    history.push('/catalog');
+    navigate('/catalog');
     return null;
   }
 
@@ -83,7 +86,7 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     // await componentFactory.removeComponentByName(componentName);
 
     await catalogApi;
-    history.push('/');
+    navigate('/');
   };
 
   // TODO - Replace with proper tabs implementation
@@ -120,7 +123,6 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
         <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
       </Header>
       <HeaderTabs tabs={tabs} />
-
       {confirmationDialogOpen && component && (
         <ComponentRemovalDialog
           component={component}

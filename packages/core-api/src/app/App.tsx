@@ -85,50 +85,31 @@ export class PrivateAppImpl implements BackstageApp {
       for (const output of plugin.output()) {
         switch (output.type) {
           case 'legacy-route': {
-            const { path, component: Component, options = {} } = output;
-            const { exact = true } = options;
+            const { path, component: Component } = output;
             routes.push(
-              <Route
-                key={path}
-                path={path}
-                element={<Component />}
-                exact={exact}
-              />,
+              <Route key={path} path={path} element={<Component />} />,
             );
             break;
           }
           case 'route': {
-            const { target, component: Component, options = {} } = output;
-            const { exact = true } = options;
+            const { target, component: Component } = output;
             routes.push(
               <Route
                 key={`${plugin.getId()}-${target.path}`}
                 path={target.path}
                 element={<Component />}
-                exact={exact}
               />,
             );
             break;
           }
           case 'legacy-redirect-route': {
-            const { path, target, options = {} } = output;
-            const { exact = true } = options;
-            routes.push(
-              <Navigate key={path} path={path} to={target} exact={exact} />,
-            );
+            const { path, target } = output;
+            routes.push(<Navigate key={path} to={target} />);
             break;
           }
           case 'redirect-route': {
-            const { from, to, options = {} } = output;
-            const { exact = true } = options;
-            routes.push(
-              <Navigate
-                key={from.path}
-                path={from.path}
-                to={to.path}
-                exact={exact}
-              />,
-            );
+            const { from, to } = output;
+            routes.push(<Navigate key={from.path} to={to.path} />);
             break;
           }
           case 'feature-flag': {
