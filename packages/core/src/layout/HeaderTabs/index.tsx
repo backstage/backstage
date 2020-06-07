@@ -18,12 +18,12 @@
 // This is just a temporary solution to implementing tabs for now
 
 import React from 'react';
-
 import { makeStyles, Tabs, Tab } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   tabsWrapper: {
     gridArea: 'pageSubheader',
+    backgroundColor: theme.palette.background.paper,
   },
   defaultTab: {
     padding: theme.spacing(3, 3),
