@@ -137,12 +137,12 @@ const CatalogPage: FC<{}> = () => {
               <span role="img" aria-label="wave" style={{ fontSize: '125%' }}>
                 👋🏼
               </span>
-              Welcome to Backstage, we are happy to have you. Start by checking
-              out our
+              &nbsp;&nbsp;&nbsp;Welcome to Backstage, we are happy to have you.
+              Start by checking out our&nbsp;
               <Link href="/welcome" color="textSecondary">
                 getting started
               </Link>
-              page.
+              &nbsp;page.
             </Typography>
           }
         />
