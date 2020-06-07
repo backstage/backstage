@@ -27,7 +27,11 @@ const containerStyle = { width: '70%' };
 
 export const Default = () => (
   <div style={containerStyle}>
-    <DismissableBanner message="This is a dismissable banner" variant="info" />
+    <DismissableBanner
+      message="This is a dismissable banner"
+      variant="info"
+      id="default_dismissable"
+    />
   </div>
 );
 
@@ -36,6 +40,7 @@ export const Error = () => (
     <DismissableBanner
       message="This is a dismissable banner with an error message"
       variant="error"
+      id="error_dismissable"
     />
   </div>
 );
@@ -45,6 +50,7 @@ export const EmojisIncluded = () => (
     <DismissableBanner
       message="This is a dismissable banner with emojis: 🚀 💚 😆 "
       variant="info"
+      id="emojis_dismissable"
     />
   </div>
 );
@@ -61,6 +67,7 @@ export const WithLink = () => (
         </Typography>
       }
       variant="info"
+      id="linked_dismissable"
     />
   </div>
 );
