@@ -24,7 +24,7 @@ import { BackstageTheme } from '@backstage/theme';
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   tabsWrapper: {
     gridArea: 'pageSubheader',
-    backgroundColor: theme.palette.tabsBackground,
+    backgroundColor: theme.palette.background.paper,
   },
   defaultTab: {
     padding: theme.spacing(3, 3),

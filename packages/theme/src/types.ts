@@ -55,7 +55,6 @@ type PaletteAdditions = {
     icon: string;
     background: string;
   };
-  tabsBackground: string;
 };
 
 export type BackstagePalette = Palette & PaletteAdditions;

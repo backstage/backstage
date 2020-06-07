@@ -60,7 +60,6 @@ export const lightTheme = createTheme({
       icon: '#BDBDBD',
       background: '#404040',
     },
-    tabsBackground: '#FFF',
   },
 });
 
@@ -107,6 +106,5 @@ export const darkTheme = createTheme({
       icon: '#181818',
       background: '#BDBDBD',
     },
-    tabsBackground: '#424242',
   },
 });
