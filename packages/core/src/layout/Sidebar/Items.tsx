@@ -112,7 +112,8 @@ export const SidebarItem: FC<SidebarItemProps> = ({
   icon: Icon,
   text,
   to = '#',
-  disableSelected = false,
+  // TODO: isActive is not in v6
+  // disableSelected = false,
   hasNotifications = false,
   onClick,
   children,
