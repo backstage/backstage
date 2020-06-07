@@ -16,6 +16,7 @@
 
 import { createPlugin, createRouteRef } from '@backstage/core';
 import ScaffolderPage from './components/ScaffolderPage';
+import ScaffoldFormPage from './components/ScaffolderFormPage';
 
 export const rootRoute = createRouteRef({
   icon: () => null,
@@ -23,9 +24,16 @@ export const rootRoute = createRouteRef({
   title: 'Create entity',
 });
 
+export const scaffoldFormRoute = createRouteRef({
+  icon: () => null,
+  path: '/create/:template',
+  title: 'Create entity',
+});
+
 export const plugin = createPlugin({
   id: 'scaffolder',
   register({ router }) {
     router.addRoute(rootRoute, ScaffolderPage);
+    router.addRoute(scaffoldFormRoute, ScaffoldFormPage);
   },
 });

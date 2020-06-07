@@ -1,6 +1,21 @@
 {
-	"id": "react-ssr-template",
-	"name": "SSR React Website",
-	"description": "Next.js application skeleton for creating isomorphic web applications.",
-	"ownerId": "something"
+  "id": "react-ssr-template",
+  "name": "SSR React Website",
+  "description": "Next.js application skeleton for creating isomorphic web applications.",
+  "ownerId": "something",
+
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "required": ["some_value"],
+    "properties": {
+      "some_value": {
+        "type": "string",
+        "description": "somethibg"
+      },
+      "not_required": {
+        "type": "string",
+        "description": "somethibg"
+      }
+    }
+  }
 }
