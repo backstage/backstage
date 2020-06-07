@@ -24,6 +24,7 @@ import { makeStyles, Tabs, Tab } from '@material-ui/core';
 const useStyles = makeStyles(theme => ({
   tabsWrapper: {
     gridArea: 'pageSubheader',
+    backgroundColor: theme.palette.tabsBackground,
   },
   defaultTab: {
     padding: theme.spacing(3, 3),
