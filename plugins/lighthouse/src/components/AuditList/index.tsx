@@ -65,7 +65,7 @@ const AuditList: FC<{}> = () => {
     return 0;
   }, [value?.total, value?.limit]);
 
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   let content: ReactNode = null;
   if (value) {
@@ -77,7 +77,7 @@ const AuditList: FC<{}> = () => {
             page={page}
             count={pageCount}
             onChange={(_event: Event, newPage: number) => {
-              history.replace(`/lighthouse?page=${newPage}`);
+              navigate(`/lighthouse?page=${newPage}`);
             }}
           />
         )}

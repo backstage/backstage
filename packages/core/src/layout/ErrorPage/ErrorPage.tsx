@@ -40,7 +40,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export const ErrorPage = ({ status, statusMessage }: IErrorPageProps) => {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <Grid container className={classes.container}>
@@ -53,7 +53,7 @@ export const ErrorPage = ({ status, statusMessage }: IErrorPageProps) => {
           Looks like someone dropped the mic!
         </Typography>
         <Typography variant="h6">
-          <Link data-testid="go-back-link" onClick={history.goBack}>
+          <Link data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
           ... or if you think this is a bug, please file an{' '}

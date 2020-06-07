@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType, FC } from 'react';
-import { Route, Redirect, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { BackstageApp, AppComponents, AppConfigLoader } from './types';
 import { BackstagePlugin } from '../plugin';

@@ -58,7 +58,7 @@ const CreateAudit: FC<{}> = () => {
   const lighthouseApi = useApi(lighthouseApiRef);
   const classes = useStyles();
   const query = useQuery();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [url, setUrl] = useState<string>(query.get('url') || '');
   const [emulatedFormFactor, setEmulatedFormFactor] = useState('mobile');
@@ -78,7 +78,7 @@ const CreateAudit: FC<{}> = () => {
           },
         },
       });
-      history.push('/lighthouse');
+      navigate('/lighthouse');
     } catch (err) {
       errorApi.post(err);
     } finally {
@@ -90,7 +90,7 @@ const CreateAudit: FC<{}> = () => {
     lighthouseApi,
     setSubmitting,
     errorApi,
-    history,
+    navigate,
   ]);
 
   return (

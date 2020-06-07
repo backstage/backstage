@@ -139,8 +139,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
       <NavLink
         className={clsx(classes.root, classes.closed)}
         activeClassName={classes.selected}
-        isActive={match => Boolean(match && !disableSelected)}
-        exact
+        end
         to={to}
         onClick={onClick}
       >
@@ -153,8 +152,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     <NavLink
       className={clsx(classes.root, classes.open)}
       activeClassName={classes.selected}
-      isActive={match => Boolean(match && !disableSelected)}
-      exact
+      end
       to={to}
       onClick={onClick}
     >
