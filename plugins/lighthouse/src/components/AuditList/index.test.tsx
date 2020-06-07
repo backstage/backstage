@@ -22,7 +22,7 @@ jest.mock('react-router-dom', () => {
   };
   return {
     ...actual,
-    useHistory: jest.fn(() => mocks),
+    useNavigate: jest.fn(() => mocks),
   };
 });
 
@@ -41,7 +41,7 @@ import AuditList from '.';
 
 import * as data from '../../__fixtures__/website-list-response.json';
 
-const { useHistory } = jest.requireMock('react-router-dom');
+const { useNavigate } = jest.requireMock('react-router-dom');
 const websiteListResponse = data as WebsiteListResponse;
 
 describe('AuditList', () => {
@@ -145,7 +145,9 @@ describe('AuditList', () => {
         );
         const element = await rendered.findByLabelText(/Go to page 1/);
         fireEvent.click(element);
-        expect(useHistory().replace).toHaveBeenCalledWith(`/lighthouse?page=1`);
+        expect(useNavigate().replace).toHaveBeenCalledWith(
+          `/lighthouse?page=1`,
+        );
       });
     });
   });

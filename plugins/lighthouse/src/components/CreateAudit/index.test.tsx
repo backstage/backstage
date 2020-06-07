@@ -22,7 +22,7 @@ jest.mock('react-router-dom', () => {
   };
   return {
     ...actual,
-    useHistory: jest.fn(() => mocks),
+    useNavigate: jest.fn(() => mocks),
   };
 });
 
@@ -41,7 +41,7 @@ import { lighthouseApiRef, LighthouseRestApi, Audit } from '../../api';
 import CreateAudit from '.';
 import * as data from '../../__fixtures__/create-audit-response.json';
 
-const { useHistory }: { useHistory: jest.Mock } = jest.requireMock(
+const { useNavigate }: { useNavigate: jest.Mock } = jest.requireMock(
   'react-router-dom',
 );
 const createAuditResponse = data as Audit;
@@ -115,7 +115,7 @@ describe('CreateAudit', () => {
 
   describe('when the audit is successfully created', () => {
     it('triggers a location change to the table', async () => {
-      useHistory().push.mockClear();
+      useNavigate().push.mockClear();
       mockFetch.mockResponseOnce(JSON.stringify(createAuditResponse));
 
       const rendered = render(
@@ -140,7 +140,7 @@ describe('CreateAudit', () => {
 
       await wait(() => expect(rendered.getByLabelText(/URL/)).toBeEnabled());
 
-      expect(useHistory().push).toHaveBeenCalledWith('/lighthouse');
+      expect(useNavigate().push).toHaveBeenCalledWith('/lighthouse');
     });
   });
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState, useCallback, FC } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   makeStyles,
   Grid,
@@ -40,7 +40,7 @@ import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   input: {
     minWidth: 300,
   },
@@ -58,7 +58,7 @@ const CreateAudit: FC<{}> = () => {
   const lighthouseApi = useApi(lighthouseApiRef);
   const classes = useStyles();
   const query = useQuery();
-  const history = useHistory();
+  const history = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [url, setUrl] = useState<string>(query.get('url') || '');
   const [emulatedFormFactor, setEmulatedFormFactor] = useState('mobile');
@@ -113,7 +113,7 @@ const CreateAudit: FC<{}> = () => {
           <Grid item xs={12} sm={6}>
             <InfoCard>
               <form
-                onSubmit={(ev) => {
+                onSubmit={ev => {
                   ev.preventDefault();
                   triggerAudit();
                 }}
@@ -128,7 +128,7 @@ const CreateAudit: FC<{}> = () => {
                       helperText="The target URL for Lighthouse to use."
                       required
                       disabled={submitting}
-                      onChange={(ev) => setUrl(ev.target.value)}
+                      onChange={ev => setUrl(ev.target.value)}
                       value={url}
                       inputProps={{ 'aria-label': 'URL' }}
                     />
@@ -142,7 +142,7 @@ const CreateAudit: FC<{}> = () => {
                       select
                       required
                       disabled={submitting}
-                      onChange={(ev) => setEmulatedFormFactor(ev.target.value)}
+                      onChange={ev => setEmulatedFormFactor(ev.target.value)}
                       value={emulatedFormFactor}
                       inputProps={{ 'aria-label': 'Emulated form factor' }}
                     >

@@ -25,7 +25,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-markdown": "^4.3.1",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "6.0.0-alpha.5",
     "react-use": "^14.2.0"
   },
   "devDependencies": {

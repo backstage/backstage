@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType, FC } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Redirect, Routes, Navigate } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { BackstageApp, AppComponents, AppConfigLoader } from './types';
 import { BackstagePlugin } from '../plugin';
@@ -85,26 +85,26 @@ export class PrivateAppImpl implements BackstageApp {
       for (const output of plugin.output()) {
         switch (output.type) {
           case 'legacy-route': {
-            const { path, component, options = {} } = output;
+            const { path, component: Component, options = {} } = output;
             const { exact = true } = options;
             routes.push(
               <Route
                 key={path}
                 path={path}
-                component={component}
+                element={<Component />}
                 exact={exact}
               />,
             );
             break;
           }
           case 'route': {
-            const { target, component, options = {} } = output;
+            const { target, component: Component, options = {} } = output;
             const { exact = true } = options;
             routes.push(
               <Route
                 key={`${plugin.getId()}-${target.path}`}
                 path={target.path}
-                component={component}
+                element={<Component />}
                 exact={exact}
               />,
             );
@@ -114,7 +114,7 @@ export class PrivateAppImpl implements BackstageApp {
             const { path, target, options = {} } = output;
             const { exact = true } = options;
             routes.push(
-              <Redirect key={path} path={path} to={target} exact={exact} />,
+              <Navigate key={path} path={path} to={target} exact={exact} />,
             );
             break;
           }
@@ -122,7 +122,7 @@ export class PrivateAppImpl implements BackstageApp {
             const { from, to, options = {} } = output;
             const { exact = true } = options;
             routes.push(
-              <Redirect
+              <Navigate
                 key={from.path}
                 path={from.path}
                 to={to.path}
@@ -150,10 +150,10 @@ export class PrivateAppImpl implements BackstageApp {
     }
 
     const rendered = (
-      <Switch>
+      <Routes>
         {routes}
-        <Route component={NotFoundErrorPage} />
-      </Switch>
+        <Route element={<NotFoundErrorPage />} />
+      </Routes>
     );
 
     return () => rendered;

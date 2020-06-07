@@ -16,7 +16,7 @@
 
 import React, { useState, useMemo, FC, ReactNode } from 'react';
 import { useLocalStorage, useAsync } from 'react-use';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Grid, Button } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
@@ -65,7 +65,7 @@ const AuditList: FC<{}> = () => {
     return 0;
   }, [value?.total, value?.limit]);
 
-  const history = useHistory();
+  const history = useNavigate();
 
   let content: ReactNode = null;
   if (value) {
