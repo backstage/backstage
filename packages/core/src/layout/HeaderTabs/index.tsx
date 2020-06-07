@@ -19,9 +19,8 @@
 
 import React from 'react';
 import { makeStyles, Tabs, Tab } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   tabsWrapper: {
     gridArea: 'pageSubheader',
     backgroundColor: theme.palette.background.paper,
