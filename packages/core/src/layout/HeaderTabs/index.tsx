@@ -18,10 +18,10 @@
 // This is just a temporary solution to implementing tabs for now
 
 import React from 'react';
-
 import { makeStyles, Tabs, Tab } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   tabsWrapper: {
     gridArea: 'pageSubheader',
     backgroundColor: theme.palette.tabsBackground,
