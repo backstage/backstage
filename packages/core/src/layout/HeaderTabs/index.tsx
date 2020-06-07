@@ -48,7 +48,7 @@ export const HeaderTabs: React.FC<{ tabs: Tab[] }> = ({ tabs }) => {
     <div className={styles.tabsWrapper}>
       <Tabs
         indicatorColor="primary"
-        textColor="background"
+        textColor="inherit"
         variant="scrollable"
         scrollButtons="auto"
         aria-label="scrollable auto tabs example"
