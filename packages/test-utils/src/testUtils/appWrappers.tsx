@@ -20,11 +20,11 @@ import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
 import privateExports, {
   defaultSystemIcons,
-  ApiTestRegistry,
   BootErrorPageProps,
 } from '@backstage/core-api';
 import { RenderResult } from '@testing-library/react';
 import { renderWithEffects } from '@backstage/test-utils-core';
+import { createMockApiRegistry } from './mockApiRegistry';
 const { PrivateAppImpl } = privateExports;
 
 const NotFoundErrorPage = () => {
@@ -57,9 +57,10 @@ export function wrapInTestApp(
   options: TestAppOptions = {},
 ): ReactElement {
   const { routeEntries = ['/'] } = options;
+  const apis = createMockApiRegistry();
 
   const app = new PrivateAppImpl({
-    apis: new ApiTestRegistry(),
+    apis,
     components: {
       NotFoundErrorPage,
       BootErrorPage,

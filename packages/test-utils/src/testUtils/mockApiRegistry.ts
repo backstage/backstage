@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-export * from './apis';
-export { default as mockBreakpoint } from './mockBreakpoint';
-export { wrapInTestApp, renderInTestApp } from './appWrappers';
+import { ApiTestRegistry } from '@backstage/core-api';
+import { MockErrorApi } from './apis';
+
+export function createMockApiRegistry(): ApiTestRegistry {
+  const registry = new ApiTestRegistry();
+
+  registry.register(MockErrorApi.factory);
+
+  return registry;
+}
