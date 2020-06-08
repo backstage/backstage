@@ -21,13 +21,13 @@ import privateExports, {
   defaultSystemIcons,
   BootErrorPageProps,
   AppConfigLoader,
-  AppConfig,
 } from '@backstage/core-api';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import { ErrorPage } from '../layout/ErrorPage';
 import Progress from '../components/Progress';
 import { lightTheme, darkTheme } from '@backstage/theme';
+import { AppConfig } from '@backstage/config';
 
 const { PrivateAppImpl } = privateExports;
 

@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export type AppConfig = any;
+export { loadConfig } from './loader';
+export type { LoadConfigOptions } from './types';

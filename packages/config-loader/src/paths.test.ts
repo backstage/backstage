@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { serveBundle } from '../../lib/bundler';
-import { loadConfig } from '@backstage/config-loader';
+import { findRootPath } from './paths';
 
-export default async (cmd: Command) => {
-  const waitForExit = await serveBundle({
-    entry: 'src/index',
-    checksEnabled: cmd.check,
-    appConfig: await loadConfig(),
+describe('findRootPath', () => {
+  it('should find root path', () => {
+    const rootPath = findRootPath(process.cwd());
+    expect(typeof rootPath).toBe('string');
   });
-
-  await waitForExit();
-};
+});

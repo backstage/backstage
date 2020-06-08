@@ -111,6 +111,8 @@ export async function templatingTask(
 // List of local packages that we need to modify as a part of an E2E test
 const PATCH_PACKAGES = [
   'cli',
+  'config',
+  'config-loader',
   'core',
   'core-api',
   'dev-utils',
@@ -192,6 +194,11 @@ export async function installWithLocalDeps(dir: string) {
           // We want dist to be used for e2e tests
           delete depJson['main:src'];
           depJson.types = 'dist/index.d.ts';
+
+          // Ugly hack until backend packages can point straight to source
+          if (name === 'config' || name === 'config-loader') {
+            depJson.main = 'dist/index.cjs.js';
+          }
 
           await fs
             .writeJSON(depJsonPath, depJson, { encoding: 'utf8', spaces: 2 })

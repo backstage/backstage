@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { serveBundle } from '../../lib/bundler';
-import { loadConfig } from '@backstage/config-loader';
-
-export default async (cmd: Command) => {
-  const waitForExit = await serveBundle({
-    entry: 'src/index',
-    checksEnabled: cmd.check,
-    appConfig: await loadConfig(),
-  });
-
-  await waitForExit();
-};
+export type {
+  AppConfig,
+  Config,
+  JsonArray,
+  JsonObject,
+  JsonValue,
+} from './types';
+export { ConfigReader } from './reader';
