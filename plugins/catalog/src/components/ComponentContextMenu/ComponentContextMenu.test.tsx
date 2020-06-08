@@ -22,7 +22,7 @@ describe('ComponentContextMenu', () => {
   it('should call onUnregisterComponent on button click', async () => {
     await act(async () => {
       const mockCallback = jest.fn();
-      const menu = await render(
+      const menu = render(
         <ComponentContextMenu onUnregisterComponent={mockCallback} />,
       );
       const button = await menu.findByTestId('menu-button');
