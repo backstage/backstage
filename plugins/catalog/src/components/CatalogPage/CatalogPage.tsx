@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import {
   Content,
   ContentHeader,
@@ -25,6 +25,7 @@ import {
   Page,
   pageTheme,
   useApi,
+  HeaderTabs,
 } from '@backstage/core';
 import { useAsync } from 'react-use';
 import CatalogTable from '../CatalogTable/CatalogTable';
@@ -34,6 +35,18 @@ import {
 } from '../CatalogFilter/CatalogFilter';
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import { filterGroups, defaultFilter, dataResolvers } from '../../data/filters';
+import { Link as RouterLink } from 'react-router-dom';
+import { catalogApiRef } from '../../api/types';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
+import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
+import GitHub from '@material-ui/icons/GitHub';
+import {
+  Entity,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
+import { Component } from '../../data/component';
+import { entityToComponent, findLocationForEntity } from '../../data/utils';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -42,54 +55,98 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
   },
+  emoji: {
+    fontSize: '125%',
+    marginRight: theme.spacing(2),
+  },
 }));
 
-import { envelopeToComponent } from '../../data/utils';
-import { catalogApiRef } from '../../api/types';
-import { useStarredEntities } from '../../hooks/useStarredEntites';
-
 const CatalogPage: FC<{}> = () => {
-  const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
-    defaultFilter,
-  );
-
-  // TODO(blam): When plugins can grab references to API's from the factory without
-  // having to use the context, this dependency injection should be moved to the data
-  // resolvers
   const catalogApi = useApi(catalogApiRef);
   const { starredEntities } = useStarredEntities();
-
+  const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
+    defaultFilter,
+  );
   const { value, error, loading } = useAsync(
     () => dataResolvers[selectedFilter.id]({ catalogApi, starredEntities }),
     [selectedFilter.id],
   );
 
-  // TODO(blam): There's a better way with material to load remote data rather than
-  // doing it all in this component. But when we're moving away from this API approach to GraphQL soon,
-  // It doesn't seem like the best investment of time.
-  // https://material-table.com/#/docs/features/remote-data
-  const components = value?.map(envelopeToComponent) ?? [];
-
-  const onFilterSelected = React.useCallback(
+  const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
     [],
   );
 
   const styles = useStyles();
 
+  const { value: locations } = useAsync(async () => {
+    const getLocationDataForEntities = async (entities: Entity[]) => {
+      return Promise.all(
+        entities.map(entity => {
+          const locationId = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+          if (!locationId) return undefined;
+
+          return catalogApi.getLocationById(locationId);
+        }),
+      );
+    };
+
+    if (value) {
+      return getLocationDataForEntities(value).then(
+        (location): Location[] =>
+          location.filter(loc => !!loc) as Array<Location>,
+      );
+    }
+    return [];
+  }, [value, catalogApi, catalogApi]);
+
+  const actions = [
+    (rowData: Component) => ({
+      icon: GitHub,
+      tooltip: 'View on GitHub',
+      onClick: () => {
+        if (!rowData || !rowData.location) return;
+        window.open(rowData.location.target, '_blank');
+      },
+      hidden:
+        rowData && rowData.location ? rowData.location.type !== 'github' : true,
+    }),
+  ];
+
+  // TODO: replace me with the proper tabs implemntation
+  const tabs = [
+    {
+      id: 'services',
+      label: 'Services',
+    },
+    {
+      id: 'websites',
+      label: 'Websites',
+    },
+    {
+      id: 'libs',
+      label: 'Libraries',
+    },
+    {
+      id: 'documentation',
+      label: 'Documentation',
+    },
+  ];
+
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
         <HomepageTimer />
       </Header>
+      <HeaderTabs tabs={tabs} />
       <Content>
         <DismissableBanner
           variant="info"
           message={
             <Typography>
-              <span role="img" aria-label="wave" style={{ fontSize: '125%' }}>
+              <span role="img" aria-label="wave" className={styles.emoji}>
                 👋🏼
-              </span>{' '}
+              </span>
               Welcome to Backstage, we are happy to have you. Start by checking
               out our{' '}
               <Link href="/welcome" color="textSecondary">
@@ -99,8 +156,14 @@ const CatalogPage: FC<{}> = () => {
             </Typography>
           }
         />
+
         <ContentHeader title="Services">
-          <Button variant="contained" color="primary" href="/create">
+          <Button
+            component={RouterLink}
+            variant="contained"
+            color="primary"
+            to={scaffolderRootRoute.path}
+          >
             Create Service
           </Button>
           <SupportButton>All your components</SupportButton>
@@ -113,12 +176,24 @@ const CatalogPage: FC<{}> = () => {
               onSelectedChange={onFilterSelected}
             />
           </div>
-          <CatalogTable
-            titlePreamble={selectedFilter.label}
-            components={components}
-            loading={loading}
-            error={error}
-          />
+          {locations && (
+            <CatalogTable
+              titlePreamble={selectedFilter.label}
+              components={
+                (value &&
+                  value.map(val => {
+                    return {
+                      ...entityToComponent(val),
+                      location: findLocationForEntity(val, locations),
+                    };
+                  })) ||
+                []
+              }
+              loading={loading}
+              error={error}
+              actions={actions}
+            />
+          )}
         </div>
       </Content>
     </Page>

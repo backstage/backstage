@@ -42,7 +42,7 @@ export const createAuthProviderRouter = (config: AuthProviderConfig) => {
   router.get('/start', provider.start.bind(provider));
   router.get('/handler/frame', provider.frameHandler.bind(provider));
   router.post('/handler/frame', provider.frameHandler.bind(provider));
-  router.get('/logout', provider.logout.bind(provider));
+  router.post('/logout', provider.logout.bind(provider));
   if (provider.refresh) {
     router.get('/refresh', provider.refresh.bind(provider));
   }

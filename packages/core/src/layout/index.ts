@@ -24,3 +24,4 @@ export * from './InfoCard';
 export * from './Page';
 export * from './Sidebar';
 export * from './TabbedCard';
+export * from './HeaderTabs';

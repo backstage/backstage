@@ -14,40 +14,59 @@
  * limitations under the License.
  */
 
-import PropTypes from 'prop-types';
-
 // Parameters for a ring; its index in an array determines how close to the center this ring is.
-export const RING = {
-  id: PropTypes.string.isRequired,
-  idx: PropTypes.number,
-  name: PropTypes.string.isRequired,
-  color: PropTypes.string.isRequired,
+export type Ring = {
+  id: string;
+  idx?: number;
+  name: string;
+  color: string;
+  outerRadius?: number;
+  innerRadius?: number;
 };
 
 // Parameters for a quadrant (there should be exactly 4 of course)
-export const QUADRANT = {
-  id: PropTypes.string.isRequired,
-  idx: PropTypes.number,
-  name: PropTypes.string.isRequired,
+export type Quadrant = {
+  id: string;
+  idx?: number;
+  name: string;
+  legendX?: number;
+  legendY?: number;
+  legendWidth?: number;
+  legendHeight?: number;
+  radialMin?: number;
+  radialMax?: number;
+  offsetX?: number;
+  offsetY?: number;
 };
 
-export const ENTRY = {
-  id: PropTypes.string.isRequired,
-  idx: PropTypes.number,
+export type Segment = {
+  clipx: Function;
+  clipy: Function;
+  random: Function;
+};
+
+export type Entry = {
+  id: string;
+  idx?: number;
+  x?: number;
+  y?: number;
+  color?: string;
+  segment?: Segment;
   // The quadrant where this entry belongs
-  quadrant: PropTypes.shape(QUADRANT).isRequired,
+  quadrant: Quadrant;
   // The ring where this entry belongs
-  ring: PropTypes.shape(RING).isRequired,
+  ring: Ring;
   // The label that's shown in the legend and on hover
-  title: PropTypes.string.isRequired,
+  title: string;
   // An URL to a longer description as to why this entry is where it is
-  url: PropTypes.string,
+  url?: string;
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
-  moved: PropTypes.number,
+  moved?: number;
+  active?: boolean;
 };
 
-// The same as ENTRY except quadrant/ring are declared by their string ID instead of being the actual objects
-export const DECLARED_ENTRY = Object.assign({}, ENTRY, {
-  quadrant: PropTypes.string.isRequired,
-  ring: PropTypes.string.isRequired,
-});
+// The same as Entry except quadrant/ring are declared by their string ID instead of being the actual objects
+export type DeclaredEntry = Entry & {
+  quadrant: string;
+  ring: string;
+};

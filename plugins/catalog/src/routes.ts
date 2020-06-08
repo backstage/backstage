@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component } from './component';
-import { Entity } from '@backstage/catalog-model';
 
-export function envelopeToComponent(envelope: Entity): Component {
-  return {
-    name: envelope.metadata?.name ?? '',
-    kind: envelope.kind ?? 'unknown',
-    description: envelope.metadata?.annotations?.description ?? 'placeholder',
-  };
-}
+import { createRouteRef } from '@backstage/core';
+
+const NoIcon = () => null;
+
+export const rootRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/',
+  title: 'Catalog',
+});
+export const entityRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/catalog/:name/',
+  title: 'Entity',
+});

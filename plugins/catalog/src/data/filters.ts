@@ -44,7 +44,8 @@ export const filterGroups: CatalogFilterGroup[] = [
     ],
   },
   {
-    name: 'Spotify',
+    // TODO: Replace with Company name, read from app config.
+    name: 'Company',
     items: [
       {
         id: FilterGroupItem.ALL,

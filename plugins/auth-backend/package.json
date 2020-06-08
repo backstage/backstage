@@ -34,7 +34,9 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-saml": "^1.3.3",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^4.0.0",
+    "jwt-decode": "2.2.0",
+    "@types/jwt-decode": "2.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.6",

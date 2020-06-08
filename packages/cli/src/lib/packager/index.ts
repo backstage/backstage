@@ -15,3 +15,5 @@
  */
 
 export { buildPackage } from './packager';
+export { Output } from './types';
+export type { BuildOptions } from './types';

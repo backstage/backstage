@@ -20,12 +20,11 @@ import {
   FormControl,
   FormHelperText,
   TextField,
-  Typography,
+  LinearProgress,
 } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
-import { Progress } from '@backstage/core';
 import { ComponentIdValidators } from '../../util/validate';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -39,57 +38,49 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-type RegisterComponentProps = {
-  onSubmit: () => any;
+export type Props = {
+  onSubmit: (formData: Record<string, string>) => Promise<void>;
   submitting: boolean;
 };
 
-const RegisterComponentForm: FC<RegisterComponentProps> = ({
-  onSubmit,
-  submitting,
-}) => {
+const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
   const { register, handleSubmit, errors, formState } = useForm({
     mode: 'onChange',
   });
   const classes = useStyles();
-  const hasErrors = !!errors.componentIdInput;
+  const hasErrors = !!errors.componentLocation;
   const dirty = formState?.dirty;
-  if (submitting) {
-    return (
-      <>
-        <Typography variant="subtitle1" paragraph>
-          Your component is being registered. Please wait.
-        </Typography>
-        <Progress />
-      </>
-    );
-  }
-  return (
+
+  return submitting ? (
+    <LinearProgress data-testid="loading-progress" />
+  ) : (
     <form
       autoComplete="off"
       onSubmit={handleSubmit(onSubmit)}
       className={classes.form}
+      data-testid="register-form"
     >
       <FormControl>
         <TextField
           id="registerComponentInput"
           variant="outlined"
           label="Component service file URL"
+          data-testid="componentLocationInput"
           error={hasErrors}
           placeholder="https://example.com/user/some-service/blob/master/service-info.yaml"
-          name="componentIdInput"
+          name="componentLocation"
           required
           margin="normal"
-          helperText="Enter the full path to the service-info.yaml file in GHE to start tracking your component. It must be in a public repo, on the master branch."
+          helperText="Enter the full path to the service-info.yaml file in GitHub to start tracking your component. It must be in a public repo."
           inputRef={register({
             required: true,
             validate: ComponentIdValidators,
           })}
         />
 
-        {errors.componentIdInput && (
+        {errors.componentLocation && (
           <FormHelperText error={hasErrors} id="register-component-helper-text">
-            {errors.componentIdInput.message}
+            {errors.componentLocation.message}
           </FormHelperText>
         )}
       </FormControl>

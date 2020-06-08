@@ -14,50 +14,107 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect, useState } from 'react';
-import { Grid } from '@material-ui/core';
+import React, { FC, useState } from 'react';
+import { Grid, makeStyles } from '@material-ui/core';
 import {
   InfoCard,
   Page,
   pageTheme,
   Content,
-  ContentHeader,
-  SupportButton,
+  useApi,
+  errorApiRef,
+  Header,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
+import { catalogApiRef } from '@backstage/plugin-catalog';
+import { useMountedState } from 'react-use';
+import { Entity, Location } from '@backstage/catalog-model';
+import { RegisterComponentResultDialog } from '../RegisterComponentResultDialog';
 
+const useStyles = makeStyles(theme => ({
+  dialogPaper: {
+    minHeight: 250,
+    minWidth: 600,
+  },
+  icon: {
+    width: 20,
+    marginRight: theme.spacing(1),
+  },
+  contentText: {
+    paddingBottom: theme.spacing(2),
+  },
+}));
+
+const FormStates = {
+  Idle: 'idle',
+  Success: 'success',
+  Submitting: 'submitting',
+} as const;
+
+type ValuesOf<T> = T extends Record<any, infer V> ? V : never;
 const RegisterComponentPage: FC<{}> = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const classes = useStyles();
+  const catalogApi = useApi(catalogApiRef);
+  const [formState, setFormState] = useState<ValuesOf<typeof FormStates>>(
+    FormStates.Idle,
+  );
+  const isMounted = useMountedState();
 
-  useEffect(() => {
-    if (isSubmitting) {
-      setTimeout(() => {
-        setIsSubmitting(false);
-      }, 4000);
+  const errorApi = useApi(errorApiRef);
+
+  const [result, setResult] = useState<{
+    data: {
+      entities: Entity[];
+      location: Location;
+    } | null;
+    error: null | Error;
+  }>({
+    data: null,
+    error: null,
+  });
+
+  const handleSubmit = async (formData: Record<string, string>) => {
+    setFormState(FormStates.Submitting);
+    const { componentLocation: target } = formData;
+    try {
+      const data = await catalogApi.addLocation('github', target);
+
+      if (!isMounted()) return;
+
+      setResult({ error: null, data });
+      setFormState(FormStates.Success);
+    } catch (e) {
+      errorApi.post(e);
+
+      if (!isMounted()) return;
+
+      setResult({ error: e, data: null });
+      setFormState(FormStates.Idle);
     }
-  }, [isSubmitting]);
-
-  const onSubmit = () => {
-    setIsSubmitting(true);
   };
 
   return (
     <Page theme={pageTheme.tool}>
+      <Header title="Register existing component" />
       <Content>
-        <ContentHeader title="Register Component">
-          <SupportButton>Documentation</SupportButton>
-        </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
             <InfoCard title="Start tracking your component in Backstage">
               <RegisterComponentForm
-                onSubmit={onSubmit}
-                submitting={isSubmitting}
+                onSubmit={handleSubmit}
+                submitting={formState === FormStates.Submitting}
               />
             </InfoCard>
           </Grid>
         </Grid>
       </Content>
+      {formState === FormStates.Success && (
+        <RegisterComponentResultDialog
+          entities={result.data!.entities}
+          onClose={() => setFormState(FormStates.Idle)}
+          classes={{ paper: classes.dialogPaper }}
+        />
+      )}
     </Page>
   );
 };

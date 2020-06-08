@@ -18,7 +18,7 @@ import Knex from 'knex';
 import path from 'path';
 import { Logger } from 'winston';
 import { CommonDatabase } from './CommonDatabase';
-import type { Database } from './types';
+import { Database } from './types';
 
 export class DatabaseManager {
   public static async createDatabase(
@@ -30,5 +30,19 @@ export class DatabaseManager {
       loadExtensions: ['.js'],
     });
     return new CommonDatabase(knex, logger);
+  }
+
+  public static async createInMemoryDatabase(
+    logger: Logger,
+  ): Promise<Database> {
+    const knex = Knex({
+      client: 'sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+      resource.run('PRAGMA foreign_keys = ON', () => {});
+    });
+    return DatabaseManager.createDatabase(knex, logger);
   }
 }

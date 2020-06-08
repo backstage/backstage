@@ -24,11 +24,14 @@ import esbuild from 'rollup-plugin-esbuild';
 import imageFiles from 'rollup-plugin-image-files';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
-import { RollupOptions } from 'rollup';
+import { RollupOptions, OutputOptions } from 'rollup';
 
+import { BuildOptions, Output } from './types';
 import { paths } from '../paths';
 
-export const makeConfigs = async (): Promise<RollupOptions[]> => {
+export const makeConfigs = async (
+  options: BuildOptions,
+): Promise<RollupOptions[]> => {
   const typesInput = paths.resolveTargetRoot(
     'dist',
     relativePath(paths.targetRoot, paths.targetDir),
@@ -43,13 +46,27 @@ export const makeConfigs = async (): Promise<RollupOptions[]> => {
     );
   }
 
-  return [
-    {
-      input: 'src/index.ts',
-      output: {
+  const configs = new Array<RollupOptions>();
+
+  if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
+    const output = new Array<OutputOptions>();
+
+    if (options.outputs.has(Output.cjs)) {
+      output.push({
+        file: 'dist/index.cjs.js',
+        format: 'commonjs',
+      });
+    }
+    if (options.outputs.has(Output.esm)) {
+      output.push({
         file: 'dist/index.esm.js',
         format: 'module',
-      },
+      });
+    }
+
+    configs.push({
+      input: 'src/index.ts',
+      output,
       plugins: [
         peerDepsExternal({
           includeDependencies: true,
@@ -68,14 +85,19 @@ export const makeConfigs = async (): Promise<RollupOptions[]> => {
           target: 'es2019',
         }),
       ],
-    },
-    {
+    });
+  }
+
+  if (options.outputs.has(Output.types)) {
+    configs.push({
       input: typesInput,
       output: {
         file: 'dist/index.d.ts',
         format: 'es',
       },
       plugins: [dts()],
-    },
-  ];
+    });
+  }
+
+  return configs;
 };

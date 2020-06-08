@@ -16,6 +16,11 @@
 
 import { CatalogApi } from './types';
 import { DescriptorEnvelope } from '../types';
+import {
+  Entity,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 
 export class CatalogClient implements CatalogApi {
   private apiOrigin: string;
@@ -30,6 +35,22 @@ export class CatalogClient implements CatalogApi {
     this.apiOrigin = apiOrigin;
     this.basePath = basePath;
   }
+  async getLocationById(id: String): Promise<Location | undefined> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations/${id}`,
+    );
+    if (response.ok) {
+      const location = await response.json();
+      if (location) return location.data;
+    }
+    return undefined;
+  }
+  async getEntitiesByLocationId(id: string): Promise<Entity[]> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/entities?${LOCATION_ANNOTATION}=${id}`,
+    );
+    return await response.json();
+  }
   async getEntities(): Promise<DescriptorEnvelope[]> {
     const response = await fetch(`${this.apiOrigin}${this.basePath}/entities`);
     return await response.json();
@@ -41,5 +62,41 @@ export class CatalogClient implements CatalogApi {
     const entity = await response.json();
     if (entity) return entity;
     throw new Error(`'Entity not found: ${name}`);
+  }
+
+  async addLocation(type: string, target: string) {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ type, target }),
+      },
+    );
+
+    if (response.status !== 201) {
+      throw new Error(await response.text());
+    }
+
+    const { location, entities } = await response.json();
+
+    if (!location || entities.length === 0)
+      throw new Error(`Location wasn't added: ${target}`);
+
+    return {
+      location,
+      entities,
+    };
+  }
+
+  async getLocationByEntity(entity: Entity): Promise<Location | undefined> {
+    const locationId = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    if (!locationId) return undefined;
+
+    const location = this.getLocationById(locationId);
+
+    return location;
   }
 }
