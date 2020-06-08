@@ -113,6 +113,7 @@ const useHeaderStyles = makeStyles<BackstageTheme>(theme => ({
     color: theme.palette.textSubtle,
     fontWeight: theme.typography.fontWeightBold,
     position: 'static',
+    wordBreak: 'normal',
   },
 }));
 
