@@ -53,13 +53,17 @@ export const makeConfigs = async (
 
     if (options.outputs.has(Output.cjs)) {
       output.push({
-        file: 'dist/index.cjs.js',
+        dir: 'dist',
+        entryFileNames: 'index.cjs.js',
+        chunkFileNames: 'cjs/[name]-[hash].js',
         format: 'commonjs',
       });
     }
     if (options.outputs.has(Output.esm)) {
       output.push({
-        file: 'dist/index.esm.js',
+        dir: 'dist',
+        entryFileNames: 'index.esm.js',
+        chunkFileNames: 'esm/[name]-[hash].js',
         format: 'module',
       });
     }
@@ -67,6 +71,8 @@ export const makeConfigs = async (
     configs.push({
       input: 'src/index.ts',
       output,
+      preserveEntrySignatures: 'strict',
+      external: require('module').builtinModules,
       plugins: [
         peerDepsExternal({
           includeDependencies: true,

@@ -130,6 +130,10 @@ class PackageJsonHandler {
 
     // Publish config can be removed the the target, skip in that case
     if (!targetPublishConf) {
+      if (await this.prompt('Missing publishConfig, do you want to add it?')) {
+        this.targetPkg.publishConfig = pkgPublishConf;
+        await this.write();
+      }
       return;
     }
 

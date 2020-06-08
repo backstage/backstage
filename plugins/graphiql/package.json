@@ -4,7 +4,9 @@
   "version": "0.1.1-alpha.6",
   "private": false,
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
   },
   "homepage": "https://github.com/spotify/backstage/tree/master/plugins/graphiql#readme",
   "repository": {
