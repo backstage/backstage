@@ -63,7 +63,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     textTransform: 'uppercase',
     fontSize: 11,
     opacity: 0.8,
-    marginBottom: 10,
+    marginBottom: theme.spacing(1),
     color: theme.palette.bursts.fontColor,
   },
 }));
