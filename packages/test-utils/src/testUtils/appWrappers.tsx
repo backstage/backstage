@@ -55,6 +55,9 @@ export function wrapInTestApp(
       NotFoundErrorPage,
       BootErrorPage,
       Progress,
+      Router: ({ children }) => (
+        <MemoryRouter initialEntries={routeEntries} children={children} />
+      ),
     },
     icons: defaultSystemIcons,
     plugins: [],
@@ -79,9 +82,7 @@ export function wrapInTestApp(
 
   return (
     <AppProvider>
-      <MemoryRouter initialEntries={routeEntries}>
-        <Route component={Wrapper} />
-      </MemoryRouter>
+      <Route component={Wrapper} />
     </AppProvider>
   );
 }
