@@ -18,13 +18,13 @@ import { Entity, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorSink } from './types';
+import { LocationProcessor, LocationProcessorEmit } from './types';
 
 export class YamlProcessor implements LocationProcessor {
   async parseData(
     data: Buffer,
     location: LocationSpec,
-    emit: LocationProcessorSink,
+    emit: LocationProcessorEmit,
   ): Promise<boolean> {
     if (!location.target.match(/\.ya?ml$/)) {
       return false;

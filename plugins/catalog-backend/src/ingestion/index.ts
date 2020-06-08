@@ -17,10 +17,10 @@
 export { HigherOrderOperations } from './HigherOrderOperations';
 export { LocationReaders } from './LocationReaders';
 export type {
-  HigherOrderOperation,
   AddLocationResult,
+  HigherOrderOperation,
   LocationReader,
-  ReadLocationResult,
   ReadLocationEntity,
   ReadLocationError,
+  ReadLocationResult,
 } from './types';

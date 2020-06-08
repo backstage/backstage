@@ -17,13 +17,13 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import fs from 'fs-extra';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorSink } from './types';
+import { LocationProcessor, LocationProcessorEmit } from './types';
 
 export class FileReaderProcessor implements LocationProcessor {
   async readLocation(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorSink,
+    emit: LocationProcessorEmit,
   ): Promise<boolean> {
     if (location.type !== 'file') {
       return false;

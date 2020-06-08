@@ -17,13 +17,13 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorSink } from './types';
+import { LocationProcessor, LocationProcessorEmit } from './types';
 
 export class GithubReaderProcessor implements LocationProcessor {
   async readLocation(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorSink,
+    emit: LocationProcessorEmit,
   ): Promise<boolean> {
     if (location.type !== 'github') {
       return false;

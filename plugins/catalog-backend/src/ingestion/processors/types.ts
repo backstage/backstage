@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LocationSpec, Entity } from '@backstage/catalog-model';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
 
 export type LocationProcessor = {
   /**
@@ -28,7 +28,7 @@ export type LocationProcessor = {
   readLocation?(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorSink,
+    emit: LocationProcessorEmit,
   ): Promise<boolean>;
 
   /**
@@ -42,7 +42,7 @@ export type LocationProcessor = {
   parseData?(
     data: Buffer,
     location: LocationSpec,
-    emit: LocationProcessorSink,
+    emit: LocationProcessorEmit,
   ): Promise<boolean>;
 
   /**
@@ -56,7 +56,7 @@ export type LocationProcessor = {
   processEntity?(
     entity: Entity,
     location: LocationSpec,
-    emit: LocationProcessorSink,
+    emit: LocationProcessorEmit,
   ): Promise<Entity>;
 
   /**
@@ -70,11 +70,11 @@ export type LocationProcessor = {
   handleError?(
     error: Error,
     location: LocationSpec,
-    emit: LocationProcessorSink,
+    emit: LocationProcessorEmit,
   ): Promise<void>;
 };
 
-export type LocationProcessorSink = (
+export type LocationProcessorEmit = (
   generated: LocationProcessorResult,
 ) => void;
 

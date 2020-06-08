@@ -16,6 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import {
+  Entity,
   EntityPolicies,
   EntityPolicy,
   LocationSpec,
@@ -29,11 +30,11 @@ import * as result from './processors/results';
 import {
   LocationProcessor,
   LocationProcessorDataResult,
+  LocationProcessorEmit,
   LocationProcessorEntityResult,
   LocationProcessorErrorResult,
   LocationProcessorLocationResult,
   LocationProcessorResult,
-  LocationProcessorSink,
 } from './processors/types';
 import { YamlProcessor } from './processors/YamlProcessor';
 import { LocationReader, ReadLocationResult } from './types';
@@ -74,17 +75,25 @@ export class LocationReaders implements LocationReader {
 
     for (let depth = 0; depth < MAX_DEPTH; ++depth) {
       const newItems: LocationProcessorResult[] = [];
-      const sink: LocationProcessorSink = i => newItems.push(i);
+      const emit: LocationProcessorEmit = i => newItems.push(i);
 
       for (const item of items) {
         if (item.type === 'location') {
-          await this.handleLocation(item, sink);
+          await this.handleLocation(item, emit);
         } else if (item.type === 'data') {
-          await this.handleData(item, sink);
+          await this.handleData(item, emit);
         } else if (item.type === 'entity') {
-          await this.handleEntity(item, sink, output);
+          const entity = await this.handleEntity(item, emit);
+          output.entities.push({
+            entity,
+            location: item.location,
+          });
         } else if (item.type === 'error') {
-          await this.handleError(item, sink, output);
+          await this.handleError(item, emit);
+          output.errors.push({
+            location: item.location,
+            error: item.error,
+          });
         }
       }
 
@@ -103,7 +112,7 @@ export class LocationReaders implements LocationReader {
 
   private async handleLocation(
     item: LocationProcessorLocationResult,
-    emit: LocationProcessorSink,
+    emit: LocationProcessorEmit,
   ) {
     this.logger.debug(
       `Reading location ${item.location.type} ${item.location.target} optional=${item.optional}`,
@@ -130,7 +139,7 @@ export class LocationReaders implements LocationReader {
 
   private async handleData(
     item: LocationProcessorDataResult,
-    emit: LocationProcessorSink,
+    emit: LocationProcessorEmit,
   ) {
     this.logger.debug(
       `Parsing data from location ${item.location.type} ${item.location.target} (${item.data.byteLength} bytes)`,
@@ -155,9 +164,8 @@ export class LocationReaders implements LocationReader {
 
   private async handleEntity(
     item: LocationProcessorEntityResult,
-    emit: LocationProcessorSink,
-    output: ReadLocationResult,
-  ) {
+    emit: LocationProcessorEmit,
+  ): Promise<Entity> {
     this.logger.debug(
       `Got entity at location ${item.location.type} ${item.location.target}, ${item.entity.apiVersion} ${item.entity.kind}`,
     );
@@ -175,13 +183,12 @@ export class LocationReaders implements LocationReader {
       }
     }
 
-    output.entities.push({ entity: current, location: item.location });
+    return current;
   }
 
   private async handleError(
     item: LocationProcessorErrorResult,
-    emit: LocationProcessorSink,
-    output: ReadLocationResult,
+    emit: LocationProcessorEmit,
   ) {
     this.logger.debug(
       `Encountered error at location ${item.location.type} ${item.location.target}, ${item.error}`,
@@ -197,10 +204,5 @@ export class LocationReaders implements LocationReader {
         }
       }
     }
-
-    output.errors.push({
-      location: item.location,
-      error: item.error,
-    });
   }
 }
