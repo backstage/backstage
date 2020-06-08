@@ -14,30 +14,52 @@
  * limitations under the License.
  */
 
+import { LocationSpec } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
-import { URL } from 'url';
-import { LocationReader } from './types';
+import * as result from './results';
+import { LocationProcessor, LocationProcessorEmit } from './types';
 
-/**
- * Reads a file whose target is a GitHub URL.
- *
- * Uses raw.githubusercontent.com for now, but this will probably change in the
- * future when token auth is implemented.
- */
-export class GitHubLocationReader implements LocationReader {
-  async tryRead(type: string, target: string): Promise<Buffer | undefined> {
-    if (type !== 'github') {
-      return undefined;
+export class GithubReaderProcessor implements LocationProcessor {
+  async readLocation(
+    location: LocationSpec,
+    optional: boolean,
+    emit: LocationProcessorEmit,
+  ): Promise<boolean> {
+    if (location.type !== 'github') {
+      return false;
     }
 
-    const url = this.buildRawUrl(target);
     try {
-      return await fetch(url.toString()).then(x => x.buffer());
+      const url = this.buildRawUrl(location.target);
+
+      // TODO(freben): Should "hard" errors thrown by this line be treated as
+      // notFound instead of fatal?
+      const response = await fetch(url.toString());
+
+      if (response.ok) {
+        const data = await response.buffer();
+        emit(result.data(location, data));
+      } else {
+        const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
+        if (response.status === 404) {
+          if (!optional) {
+            emit(result.notFoundError(location, message));
+          }
+        } else {
+          emit(result.generalError(location, message));
+        }
+      }
     } catch (e) {
-      throw new Error(`Unable to read "${target}", ${e}`);
+      const message = `Unable to read ${location.type} ${location.target}, ${e}`;
+      emit(result.generalError(location, message));
     }
+
+    return true;
   }
 
+  // Converts
+  // from: https://github.com/a/b/blob/master/c.yaml
+  // to:   https://raw.githubusercontent.com/a/b/master/c.yaml
   private buildRawUrl(target: string): URL {
     try {
       const url = new URL(target);

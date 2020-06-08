@@ -16,13 +16,11 @@
 
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { createStandaloneApplication } from './standaloneApplication';
 import { DatabaseEntitiesCatalog } from '../catalog/DatabaseEntitiesCatalog';
-import { DatabaseManager } from '../database/DatabaseManager';
 import { DatabaseLocationsCatalog } from '../catalog/DatabaseLocationsCatalog';
-import { LocationReaders } from '../ingestion/source/LocationReaders';
-import { IngestionModels, DescriptorParsers, HigherOrderOperations } from '..';
-import { EntityPolicies } from '@backstage/catalog-model';
+import { DatabaseManager } from '../database/DatabaseManager';
+import { HigherOrderOperations, LocationReaders } from '../ingestion';
+import { createStandaloneApplication } from './standaloneApplication';
 
 export interface ServerOptions {
   port: number;
@@ -39,15 +37,11 @@ export async function startStandaloneServer(
 
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
-  const ingestionModel = new IngestionModels(
-    new LocationReaders(),
-    new DescriptorParsers(),
-    new EntityPolicies(),
-  );
+  const locationReader = new LocationReaders(options.logger);
   const higherOrderOperation = new HigherOrderOperations(
     entitiesCatalog,
     locationsCatalog,
-    ingestionModel,
+    locationReader,
     logger,
   );
 

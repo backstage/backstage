@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { LocationReader } from './types';
+import { Entity, EntityPolicy } from '@backstage/catalog-model';
+import { LocationProcessor } from './types';
 
-/**
- * Reads a file from the local file system.
- */
-export class FileLocationReader implements LocationReader {
-  async tryRead(type: string, target: string): Promise<Buffer | undefined> {
-    if (type !== 'file') {
-      return undefined;
-    }
+export class EntityPolicyProcessor implements LocationProcessor {
+  private readonly policy: EntityPolicy;
 
-    try {
-      return await fs.readFile(target);
-    } catch (e) {
-      throw new Error(`Unable to read "${target}", ${e}`);
-    }
+  constructor(policy: EntityPolicy) {
+    this.policy = policy;
+  }
+
+  async processEntity(entity: Entity): Promise<Entity> {
+    return await this.policy.enforce(entity);
   }
 }
