@@ -31,9 +31,9 @@ const minProps = {
     {
       id: 'typescript',
       title: 'TypeScript',
-      quadrant: 'languages',
+      quadrant: { id: 'languages', name: 'Languages' },
       moved: 0,
-      ring: 'use',
+      ring: { id: 'use', name: 'USE', color: '#93c47d' },
       url: '#',
     },
   ],

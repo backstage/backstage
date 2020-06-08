@@ -35,8 +35,8 @@ export interface RadarEntry {
   key: string; // react key
   id: string;
   moved: number;
-  quadrant: string;
-  ring: string;
+  quadrant: RadarQuadrant;
+  ring: RadarRing;
   title: string;
   url: string;
 }

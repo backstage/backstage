@@ -29,7 +29,14 @@ const DescriptionWrapper = styled('span')({
   alignItems: 'center',
 });
 
-const createEditLink = (url: string): string => url.replace('blob', 'edit');
+const createEditLink = (location: Location): string => {
+  switch (location.type) {
+    case 'github':
+      return location.target.replace('/blob/', '/edit/');
+    default:
+      return location.target;
+  }
+};
 
 export function entityToComponent(
   envelope: Entity,
@@ -42,7 +49,7 @@ export function entityToComponent(
       <DescriptionWrapper>
         {envelope.metadata?.annotations?.description ?? 'placeholder'}
         {location?.target ? (
-          <a href={createEditLink(location?.target)}>
+          <a href={createEditLink(location)}>
             <IconButton size="small">
               <Edit fontSize="small" />
             </IconButton>
