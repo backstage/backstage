@@ -42,7 +42,27 @@ export class ApiRegistry implements ApiHolder {
     return new ApiRegistry(new Map(apis));
   }
 
+  /**
+   * Creates a new ApiRegistry with a single API implementation.
+   *
+   * @param api ApiRef for the API to add
+   * @param impl Implementation of the API to add
+   */
+  static with<T>(api: ApiRef<T>, impl: T): ApiRegistry {
+    return new ApiRegistry(new Map([[api, impl]]));
+  }
+
   constructor(private readonly apis: Map<ApiRef<unknown>, unknown>) {}
+
+  /**
+   * Returns a new ApiRegistry with the provided API added to the existing ones.
+   *
+   * @param api ApiRef for the API to add
+   * @param impl Implementation of the API to add
+   */
+  with<T>(api: ApiRef<T>, impl: T): ApiRegistry {
+    return new ApiRegistry(new Map([...this.apis, [api, impl]]));
+  }
 
   get<T>(api: ApiRef<T>): T | undefined {
     return this.apis.get(api) as T | undefined;
