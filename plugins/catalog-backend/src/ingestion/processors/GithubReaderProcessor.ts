@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import {
+  LocationProcessor,
+  LocationProcessorEmit,
+  LocationProcessorResult,
+} from './types';
 
 export class GithubReaderProcessor implements LocationProcessor {
-  async readLocation(
-    location: LocationSpec,
-    optional: boolean,
+  async process(
+    item: LocationProcessorResult,
     emit: LocationProcessorEmit,
-  ): Promise<boolean> {
-    if (location.type !== 'github') {
-      return false;
+  ): Promise<LocationProcessorResult | undefined> {
+    if (item.type !== 'location' || item.location.type !== 'github') {
+      return item;
     }
+
+    const { location, optional } = item;
 
     try {
       const url = this.buildRawUrl(location.target);
@@ -54,7 +58,7 @@ export class GithubReaderProcessor implements LocationProcessor {
       emit(result.generalError(location, message));
     }
 
-    return true;
+    return undefined;
   }
 
   // Converts

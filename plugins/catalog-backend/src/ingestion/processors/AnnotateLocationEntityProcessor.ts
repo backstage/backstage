@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
-import { LocationProcessor } from './types';
+import * as result from './results';
+import { LocationProcessor, LocationProcessorResult } from './types';
 
 export class AnnotateLocationEntityProcessor implements LocationProcessor {
-  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
-    return lodash.merge(
+  async process(
+    item: LocationProcessorResult,
+  ): Promise<LocationProcessorResult | undefined> {
+    if (item.type !== 'entity') {
+      return item;
+    }
+
+    const { location, entity } = item;
+    const output = lodash.merge(
       {
         metadata: {
           annotations: {
@@ -30,5 +37,7 @@ export class AnnotateLocationEntityProcessor implements LocationProcessor {
       },
       entity,
     );
+
+    return result.entity(item.location, output);
   }
 }

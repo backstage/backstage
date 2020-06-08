@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, EntityPolicy } from '@backstage/catalog-model';
-import { LocationProcessor } from './types';
+import { EntityPolicy } from '@backstage/catalog-model';
+import * as result from './results';
+import {
+  LocationProcessor,
+  LocationProcessorResult,
+  LocationProcessorEmit,
+} from './types';
 
 export class EntityPolicyProcessor implements LocationProcessor {
   private readonly policy: EntityPolicy;
@@ -24,7 +29,20 @@ export class EntityPolicyProcessor implements LocationProcessor {
     this.policy = policy;
   }
 
-  async processEntity(entity: Entity): Promise<Entity> {
-    return await this.policy.enforce(entity);
+  async process(
+    item: LocationProcessorResult,
+    emit: LocationProcessorEmit,
+  ): Promise<LocationProcessorResult | undefined> {
+    if (item.type !== 'entity') {
+      return item;
+    }
+
+    try {
+      const output = await this.policy.enforce(item.entity);
+      return result.entity(item.location, output);
+    } catch (e) {
+      emit(result.generalError(item.location, e.toString()));
+      return undefined;
+    }
   }
 }

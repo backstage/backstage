@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import fs from 'fs-extra';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import {
+  LocationProcessor,
+  LocationProcessorEmit,
+  LocationProcessorResult,
+} from './types';
 
 export class FileReaderProcessor implements LocationProcessor {
-  async readLocation(
-    location: LocationSpec,
-    optional: boolean,
+  async process(
+    item: LocationProcessorResult,
     emit: LocationProcessorEmit,
-  ): Promise<boolean> {
-    if (location.type !== 'file') {
-      return false;
+  ): Promise<LocationProcessorResult | undefined> {
+    if (item.type !== 'location' || item.location.type !== 'file') {
+      return item;
     }
+
+    const { location, optional } = item;
 
     try {
       const exists = await fs.pathExists(location.target);
@@ -43,6 +47,6 @@ export class FileReaderProcessor implements LocationProcessor {
       emit(result.generalError(location, message));
     }
 
-    return true;
+    return undefined;
   }
 }

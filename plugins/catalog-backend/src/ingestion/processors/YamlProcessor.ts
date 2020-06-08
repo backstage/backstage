@@ -14,28 +14,33 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import {
+  LocationProcessor,
+  LocationProcessorEmit,
+  LocationProcessorResult,
+} from './types';
 
 export class YamlProcessor implements LocationProcessor {
-  async parseData(
-    data: Buffer,
-    location: LocationSpec,
+  async process(
+    item: LocationProcessorResult,
     emit: LocationProcessorEmit,
-  ): Promise<boolean> {
-    if (!location.target.match(/\.ya?ml$/)) {
-      return false;
+  ): Promise<LocationProcessorResult | undefined> {
+    if (item.type !== 'data' || !item.location.target.match(/\.ya?ml$/)) {
+      return item;
     }
+
+    const { location, data } = item;
 
     let documents: yaml.Document.Parsed[];
     try {
       documents = yaml.parseAllDocuments(data.toString('utf8')).filter(d => d);
     } catch (e) {
       emit(result.generalError(location, `Failed to parse YAML, ${e}`));
-      return true;
+      return undefined;
     }
 
     for (const document of documents) {
@@ -53,6 +58,6 @@ export class YamlProcessor implements LocationProcessor {
       }
     }
 
-    return true;
+    return undefined;
   }
 }
