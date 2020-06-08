@@ -104,7 +104,7 @@ const TypeFragment: FC<TypeFragmentProps> = ({ type, typeLink, classes }) => {
   }
 
   if (!typeLink) {
-    // TODO: Add breadcrumps.
+    // TODO: Add breadcrumbs.
     return <Typography className={classes.type}>{type}</Typography>;
   }
 
