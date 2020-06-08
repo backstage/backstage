@@ -6,9 +6,20 @@ We chose [Passport](http://www.passportjs.org/) as our authentication platform d
 
 ## How to add a new strategy provider
 
+### Quick guide
+
+[1.](#installing-the-dependencies) Install the passport-js based provider package.
+
+[2.](#create-implementation) Create a new folder structure for the provider.
+
+[3.](#adding-an-oauth-based-provider) Implement the provider, extending the suitable framework if needed.
+
+[4.](#hook-it-up-to-the-backend) Add the provider to the backend.
+
 ### Installing the dependencies:
 
 ```bash
+cd plugins/auth-backend
 yarn add passport-provider-a
 yarn add @types/passport-provider-a
 ```
@@ -52,6 +63,8 @@ export class ProviderAAuthProvider implements OAuthProviderHandlers {
 ```
 
 #### Adding an non-OAuth based provider
+
+_**Note**: We have prioritized OAuth-based providers and non-OAuth providers should be considered experimental._
 
 An non-`OAuth` based provider could implement [AuthProviderRouteHandlers](#AuthProviderRouteHandlers) instead.
 
@@ -149,14 +162,6 @@ As you can see each endpoint is prefixed with both `/auth` and its provider name
 ### Test the new provider
 
 You can `curl -i localhost:7000/auth/providerA/start` and which should provide a `302` redirect with a `Location` header. Paste the url from that header into a web browser and you should be able to trigger the authorization flow.
-
-### To summarize
-
-1. Install the passport-js based provider package in `plugins/auth-backend`
-2. Create a new folder structure in `plugins/auth-backend/src/providers/`
-3. Implement the provider extending the suitable framework if needed
-4. Add the configuration for the provider to the list of provider configurations
-5. Add the create method to the factory object
 
 ---
 
