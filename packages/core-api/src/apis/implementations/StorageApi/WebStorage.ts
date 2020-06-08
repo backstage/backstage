@@ -22,6 +22,8 @@ import {
 import { Observable } from '../../../types';
 import ObservableImpl from 'zen-observable';
 
+const buckets = new Map<string, WebStorage>();
+
 export class WebStorage implements StorageApi {
   constructor(
     private readonly namespace: string,
@@ -46,7 +48,11 @@ export class WebStorage implements StorageApi {
   }
 
   forBucket(name: string): WebStorage {
-    return new WebStorage(`${this.namespace}/${name}`, this.errorApi);
+    const bucketPath = `${this.namespace}/${name}`;
+    if (!buckets.has(bucketPath)) {
+      buckets.set(bucketPath, new WebStorage(bucketPath, this.errorApi));
+    }
+    return buckets.get(bucketPath)!;
   }
 
   async set<T>(key: string, data: T): Promise<void> {

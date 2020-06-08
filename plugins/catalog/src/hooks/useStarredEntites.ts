@@ -21,6 +21,7 @@ export const useStarredEntities = () => {
   const storageApi = useApi(storageApiRef);
   const settingsStore = storageApi.forBucket('settings');
   const rawStarredItems = settingsStore.get<string[]>('starredEntities') ?? [];
+
   const [starredEntities, setStarredEntities] = useState(
     new Set(rawStarredItems),
   );
@@ -30,8 +31,10 @@ export const useStarredEntities = () => {
   );
 
   useEffect(() => {
-    const currentValue = observedItems?.newValue ?? [];
-    setStarredEntities(new Set(currentValue));
+    if (observedItems?.newValue) {
+      const currentValue = observedItems?.newValue ?? [];
+      setStarredEntities(new Set(currentValue));
+    }
   }, [observedItems?.newValue]);
 
   return {
