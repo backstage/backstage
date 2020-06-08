@@ -115,8 +115,9 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   ];
 
   return (
-    <Page theme={pageTheme.home}>
-      <Header title={component?.name || 'Catalog'}>
+    // TODO: Switch theme and type props based on component type (website, library, ...)
+    <Page theme={pageTheme.service}>
+      <Header title={component?.name || 'Catalog'} type="Service">
         <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
       </Header>
       <HeaderTabs tabs={tabs} />
