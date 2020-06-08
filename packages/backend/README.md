@@ -15,8 +15,8 @@ app. Until then, feel free to experiment here!
 To run the example backend, first go to the project root and run
 
 ```bash
-yarn tsc
 yarn install
+yarn tsc
 yarn build
 ```
 
