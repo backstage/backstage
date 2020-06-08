@@ -14,39 +14,32 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core';
+import React, { FC } from 'react';
+import { makeStyles, Theme } from '@material-ui/core';
 
-const styles = {
+type Props = {
+  x: number;
+  y: number;
+};
+
+const useStyles = makeStyles<Theme>(() => ({
   text: {
     pointerEvents: 'none',
     userSelect: 'none',
     fontSize: '10px',
     fill: '#000',
   },
+}));
+
+const RadarFooter: FC<Props> = props => {
+  const { x, y } = props;
+  const classes = useStyles(props);
+
+  return (
+    <text transform={`translate(${x}, ${y})`} className={classes.text}>
+      {'▲ moved up\u00a0\u00a0\u00a0\u00a0\u00a0▼ moved down'}
+    </text>
+  );
 };
 
-class RadarFooter extends React.PureComponent {
-  render() {
-    const { x, y, classes } = this.props;
-
-    return (
-      <text
-        transform={`translate(${x}, ${y})`}
-        space="preserve"
-        className={classes.text}
-      >
-        {'▲ moved up\u00a0\u00a0\u00a0\u00a0\u00a0▼ moved down'}
-      </text>
-    );
-  }
-}
-
-RadarFooter.propTypes = {
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired,
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(RadarFooter);
+export default RadarFooter;
