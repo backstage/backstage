@@ -20,6 +20,7 @@ import { Link, Typography } from '@material-ui/core';
 import {
   CreateStorageApiOptions,
   StorageApi,
+  ErrorApi,
 } from '../../../../core-api/src/apis/definitions';
 import { WebStorage } from '../../../../core-api/src/apis/implementations/StorageApi/WebStorage';
 import { ApiRegistry, ApiProvider, storageApiRef } from '@backstage/core';
@@ -29,14 +30,14 @@ export default {
   component: DismissableBanner,
 };
 
+let errorApi: ErrorApi;
 const containerStyle = { width: '70%' };
 
-const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
 const createWebStorage = (
   args?: Partial<CreateStorageApiOptions>,
 ): StorageApi => {
   return WebStorage.create({
-    errorApi: mockErrorApi,
+    errorApi: errorApi,
     ...args,
   });
 };
