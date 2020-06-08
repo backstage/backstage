@@ -81,6 +81,8 @@ describe('Integration: GitHubLocationSource', () => {
   });
 
   it('fetches the fixture from backstage repo', async () => {
+    (fetch as any).mockResolvedValueOnce(new Response('component3'));
+
     const PERMANENT_LINK =
       'https://github.com/spotify/backstage/blob/ee84a874f8e37f87940cbe515a86c07a2db29541/plugins/catalog-backend/fixtures/one_component.yaml';
 

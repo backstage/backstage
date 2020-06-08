@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 curl \
 --location \
---request POST 'localhost:3003/locations' \
+--request POST 'localhost:7000/catalog/locations' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "type": "github",

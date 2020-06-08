@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import { ProfileInfo } from '../../../definitions';
+
 export type GoogleSession = {
+  profile: ProfileInfo;
   idToken: string;
   accessToken: string;
   scopes: Set<string>;

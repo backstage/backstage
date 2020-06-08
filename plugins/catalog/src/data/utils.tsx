@@ -15,7 +15,11 @@
  */
 import React from 'react';
 import { Component } from './component';
-import { Entity, Location } from '@backstage/catalog-model';
+import {
+  Entity,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 import Edit from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import { styled } from '@material-ui/core/styles';
@@ -34,7 +38,7 @@ const createEditLink = (location: Location): string => {
   }
 };
 
-export function envelopeToComponent(
+export function entityToComponent(
   envelope: Entity,
   location?: Location,
 ): Component {
@@ -55,4 +59,16 @@ export function envelopeToComponent(
     ),
     location,
   };
+}
+
+export function findLocationForEntity(
+  entity: Entity,
+  locations: Location[],
+): Location | undefined {
+  for (const loc of locations) {
+    if (loc.id === entity.metadata.annotations?.[LOCATION_ANNOTATION]) {
+      return loc;
+    }
+  }
+  return undefined;
 }

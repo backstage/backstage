@@ -13,15 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './Content';
-export * from './ContentHeader';
-export * from './ErrorBoundary';
-export * from './Header';
-export * from './HeaderLabel';
-export * from './HomepageTimer';
-export * from './InfoCard';
-export * from './Page';
-export * from './Sidebar';
-export * from './TabbedCard';
-export * from './HeaderTabs';
+export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
