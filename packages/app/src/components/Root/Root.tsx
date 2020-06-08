@@ -33,6 +33,7 @@ import {
   SidebarSpace,
   SidebarUserSettings,
   SidebarThemeToggle,
+  SidebarPinButton,
 } from '@backstage/core';
 
 const useSidebarLogoStyles = makeStyles({
@@ -85,6 +86,7 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarDivider />
       <SidebarThemeToggle />
       <SidebarUserSettings />
+      <SidebarPinButton />
     </Sidebar>
     {children}
   </SidebarPage>

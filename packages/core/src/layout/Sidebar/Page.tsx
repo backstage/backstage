@@ -57,7 +57,7 @@ export const SidebarPage: FC<{}> = props => {
   return (
     <SidebarPinStateContext.Provider
       value={{
-        isPinned,
+        isPinned: true,
         toggleSidebarPinState,
       }}
     >
