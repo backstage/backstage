@@ -134,15 +134,19 @@ const CatalogPage: FC<{}> = () => {
           variant="info"
           message={
             <Typography>
-              <span role="img" aria-label="wave" style={{ fontSize: '125%' }}>
+              <span
+                role="img"
+                aria-label="wave"
+                style={{ fontSize: '125%', marginRight: 12 }}
+              >
                 👋🏼
               </span>
-              &nbsp;&nbsp;&nbsp;Welcome to Backstage, we are happy to have you.
-              Start by checking out our&nbsp;
+              Welcome to Backstage, we are happy to have you. Start by checking
+              out our{' '}
               <Link href="/welcome" color="textSecondary">
                 getting started
-              </Link>
-              &nbsp;page.
+              </Link>{' '}
+              page.
             </Typography>
           }
         />
