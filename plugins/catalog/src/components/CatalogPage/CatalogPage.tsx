@@ -149,6 +149,7 @@ const CatalogPage: FC<{}> = () => {
               page.
             </Typography>
           }
+          id="catalog_page_welcome_banner"
         />
 
         <ContentHeader title="Services">
