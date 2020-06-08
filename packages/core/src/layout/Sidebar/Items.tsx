@@ -148,7 +148,6 @@ export const SidebarItem: FC<SidebarItemProps> = ({
       </NavLink>
     );
   }
-
   return (
     <NavLink
       className={clsx(classes.root, classes.open)}

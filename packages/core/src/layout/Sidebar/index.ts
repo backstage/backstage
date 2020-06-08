@@ -33,3 +33,4 @@ export {
 } from './config';
 export type { SidebarContextType } from './config';
 export { SidebarThemeToggle } from './SidebarThemeToggle';
+export { SidebarUserSettings } from './UserSettings';

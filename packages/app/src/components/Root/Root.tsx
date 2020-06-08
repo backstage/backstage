@@ -31,7 +31,7 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-  SidebarUserBadge,
+  SidebarUserSettings,
   SidebarThemeToggle,
 } from '@backstage/core';
 
@@ -84,7 +84,7 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarSpace />
       <SidebarDivider />
       <SidebarThemeToggle />
-      <SidebarUserBadge />
+      <SidebarUserSettings />
     </Sidebar>
     {children}
   </SidebarPage>
