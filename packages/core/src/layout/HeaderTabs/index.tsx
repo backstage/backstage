@@ -24,6 +24,7 @@ const useStyles = makeStyles(theme => ({
   tabsWrapper: {
     gridArea: 'pageSubheader',
     backgroundColor: theme.palette.background.paper,
+    paddingLeft: theme.spacing(3),
   },
   defaultTab: {
     padding: theme.spacing(3, 3),

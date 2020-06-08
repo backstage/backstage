@@ -51,6 +51,10 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
   },
+  emoji: {
+    fontSize: '125%',
+    marginRight: theme.spacing(2),
+  },
 }));
 
 import { catalogApiRef } from '../..';
@@ -134,14 +138,14 @@ const CatalogPage: FC<{}> = () => {
           variant="info"
           message={
             <Typography>
-              <span role="img" aria-label="wave" style={{ fontSize: '125%' }}>
+              <span role="img" aria-label="wave" className={styles.emoji}>
                 👋🏼
               </span>
               Welcome to Backstage, we are happy to have you. Start by checking
-              out our
+              out our{' '}
               <Link href="/welcome" color="textSecondary">
                 getting started
-              </Link>
+              </Link>{' '}
               page.
             </Typography>
           }
