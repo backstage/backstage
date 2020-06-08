@@ -21,13 +21,13 @@ import privateExports, {
   defaultSystemIcons,
   BootErrorPageProps,
   AppConfigLoader,
-  AppConfig,
 } from '@backstage/core-api';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 import { ErrorPage } from '../layout/ErrorPage';
 import Progress from '../components/Progress';
 import { lightTheme, darkTheme } from '@backstage/theme';
+import { AppConfig } from '@backstage/config';
 
 const { PrivateAppImpl } = privateExports;
 
@@ -87,9 +87,9 @@ export function createApp(options?: AppOptions) {
     }
     // TODO: figure out a nicer way to handle routing on the error page, when it can be done.
     return (
-      <Router>
+      <MemoryRouter>
         <ErrorPage status="501" statusMessage={message} />
-      </Router>
+      </MemoryRouter>
     );
   };
 
@@ -100,6 +100,7 @@ export function createApp(options?: AppOptions) {
     NotFoundErrorPage: DefaultNotFoundPage,
     BootErrorPage: DefaultBootErrorPage,
     Progress: Progress,
+    Router: BrowserRouter,
     ...options?.components,
   };
   const themes = options?.themes ?? [

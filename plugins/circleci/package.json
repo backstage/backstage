@@ -6,6 +6,11 @@
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "private": true,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
   "proxy": {
     "/circleci/api": {
       "target": "https://circleci.com/api/v1.1",

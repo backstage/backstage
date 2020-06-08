@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-export type LocationReader = {
-  /**
-   * Reads the contents of a single location.
-   *
-   * @param type The type of location to read
-   * @param target The location target (type-specific)
-   * @returns The target contents, as a raw Buffer, or undefined if this type
-   *          was not meant to be consumed by this reader
-   * @throws An error if the type was meant for this reader, but could not be
-   *         read
-   */
-  tryRead(type: string, target: string): Promise<Buffer | undefined>;
+export type JsonObject = { [key in string]: JsonValue };
+export type JsonArray = JsonValue[];
+export type JsonValue =
+  | JsonObject
+  | JsonArray
+  | number
+  | string
+  | boolean
+  | null;
+
+export type AppConfig = JsonObject;
+
+export type Config = {
+  getConfig(key: string): Config;
+
+  getConfigArray(key: string): Config[];
+
+  getNumber(key: string): number | undefined;
+
+  getBoolean(key: string): boolean | undefined;
+
+  getString(key: string): string | undefined;
+
+  getStringArray(key: string): string[] | undefined;
 };

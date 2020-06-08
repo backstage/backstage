@@ -19,12 +19,7 @@ import {
   InputError,
   NotFoundError,
 } from '@backstage/backend-common';
-import {
-  Entity,
-  EntityMeta,
-  Location,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
+import { Entity, EntityMeta, Location } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -169,12 +164,6 @@ export class CommonDatabase implements Database {
       uid: generateUid(),
       etag: generateEtag(),
       generation: 1,
-      annotations: {
-        ...(newEntity.metadata?.annotations ?? {}),
-        ...(request.locationId
-          ? { [LOCATION_ANNOTATION]: request.locationId }
-          : {}),
-      },
     };
 
     const newRow = toEntityRow(request.locationId, newEntity);

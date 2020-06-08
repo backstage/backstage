@@ -15,20 +15,15 @@
  */
 
 import webpack, { Module, Plugin } from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { BundlingOptions } from './types';
-import { BundlingPaths } from './paths';
 
 type Transforms = {
   loaders: Module['rules'];
   plugins: Plugin[];
 };
 
-export const transforms = (
-  paths: BundlingPaths,
-  options: BundlingOptions,
-): Transforms => {
+export const transforms = (options: BundlingOptions): Transforms => {
   const { isDev } = options;
 
   const loaders = [
@@ -79,12 +74,6 @@ export const transforms = (
   ];
 
   const plugins = new Array<Plugin>();
-
-  plugins.push(
-    new HtmlWebpackPlugin({
-      template: paths.targetHtml,
-    }),
-  );
 
   if (isDev) {
     plugins.push(new webpack.HotModuleReplacementPlugin());

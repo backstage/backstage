@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export type AppConfig = any;
+export type LoadConfigOptions = {
+  // Config path, defaults to app-config.yaml in project root
+  configPath?: string;
+};

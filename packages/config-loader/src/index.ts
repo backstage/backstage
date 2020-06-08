@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { DescriptorParsers } from './DescriptorParsers';
-export { YamlDescriptorParser } from './parsers/YamlDescriptorParser';
+export { loadConfig } from './loader';
+export type { LoadConfigOptions } from './types';

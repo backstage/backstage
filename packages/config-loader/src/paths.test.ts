@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-export type { AppConfig } from './types';
-export { loadConfig } from './loaders';
+import { findRootPath } from './paths';
+
+describe('findRootPath', () => {
+  it('should find root path', () => {
+    const rootPath = findRootPath(process.cwd());
+    expect(typeof rootPath).toBe('string');
+  });
+});

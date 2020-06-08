@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export { LocationReaders } from './LocationReaders';
-export { FileLocationReader } from './readers/FileLocationReader';
-export { GitHubLocationReader } from './readers/GitHubLocationReader';
-export type { LocationReader } from './readers/types';
+export type {
+  AppConfig,
+  Config,
+  JsonArray,
+  JsonObject,
+  JsonValue,
+} from './types';
+export { ConfigReader } from './reader';

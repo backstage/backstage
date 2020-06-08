@@ -19,6 +19,7 @@ import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
 import { BackstagePlugin } from '../plugin';
 import { ApiHolder } from '../apis';
 import { AppTheme } from '../apis/definitions';
+import { AppConfig } from '@backstage/config';
 
 export type BootErrorPageProps = {
   step: 'load-config';
@@ -29,12 +30,8 @@ export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
+  Router: ComponentType<{ basename?: string }>;
 };
-
-/**
- * TBD
- */
-export type AppConfig = any;
 
 /**
  * A function that loads in the App config that will be accessible via the ConfigApi.

@@ -17,18 +17,21 @@
 import fs from 'fs-extra';
 import { paths } from '../lib/paths';
 
+const SKIPPED_KEYS = ['access', 'registry', 'tag'];
+
 export const pre = async () => {
   const pkgPath = paths.resolveTarget('package.json');
 
   const pkg = await fs.readJson(pkgPath);
-  pkg.types = 'dist/index.d.ts';
+
+  for (const key of Object.keys(pkg.publishConfig ?? {})) {
+    if (!SKIPPED_KEYS.includes(key)) {
+      pkg[key] = pkg.publishConfig[key];
+    }
+  }
   await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
 };
 
 export const post = async () => {
-  const pkgPath = paths.resolveTarget('package.json');
-
-  const pkg = await fs.readJson(pkgPath);
-  pkg.types = 'src/index.ts';
-  await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
+  // postpack is a noop for now, since it's not called anyway
 };

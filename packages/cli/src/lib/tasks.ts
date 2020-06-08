@@ -111,6 +111,8 @@ export async function templatingTask(
 // List of local packages that we need to modify as a part of an E2E test
 const PATCH_PACKAGES = [
   'cli',
+  'config',
+  'config-loader',
   'core',
   'core-api',
   'dev-utils',
@@ -174,7 +176,7 @@ export async function installWithLocalDeps(dir: string) {
   // types to dist/index.d.ts and the main:src field is removed.
   // Without this we get type checking errors in the e2e test
   if (process.env.BACKSTAGE_E2E_CLI_TEST) {
-    Task.section('Patchling local dependencies for e2e tests');
+    Task.section('Patching local dependencies for e2e tests');
 
     for (const name of PATCH_PACKAGES) {
       await Task.forItem(
@@ -191,7 +193,11 @@ export async function installWithLocalDeps(dir: string) {
 
           // We want dist to be used for e2e tests
           delete depJson['main:src'];
-          depJson.types = 'dist/index.d.ts';
+          for (const key of Object.keys(depJson.publishConfig)) {
+            if (key !== 'access') {
+              depJson[key] = depJson.publishConfig[key];
+            }
+          }
 
           await fs
             .writeJSON(depJsonPath, depJson, { encoding: 'utf8', spaces: 2 })
