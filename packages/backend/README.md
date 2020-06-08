@@ -25,7 +25,7 @@ You should only need to do this once.
 After that, go to the `packages/backend` directory and run
 
 ```bash
-AUTH_GOOGLE_CLIENT_ID=a AUTH_GOOGLE_CLIENT_SECRET=b AUTH_GITHUB_CLIENT_ID=c AUTH_GITHUB_CLIENT_SECRET=d SENTRY_TOKEN=e LOG_LEVEL=debug yarn start
+AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x AUTH_GITHUB_CLIENT_ID=x AUTH_GITHUB_CLIENT_SECRET=x SENTRY_TOKEN=x LOG_LEVEL=debug yarn start
 ```
 
 Substitute `x` for actual values, or leave them as
