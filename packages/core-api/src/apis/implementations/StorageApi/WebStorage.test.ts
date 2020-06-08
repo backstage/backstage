@@ -15,6 +15,7 @@
  */
 import { WebStorage } from './WebStorage';
 import { CreateStorageApiOptions, StorageApi } from '../../definitions';
+
 describe('WebStorage Storage API', () => {
   const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
   const createWebStorage = (
@@ -160,5 +161,13 @@ describe('WebStorage Storage API', () => {
         message: 'Error when parsing JSON config from storage for: key',
       }),
     );
+  });
+
+  it('should return a singleton for the same namespace and same bucket', async () => {
+    const rootStorage = createWebStorage({
+      namespace: '/Test/Mock/Thing/Thing ',
+    });
+
+    expect(rootStorage.forBucket('test')).toBe(rootStorage.forBucket('test'));
   });
 });

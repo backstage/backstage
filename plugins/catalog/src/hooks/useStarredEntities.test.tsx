@@ -68,6 +68,8 @@ describe('useStarredEntities', () => {
     expect(result.current.starredEntities.size).toBe(0);
     expect(result.current.starredEntities.has('something')).toBeFalsy();
 
+    // Make this happen after awaiting for the next update so we can
+    // catch when the hook re-renders with the latest data
     setTimeout(() => store?.set('starredEntities', ['something']), 1);
 
     await waitForNextUpdate();
