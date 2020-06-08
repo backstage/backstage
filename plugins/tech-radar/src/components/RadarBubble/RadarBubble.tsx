@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { FC, useRef, useLayoutEffect } from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 
 type Props = {
@@ -87,10 +87,6 @@ const RadarBubble: FC<Props> = props => {
       }
     }
   };
-
-  useEffect(() => {
-    updatePosition();
-  }, []);
 
   useLayoutEffect(() => {
     updatePosition();
