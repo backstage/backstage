@@ -24,9 +24,8 @@ export const catalogApiRef = createApiRef<CatalogApi>({
 
 export interface CatalogApi {
   getLocationById(id: String): Promise<Location | undefined>;
-  getEntities(): Promise<Entity[]>;
+  getEntities(filter?: Record<string, string>): Promise<Entity[]>;
   getEntityByName(name: string): Promise<Entity>;
-  getEntitiesByLocationId(id: string): Promise<Entity[]>;
   addLocation(type: string, target: string): Promise<AddLocationResponse>;
   getLocationByEntity(entity: Entity): Promise<Location | undefined>;
 }

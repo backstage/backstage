@@ -81,7 +81,7 @@ const ComponentContextMenu: FC<ComponentContextMenuProps> = ({
           <ListItemIcon>
             <SwapHoriz fontSize="small" />
           </ListItemIcon>
-          <Typography variant="inherit">More repository</Typography>
+          <Typography variant="inherit">Move repository</Typography>
         </MenuItem>
       </Menu>
     </div>

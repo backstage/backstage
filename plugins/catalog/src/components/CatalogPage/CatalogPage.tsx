@@ -14,35 +14,33 @@
  * limitations under the License.
  */
 
-import React, { FC, useCallback, useState } from 'react';
 import {
   Content,
   ContentHeader,
   DismissableBanner,
   Header,
+  HeaderTabs,
   HomepageTimer,
-  SupportButton,
   Page,
   pageTheme,
+  SupportButton,
   useApi,
-  HeaderTabs,
 } from '@backstage/core';
+import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
+import { Button, Link, makeStyles, Typography } from '@material-ui/core';
+import GitHub from '@material-ui/icons/GitHub';
+import React, { FC, useCallback, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import CatalogTable from '../CatalogTable/CatalogTable';
+import { catalogApiRef } from '../..';
+import { Component } from '../../data/component';
+import { defaultFilter, filterGroups } from '../../data/filters';
+import { entityToComponent, findLocationForEntity } from '../../data/utils';
 import {
   CatalogFilter,
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
-import { Button, makeStyles, Typography, Link } from '@material-ui/core';
-import { filterGroups, defaultFilter } from '../../data/filters';
-import { Link as RouterLink } from 'react-router-dom';
-import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import GitHub from '@material-ui/icons/GitHub';
-import {
-  Entity,
-  Location,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
+import CatalogTable from '../CatalogTable/CatalogTable';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -57,10 +55,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-import { catalogApiRef } from '../..';
-import { entityToComponent, findLocationForEntity } from '../../data/utils';
-import { Component } from '../../data/component';
-
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const { value, error, loading } = useAsync(() => catalogApi.getEntities());
@@ -74,26 +68,6 @@ const CatalogPage: FC<{}> = () => {
   );
   const styles = useStyles();
 
-  const { value: locations } = useAsync(async () => {
-    const getLocationDataForEntities = async (entities: Entity[]) => {
-      return Promise.all(
-        entities.map(entity => {
-          const locationId = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-          if (!locationId) return undefined;
-
-          return catalogApi.getLocationById(locationId);
-        }),
-      );
-    };
-
-    if (value) {
-      return getLocationDataForEntities(value).then(
-        (location): Location[] =>
-          location.filter(loc => !!loc) as Array<Location>,
-      );
-    }
-    return [];
-  }, [value, catalogApi, catalogApi]);
   const actions = [
     (rowData: Component) => ({
       icon: GitHub,
@@ -171,24 +145,22 @@ const CatalogPage: FC<{}> = () => {
               onSelectedChange={onFilterSelected}
             />
           </div>
-          {locations && (
-            <CatalogTable
-              titlePreamble={selectedFilter.label}
-              components={
-                (value &&
-                  value.map(val => {
-                    return {
-                      ...entityToComponent(val),
-                      location: findLocationForEntity(val, locations),
-                    };
-                  })) ||
-                []
-              }
-              loading={loading}
-              error={error}
-              actions={actions}
-            />
-          )}
+          <CatalogTable
+            titlePreamble={selectedFilter.label}
+            components={
+              (value &&
+                value.map(val => {
+                  return {
+                    ...entityToComponent(val),
+                    locationSpec: findLocationForEntity(val),
+                  };
+                })) ||
+              []
+            }
+            loading={loading}
+            error={error}
+            actions={actions}
+          />
         </div>
       </Content>
     </Page>

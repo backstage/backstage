@@ -19,6 +19,7 @@ import {
   Entity,
   Location,
   LOCATION_ANNOTATION,
+  LocationSpec,
 } from '@backstage/catalog-model';
 import Edit from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
@@ -38,13 +39,12 @@ const createEditLink = (location: Location): string => {
   }
 };
 
-export function entityToComponent(
-  envelope: Entity,
-  location?: Location,
-): Component {
+export function entityToComponent(envelope: Entity): Component {
+  const location = findLocationForEntity(envelope);
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
+    metadata: envelope.metadata,
     description: (
       <DescriptionWrapper>
         {envelope.metadata?.annotations?.description ?? 'placeholder'}
@@ -57,18 +57,25 @@ export function entityToComponent(
         ) : null}
       </DescriptionWrapper>
     ),
-    location,
+    location: findLocationForEntity(envelope),
   };
 }
 
 export function findLocationForEntity(
   entity: Entity,
-  locations: Location[],
-): Location | undefined {
-  for (const loc of locations) {
-    if (loc.id === entity.metadata.annotations?.[LOCATION_ANNOTATION]) {
-      return loc;
-    }
+): LocationSpec | undefined {
+  const annotation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+  if (!annotation) {
+    return undefined;
   }
-  return undefined;
+
+  const separatorIndex = annotation.indexOf(':');
+  if (separatorIndex === -1) {
+    return undefined;
+  }
+
+  return {
+    type: annotation.substring(0, separatorIndex),
+    target: annotation.substring(separatorIndex + 1),
+  };
 }

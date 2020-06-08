@@ -45,14 +45,27 @@ export class CatalogClient implements CatalogApi {
     }
     return undefined;
   }
-  async getEntitiesByLocationId(id: string): Promise<Entity[]> {
-    const response = await fetch(
-      `${this.apiOrigin}${this.basePath}/entities?${LOCATION_ANNOTATION}=${id}`,
-    );
-    return await response.json();
-  }
-  async getEntities(): Promise<DescriptorEnvelope[]> {
-    const response = await fetch(`${this.apiOrigin}${this.basePath}/entities`);
+  async getEntities(
+    filter?: Record<string, string>,
+  ): Promise<DescriptorEnvelope[]> {
+    let url = `${this.apiOrigin}${this.basePath}/entities`;
+    if (filter) {
+      url += '?';
+      url += Object.entries(filter)
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+        )
+        .join('&');
+    }
+    const response = await fetch(url);
+    if (!response.ok) {
+      const payload = await response.text();
+      throw new Error(
+        `Request failed with ${response.status} ${response.statusText}, ${payload}`,
+      );
+    }
+
     return await response.json();
   }
   async getEntityByName(name: string): Promise<DescriptorEnvelope> {
