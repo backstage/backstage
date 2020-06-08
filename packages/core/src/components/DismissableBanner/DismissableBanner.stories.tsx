@@ -18,12 +18,14 @@ import React from 'react';
 import DismissableBanner from './DismissableBanner';
 import { Link, Typography } from '@material-ui/core';
 import {
+  ApiProvider,
+  ApiRegistry,
   CreateStorageApiOptions,
-  StorageApi,
   ErrorApi,
-} from '../../../../core-api/src/apis/definitions';
-import { WebStorage } from '../../../../core-api/src/apis/implementations/StorageApi/WebStorage';
-import { ApiRegistry, ApiProvider, storageApiRef } from '@backstage/core';
+  storageApiRef,
+  StorageApi,
+  WebStorage,
+} from '@backstage/core';
 
 export default {
   title: 'DismissableBanner',

@@ -18,20 +18,18 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import CatalogPage from './CatalogPage';
 import {
-  ApiRegistry,
   ApiProvider,
+  ApiRegistry,
+  CreateStorageApiOptions,
   errorApiRef,
   storageApiRef,
+  StorageApi,
+  WebStorage,
 } from '@backstage/core';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../..';
 import { CatalogApi } from '../../api/types';
 import { Entity } from '@backstage/catalog-model';
-import {
-  CreateStorageApiOptions,
-  StorageApi,
-} from '../../../../../packages/core-api/src/apis/definitions';
-import { WebStorage } from '../../../../../packages/core-api/src/apis/implementations/StorageApi/WebStorage';
 
 const errorApi = { post: () => {} };
 const catalogApi: Partial<CatalogApi> = {

@@ -19,11 +19,13 @@ import { fireEvent } from '@testing-library/react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import DismissableBanner from './DismissableBanner';
 import {
+  ApiRegistry,
+  ApiProvider,
+  storageApiRef,
   CreateStorageApiOptions,
   StorageApi,
-} from '../../../../core-api/src/apis/definitions';
-import { WebStorage } from '../../../../core-api/src/apis/implementations/StorageApi/WebStorage';
-import { ApiRegistry, ApiProvider, storageApiRef } from '@backstage/core';
+  WebStorage,
+} from '@backstage/core';
 
 describe('<DismissableBanner />', () => {
   let apis: ApiRegistry;
