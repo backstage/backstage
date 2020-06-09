@@ -21,7 +21,8 @@ import { OAuthApi, AccessTokenOptions } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
-import { ObservableSession } from '../ObservableSession';
+import { BehaviorSubject } from '../../../../lib';
+import { Observable } from '../../../../types';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GithubAuth
@@ -47,7 +48,7 @@ const DEFAULT_PROVIDER = {
   icon: GithubIcon,
 };
 
-class GithubAuth extends ObservableSession<GithubSession> implements OAuthApi {
+class GithubAuth implements OAuthApi {
   static create({
     apiOrigin,
     basePath,
@@ -79,9 +80,15 @@ class GithubAuth extends ObservableSession<GithubSession> implements OAuthApi {
     return new GithubAuth(sessionManager);
   }
 
-  constructor(private readonly sessionManager: SessionManager<GithubSession>) {
-    super();
+  private readonly subject = new BehaviorSubject<boolean | undefined>(
+    undefined,
+  );
+
+  session$(): Observable<boolean | undefined> {
+    return this.subject;
   }
+
+  constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
 
   async getAccessToken(scope?: string, options?: AccessTokenOptions) {
     const normalizedScopes = GithubAuth.normalizeScope(scope);
@@ -89,7 +96,7 @@ class GithubAuth extends ObservableSession<GithubSession> implements OAuthApi {
       ...options,
       scopes: normalizedScopes,
     });
-    this.setSession(session);
+    this.subject.next(!!session);
     if (session) {
       return session.accessToken;
     }
@@ -98,7 +105,7 @@ class GithubAuth extends ObservableSession<GithubSession> implements OAuthApi {
 
   async logout() {
     await this.sessionManager.removeSession();
-    this.setSession();
+    this.subject.next(false);
   }
 
   static normalizeScope(scope?: string): Set<string> {

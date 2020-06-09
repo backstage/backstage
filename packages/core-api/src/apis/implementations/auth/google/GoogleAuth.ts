@@ -29,7 +29,8 @@ import {
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
-import { ObservableSession } from '../ObservableSession';
+import { BehaviorSubject } from '../../../../lib';
+import { Observable } from '../../../../types';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
@@ -58,8 +59,7 @@ const DEFAULT_PROVIDER = {
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
-class GoogleAuth extends ObservableSession<GoogleSession>
-  implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
+class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
   static create({
     apiOrigin,
     basePath,
@@ -101,9 +101,15 @@ class GoogleAuth extends ObservableSession<GoogleSession>
     return new GoogleAuth(sessionManager);
   }
 
-  constructor(private readonly sessionManager: SessionManager<GoogleSession>) {
-    super();
+  private readonly subject = new BehaviorSubject<boolean | undefined>(
+    undefined,
+  );
+
+  session$(): Observable<boolean | undefined> {
+    return this.subject;
   }
+
+  constructor(private readonly sessionManager: SessionManager<GoogleSession>) {}
 
   async getAccessToken(
     scope?: string | string[],
@@ -114,7 +120,7 @@ class GoogleAuth extends ObservableSession<GoogleSession>
       ...options,
       scopes: normalizedScopes,
     });
-    this.setSession(session);
+    this.subject.next(!!session);
     if (session) {
       return session.accessToken;
     }
@@ -123,7 +129,7 @@ class GoogleAuth extends ObservableSession<GoogleSession>
 
   async getIdToken(options: IdTokenOptions = {}) {
     const session = await this.sessionManager.getSession(options);
-    this.setSession(session);
+    this.subject.next(!!session);
     if (session) {
       return session.idToken;
     }
@@ -132,7 +138,7 @@ class GoogleAuth extends ObservableSession<GoogleSession>
 
   async logout() {
     await this.sessionManager.removeSession();
-    this.setSession();
+    this.subject.next(false);
   }
 
   async getProfile(options: ProfileInfoOptions = {}) {
