@@ -17,66 +17,61 @@
 import { EntityPolicy } from '../../types';
 import { Entity } from '../Entity';
 
-type ExceptWhere = 'metadata' | 'spec' | 'labels' | 'annotations';
-type ReservedFields = Record<string, ExceptWhere[]>;
-
-const DEFAULT_RESERVED_ENTITY_FIELDS: ReservedFields = {
-  apiVersion: [],
-  kind: [],
-  spec: [],
-  uid: ['metadata'],
-  etag: ['metadata'],
-  generation: ['metadata'],
-  name: ['metadata'],
-  namespace: ['metadata'],
-  description: ['metadata'],
-  labels: ['metadata'],
-  annotations: ['metadata'],
+const DEFAULT_RESERVED_ENTITY_FIELDS: string[] = [
+  'apiVersion',
+  'kind',
+  'spec',
+  'metadata.uid',
+  'metadata.etag',
+  'metadata.generation',
+  'metadata.name',
+  'metadata.namespace',
+  'metadata.description',
+  'metadata.labels',
+  'metadata.annotations',
   // The below items are known to appear in core kinds, and therefore should
   // not be appearing in metadata (which would indicate that the user made a
   // mistake in where to place them).
-  lifecycle: ['spec'],
-  owner: ['spec'],
-};
+  'spec.lifecycle',
+  'spec.owner',
+];
 
 /**
  * Ensures that fields are not given certain reserved names.
  */
 export class ReservedFieldsEntityPolicy implements EntityPolicy {
-  private readonly reservedFields: ReservedFields;
+  private readonly reservedFields: string[];
 
-  constructor(fields?: ReservedFields) {
-    this.reservedFields = {
-      ...(fields ?? {}),
+  constructor(fields?: string[]) {
+    this.reservedFields = [
+      ...(fields ?? []),
       ...DEFAULT_RESERVED_ENTITY_FIELDS,
-    };
+    ];
   }
 
   async enforce(entity: Entity): Promise<Entity> {
-    for (const [name, exceptWhere] of Object.entries(this.reservedFields)) {
-      if (
-        !exceptWhere.includes('metadata') &&
-        entity.metadata.hasOwnProperty(name)
-      ) {
+    for (const path of this.reservedFields) {
+      const [where, name] = path.includes('.')
+        ? path.split('.')
+        : [undefined, path];
+
+      if (where !== 'metadata' && entity.metadata.hasOwnProperty(name)) {
         throw new Error(
           `The metadata may not contain the field ${name}, because it has reserved meaning`,
         );
       }
-      if (!exceptWhere.includes('spec') && entity.spec?.hasOwnProperty(name)) {
+      if (where !== 'spec' && entity.spec?.hasOwnProperty(name)) {
         throw new Error(
           `The spec may not contain the field ${name}, because it has reserved meaning`,
         );
       }
-      if (
-        !exceptWhere.includes('labels') &&
-        entity.metadata.labels?.hasOwnProperty(name)
-      ) {
+      if (where !== 'labels' && entity.metadata.labels?.hasOwnProperty(name)) {
         throw new Error(
           `A label may not have the field ${name}, because it has reserved meaning`,
         );
       }
       if (
-        !exceptWhere.includes('annotations') &&
+        where !== 'annotations' &&
         entity.metadata.annotations?.hasOwnProperty(name)
       ) {
         throw new Error(
