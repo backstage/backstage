@@ -69,11 +69,9 @@ const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
       <DialogContent>
         {loading ? <Progress /> : null}
         {error ? (
-          <DialogContentText>
-            <Alert severity="error" style={{ wordBreak: 'break-word' }}>
-              {error.toString()}
-            </Alert>
-          </DialogContentText>
+          <Alert severity="error" style={{ wordBreak: 'break-word' }}>
+            {error.toString()}
+          </Alert>
         ) : null}
         {entities ? (
           <>
