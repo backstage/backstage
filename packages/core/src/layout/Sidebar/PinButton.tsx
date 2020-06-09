@@ -26,19 +26,20 @@ const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(theme => {
   return {
     root: {
       position: 'relative',
+      alignSelf: 'stretch',
     },
     arrowButtonWrapper: {
       position: 'absolute',
       right: 0,
       width: ARROW_BUTTON_SIZE,
       height: ARROW_BUTTON_SIZE,
-      top: `calc(-50% - ${ARROW_BUTTON_SIZE / 2}px)`,
+      top: -(theme.spacing(6) + ARROW_BUTTON_SIZE) / 2,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: '2px 0px 0px 2px',
-      background: 'blue',
-      color: theme.palette.pinSidebarButton.background,
+      background: theme.palette.pinSidebarButton.background,
+      color: theme.palette.pinSidebarButton.icon,
       border: 'none',
       outline: 'none',
       cursor: 'pointer',
@@ -50,7 +51,6 @@ const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(theme => {
 });
 
 export const SidebarPinButton: FC<{}> = () => {
-  console.log('hello');
   const { isOpen } = useContext(SidebarContext);
   const { isPinned, toggleSidebarPinState } = useContext(
     SidebarPinStateContext,
