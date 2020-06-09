@@ -9,7 +9,7 @@
     "target": "es2019",
     "module": "commonjs",
     "esModuleInterop": true,
-    "lib": ["es2019"],
+    "lib": ["es2019", "dom"],
     "types": ["node", "jest"]
   }
 }

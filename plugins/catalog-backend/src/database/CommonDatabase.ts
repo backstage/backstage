@@ -19,14 +19,13 @@ import {
   InputError,
   NotFoundError,
 } from '@backstage/backend-common';
-import type { Entity, EntityMeta } from '@backstage/catalog-model';
+import { Entity, EntityMeta, Location } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import type { Logger } from 'winston';
 import { buildEntitySearch } from './search';
 import type {
-  AddDatabaseLocation,
   Database,
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
@@ -165,12 +164,6 @@ export class CommonDatabase implements Database {
       uid: generateUid(),
       etag: generateEtag(),
       generation: 1,
-      annotations: {
-        ...(newEntity.metadata?.annotations ?? {}),
-        ...(request.locationId
-          ? { 'backstage.io/managed-by-location': request.locationId }
-          : {}),
-      },
     };
 
     const newRow = toEntityRow(request.locationId, newEntity);
@@ -336,25 +329,15 @@ export class CommonDatabase implements Database {
     }
   }
 
-  async addLocation(location: AddDatabaseLocation): Promise<DbLocationsRow> {
+  async addLocation(location: Location): Promise<DbLocationsRow> {
     return await this.database.transaction<DbLocationsRow>(async tx => {
-      const existingLocation = await tx<DbLocationsRow>('locations')
-        .where({ target: location.target })
-        .select();
-
-      if (existingLocation?.[0]) {
-        return existingLocation[0];
-      }
-
-      const id = uuidv4();
-      const { type, target } = location;
-      await tx<DbLocationsRow>('locations').insert({
-        id,
-        type,
-        target,
-      });
-
-      return (await tx<DbLocationsRow>('locations').where({ id }).select())![0];
+      const row: DbLocationsRow = {
+        id: location.id,
+        type: location.type,
+        target: location.target,
+      };
+      await tx<DbLocationsRow>('locations').insert(row);
+      return row;
     });
   }
 

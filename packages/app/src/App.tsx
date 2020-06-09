@@ -16,26 +16,14 @@
 
 import { createApp, AlertDisplay, OAuthRequestDialog } from '@backstage/core';
 import React, { FC } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import apis from './apis';
+import { hot } from 'react-hot-loader/root';
 
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
-  configLoader: async () => ({
-    app: {
-      title: 'Backstage Example App',
-      baseUrl: 'http://localhost:3000',
-    },
-    backend: {
-      baseUrl: 'http://localhost:7000',
-    },
-    organization: {
-      name: 'Spotify',
-    },
-  }),
 });
 
 const AppProvider = app.getProvider();
@@ -45,12 +33,10 @@ const App: FC<{}> = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
-    <Router>
-      <Root>
-        <AppComponent />
-      </Root>
-    </Router>
+    <Root>
+      <AppComponent />
+    </Root>
   </AppProvider>
 );
 
-export default App;
+export default hot(App);

@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Table, TableColumn } from '@backstage/core';
+import { Link } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React, { FC } from 'react';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
 import { Component } from '../../data/component';
-import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
-import { Typography, Link } from '@material-ui/core';
+
+import { entityRoute } from '../../routes';
 
 const columns: TableColumn[] = [
   {
@@ -24,7 +28,12 @@ const columns: TableColumn[] = [
     field: 'name',
     highlight: true,
     render: (componentData: any) => (
-      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
+      <Link
+        component={RouterLink}
+        to={generatePath(entityRoute.path, { name: componentData.name })}
+      >
+        {componentData.name}
+      </Link>
     ),
   },
   {
@@ -42,32 +51,41 @@ type CatalogTableProps = {
   titlePreamble: string;
   loading: boolean;
   error?: any;
+  actions?: any;
 };
+
 const CatalogTable: FC<CatalogTableProps> = ({
   components,
   loading,
   error,
   titlePreamble,
+  actions,
 }) => {
-  if (loading) {
-    return <Progress />;
-  }
   if (error) {
     return (
-      <InfoCard>
-        <Typography variant="subtitle1" paragraph>
-          Error encountered while fetching components.
-        </Typography>
-      </InfoCard>
+      <div>
+        <Alert severity="error">
+          Error encountered while fetching components. {error.toString()}
+        </Alert>
+      </div>
     );
   }
+
   return (
     <Table
+      isLoading={loading}
       columns={columns}
-      options={{ paging: false }}
+      options={{
+        paging: false,
+        actionsColumnIndex: -1,
+        loadingType: 'linear',
+        showEmptyDataSourceMessage: !loading,
+      }}
       title={`${titlePreamble} (${(components && components.length) || 0})`}
       data={components}
+      actions={actions}
     />
   );
 };
+
 export default CatalogTable;

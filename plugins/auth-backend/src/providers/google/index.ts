@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { GoogleAuthProvider } from './provider';
+export { createGoogleProvider } from './provider';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createApiRef } from '@backstage/core';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, Location } from '@backstage/catalog-model';
 
 export const catalogApiRef = createApiRef<CatalogApi>({
   id: 'plugin.catalog.service',
@@ -23,6 +23,11 @@ export const catalogApiRef = createApiRef<CatalogApi>({
 });
 
 export interface CatalogApi {
-  getEntities(): Promise<Entity[]>;
+  getLocationById(id: String): Promise<Location | undefined>;
+  getEntities(filter?: Record<string, string>): Promise<Entity[]>;
   getEntityByName(name: string): Promise<Entity>;
+  addLocation(type: string, target: string): Promise<AddLocationResponse>;
+  getLocationByEntity(entity: Entity): Promise<Location | undefined>;
 }
+
+export type AddLocationResponse = { location: Location; entities: Entity[] };

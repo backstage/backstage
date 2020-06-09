@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.6",
+  "version": "0.1.1-alpha.7",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -16,9 +16,9 @@
     "backstage"
   ],
   "license": "Apache-2.0",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs.js",
   "scripts": {
-    "build": "backstage-cli build-cache -- tsc --project tsconfig.build.json",
+    "build": "backstage-cli build --outputs cjs",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "test:e2e": "node e2e-test/cli-e2e-test.js",
@@ -29,10 +29,12 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
+    "@backstage/config": "^0.1.1-alpha.7",
+    "@backstage/config-loader": "^0.1.1-alpha.7",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
-    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-commonjs": "^12.0.0",
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@spotify/eslint-config": "^7.0.1",
@@ -59,7 +61,7 @@
     "ora": "^4.0.3",
     "raw-loader": "^4.0.1",
     "react": "^16.0.0",
-    "react-dev-utils": "^10.2.0",
+    "react-dev-utils": "^10.2.1",
     "react-hot-loader": "^4.12.21",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^6.0.0",
@@ -79,6 +81,7 @@
     "url-loader": "^4.1.0",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3",
+    "yaml": "^1.10.0",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0"
   },

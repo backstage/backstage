@@ -141,6 +141,7 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
         color: theme.palette.link,
         minHeight: 24,
         textTransform: 'initial',
+        letterSpacing: '0.07em',
         '&:hover': {
           color: darken(theme.palette.link, 0.3),
           background: lighten(theme.palette.link, 0.95),

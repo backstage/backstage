@@ -34,7 +34,6 @@ export async function serveBundle(options: ServeOptions) {
   }
 
   const protocol = yn(process.env.HTTPS, { default: false }) ? 'https' : 'http';
-  const urls = prepareUrls(protocol, host, port);
 
   const paths = resolveBundlingPaths(options);
   const pkgPath = paths.targetPackageJson;
@@ -44,7 +43,9 @@ export async function serveBundle(options: ServeOptions) {
 
   const server = new WebpackDevServer(compiler, {
     hot: true,
-    publicPath: '/',
+    contentBase: paths.targetPublic,
+    contentBasePublicPath: config.output?.publicPath,
+    publicPath: config.output?.publicPath,
     historyApiFallback: true,
     clientLogLevel: 'warning',
     stats: 'errors-warnings',
@@ -61,6 +62,19 @@ export async function serveBundle(options: ServeOptions) {
         return;
       }
 
+      // TODO: This signature is available in 10.2.1 but doesn't have types published yet
+      const latestPrepareUrls = prepareUrls as (
+        protocol: string,
+        host: string,
+        port: number,
+        path?: string,
+      ) => ReturnType<typeof prepareUrls>;
+      const urls = latestPrepareUrls(
+        protocol,
+        host,
+        port,
+        config.output?.publicPath,
+      );
       openBrowser(urls.localUrlForBrowser);
       resolve();
     });

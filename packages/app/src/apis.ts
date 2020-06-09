@@ -25,9 +25,13 @@ import {
   featureFlagsApiRef,
   FeatureFlags,
   GoogleAuth,
+  GithubAuth,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
+  githubAuthApiRef,
+  storageApiRef,
+  WebStorage,
 } from '@backstage/core';
 
 import {
@@ -45,8 +49,12 @@ import { gitOpsApiRef, GitOpsRestApi } from '@backstage/plugin-gitops-profiles';
 const builder = ApiRegistry.builder();
 
 const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
+const errorApi = builder.add(
+  errorApiRef,
+  new ErrorAlerter(alertApi, new ErrorApiForwarder()),
+);
 
-builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
+builder.add(storageApiRef, WebStorage.create({ errorApi }));
 builder.add(circleCIApiRef, new CircleCIApi());
 builder.add(featureFlagsApiRef, new FeatureFlags());
 
@@ -60,6 +68,15 @@ const oauthRequestApi = builder.add(
 builder.add(
   googleAuthApiRef,
   GoogleAuth.create({
+    apiOrigin: 'http://localhost:7000',
+    basePath: '/auth/',
+    oauthRequestApi,
+  }),
+);
+
+builder.add(
+  githubAuthApiRef,
+  GithubAuth.create({
     apiOrigin: 'http://localhost:7000',
     basePath: '/auth/',
     oauthRequestApi,

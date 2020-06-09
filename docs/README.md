@@ -7,3 +7,4 @@ Check out <https://backstage.io> or see the table of content below.
 - [References](reference/README.md)
 - [Publishing](publishing.md)
 - [Designing for Backstage](design.md)
+- [How to add an auth provider](auth/add-auth-provider.md)

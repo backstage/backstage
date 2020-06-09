@@ -1,7 +1,6 @@
 import { makeStyles } from '@material-ui/core';
 import { createApp } from '@backstage/core';
 import React, { FC } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
 import * as plugins from './plugins';
 
 const useStyles = makeStyles(theme => ({
@@ -33,9 +32,7 @@ const App: FC<{}> = () => {
   useStyles();
   return (
     <AppProvider>
-      <Router>
-        <AppComponent />
-      </Router>
+      <AppComponent />
     </AppProvider>
   );
 };

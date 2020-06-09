@@ -16,6 +16,11 @@
 
 import { CatalogApi } from './types';
 import { DescriptorEnvelope } from '../types';
+import {
+  Entity,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 
 export class CatalogClient implements CatalogApi {
   private apiOrigin: string;
@@ -30,8 +35,37 @@ export class CatalogClient implements CatalogApi {
     this.apiOrigin = apiOrigin;
     this.basePath = basePath;
   }
-  async getEntities(): Promise<DescriptorEnvelope[]> {
-    const response = await fetch(`${this.apiOrigin}${this.basePath}/entities`);
+  async getLocationById(id: String): Promise<Location | undefined> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations/${id}`,
+    );
+    if (response.ok) {
+      const location = await response.json();
+      if (location) return location.data;
+    }
+    return undefined;
+  }
+  async getEntities(
+    filter?: Record<string, string>,
+  ): Promise<DescriptorEnvelope[]> {
+    let url = `${this.apiOrigin}${this.basePath}/entities`;
+    if (filter) {
+      url += '?';
+      url += Object.entries(filter)
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+        )
+        .join('&');
+    }
+    const response = await fetch(url);
+    if (!response.ok) {
+      const payload = await response.text();
+      throw new Error(
+        `Request failed with ${response.status} ${response.statusText}, ${payload}`,
+      );
+    }
+
     return await response.json();
   }
   async getEntityByName(name: string): Promise<DescriptorEnvelope> {
@@ -41,5 +75,41 @@ export class CatalogClient implements CatalogApi {
     const entity = await response.json();
     if (entity) return entity;
     throw new Error(`'Entity not found: ${name}`);
+  }
+
+  async addLocation(type: string, target: string) {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ type, target }),
+      },
+    );
+
+    if (response.status !== 201) {
+      throw new Error(await response.text());
+    }
+
+    const { location, entities } = await response.json();
+
+    if (!location || entities.length === 0)
+      throw new Error(`Location wasn't added: ${target}`);
+
+    return {
+      location,
+      entities,
+    };
+  }
+
+  async getLocationByEntity(entity: Entity): Promise<Location | undefined> {
+    const locationId = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    if (!locationId) return undefined;
+
+    const location = this.getLocationById(locationId);
+
+    return location;
   }
 }

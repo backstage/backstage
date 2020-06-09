@@ -1,20 +1,37 @@
 # Development Environment
 
-## Serving the Example App
+This section describes how to get set up for doing development on the Backstage
+repository.
 
-Open a terminal window and start the web app using the following commands from the project root:
+## Cloning the Repository
+
+After you have cloned the Backstage repository, you should run the following
+commands once to set things up for development:
 
 ```bash
-$ yarn install # may take a while
+$ yarn install  # fetch dependency packages - may take a while
 
+$ yarn tsc      # does a first run of type generation and checks
+```
+
+## Serving the Example App
+
+Open a terminal window and start the web app by using the following command from
+the project root. Make sure you have run the above mentioned commands first.
+
+```bash
 $ yarn start
 ```
 
-The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
+This should open a local instance of Backstage in your browser, otherwise open
+one of the URLs printed in the terminal.
 
-By default, backstage will start on port 3000, however you can override this by setting an environment variable `PORT` on your local machine. e.g. `export PORT=8080` then running `yarn start`. Or `PORT=8080 yarn start`.
+By default, backstage will start on port 3000, however you can override this by
+setting an environment variable `PORT` on your local machine. e.g.
+`export PORT=8080` then running `yarn start`. Or `PORT=8080 yarn start`.
 
-Once successfully started, you should see the following message in your terminal window:
+Once successfully started, you should see the following message in your terminal
+window:
 
 ```
 You can now view example-app in the browser.
@@ -25,11 +42,16 @@ You can now view example-app in the browser.
 
 ## Editor
 
-The Backstage development environment does not require any specific editor, but it is intended to be used with one that has built-in linting and type-checking. The development server does not include any checks by default, but they can be enabled using the `--check` flag. Note that using the flag may consume more system resources and slow things down.
+The Backstage development environment does not require any specific editor, but
+it is intended to be used with one that has built-in linting and type-checking.
+The development server does not include any checks by default, but they can be
+enabled using the `--check` flag. Note that using the flag may consume more
+system resources and slow things down.
 
 ## Package Scripts
 
-There are many commands to be found in the root [package.json](package.json), here are some useful ones:
+There are many commands to be found in the root [package.json](package.json),
+here are some useful ones:
 
 ```python
 yarn start # Start serving the example app, use --check to include type checks and linting

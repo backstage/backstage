@@ -17,6 +17,7 @@
 import webpack from 'webpack';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { optimization } from './optimization';
@@ -33,7 +34,13 @@ export function createConfig(
 ): webpack.Configuration {
   const { checksEnabled, isDev } = options;
 
-  const { plugins, loaders } = transforms(paths, options);
+  const { plugins, loaders } = transforms(options);
+
+  const baseUrl = options.config.getString('app.baseUrl');
+  if (!baseUrl) {
+    throw new Error('app.baseUrl must be set in config');
+  }
+  const validBaseUrl = new URL(baseUrl, 'https://backstage-app.dev');
 
   if (checksEnabled) {
     plugins.push(
@@ -50,6 +57,25 @@ export function createConfig(
       }),
     );
   }
+
+  plugins.push(
+    new webpack.EnvironmentPlugin({
+      APP_CONFIG: options.appConfigs,
+    }),
+  );
+
+  plugins.push(
+    new HtmlWebpackPlugin({
+      template: paths.targetHtml,
+      templateParameters: {
+        publicPath: validBaseUrl.pathname.replace(/\/$/, ''),
+        app: {
+          title: options.config.getString('app.title'),
+          baseUrl: validBaseUrl.href,
+        },
+      },
+    }),
+  );
 
   return {
     mode: isDev ? 'development' : 'production',
@@ -79,7 +105,7 @@ export function createConfig(
     },
     output: {
       path: paths.targetDist,
-      publicPath: '/',
+      publicPath: validBaseUrl.pathname,
       filename: isDev ? '[name].js' : '[name].[hash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'

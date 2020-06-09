@@ -15,17 +15,17 @@
  */
 
 import express from 'express';
-import passport from 'passport';
 
 export type AuthProviderConfig = {
   provider: string;
   options: any;
+  disableRefresh?: boolean;
 };
 
 export interface OAuthProviderHandlers {
   start(req: express.Request, options: any): Promise<any>;
   handler(req: express.Request): Promise<any>;
-  refresh(refreshToken: string, scope: string): Promise<any>;
+  refresh?(refreshToken: string, scope: string): Promise<any>;
   logout?(): Promise<any>;
 }
 
@@ -36,13 +36,9 @@ export interface AuthProviderRouteHandlers {
   logout(req: express.Request, res: express.Response): Promise<any>;
 }
 
-export type AuthProviderFactories = {
-  [key: string]: AuthProviderFactory;
-};
-
-export type AuthProviderFactory = {
-  new (providerConfig: any): OAuthProviderHandlers;
-};
+export type AuthProviderFactory = (
+  config: AuthProviderConfig,
+) => AuthProviderRouteHandlers;
 
 export type AuthInfoBase = {
   accessToken: string;
@@ -52,7 +48,14 @@ export type AuthInfoBase = {
 };
 
 export type AuthInfoWithProfile = AuthInfoBase & {
-  profile: passport.Profile;
+  profile:
+    | {
+        provider: string;
+        email: string;
+        name?: string;
+        picture?: string;
+      }
+    | undefined;
 };
 
 export type AuthInfoPrivate = {
@@ -72,6 +75,13 @@ export type AuthResponse =
 export type RedirectInfo = {
   url: string;
   status?: number;
+};
+
+export type ProfileInfo = {
+  provider: string;
+  email: string;
+  name: string;
+  picture: string;
 };
 
 export type RefreshTokenResponse = {

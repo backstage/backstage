@@ -17,50 +17,86 @@
 import React from 'react';
 import DismissableBanner from './DismissableBanner';
 import { Link, Typography } from '@material-ui/core';
+import {
+  ApiProvider,
+  ApiRegistry,
+  CreateStorageApiOptions,
+  ErrorApi,
+  storageApiRef,
+  StorageApi,
+  WebStorage,
+} from '@backstage/core-api';
 
 export default {
   title: 'DismissableBanner',
   component: DismissableBanner,
 };
 
+let errorApi: ErrorApi;
 const containerStyle = { width: '70%' };
+
+const createWebStorage = (
+  args?: Partial<CreateStorageApiOptions>,
+): StorageApi => {
+  return WebStorage.create({
+    errorApi: errorApi,
+    ...args,
+  });
+};
+
+const apis = ApiRegistry.from([[storageApiRef, createWebStorage()]]);
 
 export const Default = () => (
   <div style={containerStyle}>
-    <DismissableBanner message="This is a dismissable banner" variant="info" />
+    <ApiProvider apis={apis}>
+      <DismissableBanner
+        message="This is a dismissable banner"
+        variant="info"
+        id="default_dismissable"
+      />
+    </ApiProvider>
   </div>
 );
 
 export const Error = () => (
   <div style={containerStyle}>
-    <DismissableBanner
-      message="This is a dismissable banner with an error message"
-      variant="error"
-    />
+    <ApiProvider apis={apis}>
+      <DismissableBanner
+        message="This is a dismissable banner with an error message"
+        variant="error"
+        id="error_dismissable"
+      />
+    </ApiProvider>
   </div>
 );
 
 export const EmojisIncluded = () => (
   <div style={containerStyle}>
-    <DismissableBanner
-      message="This is a dismissable banner with emojis: 🚀 💚 😆 "
-      variant="info"
-    />
+    <ApiProvider apis={apis}>
+      <DismissableBanner
+        message="This is a dismissable banner with emojis: 🚀 💚 😆 "
+        variant="info"
+        id="emojis_dismissable"
+      />
+    </ApiProvider>
   </div>
 );
 
 export const WithLink = () => (
   <div style={containerStyle}>
-    <DismissableBanner
-      message={
-        <Typography>
-          This is a dismissable banner with a link:{' '}
-          <Link href="http://example.com" color="textSecondary">
-            example.com
-          </Link>
-        </Typography>
-      }
-      variant="info"
-    />
+    <ApiProvider apis={apis}>
+      <DismissableBanner
+        message={
+          <Typography>
+            This is a dismissable banner with a link:{' '}
+            <Link href="http://example.com" color="textSecondary">
+              example.com
+            </Link>
+          </Typography>
+        }
+        variant="info"
+        id="linked_dismissable"
+      />
+    </ApiProvider>
   </div>
 );

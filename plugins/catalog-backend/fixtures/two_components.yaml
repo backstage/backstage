@@ -2,13 +2,13 @@
 apiVersion: backstage.io/v1beta1
 kind: Component
 metadata:
-  name: component1
+  name: playlist-proxy
 spec:
   type: service
 ---
 apiVersion: backstage.io/v1beta1
 kind: Component
 metadata:
-  name: component2
+  name: artist-web
 spec:
   type: website

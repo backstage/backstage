@@ -20,14 +20,53 @@ import privateExports, {
   ApiRegistry,
   defaultSystemIcons,
   BootErrorPageProps,
+  AppConfigLoader,
 } from '@backstage/core-api';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 import { ErrorPage } from '../layout/ErrorPage';
 import Progress from '../components/Progress';
 import { lightTheme, darkTheme } from '@backstage/theme';
+import { AppConfig } from '@backstage/config';
 
 const { PrivateAppImpl } = privateExports;
+
+/**
+ * The default config loader, which expects that config is available at compile-time
+ * in `process.env.APP_CONFIG`. APP_CONFIG should be an array of config objects as
+ * returned by the config loader.
+ *
+ * It will also load runtime config from the __APP_INJECTED_RUNTIME_CONFIG__ string,
+ * which can be rewritten at runtime to contain an additional JSON config object.
+ * If runtime config is present, it will be placed first in the config array, overriding
+ * other config values.
+ */
+export const defaultConfigLoader: AppConfigLoader = async (
+  // This string may be replaced at runtime to provide additional config.
+  // It should be replaced by a JSON-serialized config object.
+  // It's a param so we can test it, but at runtime this will always fall back to default.
+  runtimeConfigJson: string = '__APP_INJECTED_RUNTIME_CONFIG__',
+) => {
+  const appConfig = process.env.APP_CONFIG;
+  if (!appConfig) {
+    throw new Error('No static configuration provided');
+  }
+  if (!Array.isArray(appConfig)) {
+    throw new Error('Static configuration has invalid format');
+  }
+  const configs = (appConfig.slice() as unknown) as AppConfig[];
+
+  // Avoiding this string also being replaced at runtime
+  if (runtimeConfigJson !== '__app_injected_runtime_config__'.toUpperCase()) {
+    try {
+      configs.unshift(JSON.parse(runtimeConfigJson));
+    } catch (error) {
+      throw new Error(`Failed to load runtime configuration, ${error}`);
+    }
+  }
+
+  return configs;
+};
 
 // createApp is defined in core, and not core-api, since we need access
 // to the components inside core to provide defaults.
@@ -48,9 +87,9 @@ export function createApp(options?: AppOptions) {
     }
     // TODO: figure out a nicer way to handle routing on the error page, when it can be done.
     return (
-      <Router>
+      <MemoryRouter>
         <ErrorPage status="501" statusMessage={message} />
-      </Router>
+      </MemoryRouter>
     );
   };
 
@@ -61,6 +100,7 @@ export function createApp(options?: AppOptions) {
     NotFoundErrorPage: DefaultNotFoundPage,
     BootErrorPage: DefaultBootErrorPage,
     Progress: Progress,
+    Router: BrowserRouter,
     ...options?.components,
   };
   const themes = options?.themes ?? [
@@ -77,7 +117,7 @@ export function createApp(options?: AppOptions) {
       theme: darkTheme,
     },
   ];
-  const configLoader = options?.configLoader ?? (async () => ({}));
+  const configLoader = options?.configLoader ?? defaultConfigLoader;
 
   const app = new PrivateAppImpl({
     apis,

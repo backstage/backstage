@@ -16,6 +16,7 @@ To run the example backend, first go to the project root and run
 
 ```bash
 yarn install
+yarn tsc
 yarn build
 ```
 
@@ -24,7 +25,7 @@ You should only need to do this once.
 After that, go to the `packages/backend` directory and run
 
 ```bash
-AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x SENTRY_TOKEN=x yarn start
+AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x AUTH_GITHUB_CLIENT_ID=x AUTH_GITHUB_CLIENT_SECRET=x SENTRY_TOKEN=x LOG_LEVEL=debug yarn start
 ```
 
 Substitute `x` for actual values, or leave them as
@@ -54,6 +55,12 @@ to the absolute path of a YAML file on disk, you could consume your own experime
 
 The catalog currently runs in-memory only, so feel free to try it out, but it will
 need to be re-populated on next startup.
+
+## Authentication
+
+We chose [Passport](http://www.passportjs.org/) as authentication platform due to its comprehensive set of supported authentication [strategies](http://www.passportjs.org/packages/).
+
+Read more about the [auth-backend](https://github.com/spotify/backstage/blob/master/plugins/auth-backend/README.md) and [how to add a new provider](https://github.com/spotify/backstage/blob/master/docs/auth/add-auth-provider.md)
 
 ## Documentation
 

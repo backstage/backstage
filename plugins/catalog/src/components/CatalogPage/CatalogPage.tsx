@@ -14,26 +14,38 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
 import {
   Content,
   ContentHeader,
   DismissableBanner,
   Header,
+  HeaderTabs,
   HomepageTimer,
-  SupportButton,
   Page,
   pageTheme,
+  SupportButton,
   useApi,
 } from '@backstage/core';
+import { LocationSpec } from '@backstage/catalog-model';
+import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
+import { Button, makeStyles, Typography, Link } from '@material-ui/core';
+import GitHub from '@material-ui/icons/GitHub';
+import Edit from '@material-ui/icons/Edit';
+import React, { FC, useCallback, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import CatalogTable from '../CatalogTable/CatalogTable';
+import { catalogApiRef } from '../..';
+import { Component } from '../../data/component';
+import { defaultFilter, filterGroups, dataResolvers } from '../../data/filters';
+import { entityToComponent, findLocationForEntityMeta } from '../../data/utils';
 import {
   CatalogFilter,
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
-import { Button, makeStyles, Typography, Link } from '@material-ui/core';
-import { filterGroups, defaultFilter } from '../../data/filters';
+
+import { useStarredEntities } from '../../hooks/useStarredEntites';
+
+import CatalogTable from '../CatalogTable/CatalogTable';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -42,37 +54,102 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
   },
+  emoji: {
+    fontSize: '125%',
+    marginRight: theme.spacing(2),
+  },
 }));
-
-import { catalogApiRef } from '../..';
-import { envelopeToComponent } from '../../data/utils';
 
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { value, error, loading } = useAsync(() => catalogApi.getEntities());
-  const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
+  const { starredEntities } = useStarredEntities();
+  const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
+  const { value, error, loading } = useAsync(
+    () => dataResolvers[selectedFilter.id]({ catalogApi, starredEntities }),
+    [selectedFilter.id],
+  );
 
-  const onFilterSelected = React.useCallback(
+  const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
     [],
   );
+
   const styles = useStyles();
+
+  const actions = [
+    (rowData: Component) => {
+      const location = findLocationForEntityMeta(rowData.metadata);
+      return {
+        icon: GitHub,
+        tooltip: 'View on GitHub',
+        onClick: () => {
+          if (!location) return;
+          window.open(location.target, '_blank');
+        },
+        hidden: location ? location?.type !== 'github' : true,
+      };
+    },
+    (rowData: Component) => {
+      const createEditLink = (location: LocationSpec): string => {
+        switch (location.type) {
+          case 'github':
+            return location.target.replace('/blob/', '/edit/');
+          default:
+            return location.target;
+        }
+      };
+
+      const location = findLocationForEntityMeta(rowData.metadata);
+
+      return {
+        icon: Edit,
+        tooltip: 'Edit',
+        iconProps: { size: 'small' },
+        onClick: () => {
+          if (!location) return;
+          window.open(createEditLink(location), '_blank');
+        },
+        hidden: location ? location?.type !== 'github' : true,
+      };
+    },
+  ];
+
+  // TODO: replace me with the proper tabs implemntation
+  const tabs = [
+    {
+      id: 'services',
+      label: 'Services',
+    },
+    {
+      id: 'websites',
+      label: 'Websites',
+    },
+    {
+      id: 'libs',
+      label: 'Libraries',
+    },
+    {
+      id: 'documentation',
+      label: 'Documentation',
+    },
+  ];
 
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
         <HomepageTimer />
       </Header>
+      <HeaderTabs tabs={tabs} />
       <Content>
         <DismissableBanner
           variant="info"
           message={
             <Typography>
-              <span role="img" aria-label="wave" style={{ fontSize: '125%' }}>
+              <span role="img" aria-label="wave" className={styles.emoji}>
                 👋🏼
-              </span>{' '}
+              </span>
               Welcome to Backstage, we are happy to have you. Start by checking
               out our{' '}
               <Link href="/welcome" color="textSecondary">
@@ -81,9 +158,16 @@ const CatalogPage: FC<{}> = () => {
               page.
             </Typography>
           }
+          id="catalog_page_welcome_banner"
         />
+
         <ContentHeader title="Services">
-          <Button variant="contained" color="primary" href="/create">
+          <Button
+            component={RouterLink}
+            variant="contained"
+            color="primary"
+            to={scaffolderRootRoute.path}
+          >
             Create Service
           </Button>
           <SupportButton>All your components</SupportButton>
@@ -98,9 +182,19 @@ const CatalogPage: FC<{}> = () => {
           </div>
           <CatalogTable
             titlePreamble={selectedFilter.label}
-            components={(value && value.map(envelopeToComponent)) || []}
+            components={
+              (value &&
+                value.map(val => {
+                  return {
+                    ...entityToComponent(val),
+                    locationSpec: findLocationForEntityMeta(val.metadata),
+                  };
+                })) ||
+              []
+            }
             loading={loading}
             error={error}
+            actions={actions}
           />
         </div>
       </Content>

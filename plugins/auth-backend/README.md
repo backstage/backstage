@@ -19,6 +19,18 @@ read -r AUTH_GOOGLE_CLIENT_SECRET
 export AUTH_GOOGLE_CLIENT_SECRET
 run `yarn start` in packages/backend folder
 
+### SAML
+
+To try out SAML, you can use the mock identity provider:
+
+```bash
+./scripts/start-saml-idp.sh
+```
+
+## Authentication providers
+
+[How to add an auth provider](https://github.com/spotify/backstage/blob/master/docs/auth/add-auth-provider.md)
+
 ## Links
 
 - (The Backstage homepage)[https://backstage.io]

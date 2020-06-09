@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
+export * from './apis';
 export { default as mockBreakpoint } from './mockBreakpoint';
-export * from './appWrappers';
+export { wrapInTestApp, renderInTestApp } from './appWrappers';

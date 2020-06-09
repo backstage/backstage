@@ -1,0 +1,44 @@
+{
+  "name": "@backstage/config-loader",
+  "description": "Config loading functionality used by Backstage backend, and CLI",
+  "version": "0.1.1-alpha.7",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spotify/backstage",
+    "directory": "packages/config-loader"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "backstage-cli build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
+  },
+  "dependencies": {
+    "@backstage/config": "^0.1.1-alpha.7",
+    "fs-extra": "^9.0.0",
+    "yaml": "^1.9.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.2",
+    "@types/node": "^12.0.0"
+  },
+  "files": [
+    "dist/**/*.{js,d.ts}"
+  ]
+}

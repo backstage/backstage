@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, FC } from 'react';
+import React, { ComponentType, FC, useMemo } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { BackstageApp, AppComponents, AppConfigLoader } from './types';
@@ -110,11 +110,24 @@ export class PrivateAppImpl implements BackstageApp {
             );
             break;
           }
-          case 'redirect-route': {
+          case 'legacy-redirect-route': {
             const { path, target, options = {} } = output;
             const { exact = true } = options;
             routes.push(
               <Redirect key={path} path={path} to={target} exact={exact} />,
+            );
+            break;
+          }
+          case 'redirect-route': {
+            const { from, to, options = {} } = output;
+            const { exact = true } = options;
+            routes.push(
+              <Redirect
+                key={from.path}
+                path={from.path}
+                to={to.path}
+                exact={exact}
+              />,
             );
             break;
           }
@@ -148,30 +161,58 @@ export class PrivateAppImpl implements BackstageApp {
 
   getProvider(): ComponentType<{}> {
     const Provider: FC<{}> = ({ children }) => {
+      const appThemeApi = useMemo(
+        () => AppThemeSelector.createWithStorage(this.themes),
+        [],
+      );
+
       // Keeping this synchronous when a config loader isn't set simplifies tests a lot
       const hasConfig = Boolean(this.configLoader);
-      const config = useAsync(this.configLoader || (() => Promise.resolve({})));
+      const config = useAsync(this.configLoader || (() => Promise.resolve([])));
 
-      let childNode = children;
+      let noConfigNode = undefined;
 
       if (hasConfig && config.loading) {
         const { Progress } = this.components;
-        childNode = <Progress />;
+        noConfigNode = <Progress />;
       } else if (config.error) {
         const { BootErrorPage } = this.components;
-        childNode = <BootErrorPage step="load-config" error={config.error} />;
+        noConfigNode = (
+          <BootErrorPage step="load-config" error={config.error} />
+        );
       }
 
+      // Before the config is loaded we can't use a router, so exit early
+      if (noConfigNode) {
+        return (
+          <ApiProvider apis={ApiRegistry.from([[appThemeApiRef, appThemeApi]])}>
+            <AppThemeProvider>{noConfigNode}</AppThemeProvider>
+          </ApiProvider>
+        );
+      }
+
+      const configReader = ConfigReader.fromConfigs(config.value ?? []);
       const appApis = ApiRegistry.from([
         [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
-        [configApiRef, new ConfigReader(config.value ?? {})],
+        [configApiRef, configReader],
       ]);
       const apis = new ApiAggregator(this.apis, appApis);
+
+      const { Router } = this.components;
+      let { pathname } = new URL(
+        configReader.getString('app.baseUrl') ?? '/',
+        'http://dummy.dev', // baseUrl can be specified as just a path
+      );
+      if (pathname.endsWith('/')) {
+        pathname = pathname.replace(/\/$/, '');
+      }
 
       return (
         <ApiProvider apis={apis}>
           <AppContextProvider app={this}>
-            <AppThemeProvider>{childNode}</AppThemeProvider>
+            <AppThemeProvider>
+              <Router basename={pathname}>{children}</Router>
+            </AppThemeProvider>
           </AppContextProvider>
         </ApiProvider>
       );

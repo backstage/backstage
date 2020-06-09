@@ -25,87 +25,101 @@ const main = (argv: string[]) => {
   program
     .command('create-app')
     .description('Creates a new app in a new directory')
-    .action(actionHandler(() => require('./commands/create-app/createApp')));
+    .action(
+      lazyAction(() => import('./commands/create-app/createApp'), 'default'),
+    );
 
   program
     .command('app:build')
     .description('Build an app for a production release')
     .option('--stats', 'Write bundle stats to output directory')
-    .action(actionHandler(() => require('./commands/app/build')));
+    .action(lazyAction(() => import('./commands/app/build'), 'default'));
 
   program
     .command('app:serve')
     .description('Serve an app for local development')
     .option('--check', 'Enable type checking and linting')
-    .action(actionHandler(() => require('./commands/app/serve')));
+    .action(lazyAction(() => import('./commands/app/serve'), 'default'));
 
   program
     .command('app:diff')
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')
     .description('Diff an existing app with the creation template')
-    .action(actionHandler(() => require('./commands/app/diff')));
+    .action(lazyAction(() => import('./commands/app/diff'), 'default'));
 
   program
     .command('create-plugin')
     .description('Creates a new plugin in the current repository')
     .action(
-      actionHandler(() => require('./commands/create-plugin/createPlugin')),
+      lazyAction(
+        () => import('./commands/create-plugin/createPlugin'),
+        'default',
+      ),
     );
 
   program
     .command('remove-plugin')
     .description('Removes plugin in the current repository')
     .action(
-      actionHandler(() => require('./commands/remove-plugin/removePlugin')),
+      lazyAction(
+        () => import('./commands/remove-plugin/removePlugin'),
+        'default',
+      ),
     );
 
   program
     .command('plugin:build')
     .description('Build a plugin')
-    .action(actionHandler(() => require('./commands/plugin/build')));
+    .action(lazyAction(() => import('./commands/plugin/build'), 'default'));
 
   program
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
     .option('--check', 'Enable type checking and linting')
-    .action(actionHandler(() => require('./commands/plugin/serve')));
+    .action(lazyAction(() => import('./commands/plugin/serve'), 'default'));
 
   program
     .command('plugin:diff')
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')
     .description('Diff an existing plugin with the creation template')
-    .action(actionHandler(() => require('./commands/plugin/diff')));
+    .action(lazyAction(() => import('./commands/plugin/diff'), 'default'));
+
+  program
+    .command('build')
+    .description('Build a package for publishing')
+    .option('--outputs <formats>', 'List of formats to output [types,cjs,esm]')
+    .action(lazyAction(() => import('./commands/build'), 'default'));
 
   program
     .command('lint')
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint a package')
-    .action(actionHandler(() => require('./commands/lint')));
+    .action(lazyAction(() => import('./commands/lint'), 'default'));
 
   program
     .command('test')
     .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(actionHandler(() => require('./commands/testCommand')));
+    .action(lazyAction(() => import('./commands/testCommand'), 'default'));
 
   program
     .command('prepack')
     .description('Prepares a package for packaging before publishing')
-    .action(actionHandler(() => require('./commands/pack').pre));
+    .action(lazyAction(() => import('./commands/pack'), 'pre'));
 
   program
     .command('postpack')
     .description('Restores the changes made by the prepack command')
-    .action(actionHandler(() => require('./commands/pack').post));
+    .action(lazyAction(() => import('./commands/pack'), 'post'));
 
   program
     .command('watch-deps')
     .option('--build', 'Build all dependencies on startup')
     .description('Watch all dependencies while running another command')
-    .action(actionHandler(() => require('./commands/watch-deps')));
+    .action(lazyAction(() => import('./commands/watch-deps'), 'default'));
 
   program
     .command('build-cache')
@@ -122,12 +136,12 @@ const main = (argv: string[]) => {
       'Cache dir',
       '<repoRoot>/node_modules/.cache/backstage-builds',
     )
-    .action(actionHandler(() => require('./commands/build-cache')));
+    .action(lazyAction(() => import('./commands/build-cache'), 'default'));
 
   program
     .command('clean')
     .description('Delete cache directories')
-    .action(actionHandler(() => require('./commands/clean/clean')));
+    .action(lazyAction(() => import('./commands/clean/clean'), 'default'));
 
   program.on('command:*', () => {
     console.log();
@@ -147,15 +161,16 @@ const main = (argv: string[]) => {
 };
 
 // Wraps an action function so that it always exits and handles errors
-function actionHandler<T extends readonly any[]>(
-  actionRequireFunc:
-    | (() => { default(...args: T): Promise<any> })
-    | (() => (...args: T) => Promise<any>),
+function lazyAction<T extends readonly any[], Export extends string>(
+  actionRequireFunc: () => Promise<
+    { [name in Export]: (...args: T) => Promise<any> }
+  >,
+  exportName: Export,
 ): (...args: T) => Promise<never> {
   return async (...args: T) => {
     try {
-      const ret = actionRequireFunc();
-      const actionFunc = typeof ret === 'function' ? ret : ret.default;
+      const module = await actionRequireFunc();
+      const actionFunc = module[exportName];
       await actionFunc(...args);
       process.exit(0);
     } catch (error) {

@@ -14,8 +14,48 @@
  * limitations under the License.
  */
 
-import { ReaderOutput } from './descriptor/parsers/types';
+import type { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 
-export type IngestionModel = {
-  readLocation(type: string, target: string): Promise<ReaderOutput[]>;
+//
+// HigherOrderOperation
+//
+
+export type HigherOrderOperation = {
+  addLocation(spec: LocationSpec): Promise<AddLocationResult>;
+  refreshAllLocations(): Promise<void>;
+};
+
+export type AddLocationResult = {
+  location: Location;
+  entities: Entity[];
+};
+
+//
+// LocationReader
+//
+
+export type LocationReader = {
+  /**
+   * Reads the contents of a location.
+   *
+   * @param location The location to read
+   * @throws An error if the location was handled by this reader, but could not
+   *         be read
+   */
+  read(location: LocationSpec): Promise<ReadLocationResult>;
+};
+
+export type ReadLocationResult = {
+  entities: ReadLocationEntity[];
+  errors: ReadLocationError[];
+};
+
+export type ReadLocationEntity = {
+  location: LocationSpec;
+  entity: Entity;
+};
+
+export type ReadLocationError = {
+  location: LocationSpec;
+  error: Error;
 };

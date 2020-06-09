@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import type { Entity, EntityPolicy } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import type { Database, DbEntityResponse, EntityFilters } from '../database';
 import type { EntitiesCatalog } from './types';
 
 export class DatabaseEntitiesCatalog implements EntitiesCatalog {
-  constructor(
-    private readonly database: Database,
-    private readonly policy: EntityPolicy,
-  ) {}
+  constructor(private readonly database: Database) {}
 
   async entities(filters?: EntityFilters): Promise<Entity[]> {
     const items = await this.database.transaction(tx =>
@@ -41,21 +38,23 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
   async entityByName(
     kind: string,
-    name: string,
     namespace: string | undefined,
+    name: string,
   ): Promise<Entity | undefined> {
     return await this.database.transaction(tx =>
       this.entityByNameInternal(tx, kind, name, namespace),
     );
   }
 
-  async addOrUpdateEntity(entity: Entity): Promise<Entity> {
-    await this.policy.enforce(entity);
+  async addOrUpdateEntity(
+    entity: Entity,
+    locationId?: string,
+  ): Promise<Entity> {
     return await this.database.transaction(async tx => {
       let response: DbEntityResponse;
 
       if (entity.metadata.uid) {
-        response = await this.database.updateEntity(tx, { entity });
+        response = await this.database.updateEntity(tx, { locationId, entity });
       } else {
         const existing = await this.entityByNameInternal(
           tx,
@@ -64,9 +63,12 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
           entity.metadata.namespace,
         );
         if (existing) {
-          response = await this.database.updateEntity(tx, { entity });
+          response = await this.database.updateEntity(tx, {
+            locationId,
+            entity,
+          });
         } else {
-          response = await this.database.addEntity(tx, { entity });
+          response = await this.database.addEntity(tx, { locationId, entity });
         }
       }
 

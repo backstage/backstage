@@ -34,6 +34,7 @@ import {
   SidebarUserBadge,
   SidebarThemeToggle,
 } from '@backstage/core';
+import { NavLink } from 'react-router-dom';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -56,7 +57,12 @@ const SidebarLogo: FC<{}> = () => {
 
   return (
     <div className={classes.root}>
-      <Link href="/" underline="none" className={classes.link}>
+      <Link
+        component={NavLink}
+        to="/"
+        underline="none"
+        className={classes.link}
+      >
         {isOpen ? <LogoFull /> : <LogoIcon />}
       </Link>
     </div>

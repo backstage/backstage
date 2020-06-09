@@ -17,14 +17,35 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import CatalogPage from './CatalogPage';
-import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
-import { wrapInTestApp } from '@backstage/test-utils';
+import {
+  ApiRegistry,
+  ApiProvider,
+  errorApiRef,
+  storageApiRef,
+  WebStorage,
+} from '@backstage/core';
+import { wrapInTestApp, MockErrorApi } from '@backstage/test-utils';
 import { catalogApiRef } from '../..';
-
-const errorApi = { post: () => {} };
-const catalogApi = { getEntities: () => Promise.resolve([{ kind: '' }]) };
+import { CatalogApi } from '../../api/types';
+import { Entity } from '@backstage/catalog-model';
 
 describe('CatalogPage', () => {
+  const mockErrorApi = new MockErrorApi();
+  const catalogApi: Partial<CatalogApi> = {
+    getEntities: () =>
+      Promise.resolve([
+        {
+          metadata: {
+            name: 'Entity1',
+          },
+          apiVersion: 'backstage.io/v1beta1',
+          kind: 'Component',
+        },
+      ] as Entity[]),
+    getLocationByEntity: () =>
+      Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
+  };
+
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
@@ -33,8 +54,9 @@ describe('CatalogPage', () => {
       wrapInTestApp(
         <ApiProvider
           apis={ApiRegistry.from([
-            [errorApiRef, errorApi],
+            [errorApiRef, mockErrorApi],
             [catalogApiRef, catalogApi],
+            [storageApiRef, new WebStorage('@mock', mockErrorApi)],
           ])}
         >
           <CatalogPage />
