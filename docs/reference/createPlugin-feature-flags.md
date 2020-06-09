@@ -1,6 +1,8 @@
 # createPlugin - feature flags
 
-The `featureFlags` object passed to the `register` function makes it possible for plugins to register Feature Flags in Backstage for users to opt into. You can use this to split out logic in your code for manual A/B testing, etc.
+The `featureFlags` object passed to the `register` function makes it possible
+for plugins to register Feature Flags in Backstage for users to opt into. You
+can use this to split out logic in your code for manual A/B testing, etc.
 
 ```typescript
 export type FeatureFlagsHooks = {
@@ -24,7 +26,8 @@ export default createPlugin({
 
 ## Using with useApi
 
-To use it, you'll first need to register the `FeatureFlags` API via `ApiRegistry` in your `apis.ts` in your App:
+To use it, you'll first need to register the `FeatureFlags` API via
+`ApiRegistry` in your `apis.ts` in your App:
 
 ```tsx
 import {
