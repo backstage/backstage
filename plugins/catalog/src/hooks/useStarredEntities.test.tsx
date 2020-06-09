@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react-hooks';
 import { useStarredEntities } from './useStarredEntites';
 import {
   ApiProvider,
@@ -76,5 +76,35 @@ describe('useStarredEntities', () => {
 
     expect(result.current.starredEntities.size).toBe(1);
     expect(result.current.starredEntities.has('something')).toBeTruthy();
+  });
+
+  it('should write new entries to the local store when adding a togglging entity', async () => {
+    const store = mockStorage?.forBucket('settings');
+
+    await store?.set('starredEntities', ['something1']);
+
+    const { result } = renderHook(() => useStarredEntities(), { wrapper });
+
+    act(() => {
+      result.current.toggleStarredEntity('something2');
+    });
+
+    expect(result.current.starredEntities.has('something2')).toBeTruthy();
+    expect(result.current.starredEntities.has('something1')).toBeTruthy();
+  });
+
+  it('should remove an existing entity when toggling entries', async () => {
+    const store = mockStorage?.forBucket('settings');
+
+    await store?.set('starredEntities', ['something1', 'something2']);
+
+    const { result } = renderHook(() => useStarredEntities(), { wrapper });
+
+    act(() => {
+      result.current.toggleStarredEntity('something2');
+    });
+
+    expect(result.current.starredEntities.has('something2')).toBeFalsy();
+    expect(result.current.starredEntities.has('something1')).toBeTruthy();
   });
 });

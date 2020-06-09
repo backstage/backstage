@@ -29,6 +29,8 @@ import {
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import GitHub from '@material-ui/icons/GitHub';
+import StarOutline from '@material-ui/icons/StarBorder';
+import Star from '@material-ui/icons/Star';
 import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -60,13 +62,14 @@ const useStyles = makeStyles(theme => ({
 
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { starredEntities } = useStarredEntities();
+  const { starredEntities, toggleStarredEntity } = useStarredEntities();
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
+
   const { value, error, loading } = useAsync(
     () => dataResolvers[selectedFilter.id]({ catalogApi, starredEntities }),
-    [selectedFilter.id],
+    [selectedFilter.id, starredEntities.size],
   );
 
   const onFilterSelected = useCallback(
@@ -87,6 +90,15 @@ const CatalogPage: FC<{}> = () => {
           window.open(location.target, '_blank');
         },
         hidden: location ? location?.type !== 'github' : true,
+      };
+    },
+    (rowData: Component) => {
+      return {
+        icon: starredEntities.has(rowData.metadata.name) ? Star : StarOutline,
+        toolTip: `${
+          starredEntities.has(rowData.metadata.name) ? 'Unstar' : 'Star'
+        } ${rowData.metadata.name}`,
+        onClick: () => toggleStarredEntity(rowData.metadata.name),
       };
     },
   ];

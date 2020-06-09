@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useApi, storageApiRef } from '@backstage/core';
 import { useObservable } from 'react-use';
 
@@ -37,7 +37,20 @@ export const useStarredEntities = () => {
     }
   }, [observedItems?.newValue]);
 
+  const toggleStarredEntity = useCallback(
+    (entity: string) => {
+      if (starredEntities.has(entity)) {
+        starredEntities.delete(entity);
+      } else {
+        starredEntities.add(entity);
+      }
+
+      settingsStore.set('starredEntities', Array.from(starredEntities));
+    },
+    [starredEntities, settingsStore],
+  );
   return {
     starredEntities,
+    toggleStarredEntity,
   };
 };
