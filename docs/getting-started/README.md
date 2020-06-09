@@ -2,7 +2,9 @@
 
 ## Creating a Plugin
 
-The value of Backstage grows with every new plugin that gets added. Here is a collection of tutorials that will guide you through setting up and extending an instance of Backstage with your own plugins.
+The value of Backstage grows with every new plugin that gets added. Here is a
+collection of tutorials that will guide you through setting up and extending an
+instance of Backstage with your own plugins.
 
 - [Development Environment](development-environment.md)
 - [Create a Backstage plugin](create-a-plugin.md)
