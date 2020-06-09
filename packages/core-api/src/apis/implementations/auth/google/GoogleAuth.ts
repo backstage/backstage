@@ -25,6 +25,7 @@ import {
   ProfileInfoApi,
   ProfileInfoOptions,
   ProfileInfo,
+  ObservableSession,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
@@ -59,7 +60,8 @@ const DEFAULT_PROVIDER = {
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
-class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
+class GoogleAuth
+  implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, ObservableSession {
   static create({
     apiOrigin,
     basePath,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect, useRef, FC } from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -29,76 +29,131 @@ import {
   googleAuthApiRef,
   githubAuthApiRef,
   ProfileInfo,
+  OAuthApi,
+  OpenIdConnectApi,
+  ProfileInfoApi,
+  ApiRef,
+  ObservableSession,
 } from '@backstage/core-api';
 import { Avatar, IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import PowerButton from '@material-ui/icons/PowerSettingsNew';
 
-type AppAuthProviders = Provider[];
-
 type Provider = {
   title: string;
-  api: any;
-  identity?: boolean;
-  isSignedIn: boolean;
   icon: any;
 };
 
-const useProviders = () => {
-  const googleAuth = useApi(googleAuthApiRef);
-  const githubAuth = useApi(githubAuthApiRef);
-  // TODO(soapraj): List all the providers supported by the app
-  const [providers, setProviders] = useState<AppAuthProviders>([
-    {
-      title: 'Google',
-      api: googleAuth,
-      identity: true,
-      isSignedIn: false,
-      icon: Star,
-    },
-    {
-      title: 'Github',
-      api: githubAuth,
-      isSignedIn: false,
-      icon: StarBorder,
-    },
-  ]);
+type OAuthProviderSidebarProps = {
+  title: string;
+  icon: any;
+  apiRef: ApiRef<OAuthApi & ObservableSession>;
+};
 
-  // On page load we check the status of sign-in/sign-out for all the providers
-  // by making a optional getIdToken or getAccessToken request.
-  const setIsSignedIn = async () => {
-    const signInChecks = await Promise.all(
-      providers.map(provider => {
-        return provider.identity
-          ? provider.api.getIdToken({ optional: true })
-          : provider.api.getAccessToken('', { optional: true });
-      }),
-    );
+type OIDCProviderSidebarProps = {
+  title: string;
+  icon: any;
+  apiRef: ApiRef<OpenIdConnectApi & ObservableSession>;
+};
 
-    signInChecks.map((result, i) => {
-      providers[i].isSignedIn = !!result;
-    });
-
-    setProviders(providers);
-  };
-
-  // Any sign-in/sign-out activity on any provider is observed here
-  const observeProviderState = () => {
-    providers.map((provider, index) => {
-      provider.api.session$().subscribe((signedInState: boolean) => {
-        const mutatedProvider = providers[index];
-        mutatedProvider.isSignedIn = signedInState;
-        providers[index] = mutatedProvider;
-        setProviders(providers.slice());
-      });
-    });
-  };
+const OAuthProviderSidebarComponent: FC<OAuthProviderSidebarProps> = ({
+  title,
+  icon,
+  apiRef,
+}) => {
+  const api = useApi(apiRef);
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
-    setIsSignedIn();
-    observeProviderState();
-  }, [setIsSignedIn, observeProviderState]);
+    const checkSession = async () => {
+      const session = await api.getAccessToken('', { optional: true });
+      setSignedIn(!!session);
+    };
 
-  return providers;
+    const observeSession = () => {
+      api.session$().subscribe((signedInState: boolean) => {
+        if (signedIn !== signedInState) {
+          setSignedIn(signedInState);
+        }
+      });
+    };
+
+    checkSession();
+    observeSession();
+  }, []);
+
+  return (
+    <ProviderSidebarItemComponent
+      title={title}
+      icon={icon}
+      signedIn={signedIn}
+      api={api}
+      signInHandler={api.getAccessToken}
+    />
+  );
+};
+
+const OIDCProviderSidebarComponent: FC<OIDCProviderSidebarProps> = ({
+  title,
+  icon,
+  apiRef,
+}) => {
+  const api = useApi(apiRef);
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const session = await api.getIdToken({ optional: true });
+      setSignedIn(!!session);
+    };
+
+    const observeSession = () => {
+      api.session$().subscribe((signedInState: boolean) => {
+        if (signedIn !== signedInState) {
+          setSignedIn(signedInState);
+        }
+      });
+    };
+
+    checkSession();
+    observeSession();
+  }, []);
+
+  return (
+    <ProviderSidebarItemComponent
+      title={title}
+      icon={icon}
+      signedIn={signedIn}
+      api={api}
+      signInHandler={api.getIdToken}
+    />
+  );
+};
+
+const ProviderSidebarItemComponent: FC<{
+  title: string;
+  icon: any;
+  signedIn: boolean;
+  api: OAuthApi | OpenIdConnectApi;
+  signInHandler: Function;
+}> = ({ title, icon, signedIn, api, signInHandler }) => {
+  return (
+    <SidebarItem
+      key={title}
+      text={title}
+      icon={icon ?? StarBorder}
+      disableSelected
+    >
+      <IconButton onClick={() => (signedIn ? api.logout() : signInHandler())}>
+        <Tooltip
+          placement="top"
+          arrow
+          title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
+        >
+          <PowerButton color={signedIn ? 'secondary' : 'primary'} />
+        </Tooltip>
+      </IconButton>
+    </SidebarItem>
+  );
 };
 
 const useStyles = makeStyles({
@@ -108,38 +163,35 @@ const useStyles = makeStyles({
   },
 });
 
-export function SidebarUserSettings() {
-  const { isOpen: sidebarOpen } = useContext(SidebarContext);
-  const [open, setOpen] = React.useState(false);
-  const ref = useRef<Element>(); // for scrolling down when collapse item opens
-  const providers = useProviders();
+export const SidebarUserProfile: FC<{ setOpen: Function }> = ({ setOpen }) => {
   const [profile, setProfile] = useState<ProfileInfo>();
+  const ref = useRef<Element>(); // for scrolling down when collapse item opens
+  const googleAuth = useApi(googleAuthApiRef);
   const classes = useStyles();
-
-  useEffect(() => {
-    const identityProvider = providers.find(
-      (provider: Provider) => provider.identity,
-    );
-    if (identityProvider?.isSignedIn) {
-      identityProvider?.api
-        .getProfile({ optional: true })
-        .then((userProfile: ProfileInfo) => {
-          setProfile(userProfile);
-        });
-    } else {
-      setProfile(undefined);
-    }
-  }, [providers, open]);
 
   const handleClick = () => {
     setOpen(!open);
     setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth' }), 300);
   };
 
-  // Close the provider list when sidebar collapse
   useEffect(() => {
-    if (!sidebarOpen && open) setOpen(false);
-  }, [open, sidebarOpen]);
+    const fetchProfile = async () => {
+      await googleAuth
+        .getProfile({ optional: true })
+        .then((userProfile?: ProfileInfo) => {
+          setProfile(userProfile);
+        });
+    };
+
+    const observeSession = () => {
+      googleAuth.session$().subscribe(() => {
+        fetchProfile();
+      });
+    };
+
+    fetchProfile();
+    observeSession();
+  }, [open]);
 
   // Handle main auth info that is shown on the collapsible SidebarItem
   let avatar;
@@ -170,37 +222,33 @@ export function SidebarUserSettings() {
       >
         {open ? <ExpandLess /> : <ExpandMore />}
       </SidebarItem>
+    </>
+  );
+};
+
+export function SidebarUserSettings() {
+  const { isOpen: sidebarOpen } = useContext(SidebarContext);
+  const [open, setOpen] = React.useState(false);
+
+  // Close the provider list when sidebar collapse
+  useEffect(() => {
+    if (!sidebarOpen && open) setOpen(false);
+  }, [open, sidebarOpen]);
+
+  return (
+    <>
+      <SidebarUserProfile setOpen={setOpen} />
       <Collapse in={open} timeout="auto" unmountOnExit>
-        {providers.map((provider: Provider) => (
-          <SidebarItem
-            key={provider.title}
-            text={provider.title}
-            icon={provider.icon ?? StarBorder}
-            disableSelected
-          >
-            <IconButton
-              onClick={() =>
-                provider.isSignedIn
-                  ? provider.api.logout()
-                  : provider.api.getAccessToken()
-              }
-            >
-              <Tooltip
-                placement="top"
-                arrow
-                title={
-                  provider.isSignedIn
-                    ? `Sign out from ${provider.title}`
-                    : `Sign in to ${provider.title}`
-                }
-              >
-                <PowerButton
-                  color={provider.isSignedIn ? 'secondary' : 'primary'}
-                />
-              </Tooltip>
-            </IconButton>
-          </SidebarItem>
-        ))}
+        <OIDCProviderSidebarComponent
+          title="Google"
+          apiRef={googleAuthApiRef}
+          icon={Star}
+        />
+        <OAuthProviderSidebarComponent
+          title="Github"
+          apiRef={githubAuthApiRef}
+          icon={Star}
+        />
       </Collapse>
     </>
   );

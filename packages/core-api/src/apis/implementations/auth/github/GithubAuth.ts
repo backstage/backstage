@@ -17,7 +17,11 @@
 import GithubIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { GithubSession } from './types';
-import { OAuthApi, AccessTokenOptions } from '../../../definitions/auth';
+import {
+  OAuthApi,
+  AccessTokenOptions,
+  ObservableSession,
+} from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
@@ -48,7 +52,7 @@ const DEFAULT_PROVIDER = {
   icon: GithubIcon,
 };
 
-class GithubAuth implements OAuthApi {
+class GithubAuth implements OAuthApi, ObservableSession {
   static create({
     apiOrigin,
     basePath,
