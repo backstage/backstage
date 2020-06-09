@@ -25,6 +25,11 @@ type Props = ComponentProps<typeof MaterialButton> &
  * Thin wrapper on top of material-ui's Button component
  * Makes the Button to utilise react-router
  */
+
+const LinkBehavior = React.forwardRef<any, Props>((props, ref) => (
+  <RouterLink ref={ref} {...props} />
+));
+
 export const Button = React.forwardRef<any, Props>((props, ref) => (
-  <MaterialButton ref={ref} component={RouterLink} {...props} />
+  <MaterialButton ref={ref} component={LinkBehavior} {...props} />
 ));

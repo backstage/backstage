@@ -19,12 +19,12 @@ import { Link as MaterialLink } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 
 type Props = ComponentProps<typeof MaterialLink> &
-  ComponentProps<typeof RouterLink>;
+  ComponentProps<typeof RouterLink> & { as?: React.FC<any> };
 
 /**
  * Thin wrapper on top of material-ui's Link component
  * Makes the Link to utilise react-router
  */
 export const Link = React.forwardRef<any, Props>((props, ref) => (
-  <MaterialLink ref={ref} component={RouterLink} {...props} />
+  <MaterialLink ref={ref} as={RouterLink} {...props} />
 ));

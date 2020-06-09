@@ -80,7 +80,7 @@ export function wrapInTestApp(
   return (
     <AppProvider>
       <MemoryRouter initialEntries={routeEntries}>
-        <Route component={Wrapper} />
+        <Route element={<Wrapper />} />
       </MemoryRouter>
     </AppProvider>
   );
