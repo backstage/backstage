@@ -61,4 +61,9 @@ describe('ReservedFieldsEntityPolicy', () => {
       /annotation.*apiVersion/i,
     );
   });
+
+  it('rejects core fields mistakenly placed in metadata', async () => {
+    data.metadata.owner = 'emma';
+    await expect(policy.enforce(data)).rejects.toThrow(/owner/i);
+  });
 });

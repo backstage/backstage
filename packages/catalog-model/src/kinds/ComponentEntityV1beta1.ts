@@ -26,6 +26,8 @@ export interface ComponentEntityV1beta1 extends Entity {
   kind: typeof KIND;
   spec: {
     type: string;
+    lifecycle: string;
+    owner: string;
   };
 }
 
@@ -36,7 +38,9 @@ export class ComponentEntityV1beta1Policy implements EntityPolicy {
     this.schema = yup.object<Partial<ComponentEntityV1beta1>>({
       spec: yup
         .object({
-          type: yup.string().required(),
+          type: yup.string().required().min(1),
+          lifecycle: yup.string().required().min(1),
+          owner: yup.string().required().min(1),
         })
         .required(),
     });
