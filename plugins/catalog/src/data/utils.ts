@@ -19,44 +19,14 @@ import {
   LOCATION_ANNOTATION,
   EntityMeta,
 } from '@backstage/catalog-model';
-import IconButton from '@material-ui/core/IconButton';
-import { styled } from '@material-ui/core/styles';
-import Edit from '@material-ui/icons/Edit';
-import React from 'react';
 import { Component } from './component';
 
-const DescriptionWrapper = styled('span')({
-  display: 'flex',
-  alignItems: 'center',
-});
-
-const createEditLink = (location: LocationSpec): string => {
-  switch (location.type) {
-    case 'github':
-      return location.target.replace('/blob/', '/edit/');
-    default:
-      return location.target;
-  }
-};
-
 export function entityToComponent(envelope: Entity): Component {
-  const location = findLocationForEntityMeta(envelope.metadata);
   return {
-    name: envelope.metadata?.name ?? '',
-    kind: envelope.kind ?? 'unknown',
+    name: envelope.metadata.name,
+    kind: envelope.kind,
     metadata: envelope.metadata,
-    description: (
-      <DescriptionWrapper>
-        {envelope.metadata?.annotations?.description ?? 'placeholder'}
-        {location?.target ? (
-          <a href={createEditLink(location)}>
-            <IconButton size="small">
-              <Edit fontSize="small" />
-            </IconButton>
-          </a>
-        ) : null}
-      </DescriptionWrapper>
-    ),
+    description: envelope.metadata.annotations?.description ?? 'placeholder',
   };
 }
 
