@@ -104,7 +104,8 @@ export const Tabs: FC<TabsProps> = ({ tabs }) => {
       Math.floor(flattenIndex / newChunkedElementSize),
       flattenIndex % newChunkedElementSize,
     ]);
-  }, [width, navIndex, numberOfChunkedElement, tabs, value]);
+    // eslint-disable-next-line
+  }, [width, tabs]);
 
   const currentIndex = navIndex === value[0] ? value[1] : false;
 
