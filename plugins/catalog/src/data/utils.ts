@@ -24,6 +24,7 @@ import { Component } from './component';
 export function entityToComponent(envelope: Entity): Component {
   return {
     name: envelope.metadata.name,
+    namespace: envelope.metadata.namespace,
     kind: envelope.kind,
     metadata: envelope.metadata,
     description: envelope.metadata.annotations?.description ?? 'placeholder',

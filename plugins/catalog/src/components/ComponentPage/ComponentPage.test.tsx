@@ -24,7 +24,7 @@ const getTestProps = (name: string) => {
   return {
     match: {
       params: {
-        name: name,
+        optionalNamespaceAndName: name,
         kind: 'Component',
       },
     },

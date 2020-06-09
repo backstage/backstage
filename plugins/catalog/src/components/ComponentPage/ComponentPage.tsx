@@ -40,8 +40,7 @@ const REDIRECT_DELAY = 1000;
 type ComponentPageProps = {
   match: {
     params: {
-      name: string;
-      namespace?: string;
+      optionalNamespaceAndName: string;
       kind: string;
     };
   };
@@ -55,7 +54,8 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   const [removingPending, setRemovingPending] = useState(false);
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
   const hideRemovalDialog = () => setConfirmationDialogOpen(false);
-  const { name, namespace, kind } = match.params;
+  const { optionalNamespaceAndName, kind } = match.params;
+  const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
   const errorApi = useApi<ErrorApi>(errorApiRef);
 
   const catalogApi = useApi(catalogApiRef);
