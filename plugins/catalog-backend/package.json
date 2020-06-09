@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "0.1.1-alpha.6",
+  "version": "0.1.1-alpha.7",
   "main": "dist",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -16,8 +16,8 @@
     "mock-data": "./scripts/mock-data"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.6",
-    "@backstage/catalog-model": "^0.1.1-alpha.6",
+    "@backstage/backend-common": "^0.1.1-alpha.7",
+    "@backstage/catalog-model": "^0.1.1-alpha.7",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "esm": "^3.2.25",
@@ -37,7 +37,7 @@
     "yup": "^0.28.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.6",
+    "@backstage/cli": "^0.1.1-alpha.7",
     "@types/lodash": "^4.14.151",
     "@types/node-fetch": "^2.5.7",
     "@types/supertest": "^2.0.8",
