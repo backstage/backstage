@@ -25,13 +25,12 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import type { IconComponent } from '@backstage/core';
-
+import { FilterGroupItem } from '../../types';
 export type CatalogFilterItem = {
-  id: string;
+  id: FilterGroupItem;
   label: string;
   icon?: IconComponent;
-  count?: number;
-  loading?: boolean;
+  count?: number | React.FC;
 };
 
 export type CatalogFilterGroup = {
@@ -105,7 +104,11 @@ export const CatalogFilter: React.FC<CatalogFilterProps> = ({
                       {item.label}
                     </Typography>
                   </ListItemText>
-                  {item.count}
+                  {typeof item.count === 'function' ? (
+                    <item.count />
+                  ) : (
+                    item.count
+                  )}
                 </MenuItem>
               ))}
             </List>

@@ -41,16 +41,6 @@ const components: Component[] = [
 ];
 
 describe('CatalogTable component', () => {
-  it('should render loading when loading prop it set to true', async () => {
-    const rendered = render(
-      wrapInTestApp(
-        <CatalogTable titlePreamble="Owned" components={[]} loading />,
-      ),
-    );
-    const progress = await rendered.findByTestId('progress');
-    expect(progress).toBeInTheDocument();
-  });
-
   it('should render error message when error is passed in props', async () => {
     const rendered = render(
       wrapInTestApp(

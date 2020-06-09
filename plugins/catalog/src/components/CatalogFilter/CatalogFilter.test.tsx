@@ -18,6 +18,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
+import { FilterGroupItem } from '../../types';
 
 describe('Catalog Filter', () => {
   it('should render the different groups', async () => {
@@ -40,11 +41,11 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: 'first',
+            id: FilterGroupItem.ALL,
             label: 'First Label',
           },
           {
-            id: 'second',
+            id: FilterGroupItem.STARRED,
             label: 'Second Label',
           },
         ],
@@ -67,12 +68,12 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: 'first',
+            id: FilterGroupItem.ALL,
             label: 'First Label',
             count: 100,
           },
           {
-            id: 'second',
+            id: FilterGroupItem.STARRED,
             label: 'Second Label',
             count: 400,
           },
@@ -96,12 +97,12 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: 'first',
+            id: FilterGroupItem.ALL,
             label: 'First Label',
             count: 100,
           },
           {
-            id: 'second',
+            id: FilterGroupItem.STARRED,
             label: 'Second Label',
             count: 400,
           },
@@ -127,5 +128,30 @@ describe('Catalog Filter', () => {
     fireEvent.click(element);
 
     expect(onSelectedChangeHandler).toHaveBeenCalledWith(item);
+  });
+
+  it('should render a component when a function is passed to the count component', async () => {
+    const mockGroups: CatalogFilterGroup[] = [
+      {
+        name: 'Test Group 1',
+        items: [
+          {
+            id: FilterGroupItem.ALL,
+            label: 'First Label',
+            count: () => <b>BACKSTAGE!</b>,
+          },
+          {
+            id: FilterGroupItem.STARRED,
+            label: 'Second Label',
+            count: 400,
+          },
+        ],
+      },
+    ];
+    const { findByText } = render(
+      wrapInTestApp(<CatalogFilter groups={mockGroups} />),
+    );
+
+    expect(await findByText('BACKSTAGE!')).toBeInTheDocument();
   });
 });

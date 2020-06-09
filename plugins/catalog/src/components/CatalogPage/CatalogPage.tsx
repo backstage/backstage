@@ -27,19 +27,22 @@ import {
   useApi,
 } from '@backstage/core';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import { Button, Link, makeStyles, Typography } from '@material-ui/core';
+import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import GitHub from '@material-ui/icons/GitHub';
 import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { Component } from '../../data/component';
-import { defaultFilter, filterGroups } from '../../data/filters';
+import { defaultFilter, filterGroups, dataResolvers } from '../../data/filters';
 import { entityToComponent, findLocationForEntityMeta } from '../../data/utils';
 import {
   CatalogFilter,
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
+
+import { useStarredEntities } from '../../hooks/useStarredEntites';
+
 import CatalogTable from '../CatalogTable/CatalogTable';
 
 const useStyles = makeStyles(theme => ({
@@ -57,15 +60,20 @@ const useStyles = makeStyles(theme => ({
 
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { value, error, loading } = useAsync(() => catalogApi.getEntities());
+  const { starredEntities } = useStarredEntities();
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
+  );
+  const { value, error, loading } = useAsync(
+    () => dataResolvers[selectedFilter.id]({ catalogApi, starredEntities }),
+    [selectedFilter.id],
   );
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
     [],
   );
+
   const styles = useStyles();
 
   const actions = [

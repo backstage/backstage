@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import ComponentPage from './ComponentPage';
-import { render } from '@testing-library/react';
+import { render, wait } from '@testing-library/react';
 import * as React from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
@@ -38,7 +38,7 @@ const errorApi = { post: () => {} };
 describe('ComponentPage', () => {
   it('should redirect to component table page when name is not provided', async () => {
     const props = getTestProps('');
-    await render(
+    render(
       wrapInTestApp(
         <ApiProvider
           apis={ApiRegistry.from([
@@ -55,6 +55,9 @@ describe('ComponentPage', () => {
         </ApiProvider>,
       ),
     );
-    expect(props.history.push).toHaveBeenCalledWith('/catalog');
+
+    await wait(() =>
+      expect(props.history.push).toHaveBeenCalledWith('/catalog'),
+    );
   });
 });
