@@ -60,23 +60,43 @@ const useProviders = () => {
     },
   ]);
 
-  const setIsSignedIn = async () => {
-    const signInChecks = await Promise.all(
-      providers.map(provider =>
-        provider.identity
-          ? provider.api.getIdToken({ optional: true })
-          : provider.api.getAccessToken('', { optional: true }),
-      ),
-    );
+  useEffect(() => {
+    // On page load we check the status of sign-in/sign-out for all the providers
+    // by making a optional getIdToken or getAccessToken request.
+    const setIsSignedIn = async () => {
+      const signInChecks = await Promise.all(
+        providers.map(provider => {
+          return provider.identity
+            ? provider.api.getIdToken({ optional: true })
+            : provider.api.getAccessToken('', { optional: true });
+        }),
+      );
 
-    signInChecks.map((result, i) => {
-      providers[i].isSignedIn = !!result;
+      signInChecks.map((result, i) => {
+        providers[i].isSignedIn = !!result;
+      });
+
+      setProviders(providers);
+    };
+
+    setIsSignedIn();
+
+    // Any sign-in/sign-out activity on any provider is observed here
+    providers.map((provider, index) => {
+      provider.api.session$().subscribe((session: any) => {
+        if (session) {
+          const currentProvider = providers[index];
+          currentProvider.isSignedIn = true;
+          setProviders([
+            ...providers.slice(0, index),
+            currentProvider,
+            ...providers.slice(index + 1, providers.length),
+          ]);
+        }
+      });
     });
-
-    setProviders(providers);
-  };
-
-  setIsSignedIn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return providers;
 };

@@ -29,6 +29,8 @@ import {
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
+import { BehaviorSubject } from '../../../../lib';
+import { Observable } from '../../../../types';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
@@ -101,6 +103,24 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
 
   constructor(private readonly sessionManager: SessionManager<GoogleSession>) {}
 
+  private session: GoogleSession | undefined;
+  private readonly subject = new BehaviorSubject<GoogleSession | undefined>(
+    undefined,
+  );
+
+  session$(): Observable<GoogleSession | undefined> {
+    return this.subject;
+  }
+
+  getSession(): GoogleSession | undefined {
+    return this.session;
+  }
+
+  setSession(session?: GoogleSession): void {
+    this.session = session;
+    this.subject.next(session);
+  }
+
   async getAccessToken(
     scope?: string | string[],
     options?: AccessTokenOptions,
@@ -110,6 +130,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
       ...options,
       scopes: normalizedScopes,
     });
+    this.setSession(session);
     if (session) {
       return session.accessToken;
     }
@@ -118,6 +139,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
 
   async getIdToken(options: IdTokenOptions = {}) {
     const session = await this.sessionManager.getSession(options);
+    this.setSession(session);
     if (session) {
       return session.idToken;
     }
@@ -126,6 +148,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
 
   async logout() {
     await this.sessionManager.removeSession();
+    this.setSession();
   }
 
   async getProfile(options: ProfileInfoOptions = {}) {

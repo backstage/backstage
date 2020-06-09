@@ -21,6 +21,8 @@ import { OAuthApi, AccessTokenOptions } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
+import { BehaviorSubject } from '../../../../lib';
+import { Observable } from '../../../../types';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GithubAuth
@@ -80,12 +82,31 @@ class GithubAuth implements OAuthApi {
 
   constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
 
+  private session: GithubSession | undefined;
+  private readonly subject = new BehaviorSubject<GithubSession | undefined>(
+    undefined,
+  );
+
+  session$(): Observable<GithubSession | undefined> {
+    return this.subject;
+  }
+
+  getSession(): GithubSession | undefined {
+    return this.session;
+  }
+
+  setSession(session?: GithubSession): void {
+    this.session = session;
+    this.subject.next(session);
+  }
+
   async getAccessToken(scope?: string, options?: AccessTokenOptions) {
     const normalizedScopes = GithubAuth.normalizeScope(scope);
     const session = await this.sessionManager.getSession({
       ...options,
       scopes: normalizedScopes,
     });
+    this.setSession(session);
     if (session) {
       return session.accessToken;
     }
@@ -94,6 +115,7 @@ class GithubAuth implements OAuthApi {
 
   async logout() {
     await this.sessionManager.removeSession();
+    this.setSession();
   }
 
   static normalizeScope(scope?: string): Set<string> {
