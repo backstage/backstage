@@ -24,9 +24,18 @@ import {
   StorageApi,
 } from '@backstage/core';
 import { MockErrorApi } from '@backstage/test-utils';
+import { Component } from '../data/component';
 
 describe('useStarredEntities', () => {
   let mockStorage: StorageApi | undefined;
+  const mockEntity: Component = {
+    description: 'some mock description',
+    kind: 'Component',
+    name: 'mock',
+    metadata: {
+      name: 'mock',
+    },
+  };
 
   const wrapper: React.FC<{}> = ({ children }) => {
     return (

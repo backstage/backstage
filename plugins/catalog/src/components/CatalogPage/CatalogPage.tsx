@@ -64,7 +64,11 @@ const useStyles = makeStyles(theme => ({
 
 const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { starredEntities, toggleStarredEntity } = useStarredEntities();
+  const {
+    starredEntities,
+    toggleStarredEntity,
+    isStarredEntity,
+  } = useStarredEntities();
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
@@ -118,12 +122,11 @@ const CatalogPage: FC<{}> = () => {
       };
     },
     (rowData: Component) => {
+      const isStarred = isStarredEntity(rowData);
       return {
-        icon: starredEntities.has(rowData.metadata.name) ? Star : StarOutline,
-        toolTip: `${
-          starredEntities.has(rowData.metadata.name) ? 'Unstar' : 'Star'
-        } ${rowData.metadata.name}`,
-        onClick: () => toggleStarredEntity(rowData.metadata.name),
+        icon: isStarred ? Star : StarOutline,
+        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
+        onClick: () => toggleStarredEntity(rowData),
       };
     },
   ];

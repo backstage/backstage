@@ -16,14 +16,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useApi, storageApiRef } from '@backstage/core';
 import { useObservable } from 'react-use';
+import { Component } from '../data/component';
+
+const buildEntityKey = (component: Component) =>
+  `entity:${component.kind}:${component.metadata.namespace ?? 'default'}:${
+    component.metadata.name
+  }`;
 
 export const useStarredEntities = () => {
   const storageApi = useApi(storageApiRef);
   const settingsStore = storageApi.forBucket('settings');
-  const rawStarredItems = settingsStore.get<string[]>('starredEntities') ?? [];
+  const rawStarredEntityKeys =
+    settingsStore.get<string[]>('starredEntities') ?? [];
 
   const [starredEntities, setStarredEntities] = useState(
-    new Set(rawStarredItems),
+    new Set(rawStarredEntityKeys),
   );
 
   const observedItems = useObservable(
@@ -38,19 +45,30 @@ export const useStarredEntities = () => {
   }, [observedItems?.newValue]);
 
   const toggleStarredEntity = useCallback(
-    (entity: string) => {
-      if (starredEntities.has(entity)) {
-        starredEntities.delete(entity);
+    (entity: Component) => {
+      const entityKey = buildEntityKey(entity);
+      if (starredEntities.has(entityKey)) {
+        starredEntities.delete(entityKey);
       } else {
-        starredEntities.add(entity);
+        starredEntities.add(entityKey);
       }
 
       settingsStore.set('starredEntities', Array.from(starredEntities));
     },
     [starredEntities, settingsStore],
   );
+
+  const isStarredEntity = useCallback(
+    (entity: Component) => {
+      const entityKey = buildEntityKey(entity);
+      return starredEntities.has(entityKey);
+    },
+    [starredEntities],
+  );
+
   return {
     starredEntities,
     toggleStarredEntity,
+    isStarredEntity,
   };
 };
