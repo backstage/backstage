@@ -27,6 +27,10 @@ To try out SAML, you can use the mock identity provider:
 ./scripts/start-saml-idp.sh
 ```
 
+## Authentication providers
+
+[How to add an auth provider](https://github.com/spotify/backstage/blob/master/docs/auth/add-auth-provider.md)
+
 ## Links
 
 - (The Backstage homepage)[https://backstage.io]
