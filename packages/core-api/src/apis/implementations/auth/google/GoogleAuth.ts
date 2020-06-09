@@ -29,8 +29,7 @@ import {
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
-import { BehaviorSubject } from '../../../../lib';
-import { Observable } from '../../../../types';
+import { ObservableSession } from '../ObservableSession';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
@@ -59,7 +58,8 @@ const DEFAULT_PROVIDER = {
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
-class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
+class GoogleAuth extends ObservableSession<GoogleSession>
+  implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
   static create({
     apiOrigin,
     basePath,
@@ -101,24 +101,8 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
     return new GoogleAuth(sessionManager);
   }
 
-  constructor(private readonly sessionManager: SessionManager<GoogleSession>) {}
-
-  private session: GoogleSession | undefined;
-  private readonly subject = new BehaviorSubject<GoogleSession | undefined>(
-    undefined,
-  );
-
-  session$(): Observable<GoogleSession | undefined> {
-    return this.subject;
-  }
-
-  getSession(): GoogleSession | undefined {
-    return this.session;
-  }
-
-  setSession(session?: GoogleSession): void {
-    this.session = session;
-    this.subject.next(session);
+  constructor(private readonly sessionManager: SessionManager<GoogleSession>) {
+    super();
   }
 
   async getAccessToken(

@@ -21,8 +21,7 @@ import { OAuthApi, AccessTokenOptions } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
-import { BehaviorSubject } from '../../../../lib';
-import { Observable } from '../../../../types';
+import { ObservableSession } from '../ObservableSession';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GithubAuth
@@ -48,7 +47,7 @@ const DEFAULT_PROVIDER = {
   icon: GithubIcon,
 };
 
-class GithubAuth implements OAuthApi {
+class GithubAuth extends ObservableSession<GithubSession> implements OAuthApi {
   static create({
     apiOrigin,
     basePath,
@@ -80,24 +79,8 @@ class GithubAuth implements OAuthApi {
     return new GithubAuth(sessionManager);
   }
 
-  constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
-
-  private session: GithubSession | undefined;
-  private readonly subject = new BehaviorSubject<GithubSession | undefined>(
-    undefined,
-  );
-
-  session$(): Observable<GithubSession | undefined> {
-    return this.subject;
-  }
-
-  getSession(): GithubSession | undefined {
-    return this.session;
-  }
-
-  setSession(session?: GithubSession): void {
-    this.session = session;
-    this.subject.next(session);
+  constructor(private readonly sessionManager: SessionManager<GithubSession>) {
+    super();
   }
 
   async getAccessToken(scope?: string, options?: AccessTokenOptions) {
