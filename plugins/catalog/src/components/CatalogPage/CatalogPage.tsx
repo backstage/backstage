@@ -26,11 +26,13 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
+import { LocationSpec } from '@backstage/catalog-model';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import GitHub from '@material-ui/icons/GitHub';
 import StarOutline from '@material-ui/icons/StarBorder';
 import Star from '@material-ui/icons/Star';
+import Edit from '@material-ui/icons/Edit';
 import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -88,6 +90,29 @@ const CatalogPage: FC<{}> = () => {
         onClick: () => {
           if (!location) return;
           window.open(location.target, '_blank');
+        },
+        hidden: location ? location?.type !== 'github' : true,
+      };
+    },
+    (rowData: Component) => {
+      const createEditLink = (location: LocationSpec): string => {
+        switch (location.type) {
+          case 'github':
+            return location.target.replace('/blob/', '/edit/');
+          default:
+            return location.target;
+        }
+      };
+
+      const location = findLocationForEntityMeta(rowData.metadata);
+
+      return {
+        icon: Edit,
+        tooltip: 'Edit',
+        iconProps: { size: 'small' },
+        onClick: () => {
+          if (!location) return;
+          window.open(createEditLink(location), '_blank');
         },
         hidden: location ? location?.type !== 'github' : true,
       };
