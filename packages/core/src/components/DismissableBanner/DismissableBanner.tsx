@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import React, { FC, ReactNode, useState } from 'react';
+import React, { FC, ReactNode, useState, useEffect } from 'react';
+import { useApi, storageApiRef } from '@backstage/core-api';
+import { useObservable } from 'react-use';
 import classNames from 'classnames';
 import { makeStyles, Theme } from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
-// import { useSetting, Setting } from 'shared/apis/settings';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -54,23 +55,40 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   variant: 'info' | 'error';
-  // setting: Setting<boolean>;
   message: ReactNode;
+  id: string;
 };
 
-const DismissableBanner: FC<Props> = ({ variant, /* setting, */ message }) => {
-  // const [show, setShown, loading] = useSetting(setting);
-  const [show, setShown] = useState(true);
+const DismissableBanner: FC<Props> = ({ variant, message, id }) => {
   const classes = useStyles();
+  const storageApi = useApi(storageApiRef);
+  const notificationsStore = storageApi.forBucket('notifications');
+  const rawDismissedBanners =
+    notificationsStore.get<string[]>('dismissedBanners') ?? [];
+
+  const [dismissedBanners, setDismissedBanners] = useState(
+    new Set(rawDismissedBanners),
+  );
+
+  const observedItems = useObservable(
+    notificationsStore.observe$<string[]>('dismissedBanners'),
+  );
+
+  useEffect(() => {
+    if (observedItems?.newValue) {
+      const currentValue = observedItems?.newValue ?? [];
+      setDismissedBanners(new Set(currentValue));
+    }
+  }, [observedItems?.newValue]);
 
   const handleClick = () => {
-    setShown(false);
+    notificationsStore.set('dismissedBanners', [...dismissedBanners, id]);
   };
 
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      open={show /* && !loading */}
+      open={!dismissedBanners.has(id)}
       classes={{ root: classes.root }}
     >
       <SnackbarContent

@@ -16,7 +16,11 @@
 
 import { CatalogApi } from './types';
 import { DescriptorEnvelope } from '../types';
-import { Entity, Location } from '@backstage/catalog-model';
+import {
+  Entity,
+  Location,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 
 export class CatalogClient implements CatalogApi {
   private apiOrigin: string;
@@ -31,8 +35,37 @@ export class CatalogClient implements CatalogApi {
     this.apiOrigin = apiOrigin;
     this.basePath = basePath;
   }
-  async getEntities(): Promise<DescriptorEnvelope[]> {
-    const response = await fetch(`${this.apiOrigin}${this.basePath}/entities`);
+  async getLocationById(id: String): Promise<Location | undefined> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations/${id}`,
+    );
+    if (response.ok) {
+      const location = await response.json();
+      if (location) return location.data;
+    }
+    return undefined;
+  }
+  async getEntities(
+    filter?: Record<string, string>,
+  ): Promise<DescriptorEnvelope[]> {
+    let url = `${this.apiOrigin}${this.basePath}/entities`;
+    if (filter) {
+      url += '?';
+      url += Object.entries(filter)
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+        )
+        .join('&');
+    }
+    const response = await fetch(url);
+    if (!response.ok) {
+      const payload = await response.text();
+      throw new Error(
+        `Request failed with ${response.status} ${response.statusText}, ${payload}`,
+      );
+    }
+
     return await response.json();
   }
 
@@ -83,20 +116,11 @@ export class CatalogClient implements CatalogApi {
   }
 
   async getLocationByEntity(entity: Entity): Promise<Location | undefined> {
-    const findLocationIdInEntity = (e: Entity): string | undefined =>
-      e.metadata.annotations?.['backstage.io/managed-by-location'];
-
-    const locationId = findLocationIdInEntity(entity);
+    const locationId = entity.metadata.annotations?.[LOCATION_ANNOTATION];
     if (!locationId) return undefined;
 
-    const response = await fetch(
-      `${this.apiOrigin}${this.basePath}/locations/${locationId}`,
-    );
-    if (response.ok) {
-      const location = await response.json();
-      if (location) return location.data;
-    }
+    const location = this.getLocationById(locationId);
 
-    return undefined;
+    return location;
   }
 }

@@ -20,22 +20,27 @@ import CatalogTable from './CatalogTable';
 import { Component } from '../../data/component';
 
 const components: Component[] = [
-  { name: 'component1', kind: 'Component', description: 'Placeholder' },
-  { name: 'component2', kind: 'Component', description: 'Placeholder' },
-  { name: 'component3', kind: 'Component', description: 'Placeholder' },
+  {
+    name: 'component1',
+    kind: 'Component',
+    metadata: { name: 'component1' },
+    description: 'Placeholder',
+  },
+  {
+    name: 'component2',
+    kind: 'Component',
+    metadata: { name: 'component2' },
+    description: 'Placeholder',
+  },
+  {
+    name: 'component3',
+    kind: 'Component',
+    metadata: { name: 'component3' },
+    description: 'Placeholder',
+  },
 ];
 
 describe('CatalogTable component', () => {
-  it('should render loading when loading prop it set to true', async () => {
-    const rendered = render(
-      wrapInTestApp(
-        <CatalogTable titlePreamble="Owned" components={[]} loading />,
-      ),
-    );
-    const progress = await rendered.findByTestId('progress');
-    expect(progress).toBeInTheDocument();
-  });
-
   it('should render error message when error is passed in props', async () => {
     const rendered = render(
       wrapInTestApp(
@@ -48,7 +53,7 @@ describe('CatalogTable component', () => {
       ),
     );
     const errorMessage = await rendered.findByText(
-      'Error encountered while fetching components.',
+      /Error encountered while fetching components./,
     );
     expect(errorMessage).toBeInTheDocument();
   });

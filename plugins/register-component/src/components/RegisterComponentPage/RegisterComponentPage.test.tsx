@@ -30,6 +30,7 @@ const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
   getEntities: jest.fn(),
   getEntity: jest.fn(),
   getLocationByEntity: jest.fn(),
+  getLocationById: jest.fn(),
 };
 
 const setup = () => ({

@@ -23,12 +23,13 @@ export const catalogApiRef = createApiRef<CatalogApi>({
 });
 
 export interface CatalogApi {
-  getEntities(): Promise<Entity[]>;
   getEntity(params: {
     name: string;
     namespace?: string;
     kind: string;
   }): Promise<Entity>;
+  getLocationById(id: String): Promise<Location | undefined>;
+  getEntities(filter?: Record<string, string>): Promise<Entity[]>;
   addLocation(type: string, target: string): Promise<AddLocationResponse>;
   getLocationByEntity(entity: Entity): Promise<Location | undefined>;
 }

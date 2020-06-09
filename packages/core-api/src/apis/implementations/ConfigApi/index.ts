@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ConfigReader } from './ConfigReader';
+export { ConfigReader } from '@backstage/config';

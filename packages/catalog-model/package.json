@@ -1,6 +1,6 @@
 {
   "name": "@backstage/catalog-model",
-  "version": "0.1.1-alpha.6",
+  "version": "0.1.1-alpha.7",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "main:src": "src/index.ts",
@@ -8,7 +8,10 @@
   "license": "Apache-2.0",
   "private": true,
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
   },
   "scripts": {
     "build": "backstage-cli build",
@@ -23,7 +26,7 @@
     "yup": "^0.28.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.6",
+    "@backstage/cli": "^0.1.1-alpha.7",
     "@types/jest": "^25.2.2",
     "@types/lodash": "^4.14.151",
     "@types/yup": "^0.28.2",

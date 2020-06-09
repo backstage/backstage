@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+
+import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { Progress, useApi } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -21,9 +23,15 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import React, { FC } from 'react';
+import { useAsync } from 'react-use';
+import { AsyncState } from 'react-use/lib/useAsync';
+import { catalogApiRef } from '../../api/types';
 import { Component } from '../../data/component';
 
 type ComponentRemovalDialogProps = {
@@ -32,34 +40,79 @@ type ComponentRemovalDialogProps = {
   onClose: () => any;
   component: Component;
 };
+
+function useColocatedEntities(component: Component): AsyncState<Entity[]> {
+  const catalogApi = useApi(catalogApiRef);
+  return useAsync(async () => {
+    const myLocation = component.metadata.annotations?.[LOCATION_ANNOTATION];
+    return myLocation
+      ? await catalogApi.getEntities({ [LOCATION_ANNOTATION]: myLocation })
+      : [];
+  }, [catalogApi, component]);
+}
+
 const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
   onConfirm,
   onCancel,
   onClose,
   component,
 }) => {
+  const { value: entities, loading, error } = useColocatedEntities(component);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <Dialog fullScreen={fullScreen} open onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
         Are you sure you want to unregister this component?
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          This action will unregister {component.name}. To undo, just
-          re-register the component in Backstage.
-        </DialogContentText>
+        {loading ? <Progress /> : null}
+        {error ? (
+          <Alert severity="error" style={{ wordBreak: 'break-word' }}>
+            {error.toString()}
+          </Alert>
+        ) : null}
+        {entities ? (
+          <>
+            <DialogContentText>
+              This action will unregister the following entities:
+            </DialogContentText>
+            <Typography component="div">
+              <ul>
+                {entities.map(e => (
+                  <li key={e.metadata.name}>{e.metadata.name}</li>
+                ))}
+              </ul>
+            </Typography>
+            <DialogContentText>
+              That are located at the following location:
+            </DialogContentText>
+            <Typography component="div">
+              <ul>
+                <li>
+                  {entities[0]?.metadata?.annotations?.[LOCATION_ANNOTATION]}
+                </li>
+              </ul>
+            </Typography>
+            <DialogContentText>
+              To undo, just re-register the component in Backstage.
+            </DialogContentText>
+          </>
+        ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={onConfirm} color="primary">
+        <Button onClick={onCancel}>Cancel</Button>
+        <Button
+          disabled={!!(loading || error)}
+          onClick={onConfirm}
+          color="secondary"
+        >
           Unregister
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
+
 export default ComponentRemovalDialog;

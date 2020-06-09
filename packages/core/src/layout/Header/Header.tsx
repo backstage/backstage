@@ -61,9 +61,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
   type: {
     textTransform: 'uppercase',
-    fontSize: 9,
+    fontSize: 11,
     opacity: 0.8,
-    marginBottom: 10,
+    marginBottom: theme.spacing(1),
     color: theme.palette.bursts.fontColor,
   },
 }));
@@ -104,16 +104,11 @@ const TypeFragment: FC<TypeFragmentProps> = ({ type, typeLink, classes }) => {
   }
 
   if (!typeLink) {
-    return (
-      // </Link>
-      <Typography className={classes.type}>{type}</Typography>
-    );
+    // TODO: Add breadcrumbs.
+    return <Typography className={classes.type}>{type}</Typography>;
   }
 
-  return (
-    // <Link to={typeLink}>
-    <Typography className={classes.type}>{type}</Typography>
-  );
+  return <Typography className={classes.type}>{type}</Typography>;
 };
 
 const TitleFragment: FC<TitleFragmentProps> = ({

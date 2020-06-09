@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Location } from '@backstage/catalog-model';
+import { EntityMeta } from '@backstage/catalog-model';
+import { ReactNode } from 'react';
 
 export type Component = {
   name: string;
   kind: string;
-  description: string;
-  location?: Location;
+  metadata: EntityMeta;
+  description: ReactNode;
 };

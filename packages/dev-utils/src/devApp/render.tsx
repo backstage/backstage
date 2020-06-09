@@ -17,7 +17,6 @@
 import { hot } from 'react-hot-loader/root';
 import React, { FC, ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import {
   createApp,
@@ -94,12 +93,10 @@ class DevAppBuilder {
           <AlertDisplay />
           <OAuthRequestDialog />
           {this.rootChildren}
-          <BrowserRouter>
-            <SidebarPage>
-              {sidebar}
-              <AppComponent />
-            </SidebarPage>
-          </BrowserRouter>
+          <SidebarPage>
+            {sidebar}
+            <AppComponent />
+          </SidebarPage>
         </AppProvider>
       );
     };

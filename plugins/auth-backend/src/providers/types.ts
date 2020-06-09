@@ -15,7 +15,6 @@
  */
 
 import express from 'express';
-import passport from 'passport';
 
 export type AuthProviderConfig = {
   provider: string;
@@ -49,7 +48,14 @@ export type AuthInfoBase = {
 };
 
 export type AuthInfoWithProfile = AuthInfoBase & {
-  profile: passport.Profile;
+  profile:
+    | {
+        provider: string;
+        email: string;
+        name?: string;
+        picture?: string;
+      }
+    | undefined;
 };
 
 export type AuthInfoPrivate = {
@@ -69,6 +75,13 @@ export type AuthResponse =
 export type RedirectInfo = {
   url: string;
   status?: number;
+};
+
+export type ProfileInfo = {
+  provider: string;
+  email: string;
+  name: string;
+  picture: string;
 };
 
 export type RefreshTokenResponse = {

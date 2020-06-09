@@ -13,17 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  Entity,
+  LocationSpec,
+  LOCATION_ANNOTATION,
+  EntityMeta,
+} from '@backstage/catalog-model';
 import { Component } from './component';
-import { Entity, Location } from '@backstage/catalog-model';
 
-export function envelopeToComponent(
-  envelope: Entity,
-  location?: Location,
-): Component {
+export function entityToComponent(envelope: Entity): Component {
   return {
-    name: envelope.metadata?.name ?? '',
-    kind: envelope.kind ?? 'unknown',
-    description: envelope.metadata?.annotations?.description ?? 'placeholder',
-    location,
+    name: envelope.metadata.name,
+    kind: envelope.kind,
+    metadata: envelope.metadata,
+    description: envelope.metadata.annotations?.description ?? 'placeholder',
+  };
+}
+
+export function findLocationForEntityMeta(
+  meta: EntityMeta,
+): LocationSpec | undefined {
+  if (!meta) {
+    return undefined;
+  }
+
+  const annotation = meta.annotations?.[LOCATION_ANNOTATION];
+  if (!annotation) {
+    return undefined;
+  }
+
+  const separatorIndex = annotation.indexOf(':');
+  if (separatorIndex === -1) {
+    return undefined;
+  }
+
+  return {
+    type: annotation.substring(0, separatorIndex),
+    target: annotation.substring(separatorIndex + 1),
   };
 }

@@ -23,6 +23,7 @@ describe('ComponentMetadataCard component', () => {
     const testComponent: Component = {
       name: 'test',
       kind: 'Component',
+      metadata: { name: 'test' },
       description: 'Placeholder',
     };
     const rendered = await render(
