@@ -157,3 +157,9 @@ export type KindParser = {
     envelope: DescriptorEnvelope,
   ): Promise<DescriptorEnvelope | undefined>;
 };
+
+export enum FilterGroupItem {
+  ALL = 'ALL',
+  STARRED = 'STARRED',
+  OWNED = 'OWNED',
+}

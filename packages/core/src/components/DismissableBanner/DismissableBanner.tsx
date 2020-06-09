@@ -15,7 +15,7 @@
  */
 
 import React, { FC, ReactNode, useState, useEffect } from 'react';
-import { useApi, storageApiRef } from '@backstage/core';
+import { useApi, storageApiRef } from '@backstage/core-api';
 import { useObservable } from 'react-use';
 import classNames from 'classnames';
 import { makeStyles, Theme } from '@material-ui/core';

@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ComponentContextMenu from './ComponentContextMenu';
-import { render } from '@testing-library/react';
-import * as React from 'react';
-import { act } from 'react-dom/test-utils';
 
-describe('ComponentContextMenu', () => {
-  it('should call onUnregisterComponent on button click', async () => {
-    await act(async () => {
-      const mockCallback = jest.fn();
-      const menu = render(
-        <ComponentContextMenu onUnregisterComponent={mockCallback} />,
-      );
-      const button = await menu.findByTestId('menu-button');
-      button.click();
-      const unregister = await menu.findByText('Unregister component');
-      expect(unregister).toBeInTheDocument();
+import React from 'react';
+import { render } from '@testing-library/react';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { StarredCount } from './StarredCount';
+import * as Hooks from '../../hooks/useStarredEntites';
+
+describe('Starred Count', () => {
+  it('should render the count returned from the hook', async () => {
+    jest.spyOn(Hooks, 'useStarredEntities').mockReturnValue({
+      starredEntities: new Set(['id1', 'id2', 'id3', 'id4']),
     });
+
+    const { findByText } = render(wrapInTestApp(<StarredCount />));
+
+    expect(await findByText('4')).toBeInTheDocument();
   });
 });

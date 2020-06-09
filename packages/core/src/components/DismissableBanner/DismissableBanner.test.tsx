@@ -25,7 +25,7 @@ import {
   CreateStorageApiOptions,
   StorageApi,
   WebStorage,
-} from '@backstage/core';
+} from '@backstage/core-api';
 
 describe('<DismissableBanner />', () => {
   let apis: ApiRegistry;

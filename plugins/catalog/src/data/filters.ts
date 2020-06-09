@@ -19,21 +19,26 @@ import {
 } from '../components/CatalogFilter/CatalogFilter';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
+import { StarredCount } from '../components/CatalogFilter/StarredCount';
+import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
+import { FilterGroupItem } from '../types';
+import { CatalogApi } from '../..';
+import { Entity } from '@backstage/catalog-model';
 
 export const filterGroups: CatalogFilterGroup[] = [
   {
     name: 'Personal',
     items: [
       {
-        id: 'owned',
+        id: FilterGroupItem.OWNED,
         label: 'Owned',
-        count: 123,
+        count: 0,
         icon: SettingsIcon,
       },
       {
-        id: 'starred',
+        id: FilterGroupItem.STARRED,
         label: 'Starred',
-        count: 10,
+        count: StarredCount,
         icon: StarIcon,
       },
     ],
@@ -43,12 +48,34 @@ export const filterGroups: CatalogFilterGroup[] = [
     name: 'Company',
     items: [
       {
-        id: 'all',
+        id: FilterGroupItem.ALL,
         label: 'All Services',
-        count: 123,
+        count: AllServicesCount,
       },
     ],
   },
 ];
+
+type ResolverFunction = ({
+  catalogApi,
+  starredEntities,
+}: {
+  catalogApi: CatalogApi;
+  starredEntities: Set<string>;
+}) => Promise<Entity[]>;
+
+export const dataResolvers: Record<FilterGroupItem, ResolverFunction> = {
+  [FilterGroupItem.OWNED]: async () => [],
+  [FilterGroupItem.ALL]: async ({ catalogApi }) => {
+    return catalogApi.getEntities();
+  },
+  [FilterGroupItem.STARRED]: async ({ catalogApi, starredEntities }) => {
+    const allEntities = await catalogApi.getEntities();
+
+    return allEntities.filter(entity =>
+      starredEntities.has(entity.metadata.name),
+    );
+  },
+};
 
 export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];

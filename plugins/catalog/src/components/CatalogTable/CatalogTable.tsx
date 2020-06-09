@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Progress, Table, TableColumn } from '@backstage/core';
+import { Table, TableColumn } from '@backstage/core';
 import { Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC } from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
 import { Component } from '../../data/component';
+
 import { entityRoute } from '../../routes';
 
 const columns: TableColumn[] = [
@@ -60,9 +61,7 @@ const CatalogTable: FC<CatalogTableProps> = ({
   titlePreamble,
   actions,
 }) => {
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
+  if (error) {
     return (
       <div>
         <Alert severity="error">
@@ -74,8 +73,14 @@ const CatalogTable: FC<CatalogTableProps> = ({
 
   return (
     <Table
+      isLoading={loading}
       columns={columns}
-      options={{ paging: false, actionsColumnIndex: -1 }}
+      options={{
+        paging: false,
+        actionsColumnIndex: -1,
+        loadingType: 'linear',
+        showEmptyDataSourceMessage: !loading,
+      }}
       title={`${titlePreamble} (${(components && components.length) || 0})`}
       data={components}
       actions={actions}

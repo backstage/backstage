@@ -25,7 +25,7 @@ import {
   storageApiRef,
   StorageApi,
   WebStorage,
-} from '@backstage/core';
+} from '@backstage/core-api';
 
 export default {
   title: 'DismissableBanner',
