@@ -45,6 +45,36 @@ export class CatalogClient implements CatalogApi {
     }
     return undefined;
   }
+  async removeEntityByUid(uid: string): Promise<void> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/entities/by-uid/${uid}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    if (!response.ok) {
+      const payload = await response.text();
+      throw new Error(
+        `Request failed with ${response.status} ${response.statusText}, ${payload}`,
+      );
+    }
+    return undefined;
+  }
+  async removeLocationById(id: string): Promise<void> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/locations/${id}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    if (!response.ok) {
+      const payload = await response.text();
+      throw new Error(
+        `Request failed with ${response.status} ${response.statusText}, ${payload}`,
+      );
+    }
+    return undefined;
+  }
   async getEntities(
     filter?: Record<string, string>,
   ): Promise<DescriptorEnvelope[]> {

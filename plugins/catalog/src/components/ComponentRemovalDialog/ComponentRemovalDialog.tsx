@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Progress, useApi } from '@backstage/core';
+import { Progress, useApi, alertApiRef } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -32,32 +32,33 @@ import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api/types';
-import { Component } from '../../data/component';
 
 type ComponentRemovalDialogProps = {
   onConfirm: () => any;
   onCancel: () => any;
   onClose: () => any;
-  component: Component;
+  entity: Entity;
 };
 
-function useColocatedEntities(component: Component): AsyncState<Entity[]> {
+function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   const catalogApi = useApi(catalogApiRef);
   return useAsync(async () => {
-    const myLocation = component.metadata.annotations?.[LOCATION_ANNOTATION];
+    const myLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
     return myLocation
       ? await catalogApi.getEntities({ [LOCATION_ANNOTATION]: myLocation })
       : [];
-  }, [catalogApi, component]);
+  }, [catalogApi, entity]);
 }
 
 const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
   onConfirm,
   onCancel,
   onClose,
-  component,
+  entity,
 }) => {
-  const { value: entities, loading, error } = useColocatedEntities(component);
+  const catalogApi = useApi(catalogApiRef);
+  const alertApi = useApi(alertApiRef);
+  const { value: entities, loading, error } = useColocatedEntities(entity);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -107,7 +108,20 @@ const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
         </Button>
         <Button
           disabled={!!(loading || error)}
-          onClick={onConfirm}
+          onClick={async () => {
+            const uid = entity.metadata?.uid;
+            if (uid) {
+              try {
+                await catalogApi.removeEntityByUid(uid);
+              } catch (err) {
+                alertApi.post({ message: err.message });
+              }
+            } else {
+              alertApi.post({ message: `No entity with UID ${uid}` });
+            }
+
+            onConfirm();
+          }}
           color="primary"
         >
           Unregister

@@ -130,11 +130,13 @@ export type Database = {
     namespace?: string,
   ): Promise<DbEntityResponse | undefined>;
 
+  entityById(tx: unknown, id: string): Promise<DbEntityResponse | undefined>;
+
   removeEntity(tx: unknown, uid: string): Promise<void>;
 
   addLocation(location: Location): Promise<DbLocationsRow>;
 
-  removeLocation(id: string): Promise<void>;
+  removeLocation(tx: unknown, id: string): Promise<void>;
 
   location(id: string): Promise<DbLocationsRowWithStatus>;
 

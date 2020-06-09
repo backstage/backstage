@@ -20,9 +20,30 @@ import CatalogTable from './CatalogTable';
 import { Component } from '../../data/component';
 
 const components: Component[] = [
-  { name: 'component1', kind: 'Component', description: 'Placeholder' },
-  { name: 'component2', kind: 'Component', description: 'Placeholder' },
-  { name: 'component3', kind: 'Component', description: 'Placeholder' },
+  {
+    name: 'component1',
+    kind: 'Component',
+    description: 'Placeholder',
+    metadata: {
+      name: 'component1',
+    },
+  },
+  {
+    name: 'component2',
+    kind: 'Component',
+    description: 'Placeholder',
+    metadata: {
+      name: 'component2',
+    },
+  },
+  {
+    name: 'component3',
+    kind: 'Component',
+    description: 'Placeholder',
+    metadata: {
+      name: 'component3',
+    },
+  },
 ];
 
 describe('CatalogTable component', () => {
@@ -48,7 +69,7 @@ describe('CatalogTable component', () => {
       ),
     );
     const errorMessage = await rendered.findByText(
-      'Error encountered while fetching components.',
+      'Something went wrong here. Please contact #backstage for help.',
     );
     expect(errorMessage).toBeInTheDocument();
   });

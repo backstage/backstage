@@ -24,10 +24,12 @@ export const catalogApiRef = createApiRef<CatalogApi>({
 
 export interface CatalogApi {
   getLocationById(id: String): Promise<Location | undefined>;
+  removeLocationById(id: String): Promise<void>;
   getEntities(filter?: Record<string, string>): Promise<Entity[]>;
   getEntityByName(name: string): Promise<Entity>;
   addLocation(type: string, target: string): Promise<AddLocationResponse>;
   getLocationByEntity(entity: Entity): Promise<Location | undefined>;
+  removeEntityByUid(uid: string): Promise<void>;
 }
 
 export type AddLocationResponse = { location: Location; entities: Entity[] };

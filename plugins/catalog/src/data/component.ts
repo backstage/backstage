@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityMeta, Location } from '@backstage/catalog-model';
+import { EntityMeta, LocationSpec } from '@backstage/catalog-model';
 import { ReactNode } from 'react';
 
 export type Component = {
@@ -21,5 +21,5 @@ export type Component = {
   kind: string;
   metadata: EntityMeta;
   description: ReactNode;
-  location?: Location;
+  location?: LocationSpec;
 };

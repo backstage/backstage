@@ -15,6 +15,9 @@
  */
 
 import type { Entity } from '@backstage/catalog-model';
+import { LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { NotFoundError } from '@backstage/backend-common';
+
 import type { Database, DbEntityResponse, EntityFilters } from '../database';
 import type { EntitiesCatalog } from './types';
 
@@ -78,7 +81,30 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
   async removeEntityByUid(uid: string): Promise<void> {
     return await this.database.transaction(async tx => {
-      await this.database.removeEntity(tx, uid);
+      const currentEntity = await this.database.entityById(tx, uid);
+      if (!currentEntity) {
+        throw new NotFoundError(`Entity with ID ${uid} was not found`);
+      }
+      const colocatedEntities = currentEntity?.entity.metadata.annotations?.[
+        LOCATION_ANNOTATION
+      ]
+        ? await this.database.entities(tx, [
+            {
+              key: LOCATION_ANNOTATION,
+              values: [
+                currentEntity.entity.metadata.annotations[LOCATION_ANNOTATION],
+              ],
+            },
+          ])
+        : [currentEntity];
+      for (const dbResponse of colocatedEntities) {
+        await this.database.removeEntity(tx, dbResponse?.entity.metadata.uid!);
+      }
+
+      if (currentEntity?.locationId) {
+        await this.database.removeLocation(tx, currentEntity?.locationId!);
+      }
+      return Promise.resolve();
     });
   }
 

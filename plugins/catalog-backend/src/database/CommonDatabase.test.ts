@@ -105,8 +105,7 @@ describe('CommonDatabase', () => {
     expect(locations).toEqual([output]);
     const location = await db.location(locations[0].id);
     expect(location).toEqual(output);
-
-    await db.removeLocation(locations[0].id);
+    await db.transaction(tx => db.removeLocation(tx, locations[0].id));
 
     await expect(db.locations()).resolves.toEqual([]);
     await expect(db.location(locations[0].id)).rejects.toThrow(

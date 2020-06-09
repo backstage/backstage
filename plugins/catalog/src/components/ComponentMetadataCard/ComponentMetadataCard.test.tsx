@@ -15,24 +15,26 @@
  */
 import React from 'react';
 import ComponentMetadataCard from './ComponentMetadataCard';
-import { Component } from '../../data/component';
 import { render } from '@testing-library/react';
+import { Entity } from '../../../../../packages/catalog-model/src/entity/Entity';
 
 describe('ComponentMetadataCard component', () => {
   it('should display component name if provided', async () => {
-    const testComponent: Component = {
-      name: 'test',
+    const testEntity: Entity = {
+      apiVersion: '',
       kind: 'Component',
-      description: 'Placeholder',
+      metadata: {
+        name: 'test',
+      },
     };
     const rendered = await render(
-      <ComponentMetadataCard loading={false} component={testComponent} />,
+      <ComponentMetadataCard loading={false} entity={testEntity} />,
     );
     expect(await rendered.findByText('test')).toBeInTheDocument();
   });
   it('should display loader when loading is set to true', async () => {
     const rendered = await render(
-      <ComponentMetadataCard loading component={undefined} />,
+      <ComponentMetadataCard loading entity={undefined} />,
     );
     expect(await rendered.findByRole('progressbar')).toBeInTheDocument();
   });

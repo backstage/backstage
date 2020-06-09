@@ -32,8 +32,7 @@ import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDi
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
 import { catalogApiRef } from '../..';
-import { entityToComponent } from '../../data/utils';
-import { Component } from '../../data/component';
+import { Entity } from '@backstage/catalog-model';
 
 const REDIRECT_DELAY = 1000;
 
@@ -53,14 +52,12 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   const [removingPending, setRemovingPending] = useState(false);
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
   const hideRemovalDialog = () => setConfirmationDialogOpen(false);
-  const componentName = match.params.name;
+  const entityName = match.params.name;
   const errorApi = useApi<ErrorApi>(errorApiRef);
 
   const catalogApi = useApi(catalogApiRef);
-  const { value: component, error, loading } = useAsync<Component>(async () => {
-    const entity = await catalogApi.getEntityByName(match.params.name);
-    const location = await catalogApi.getLocationByEntity(entity);
-    return { ...entityToComponent(entity), location };
+  const { value: entity, error, loading } = useAsync<Entity>(async () => {
+    return await catalogApi.getEntityByName(match.params.name);
   });
 
   useEffect(() => {
@@ -72,17 +69,14 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     }
   }, [error, errorApi, history]);
 
-  if (componentName === '') {
+  if (entityName === '') {
     history.push('/catalog');
     return null;
   }
 
-  const removeComponent = async () => {
+  const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
     setRemovingPending(true);
-    // await componentFactory.removeComponentByName(componentName);
-
-    await catalogApi;
     history.push('/');
   };
 
@@ -117,16 +111,16 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   return (
     // TODO: Switch theme and type props based on component type (website, library, ...)
     <Page theme={pageTheme.service}>
-      <Header title={component?.name || 'Catalog'} type="Service">
+      <Header title={entity?.metadata.name || 'Catalog'}>
         <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
       </Header>
       <HeaderTabs tabs={tabs} />
 
-      {confirmationDialogOpen && component && (
+      {confirmationDialogOpen && entity && (
         <ComponentRemovalDialog
-          component={component}
+          entity={entity}
           onClose={hideRemovalDialog}
-          onConfirm={removeComponent}
+          onConfirm={cleanUpAfterRemoval}
           onCancel={hideRemovalDialog}
         />
       )}
@@ -135,7 +129,7 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
           <Grid item>
             <ComponentMetadataCard
               loading={loading || removingPending}
-              component={component}
+              entity={entity}
             />
           </Grid>
           <Grid item>

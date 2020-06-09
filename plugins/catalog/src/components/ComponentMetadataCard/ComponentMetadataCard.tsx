@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { Component } from '../../data/component';
 import { Progress, InfoCard, StructuredMetadataTable } from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
 
 type ComponentMetadataCardProps = {
   loading: boolean;
-  component: Component | undefined;
+  entity: Entity | undefined;
 };
 const ComponentMetadataCard: FC<ComponentMetadataCardProps> = ({
   loading,
-  component,
+  entity,
 }) => {
   if (loading) {
     return (
@@ -32,12 +32,12 @@ const ComponentMetadataCard: FC<ComponentMetadataCardProps> = ({
       </InfoCard>
     );
   }
-  if (!component) {
+  if (!entity) {
     return null;
   }
   return (
     <InfoCard title="Metadata">
-      <StructuredMetadataTable metadata={component} />
+      <StructuredMetadataTable metadata={entity} />
     </InfoCard>
   );
 };

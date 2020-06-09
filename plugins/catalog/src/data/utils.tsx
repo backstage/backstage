@@ -17,7 +17,6 @@ import React from 'react';
 import { Component } from './component';
 import {
   Entity,
-  Location,
   LOCATION_ANNOTATION,
   LocationSpec,
 } from '@backstage/catalog-model';
@@ -30,7 +29,7 @@ const DescriptionWrapper = styled('span')({
   alignItems: 'center',
 });
 
-const createEditLink = (location: Location): string => {
+const createEditLink = (location: LocationSpec): string => {
   switch (location.type) {
     case 'github':
       return location.target.replace('/blob/', '/edit/');
