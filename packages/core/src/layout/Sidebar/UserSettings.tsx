@@ -32,7 +32,6 @@ import {
 } from '@backstage/core-api';
 import { Avatar, IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import PowerButton from '@material-ui/icons/PowerSettingsNew';
-// import { SidebarThemeToggle } from './SidebarThemeToggle';
 
 type Provider = {
   title: string;
@@ -61,19 +60,23 @@ const useProviders = () => {
     },
   ]);
 
-  Promise.all(
-    providers.map((provider: Provider) =>
-      provider.identity
-        ? provider.api.getIdToken({ optional: true })
-        : provider.api.getAccessToken('', { optional: true }),
-    ),
-  ).then(results => {
-    results.map((result, i) => {
+  const setIsSignedIn = async () => {
+    const signInChecks = await Promise.all(
+      providers.map(provider =>
+        provider.identity
+          ? provider.api.getIdToken({ optional: true })
+          : provider.api.getAccessToken('', { optional: true }),
+      ),
+    );
+
+    signInChecks.map((result, i) => {
       providers[i].isSignedIn = !!result;
     });
 
     setProviders(providers);
-  });
+  };
+
+  setIsSignedIn();
 
   return providers;
 };
@@ -141,7 +144,7 @@ export function SidebarUserSettings() {
     <>
       <Divider innerRef={ref} />
       <SidebarItem
-        text={displayName || 'Sign In'}
+        text={displayName || 'Guest'}
         onClick={handleClick}
         icon={avatar || AccountCircleIcon}
         disableSelected
