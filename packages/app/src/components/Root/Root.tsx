@@ -57,11 +57,14 @@ const SidebarLogo: FC<{}> = () => {
 
   return (
     <div className={classes.root}>
-      <NavLink to="/">
-        <Link underline="none" className={classes.link}>
-          {isOpen ? <LogoFull /> : <LogoIcon />}
-        </Link>
-      </NavLink>
+      <Link
+        component={NavLink}
+        to="/"
+        underline="none"
+        className={classes.link}
+      >
+        {isOpen ? <LogoFull /> : <LogoIcon />}
+      </Link>
     </div>
   );
 };
