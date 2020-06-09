@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Table, TableColumn } from '@backstage/core';
+import { Link } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React, { FC } from 'react';
-import { Component } from '../../data/component';
-import { InfoCard, Table, TableColumn } from '@backstage/core';
-import { Typography, Link } from '@material-ui/core';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { Component } from '../../data/component';
+
 import { entityRoute } from '../../routes';
 
 const columns: TableColumn[] = [
@@ -61,13 +63,14 @@ const CatalogTable: FC<CatalogTableProps> = ({
 }) => {
   if (error) {
     return (
-      <InfoCard>
-        <Typography variant="subtitle1" paragraph>
-          Error encountered while fetching components.
-        </Typography>
-      </InfoCard>
+      <div>
+        <Alert severity="error">
+          Error encountered while fetching components. {error.toString()}
+        </Alert>
+      </div>
     );
   }
+
   return (
     <Table
       isLoading={loading}
@@ -84,4 +87,5 @@ const CatalogTable: FC<CatalogTableProps> = ({
     />
   );
 };
+
 export default CatalogTable;

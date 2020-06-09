@@ -14,39 +14,36 @@
  * limitations under the License.
  */
 
-import React, { FC, useCallback, useState } from 'react';
 import {
   Content,
   ContentHeader,
   DismissableBanner,
   Header,
+  HeaderTabs,
   HomepageTimer,
-  SupportButton,
   Page,
   pageTheme,
+  SupportButton,
   useApi,
-  HeaderTabs,
 } from '@backstage/core';
+import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
+import { Button, makeStyles, Typography, Link } from '@material-ui/core';
+import GitHub from '@material-ui/icons/GitHub';
+import React, { FC, useCallback, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import CatalogTable from '../CatalogTable/CatalogTable';
+import { catalogApiRef } from '../..';
+import { Component } from '../../data/component';
+import { defaultFilter, filterGroups, dataResolvers } from '../../data/filters';
+import { entityToComponent, findLocationForEntityMeta } from '../../data/utils';
 import {
   CatalogFilter,
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
-import { Button, makeStyles, Typography, Link } from '@material-ui/core';
-import { filterGroups, defaultFilter, dataResolvers } from '../../data/filters';
-import { Link as RouterLink } from 'react-router-dom';
-import { catalogApiRef } from '../../api/types';
+
 import { useStarredEntities } from '../../hooks/useStarredEntites';
-import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import GitHub from '@material-ui/icons/GitHub';
-import {
-  Entity,
-  Location,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
-import { Component } from '../../data/component';
-import { entityToComponent, findLocationForEntity } from '../../data/utils';
+
+import CatalogTable from '../CatalogTable/CatalogTable';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -79,38 +76,19 @@ const CatalogPage: FC<{}> = () => {
 
   const styles = useStyles();
 
-  const { value: locations } = useAsync(async () => {
-    const getLocationDataForEntities = async (entities: Entity[]) => {
-      return Promise.all(
-        entities.map(entity => {
-          const locationId = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-          if (!locationId) return undefined;
-
-          return catalogApi.getLocationById(locationId);
-        }),
-      );
-    };
-
-    if (value) {
-      return getLocationDataForEntities(value).then(
-        (location): Location[] =>
-          location.filter(loc => !!loc) as Array<Location>,
-      );
-    }
-    return [];
-  }, [value, catalogApi, catalogApi]);
-
   const actions = [
-    (rowData: Component) => ({
-      icon: GitHub,
-      tooltip: 'View on GitHub',
-      onClick: () => {
-        if (!rowData || !rowData.location) return;
-        window.open(rowData.location.target, '_blank');
-      },
-      hidden:
-        rowData && rowData.location ? rowData.location.type !== 'github' : true,
-    }),
+    (rowData: Component) => {
+      const location = findLocationForEntityMeta(rowData.metadata);
+      return {
+        icon: GitHub,
+        tooltip: 'View on GitHub',
+        onClick: () => {
+          if (!location) return;
+          window.open(location.target, '_blank');
+        },
+        hidden: location ? location?.type !== 'github' : true,
+      };
+    },
   ];
 
   // TODO: replace me with the proper tabs implemntation
@@ -177,24 +155,22 @@ const CatalogPage: FC<{}> = () => {
               onSelectedChange={onFilterSelected}
             />
           </div>
-          {locations && (
-            <CatalogTable
-              titlePreamble={selectedFilter.label}
-              components={
-                (value &&
-                  value.map(val => {
-                    return {
-                      ...entityToComponent(val),
-                      location: findLocationForEntity(val, locations),
-                    };
-                  })) ||
-                []
-              }
-              loading={loading}
-              error={error}
-              actions={actions}
-            />
-          )}
+          <CatalogTable
+            titlePreamble={selectedFilter.label}
+            components={
+              (value &&
+                value.map(val => {
+                  return {
+                    ...entityToComponent(val),
+                    locationSpec: findLocationForEntityMeta(val.metadata),
+                  };
+                })) ||
+              []
+            }
+            loading={loading}
+            error={error}
+            actions={actions}
+          />
         </div>
       </Content>
     </Page>

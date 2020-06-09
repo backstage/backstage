@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useEffect, useRef, useState } from 'react';
 import {
   IconButton,
   ListItemIcon,
-  Menu,
   MenuItem,
+  MenuList,
+  Popover,
   Typography,
 } from '@material-ui/core';
 import Cancel from '@material-ui/icons/Cancel';
 import MoreVert from '@material-ui/icons/MoreVert';
 import SwapHoriz from '@material-ui/icons/SwapHoriz';
+import React, { FC, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
+// TODO(freben): It should probably instead be the case that Header sets the theme text color to white inside itself unconditionally instead
 const useStyles = makeStyles({
-  menu: {
-    marginTop: 52,
+  button: {
+    color: 'white',
   },
 });
 
@@ -39,52 +41,58 @@ type ComponentContextMenuProps = {
 const ComponentContextMenu: FC<ComponentContextMenuProps> = ({
   onUnregisterComponent,
 }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuAnchor = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
 
-  useEffect(() => {
-    const globalCloseHandler = (event: any) => {
-      const menu = menuAnchor.current;
-      if (menu !== null && !menu.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    };
+  const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-    window.addEventListener('click', globalCloseHandler);
-    return () => window.removeEventListener('click', globalCloseHandler);
-  }, [menuOpen]);
+  const onClose = () => {
+    setAnchorEl(undefined);
+  };
 
   return (
-    <div ref={menuAnchor}>
+    <div>
       <IconButton
         aria-label="more"
         aria-controls="long-menu"
         aria-haspopup="true"
-        onClick={() => setMenuOpen(!menuOpen)}
+        onClick={onOpen}
         data-testid="menu-button"
+        className={classes.button}
       >
         <MoreVert />
       </IconButton>
-      <Menu
-        open={menuOpen}
-        anchorEl={menuAnchor.current}
-        className={classes.menu}
+      <Popover
+        open={Boolean(anchorEl)}
+        onClose={onClose}
+        anchorEl={anchorEl}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <MenuItem onClick={onUnregisterComponent}>
-          <ListItemIcon>
-            <Cancel fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit">Unregister component</Typography>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <SwapHoriz fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit">More repository</Typography>
-        </MenuItem>
-      </Menu>
+        <MenuList>
+          <MenuItem
+            onClick={() => {
+              onClose();
+              onUnregisterComponent();
+            }}
+          >
+            <ListItemIcon>
+              <Cancel fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit">Unregister component</Typography>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <SwapHoriz fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit">Move repository</Typography>
+          </MenuItem>
+        </MenuList>
+      </Popover>
     </div>
   );
 };
+
 export default ComponentContextMenu;

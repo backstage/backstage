@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Component } from './component';
 import {
   Entity,
-  Location,
+  LocationSpec,
   LOCATION_ANNOTATION,
+  EntityMeta,
 } from '@backstage/catalog-model';
-import Edit from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import { styled } from '@material-ui/core/styles';
+import Edit from '@material-ui/icons/Edit';
+import React from 'react';
+import { Component } from './component';
 
 const DescriptionWrapper = styled('span')({
   display: 'flex',
   alignItems: 'center',
 });
 
-const createEditLink = (location: Location): string => {
+const createEditLink = (location: LocationSpec): string => {
   switch (location.type) {
     case 'github':
       return location.target.replace('/blob/', '/edit/');
@@ -38,13 +39,12 @@ const createEditLink = (location: Location): string => {
   }
 };
 
-export function entityToComponent(
-  envelope: Entity,
-  location?: Location,
-): Component {
+export function entityToComponent(envelope: Entity): Component {
+  const location = findLocationForEntityMeta(envelope.metadata);
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
+    metadata: envelope.metadata,
     description: (
       <DescriptionWrapper>
         {envelope.metadata?.annotations?.description ?? 'placeholder'}
@@ -57,18 +57,28 @@ export function entityToComponent(
         ) : null}
       </DescriptionWrapper>
     ),
-    location,
   };
 }
 
-export function findLocationForEntity(
-  entity: Entity,
-  locations: Location[],
-): Location | undefined {
-  for (const loc of locations) {
-    if (loc.id === entity.metadata.annotations?.[LOCATION_ANNOTATION]) {
-      return loc;
-    }
+export function findLocationForEntityMeta(
+  meta: EntityMeta,
+): LocationSpec | undefined {
+  if (!meta) {
+    return undefined;
   }
-  return undefined;
+
+  const annotation = meta.annotations?.[LOCATION_ANNOTATION];
+  if (!annotation) {
+    return undefined;
+  }
+
+  const separatorIndex = annotation.indexOf(':');
+  if (separatorIndex === -1) {
+    return undefined;
+  }
+
+  return {
+    type: annotation.substring(0, separatorIndex),
+    target: annotation.substring(separatorIndex + 1),
+  };
 }
