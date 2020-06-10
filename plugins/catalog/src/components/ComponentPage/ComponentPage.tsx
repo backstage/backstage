@@ -59,7 +59,10 @@ export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
 
   const catalogApi = useApi(catalogApiRef);
   const { value: component, error, loading } = useAsync<Component>(async () => {
-    const entity = await catalogApi.getEntity({ name, namespace, kind });
+    const entity = await catalogApi.getEntityByName({ name, namespace, kind });
+    if (!entity) {
+      throw new Error(`No entity found with that name`);
+    }
     const location = await catalogApi.getLocationByEntity(entity);
     return { ...entityToComponent(entity), location };
   });
