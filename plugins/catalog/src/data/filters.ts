@@ -22,7 +22,6 @@ import StarIcon from '@material-ui/icons/Star';
 import { StarredCount } from '../components/CatalogFilter/StarredCount';
 import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
 import { FilterGroupItem } from '../types';
-import { Entity } from '@backstage/catalog-model';
 
 export const filterGroups: CatalogFilterGroup[] = [
   {
