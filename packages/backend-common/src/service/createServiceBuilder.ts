@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export * from './errors';
-export * from './logging';
-export * from './middleware';
-export * from './service';
+import { ServiceBuilderImpl } from './ServiceBuilderImpl';
+
+/**
+ * Creates a new service builder.
+ */
+export function createServiceBuilder() {
+  return new ServiceBuilderImpl();
+}
