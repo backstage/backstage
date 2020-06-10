@@ -22,7 +22,6 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-  SidebarUserBadge,
 } from '.';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -55,6 +54,5 @@ export const SampleSidebar = () => (
     <SidebarIntro />
     <SidebarSpace />
     <SidebarDivider />
-    <SidebarUserBadge />
   </Sidebar>
 );

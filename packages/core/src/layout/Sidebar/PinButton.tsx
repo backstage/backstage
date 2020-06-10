@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC, useContext } from 'react';
 import { makeStyles } from '@material-ui/core';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import { SidebarContext } from './config';
-import { SidebarItem } from './Items';
-import { LoggedUserBadge } from './LoggedUserBadge';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
+import { SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
-import { useApi, googleAuthApiRef, ProfileInfo } from '@backstage/core-api';
 
 const ARROW_BUTTON_SIZE = 20;
 const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(theme => {
   return {
     root: {
       position: 'relative',
+      alignSelf: 'stretch',
     },
     arrowButtonWrapper: {
       position: 'absolute',
       right: 0,
       width: ARROW_BUTTON_SIZE,
       height: ARROW_BUTTON_SIZE,
-      top: `calc(50% - ${ARROW_BUTTON_SIZE / 2}px)`,
+      top: -(theme.spacing(6) + ARROW_BUTTON_SIZE) / 2,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: '2px 0px 0px 2px',
-      background: theme.palette.pinSidebarButton.icon,
-      color: theme.palette.pinSidebarButton.background,
+      background: theme.palette.pinSidebarButton.background,
+      color: theme.palette.pinSidebarButton.icon,
       border: 'none',
       outline: 'none',
       cursor: 'pointer',
@@ -53,37 +50,15 @@ const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(theme => {
   };
 });
 
-export const SidebarUserBadge: FC<{}> = () => {
+export const SidebarPinButton: FC<{}> = () => {
   const { isOpen } = useContext(SidebarContext);
   const { isPinned, toggleSidebarPinState } = useContext(
     SidebarPinStateContext,
   );
   const classes = useStyles({ isPinned });
-  const googleAuth = useApi(googleAuthApiRef);
-  const [profile, setProfile] = useState<ProfileInfo>();
-
-  useEffect(() => {
-    // TODO(soapraj): How to observe if the user is logged in
-    // TODO(soapraj): List all the providers supported by the app and let user log in from here
-    googleAuth.getProfile({ optional: true }).then(googleProfile => {
-      setProfile(googleProfile);
-    });
-  }, [googleAuth]);
 
   return (
     <div className={classes.root}>
-      {profile ? (
-        <>
-          <LoggedUserBadge
-            email={profile.email}
-            imageUrl={profile.picture}
-            name={profile.name}
-            collapsedMode={!isOpen}
-          />
-        </>
-      ) : (
-        <SidebarItem icon={AccountCircleIcon} text="" disableSelected />
-      )}
       {isOpen && (
         <button
           className={classes.arrowButtonWrapper}
