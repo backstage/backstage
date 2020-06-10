@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Component } from './component';
 import {
   Entity,
-  LOCATION_ANNOTATION,
   LocationSpec,
+  LOCATION_ANNOTATION,
+  EntityMeta,
 } from '@backstage/catalog-model';
-import Edit from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import { styled } from '@material-ui/core/styles';
+import Edit from '@material-ui/icons/Edit';
+import React from 'react';
+import { Component } from './component';
 
 const DescriptionWrapper = styled('span')({
   display: 'flex',
@@ -39,7 +40,7 @@ const createEditLink = (location: LocationSpec): string => {
 };
 
 export function entityToComponent(envelope: Entity): Component {
-  const location = findLocationForEntity(envelope);
+  const location = findLocationForEntityMeta(envelope.metadata);
   return {
     name: envelope.metadata?.name ?? '',
     kind: envelope.kind ?? 'unknown',
@@ -56,14 +57,17 @@ export function entityToComponent(envelope: Entity): Component {
         ) : null}
       </DescriptionWrapper>
     ),
-    location: findLocationForEntity(envelope),
   };
 }
 
-export function findLocationForEntity(
-  entity: Entity,
+export function findLocationForEntityMeta(
+  meta: EntityMeta,
 ): LocationSpec | undefined {
-  const annotation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+  if (!meta) {
+    return undefined;
+  }
+
+  const annotation = meta.annotations?.[LOCATION_ANNOTATION];
   if (!annotation) {
     return undefined;
   }

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
-import { Link, Typography } from '@material-ui/core';
+import { Progress, Table, TableColumn } from '@backstage/core';
+import { Link } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React, { FC } from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { Component } from '../../data/component';
@@ -63,12 +64,11 @@ const CatalogTable: FC<CatalogTableProps> = ({
     return <Progress />;
   } else if (error) {
     return (
-      <InfoCard>
-        <Typography variant="subtitle1" paragraph>
-          Error encountered while fetching components.
-        </Typography>
-        <Typography>{error}</Typography>
-      </InfoCard>
+      <div>
+        <Alert severity="error">
+          Error encountered while fetching components. {error.toString()}
+        </Alert>
+      </div>
     );
   }
 

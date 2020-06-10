@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Progress, useApi, alertApiRef } from '@backstage/core';
+import { Progress, useApi } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -22,12 +23,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
   useMediaQuery,
   useTheme,
   List,
   ListItem,
   ListItemText,
 } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
 import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';

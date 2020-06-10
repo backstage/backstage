@@ -23,26 +23,20 @@ const components: Component[] = [
   {
     name: 'component1',
     kind: 'Component',
+    metadata: { name: 'component1' },
     description: 'Placeholder',
-    metadata: {
-      name: 'component1',
-    },
   },
   {
     name: 'component2',
     kind: 'Component',
+    metadata: { name: 'component2' },
     description: 'Placeholder',
-    metadata: {
-      name: 'component2',
-    },
   },
   {
     name: 'component3',
     kind: 'Component',
+    metadata: { name: 'component3' },
     description: 'Placeholder',
-    metadata: {
-      name: 'component3',
-    },
   },
 ];
 
@@ -69,7 +63,7 @@ describe('CatalogTable component', () => {
       ),
     );
     const errorMessage = await rendered.findByText(
-      'Something went wrong here. Please contact #backstage for help.',
+      /Error encountered while fetching components./,
     );
     expect(errorMessage).toBeInTheDocument();
   });

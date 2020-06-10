@@ -35,7 +35,7 @@ import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { Component } from '../../data/component';
 import { defaultFilter, filterGroups } from '../../data/filters';
-import { entityToComponent, findLocationForEntity } from '../../data/utils';
+import { entityToComponent, findLocationForEntityMeta } from '../../data/utils';
 import {
   CatalogFilter,
   CatalogFilterItem,
@@ -69,16 +69,18 @@ const CatalogPage: FC<{}> = () => {
   const styles = useStyles();
 
   const actions = [
-    (rowData: Component) => ({
-      icon: GitHub,
-      tooltip: 'View on GitHub',
-      onClick: () => {
-        if (!rowData || !rowData.location) return;
-        window.open(rowData.location.target, '_blank');
-      },
-      hidden:
-        rowData && rowData.location ? rowData.location.type !== 'github' : true,
-    }),
+    (rowData: Component) => {
+      const location = findLocationForEntityMeta(rowData.metadata);
+      return {
+        icon: GitHub,
+        tooltip: 'View on GitHub',
+        onClick: () => {
+          if (!location) return;
+          window.open(location.target, '_blank');
+        },
+        hidden: location ? location?.type !== 'github' : true,
+      };
+    },
   ];
 
   // TODO: replace me with the proper tabs implemntation
@@ -152,7 +154,7 @@ const CatalogPage: FC<{}> = () => {
                 value.map(val => {
                   return {
                     ...entityToComponent(val),
-                    locationSpec: findLocationForEntity(val),
+                    locationSpec: findLocationForEntityMeta(val.metadata),
                   };
                 })) ||
               []
