@@ -1,0 +1,59 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import webpack from 'webpack';
+import { createConfig } from './config';
+import { resolveBundlingPaths } from './paths';
+import { ServeOptions } from './types';
+
+export async function serveBackend(options: ServeOptions) {
+  const paths = resolveBundlingPaths(options);
+  const config = createConfig(paths, {
+    ...options,
+    isDev: true,
+    isBackend: true,
+  });
+
+  const compiler = webpack(config);
+
+  const watcher = compiler.watch(
+    {
+      poll: true,
+    },
+    (err: Error, _stats: any) => {
+      console.log('Build succeeded');
+      if (err) {
+        console.error(err);
+      }
+    },
+  );
+
+  const waitForExit = async () => {
+    for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+      process.on(signal, () => {
+        // server.close();
+        watcher.close(() => console.log('Watcher closed'));
+        // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
+        process.exit();
+      });
+    }
+
+    // Block indefinitely and wait for the interrupt signal
+    return new Promise(() => {});
+  };
+
+  return waitForExit;
+}

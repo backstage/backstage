@@ -60,6 +60,8 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     targetTsConfig: paths.resolveTargetRoot('tsconfig.json'),
     targetNodeModules: paths.resolveTarget('node_modules'),
     targetPackageJson: paths.resolveTarget('package.json'),
+    rootNodeModules: paths.resolveTargetRoot('node_modules'),
+    root: paths.targetRoot,
   };
 }
 

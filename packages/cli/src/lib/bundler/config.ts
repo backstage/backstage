@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import webpack from 'webpack';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
+import StartServerPlugin from 'start-server-webpack-plugin';
+import webpack from 'webpack';
+import nodeExternals from 'webpack-node-externals';
+import { optimization } from './optimization';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
-import { optimization } from './optimization';
 import { BundlingOptions } from './types';
 // import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles';
 // import ModuleNotFoundPlugin from 'react-dev-utils/ModuleNotFoundPlugin';
@@ -32,7 +34,7 @@ export function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): webpack.Configuration {
-  const { checksEnabled, isDev } = options;
+  const { checksEnabled, isDev, isBackend } = options;
 
   const { plugins, loaders } = transforms(options);
 
@@ -80,16 +82,65 @@ export function createConfig(
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
+    ...(isBackend
+      ? {
+          watch: true,
+          watchOptions: {
+            ignored: [/node_modules\/(?!\@backstage)/],
+            // poll: 1000
+          },
+          externals: [
+            nodeExternals({
+              modulesDir: paths.rootNodeModules,
+              whitelist: [
+                'webpack/hot/poll?100',
+                /\@backstage\/.*\/(?!node_modules)/,
+              ],
+            }),
+            nodeExternals({
+              modulesDir: paths.targetNodeModules,
+              whitelist: [
+                'webpack/hot/poll?100',
+                /\@backstage\/.*\/(?!node_modules)/,
+              ],
+            }),
+          ],
+          target: 'node',
+          node: {
+            __dirname: true,
+            __filename: true,
+            global: true,
+          },
+        }
+      : {
+          node: {
+            module: 'empty',
+            dgram: 'empty',
+            dns: 'mock',
+            fs: 'empty',
+            http2: 'empty',
+            net: 'empty',
+            tls: 'empty',
+            child_process: 'empty',
+          },
+          optimization: optimization(options),
+        }),
     bail: false,
     performance: {
       hints: false, // we check the gzip size instead
     },
     devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
     context: paths.targetPath,
-    entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
+    entry: [
+      ...(isBackend
+        ? ['webpack/hot/poll?100']
+        : [require.resolve('react-hot-loader/patch')]),
+      paths.targetEntry,
+    ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['main:src', 'browser', 'module', 'main'],
+      modules: [paths.targetNodeModules, paths.rootNodeModules],
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
@@ -111,17 +162,11 @@ export function createConfig(
         ? '[name].chunk.js'
         : '[name].[chunkhash:8].chunk.js',
     },
-    optimization: optimization(options),
-    plugins,
-    node: {
-      module: 'empty',
-      dgram: 'empty',
-      dns: 'mock',
-      fs: 'empty',
-      http2: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      child_process: 'empty',
-    },
+    plugins: isBackend
+      ? [
+          new StartServerPlugin('main.js'),
+          new webpack.HotModuleReplacementPlugin(),
+        ]
+      : plugins,
   };
 }
