@@ -55,24 +55,11 @@ export const filterGroups: CatalogFilterGroup[] = [
   },
 ];
 
-type ResolverFunction = ({
-  entitiesResolver,
-  isStarredEntity,
-}: {
-  entitiesResolver: () => Promise<Entity[]>;
-  isStarredEntity: (entity: Entity) => boolean;
-}) => Promise<Entity[]>;
-
-export const asyncEntityFilters: Record<FilterGroupItem, ResolverFunction> = {
-  [FilterGroupItem.OWNED]: async () => [],
-  [FilterGroupItem.ALL]: async ({ entitiesResolver: asyncFn }) => {
-    return asyncFn();
-  },
-  [FilterGroupItem.STARRED]: async ({ entitiesResolver, isStarredEntity }) => {
-    const allEntities = await entitiesResolver();
-
-    return allEntities.filter(entity => isStarredEntity(entity));
-  },
+export const entityFilters = {
+  [FilterGroupItem.OWNED]: () => () => false,
+  [FilterGroupItem.ALL]: () => () => true,
+  [FilterGroupItem.STARRED]: ({ isStarredEntity }: { isStarredEntity: any }) =>
+    isStarredEntity,
 };
 
 export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];
