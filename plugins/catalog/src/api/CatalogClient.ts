@@ -77,7 +77,11 @@ export class CatalogClient implements CatalogApi {
       );
     }
     const value = await response.json();
-    this.cache.set(`get:${JSON.stringify(filter)}`, value);
+
+    if (value?.length) {
+      this.cache.set(`get:${JSON.stringify(filter)}`, value);
+    }
+
     return value;
   }
 
