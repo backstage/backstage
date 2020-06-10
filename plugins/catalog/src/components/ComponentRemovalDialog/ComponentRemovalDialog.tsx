@@ -32,37 +32,36 @@ import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api/types';
-import { Component } from '../../data/component';
 
 type ComponentRemovalDialogProps = {
+  open: boolean;
   onConfirm: () => any;
-  onCancel: () => any;
   onClose: () => any;
-  component: Component;
+  entity: Entity;
 };
 
-function useColocatedEntities(component: Component): AsyncState<Entity[]> {
+function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   const catalogApi = useApi(catalogApiRef);
   return useAsync(async () => {
-    const myLocation = component.metadata.annotations?.[LOCATION_ANNOTATION];
+    const myLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
     return myLocation
       ? await catalogApi.getEntities({ [LOCATION_ANNOTATION]: myLocation })
       : [];
-  }, [catalogApi, component]);
+  }, [catalogApi, entity]);
 }
 
 export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
+  open,
   onConfirm,
-  onCancel,
   onClose,
-  component,
+  entity,
 }) => {
-  const { value: entities, loading, error } = useColocatedEntities(component);
+  const { value: entities, loading, error } = useColocatedEntities(entity);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
-    <Dialog fullScreen={fullScreen} open onClose={onClose}>
+    <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
         Are you sure you want to unregister this component?
       </DialogTitle>
@@ -102,7 +101,7 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={onClose}>Cancel</Button>
         <Button
           disabled={!!(loading || error)}
           onClick={onConfirm}
