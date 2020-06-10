@@ -59,6 +59,7 @@ const useStyles = makeStyles<Theme>(theme => {
       fontWeight: 'bold',
       whiteSpace: 'nowrap',
       lineHeight: 1.0,
+      flex: '3 1 auto',
     },
     iconContainer: {
       boxSizing: 'border-box',
@@ -83,6 +84,11 @@ const useStyles = makeStyles<Theme>(theme => {
     },
     searchContainer: {
       width: drawerWidthOpen - iconContainerWidth,
+    },
+    secondaryAction: {
+      width: theme.spacing(6),
+      textAlign: 'center',
+      marginRight: theme.spacing(1),
     },
     selected: {
       '&$root': {
@@ -148,7 +154,6 @@ export const SidebarItem: FC<SidebarItemProps> = ({
       </NavLink>
     );
   }
-
   return (
     <NavLink
       className={clsx(classes.root, classes.open)}
@@ -166,7 +171,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
           {text}
         </Typography>
       )}
-      {children}
+      <div className={classes.secondaryAction}>{children}</div>
     </NavLink>
   );
 };

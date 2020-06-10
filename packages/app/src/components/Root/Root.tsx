@@ -31,8 +31,9 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-  SidebarUserBadge,
+  SidebarUserSettings,
   SidebarThemeToggle,
+  SidebarPinButton,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
 
@@ -90,7 +91,8 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarSpace />
       <SidebarDivider />
       <SidebarThemeToggle />
-      <SidebarUserBadge />
+      <SidebarUserSettings />
+      <SidebarPinButton />
     </Sidebar>
     {children}
   </SidebarPage>
