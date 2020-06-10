@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { BehaviorSubject } from '../../../lib';
-import { SessionState } from '../..';
+import { BehaviorSubject } from '..';
+import { SessionState } from '../../apis';
 
 export class SessionStateTracker {
   private signedIn: boolean = false;

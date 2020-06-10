@@ -17,7 +17,7 @@
 import {
   ApiRef,
   OpenIdConnectApi,
-  ObservableSessionStateApi,
+  SessionStateApi,
   useApi,
   Subscription,
   IconComponent,
@@ -29,7 +29,7 @@ import { ProviderSettingsItem } from './ProviderSettingsItem';
 export type OIDCProviderSidebarProps = {
   title: string;
   icon: IconComponent;
-  apiRef: ApiRef<OpenIdConnectApi & ObservableSessionStateApi>;
+  apiRef: ApiRef<OpenIdConnectApi & SessionStateApi>;
 };
 
 export const OIDCProviderSettings: FC<OIDCProviderSidebarProps> = ({

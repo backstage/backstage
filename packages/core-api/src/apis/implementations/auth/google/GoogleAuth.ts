@@ -25,14 +25,14 @@ import {
   ProfileInfoApi,
   ProfileInfoOptions,
   ProfileInfo,
-  ObservableSessionStateApi,
+  SessionStateApi,
   SessionState,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
-import { SessionStateTracker } from '../SessionStateTracker';
+import { SessionStateTracker } from '../../../../lib/AuthSessionManager/SessionStateTracker';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
@@ -62,11 +62,7 @@ const DEFAULT_PROVIDER = {
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
 class GoogleAuth
-  implements
-    OAuthApi,
-    OpenIdConnectApi,
-    ProfileInfoApi,
-    ObservableSessionStateApi {
+  implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, SessionStateApi {
   static create({
     apiOrigin,
     basePath,
@@ -148,6 +144,7 @@ class GoogleAuth
 
   async getProfile(options: ProfileInfoOptions = {}) {
     const session = await this.sessionManager.getSession(options);
+    this.sessionStateTracker.setIsSignedId(!!session);
     if (!session) {
       return undefined;
     }

@@ -173,7 +173,7 @@ export enum SessionState {
   SignedOut = 'SignedOut',
 }
 
-export type ObservableSessionStateApi = {
+export type SessionStateApi = {
   sessionState$(): Observable<SessionState>;
 };
 /**
@@ -185,7 +185,7 @@ export type ObservableSessionStateApi = {
  * email and expiration information. Do not rely on any other fields, as they might not be present.
  */
 export const googleAuthApiRef = createApiRef<
-  OAuthApi & OpenIdConnectApi & ProfileInfoApi & ObservableSessionStateApi
+  OAuthApi & OpenIdConnectApi & ProfileInfoApi & SessionStateApi
 >({
   id: 'core.auth.google',
   description: 'Provides authentication towards Google APIs and identities',
@@ -197,9 +197,7 @@ export const googleAuthApiRef = createApiRef<
  * See https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
  * for a full list of supported scopes.
  */
-export const githubAuthApiRef = createApiRef<
-  OAuthApi & ObservableSessionStateApi
->({
+export const githubAuthApiRef = createApiRef<OAuthApi & SessionStateApi>({
   id: 'core.auth.github',
   description: 'Provides authentication towards Github APIs',
 });

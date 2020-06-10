@@ -17,7 +17,7 @@
 import {
   ApiRef,
   OAuthApi,
-  ObservableSessionStateApi,
+  SessionStateApi,
   useApi,
   Subscription,
   IconComponent,
@@ -29,7 +29,7 @@ import { ProviderSettingsItem } from './ProviderSettingsItem';
 type OAuthProviderSidebarProps = {
   title: string;
   icon: IconComponent;
-  apiRef: ApiRef<OAuthApi & ObservableSessionStateApi>;
+  apiRef: ApiRef<OAuthApi & SessionStateApi>;
 };
 
 export const OAuthProviderSettings: FC<OAuthProviderSidebarProps> = ({

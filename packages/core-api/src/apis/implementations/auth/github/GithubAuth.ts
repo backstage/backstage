@@ -20,14 +20,14 @@ import { GithubSession } from './types';
 import {
   OAuthApi,
   AccessTokenOptions,
-  ObservableSessionStateApi,
+  SessionStateApi,
   SessionState,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
-import { SessionStateTracker } from '../SessionStateTracker';
+import { SessionStateTracker } from '../../../../lib/AuthSessionManager/SessionStateTracker';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GithubAuth
@@ -53,7 +53,7 @@ const DEFAULT_PROVIDER = {
   icon: GithubIcon,
 };
 
-class GithubAuth implements OAuthApi, ObservableSessionStateApi {
+class GithubAuth implements OAuthApi, SessionStateApi {
   static create({
     apiOrigin,
     basePath,
