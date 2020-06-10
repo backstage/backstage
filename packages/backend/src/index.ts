@@ -22,26 +22,14 @@
  * Happy hacking!
  */
 
-import {
-  errorHandler,
-  getRootLogger,
-  notFoundHandler,
-  requestLoggingHandler,
-} from '@backstage/backend-common';
-import compression from 'compression';
-import cors from 'cors';
-import express from 'express';
-import helmet from 'helmet';
+import { createServiceBuilder, getRootLogger } from '@backstage/backend-common';
 import knex from 'knex';
+import auth from './plugins/auth';
 import catalog from './plugins/catalog';
+import identity from './plugins/identity';
 import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
-import auth from './plugins/auth';
-import identity from './plugins/identity';
 import { PluginEnvironment } from './types';
-
-const DEFAULT_PORT = 7000;
-const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
 
 function createEnv(plugin: string): PluginEnvironment {
   const logger = getRootLogger().child({ type: 'plugin', plugin });
@@ -57,30 +45,23 @@ function createEnv(plugin: string): PluginEnvironment {
 }
 
 async function main() {
-  const app = express();
-  const corsOptions: cors.CorsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true,
-  };
+  const service = createServiceBuilder()
+    .enableCors({
+      origin: 'http://localhost:3000',
+      credentials: true,
+    })
+    .addRouter('/catalog', await catalog(createEnv('catalog')))
+    .addRouter('/scaffolder', await scaffolder(createEnv('scaffolder')))
+    .addRouter(
+      '/sentry',
+      await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
+    )
+    .addRouter('/auth', await auth(createEnv('auth')))
+    .addRouter('/identity', await identity(createEnv('identity')));
 
-  app.use(helmet());
-  app.use(cors(corsOptions));
-  app.use(compression());
-  app.use(express.json());
-  app.use(requestLoggingHandler());
-  app.use('/catalog', await catalog(createEnv('catalog')));
-  app.use('/scaffolder', await scaffolder(createEnv('scaffolder')));
-  app.use(
-    '/sentry',
-    await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
-  );
-  app.use('/auth', await auth(createEnv('auth')));
-  app.use('/identity', await identity(createEnv('identity')));
-  app.use(notFoundHandler());
-  app.use(errorHandler());
-
-  app.listen(PORT, () => {
-    getRootLogger().info(`Listening on port ${PORT}`);
+  await service.start().catch(err => {
+    console.log(err);
+    process.exit(1);
   });
 }
 

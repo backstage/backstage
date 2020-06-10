@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-export * from './errors';
-export * from './logging';
-export * from './middleware';
-export * from './service';
+import React, { FC } from 'react';
+import Box from '@material-ui/core/Box';
+
+export interface TabPanelProps {
+  children: any;
+  value?: any;
+  index?: number;
+}
+
+export const TabPanel: FC<TabPanelProps> = props => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      aria-labelledby={`scrollable-auto-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box p={3}>{children}</Box>}
+    </div>
+  );
+};

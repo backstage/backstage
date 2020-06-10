@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ComponentPage from './ComponentPage';
+import { ComponentPage } from './ComponentPage';
 import { render, wait } from '@testing-library/react';
 import * as React from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { catalogApiRef, CatalogApi } from '../../api/types';
 
-const getTestProps = (componentName: string) => {
+const getTestProps = (name: string) => {
   return {
     match: {
       params: {
-        name: componentName,
+        optionalNamespaceAndName: name,
+        kind: 'Component',
       },
     },
     history: {
@@ -46,7 +47,7 @@ describe('ComponentPage', () => {
             [
               catalogApiRef,
               ({
-                async getEntityByName() {},
+                async getEntity() {},
               } as unknown) as CatalogApi,
             ],
           ])}

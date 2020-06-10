@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export * from './errors';
-export * from './logging';
-export * from './middleware';
-export * from './service';
+import React from 'react';
+import { render } from '@testing-library/react';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { StyledTab } from './Tab';
+
+describe('<Tab />', () => {
+  it('renders without exploding', () => {
+    const rendered = render(wrapInTestApp(<StyledTab label="test" />));
+    expect(rendered.getByText('test')).toBeInTheDocument();
+  });
+});

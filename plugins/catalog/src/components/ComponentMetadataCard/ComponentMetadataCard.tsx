@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { InfoCard, Progress, StructuredMetadataTable } from '@backstage/core';
 import React, { FC } from 'react';
 import { Component } from '../../data/component';
-import { Progress, InfoCard, StructuredMetadataTable } from '@backstage/core';
 
-type ComponentMetadataCardProps = {
+type Props = {
   loading: boolean;
   component: Component | undefined;
 };
-const ComponentMetadataCard: FC<ComponentMetadataCardProps> = ({
-  loading,
-  component,
-}) => {
+
+export const ComponentMetadataCard: FC<Props> = ({ loading, component }) => {
   if (loading) {
     return (
       <InfoCard title="Metadata">
@@ -41,4 +39,3 @@ const ComponentMetadataCard: FC<ComponentMetadataCardProps> = ({
     </InfoCard>
   );
 };
-export default ComponentMetadataCard;

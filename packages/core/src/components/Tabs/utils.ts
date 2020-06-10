@@ -13,5 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TabProps } from './Tabs';
 
-export { default } from './CatalogPage';
+export const chunkArray = (
+  myArray: TabProps[],
+  chunkSize: number,
+): TabProps[][] => {
+  const results = [];
+  while (myArray.length) {
+    results.push(myArray.splice(0, chunkSize));
+  }
+  return results;
+};

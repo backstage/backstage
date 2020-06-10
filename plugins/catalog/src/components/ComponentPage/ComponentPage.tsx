@@ -13,34 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useEffect, useState } from 'react';
-import { useAsync } from 'react-use';
-import ComponentMetadataCard from '../ComponentMetadataCard/ComponentMetadataCard';
 import {
   Content,
-  Header,
-  pageTheme,
-  Page,
-  useApi,
   ErrorApi,
   errorApiRef,
+  Header,
   HeaderTabs,
+  Page,
+  pageTheme,
+  useApi,
 } from '@backstage/core';
-import ComponentContextMenu from '../ComponentContextMenu/ComponentContextMenu';
-import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDialog';
-
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
+import React, { FC, useEffect, useState } from 'react';
+import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
-import { entityToComponent } from '../../data/utils';
 import { Component } from '../../data/component';
+import { entityToComponent } from '../../data/utils';
+import { ComponentContextMenu } from '../ComponentContextMenu/ComponentContextMenu';
+import { ComponentMetadataCard } from '../ComponentMetadataCard/ComponentMetadataCard';
+import { ComponentRemovalDialog } from '../ComponentRemovalDialog/ComponentRemovalDialog';
 
 const REDIRECT_DELAY = 1000;
 
 type ComponentPageProps = {
   match: {
     params: {
-      name: string;
+      optionalNamespaceAndName: string;
+      kind: string;
     };
   };
   history: {
@@ -48,17 +48,18 @@ type ComponentPageProps = {
   };
 };
 
-const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
+export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const [removingPending, setRemovingPending] = useState(false);
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
   const hideRemovalDialog = () => setConfirmationDialogOpen(false);
-  const componentName = match.params.name;
+  const { optionalNamespaceAndName, kind } = match.params;
+  const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
   const errorApi = useApi<ErrorApi>(errorApiRef);
 
   const catalogApi = useApi(catalogApiRef);
   const { value: component, error, loading } = useAsync<Component>(async () => {
-    const entity = await catalogApi.getEntityByName(match.params.name);
+    const entity = await catalogApi.getEntity({ name, namespace, kind });
     const location = await catalogApi.getLocationByEntity(entity);
     return { ...entityToComponent(entity), location };
   });
@@ -72,7 +73,7 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     }
   }, [error, errorApi, history]);
 
-  if (componentName === '') {
+  if (name === '') {
     history.push('/catalog');
     return null;
   }
@@ -149,4 +150,3 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     </Page>
   );
 };
-export default ComponentPage;

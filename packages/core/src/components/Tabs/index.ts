@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export * from './errors';
-export * from './logging';
-export * from './middleware';
-export * from './service';
+export { Tabs as default } from './Tabs';

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LocationSpec, Entity } from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
@@ -26,27 +27,27 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
-import { LocationSpec, Entity } from '@backstage/catalog-model';
+
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import GitHub from '@material-ui/icons/GitHub';
 import StarOutline from '@material-ui/icons/StarBorder';
 import Star from '@material-ui/icons/Star';
+
 import Edit from '@material-ui/icons/Edit';
+
 import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { defaultFilter, filterGroups, dataResolvers } from '../../data/filters';
 import { entityToComponent, findLocationForEntityMeta } from '../../data/utils';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
 import {
   CatalogFilter,
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
-
-import { useStarredEntities } from '../../hooks/useStarredEntites';
-
-import CatalogTable from '../CatalogTable/CatalogTable';
+import { CatalogTable } from '../CatalogTable/CatalogTable';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -61,7 +62,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CatalogPage: FC<{}> = () => {
+export const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const {
     starredEntities,
@@ -215,5 +216,3 @@ const CatalogPage: FC<{}> = () => {
     </Page>
   );
 };
-
-export default CatalogPage;
