@@ -92,7 +92,7 @@ export const CatalogPage: FC<{}> = () => {
           if (!location) return;
           window.open(location.target, '_blank');
         },
-        hidden: location ? location?.type !== 'github' : true,
+        hidden: location?.type !== 'github',
       };
     },
     (rowData: Entity) => {
