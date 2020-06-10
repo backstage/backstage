@@ -20,11 +20,12 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { catalogApiRef, CatalogApi } from '../../api/types';
 
-const getTestProps = (componentName: string) => {
+const getTestProps = (name: string) => {
   return {
     match: {
       params: {
-        name: componentName,
+        optionalNamespaceAndName: name,
+        kind: 'Component',
       },
     },
     history: {
@@ -46,7 +47,7 @@ describe('ComponentPage', () => {
             [
               catalogApiRef,
               ({
-                async getEntityByName() {},
+                async getEntity() {},
               } as unknown) as CatalogApi,
             ],
           ])}
