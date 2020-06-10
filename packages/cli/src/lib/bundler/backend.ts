@@ -33,7 +33,7 @@ export async function serveBackend(options: ServeOptions) {
     {
       poll: true,
     },
-    (err: Error, _stats: any) => {
+    (err: Error) => {
       console.log('Build succeeded');
       if (err) {
         console.error(err);
@@ -44,8 +44,7 @@ export async function serveBackend(options: ServeOptions) {
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
-        // server.close();
-        watcher.close(() => console.log('Watcher closed'));
+        watcher.close(() => console.log('Stopped watcher'));
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
         process.exit();
       });
