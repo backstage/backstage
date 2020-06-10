@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ComponentContextMenu from './ComponentContextMenu';
+import { ComponentContextMenu } from './ComponentContextMenu';
 import { render } from '@testing-library/react';
 import * as React from 'react';
 import { act } from 'react-dom/test-utils';

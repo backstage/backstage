@@ -53,7 +53,7 @@ function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   }, [catalogApi, entity]);
 }
 
-const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
+export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
   onConfirm,
   onCancel,
   onClose,
@@ -133,5 +133,3 @@ const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
     </Dialog>
   );
 };
-
-export default ComponentRemovalDialog;
