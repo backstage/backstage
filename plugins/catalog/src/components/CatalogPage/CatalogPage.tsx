@@ -26,7 +26,7 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
-import { LocationSpec } from '@backstage/catalog-model';
+import { LocationSpec, Entity } from '@backstage/catalog-model';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import GitHub from '@material-ui/icons/GitHub';
@@ -37,7 +37,6 @@ import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
-import { Component } from '../../data/component';
 import { defaultFilter, filterGroups, dataResolvers } from '../../data/filters';
 import { entityToComponent, findLocationForEntityMeta } from '../../data/utils';
 import {
@@ -74,7 +73,7 @@ const CatalogPage: FC<{}> = () => {
   );
 
   const { value, error, loading } = useAsync(
-    () => dataResolvers[selectedFilter.id]({ catalogApi, starredEntities }),
+    () => dataResolvers[selectedFilter.id]({ catalogApi, isStarredEntity }),
     [selectedFilter.id, starredEntities.size],
   );
 
@@ -86,7 +85,7 @@ const CatalogPage: FC<{}> = () => {
   const styles = useStyles();
 
   const actions = [
-    (rowData: Component) => {
+    (rowData: Entity) => {
       const location = findLocationForEntityMeta(rowData.metadata);
       return {
         icon: GitHub,
@@ -98,7 +97,7 @@ const CatalogPage: FC<{}> = () => {
         hidden: location ? location?.type !== 'github' : true,
       };
     },
-    (rowData: Component) => {
+    (rowData: Entity) => {
       const createEditLink = (location: LocationSpec): string => {
         switch (location.type) {
           case 'github':
@@ -121,7 +120,7 @@ const CatalogPage: FC<{}> = () => {
         hidden: location ? location?.type !== 'github' : true,
       };
     },
-    (rowData: Component) => {
+    (rowData: Entity) => {
       const isStarred = isStarredEntity(rowData);
       return {
         icon: isStarred ? Star : StarOutline,

@@ -58,10 +58,10 @@ export const filterGroups: CatalogFilterGroup[] = [
 
 type ResolverFunction = ({
   catalogApi,
-  starredEntities,
+  isStarredEntity,
 }: {
   catalogApi: CatalogApi;
-  starredEntities: Set<string>;
+  isStarredEntity: (entity: Entity) => boolean;
 }) => Promise<Entity[]>;
 
 export const dataResolvers: Record<FilterGroupItem, ResolverFunction> = {
@@ -69,12 +69,10 @@ export const dataResolvers: Record<FilterGroupItem, ResolverFunction> = {
   [FilterGroupItem.ALL]: async ({ catalogApi }) => {
     return catalogApi.getEntities();
   },
-  [FilterGroupItem.STARRED]: async ({ catalogApi, starredEntities }) => {
+  [FilterGroupItem.STARRED]: async ({ catalogApi, isStarredEntity }) => {
     const allEntities = await catalogApi.getEntities();
 
-    return allEntities.filter(entity =>
-      starredEntities.has(entity.metadata.name),
-    );
+    return allEntities.filter(entity => isStarredEntity(entity));
   },
 };
 

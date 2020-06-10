@@ -16,9 +16,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useApi, storageApiRef } from '@backstage/core';
 import { useObservable } from 'react-use';
-import { Component } from '../data/component';
+import { Entity } from '@backstage/catalog-model';
 
-const buildEntityKey = (component: Component) =>
+const buildEntityKey = (component: Entity) =>
   `entity:${component.kind}:${component.metadata.namespace ?? 'default'}:${
     component.metadata.name
   }`;
@@ -45,7 +45,7 @@ export const useStarredEntities = () => {
   }, [observedItems?.newValue]);
 
   const toggleStarredEntity = useCallback(
-    (entity: Component) => {
+    (entity: Entity) => {
       const entityKey = buildEntityKey(entity);
       if (starredEntities.has(entityKey)) {
         starredEntities.delete(entityKey);
@@ -59,7 +59,7 @@ export const useStarredEntities = () => {
   );
 
   const isStarredEntity = useCallback(
-    (entity: Component) => {
+    (entity: Entity) => {
       const entityKey = buildEntityKey(entity);
       return starredEntities.has(entityKey);
     },

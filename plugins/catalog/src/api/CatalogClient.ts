@@ -21,8 +21,10 @@ import {
   Location,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
+import Cache from 'node-cache';
 
 export class CatalogClient implements CatalogApi {
+  private cache: Cache;
   private apiOrigin: string;
   private basePath: string;
   constructor({
@@ -34,6 +36,7 @@ export class CatalogClient implements CatalogApi {
   }) {
     this.apiOrigin = apiOrigin;
     this.basePath = basePath;
+    this.cache = new Cache({ stdTTL: 10 });
   }
   async getLocationById(id: String): Promise<Location | undefined> {
     const response = await fetch(
@@ -48,6 +51,11 @@ export class CatalogClient implements CatalogApi {
   async getEntities(
     filter?: Record<string, string>,
   ): Promise<DescriptorEnvelope[]> {
+    const cachedValue = this.cache.get<DescriptorEnvelope[]>(
+      `get:${JSON.stringify(filter)}`,
+    );
+    if (cachedValue) return cachedValue;
+
     let url = `${this.apiOrigin}${this.basePath}/entities`;
     if (filter) {
       url += '?';
@@ -65,8 +73,9 @@ export class CatalogClient implements CatalogApi {
         `Request failed with ${response.status} ${response.statusText}, ${payload}`,
       );
     }
-
-    return await response.json();
+    const value = await response.json();
+    this.cache.set(`get:${JSON.stringify(filter)}`, value);
+    return value;
   }
   async getEntityByName(name: string): Promise<DescriptorEnvelope> {
     const response = await fetch(
