@@ -22,7 +22,6 @@ import StarIcon from '@material-ui/icons/Star';
 import { StarredCount } from '../components/CatalogFilter/StarredCount';
 import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
 import { FilterGroupItem } from '../types';
-import { CatalogApi } from '../..';
 import { Entity } from '@backstage/catalog-model';
 
 export const filterGroups: CatalogFilterGroup[] = [
@@ -57,20 +56,20 @@ export const filterGroups: CatalogFilterGroup[] = [
 ];
 
 type ResolverFunction = ({
-  catalogApi,
+  entitiesResolver,
   isStarredEntity,
 }: {
-  catalogApi: CatalogApi;
+  entitiesResolver: () => Promise<Entity[]>;
   isStarredEntity: (entity: Entity) => boolean;
 }) => Promise<Entity[]>;
 
-export const dataResolvers: Record<FilterGroupItem, ResolverFunction> = {
+export const asyncEntityFilters: Record<FilterGroupItem, ResolverFunction> = {
   [FilterGroupItem.OWNED]: async () => [],
-  [FilterGroupItem.ALL]: async ({ catalogApi }) => {
-    return catalogApi.getEntities();
+  [FilterGroupItem.ALL]: async ({ entitiesResolver: asyncFn }) => {
+    return asyncFn();
   },
-  [FilterGroupItem.STARRED]: async ({ catalogApi, isStarredEntity }) => {
-    const allEntities = await catalogApi.getEntities();
+  [FilterGroupItem.STARRED]: async ({ entitiesResolver, isStarredEntity }) => {
+    const allEntities = await entitiesResolver();
 
     return allEntities.filter(entity => isStarredEntity(entity));
   },

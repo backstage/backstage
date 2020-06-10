@@ -40,7 +40,11 @@ import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
-import { defaultFilter, filterGroups, dataResolvers } from '../../data/filters';
+import {
+  defaultFilter,
+  filterGroups,
+  asyncEntityFilters,
+} from '../../data/filters';
 import { entityToComponent, findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import {
@@ -74,7 +78,11 @@ export const CatalogPage: FC<{}> = () => {
   );
 
   const { value, error, loading } = useAsync(
-    () => dataResolvers[selectedFilter.id]({ catalogApi, isStarredEntity }),
+    () =>
+      asyncEntityFilters[selectedFilter.id]({
+        entitiesResolver: () => catalogApi.getEntities(),
+        isStarredEntity,
+      }),
     [selectedFilter.id, starredEntities.size],
   );
 
