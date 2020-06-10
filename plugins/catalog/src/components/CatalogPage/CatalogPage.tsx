@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LocationSpec, Entity } from '@backstage/catalog-model';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
@@ -27,21 +27,18 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
-
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import { Button, makeStyles, Typography, Link } from '@material-ui/core';
-import GitHub from '@material-ui/icons/GitHub';
-import StarOutline from '@material-ui/icons/StarBorder';
-import Star from '@material-ui/icons/Star';
-
+import { Button, Link, makeStyles, Typography } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
-
+import GitHub from '@material-ui/icons/GitHub';
+import Star from '@material-ui/icons/Star';
+import StarOutline from '@material-ui/icons/StarBorder';
 import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { defaultFilter, filterGroups, entityFilters } from '../../data/filters';
-import { entityToComponent, findLocationForEntityMeta } from '../../data/utils';
+import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import {
   CatalogFilter,
@@ -102,7 +99,7 @@ export const CatalogPage: FC<{}> = () => {
           if (!location) return;
           window.open(location.target, '_blank');
         },
-        hidden: location ? location?.type !== 'github' : true,
+        hidden: location?.type !== 'github',
       };
     },
     (rowData: Entity) => {
@@ -125,7 +122,7 @@ export const CatalogPage: FC<{}> = () => {
           if (!location) return;
           window.open(createEditLink(location), '_blank');
         },
-        hidden: location ? location?.type !== 'github' : true,
+        hidden: location?.type !== 'github',
       };
     },
     (rowData: Entity) => {
@@ -204,16 +201,7 @@ export const CatalogPage: FC<{}> = () => {
           </div>
           <CatalogTable
             titlePreamble={selectedFilter.label}
-            components={
-              (value &&
-                value.map(val => {
-                  return {
-                    ...entityToComponent(val),
-                    locationSpec: findLocationForEntityMeta(val.metadata),
-                  };
-                })) ||
-              []
-            }
+            entities={value || []}
             loading={loading}
             error={error}
             actions={actions}

@@ -22,13 +22,17 @@ export const catalogApiRef = createApiRef<CatalogApi>({
     'Used by the Catalog plugin to make requests to accompanying backend',
 });
 
+export type EntityCompoundName = {
+  kind: string;
+  namespace?: string;
+  name: string;
+};
+
 export interface CatalogApi {
-  getEntity(params: {
-    name: string;
-    namespace?: string;
-    kind: string;
-  }): Promise<Entity>;
   getLocationById(id: String): Promise<Location | undefined>;
+  getEntityByName(
+    compoundName: EntityCompoundName,
+  ): Promise<Entity | undefined>;
   getEntities(filter?: Record<string, string>): Promise<Entity[]>;
   addLocation(type: string, target: string): Promise<AddLocationResponse>;
   getLocationByEntity(entity: Entity): Promise<Location | undefined>;

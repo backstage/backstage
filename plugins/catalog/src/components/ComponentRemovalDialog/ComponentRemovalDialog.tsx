@@ -26,19 +26,17 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  List,
-  ListItem,
-  ListItemText,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api/types';
+import { alertApiRef } from '../../../../../packages/core-api/src/apis/definitions/AlertApi';
 
 type ComponentRemovalDialogProps = {
+  open: boolean;
   onConfirm: () => any;
-  onCancel: () => any;
   onClose: () => any;
   entity: Entity;
 };
@@ -54,51 +52,51 @@ function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
 }
 
 export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
+  open,
   onConfirm,
-  onCancel,
   onClose,
   entity,
 }) => {
-  const catalogApi = useApi(catalogApiRef);
-  const alertApi = useApi(alertApiRef);
   const { value: entities, loading, error } = useColocatedEntities(entity);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const catalogApi = useApi(catalogApiRef);
+  const alertApi = useApi(alertApiRef);
 
   return (
-    <Dialog fullScreen={fullScreen} open onClose={onClose}>
+    <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
         Are you sure you want to unregister this component?
       </DialogTitle>
       <DialogContent>
         {loading ? <Progress /> : null}
         {error ? (
-          <DialogContentText>{error.toString()}</DialogContentText>
+          <Alert severity="error" style={{ wordBreak: 'break-word' }}>
+            {error.toString()}
+          </Alert>
         ) : null}
         {entities ? (
           <>
             <DialogContentText>
               This action will unregister the following entities:
             </DialogContentText>
-            <List dense>
-              {entities.map(e => (
-                <ListItem key={e.metadata.name}>
-                  <ListItemText primary={e.metadata.name} />
-                </ListItem>
-              ))}
-            </List>
+            <Typography component="div">
+              <ul>
+                {entities.map(e => (
+                  <li key={e.metadata.name}>{e.metadata.name}</li>
+                ))}
+              </ul>
+            </Typography>
             <DialogContentText>
               That are located at the following location:
             </DialogContentText>
-            <List dense>
-              <ListItem>
-                <ListItemText
-                  primary={
-                    entities[0]?.metadata?.annotations?.[LOCATION_ANNOTATION]
-                  }
-                />
-              </ListItem>
-            </List>
+            <Typography component="div">
+              <ul>
+                <li>
+                  {entities[0]?.metadata?.annotations?.[LOCATION_ANNOTATION]}
+                </li>
+              </ul>
+            </Typography>
             <DialogContentText>
               To undo, just re-register the component in Backstage.
             </DialogContentText>
@@ -106,7 +104,7 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel} color="primary">
+        <Button onClick={onClose} color="primary">
           Cancel
         </Button>
         <Button
@@ -125,7 +123,7 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
 
             onConfirm();
           }}
-          color="primary"
+          color="secondary"
         >
           Unregister
         </Button>

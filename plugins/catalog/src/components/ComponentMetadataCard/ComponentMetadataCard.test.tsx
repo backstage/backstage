@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import ComponentMetadataCard from './ComponentMetadataCard';
+import { Entity } from '@backstage/catalog-model';
 import { render } from '@testing-library/react';
-import { Entity } from '../../../../../packages/catalog-model/src/entity/Entity';
+import React from 'react';
+import { ComponentMetadataCard } from './ComponentMetadataCard';
 
 describe('ComponentMetadataCard component', () => {
   it('should display component name if provided', async () => {
     const testEntity: Entity = {
-      apiVersion: '',
+      apiVersion: 'backstage.io/v1beta1',
       kind: 'Component',
-      metadata: {
-        name: 'test',
-      },
+      metadata: { name: 'test' },
     };
     const rendered = await render(
-      <ComponentMetadataCard loading={false} entity={testEntity} />,
+      <ComponentMetadataCard entity={testEntity} />,
     );
     expect(await rendered.findByText('test')).toBeInTheDocument();
-  });
-  it('should display loader when loading is set to true', async () => {
-    const rendered = await render(
-      <ComponentMetadataCard loading entity={undefined} />,
-    );
-    expect(await rendered.findByRole('progressbar')).toBeInTheDocument();
   });
 });

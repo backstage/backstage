@@ -47,8 +47,8 @@ describe('ComponentPage', () => {
             [
               catalogApiRef,
               ({
-                async getEntity() {},
-              } as unknown) as CatalogApi,
+                async getEntityByName() {},
+              } as Partial<CatalogApi>) as CatalogApi,
             ],
           ])}
         >
