@@ -44,7 +44,6 @@
       "pre-commit": "lint-staged"
     }
   },
-  "prettier": "@spotify/prettier-config",
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
