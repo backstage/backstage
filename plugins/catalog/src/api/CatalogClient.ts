@@ -21,8 +21,13 @@ import {
   Location,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
+import Cache from 'node-cache';
 
 export class CatalogClient implements CatalogApi {
+  // TODO(blam): This cache is just temporary until we have GraphQL.
+  // And client side caching using things like React Apollo or Relay.
+  // There's a lot of loading states that cause flickering around the app which aren't needed.
+  private cache: Cache;
   private apiOrigin: string;
   private basePath: string;
   constructor({
@@ -34,6 +39,7 @@ export class CatalogClient implements CatalogApi {
   }) {
     this.apiOrigin = apiOrigin;
     this.basePath = basePath;
+    this.cache = new Cache({ stdTTL: 10 });
   }
   async getLocationById(id: String): Promise<Location | undefined> {
     const response = await fetch(
@@ -78,6 +84,11 @@ export class CatalogClient implements CatalogApi {
   async getEntities(
     filter?: Record<string, string>,
   ): Promise<DescriptorEnvelope[]> {
+    const cachedValue = this.cache.get<DescriptorEnvelope[]>(
+      `get:${JSON.stringify(filter)}`,
+    );
+    if (cachedValue) return cachedValue;
+
     let url = `${this.apiOrigin}${this.basePath}/entities`;
     if (filter) {
       url += '?';
@@ -95,8 +106,13 @@ export class CatalogClient implements CatalogApi {
         `Request failed with ${response.status} ${response.statusText}, ${payload}`,
       );
     }
+    const value = await response.json();
 
-    return await response.json();
+    if (value?.length) {
+      this.cache.set(`get:${JSON.stringify(filter)}`, value);
+    }
+
+    return value;
   }
 
   async getEntity({

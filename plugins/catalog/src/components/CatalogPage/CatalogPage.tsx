@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
+import { LocationSpec, Entity } from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
@@ -27,16 +27,20 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
+
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import { Button, Link, makeStyles, Typography } from '@material-ui/core';
-import Edit from '@material-ui/icons/Edit';
+import { Button, makeStyles, Typography, Link } from '@material-ui/core';
 import GitHub from '@material-ui/icons/GitHub';
+import StarOutline from '@material-ui/icons/StarBorder';
+import Star from '@material-ui/icons/Star';
+
+import Edit from '@material-ui/icons/Edit';
+
 import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
-import { Component } from '../../data/component';
-import { dataResolvers, defaultFilter, filterGroups } from '../../data/filters';
+import { defaultFilter, filterGroups, dataResolvers } from '../../data/filters';
 import { entityToComponent, findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import {
@@ -60,13 +64,18 @@ const useStyles = makeStyles(theme => ({
 
 export const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { starredEntities } = useStarredEntities();
+  const {
+    starredEntities,
+    toggleStarredEntity,
+    isStarredEntity,
+  } = useStarredEntities();
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
+
   const { value, error, loading } = useAsync(
-    () => dataResolvers[selectedFilter.id]({ catalogApi, starredEntities }),
-    [selectedFilter.id],
+    () => dataResolvers[selectedFilter.id]({ catalogApi, isStarredEntity }),
+    [selectedFilter.id, starredEntities.size],
   );
 
   const onFilterSelected = useCallback(
@@ -77,7 +86,7 @@ export const CatalogPage: FC<{}> = () => {
   const styles = useStyles();
 
   const actions = [
-    (rowData: Component) => {
+    (rowData: Entity) => {
       const location = findLocationForEntityMeta(rowData.metadata);
       return {
         icon: GitHub,
@@ -89,7 +98,7 @@ export const CatalogPage: FC<{}> = () => {
         hidden: location ? location?.type !== 'github' : true,
       };
     },
-    (rowData: Component) => {
+    (rowData: Entity) => {
       const createEditLink = (location: LocationSpec): string => {
         switch (location.type) {
           case 'github':
@@ -110,6 +119,14 @@ export const CatalogPage: FC<{}> = () => {
           window.open(createEditLink(location), '_blank');
         },
         hidden: location ? location?.type !== 'github' : true,
+      };
+    },
+    (rowData: Entity) => {
+      const isStarred = isStarredEntity(rowData);
+      return {
+        icon: isStarred ? Star : StarOutline,
+        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
+        onClick: () => toggleStarredEntity(rowData),
       };
     },
   ];
