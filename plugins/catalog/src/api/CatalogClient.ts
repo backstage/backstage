@@ -87,13 +87,7 @@ export class CatalogClient implements CatalogApi {
 
     let path = `/entities`;
     if (filter) {
-      path += '?';
-      path += Object.entries(filter)
-        .map(
-          ([key, value]) =>
-            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-        )
-        .join('&');
+      path += `?${new URLSearchParams(filter).toString()}`;
     }
 
     return await this.getRequired(path);
