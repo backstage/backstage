@@ -25,13 +25,14 @@ import {
   ProfileInfoApi,
   ProfileInfoOptions,
   ProfileInfo,
-  ObservableSession,
+  ObservableSessionStateApi,
+  SessionState,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
-import { BehaviorSubject } from '../../../../lib';
 import { Observable } from '../../../../types';
+import { SessionStateTracker } from '../SessionStateTracker';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
@@ -61,7 +62,11 @@ const DEFAULT_PROVIDER = {
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
 class GoogleAuth
-  implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, ObservableSession {
+  implements
+    OAuthApi,
+    OpenIdConnectApi,
+    ProfileInfoApi,
+    ObservableSessionStateApi {
   static create({
     apiOrigin,
     basePath,
@@ -103,12 +108,10 @@ class GoogleAuth
     return new GoogleAuth(sessionManager);
   }
 
-  private readonly subject = new BehaviorSubject<boolean | undefined>(
-    undefined,
-  );
+  private readonly sessionStateTracker = new SessionStateTracker();
 
-  session$(): Observable<boolean | undefined> {
-    return this.subject;
+  sessionState$(): Observable<SessionState> {
+    return this.sessionStateTracker.observable;
   }
 
   constructor(private readonly sessionManager: SessionManager<GoogleSession>) {}
@@ -122,7 +125,7 @@ class GoogleAuth
       ...options,
       scopes: normalizedScopes,
     });
-    this.subject.next(!!session);
+    this.sessionStateTracker.setIsSignedId(!!session);
     if (session) {
       return session.accessToken;
     }
@@ -131,7 +134,7 @@ class GoogleAuth
 
   async getIdToken(options: IdTokenOptions = {}) {
     const session = await this.sessionManager.getSession(options);
-    this.subject.next(!!session);
+    this.sessionStateTracker.setIsSignedId(!!session);
     if (session) {
       return session.idToken;
     }
@@ -140,7 +143,7 @@ class GoogleAuth
 
   async logout() {
     await this.sessionManager.removeSession();
-    this.subject.next(false);
+    this.sessionStateTracker.setIsSignedId(false);
   }
 
   async getProfile(options: ProfileInfoOptions = {}) {
