@@ -22,7 +22,7 @@ export type BundlingOptions = {
   isDev: boolean;
   config: Config;
   appConfigs: AppConfig[];
-  isBackend?: boolean;
+  isBackend: boolean;
 };
 
 export type ServeOptions = BundlingPathsOptions & {

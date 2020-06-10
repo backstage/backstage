@@ -40,6 +40,7 @@ export async function buildBundle(options: BuildOptions) {
     ...options,
     checksEnabled: false,
     isDev: false,
+    isBackend: false,
   });
   const compiler = webpack(config);
 

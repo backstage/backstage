@@ -38,7 +38,11 @@ export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
   const pkgPath = paths.targetPackageJson;
   const pkg = await fs.readJson(pkgPath);
-  const config = createConfig(paths, { ...options, isDev: true });
+  const config = createConfig(paths, {
+    ...options,
+    isDev: true,
+    isBackend: false,
+  });
   const compiler = webpack(config);
 
   const server = new WebpackDevServer(compiler, {

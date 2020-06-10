@@ -79,39 +79,40 @@ export function createConfig(
     }),
   );
 
+  const backendRelatedConfig = {
+    watch: true,
+    watchOptions: {
+      ignored: [/node_modules\/(?!\@backstage)/],
+    },
+    externals: [
+      nodeExternals({
+        modulesDir: paths.rootNodeModules,
+        whitelist: [
+          'webpack/hot/poll?100',
+          /\@backstage\/.*\/(?!node_modules)/,
+        ],
+      }),
+      nodeExternals({
+        modulesDir: paths.targetNodeModules,
+        whitelist: [
+          'webpack/hot/poll?100',
+          /\@backstage\/.*\/(?!node_modules)/,
+        ],
+      }),
+    ],
+    target: 'node' as const,
+    node: {
+      __dirname: true,
+      __filename: true,
+      global: true,
+    },
+  };
+
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
     ...(isBackend
-      ? {
-          watch: true,
-          watchOptions: {
-            ignored: [/node_modules\/(?!\@backstage)/],
-            // poll: 1000
-          },
-          externals: [
-            nodeExternals({
-              modulesDir: paths.rootNodeModules,
-              whitelist: [
-                'webpack/hot/poll?100',
-                /\@backstage\/.*\/(?!node_modules)/,
-              ],
-            }),
-            nodeExternals({
-              modulesDir: paths.targetNodeModules,
-              whitelist: [
-                'webpack/hot/poll?100',
-                /\@backstage\/.*\/(?!node_modules)/,
-              ],
-            }),
-          ],
-          target: 'node',
-          node: {
-            __dirname: true,
-            __filename: true,
-            global: true,
-          },
-        }
+      ? backendRelatedConfig
       : {
           node: {
             module: 'empty',
@@ -140,7 +141,6 @@ export function createConfig(
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['main:src', 'browser', 'module', 'main'],
-      modules: [paths.targetNodeModules, paths.rootNodeModules],
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
