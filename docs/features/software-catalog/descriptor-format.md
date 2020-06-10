@@ -79,10 +79,13 @@ The root envelope object has the following structure.
 
 ### `apiVersion` and `kind` [required]
 
-The `kind` is the high level entity type being described. The
-[Backstage system model](https://github.com/spotify/backstage/issues/390) describes
+The `kind` is the high level entity type being described.
+[ADR005](/docs/architecture-decisions/adr005-catalog-core-entities.md) describes
 a number of core kinds that plugins can know of and understand, but an organization
 using Backstage is free to also add entities of other kinds to the catalog.
+
+The perhaps most central kind of entity, that the catalog focuses on in the initial
+phase, is `Component` ([see below](#kind-component)).
 
 The `apiVersion` is the version of specification format for that particular
 entity that the specification is made against. The version is used for being able to
