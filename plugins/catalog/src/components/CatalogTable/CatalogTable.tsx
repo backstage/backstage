@@ -17,9 +17,8 @@ import { Table, TableColumn } from '@backstage/core';
 import { Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC } from 'react';
-import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { Component } from '../../data/component';
-
 import { entityRoute } from '../../routes';
 
 const columns: TableColumn[] = [
@@ -62,7 +61,7 @@ type CatalogTableProps = {
   actions?: any;
 };
 
-const CatalogTable: FC<CatalogTableProps> = ({
+export const CatalogTable: FC<CatalogTableProps> = ({
   components,
   loading,
   error,
@@ -95,5 +94,3 @@ const CatalogTable: FC<CatalogTableProps> = ({
     />
   );
 };
-
-export default CatalogTable;

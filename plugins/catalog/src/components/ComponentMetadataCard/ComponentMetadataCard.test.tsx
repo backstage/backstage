@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import ComponentMetadataCard from './ComponentMetadataCard';
+import { ComponentMetadataCard } from './ComponentMetadataCard';
 import { Component } from '../../data/component';
 import { render } from '@testing-library/react';
 

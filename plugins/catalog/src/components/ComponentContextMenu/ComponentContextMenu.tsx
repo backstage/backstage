@@ -21,11 +21,11 @@ import {
   Popover,
   Typography,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import Cancel from '@material-ui/icons/Cancel';
 import MoreVert from '@material-ui/icons/MoreVert';
 import SwapHoriz from '@material-ui/icons/SwapHoriz';
 import React, { FC, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 
 // TODO(freben): It should probably instead be the case that Header sets the theme text color to white inside itself unconditionally instead
 const useStyles = makeStyles({
@@ -38,7 +38,7 @@ type ComponentContextMenuProps = {
   onUnregisterComponent: () => void;
 };
 
-const ComponentContextMenu: FC<ComponentContextMenuProps> = ({
+export const ComponentContextMenu: FC<ComponentContextMenuProps> = ({
   onUnregisterComponent,
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
@@ -94,5 +94,3 @@ const ComponentContextMenu: FC<ComponentContextMenuProps> = ({
     </div>
   );
 };
-
-export default ComponentContextMenu;

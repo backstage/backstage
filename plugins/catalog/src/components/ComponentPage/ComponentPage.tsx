@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useEffect, useState } from 'react';
-import { useAsync } from 'react-use';
-import ComponentMetadataCard from '../ComponentMetadataCard/ComponentMetadataCard';
 import {
   Content,
-  Header,
-  pageTheme,
-  Page,
-  useApi,
   ErrorApi,
   errorApiRef,
+  Header,
   HeaderTabs,
+  Page,
+  pageTheme,
+  useApi,
 } from '@backstage/core';
-import ComponentContextMenu from '../ComponentContextMenu/ComponentContextMenu';
-import ComponentRemovalDialog from '../ComponentRemovalDialog/ComponentRemovalDialog';
-
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
+import React, { FC, useEffect, useState } from 'react';
+import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
-import { entityToComponent } from '../../data/utils';
 import { Component } from '../../data/component';
+import { entityToComponent } from '../../data/utils';
+import { ComponentContextMenu } from '../ComponentContextMenu/ComponentContextMenu';
+import { ComponentMetadataCard } from '../ComponentMetadataCard/ComponentMetadataCard';
+import { ComponentRemovalDialog } from '../ComponentRemovalDialog/ComponentRemovalDialog';
 
 const REDIRECT_DELAY = 1000;
 
@@ -49,7 +48,7 @@ type ComponentPageProps = {
   };
 };
 
-const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
+export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const [removingPending, setRemovingPending] = useState(false);
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
@@ -151,4 +150,3 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     </Page>
   );
 };
-export default ComponentPage;

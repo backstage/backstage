@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ComponentPage from './ComponentPage';
+import { ComponentPage } from './ComponentPage';
 import { render, wait } from '@testing-library/react';
 import * as React from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';

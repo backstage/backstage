@@ -16,7 +16,7 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import CatalogTable from './CatalogTable';
+import { CatalogTable } from './CatalogTable';
 import { Component } from '../../data/component';
 
 const components: Component[] = [
