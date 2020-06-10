@@ -24,6 +24,9 @@ import {
 import Cache from 'node-cache';
 
 export class CatalogClient implements CatalogApi {
+  // TODO(blam): This cache is just temporary until we have GraphQL.
+  // And client side caching using things like React Apollo or Relay.
+  // There's a lot of loading states that cause flickering around the app which aren't needed.
   private cache: Cache;
   private apiOrigin: string;
   private basePath: string;
