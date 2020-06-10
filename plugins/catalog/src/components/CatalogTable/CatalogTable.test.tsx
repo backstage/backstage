@@ -13,30 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from 'react';
-import { render } from '@testing-library/react';
+import { Entity } from '@backstage/catalog-model';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { render } from '@testing-library/react';
+import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
-import { Component } from '../../data/component';
 
-const components: Component[] = [
+const entites: Entity[] = [
   {
-    name: 'component1',
+    apiVersion: 'backstage.io/v1beta1',
     kind: 'Component',
     metadata: { name: 'component1' },
-    description: 'Placeholder',
   },
   {
-    name: 'component2',
+    apiVersion: 'backstage.io/v1beta1',
     kind: 'Component',
     metadata: { name: 'component2' },
-    description: 'Placeholder',
   },
   {
-    name: 'component3',
+    apiVersion: 'backstage.io/v1beta1',
     kind: 'Component',
     metadata: { name: 'component3' },
-    description: 'Placeholder',
   },
 ];
 
@@ -46,7 +43,7 @@ describe('CatalogTable component', () => {
       wrapInTestApp(
         <CatalogTable
           titlePreamble="Owned"
-          components={[]}
+          entities={[]}
           loading={false}
           error={{ code: 'error' }}
         />,
@@ -63,13 +60,13 @@ describe('CatalogTable component', () => {
       wrapInTestApp(
         <CatalogTable
           titlePreamble="Owned"
-          components={components}
+          entities={entites}
           loading={false}
         />,
       ),
     );
     expect(
-      await rendered.findByText(`Owned (${components.length})`),
+      await rendered.findByText(`Owned (${entites.length})`),
     ).toBeInTheDocument();
     expect(await rendered.findByText('component1')).toBeInTheDocument();
     expect(await rendered.findByText('component2')).toBeInTheDocument();
