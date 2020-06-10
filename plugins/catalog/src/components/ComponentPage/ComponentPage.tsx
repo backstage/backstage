@@ -39,7 +39,8 @@ const REDIRECT_DELAY = 1000;
 type ComponentPageProps = {
   match: {
     params: {
-      name: string;
+      optionalNamespaceAndName: string;
+      kind: string;
     };
   };
   history: {
@@ -52,12 +53,15 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
   const [removingPending, setRemovingPending] = useState(false);
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
   const hideRemovalDialog = () => setConfirmationDialogOpen(false);
-  const entityName = match.params.name;
+  const { optionalNamespaceAndName, kind } = match.params;
+  const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
   const errorApi = useApi<ErrorApi>(errorApiRef);
 
   const catalogApi = useApi(catalogApiRef);
-  const { value: entity, error, loading } = useAsync<Entity>(async () => {
-    return await catalogApi.getEntityByName(match.params.name);
+  const { value: component, error, loading } = useAsync<Component>(async () => {
+    const entity = await catalogApi.getEntity({ name, namespace, kind });
+    const location = await catalogApi.getLocationByEntity(entity);
+    return { ...entityToComponent(entity), location };
   });
 
   useEffect(() => {
@@ -69,7 +73,7 @@ const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     }
   }, [error, errorApi, history]);
 
-  if (entityName === '') {
+  if (name === '') {
     history.push('/catalog');
     return null;
   }

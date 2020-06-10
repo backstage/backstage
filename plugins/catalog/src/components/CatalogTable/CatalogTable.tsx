@@ -30,7 +30,15 @@ const columns: TableColumn[] = [
     render: (componentData: any) => (
       <Link
         component={RouterLink}
-        to={generatePath(entityRoute.path, { name: componentData.name })}
+        to={generatePath(entityRoute.path, {
+          optionalNamespaceAndName: [
+            componentData.namespace,
+            componentData.name,
+          ]
+            .filter(Boolean)
+            .join(':'),
+          kind: componentData.kind,
+        })}
       >
         {componentData.name}
       </Link>

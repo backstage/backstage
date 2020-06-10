@@ -18,6 +18,7 @@ import { ReactNode } from 'react';
 
 export type Component = {
   name: string;
+  namespace?: string;
   kind: string;
   metadata: EntityMeta;
   description: ReactNode;
