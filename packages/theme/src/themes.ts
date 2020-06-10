@@ -60,6 +60,9 @@ export const lightTheme = createTheme({
       icon: '#BDBDBD',
       background: '#404040',
     },
+    tabbar: {
+      indicator: '#9BF0E1',
+    },
   },
 });
 
@@ -105,6 +108,9 @@ export const darkTheme = createTheme({
     pinSidebarButton: {
       icon: '#181818',
       background: '#BDBDBD',
+    },
+    tabbar: {
+      indicator: '#9BF0E1',
     },
   },
 });
