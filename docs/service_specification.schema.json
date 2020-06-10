@@ -2,8 +2,8 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "backstage.io/v1beta1",
     "type": "object",
-    "title": "A JSON Schema for Backstage service definitions.",
-    "description": "Each Backstage description file has a number of files. This schema matches each of those.",
+    "title": "A JSON Schema for Backstage catalog entities.",
+    "description": "Each descriptor file has a number of entities. This schema matches each of those.",
     "examples": [
         {
             "apiVersion": "backstage.io/v1beta1",
@@ -20,17 +20,16 @@
                 "annnotations": {
                     "docs": "https://github.com/..../tree/develop/doc"
                 },
-                "teams": {
+                "teams": [{
                     "name": "Team super great",
                     "email": "greatTeam@geemel.com"
-                }
+                }]
             }
         }
     ],
     "required": [
         "apiVersion",
         "kind",
-        "spec",
         "metadata"
     ],
     "additionalProperties": false,
@@ -38,7 +37,6 @@
         "apiVersion": {
             "type": "string",
             "description": "Version of the specification format for a particular file is written against.",
-            "default": "backstage.io/v1beta1",
             "enum": [
                 "backstage.io/v1beta1"
             ]
@@ -47,7 +45,7 @@
             "type": "string",
             "description": "High level entity type being described, from the Backstage system model.",
             "enum": [
-                "Compontent"
+                "Component"
             ]
         },
         "spec": {
@@ -78,7 +76,7 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "pattern": "^[a-z0-9A-Z_\\-\\.]{1,63}$",
+                    "pattern": "^[a-z0-9A-Z_.-]{1,63}$",
                     "description": "The name of the entity. This name is both meant for human eyes to recognize the entity, and for machines and other components to reference the entity"
                 },
                 "description": {
@@ -96,7 +94,7 @@
                     "patternProperties": {
                         "^([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\\.[a-zA-Z]{2,}\/)?[a-z0-9A-Z_\\-\\.]{1,63}$": {
                             "type": "string",
-                            "pattern": "^[a-z0-9A-Z_\\-\\.]{1,63}$",
+                            "pattern": "^[a-z0-9A-Z_.-]{1,63}$"
                         }
                     }
                 },
@@ -107,7 +105,7 @@
                     "patternProperties": {
                         "^([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\\.[a-zA-Z]{2,}\/)?[a-z0-9A-Z_\\-\\.]{1,63}$": {
                             "type": "string",
-                            "pattern": "^[a-z0-9A-Z_\\-\\.]{1,63}$",
+                            "pattern": "^[a-z0-9A-Z_.-]{1,63}$"
                         }
                     }
                 }
