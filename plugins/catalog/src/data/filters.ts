@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
+import SettingsIcon from '@material-ui/icons/Settings';
+import StarIcon from '@material-ui/icons/Star';
+import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
 import {
   CatalogFilterGroup,
   CatalogFilterItem,
 } from '../components/CatalogFilter/CatalogFilter';
-import SettingsIcon from '@material-ui/icons/Settings';
-import StarIcon from '@material-ui/icons/Star';
 import { StarredCount } from '../components/CatalogFilter/StarredCount';
-import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
-import { Entity } from '@backstage/catalog-model';
 
 export enum EntityFilterType {
   ALL = 'ALL',
@@ -61,16 +61,16 @@ export const filterGroups: CatalogFilterGroup[] = [
   },
 ];
 
-type EntityFilter = (entity: Entity) => boolean;
+type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
+
 type EntityFilterOptions = {
-  isStarredEntity: EntityFilter;
+  isStarred: boolean;
 };
 
-export const entityFilters = {
-  [EntityFilterType.OWNED]: (): EntityFilter => () => false,
-  [EntityFilterType.ALL]: (): EntityFilter => () => true,
-  [EntityFilterType.STARRED]: ({ isStarredEntity }: EntityFilterOptions) =>
-    isStarredEntity,
+export const entityFilters: Record<string, EntityFilter> = {
+  [EntityFilterType.OWNED]: () => false,
+  [EntityFilterType.ALL]: () => true,
+  [EntityFilterType.STARRED]: (_, { isStarred }) => isStarred,
 };
 
 export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];
