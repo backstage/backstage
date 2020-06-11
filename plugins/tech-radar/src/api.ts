@@ -69,6 +69,7 @@ export interface TechRadarComponentProps {
 export interface TechRadarApi extends TechRadarComponentProps {
   title?: string;
   subtitle?: string;
+  pageTitle?: string;
 }
 
 export const techRadarApiRef = createApiRef<TechRadarApi>({
@@ -84,11 +85,13 @@ export class TechRadar implements TechRadarApi {
   public svgProps: TechRadarApi['svgProps'];
   public title: TechRadarApi['title'];
   public subtitle: TechRadarApi['subtitle'];
+  public pageTitle: TechRadarApi['pageTitle'];
 
   constructor(overrideOptions: TechRadarApi) {
     const defaultOptions: Partial<TechRadarApi> = {
       title: 'Tech Radar',
-      subtitle: 'Welcome to the Tech Radar!',
+      subtitle: 'Pick the recommended technologies for your projects',
+      pageTitle: 'Company Radar',
     };
 
     const options = { ...defaultOptions, ...overrideOptions };
@@ -99,5 +102,6 @@ export class TechRadar implements TechRadarApi {
     this.svgProps = options.svgProps;
     this.title = options.title;
     this.subtitle = options.subtitle;
+    this.pageTitle = options.pageTitle;
   }
 }
