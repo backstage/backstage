@@ -18,7 +18,7 @@ import { createApp, AlertDisplay, OAuthRequestDialog } from '@backstage/core';
 import React, { FC } from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
-import apis from './apis';
+import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 
 const app = createApp({
