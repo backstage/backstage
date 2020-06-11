@@ -18,20 +18,21 @@ import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Button } from './Button';
-import { Route } from 'react-router';
+import { Route, Routes } from 'react-router';
 
 describe('<Button />', () => {
   it('navigates using react-router', async () => {
     const testString = 'This is test string';
     const buttonLabel = 'Navigate!';
-    const { getByText, getByRole } = render(
+    const { getByText, getByRole, ...all } = render(
       wrapInTestApp(
-        <>
+        <Routes>
           <Route path="/test" element={<p>{testString}</p>} />
           <Button to="/test">{buttonLabel}</Button>
-        </>,
+        </Routes>,
       ),
     );
+
     expect(() => getByText(testString)).toThrow();
     await act(async () => fireEvent.click(getByRole('button')));
     expect(getByText(testString)).toBeInTheDocument();

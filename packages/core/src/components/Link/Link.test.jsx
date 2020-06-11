@@ -18,7 +18,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Link } from './Link';
-import { Route } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { act } from 'react-dom/test-utils';
 
 describe('<Link />', () => {
@@ -27,10 +27,10 @@ describe('<Link />', () => {
     const linkText = 'Navigate!';
     const { getByText } = render(
       wrapInTestApp(
-        <>
+        <Routes>
           <Link to="/test">{linkText}</Link>
           <Route path="/test">{testString}</Route>
-        </>,
+        </Routes>,
       ),
     );
     expect(() => getByText(testString)).toThrow();

@@ -26,5 +26,5 @@ type Props = ComponentProps<typeof MaterialLink> &
  * Makes the Link to utilise react-router
  */
 export const Link = React.forwardRef<any, Props>((props, ref) => (
-  <MaterialLink ref={ref} as={RouterLink} {...props} />
+  <MaterialLink ref={ref} component={RouterLink} {...props} />
 ));
