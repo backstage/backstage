@@ -319,6 +319,21 @@ export class CommonDatabase implements Database {
     return toEntityResponse(rows[0]);
   }
 
+  async entityByUid(
+    txOpaque: unknown,
+    id: string,
+  ): Promise<DbEntityResponse | undefined> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    const rows = await tx<DbEntitiesRow>('entities').where({ id }).select();
+
+    if (rows.length !== 1) {
+      return undefined;
+    }
+
+    return toEntityResponse(rows[0]);
+  }
+
   async removeEntity(txOpaque: unknown, uid: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
@@ -341,10 +356,10 @@ export class CommonDatabase implements Database {
     });
   }
 
-  async removeLocation(id: string): Promise<void> {
-    const result = await this.database<DbLocationsRow>('locations')
-      .where({ id })
-      .del();
+  async removeLocation(txOpaque: unknown, id: string): Promise<void> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    const result = await tx<DbLocationsRow>('locations').where({ id }).del();
 
     if (!result) {
       throw new NotFoundError(`Found no location with ID ${id}`);

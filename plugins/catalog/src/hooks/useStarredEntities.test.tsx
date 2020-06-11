@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react-hooks';
 import { useStarredEntities } from './useStarredEntites';
 import {
   ApiProvider,
@@ -24,9 +25,27 @@ import {
   StorageApi,
 } from '@backstage/core';
 import { MockErrorApi } from '@backstage/test-utils';
+import { Entity } from '@backstage/catalog-model';
 
 describe('useStarredEntities', () => {
   let mockStorage: StorageApi | undefined;
+
+  const mockEntity: Entity = {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      name: 'mock',
+    },
+  };
+
+  const secondMockEntity: Entity = {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      namespace: 'test',
+      name: 'mock2',
+    },
+  };
 
   const wrapper: React.FC<{}> = ({ children }) => {
     return (
@@ -58,23 +77,45 @@ describe('useStarredEntities', () => {
     }
   });
   it('should listen to changes when the storage is set elsewhere', async () => {
-    const store = mockStorage?.forBucket('settings');
-
     const { result, waitForNextUpdate } = renderHook(
       () => useStarredEntities(),
       { wrapper },
     );
 
     expect(result.current.starredEntities.size).toBe(0);
-    expect(result.current.starredEntities.has('something')).toBeFalsy();
+    expect(result.current.isStarredEntity(mockEntity)).toBeFalsy();
 
     // Make this happen after awaiting for the next update so we can
     // catch when the hook re-renders with the latest data
-    setTimeout(() => store?.set('starredEntities', ['something']), 1);
+    setTimeout(() => result.current.toggleStarredEntity(mockEntity), 1);
 
     await waitForNextUpdate();
 
     expect(result.current.starredEntities.size).toBe(1);
-    expect(result.current.starredEntities.has('something')).toBeTruthy();
+    expect(result.current.isStarredEntity(mockEntity)).toBeTruthy();
+  });
+
+  it('should write new entries to the local store when adding a togglging entity', async () => {
+    const { result } = renderHook(() => useStarredEntities(), { wrapper });
+
+    act(() => {
+      result.current.toggleStarredEntity(mockEntity);
+    });
+
+    expect(result.current.isStarredEntity(mockEntity)).toBeTruthy();
+    expect(result.current.isStarredEntity(secondMockEntity)).toBeFalsy();
+  });
+
+  it('should remove an existing entity when toggling entries', async () => {
+    const { result } = renderHook(() => useStarredEntities(), { wrapper });
+
+    act(() => {
+      result.current.toggleStarredEntity(mockEntity);
+      result.current.toggleStarredEntity(secondMockEntity);
+      result.current.toggleStarredEntity(mockEntity);
+    });
+
+    expect(result.current.isStarredEntity(mockEntity)).toBeFalsy();
+    expect(result.current.isStarredEntity(secondMockEntity)).toBeTruthy();
   });
 });

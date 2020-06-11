@@ -19,6 +19,9 @@ import PropTypes from 'prop-types';
 import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
+import BuildIcon from '@material-ui/icons/BuildRounded';
+import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
+import MapIcon from '@material-ui/icons/MyLocation';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
@@ -31,8 +34,9 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-  SidebarUserBadge,
+  SidebarUserSettings,
   SidebarThemeToggle,
+  SidebarPinButton,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
 
@@ -87,10 +91,14 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarItem icon={CreateComponentIcon} to="/create" text="Create..." />
       {/* End global nav */}
       <SidebarDivider />
+      <SidebarItem icon={MapIcon} to="/tech-radar" text="Tech Radar" />
+      <SidebarItem icon={RuleIcon} to="/lighthouse" text="Lighthouse" />
+      <SidebarItem icon={BuildIcon} to="/circleci" text="CircleCI" />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarThemeToggle />
-      <SidebarUserBadge />
+      <SidebarUserSettings />
+      <SidebarPinButton />
     </Sidebar>
     {children}
   </SidebarPage>

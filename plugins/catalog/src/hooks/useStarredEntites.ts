@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect } from 'react';
-import { useApi, storageApiRef } from '@backstage/core';
+
+import { Entity } from '@backstage/catalog-model';
+import { storageApiRef, useApi } from '@backstage/core';
+import { useCallback, useEffect, useState } from 'react';
 import { useObservable } from 'react-use';
+
+const buildEntityKey = (component: Entity) =>
+  `entity:${component.kind}:${component.metadata.namespace ?? 'default'}:${
+    component.metadata.name
+  }`;
 
 export const useStarredEntities = () => {
   const storageApi = useApi(storageApiRef);
   const settingsStore = storageApi.forBucket('settings');
-  const rawStarredItems = settingsStore.get<string[]>('starredEntities') ?? [];
+  const rawStarredEntityKeys =
+    settingsStore.get<string[]>('starredEntities') ?? [];
 
   const [starredEntities, setStarredEntities] = useState(
-    new Set(rawStarredItems),
+    new Set(rawStarredEntityKeys),
   );
 
   const observedItems = useObservable(
@@ -37,7 +45,31 @@ export const useStarredEntities = () => {
     }
   }, [observedItems?.newValue]);
 
+  const toggleStarredEntity = useCallback(
+    (entity: Entity) => {
+      const entityKey = buildEntityKey(entity);
+      if (starredEntities.has(entityKey)) {
+        starredEntities.delete(entityKey);
+      } else {
+        starredEntities.add(entityKey);
+      }
+
+      settingsStore.set('starredEntities', Array.from(starredEntities));
+    },
+    [starredEntities, settingsStore],
+  );
+
+  const isStarredEntity = useCallback(
+    (entity: Entity) => {
+      const entityKey = buildEntityKey(entity);
+      return starredEntities.has(entityKey);
+    },
+    [starredEntities],
+  );
+
   return {
     starredEntities,
+    toggleStarredEntity,
+    isStarredEntity,
   };
 };

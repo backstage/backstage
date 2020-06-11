@@ -24,6 +24,8 @@ describe('Starred Count', () => {
   it('should render the count returned from the hook', async () => {
     jest.spyOn(Hooks, 'useStarredEntities').mockReturnValue({
       starredEntities: new Set(['id1', 'id2', 'id3', 'id4']),
+      isStarredEntity: () => false,
+      toggleStarredEntity: () => undefined,
     });
 
     const { findByText } = render(wrapInTestApp(<StarredCount />));

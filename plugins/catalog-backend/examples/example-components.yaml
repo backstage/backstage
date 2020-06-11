@@ -1,0 +1,60 @@
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: podcast-api
+  description: Podcast API
+spec:
+  type: service
+  lifecycle: experimental
+  owner: tools@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: artist-lookup
+  description: Artist Lookup
+spec:
+  type: service
+  lifecycle: experimental
+  owner: tools@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: searcher
+  description: Searcher
+spec:
+  type: service
+  lifecycle: production
+  owner: tools@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: playback-order
+  description: Playback Order
+spec:
+  type: service
+  lifecycle: production
+  owner: tools@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: shuffle-api
+  description: Shuffle API
+spec:
+  type: service
+  lifecycle: production
+  owner: tools@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: queue-proxy
+  description: Queue Proxy
+spec:
+  type: website
+  lifecycle: production
+  owner: tools@example.com

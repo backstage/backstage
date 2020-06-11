@@ -13,56 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
-import { DescriptorEnvelope } from '../types';
-
 const server = setupServer();
 
 describe('CatalogClient', () => {
   beforeAll(() => server.listen());
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
+  const mockApiOrigin = 'http://backstage:9191';
+  const mockBasePath = '/i-am-a-mock-base';
+  let client = new CatalogClient({
+    apiOrigin: mockApiOrigin,
+    basePath: mockBasePath,
+  });
 
-  describe('getEntities', () => {
-    it('should return the json response for the correct path', async () => {
-      const mockApiOrigin = 'http://backstage:9191';
-      const mockBasePath = '/i-am-a-mock-base';
-      const client = new CatalogClient({
-        apiOrigin: mockApiOrigin,
-        basePath: mockBasePath,
-      });
-
-      const mockDescriptors: DescriptorEnvelope[] = [
-        {
-          apiVersion: '1',
-          kind: 'Component',
-          metadata: {
-            description: 'Im a description',
-            name: 'Test1',
-            namespace: 'test1',
-          },
-        },
-        {
-          apiVersion: '1',
-          kind: 'Component',
-          metadata: {
-            description: 'Im a description',
-            name: 'Test2',
-            namespace: 'test1',
-          },
-        },
-      ];
-      server.use(
-        rest.get(`${mockApiOrigin}${mockBasePath}/entities`, (_, res, ctx) => {
-          return res(ctx.json(mockDescriptors));
-        }),
-      );
-
-      const entities = await client.getEntities();
-
-      expect(entities).toEqual(mockDescriptors);
+  beforeEach(() => {
+    client = new CatalogClient({
+      apiOrigin: mockApiOrigin,
+      basePath: mockBasePath,
     });
+  });
+  it('builds entity search filters properly', async () => {
+    expect.assertions(2);
+    server.use(
+      rest.get(`${mockApiOrigin}${mockBasePath}/entities`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe('a=1&b=2&b=3&%C3%B6=%3D');
+        return res(ctx.json([]));
+      }),
+    );
+
+    const entities = await client.getEntities({
+      a: '1',
+      b: ['2', '3'],
+      ö: '=',
+    });
+
+    expect(entities).toEqual([]);
   });
 });

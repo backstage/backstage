@@ -18,7 +18,7 @@ import { ComponentType } from 'react';
 import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
 import { BackstagePlugin } from '../plugin';
 import { ApiHolder } from '../apis';
-import { AppTheme } from '../apis/definitions';
+import { AppTheme, ConfigApi } from '../apis/definitions';
 import { AppConfig } from '@backstage/config';
 
 export type BootErrorPageProps = {
@@ -41,13 +41,16 @@ export type AppComponents = {
  */
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
+// TODO(Rugvip): Temporary workaround for accessing config when instantiating APIs, we might want to do this differently
+export type Apis = ApiHolder | ((config: ConfigApi) => ApiHolder);
+
 export type AppOptions = {
   /**
    * A holder of all APIs available in the app.
    *
    * Use for example ApiRegistry or ApiTestRegistry.
    */
-  apis?: ApiHolder;
+  apis?: Apis;
 
   /**
    * Supply icons to override the default ones.

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import CatalogPage from './CatalogPage';
 import {
-  ApiRegistry,
   ApiProvider,
+  ApiRegistry,
   errorApiRef,
   storageApiRef,
   WebStorage,
 } from '@backstage/core';
-import { wrapInTestApp, MockErrorApi } from '@backstage/test-utils';
+import { MockErrorApi, wrapInTestApp } from '@backstage/test-utils';
+import { render } from '@testing-library/react';
+import React from 'react';
 import { catalogApiRef } from '../..';
 import { CatalogApi } from '../../api/types';
+import { CatalogPage } from './CatalogPage';
 import { Entity } from '@backstage/catalog-model';
 
 describe('CatalogPage', () => {

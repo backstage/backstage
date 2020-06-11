@@ -31,7 +31,7 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
   }
 
   async removeLocation(id: string): Promise<void> {
-    await this.database.removeLocation(id);
+    await this.database.transaction(tx => this.database.removeLocation(tx, id));
   }
 
   async locations(): Promise<LocationResponse[]> {

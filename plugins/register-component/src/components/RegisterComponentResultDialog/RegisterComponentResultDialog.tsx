@@ -54,34 +54,39 @@ export const RegisterComponentResultDialog: FC<Props> = ({
         The following components have been succefully created:
       </DialogContentText>
       <List>
-        {entities.map((entity: any, index: number) => (
-          <React.Fragment
-            key={`${entity.metadata.namespace}-${entity.metadata.name}`}
-          >
-            <ListItem>
-              <StructuredMetadataTable
-                dense
-                metadata={{
-                  name: entity.metadata.name,
-                  type: entity.spec.type,
-                  link: (
-                    <Link
-                      component={RouterLink}
-                      to={generatePath(entityRoute.path, {
-                        name: entity.metadata.name,
-                      })}
-                    >
-                      {generatePath(entityRoute.path, {
-                        name: entity.metadata.name,
-                      })}
-                    </Link>
-                  ),
-                }}
-              />
-            </ListItem>
-            {index < entities.length - 1 && <Divider component="li" />}
-          </React.Fragment>
-        ))}
+        {entities.map((entity: any, index: number) => {
+          const entityPath = generatePath(entityRoute.path, {
+            optionalNamespaceAndName: [
+              entity.metadata.namespace,
+              entity.metadata.name,
+            ]
+              .filter(Boolean)
+              .join(':'),
+            kind: entity.kind,
+          });
+
+          return (
+            <React.Fragment
+              key={`${entity.metadata.namespace}-${entity.metadata.name}`}
+            >
+              <ListItem>
+                <StructuredMetadataTable
+                  dense
+                  metadata={{
+                    name: entity.metadata.name,
+                    type: entity.spec.type,
+                    link: (
+                      <Link component={RouterLink} to={entityPath}>
+                        {entityPath}
+                      </Link>
+                    ),
+                  }}
+                />
+              </ListItem>
+              {index < entities.length - 1 && <Divider component="li" />}
+            </React.Fragment>
+          );
+        })}
       </List>
     </DialogContent>
     <DialogActions>
