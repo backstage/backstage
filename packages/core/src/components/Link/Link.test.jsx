@@ -29,13 +29,12 @@ describe('<Link />', () => {
       wrapInTestApp(
         <Routes>
           <Link to="/test">{linkText}</Link>
-          <Route path="/test">{testString}</Route>
+          <Route path="/test" element={<p>{testString}</p>} />
         </Routes>,
       ),
     );
     expect(() => getByText(testString)).toThrow();
     await act(async () => fireEvent.click(getByText(linkText)));
-
     expect(getByText(testString)).toBeInTheDocument();
   });
 });
