@@ -76,7 +76,9 @@ export class CatalogClient implements CatalogApi {
     return await this.getOptional(`/locations/${id}`);
   }
 
-  async getEntities(filter?: Record<string, string>): Promise<Entity[]> {
+  async getEntities(
+    filter?: Record<string, string | string[]>,
+  ): Promise<Entity[]> {
     const cachedValue = this.cache.get<Entity[]>(
       `get:${JSON.stringify(filter)}`,
     );
@@ -84,7 +86,17 @@ export class CatalogClient implements CatalogApi {
 
     let path = `/entities`;
     if (filter) {
-      path += `?${new URLSearchParams(filter).toString()}`;
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(filter)) {
+        if (Array.isArray(value)) {
+          for (const v of value) {
+            params.append(key, v);
+          }
+        } else {
+          params.append(key, value);
+        }
+      }
+      path += `?${params.toString()}`;
     }
 
     return await this.getRequired(path);
