@@ -130,7 +130,7 @@ export type Database = {
     namespace?: string,
   ): Promise<DbEntityResponse | undefined>;
 
-  entityById(tx: unknown, id: string): Promise<DbEntityResponse | undefined>;
+  entityByUid(tx: unknown, uid: string): Promise<DbEntityResponse | undefined>;
 
   removeEntity(tx: unknown, uid: string): Promise<void>;
 

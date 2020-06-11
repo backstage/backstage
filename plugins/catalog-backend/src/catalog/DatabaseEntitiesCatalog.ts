@@ -81,7 +81,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
   async removeEntityByUid(uid: string): Promise<void> {
     return await this.database.transaction(async tx => {
-      const currentEntity = await this.database.entityById(tx, uid);
+      const currentEntity = await this.database.entityByUid(tx, uid);
       if (!currentEntity) {
         throw new NotFoundError(`Entity with ID ${uid} was not found`);
       }

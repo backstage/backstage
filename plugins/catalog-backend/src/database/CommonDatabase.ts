@@ -319,7 +319,7 @@ export class CommonDatabase implements Database {
     return toEntityResponse(rows[0]);
   }
 
-  async entityById(
+  async entityByUid(
     txOpaque: unknown,
     id: string,
   ): Promise<DbEntityResponse | undefined> {

@@ -15,7 +15,7 @@
  */
 
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Progress, useApi } from '@backstage/core';
+import { Progress, useApi, alertApiRef } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -32,7 +32,6 @@ import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api/types';
-import { alertApiRef } from '../../../../../packages/core-api/src/apis/definitions/AlertApi';
 
 type ComponentRemovalDialogProps = {
   open: boolean;
@@ -62,6 +61,17 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
+
+  const removeEntity = async () => {
+    const uid = entity.metadata.uid;
+    try {
+      await catalogApi.removeEntityByUid(uid!);
+    } catch (err) {
+      alertApi.post({ message: err.message });
+    }
+
+    onConfirm();
+  };
 
   return (
     <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
@@ -93,7 +103,7 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
             <Typography component="div">
               <ul>
                 <li>
-                  {entities[0]?.metadata?.annotations?.[LOCATION_ANNOTATION]}
+                  {entities[0]?.metadata.annotations?.[LOCATION_ANNOTATION]}
                 </li>
               </ul>
             </Typography>
@@ -109,20 +119,7 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
         </Button>
         <Button
           disabled={!!(loading || error)}
-          onClick={async () => {
-            const uid = entity.metadata?.uid;
-            if (uid) {
-              try {
-                await catalogApi.removeEntityByUid(uid);
-              } catch (err) {
-                alertApi.post({ message: err.message });
-              }
-            } else {
-              alertApi.post({ message: `No entity with UID ${uid}` });
-            }
-
-            onConfirm();
-          }}
+          onClick={removeEntity}
           color="secondary"
         >
           Unregister

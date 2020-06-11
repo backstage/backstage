@@ -21,20 +21,26 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import { StarredCount } from '../components/CatalogFilter/StarredCount';
 import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
-import { FilterGroupItem } from '../types';
+import { Entity } from '@backstage/catalog-model';
+
+export enum EntityFilterType {
+  ALL = 'ALL',
+  STARRED = 'STARRED',
+  OWNED = 'OWNED',
+}
 
 export const filterGroups: CatalogFilterGroup[] = [
   {
     name: 'Personal',
     items: [
       {
-        id: FilterGroupItem.OWNED,
+        id: EntityFilterType.OWNED,
         label: 'Owned',
         count: 0,
         icon: SettingsIcon,
       },
       {
-        id: FilterGroupItem.STARRED,
+        id: EntityFilterType.STARRED,
         label: 'Starred',
         count: StarredCount,
         icon: StarIcon,
@@ -46,7 +52,7 @@ export const filterGroups: CatalogFilterGroup[] = [
     name: 'Company',
     items: [
       {
-        id: FilterGroupItem.ALL,
+        id: EntityFilterType.ALL,
         label: 'All Services',
         count: AllServicesCount,
       },
@@ -54,10 +60,15 @@ export const filterGroups: CatalogFilterGroup[] = [
   },
 ];
 
+type EntityFilter = (entity: Entity) => boolean;
+type EntityFilterOptions = {
+  isStarredEntity: EntityFilter;
+};
+
 export const entityFilters = {
-  [FilterGroupItem.OWNED]: () => () => false,
-  [FilterGroupItem.ALL]: () => () => true,
-  [FilterGroupItem.STARRED]: ({ isStarredEntity }: { isStarredEntity: any }) =>
+  [EntityFilterType.OWNED]: (): EntityFilter => () => false,
+  [EntityFilterType.ALL]: (): EntityFilter => () => true,
+  [EntityFilterType.STARRED]: ({ isStarredEntity }: EntityFilterOptions) =>
     isStarredEntity,
 };
 

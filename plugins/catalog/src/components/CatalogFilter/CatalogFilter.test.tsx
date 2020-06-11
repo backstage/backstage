@@ -18,7 +18,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
-import { FilterGroupItem } from '../../types';
+import { EntityFilterType } from '../../data/filters';
 
 describe('Catalog Filter', () => {
   it('should render the different groups', async () => {
@@ -41,11 +41,11 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: FilterGroupItem.ALL,
+            id: EntityFilterType.ALL,
             label: 'First Label',
           },
           {
-            id: FilterGroupItem.STARRED,
+            id: EntityFilterType.STARRED,
             label: 'Second Label',
           },
         ],
@@ -68,12 +68,12 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: FilterGroupItem.ALL,
+            id: EntityFilterType.ALL,
             label: 'First Label',
             count: 100,
           },
           {
-            id: FilterGroupItem.STARRED,
+            id: EntityFilterType.STARRED,
             label: 'Second Label',
             count: 400,
           },
@@ -97,12 +97,12 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: FilterGroupItem.ALL,
+            id: EntityFilterType.ALL,
             label: 'First Label',
             count: 100,
           },
           {
-            id: FilterGroupItem.STARRED,
+            id: EntityFilterType.STARRED,
             label: 'Second Label',
             count: 400,
           },
@@ -136,12 +136,12 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: FilterGroupItem.ALL,
+            id: EntityFilterType.ALL,
             label: 'First Label',
             count: () => <b>BACKSTAGE!</b>,
           },
           {
-            id: FilterGroupItem.STARRED,
+            id: EntityFilterType.STARRED,
             label: 'Second Label',
             count: 400,
           },
