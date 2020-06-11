@@ -18,7 +18,6 @@ import { Link, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import {
   makeStyles,
-  Button,
   Grid,
   List,
   ListItem,
@@ -33,6 +32,7 @@ import {
   Header,
   Page,
   Content,
+  Button,
   ContentHeader,
   HeaderLabel,
   Progress,

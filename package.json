@@ -11,7 +11,7 @@
     "tsc": "tsc",
     "clean": "backstage-cli clean && lerna run clean",
     "diff": "lerna run diff --",
-    "test": "lerna run test --since origin/master --parallel -- --coverage",
+    "test": "lerna run test --since origin/master -- --coverage",
     "test:all": "lerna run test -- --coverage",
     "lint": "lerna run lint --since origin/master --",
     "lint:all": "lerna run lint --",

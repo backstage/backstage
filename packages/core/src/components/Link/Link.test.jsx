@@ -18,7 +18,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Link } from './Link';
-import { MemoryRouter, Route } from 'react-router';
+import { Route } from 'react-router';
 import { act } from 'react-dom/test-utils';
 
 describe('<Link />', () => {
@@ -27,14 +27,15 @@ describe('<Link />', () => {
     const linkText = 'Navigate!';
     const { getByText } = render(
       wrapInTestApp(
-        <MemoryRouter>
+        <>
           <Link to="/test">{linkText}</Link>
           <Route path="/test">{testString}</Route>
-        </MemoryRouter>,
+        </>,
       ),
     );
     expect(() => getByText(testString)).toThrow();
     await act(async () => fireEvent.click(getByText(linkText)));
+
     expect(getByText(testString)).toBeInTheDocument();
   });
 });
