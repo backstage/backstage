@@ -1,0 +1,40 @@
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: backstage-frontend
+  description: Frontend service for Backend
+spec:
+  type: service
+  lifecycle: experimental
+  owner: backstage@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: backstage-backend
+  description: Backend service for Backstage
+spec:
+  type: service
+  lifecycle: experimental
+  owner: backstage@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: backstage-io
+  description: Backstage Open Source (BOSS) Microsite
+spec:
+  type: website
+  lifecycle: production
+  owner: backstage@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: http-proxy
+  description: A HTTP proxy server
+spec:
+  type: website
+  lifecycle: production
+  owner: infra@example.com

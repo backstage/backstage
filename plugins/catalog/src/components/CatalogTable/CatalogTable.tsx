@@ -44,8 +44,12 @@ const columns: TableColumn[] = [
     ),
   },
   {
-    title: 'Kind',
-    field: 'kind',
+    title: 'Owner',
+    field: 'spec.owner',
+  },
+  {
+    title: 'Lifecycle',
+    field: 'spec.lifecycle',
   },
   {
     title: 'Description',
