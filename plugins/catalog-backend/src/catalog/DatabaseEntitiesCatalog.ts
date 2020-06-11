@@ -81,30 +81,28 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
   async removeEntityByUid(uid: string): Promise<void> {
     return await this.database.transaction(async tx => {
-      const currentEntity = await this.database.entityByUid(tx, uid);
-      if (!currentEntity) {
+      const entityResponse = await this.database.entityByUid(tx, uid);
+      if (!entityResponse) {
         throw new NotFoundError(`Entity with ID ${uid} was not found`);
       }
-      const colocatedEntities = currentEntity?.entity.metadata.annotations?.[
-        LOCATION_ANNOTATION
-      ]
+      const location =
+        entityResponse.entity.metadata.annotations?.[LOCATION_ANNOTATION];
+      const colocatedEntities = location
         ? await this.database.entities(tx, [
             {
               key: LOCATION_ANNOTATION,
-              values: [
-                currentEntity.entity.metadata.annotations[LOCATION_ANNOTATION],
-              ],
+              values: [location],
             },
           ])
-        : [currentEntity];
+        : [entityResponse];
       for (const dbResponse of colocatedEntities) {
         await this.database.removeEntity(tx, dbResponse?.entity.metadata.uid!);
       }
 
-      if (currentEntity?.locationId) {
-        await this.database.removeLocation(tx, currentEntity?.locationId!);
+      if (entityResponse.locationId) {
+        await this.database.removeLocation(tx, entityResponse?.locationId!);
       }
-      return Promise.resolve();
+      return undefined;
     });
   }
 
