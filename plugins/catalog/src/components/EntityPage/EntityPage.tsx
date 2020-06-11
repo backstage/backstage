@@ -31,13 +31,13 @@ import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
-import { ComponentContextMenu } from '../ComponentContextMenu/ComponentContextMenu';
-import { ComponentMetadataCard } from '../ComponentMetadataCard/ComponentMetadataCard';
-import { ComponentRemovalDialog } from '../ComponentRemovalDialog/ComponentRemovalDialog';
+import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
+import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
+import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 
 const REDIRECT_DELAY = 1000;
 
-type ComponentPageProps = {
+type Props = {
   match: {
     params: {
       optionalNamespaceAndName: string;
@@ -68,7 +68,7 @@ function headerProps(
   };
 }
 
-export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
+export const EntityPage: FC<Props> = ({ match, history }) => {
   const { optionalNamespaceAndName, kind } = match.params;
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
 
@@ -83,7 +83,7 @@ export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
 
   useEffect(() => {
     if (!error && !loading && !entity) {
-      errorApi.post(new Error('Component not found!'));
+      errorApi.post(new Error('Entity not found!'));
       setTimeout(() => {
         history.push('/');
       }, REDIRECT_DELAY);
@@ -141,9 +141,7 @@ export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     // TODO: Switch theme and type props based on component type (website, library, ...)
     <Page theme={pageTheme.service}>
       <Header title={headerTitle} type={headerType}>
-        {entity && (
-          <ComponentContextMenu onUnregisterComponent={showRemovalDialog} />
-        )}
+        {entity && <EntityContextMenu onUnregisterEntity={showRemovalDialog} />}
       </Header>
 
       {loading && <Progress />}
@@ -161,7 +159,7 @@ export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
           <Content>
             <Grid container spacing={3} direction="column">
               <Grid item>
-                <ComponentMetadataCard entity={entity} />
+                <EntityMetadataCard entity={entity} />
               </Grid>
               <Grid item>
                 <SentryIssuesWidget
@@ -172,7 +170,7 @@ export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
             </Grid>
           </Content>
 
-          <ComponentRemovalDialog
+          <UnregisterEntityDialog
             open={confirmationDialogOpen}
             entity={entity}
             onConfirm={cleanUpAfterRemoval}

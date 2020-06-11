@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core';
 import React, { FC } from 'react';
@@ -21,7 +22,7 @@ type Props = {
   entity: Entity;
 };
 
-export const ComponentMetadataCard: FC<Props> = ({ entity }) => (
+export const EntityMetadataCard: FC<Props> = ({ entity }) => (
   <InfoCard title="Metadata">
     <StructuredMetadataTable metadata={entity.metadata} />
   </InfoCard>

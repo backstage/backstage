@@ -20,7 +20,6 @@ import {
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import Cache from 'node-cache';
-import { DescriptorEnvelope } from '../types';
 import { CatalogApi, EntityCompoundName } from './types';
 
 export class CatalogClient implements CatalogApi {
@@ -77,10 +76,8 @@ export class CatalogClient implements CatalogApi {
     return await this.getOptional(`/locations/${id}`);
   }
 
-  async getEntities(
-    filter?: Record<string, string>,
-  ): Promise<DescriptorEnvelope[]> {
-    const cachedValue = this.cache.get<DescriptorEnvelope[]>(
+  async getEntities(filter?: Record<string, string>): Promise<Entity[]> {
+    const cachedValue = this.cache.get<Entity[]>(
       `get:${JSON.stringify(filter)}`,
     );
     if (cachedValue) return cachedValue;

@@ -33,7 +33,7 @@ import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api/types';
 
-type ComponentRemovalDialogProps = {
+type Props = {
   open: boolean;
   onConfirm: () => any;
   onClose: () => any;
@@ -50,7 +50,7 @@ function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   }, [catalogApi, entity]);
 }
 
-export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
+export const UnregisterEntityDialog: FC<Props> = ({
   open,
   onConfirm,
   onClose,
@@ -76,7 +76,7 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
   return (
     <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
-        Are you sure you want to unregister this component?
+        Are you sure you want to unregister this entity?
       </DialogTitle>
       <DialogContent>
         {loading ? <Progress /> : null}
@@ -108,7 +108,7 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
               </ul>
             </Typography>
             <DialogContentText>
-              To undo, just re-register the component in Backstage.
+              To undo, just re-register the entity in Backstage.
             </DialogContentText>
           </>
         ) : null}

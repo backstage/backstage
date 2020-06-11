@@ -17,5 +17,4 @@
 export { plugin } from './plugin';
 export * from './api/CatalogClient';
 export * from './api/types';
-export * from './types';
 export * from './routes';

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useCallback } from 'react';
-import { useApi, storageApiRef } from '@backstage/core';
-import { useObservable } from 'react-use';
+
 import { Entity } from '@backstage/catalog-model';
+import { storageApiRef, useApi } from '@backstage/core';
+import { useCallback, useEffect, useState } from 'react';
+import { useObservable } from 'react-use';
 
 const buildEntityKey = (component: Entity) =>
   `entity:${component.kind}:${component.metadata.namespace ?? 'default'}:${

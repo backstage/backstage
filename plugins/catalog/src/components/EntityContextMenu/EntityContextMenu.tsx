@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   IconButton,
   ListItemIcon,
@@ -34,13 +35,11 @@ const useStyles = makeStyles({
   },
 });
 
-type ComponentContextMenuProps = {
-  onUnregisterComponent: () => void;
+type Props = {
+  onUnregisterEntity: () => void;
 };
 
-export const ComponentContextMenu: FC<ComponentContextMenuProps> = ({
-  onUnregisterComponent,
-}) => {
+export const EntityContextMenu: FC<Props> = ({ onUnregisterEntity }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
 
@@ -53,7 +52,7 @@ export const ComponentContextMenu: FC<ComponentContextMenuProps> = ({
   };
 
   return (
-    <div>
+    <>
       <IconButton
         aria-label="more"
         aria-controls="long-menu"
@@ -75,13 +74,13 @@ export const ComponentContextMenu: FC<ComponentContextMenuProps> = ({
           <MenuItem
             onClick={() => {
               onClose();
-              onUnregisterComponent();
+              onUnregisterEntity();
             }}
           >
             <ListItemIcon>
               <Cancel fontSize="small" />
             </ListItemIcon>
-            <Typography variant="inherit">Unregister component</Typography>
+            <Typography variant="inherit">Unregister entity</Typography>
           </MenuItem>
           <MenuItem>
             <ListItemIcon>
@@ -91,6 +90,6 @@ export const ComponentContextMenu: FC<ComponentContextMenuProps> = ({
           </MenuItem>
         </MenuList>
       </Popover>
-    </div>
+    </>
   );
 };
