@@ -17,7 +17,7 @@
 import React, { FC, useEffect } from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp, renderInTestApp } from './appWrappers';
-import { Route } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { withLogCollector } from '@backstage/test-utils-core';
 import {
   useApi,
@@ -32,11 +32,11 @@ describe('wrapInTestApp', () => {
     const { error } = await withLogCollector(['error'], async () => {
       const rendered = render(
         wrapInTestApp(
-          <>
+          <Routes>
             <Route path="/route1" element={<p>Route 1</p>} />
             <Route path="/route2" element={<p>Route 2</p>} />
-          </>,
-          { routeEntries: ['/'] },
+          </Routes>,
+          { routeEntries: ['/route2'] },
         ),
       );
 

@@ -24,7 +24,7 @@ describe('<Button />', () => {
   it('navigates using react-router', async () => {
     const testString = 'This is test string';
     const buttonLabel = 'Navigate!';
-    const { getByText, getByRole, ...all } = render(
+    const { getByText } = render(
       wrapInTestApp(
         <Routes>
           <Route path="/test" element={<p>{testString}</p>} />
@@ -34,7 +34,7 @@ describe('<Button />', () => {
     );
 
     expect(() => getByText(testString)).toThrow();
-    await act(async () => fireEvent.click(getByRole('button')));
+    await act(async () => fireEvent.click(getByText(buttonLabel)));
     expect(getByText(testString)).toBeInTheDocument();
   });
 });
