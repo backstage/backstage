@@ -15,11 +15,11 @@
  */
 
 import {
-  ApiHolder,
   ApiRegistry,
   alertApiRef,
   errorApiRef,
   AlertApiForwarder,
+  ConfigApi,
   ErrorApiForwarder,
   ErrorAlerter,
   featureFlagsApiRef,
@@ -46,59 +46,64 @@ import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
 import { gitOpsApiRef, GitOpsRestApi } from '@backstage/plugin-gitops-profiles';
 
-const builder = ApiRegistry.builder();
+export const apis = (config: ConfigApi) => {
+  // eslint-disable-next-line no-console
+  console.log(`Creating APIs for ${config.getString('app.title')}`);
 
-const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
-const errorApi = builder.add(
-  errorApiRef,
-  new ErrorAlerter(alertApi, new ErrorApiForwarder()),
-);
+  const builder = ApiRegistry.builder();
 
-builder.add(storageApiRef, WebStorage.create({ errorApi }));
-builder.add(circleCIApiRef, new CircleCIApi());
-builder.add(featureFlagsApiRef, new FeatureFlags());
+  const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
+  const errorApi = builder.add(
+    errorApiRef,
+    new ErrorAlerter(alertApi, new ErrorApiForwarder()),
+  );
 
-builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
+  builder.add(storageApiRef, WebStorage.create({ errorApi }));
+  builder.add(circleCIApiRef, new CircleCIApi());
+  builder.add(featureFlagsApiRef, new FeatureFlags());
 
-const oauthRequestApi = builder.add(
-  oauthRequestApiRef,
-  new OAuthRequestManager(),
-);
+  builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
 
-builder.add(
-  googleAuthApiRef,
-  GoogleAuth.create({
-    apiOrigin: 'http://localhost:7000',
-    basePath: '/auth/',
-    oauthRequestApi,
-  }),
-);
+  const oauthRequestApi = builder.add(
+    oauthRequestApiRef,
+    new OAuthRequestManager(),
+  );
 
-builder.add(
-  githubAuthApiRef,
-  GithubAuth.create({
-    apiOrigin: 'http://localhost:7000',
-    basePath: '/auth/',
-    oauthRequestApi,
-  }),
-);
+  builder.add(
+    googleAuthApiRef,
+    GoogleAuth.create({
+      apiOrigin: 'http://localhost:7000',
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+  );
 
-builder.add(
-  techRadarApiRef,
-  new TechRadar({
-    width: 1500,
-    height: 800,
-  }),
-);
+  builder.add(
+    githubAuthApiRef,
+    GithubAuth.create({
+      apiOrigin: 'http://localhost:7000',
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+  );
 
-builder.add(
-  catalogApiRef,
-  new CatalogClient({
-    apiOrigin: 'http://localhost:3000',
-    basePath: '/catalog/api',
-  }),
-);
+  builder.add(
+    techRadarApiRef,
+    new TechRadar({
+      width: 1500,
+      height: 800,
+    }),
+  );
 
-builder.add(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008'));
+  builder.add(
+    catalogApiRef,
+    new CatalogClient({
+      apiOrigin: 'http://localhost:3000',
+      basePath: '/catalog/api',
+    }),
+  );
 
-export default builder.build() as ApiHolder;
+  builder.add(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008'));
+
+  return builder.build();
+};
