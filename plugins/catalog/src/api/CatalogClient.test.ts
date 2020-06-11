@@ -17,6 +17,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
+import { Entity } from '@backstage/catalog-model';
 const server = setupServer();
 
 describe('CatalogClient', () => {
@@ -36,21 +37,61 @@ describe('CatalogClient', () => {
       basePath: mockBasePath,
     });
   });
-  it('builds entity search filters properly', async () => {
-    expect.assertions(2);
-    server.use(
-      rest.get(`${mockApiOrigin}${mockBasePath}/entities`, (req, res, ctx) => {
-        expect(req.url.searchParams.toString()).toBe('a=1&b=2&b=3&%C3%B6=%3D');
-        return res(ctx.json([]));
-      }),
-    );
 
-    const entities = await client.getEntities({
-      a: '1',
-      b: ['2', '3'],
-      ö: '=',
+  describe('getEntiies', () => {
+    const defaultResponse: Entity[] = [
+      {
+        apiVersion: '1',
+        kind: 'Component',
+        metadata: {
+          name: 'Test1',
+          namespace: 'test1',
+        },
+      },
+      {
+        apiVersion: '1',
+        kind: 'Component',
+        metadata: {
+          name: 'Test2',
+          namespace: 'test1',
+        },
+      },
+    ];
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockApiOrigin}${mockBasePath}/entities`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse));
+        }),
+      );
     });
 
-    expect(entities).toEqual([]);
+    it('should entities from correct endpoint', async () => {
+      const entities = await client.getEntities();
+      expect(entities).toEqual(defaultResponse);
+    });
+
+    it('builds entity search filters properly', async () => {
+      expect.assertions(2);
+      server.use(
+        rest.get(
+          `${mockApiOrigin}${mockBasePath}/entities`,
+          (req, res, ctx) => {
+            expect(req.url.searchParams.toString()).toBe(
+              'a=1&b=2&b=3&%C3%B6=%3D',
+            );
+            return res(ctx.json([]));
+          },
+        ),
+      );
+
+      const entities = await client.getEntities({
+        a: '1',
+        b: ['2', '3'],
+        ö: '=',
+      });
+
+      expect(entities).toEqual([]);
+    });
   });
 });
