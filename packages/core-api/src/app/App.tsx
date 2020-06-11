@@ -16,7 +16,7 @@
 import React, { ComponentType, FC, useMemo } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
-import { BackstageApp, AppComponents, AppConfigLoader } from './types';
+import { BackstageApp, AppComponents, AppConfigLoader, Apis } from './types';
 import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import { featureFlagsApiRef } from '../apis/definitions';
@@ -37,7 +37,7 @@ import { ApiAggregator } from '../apis/ApiAggregator';
 import { useAsync } from 'react-use';
 
 type FullAppOptions = {
-  apis: ApiHolder;
+  apis: Apis;
   icons: SystemIcons;
   plugins: BackstagePlugin[];
   components: AppComponents;
@@ -46,15 +46,17 @@ type FullAppOptions = {
 };
 
 export class PrivateAppImpl implements BackstageApp {
-  private readonly apis: ApiHolder;
+  private apis?: ApiHolder = undefined;
   private readonly icons: SystemIcons;
   private readonly plugins: BackstagePlugin[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
 
+  private apisOrFactory: Apis;
+
   constructor(options: FullAppOptions) {
-    this.apis = options.apis;
+    this.apisOrFactory = options.apis;
     this.icons = options.icons;
     this.plugins = options.plugins;
     this.components = options.components;
@@ -63,6 +65,9 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getApis(): ApiHolder {
+    if (!this.apis) {
+      throw new Error('Tried to access APIs before app was loaded');
+    }
     return this.apis;
   }
 
@@ -176,6 +181,15 @@ export class PrivateAppImpl implements BackstageApp {
         [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
         [configApiRef, configReader],
       ]);
+
+      if (!this.apis) {
+        if ('get' in this.apisOrFactory) {
+          this.apis = this.apisOrFactory;
+        } else {
+          this.apis = this.apisOrFactory(configReader);
+        }
+      }
+
       const apis = new ApiAggregator(this.apis, appApis);
 
       const { Router } = this.components;

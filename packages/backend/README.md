@@ -40,7 +40,7 @@ to the backend. These are places where the backend can find some entity descript
 data to consume and serve.
 
 To get started, you can issue the following after starting the backend, from inside
-the `packages/catalog-backend` directory:
+the `plugins/catalog-backend` directory:
 
 ```bash
 yarn mock-catalog-data
