@@ -21,6 +21,7 @@ import {
   Grid,
   List,
   ListItem,
+  Button,
   ListItemIcon,
   ListItemText,
 } from '@material-ui/core';
@@ -32,7 +33,6 @@ import {
   Header,
   Page,
   Content,
-  Button,
   ContentHeader,
   HeaderLabel,
   Progress,

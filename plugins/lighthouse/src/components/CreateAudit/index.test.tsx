@@ -16,13 +16,10 @@
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');
-  const mocks = {
-    replace: jest.fn(),
-    push: jest.fn(),
-  };
+  const mockNavigate = jest.fn();
   return {
     ...actual,
-    useNavigate: jest.fn(() => mocks),
+    useNavigate: jest.fn(() => mockNavigate),
   };
 });
 
@@ -115,7 +112,7 @@ describe('CreateAudit', () => {
 
   describe('when the audit is successfully created', () => {
     it('triggers a location change to the table', async () => {
-      useNavigate().push.mockClear();
+      useNavigate.mockClear();
       mockFetch.mockResponseOnce(JSON.stringify(createAuditResponse));
 
       const rendered = render(
@@ -140,7 +137,7 @@ describe('CreateAudit', () => {
 
       await wait(() => expect(rendered.getByLabelText(/URL/)).toBeEnabled());
 
-      expect(useNavigate().push).toHaveBeenCalledWith('/lighthouse');
+      expect(useNavigate()).toHaveBeenCalledWith('/lighthouse');
     });
   });
 

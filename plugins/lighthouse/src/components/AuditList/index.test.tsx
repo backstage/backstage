@@ -16,13 +16,10 @@
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');
-  const mocks = {
-    replace: jest.fn(),
-    push: jest.fn(),
-  };
+  const mockNavigation = jest.fn();
   return {
     ...actual,
-    useNavigate: jest.fn(() => mocks),
+    useNavigate: jest.fn(() => mockNavigation),
   };
 });
 
@@ -145,9 +142,8 @@ describe('AuditList', () => {
         );
         const element = await rendered.findByLabelText(/Go to page 1/);
         fireEvent.click(element);
-        expect(useNavigate().replace).toHaveBeenCalledWith(
-          `/lighthouse?page=1`,
-        );
+
+        expect(useNavigate()).toHaveBeenCalledWith(`/lighthouse?page=1`);
       });
     });
   });
