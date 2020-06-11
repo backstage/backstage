@@ -189,7 +189,7 @@ export const CatalogPage: FC<{}> = () => {
           >
             Create Service
           </Button>
-          <SupportButton>All your components</SupportButton>
+          <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>
           <div>

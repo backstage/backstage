@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ComponentContextMenu } from './ComponentContextMenu';
-import { render } from '@testing-library/react';
+
+import { render, fireEvent } from '@testing-library/react';
 import * as React from 'react';
 import { act } from 'react-dom/test-utils';
+import { EntityContextMenu } from './EntityContextMenu';
 
 describe('ComponentContextMenu', () => {
-  it('should call onUnregisterComponent on button click', async () => {
+  it('should call onUnregisterEntity on button click', async () => {
     await act(async () => {
       const mockCallback = jest.fn();
       const menu = render(
-        <ComponentContextMenu onUnregisterComponent={mockCallback} />,
+        <EntityContextMenu onUnregisterEntity={mockCallback} />,
       );
       const button = await menu.findByTestId('menu-button');
-      button.click();
-      const unregister = await menu.findByText('Unregister component');
+      fireEvent.click(button);
+      const unregister = await menu.findByText('Unregister entity');
       expect(unregister).toBeInTheDocument();
     });
   });
