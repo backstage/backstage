@@ -2,39 +2,59 @@
 apiVersion: backstage.io/v1beta1
 kind: Component
 metadata:
-  name: backstage-frontend
-  description: Frontend service for Backend
+  name: podcast-api
+  description: Podcast API
 spec:
   type: service
   lifecycle: experimental
-  owner: backstage@example.com
+  owner: tools@example.com
 ---
 apiVersion: backstage.io/v1beta1
 kind: Component
 metadata:
-  name: backstage-backend
-  description: Backend service for Backstage
+  name: artist-lookup
+  description: Artist Lookup
 spec:
   type: service
   lifecycle: experimental
-  owner: backstage@example.com
+  owner: tools@example.com
 ---
 apiVersion: backstage.io/v1beta1
 kind: Component
 metadata:
-  name: backstage-io
-  description: Backstage Open Source (BOSS) Microsite
+  name: searcher
+  description: Searcher
 spec:
-  type: website
+  type: service
   lifecycle: production
-  owner: backstage@example.com
+  owner: tools@example.com
 ---
 apiVersion: backstage.io/v1beta1
 kind: Component
 metadata:
-  name: http-proxy
-  description: A HTTP proxy server
+  name: playback-order
+  description: Playback Order
+spec:
+  type: service
+  lifecycle: production
+  owner: tools@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: shuffle-api
+  description: Shuffle API
+spec:
+  type: service
+  lifecycle: production
+  owner: tools@example.com
+---
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: queue-proxy
+  description: Queue Proxy
 spec:
   type: website
   lifecycle: production
-  owner: infra@example.com
+  owner: tools@example.com
