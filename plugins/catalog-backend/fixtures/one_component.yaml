@@ -1,6 +1,0 @@
-apiVersion: backstage.io/v1beta1
-kind: Component
-metadata:
-  name: component3
-spec:
-  type: service
