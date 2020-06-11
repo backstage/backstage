@@ -22,7 +22,11 @@
  * Happy hacking!
  */
 
-import { createServiceBuilder, getRootLogger } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  getRootLogger,
+  useHotMemoize,
+} from '@backstage/backend-common';
 import knex from 'knex';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -45,19 +49,24 @@ function createEnv(plugin: string): PluginEnvironment {
 }
 
 async function main() {
-  const service = createServiceBuilder()
+  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
+  const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
+  const authEnv = useHotMemoize(module, () => createEnv('auth'));
+  const identityEnv = useHotMemoize(module, () => createEnv('identity'));
+
+  const service = createServiceBuilder(module)
     .enableCors({
       origin: 'http://localhost:3000',
       credentials: true,
     })
-    .addRouter('/catalog', await catalog(createEnv('catalog')))
-    .addRouter('/scaffolder', await scaffolder(createEnv('scaffolder')))
+    .addRouter('/catalog', await catalog(catalogEnv))
+    .addRouter('/scaffolder', await scaffolder(scaffolderEnv))
     .addRouter(
       '/sentry',
       await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
     )
-    .addRouter('/auth', await auth(createEnv('auth')))
-    .addRouter('/identity', await identity(createEnv('identity')));
+    .addRouter('/auth', await auth(authEnv))
+    .addRouter('/identity', await identity(identityEnv));
 
   await service.start().catch(err => {
     console.log(err);
@@ -66,3 +75,5 @@ async function main() {
 }
 
 main();
+
+module.hot?.accept();

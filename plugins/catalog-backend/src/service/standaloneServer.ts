@@ -54,7 +54,7 @@ export async function startStandaloneServer(
     higherOrderOperation,
     logger,
   });
-  const service = createServiceBuilder()
+  const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })
     .addRouter('/catalog', router);
   return await service.start().catch(err => {
@@ -62,3 +62,5 @@ export async function startStandaloneServer(
     process.exit(1);
   });
 }
+
+module.hot?.accept();

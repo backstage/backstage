@@ -24,6 +24,7 @@ import {
   runPeriodically,
 } from '@backstage/plugin-catalog-backend';
 import { PluginEnvironment } from '../types';
+import { useHotEffect } from '@backstage/backend-common';
 
 export default async function createPlugin({
   logger,
@@ -41,7 +42,9 @@ export default async function createPlugin({
     logger,
   );
 
-  runPeriodically(() => higherOrderOperation.refreshAllLocations(), 10000);
+  useHotEffect(module, () =>
+    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 10000),
+  );
 
   return await createRouter({
     entitiesCatalog,

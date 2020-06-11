@@ -87,17 +87,11 @@ export function createConfig(
     externals: [
       nodeExternals({
         modulesDir: paths.rootNodeModules,
-        whitelist: [
-          'webpack/hot/poll?100',
-          /\@backstage\/.*\/(?!node_modules)/,
-        ],
+        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
       }),
       nodeExternals({
         modulesDir: paths.targetNodeModules,
-        whitelist: [
-          'webpack/hot/poll?100',
-          /\@backstage\/.*\/(?!node_modules)/,
-        ],
+        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
       }),
     ],
     target: 'node' as const,
@@ -141,6 +135,9 @@ export function createConfig(
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['main:src', 'browser', 'module', 'main'],
+      ...(isBackend
+        ? { modules: [paths.targetNodeModules, paths.rootNodeModules] }
+        : {}),
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
