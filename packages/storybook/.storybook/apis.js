@@ -5,10 +5,12 @@ import {
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
+  githubAuthApiRef,
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
   GoogleAuth,
+  GithubAuth,
 } from '@backstage/core';
 
 const builder = ApiRegistry.builder();
@@ -25,6 +27,15 @@ const oauthRequestApi = builder.add(
 builder.add(
   googleAuthApiRef,
   GoogleAuth.create({
+    apiOrigin: 'http://localhost:7000',
+    basePath: '/auth/',
+    oauthRequestApi,
+  }),
+);
+
+builder.add(
+  githubAuthApiRef,
+  GithubAuth.create({
     apiOrigin: 'http://localhost:7000',
     basePath: '/auth/',
     oauthRequestApi,

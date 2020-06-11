@@ -58,8 +58,11 @@ const useStyles = makeStyles<Theme>(theme => {
       // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
       fontWeight: 'bold',
       whiteSpace: 'nowrap',
-      lineHeight: 1.0,
+      lineHeight: 'auto',
       flex: '3 1 auto',
+      width: '110px',
+      overflow: 'hidden',
+      'text-overflow': 'ellipsis',
     },
     iconContainer: {
       boxSizing: 'border-box',
