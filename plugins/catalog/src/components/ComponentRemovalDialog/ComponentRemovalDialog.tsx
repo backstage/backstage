@@ -15,7 +15,7 @@
  */
 
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Progress, useApi } from '@backstage/core';
+import { Progress, useApi, alertApiRef } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -59,6 +59,19 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
   const { value: entities, loading, error } = useColocatedEntities(entity);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const catalogApi = useApi(catalogApiRef);
+  const alertApi = useApi(alertApiRef);
+
+  const removeEntity = async () => {
+    const uid = entity.metadata.uid;
+    try {
+      await catalogApi.removeEntityByUid(uid!);
+    } catch (err) {
+      alertApi.post({ message: err.message });
+    }
+
+    onConfirm();
+  };
 
   return (
     <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
@@ -90,7 +103,7 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
             <Typography component="div">
               <ul>
                 <li>
-                  {entities[0]?.metadata?.annotations?.[LOCATION_ANNOTATION]}
+                  {entities[0]?.metadata.annotations?.[LOCATION_ANNOTATION]}
                 </li>
               </ul>
             </Typography>
@@ -101,10 +114,12 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose} color="primary">
+          Cancel
+        </Button>
         <Button
           disabled={!!(loading || error)}
-          onClick={onConfirm}
+          onClick={removeEntity}
           color="secondary"
         >
           Unregister

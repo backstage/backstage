@@ -134,4 +134,20 @@ export class CatalogClient implements CatalogApi {
       .map(r => r.data)
       .find(l => locationCompound === `${l.type}:${l.target}`);
   }
+
+  async removeEntityByUid(uid: string): Promise<void> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/entities/by-uid/${uid}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    if (!response.ok) {
+      const payload = await response.text();
+      throw new Error(
+        `Request failed with ${response.status} ${response.statusText}, ${payload}`,
+      );
+    }
+    return undefined;
+  }
 }

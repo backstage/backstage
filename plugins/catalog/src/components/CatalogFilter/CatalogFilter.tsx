@@ -25,9 +25,9 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import type { IconComponent } from '@backstage/core';
-import { FilterGroupItem } from '../../types';
+import { EntityFilterType } from '../../data/filters';
 export type CatalogFilterItem = {
-  id: FilterGroupItem;
+  id: EntityFilterType;
   label: string;
   icon?: IconComponent;
   count?: number | React.FC;

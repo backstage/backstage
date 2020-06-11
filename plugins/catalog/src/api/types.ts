@@ -36,6 +36,7 @@ export interface CatalogApi {
   getEntities(filter?: Record<string, string>): Promise<Entity[]>;
   addLocation(type: string, target: string): Promise<AddLocationResponse>;
   getLocationByEntity(entity: Entity): Promise<Location | undefined>;
+  removeEntityByUid(uid: string): Promise<void>;
 }
 
 export type AddLocationResponse = { location: Location; entities: Entity[] };

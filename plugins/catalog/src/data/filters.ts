@@ -21,22 +21,26 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import { StarredCount } from '../components/CatalogFilter/StarredCount';
 import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
-import { FilterGroupItem } from '../types';
-import { CatalogApi } from '../..';
 import { Entity } from '@backstage/catalog-model';
+
+export enum EntityFilterType {
+  ALL = 'ALL',
+  STARRED = 'STARRED',
+  OWNED = 'OWNED',
+}
 
 export const filterGroups: CatalogFilterGroup[] = [
   {
     name: 'Personal',
     items: [
       {
-        id: FilterGroupItem.OWNED,
+        id: EntityFilterType.OWNED,
         label: 'Owned',
         count: 0,
         icon: SettingsIcon,
       },
       {
-        id: FilterGroupItem.STARRED,
+        id: EntityFilterType.STARRED,
         label: 'Starred',
         count: StarredCount,
         icon: StarIcon,
@@ -48,7 +52,7 @@ export const filterGroups: CatalogFilterGroup[] = [
     name: 'Company',
     items: [
       {
-        id: FilterGroupItem.ALL,
+        id: EntityFilterType.ALL,
         label: 'All Services',
         count: AllServicesCount,
       },
@@ -56,24 +60,16 @@ export const filterGroups: CatalogFilterGroup[] = [
   },
 ];
 
-type ResolverFunction = ({
-  catalogApi,
-  isStarredEntity,
-}: {
-  catalogApi: CatalogApi;
-  isStarredEntity: (entity: Entity) => boolean;
-}) => Promise<Entity[]>;
+type EntityFilter = (entity: Entity) => boolean;
+type EntityFilterOptions = {
+  isStarredEntity: EntityFilter;
+};
 
-export const dataResolvers: Record<FilterGroupItem, ResolverFunction> = {
-  [FilterGroupItem.OWNED]: async () => [],
-  [FilterGroupItem.ALL]: async ({ catalogApi }) => {
-    return catalogApi.getEntities();
-  },
-  [FilterGroupItem.STARRED]: async ({ catalogApi, isStarredEntity }) => {
-    const allEntities = await catalogApi.getEntities();
-
-    return allEntities.filter(entity => isStarredEntity(entity));
-  },
+export const entityFilters = {
+  [EntityFilterType.OWNED]: (): EntityFilter => () => false,
+  [EntityFilterType.ALL]: (): EntityFilter => () => true,
+  [EntityFilterType.STARRED]: ({ isStarredEntity }: EntityFilterOptions) =>
+    isStarredEntity,
 };
 
 export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];

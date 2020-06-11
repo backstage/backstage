@@ -95,14 +95,12 @@ export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
     return null;
   }
 
-  const removeComponent = async () => {
+  const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
-    // await componentFactory.removeComponentByName(componentName);
     history.push('/');
   };
 
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
-  const hideRemovalDialog = () => setConfirmationDialogOpen(false);
 
   // TODO - Replace with proper tabs implementation
   const tabs = [
@@ -177,8 +175,8 @@ export const ComponentPage: FC<ComponentPageProps> = ({ match, history }) => {
           <ComponentRemovalDialog
             open={confirmationDialogOpen}
             entity={entity}
-            onClose={hideRemovalDialog}
-            onConfirm={removeComponent}
+            onConfirm={cleanUpAfterRemoval}
+            onClose={() => setConfirmationDialogOpen(false)}
           />
         </>
       )}
