@@ -37,7 +37,7 @@ import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
-import { defaultFilter, filterGroups, entityFilters } from '../../data/filters';
+import { defaultFilter, entityFilters, filterGroups } from '../../data/filters';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import {
@@ -70,17 +70,11 @@ export const CatalogPage: FC<{}> = () => {
     defaultFilter,
   );
 
-  const { value, error, loading } = useAsync(
-    () =>
-      catalogApi
-        .getEntities()
-        .then(entities =>
-          entities.filter(
-            entityFilters[selectedFilter.id]({ isStarredEntity }),
-          ),
-        ),
-    [selectedFilter.id, starredEntities.size],
-  );
+  const { value, error, loading } = useAsync(async () => {
+    const filter = entityFilters[selectedFilter.id];
+    const all = await catalogApi.getEntities();
+    return all.filter(e => filter(e, { isStarred: isStarredEntity(e) }));
+  }, [selectedFilter.id, starredEntities.size]);
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
