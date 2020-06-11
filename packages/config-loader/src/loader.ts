@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import yaml from 'yaml';
 import { resolve as resolvePath } from 'path';
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig, JsonObject, JsonValue } from '@backstage/config';
 import { findRootPath } from './paths';
 import { LoadConfigOptions } from './types';
 
@@ -77,7 +77,70 @@ export function readEnv(env: {
   return config ? [config] : [];
 }
 
-export async function readStaticConfig(
+type ReadFileFunc = (path: string) => Promise<string>;
+
+function isObject(obj: JsonValue | undefined): obj is JsonObject {
+  if (typeof obj !== 'object') {
+    return false;
+  } else if (Array.isArray(obj)) {
+    return false;
+  }
+  return obj !== null;
+}
+
+export async function readConfigFile(filePath: string, readFile: ReadFileFunc) {
+  const configYaml = await readFile(filePath);
+  const config = yaml.parse(configYaml);
+
+  async function transform(
+    obj: JsonValue,
+    path: string,
+  ): Promise<JsonValue | undefined> {
+    if (typeof obj !== 'object') {
+      return obj;
+    } else if (obj === null) {
+      return obj;
+    } else if (Array.isArray(obj)) {
+      const arr = new Array<JsonValue>();
+
+      for (const [index, value] of obj.entries()) {
+        const out = await transform(value, `${path}[${index}]`);
+        if (out !== undefined) {
+          arr.push(out);
+        }
+      }
+
+      return arr;
+    }
+
+    if ('$secret' in obj) {
+      if (!isObject(obj.$secret)) {
+        throw TypeError(`Secret expected object at secret ${path}.$secret`);
+      }
+
+      return undefined;
+    }
+
+    const out: JsonObject = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+      const result = await transform(value, `${path}.${key}`);
+      if (result !== undefined) {
+        out[key] = result;
+      }
+    }
+
+    return out;
+  }
+
+  const finalConfig = await transform(config, '');
+  if (!isObject(finalConfig)) {
+    throw new TypeError('Expected object at config root');
+  }
+  return finalConfig;
+}
+
+export async function loadStaticConfig(
   options: LoadConfigOptions,
 ): Promise<AppConfig[]> {
   // TODO: We'll want this to be a bit more elaborate, probably adding configs for
@@ -91,8 +154,10 @@ export async function readStaticConfig(
   }
 
   try {
-    const configYaml = await fs.readFile(configPath, 'utf8');
-    const config = yaml.parse(configYaml);
+    const rootPath = configPath;
+    const config = await readConfigFile(configPath, (path: string) => {
+      return fs.readFile(resolvePath(rootPath, path), 'utf8');
+    });
     return [config];
   } catch (error) {
     throw new Error(`Failed to read static configuration file, ${error}`);
@@ -105,7 +170,7 @@ export async function loadConfig(
   const configs = [];
 
   configs.push(...readEnv(process.env));
-  configs.push(...(await readStaticConfig(options)));
+  configs.push(...(await loadStaticConfig(options)));
 
   return configs;
 }
