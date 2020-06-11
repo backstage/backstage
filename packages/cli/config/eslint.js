@@ -69,6 +69,7 @@ module.exports = {
           },
           ...require('module').builtinModules,
         ],
+        patterns: ['**/../packages/**', '**/../plugins/**'],
       },
     ],
   },
