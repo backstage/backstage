@@ -61,33 +61,21 @@ const useStyles = makeStyles(theme => ({
 
 export const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
-  const {
-    starredEntities,
-    toggleStarredEntity,
-    isStarredEntity,
-  } = useStarredEntities();
+  const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
+
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
 
-  const { data: entities, error, revalidate } = useStaleWhileRevalidate(
-    ['catalog', entityFilters[selectedFilter.id]],
-    async (_, filter) => {
-      return await catalogApi.getEntities();
-    },
-    { compare: () => false },
+  const { data: entities, error } = useStaleWhileRevalidate(
+    ['catalog/all', entityFilters[selectedFilter.id]],
+    async () => catalogApi.getEntities(),
   );
 
   const data =
     entities?.filter(e =>
       entityFilters[selectedFilter.id](e, { isStarred: isStarredEntity(e) }),
     ) ?? [];
-
-  const revalidator = starredEntities.size || {};
-
-  useEffect(() => {
-    revalidate();
-  }, [revalidate, revalidator]);
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
