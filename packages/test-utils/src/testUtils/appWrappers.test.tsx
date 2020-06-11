@@ -33,14 +33,14 @@ describe('wrapInTestApp', () => {
       const rendered = render(
         wrapInTestApp(
           <>
-            <Route path="/route1">Route 1</Route>
-            <Route path="/route2">Route 2</Route>
+            <Route path="/route1" element={<p>Route 1</p>} />
+            <Route path="/route2" element={<p>Route 2</p>} />
           </>,
-          { routeEntries: ['/route2'] },
+          { routeEntries: ['/'] },
         ),
       );
-      expect(rendered.getByText('Route 2')).toBeInTheDocument();
 
+      expect(rendered.getByText('Route 2')).toBeInTheDocument();
       // Wait for async actions to trigger the act() warnings that we assert below
       await Promise.resolve();
     });
