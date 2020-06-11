@@ -33,7 +33,7 @@ import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import Star from '@material-ui/icons/Star';
 import StarOutline from '@material-ui/icons/StarBorder';
-import React, { FC, useCallback, useState, useEffect } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { catalogApiRef } from '../..';
 import { defaultFilter, entityFilters, filterGroups } from '../../data/filters';
