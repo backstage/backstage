@@ -21,8 +21,12 @@ describe('CatalogClient', () => {
   it('builds entity search filters properly', async () => {
     mockFetch.mockResponse('[]');
     const client = new CatalogClient({ apiOrigin: '', basePath: '' });
-    const entities = await client.getEntities({ a: '1', ö: '=' });
+    const entities = await client.getEntities({
+      a: '1',
+      b: ['2', '3'],
+      ö: '=',
+    });
     expect(entities).toEqual([]);
-    expect(mockFetch).toBeCalledWith('/entities?a=1&%C3%B6=%3D');
+    expect(mockFetch).toBeCalledWith('/entities?a=1&b=2&b=3&%C3%B6=%3D');
   });
 });
