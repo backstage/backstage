@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
-import { render } from '@testing-library/react';
-import React from 'react';
-import { ComponentMetadataCard } from './ComponentMetadataCard';
 
-describe('ComponentMetadataCard component', () => {
-  it('should display component name if provided', async () => {
-    const testEntity: Entity = {
-      apiVersion: 'backstage.io/v1beta1',
-      kind: 'Component',
-      metadata: { name: 'test' },
-    };
-    const rendered = await render(
-      <ComponentMetadataCard entity={testEntity} />,
-    );
-    expect(await rendered.findByText('test')).toBeInTheDocument();
-  });
-});
+import { Entity } from '@backstage/catalog-model';
+import { InfoCard, StructuredMetadataTable } from '@backstage/core';
+import React, { FC } from 'react';
+
+type Props = {
+  entity: Entity;
+};
+
+export const EntityMetadataCard: FC<Props> = ({ entity }) => (
+  <InfoCard title="Metadata">
+    <StructuredMetadataTable metadata={entity.metadata} />
+  </InfoCard>
+);

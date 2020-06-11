@@ -28,6 +28,7 @@ describe('DatabaseEntitiesCatalog', () => {
       updateEntity: jest.fn(),
       entities: jest.fn(),
       entity: jest.fn(),
+      entityByUid: jest.fn(),
       removeEntity: jest.fn(),
       addLocation: jest.fn(),
       removeLocation: jest.fn(),

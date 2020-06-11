@@ -39,19 +39,14 @@ If you want to use the catalog functionality, you need to add so called location
 to the backend. These are places where the backend can find some entity descriptor
 data to consume and serve.
 
-To get started, you can issue the following after starting the backend:
+To get started, you can issue the following after starting the backend, from inside
+the `packages/catalog-backend` directory:
 
 ```bash
-curl -i \
-  -H "Content-Type: application/json" \
-  -d '{"type":"github","target":"https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/fixtures/two_components.yaml"}' \
-  localhost:7000/catalog/locations
+yarn mock-catalog-data
 ```
 
-After a short while, you should start seeing data on `localhost:7000/catalog/entities`.
-
-If you changed the `type` to `file` in the command above, and set the `target`
-to the absolute path of a YAML file on disk, you could consume your own experimental data.
+You should then start seeing data on `localhost:7000/catalog/entities`.
 
 The catalog currently runs in-memory only, so feel free to try it out, but it will
 need to be re-populated on next startup.

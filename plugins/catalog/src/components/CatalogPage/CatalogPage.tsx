@@ -37,7 +37,7 @@ import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
-import { dataResolvers, defaultFilter, filterGroups } from '../../data/filters';
+import { defaultFilter, entityFilters, filterGroups } from '../../data/filters';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import {
@@ -70,10 +70,11 @@ export const CatalogPage: FC<{}> = () => {
     defaultFilter,
   );
 
-  const { value, error, loading } = useAsync(
-    () => dataResolvers[selectedFilter.id]({ catalogApi, isStarredEntity }),
-    [selectedFilter.id, starredEntities.size],
-  );
+  const { value, error, loading } = useAsync(async () => {
+    const filter = entityFilters[selectedFilter.id];
+    const all = await catalogApi.getEntities();
+    return all.filter(e => filter(e, { isStarred: isStarredEntity(e) }));
+  }, [selectedFilter.id, starredEntities.size]);
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
@@ -182,7 +183,7 @@ export const CatalogPage: FC<{}> = () => {
           >
             Create Service
           </Button>
-          <SupportButton>All your components</SupportButton>
+          <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>
           <div>

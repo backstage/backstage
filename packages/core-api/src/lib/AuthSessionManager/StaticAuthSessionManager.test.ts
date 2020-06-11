@@ -84,11 +84,6 @@ describe('StaticAuthSessionManager', () => {
   });
 
   it('should remove session and reload', async () => {
-    const location = { ...window.location };
-    delete window.location;
-    window.location = location;
-    jest.spyOn(window.location, 'reload').mockImplementation();
-
     const removeSession = jest.fn();
     const manager = new StaticAuthSessionManager({
       connector: { removeSession },
@@ -96,7 +91,7 @@ describe('StaticAuthSessionManager', () => {
     } as any);
 
     await manager.removeSession();
-    expect(window.location.reload).toHaveBeenCalled();
     expect(removeSession).toHaveBeenCalled();
+    expect(await manager.getSession({ optional: true })).toBe(undefined);
   });
 });

@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
-import { InfoCard, StructuredMetadataTable } from '@backstage/core';
-import React, { FC } from 'react';
 
-type Props = {
-  entity: Entity;
-};
+import { plugin } from './plugin';
 
-export const ComponentMetadataCard: FC<Props> = ({ entity }) => (
-  <InfoCard title="Metadata">
-    <StructuredMetadataTable metadata={entity.metadata} />
-  </InfoCard>
-);
+describe('gitops-profiles', () => {
+  it('should export plugin', () => {
+    expect(plugin).toBeDefined();
+  });
+});

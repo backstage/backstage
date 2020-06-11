@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ComponentPage } from './ComponentPage';
+
+import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import { wrapInTestApp } from '@backstage/test-utils';
 import { render, wait } from '@testing-library/react';
 import * as React from 'react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
-import { catalogApiRef, CatalogApi } from '../../api/types';
+import { CatalogApi, catalogApiRef } from '../../api/types';
+import { EntityPage } from './EntityPage';
 
 const getTestProps = (name: string) => {
   return {
@@ -36,8 +37,8 @@ const getTestProps = (name: string) => {
 
 const errorApi = { post: () => {} };
 
-describe('ComponentPage', () => {
-  it('should redirect to component table page when name is not provided', async () => {
+describe('EntityPage', () => {
+  it('should redirect to catalog page when name is not provided', async () => {
     const props = getTestProps('');
     render(
       wrapInTestApp(
@@ -52,7 +53,7 @@ describe('ComponentPage', () => {
             ],
           ])}
         >
-          <ComponentPage {...props} />
+          <EntityPage {...props} />
         </ApiProvider>,
       ),
     );

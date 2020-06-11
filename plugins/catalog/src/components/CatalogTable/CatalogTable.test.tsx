@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
@@ -50,12 +51,12 @@ describe('CatalogTable component', () => {
       ),
     );
     const errorMessage = await rendered.findByText(
-      /Error encountered while fetching components./,
+      /Error encountered while fetching catalog entities./,
     );
     expect(errorMessage).toBeInTheDocument();
   });
 
-  it('should display component names when loading has finished and no error occurred', async () => {
+  it('should display entity names when loading has finished and no error occurred', async () => {
     const rendered = render(
       wrapInTestApp(
         <CatalogTable

@@ -83,7 +83,9 @@ describe('RadarPage', () => {
 
     await waitForElement(() => getByTestId('tech-radar-svg'));
 
-    expect(getByText('Welcome to the Tech Radar!')).toBeInTheDocument();
+    expect(
+      getByText('Pick the recommended technologies for your projects'),
+    ).toBeInTheDocument();
     expect(getByTestId('tech-radar-svg')).toBeInTheDocument();
   });
 

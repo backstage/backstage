@@ -20,7 +20,6 @@ import {
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import Cache from 'node-cache';
-import { DescriptorEnvelope } from '../types';
 import { CatalogApi, EntityCompoundName } from './types';
 
 export class CatalogClient implements CatalogApi {
@@ -78,16 +77,26 @@ export class CatalogClient implements CatalogApi {
   }
 
   async getEntities(
-    filter?: Record<string, string>,
-  ): Promise<DescriptorEnvelope[]> {
-    const cachedValue = this.cache.get<DescriptorEnvelope[]>(
+    filter?: Record<string, string | string[]>,
+  ): Promise<Entity[]> {
+    const cachedValue = this.cache.get<Entity[]>(
       `get:${JSON.stringify(filter)}`,
     );
     if (cachedValue) return cachedValue;
 
     let path = `/entities`;
     if (filter) {
-      path += `?${new URLSearchParams(filter).toString()}`;
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(filter)) {
+        if (Array.isArray(value)) {
+          for (const v of value) {
+            params.append(key, v);
+          }
+        } else {
+          params.append(key, value);
+        }
+      }
+      path += `?${params.toString()}`;
     }
 
     return await this.getRequired(path);
@@ -133,5 +142,21 @@ export class CatalogClient implements CatalogApi {
     return all
       .map(r => r.data)
       .find(l => locationCompound === `${l.type}:${l.target}`);
+  }
+
+  async removeEntityByUid(uid: string): Promise<void> {
+    const response = await fetch(
+      `${this.apiOrigin}${this.basePath}/entities/by-uid/${uid}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    if (!response.ok) {
+      const payload = await response.text();
+      throw new Error(
+        `Request failed with ${response.status} ${response.statusText}, ${payload}`,
+      );
+    }
+    return undefined;
   }
 }

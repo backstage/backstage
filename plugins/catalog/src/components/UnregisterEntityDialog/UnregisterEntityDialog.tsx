@@ -15,7 +15,7 @@
  */
 
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Progress, useApi } from '@backstage/core';
+import { Progress, useApi, alertApiRef } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -33,7 +33,7 @@ import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api/types';
 
-type ComponentRemovalDialogProps = {
+type Props = {
   open: boolean;
   onConfirm: () => any;
   onClose: () => any;
@@ -50,7 +50,7 @@ function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   }, [catalogApi, entity]);
 }
 
-export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
+export const UnregisterEntityDialog: FC<Props> = ({
   open,
   onConfirm,
   onClose,
@@ -59,11 +59,24 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
   const { value: entities, loading, error } = useColocatedEntities(entity);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const catalogApi = useApi(catalogApiRef);
+  const alertApi = useApi(alertApiRef);
+
+  const removeEntity = async () => {
+    const uid = entity.metadata.uid;
+    try {
+      await catalogApi.removeEntityByUid(uid!);
+    } catch (err) {
+      alertApi.post({ message: err.message });
+    }
+
+    onConfirm();
+  };
 
   return (
     <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
-        Are you sure you want to unregister this component?
+        Are you sure you want to unregister this entity?
       </DialogTitle>
       <DialogContent>
         {loading ? <Progress /> : null}
@@ -90,21 +103,23 @@ export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
             <Typography component="div">
               <ul>
                 <li>
-                  {entities[0]?.metadata?.annotations?.[LOCATION_ANNOTATION]}
+                  {entities[0]?.metadata.annotations?.[LOCATION_ANNOTATION]}
                 </li>
               </ul>
             </Typography>
             <DialogContentText>
-              To undo, just re-register the component in Backstage.
+              To undo, just re-register the entity in Backstage.
             </DialogContentText>
           </>
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose} color="primary">
+          Cancel
+        </Button>
         <Button
           disabled={!!(loading || error)}
-          onClick={onConfirm}
+          onClick={removeEntity}
           color="secondary"
         >
           Unregister

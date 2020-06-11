@@ -64,7 +64,7 @@ export class StaticAuthSessionManager<T> implements SessionManager<T> {
   }
 
   async removeSession() {
+    this.currentSession = undefined;
     await this.connector.removeSession();
-    window.location.reload(); // TODO(Rugvip): make this work without reload?
   }
 }

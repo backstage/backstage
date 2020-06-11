@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
-  Entity,
+  EntityMeta,
   LocationSpec,
   LOCATION_ANNOTATION,
-  EntityMeta,
 } from '@backstage/catalog-model';
-import { Component } from './component';
-
-export function entityToComponent(envelope: Entity): Component {
-  return {
-    name: envelope.metadata.name,
-    namespace: envelope.metadata.namespace,
-    kind: envelope.kind,
-    metadata: envelope.metadata,
-    description: envelope.metadata.annotations?.description ?? 'placeholder',
-  };
-}
 
 export function findLocationForEntityMeta(
   meta: EntityMeta,
