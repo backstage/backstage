@@ -24,6 +24,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog';
 import { MemoryRouter } from 'react-router-dom';
 
 const errorApi = { post: () => {} };
+
 const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   addLocation: jest.fn((_a, _b) => new Promise(() => {})),
@@ -31,7 +32,6 @@ const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
   getEntityByName: jest.fn(),
   getLocationByEntity: jest.fn(),
   getLocationById: jest.fn(),
-  getEntitiesByLocationId: jest.fn(),
 };
 
 const setup = () => ({
@@ -50,6 +50,7 @@ const setup = () => ({
     </MemoryRouter>,
   ),
 });
+
 describe('RegisterComponentPage', () => {
   afterEach(() => cleanup());
 

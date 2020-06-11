@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ComponentContextMenu from './ComponentContextMenu';
+import { ComponentContextMenu } from './ComponentContextMenu';
 import { render } from '@testing-library/react';
 import * as React from 'react';
 import { act } from 'react-dom/test-utils';
@@ -22,7 +22,7 @@ describe('ComponentContextMenu', () => {
   it('should call onUnregisterComponent on button click', async () => {
     await act(async () => {
       const mockCallback = jest.fn();
-      const menu = await render(
+      const menu = render(
         <ComponentContextMenu onUnregisterComponent={mockCallback} />,
       );
       const button = await menu.findByTestId('menu-button');

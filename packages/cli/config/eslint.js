@@ -67,6 +67,7 @@ module.exports = {
             name: '@material-ui/icons',
             message: "Please import '@material-ui/icons/<Icon>' instead.",
           },
+          ...require('module').builtinModules,
         ],
       },
     ],

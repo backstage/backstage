@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
 import { relative as relativePath } from 'path';
@@ -83,5 +84,6 @@ async function build(config: RollupOptions) {
 
 export const buildPackage = async (options: BuildOptions) => {
   const configs = await makeConfigs(options);
+  await fs.remove(paths.resolveTarget('dist'));
   await Promise.all(configs.map(build));
 };

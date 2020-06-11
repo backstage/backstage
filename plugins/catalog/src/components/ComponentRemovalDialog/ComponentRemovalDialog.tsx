@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+
+import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { Progress, useApi } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -21,59 +23,93 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
-import { Component } from '../../data/component';
+import Alert from '@material-ui/lab/Alert';
+import React, { FC } from 'react';
 import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core';
+import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api/types';
-import { Entity } from '@backstage/catalog-model';
 
 type ComponentRemovalDialogProps = {
+  open: boolean;
   onConfirm: () => any;
-  onCancel: () => any;
   onClose: () => any;
-  component: Component;
+  entity: Entity;
 };
-const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
-  onConfirm,
-  onCancel,
-  onClose,
-  component,
-}) => {
+
+function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   const catalogApi = useApi(catalogApiRef);
-  const { value } = useAsync(async () => {
-    let colocatedEntities: Array<Entity> = [];
-    const locationId = component.location?.id;
-    if (locationId) {
-      colocatedEntities = await catalogApi.getEntitiesByLocationId(locationId);
-    }
-    return colocatedEntities;
-  });
+  return useAsync(async () => {
+    const myLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    return myLocation
+      ? await catalogApi.getEntities({ [LOCATION_ANNOTATION]: myLocation })
+      : [];
+  }, [catalogApi, entity]);
+}
+
+export const ComponentRemovalDialog: FC<ComponentRemovalDialogProps> = ({
+  open,
+  onConfirm,
+  onClose,
+  entity,
+}) => {
+  const { value: entities, loading, error } = useColocatedEntities(entity);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const infoMessage = `This action will unregister ${
-    value ? value.map(e => e.metadata.name).join(', ') : ''
-  } from location with target ${component.location?.target}. To undo,
-  just re-register the component in Backstage.`;
+
   return (
-    <Dialog fullScreen={fullScreen} open onClose={onClose}>
+    <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
         Are you sure you want to unregister this component?
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>{infoMessage}</DialogContentText>
+        {loading ? <Progress /> : null}
+        {error ? (
+          <Alert severity="error" style={{ wordBreak: 'break-word' }}>
+            {error.toString()}
+          </Alert>
+        ) : null}
+        {entities ? (
+          <>
+            <DialogContentText>
+              This action will unregister the following entities:
+            </DialogContentText>
+            <Typography component="div">
+              <ul>
+                {entities.map(e => (
+                  <li key={e.metadata.name}>{e.metadata.name}</li>
+                ))}
+              </ul>
+            </Typography>
+            <DialogContentText>
+              That are located at the following location:
+            </DialogContentText>
+            <Typography component="div">
+              <ul>
+                <li>
+                  {entities[0]?.metadata?.annotations?.[LOCATION_ANNOTATION]}
+                </li>
+              </ul>
+            </Typography>
+            <DialogContentText>
+              To undo, just re-register the component in Backstage.
+            </DialogContentText>
+          </>
+        ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={onConfirm} color="primary">
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          disabled={!!(loading || error)}
+          onClick={onConfirm}
+          color="secondary"
+        >
           Unregister
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
-export default ComponentRemovalDialog;

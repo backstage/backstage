@@ -18,12 +18,13 @@
 // This is just a temporary solution to implementing tabs for now
 
 import React from 'react';
-
 import { makeStyles, Tabs, Tab } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   tabsWrapper: {
     gridArea: 'pageSubheader',
+    backgroundColor: theme.palette.background.paper,
+    paddingLeft: theme.spacing(3),
   },
   defaultTab: {
     padding: theme.spacing(3, 3),
@@ -48,7 +49,7 @@ export const HeaderTabs: React.FC<{ tabs: Tab[] }> = ({ tabs }) => {
     <div className={styles.tabsWrapper}>
       <Tabs
         indicatorColor="primary"
-        textColor="background"
+        textColor="inherit"
         variant="scrollable"
         scrollButtons="auto"
         aria-label="scrollable auto tabs example"

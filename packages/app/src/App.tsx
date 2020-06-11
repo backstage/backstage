@@ -16,7 +16,6 @@
 
 import { createApp, AlertDisplay, OAuthRequestDialog } from '@backstage/core';
 import React, { FC } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import apis from './apis';
@@ -34,11 +33,9 @@ const App: FC<{}> = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
-    <Router>
-      <Root>
-        <AppComponent />
-      </Root>
-    </Router>
+    <Root>
+      <AppComponent />
+    </Root>
   </AppProvider>
 );
 

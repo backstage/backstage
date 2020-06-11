@@ -68,7 +68,7 @@ const AuditLinkList: FC<AuditLinkListProps> = ({
     component="nav"
     aria-label="lighthouse audit history"
   >
-    {audits.map((audit) => (
+    {audits.map(audit => (
       <ListItem
         key={audit.id}
         selected={audit.id === selectedId}
@@ -88,7 +88,7 @@ const AuditLinkList: FC<AuditLinkListProps> = ({
 
 const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
   const classes = useStyles();
-  const params = useParams<{ id: string }>();
+  const params = useParams() as { id: string };
   const { url: lighthouseUrl } = useApi(lighthouseApiRef);
 
   if (audit?.status === 'RUNNING') return <Progress />;
@@ -114,7 +114,7 @@ const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
 
 const ConnectedAuditView: FC<{}> = () => {
   const lighthouseApi = useApi(lighthouseApiRef);
-  const params = useParams<{ id: string }>();
+  const params = useParams() as { id: string };
   const classes = useStyles();
 
   const { loading, error, value: nextValue } = useAsync<Website>(
@@ -136,7 +136,7 @@ const ConnectedAuditView: FC<{}> = () => {
           <AuditLinkList audits={value?.audits} selectedId={params.id} />
         </Grid>
         <Grid item xs={9}>
-          <AuditView audit={value?.audits.find((a) => a.id === params.id)} />
+          <AuditView audit={value?.audits.find(a => a.id === params.id)} />
         </Grid>
       </Grid>
     );

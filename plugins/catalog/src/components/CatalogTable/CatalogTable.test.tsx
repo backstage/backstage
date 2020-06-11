@@ -13,42 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from 'react';
-import { render } from '@testing-library/react';
+import { Entity } from '@backstage/catalog-model';
 import { wrapInTestApp } from '@backstage/test-utils';
-import CatalogTable from './CatalogTable';
-import { Component } from '../../data/component';
+import { render } from '@testing-library/react';
+import * as React from 'react';
+import { CatalogTable } from './CatalogTable';
 
-const components: Component[] = [
-  { name: 'component1', kind: 'Component', description: 'Placeholder' },
-  { name: 'component2', kind: 'Component', description: 'Placeholder' },
-  { name: 'component3', kind: 'Component', description: 'Placeholder' },
+const entites: Entity[] = [
+  {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'Component',
+    metadata: { name: 'component1' },
+  },
+  {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'Component',
+    metadata: { name: 'component2' },
+  },
+  {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'Component',
+    metadata: { name: 'component3' },
+  },
 ];
 
 describe('CatalogTable component', () => {
-  it('should render loading when loading prop it set to true', async () => {
-    const rendered = render(
-      wrapInTestApp(
-        <CatalogTable titlePreamble="Owned" components={[]} loading />,
-      ),
-    );
-    const progress = await rendered.findByTestId('progress');
-    expect(progress).toBeInTheDocument();
-  });
-
   it('should render error message when error is passed in props', async () => {
     const rendered = render(
       wrapInTestApp(
         <CatalogTable
           titlePreamble="Owned"
-          components={[]}
+          entities={[]}
           loading={false}
           error={{ code: 'error' }}
         />,
       ),
     );
     const errorMessage = await rendered.findByText(
-      'Error encountered while fetching components.',
+      /Error encountered while fetching components./,
     );
     expect(errorMessage).toBeInTheDocument();
   });
@@ -58,13 +60,13 @@ describe('CatalogTable component', () => {
       wrapInTestApp(
         <CatalogTable
           titlePreamble="Owned"
-          components={components}
+          entities={entites}
           loading={false}
         />,
       ),
     );
     expect(
-      await rendered.findByText(`Owned (${components.length})`),
+      await rendered.findByText(`Owned (${entites.length})`),
     ).toBeInTheDocument();
     expect(await rendered.findByText('component1')).toBeInTheDocument();
     expect(await rendered.findByText('component2')).toBeInTheDocument();

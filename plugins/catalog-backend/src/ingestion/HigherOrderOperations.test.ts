@@ -15,17 +15,17 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { Entity, Location } from '@backstage/catalog-model';
+import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { LocationUpdateStatus } from '../catalog/types';
 import { DatabaseLocationUpdateLogStatus } from '../database/types';
 import { HigherOrderOperations } from './HigherOrderOperations';
-import { IngestionModel } from './types';
+import { LocationReader } from './types';
 
 describe('HigherOrderOperations', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;
-  let ingestionModel: jest.Mocked<IngestionModel>;
+  let locationReader: jest.Mocked<LocationReader>;
   let higherOrderOperation: HigherOrderOperations;
 
   beforeAll(() => {
@@ -45,13 +45,13 @@ describe('HigherOrderOperations', () => {
       logUpdateSuccess: jest.fn(),
       logUpdateFailure: jest.fn(),
     };
-    ingestionModel = {
-      readLocation: jest.fn(),
+    locationReader = {
+      read: jest.fn(),
     };
     higherOrderOperation = new HigherOrderOperations(
       entitiesCatalog,
       locationsCatalog,
-      ingestionModel,
+      locationReader,
       getVoidLogger(),
     );
   });
@@ -68,7 +68,7 @@ describe('HigherOrderOperations', () => {
       };
       locationsCatalog.addLocation.mockImplementation(x => Promise.resolve(x));
       locationsCatalog.locations.mockResolvedValue([]);
-      ingestionModel.readLocation.mockResolvedValue([]);
+      locationReader.read.mockResolvedValue({ entities: [], errors: [] });
 
       const result = await higherOrderOperation.addLocation(spec);
 
@@ -80,8 +80,8 @@ describe('HigherOrderOperations', () => {
       );
       expect(result.entities).toEqual([]);
       expect(locationsCatalog.locations).toBeCalledTimes(1);
-      expect(ingestionModel.readLocation).toBeCalledTimes(1);
-      expect(ingestionModel.readLocation).toBeCalledWith('a', 'b');
+      expect(locationReader.read).toBeCalledTimes(1);
+      expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
       expect(entitiesCatalog.addOrUpdateEntity).not.toBeCalled();
       expect(locationsCatalog.addLocation).toBeCalledTimes(1);
       expect(locationsCatalog.addLocation).toBeCalledWith(
@@ -108,15 +108,15 @@ describe('HigherOrderOperations', () => {
           data: location,
         },
       ]);
-      ingestionModel.readLocation.mockResolvedValue([]);
+      locationReader.read.mockResolvedValue({ entities: [], errors: [] });
 
       const result = await higherOrderOperation.addLocation(spec);
 
       expect(result.location).toEqual(location);
       expect(result.entities).toEqual([]);
       expect(locationsCatalog.locations).toBeCalledTimes(1);
-      expect(ingestionModel.readLocation).toBeCalledTimes(1);
-      expect(ingestionModel.readLocation).toBeCalledWith('a', 'b');
+      expect(locationReader.read).toBeCalledTimes(1);
+      expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
       expect(entitiesCatalog.addOrUpdateEntity).not.toBeCalled();
       expect(locationsCatalog.addLocation).not.toBeCalled();
     });
@@ -126,6 +126,7 @@ describe('HigherOrderOperations', () => {
         type: 'a',
         target: 'b',
       };
+      const location: LocationSpec = { type: '', target: '' };
       const entity: Entity = {
         apiVersion: 'a',
         kind: 'b',
@@ -133,10 +134,10 @@ describe('HigherOrderOperations', () => {
       };
 
       locationsCatalog.locations.mockResolvedValue([]);
-      ingestionModel.readLocation.mockResolvedValue([
-        { type: 'data', data: entity },
-        { type: 'error', error: new Error('abcd') },
-      ]);
+      locationReader.read.mockResolvedValue({
+        entities: [{ entity, location }],
+        errors: [{ error: new Error('abcd'), location }],
+      });
 
       await expect(higherOrderOperation.addLocation(spec)).rejects.toThrow(
         /abcd/,
@@ -156,7 +157,7 @@ describe('HigherOrderOperations', () => {
       ).resolves.toBeUndefined();
 
       expect(locationsCatalog.locations).toHaveBeenCalledTimes(1);
-      expect(ingestionModel.readLocation).not.toHaveBeenCalled();
+      expect(locationReader.read).not.toHaveBeenCalled();
       expect(entitiesCatalog.addOrUpdateEntity).not.toHaveBeenCalled();
     });
 
@@ -181,9 +182,10 @@ describe('HigherOrderOperations', () => {
       locationsCatalog.locations.mockResolvedValue([
         { currentStatus: locationStatus, data: location },
       ]);
-      ingestionModel.readLocation.mockResolvedValue([
-        { type: 'data', data: desc },
-      ]);
+      locationReader.read.mockResolvedValue({
+        entities: [{ entity: desc, location }],
+        errors: [],
+      });
       entitiesCatalog.entityByName.mockResolvedValue(undefined);
       entitiesCatalog.addOrUpdateEntity.mockResolvedValue(desc);
 
@@ -192,12 +194,11 @@ describe('HigherOrderOperations', () => {
       ).resolves.toBeUndefined();
 
       expect(locationsCatalog.locations).toHaveBeenCalledTimes(1);
-      expect(ingestionModel.readLocation).toHaveBeenCalledTimes(1);
-      expect(ingestionModel.readLocation).toHaveBeenNthCalledWith(
-        1,
-        'some',
-        'thing',
-      );
+      expect(locationReader.read).toHaveBeenCalledTimes(1);
+      expect(locationReader.read).toHaveBeenNthCalledWith(1, {
+        type: 'some',
+        target: 'thing',
+      });
       expect(entitiesCatalog.entityByName).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.entityByName).toHaveBeenNthCalledWith(
         1,
@@ -236,9 +237,10 @@ describe('HigherOrderOperations', () => {
       locationsCatalog.locations.mockResolvedValue([
         { currentStatus: locationStatus, data: location },
       ]);
-      ingestionModel.readLocation.mockResolvedValue([
-        { type: 'data', data: desc },
-      ]);
+      locationReader.read.mockResolvedValue({
+        entities: [{ entity: desc, location }],
+        errors: [],
+      });
       entitiesCatalog.entityByName.mockResolvedValue(undefined);
       entitiesCatalog.addOrUpdateEntity.mockResolvedValue(desc);
 
@@ -272,15 +274,13 @@ describe('HigherOrderOperations', () => {
       locationsCatalog.locations.mockResolvedValue([
         { currentStatus: locationStatus, data: location },
       ]);
-      ingestionModel.readLocation.mockRejectedValue(
-        new Error('reader error message'),
-      );
+      locationReader.read.mockRejectedValue(new Error('reader error message'));
 
       await expect(
         higherOrderOperation.refreshAllLocations(),
       ).resolves.toBeUndefined();
 
-      expect(ingestionModel.readLocation).toHaveBeenCalledTimes(1);
+      expect(locationReader.read).toHaveBeenCalledTimes(1);
       expect(locationsCatalog.logUpdateFailure).toHaveBeenCalledTimes(1);
       expect(locationsCatalog.logUpdateSuccess).not.toHaveBeenCalled();
       expect(locationsCatalog.logUpdateFailure).toHaveBeenCalledWith(

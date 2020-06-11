@@ -25,7 +25,7 @@ export {
   SidebarSpacer,
 } from './Items';
 export { IntroCard, SidebarIntro } from './Intro';
-export { SidebarUserBadge } from './UserBadge';
+export { SidebarPinButton } from './PinButton';
 export {
   SIDEBAR_INTRO_LOCAL_STORAGE,
   SidebarContext,
@@ -33,3 +33,4 @@ export {
 } from './config';
 export type { SidebarContextType } from './config';
 export { SidebarThemeToggle } from './SidebarThemeToggle';
+export { SidebarUserSettings } from './UserSettings';

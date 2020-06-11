@@ -41,3 +41,4 @@ export * from './components/Status';
 export * from './components/Button';
 export * from './components/Link';
 export { default as WarningPanel } from './components/WarningPanel';
+export { default as Tabs } from './components/Tabs';

@@ -13,24 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
+import { Table, TableColumn } from '@backstage/core';
+import { Link } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React, { FC } from 'react';
-import { Component } from '../../data/component';
-import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
-import { Typography, Link } from '@material-ui/core';
-import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { entityRoute } from '../../routes';
 
 const columns: TableColumn[] = [
   {
     title: 'Name',
-    field: 'name',
+    field: 'metadata.name',
     highlight: true,
-    render: (componentData: any) => (
+    render: (entity: any) => (
       <Link
         component={RouterLink}
-        to={generatePath(entityRoute.path, { name: componentData.name })}
+        to={generatePath(entityRoute.path, {
+          optionalNamespaceAndName: [
+            entity.metadata.namespace,
+            entity.metadata.name,
+          ]
+            .filter(Boolean)
+            .join(':'),
+          kind: entity.kind,
+        })}
       >
-        {componentData.name}
+        {entity.metadata.name}
       </Link>
     ),
   },
@@ -40,44 +49,48 @@ const columns: TableColumn[] = [
   },
   {
     title: 'Description',
-    field: 'description',
+    field: 'metadata.description',
   },
 ];
 
 type CatalogTableProps = {
-  components: Component[];
+  entities: Entity[];
   titlePreamble: string;
   loading: boolean;
   error?: any;
   actions?: any;
 };
-const CatalogTable: FC<CatalogTableProps> = ({
-  components,
+
+export const CatalogTable: FC<CatalogTableProps> = ({
+  entities,
   loading,
   error,
   titlePreamble,
   actions,
 }) => {
-  if (loading) {
-    return <Progress />;
-  }
   if (error) {
     return (
-      <InfoCard>
-        <Typography variant="subtitle1" paragraph>
-          Error encountered while fetching components.
-        </Typography>
-      </InfoCard>
+      <div>
+        <Alert severity="error">
+          Error encountered while fetching components. {error.toString()}
+        </Alert>
+      </div>
     );
   }
+
   return (
     <Table
+      isLoading={loading}
       columns={columns}
-      options={{ paging: false, actionsColumnIndex: -1 }}
-      title={`${titlePreamble} (${(components && components.length) || 0})`}
-      data={components}
+      options={{
+        paging: false,
+        actionsColumnIndex: -1,
+        loadingType: 'linear',
+        showEmptyDataSourceMessage: !loading,
+      }}
+      title={`${titlePreamble} (${(entities && entities.length) || 0})`}
+      data={entities}
       actions={actions}
     />
   );
 };
-export default CatalogTable;

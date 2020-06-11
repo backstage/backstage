@@ -44,6 +44,9 @@ type PaletteAdditions = {
   link: string;
   gold: string;
   sidebar: string;
+  tabbar: {
+    indicator: string;
+  };
   bursts: {
     fontColor: string;
     slackChannelText: string;

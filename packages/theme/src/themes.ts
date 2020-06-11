@@ -57,8 +57,11 @@ export const lightTheme = createTheme({
     gold: yellow.A700,
     sidebar: '#171717',
     pinSidebarButton: {
-      icon: '#BDBDBD',
-      background: '#404040',
+      icon: '#181818',
+      background: '#BDBDBD',
+    },
+    tabbar: {
+      indicator: '#9BF0E1',
     },
   },
 });
@@ -103,8 +106,11 @@ export const darkTheme = createTheme({
     gold: yellow.A700,
     sidebar: '#424242',
     pinSidebarButton: {
-      icon: '#181818',
+      icon: '#404040',
       background: '#BDBDBD',
+    },
+    tabbar: {
+      indicator: '#9BF0E1',
     },
   },
 });

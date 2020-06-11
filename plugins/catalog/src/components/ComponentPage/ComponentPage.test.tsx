@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ComponentPage from './ComponentPage';
-import { render } from '@testing-library/react';
+import { ComponentPage } from './ComponentPage';
+import { render, wait } from '@testing-library/react';
 import * as React from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { catalogApiRef, CatalogApi } from '../../api/types';
 
-const getTestProps = (componentName: string) => {
+const getTestProps = (name: string) => {
   return {
     match: {
       params: {
-        name: componentName,
+        optionalNamespaceAndName: name,
+        kind: 'Component',
       },
     },
     history: {
@@ -38,7 +39,7 @@ const errorApi = { post: () => {} };
 describe('ComponentPage', () => {
   it('should redirect to component table page when name is not provided', async () => {
     const props = getTestProps('');
-    await render(
+    render(
       wrapInTestApp(
         <ApiProvider
           apis={ApiRegistry.from([
@@ -47,7 +48,7 @@ describe('ComponentPage', () => {
               catalogApiRef,
               ({
                 async getEntityByName() {},
-              } as unknown) as CatalogApi,
+              } as Partial<CatalogApi>) as CatalogApi,
             ],
           ])}
         >
@@ -55,6 +56,9 @@ describe('ComponentPage', () => {
         </ApiProvider>,
       ),
     );
-    expect(props.history.push).toHaveBeenCalledWith('/catalog');
+
+    await wait(() =>
+      expect(props.history.push).toHaveBeenCalledWith('/catalog'),
+    );
   });
 });

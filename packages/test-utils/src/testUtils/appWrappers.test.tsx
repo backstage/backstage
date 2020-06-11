@@ -14,22 +14,106 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { FC, useEffect } from 'react';
 import { render } from '@testing-library/react';
-import { wrapInTestApp } from './appWrappers';
+import { wrapInTestApp, renderInTestApp } from './appWrappers';
 import { Route } from 'react-router';
+import { withLogCollector } from '@backstage/test-utils-core';
+import {
+  useApi,
+  errorApiRef,
+  ApiProvider,
+  ApiRegistry,
+} from '@backstage/core-api';
+import { MockErrorApi } from './apis';
 
 describe('wrapInTestApp', () => {
-  it('should provide routing', () => {
-    const rendered = render(
-      wrapInTestApp(
-        <>
-          <Route path="/route1">Route 1</Route>
-          <Route path="/route2">Route 2</Route>
-        </>,
-        { routeEntries: ['/route2'] },
+  it('should provide routing and warn about missing act()', async () => {
+    const { error } = await withLogCollector(['error'], async () => {
+      const rendered = render(
+        wrapInTestApp(
+          <>
+            <Route path="/route1">Route 1</Route>
+            <Route path="/route2">Route 2</Route>
+          </>,
+          { routeEntries: ['/route2'] },
+        ),
+      );
+      expect(rendered.getByText('Route 2')).toBeInTheDocument();
+
+      // Wait for async actions to trigger the act() warnings that we assert below
+      await Promise.resolve();
+    });
+
+    expect(error).toEqual([
+      expect.stringMatching(
+        /^Warning: An update to %s inside a test was not wrapped in act\(...\)/,
       ),
+      expect.stringMatching(
+        /^Warning: An update to %s inside a test was not wrapped in act\(...\)/,
+      ),
+    ]);
+  });
+
+  it('should render a component in a test app without warning about missing act()', async () => {
+    const { error } = await withLogCollector(['error'], async () => {
+      const Foo: FC<{}> = () => {
+        return <p>foo</p>;
+      };
+
+      const rendered = await renderInTestApp(Foo);
+      expect(rendered.getByText('foo')).toBeInTheDocument();
+    });
+
+    expect(error).toEqual([]);
+  });
+
+  it('should render a node in a test app', async () => {
+    const Foo: FC<{}> = () => {
+      return <p>foo</p>;
+    };
+
+    const rendered = await renderInTestApp(<Foo />);
+    expect(rendered.getByText('foo')).toBeInTheDocument();
+  });
+
+  it('should provide mock API implementations', async () => {
+    const A: FC<{}> = () => {
+      const errorApi = useApi(errorApiRef);
+      errorApi.post(new Error('NOPE'));
+      return null;
+    };
+
+    const { error } = await withLogCollector(['error'], async () => {
+      await expect(renderInTestApp(A)).rejects.toThrow('NOPE');
+    });
+
+    expect(error).toEqual([
+      expect.stringMatching(
+        /^Error: Uncaught \[Error: MockErrorApi received unexpected error, Error: NOPE\]/,
+      ),
+      expect.stringMatching(/^The above error occurred in the <A> component:/),
+    ]);
+  });
+
+  it('should allow custom API implementations', async () => {
+    const mockErrorApi = new MockErrorApi({ collect: true });
+
+    const A: FC<{}> = () => {
+      const errorApi = useApi(errorApiRef);
+      useEffect(() => {
+        errorApi.post(new Error('NOPE'));
+      }, [errorApi]);
+      return <p>foo</p>;
+    };
+
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={ApiRegistry.with(errorApiRef, mockErrorApi)}>
+        <A />
+      </ApiProvider>,
     );
-    expect(rendered.getByText('Route 2')).toBeInTheDocument();
+
+    expect(rendered.getByText('foo')).toBeInTheDocument();
+    expect(mockErrorApi.getErrors()).toEqual([{ error: new Error('NOPE') }]);
   });
 });

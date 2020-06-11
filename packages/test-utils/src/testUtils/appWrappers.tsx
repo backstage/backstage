@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, FunctionComponent, FC } from 'react';
+import React, { ComponentType, ReactNode, FC, ReactElement } from 'react';
 import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
 import privateExports, {
   defaultSystemIcons,
-  ApiTestRegistry,
   BootErrorPageProps,
 } from '@backstage/core-api';
+import { RenderResult } from '@testing-library/react';
+import { renderWithEffects } from '@backstage/test-utils-core';
+import { createMockApiRegistry } from './mockApiRegistry';
 const { PrivateAppImpl } = privateExports;
 
 const NotFoundErrorPage = () => {
@@ -43,18 +45,29 @@ type TestAppOptions = {
   routeEntries?: string[];
 };
 
+/**
+ * Wraps a component inside a Backstage test app, providing a mocked theme
+ * and app context, along with mocked APIs.
+ *
+ * @param Component - A component or react node to render inside the test app.
+ * @param options - Additional options for the rendering.
+ */
 export function wrapInTestApp(
   Component: ComponentType | ReactNode,
   options: TestAppOptions = {},
-) {
+): ReactElement {
   const { routeEntries = ['/'] } = options;
+  const apis = createMockApiRegistry();
 
   const app = new PrivateAppImpl({
-    apis: new ApiTestRegistry(),
+    apis,
     components: {
       NotFoundErrorPage,
       BootErrorPage,
       Progress,
+      Router: ({ children }) => (
+        <MemoryRouter initialEntries={routeEntries} children={children} />
+      ),
     },
     icons: defaultSystemIcons,
     plugins: [],
@@ -72,16 +85,31 @@ export function wrapInTestApp(
   if (Component instanceof Function) {
     Wrapper = Component;
   } else {
-    Wrapper = (() => Component) as FunctionComponent;
+    Wrapper = (() => Component) as FC;
   }
 
   const AppProvider = app.getProvider();
 
   return (
     <AppProvider>
-      <MemoryRouter initialEntries={routeEntries}>
-        <Route element={<Wrapper />} />
-      </MemoryRouter>
+      <Route element={<Wrapper />} />
     </AppProvider>
   );
+}
+
+/**
+ * Renders a component inside a Backstage test app, providing a mocked theme
+ * and app context, along with mocked APIs.
+ *
+ * The render executes async effects similar to `renderWithEffects`. To avoid this
+ * behavior, use a regular `render()` + `wrapInTestApp()` instead.
+ *
+ * @param Component - A component or react node to render inside the test app.
+ * @param options - Additional options for the rendering.
+ */
+export async function renderInTestApp(
+  Component: ComponentType | ReactNode,
+  options: TestAppOptions = {},
+): Promise<RenderResult> {
+  return renderWithEffects(wrapInTestApp(Component, options));
 }

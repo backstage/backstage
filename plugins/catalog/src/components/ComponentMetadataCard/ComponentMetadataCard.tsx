@@ -13,32 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
+import { InfoCard, StructuredMetadataTable } from '@backstage/core';
 import React, { FC } from 'react';
-import { Component } from '../../data/component';
-import { Progress, InfoCard, StructuredMetadataTable } from '@backstage/core';
 
-type ComponentMetadataCardProps = {
-  loading: boolean;
-  component: Component | undefined;
+type Props = {
+  entity: Entity;
 };
-const ComponentMetadataCard: FC<ComponentMetadataCardProps> = ({
-  loading,
-  component,
-}) => {
-  if (loading) {
-    return (
-      <InfoCard title="Metadata">
-        <Progress />
-      </InfoCard>
-    );
-  }
-  if (!component) {
-    return null;
-  }
-  return (
-    <InfoCard title="Metadata">
-      <StructuredMetadataTable metadata={component} />
-    </InfoCard>
-  );
-};
-export default ComponentMetadataCard;
+
+export const ComponentMetadataCard: FC<Props> = ({ entity }) => (
+  <InfoCard title="Metadata">
+    <StructuredMetadataTable metadata={entity.metadata} />
+  </InfoCard>
+);
