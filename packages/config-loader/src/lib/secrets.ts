@@ -56,7 +56,7 @@ const secretLoaderSchemas = {
 
 const secretSchema = yup.lazy<object>(value => {
   if (typeof value !== 'object' || value === null) {
-    return yup.object().required();
+    return yup.object().required().label('secret');
   }
 
   const loaderTypes = Object.keys(
@@ -87,7 +87,7 @@ export async function readSecret(
   data: JsonObject,
   ctx: ReaderContext,
 ): Promise<string | undefined> {
-  const secret = secretSchema.validateSync(data) as Secret;
+  const secret = secretSchema.validateSync(data, { strict: true }) as Secret;
 
   if ('file' in secret) {
     return ctx.readFile(secret.file);
