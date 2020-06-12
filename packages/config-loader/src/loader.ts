@@ -15,8 +15,9 @@
  */
 
 import fs from 'fs-extra';
+import * as yup from 'yup';
 import yaml from 'yaml';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, dirname } from 'path';
 import { AppConfig, JsonObject, JsonValue } from '@backstage/config';
 import { findRootPath } from './paths';
 import { LoadConfigOptions } from './types';
@@ -79,6 +80,11 @@ export function readEnv(env: {
 
 type ReadFileFunc = (path: string) => Promise<string>;
 
+type ReaderContext = {
+  shouldReadSecrets: boolean;
+  readFile: ReadFileFunc;
+};
+
 function isObject(obj: JsonValue | undefined): obj is JsonObject {
   if (typeof obj !== 'object') {
     return false;
@@ -88,8 +94,54 @@ function isObject(obj: JsonValue | undefined): obj is JsonObject {
   return obj !== null;
 }
 
-export async function readConfigFile(filePath: string, readFile: ReadFileFunc) {
-  const configYaml = await readFile(filePath);
+type FileSecret = {
+  file: string;
+};
+
+type Secret = FileSecret;
+
+const secretLoaderSchemas = {
+  file: yup.object({
+    file: yup.string().required(),
+  }),
+};
+
+const secretSchema = yup.lazy<object>(value => {
+  if (typeof value !== 'object' || value === null) {
+    return yup.object().required();
+  }
+
+  const loaderTypes = Object.keys(
+    secretLoaderSchemas,
+  ) as (keyof typeof secretLoaderSchemas)[];
+
+  for (const key of loaderTypes) {
+    if (key in value) {
+      return secretLoaderSchemas[key];
+    }
+  }
+  throw new yup.ValidationError(
+    `Secret must contain one of '${loaderTypes.join("', '")}'`,
+    value,
+    '$secret',
+  );
+});
+
+export async function readSecret(
+  data: JsonObject,
+  readFile: ReadFileFunc,
+): Promise<string | undefined> {
+  const secret = secretSchema.validateSync(data) as Secret;
+
+  if ('file' in secret) {
+    return readFile(secret.file);
+  }
+
+  throw new Error('Secret was left unhandled');
+}
+
+export async function readConfigFile(filePath: string, context: ReaderContext) {
+  const configYaml = await context.readFile(filePath);
   const config = yaml.parse(configYaml);
 
   async function transform(
@@ -115,10 +167,18 @@ export async function readConfigFile(filePath: string, readFile: ReadFileFunc) {
 
     if ('$secret' in obj) {
       if (!isObject(obj.$secret)) {
-        throw TypeError(`Secret expected object at secret ${path}.$secret`);
+        throw TypeError(`Expected object at secret ${path}.$secret`);
       }
 
-      return undefined;
+      if (!context.shouldReadSecrets) {
+        return undefined;
+      }
+
+      try {
+        return await readSecret(obj.$secret, context.readFile);
+      } catch (error) {
+        throw new Error(`Invalid secret at ${path}: ${error.message}`);
+      }
     }
 
     const out: JsonObject = {};
@@ -143,6 +203,8 @@ export async function readConfigFile(filePath: string, readFile: ReadFileFunc) {
 export async function loadStaticConfig(
   options: LoadConfigOptions,
 ): Promise<AppConfig[]> {
+  const { shouldReadSecrets = false } = options;
+
   // TODO: We'll want this to be a bit more elaborate, probably adding configs for
   //       specific env, and maybe local config for plugins.
   let { configPath } = options;
@@ -154,13 +216,18 @@ export async function loadStaticConfig(
   }
 
   try {
-    const rootPath = configPath;
-    const config = await readConfigFile(configPath, (path: string) => {
-      return fs.readFile(resolvePath(rootPath, path), 'utf8');
+    const rootPath = dirname(configPath);
+    const config = await readConfigFile(configPath, {
+      shouldReadSecrets,
+      readFile: (path: string) => {
+        return fs.readFile(resolvePath(rootPath, path), 'utf8');
+      },
     });
     return [config];
   } catch (error) {
-    throw new Error(`Failed to read static configuration file, ${error}`);
+    throw new Error(
+      `Failed to read static configuration file: ${error.message}`,
+    );
   }
 }
 

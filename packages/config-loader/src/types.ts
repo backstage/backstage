@@ -17,4 +17,7 @@
 export type LoadConfigOptions = {
   // Config path, defaults to app-config.yaml in project root
   configPath?: string;
+
+  // Whether to read secrets or omit them, defaults to false.
+  shouldReadSecrets?: boolean;
 };
