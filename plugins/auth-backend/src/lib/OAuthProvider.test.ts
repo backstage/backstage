@@ -18,15 +18,12 @@ import express from 'express';
 import {
   ensuresXRequestedWith,
   postMessageResponse,
-  removeRefreshTokenCookie,
-  setRefreshTokenCookie,
   THOUSAND_DAYS_MS,
-  setNonceCookie,
   TEN_MINUTES_MS,
   verifyNonce,
   OAuthProvider,
 } from './OAuthProvider';
-import { AuthResponse, OAuthProviderHandlers } from './types';
+import { AuthResponse, OAuthProviderHandlers } from '../providers/types';
 
 describe('OAuthProvider Utils', () => {
   describe('verifyNonce', () => {
@@ -80,52 +77,8 @@ describe('OAuthProvider Utils', () => {
     });
   });
 
-  describe('setNonceCookie', () => {
-    it('should set nonce cookie', () => {
-      const mockResponse = ({
-        cookie: jest.fn().mockReturnThis(),
-      } as unknown) as express.Response;
-      setNonceCookie(mockResponse, 'providera');
-      expect(mockResponse.cookie).toBeCalledTimes(1);
-      expect(mockResponse.cookie).toBeCalledWith(
-        'providera-nonce',
-        expect.any(String),
-        expect.objectContaining({ maxAge: TEN_MINUTES_MS }),
-      );
-    });
-  });
-
-  describe('setRefreshTokenCookie', () => {
-    it('should set refresh token cookie', () => {
-      const mockResponse = ({
-        cookie: jest.fn().mockReturnThis(),
-      } as unknown) as express.Response;
-      setRefreshTokenCookie(mockResponse, 'providera', 'REFRESH_TOKEN');
-      expect(mockResponse.cookie).toBeCalledTimes(1);
-      expect(mockResponse.cookie).toBeCalledWith(
-        'providera-refresh-token',
-        'REFRESH_TOKEN',
-        expect.objectContaining({ maxAge: THOUSAND_DAYS_MS }),
-      );
-    });
-  });
-
-  describe('removeRefreshTokenCookie', () => {
-    it('should remove refresh token cookie', () => {
-      const mockResponse = ({
-        cookie: jest.fn().mockReturnThis(),
-      } as unknown) as express.Response;
-      removeRefreshTokenCookie(mockResponse, 'providera');
-      expect(mockResponse.cookie).toBeCalledTimes(1);
-      expect(mockResponse.cookie).toBeCalledWith(
-        'providera-refresh-token',
-        '',
-        expect.objectContaining({ maxAge: 0 }),
-      );
-    });
-  });
-
   describe('postMessageResponse', () => {
+    const appOrigin = 'http://localhost:3000';
     it('should post a message back with payload success', () => {
       const mockResponse = ({
         end: jest.fn().mockReturnThis(),
@@ -144,7 +97,7 @@ describe('OAuthProvider Utils', () => {
       const jsonData = JSON.stringify(data);
       const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
 
-      postMessageResponse(mockResponse, data);
+      postMessageResponse(mockResponse, appOrigin, data);
       expect(mockResponse.setHeader).toBeCalledTimes(2);
       expect(mockResponse.end).toBeCalledTimes(1);
       expect(mockResponse.end).toBeCalledWith(
@@ -165,7 +118,7 @@ describe('OAuthProvider Utils', () => {
       const jsonData = JSON.stringify(data);
       const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
 
-      postMessageResponse(mockResponse, data);
+      postMessageResponse(mockResponse, appOrigin, data);
       expect(mockResponse.setHeader).toBeCalledTimes(2);
       expect(mockResponse.end).toBeCalledTimes(1);
       expect(mockResponse.end).toBeCalledWith(
@@ -221,10 +174,19 @@ describe('OAuthProvider', () => {
     }
   }
   const providerInstance = new MyAuthProvider();
-  const providerId = 'test-provider';
+  const oAuthProviderOptions = {
+    providerId: 'test-provider',
+    secure: false,
+    disableRefresh: true,
+    baseUrl: 'http://localhost:7000/auth',
+    appOrigin: 'http://localhost:3000',
+  };
 
   it('sets the correct headers in start', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, providerId);
+    const oauthProvider = new OAuthProvider(
+      providerInstance,
+      oAuthProviderOptions,
+    );
     const mockRequest = ({
       query: {
         scope: 'user',
@@ -239,6 +201,14 @@ describe('OAuthProvider', () => {
     } as unknown) as express.Response;
 
     await oauthProvider.start(mockRequest, mockResponse);
+    // nonce cookie checks
+    expect(mockResponse.cookie).toBeCalledTimes(1);
+    expect(mockResponse.cookie).toBeCalledWith(
+      `${oAuthProviderOptions.providerId}-nonce`,
+      expect.any(String),
+      expect.objectContaining({ maxAge: TEN_MINUTES_MS }),
+    );
+    // redirect checks
     expect(mockResponse.setHeader).toHaveBeenCalledTimes(2);
     expect(mockResponse.setHeader).toHaveBeenCalledWith('Location', '/url');
     expect(mockResponse.setHeader).toHaveBeenCalledWith('Content-Length', '0');
@@ -247,7 +217,11 @@ describe('OAuthProvider', () => {
   });
 
   it('sets the refresh cookie if refresh is enabled', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, providerId);
+    oAuthProviderOptions.disableRefresh = false;
+    const oauthProvider = new OAuthProvider(
+      providerInstance,
+      oAuthProviderOptions,
+    );
 
     const mockRequest = ({
       cookies: {
@@ -269,12 +243,19 @@ describe('OAuthProvider', () => {
     expect(mockResponse.cookie).toHaveBeenCalledWith(
       expect.stringContaining('test-provider-refresh-token'),
       expect.stringContaining('token'),
-      expect.objectContaining({ path: '/auth/test-provider' }),
+      expect.objectContaining({
+        path: '/auth/test-provider',
+        maxAge: THOUSAND_DAYS_MS,
+      }),
     );
   });
 
-  it('does no set the refresh cookie if refresh is disabled', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, providerId, true);
+  it('does not set the refresh cookie if refresh is disabled', async () => {
+    oAuthProviderOptions.disableRefresh = true;
+    const oauthProvider = new OAuthProvider(
+      providerInstance,
+      oAuthProviderOptions,
+    );
 
     const mockRequest = ({
       cookies: {
@@ -296,7 +277,11 @@ describe('OAuthProvider', () => {
   });
 
   it('removes refresh cookie when logging out', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, providerId);
+    oAuthProviderOptions.disableRefresh = false;
+    const oauthProvider = new OAuthProvider(
+      providerInstance,
+      oAuthProviderOptions,
+    );
 
     const mockRequest = ({
       header: () => 'XMLHttpRequest',
@@ -317,7 +302,11 @@ describe('OAuthProvider', () => {
   });
 
   it('gets new access-token when refreshing', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, providerId);
+    oAuthProviderOptions.disableRefresh = false;
+    const oauthProvider = new OAuthProvider(
+      providerInstance,
+      oAuthProviderOptions,
+    );
 
     const mockRequest = ({
       header: () => 'XMLHttpRequest',
@@ -341,7 +330,11 @@ describe('OAuthProvider', () => {
   });
 
   it('handles refresh without capabilities', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, providerId, true);
+    oAuthProviderOptions.disableRefresh = true;
+    const oauthProvider = new OAuthProvider(
+      providerInstance,
+      oAuthProviderOptions,
+    );
 
     const mockRequest = ({
       header: () => 'XMLHttpRequest',

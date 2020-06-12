@@ -17,7 +17,11 @@
 import express from 'express';
 import passport from 'passport';
 import jwtDecoder from 'jwt-decode';
-import { RedirectInfo, RefreshTokenResponse, ProfileInfo } from './types';
+import {
+  RedirectInfo,
+  RefreshTokenResponse,
+  ProfileInfo,
+} from '../providers/types';
 
 export const makeProfileInfo = (
   profile: passport.Profile,

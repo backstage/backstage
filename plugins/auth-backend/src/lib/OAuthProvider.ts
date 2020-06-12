@@ -14,20 +14,29 @@
  * limitations under the License.
  */
 
-import express, { CookieOptions } from 'express';
+import express from 'express';
 import crypto from 'crypto';
+import { URL } from 'url';
 import {
   AuthResponse,
   AuthProviderRouteHandlers,
   OAuthProviderHandlers,
-} from './types';
+} from '../providers/types';
 import { InputError } from '@backstage/backend-common';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
 
-export const verifyNonce = (req: express.Request, provider: string) => {
-  const cookieNonce = req.cookies[`${provider}-nonce`];
+export type Options = {
+  providerId: string;
+  secure: boolean;
+  disableRefresh?: boolean;
+  baseUrl: string;
+  appOrigin: string;
+};
+
+export const verifyNonce = (req: express.Request, providerId: string) => {
+  const cookieNonce = req.cookies[`${providerId}-nonce`];
   const stateNonce = req.query.state;
 
   if (!cookieNonce || !stateNonce) {
@@ -39,58 +48,9 @@ export const verifyNonce = (req: express.Request, provider: string) => {
   }
 };
 
-export const setNonceCookie = (res: express.Response, provider: string) => {
-  const nonce = crypto.randomBytes(16).toString('base64');
-
-  const options: CookieOptions = {
-    maxAge: TEN_MINUTES_MS,
-    secure: false,
-    sameSite: 'none',
-    domain: 'localhost',
-    path: `/auth/${provider}/handler`,
-    httpOnly: true,
-  };
-
-  res.cookie(`${provider}-nonce`, nonce, options);
-
-  return nonce;
-};
-
-export const setRefreshTokenCookie = (
-  res: express.Response,
-  provider: string,
-  refreshToken: string,
-) => {
-  const options: CookieOptions = {
-    maxAge: THOUSAND_DAYS_MS,
-    secure: false,
-    sameSite: 'none',
-    domain: 'localhost',
-    path: `/auth/${provider}`,
-    httpOnly: true,
-  };
-
-  res.cookie(`${provider}-refresh-token`, refreshToken, options);
-};
-
-export const removeRefreshTokenCookie = (
-  res: express.Response,
-  provider: string,
-) => {
-  const options: CookieOptions = {
-    maxAge: 0,
-    secure: false,
-    sameSite: 'none',
-    domain: 'localhost',
-    path: `/auth/${provider}`,
-    httpOnly: true,
-  };
-
-  res.cookie(`${provider}-refresh-token`, '', options);
-};
-
 export const postMessageResponse = (
   res: express.Response,
+  appOrigin: string,
   data: AuthResponse,
 ) => {
   const jsonData = JSON.stringify(data);
@@ -104,7 +64,7 @@ export const postMessageResponse = (
 <html>
 <body>
   <script>
-    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), 'http://localhost:3000')
+    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), '${appOrigin}')
     window.close()
   </script>
 </body>
@@ -122,17 +82,16 @@ export const ensuresXRequestedWith = (req: express.Request) => {
 };
 
 export class OAuthProvider implements AuthProviderRouteHandlers {
-  private readonly provider: string;
-  private readonly providerHandlers: OAuthProviderHandlers;
-  private readonly disableRefresh: boolean;
+  private readonly domain: string;
+  private readonly basePath: string;
+
   constructor(
-    providerHandlers: OAuthProviderHandlers,
-    provider: string,
-    disableRefresh?: boolean,
+    private readonly providerHandlers: OAuthProviderHandlers,
+    private readonly options: Options,
   ) {
-    this.provider = provider;
-    this.providerHandlers = providerHandlers;
-    this.disableRefresh = disableRefresh ?? false;
+    const url = new URL(options.baseUrl);
+    this.domain = url.hostname;
+    this.basePath = url.pathname;
   }
 
   async start(req: express.Request, res: express.Response): Promise<any> {
@@ -143,8 +102,9 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       throw new InputError('missing scope parameter');
     }
 
+    const nonce = crypto.randomBytes(16).toString('base64');
     // set a nonce cookie before redirecting to oauth provider
-    const nonce = setNonceCookie(res, this.provider);
+    this.setNonceCookie(res, nonce);
 
     const options = {
       scope,
@@ -152,6 +112,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       prompt: 'consent',
       state: nonce,
     };
+
     const { url, status } = await this.providerHandlers.start(req, options);
 
     res.statusCode = status || 302;
@@ -166,11 +127,11 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
   ): Promise<any> {
     try {
       // verify nonce cookie and state cookie on callback
-      verifyNonce(req, this.provider);
+      verifyNonce(req, this.options.providerId);
 
       const { user, info } = await this.providerHandlers.handler(req);
 
-      if (!this.disableRefresh) {
+      if (!this.options.disableRefresh) {
         // throw error if missing refresh token
         const { refreshToken } = info;
         if (!refreshToken) {
@@ -178,17 +139,17 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
         }
 
         // set new refresh token
-        setRefreshTokenCookie(res, this.provider, refreshToken);
+        this.setRefreshTokenCookie(res, refreshToken);
       }
 
       // post message back to popup if successful
-      return postMessageResponse(res, {
+      return postMessageResponse(res, this.options.appOrigin, {
         type: 'auth-result',
         payload: user,
       });
     } catch (error) {
       // post error message back to popup if failure
-      return postMessageResponse(res, {
+      return postMessageResponse(res, this.options.appOrigin, {
         type: 'auth-result',
         error: {
           name: error.name,
@@ -203,9 +164,9 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       return res.status(401).send('Invalid X-Requested-With header');
     }
 
-    if (!this.disableRefresh) {
+    if (!this.options.disableRefresh) {
       // remove refresh token cookie before logout
-      removeRefreshTokenCookie(res, this.provider);
+      this.removeRefreshTokenCookie(res);
     }
     return res.send('logout!');
   }
@@ -215,14 +176,15 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       return res.status(401).send('Invalid X-Requested-With header');
     }
 
-    if (!this.providerHandlers.refresh || this.disableRefresh) {
+    if (!this.providerHandlers.refresh || this.options.disableRefresh) {
       return res.send(
-        `Refresh token not supported for provider: ${this.provider}`,
+        `Refresh token not supported for provider: ${this.options.providerId}`,
       );
     }
 
     try {
-      const refreshToken = req.cookies[`${this.provider}-refresh-token`];
+      const refreshToken =
+        req.cookies[`${this.options.providerId}-refresh-token`];
 
       // throw error if refresh token is missing in the request
       if (!refreshToken) {
@@ -241,4 +203,40 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       return res.status(401).send(`${error.message}`);
     }
   }
+
+  private setNonceCookie = (res: express.Response, nonce: string) => {
+    res.cookie(`${this.options.providerId}-nonce`, nonce, {
+      maxAge: TEN_MINUTES_MS,
+      secure: this.options.secure,
+      sameSite: 'none',
+      domain: this.domain,
+      path: `${this.basePath}/${this.options.providerId}/handler`,
+      httpOnly: true,
+    });
+  };
+
+  private setRefreshTokenCookie = (
+    res: express.Response,
+    refreshToken: string,
+  ) => {
+    res.cookie(`${this.options.providerId}-refresh-token`, refreshToken, {
+      maxAge: THOUSAND_DAYS_MS,
+      secure: this.options.secure,
+      sameSite: 'none',
+      domain: this.domain,
+      path: `${this.basePath}/${this.options.providerId}`,
+      httpOnly: true,
+    });
+  };
+
+  private removeRefreshTokenCookie = (res: express.Response) => {
+    res.cookie(`${this.options.providerId}-refresh-token`, '', {
+      maxAge: 0,
+      secure: false,
+      sameSite: 'none',
+      domain: `${this.domain}`,
+      path: `${this.basePath}/${this.options.providerId}`,
+      httpOnly: true,
+    });
+  };
 }

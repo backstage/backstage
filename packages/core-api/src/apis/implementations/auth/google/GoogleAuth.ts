@@ -66,7 +66,7 @@ class GoogleAuth
   static create({
     apiOrigin,
     basePath,
-    environment = 'dev',
+    environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
