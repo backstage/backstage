@@ -61,7 +61,6 @@ function serializeSpec(spec: Entity['spec']): DbEntitiesRow['spec'] {
 function toEntityRow(
   locationId: string | undefined,
   entity: Entity,
-  normalize: (value: string) => string,
 ): DbEntitiesRow {
   return {
     id: entity.metadata.uid!,
@@ -72,9 +71,6 @@ function toEntityRow(
     kind: entity.kind,
     name: entity.metadata.name,
     namespace: entity.metadata.namespace || null,
-    kind_normalized: normalize(entity.kind),
-    name_normalized: normalize(entity.metadata.name),
-    namespace_normalized: normalize(entity.metadata.namespace || ''),
     metadata: serializeMetadata(entity.metadata),
     spec: serializeSpec(entity.spec),
   };
@@ -162,6 +158,8 @@ export class CommonDatabase implements Database {
       throw new InputError('May not specify generation for new entities');
     }
 
+    await this.ensureNoSimilarNames(tx, request.entity);
+
     const newEntity = lodash.cloneDeep(request.entity);
     newEntity.metadata = {
       ...newEntity.metadata,
@@ -170,7 +168,7 @@ export class CommonDatabase implements Database {
       generation: 1,
     };
 
-    const newRow = toEntityRow(request.locationId, newEntity, this.normalize);
+    const newRow = toEntityRow(request.locationId, newEntity);
     await tx<DbEntitiesRow>('entities').insert(newRow);
     await this.updateEntitiesSearch(tx, newRow.id, newEntity);
 
@@ -259,9 +257,11 @@ export class CommonDatabase implements Database {
       }
     }
 
+    await this.ensureNoSimilarNames(tx, newEntity);
+
     // Store the updated entity; select on the old etag to ensure that we do
     // not lose to another writer
-    const newRow = toEntityRow(request.locationId, newEntity, this.normalize);
+    const newRow = toEntityRow(request.locationId, newEntity);
     const updatedRows = await tx<DbEntitiesRow>('entities')
       .where({ id: oldRow.id, etag: oldRow.etag })
       .update(newRow);
@@ -449,6 +449,48 @@ export class CommonDatabase implements Database {
     } catch {
       // ignore intentionally - if this happens, the entity was deleted before
       // we got around to writing the entries
+    }
+  }
+
+  private async ensureNoSimilarNames(
+    tx: Knex.Transaction<any, any>,
+    data: Entity,
+  ): Promise<void> {
+    const newKind = data.kind;
+    const newName = data.metadata.name;
+    const newNamespace = data.metadata.namespace;
+    const newKindNorm = this.normalize(newKind);
+    const newNameNorm = this.normalize(newName);
+    const newNamespaceNorm = this.normalize(newNamespace || '');
+
+    for (const item of await this.entities(tx)) {
+      if (data.metadata.uid === item.entity.metadata.uid) {
+        continue;
+      }
+
+      const oldKind = item.entity.kind;
+      const oldName = item.entity.metadata.name;
+      const oldNamespace = item.entity.metadata.namespace;
+      const oldKindNorm = this.normalize(oldKind);
+      const oldNameNorm = this.normalize(oldName);
+      const oldNamespaceNorm = this.normalize(oldNamespace || '');
+
+      if (
+        oldKindNorm === newKindNorm &&
+        oldNameNorm === newNameNorm &&
+        oldNamespaceNorm === newNamespaceNorm
+      ) {
+        // Only throw if things were actually different - for completely equal
+        // things, we let the database handle the conflict
+        if (
+          oldKind !== newKind ||
+          oldName !== newName ||
+          oldNamespace !== newNamespace
+        ) {
+          const message = `Kind, namespace, name are too similar to an existing entity`;
+          throw new ConflictError(message);
+        }
+      }
     }
   }
 }
