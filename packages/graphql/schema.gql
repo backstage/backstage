@@ -1,0 +1,7 @@
+type Pong {
+  now: Int!
+}
+
+type Query {
+  log(text: String): Pong
+}

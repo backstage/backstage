@@ -37,6 +37,9 @@
     "tsc-watch": "^4.2.3",
     "typescript": "^3.9.2"
   },
+  "resolutions": {
+    "graphql": "15.1.0"
+  },
   "nodemonConfig": {
     "watch": [
       "./dist",
