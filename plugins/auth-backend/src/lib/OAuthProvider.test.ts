@@ -217,11 +217,10 @@ describe('OAuthProvider', () => {
   });
 
   it('sets the refresh cookie if refresh is enabled', async () => {
-    oAuthProviderOptions.disableRefresh = false;
-    const oauthProvider = new OAuthProvider(
-      providerInstance,
-      oAuthProviderOptions,
-    );
+    const oauthProvider = new OAuthProvider(providerInstance, {
+      ...oAuthProviderOptions,
+      disableRefresh: false,
+    });
 
     const mockRequest = ({
       cookies: {
@@ -251,11 +250,10 @@ describe('OAuthProvider', () => {
   });
 
   it('does not set the refresh cookie if refresh is disabled', async () => {
-    oAuthProviderOptions.disableRefresh = true;
-    const oauthProvider = new OAuthProvider(
-      providerInstance,
-      oAuthProviderOptions,
-    );
+    const oauthProvider = new OAuthProvider(providerInstance, {
+      ...oAuthProviderOptions,
+      disableRefresh: true,
+    });
 
     const mockRequest = ({
       cookies: {
@@ -277,11 +275,10 @@ describe('OAuthProvider', () => {
   });
 
   it('removes refresh cookie when logging out', async () => {
-    oAuthProviderOptions.disableRefresh = false;
-    const oauthProvider = new OAuthProvider(
-      providerInstance,
-      oAuthProviderOptions,
-    );
+    const oauthProvider = new OAuthProvider(providerInstance, {
+      ...oAuthProviderOptions,
+      disableRefresh: false,
+    });
 
     const mockRequest = ({
       header: () => 'XMLHttpRequest',
@@ -303,10 +300,10 @@ describe('OAuthProvider', () => {
 
   it('gets new access-token when refreshing', async () => {
     oAuthProviderOptions.disableRefresh = false;
-    const oauthProvider = new OAuthProvider(
-      providerInstance,
-      oAuthProviderOptions,
-    );
+    const oauthProvider = new OAuthProvider(providerInstance, {
+      ...oAuthProviderOptions,
+      disableRefresh: false,
+    });
 
     const mockRequest = ({
       header: () => 'XMLHttpRequest',
@@ -330,11 +327,10 @@ describe('OAuthProvider', () => {
   });
 
   it('handles refresh without capabilities', async () => {
-    oAuthProviderOptions.disableRefresh = true;
-    const oauthProvider = new OAuthProvider(
-      providerInstance,
-      oAuthProviderOptions,
-    );
+    const oauthProvider = new OAuthProvider(providerInstance, {
+      ...oAuthProviderOptions,
+      disableRefresh: true,
+    });
 
     const mockRequest = ({
       header: () => 'XMLHttpRequest',

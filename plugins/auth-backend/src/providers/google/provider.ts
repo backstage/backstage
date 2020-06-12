@@ -122,7 +122,7 @@ export function createGoogleProvider(
   for (const [env, envConfig] of Object.entries(providerConfig)) {
     const config = (envConfig as unknown) as OAuthProviderConfig;
     const { secure, appOrigin } = config;
-    const callbackURLParam = env === 'development' ? '?env=development' : '';
+    const callbackURLParam = `?env=${env}`;
     const opts = {
       clientID: config.clientId,
       clientSecret: config.clientSecret,
