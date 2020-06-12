@@ -34,21 +34,9 @@ import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const REDIRECT_DELAY = 1000;
-
-type Props = {
-  match: {
-    params: {
-      optionalNamespaceAndName: string;
-      kind: string;
-    };
-  };
-  history: {
-    push: (url: string) => void;
-  };
-};
-
 function headerProps(
   kind: string,
   namespace: string | undefined,
@@ -68,8 +56,12 @@ function headerProps(
   };
 }
 
-export const EntityPage: FC<Props> = ({ match, history }) => {
-  const { optionalNamespaceAndName, kind } = match.params;
+export const EntityPage: FC<{}> = () => {
+  const { optionalNamespaceAndName, kind } = useParams() as {
+    optionalNamespaceAndName: string;
+    kind: string;
+  };
+  const navigate = useNavigate();
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
 
   const errorApi = useApi(errorApiRef);
@@ -85,19 +77,19 @@ export const EntityPage: FC<Props> = ({ match, history }) => {
     if (!error && !loading && !entity) {
       errorApi.post(new Error('Entity not found!'));
       setTimeout(() => {
-        history.push('/');
+        navigate('/');
       }, REDIRECT_DELAY);
     }
-  }, [errorApi, history, error, loading, entity]);
+  }, [errorApi, navigate, error, loading, entity]);
 
   if (!name) {
-    history.push('/catalog');
+    navigate('/catalog');
     return null;
   }
 
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
-    history.push('/');
+    navigate('/');
   };
 
   const showRemovalDialog = () => setConfirmationDialogOpen(true);

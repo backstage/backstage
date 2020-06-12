@@ -19,7 +19,7 @@ import { Typography, Link, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { MicDrop } from './MicDrop';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 
 interface IErrorPageProps {
   status: string;
@@ -40,7 +40,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export const ErrorPage = ({ status, statusMessage }: IErrorPageProps) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <Grid container className={classes.container}>
@@ -53,7 +53,7 @@ export const ErrorPage = ({ status, statusMessage }: IErrorPageProps) => {
           Looks like someone dropped the mic!
         </Typography>
         <Typography variant="h6">
-          <Link data-testid="go-back-link" onClick={history.goBack}>
+          <Link data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
           ... or if you think this is a bug, please file an{' '}

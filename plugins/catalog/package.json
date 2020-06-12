@@ -32,8 +32,8 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.2.0",
+    "react-router": "^6.0.0-alpha.5",
+    "react-router-dom": "^6.0.0-alpha.5",
     "react-use": "^14.2.0",
     "swr": "^0.2.2"
   },

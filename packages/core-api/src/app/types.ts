@@ -25,12 +25,11 @@ export type BootErrorPageProps = {
   step: 'load-config';
   error: Error;
 };
-
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
-  Router: ComponentType<{ basename?: string }>;
+  Router: ComponentType<{}>;
 };
 
 /**

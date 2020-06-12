@@ -19,7 +19,7 @@ import { Link as MaterialLink } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 
 type Props = ComponentProps<typeof MaterialLink> &
-  ComponentProps<typeof RouterLink>;
+  ComponentProps<typeof RouterLink> & { component?: React.FC<any> };
 
 /**
  * Thin wrapper on top of material-ui's Link component

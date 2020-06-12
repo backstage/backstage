@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Switch, Route, MemoryRouter } from 'react-router';
+import { Route, MemoryRouter, Routes } from 'react-router';
 import { BuildsPage, Builds } from '../pages/BuildsPage';
 import { DetailedViewPage, BuildWithSteps } from '../pages/BuildWithStepsPage';
 import { AppStateProvider } from '../state';
@@ -24,14 +24,13 @@ export const App = () => {
   return (
     <AppStateProvider>
       <>
-        <Switch>
-          <Route path="/circleci" exact component={BuildsPage} />
+        <Routes>
+          <Route path="/circleci" element={<BuildsPage />} />
           <Route
             path="/circleci/build/:buildId"
-            exact
-            component={DetailedViewPage}
+            element={<DetailedViewPage />}
           />
-        </Switch>
+        </Routes>
         <Settings />
       </>
     </AppStateProvider>
@@ -45,14 +44,10 @@ export const CircleCIWidget = () => (
   <MemoryRouter initialEntries={['/circleci']}>
     <AppStateProvider>
       <>
-        <Switch>
-          <Route path="/circleci" exact component={Builds} />
-          <Route
-            path="/circleci/build/:buildId"
-            exact
-            component={BuildWithSteps}
-          />
-        </Switch>
+        <Routes>
+          <Route path="/circleci" element={<Builds />} />
+          <Route path="/circleci/build/:buildId" element={<BuildWithSteps />} />
+        </Routes>
         <Settings />
       </>
     </AppStateProvider>
