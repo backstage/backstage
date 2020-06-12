@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import * as yup from 'yup';
 import yaml from 'yaml';
-import { resolve as resolvePath, dirname } from 'path';
+import { resolve as resolvePath, dirname, extname } from 'path';
 import { AppConfig, JsonObject, JsonValue } from '@backstage/config';
 import { findRootPath } from './paths';
 import { LoadConfigOptions } from './types';
@@ -103,7 +103,12 @@ type EnvSecret = {
   env: string;
 };
 
-type Secret = FileSecret | EnvSecret;
+type DataSecret = {
+  data: string;
+  path: string | string[];
+};
+
+type Secret = FileSecret | EnvSecret | DataSecret;
 
 const secretLoaderSchemas = {
   file: yup.object({
@@ -111,6 +116,15 @@ const secretLoaderSchemas = {
   }),
   env: yup.object({
     env: yup.string().required(),
+  }),
+  data: yup.object({
+    data: yup.string().required(),
+    path: yup.lazy(value => {
+      if (typeof value === 'string') {
+        return yup.string().required();
+      }
+      return yup.array().of(yup.string().required()).required();
+    }),
   }),
 };
 
@@ -135,6 +149,14 @@ const secretSchema = yup.lazy<object>(value => {
   );
 });
 
+const dataSecretParser: {
+  [ext in string]: (content: string) => Promise<JsonObject>;
+} = {
+  '.json': async content => JSON.parse(content),
+  '.yaml': async content => yaml.parse(content),
+  '.yml': async content => yaml.parse(content),
+};
+
 // A thing to make sure we've narrowed the type down to never
 function isNever<T extends never>() {
   return void 0 as T;
@@ -155,6 +177,30 @@ export async function readSecret(
   }
   if ('env' in secret) {
     return ctx.env[secret.env];
+  }
+  if ('data' in secret) {
+    const ext = extname(secret.data);
+    const parser = dataSecretParser[ext];
+    if (!parser) {
+      throw new Error(`No data secret parser available for extension ${ext}`);
+    }
+
+    const content = await ctx.readFile(secret.data);
+
+    const { path } = secret;
+    const parts = typeof path === 'string' ? path.split('.') : path;
+
+    let value: JsonValue = await parser(content);
+    for (const [index, part] of parts.entries()) {
+      if (!isObject(value)) {
+        const errPath = parts.slice(0, index).join('.');
+        throw new Error(
+          `Value is not an object at ${errPath} in ${secret.data}`,
+        );
+      }
+      value = value[part];
+    }
+    return String(value);
   }
 
   isNever<typeof secret>();
