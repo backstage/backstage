@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.1.1-alpha.7",
+  "version": "0.1.1-alpha.8",
   "main": "dist",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -15,7 +15,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.7",
+    "@backstage/backend-common": "^0.1.1-alpha.8",
     "@types/cookie-parser": "^1.4.2",
     "@types/jwt-decode": "2.2.1",
     "@types/passport": "^1.0.3",
@@ -39,7 +39,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.7",
+    "@backstage/cli": "^0.1.1-alpha.8",
     "@types/body-parser": "^1.19.0",
     "@types/passport-saml": "^1.1.2",
     "jest-fetch-mock": "^3.0.3",
