@@ -43,7 +43,6 @@ function getStrippedMetadata(metadata: EntityMeta): EntityMeta {
   delete output.uid;
   delete output.etag;
   delete output.generation;
-
   return output;
 }
 
@@ -62,6 +61,7 @@ function serializeSpec(spec: Entity['spec']): DbEntitiesRow['spec'] {
 function toEntityRow(
   locationId: string | undefined,
   entity: Entity,
+  normalize: (value: string) => string,
 ): DbEntitiesRow {
   return {
     id: entity.metadata.uid!,
@@ -70,8 +70,11 @@ function toEntityRow(
     generation: entity.metadata.generation!,
     api_version: entity.apiVersion,
     kind: entity.kind,
-    name: entity.metadata.name || null,
+    name: entity.metadata.name,
     namespace: entity.metadata.namespace || null,
+    kind_normalized: normalize(entity.kind),
+    name_normalized: normalize(entity.metadata.name),
+    namespace_normalized: normalize(entity.metadata.namespace || ''),
     metadata: serializeMetadata(entity.metadata),
     spec: serializeSpec(entity.spec),
   };
@@ -124,6 +127,7 @@ function generateEtag(): string {
 export class CommonDatabase implements Database {
   constructor(
     private readonly database: Knex,
+    private readonly normalize: (value: string) => string,
     private readonly logger: Logger,
   ) {}
 
@@ -166,7 +170,7 @@ export class CommonDatabase implements Database {
       generation: 1,
     };
 
-    const newRow = toEntityRow(request.locationId, newEntity);
+    const newRow = toEntityRow(request.locationId, newEntity, this.normalize);
     await tx<DbEntitiesRow>('entities').insert(newRow);
     await this.updateEntitiesSearch(tx, newRow.id, newEntity);
 
@@ -257,7 +261,7 @@ export class CommonDatabase implements Database {
 
     // Store the updated entity; select on the old etag to ensure that we do
     // not lose to another writer
-    const newRow = toEntityRow(request.locationId, newEntity);
+    const newRow = toEntityRow(request.locationId, newEntity, this.normalize);
     const updatedRows = await tx<DbEntitiesRow>('entities')
       .where({ id: oldRow.id, etag: oldRow.etag })
       .update(newRow);
