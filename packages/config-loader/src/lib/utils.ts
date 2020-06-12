@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-export type LoadConfigOptions = {
-  // Config path, defaults to app-config.yaml in project root
-  configPath?: string;
+import { JsonValue, JsonObject } from '@backstage/config';
 
-  // Whether to read secrets or omit them, defaults to false.
-  shouldReadSecrets?: boolean;
-};
+export function isObject(obj: JsonValue | undefined): obj is JsonObject {
+  if (typeof obj !== 'object') {
+    return false;
+  } else if (Array.isArray(obj)) {
+    return false;
+  }
+  return obj !== null;
+}
+
+// A thing to make sure we've narrowed the type down to never
+export function isNever<T extends never>() {
+  return void 0 as T;
+}

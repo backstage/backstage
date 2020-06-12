@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { loadConfig } from './loader';
-export type { LoadConfigOptions } from './loader';
+export { findRootPath } from './paths';
+export { readConfigFile } from './reader';
+export { readEnv } from './env';
