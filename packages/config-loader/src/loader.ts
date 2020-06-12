@@ -83,6 +83,7 @@ type ReadFileFunc = (path: string) => Promise<string>;
 type ReaderContext = {
   shouldReadSecrets: boolean;
   readFile: ReadFileFunc;
+  env: { [name in string]?: string };
 };
 
 function isObject(obj: JsonValue | undefined): obj is JsonObject {
@@ -98,11 +99,18 @@ type FileSecret = {
   file: string;
 };
 
-type Secret = FileSecret;
+type EnvSecret = {
+  env: string;
+};
+
+type Secret = FileSecret | EnvSecret;
 
 const secretLoaderSchemas = {
   file: yup.object({
     file: yup.string().required(),
+  }),
+  env: yup.object({
+    env: yup.string().required(),
   }),
 };
 
@@ -127,21 +135,34 @@ const secretSchema = yup.lazy<object>(value => {
   );
 });
 
+// A thing to make sure we've narrowed the type down to never
+function isNever<T extends never>() {
+  return void 0 as T;
+}
+
 export async function readSecret(
   data: JsonObject,
-  readFile: ReadFileFunc,
+  ctx: ReaderContext,
 ): Promise<string | undefined> {
+  if (!ctx.shouldReadSecrets) {
+    return undefined;
+  }
+
   const secret = secretSchema.validateSync(data) as Secret;
 
   if ('file' in secret) {
-    return readFile(secret.file);
+    return ctx.readFile(secret.file);
+  }
+  if ('env' in secret) {
+    return ctx.env[secret.env];
   }
 
+  isNever<typeof secret>();
   throw new Error('Secret was left unhandled');
 }
 
-export async function readConfigFile(filePath: string, context: ReaderContext) {
-  const configYaml = await context.readFile(filePath);
+export async function readConfigFile(filePath: string, ctx: ReaderContext) {
+  const configYaml = await ctx.readFile(filePath);
   const config = yaml.parse(configYaml);
 
   async function transform(
@@ -170,12 +191,8 @@ export async function readConfigFile(filePath: string, context: ReaderContext) {
         throw TypeError(`Expected object at secret ${path}.$secret`);
       }
 
-      if (!context.shouldReadSecrets) {
-        return undefined;
-      }
-
       try {
-        return await readSecret(obj.$secret, context.readFile);
+        return await readSecret(obj.$secret, ctx);
       } catch (error) {
         throw new Error(`Invalid secret at ${path}: ${error.message}`);
       }
@@ -218,6 +235,7 @@ export async function loadStaticConfig(
   try {
     const rootPath = dirname(configPath);
     const config = await readConfigFile(configPath, {
+      env: process.env,
       shouldReadSecrets,
       readFile: (path: string) => {
         return fs.readFile(resolvePath(rootPath, path), 'utf8');
