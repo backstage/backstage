@@ -19,24 +19,28 @@ import type { Entity } from '../entity/Entity';
 import type { EntityPolicy } from '../types';
 
 const API_VERSION = 'backstage.io/v1beta1';
-const KIND = 'Component';
+const KIND = 'LocationRef';
 
-export interface ComponentV1beta1 extends Entity {
+export interface LocationRefV1beta1 extends Entity {
   apiVersion: typeof API_VERSION;
   kind: typeof KIND;
   spec: {
     type: string;
+    target?: string;
+    targets?: string[];
   };
 }
 
-export class ComponentV1beta1Policy implements EntityPolicy {
+export class LocationRefV1beta1Policy implements EntityPolicy {
   private schema: yup.Schema<any>;
 
   constructor() {
-    this.schema = yup.object<Partial<ComponentV1beta1>>({
+    this.schema = yup.object<Partial<LocationRefV1beta1>>({
       spec: yup
         .object({
           type: yup.string().required(),
+          target: yup.string().notRequired(),
+          targets: yup.array(yup.string()).notRequired(),
         })
         .required(),
     });
