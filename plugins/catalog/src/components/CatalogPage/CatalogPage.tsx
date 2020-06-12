@@ -33,11 +33,16 @@ import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import Star from '@material-ui/icons/Star';
 import StarOutline from '@material-ui/icons/StarBorder';
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useState, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
-import { defaultFilter, entityFilters, filterGroups } from '../../data/filters';
+import {
+  defaultFilter,
+  entityFilters,
+  filterGroups,
+  EntityFilterType,
+} from '../../data/filters';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import {
@@ -45,6 +50,26 @@ import {
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
+
+// TODO: replace me with the proper tabs implemntation
+const tabs = [
+  {
+    id: 'service',
+    label: 'Services',
+  },
+  {
+    id: 'website',
+    label: 'Websites',
+  },
+  {
+    id: 'lib',
+    label: 'Libraries',
+  },
+  {
+    id: 'documentation',
+    label: 'Documentation',
+  },
+];
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -61,6 +86,7 @@ const useStyles = makeStyles(theme => ({
 
 export const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
+  const [selectedTab, setSelectedTab] = useState<string>(tabs[0].id);
   const {
     starredEntities,
     toggleStarredEntity,
@@ -71,15 +97,21 @@ export const CatalogPage: FC<{}> = () => {
   );
 
   const { value, error, loading } = useAsync(async () => {
-    const filter = entityFilters[selectedFilter.id];
-    const all = await catalogApi.getEntities();
-    return all.filter(e => filter(e, { isStarred: isStarredEntity(e) }));
-  }, [selectedFilter.id, starredEntities.size]);
+    return await catalogApi.getEntities();
+  });
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
     [],
   );
+
+  const filteredEntities = useMemo(() => {
+    const typeFilter = entityFilters[EntityFilterType.TYPE];
+    const leftMenuFilter = entityFilters[selectedFilter.id];
+    return value
+      ?.filter(e => leftMenuFilter(e, { isStarred: isStarredEntity(e) }))
+      .filter(e => typeFilter(e, { type: selectedTab }));
+  }, [selectedFilter.id, selectedTab, isStarredEntity, value?.filter]);
 
   const styles = useStyles();
 
@@ -129,32 +161,17 @@ export const CatalogPage: FC<{}> = () => {
     },
   ];
 
-  // TODO: replace me with the proper tabs implemntation
-  const tabs = [
-    {
-      id: 'services',
-      label: 'Services',
-    },
-    {
-      id: 'websites',
-      label: 'Websites',
-    },
-    {
-      id: 'libs',
-      label: 'Libraries',
-    },
-    {
-      id: 'documentation',
-      label: 'Documentation',
-    },
-  ];
-
   return (
     <Page theme={pageTheme.home}>
       <Header title="Service Catalog" subtitle="Keep track of your software">
         <HomepageTimer />
       </Header>
-      <HeaderTabs tabs={tabs} />
+      <HeaderTabs
+        tabs={tabs}
+        onChange={index => {
+          setSelectedTab(tabs[index as number].id);
+        }}
+      />
       <Content>
         <DismissableBanner
           variant="info"
@@ -195,7 +212,7 @@ export const CatalogPage: FC<{}> = () => {
           </div>
           <CatalogTable
             titlePreamble={selectedFilter.label}
-            entities={value || []}
+            entities={filteredEntities || []}
             loading={loading}
             error={error}
             actions={actions}
