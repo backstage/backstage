@@ -73,7 +73,7 @@ export const PassProps = () => {
       <Link
         to={routeRef.path}
         /** react-router-dom related prop */
-        as={RouterNavLink}
+        component={RouterNavLink}
         /** material-ui related prop */
         color="secondary"
       >
