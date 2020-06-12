@@ -57,7 +57,7 @@ class GithubAuth implements OAuthApi, SessionStateApi {
   static create({
     apiOrigin,
     basePath,
-    environment = 'dev',
+    environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {

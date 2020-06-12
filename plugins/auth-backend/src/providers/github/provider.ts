@@ -19,24 +19,30 @@ import { Strategy as GithubStrategy } from 'passport-github2';
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
-} from '../PassportStrategyHelper';
+} from '../../lib/PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
   AuthProviderConfig,
   RedirectInfo,
   AuthInfoBase,
   AuthInfoPrivate,
+  EnvironmentProviderConfig,
+  OAuthProviderOptions,
+  OAuthProviderConfig,
 } from '../types';
-import { OAuthProvider } from '../OAuthProvider';
+import { OAuthProvider } from '../../lib/OAuthProvider';
+import {
+  EnvironmentHandlers,
+  EnvironmentHandler,
+} from '../../lib/EnvironmentHandler';
+import { Logger } from 'winston';
 
 export class GithubAuthProvider implements OAuthProviderHandlers {
-  private readonly providerConfig: AuthProviderConfig;
   private readonly _strategy: GithubStrategy;
 
-  constructor(providerConfig: AuthProviderConfig) {
-    this.providerConfig = providerConfig;
+  constructor(options: OAuthProviderOptions) {
     this._strategy = new GithubStrategy(
-      { ...this.providerConfig.options },
+      { ...options },
       (accessToken: any, _: any, params: any, profile: any, done: any) => {
         done(undefined, {
           profile,
@@ -59,8 +65,42 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createGithubProvider(config: AuthProviderConfig) {
-  const provider = new GithubAuthProvider(config);
-  const oauthProvider = new OAuthProvider(provider, config.provider, true);
-  return oauthProvider;
+export function createGithubProvider(
+  { baseUrl }: AuthProviderConfig,
+  providerConfig: EnvironmentProviderConfig,
+  logger: Logger,
+) {
+  const envProviders: EnvironmentHandlers = {};
+
+  for (const [env, envConfig] of Object.entries(providerConfig)) {
+    const config = (envConfig as unknown) as OAuthProviderConfig;
+    const { secure, appOrigin } = config;
+    const callbackURLParam = `?env=${env}`;
+    const opts = {
+      clientID: config.clientId,
+      clientSecret: config.clientSecret,
+      callbackURL: `${baseUrl}/github/handler/frame${callbackURLParam}`,
+    };
+
+    if (!opts.clientID || !opts.clientSecret) {
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          'Failed to initialize Github auth provider, set AUTH_GITHUB_CLIENT_ID and AUTH_GITHUB_CLIENT_SECRET env vars',
+        );
+      }
+
+      logger.warn(
+        'Github auth provider disabled, set AUTH_GITHUB_CLIENT_ID and AUTH_GITHUB_CLIENT_SECRET env vars to enable',
+      );
+      continue;
+    }
+
+    envProviders[env] = new OAuthProvider(new GithubAuthProvider(opts), {
+      providerId: 'github',
+      secure,
+      baseUrl,
+      appOrigin,
+    });
+  }
+  return new EnvironmentHandler(envProviders);
 }
