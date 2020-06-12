@@ -17,3 +17,4 @@
 export { resolveStaticConfig } from './resolver';
 export { readConfigFile } from './reader';
 export { readEnv } from './env';
+export { readSecret } from './secrets';

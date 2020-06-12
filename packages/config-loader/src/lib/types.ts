@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/config';
+
 export type ReadFileFunc = (path: string) => Promise<string>;
+export type ReadSecretFunc = (desc: JsonObject) => Promise<string | undefined>;
 
 export type ReaderContext = {
-  shouldReadSecrets: boolean;
-  readFile: ReadFileFunc;
   env: { [name in string]?: string };
+  readFile: ReadFileFunc;
+  readSecret: ReadSecretFunc;
 };

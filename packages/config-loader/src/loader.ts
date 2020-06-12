@@ -16,8 +16,13 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, dirname } from 'path';
-import { AppConfig } from '@backstage/config';
-import { resolveStaticConfig, readConfigFile, readEnv } from './lib';
+import { AppConfig, JsonObject } from '@backstage/config';
+import {
+  resolveStaticConfig,
+  readConfigFile,
+  readEnv,
+  readSecret,
+} from './lib';
 
 export type LoadConfigOptions = {
   // Config path, defaults to app-config.yaml in project root
@@ -26,6 +31,32 @@ export type LoadConfigOptions = {
   // Whether to read secrets or omit them, defaults to false.
   shouldReadSecrets?: boolean;
 };
+
+class Context {
+  constructor(
+    private readonly options: {
+      env: { [name in string]?: string };
+      rootPath: string;
+      shouldReadSecrets: boolean;
+    },
+  ) {}
+
+  get env() {
+    return this.options.env;
+  }
+
+  async readFile(path: string): Promise<string> {
+    return fs.readFile(resolvePath(this.options.rootPath, path), 'utf8');
+  }
+
+  async readSecret(desc: JsonObject): Promise<string | undefined> {
+    if (!this.options.shouldReadSecrets) {
+      return undefined;
+    }
+
+    return readSecret(desc, this);
+  }
+}
 
 export async function loadConfig(
   options: LoadConfigOptions = {},
@@ -38,15 +69,14 @@ export async function loadConfig(
 
   try {
     for (const configPath of configPaths) {
-      const rootPath = dirname(configPath);
-
-      const config = await readConfigFile(configPath, {
-        env: process.env,
-        shouldReadSecrets: Boolean(options.shouldReadSecrets),
-        readFile: (path: string) => {
-          return fs.readFile(resolvePath(rootPath, path), 'utf8');
-        },
-      });
+      const config = await readConfigFile(
+        configPath,
+        new Context({
+          env: process.env,
+          rootPath: dirname(configPath),
+          shouldReadSecrets: Boolean(options.shouldReadSecrets),
+        }),
+      );
 
       configs.push(config);
     }

@@ -87,10 +87,6 @@ export async function readSecret(
   data: JsonObject,
   ctx: ReaderContext,
 ): Promise<string | undefined> {
-  if (!ctx.shouldReadSecrets) {
-    return undefined;
-  }
-
   const secret = secretSchema.validateSync(data) as Secret;
 
   if ('file' in secret) {

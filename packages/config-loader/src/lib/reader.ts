@@ -16,7 +16,6 @@
 
 import yaml from 'yaml';
 import { isObject } from './utils';
-import { readSecret } from './secrets';
 import { JsonValue, JsonObject } from '@backstage/config';
 import { ReaderContext } from './types';
 
@@ -51,7 +50,7 @@ export async function readConfigFile(filePath: string, ctx: ReaderContext) {
       }
 
       try {
-        return await readSecret(obj.$secret, ctx);
+        return await ctx.readSecret(obj.$secret);
       } catch (error) {
         throw new Error(`Invalid secret at ${path}: ${error.message}`);
       }
