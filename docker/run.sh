@@ -22,7 +22,7 @@ function inject_config() {
   >&2 echo "Runtime app config: $config"
 
   local main_js
-  main_js="$(ls /usr/share/nginx/html/main.*.chunk.js)"
+  main_js="$(grep -l __APP_INJECTED_RUNTIME_CONFIG__ /usr/share/nginx/html/*.chunk.js)"
   echo "Writing runtime config to ${main_js}"
 
   # escape ' and " twice, for both sed and json
