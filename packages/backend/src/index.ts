@@ -65,4 +65,7 @@ async function main() {
   });
 }
 
-main();
+main().catch(error => {
+  console.error(`Backend failed to start up, ${error}`);
+  process.exit(1);
+});
