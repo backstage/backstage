@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath, dirname } from 'path';
 import { AppConfig } from '@backstage/config';
-import { findRootPath, readConfigFile, readEnv } from './lib';
+import { resolveStaticConfig, readConfigFile, readEnv } from './lib';
 
 export type LoadConfigOptions = {
   // Config path, defaults to app-config.yaml in project root
@@ -27,45 +27,34 @@ export type LoadConfigOptions = {
   shouldReadSecrets?: boolean;
 };
 
-export async function loadStaticConfig(
-  options: LoadConfigOptions,
-): Promise<AppConfig[]> {
-  const { shouldReadSecrets = false } = options;
-
-  // TODO: We'll want this to be a bit more elaborate, probably adding configs for
-  //       specific env, and maybe local config for plugins.
-  let { configPath } = options;
-  if (!configPath) {
-    configPath = resolvePath(
-      findRootPath(fs.realpathSync(process.cwd())),
-      'app-config.yaml',
-    );
-  }
-
-  try {
-    const rootPath = dirname(configPath);
-    const config = await readConfigFile(configPath, {
-      env: process.env,
-      shouldReadSecrets,
-      readFile: (path: string) => {
-        return fs.readFile(resolvePath(rootPath, path), 'utf8');
-      },
-    });
-    return [config];
-  } catch (error) {
-    throw new Error(
-      `Failed to read static configuration file: ${error.message}`,
-    );
-  }
-}
-
 export async function loadConfig(
   options: LoadConfigOptions = {},
 ): Promise<AppConfig[]> {
   const configs = [];
 
   configs.push(...readEnv(process.env));
-  configs.push(...(await loadStaticConfig(options)));
+
+  const configPaths = await resolveStaticConfig(options);
+
+  try {
+    for (const configPath of configPaths) {
+      const rootPath = dirname(configPath);
+
+      const config = await readConfigFile(configPath, {
+        env: process.env,
+        shouldReadSecrets: Boolean(options.shouldReadSecrets),
+        readFile: (path: string) => {
+          return fs.readFile(resolvePath(rootPath, path), 'utf8');
+        },
+      });
+
+      configs.push(config);
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to read static configuration file: ${error.message}`,
+    );
+  }
 
   return configs;
 }

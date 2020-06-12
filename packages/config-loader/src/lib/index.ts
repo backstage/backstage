@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { findRootPath } from './paths';
+export { resolveStaticConfig } from './resolver';
 export { readConfigFile } from './reader';
 export { readEnv } from './env';
