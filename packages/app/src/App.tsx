@@ -19,7 +19,7 @@ import React, { FC } from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
-import { hot } from 'react-hot-loader/root';
+// import { hot } from 'react-hot-loader/root';
 
 const app = createApp({
   apis,
@@ -39,4 +39,4 @@ const App: FC<{}> = () => (
   </AppProvider>
 );
 
-export default hot(App);
+export default App;

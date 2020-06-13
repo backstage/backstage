@@ -47,25 +47,31 @@ export const defaultConfigLoader: AppConfigLoader = async (
   // It's a param so we can test it, but at runtime this will always fall back to default.
   runtimeConfigJson: string = '__APP_INJECTED_RUNTIME_CONFIG__',
 ) => {
-  const appConfig = process.env.APP_CONFIG;
-  if (!appConfig) {
-    throw new Error('No static configuration provided');
-  }
-  if (!Array.isArray(appConfig)) {
-    throw new Error('Static configuration has invalid format');
-  }
-  const configs = (appConfig.slice() as unknown) as AppConfig[];
+  return [{}];
+  // TODO(blam): Becausse we need to run parcel after we've setup
+  // the config otheerwise the app complains, i've commented this stuff out.
+  // we basically just need to replace webpack run with the parcel serve stuff instead
+  // and it should just work.
 
-  // Avoiding this string also being replaced at runtime
-  if (runtimeConfigJson !== '__app_injected_runtime_config__'.toUpperCase()) {
-    try {
-      configs.unshift(JSON.parse(runtimeConfigJson));
-    } catch (error) {
-      throw new Error(`Failed to load runtime configuration, ${error}`);
-    }
-  }
+  // const appConfig = process.env.APP_CONFIG;
+  // if (!appConfig) {
+  //   throw new Error('No static configuration provided');
+  // }
+  // if (!Array.isArray(appConfig)) {
+  //   throw new Error('Static configuration has invalid format');
+  // }
+  // const configs = (appConfig.slice() as unknown) as AppConfig[];
 
-  return configs;
+  // // Avoiding this string also being replaced at runtime
+  // if (runtimeConfigJson !== '__app_injected_runtime_config__'.toUpperCase()) {
+  //   try {
+  //     configs.unshift(JSON.parse(runtimeConfigJson));
+  //   } catch (error) {
+  //     throw new Error(`Failed to load runtime configuration, ${error}`);
+  //   }
+  // }
+
+  // return configs;
 };
 
 // createApp is defined in core, and not core-api, since we need access

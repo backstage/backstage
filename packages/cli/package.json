@@ -74,6 +74,7 @@
     "rollup-plugin-typescript2": "^0.26.0",
     "style-loader": "^1.2.1",
     "sucrase": "^3.14.1",
+    "parcel": "^2.0.0-alpha.3.2",
     "tar": "^6.0.1",
     "ts-jest": "^26.0.0",
     "ts-loader": "^7.0.4",

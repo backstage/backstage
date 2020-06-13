@@ -44,7 +44,7 @@ const ScaffolderPage: React.FC<{}> = () => {
         pageTitleOverride="Create a new component"
         title={
           <>
-            Create a new component <Lifecycle alpha shorthand />{' '}
+            Create a component <Lifecycle alpha shorthand />{' '}
           </>
         }
         subtitle="Create new software components using standard templates"

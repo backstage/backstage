@@ -2,6 +2,7 @@
   "name": "example-app",
   "version": "0.1.1-alpha.8",
   "private": true,
+  "source": "src/index.tsx",
   "dependencies": {
     "@backstage/cli": "^0.1.1-alpha.8",
     "@backstage/core": "^0.1.1-alpha.8",
@@ -39,6 +40,7 @@
     "cross-env": "^7.0.0",
     "cypress": "^4.2.0",
     "eslint-plugin-cypress": "^2.10.3",
+    "parcel": "^2.0.0-alpha.3.2",
     "start-server-and-test": "^1.10.11"
   },
   "scripts": {
@@ -64,21 +66,5 @@
       "last 1 safari version"
     ]
   },
-  "license": "Apache-2.0",
-  "proxy": {
-    "/circleci/api": {
-      "target": "https://circleci.com/api/v1.1",
-      "changeOrigin": true,
-      "pathRewrite": {
-        "^/circleci/api/": "/"
-      }
-    },
-    "/catalog/api": {
-      "target": "http://localhost:7000",
-      "changeOrigin": true,
-      "pathRewrite": {
-        "^/catalog/api/": "/catalog/"
-      }
-    }
-  }
+  "license": "Apache-2.0"
 }
