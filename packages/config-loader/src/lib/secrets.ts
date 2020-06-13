@@ -21,21 +21,31 @@ import { JsonObject, JsonValue } from '@backstage/config';
 import { isObject, isNever } from './utils';
 import { ReaderContext } from './types';
 
+// Reads a file and forwards the contents as is, assuming ut8 encoding
 type FileSecret = {
+  // Path to the secret file, relative to the config file.
   file: string;
 };
 
+// Reads the secret from an environment variable.
 type EnvSecret = {
+  // The name of the environment file.
   env: string;
 };
 
+// Reads a secret from a json-like file and extracts a value at a path.
+// The supported extensions are define in dataSecretParser below.
 type DataSecret = {
+  // Path to the data secret file, relative to the config file.
   data: string;
+  // The path to the value inside the data file.
+  // Either a '.' separated list, or an array of path segments.
   path: string | string[];
 };
 
 type Secret = FileSecret | EnvSecret | DataSecret;
 
+// Schema for each type of secret description
 const secretLoaderSchemas = {
   file: yup.object({
     file: yup.string().required(),
@@ -54,6 +64,7 @@ const secretLoaderSchemas = {
   }),
 };
 
+// The top-level secret schema, which figures out what type of secret it is.
 const secretSchema = yup.lazy<object>(value => {
   if (typeof value !== 'object' || value === null) {
     return yup.object().required().label('secret');
@@ -75,6 +86,7 @@ const secretSchema = yup.lazy<object>(value => {
   );
 });
 
+// Parsers for each type of data secret file.
 const dataSecretParser: {
   [ext in string]: (content: string) => Promise<JsonObject>;
 } = {
@@ -83,6 +95,9 @@ const dataSecretParser: {
   '.yml': async content => yaml.parse(content),
 };
 
+/**
+ * Transforms a secret description into the actual secret value.
+ */
 export async function readSecret(
   data: JsonObject,
   ctx: ReaderContext,

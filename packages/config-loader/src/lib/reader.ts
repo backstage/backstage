@@ -19,6 +19,10 @@ import { isObject } from './utils';
 import { JsonValue, JsonObject } from '@backstage/config';
 import { ReaderContext } from './types';
 
+/**
+ * Reads and parses, and validates, and transforms a single config file.
+ * The transformation rewrites any special values, like the $secret key.
+ */
 export async function readConfigFile(filePath: string, ctx: ReaderContext) {
   const configYaml = await ctx.readFile(filePath);
   const config = yaml.parse(configYaml);

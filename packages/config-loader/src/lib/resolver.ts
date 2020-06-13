@@ -24,7 +24,7 @@ type ResolveOptions = {
 };
 
 /**
- * Resolves all configuration files that should be loaded.
+ * Resolves all configuration files that should be loaded in the given environment.
  */
 export async function resolveStaticConfig(
   options: ResolveOptions,
