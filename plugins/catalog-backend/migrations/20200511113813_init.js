@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import * as Knex from 'knex';
-
-export async function up(knex: Knex): Promise<any> {
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
   return (
     knex.schema
       //
@@ -114,9 +115,12 @@ export async function up(knex: Knex): Promise<any> {
           .comment('The corresponding value to match on');
       })
   );
-}
+};
 
-export async function down(knex: Knex): Promise<any> {
+/**
+ * @param {import('knex')} knex
+ */
+exports.down = async function down(knex) {
   return knex.schema
     .dropTable('entities_search')
     .alterTable('entities', table => {
@@ -124,4 +128,4 @@ export async function down(knex: Knex): Promise<any> {
     })
     .dropTable('entities')
     .dropTable('locations');
-}
+};

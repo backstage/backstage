@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Knex from 'knex';
 
-export async function up(knex: Knex): Promise<any> {
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
   return knex.schema.createTable('location_update_log', table => {
     table.uuid('id').primary();
     table.enum('status', ['success', 'fail']).notNullable();
-    table
-      .dateTime('created_at')
-      .defaultTo(knex.fn.now())
-      .notNullable();
+    table.dateTime('created_at').defaultTo(knex.fn.now()).notNullable();
     table.string('message');
     table
       .uuid('location_id')
@@ -32,8 +31,11 @@ export async function up(knex: Knex): Promise<any> {
       .onDelete('CASCADE');
     table.string('entity_name').nullable();
   });
-}
+};
 
-export async function down(knex: Knex): Promise<any> {
+/**
+ * @param {import('knex')} knex
+ */
+exports.down = async function down(knex) {
   return knex.schema.dropTableIfExists('location_update_log');
-}
+};

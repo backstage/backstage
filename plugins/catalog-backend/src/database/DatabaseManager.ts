@@ -22,6 +22,11 @@ import { Logger } from 'winston';
 import { CommonDatabase } from './CommonDatabase';
 import { Database } from './types';
 
+const migrationsDir = path.resolve(
+  require.resolve('@backstage/plugin-catalog-backend/package.json'),
+  '../migrations',
+);
+
 export type CreateDatabaseOptions = {
   logger: Logger;
   fieldNormalizer: (value: string) => string;
@@ -38,8 +43,7 @@ export class DatabaseManager {
     options: Partial<CreateDatabaseOptions> = {},
   ): Promise<Database> {
     await knex.migrate.latest({
-      directory: path.resolve(__dirname, 'migrations'),
-      loadExtensions: ['.js'],
+      directory: migrationsDir,
     });
     const { logger, fieldNormalizer } = { ...defaultOptions, ...options };
     return new CommonDatabase(knex, fieldNormalizer, logger);
@@ -69,8 +73,7 @@ export class DatabaseManager {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });
     await knex.migrate.latest({
-      directory: path.resolve(__dirname, 'migrations'),
-      loadExtensions: ['.ts'],
+      directory: migrationsDir,
     });
     const { logger, fieldNormalizer } = defaultOptions;
     return new CommonDatabase(knex, fieldNormalizer, logger);

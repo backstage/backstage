@@ -45,7 +45,8 @@
     "tsc-watch": "^4.2.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "migrations"
   ],
   "nodemonConfig": {
     "watch": "./dist"
