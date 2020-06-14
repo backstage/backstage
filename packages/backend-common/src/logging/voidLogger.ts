@@ -15,12 +15,12 @@
  */
 
 import { PassThrough } from 'stream';
-import winston, { Logger } from 'winston';
+import * as winston from 'winston';
 
 /**
  * A logger that just throws away all messages.
  */
-export function getVoidLogger(): Logger {
+export function getVoidLogger(): winston.Logger {
   return winston.createLogger({
     transports: [new winston.transports.Stream({ stream: new PassThrough() })],
   });
