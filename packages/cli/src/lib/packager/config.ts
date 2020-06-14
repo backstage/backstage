@@ -50,6 +50,7 @@ export const makeConfigs = async (
 
   if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
     const output = new Array<OutputOptions>();
+    const mainFields = ['module', 'main'];
 
     if (options.outputs.has(Output.cjs)) {
       output.push({
@@ -66,6 +67,8 @@ export const makeConfigs = async (
         chunkFileNames: 'esm/[name]-[hash].js',
         format: 'module',
       });
+      // Assume we're building for the browser if ESM output is included
+      mainFields.unshift('browser');
     }
 
     configs.push({
@@ -77,9 +80,7 @@ export const makeConfigs = async (
         peerDepsExternal({
           includeDependencies: true,
         }),
-        resolve({
-          mainFields: ['browser', 'module', 'main'],
-        }),
+        resolve({ mainFields }),
         commonjs({
           include: ['node_modules/**', '../../node_modules/**'],
           exclude: ['**/*.stories.*', '**/*.test.*'],
