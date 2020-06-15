@@ -142,23 +142,25 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     </Badge>
   );
 
-  const Component = to === undefined ? 'div' : NavLink;
   const childProps = {
-    activeClassName: classes.selected,
-    end: true,
-    to: to!,
-    onClick: onClick,
+    onClick,
+    className: clsx(classes.root, isOpen ? classes.open : classes.closed),
   };
 
   if (!isOpen) {
+    if (to === undefined) {
+      return <div {...childProps}>{itemIcon}</div>;
+    }
+
     return (
-      <Component className={clsx(classes.root, classes.closed)} {...childProps}>
+      <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
         {itemIcon}
-      </Component>
+      </NavLink>
     );
   }
-  return (
-    <Component className={clsx(classes.root, classes.open)} {...childProps}>
+
+  const content = (
+    <>
       <div data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
       </div>
@@ -168,7 +170,17 @@ export const SidebarItem: FC<SidebarItemProps> = ({
         </Typography>
       )}
       <div className={classes.secondaryAction}>{children}</div>
-    </Component>
+    </>
+  );
+
+  if (to === undefined) {
+    return <div {...childProps}>{content}</div>;
+  }
+
+  return (
+    <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
+      {content}
+    </NavLink>
   );
 };
 
