@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: shuffle-api
+  description: Shuffle API
+spec:
+  type: service
+  lifecycle: production
+  owner: tools@example.com
