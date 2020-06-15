@@ -14,26 +14,43 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
+import { makeValidator } from '@backstage/catalog-model';
 import Knex from 'knex';
 import path from 'path';
 import { Logger } from 'winston';
 import { CommonDatabase } from './CommonDatabase';
 import { Database } from './types';
 
+const migrationsDir = path.resolve(
+  require.resolve('@backstage/plugin-catalog-backend/package.json'),
+  '../migrations',
+);
+
+export type CreateDatabaseOptions = {
+  logger: Logger;
+  fieldNormalizer: (value: string) => string;
+};
+
+const defaultOptions: CreateDatabaseOptions = {
+  logger: getVoidLogger(),
+  fieldNormalizer: makeValidator().normalizeEntityName,
+};
+
 export class DatabaseManager {
   public static async createDatabase(
     knex: Knex,
-    logger: Logger,
+    options: Partial<CreateDatabaseOptions> = {},
   ): Promise<Database> {
     await knex.migrate.latest({
-      directory: path.resolve(__dirname, 'migrations'),
-      loadExtensions: ['.js'],
+      directory: migrationsDir,
     });
-    return new CommonDatabase(knex, logger);
+    const { logger, fieldNormalizer } = { ...defaultOptions, ...options };
+    return new CommonDatabase(knex, fieldNormalizer, logger);
   }
 
   public static async createInMemoryDatabase(
-    logger: Logger,
+    options: Partial<CreateDatabaseOptions> = {},
   ): Promise<Database> {
     const knex = Knex({
       client: 'sqlite3',
@@ -43,6 +60,22 @@ export class DatabaseManager {
     knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });
-    return DatabaseManager.createDatabase(knex, logger);
+    return DatabaseManager.createDatabase(knex, options);
+  }
+
+  public static async createTestDatabase(): Promise<Database> {
+    const knex = Knex({
+      client: 'sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+      resource.run('PRAGMA foreign_keys = ON', () => {});
+    });
+    await knex.migrate.latest({
+      directory: migrationsDir,
+    });
+    const { logger, fieldNormalizer } = defaultOptions;
+    return new CommonDatabase(knex, fieldNormalizer, logger);
   }
 }

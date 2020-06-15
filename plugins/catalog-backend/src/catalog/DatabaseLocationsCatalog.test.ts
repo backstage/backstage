@@ -14,29 +14,14 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import Knex from 'knex';
-import path from 'path';
-import { CommonDatabase } from '../database';
+import { DatabaseManager } from '../database';
 import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
 
 describe('DatabaseLocationsCatalog', () => {
   let catalog: DatabaseLocationsCatalog;
 
   beforeEach(async () => {
-    const knex = Knex({
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
-    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-      resource.run('PRAGMA foreign_keys = ON', () => {});
-    });
-    await knex.migrate.latest({
-      directory: path.resolve(__dirname, '../database/migrations'),
-      loadExtensions: ['.ts'],
-    });
-    const db = new CommonDatabase(knex, getVoidLogger());
+    const db = await DatabaseManager.createTestDatabase();
     catalog = new DatabaseLocationsCatalog(db);
   });
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import { relative as relativePath } from 'path';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
@@ -42,7 +43,9 @@ export const makeConfigs = async (
   if (!declarationsExist) {
     const path = relativePath(paths.targetDir, typesInput);
     throw new Error(
-      `No declaration files found at ${path}, be sure to run tsc to generate .d.ts files before packaging`,
+      `No declaration files found at ${path}, be sure to run ${chalk.bgRed.white(
+        'yarn tsc',
+      )} to generate .d.ts files before packaging`,
     );
   }
 
@@ -50,6 +53,7 @@ export const makeConfigs = async (
 
   if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
     const output = new Array<OutputOptions>();
+    const mainFields = ['module', 'main'];
 
     if (options.outputs.has(Output.cjs)) {
       output.push({
@@ -66,6 +70,8 @@ export const makeConfigs = async (
         chunkFileNames: 'esm/[name]-[hash].js',
         format: 'module',
       });
+      // Assume we're building for the browser if ESM output is included
+      mainFields.unshift('browser');
     }
 
     configs.push({
@@ -77,9 +83,7 @@ export const makeConfigs = async (
         peerDepsExternal({
           includeDependencies: true,
         }),
-        resolve({
-          mainFields: ['browser', 'module', 'main'],
-        }),
+        resolve({ mainFields }),
         commonjs({
           include: ['node_modules/**', '../../node_modules/**'],
           exclude: ['**/*.stories.*', '**/*.test.*'],

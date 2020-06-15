@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import {
   ApiProvider,
   ApiRegistry,
@@ -28,6 +27,7 @@ import React from 'react';
 import { catalogApiRef } from '../..';
 import { CatalogApi } from '../../api/types';
 import { CatalogPage } from './CatalogPage';
+import { Entity } from '@backstage/catalog-model';
 
 describe('CatalogPage', () => {
   const mockErrorApi = new MockErrorApi();

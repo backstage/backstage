@@ -5,5 +5,5 @@ curl \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "type": "github",
-    "target": "https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/fixtures/two_components.yaml"
+    "target": "https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/examples/example-components.yaml"
 }'

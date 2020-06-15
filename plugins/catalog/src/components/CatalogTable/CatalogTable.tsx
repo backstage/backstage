@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core';
 import { Link } from '@material-ui/core';
@@ -44,8 +45,12 @@ const columns: TableColumn[] = [
     ),
   },
   {
-    title: 'Kind',
-    field: 'kind',
+    title: 'Owner',
+    field: 'spec.owner',
+  },
+  {
+    title: 'Lifecycle',
+    field: 'spec.lifecycle',
   },
   {
     title: 'Description',
@@ -72,7 +77,7 @@ export const CatalogTable: FC<CatalogTableProps> = ({
     return (
       <div>
         <Alert severity="error">
-          Error encountered while fetching components. {error.toString()}
+          Error encountered while fetching catalog entities. {error.toString()}
         </Alert>
       </div>
     );

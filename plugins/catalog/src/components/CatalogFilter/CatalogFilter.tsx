@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import {
   Card,
@@ -25,9 +26,9 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import type { IconComponent } from '@backstage/core';
-import { FilterGroupItem } from '../../types';
+import { EntityFilterType } from '../../data/filters';
 export type CatalogFilterItem = {
-  id: FilterGroupItem;
+  id: EntityFilterType;
   label: string;
   icon?: IconComponent;
   count?: number | React.FC;

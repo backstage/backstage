@@ -90,6 +90,24 @@ entries.push({
 });
 entries.push({
   moved: 0,
+  url: '#',
+  key: 'docs-like-code',
+  id: 'docs-like-code',
+  title: 'Docs-like-code',
+  quadrant: { id: 'process', name: 'Process' },
+  ring: { id: 'use', name: 'USE', color: '#93c47d' },
+});
+entries.push({
+  moved: 0,
+  url: '#',
+  key: 'force-push',
+  id: 'force-push',
+  title: 'Force push to master',
+  quadrant: { id: 'process', name: 'Process' },
+  ring: { id: 'hold', name: 'HOLD', color: '#93c47d' },
+});
+entries.push({
+  moved: 0,
   ring: { id: 'use', name: 'USE', color: '#93c47d' },
   url: '#',
   key: 'github-actions',

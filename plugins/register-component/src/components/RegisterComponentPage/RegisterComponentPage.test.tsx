@@ -29,9 +29,10 @@ const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   addLocation: jest.fn((_a, _b) => new Promise(() => {})),
   getEntities: jest.fn(),
-  getEntityByName: jest.fn(),
   getLocationByEntity: jest.fn(),
   getLocationById: jest.fn(),
+  removeEntityByUid: jest.fn(),
+  getEntityByName: jest.fn(),
 };
 
 const setup = () => ({

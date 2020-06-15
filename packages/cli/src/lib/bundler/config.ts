@@ -21,6 +21,7 @@ import StartServerPlugin from 'start-server-webpack-plugin';
 import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { optimization } from './optimization';
+import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { BundlingOptions } from './types';
@@ -29,6 +30,18 @@ import { BundlingOptions } from './types';
 // import errorOverlayMiddleware from 'react-dev-utils/errorOverlayMiddleware';
 // import evalSourceMapMiddleware from 'react-dev-utils/evalSourceMapMiddleware';
 // import WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin';
+
+export function resolveBaseUrl(config: Config): URL {
+  const baseUrl = config.getString('app.baseUrl');
+  if (!baseUrl) {
+    throw new Error('app.baseUrl must be set in config');
+  }
+  try {
+    return new URL(baseUrl, 'http://localhost:3000');
+  } catch (error) {
+    throw new Error(`Invalid app.baseUrl, ${error}`);
+  }
+}
 
 export function createConfig(
   paths: BundlingPaths,

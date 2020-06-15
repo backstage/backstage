@@ -23,6 +23,7 @@ export type BundlingOptions = {
   config: Config;
   appConfigs: AppConfig[];
   isBackend: boolean;
+  baseUrl: URL;
 };
 
 export type ServeOptions = BundlingPathsOptions & {

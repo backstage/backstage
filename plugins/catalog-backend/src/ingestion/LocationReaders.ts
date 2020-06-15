@@ -26,6 +26,7 @@ import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEn
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
+import { LocationRefProcessor } from './processors/LocationEntityProcessor';
 import * as result from './processors/results';
 import {
   LocationProcessor,
@@ -57,6 +58,7 @@ export class LocationReaders implements LocationReader {
       new GithubReaderProcessor(),
       new YamlProcessor(),
       new EntityPolicyProcessor(entityPolicy),
+      new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
     ];
   }

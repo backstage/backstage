@@ -17,10 +17,17 @@
 import GithubIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { GithubSession } from './types';
-import { OAuthApi, AccessTokenOptions } from '../../../definitions/auth';
+import {
+  OAuthApi,
+  AccessTokenOptions,
+  SessionStateApi,
+  SessionState,
+} from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
+import { Observable } from '../../../../types';
+import { SessionStateTracker } from '../../../../lib/AuthSessionManager/SessionStateTracker';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GithubAuth
@@ -46,11 +53,11 @@ const DEFAULT_PROVIDER = {
   icon: GithubIcon,
 };
 
-class GithubAuth implements OAuthApi {
+class GithubAuth implements OAuthApi, SessionStateApi {
   static create({
     apiOrigin,
     basePath,
-    environment = 'dev',
+    environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
@@ -78,6 +85,12 @@ class GithubAuth implements OAuthApi {
     return new GithubAuth(sessionManager);
   }
 
+  private readonly sessionStateTracker = new SessionStateTracker();
+
+  sessionState$(): Observable<SessionState> {
+    return this.sessionStateTracker.observable;
+  }
+
   constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
 
   async getAccessToken(scope?: string, options?: AccessTokenOptions) {
@@ -86,6 +99,7 @@ class GithubAuth implements OAuthApi {
       ...options,
       scopes: normalizedScopes,
     });
+    this.sessionStateTracker.setIsSignedId(!!session);
     if (session) {
       return session.accessToken;
     }
@@ -94,6 +108,7 @@ class GithubAuth implements OAuthApi {
 
   async logout() {
     await this.sessionManager.removeSession();
+    this.sessionStateTracker.setIsSignedId(false);
   }
 
   static normalizeScope(scope?: string): Set<string> {

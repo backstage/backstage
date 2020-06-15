@@ -19,7 +19,6 @@ import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { Logger } from 'winston';
-import { providers } from './../providers/config';
 import { createAuthProviderRouter } from '../providers';
 
 export interface RouterOptions {
@@ -36,13 +35,61 @@ export async function createRouter(
   router.use(bodyParser.urlencoded({ extended: false }));
   router.use(bodyParser.json());
 
-  // configure all the providers
-  for (const providerConfig of providers) {
-    const { provider } = providerConfig;
-    const providerRouter = createAuthProviderRouter(providerConfig);
-    logger.info(`Configuring provider, ${provider}`);
-    router.use(`/${provider}`, providerRouter);
-  }
+  // TODO: read from app config
+  const config = {
+    backend: {
+      baseUrl: 'http://localhost:7000',
+    },
+    auth: {
+      providers: {
+        google: {
+          development: {
+            appOrigin: 'http://localhost:3000',
+            secure: false,
+            clientId: process.env.AUTH_GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET!,
+          },
+          production: {
+            appOrigin: 'http://localhost:3000',
+            secure: false,
+            clientId: '',
+            clientSecret: '',
+          },
+        },
+        github: {
+          development: {
+            appOrigin: 'http://localhost:3000',
+            secure: false,
+            clientId: process.env.AUTH_GITHUB_CLIENT_ID!,
+            clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET!,
+          },
+        },
+        saml: {
+          development: {
+            entryPoint: 'http://localhost:7001/',
+            issuer: 'passport-saml',
+          },
+        },
+      },
+    },
+  };
 
+  const providerConfigs = config.auth.providers;
+
+  for (const [providerId, providerConfig] of Object.entries(providerConfigs)) {
+    const baseUrl = `${config.backend.baseUrl}/auth`;
+    logger.info(`Configuring provider, ${providerId}`);
+    try {
+      const providerRouter = createAuthProviderRouter(
+        providerId,
+        { baseUrl },
+        providerConfig,
+        logger,
+      );
+      router.use(`/${providerId}`, providerRouter);
+    } catch (e) {
+      logger.error(e.message);
+    }
+  }
   return router;
 }

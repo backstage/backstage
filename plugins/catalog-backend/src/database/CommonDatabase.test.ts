@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  ConflictError,
-  getVoidLogger,
-  NotFoundError,
-} from '@backstage/backend-common';
+import { ConflictError, NotFoundError } from '@backstage/backend-common';
 import type { Entity, Location } from '@backstage/catalog-model';
-import Knex from 'knex';
-import path from 'path';
-import { CommonDatabase } from './CommonDatabase';
-import { DatabaseLocationUpdateLogStatus } from './types';
+import { DatabaseManager } from './DatabaseManager';
+import { Database, DatabaseLocationUpdateLogStatus } from './types';
 import type {
   DbEntityRequest,
   DbEntityResponse,
@@ -31,22 +25,12 @@ import type {
 } from './types';
 
 describe('CommonDatabase', () => {
-  let knex: Knex;
+  let db: Database;
   let entityRequest: DbEntityRequest;
   let entityResponse: DbEntityResponse;
 
   beforeEach(async () => {
-    knex = Knex({
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
-
-    await knex.raw('PRAGMA foreign_keys = ON');
-    await knex.migrate.latest({
-      directory: path.resolve(__dirname, 'migrations'),
-      loadExtensions: ['.ts'],
-    });
+    db = await DatabaseManager.createTestDatabase();
 
     entityRequest = {
       entity: {
@@ -84,7 +68,6 @@ describe('CommonDatabase', () => {
   });
 
   it('manages locations', async () => {
-    const db = new CommonDatabase(knex, getVoidLogger());
     const input: Location = {
       id: 'dd12620d-0436-422f-93bd-929aa0788123',
       type: 'a',
@@ -105,8 +88,7 @@ describe('CommonDatabase', () => {
     expect(locations).toEqual([output]);
     const location = await db.location(locations[0].id);
     expect(location).toEqual(output);
-
-    await db.removeLocation(locations[0].id);
+    await db.transaction(tx => db.removeLocation(tx, locations[0].id));
 
     await expect(db.locations()).resolves.toEqual([]);
     await expect(db.location(locations[0].id)).rejects.toThrow(
@@ -116,55 +98,76 @@ describe('CommonDatabase', () => {
 
   describe('addEntity', () => {
     it('happy path: adds entity to empty database', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
-      const added = await catalog.transaction(tx =>
-        catalog.addEntity(tx, entityRequest),
-      );
+      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
       expect(added).toStrictEqual(entityResponse);
       expect(added.entity.metadata.generation).toBe(1);
     });
 
     it('rejects adding the same-named entity twice', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
-      await catalog.transaction(tx => catalog.addEntity(tx, entityRequest));
+      await db.transaction(tx => db.addEntity(tx, entityRequest));
       await expect(
-        catalog.transaction(tx => catalog.addEntity(tx, entityRequest)),
+        db.transaction(tx => db.addEntity(tx, entityRequest)),
+      ).rejects.toThrow(ConflictError);
+    });
+
+    it('rejects adding the almost-same-kind entity twice', async () => {
+      entityRequest.entity.kind = 'some-kind';
+      await db.transaction(tx => db.addEntity(tx, entityRequest));
+      entityRequest.entity.kind = 'SomeKind';
+      await expect(
+        db.transaction(tx => db.addEntity(tx, entityRequest)),
+      ).rejects.toThrow(ConflictError);
+    });
+
+    it('rejects adding the almost-same-named entity twice', async () => {
+      entityRequest.entity.metadata.name = 'some-name';
+      await db.transaction(tx => db.addEntity(tx, entityRequest));
+      entityRequest.entity.metadata.name = 'SomeName';
+      await expect(
+        db.transaction(tx => db.addEntity(tx, entityRequest)),
+      ).rejects.toThrow(ConflictError);
+    });
+
+    it('rejects adding the almost-same-namespace entity twice', async () => {
+      entityRequest.entity.metadata.namespace = undefined;
+      await db.transaction(tx => db.addEntity(tx, entityRequest));
+      entityRequest.entity.metadata.namespace = '';
+      await expect(
+        db.transaction(tx => db.addEntity(tx, entityRequest)),
       ).rejects.toThrow(ConflictError);
     });
 
     it('accepts adding the same-named entity twice if on different namespaces', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
       entityRequest.entity.metadata.namespace = 'namespace1';
-      await catalog.transaction(tx => catalog.addEntity(tx, entityRequest));
+      await db.transaction(tx => db.addEntity(tx, entityRequest));
       entityRequest.entity.metadata.namespace = 'namespace2';
       await expect(
-        catalog.transaction(tx => catalog.addEntity(tx, entityRequest)),
+        db.transaction(tx => db.addEntity(tx, entityRequest)),
       ).resolves.toBeDefined();
     });
   });
 
   describe('locationHistory', () => {
     it('outputs the history correctly', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
       const location: Location = {
         id: 'dd12620d-0436-422f-93bd-929aa0788123',
         type: 'a',
         target: 'b',
       };
-      await catalog.addLocation(location);
+      await db.addLocation(location);
 
-      await catalog.addLocationUpdateLogEvent(
+      await db.addLocationUpdateLogEvent(
         'dd12620d-0436-422f-93bd-929aa0788123',
         DatabaseLocationUpdateLogStatus.SUCCESS,
       );
-      await catalog.addLocationUpdateLogEvent(
+      await db.addLocationUpdateLogEvent(
         'dd12620d-0436-422f-93bd-929aa0788123',
         DatabaseLocationUpdateLogStatus.FAIL,
         undefined,
         'Something went wrong',
       );
 
-      const result = await catalog.locationHistory(
+      const result = await db.locationHistory(
         'dd12620d-0436-422f-93bd-929aa0788123',
       );
       expect(result).toEqual([
@@ -190,12 +193,9 @@ describe('CommonDatabase', () => {
 
   describe('updateEntity', () => {
     it('can read and no-op-update an entity', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
-      const added = await catalog.transaction(tx =>
-        catalog.addEntity(tx, entityRequest),
-      );
-      const updated = await catalog.transaction(tx =>
-        catalog.updateEntity(tx, { entity: added.entity }),
+      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const updated = await db.transaction(tx =>
+        db.updateEntity(tx, { entity: added.entity }),
       );
       expect(updated.entity.apiVersion).toEqual(added.entity.apiVersion);
       expect(updated.entity.kind).toEqual(added.entity.kind);
@@ -212,77 +212,55 @@ describe('CommonDatabase', () => {
     });
 
     it('can update name if uid matches', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
-      const added = await catalog.transaction(tx =>
-        catalog.addEntity(tx, entityRequest),
-      );
+      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
       added.entity.metadata.name! = 'new!';
-      const updated = await catalog.transaction(tx =>
-        catalog.updateEntity(tx, { entity: added.entity }),
+      const updated = await db.transaction(tx =>
+        db.updateEntity(tx, { entity: added.entity }),
       );
       expect(updated.entity.metadata.name).toEqual('new!');
     });
 
     it('can update fields if kind, name, and namespace match', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
-      const added = await catalog.transaction(tx =>
-        catalog.addEntity(tx, entityRequest),
-      );
+      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
       added.entity.apiVersion = 'something.new';
       delete added.entity.metadata.uid;
       delete added.entity.metadata.generation;
-      const updated = await catalog.transaction(tx =>
-        catalog.updateEntity(tx, { entity: added.entity }),
+      const updated = await db.transaction(tx =>
+        db.updateEntity(tx, { entity: added.entity }),
       );
       expect(updated.entity.apiVersion).toEqual('something.new');
     });
 
     it('rejects if kind, name, but not namespace match', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
-      const added = await catalog.transaction(tx =>
-        catalog.addEntity(tx, entityRequest),
-      );
+      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
       added.entity.apiVersion = 'something.new';
       delete added.entity.metadata.uid;
       delete added.entity.metadata.generation;
       added.entity.metadata.namespace = 'something.wrong';
       await expect(
-        catalog.transaction(tx =>
-          catalog.updateEntity(tx, { entity: added.entity }),
-        ),
+        db.transaction(tx => db.updateEntity(tx, { entity: added.entity })),
       ).rejects.toThrow(NotFoundError);
     });
 
     it('fails to update an entity if etag does not match', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
-      const added = await catalog.transaction(tx =>
-        catalog.addEntity(tx, entityRequest),
-      );
+      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
       added.entity.metadata.etag = 'garbage';
       await expect(
-        catalog.transaction(tx =>
-          catalog.updateEntity(tx, { entity: added.entity }),
-        ),
+        db.transaction(tx => db.updateEntity(tx, { entity: added.entity })),
       ).rejects.toThrow(ConflictError);
     });
 
     it('fails to update an entity if generation does not match', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
-      const added = await catalog.transaction(tx =>
-        catalog.addEntity(tx, entityRequest),
-      );
+      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
       added.entity.metadata.generation! += 100;
       await expect(
-        catalog.transaction(tx =>
-          catalog.updateEntity(tx, { entity: added.entity }),
-        ),
+        db.transaction(tx => db.updateEntity(tx, { entity: added.entity })),
       ).rejects.toThrow(ConflictError);
     });
   });
 
   describe('entities', () => {
     it('can get all entities with empty filters list', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
       const e1: Entity = {
         apiVersion: 'a',
         kind: 'k1',
@@ -294,13 +272,11 @@ describe('CommonDatabase', () => {
         metadata: { name: 'n' },
         spec: { c: null },
       };
-      await catalog.transaction(async tx => {
-        await catalog.addEntity(tx, { entity: e1 });
-        await catalog.addEntity(tx, { entity: e2 });
+      await db.transaction(async tx => {
+        await db.addEntity(tx, { entity: e1 });
+        await db.addEntity(tx, { entity: e2 });
       });
-      const result = await catalog.transaction(async tx =>
-        catalog.entities(tx, []),
-      );
+      const result = await db.transaction(async tx => db.entities(tx, []));
       expect(result.length).toEqual(2);
       expect(result).toEqual(
         expect.arrayContaining([
@@ -317,7 +293,6 @@ describe('CommonDatabase', () => {
     });
 
     it('can get all specific entities for matching filters (naive case)', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
       const entities: Entity[] = [
         { apiVersion: 'a', kind: 'k1', metadata: { name: 'n' } },
         {
@@ -334,15 +309,15 @@ describe('CommonDatabase', () => {
         },
       ];
 
-      await catalog.transaction(async tx => {
+      await db.transaction(async tx => {
         for (const entity of entities) {
-          await catalog.addEntity(tx, { entity });
+          await db.addEntity(tx, { entity });
         }
       });
 
       await expect(
-        catalog.transaction(async tx =>
-          catalog.entities(tx, [
+        db.transaction(async tx =>
+          db.entities(tx, [
             { key: 'kind', values: ['k2'] },
             { key: 'spec.c', values: ['some'] },
           ]),
@@ -356,7 +331,6 @@ describe('CommonDatabase', () => {
     });
 
     it('can get all specific entities for matching filters with nulls (both missing and literal null value)', async () => {
-      const catalog = new CommonDatabase(knex, getVoidLogger());
       const entities: Entity[] = [
         { apiVersion: 'a', kind: 'k1', metadata: { name: 'n' } },
         {
@@ -373,14 +347,14 @@ describe('CommonDatabase', () => {
         },
       ];
 
-      await catalog.transaction(async tx => {
+      await db.transaction(async tx => {
         for (const entity of entities) {
-          await catalog.addEntity(tx, { entity });
+          await db.addEntity(tx, { entity });
         }
       });
 
-      const rows = await catalog.transaction(async tx =>
-        catalog.entities(tx, [
+      const rows = await db.transaction(async tx =>
+        db.entities(tx, [
           { key: 'apiVersion', values: ['a'] },
           { key: 'spec.c', values: [null, 'some'] },
         ]),

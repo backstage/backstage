@@ -25,10 +25,14 @@ import {
   ProfileInfoApi,
   ProfileInfoOptions,
   ProfileInfo,
+  SessionStateApi,
+  SessionState,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
+import { Observable } from '../../../../types';
+import { SessionStateTracker } from '../../../../lib/AuthSessionManager/SessionStateTracker';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
@@ -57,11 +61,12 @@ const DEFAULT_PROVIDER = {
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
-class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
+class GoogleAuth
+  implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, SessionStateApi {
   static create({
     apiOrigin,
     basePath,
-    environment = 'dev',
+    environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
@@ -99,6 +104,12 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
     return new GoogleAuth(sessionManager);
   }
 
+  private readonly sessionStateTracker = new SessionStateTracker();
+
+  sessionState$(): Observable<SessionState> {
+    return this.sessionStateTracker.observable;
+  }
+
   constructor(private readonly sessionManager: SessionManager<GoogleSession>) {}
 
   async getAccessToken(
@@ -110,6 +121,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
       ...options,
       scopes: normalizedScopes,
     });
+    this.sessionStateTracker.setIsSignedId(!!session);
     if (session) {
       return session.accessToken;
     }
@@ -118,6 +130,7 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
 
   async getIdToken(options: IdTokenOptions = {}) {
     const session = await this.sessionManager.getSession(options);
+    this.sessionStateTracker.setIsSignedId(!!session);
     if (session) {
       return session.idToken;
     }
@@ -126,10 +139,12 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi, ProfileInfoApi {
 
   async logout() {
     await this.sessionManager.removeSession();
+    this.sessionStateTracker.setIsSignedId(false);
   }
 
   async getProfile(options: ProfileInfoOptions = {}) {
     const session = await this.sessionManager.getSession(options);
+    this.sessionStateTracker.setIsSignedId(!!session);
     if (!session) {
       return undefined;
     }

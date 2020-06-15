@@ -36,7 +36,7 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'catalog-backend' });
 
   logger.debug('Creating application...');
-  const db = await DatabaseManager.createInMemoryDatabase(logger);
+  const db = await DatabaseManager.createInMemoryDatabase({ logger });
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
   const locationReader = new LocationReaders();

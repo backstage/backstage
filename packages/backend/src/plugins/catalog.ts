@@ -32,7 +32,7 @@ export default async function createPlugin({
 }: PluginEnvironment) {
   const locationReader = new LocationReaders(logger);
 
-  const db = await DatabaseManager.createDatabase(database, logger);
+  const db = await DatabaseManager.createDatabase(database, { logger });
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
   const higherOrderOperation = new HigherOrderOperations(

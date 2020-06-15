@@ -17,7 +17,7 @@
 import React, { FC, useEffect } from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp, renderInTestApp } from './appWrappers';
-import { Route } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { withLogCollector } from '@backstage/test-utils-core';
 import {
   useApi,
@@ -32,15 +32,15 @@ describe('wrapInTestApp', () => {
     const { error } = await withLogCollector(['error'], async () => {
       const rendered = render(
         wrapInTestApp(
-          <>
-            <Route path="/route1">Route 1</Route>
-            <Route path="/route2">Route 2</Route>
-          </>,
+          <Routes>
+            <Route path="/route1" element={<p>Route 1</p>} />
+            <Route path="/route2" element={<p>Route 2</p>} />
+          </Routes>,
           { routeEntries: ['/route2'] },
         ),
       );
-      expect(rendered.getByText('Route 2')).toBeInTheDocument();
 
+      expect(rendered.getByText('Route 2')).toBeInTheDocument();
       // Wait for async actions to trigger the act() warnings that we assert below
       await Promise.resolve();
     });

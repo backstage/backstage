@@ -131,15 +131,6 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should remove session and reload', async () => {
-    // This is a workaround that is used by Facebook and the Jest core team
-    // It is a limitation with the newest versions of JSDOM, and newer browser standards
-    // where window.location and all of its properties are read-only. So we re-construct it!
-    // See https://github.com/facebook/jest/issues/890#issuecomment-209698782
-    const location = { ...window.location };
-    delete window.location;
-    window.location = location;
-    jest.spyOn(window.location, 'reload').mockImplementation();
-
     const removeSession = jest.fn();
     const manager = new RefreshingAuthSessionManager({
       connector: { removeSession },
@@ -147,7 +138,7 @@ describe('RefreshingAuthSessionManager', () => {
     } as any);
 
     await manager.removeSession();
-    expect(window.location.reload).toHaveBeenCalled();
     expect(removeSession).toHaveBeenCalled();
+    expect(await manager.getSession({ optional: true })).toBe(undefined);
   });
 });

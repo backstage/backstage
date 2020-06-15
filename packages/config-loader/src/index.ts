@@ -15,4 +15,4 @@
  */
 
 export { loadConfig } from './loader';
-export type { LoadConfigOptions } from './types';
+export type { LoadConfigOptions } from './loader';
