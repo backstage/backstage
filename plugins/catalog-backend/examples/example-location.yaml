@@ -1,6 +1,6 @@
 ---
 apiVersion: backstage.io/v1beta1
-kind: LocationRef
+kind: Location
 metadata:
   name: location-1
 spec:

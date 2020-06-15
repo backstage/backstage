@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-export { ComponentV1beta1Policy } from './ComponentV1beta1';
+export { ComponentEntityV1beta1Policy } from './ComponentEntityV1beta1';
 export type {
-  ComponentV1beta1 as Component,
-  ComponentV1beta1,
-} from './ComponentV1beta1';
-export { LocationRefV1beta1Policy } from './LocationRefV1beta1';
+  ComponentEntityV1beta1 as ComponentEntity,
+  ComponentEntityV1beta1,
+} from './ComponentEntityV1beta1';
+export { LocationEntityV1beta1Policy } from './LocationEntityV1beta1';
 export type {
-  LocationRefV1beta1 as LocationRef,
-  LocationRefV1beta1,
-} from './LocationRefV1beta1';
+  LocationEntityV1beta1 as LocationEntity,
+  LocationEntityV1beta1,
+} from './LocationEntityV1beta1';

@@ -15,14 +15,17 @@
  */
 
 import {
+  DefaultNamespaceEntityPolicy,
   Entity,
   FieldFormatEntityPolicy,
   NoForeignRootFieldsEntityPolicy,
   ReservedFieldsEntityPolicy,
   SchemaValidEntityPolicy,
 } from './entity';
-import { DefaultNamespaceEntityPolicy } from './entity/policies/DefaultNamespaceEntityPolicy';
-import { ComponentV1beta1Policy, LocationRefV1beta1Policy } from './kinds';
+import {
+  ComponentEntityV1beta1Policy,
+  LocationEntityV1beta1Policy,
+} from './kinds';
 import { EntityPolicy } from './types';
 
 // Helper that requires that all of a set of policies can be successfully
@@ -69,8 +72,8 @@ export class EntityPolicies implements EntityPolicy {
         new ReservedFieldsEntityPolicy(),
       ]),
       EntityPolicies.anyOf([
-        new ComponentV1beta1Policy(),
-        new LocationRefV1beta1Policy(),
+        new ComponentEntityV1beta1Policy(),
+        new LocationEntityV1beta1Policy(),
       ]),
     ]);
   }

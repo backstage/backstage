@@ -21,7 +21,7 @@ import type { EntityPolicy } from '../types';
 const API_VERSION = 'backstage.io/v1beta1';
 const KIND = 'Component';
 
-export interface ComponentV1beta1 extends Entity {
+export interface ComponentEntityV1beta1 extends Entity {
   apiVersion: typeof API_VERSION;
   kind: typeof KIND;
   spec: {
@@ -29,11 +29,11 @@ export interface ComponentV1beta1 extends Entity {
   };
 }
 
-export class ComponentV1beta1Policy implements EntityPolicy {
+export class ComponentEntityV1beta1Policy implements EntityPolicy {
   private schema: yup.Schema<any>;
 
   constructor() {
-    this.schema = yup.object<Partial<ComponentV1beta1>>({
+    this.schema = yup.object<Partial<ComponentEntityV1beta1>>({
       spec: yup
         .object({
           type: yup.string().required(),

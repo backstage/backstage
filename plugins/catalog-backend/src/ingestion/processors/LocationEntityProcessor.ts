@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, LocationRef, LocationSpec } from '@backstage/catalog-model';
+import { Entity, LocationEntity, LocationSpec } from '@backstage/catalog-model';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
@@ -24,8 +24,8 @@ export class LocationRefProcessor implements LocationProcessor {
     _location: LocationSpec,
     emit: LocationProcessorEmit,
   ): Promise<Entity> {
-    if (entity.kind === 'LocationRef') {
-      const location = entity as LocationRef;
+    if (entity.kind === 'Location') {
+      const location = entity as LocationEntity;
       if (location.spec.target) {
         emit(
           result.location(
