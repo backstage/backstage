@@ -282,7 +282,8 @@ export class CommonDatabase implements Database {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     let builder = tx<DbEntitiesRow>('entities');
-    for (const [index, filter] of (filters ?? []).entries()) {
+    for (const [indexU, filter] of (filters ?? []).entries()) {
+      const index = Number(indexU);
       const key = filter.key.replace('*', '%');
       const keyOp = filter.key.includes('*') ? 'like' : '=';
 
