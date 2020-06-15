@@ -24,7 +24,7 @@ import {
   runPeriodically,
 } from '@backstage/plugin-catalog-backend';
 import { PluginEnvironment } from '../types';
-import { useHotEffect } from '@backstage/backend-common';
+import { useHotCleanup } from '@backstage/backend-common';
 
 export default async function createPlugin({
   logger,
@@ -42,7 +42,8 @@ export default async function createPlugin({
     logger,
   );
 
-  useHotEffect(module, () =>
+  useHotCleanup(
+    module,
     runPeriodically(() => higherOrderOperation.refreshAllLocations(), 10000),
   );
 

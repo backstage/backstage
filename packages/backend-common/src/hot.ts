@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export function useHotEffect(
-  _module: NodeModule,
-  effectFactory: () => () => void,
-) {
-  const cancelEffect = effectFactory();
+
+/**
+ * This function allows devs to cleanup
+ * ongoing effects when module gets hot-reloaded
+ * Useful for cleaning intervals, timers, requests etc
+ * @example
+ * ```ts
+ * const intervalId = setInterval(doStuff, 1000);
+ * useHotCleanup(module, () => clearInterval(intervalId));
+ * ```
+ * @param _module Reference to the current module where you invoke the fn
+ * @param cancelEffect Fn that cleans up the ongoing effects
+ */
+export function useHotCleanup(_module: NodeModule, cancelEffect: () => void) {
   if (_module.hot) {
     _module.hot.addDisposeHandler(() => {
       cancelEffect();
@@ -25,27 +34,59 @@ export function useHotEffect(
   }
 }
 
+/**
+ * This function allows devs to preserve
+ * some value between hot-reloads.
+ * Useful for stateful parts of the backend
+ * @example
+ * ```ts
+ * const db = useHotMemoize(module, () => createDB(dbParams));
+ * ```
+ * @param _module Reference to the current module where you invoke the fn
+ * @param valueFactory Fn that returns the value you want to memoize
+ * @warning Don't use inside conditionals or loops,
+ * same rules as for hooks apply (https://reactjs.org/docs/hooks-rules.html)
+ */
 export function useHotMemoize<T>(
   _module: NodeModule,
   valueFactory: () => T,
 ): T {
+  const CURRENT_HOT_MEMOIZE_INDEX_KEY = 'backstage.io/hmr-memoize-key';
+
   if (!_module.hot) {
+    // Just return value straight away
     return valueFactory();
   }
-  const index = (useHotMemoize as any).index ?? 0;
-  (useHotMemoize as any).index += 1;
-  const prevValue = _module.hot?.data?.[index];
+
+  if (_module.hot && typeof _module.hot.data === 'undefined') {
+    // First run, init the module data
+    _module.hot.data = {
+      [CURRENT_HOT_MEMOIZE_INDEX_KEY]: 0,
+    };
+  }
+
+  // Let's store data per module based on the order of the code invocation
+  const index = _module.hot.data?.[CURRENT_HOT_MEMOIZE_INDEX_KEY];
+  // Increasing the counter after each call
+  _module.hot.data[CURRENT_HOT_MEMOIZE_INDEX_KEY] += 1;
+
+  const prevValue = _module.hot.data?.[index];
+  const createDisposeHandler = (value: any) => (data: {
+    [key: number]: any;
+    [indexKey: string]: number;
+  }) => {
+    // Preserving the value through the HMR process
+    data[index] = value;
+    // Decreasing the counter after each handler
+    data[CURRENT_HOT_MEMOIZE_INDEX_KEY] = index - 1;
+  };
+
   if (prevValue) {
-    _module.hot!.addDisposeHandler(data => {
-      data[index] = prevValue;
-    });
+    _module.hot!.addDisposeHandler(createDisposeHandler(prevValue));
     return prevValue;
   }
+
   const newValue = valueFactory();
-  if (_module.hot) {
-    _module.hot.addDisposeHandler(data => {
-      data[index] = newValue;
-    });
-  }
+  _module.hot.addDisposeHandler(createDisposeHandler(newValue));
   return newValue;
 }

@@ -28,7 +28,7 @@ import {
   requestLoggingHandler,
 } from '../middleware';
 import { ServiceBuilder } from './types';
-import { useHotEffect } from '../hot';
+import { useHotCleanup } from '../hot';
 
 const DEFAULT_PORT = 7000;
 
@@ -96,12 +96,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         0,
       );
 
-      useHotEffect(this.module, () => {
-        return () =>
-          server.stop((e: any) => {
-            if (e) console.error(e);
-          });
-      });
+      useHotCleanup(this.module, () =>
+        server.stop((e: any) => {
+          if (e) console.error(e);
+        }),
+      );
 
       resolve(server);
     });
