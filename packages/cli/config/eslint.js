@@ -57,18 +57,19 @@ module.exports = {
       'warn',
       { vars: 'all', args: 'after-used', ignoreRestSiblings: true },
     ],
-
-    // Importing the entire MUI icons packages kills build performance as the list of icons is huge.
     'no-restricted-imports': [
       2,
       {
         paths: [
           {
+            // Importing the entire MUI icons packages kills build performance as the list of icons is huge.
             name: '@material-ui/icons',
             message: "Please import '@material-ui/icons/<Icon>' instead.",
           },
           ...require('module').builtinModules,
         ],
+        // Avoid cross-package imports
+        patterns: ['**/../../**/*/src/**'],
       },
     ],
   },

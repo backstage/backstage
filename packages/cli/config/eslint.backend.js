@@ -52,6 +52,8 @@ module.exports = {
       'warn',
       { vars: 'all', args: 'after-used', ignoreRestSiblings: true },
     ],
+    // Avoid cross-package imports
+    'no-restricted-imports': [2, { patterns: ['**/../../**/*/src/**'] }],
   },
   overrides: [
     {
