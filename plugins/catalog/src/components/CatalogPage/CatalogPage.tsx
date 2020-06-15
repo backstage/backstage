@@ -21,7 +21,6 @@ import {
   DismissableBanner,
   HeaderTabs,
   SupportButton,
-  useApi,
 } from '@backstage/core';
 import CatalogLayout from './CatalogLayout';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
@@ -30,18 +29,13 @@ import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import Star from '@material-ui/icons/Star';
 import StarOutline from '@material-ui/icons/StarBorder';
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { catalogApiRef } from '../..';
-import { defaultFilter, entityFilters, filterGroups } from '../../data/filters';
-import { findLocationForEntityMeta } from '../../data/utils';
-import { useStarredEntities } from '../../hooks/useStarredEntites';
-import {
-  CatalogFilter,
-  CatalogFilterItem,
-} from '../CatalogFilter/CatalogFilter';
+import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
-import useStaleWhileRevalidate from 'swr';
+import { useEntitiesStore } from '../../hooks/useEntitiesStore';
+import { findLocationForEntityMeta } from '../../data/utils';
+import { filterGroups } from '../../data/filters';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -57,26 +51,18 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const CatalogPage: FC<{}> = () => {
-  const catalogApi = useApi(catalogApiRef);
-  const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
-
-  const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
-    defaultFilter,
-  );
-
-  const { data: entities, error } = useStaleWhileRevalidate(
-    ['catalog/all', entityFilters[selectedFilter.id]],
-    async () => catalogApi.getEntities(),
-  );
-
-  const data =
-    entities?.filter(e =>
-      entityFilters[selectedFilter.id](e, { isStarred: isStarredEntity(e) }),
-    ) ?? [];
+  const {
+    filteredEntities: data,
+    selectedFilter,
+    setSelectedFilter,
+    error,
+    toggleStarredEntity,
+    isStarredEntity,
+  } = useEntitiesStore();
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
-    [],
+    [setSelectedFilter],
   );
 
   const styles = useStyles();

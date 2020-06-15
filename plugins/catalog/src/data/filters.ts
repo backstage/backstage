@@ -63,14 +63,22 @@ export const filterGroups: CatalogFilterGroup[] = [
 
 type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
 
-type EntityFilterOptions = {
+type EntityFilterOptions = Partial<{
   isStarred: boolean;
+  userId: string;
+}>;
+
+type Owned = {
+  owner: string;
 };
 
 export const entityFilters: Record<string, EntityFilter> = {
-  [EntityFilterType.OWNED]: () => false,
+  [EntityFilterType.OWNED]: (e, { userId }) => {
+    const owner = (e.spec! as Owned).owner;
+    return owner === userId;
+  },
   [EntityFilterType.ALL]: () => true,
-  [EntityFilterType.STARRED]: (_, { isStarred }) => isStarred,
+  [EntityFilterType.STARRED]: (_, { isStarred }) => isStarred ?? false,
 };
 
 export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];

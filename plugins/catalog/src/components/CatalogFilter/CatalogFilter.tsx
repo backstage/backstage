@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { FC } from 'react';
 import {
   Card,
   List,
@@ -27,11 +27,12 @@ import {
 } from '@material-ui/core';
 import type { IconComponent } from '@backstage/core';
 import { EntityFilterType } from '../../data/filters';
+
 export type CatalogFilterItem = {
   id: EntityFilterType;
   label: string;
   icon?: IconComponent;
-  count?: number | React.FC;
+  count?: number | FC;
 };
 
 export type CatalogFilterGroup = {
@@ -71,7 +72,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const CatalogFilter: React.FC<CatalogFilterProps> = ({
+export const CatalogFilter: FC<CatalogFilterProps> = ({
   groups,
   selectedId,
   onSelectedChange,
