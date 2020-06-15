@@ -35,7 +35,6 @@ import Star from '@material-ui/icons/Star';
 import StarOutline from '@material-ui/icons/StarBorder';
 import React, { FC, useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { defaultFilter, entityFilters, filterGroups } from '../../data/filters';
 import { findLocationForEntityMeta } from '../../data/utils';
@@ -45,6 +44,7 @@ import {
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
+import useStaleWhileRevalidate from 'swr';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -61,20 +61,21 @@ const useStyles = makeStyles(theme => ({
 
 export const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
-  const {
-    starredEntities,
-    toggleStarredEntity,
-    isStarredEntity,
-  } = useStarredEntities();
+  const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
+
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
 
-  const { value, error, loading } = useAsync(async () => {
-    const filter = entityFilters[selectedFilter.id];
-    const all = await catalogApi.getEntities();
-    return all.filter(e => filter(e, { isStarred: isStarredEntity(e) }));
-  }, [selectedFilter.id, starredEntities.size]);
+  const { data: entities, error } = useStaleWhileRevalidate(
+    ['catalog/all', entityFilters[selectedFilter.id]],
+    async () => catalogApi.getEntities(),
+  );
+
+  const data =
+    entities?.filter(e =>
+      entityFilters[selectedFilter.id](e, { isStarred: isStarredEntity(e) }),
+    ) ?? [];
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
@@ -147,6 +148,10 @@ export const CatalogPage: FC<{}> = () => {
       id: 'documentation',
       label: 'Documentation',
     },
+    {
+      id: 'other',
+      label: 'Other',
+    },
   ];
 
   return (
@@ -195,8 +200,8 @@ export const CatalogPage: FC<{}> = () => {
           </div>
           <CatalogTable
             titlePreamble={selectedFilter.label}
-            entities={value || []}
-            loading={loading}
+            entities={data || []}
+            loading={!data && !error}
             error={error}
             actions={actions}
           />

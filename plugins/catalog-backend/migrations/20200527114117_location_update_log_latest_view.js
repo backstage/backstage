@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Knex from 'knex';
 
-export async function up(knex: Knex): Promise<any> {
+// @ts-check
+
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
   // Need to first order by date of creation
   const query = knex
     .select()
@@ -28,8 +32,11 @@ export async function up(knex: Knex): Promise<any> {
   await knex.schema.raw(
     `CREATE VIEW location_update_log_latest AS ${groupedQuery.toString()};`,
   );
-}
+};
 
-export async function down(knex: Knex): Promise<any> {
+/**
+ * @param {import('knex')} knex
+ */
+exports.down = async function down(knex) {
   return knex.schema.raw(`DROP VIEW location_update_log_latest;`);
-}
+};

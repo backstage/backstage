@@ -15,11 +15,10 @@
  */
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Button } from './Button';
-import { MemoryRouter, Route } from 'react-router';
-import { act } from 'react-dom/test-utils';
+import { Route, Routes } from 'react-router';
 
 describe('<Button />', () => {
   it('navigates using react-router', async () => {
@@ -27,12 +26,13 @@ describe('<Button />', () => {
     const buttonLabel = 'Navigate!';
     const { getByText } = render(
       wrapInTestApp(
-        <MemoryRouter>
+        <Routes>
+          <Route path="/test" element={<p>{testString}</p>} />
           <Button to="/test">{buttonLabel}</Button>
-          <Route path="/test">{testString}</Route>{' '}
-        </MemoryRouter>,
+        </Routes>,
       ),
     );
+
     expect(() => getByText(testString)).toThrow();
     await act(async () => fireEvent.click(getByText(buttonLabel)));
     expect(getByText(testString)).toBeInTheDocument();

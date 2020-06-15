@@ -19,16 +19,26 @@ import { Strategy as SamlStrategy } from 'passport-saml';
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
-} from '../PassportStrategyHelper';
-import { AuthProviderConfig, AuthProviderRouteHandlers } from '../types';
-import { postMessageResponse } from '../OAuthProvider';
+} from '../../lib/PassportStrategyHelper';
+import {
+  AuthProviderConfig,
+  AuthProviderRouteHandlers,
+  EnvironmentProviderConfig,
+  SAMLProviderConfig,
+} from '../types';
+import { postMessageResponse } from '../../lib/OAuthProvider';
+import {
+  EnvironmentHandlers,
+  EnvironmentHandler,
+} from '../../lib/EnvironmentHandler';
+import { Logger } from 'winston';
 
 export class SamlAuthProvider implements AuthProviderRouteHandlers {
   private readonly strategy: SamlStrategy;
 
-  constructor(providerConfig: AuthProviderConfig) {
+  constructor(options: SAMLProviderOptions) {
     this.strategy = new SamlStrategy(
-      { ...providerConfig.options },
+      { ...options },
       (profile: any, done: any) => {
         // TODO: There's plenty more validation and profile handling to do here,
         //       this provider is currently only intended to validate the provider pattern
@@ -57,12 +67,12 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     try {
       const { user } = await executeFrameHandlerStrategy(req, this.strategy);
 
-      return postMessageResponse(res, {
+      return postMessageResponse(res, 'http://localhost:3000', {
         type: 'auth-result',
         payload: user,
       });
     } catch (error) {
-      return postMessageResponse(res, {
+      return postMessageResponse(res, 'http://localhost:3000', {
         type: 'auth-result',
         error: {
           name: error.name,
@@ -77,6 +87,36 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
-export function createSamlProvider(config: AuthProviderConfig) {
-  return new SamlAuthProvider(config);
+type SAMLProviderOptions = {
+  entryPoint: string;
+  issuer: string;
+  path: string;
+};
+
+export function createSamlProvider(
+  _authProviderConfig: AuthProviderConfig,
+  providerConfig: EnvironmentProviderConfig,
+  logger: Logger,
+) {
+  const envProviders: EnvironmentHandlers = {};
+
+  for (const [env, envConfig] of Object.entries(providerConfig)) {
+    const config = (envConfig as unknown) as SAMLProviderConfig;
+    const opts = {
+      entryPoint: config.entryPoint,
+      issuer: config.issuer,
+      path: '/auth/saml/handler/frame',
+    };
+
+    if (!opts.entryPoint || !opts.issuer) {
+      logger.warn(
+        'SAML auth provider disabled, set entryPoint and entryPoint in saml auth config to enable',
+      );
+      continue;
+    }
+
+    envProviders[env] = new SamlAuthProvider(opts);
+  }
+
+  return new EnvironmentHandler(envProviders);
 }

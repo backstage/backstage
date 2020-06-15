@@ -22,13 +22,19 @@ export async function createRouter(logger: Logger): Promise<express.Router> {
   const router = Router();
   const SENTRY_TOKEN = process.env.SENTRY_TOKEN;
   if (!SENTRY_TOKEN) {
-    throw new Error(
-      'Sentry token must be provided in SENTRY_TOKEN environment variable to start the API.',
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error(
+        'Sentry token must be provided in SENTRY_TOKEN environment variable to start the API.',
+      );
+    }
+    logger.warn(
+      'Failed to initialize Sentry backend, set SENTRY_TOKEN environment variable to start the API.',
     );
-  }
-  const sentryForwarder = getSentryApiForwarder(SENTRY_TOKEN, logger);
+  } else {
+    const sentryForwarder = getSentryApiForwarder(SENTRY_TOKEN, logger);
 
-  router.use(sentryForwarder);
+    router.use(sentryForwarder);
+  }
 
   return router;
 }

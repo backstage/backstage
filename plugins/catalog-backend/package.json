@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "0.1.1-alpha.7",
+  "version": "0.1.1-alpha.8",
   "main": "dist",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -16,8 +16,8 @@
     "mock-catalog-data": "./scripts/mock-data"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.7",
-    "@backstage/catalog-model": "^0.1.1-alpha.7",
+    "@backstage/backend-common": "^0.1.1-alpha.8",
+    "@backstage/catalog-model": "^0.1.1-alpha.8",
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
@@ -34,7 +34,7 @@
     "yup": "^0.28.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.7",
+    "@backstage/cli": "^0.1.1-alpha.8",
     "@types/lodash": "^4.14.151",
     "@types/node-fetch": "^2.5.7",
     "@types/supertest": "^2.0.8",
@@ -45,7 +45,8 @@
     "tsc-watch": "^4.2.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "migrations"
   ],
   "nodemonConfig": {
     "watch": "./dist"

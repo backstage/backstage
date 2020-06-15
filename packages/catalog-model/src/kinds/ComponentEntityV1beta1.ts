@@ -15,33 +15,25 @@
  */
 
 import * as yup from 'yup';
-import type { Entity, EntityMeta } from '../entity/Entity';
+import type { Entity } from '../entity/Entity';
 import type { EntityPolicy } from '../types';
 
 const API_VERSION = 'backstage.io/v1beta1';
 const KIND = 'Component';
 
-export interface ComponentV1beta1 extends Entity {
+export interface ComponentEntityV1beta1 extends Entity {
   apiVersion: typeof API_VERSION;
   kind: typeof KIND;
-  metadata: EntityMeta & {
-    name: string;
-  };
   spec: {
     type: string;
   };
 }
 
-export class ComponentV1beta1Policy implements EntityPolicy {
+export class ComponentEntityV1beta1Policy implements EntityPolicy {
   private schema: yup.Schema<any>;
 
   constructor() {
-    this.schema = yup.object<Partial<ComponentV1beta1>>({
-      metadata: yup
-        .object({
-          name: yup.string().required(),
-        })
-        .required(),
+    this.schema = yup.object<Partial<ComponentEntityV1beta1>>({
       spec: yup
         .object({
           type: yup.string().required(),
@@ -51,10 +43,7 @@ export class ComponentV1beta1Policy implements EntityPolicy {
   }
 
   async enforce(envelope: Entity): Promise<Entity> {
-    if (
-      envelope.apiVersion !== 'backstage.io/v1beta1' ||
-      envelope.kind !== 'Component'
-    ) {
+    if (envelope.apiVersion !== API_VERSION || envelope.kind !== KIND) {
       throw new Error('Unsupported apiVersion / kind');
     }
 

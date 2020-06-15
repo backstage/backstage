@@ -1,8 +1,8 @@
-# Backstage Plugins
+# Create a Backstage Plugin
 
 A Backstage Plugin adds functionality to Backstage.
 
-## Create a plugin
+## Create a Plugin
 
 To create a new plugin, make sure you've run `yarn install` and installed
 dependencies, then run the following on your command line (invoking the

@@ -15,87 +15,46 @@
  */
 
 import fs from 'fs-extra';
-import yaml from 'yaml';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, dirname } from 'path';
 import { AppConfig, JsonObject } from '@backstage/config';
-import { findRootPath } from './paths';
-import { LoadConfigOptions } from './types';
+import {
+  resolveStaticConfig,
+  readConfigFile,
+  readEnv,
+  readSecret,
+} from './lib';
 
-const ENV_PREFIX = 'APP_CONFIG_';
+export type LoadConfigOptions = {
+  // Config path, defaults to app-config.yaml in project root
+  configPath?: string;
 
-// Update the same pattern in config package if this is changed
-const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
+  // Whether to read secrets or omit them, defaults to false.
+  shouldReadSecrets?: boolean;
+};
 
-export function readEnv(env: {
-  [name: string]: string | undefined;
-}): AppConfig[] {
-  let config: JsonObject | undefined = undefined;
+class Context {
+  constructor(
+    private readonly options: {
+      env: { [name in string]?: string };
+      rootPath: string;
+      shouldReadSecrets: boolean;
+    },
+  ) {}
 
-  for (const [name, value] of Object.entries(env)) {
-    if (!value) {
-      continue;
-    }
-    if (name.startsWith(ENV_PREFIX)) {
-      const key = name.replace(ENV_PREFIX, '');
-      const keyParts = key.split('_');
-
-      let obj = (config = config ?? {});
-      for (const [index, part] of keyParts.entries()) {
-        if (!CONFIG_KEY_PART_PATTERN.test(part)) {
-          throw new TypeError(`Invalid env config key '${key}'`);
-        }
-        if (index < keyParts.length - 1) {
-          obj = (obj[part] = obj[part] ?? {}) as JsonObject;
-          if (typeof obj !== 'object' || Array.isArray(obj)) {
-            const subKey = keyParts.slice(0, index + 1).join('_');
-            throw new TypeError(
-              `Could not nest config for key '${key}' under existing value '${subKey}'`,
-            );
-          }
-        } else {
-          if (part in obj) {
-            throw new TypeError(
-              `Refusing to override existing config at key '${key}'`,
-            );
-          }
-          try {
-            const parsedValue = JSON.parse(value);
-            if (parsedValue === null) {
-              throw new Error('value may not be null');
-            }
-            obj[part] = parsedValue;
-          } catch (error) {
-            throw new TypeError(
-              `Failed to parse JSON-serialized config value for key '${key}', ${error}`,
-            );
-          }
-        }
-      }
-    }
+  get env() {
+    return this.options.env;
   }
 
-  return config ? [config] : [];
-}
-
-export async function readStaticConfig(
-  options: LoadConfigOptions,
-): Promise<AppConfig[]> {
-  // TODO: We'll want this to be a bit more elaborate, probably adding configs for
-  //       specific env, and maybe local config for plugins.
-  let { configPath } = options;
-  if (!configPath) {
-    configPath = resolvePath(
-      findRootPath(fs.realpathSync(process.cwd())),
-      'app-config.yaml',
-    );
+  async readFile(path: string): Promise<string> {
+    return fs.readFile(resolvePath(this.options.rootPath, path), 'utf8');
   }
 
-  try {
-    const configYaml = await fs.readFile(configPath, 'utf8');
-    const config = yaml.parse(configYaml);
-    return [config];
-  } catch (error) {
-    throw new Error(`Failed to read static configuration file, ${error}`);
+  async readSecret(desc: JsonObject): Promise<string | undefined> {
+    if (!this.options.shouldReadSecrets) {
+      return undefined;
+    }
+
+    return readSecret(desc, this);
   }
 }
 
@@ -105,7 +64,27 @@ export async function loadConfig(
   const configs = [];
 
   configs.push(...readEnv(process.env));
-  configs.push(...(await readStaticConfig(options)));
+
+  const configPaths = await resolveStaticConfig(options);
+
+  try {
+    for (const configPath of configPaths) {
+      const config = await readConfigFile(
+        configPath,
+        new Context({
+          env: process.env,
+          rootPath: dirname(configPath),
+          shouldReadSecrets: Boolean(options.shouldReadSecrets),
+        }),
+      );
+
+      configs.push(config);
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to read static configuration file: ${error.message}`,
+    );
+  }
 
   return configs;
 }

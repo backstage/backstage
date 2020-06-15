@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React, { ComponentType, FC, useMemo } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { BackstageApp, AppComponents, AppConfigLoader, Apis } from './types';
 import { BackstagePlugin } from '../plugin';
@@ -90,50 +89,31 @@ export class PrivateAppImpl implements BackstageApp {
       for (const output of plugin.output()) {
         switch (output.type) {
           case 'legacy-route': {
-            const { path, component, options = {} } = output;
-            const { exact = true } = options;
+            const { path, component: Component } = output;
             routes.push(
-              <Route
-                key={path}
-                path={path}
-                component={component}
-                exact={exact}
-              />,
+              <Route key={path} path={path} element={<Component />} />,
             );
             break;
           }
           case 'route': {
-            const { target, component, options = {} } = output;
-            const { exact = true } = options;
+            const { target, component: Component } = output;
             routes.push(
               <Route
                 key={`${plugin.getId()}-${target.path}`}
                 path={target.path}
-                component={component}
-                exact={exact}
+                element={<Component />}
               />,
             );
             break;
           }
           case 'legacy-redirect-route': {
-            const { path, target, options = {} } = output;
-            const { exact = true } = options;
-            routes.push(
-              <Redirect key={path} path={path} to={target} exact={exact} />,
-            );
+            const { path, target } = output;
+            routes.push(<Navigate key={path} to={target} />);
             break;
           }
           case 'redirect-route': {
-            const { from, to, options = {} } = output;
-            const { exact = true } = options;
-            routes.push(
-              <Redirect
-                key={from.path}
-                path={from.path}
-                to={to.path}
-                exact={exact}
-              />,
-            );
+            const { from, to } = output;
+            routes.push(<Navigate key={from.path} to={to.path} />);
             break;
           }
           case 'feature-flag': {
@@ -155,10 +135,10 @@ export class PrivateAppImpl implements BackstageApp {
     }
 
     const rendered = (
-      <Switch>
+      <Routes>
         {routes}
-        <Route component={NotFoundErrorPage} />
-      </Switch>
+        <Route element={<NotFoundErrorPage />} />
+      </Routes>
     );
 
     return () => rendered;
@@ -225,7 +205,7 @@ export class PrivateAppImpl implements BackstageApp {
         <ApiProvider apis={apis}>
           <AppContextProvider app={this}>
             <AppThemeProvider>
-              <Router basename={pathname}>{children}</Router>
+              <Router>{children}</Router>
             </AppThemeProvider>
           </AppContextProvider>
         </ApiProvider>

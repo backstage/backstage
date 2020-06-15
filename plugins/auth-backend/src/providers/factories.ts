@@ -19,6 +19,7 @@ import { createGithubProvider } from './github';
 import { createGoogleProvider } from './google';
 import { createSamlProvider } from './saml';
 import { AuthProviderFactory, AuthProviderConfig } from './types';
+import { Logger } from 'winston';
 
 const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
@@ -26,17 +27,18 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   saml: createSamlProvider,
 };
 
-export function createAuthProvider(providerId: string, config: any) {
+export const createAuthProviderRouter = (
+  providerId: string,
+  globalConfig: AuthProviderConfig,
+  providerConfig: any, // TODO: make this a config reader object of sorts
+  logger: Logger,
+) => {
   const factory = factories[providerId];
   if (!factory) {
     throw Error(`No auth provider available for '${providerId}'`);
   }
-  return factory(config);
-}
 
-export const createAuthProviderRouter = (config: AuthProviderConfig) => {
-  const providerId = config.provider;
-  const provider = createAuthProvider(providerId, config);
+  const provider = factory(globalConfig, providerConfig, logger);
 
   const router = Router();
   router.get('/start', provider.start.bind(provider));
@@ -46,5 +48,6 @@ export const createAuthProviderRouter = (config: AuthProviderConfig) => {
   if (provider.refresh) {
     router.get('/refresh', provider.refresh.bind(provider));
   }
+
   return router;
 };

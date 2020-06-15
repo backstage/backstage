@@ -16,7 +16,7 @@
 
 import express from 'express';
 import request from 'supertest';
-import winston from 'winston';
+import * as winston from 'winston';
 import { requestLoggingHandler } from './requestLoggingHandler';
 
 describe('requestLoggingHandler', () => {

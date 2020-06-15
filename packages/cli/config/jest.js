@@ -41,7 +41,7 @@ async function getConfig() {
     for (const pkg of packages) {
       const mainSrc = pkg.get('main:src');
       if (mainSrc) {
-        moduleNameMapper[pkg.name] = path.resolve(pkg.location, mainSrc);
+        moduleNameMapper[`^${pkg.name}$`] = path.resolve(pkg.location, mainSrc);
       }
     }
   }
