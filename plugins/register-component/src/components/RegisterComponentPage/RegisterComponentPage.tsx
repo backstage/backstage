@@ -102,7 +102,7 @@ const RegisterComponentPage: FC<{}> = () => {
         <ContentHeader title="Start tracking your component in Backstage">
           <SupportButton>
             Start tracking your component in Backstage. TODO: Add more
-            information about how what this is.
+            information about what this is.
           </SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="column">
