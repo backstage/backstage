@@ -29,12 +29,7 @@ export const ProviderSettingsItem: FC<{
   signInHandler: Function;
 }> = ({ title, icon, signedIn, api, signInHandler }) => {
   return (
-    <SidebarItem
-      key={title}
-      text={title}
-      icon={icon ?? StarBorder}
-      disableSelected
-    >
+    <SidebarItem key={title} text={title} icon={icon ?? StarBorder}>
       <IconButton onClick={() => (signedIn ? api.logout() : signInHandler())}>
         <Tooltip
           placement="top"

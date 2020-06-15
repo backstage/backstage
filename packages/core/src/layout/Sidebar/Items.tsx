@@ -111,8 +111,8 @@ const useStyles = makeStyles<Theme>(theme => {
 type SidebarItemProps = {
   icon: IconComponent;
   text?: string;
+  // If 'to' is set the item will act as a nav link with highlight, otherwise it's just a button
   to?: string;
-  disableSelected?: boolean;
   hasNotifications?: boolean;
   onClick?: () => void;
 };
@@ -120,9 +120,7 @@ type SidebarItemProps = {
 export const SidebarItem: FC<SidebarItemProps> = ({
   icon: Icon,
   text,
-  to = '#',
-  // TODO: isActive is not in v6
-  // disableSelected = false,
+  to,
   hasNotifications = false,
   onClick,
   children,
@@ -144,27 +142,23 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     </Badge>
   );
 
+  const Component = to === undefined ? 'div' : NavLink;
+  const childProps = {
+    activeClassName: classes.selected,
+    end: true,
+    to: to!,
+    onClick: onClick,
+  };
+
   if (!isOpen) {
     return (
-      <NavLink
-        className={clsx(classes.root, classes.closed)}
-        activeClassName={classes.selected}
-        end
-        to={to}
-        onClick={onClick}
-      >
+      <Component className={clsx(classes.root, classes.closed)} {...childProps}>
         {itemIcon}
-      </NavLink>
+      </Component>
     );
   }
   return (
-    <NavLink
-      className={clsx(classes.root, classes.open)}
-      activeClassName={classes.selected}
-      end
-      to={to}
-      onClick={onClick}
-    >
+    <Component className={clsx(classes.root, classes.open)} {...childProps}>
       <div data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
       </div>
@@ -174,7 +168,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
         </Typography>
       )}
       <div className={classes.secondaryAction}>{children}</div>
-    </NavLink>
+    </Component>
   );
 };
 
@@ -198,7 +192,7 @@ export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
 
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon} disableSelected>
+      <SidebarItem icon={SearchIcon}>
         <TextField
           placeholder="Search"
           onChange={handleInput}
