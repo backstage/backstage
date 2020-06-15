@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@types/stoppable": "^1.1.0",
+    "@types/webpack-env": "^1.15.2",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -44,7 +45,6 @@
     "@types/http-errors": "^1.6.3",
     "@types/morgan": "^1.9.0",
     "@types/supertest": "^2.0.8",
-    "@types/webpack-env": "^1.15.2",
     "@types/yaml": "^1.9.7",
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",

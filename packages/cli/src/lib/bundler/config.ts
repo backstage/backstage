@@ -24,7 +24,7 @@ import { optimization } from './optimization';
 import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
-import { BundlingOptions } from './types';
+import { BundlingOptions, BackendBundlingOptions } from './types';
 // import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles';
 // import ModuleNotFoundPlugin from 'react-dev-utils/ModuleNotFoundPlugin';
 // import errorOverlayMiddleware from 'react-dev-utils/errorOverlayMiddleware';
@@ -47,7 +47,7 @@ export function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): webpack.Configuration {
-  const { checksEnabled, isDev, isBackend } = options;
+  const { checksEnabled, isDev } = options;
 
   const { plugins, loaders } = transforms(options);
 
@@ -92,7 +92,66 @@ export function createConfig(
     }),
   );
 
-  const backendRelatedConfig = {
+  return {
+    mode: isDev ? 'development' : 'production',
+    profile: false,
+    node: {
+      module: 'empty',
+      dgram: 'empty',
+      dns: 'mock',
+      fs: 'empty',
+      http2: 'empty',
+      net: 'empty',
+      tls: 'empty',
+      child_process: 'empty',
+    },
+    optimization: optimization(options),
+    bail: false,
+    performance: {
+      hints: false, // we check the gzip size instead
+    },
+    devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
+    context: paths.targetPath,
+    entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
+    resolve: {
+      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
+      mainFields: ['main:src', 'browser', 'module', 'main'],
+      plugins: [
+        new ModuleScopePlugin(
+          [paths.targetSrc, paths.targetDev],
+          [paths.targetPackageJson],
+        ),
+      ],
+      alias: {
+        'react-dom': '@hot-loader/react-dom',
+      },
+    },
+    module: {
+      rules: loaders,
+    },
+    output: {
+      path: paths.targetDist,
+      publicPath: validBaseUrl.pathname,
+      filename: isDev ? '[name].js' : '[name].[hash:8].js',
+      chunkFilename: isDev
+        ? '[name].chunk.js'
+        : '[name].[chunkhash:8].chunk.js',
+    },
+    plugins,
+  };
+}
+
+export function createBackendConfig(
+  paths: BundlingPaths,
+  options: BackendBundlingOptions,
+): webpack.Configuration {
+  const { checksEnabled, isDev } = options;
+
+  const { loaders } = transforms(options);
+
+  return {
+    mode: isDev ? 'development' : 'production',
+    profile: false,
     ...(isDev
       ? {
           watch: true,
@@ -117,44 +176,17 @@ export function createConfig(
       __filename: true,
       global: true,
     },
-  };
-
-  return {
-    mode: isDev ? 'development' : 'production',
-    profile: false,
-    ...(isBackend
-      ? backendRelatedConfig
-      : {
-          node: {
-            module: 'empty',
-            dgram: 'empty',
-            dns: 'mock',
-            fs: 'empty',
-            http2: 'empty',
-            net: 'empty',
-            tls: 'empty',
-            child_process: 'empty',
-          },
-          optimization: optimization(options),
-        }),
     bail: false,
     performance: {
       hints: false, // we check the gzip size instead
     },
     devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
     context: paths.targetPath,
-    entry: [
-      ...(isBackend
-        ? ['webpack/hot/poll?100']
-        : [require.resolve('react-hot-loader/patch')]),
-      paths.targetEntry,
-    ],
+    entry: ['webpack/hot/poll?100', paths.targetEntry],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['main:src', 'browser', 'module', 'main'],
-      ...(isBackend
-        ? { modules: [paths.targetNodeModules, paths.rootNodeModules] }
-        : {}),
+      modules: [paths.targetNodeModules, paths.rootNodeModules],
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
@@ -170,17 +202,29 @@ export function createConfig(
     },
     output: {
       path: paths.targetDist,
-      publicPath: validBaseUrl.pathname,
       filename: isDev ? '[name].js' : '[name].[hash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'
         : '[name].[chunkhash:8].chunk.js',
     },
-    plugins: isBackend
-      ? [
-          new StartServerPlugin('main.js'),
-          new webpack.HotModuleReplacementPlugin(),
-        ]
-      : plugins,
+    plugins: [
+      new StartServerPlugin('main.js'),
+      new webpack.HotModuleReplacementPlugin(),
+      ...(checksEnabled
+        ? [
+            new ForkTsCheckerWebpackPlugin({
+              tsconfig: paths.targetTsConfig,
+              eslint: true,
+              eslintOptions: {
+                parserOptions: {
+                  project: paths.targetTsConfig,
+                  tsconfigRootDir: paths.targetPath,
+                },
+              },
+              reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
+            }),
+          ]
+        : []),
+    ],
   };
 }

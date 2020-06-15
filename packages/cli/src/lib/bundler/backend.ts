@@ -15,16 +15,15 @@
  */
 
 import webpack from 'webpack';
-import { createConfig } from './config';
+import { createBackendConfig } from './config';
 import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 
 export async function serveBackend(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
-  const config = createConfig(paths, {
+  const config = createBackendConfig(paths, {
     ...options,
     isDev: true,
-    isBackend: true,
   });
 
   const compiler = webpack(config);

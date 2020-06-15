@@ -22,9 +22,10 @@ export type BundlingOptions = {
   isDev: boolean;
   config: Config;
   appConfigs: AppConfig[];
-  isBackend: boolean;
   baseUrl: URL;
 };
+
+export type BackendBundlingOptions = Omit<BundlingOptions, 'baseUrl'>;
 
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;

@@ -33,7 +33,6 @@ export async function serveBundle(options: ServeOptions) {
   const config = createConfig(paths, {
     ...options,
     isDev: true,
-    isBackend: false,
     baseUrl: url,
   });
   const compiler = webpack(config);
