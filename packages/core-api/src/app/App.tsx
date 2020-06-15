@@ -45,6 +45,41 @@ type FullAppOptions = {
   configLoader?: AppConfigLoader;
 };
 
+function useConfigLoader(
+  configLoader: AppConfigLoader | undefined,
+  components: AppComponents,
+  appThemeApi: AppThemeApi,
+): { api: ConfigApi } | { node: JSX.Element } {
+  // Keeping this synchronous when a config loader isn't set simplifies tests a lot
+  const hasConfig = Boolean(configLoader);
+  const config = useAsync(configLoader || (() => Promise.resolve([])));
+
+  let noConfigNode = undefined;
+
+  if (hasConfig && config.loading) {
+    const { Progress } = components;
+    noConfigNode = <Progress />;
+  } else if (config.error) {
+    const { BootErrorPage } = components;
+    noConfigNode = <BootErrorPage step="load-config" error={config.error} />;
+  }
+
+  // Before the config is loaded we can't use a router, so exit early
+  if (noConfigNode) {
+    return {
+      node: (
+        <ApiProvider apis={ApiRegistry.from([[appThemeApiRef, appThemeApi]])}>
+          <AppThemeProvider>{noConfigNode}</AppThemeProvider>
+        </ApiProvider>
+      ),
+    };
+  }
+
+  const configReader = ConfigReader.fromConfigs(config.value ?? []);
+
+  return { api: configReader };
+}
+
 export class PrivateAppImpl implements BackstageApp {
   private apis?: ApiHolder = undefined;
   private readonly icons: SystemIcons;
@@ -151,32 +186,17 @@ export class PrivateAppImpl implements BackstageApp {
         [],
       );
 
-      // Keeping this synchronous when a config loader isn't set simplifies tests a lot
-      const hasConfig = Boolean(this.configLoader);
-      const config = useAsync(this.configLoader || (() => Promise.resolve([])));
+      const loadedConfig = useConfigLoader(
+        this.configLoader,
+        this.components,
+        appThemeApi,
+      );
 
-      let noConfigNode = undefined;
-
-      if (hasConfig && config.loading) {
-        const { Progress } = this.components;
-        noConfigNode = <Progress />;
-      } else if (config.error) {
-        const { BootErrorPage } = this.components;
-        noConfigNode = (
-          <BootErrorPage step="load-config" error={config.error} />
-        );
+      if ('node' in loadedConfig) {
+        return loadedConfig.node;
       }
+      const configReader = loadedConfig.api;
 
-      // Before the config is loaded we can't use a router, so exit early
-      if (noConfigNode) {
-        return (
-          <ApiProvider apis={ApiRegistry.from([[appThemeApiRef, appThemeApi]])}>
-            <AppThemeProvider>{noConfigNode}</AppThemeProvider>
-          </ApiProvider>
-        );
-      }
-
-      const configReader = ConfigReader.fromConfigs(config.value ?? []);
       const appApis = ApiRegistry.from([
         [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
         [configApiRef, configReader],
