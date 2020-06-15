@@ -282,23 +282,50 @@ export class CommonDatabase implements Database {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     let builder = tx<DbEntitiesRow>('entities');
-    for (const [index, filter] of (filters ?? []).entries()) {
+    for (const [indexU, filter] of (filters ?? []).entries()) {
+      const index = Number(indexU);
+      const key = filter.key.replace('*', '%');
+      const keyOp = filter.key.includes('*') ? 'like' : '=';
+
+      let matchNulls = false;
+      const matchIn: string[] = [];
+      const matchLike: string[] = [];
+
+      for (const value of filter.values) {
+        if (!value) {
+          matchNulls = true;
+        } else if (value.includes('*')) {
+          matchLike.push(value.replace('*', '%'));
+        } else {
+          matchIn.push(value);
+        }
+      }
+
       builder = builder
-        .leftOuterJoin(`entities_search as t${index}`, function join() {
-          this.on('entities.id', '=', `t${index}.entity_id`).onIn(
-            `t${index}.value`,
-            filter.values.filter(x => x),
-          );
-          if (filter.values.some(x => !x)) {
-            this.orOnNull(`t${index}.value`);
-          }
+        .leftOuterJoin(`entities_search as t${index}`, function joins() {
+          this.on('entities.id', '=', `t${index}.entity_id`);
+          this.andOn(`t${index}.key`, keyOp, tx.raw('?', [key]));
         })
-        .where(`t${index}.key`, '=', filter.key);
+        .where(function rules() {
+          if (matchIn.length) {
+            this.orWhereIn(`t${index}.value`, matchIn);
+          }
+          if (matchLike.length) {
+            for (const x of matchLike) {
+              this.orWhere(`t${index}.value`, 'like', tx.raw('?', [x]));
+            }
+          }
+          if (matchNulls) {
+            this.orWhereNull(`t${index}.value`);
+          }
+        });
     }
 
     const rows = await builder
-      .orderBy('namespace', 'name')
       .select('entities.*')
+      .orderBy('kind', 'asc')
+      .orderBy('namespace', 'asc')
+      .orderBy('name', 'asc')
       .groupBy('id');
 
     return rows.map(row => toEntityResponse(row));
