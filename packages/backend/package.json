@@ -1,7 +1,7 @@
 {
   "name": "example-backend",
   "version": "0.1.1-alpha.7",
-  "main": "dist/index.cjs",
+  "main": "dist",
   "types": "src/index.ts",
   "private": true,
   "license": "Apache-2.0",
@@ -9,8 +9,8 @@
     "node": ">=12"
   },
   "scripts": {
-    "build": "backstage-cli build --outputs cjs",
-    "start": "backstage-cli watch-deps --build -- backstage-cli backend:dev",
+    "build": "tsc",
+    "start": "backstage-cli backend:dev",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "clean": "backstage-cli clean",

@@ -80,10 +80,14 @@ export function createConfig(
   );
 
   const backendRelatedConfig = {
-    watch: true,
-    watchOptions: {
-      ignored: [/node_modules\/(?!\@backstage)/],
-    },
+    ...(isDev
+      ? {
+          watch: true,
+          watchOptions: {
+            ignored: [/node_modules\/(?!\@backstage)/],
+          },
+        }
+      : {}),
     externals: [
       nodeExternals({
         modulesDir: paths.rootNodeModules,
