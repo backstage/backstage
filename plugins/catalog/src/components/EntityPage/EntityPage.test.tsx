@@ -14,32 +14,38 @@
  * limitations under the License.
  */
 
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  const mockNavigate = jest.fn();
+  return {
+    ...actual,
+    useNavigate: jest.fn(() => mockNavigate),
+    useParams: jest.fn(),
+  };
+});
+
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render, wait } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogApi, catalogApiRef } from '../../api/types';
 import { EntityPage } from './EntityPage';
-
-const getTestProps = (name: string) => {
-  return {
-    match: {
-      params: {
-        optionalNamespaceAndName: name,
-        kind: 'Component',
-      },
-    },
-    history: {
-      push: jest.fn(),
-    },
-  };
-};
+const {
+  useParams,
+  useNavigate,
+}: { useParams: jest.Mock; useNavigate: () => jest.Mock } = jest.requireMock(
+  'react-router-dom',
+);
 
 const errorApi = { post: () => {} };
 
 describe('EntityPage', () => {
   it('should redirect to catalog page when name is not provided', async () => {
-    const props = getTestProps('');
+    useParams.mockReturnValue({
+      kind: 'Component',
+      optionalNamespaceAndName: '',
+    });
+
     render(
       wrapInTestApp(
         <ApiProvider
@@ -53,13 +59,11 @@ describe('EntityPage', () => {
             ],
           ])}
         >
-          <EntityPage {...props} />
+          <EntityPage />
         </ApiProvider>,
       ),
     );
 
-    await wait(() =>
-      expect(props.history.push).toHaveBeenCalledWith('/catalog'),
-    );
+    await wait(() => expect(useNavigate()).toHaveBeenCalledWith('/catalog'));
   });
 });

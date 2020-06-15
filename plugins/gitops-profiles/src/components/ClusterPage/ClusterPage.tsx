@@ -33,8 +33,7 @@ import { gitOpsApiRef, Status } from '../../api';
 import { transformRunStatus } from '../ProfileCatalog';
 
 const ClusterPage: FC<{}> = () => {
-  const params = useParams<{ owner: string; repo: string }>();
-
+  const params = useParams() as { owner: string; repo: string };
   const [loginInfo] = useLocalStorage<{
     token: string;
     username: string;

@@ -92,7 +92,9 @@ export function wrapInTestApp(
 
   return (
     <AppProvider>
-      <Route component={Wrapper} />
+      {/* The path of * here is needed to be set as a catch all, so it will render the wrapper element
+       *  and work with nested routes if they exist too */}
+      <Route path="*" element={<Wrapper />} />
     </AppProvider>
   );
 }

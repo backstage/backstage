@@ -15,11 +15,32 @@
  */
 
 import express from 'express';
+import { Logger } from 'winston';
+
+export type OAuthProviderOptions = {
+  clientID: string;
+  clientSecret: string;
+  callbackURL: string;
+};
+
+export type SAMLProviderConfig = {
+  entryPoint: string;
+  issuer: string;
+};
+
+export type EnvironmentProviderConfig = {
+  [key: string]: OAuthProviderConfig | SAMLProviderConfig;
+};
 
 export type AuthProviderConfig = {
-  provider: string;
-  options: any;
-  disableRefresh?: boolean;
+  baseUrl: string;
+};
+
+export type OAuthProviderConfig = {
+  secure: boolean;
+  appOrigin: string; // http://localhost:3000
+  clientId: string;
+  clientSecret: string;
 };
 
 export interface OAuthProviderHandlers {
@@ -36,8 +57,14 @@ export interface AuthProviderRouteHandlers {
   logout(req: express.Request, res: express.Response): Promise<any>;
 }
 
+export type SAMLEnvironmentProviderConfig = {
+  [key: string]: SAMLProviderConfig;
+};
+
 export type AuthProviderFactory = (
-  config: AuthProviderConfig,
+  globalConfig: AuthProviderConfig,
+  providerConfig: EnvironmentProviderConfig,
+  logger: Logger,
 ) => AuthProviderRouteHandlers;
 
 export type AuthInfoBase = {

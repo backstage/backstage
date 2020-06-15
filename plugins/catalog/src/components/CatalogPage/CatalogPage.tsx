@@ -35,7 +35,6 @@ import Star from '@material-ui/icons/Star';
 import StarOutline from '@material-ui/icons/StarBorder';
 import React, { FC, useCallback, useState, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import {
   defaultFilter,
@@ -50,6 +49,7 @@ import {
   CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
+import useStaleWhileRevalidate from 'swr';
 
 // TODO: replace me with the proper tabs implemntation
 const tabs = [
@@ -87,18 +87,15 @@ const useStyles = makeStyles(theme => ({
 export const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0].id);
-  const {
-    starredEntities,
-    toggleStarredEntity,
-    isStarredEntity,
-  } = useStarredEntities();
+  const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
     defaultFilter,
   );
 
-  const { value, error, loading } = useAsync(async () => {
-    return await catalogApi.getEntities();
-  });
+  const { data: entities, error } = useStaleWhileRevalidate(
+    ['catalog/all', entityFilters[selectedFilter.id]],
+    async () => catalogApi.getEntities(),
+  );
 
   const onFilterSelected = useCallback(
     selected => setSelectedFilter(selected),
@@ -108,10 +105,10 @@ export const CatalogPage: FC<{}> = () => {
   const filteredEntities = useMemo(() => {
     const typeFilter = entityFilters[EntityFilterType.TYPE];
     const leftMenuFilter = entityFilters[selectedFilter.id];
-    return value
+    return entities
       ?.filter(e => leftMenuFilter(e, { isStarred: isStarredEntity(e) }))
       .filter(e => typeFilter(e, { type: selectedTab }));
-  }, [selectedFilter.id, selectedTab, isStarredEntity, value?.filter]);
+  }, [selectedFilter.id, selectedTab, isStarredEntity, entities?.filter]);
 
   const styles = useStyles();
 
@@ -213,7 +210,7 @@ export const CatalogPage: FC<{}> = () => {
           <CatalogTable
             titlePreamble={selectedFilter.label}
             entities={filteredEntities || []}
-            loading={loading}
+            loading={!entities && !error}
             error={error}
             actions={actions}
           />

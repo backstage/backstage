@@ -1,11 +1,11 @@
 {
   "name": "@backstage/plugin-lighthouse",
-  "version": "0.1.1-alpha.7",
+  "version": "0.1.1-alpha.8",
   "main": "dist/index.esm.js",
   "main:src": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": true,
+  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -22,21 +22,21 @@
     "start": "backstage-cli plugin:serve"
   },
   "dependencies": {
-    "@backstage/core": "^0.1.1-alpha.7",
-    "@backstage/theme": "^0.1.1-alpha.7",
+    "@backstage/core": "^0.1.1-alpha.8",
+    "@backstage/theme": "^0.1.1-alpha.8",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-markdown": "^4.3.1",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "6.0.0-alpha.5",
     "react-use": "^14.2.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.7",
-    "@backstage/dev-utils": "^0.1.1-alpha.7",
-    "@backstage/test-utils": "^0.1.1-alpha.7",
+    "@backstage/cli": "^0.1.1-alpha.8",
+    "@backstage/dev-utils": "^0.1.1-alpha.8",
+    "@backstage/test-utils": "^0.1.1-alpha.8",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^10.2.4",

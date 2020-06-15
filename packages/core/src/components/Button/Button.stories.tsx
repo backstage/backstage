@@ -15,12 +15,7 @@
  */
 import React, { FunctionComponentFactory } from 'react';
 import { Button } from './Button';
-import {
-  MemoryRouter,
-  Route,
-  useLocation,
-  Link as RouterLink,
-} from 'react-router-dom';
+import { MemoryRouter, Route, useLocation } from 'react-router-dom';
 import { createRouteRef } from '@backstage/core-api';
 
 const Location = () => {
@@ -70,14 +65,7 @@ export const PassProps = () => {
 
   return (
     <>
-      <Button
-        to={routeRef.path}
-        /** react-router-dom related prop */
-        component={RouterLink}
-        /** material-ui related prop */
-        color="secondary"
-        variant="outlined"
-      >
+      <Button to={routeRef.path} color="secondary" variant="outlined">
         This link
       </Button>
       &nbsp;has props for both material-ui's component as well as for
