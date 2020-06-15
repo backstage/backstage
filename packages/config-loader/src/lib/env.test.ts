@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readEnv } from './loader';
+import { readEnv } from './env';
 
 describe('readEnv', () => {
   it('should return empty config for empty env', () => {

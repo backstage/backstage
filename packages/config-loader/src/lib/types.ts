@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export { loadConfig } from './loader';
-export type { LoadConfigOptions } from './loader';
+import { JsonObject } from '@backstage/config';
+
+export type ReadFileFunc = (path: string) => Promise<string>;
+export type ReadSecretFunc = (desc: JsonObject) => Promise<string | undefined>;
+
+/**
+ * Common context that provides all the necessary hooks for reading configuration files.
+ */
+export type ReaderContext = {
+  env: { [name in string]?: string };
+  readFile: ReadFileFunc;
+  readSecret: ReadSecretFunc;
+};

@@ -69,6 +69,10 @@ const tabs = [
     id: 'documentation',
     label: 'Documentation',
   },
+  {
+    id: 'other',
+    label: 'Other',
+  },
 ];
 
 const useStyles = makeStyles(theme => ({
