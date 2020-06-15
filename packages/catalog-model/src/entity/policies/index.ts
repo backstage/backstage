@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { DefaultNamespaceEntityPolicy } from './DefaultNamespaceEntityPolicy';
 export { FieldFormatEntityPolicy } from './FieldFormatEntityPolicy';
 export { NoForeignRootFieldsEntityPolicy } from './NoForeignRootFieldsEntityPolicy';
 export { ReservedFieldsEntityPolicy } from './ReservedFieldsEntityPolicy';
