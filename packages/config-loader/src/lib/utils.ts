@@ -14,5 +14,18 @@
  * limitations under the License.
  */
 
-export { loadConfig } from './loader';
-export type { LoadConfigOptions } from './loader';
+import { JsonValue, JsonObject } from '@backstage/config';
+
+export function isObject(obj: JsonValue | undefined): obj is JsonObject {
+  if (typeof obj !== 'object') {
+    return false;
+  } else if (Array.isArray(obj)) {
+    return false;
+  }
+  return obj !== null;
+}
+
+// A thing to make sure we've narrowed the type down to never
+export function isNever<T extends never>() {
+  return void 0 as T;
+}
