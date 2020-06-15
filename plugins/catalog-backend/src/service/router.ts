@@ -110,7 +110,7 @@ export async function createRouter(
       .delete('/locations/:id', async (req, res) => {
         const { id } = req.params;
         await locationsCatalog.removeLocation(id);
-        res.status(200).send();
+        res.status(204).send();
       });
   }
 
