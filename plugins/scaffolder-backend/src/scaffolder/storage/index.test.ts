@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { StorageBase, createStorage } from '.';
-import winston from 'winston';
+import * as winston from 'winston';
 
 describe('Storage Interface Test', () => {
   const mockStore = new (class MockStorage implements StorageBase {
