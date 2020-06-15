@@ -28,16 +28,21 @@ import {
 } from '@backstage/core';
 
 import ClusterTable from '../ClusterTable/ClusterTable';
-import { Button, Typography } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { useAsync, useLocalStorage } from 'react-use';
 import { gitOpsApiRef, ListClusterStatusesResponse } from '../../api';
+import { Alert } from '@material-ui/lab';
 
 const ClusterList: FC<{}> = () => {
   const [loginInfo] = useLocalStorage<{
     token: string;
     username: string;
     name: string;
-  }>('githubLoginDetails');
+  }>('githubLoginDetails', {
+    token: '',
+    username: '',
+    name: 'Guest',
+  });
 
   const api = useApi(gitOpsApiRef);
 
@@ -59,9 +64,19 @@ const ClusterList: FC<{}> = () => {
   } else if (error) {
     content = (
       <Content>
-        <Typography variant="h4" color="error">
-          Failed to load cluster, {String(error)}
-        </Typography>
+        <div>
+          <Alert severity="error">
+            Error encountered while fetching list of GitOps-managed cluster.{' '}
+            {error.toString()}
+          </Alert>
+          <Alert severity="info">
+            Please make sure that you start GitOps-API backend on localhost port
+            3008 before using this plugin.
+          </Alert>
+          <Alert severity="info">
+            If you're Guest, please login via GitHub first.
+          </Alert>
+        </div>
       </Content>
     );
   } else {

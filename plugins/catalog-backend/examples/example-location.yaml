@@ -1,8 +1,0 @@
----
-apiVersion: backstage.io/v1beta1
-kind: Location
-metadata:
-  name: location-1
-spec:
-  type: github
-  target: https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/examples/example-components.yaml
