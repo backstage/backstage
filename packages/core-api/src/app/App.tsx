@@ -207,10 +207,7 @@ export class PrivateAppImpl implements BackstageApp {
             <AppThemeProvider>
               <Router>
                 <Routes>
-                  <Route
-                    path={`${pathname}/*`}
-                    element={<div>{children}</div>}
-                  />
+                  <Route path={`${pathname}/*`} element={<>{children}</>} />
                 </Routes>
               </Router>
             </AppThemeProvider>
