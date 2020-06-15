@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: podcast-api
+  description: Podcast API
+spec:
+  type: service
+  lifecycle: experimental
+  owner: tools@example.com
