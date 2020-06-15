@@ -26,13 +26,16 @@ const app = createApp({
 });
 
 const AppProvider = app.getProvider();
-const AppComponent = app.getRootComponent();
+const AppRouter = app.getRouter();
+const AppRoutes = app.getRoutes();
 
 const App: FC<{}> = () => {
   useStyles();
   return (
     <AppProvider>
-      <AppComponent />
+      <AppRouter>
+        <AppRoutes />
+      </AppRouter>
     </AppProvider>
   );
 };

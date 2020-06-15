@@ -19,7 +19,11 @@ import { AppContextProvider } from './AppContext';
 import { BackstageApp, AppComponents, AppConfigLoader, Apis } from './types';
 import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
-import { featureFlagsApiRef } from '../apis/definitions';
+import {
+  featureFlagsApiRef,
+  AppThemeApi,
+  ConfigApi,
+} from '../apis/definitions';
 import { AppThemeProvider } from './AppThemeProvider';
 
 import { IconComponent, SystemIcons, SystemIconKey } from '../icons';
@@ -32,6 +36,7 @@ import {
   appThemeApiRef,
   configApiRef,
   ConfigReader,
+  useApi,
 } from '../apis';
 import { ApiAggregator } from '../apis/ApiAggregator';
 import { useAsync } from 'react-use';
@@ -114,7 +119,7 @@ export class PrivateAppImpl implements BackstageApp {
     return this.icons[key];
   }
 
-  getRootComponent(): ComponentType<{}> {
+  getRoutes(): ComponentType<{}> {
     const routes = new Array<JSX.Element>();
     const registeredFeatureFlags = new Array<FeatureFlagsRegistryItem>();
 
@@ -195,26 +200,42 @@ export class PrivateAppImpl implements BackstageApp {
       if ('node' in loadedConfig) {
         return loadedConfig.node;
       }
-      const configReader = loadedConfig.api;
+      const configApi = loadedConfig.api;
 
       const appApis = ApiRegistry.from([
-        [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
-        [configApiRef, configReader],
+        [appThemeApiRef, appThemeApi],
+        [configApiRef, configApi],
       ]);
 
       if (!this.apis) {
         if ('get' in this.apisOrFactory) {
           this.apis = this.apisOrFactory;
         } else {
-          this.apis = this.apisOrFactory(configReader);
+          this.apis = this.apisOrFactory(configApi);
         }
       }
 
       const apis = new ApiAggregator(this.apis, appApis);
 
-      const { Router } = this.components;
+      return (
+        <ApiProvider apis={apis}>
+          <AppContextProvider app={this}>
+            <AppThemeProvider>{children}</AppThemeProvider>
+          </AppContextProvider>
+        </ApiProvider>
+      );
+    };
+    return Provider;
+  }
+
+  getRouter(): ComponentType<{}> {
+    const { Router: RouterComponent } = this.components;
+
+    const AppRouter: FC<{}> = ({ children }) => {
+      const configApi = useApi(configApiRef);
+
       let { pathname } = new URL(
-        configReader.getString('app.baseUrl') ?? '/',
+        configApi.getString('app.baseUrl') ?? '/',
         'http://dummy.dev', // baseUrl can be specified as just a path
       );
       if (pathname.endsWith('/')) {
@@ -222,20 +243,14 @@ export class PrivateAppImpl implements BackstageApp {
       }
 
       return (
-        <ApiProvider apis={apis}>
-          <AppContextProvider app={this}>
-            <AppThemeProvider>
-              <Router>
-                <Routes>
-                  <Route path={`${pathname}/*`} element={<>{children}</>} />
-                </Routes>
-              </Router>
-            </AppThemeProvider>
-          </AppContextProvider>
-        </ApiProvider>
+        <RouterComponent>
+          <Routes>
+            <Route path={`${pathname}/*`} element={<>{children}</>} />
+          </Routes>
+        </RouterComponent>
       );
     };
-    return Provider;
+    return AppRouter;
   }
 
   verify() {

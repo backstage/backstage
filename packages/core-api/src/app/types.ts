@@ -117,14 +117,19 @@ export type BackstageApp = {
   getSystemIcon(key: SystemIconKey): IconComponent;
 
   /**
-   * Creates a root component for this app, including the App chrome
-   * and routes to all plugins.
-   */
-  getRootComponent(): ComponentType<{}>;
-
-  /**
-   * Provider component that should wrap the App's RootComponent and
-   * any other components that need to be within the app context.
+   * Provider component that should wrap the Router created with getRouter()
+   * and any other components that need to be within the app context.
    */
   getProvider(): ComponentType<{}>;
+
+  /**
+   * Router component that should wrap the App Routes create with getRoutes()
+   * and any other components that should only be available while signed in.
+   */
+  getRouter(): ComponentType<{}>;
+
+  /**
+   * Routes component that contains all routes for plugin pages in the app.
+   */
+  getRoutes(): ComponentType<{}>;
 };
