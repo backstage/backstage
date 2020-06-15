@@ -108,7 +108,7 @@ export const CatalogFilter: FC<{
                       {item.label}
                     </Typography>
                   </ListItemText>
-                  {entitiesByFilter[item.id]?.length ?? 0}
+                  {entitiesByFilter[item.id]?.length ?? '-'}
                 </MenuItem>
               ))}
             </List>

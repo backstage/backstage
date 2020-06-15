@@ -17,12 +17,10 @@
 import { Entity } from '@backstage/catalog-model';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
-import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
 import {
   CatalogFilterGroup,
   CatalogFilterItem,
 } from '../components/CatalogFilter/CatalogFilter';
-import { StarredCount } from '../components/CatalogFilter/StarredCount';
 
 export enum EntityFilterType {
   ALL = 'ALL',
@@ -37,13 +35,11 @@ export const filterGroups: CatalogFilterGroup[] = [
       {
         id: EntityFilterType.OWNED,
         label: 'Owned',
-        count: 0,
         icon: SettingsIcon,
       },
       {
         id: EntityFilterType.STARRED,
         label: 'Starred',
-        count: StarredCount,
         icon: StarIcon,
       },
     ],
@@ -55,7 +51,6 @@ export const filterGroups: CatalogFilterGroup[] = [
       {
         id: EntityFilterType.ALL,
         label: 'All Services',
-        count: AllServicesCount,
       },
     ],
   },

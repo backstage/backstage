@@ -29,5 +29,5 @@ export const AllServicesCount: FC<{}> = () => {
     return <CircularProgress size={theme.spacing(2)} />;
   }
 
-  return <span>{value?.length ?? '-'}</span>;
+  return <span>{value ?? length ?? '-'}</span>;
 };
