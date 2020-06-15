@@ -148,6 +148,10 @@ export const CatalogPage: FC<{}> = () => {
       id: 'documentation',
       label: 'Documentation',
     },
+    {
+      id: 'other',
+      label: 'Other',
+    },
   ];
 
   return (
