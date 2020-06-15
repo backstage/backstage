@@ -26,7 +26,8 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import type { IconComponent } from '@backstage/core';
-import { EntityFilterType } from '../../data/filters';
+import { EntityFilterType, filterGroups } from '../../data/filters';
+import { EntitiesByFilter } from '../../hooks/useEntities';
 
 export type CatalogFilterItem = {
   id: EntityFilterType;
@@ -38,12 +39,6 @@ export type CatalogFilterItem = {
 export type CatalogFilterGroup = {
   name: string;
   items: CatalogFilterItem[];
-};
-
-export type CatalogFilterProps = {
-  groups: CatalogFilterGroup[];
-  selectedId?: string;
-  onSelectedChange?: (item: CatalogFilterItem) => void;
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -72,11 +67,16 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const CatalogFilter: FC<CatalogFilterProps> = ({
-  groups,
-  selectedId,
-  onSelectedChange,
+export const CatalogFilter: FC<{
+  selectedFilter: EntityFilterType;
+  onFilterChange: (type: EntityFilterType) => void;
+  entitiesByFilter: EntitiesByFilter;
+}> = ({
+  selectedFilter: selectedId,
+  onFilterChange: setSelectedFilter,
+  entitiesByFilter,
 }) => {
+  const groups = filterGroups;
   const classes = useStyles();
   return (
     <Card className={classes.root}>
@@ -92,7 +92,9 @@ export const CatalogFilter: FC<CatalogFilterProps> = ({
                   key={item.id}
                   button
                   divider
-                  onClick={() => onSelectedChange?.(item)}
+                  onClick={() => {
+                    setSelectedFilter(item.id);
+                  }}
                   selected={item.id === selectedId}
                   className={classes.menuItem}
                 >
@@ -106,11 +108,7 @@ export const CatalogFilter: FC<CatalogFilterProps> = ({
                       {item.label}
                     </Typography>
                   </ListItemText>
-                  {typeof item.count === 'function' ? (
-                    <item.count />
-                  ) : (
-                    item.count
-                  )}
+                  {entitiesByFilter[item.id]?.length ?? 0}
                 </MenuItem>
               ))}
             </List>

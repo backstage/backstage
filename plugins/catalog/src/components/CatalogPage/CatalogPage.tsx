@@ -29,13 +29,16 @@ import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import Star from '@material-ui/icons/Star';
 import StarOutline from '@material-ui/icons/StarBorder';
-import React, { FC, useCallback } from 'react';
+import React, { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
-import { useEntitiesStore } from '../../hooks/useEntitiesStore';
+import { useEntities } from '../../hooks/useEntities';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { filterGroups } from '../../data/filters';
+import {
+  getCatalogFilterItemByType,
+  EntityFilterType,
+} from '../../data/filters';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -52,19 +55,15 @@ const useStyles = makeStyles(theme => ({
 
 export const CatalogPage: FC<{}> = () => {
   const {
-    filteredEntities: data,
-    selectedFilter,
-    setSelectedFilter,
+    entitiesByFilter,
+    selectedFilter: selectedId,
     error,
     toggleStarredEntity,
     isStarredEntity,
-  } = useEntitiesStore();
+    setSelectedFilter,
+  } = useEntities();
 
-  const onFilterSelected = useCallback(
-    selected => setSelectedFilter(selected),
-    [setSelectedFilter],
-  );
-
+  const data = entitiesByFilter[selectedId ?? EntityFilterType.ALL];
   const styles = useStyles();
 
   const actions = [
@@ -172,13 +171,16 @@ export const CatalogPage: FC<{}> = () => {
         <div className={styles.contentWrapper}>
           <div>
             <CatalogFilter
-              groups={filterGroups}
-              selectedId={selectedFilter.id}
-              onSelectedChange={onFilterSelected}
+              selectedFilter={selectedId ?? EntityFilterType.ALL}
+              onFilterChange={setSelectedFilter}
+              entitiesByFilter={entitiesByFilter}
             />
           </div>
           <CatalogTable
-            titlePreamble={selectedFilter.label}
+            titlePreamble={
+              getCatalogFilterItemByType(selectedId ?? EntityFilterType.ALL)
+                ?.label ?? ''
+            }
             entities={data || []}
             loading={!data && !error}
             error={error}

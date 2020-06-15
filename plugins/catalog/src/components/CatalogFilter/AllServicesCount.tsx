@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { FC } from 'react';
 import { useApi } from '@backstage/core';
 import { catalogApiRef } from '../../api/types';
 import { useAsync } from 'react-use';
 import { CircularProgress, useTheme } from '@material-ui/core';
 
-export const AllServicesCount: React.FC<{}> = () => {
+export const AllServicesCount: FC<{}> = () => {
   const theme = useTheme();
   const catalogApi = useApi(catalogApiRef);
   const { value, loading } = useAsync(() => catalogApi.getEntities());

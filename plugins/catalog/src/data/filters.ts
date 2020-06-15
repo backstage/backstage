@@ -61,6 +61,17 @@ export const filterGroups: CatalogFilterGroup[] = [
   },
 ];
 
+export const getCatalogFilterItemByType = (filterType: EntityFilterType) => {
+  for (const group of filterGroups) {
+    for (const filter of group.items) {
+      if (filter.id === filterType) {
+        return filter;
+      }
+    }
+  }
+  return null;
+};
+
 type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
 
 type EntityFilterOptions = Partial<{
