@@ -390,6 +390,10 @@ export class CommonDatabase implements Database {
   async removeLocation(txOpaque: unknown, id: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
+    await tx<DbEntitiesRow>('entities')
+      .where({ location_id: id })
+      .update({ location_id: null });
+
     const result = await tx<DbLocationsRow>('locations').where({ id }).del();
 
     if (!result) {
