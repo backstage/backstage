@@ -73,7 +73,7 @@ export const entityFilters: Record<string, EntityFilter> = {
   [EntityFilterType.OWNED]: () => false,
   [EntityFilterType.ALL]: () => true,
   [EntityFilterType.STARRED]: (_, { isStarred }) => !!isStarred,
-  [EntityFilterType.TYPE]: (e, { type }) => e.spec?.type === type,
+  [EntityFilterType.TYPE]: (e, { type }) => (e.spec as any)?.type === type,
 };
 
 export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];
