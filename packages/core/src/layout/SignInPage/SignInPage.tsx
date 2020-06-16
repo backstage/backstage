@@ -14,54 +14,90 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useLayoutEffect } from 'react';
 import { Page } from '../Page';
 import { Header } from '../Header';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
 import { Grid, Typography, Button } from '@material-ui/core';
 import { InfoCard } from '../InfoCard/InfoCard';
-import { SignInPageProps } from '@backstage/core-api';
+import { SignInPageProps, SignInResult } from '@backstage/core-api';
 
-const GuestProvider: FC<SignInPageProps> = ({ onResult }) => (
-  <Grid item>
-    <InfoCard
-      title="Guest"
-      actions={
-        <Button
-          color="primary"
-          variant="outlined"
-          onClick={() => onResult({ userId: 'guest' })}
-        >
-          Enter
-        </Button>
-      }
-    >
-      <Typography variant="body1">
-        Enter as a Guest User.
-        <br />
-        You will not have a verified identity,
-        <br />
-        so some features might be unavailable.
-      </Typography>
-    </InfoCard>
-  </Grid>
-);
+const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
-export type SignInProviders = 'guest';
+type ProviderProps = SignInPageProps & {
+  selected: boolean;
+};
+
+const GuestProvider: FC<ProviderProps> = ({ selected, onResult }) => {
+  useLayoutEffect(() => {
+    if (selected) {
+      onResult({ userId: 'guest' });
+    }
+  }, [selected, onResult]);
+
+  return (
+    <Grid item>
+      <InfoCard
+        title="Guest"
+        actions={
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => onResult({ userId: 'guest' })}
+          >
+            Enter
+          </Button>
+        }
+      >
+        <Typography variant="body1">
+          Enter as a Guest User.
+          <br />
+          You will not have a verified identity,
+          <br />
+          so some features might be unavailable.
+        </Typography>
+      </InfoCard>
+    </Grid>
+  );
+};
+
+export type SignInProvider = 'guest';
 
 export type Props = SignInPageProps & {
-  providers: SignInProviders[];
+  providers: SignInProvider[];
 };
 
 export const SignInPage: FC<Props> = ({ onResult, providers }) => {
+  // We can't use storageApi here, as it might have a dependency on the IdentityApi
+  const selectedProvider = localStorage.getItem(PROVIDER_STORAGE_KEY);
+
+  const makeResultHandler = (provider: SignInProvider) => (
+    result: SignInResult,
+  ) => {
+    localStorage.setItem(PROVIDER_STORAGE_KEY, provider);
+
+    onResult({
+      ...result,
+      logout: async () => {
+        localStorage.removeItem(PROVIDER_STORAGE_KEY);
+        await result.logout?.();
+      },
+    });
+  };
+
   return (
     <Page>
       <Header title="Login" />
       <Content>
         <ContentHeader title="Select a sign-in method" />
         <Grid container>
-          {providers.includes('guest') && <GuestProvider onResult={onResult} />}
+          {providers.includes('guest') && (
+            <GuestProvider
+              selected={selectedProvider === 'guest'}
+              onResult={makeResultHandler('guest')}
+            />
+          )}
         </Grid>
       </Content>
     </Page>
