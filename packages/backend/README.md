@@ -43,7 +43,7 @@ To get started, you can issue the following after starting the backend, from ins
 the `plugins/catalog-backend` directory:
 
 ```bash
-yarn mock-catalog-data
+yarn mock-data
 ```
 
 You should then start seeing data on `localhost:7000/catalog/entities`.

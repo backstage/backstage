@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+curl \
+--location \
+--request POST 'localhost:7000/catalog/locations' \
+--header 'Content-Type: application/json' \
+--data-raw "{\"type\": \"github\", \"target\": \"https://github.com/spotify/backstage/blob/mob/move-templates-into-service-catalog/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yml\"}"
+
