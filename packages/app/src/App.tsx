@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { createApp, AlertDisplay, OAuthRequestDialog } from '@backstage/core';
+import {
+  createApp,
+  AlertDisplay,
+  OAuthRequestDialog,
+  SignInPage,
+} from '@backstage/core';
 import React, { FC } from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
@@ -24,6 +29,11 @@ import { hot } from 'react-hot-loader/root';
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
+  components: {
+    SignInPage: props => (
+      <SignInPage {...props} providers={['guest', 'google', 'custom']} />
+    ),
+  },
 });
 
 const AppProvider = app.getProvider();
