@@ -13,16 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType, FC, useMemo } from 'react';
+import React, {
+  ComponentType,
+  FC,
+  useMemo,
+  useCallback,
+  useState,
+  ReactElement,
+} from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
-import { BackstageApp, AppComponents, AppConfigLoader, Apis } from './types';
+import {
+  BackstageApp,
+  AppComponents,
+  AppConfigLoader,
+  Apis,
+  SignInResult,
+  SignInPageProps,
+} from './types';
 import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import {
   featureFlagsApiRef,
   AppThemeApi,
   ConfigApi,
+  identityApiRef,
 } from '../apis/definitions';
 import { AppThemeProvider } from './AppThemeProvider';
 
@@ -40,6 +55,7 @@ import {
 } from '../apis';
 import { ApiAggregator } from '../apis/ApiAggregator';
 import { useAsync } from 'react-use';
+import { AppIdentity } from './AppIdentity';
 
 type FullAppOptions = {
   apis: Apis;
@@ -92,6 +108,8 @@ export class PrivateAppImpl implements BackstageApp {
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
+
+  private readonly identityApi = new AppIdentity();
 
   private apisOrFactory: Apis;
 
@@ -205,6 +223,7 @@ export class PrivateAppImpl implements BackstageApp {
       const appApis = ApiRegistry.from([
         [appThemeApiRef, appThemeApi],
         [configApiRef, configApi],
+        [identityApiRef, this.identityApi],
       ]);
 
       if (!this.apis) {
@@ -229,7 +248,35 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getRouter(): ComponentType<{}> {
-    const { Router: RouterComponent } = this.components;
+    const {
+      Router: RouterComponent,
+      SignInPage: SignInPageComponent,
+    } = this.components;
+
+    // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
+    const SignInPageWrapper: FC<{
+      component: ComponentType<SignInPageProps>;
+      children: ReactElement;
+    }> = ({ component: Component, children }) => {
+      const [done, setDone] = useState(false);
+
+      const onResult = useCallback(
+        (result: SignInResult) => {
+          if (done) {
+            throw new Error('Identity result callback was called twice');
+          }
+          setDone(true);
+          this.identityApi.setSignInResult(result);
+        },
+        [done],
+      );
+
+      if (done) {
+        return children;
+      }
+
+      return <Component onResult={onResult} />;
+    };
 
     const AppRouter: FC<{}> = ({ children }) => {
       const configApi = useApi(configApiRef);
@@ -242,14 +289,34 @@ export class PrivateAppImpl implements BackstageApp {
         pathname = pathname.replace(/\/$/, '');
       }
 
+      // If the app hasn't configured a sign-in page, we just continue as guest.
+      if (!SignInPageComponent) {
+        this.identityApi.setSignInResult({
+          userId: 'guest',
+          idToken: undefined,
+          logout: async () => {},
+        });
+
+        return (
+          <RouterComponent>
+            <Routes>
+              <Route path={`${pathname}/*`} element={<>{children}</>} />
+            </Routes>
+          </RouterComponent>
+        );
+      }
+
       return (
         <RouterComponent>
-          <Routes>
-            <Route path={`${pathname}/*`} element={<>{children}</>} />
-          </Routes>
+          <SignInPageWrapper component={SignInPageComponent}>
+            <Routes>
+              <Route path={`${pathname}/*`} element={<>{children}</>} />
+            </Routes>
+          </SignInPageWrapper>
         </RouterComponent>
       );
     };
+
     return AppRouter;
   }
 
