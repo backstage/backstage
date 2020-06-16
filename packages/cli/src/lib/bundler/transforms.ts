@@ -16,14 +16,16 @@
 
 import webpack, { Module, Plugin } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { BundlingOptions } from './types';
+import { BundlingOptions, BackendBundlingOptions } from './types';
 
 type Transforms = {
   loaders: Module['rules'];
   plugins: Plugin[];
 };
 
-export const transforms = (options: BundlingOptions): Transforms => {
+export const transforms = (
+  options: BundlingOptions | BackendBundlingOptions,
+): Transforms => {
   const { isDev } = options;
 
   const loaders = [

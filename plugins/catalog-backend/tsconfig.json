@@ -11,6 +11,6 @@
     "esModuleInterop": true,
     "allowJs": true,
     "lib": ["es2019"],
-    "types": ["node", "jest"]
+    "types": ["node", "jest", "webpack-env"]
   }
 }

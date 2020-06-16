@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-export * from './errors';
-export * from './logging';
-export * from './middleware';
-export * from './service';
-export * from './hot';
+import { ConfigReader } from '@backstage/config';
+import { loadConfig } from '@backstage/config-loader';
+import { Command } from 'commander';
+import { serveBackend } from '../../lib/bundler/backend';
+
+export default async (cmd: Command) => {
+  const appConfigs = await loadConfig();
+  const waitForExit = await serveBackend({
+    entry: 'src/index',
+    checksEnabled: cmd.check,
+    config: ConfigReader.fromConfigs(appConfigs),
+    appConfigs,
+  });
+
+  await waitForExit();
+};

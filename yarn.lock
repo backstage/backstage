@@ -4020,6 +4020,20 @@
   resolved "https://registry.npmjs.org/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
+"@types/start-server-webpack-plugin@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@types/start-server-webpack-plugin/-/start-server-webpack-plugin-2.2.0.tgz#a7c4595c715eda083d92ca1ea184d97db3d8fc7b"
+  integrity sha512-TFiZWMPuiMR/utvjk6ENi0HPtQl38HnPMYfJqm04ztpzITHzTCXt7T7LyXnP9eTwg4lLQkmRUaFy04iEyjoJmw==
+  dependencies:
+    "@types/webpack" "*"
+
+"@types/stoppable@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@types/stoppable/-/stoppable-1.1.0.tgz#a5fa6a48120b109ca9233eed05c67c50bc4f3b91"
+  integrity sha512-BRR23Q9CJduH7AM6mk4JRttd8XyFkb4qIPZu4mdLF+VoP+wcjIxIWIKiBbN78NBbEuynrAyMPtzOHnIp2B/JPQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/styled-jsx@^2.2.8":
   version "2.2.8"
   resolved "https://registry.npmjs.org/@types/styled-jsx/-/styled-jsx-2.2.8.tgz#b50d13d8a3c34036282d65194554cf186bab7234"
@@ -4142,6 +4156,18 @@
   version "1.15.1"
   resolved "https://registry.npmjs.org/@types/webpack-env/-/webpack-env-1.15.1.tgz#c8e84705e08eed430b5e15b39c65b0944e4d1422"
   integrity sha512-eWN5ElDTeBc5lRDh95SqA8x18D0ll2pWudU3uWiyfsRmIZcmUXpEsxPU+7+BsdCrO2vfLRC629u/MmjbmF+2tA==
+
+"@types/webpack-env@^1.15.2":
+  version "1.15.2"
+  resolved "https://registry.npmjs.org/@types/webpack-env/-/webpack-env-1.15.2.tgz#927997342bb9f4a5185a86e6579a0a18afc33b0a"
+  integrity sha512-67ZgZpAlhIICIdfQrB5fnDvaKFcDxpKibxznfYRVAT4mQE41Dido/3Ty+E3xGBmTogc5+0Qb8tWhna+5B8z1iQ==
+
+"@types/webpack-node-externals@^1.7.1":
+  version "1.7.1"
+  resolved "https://registry.npmjs.org/@types/webpack-node-externals/-/webpack-node-externals-1.7.1.tgz#73d0d7ae0e98cfbd69b7443388302cd69217494a"
+  integrity sha512-kbO2gYPKvMb5j1KOgnIuUH52CKul9Ud4b10J5n+JX8oHmgu86hYpBVfrV4bMDe5lhCaO64h8QrKz7WnRZzqkbA==
+  dependencies:
+    "@types/webpack" "*"
 
 "@types/webpack-sources@*":
   version "0.1.6"
@@ -9932,7 +9958,7 @@ he@^1.2.0:
   resolved "https://registry.npmjs.org/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-headers-utils@^1.1.3, headers-utils@^1.1.9:
+headers-utils@^1.1.9, headers-utils@^1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/headers-utils/-/headers-utils-1.2.0.tgz#5e10d1bc9d2bccf789547afca5b991a3167241e8"
   integrity sha512-4/BMXcWrJErw7JpM87gF8MNEXcIMLzepYZjNRv/P9ctgupl2Ywa3u1PgHtNhSRq84bHH9Ndlkdy7bSi+bZ9I9A==
@@ -13169,9 +13195,9 @@ ms@^2.0.0, ms@^2.1.1:
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
 msw@^0.19.0:
-  version "0.19.0"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.19.0.tgz#fd37015787d40db82d243a2853be66c466675e72"
-  integrity sha512-1TpmJzJ+afBWTRNJYoeW8KwLQbCVlvvhw2u/eRuIYfel+bPqcut5NaSgo+Bi4C0Q/7M5wza00w1GEuOXQu6FCA==
+  version "0.19.3"
+  resolved "https://registry.npmjs.org/msw/-/msw-0.19.3.tgz#88f39edbd37313bff15a0e7cd00c71406cbdbbae"
+  integrity sha512-HYLnyrCDDPP72GG/CeHPhBjHsZFYkz36rJLXDWccZWNA24gYjgrcp9iVqqitk2cI6NAJwsupRml9GkfpJBB74w==
   dependencies:
     "@open-draft/until" "^1.0.0"
     "@types/cookie" "^0.3.3"
@@ -13180,7 +13206,7 @@ msw@^0.19.0:
     graphql "^15.0.0"
     headers-utils "^1.1.9"
     node-match-path "^0.4.2"
-    node-request-interceptor "^0.2.4"
+    node-request-interceptor "^0.2.5"
     statuses "^2.0.0"
     yargs "^15.3.1"
 
@@ -13436,13 +13462,13 @@ node-releases@^1.1.29, node-releases@^1.1.52:
   dependencies:
     semver "^6.3.0"
 
-node-request-interceptor@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.npmjs.org/node-request-interceptor/-/node-request-interceptor-0.2.4.tgz#f03a1b874823d0bea311a14280227707be946298"
-  integrity sha512-/htjDLmygBczT5qYPaSxfAEtMkc0LGuH6jqAP1o+TKfQh6yQfFyTtac25cpY8+pb4EawHljCLUN7dCeed9SdPA==
+node-request-interceptor@^0.2.5:
+  version "0.2.6"
+  resolved "https://registry.npmjs.org/node-request-interceptor/-/node-request-interceptor-0.2.6.tgz#541278d7033bb6a8befb5dd793f83428cf6446a2"
+  integrity sha512-aJW1tPSM7nzuZFRe+C/KSz22GJO3CVFMxHHmMGX8Z+tjP7TCIVbzeckLFVfJG68BdVgrdOOP7Ejc57ag820eyA==
   dependencies:
     debug "^4.1.1"
-    headers-utils "^1.1.3"
+    headers-utils "^1.2.0"
 
 nodemon@^2.0.2:
   version "2.0.4"
@@ -17299,6 +17325,11 @@ start-server-and-test@^1.10.11:
     ps-tree "1.2.0"
     wait-on "4.0.0"
 
+start-server-webpack-plugin@^2.2.5:
+  version "2.2.5"
+  resolved "https://registry.npmjs.org/start-server-webpack-plugin/-/start-server-webpack-plugin-2.2.5.tgz#4a2838759b0f36acd11b0b2f5f196f289ae29d31"
+  integrity sha512-DRCkciwCJoCFZ+wt3wWMkR1M2mpVhJbUKFXqhK3FWyIUKYb42NnocH5sMwqgo+nPNHupqNwK/v8lgfBbr2NKdg==
+
 state-toggle@^1.0.0:
   version "1.0.3"
   resolved "https://registry.npmjs.org/state-toggle/-/state-toggle-1.0.3.tgz#e123b16a88e143139b09c6852221bc9815917dfe"
@@ -17326,6 +17357,11 @@ stealthy-require@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
   integrity sha1-NbCYdbT/SfJqd35QmzCQoyJr8ks=
+
+stoppable@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/stoppable/-/stoppable-1.1.0.tgz#32da568e83ea488b08e4d7ea2c3bcc9d75015d5b"
+  integrity sha512-KXDYZ9dszj6bzvnEMRYvxgeTHU74QBFL54XKtP3nyMuJ81CFYtABZ3bAzL2EdFUaEwJOBOgENyFj3R7oTzDyyw==
 
 store2@^2.7.1:
   version "2.10.0"
@@ -19066,6 +19102,11 @@ webpack-log@^2.0.0:
   dependencies:
     ansi-colors "^3.0.0"
     uuid "^3.3.2"
+
+webpack-node-externals@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.npmjs.org/webpack-node-externals/-/webpack-node-externals-1.7.2.tgz#6e1ee79ac67c070402ba700ef033a9b8d52ac4e3"
+  integrity sha512-ajerHZ+BJKeCLviLUUmnyd5B4RavLF76uv3cs6KNuO8W+HuQaEs0y0L7o40NQxdPy5w0pcv8Ew7yPUAQG0UdCg==
 
 webpack-sources@^1.1.0, webpack-sources@^1.4.0, webpack-sources@^1.4.1, webpack-sources@^1.4.3:
   version "1.4.3"

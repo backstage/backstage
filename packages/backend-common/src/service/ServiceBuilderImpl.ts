@@ -19,6 +19,7 @@ import cors from 'cors';
 import express, { Router } from 'express';
 import helmet from 'helmet';
 import { Server } from 'http';
+import stoppable from 'stoppable';
 import { Logger } from 'winston';
 import { getRootLogger } from '../logging';
 import {
@@ -27,6 +28,7 @@ import {
   requestLoggingHandler,
 } from '../middleware';
 import { ServiceBuilder } from './types';
+import { useHotCleanup } from '../hot';
 
 const DEFAULT_PORT = 7000;
 
@@ -35,9 +37,14 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
   private routers: [string, Router][];
-
-  constructor() {
+  /**
+   * Reference to the module where builder is created
+   * Needed for the HMR
+   */
+  private module: NodeModule;
+  constructor(module: NodeModule) {
     this.routers = [];
+    this.module = module;
   }
 
   setPort(port: number): ServiceBuilder {
@@ -82,9 +89,19 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         logger.error(`Failed to start up on port ${port}, ${e}`);
         reject(e);
       });
-      const server = app.listen(port, () => {
-        logger.info(`Listening on port ${port}`);
-      });
+      const server = stoppable(
+        app.listen(port, () => {
+          logger.info(`Listening on port ${port}`);
+        }),
+        0,
+      );
+
+      useHotCleanup(this.module, () =>
+        server.stop((e: any) => {
+          if (e) console.error(e);
+        }),
+      );
+
       resolve(server);
     });
   }
