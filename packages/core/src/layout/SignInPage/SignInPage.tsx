@@ -21,7 +21,12 @@ import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
 import { Grid, Typography, Button } from '@material-ui/core';
 import { InfoCard } from '../InfoCard/InfoCard';
-import { SignInPageProps, SignInResult } from '@backstage/core-api';
+import {
+  SignInPageProps,
+  SignInResult,
+  useApi,
+  configApiRef,
+} from '@backstage/core-api';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -69,6 +74,8 @@ export type Props = SignInPageProps & {
 };
 
 export const SignInPage: FC<Props> = ({ onResult, providers }) => {
+  const configApi = useApi(configApiRef);
+
   // We can't use storageApi here, as it might have a dependency on the IdentityApi
   const selectedProvider = localStorage.getItem(PROVIDER_STORAGE_KEY);
 
@@ -88,7 +95,7 @@ export const SignInPage: FC<Props> = ({ onResult, providers }) => {
 
   return (
     <Page>
-      <Header title="Login" />
+      <Header title={configApi.getString('app.title') ?? 'Backstage'} />
       <Content>
         <ContentHeader title="Select a sign-in method" />
         <Grid container>
