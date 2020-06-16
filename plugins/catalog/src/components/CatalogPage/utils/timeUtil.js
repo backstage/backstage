@@ -15,6 +15,9 @@
  */
 
 import moment from 'moment';
+import goodMorning from './locales/goodMorning.locales.json';
+import goodAfternoon from './locales/goodAfternoon.locales.json';
+import goodEvening from './locales/goodEvening.locales.json';
 
 /**
  * Validates that a date is a valid ISO string.
@@ -56,12 +59,11 @@ export function getTimeBasedGreeting() {
     };
   }
   const timeOfDay = hour => {
-    if (hour < 12) return 'goodMorning';
-    if (hour < 17) return 'goodAfternoon';
-    return 'goodEvening';
+    if (hour < 12) return goodMorning;
+    if (hour < 17) return goodAfternoon;
+    return goodEvening;
   };
-  // TODO: This does not work.
-  const greetings = require(`utils/locales/${timeOfDay(currentHour)}.locales.json`);
+  const greetings = timeOfDay(currentHour);
   const greetingsKey = random(Object.keys(greetings));
   return {
     language: greetingsKey,

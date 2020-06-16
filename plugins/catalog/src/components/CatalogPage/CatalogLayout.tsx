@@ -21,7 +21,7 @@ import { getTimeBasedGreeting } from './utils/timeUtil';
 const CatalogLayout: FC<{}> = props => {
   const { children } = props;
   // const profile = useProfile();
-  const profile = { givenName: 'Stefan' };
+  const profile = { givenName: 'friend' };
   const greeting = getTimeBasedGreeting();
 
   return (
@@ -29,13 +29,12 @@ const CatalogLayout: FC<{}> = props => {
       <Header
         title={
           profile
-            ? `${greeting.greeting}, ${profile.givenName}`
+            ? `${greeting.greeting}, ${profile.givenName}!`
             : greeting.greeting
         }
-        subtitle="Service Catalog"
+        subtitle="Backstage Service Catalog"
         tooltip={greeting.language}
         pageTitleOverride="Home"
-        type="home"
       >
         <HomepageTimer />
       </Header>
