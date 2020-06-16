@@ -205,7 +205,11 @@ export class PrivateAppImpl implements BackstageApp {
         <ApiProvider apis={apis}>
           <AppContextProvider app={this}>
             <AppThemeProvider>
-              <Router>{children}</Router>
+              <Router>
+                <Routes>
+                  <Route path={`${pathname}/*`} element={<>{children}</>} />
+                </Routes>
+              </Router>
             </AppThemeProvider>
           </AppContextProvider>
         </ApiProvider>

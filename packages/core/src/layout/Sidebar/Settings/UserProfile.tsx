@@ -103,7 +103,6 @@ export const UserProfile: FC<{ open: boolean; setOpen: Function }> = ({
         text={displayName}
         onClick={handleClick}
         icon={avatar || AccountCircleIcon}
-        disableSelected
       >
         {open ? <ExpandLess /> : <ExpandMore />}
       </SidebarItem>
