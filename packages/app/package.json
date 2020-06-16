@@ -9,7 +9,6 @@
     "@backstage/plugin-circleci": "^0.1.1-alpha.8",
     "@backstage/plugin-explore": "^0.1.1-alpha.8",
     "@backstage/plugin-gitops-profiles": "^0.1.1-alpha.8",
-    "@backstage/plugin-home-page": "^0.1.1-alpha.8",
     "@backstage/plugin-lighthouse": "^0.1.1-alpha.8",
     "@backstage/plugin-register-component": "^0.1.1-alpha.8",
     "@backstage/plugin-scaffolder": "^0.1.1-alpha.8",
