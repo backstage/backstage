@@ -129,15 +129,7 @@ can browse and search for all available plugins. ​
 
 ### Which plugin is used the most at Spotify?
 
-​ By far, our most-used plugin is our TechDocs plugin, which we use for creating
-technical documentation. Our philosophy at Spotify is to treat "docs like code",
-where you write documentation using the same workflow as you write your code.
-This makes it easier to create, find, and update documentation. We hope to
-release
-[the open source version](https://github.com/spotify/backstage/issues/687) in
-the future. (See also:
-"[Will Spotify's internal plugins be open sourced, too?](https://github.com/spotify/faq#will-spotifys-internal-plugins-be-open-sourced-too)"
-above) ​
+By far, our most-used plugin is our TechDocs plugin, which we use for creating technical documentation. Our philosophy at Spotify is to treat "docs like code", where you write documentation using the same workflow as you write your code. This makes it easier to create, find, and update documentation. We hope to release [the open source version](https://github.com/spotify/backstage/issues/687) in the future. (See also: "[Will Spotify's internal plugins be open sourced, too?](https://github.com/spotify/faq#will-spotifys-internal-plugins-be-open-sourced-too)" above)
 
 ### Are you planning to have plugins baked into the repo? Or should they be developed in separate repos?
 
