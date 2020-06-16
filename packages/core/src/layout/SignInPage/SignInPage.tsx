@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { FC, useLayoutEffect } from 'react';
+import React, {
+  FC,
+  useLayoutEffect,
+  useState,
+  ComponentType,
+  useMemo,
+} from 'react';
 import { Page } from '../Page';
 import { Header } from '../Header';
 import { Content } from '../Content/Content';
@@ -26,86 +32,150 @@ import {
   SignInResult,
   useApi,
   configApiRef,
+  useApiHolder,
+  ApiHolder,
+  errorApiRef,
 } from '@backstage/core-api';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
-type ProviderProps = SignInPageProps & {
-  selected: boolean;
+type ProviderComponent = ComponentType<SignInPageProps>;
+
+type ProviderLoader = (apis: ApiHolder) => Promise<SignInResult | undefined>;
+
+type SignInProvider = {
+  component: ProviderComponent;
+  loader: ProviderLoader;
 };
 
-const GuestProvider: FC<ProviderProps> = ({ selected, onResult }) => {
-  useLayoutEffect(() => {
-    if (selected) {
-      onResult({ userId: 'guest' });
-    }
-  }, [selected, onResult]);
+const GuestProvider: ProviderComponent = ({ onResult }) => (
+  <Grid item>
+    <InfoCard
+      title="Guest"
+      actions={
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => onResult({ userId: 'guest' })}
+        >
+          Enter
+        </Button>
+      }
+    >
+      <Typography variant="body1">
+        Enter as a Guest User.
+        <br />
+        You will not have a verified identity,
+        <br />
+        meaning some features might be unavailable.
+      </Typography>
+    </InfoCard>
+  </Grid>
+);
 
-  return (
-    <Grid item>
-      <InfoCard
-        title="Guest"
-        actions={
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={() => onResult({ userId: 'guest' })}
-          >
-            Enter
-          </Button>
-        }
-      >
-        <Typography variant="body1">
-          Enter as a Guest User.
-          <br />
-          You will not have a verified identity,
-          <br />
-          so some features might be unavailable.
-        </Typography>
-      </InfoCard>
-    </Grid>
-  );
+const guestLoader: ProviderLoader = async () => {
+  return { userId: 'guest' };
 };
 
-export type SignInProvider = 'guest';
+const guestProvider: SignInProvider = {
+  component: GuestProvider,
+  loader: guestLoader,
+};
+
+const signInProviders = {
+  guest: guestProvider,
+};
+
+export type SignInProviderId = keyof typeof signInProviders;
 
 export type Props = SignInPageProps & {
-  providers: SignInProvider[];
+  providers: SignInProviderId[];
 };
 
 export const SignInPage: FC<Props> = ({ onResult, providers }) => {
   const configApi = useApi(configApiRef);
+  const errorApi = useApi(errorApiRef);
+  const apiHolder = useApiHolder();
 
   // We can't use storageApi here, as it might have a dependency on the IdentityApi
-  const selectedProvider = localStorage.getItem(PROVIDER_STORAGE_KEY);
+  const selectedProvider = localStorage.getItem(
+    PROVIDER_STORAGE_KEY,
+  ) as SignInProviderId;
 
-  const makeResultHandler = (provider: SignInProvider) => (
-    result: SignInResult,
-  ) => {
-    localStorage.setItem(PROVIDER_STORAGE_KEY, provider);
+  const [attempting, setAttempting] = useState(Boolean(selectedProvider));
 
-    onResult({
-      ...result,
-      logout: async () => {
-        localStorage.removeItem(PROVIDER_STORAGE_KEY);
-        await result.logout?.();
-      },
-    });
-  };
+  useLayoutEffect(() => {
+    if (!attempting || selectedProvider === null) {
+      return undefined;
+    }
+
+    const provider = signInProviders[selectedProvider];
+    if (!provider) {
+      setAttempting(false);
+      return undefined;
+    }
+
+    let didCancel = false;
+    provider
+      .loader(apiHolder)
+      .then(result => {
+        if (didCancel) {
+          return;
+        }
+        setAttempting(false);
+        if (result) {
+          onResult({
+            ...result,
+            logout: async () => {
+              localStorage.removeItem(PROVIDER_STORAGE_KEY);
+              await result.logout?.();
+            },
+          });
+        }
+      })
+      .catch(error => {
+        if (!didCancel) {
+          errorApi.post(error);
+        }
+      });
+
+    return () => {
+      didCancel = true;
+    };
+  }, [attempting, errorApi, onResult, apiHolder, providers, selectedProvider]);
+
+  const providerElements = useMemo(
+    () =>
+      providers.map(providerId => {
+        const provider = signInProviders[providerId];
+        if (!provider) {
+          throw new Error(`Unknown sign-in provider: ${providerId}`);
+        }
+        const { component: Component } = provider;
+
+        const handleResult = (result: SignInResult) => {
+          localStorage.setItem(PROVIDER_STORAGE_KEY, providerId);
+
+          onResult({
+            ...result,
+            logout: async () => {
+              localStorage.removeItem(PROVIDER_STORAGE_KEY);
+              await result.logout?.();
+            },
+          });
+        };
+
+        return <Component key={providerId} onResult={handleResult} />;
+      }),
+    [providers, onResult],
+  );
 
   return (
     <Page>
       <Header title={configApi.getString('app.title') ?? 'Backstage'} />
       <Content>
         <ContentHeader title="Select a sign-in method" />
-        <Grid container>
-          {providers.includes('guest') && (
-            <GuestProvider
-              selected={selectedProvider === 'guest'}
-              onResult={makeResultHandler('guest')}
-            />
-          )}
-        </Grid>
+        <Grid container>{providerElements}</Grid>
       </Content>
     </Page>
   );
