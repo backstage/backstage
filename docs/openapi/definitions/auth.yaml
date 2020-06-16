@@ -113,6 +113,36 @@ paths:
       responses:
         200:
           description: Message received from consent popup
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AuthResponse'
+                  - $ref: '#/components/schemas/AuthError'
+              examples:
+                AuthResponse:
+                  summary: AuthResponse
+                  value: |
+                    {
+                      type: "auth-result",
+                      payload: {
+                          accessToken: "access-token",
+                          idToken: "id-token",
+                          expiresInSecond: 3600,
+                          scope: "email"
+                        }
+                    }
+                AuthError:
+                  summary: AuthError
+                  value: |
+                    {
+                      type: "auth-result",
+                      error: {
+                        name: "error",
+                        message: "message",
+                        stack: "stack"
+                      }
+                    }
           headers:
             Set-Cookie:
               description: Refresh cookie
@@ -219,3 +249,33 @@ components:
           type: string
         httpOnly:
           type: boolean
+    AuthResponse:
+      type: object
+      properties:
+        type:
+          type: string
+        payload:
+          type: object
+          properties:
+            accessToken:
+              type: string
+            idToken:
+              type: string
+            expiresInSeconds:
+              type: number
+            scope:
+              type: string
+    AuthError:
+      type: object
+      properties:
+        type:
+          type: string
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+            stack:
+              type: string
