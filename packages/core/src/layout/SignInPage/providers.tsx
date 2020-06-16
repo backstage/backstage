@@ -23,14 +23,16 @@ import {
   useApiHolder,
   errorApiRef,
 } from '@backstage/core-api';
+import { SignInProvider } from './types';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
-const signInProviders = {
+// Separate list here to avoid exporting internal types
+export type SignInProviderId = 'guest';
+
+const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
   guest: guestProvider,
 };
-
-export type SignInProviderId = keyof typeof signInProviders;
 
 export const useSignInProviders = (
   providers: SignInProviderId[],
