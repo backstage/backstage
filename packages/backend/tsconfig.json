@@ -10,6 +10,6 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "lib": ["es2019", "dom"],
-    "types": ["node", "jest"]
+    "types": ["node", "jest", "webpack-env"]
   }
 }

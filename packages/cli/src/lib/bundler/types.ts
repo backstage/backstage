@@ -25,6 +25,8 @@ export type BundlingOptions = {
   baseUrl: URL;
 };
 
+export type BackendBundlingOptions = Omit<BundlingOptions, 'baseUrl'>;
+
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   config: Config;

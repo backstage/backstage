@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
-import HomePage from './components/HomePage';
+import { ConfigReader } from '@backstage/config';
+import { loadConfig } from '@backstage/config-loader';
+import { Command } from 'commander';
+import { serveBackend } from '../../lib/bundler/backend';
 
-export const plugin = createPlugin({
-  id: 'home-page',
-  register({ router }) {
-    router.registerRoute('/home', HomePage);
-  },
-});
+export default async (cmd: Command) => {
+  const appConfigs = await loadConfig();
+  const waitForExit = await serveBackend({
+    entry: 'src/index',
+    checksEnabled: cmd.check,
+    config: ConfigReader.fromConfigs(appConfigs),
+    appConfigs,
+  });
+
+  await waitForExit();
+};

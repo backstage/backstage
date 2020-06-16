@@ -42,6 +42,12 @@ const main = (argv: string[]) => {
     .action(lazyAction(() => import('./commands/app/serve'), 'default'));
 
   program
+    .command('backend:dev')
+    .description('Start local development server with HMR for the backend')
+    .option('--check', 'Enable type checking and linting')
+    .action(lazyAction(() => import('./commands/backend/dev'), 'default'));
+
+  program
     .command('app:diff')
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')

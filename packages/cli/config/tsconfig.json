@@ -32,6 +32,6 @@
     "strictPropertyInitialization": true,
     "stripInternal": true,
     "target": "ES2019",
-    "types": ["node", "jest"]
+    "types": ["node", "jest", "webpack-env"]
   }
 }

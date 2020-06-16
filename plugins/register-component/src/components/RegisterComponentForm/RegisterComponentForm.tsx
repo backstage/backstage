@@ -64,14 +64,14 @@ const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
         <TextField
           id="registerComponentInput"
           variant="outlined"
-          label="Component service file URL"
+          label="Component file URL"
           data-testid="componentLocationInput"
           error={hasErrors}
-          placeholder="https://example.com/user/some-service/blob/master/service-info.yaml"
+          placeholder="https://example.com/user/some-service/blob/master/component.yaml"
           name="componentLocation"
           required
           margin="normal"
-          helperText="Enter the full path to the service-info.yaml file in GitHub to start tracking your component. It must be in a public repo."
+          helperText="Enter the full path to the component.yaml file in GitHub to start tracking your component. It must be in a public repo."
           inputRef={register({
             required: true,
             validate: ComponentIdValidators,

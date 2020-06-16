@@ -37,7 +37,7 @@ describe('RegisterComponentForm', () => {
     const { rendered } = setup();
     expect(
       await rendered.findByText(
-        'Enter the full path to the service-info.yaml file in GitHub to start tracking your component. It must be in a public repo.',
+        'Enter the full path to the component.yaml file in GitHub to start tracking your component. It must be in a public repo.',
       ),
     ).toBeInTheDocument();
 
@@ -51,7 +51,7 @@ describe('RegisterComponentForm', () => {
     await act(async () => {
       // react-hook-form uses `input` event for changes
       fireEvent.input(input, {
-        target: { value: 'https://example.com/blob/master/service.yaml' },
+        target: { value: 'https://example.com/blob/master/component.yaml' },
       });
     });
     const submit = (await rendered.getByRole('button')) as HTMLButtonElement;

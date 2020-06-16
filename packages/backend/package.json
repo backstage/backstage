@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "backstage-cli watch-deps --build -- tsc-watch --onFirstSuccess \\\"cross-env NODE_ENV=development nodemon -r esm\\\"",
+    "start": "backstage-cli backend:dev",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "clean": "backstage-cli clean",

@@ -24,6 +24,8 @@ import {
   useApi,
   errorApiRef,
   Header,
+  SupportButton,
+  ContentHeader,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
 import { catalogApiRef } from '@backstage/plugin-catalog';
@@ -94,12 +96,18 @@ const RegisterComponentPage: FC<{}> = () => {
   };
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page theme={pageTheme.home}>
       <Header title="Register existing component" />
       <Content>
+        <ContentHeader title="Start tracking your component in Backstage">
+          <SupportButton>
+            Start tracking your component in Backstage. TODO: Add more
+            information about what this is.
+          </SupportButton>
+        </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <InfoCard title="Start tracking your component in Backstage">
+            <InfoCard>
               <RegisterComponentForm
                 onSubmit={handleSubmit}
                 submitting={formState === FormStates.Submitting}

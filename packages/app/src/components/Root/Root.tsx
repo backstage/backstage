@@ -86,14 +86,14 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarSearchField onSearch={handleSearch} />
       <SidebarDivider />
       {/* Global nav, not org-specific */}
-      <SidebarItem icon={HomeIcon} to="/" text="Home" />
-      <SidebarItem icon={ExploreIcon} to="/explore" text="Explore" />
-      <SidebarItem icon={CreateComponentIcon} to="/create" text="Create..." />
+      <SidebarItem icon={HomeIcon} to="./" text="Home" />
+      <SidebarItem icon={ExploreIcon} to="explore" text="Explore" />
+      <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
       {/* End global nav */}
       <SidebarDivider />
-      <SidebarItem icon={MapIcon} to="/tech-radar" text="Tech Radar" />
-      <SidebarItem icon={RuleIcon} to="/lighthouse" text="Lighthouse" />
-      <SidebarItem icon={BuildIcon} to="/circleci" text="CircleCI" />
+      <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+      <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
+      <SidebarItem icon={BuildIcon} to="circleci" text="CircleCI" />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarThemeToggle />

@@ -111,8 +111,8 @@ const useStyles = makeStyles<Theme>(theme => {
 type SidebarItemProps = {
   icon: IconComponent;
   text?: string;
+  // If 'to' is set the item will act as a nav link with highlight, otherwise it's just a button
   to?: string;
-  disableSelected?: boolean;
   hasNotifications?: boolean;
   onClick?: () => void;
 };
@@ -120,9 +120,7 @@ type SidebarItemProps = {
 export const SidebarItem: FC<SidebarItemProps> = ({
   icon: Icon,
   text,
-  to = '#',
-  // TODO: isActive is not in v6
-  // disableSelected = false,
+  to,
   hasNotifications = false,
   onClick,
   children,
@@ -144,27 +142,25 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     </Badge>
   );
 
+  const childProps = {
+    onClick,
+    className: clsx(classes.root, isOpen ? classes.open : classes.closed),
+  };
+
   if (!isOpen) {
+    if (to === undefined) {
+      return <div {...childProps}>{itemIcon}</div>;
+    }
+
     return (
-      <NavLink
-        className={clsx(classes.root, classes.closed)}
-        activeClassName={classes.selected}
-        end
-        to={to}
-        onClick={onClick}
-      >
+      <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
         {itemIcon}
       </NavLink>
     );
   }
-  return (
-    <NavLink
-      className={clsx(classes.root, classes.open)}
-      activeClassName={classes.selected}
-      end
-      to={to}
-      onClick={onClick}
-    >
+
+  const content = (
+    <>
       <div data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
       </div>
@@ -174,6 +170,16 @@ export const SidebarItem: FC<SidebarItemProps> = ({
         </Typography>
       )}
       <div className={classes.secondaryAction}>{children}</div>
+    </>
+  );
+
+  if (to === undefined) {
+    return <div {...childProps}>{content}</div>;
+  }
+
+  return (
+    <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
+      {content}
     </NavLink>
   );
 };
@@ -198,7 +204,7 @@ export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
 
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon} disableSelected>
+      <SidebarItem icon={SearchIcon}>
         <TextField
           placeholder="Search"
           onChange={handleInput}

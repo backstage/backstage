@@ -9,6 +9,6 @@
     "target": "ES2019",
     "module": "commonjs",
     "esModuleInterop": true,
-    "types": ["node", "jest"]
+    "types": ["node", "jest", "webpack-env"]
   }
 }
