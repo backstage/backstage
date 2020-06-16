@@ -15,7 +15,7 @@
  */
 import { useState, useMemo } from 'react';
 import { EntityFilterType, entityFilters } from '../data/filters';
-import { useApi } from '@backstage/core';
+import { useApi, identifyApiRef } from '@backstage/core';
 import { catalogApiRef } from '..';
 import { useStarredEntities } from './useStarredEntites';
 import { Entity } from '@backstage/catalog-model';
@@ -42,11 +42,9 @@ export const useEntities = (): UseEntities => {
     ['catalog/all', entityFilters[selectedFilter ?? EntityFilterType.ALL]],
     async () => catalogApi.getEntities(),
   );
-  const useUser = () => {
-    const [user] = useState('tools@example.com');
-    return user;
-  };
-  const userId = useUser();
+
+  const indentityApi = useApi(identifyApiRef);
+  const userId = indentityApi.getUserId();
 
   const entitiesByFilter = useMemo(() => {
     const filterEntities = (
