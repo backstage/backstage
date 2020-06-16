@@ -34,11 +34,11 @@ export type SignInResult = {
   /**
    * ID token that will be returned by the IdentityApi
    */
-  idToken: string | undefined;
+  idToken?: string;
   /**
    * Logout handler that will be called if the user requests a logout.
    */
-  logout: () => Promise<void>;
+  logout?: () => Promise<void>;
 };
 
 export type SignInPageProps = {
