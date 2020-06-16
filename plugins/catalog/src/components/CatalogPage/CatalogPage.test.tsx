@@ -38,7 +38,7 @@ describe('CatalogPage', () => {
           metadata: {
             name: 'Entity1',
           },
-          apiVersion: 'backstage.io/v1beta1',
+          apiVersion: 'backstage.io/v1alpha1',
           kind: 'Component',
         },
       ] as Entity[]),

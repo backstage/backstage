@@ -23,7 +23,7 @@ describe('ReservedFieldsEntityPolicy', () => {
 
   beforeEach(() => {
     data = yaml.parse(`
-      apiVersion: backstage.io/v1beta1
+      apiVersion: backstage.io/v1alpha1
       kind: Component
       metadata:
         uid: e01199ab-08cc-44c2-8e19-5c29ded82521

@@ -44,7 +44,7 @@ describe('ComponentV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
-  it('happy path: silently accepts v1beta1 as well', async () => {
+  it('silently accepts v1beta1 as well', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta1';
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });

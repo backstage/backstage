@@ -24,13 +24,13 @@ describe('DefaultNamespaceEntityPolicy', () => {
 
   beforeEach(() => {
     withoutNamespace = yaml.parse(`
-      apiVersion: backstage.io/v1beta1
+      apiVersion: backstage.io/v1alpha1
       kind: Component
       metadata:
         name: my-component-yay
     `);
     withNamespace = yaml.parse(`
-      apiVersion: backstage.io/v1beta1
+      apiVersion: backstage.io/v1alpha1
       kind: Component
       metadata:
         name: my-component-yay
