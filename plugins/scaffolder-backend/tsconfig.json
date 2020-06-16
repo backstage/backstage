@@ -1,11 +1,16 @@
 {
-  "extends": "../../packages/backend/tsconfig.json",
-  "include": [
-    "./src"
-  ],
+  "include": ["src"],
   "compilerOptions": {
-    "baseUrl": "./src",
-    "outDir": "./dist",
-    "skipLibCheck": true
+    "outDir": "dist",
+    "incremental": true,
+    "sourceMap": true,
+    "declaration": true,
+    "strict": true,
+    "target": "es2019",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowJs": true,
+    "lib": ["es2019"],
+    "types": ["node", "jest", "webpack-env"]
   }
 }
