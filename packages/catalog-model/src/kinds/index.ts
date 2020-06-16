@@ -24,3 +24,8 @@ export type {
   LocationEntityV1alpha1 as LocationEntity,
   LocationEntityV1alpha1,
 } from './LocationEntityV1alpha1';
+export { TemplateEntityV1alpha1Policy } from './TemplateEntityV1alpha1';
+export type {
+  TemplateEntityV1alpha1 as TemplateEntity,
+  TemplateEntityV1alpha1,
+} from './TemplateEntityV1alpha1';

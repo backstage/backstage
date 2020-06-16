@@ -22,8 +22,8 @@ import {
   DiskStorage,
   CookieCutter,
 } from '../scaffolder';
-import { createStandaloneApplication } from './standaloneApplication';
-
+import { createServiceBuilder, useHotMemoize } from '@backstage/backend-common';
+import { createRouter } from './router';
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
@@ -34,27 +34,24 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'scaffolder-backend' });
-  const store = new DiskStorage({ logger });
+  const store = useHotMemoize(module, () => new DiskStorage({ logger }));
   const templater = new CookieCutter();
   logger.debug('Creating application...');
 
-  const app = await createStandaloneApplication({
-    enableCors: options.enableCors,
+  const router = await createRouter({
     storage: createStorage({ store, logger }),
     templater: createTemplater({ templater }),
     logger,
   });
 
-  logger.debug('Starting application server...');
-  return await new Promise((resolve, reject) => {
-    const server = app.listen(options.port, (err?: Error) => {
-      if (err) {
-        reject(err);
-        return;
-      }
+  const service = createServiceBuilder(module)
+    .enableCors({ origin: 'http://localhost:3000' })
+    .addRouter('/catalog', router);
 
-      logger.info(`Listening on port ${options.port}`);
-      resolve(server);
-    });
+  return await service.start().catch(err => {
+    logger.error(err);
+    process.exit(1);
   });
 }
+
+module.hot?.accept();
