@@ -6,7 +6,9 @@
   "types": "src/index.ts",
   "private": false,
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -19,7 +21,7 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "backstage-cli build-cache -- tsc",
+    "build": "backstage-cli build --outputs cjs,types",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
@@ -50,8 +52,7 @@
     "http-errors": "^1.7.3",
     "jest": "^26.0.1",
     "jest-fetch-mock": "^3.0.3",
-    "supertest": "^4.0.2",
-    "typescript": "^3.9.2"
+    "supertest": "^4.0.2"
   },
   "files": [
     "dist"
