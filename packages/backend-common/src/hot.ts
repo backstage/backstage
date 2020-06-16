@@ -66,11 +66,11 @@ export function useHotMemoize<T>(
   }
 
   // Let's store data per module based on the order of the code invocation
-  const index = _module.hot.data?.[CURRENT_HOT_MEMOIZE_INDEX_KEY];
+  const index = _module.hot.data[CURRENT_HOT_MEMOIZE_INDEX_KEY];
   // Increasing the counter after each call
   _module.hot.data[CURRENT_HOT_MEMOIZE_INDEX_KEY] += 1;
 
-  const prevValue = _module.hot.data?.[index];
+  const prevValue = _module.hot.data[index];
   const createDisposeHandler = (value: any) => (data: {
     [key: number]: any;
     [indexKey: string]: number;
@@ -78,7 +78,11 @@ export function useHotMemoize<T>(
     // Preserving the value through the HMR process
     data[index] = value;
     // Decreasing the counter after each handler
-    data[CURRENT_HOT_MEMOIZE_INDEX_KEY] = index - 1;
+    data[CURRENT_HOT_MEMOIZE_INDEX_KEY] =
+      // First hot update is still different, need to populate the data
+      typeof data[CURRENT_HOT_MEMOIZE_INDEX_KEY] === 'undefined'
+        ? _module.hot!.data[CURRENT_HOT_MEMOIZE_INDEX_KEY] - 1
+        : data[CURRENT_HOT_MEMOIZE_INDEX_KEY] - 1;
   };
 
   if (prevValue) {
