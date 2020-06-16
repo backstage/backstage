@@ -40,7 +40,7 @@ export type IdentityApi = {
   // TODO: getProfile(): Promise<Profile> - We want this to be async when added, but needs more work.
 };
 
-export const identifyApiRef = createApiRef<IdentityApi>({
+export const identityApiRef = createApiRef<IdentityApi>({
   id: 'core.identity',
   description: 'Provides access to the identity of the signed in user',
 });

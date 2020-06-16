@@ -32,6 +32,8 @@ import {
   githubAuthApiRef,
   storageApiRef,
   WebStorage,
+  identityApiRef,
+  MockIdentity,
 } from '@backstage/core';
 
 import {
@@ -51,6 +53,8 @@ export const apis = (config: ConfigApi) => {
   console.log(`Creating APIs for ${config.getString('app.title')}`);
 
   const builder = ApiRegistry.builder();
+
+  builder.add(identityApiRef, new MockIdentity());
 
   const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
   const errorApi = builder.add(

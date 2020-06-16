@@ -20,6 +20,8 @@ import {
   errorApiRef,
   storageApiRef,
   WebStorage,
+  IdentityApi,
+  identityApiRef,
 } from '@backstage/core';
 import { MockErrorApi, wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';

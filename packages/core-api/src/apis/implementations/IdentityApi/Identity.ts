@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { IdentityApi } from '../..';
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-
-export * from './auth';
-
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ConfigApi';
-export * from './ErrorApi';
-export * from './OAuthRequestApi';
-export * from './StorageApi';
-export * from './IdentityApi';
+export class MockIdentity implements IdentityApi {
+  getUserId(): string {
+    return '';
+  }
+  getIdToken(): string | undefined {
+    throw new Error('Method not implemented.');
+  }
+}

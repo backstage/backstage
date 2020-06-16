@@ -11,6 +11,8 @@ import {
   ErrorAlerter,
   GoogleAuth,
   GithubAuth,
+  identityApiRef,
+  MockIdentity,
 } from '@backstage/core';
 
 const builder = ApiRegistry.builder();
@@ -18,6 +20,8 @@ const builder = ApiRegistry.builder();
 const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 
 builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
+
+builder.add(identityApiRef, new MockIdentity());
 
 const oauthRequestApi = builder.add(
   oauthRequestApiRef,
