@@ -17,17 +17,25 @@
 import React, { useContext, useEffect } from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import Star from '@material-ui/icons/Star';
+import SignOutIcon from '@material-ui/icons/MeetingRoom';
 import { SidebarContext } from './config';
-import { googleAuthApiRef, githubAuthApiRef } from '@backstage/core-api';
+import {
+  googleAuthApiRef,
+  githubAuthApiRef,
+  identityApiRef,
+  useApi,
+} from '@backstage/core-api';
 import {
   OAuthProviderSettings,
   OIDCProviderSettings,
   UserProfile as SidebarUserProfile,
 } from './Settings';
+import { SidebarItem } from './Items';
 
 export function SidebarUserSettings() {
   const { isOpen: sidebarOpen } = useContext(SidebarContext);
   const [open, setOpen] = React.useState(false);
+  const identityApi = useApi(identityApiRef);
 
   // Close the provider list when sidebar collapse
   useEffect(() => {
@@ -47,6 +55,11 @@ export function SidebarUserSettings() {
           title="Github"
           apiRef={githubAuthApiRef}
           icon={Star}
+        />
+        <SidebarItem
+          icon={SignOutIcon}
+          text="Sign Out"
+          onClick={() => identityApi.logout()}
         />
       </Collapse>
     </>
