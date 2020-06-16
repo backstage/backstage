@@ -23,8 +23,8 @@ import {
   SchemaValidEntityPolicy,
 } from './entity';
 import {
-  ComponentEntityV1beta1Policy,
-  LocationEntityV1beta1Policy,
+  ComponentEntityV1alpha1Policy,
+  LocationEntityV1alpha1Policy,
 } from './kinds';
 import { EntityPolicy } from './types';
 
@@ -72,8 +72,8 @@ export class EntityPolicies implements EntityPolicy {
         new ReservedFieldsEntityPolicy(),
       ]),
       EntityPolicies.anyOf([
-        new ComponentEntityV1beta1Policy(),
-        new LocationEntityV1beta1Policy(),
+        new ComponentEntityV1alpha1Policy(),
+        new LocationEntityV1alpha1Policy(),
       ]),
     ]);
   }

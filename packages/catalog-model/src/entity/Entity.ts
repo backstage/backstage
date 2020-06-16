@@ -96,6 +96,12 @@ export type EntityMeta = {
   namespace?: string;
 
   /**
+   * A short (typically relatively few words, on one line) description of the
+   * entity.
+   */
+  description?: string;
+
+  /**
    * Key/value pairs of identifying information attached to the entity.
    */
   labels?: Record<string, string>;

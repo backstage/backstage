@@ -22,17 +22,17 @@ import { CatalogTable } from './CatalogTable';
 
 const entites: Entity[] = [
   {
-    apiVersion: 'backstage.io/v1beta1',
+    apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: { name: 'component1' },
   },
   {
-    apiVersion: 'backstage.io/v1beta1',
+    apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: { name: 'component2' },
   },
   {
-    apiVersion: 'backstage.io/v1beta1',
+    apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: { name: 'component3' },
   },

@@ -52,7 +52,7 @@ This is an example entity definition with some mocked data.
 
 ```yaml
 ---
-apiVersion: backstage.io/v1beta1
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: frobs-awesome
@@ -96,8 +96,8 @@ Backstage specific entities have an `apiVersion` that is prefixed with
 same type of structure. This may be relevant when co-hosting these
 specifications with e.g. kubernetes object manifests.
 
-Early versions of the catalog will be using beta versions, e.g.
-`backstage.io/v1beta1`, to signal that the format may still change. After that,
+Early versions of the catalog will be using alpha/beta versions, e.g.
+`backstage.io/v1alpha1`, to signal that the format may still change. After that,
 we will be using `backstage.io/v1` and up.
 
 ### `metadata`
@@ -213,10 +213,10 @@ Values can be of any length, but are limited to being strings.
 
 ## Component
 
-| Field        | Value                  |
-| ------------ | ---------------------- |
-| `apiVersion` | `backstage.io/v1beta1` |
-| `kind`       | `Component`            |
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Component`             |
 
 The `spec` object for this kind is as follows:
 
