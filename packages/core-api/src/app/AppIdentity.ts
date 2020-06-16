@@ -22,21 +22,22 @@ import { SignInResult } from './types';
  * and sign-in page.
  */
 export class AppIdentity implements IdentityApi {
+  private hasIdentity = false;
   private userId?: string;
   private idToken?: string;
   private logoutFunc?: () => Promise<void>;
 
   getUserId(): string {
-    if (!this.userId) {
+    if (!this.hasIdentity) {
       throw new Error(
         'Tried to access IdentityApi userId before app was loaded',
       );
     }
-    return this.userId;
+    return this.userId!;
   }
 
-  getIdToken(): string {
-    if (!this.idToken) {
+  getIdToken(): string | undefined {
+    if (!this.hasIdentity) {
       throw new Error(
         'Tried to access IdentityApi idToken before app was loaded',
       );
@@ -45,15 +46,23 @@ export class AppIdentity implements IdentityApi {
   }
 
   async logout(): Promise<void> {
-    if (!this.logoutFunc) {
+    if (!this.hasIdentity) {
       throw new Error(
         'Tried to access IdentityApi logoutFunc before app was loaded',
       );
     }
-    await this.logoutFunc;
+    await this.logoutFunc?.();
+    location.reload();
   }
 
   setSignInResult(result: SignInResult) {
+    if (this.hasIdentity) {
+      return;
+    }
+    if (!result.userId) {
+      throw new Error('Invalid sign-in result, userId not set');
+    }
+    this.hasIdentity = true;
     this.userId = result.userId;
     this.idToken = result.idToken;
     this.logoutFunc = result.logout;

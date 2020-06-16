@@ -38,6 +38,11 @@ export type IdentityApi = {
   getIdToken(): string | undefined;
 
   // TODO: getProfile(): Promise<Profile> - We want this to be async when added, but needs more work.
+
+  /**
+   * Log out the current user
+   */
+  logout(): Promise<void>;
 };
 
 export const identityApiRef = createApiRef<IdentityApi>({
