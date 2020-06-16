@@ -1,4 +1,4 @@
-apiVersion: backstage.io/v1beta1
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: queue-proxy

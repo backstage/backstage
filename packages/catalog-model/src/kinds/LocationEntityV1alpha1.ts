@@ -18,11 +18,11 @@ import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
 import type { EntityPolicy } from '../types';
 
-const API_VERSION = 'backstage.io/v1beta1';
-const KIND = 'Location';
+const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
+const KIND = 'Location' as const;
 
-export interface LocationEntityV1beta1 extends Entity {
-  apiVersion: typeof API_VERSION;
+export interface LocationEntityV1alpha1 extends Entity {
+  apiVersion: typeof API_VERSION[number];
   kind: typeof KIND;
   spec: {
     type: string;
@@ -31,15 +31,17 @@ export interface LocationEntityV1beta1 extends Entity {
   };
 }
 
-export class LocationEntityV1beta1Policy implements EntityPolicy {
+export class LocationEntityV1alpha1Policy implements EntityPolicy {
   private schema: yup.Schema<any>;
 
   constructor() {
-    this.schema = yup.object<Partial<LocationEntityV1beta1>>({
+    this.schema = yup.object<Partial<LocationEntityV1alpha1>>({
+      apiVersion: yup.string().required().oneOf(API_VERSION),
+      kind: yup.string().required().equals([KIND]),
       spec: yup
         .object({
-          type: yup.string().required(),
-          target: yup.string().notRequired(),
+          type: yup.string().required().min(1),
+          target: yup.string().notRequired().min(1),
           targets: yup.array(yup.string()).notRequired(),
         })
         .required(),
@@ -47,10 +49,6 @@ export class LocationEntityV1beta1Policy implements EntityPolicy {
   }
 
   async enforce(envelope: Entity): Promise<Entity> {
-    if (envelope.apiVersion !== API_VERSION || envelope.kind !== KIND) {
-      throw new Error('Unsupported apiVersion / kind');
-    }
-
     return await this.schema.validate(envelope, { strict: true });
   }
 }
