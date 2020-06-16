@@ -1,18 +1,27 @@
 openapi: 3.0.1
 info:
   title: Auth API
-  description:
-    Backstage passport-based auth-provider API. Each provider that is configured
-    in `@backstage/auth-backend` is supplied with the documented endpoints.
+  description: |
+    # Backstage's auth-provider API.
+
+    **Provided by `@backstage/auth-backend`.**
+
+    The purpose of the Auth APIs in Backstage are to identify the user, and to provide a way for plugins 
+    to request access to 3rd party services on behalf of that user.
+
+    The API is supplied with a list of providers - such as `Google` or `Github` - and will add the endpoints 
+    described below to each of those providers.
+
+    Read more about [User Authentication and Authorization in Backstage](https://github.com/spotify/backstage/blob/master/docs/auth/overview.md).
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.1.1-alpha.7
+  version: 0.1.1-alpha.8
 externalDocs:
   description: Backstage official documentation
   url: https://github.com/spotify/backstage/blob/master/docs/README.md
 servers:
-  - url: http://localhost:7000/auth/google
+  - url: http://localhost:7000/auth/
 tags:
   - name: provider
     description: List of endpoints per provider
@@ -22,7 +31,7 @@ paths:
       tags:
         - provider
       summary:
-        Initializes the authorization flow and redirects to a consent popup for
+        Initializes the authorization flow and redirects to a consent screen for
         the provider
       description:
         The popup window is pointed to the `/start` endpoint of the auth
@@ -31,7 +40,9 @@ paths:
       parameters:
         - name: scope
           in: query
-          description: Scope requested for the auth session
+          description:
+            Scope requested for the auth session. The scope format and handling
+            is specific to each provider
           required: true
           schema:
             type: string
@@ -76,8 +87,7 @@ paths:
         - name: code
           in: query
           description:
-            Short-term authorization code used to be exchanged for long-term
-            tokens
+            Short-term authorization code used to be exchanged for access tokens
           required: true
           schema:
             type: string
@@ -108,13 +118,6 @@ paths:
               description: Refresh cookie
               schema:
                 $ref: '#/components/schemas/Refresh-Cookie'
-    post:
-      tags:
-        - provider
-      summary: TODO
-      responses:
-        default:
-          description: TODO
   /refresh:
     get:
       tags:
@@ -169,6 +172,7 @@ paths:
           required: true
           schema:
             type: string
+            example: 'x-requested-with: XMLHttpRequest'
       responses:
         200:
           description: Successfully logged out
