@@ -17,6 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
+import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
 import {
   CatalogFilterGroup,
   CatalogFilterItem,
@@ -30,10 +31,7 @@ export enum EntityFilterType {
   TYPE = 'TYPE',
 }
 
-export const createFilterGroups = (
-  typeLabel?: string,
-  entities?: Entity[],
-): CatalogFilterGroup[] => [
+export const filterGroups: CatalogFilterGroup[] = [
   {
     name: 'Personal',
     items: [
@@ -57,8 +55,8 @@ export const createFilterGroups = (
     items: [
       {
         id: EntityFilterType.ALL,
-        label: `All ${typeLabel}`,
-        count: entities?.length,
+        label: 'All Services',
+        count: AllServicesCount,
       },
     ],
   },
@@ -78,5 +76,4 @@ export const entityFilters: Record<string, EntityFilter> = {
   [EntityFilterType.TYPE]: (e, { type }) => (e.spec as any)?.type === type,
 };
 
-export const defaultFilter: CatalogFilterItem = createFilterGroups()[0]
-  .items[0];
+export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];

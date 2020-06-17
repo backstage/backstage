@@ -21,7 +21,6 @@ import {
   DismissableBanner,
   Header,
   HeaderTabs,
-  Tab,
   HomepageTimer,
   Page,
   pageTheme,
@@ -40,7 +39,7 @@ import { catalogApiRef } from '../..';
 import {
   defaultFilter,
   entityFilters,
-  createFilterGroups,
+  filterGroups,
   EntityFilterType,
 } from '../../data/filters';
 import { findLocationForEntityMeta } from '../../data/utils';
@@ -53,8 +52,7 @@ import { CatalogTable } from '../CatalogTable/CatalogTable';
 import useStaleWhileRevalidate from 'swr';
 
 // TODO: replace me with the proper tabs implemntation
-
-const tabs: Tab[] = [
+const tabs = [
   {
     id: 'service',
     label: 'Services',
@@ -208,14 +206,7 @@ export const CatalogPage: FC<{}> = () => {
         <div className={styles.contentWrapper}>
           <div>
             <CatalogFilter
-              groups={createFilterGroups(
-                tabs.find(tab => tab.id === selectedTab)?.label,
-                entities?.filter(e =>
-                  entityFilters[EntityFilterType.TYPE](e, {
-                    type: selectedTab,
-                  }),
-                ),
-              )}
+              groups={filterGroups}
               selectedId={selectedFilter.id}
               onSelectedChange={onFilterSelected}
             />
