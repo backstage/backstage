@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// import fs from 'fs-extra';
-import fs from 'fs';
+import fs from 'fs-extra';
+import path from 'path';
+import os from 'os';
 import {
   TemplateEntityV1alpha1,
   LOCATION_ANNOTATION,
@@ -26,14 +27,16 @@ export class FilePreparer implements PreparerBase {
   async prepare(template: TemplateEntityV1alpha1): Promise<string> {
     const location = template?.metadata?.annotations?.[LOCATION_ANNOTATION];
 
-    const [locationType, actualLocation] = (location ?? '').split(/:(.+)/);
+    const [locationType, templateEntityLocation] = (location ?? '').split(
+      /:(.+)/,
+    );
     if (locationType !== 'file') {
       throw new InputError(
         `Wrong location type: ${locationType}, should be 'file'`,
       );
     }
 
-    if (!actualLocation) {
+    if (!templateEntityLocation) {
       throw new InputError(
         `Couldn't parse location for template: ${template.metadata.name}`,
       );
@@ -41,9 +44,18 @@ export class FilePreparer implements PreparerBase {
 
     const templateId = template.metadata.name;
 
-    const tempDir = await fs.promises.mkdtemp(templateId);
+    const tempDir = await fs.promises.mkdtemp(
+      path.join(os.tmpdir(), templateId),
+    );
 
-    // await fs.copy(actualLocation, tempDir);
+    const parentDirectory = path.dirname(templateEntityLocation);
+
+    await fs.copy(parentDirectory, tempDir, {
+      filter: src => src !== templateEntityLocation,
+    });
+
+    // TODO(blam): Need to use the `spec.path` with path.resolve to ensure that the test case for test-nested-templates will work
+
     return tempDir;
   }
 }
