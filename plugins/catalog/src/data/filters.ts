@@ -55,7 +55,7 @@ export const filterGroups: CatalogFilterGroup[] = [
     items: [
       {
         id: EntityFilterType.ALL,
-        label: 'All Services',
+        label: 'All Entities',
         count: AllServicesCount,
       },
     ],
