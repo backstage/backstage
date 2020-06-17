@@ -20,7 +20,7 @@ import mockFetch from 'jest-fetch-mock';
 import ProfileCatalog from './ProfileCatalog';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { ApiProvider, ApiRegistry } from '@backstage/core-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { gitOpsApiRef, GitOpsRestApi } from '../../api';
 
 describe('ProfileCatalog', () => {

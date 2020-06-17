@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.1.1-alpha.8",
+  "version": "0.1.1-alpha.9",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "private": true,
@@ -17,20 +17,20 @@
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.8",
-    "@backstage/catalog-model": "^0.1.1-alpha.8",
-    "@backstage/plugin-auth-backend": "^0.1.1-alpha.8",
-    "@backstage/plugin-catalog-backend": "^0.1.1-alpha.8",
-    "@backstage/plugin-identity-backend": "^0.1.1-alpha.8",
-    "@backstage/plugin-scaffolder-backend": "^0.1.1-alpha.8",
-    "@backstage/plugin-sentry-backend": "^0.1.1-alpha.8",
+    "@backstage/backend-common": "^0.1.1-alpha.9",
+    "@backstage/catalog-model": "^0.1.1-alpha.9",
+    "@backstage/plugin-auth-backend": "^0.1.1-alpha.9",
+    "@backstage/plugin-catalog-backend": "^0.1.1-alpha.9",
+    "@backstage/plugin-identity-backend": "^0.1.1-alpha.9",
+    "@backstage/plugin-scaffolder-backend": "^0.1.1-alpha.9",
+    "@backstage/plugin-sentry-backend": "^0.1.1-alpha.9",
     "express": "^4.17.1",
     "knex": "^0.21.1",
     "sqlite3": "^4.2.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.8",
+    "@backstage/cli": "^0.1.1-alpha.9",
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
     "@types/helmet": "^0.0.47"

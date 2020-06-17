@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "0.1.1-alpha.7",
+  "version": "0.1.1-alpha.9",
   "private": false,
   "publishConfig": {
     "access": "public",
