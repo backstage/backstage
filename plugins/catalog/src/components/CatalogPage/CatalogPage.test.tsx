@@ -24,7 +24,7 @@ import {
   identityApiRef,
 } from '@backstage/core';
 import { MockErrorApi, wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { screen, render, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { catalogApiRef } from '../..';
 import { CatalogApi } from '../../api/types';
@@ -42,31 +42,66 @@ describe('CatalogPage', () => {
           },
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Component',
+          spec: {
+            owner: 'tools@example.com',
+          },
+        },
+        {
+          metadata: {
+            name: 'Entity2',
+          },
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          spec: {
+            owner: 'not-tools@example.com',
+          },
         },
       ] as Entity[]),
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
+  };
+  const mockIndentityApi: Partial<IdentityApi> = {
+    getUserId: () => 'tools@example.com',
   };
 
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    const rendered = render(
+    render(
       wrapInTestApp(
         <ApiProvider
           apis={ApiRegistry.from([
             [errorApiRef, mockErrorApi],
             [catalogApiRef, catalogApi],
             [storageApiRef, new WebStorage('@mock', mockErrorApi)],
+            [identityApiRef, mockIndentityApi],
           ])}
         >
           <CatalogPage />
         </ApiProvider>,
       ),
     );
-    expect(
-      await rendered.findByText('Backstage Service Catalog'),
-    ).toBeInTheDocument();
+    await waitFor(() => screen.getByText(/All Services \(2\)/));
+    expect(screen.getByText(/All Services \(2\)/)).toBeInTheDocument();
+  });
+  it('should filter by owner', async () => {
+    render(
+      wrapInTestApp(
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [errorApiRef, mockErrorApi],
+            [catalogApiRef, catalogApi],
+            [storageApiRef, new WebStorage('@mock', mockErrorApi)],
+            [identityApiRef, mockIndentityApi],
+          ])}
+        >
+          <CatalogPage />
+        </ApiProvider>,
+      ),
+    );
+    fireEvent.click(screen.getByText(/Owned/));
+    await waitFor(() => screen.getByText(/Owned \(1\)/));
+    expect(screen.getByText(/Owned \(1\)/)).toBeInTheDocument();
   });
 });

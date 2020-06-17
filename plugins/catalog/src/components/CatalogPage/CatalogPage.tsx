@@ -36,6 +36,7 @@ import { CatalogTable } from '../CatalogTable/CatalogTable';
 import { useEntities } from '../../hooks/useEntities';
 import { findLocationForEntityMeta } from '../../data/utils';
 import {
+  filterGroups,
   getCatalogFilterItemByType,
   EntityFilterType,
 } from '../../data/filters';
@@ -171,6 +172,7 @@ export const CatalogPage: FC<{}> = () => {
         <div className={styles.contentWrapper}>
           <div>
             <CatalogFilter
+              groups={filterGroups}
               selectedFilter={selectedId ?? EntityFilterType.ALL}
               onFilterChange={setSelectedFilter}
               entitiesByFilter={entitiesByFilter}

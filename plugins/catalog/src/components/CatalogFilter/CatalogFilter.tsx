@@ -26,7 +26,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import type { IconComponent } from '@backstage/core';
-import { EntityFilterType, filterGroups } from '../../data/filters';
+import { EntityFilterType } from '../../data/filters';
 import { EntitiesByFilter } from '../../hooks/useEntities';
 
 export type CatalogFilterItem = {
@@ -71,12 +71,13 @@ export const CatalogFilter: FC<{
   selectedFilter: EntityFilterType;
   onFilterChange: (type: EntityFilterType) => void;
   entitiesByFilter: EntitiesByFilter;
+  groups: CatalogFilterGroup[];
 }> = ({
   selectedFilter: selectedId,
   onFilterChange: setSelectedFilter,
   entitiesByFilter,
+  groups,
 }) => {
-  const groups = filterGroups;
   const classes = useStyles();
   return (
     <Card className={classes.root}>
