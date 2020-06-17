@@ -231,6 +231,9 @@ describe('ConfigReader with fallback', () => {
       'a',
       'b',
     ]);
+    expect(() => config.getConfig('merged').getStringArray('x')).toThrow(
+      'Invalid type in config for key merged.x, got string, wanted string-array',
+    );
 
     // Config arrays aren't merged either
     expect(config.getConfigArray('merged.configs').length).toBe(1);
@@ -238,7 +241,7 @@ describe('ConfigReader with fallback', () => {
     expect(config.getConfigArray('merged.configs')[0].getString('a')).toBe('a');
     expect(() =>
       config.getConfigArray('merged.configs')[0].getString('missing'),
-    ).toThrow("Missing required config value at 'missing'");
+    ).toThrow("Missing required config value at 'merged.configs[0].missing'");
     expect(
       config.getConfigArray('merged.configs')[0].getOptionalString('b'),
     ).toBeUndefined();
