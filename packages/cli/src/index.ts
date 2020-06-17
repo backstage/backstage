@@ -127,29 +127,6 @@ const main = (argv: string[]) => {
     .action(lazyAction(() => import('./commands/pack'), 'post'));
 
   program
-    .command('watch-deps')
-    .option('--build', 'Build all dependencies on startup')
-    .description('Watch all dependencies while running another command')
-    .action(lazyAction(() => import('./commands/watch-deps'), 'default'));
-
-  program
-    .command('build-cache')
-    .description('Wrap build command with a cache')
-    .option(
-      '--input <dirs>',
-      'List of input directories that invalidate the cache [.]',
-      (value, acc) => acc.concat(value),
-      [],
-    )
-    .option('--output <dir>', 'Output directory to cache', 'dist')
-    .option(
-      '--cache-dir <dir>',
-      'Cache dir',
-      '<repoRoot>/node_modules/.cache/backstage-builds',
-    )
-    .action(lazyAction(() => import('./commands/build-cache'), 'default'));
-
-  program
     .command('clean')
     .description('Delete cache directories')
     .action(lazyAction(() => import('./commands/clean/clean'), 'default'));
