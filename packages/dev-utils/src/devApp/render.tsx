@@ -82,8 +82,10 @@ class DevAppBuilder {
       apis: this.setupApiRegistry(this.factories),
       plugins: this.plugins,
     });
+
     const AppProvider = app.getProvider();
-    const AppComponent = app.getRootComponent();
+    const AppRouter = app.getRouter();
+    const AppRoutes = app.getRoutes();
 
     const sidebar = this.setupSidebar(this.plugins);
 
@@ -93,10 +95,13 @@ class DevAppBuilder {
           <AlertDisplay />
           <OAuthRequestDialog />
           {this.rootChildren}
-          <SidebarPage>
-            {sidebar}
-            <AppComponent />
-          </SidebarPage>
+
+          <AppRouter>
+            <SidebarPage>
+              {sidebar}
+              <AppRoutes />
+            </SidebarPage>
+          </AppRouter>
         </AppProvider>
       );
     };

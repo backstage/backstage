@@ -39,12 +39,18 @@ ApiProvider.propTypes = {
   children: PropTypes.node,
 };
 
-export function useApi<T>(apiRef: ApiRef<T>): T {
+export function useApiHolder(): ApiHolder {
   const apiHolder = useContext(Context);
 
   if (!apiHolder) {
     throw new Error('No ApiProvider available in react context');
   }
+
+  return apiHolder;
+}
+
+export function useApi<T>(apiRef: ApiRef<T>): T {
+  const apiHolder = useApiHolder();
 
   const api = apiHolder.get(apiRef);
   if (!api) {

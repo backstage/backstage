@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-export { ApiProvider, useApi, useApiHolder } from './ApiProvider';
-export { ApiRegistry } from './ApiRegistry';
-export { ApiTestRegistry } from './ApiTestRegistry';
-export * from './ApiRef';
-export * from './types';
-export * from './helpers';
-export * from './definitions';
-export * from './implementations';
+import { buildPackage, Output } from '../../lib/packager';
+
+export default async () => {
+  await buildPackage({
+    outputs: new Set([Output.cjs, Output.types]),
+  });
+};

@@ -48,10 +48,15 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     }
   }
 
+  // Backend plugin dev run file
+  const targetRunFile = paths.resolveTarget('src/run.ts');
+  const runFileExists = fs.pathExistsSync(targetRunFile);
+
   return {
     targetHtml,
     targetPublic,
     targetPath: paths.resolveTarget('.'),
+    targetRunFile: runFileExists ? targetRunFile : undefined,
     targetDist: paths.resolveTarget('dist'),
     targetAssets: paths.resolveTarget('assets'),
     targetSrc: paths.resolveTarget('src'),

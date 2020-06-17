@@ -13,13 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType, FC, useMemo } from 'react';
+import React, {
+  ComponentType,
+  FC,
+  useMemo,
+  useCallback,
+  useState,
+  ReactElement,
+} from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
-import { BackstageApp, AppComponents, AppConfigLoader, Apis } from './types';
+import {
+  BackstageApp,
+  AppComponents,
+  AppConfigLoader,
+  Apis,
+  SignInResult,
+  SignInPageProps,
+} from './types';
 import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
-import { featureFlagsApiRef } from '../apis/definitions';
+import {
+  featureFlagsApiRef,
+  AppThemeApi,
+  ConfigApi,
+  identityApiRef,
+} from '../apis/definitions';
 import { AppThemeProvider } from './AppThemeProvider';
 
 import { IconComponent, SystemIcons, SystemIconKey } from '../icons';
@@ -32,9 +51,11 @@ import {
   appThemeApiRef,
   configApiRef,
   ConfigReader,
+  useApi,
 } from '../apis';
 import { ApiAggregator } from '../apis/ApiAggregator';
 import { useAsync } from 'react-use';
+import { AppIdentity } from './AppIdentity';
 
 type FullAppOptions = {
   apis: Apis;
@@ -45,6 +66,41 @@ type FullAppOptions = {
   configLoader?: AppConfigLoader;
 };
 
+function useConfigLoader(
+  configLoader: AppConfigLoader | undefined,
+  components: AppComponents,
+  appThemeApi: AppThemeApi,
+): { api: ConfigApi } | { node: JSX.Element } {
+  // Keeping this synchronous when a config loader isn't set simplifies tests a lot
+  const hasConfig = Boolean(configLoader);
+  const config = useAsync(configLoader || (() => Promise.resolve([])));
+
+  let noConfigNode = undefined;
+
+  if (hasConfig && config.loading) {
+    const { Progress } = components;
+    noConfigNode = <Progress />;
+  } else if (config.error) {
+    const { BootErrorPage } = components;
+    noConfigNode = <BootErrorPage step="load-config" error={config.error} />;
+  }
+
+  // Before the config is loaded we can't use a router, so exit early
+  if (noConfigNode) {
+    return {
+      node: (
+        <ApiProvider apis={ApiRegistry.from([[appThemeApiRef, appThemeApi]])}>
+          <AppThemeProvider>{noConfigNode}</AppThemeProvider>
+        </ApiProvider>
+      ),
+    };
+  }
+
+  const configReader = ConfigReader.fromConfigs(config.value ?? []);
+
+  return { api: configReader };
+}
+
 export class PrivateAppImpl implements BackstageApp {
   private apis?: ApiHolder = undefined;
   private readonly icons: SystemIcons;
@@ -52,6 +108,8 @@ export class PrivateAppImpl implements BackstageApp {
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
+
+  private readonly identityApi = new AppIdentity();
 
   private apisOrFactory: Apis;
 
@@ -79,7 +137,7 @@ export class PrivateAppImpl implements BackstageApp {
     return this.icons[key];
   }
 
-  getRootComponent(): ComponentType<{}> {
+  getRoutes(): ComponentType<{}> {
     const routes = new Array<JSX.Element>();
     const registeredFeatureFlags = new Array<FeatureFlagsRegistryItem>();
 
@@ -151,71 +209,115 @@ export class PrivateAppImpl implements BackstageApp {
         [],
       );
 
-      // Keeping this synchronous when a config loader isn't set simplifies tests a lot
-      const hasConfig = Boolean(this.configLoader);
-      const config = useAsync(this.configLoader || (() => Promise.resolve([])));
+      const loadedConfig = useConfigLoader(
+        this.configLoader,
+        this.components,
+        appThemeApi,
+      );
 
-      let noConfigNode = undefined;
-
-      if (hasConfig && config.loading) {
-        const { Progress } = this.components;
-        noConfigNode = <Progress />;
-      } else if (config.error) {
-        const { BootErrorPage } = this.components;
-        noConfigNode = (
-          <BootErrorPage step="load-config" error={config.error} />
-        );
+      if ('node' in loadedConfig) {
+        return loadedConfig.node;
       }
+      const configApi = loadedConfig.api;
 
-      // Before the config is loaded we can't use a router, so exit early
-      if (noConfigNode) {
-        return (
-          <ApiProvider apis={ApiRegistry.from([[appThemeApiRef, appThemeApi]])}>
-            <AppThemeProvider>{noConfigNode}</AppThemeProvider>
-          </ApiProvider>
-        );
-      }
-
-      const configReader = ConfigReader.fromConfigs(config.value ?? []);
       const appApis = ApiRegistry.from([
-        [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
-        [configApiRef, configReader],
+        [appThemeApiRef, appThemeApi],
+        [configApiRef, configApi],
+        [identityApiRef, this.identityApi],
       ]);
 
       if (!this.apis) {
         if ('get' in this.apisOrFactory) {
           this.apis = this.apisOrFactory;
         } else {
-          this.apis = this.apisOrFactory(configReader);
+          this.apis = this.apisOrFactory(configApi);
         }
       }
 
       const apis = new ApiAggregator(this.apis, appApis);
 
-      const { Router } = this.components;
+      return (
+        <ApiProvider apis={apis}>
+          <AppContextProvider app={this}>
+            <AppThemeProvider>{children}</AppThemeProvider>
+          </AppContextProvider>
+        </ApiProvider>
+      );
+    };
+    return Provider;
+  }
+
+  getRouter(): ComponentType<{}> {
+    const {
+      Router: RouterComponent,
+      SignInPage: SignInPageComponent,
+    } = this.components;
+
+    // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
+    const SignInPageWrapper: FC<{
+      component: ComponentType<SignInPageProps>;
+      children: ReactElement;
+    }> = ({ component: Component, children }) => {
+      const [done, setDone] = useState(false);
+
+      const onResult = useCallback(
+        (result: SignInResult) => {
+          if (done) {
+            throw new Error('Identity result callback was called twice');
+          }
+          setDone(true);
+          this.identityApi.setSignInResult(result);
+        },
+        [done],
+      );
+
+      if (done) {
+        return children;
+      }
+
+      return <Component onResult={onResult} />;
+    };
+
+    const AppRouter: FC<{}> = ({ children }) => {
+      const configApi = useApi(configApiRef);
+
       let { pathname } = new URL(
-        configReader.getString('app.baseUrl') ?? '/',
+        configApi.getString('app.baseUrl') ?? '/',
         'http://dummy.dev', // baseUrl can be specified as just a path
       );
       if (pathname.endsWith('/')) {
         pathname = pathname.replace(/\/$/, '');
       }
 
+      // If the app hasn't configured a sign-in page, we just continue as guest.
+      if (!SignInPageComponent) {
+        this.identityApi.setSignInResult({
+          userId: 'guest',
+          idToken: undefined,
+          logout: async () => {},
+        });
+
+        return (
+          <RouterComponent>
+            <Routes>
+              <Route path={`${pathname}/*`} element={<>{children}</>} />
+            </Routes>
+          </RouterComponent>
+        );
+      }
+
       return (
-        <ApiProvider apis={apis}>
-          <AppContextProvider app={this}>
-            <AppThemeProvider>
-              <Router>
-                <Routes>
-                  <Route path={`${pathname}/*`} element={<>{children}</>} />
-                </Routes>
-              </Router>
-            </AppThemeProvider>
-          </AppContextProvider>
-        </ApiProvider>
+        <RouterComponent>
+          <SignInPageWrapper component={SignInPageComponent}>
+            <Routes>
+              <Route path={`${pathname}/*`} element={<>{children}</>} />
+            </Routes>
+          </SignInPageWrapper>
+        </RouterComponent>
       );
     };
-    return Provider;
+
+    return AppRouter;
   }
 
   verify() {

@@ -19,19 +19,21 @@ import {
   Lifecycle,
   Content,
   ContentHeader,
-  InfoCard,
   Header,
   Page,
   pageTheme,
 } from '@backstage/core';
 import { Typography, Link, Button } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
+import TemplateCard from '../TemplateCard';
 
 // TODO(blam): Connect to backend
 const STATIC_DATA = [
   {
     id: 'react-ssr-template',
+    type: 'web-infra',
     name: 'SSR React Website',
+    tags: ['Experimental'],
     description:
       'Next.js application skeleton for creating isomorphic web applications.',
     ownerId: 'something',
@@ -68,15 +70,15 @@ const ScaffolderPage: React.FC<{}> = () => {
           .
         </Typography>
         <div style={{ display: 'flex' }}>
-          {STATIC_DATA.map((item, ix) => {
+          {STATIC_DATA.map(item => {
             return (
-              <InfoCard
+              <TemplateCard
+                key={item.id}
                 title={item.name}
-                deepLink={{ title: 'Create', link: '#' }}
-                key={ix}
-              >
-                <Typography paragraph>{item.description}</Typography>
-              </InfoCard>
+                type={item.type}
+                description={item.description}
+                tags={item.tags}
+              />
             );
           })}
         </div>
