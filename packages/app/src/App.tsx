@@ -27,15 +27,18 @@ const app = createApp({
 });
 
 const AppProvider = app.getProvider();
-const AppComponent = app.getRootComponent();
+const AppRouter = app.getRouter();
+const AppRoutes = app.getRoutes();
 
 const App: FC<{}> = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
-    <Root>
-      <AppComponent />
-    </Root>
+    <AppRouter>
+      <Root>
+        <AppRoutes />
+      </Root>
+    </AppRouter>
   </AppProvider>
 );
 
