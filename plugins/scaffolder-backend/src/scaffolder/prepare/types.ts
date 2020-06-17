@@ -15,10 +15,18 @@
  */
 import type { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
-export type StorageBase = {
+export type PreparerBase = {
   /**
-   *
-   * @param id
+   * Given an Entity definition from the Service Catalog, go and prepare a directory
+   * with contents from the remote location in temporary storage and return the path
+   * @param template The template entity from the Service Catalog
    */
   prepare(template: TemplateEntityV1alpha1): Promise<string>;
 };
+
+export type PreparerBuilder = {
+  register(key: RemoteLocation, preparer: PreparerBase): void;
+  get(key: TemplateEntityV1alpha1): PreparerBase;
+};
+
+export type RemoteLocation = 'file';

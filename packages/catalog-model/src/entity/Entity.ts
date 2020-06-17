@@ -48,7 +48,7 @@ export type Entity = {
  * @see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
  */
-export type EntityMeta = {
+export type EntityMeta = Record<string, any> & {
   /**
    * A globally unique ID for the entity.
    *
