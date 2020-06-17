@@ -17,7 +17,7 @@
 // TODO(blam): Remove this implementation when the Tabs are ready
 // This is just a temporary solution to implementing tabs for now
 
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, Tabs, Tab } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -42,8 +42,17 @@ export type Tab = {
   id: string;
   label: string;
 };
-export const HeaderTabs: React.FC<{ tabs: Tab[] }> = ({ tabs }) => {
+export const HeaderTabs: React.FC<{
+  tabs: Tab[];
+  onChange?: (index: Number) => void;
+}> = ({ tabs, onChange }) => {
+  const [selectedTab, setSelectedTab] = useState<Number>(0);
   const styles = useStyles();
+
+  const handleChange = (_: React.ChangeEvent<{}>, index: Number) => {
+    setSelectedTab(index);
+    if (onChange) onChange(index);
+  };
 
   return (
     <div className={styles.tabsWrapper}>
@@ -53,7 +62,8 @@ export const HeaderTabs: React.FC<{ tabs: Tab[] }> = ({ tabs }) => {
         variant="scrollable"
         scrollButtons="auto"
         aria-label="scrollable auto tabs example"
-        value={0}
+        onChange={handleChange}
+        value={selectedTab}
       >
         {tabs.map((tab, index) => (
           <Tab

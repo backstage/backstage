@@ -28,6 +28,7 @@ export enum EntityFilterType {
   ALL = 'ALL',
   STARRED = 'STARRED',
   OWNED = 'OWNED',
+  TYPE = 'TYPE',
 }
 
 export const filterGroups: CatalogFilterGroup[] = [
@@ -54,7 +55,7 @@ export const filterGroups: CatalogFilterGroup[] = [
     items: [
       {
         id: EntityFilterType.ALL,
-        label: 'All Services',
+        label: 'All Entities',
         count: AllServicesCount,
       },
     ],
@@ -64,13 +65,15 @@ export const filterGroups: CatalogFilterGroup[] = [
 type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
 
 type EntityFilterOptions = {
-  isStarred: boolean;
+  isStarred?: boolean;
+  type?: string;
 };
 
 export const entityFilters: Record<string, EntityFilter> = {
   [EntityFilterType.OWNED]: () => false,
   [EntityFilterType.ALL]: () => true,
-  [EntityFilterType.STARRED]: (_, { isStarred }) => isStarred,
+  [EntityFilterType.STARRED]: (_, { isStarred }) => !!isStarred,
+  [EntityFilterType.TYPE]: (e, { type }) => (e.spec as any)?.type === type,
 };
 
 export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];
