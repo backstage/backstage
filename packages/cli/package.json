@@ -29,7 +29,7 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.7",
+    "@backstage/config": "0.1.1-alpha.9",
     "@backstage/config-loader": "^0.1.1-alpha.9",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
