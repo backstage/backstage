@@ -40,11 +40,9 @@ function typeOf(value: JsonValue | undefined): string {
 }
 
 export class ConfigReader implements Config {
-  private static readonly nullReader = new ConfigReader({});
-
   static fromConfigs(configs: AppConfig[]): ConfigReader {
     if (configs.length === 0) {
-      return new ConfigReader({});
+      return new ConfigReader(undefined);
     }
 
     // Merge together all configs info a single config with recursive fallback
@@ -55,13 +53,14 @@ export class ConfigReader implements Config {
   }
 
   constructor(
-    private readonly data: JsonObject,
+    private readonly data: JsonObject | undefined,
     private readonly fallback?: ConfigReader,
   ) {}
 
   getConfig(key: string): ConfigReader {
     const value = this.readValue(key);
     const fallbackConfig = this.fallback?.getConfig(key);
+
     if (isObject(value)) {
       return new ConfigReader(value, fallbackConfig);
     }
@@ -72,7 +71,7 @@ export class ConfigReader implements Config {
         )}, wanted object`,
       );
     }
-    return fallbackConfig ?? ConfigReader.nullReader;
+    return fallbackConfig ?? new ConfigReader(undefined, undefined);
   }
 
   getConfigArray(key: string): ConfigReader[] {
@@ -191,12 +190,18 @@ export class ConfigReader implements Config {
 
   private readValue(key: string): JsonValue | undefined {
     const parts = key.split('.');
-
-    let value: JsonValue | undefined = this.data;
     for (const part of parts) {
       if (!CONFIG_KEY_PART_PATTERN.test(part)) {
         throw new TypeError(`Invalid config key '${key}'`);
       }
+    }
+
+    if (this.data === undefined) {
+      return undefined;
+    }
+
+    let value: JsonValue | undefined = this.data;
+    for (const part of parts) {
       if (isObject(value)) {
         value = value[part];
       } else {

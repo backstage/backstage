@@ -118,6 +118,8 @@ describe('ConfigReader', () => {
     expect(config.getOptionalString('X-x2')).toBeUndefined();
     expect(config.getOptionalString('x0_x0')).toBeUndefined();
     expect(config.getOptionalString('x_x-x_x')).toBeUndefined();
+
+    expect(new ConfigReader(undefined).getOptionalString('x')).toBeUndefined();
   });
 
   it('should throw on invalid keys', () => {
@@ -138,6 +140,10 @@ describe('ConfigReader', () => {
     expect(() => config.getString('a.a.a.a.')).toThrow(/^Invalid config key/);
     expect(() => config.getString('a._')).toThrow(/^Invalid config key/);
     expect(() => config.getString('a.-.a')).toThrow(/^Invalid config key/);
+
+    expect(() => new ConfigReader(undefined).getString('.')).toThrow(
+      /^Invalid config key/,
+    );
   });
 
   it('should read valid values', () => {
