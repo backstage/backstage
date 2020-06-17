@@ -42,6 +42,11 @@ const main = (argv: string[]) => {
     .action(lazyAction(() => import('./commands/app/serve'), 'default'));
 
   program
+    .command('backend:build')
+    .description('Build a backend plugin')
+    .action(lazyAction(() => import('./commands/backend/build'), 'default'));
+
+  program
     .command('backend:dev')
     .description('Start local development server with HMR for the backend')
     .option('--check', 'Enable type checking and linting')

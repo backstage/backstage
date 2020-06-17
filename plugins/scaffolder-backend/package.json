@@ -5,9 +5,14 @@
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "private": true,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
   "scripts": {
-    "build": "tsc",
     "start": "backstage-cli backend:dev",
+    "build": "backstage-cli backend:build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
