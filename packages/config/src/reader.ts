@@ -39,6 +39,16 @@ function typeOf(value: JsonValue | undefined): string {
   return type;
 }
 
+// Separate out a couple of common error messages to reduce bundle size.
+const errors = {
+  type(key: string, typeName: string, expected: string) {
+    return `Invalid type in config for key ${key}, got ${typeName}, wanted ${expected}`;
+  },
+  missing(key: string) {
+    return `Missing required config value at '${key}'`;
+  },
+};
+
 export class ConfigReader implements Config {
   static fromConfigs(configs: AppConfig[]): ConfigReader {
     if (configs.length === 0) {
@@ -65,11 +75,7 @@ export class ConfigReader implements Config {
       return new ConfigReader(value, fallbackConfig);
     }
     if (value !== undefined) {
-      throw new TypeError(
-        `Invalid type in config for key ${key}, got ${typeOf(
-          value,
-        )}, wanted object`,
-      );
+      throw new TypeError(errors.type(key, typeOf(value), 'object'));
     }
     return fallbackConfig ?? new ConfigReader(undefined, undefined);
   }
@@ -94,7 +100,7 @@ export class ConfigReader implements Config {
   getNumber(key: string): number {
     const value = this.getOptionalNumber(key);
     if (value === undefined) {
-      throw new Error(`Missing required config value at '${key}'`);
+      throw new Error(errors.missing(key));
     }
     return value;
   }
@@ -109,7 +115,7 @@ export class ConfigReader implements Config {
   getBoolean(key: string): boolean {
     const value = this.getOptionalBoolean(key);
     if (value === undefined) {
-      throw new Error(`Missing required config value at '${key}'`);
+      throw new Error(errors.missing(key));
     }
     return value;
   }
@@ -124,7 +130,7 @@ export class ConfigReader implements Config {
   getString(key: string): string {
     const value = this.getOptionalString(key);
     if (value === undefined) {
-      throw new Error(`Missing required config value at '${key}'`);
+      throw new Error(errors.missing(key));
     }
     return value;
   }
@@ -140,7 +146,7 @@ export class ConfigReader implements Config {
   getStringArray(key: string): string[] {
     const value = this.getOptionalStringArray(key);
     if (value === undefined) {
-      throw new Error(`Missing required config value at '${key}'`);
+      throw new Error(errors.missing(key));
     }
     return value;
   }
@@ -178,10 +184,7 @@ export class ConfigReader implements Config {
           value: theValue = value,
           expected,
         } = result;
-        const typeName = typeOf(theValue);
-        throw new TypeError(
-          `Invalid type in config for key ${keyName}, got ${typeName}, wanted ${expected}`,
-        );
+        throw new TypeError(errors.type(keyName, typeOf(theValue), expected));
       }
     }
 
