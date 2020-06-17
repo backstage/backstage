@@ -16,24 +16,17 @@
 
 import {
   Group,
-  GroupsJson,
   GroupsResponse,
   IdentityApi,
   GroupsRequest,
+  GroupsJson,
 } from './types';
-import fs from 'fs-extra';
-import path from 'path';
-
-const GROUPS_JSON_FILE = path.join(__dirname, 'data', 'userGroups.json');
 
 export class StaticJsonAdapter implements IdentityApi {
   private readonly groups: Group[];
 
-  constructor() {
-    const groupsJson: GroupsJson = fs.readJsonSync(GROUPS_JSON_FILE, {
-      encoding: 'utf8',
-    });
-    this.groups = groupsJson.groups;
+  constructor(userGroups: GroupsJson) {
+    this.groups = userGroups.groups;
   }
 
   getUserGroups(req: GroupsRequest): Promise<GroupsResponse> {

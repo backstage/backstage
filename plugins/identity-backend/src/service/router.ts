@@ -19,6 +19,7 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { StaticJsonAdapter } from '../adapters';
 import { IdentityApi } from '../adapters/types';
+import { userGroups } from '../adapters/userGroups';
 
 export interface RouterOptions {
   logger: Logger;
@@ -42,6 +43,6 @@ export async function createRouter(
   const logger = options.logger;
 
   logger.info('Initializing identity API backend');
-  const adapter = new StaticJsonAdapter();
+  const adapter = new StaticJsonAdapter(userGroups);
   return makeRouter(adapter);
 }
