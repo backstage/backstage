@@ -35,7 +35,7 @@ export async function createRouter(
 
   router.post('/v1/jobs', async (_, res) => {
     // TODO(blam): Actually make this function work
-    // res.status(201).json({ accepted: true });
+    res.status(201).json({ accepted: true });
 
     const mockEntity: TemplateEntityV1alpha1 = {
       apiVersion: 'backstage.io/v1alpha1',

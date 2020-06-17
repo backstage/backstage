@@ -38,6 +38,7 @@
     "@backstage/cli": "^0.1.1-alpha.8",
     "@types/fs-extra": "^9.0.1",
     "@types/supertest": "^2.0.8",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "yaml": "^1.10.0"
   }
 }

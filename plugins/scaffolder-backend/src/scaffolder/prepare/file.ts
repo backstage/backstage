@@ -13,3 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// import fs from 'fs-extra';
+import fs from 'fs';
+import {
+  TemplateEntityV1alpha1,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
+import { InputError } from '@backstage/backend-common';
+import { PreparerBase } from './types';
+
+export class FilePreparer implements PreparerBase {
+  async prepare(template: TemplateEntityV1alpha1): Promise<string> {
+    const location = template?.metadata?.annotations?.[LOCATION_ANNOTATION];
+
+    const [locationType, actualLocation] = (location ?? '').split(/:(.+)/);
+    if (locationType !== 'file') {
+      throw new InputError(
+        `Wrong location type: ${locationType}, should be 'file'`,
+      );
+    }
+
+    if (!actualLocation) {
+      throw new InputError(
+        `Couldn't parse location for template: ${template.metadata.name}`,
+      );
+    }
+
+    const templateId = template.metadata.name;
+
+    const tempDir = await fs.promises.mkdtemp(templateId);
+
+    // await fs.copy(actualLocation, tempDir);
+    return tempDir;
+  }
+}

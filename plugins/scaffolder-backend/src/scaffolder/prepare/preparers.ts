@@ -15,7 +15,10 @@
  */
 
 import { PreparerBase, RemoteLocation, PreparerBuilder } from './types';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import {
+  TemplateEntityV1alpha1,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteLocation, PreparerBase>();
@@ -38,8 +41,7 @@ export class Preparers implements PreparerBuilder {
   private getPreparerKeyFromEntity(
     entity: TemplateEntityV1alpha1,
   ): RemoteLocation {
-    const annotation =
-      entity.metadata.annotations?.['backstage.io/managed-by-location'] ?? '';
+    const annotation = entity.metadata.annotations?.[LOCATION_ANNOTATION] ?? '';
     const [key] = annotation?.split(':');
 
     if (!key) {
