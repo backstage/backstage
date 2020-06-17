@@ -22,6 +22,7 @@
   "dependencies": {
     "@types/yup": "^0.28.2",
     "lodash": "^4.17.15",
+    "uuid": "^8.0.0",
     "yup": "^0.28.5"
   },
   "devDependencies": {

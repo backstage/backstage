@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConflictError, NotFoundError } from '@backstage/backend-common';
+import { ConflictError } from '@backstage/backend-common';
 import type { Entity, Location } from '@backstage/catalog-model';
 import { DatabaseManager } from './DatabaseManager';
 import { Database, DatabaseLocationUpdateLogStatus } from './types';
@@ -199,9 +199,7 @@ describe('CommonDatabase', () => {
       );
       expect(updated.entity.apiVersion).toEqual(added.entity.apiVersion);
       expect(updated.entity.kind).toEqual(added.entity.kind);
-      expect(updated.entity.metadata.etag).not.toEqual(
-        added.entity.metadata.etag,
-      );
+      expect(updated.entity.metadata.etag).toEqual(added.entity.metadata.etag);
       expect(updated.entity.metadata.generation).toEqual(
         added.entity.metadata.generation,
       );
@@ -220,41 +218,21 @@ describe('CommonDatabase', () => {
       expect(updated.entity.metadata.name).toEqual('new!');
     });
 
-    it('can update fields if kind, name, and namespace match', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
-      added.entity.apiVersion = 'something.new';
-      delete added.entity.metadata.uid;
-      delete added.entity.metadata.generation;
-      const updated = await db.transaction(tx =>
-        db.updateEntity(tx, { entity: added.entity }),
-      );
-      expect(updated.entity.apiVersion).toEqual('something.new');
-    });
-
-    it('rejects if kind, name, but not namespace match', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
-      added.entity.apiVersion = 'something.new';
-      delete added.entity.metadata.uid;
-      delete added.entity.metadata.generation;
-      added.entity.metadata.namespace = 'something.wrong';
-      await expect(
-        db.transaction(tx => db.updateEntity(tx, { entity: added.entity })),
-      ).rejects.toThrow(NotFoundError);
-    });
-
     it('fails to update an entity if etag does not match', async () => {
       const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
-      added.entity.metadata.etag = 'garbage';
       await expect(
-        db.transaction(tx => db.updateEntity(tx, { entity: added.entity })),
+        db.transaction(tx =>
+          db.updateEntity(tx, { entity: added.entity }, 'garbage'),
+        ),
       ).rejects.toThrow(ConflictError);
     });
 
     it('fails to update an entity if generation does not match', async () => {
       const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
-      added.entity.metadata.generation! += 100;
       await expect(
-        db.transaction(tx => db.updateEntity(tx, { entity: added.entity })),
+        db.transaction(tx =>
+          db.updateEntity(tx, { entity: added.entity }, undefined, 1e20),
+        ),
       ).rejects.toThrow(ConflictError);
     });
   });

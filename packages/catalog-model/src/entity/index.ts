@@ -16,3 +16,9 @@
 
 export type { Entity, EntityMeta } from './Entity';
 export * from './policies';
+export {
+  entityHasChanges,
+  generateEntityEtag,
+  generateEntityUid,
+  generateUpdatedEntity,
+} from './util';

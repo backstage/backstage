@@ -15,7 +15,10 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
-import { LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import {
+  generateUpdatedEntity,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
 import type { Database, DbEntityResponse, EntityFilters } from '../database';
 import type { EntitiesCatalog } from './types';
@@ -43,9 +46,10 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     namespace: string | undefined,
     name: string,
   ): Promise<Entity | undefined> {
-    return await this.database.transaction(tx =>
+    const response = await this.database.transaction(tx =>
       this.entityByNameInternal(tx, kind, name, namespace),
     );
+    return response ? response.entity : undefined;
   }
 
   async addOrUpdateEntity(
@@ -53,25 +57,30 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     locationId?: string,
   ): Promise<Entity> {
     return await this.database.transaction(async tx => {
-      let response: DbEntityResponse;
+      // Find a matching (by uid, or by compound name, depending on the given
+      // entity) existing entity, to know whether to update or add
+      const existing = entity.metadata.uid
+        ? await this.database.entityByUid(tx, entity.metadata.uid)
+        : await this.entityByNameInternal(
+            tx,
+            entity.kind,
+            entity.metadata.name,
+            entity.metadata.namespace,
+          );
 
-      if (entity.metadata.uid) {
-        response = await this.database.updateEntity(tx, { locationId, entity });
-      } else {
-        const existing = await this.entityByNameInternal(
+      // If it's an update, run the algorithm for annotation merging, updating
+      // etag/generation, etc.
+      let response: DbEntityResponse;
+      if (existing) {
+        const updated = generateUpdatedEntity(existing.entity, entity);
+        response = await this.database.updateEntity(
           tx,
-          entity.kind,
-          entity.metadata.name,
-          entity.metadata.namespace,
+          { locationId, entity: updated },
+          existing.entity.metadata.etag,
+          existing.entity.metadata.generation,
         );
-        if (existing) {
-          response = await this.database.updateEntity(tx, {
-            locationId,
-            entity,
-          });
-        } else {
-          response = await this.database.addEntity(tx, { locationId, entity });
-        }
+      } else {
+        response = await this.database.addEntity(tx, { locationId, entity });
       }
 
       return response.entity;
@@ -110,7 +119,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     kind: string,
     name: string,
     namespace: string | undefined,
-  ): Promise<Entity | undefined> {
+  ): Promise<DbEntityResponse | undefined> {
     const matches = await this.database.entities(tx, [
       { key: 'kind', values: [kind] },
       { key: 'name', values: [name] },
@@ -123,6 +132,6 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       },
     ]);
 
-    return matches.length ? matches[0].entity : undefined;
+    return matches.length ? matches[0] : undefined;
   }
 }
