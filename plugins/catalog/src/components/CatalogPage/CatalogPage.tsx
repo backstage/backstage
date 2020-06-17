@@ -34,40 +34,37 @@ import React, { FC, useCallback, useState, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { catalogApiRef } from '../..';
 import {
-  defaultFilter,
-  entityFilters,
-  filterGroups,
+  filterEntities,
   EntityFilterType,
+  filterLevels,
 } from '../../data/filters';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import {
   CatalogFilter,
-  CatalogFilterItem,
 } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
 import useStaleWhileRevalidate from 'swr';
 
-// TODO: replace me with the proper tabs implemntation
 const tabs = [
   {
-    id: 'service',
+    id: EntityFilterType.TYPE_SERVICE,
     label: 'Services',
   },
   {
-    id: 'website',
+    id: EntityFilterType.TYPE_WEBSITE,
     label: 'Websites',
   },
   {
-    id: 'lib',
+    id: EntityFilterType.TYPE_LIB,
     label: 'Libraries',
   },
   {
-    id: 'documentation',
+    id: EntityFilterType.TYPE_DOCUMENTATION,
     label: 'Documentation',
   },
   {
-    id: 'other',
+    id: EntityFilterType.TYPE_OTHER,
     label: 'Other',
   },
 ];
@@ -87,31 +84,38 @@ const useStyles = makeStyles(theme => ({
 
 export const CatalogPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
-  const [selectedTab, setSelectedTab] = useState<string>(tabs[0].id);
   const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
-  const [selectedFilter, setSelectedFilter] = useState<CatalogFilterItem>(
-    defaultFilter,
-  );
+  const styles = useStyles();
+
+  const [filters, setFilters] = useState<EntityFilterType[][]>(filterLevels);
 
   const { data: entities, error } = useStaleWhileRevalidate(
-    ['catalog/all', entityFilters[selectedFilter.id]],
+    ['catalog/all'],
     async () => catalogApi.getEntities(),
   );
+  
+  const onSelectedSideFilterChange = (entityFilter: EntityFilterType) => {
+    if (entityFilter === EntityFilterType.ALL) {
+      setFilters([
+        filters[0],
+        [],
+      ]);
+    } else {
+      setFilters([
+        filters[0],
+        [entityFilter],
+      ]);
+    }
+  }
 
-  const onFilterSelected = useCallback(
-    selected => setSelectedFilter(selected),
-    [],
-  );
+  const onSelectedTypeFilterChange = (entityFilter: EntityFilterType) => {
+    setFilters([
+      [entityFilter],
+      filters[1],
+    ]);
+  }
 
-  const filteredEntities = useMemo(() => {
-    const typeFilter = entityFilters[EntityFilterType.TYPE];
-    const leftMenuFilter = entityFilters[selectedFilter.id];
-    return entities
-      ?.filter(e => leftMenuFilter(e, { isStarred: isStarredEntity(e) }))
-      .filter(e => typeFilter(e, { type: selectedTab }));
-  }, [selectedFilter.id, selectedTab, isStarredEntity, entities?.filter]);
-
-  const styles = useStyles();
+  const filteredEntities = filterEntities(entities, filters);
 
   const actions = [
     (rowData: Entity) => {
@@ -164,7 +168,7 @@ export const CatalogPage: FC<{}> = () => {
       <HeaderTabs
         tabs={tabs}
         onChange={index => {
-          setSelectedTab(tabs[index as number].id);
+          onSelectedTypeFilterChange(tabs[index as number].id);
         }}
       />
       <Content>
@@ -199,14 +203,14 @@ export const CatalogPage: FC<{}> = () => {
         <div className={styles.contentWrapper}>
           <div>
             <CatalogFilter
-              groups={filterGroups}
-              selectedId={selectedFilter.id}
-              onSelectedChange={onFilterSelected}
+              entities={entities}
+              filterGroups={filters}
+              onSelectedChange={onSelectedSideFilterChange}
             />
           </div>
           <CatalogTable
-            titlePreamble={selectedFilter.label}
-            entities={filteredEntities || []}
+            titlePreamble={`All ${tabs.find(tab => tab.id === filters[0][0])?.label}`}
+            entities={filteredEntities}
             loading={!entities && !error}
             error={error}
             actions={actions}

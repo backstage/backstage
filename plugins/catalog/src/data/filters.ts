@@ -15,65 +15,84 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import SettingsIcon from '@material-ui/icons/Settings';
-import StarIcon from '@material-ui/icons/Star';
-import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
-import {
-  CatalogFilterGroup,
-  CatalogFilterItem,
-} from '../components/CatalogFilter/CatalogFilter';
-import { StarredCount } from '../components/CatalogFilter/StarredCount';
+import { storageApiRef, useApi } from '@backstage/core';
 
 export enum EntityFilterType {
   ALL = 'ALL',
   STARRED = 'STARRED',
   OWNED = 'OWNED',
-  TYPE = 'TYPE',
+  TYPE_SERVICE = 'TYPE_SERVICE',
+  TYPE_WEBSITE = 'TYPE_WEBSITE',
+  TYPE_LIB = 'TYPE_LIB',
+  TYPE_DOCUMENTATION = 'TYPE_DOCUMENTATION',
+  TYPE_OTHER = 'TYPE_OTHER',
 }
 
-export const filterGroups: CatalogFilterGroup[] = [
-  {
-    name: 'Personal',
-    items: [
-      {
-        id: EntityFilterType.OWNED,
-        label: 'Owned',
-        count: 0,
-        icon: SettingsIcon,
-      },
-      {
-        id: EntityFilterType.STARRED,
-        label: 'Starred',
-        count: StarredCount,
-        icon: StarIcon,
-      },
-    ],
-  },
-  {
-    // TODO: Replace with Company name, read from app config.
-    name: 'Company',
-    items: [
-      {
-        id: EntityFilterType.ALL,
-        label: 'All Entities',
-        count: AllServicesCount,
-      },
-    ],
-  },
+export const filterLevels: EntityFilterType[][] = [
+  [EntityFilterType.TYPE_SERVICE],
+  [EntityFilterType.OWNED],
 ];
 
-type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
+const buildEntityKey = (component: Entity) =>
+  `entity:${component.kind}:${component.metadata.namespace ?? 'default'}:${
+    component.metadata.name
+  }`;
+
+const getAllStarredEntities = (): Set<string> => {
+  const storageApi = useApi(storageApiRef);
+  const settingsStore = storageApi.forBucket('settings');
+  return new Set(settingsStore.get<string[]>('starredEntities') ?? []);
+};
+
+export const filterEntities = (
+  entities: Entity[] | undefined,
+  filterGroups: EntityFilterType[][],
+): Entity[] => {
+  if (!entities) return [];
+
+  const starredEntities = getAllStarredEntities();
+  return entities.filter(entity => {
+    return !!filterGroups.every(group => {
+      return !!group.every(filter => {
+        return !!entityFilters[filter](entity, {
+          isStarred: starredEntities.has(buildEntityKey(entity)),
+        });
+      });
+    });
+  });
+};
 
 type EntityFilterOptions = {
   isStarred?: boolean;
-  type?: string;
 };
+
+type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
+
+const typeFilterToTypeId = (
+  typeFilter:
+    | EntityFilterType.TYPE_SERVICE
+    | EntityFilterType.TYPE_WEBSITE
+    | EntityFilterType.TYPE_LIB
+    | EntityFilterType.TYPE_DOCUMENTATION
+    | EntityFilterType.TYPE_OTHER,
+) => typeFilter.split('_')[1].toLowerCase();
 
 export const entityFilters: Record<string, EntityFilter> = {
   [EntityFilterType.OWNED]: () => false,
-  [EntityFilterType.ALL]: () => true,
   [EntityFilterType.STARRED]: (_, { isStarred }) => !!isStarred,
-  [EntityFilterType.TYPE]: (e, { type }) => (e.spec as any)?.type === type,
+  [EntityFilterType.TYPE_SERVICE]: e =>
+    (e.spec as any)?.type === typeFilterToTypeId(EntityFilterType.TYPE_SERVICE),
+  [EntityFilterType.TYPE_WEBSITE]: e =>
+    (e.spec as any)?.type === typeFilterToTypeId(EntityFilterType.TYPE_WEBSITE),
+  [EntityFilterType.TYPE_LIB]: e =>
+    (e.spec as any)?.type === typeFilterToTypeId(EntityFilterType.TYPE_LIB),
+  [EntityFilterType.TYPE_DOCUMENTATION]: e =>
+    (e.spec as any)?.type ===
+    typeFilterToTypeId(EntityFilterType.TYPE_DOCUMENTATION),
+  [EntityFilterType.TYPE_OTHER]: e =>
+    (e.spec as any)?.type === typeFilterToTypeId(EntityFilterType.TYPE_OTHER),
 };
 
-export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];
+
+
+//export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];

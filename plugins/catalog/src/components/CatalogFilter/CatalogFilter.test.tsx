@@ -17,22 +17,24 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
+import { CatalogFilter } from './CatalogFilter';
 import { EntityFilterType } from '../../data/filters';
+import { Entity } from '@backstage/catalog-model';
 
 describe('Catalog Filter', () => {
-  it('should render the different groups', async () => {
-    const mockGroups: CatalogFilterGroup[] = [
-      { name: 'Test Group 1', items: [] },
-      { name: 'Test Group 2', items: [] },
+  it('should does not explode', async () => {
+    const mockFilterGroups: EntityFilterType[][] = [
+      [],
+      [],
     ];
-    const { findByText } = render(
-      wrapInTestApp(<CatalogFilter groups={mockGroups} />),
-    );
 
-    for (const group of mockGroups) {
-      expect(await findByText(group.name)).toBeInTheDocument();
-    }
+    const mockEntities: Entity[] = [];
+
+    const { findByText } = render(
+      wrapInTestApp(<CatalogFilter filterGroups={mockFilterGroups} entities={mockEntities} />),
+    );
+    
+    expect(await findByText("Personal")).toBeInTheDocument();
   });
 
   it('should render the different items and their names', async () => {

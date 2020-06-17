@@ -25,24 +25,15 @@ import {
   Theme,
   makeStyles,
 } from '@material-ui/core';
-import type { IconComponent } from '@backstage/core';
-import { EntityFilterType } from '../../data/filters';
-export type CatalogFilterItem = {
-  id: EntityFilterType;
-  label: string;
-  icon?: IconComponent;
-  count?: number | React.FC;
-};
-
-export type CatalogFilterGroup = {
-  name: string;
-  items: CatalogFilterItem[];
-};
+import { EntityFilterType, filterEntities } from '../../data/filters';
+import SettingsIcon from '@material-ui/icons/Settings';
+import StarIcon from '@material-ui/icons/Star';
+import { Entity } from '@backstage/catalog-model';
 
 export type CatalogFilterProps = {
-  groups: CatalogFilterGroup[];
-  selectedId?: string;
-  onSelectedChange?: (item: CatalogFilterItem) => void;
+  filterGroups: EntityFilterType[][];
+  onSelectedChange?: (item: EntityFilterType) => void;
+  entities: Entity[] | undefined;
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -72,50 +63,100 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 export const CatalogFilter: React.FC<CatalogFilterProps> = ({
-  groups,
-  selectedId,
+  filterGroups,
   onSelectedChange,
+  entities,
 }) => {
   const classes = useStyles();
   return (
     <Card className={classes.root}>
-      {groups.map(group => (
-        <React.Fragment key={group.name}>
-          <Typography variant="subtitle2" className={classes.title}>
-            {group.name}
-          </Typography>
-          <Card className={classes.groupWrapper}>
-            <List disablePadding dense>
-              {group.items.map(item => (
-                <MenuItem
-                  key={item.id}
-                  button
-                  divider
-                  onClick={() => onSelectedChange?.(item)}
-                  selected={item.id === selectedId}
-                  className={classes.menuItem}
-                >
-                  {item.icon && (
-                    <ListItemIcon className={classes.listIcon}>
-                      <item.icon fontSize="small" />
-                    </ListItemIcon>
-                  )}
-                  <ListItemText>
-                    <Typography variant="body1" className={classes.menuTitle}>
-                      {item.label}
-                    </Typography>
-                  </ListItemText>
-                  {typeof item.count === 'function' ? (
-                    <item.count />
-                  ) : (
-                    item.count
-                  )}
-                </MenuItem>
-              ))}
-            </List>
-          </Card>
-        </React.Fragment>
-      ))}
+      <Typography variant="subtitle2" className={classes.title}>
+        Personal
+      </Typography>
+      <Card className={classes.groupWrapper}>
+        <List disablePadding dense>
+          <MenuItem
+            key={EntityFilterType.OWNED}
+            button
+            divider
+            onClick={() => onSelectedChange?.(EntityFilterType.OWNED)}
+            selected={
+              !!filterGroups[1].find(
+                filter => filter === EntityFilterType.OWNED,
+              )
+            }
+            className={classes.menuItem}
+          >
+            <ListItemIcon className={classes.listIcon}>
+              <SettingsIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography variant="body1" className={classes.menuTitle}>
+                Owned
+              </Typography>
+            </ListItemText>
+            {
+              filterEntities(entities, [
+                filterGroups[0],
+                [EntityFilterType.OWNED],
+              ]).length
+            }
+          </MenuItem>
+          <MenuItem
+            key={EntityFilterType.STARRED}
+            button
+            divider
+            onClick={() => onSelectedChange?.(EntityFilterType.STARRED)}
+            selected={
+              !!filterGroups[1].find(
+                filter => filter === EntityFilterType.STARRED,
+              )
+            }
+            className={classes.menuItem}
+          >
+            <ListItemIcon className={classes.listIcon}>
+              <StarIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography variant="body1" className={classes.menuTitle}>
+                Starred
+              </Typography>
+            </ListItemText>
+            {
+              filterEntities(entities, [
+                filterGroups[0],
+                [EntityFilterType.STARRED],
+              ]).length
+            }
+          </MenuItem>
+        </List>
+      </Card>
+
+      <Typography variant="subtitle2" className={classes.title}>
+        Company
+      </Typography>
+      <Card className={classes.groupWrapper}>
+        <List disablePadding dense>
+          <MenuItem
+            key={EntityFilterType.ALL}
+            button
+            divider
+            onClick={() => onSelectedChange?.(EntityFilterType.ALL)}
+            selected={filterGroups[1].length === 0}
+            className={classes.menuItem}
+          >
+            <ListItemIcon className={classes.listIcon}>
+              <SettingsIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography variant="body1" className={classes.menuTitle}>
+                All
+              </Typography>
+            </ListItemText>
+            {filterEntities(entities, [filterGroups[0], []]).length}
+          </MenuItem>
+        </List>
+      </Card>
     </Card>
   );
 };
