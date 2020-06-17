@@ -37,7 +37,7 @@ export class EnvironmentHandler implements AuthProviderRouteHandlers {
 
   async start(req: express.Request, res: express.Response): Promise<void> {
     const provider = this.getProviderForEnv(req);
-    provider.start(req, res);
+    await provider.start(req, res);
   }
 
   async frameHandler(
@@ -45,18 +45,18 @@ export class EnvironmentHandler implements AuthProviderRouteHandlers {
     res: express.Response,
   ): Promise<void> {
     const provider = this.getProviderForEnv(req);
-    provider.frameHandler(req, res);
+    await provider.frameHandler(req, res);
   }
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
     const provider = this.getProviderForEnv(req);
     if (provider.refresh) {
-      provider.refresh(req, res);
+      await provider.refresh(req, res);
     }
   }
 
   async logout(req: express.Request, res: express.Response): Promise<void> {
     const provider = this.getProviderForEnv(req);
-    provider.logout(req, res);
+    await provider.logout(req, res);
   }
 }
