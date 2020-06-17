@@ -19,7 +19,13 @@ import {
   InputError,
   NotFoundError,
 } from '@backstage/backend-common';
-import { Entity, EntityMeta, Location } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityMeta,
+  generateEntityEtag,
+  generateEntityUid,
+  Location,
+} from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -38,16 +44,12 @@ import type {
   EntityFilters,
 } from './types';
 
-function getStrippedMetadata(metadata: EntityMeta): EntityMeta {
-  const output = lodash.cloneDeep(metadata);
-  delete output.uid;
-  delete output.etag;
-  delete output.generation;
-  return output;
-}
-
 function serializeMetadata(metadata: EntityMeta): string {
-  return JSON.stringify(getStrippedMetadata(metadata));
+  const withoutGeneratedFields = lodash.cloneDeep(metadata);
+  delete withoutGeneratedFields.uid;
+  delete withoutGeneratedFields.etag;
+  delete withoutGeneratedFields.generation;
+  return JSON.stringify(withoutGeneratedFields);
 }
 
 function serializeSpec(spec: Entity['spec']): DbEntitiesRow['spec'] {
@@ -99,27 +101,6 @@ function toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
   };
 }
 
-function specsAreEqual(
-  first: string | null,
-  second: object | undefined,
-): boolean {
-  if (!first && !second) {
-    return true;
-  } else if (!first || !second) {
-    return false;
-  }
-
-  return lodash.isEqual(JSON.parse(first), second);
-}
-
-function generateUid(): string {
-  return uuidv4();
-}
-
-function generateEtag(): string {
-  return Buffer.from(uuidv4(), 'utf8').toString('base64').replace(/[^\w]/g, '');
-}
-
 export class CommonDatabase implements Database {
   constructor(
     private readonly database: Knex,
@@ -163,8 +144,8 @@ export class CommonDatabase implements Database {
     const newEntity = lodash.cloneDeep(request.entity);
     newEntity.metadata = {
       ...newEntity.metadata,
-      uid: generateUid(),
-      etag: generateEtag(),
+      uid: generateEntityUid(),
+      etag: generateEntityEtag(),
       generation: 1,
     };
 
@@ -178,35 +159,20 @@ export class CommonDatabase implements Database {
   async updateEntity(
     txOpaque: unknown,
     request: DbEntityRequest,
+    matchingEtag?: string,
+    matchingGeneration?: number,
   ): Promise<DbEntityResponse> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
-    const { kind } = request.entity;
-    const {
-      uid,
-      etag: expectedOldEtag,
-      generation: expectedOldGeneration,
-      name,
-      namespace,
-    } = request.entity.metadata ?? {};
+    const { uid } = request.entity.metadata;
 
-    // Find existing entities that match the given metadata
-    let entitySelector: Partial<DbEntitiesRow>;
-    if (uid) {
-      entitySelector = { id: uid };
-    } else if (kind && name) {
-      entitySelector = {
-        kind,
-        name: name,
-        namespace: namespace || null,
-      };
-    } else {
-      throw new InputError(
-        'Must specify either uid, or kind + name + namespace to be able to identify an entity',
-      );
+    if (uid === undefined) {
+      throw new InputError('Must specify uid when updating entities');
     }
+
+    // Find existing entity
     const oldRows = await tx<DbEntitiesRow>('entities')
-      .where(entitySelector)
+      .where({ id: uid })
       .select();
     if (oldRows.length !== 1) {
       throw new NotFoundError('No matching entity found');
@@ -217,51 +183,26 @@ export class CommonDatabase implements Database {
     // The Number cast is here because sqlite reads it as a string, no matter
     // what the table actually says
     oldRow.generation = Number(oldRow.generation);
-    if (expectedOldEtag) {
-      if (expectedOldEtag !== oldRow.etag) {
+    if (matchingEtag) {
+      if (matchingEtag !== oldRow.etag) {
         throw new ConflictError(
-          `Etag mismatch, expected="${expectedOldEtag}" found="${oldRow.etag}"`,
+          `Etag mismatch, expected="${matchingEtag}" found="${oldRow.etag}"`,
         );
       }
     }
-    if (expectedOldGeneration) {
-      if (expectedOldGeneration !== oldRow.generation) {
+    if (matchingGeneration) {
+      if (matchingGeneration !== oldRow.generation) {
         throw new ConflictError(
-          `Generation mismatch, expected="${expectedOldGeneration}" found="${oldRow.generation}"`,
+          `Generation mismatch, expected="${matchingGeneration}" found="${oldRow.generation}"`,
         );
       }
     }
 
-    // Build the new shape of the entity
-    const newEtag = generateEtag();
-    const newGeneration = specsAreEqual(oldRow.spec, request.entity.spec)
-      ? oldRow.generation
-      : oldRow.generation + 1;
-    const newEntity = lodash.cloneDeep(request.entity);
-    newEntity.metadata = {
-      ...newEntity.metadata,
-      uid: oldRow.id,
-      etag: newEtag,
-      generation: newGeneration,
-    };
-
-    // Preserve annotations that were set on the old version of the entity,
-    // unless the new version overwrites them
-    if (oldRow.metadata) {
-      const oldMetadata = JSON.parse(oldRow.metadata) as EntityMeta;
-      if (oldMetadata.annotations) {
-        newEntity.metadata.annotations = {
-          ...oldMetadata.annotations,
-          ...newEntity.metadata.annotations,
-        };
-      }
-    }
-
-    await this.ensureNoSimilarNames(tx, newEntity);
+    await this.ensureNoSimilarNames(tx, request.entity);
 
     // Store the updated entity; select on the old etag to ensure that we do
     // not lose to another writer
-    const newRow = toEntityRow(request.locationId, newEntity);
+    const newRow = toEntityRow(request.locationId, request.entity);
     const updatedRows = await tx<DbEntitiesRow>('entities')
       .where({ id: oldRow.id, etag: oldRow.etag })
       .update(newRow);
@@ -271,8 +212,9 @@ export class CommonDatabase implements Database {
       throw new ConflictError(`Failed to update entity`);
     }
 
-    await this.updateEntitiesSearch(tx, oldRow.id, newEntity);
-    return { locationId: request.locationId, entity: newEntity };
+    await this.updateEntitiesSearch(tx, oldRow.id, request.entity);
+
+    return request;
   }
 
   async entities(
