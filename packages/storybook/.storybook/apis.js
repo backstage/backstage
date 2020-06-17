@@ -13,7 +13,6 @@ import {
   GoogleAuth,
   GithubAuth,
   identityApiRef,
-  MockIdentity,
 } from '@backstage/core';
 
 const builder = ApiRegistry.builder();

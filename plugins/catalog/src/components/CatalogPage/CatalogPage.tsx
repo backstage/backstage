@@ -61,11 +61,10 @@ export const CatalogPage: FC<{}> = () => {
     error,
     loading,
     selectedFilter,
+    setSelectedFilter,
     toggleStarredEntity,
     isStarredEntity,
-    setSelectedFilter,
-    selectedTypeFilter: selectedTab,
-    selectTypeFilter: setSelectedTab,
+    selectTypeFilter,
   } = useEntities();
 
   const filteredEntities = entitiesByFilter[selectedFilter ?? EntityGroup.ALL];
@@ -123,7 +122,7 @@ export const CatalogPage: FC<{}> = () => {
       <HeaderTabs
         tabs={labeledEntityTypes}
         onChange={(index: Number) => {
-          setSelectedTab(labeledEntityTypes[index as number].id);
+          selectTypeFilter(labeledEntityTypes[index as number].id);
         }}
       />
       <Content>

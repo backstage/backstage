@@ -26,4 +26,3 @@ export * from './ConfigApi';
 export * from './ErrorApi';
 export * from './OAuthRequestApi';
 export * from './StorageApi';
-export * from './IdentityApi';
