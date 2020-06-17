@@ -19,6 +19,8 @@
   "dependencies": {
     "@backstage/backend-common": "^0.1.1-alpha.9",
     "@backstage/catalog-model": "^0.1.1-alpha.9",
+    "@backstage/config": "^0.1.1-alpha.9",
+    "@backstage/config-loader": "^0.1.1-alpha.9",
     "@backstage/plugin-auth-backend": "^0.1.1-alpha.9",
     "@backstage/plugin-catalog-backend": "^0.1.1-alpha.9",
     "@backstage/plugin-identity-backend": "^0.1.1-alpha.9",
