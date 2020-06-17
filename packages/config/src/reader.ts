@@ -92,45 +92,45 @@ export class ConfigReader implements Config {
     return (configs ?? []).map(obj => new ConfigReader(obj));
   }
 
-  mustNumber(key: string): number {
-    const value = this.getNumber(key);
+  getNumber(key: string): number {
+    const value = this.getOptionalNumber(key);
     if (value === undefined) {
       throw new Error(`Missing required config value at '${key}'`);
     }
     return value;
   }
 
-  getNumber(key: string): number | undefined {
+  getOptionalNumber(key: string): number | undefined {
     return this.readConfigValue(
       key,
       value => typeof value === 'number' || { expected: 'number' },
     );
   }
 
-  mustBoolean(key: string): boolean {
-    const value = this.getBoolean(key);
+  getBoolean(key: string): boolean {
+    const value = this.getOptionalBoolean(key);
     if (value === undefined) {
       throw new Error(`Missing required config value at '${key}'`);
     }
     return value;
   }
 
-  getBoolean(key: string): boolean | undefined {
+  getOptionalBoolean(key: string): boolean | undefined {
     return this.readConfigValue(
       key,
       value => typeof value === 'boolean' || { expected: 'boolean' },
     );
   }
 
-  mustString(key: string): string {
-    const value = this.getString(key);
+  getString(key: string): string {
+    const value = this.getOptionalString(key);
     if (value === undefined) {
       throw new Error(`Missing required config value at '${key}'`);
     }
     return value;
   }
 
-  getString(key: string): string | undefined {
+  getOptionalString(key: string): string | undefined {
     return this.readConfigValue(
       key,
       value =>
@@ -138,15 +138,15 @@ export class ConfigReader implements Config {
     );
   }
 
-  mustStringArray(key: string): string[] {
-    const value = this.getStringArray(key);
+  getStringArray(key: string): string[] {
+    const value = this.getOptionalStringArray(key);
     if (value === undefined) {
       throw new Error(`Missing required config value at '${key}'`);
     }
     return value;
   }
 
-  getStringArray(key: string): string[] | undefined {
+  getOptionalStringArray(key: string): string[] | undefined {
     return this.readConfigValue(key, values => {
       if (!Array.isArray(values)) {
         return { expected: 'string-array' };

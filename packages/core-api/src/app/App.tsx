@@ -282,7 +282,7 @@ export class PrivateAppImpl implements BackstageApp {
       const configApi = useApi(configApiRef);
 
       let { pathname } = new URL(
-        configApi.getString('app.baseUrl') ?? '/',
+        configApi.getOptionalString('app.baseUrl') ?? '/',
         'http://dummy.dev', // baseUrl can be specified as just a path
       );
       if (pathname.endsWith('/')) {
