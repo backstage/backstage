@@ -1,5 +1,3 @@
-import { Logger } from 'winston';
-
 /*
  * Copyright 2020 Spotify AB
  *
@@ -15,39 +13,3 @@ import { Logger } from 'winston';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface Template {
-  id: string;
-  name: string;
-  description: string;
-  ownerId: string;
-}
-
-export abstract class StorageBase {
-  // lists all templates available
-  abstract async list(): Promise<Template[]>;
-  // can be used to build an index of the available templates;
-  abstract async reindex(): Promise<void>;
-  // returns a directory to run the templaterin
-  abstract async prepare(id: string): Promise<string>;
-}
-
-export interface StorageConfig {
-  store?: StorageBase;
-  logger?: Logger;
-}
-
-class Storage implements StorageBase {
-  store?: StorageBase;
-
-  constructor({ store }: StorageConfig) {
-    this.store = store;
-  }
-
-  list = () => this.store!.list();
-  prepare = (id: string) => this.store!.prepare(id);
-  reindex = () => this.store!.reindex();
-}
-
-export const createStorage = (storageConfig: StorageConfig): StorageBase => {
-  return new Storage(storageConfig);
-};

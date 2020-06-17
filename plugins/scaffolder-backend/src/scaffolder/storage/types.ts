@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './templater';
+import type { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
-export * from './templater/cookiecutter';
+export type StorageBase = {
+  /**
+   *
+   * @param id
+   */
+  prepare(template: TemplateEntityV1alpha1): Promise<string>;
+};

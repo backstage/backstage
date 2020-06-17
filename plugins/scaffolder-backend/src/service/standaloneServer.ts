@@ -16,12 +16,7 @@
 
 import { Server } from 'http';
 import { Logger } from 'winston';
-import {
-  createStorage,
-  createTemplater,
-  DiskStorage,
-  CookieCutter,
-} from '../scaffolder';
+import { createTemplater, CookieCutter } from '../scaffolder';
 import { createServiceBuilder, useHotMemoize } from '@backstage/backend-common';
 import { createRouter } from './router';
 export interface ServerOptions {
@@ -34,12 +29,11 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'scaffolder-backend' });
-  const store = useHotMemoize(module, () => new DiskStorage({ logger }));
   const templater = new CookieCutter();
   logger.debug('Creating application...');
 
   const router = await createRouter({
-    storage: createStorage({ store, logger }),
+    storage: null,
     templater: createTemplater({ templater }),
     logger,
   });
