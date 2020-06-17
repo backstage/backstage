@@ -67,7 +67,7 @@ const TemplateCard: FC<TemplateCardProps> = ({
         </div>
         <div className={classes.content}>
           {tags?.map(tag => (
-            <Chip label={tag} />
+            <Chip label={tag} key={tag} />
           ))}
           <Typography variant="body2" paragraph className={classes.description}>
             {description}

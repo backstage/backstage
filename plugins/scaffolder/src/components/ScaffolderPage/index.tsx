@@ -23,33 +23,38 @@ import {
   SupportButton,
   Page,
   pageTheme,
+  useApi,
 } from '@backstage/core';
-import { Button, Grid, Link, Typography } from '@material-ui/core';
+import { catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  Typography,
+  Link,
+  Button,
+  Grid,
+  LinearProgress,
+} from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 import TemplateCard from '../TemplateCard';
+import { useAsync } from 'react-use';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
-// TODO(blam): Connect to backend
-const STATIC_DATA = [
-  {
-    id: 'springboot-template',
-    type: 'service',
-    name: 'Spring Boot Service',
-    tags: ['Recommended', 'Java'],
-    description:
-      'Standard Spring Boot (Java) microservice with recommended configuration.',
-    ownerId: 'spotify',
-  },
-  {
-    id: 'react-ssr-template',
-    type: 'website',
-    name: 'SSR React Website',
-    tags: ['Recommended', 'React'],
-    description:
-      'Next.js application skeleton for creating isomorphic web applications.',
-    ownerId: 'spotify',
-  },
-];
 const ScaffolderPage: React.FC<{}> = () => {
+  const catalogApi = useApi(catalogApiRef);
+
+  const { value, loading } = useAsync(async () => {
+    const entities = await catalogApi.getEntities({ kind: 'Template' });
+    return (entities as TemplateEntityV1alpha1[]).map(template => ({
+      id: template.metadata.uid,
+      type: template.spec.type,
+      name: template.metadata.name,
+      // TODO(shmidt-i): decide on tags
+      tags: ['not-implemented'],
+      description: template.metadata.description ?? '-',
+      // TODO(shmidt-i): decide on owner
+      ownerId: '-',
+    }));
+  });
+
   return (
     <Page theme={pageTheme.home}>
       <Header
@@ -84,19 +89,23 @@ const ScaffolderPage: React.FC<{}> = () => {
           </Link>
           .
         </Typography>
-        <Grid container>
-          {STATIC_DATA.map(item => {
-            return (
-              <TemplateCard
-                key={item.id}
-                title={item.name}
-                type={item.type}
-                description={item.description}
-                tags={item.tags}
-              />
-            );
-          })}
-        </Grid>
+        {loading ? (
+          <LinearProgress />
+        ) : (
+          <Grid container>
+            {value!.map(item => {
+              return (
+                <TemplateCard
+                  key={item.id}
+                  title={item.name}
+                  type={item.type}
+                  description={item.description}
+                  tags={item.tags}
+                />
+              );
+            })}
+          </Grid>
+        )}
       </Content>
     </Page>
   );
