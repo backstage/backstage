@@ -49,6 +49,10 @@ function expectValidValues(config: ConfigReader) {
     'string1',
     'string2',
   ]);
+  expect(config.mustNumber('zero')).toBe(0);
+  expect(config.mustBoolean('true')).toBe(true);
+  expect(config.mustString('string')).toBe('string');
+  expect(config.mustStringArray('strings')).toEqual(['string1', 'string2']);
 
   const [config1, config2, config3] = config.getConfigArray('nestlings');
   expect(config1.getBoolean('boolean')).toBe(true);
@@ -57,6 +61,9 @@ function expectValidValues(config: ConfigReader) {
 }
 
 function expectInvalidValues(config: ConfigReader) {
+  expect(() => config.getBoolean('string')).toThrow(
+    'Invalid type in config for key string, got string, wanted boolean',
+  );
   expect(() => config.getNumber('string')).toThrow(
     'Invalid type in config for key string, got string, wanted number',
   );
@@ -86,6 +93,18 @@ function expectInvalidValues(config: ConfigReader) {
   );
   expect(() => config.getConfigArray('one')).toThrow(
     'Invalid type in config for key one, got number, wanted object-array',
+  );
+  expect(() => config.mustBoolean('missing')).toThrow(
+    "Missing required config value at 'missing'",
+  );
+  expect(() => config.mustNumber('missing')).toThrow(
+    "Missing required config value at 'missing'",
+  );
+  expect(() => config.mustString('missing')).toThrow(
+    "Missing required config value at 'missing'",
+  );
+  expect(() => config.mustStringArray('missing')).toThrow(
+    "Missing required config value at 'missing'",
   );
 }
 
@@ -210,6 +229,12 @@ describe('ConfigReader with fallback', () => {
     // Config arrays aren't merged either
     expect(config.getConfigArray('merged.configs').length).toBe(1);
     expect(config.getConfigArray('merged.configs')[0].getString('a')).toBe('a');
+    expect(config.getConfigArray('merged.configs')[0].mustString('a')).toBe(
+      'a',
+    );
+    expect(() =>
+      config.getConfigArray('merged.configs')[0].mustString('missing'),
+    ).toThrow("Missing required config value at 'missing'");
     expect(
       config.getConfigArray('merged.configs')[0].getString('b'),
     ).toBeUndefined();

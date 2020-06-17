@@ -92,11 +92,27 @@ export class ConfigReader implements Config {
     return (configs ?? []).map(obj => new ConfigReader(obj));
   }
 
+  mustNumber(key: string): number {
+    const value = this.getNumber(key);
+    if (value === undefined) {
+      throw new Error(`Missing required config value at '${key}'`);
+    }
+    return value;
+  }
+
   getNumber(key: string): number | undefined {
     return this.readConfigValue(
       key,
       value => typeof value === 'number' || { expected: 'number' },
     );
+  }
+
+  mustBoolean(key: string): boolean {
+    const value = this.getBoolean(key);
+    if (value === undefined) {
+      throw new Error(`Missing required config value at '${key}'`);
+    }
+    return value;
   }
 
   getBoolean(key: string): boolean | undefined {
@@ -106,12 +122,28 @@ export class ConfigReader implements Config {
     );
   }
 
+  mustString(key: string): string {
+    const value = this.getString(key);
+    if (value === undefined) {
+      throw new Error(`Missing required config value at '${key}'`);
+    }
+    return value;
+  }
+
   getString(key: string): string | undefined {
     return this.readConfigValue(
       key,
       value =>
         (typeof value === 'string' && value !== '') || { expected: 'string' },
     );
+  }
+
+  mustStringArray(key: string): string[] {
+    const value = this.getStringArray(key);
+    if (value === undefined) {
+      throw new Error(`Missing required config value at '${key}'`);
+    }
+    return value;
   }
 
   getStringArray(key: string): string[] | undefined {
