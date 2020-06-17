@@ -32,10 +32,14 @@ export type Config = {
   getConfigArray(key: string): Config[];
 
   getNumber(key: string): number | undefined;
+  mustNumber(key: string): number;
 
   getBoolean(key: string): boolean | undefined;
+  mustBoolean(key: string): boolean;
 
   getString(key: string): string | undefined;
+  mustString(key: string): string;
 
   getStringArray(key: string): string[] | undefined;
+  mustStringArray(key: string): string[];
 };
