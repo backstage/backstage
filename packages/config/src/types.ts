@@ -27,6 +27,8 @@ export type JsonValue =
 export type AppConfig = JsonObject;
 
 export type Config = {
+  keys(): string[];
+
   getConfig(key: string): Config;
 
   getConfigArray(key: string): Config[];
