@@ -265,8 +265,8 @@ export class PrivateAppImpl implements BackstageApp {
           if (done) {
             throw new Error('Identity result callback was called twice');
           }
-          setDone(true);
           this.identityApi.setSignInResult(result);
+          setDone(true);
         },
         [done],
       );
