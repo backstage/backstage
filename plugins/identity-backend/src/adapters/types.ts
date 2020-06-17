@@ -14,5 +14,29 @@
  * limitations under the License.
  */
 
-export * from './withCache';
-export * from './options';
+export type User = {
+  name: string;
+};
+
+export type Group = {
+  name: string;
+  type: string;
+  members?: User[];
+  children?: Group[];
+};
+
+export type GroupsJson = {
+  groups: Group[];
+};
+
+export type GroupsResponse = {
+  groups: Group[];
+};
+
+export type GroupsRequest = {
+  user: string;
+  type: string;
+};
+export interface IdentityApi {
+  getUserGroups(req: GroupsRequest): Promise<GroupsResponse>;
+}

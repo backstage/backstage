@@ -143,6 +143,7 @@ export function createGoogleProvider(
     }
 
     envProviders[env] = new OAuthProvider(new GoogleAuthProvider(opts), {
+      disableRefresh: false,
       providerId: 'google',
       secure,
       baseUrl,

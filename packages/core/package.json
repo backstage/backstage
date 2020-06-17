@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core",
   "description": "Core API used by Backstage plugins and apps",
-  "version": "0.1.1-alpha.8",
+  "version": "0.1.1-alpha.9",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -30,9 +30,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.7",
-    "@backstage/core-api": "^0.1.1-alpha.8",
-    "@backstage/theme": "^0.1.1-alpha.8",
+    "@backstage/config": "0.1.1-alpha.9",
+    "@backstage/core-api": "^0.1.1-alpha.9",
+    "@backstage/theme": "^0.1.1-alpha.9",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -55,8 +55,8 @@
     "react-use": "^14.2.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.8",
-    "@backstage/test-utils": "^0.1.1-alpha.8",
+    "@backstage/cli": "^0.1.1-alpha.9",
+    "@backstage/test-utils": "^0.1.1-alpha.9",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^10.2.4",
