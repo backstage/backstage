@@ -25,11 +25,45 @@ export type BootErrorPageProps = {
   step: 'load-config';
   error: Error;
 };
+
+export type SignInResult = {
+  /**
+   * User ID that will be returned by the IdentityApi
+   */
+  userId: string;
+  /**
+   * ID token that will be returned by the IdentityApi
+   */
+  idToken?: string;
+  /**
+   * Logout handler that will be called if the user requests a logout.
+   */
+  logout?: () => Promise<void>;
+};
+
+export type SignInPageProps = {
+  /**
+   * Set the sign-in result for the app. This should only be called once.
+   */
+  onResult(result: SignInResult): void;
+};
+
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
+
+  /**
+   * An optional sign-in page that will be rendered instead of the AppRouter at startup.
+   *
+   * If a sign-in page is set, it will always be shown before the app, and it is up
+   * to the sign-in page to handle e.g. saving of login methods for subsequent visits.
+   *
+   * The sign-in page will be displayed until it has passed up a result to the parent,
+   * and which point the AppRouter and all of its children will be rendered instead.
+   */
+  SignInPage?: ComponentType<SignInPageProps>;
 };
 
 /**
@@ -117,14 +151,19 @@ export type BackstageApp = {
   getSystemIcon(key: SystemIconKey): IconComponent;
 
   /**
-   * Creates a root component for this app, including the App chrome
-   * and routes to all plugins.
-   */
-  getRootComponent(): ComponentType<{}>;
-
-  /**
-   * Provider component that should wrap the App's RootComponent and
-   * any other components that need to be within the app context.
+   * Provider component that should wrap the Router created with getRouter()
+   * and any other components that need to be within the app context.
    */
   getProvider(): ComponentType<{}>;
+
+  /**
+   * Router component that should wrap the App Routes create with getRoutes()
+   * and any other components that should only be available while signed in.
+   */
+  getRouter(): ComponentType<{}>;
+
+  /**
+   * Routes component that contains all routes for plugin pages in the app.
+   */
+  getRoutes(): ComponentType<{}>;
 };

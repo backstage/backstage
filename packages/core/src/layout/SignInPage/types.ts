@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-export { ApiProvider, useApi, useApiHolder } from './ApiProvider';
-export { ApiRegistry } from './ApiRegistry';
-export { ApiTestRegistry } from './ApiTestRegistry';
-export * from './ApiRef';
-export * from './types';
-export * from './helpers';
-export * from './definitions';
-export * from './implementations';
+import { ComponentType } from 'react';
+import { SignInPageProps, SignInResult, ApiHolder } from '@backstage/core-api';
+
+export type ProviderComponent = ComponentType<SignInPageProps>;
+
+export type ProviderLoader = (
+  apis: ApiHolder,
+) => Promise<SignInResult | undefined>;
+
+export type SignInProvider = {
+  Component: ProviderComponent;
+  loader: ProviderLoader;
+};

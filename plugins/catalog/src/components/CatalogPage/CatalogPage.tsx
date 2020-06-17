@@ -36,9 +36,10 @@ import { CatalogTable } from '../CatalogTable/CatalogTable';
 import { useEntities } from '../../hooks/useEntities';
 import { findLocationForEntityMeta } from '../../data/utils';
 import {
-  filterGroups,
   getCatalogFilterItemByType,
   EntityFilterType,
+  filterGroups,
+  labeledEntityTypes,
 } from '../../data/filters';
 
 const useStyles = makeStyles(theme => ({
@@ -57,14 +58,19 @@ const useStyles = makeStyles(theme => ({
 export const CatalogPage: FC<{}> = () => {
   const {
     entitiesByFilter,
-    selectedFilter: selectedId,
     error,
+    loading,
+    selectedFilter,
     toggleStarredEntity,
     isStarredEntity,
     setSelectedFilter,
+    selectedTab,
+    setSelectedTab,
   } = useEntities();
 
-  const data = entitiesByFilter[selectedId ?? EntityFilterType.ALL];
+  const filteredEntities =
+    entitiesByFilter[selectedFilter ?? EntityFilterType.ALL];
+
   const styles = useStyles();
 
   const actions = [
@@ -113,33 +119,14 @@ export const CatalogPage: FC<{}> = () => {
     },
   ];
 
-  // TODO: replace me with the proper tabs implemntation
-  const tabs = [
-    {
-      id: 'services',
-      label: 'Services',
-    },
-    {
-      id: 'websites',
-      label: 'Websites',
-    },
-    {
-      id: 'libs',
-      label: 'Libraries',
-    },
-    {
-      id: 'documentation',
-      label: 'Documentation',
-    },
-    {
-      id: 'other',
-      label: 'Other',
-    },
-  ];
-
   return (
     <CatalogLayout>
-      <HeaderTabs tabs={tabs} />
+      <HeaderTabs
+        tabs={labeledEntityTypes}
+        onChange={(index: Number) => {
+          setSelectedTab(labeledEntityTypes[index as number].id);
+        }}
+      />
       <Content>
         <DismissableBanner
           variant="info"
@@ -173,18 +160,18 @@ export const CatalogPage: FC<{}> = () => {
           <div>
             <CatalogFilter
               groups={filterGroups}
-              selectedFilter={selectedId ?? EntityFilterType.ALL}
+              selectedFilter={selectedFilter ?? EntityFilterType.ALL}
               onFilterChange={setSelectedFilter}
               entitiesByFilter={entitiesByFilter}
             />
           </div>
           <CatalogTable
             titlePreamble={
-              getCatalogFilterItemByType(selectedId ?? EntityFilterType.ALL)
+              getCatalogFilterItemByType(selectedFilter ?? EntityFilterType.ALL)
                 ?.label ?? ''
             }
-            entities={data || []}
-            loading={!data && !error}
+            entities={filteredEntities || []}
+            loading={loading && !error}
             error={error}
             actions={actions}
           />

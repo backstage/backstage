@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import { useState, useMemo } from 'react';
-import { EntityFilterType, entityFilters } from '../data/filters';
+import {
+  EntityFilterType,
+  entityFilters,
+  entityTypeFilter,
+  labeledEntityTypes,
+} from '../data/filters';
 import { useApi, identityApiRef } from '@backstage/core';
 import { catalogApiRef } from '..';
 import { useStarredEntities } from './useStarredEntites';
@@ -30,6 +35,7 @@ type UseEntities = {
   toggleStarredEntity: any;
   isStarredEntity: (e: Entity) => boolean;
   entitiesByFilter: EntitiesByFilter;
+  loading: boolean;
 };
 
 export const useEntities = (): UseEntities => {
@@ -46,6 +52,18 @@ export const useEntities = (): UseEntities => {
   const indentityApi = useApi(identityApiRef);
   const userId = indentityApi.getUserId();
 
+  const [selectedTab, setSelectedTab] = useState<string>(
+    labeledEntityTypes[0].id,
+  );
+
+  // const filteredEntities = useMemo(() => {
+  //   const typeFilter = entityFilters[EntityFilterType.TYPE];
+  //   const leftMenuFilter = entityFilters[selectedFilter.id];
+  //   return entities
+  //     ?.filter(e => leftMenuFilter(e, { isStarred: isStarredEntity(e) }))
+  //     .filter(e => typeFilter(e, { type: selectedTab }));
+  // }, [selectedFilter.id, selectedTab, isStarredEntity, entities?.filter]);
+
   const entitiesByFilter = useMemo(() => {
     const filterEntities = (
       ents: Entity[] | undefined,
@@ -53,12 +71,14 @@ export const useEntities = (): UseEntities => {
       isStarred: (e: Entity) => boolean,
       user: string,
     ) => {
-      return ents?.filter((e: Entity) =>
-        entityFilters[filterId](e, {
-          isStarred: isStarred(e),
-          userId: user,
-        }),
-      );
+      return ents
+        ?.filter((e: Entity) =>
+          entityFilters[filterId](e, {
+            isStarred: isStarred(e),
+            userId: user,
+          }),
+        )
+        .filter(e => entityTypeFilter(e, selectedTab));
     };
     const data = Object.keys(EntityFilterType).reduce(
       (res, key) => ({
@@ -73,7 +93,7 @@ export const useEntities = (): UseEntities => {
       {} as EntitiesByFilter,
     );
     return data;
-  }, [entities, isStarredEntity, userId]);
+  }, [entities, isStarredEntity, userId, selectedTab]);
 
   return {
     selectedFilter,
@@ -82,5 +102,8 @@ export const useEntities = (): UseEntities => {
     toggleStarredEntity,
     isStarredEntity,
     entitiesByFilter,
+    loading: entities === undefined,
+    selectedTab,
+    setSelectedTab,
   };
 };

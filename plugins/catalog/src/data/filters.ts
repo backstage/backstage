@@ -72,6 +72,7 @@ type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
 type EntityFilterOptions = Partial<{
   isStarred: boolean;
   userId: string;
+  type: string;
 }>;
 
 type Owned = {
@@ -84,7 +85,40 @@ export const entityFilters: Record<string, EntityFilter> = {
     return owner === userId;
   },
   [EntityFilterType.ALL]: () => true,
-  [EntityFilterType.STARRED]: (_, { isStarred }) => isStarred ?? false,
+  [EntityFilterType.STARRED]: (_, { isStarred }) => !!isStarred,
 };
+
+export const entityTypeFilter = (e: Entity, type: string) =>
+  (e.spec as any)?.type === type;
+
+type EntityType = 'service' | 'website' | 'lib' | 'documentation' | 'other';
+
+type LabeledEntityType = {
+  id: EntityType;
+  label: string;
+};
+
+export const labeledEntityTypes: LabeledEntityType[] = [
+  {
+    id: 'service',
+    label: 'Services',
+  },
+  {
+    id: 'website',
+    label: 'Websites',
+  },
+  {
+    id: 'lib',
+    label: 'Libraries',
+  },
+  {
+    id: 'documentation',
+    label: 'Documentation',
+  },
+  {
+    id: 'other',
+    label: 'Other',
+  },
+];
 
 export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];

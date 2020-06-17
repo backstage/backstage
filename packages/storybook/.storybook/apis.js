@@ -2,6 +2,7 @@ import {
   ApiRegistry,
   alertApiRef,
   errorApiRef,
+  identityApiRef,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
@@ -21,7 +22,11 @@ const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 
 builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
 
-builder.add(identityApiRef, new MockIdentity());
+builder.add(identityApiRef, {
+  getUserId: () => 'guest',
+  getIdToken: () => undefined,
+  logout: async () => {},
+});
 
 const oauthRequestApi = builder.add(
   oauthRequestApiRef,
