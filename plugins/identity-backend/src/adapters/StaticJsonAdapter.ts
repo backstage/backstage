@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import { Group, GroupsJson, GroupsResponse, IdentityApiAdapter } from './types';
+import {
+  Group,
+  GroupsJson,
+  GroupsResponse,
+  IdentityApi,
+  GroupsRequest,
+} from './types';
 import fs from 'fs-extra';
-import express from 'express';
 import path from 'path';
 
 const GROUPS_JSON_FILE = path.join(__dirname, 'data', 'userGroups.json');
 
-export class StaticJsonAdapter implements IdentityApiAdapter {
+export class StaticJsonAdapter implements IdentityApi {
   private readonly groups: Group[];
 
   constructor() {
@@ -31,16 +36,13 @@ export class StaticJsonAdapter implements IdentityApiAdapter {
     this.groups = groupsJson.groups;
   }
 
-  getUserGroups(
-    req: express.Request,
-    res: express.Response,
-  ): express.Response<GroupsResponse> {
-    const user = req.params.user;
-    const type = req.query.type?.toString() ?? '';
-
-    const userGroups = this._getUserGroups(this.groups, user);
-    const groups = this.filterGroupsByType(userGroups, type);
-    return res.json({ groups });
+  getUserGroups(req: GroupsRequest): Promise<GroupsResponse> {
+    return new Promise(resolve => {
+      const { user, type } = req;
+      const userGroups = this._getUserGroups(this.groups, user);
+      const groups = this.filterGroupsByType(userGroups, type);
+      resolve({ groups });
+    });
   }
 
   _getUserGroups(groups: Group[], user: string) {

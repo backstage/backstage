@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import express from 'express';
-
 export type User = {
   name: string;
 };
@@ -35,9 +33,10 @@ export type GroupsResponse = {
   groups: Group[];
 };
 
-export interface IdentityApiAdapter {
-  getUserGroups(
-    req: express.Request,
-    res: express.Response,
-  ): express.Response<GroupsResponse>;
+export type GroupsRequest = {
+  user: string;
+  type: string;
+};
+export interface IdentityApi {
+  getUserGroups(req: GroupsRequest): Promise<GroupsResponse>;
 }
