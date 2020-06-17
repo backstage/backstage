@@ -1,16 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "backstage.io/v1beta1",
+  "$id": "backstage.io/v1alpha1",
   "type": "object",
   "title": "A JSON Schema for Backstage catalog entities.",
   "description": "Each descriptor file has a number of entities. This schema matches each of those.",
   "examples": [
     {
-      "apiVersion": "backstage.io/v1beta1",
+      "apiVersion": "backstage.io/v1alpha1",
       "kind": "Component",
-      "spec": {
-        "type": "service"
-      },
       "metadata": {
         "name": "LoremService",
         "description": "Creates Lorems like a pro.",
@@ -26,6 +23,11 @@
             "email": "greatTeam@geemel.com"
           }
         ]
+      },
+      "spec": {
+        "type": "service",
+        "lifecycle": "production",
+        "owner": "tools@example.com"
       }
     }
   ],
@@ -35,27 +37,21 @@
     "apiVersion": {
       "type": "string",
       "description": "Version of the specification format for a particular file is written against.",
-      "enum": ["backstage.io/v1beta1"]
+      "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
     },
     "kind": {
       "type": "string",
       "description": "High level entity type being described, from the Backstage system model.",
       "enum": ["Component"]
     },
-    "spec": {
-      "type": "object",
-      "description": "Actual specification data that describes the entity. TODO: shape depend on `kind`",
-      "required": ["type"],
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "The type of component.",
-          "default": "",
-          "examples": ["service"]
-        }
-      }
+    "metadata": {
+      "$ref": "#/definitions/metadata"
     },
+    "spec": {
+      "$ref": "#/definitions/spec"
+    }
+  },
+  "definitions": {
     "metadata": {
       "type": "object",
       "description": "Metadata about the entity, i.e. things that aren't directly part of the entity specification itself.",
@@ -96,6 +92,29 @@
               "pattern": "^[a-z0-9A-Z_.-]{1,63}$"
             }
           }
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "description": "Actual specification data that describes the entity. TODO: shape depend on `kind`",
+      "required": ["type", "lifecycle", "owner"],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The type of component.",
+          "examples": ["service"]
+        },
+        "lifecycle": {
+          "type": "string",
+          "description": "The lifecycle step that this component is in.",
+          "examples": ["production"]
+        },
+        "owner": {
+          "type": "string",
+          "description": "The owner of the component.",
+          "examples": ["tools@example.com"]
         }
       }
     }
