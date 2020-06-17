@@ -64,7 +64,7 @@ describe('CatalogPage', () => {
       ),
     );
     expect(
-      await rendered.findByText('Keep track of your software'),
+      await rendered.findByText('Backstage Service Catalog'),
     ).toBeInTheDocument();
   });
 });
