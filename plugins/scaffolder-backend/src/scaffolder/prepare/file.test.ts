@@ -23,28 +23,41 @@ import {
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 
+const setupTest = async (fixturePath: string) => {
+  const locationForTemplateYaml = path.resolve(
+    __dirname,
+    '../../../fixtures',
+    fixturePath,
+  );
+
+  const [parsedDocument] = YAML.parseAllDocuments(
+    await fs.readFile(locationForTemplateYaml, 'utf-8'),
+  );
+
+  const template: TemplateEntityV1alpha1 = parsedDocument.toJSON();
+  template.metadata.annotations = {
+    [LOCATION_ANNOTATION]: `file:${locationForTemplateYaml}`,
+  };
+
+  const filePreparer = new FilePreparer();
+  const resultDir = await filePreparer.prepare(template);
+
+  return { filePreparer, template, resultDir };
+};
+
 describe('File preparer', () => {
-  it('resolves relative path from the template', async () => {
-    const locationForTemplateYaml = path.resolve(
-      __dirname,
-      '../../..',
-      'test/test-simple-template/template.yaml',
-    );
-
-    const [parsedDocument] = YAML.parseAllDocuments(
-      await fs.readFile(locationForTemplateYaml, 'utf-8'),
-    );
-
-    const template: TemplateEntityV1alpha1 = parsedDocument.toJSON();
-
-    template.metadata.annotations = {
-      [LOCATION_ANNOTATION]: `file:${locationForTemplateYaml}`,
-    };
-
-    const filePreparer = new FilePreparer();
-    const resultDir = await filePreparer.prepare(template);
-
-    expect(fs.existsSync(`${resultDir}/expected_file.ts`)).toBe(true);
+  it('excludes the yaml file from the temp folder', async () => {
+    const { resultDir } = await setupTest('test-simple-template/template.yaml');
     expect(fs.existsSync(`${resultDir}/template.yaml`)).toBe(false);
+  });
+
+  it('resolves relative path from the template', async () => {
+    const { resultDir } = await setupTest('test-simple-template/template.yaml');
+    expect(fs.existsSync(`${resultDir}/expected_file.ts`)).toBe(true);
+  });
+
+  it('resolves relative path from the nested template', async () => {
+    const { resultDir } = await setupTest('test-nested-template/template.yaml');
+    expect(fs.existsSync(`${resultDir}/expected_file.ts`)).toBe(true);
   });
 });

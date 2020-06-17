@@ -48,13 +48,14 @@ export class FilePreparer implements PreparerBase {
       path.join(os.tmpdir(), templateId),
     );
 
-    const parentDirectory = path.dirname(templateEntityLocation);
+    const parentDirectory = path.resolve(
+      path.dirname(templateEntityLocation),
+      template.spec.path ?? '.',
+    );
 
     await fs.copy(parentDirectory, tempDir, {
       filter: src => src !== templateEntityLocation,
     });
-
-    // TODO(blam): Need to use the `spec.path` with path.resolve to ensure that the test case for test-nested-templates will work
 
     return tempDir;
   }
