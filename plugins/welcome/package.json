@@ -4,7 +4,7 @@
   "main": "dist/index.esm.js",
   "main:src": "src/index.ts",
   "types": "src/index.ts",
-  "private": true,
+  "private": false,
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public",
