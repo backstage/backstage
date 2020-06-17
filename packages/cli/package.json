@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.8",
+  "version": "0.1.1-alpha.9",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.1-alpha.7",
-    "@backstage/config-loader": "^0.1.1-alpha.7",
+    "@backstage/config-loader": "^0.1.1-alpha.9",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -40,8 +40,8 @@
     "@spotify/eslint-config": "^7.0.1",
     "@sucrase/webpack-loader": "^2.0.0",
     "@types/start-server-webpack-plugin": "^2.2.0",
-    "@types/webpack-node-externals": "^1.7.1",
     "@types/webpack-env": "^1.15.2",
+    "@types/webpack-node-externals": "^1.7.1",
     "bfj": "^7.0.2",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
