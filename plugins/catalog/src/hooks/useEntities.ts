@@ -15,7 +15,7 @@
  */
 import { useState, useMemo } from 'react';
 import {
-  EntityFilterType,
+  EntityGroup,
   entityFilters,
   entityTypeFilter,
   labeledEntityTypes,
@@ -26,48 +26,42 @@ import { useStarredEntities } from './useStarredEntites';
 import { Entity } from '@backstage/catalog-model';
 import useStaleWhileRevalidate from 'swr';
 
-export type EntitiesByFilter = Record<EntityFilterType, Entity[] | undefined>;
+export type EntitiesByFilter = Record<EntityGroup, Entity[] | undefined>;
 
 type UseEntities = {
-  selectedFilter: EntityFilterType | undefined;
-  setSelectedFilter: (f: EntityFilterType) => void;
+  selectedFilter: EntityGroup | undefined;
+  setSelectedFilter: (f: EntityGroup) => void;
   error: Error | null;
   toggleStarredEntity: any;
   isStarredEntity: (e: Entity) => boolean;
   entitiesByFilter: EntitiesByFilter;
   loading: boolean;
+  selectedTypeFilter: string;
+  selectTypeFilter: (id: string) => void;
 };
 
 export const useEntities = (): UseEntities => {
   const [selectedFilter, setSelectedFilter] = useState<
-    EntityFilterType | undefined
+    EntityGroup | undefined
   >();
   const catalogApi = useApi(catalogApiRef);
   const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
   const { data: entities, error } = useStaleWhileRevalidate(
-    ['catalog/all', entityFilters[selectedFilter ?? EntityFilterType.ALL]],
+    ['catalog/all', entityFilters[selectedFilter ?? EntityGroup.ALL]],
     async () => catalogApi.getEntities(),
   );
 
   const indentityApi = useApi(identityApiRef);
   const userId = indentityApi.getUserId();
 
-  const [selectedTab, setSelectedTab] = useState<string>(
+  const [selectedTypeFilter, selectTypeFilter] = useState<string>(
     labeledEntityTypes[0].id,
   );
-
-  // const filteredEntities = useMemo(() => {
-  //   const typeFilter = entityFilters[EntityFilterType.TYPE];
-  //   const leftMenuFilter = entityFilters[selectedFilter.id];
-  //   return entities
-  //     ?.filter(e => leftMenuFilter(e, { isStarred: isStarredEntity(e) }))
-  //     .filter(e => typeFilter(e, { type: selectedTab }));
-  // }, [selectedFilter.id, selectedTab, isStarredEntity, entities?.filter]);
 
   const entitiesByFilter = useMemo(() => {
     const filterEntities = (
       ents: Entity[] | undefined,
-      filterId: EntityFilterType,
+      filterId: EntityGroup,
       isStarred: (e: Entity) => boolean,
       user: string,
     ) => {
@@ -78,14 +72,14 @@ export const useEntities = (): UseEntities => {
             userId: user,
           }),
         )
-        .filter(e => entityTypeFilter(e, selectedTab));
+        .filter(e => entityTypeFilter(e, selectedTypeFilter));
     };
-    const data = Object.keys(EntityFilterType).reduce(
+    const data = Object.keys(EntityGroup).reduce(
       (res, key) => ({
         ...res,
         [key]: filterEntities(
           entities,
-          key as EntityFilterType,
+          key as EntityGroup,
           isStarredEntity,
           userId,
         ),
@@ -93,7 +87,7 @@ export const useEntities = (): UseEntities => {
       {} as EntitiesByFilter,
     );
     return data;
-  }, [entities, isStarredEntity, userId, selectedTab]);
+  }, [entities, isStarredEntity, userId, selectedTypeFilter]);
 
   return {
     selectedFilter,
@@ -103,7 +97,7 @@ export const useEntities = (): UseEntities => {
     isStarredEntity,
     entitiesByFilter,
     loading: entities === undefined,
-    selectedTab,
-    setSelectedTab,
+    selectedTypeFilter,
+    selectTypeFilter,
   };
 };

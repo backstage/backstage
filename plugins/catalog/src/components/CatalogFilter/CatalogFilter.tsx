@@ -26,11 +26,11 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import type { IconComponent } from '@backstage/core';
-import { EntityFilterType } from '../../data/filters';
+import { EntityGroup } from '../../data/filters';
 import { EntitiesByFilter } from '../../hooks/useEntities';
 
 export type CatalogFilterItem = {
-  id: EntityFilterType;
+  id: EntityGroup;
   label: string;
   icon?: IconComponent;
   count?: number | FC;
@@ -68,8 +68,8 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 export const CatalogFilter: FC<{
-  selectedFilter: EntityFilterType;
-  onFilterChange: (type: EntityFilterType) => void;
+  selectedFilter: EntityGroup;
+  onFilterChange: (type: EntityGroup) => void;
   entitiesByFilter: EntitiesByFilter;
   groups: CatalogFilterGroup[];
 }> = ({

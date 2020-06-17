@@ -22,7 +22,7 @@ import {
   CatalogFilterItem,
 } from '../components/CatalogFilter/CatalogFilter';
 
-export enum EntityFilterType {
+export enum EntityGroup {
   ALL = 'ALL',
   STARRED = 'STARRED',
   OWNED = 'OWNED',
@@ -33,12 +33,12 @@ export const filterGroups: CatalogFilterGroup[] = [
     name: 'Personal',
     items: [
       {
-        id: EntityFilterType.OWNED,
+        id: EntityGroup.OWNED,
         label: 'Owned',
         icon: SettingsIcon,
       },
       {
-        id: EntityFilterType.STARRED,
+        id: EntityGroup.STARRED,
         label: 'Starred',
         icon: StarIcon,
       },
@@ -49,14 +49,14 @@ export const filterGroups: CatalogFilterGroup[] = [
     name: 'Company',
     items: [
       {
-        id: EntityFilterType.ALL,
+        id: EntityGroup.ALL,
         label: 'All Services',
       },
     ],
   },
 ];
 
-export const getCatalogFilterItemByType = (filterType: EntityFilterType) => {
+export const getCatalogFilterItemByType = (filterType: EntityGroup) => {
   for (const group of filterGroups) {
     for (const filter of group.items) {
       if (filter.id === filterType) {
@@ -72,7 +72,6 @@ type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
 type EntityFilterOptions = Partial<{
   isStarred: boolean;
   userId: string;
-  type: string;
 }>;
 
 type Owned = {
@@ -80,12 +79,12 @@ type Owned = {
 };
 
 export const entityFilters: Record<string, EntityFilter> = {
-  [EntityFilterType.OWNED]: (e, { userId }) => {
+  [EntityGroup.OWNED]: (e, { userId }) => {
     const owner = (e.spec! as Owned).owner;
     return owner === userId;
   },
-  [EntityFilterType.ALL]: () => true,
-  [EntityFilterType.STARRED]: (_, { isStarred }) => !!isStarred,
+  [EntityGroup.ALL]: () => true,
+  [EntityGroup.STARRED]: (_, { isStarred }) => !!isStarred,
 };
 
 export const entityTypeFilter = (e: Entity, type: string) =>

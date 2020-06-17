@@ -37,7 +37,7 @@ import { useEntities } from '../../hooks/useEntities';
 import { findLocationForEntityMeta } from '../../data/utils';
 import {
   getCatalogFilterItemByType,
-  EntityFilterType,
+  EntityGroup,
   filterGroups,
   labeledEntityTypes,
 } from '../../data/filters';
@@ -64,12 +64,11 @@ export const CatalogPage: FC<{}> = () => {
     toggleStarredEntity,
     isStarredEntity,
     setSelectedFilter,
-    selectedTab,
-    setSelectedTab,
+    selectedTypeFilter: selectedTab,
+    selectTypeFilter: setSelectedTab,
   } = useEntities();
 
-  const filteredEntities =
-    entitiesByFilter[selectedFilter ?? EntityFilterType.ALL];
+  const filteredEntities = entitiesByFilter[selectedFilter ?? EntityGroup.ALL];
 
   const styles = useStyles();
 
@@ -160,14 +159,14 @@ export const CatalogPage: FC<{}> = () => {
           <div>
             <CatalogFilter
               groups={filterGroups}
-              selectedFilter={selectedFilter ?? EntityFilterType.ALL}
+              selectedFilter={selectedFilter ?? EntityGroup.ALL}
               onFilterChange={setSelectedFilter}
               entitiesByFilter={entitiesByFilter}
             />
           </div>
           <CatalogTable
             titlePreamble={
-              getCatalogFilterItemByType(selectedFilter ?? EntityFilterType.ALL)
+              getCatalogFilterItemByType(selectedFilter ?? EntityGroup.ALL)
                 ?.label ?? ''
             }
             entities={filteredEntities || []}

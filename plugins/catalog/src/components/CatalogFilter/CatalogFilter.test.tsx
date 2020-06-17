@@ -18,7 +18,7 @@ import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
-import { EntityFilterType } from '../../data/filters';
+import { EntityGroup } from '../../data/filters';
 
 describe('Catalog Filter', () => {
   const comp1 = {
@@ -52,12 +52,12 @@ describe('Catalog Filter', () => {
     },
   };
   const defaultFilterProps = {
-    selectedFilter: EntityFilterType.ALL,
-    onFilterChange: (type: EntityFilterType) => type,
+    selectedFilter: EntityGroup.ALL,
+    onFilterChange: (type: EntityGroup) => type,
     entitiesByFilter: {
-      [EntityFilterType.ALL]: [comp1, comp2, comp3],
-      [EntityFilterType.STARRED]: [comp1],
-      [EntityFilterType.OWNED]: [comp1],
+      [EntityGroup.ALL]: [comp1, comp2, comp3],
+      [EntityGroup.STARRED]: [comp1],
+      [EntityGroup.OWNED]: [comp1],
     },
   };
   it('should render the different groups', async () => {
@@ -82,11 +82,11 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: EntityFilterType.ALL,
+            id: EntityGroup.ALL,
             label: 'First Label',
           },
           {
-            id: EntityFilterType.STARRED,
+            id: EntityGroup.STARRED,
             label: 'Second Label',
           },
         ],
@@ -111,12 +111,12 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: EntityFilterType.ALL,
+            id: EntityGroup.ALL,
             label: 'First Label',
             count: 3,
           },
           {
-            id: EntityFilterType.STARRED,
+            id: EntityGroup.STARRED,
             label: 'Second Label',
             count: 1,
           },
@@ -135,8 +135,7 @@ describe('Catalog Filter', () => {
         screen.getAllByText(
           new RegExp(
             `(${
-              defaultFilterProps.entitiesByFilter[key as EntityFilterType]
-                .length
+              defaultFilterProps.entitiesByFilter[key as EntityGroup].length
             })`,
           ),
         ),
@@ -150,12 +149,12 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: EntityFilterType.ALL,
+            id: EntityGroup.ALL,
             label: 'First Label',
             count: 100,
           },
           {
-            id: EntityFilterType.STARRED,
+            id: EntityGroup.STARRED,
             label: 'Second Label',
             count: 400,
           },
@@ -190,12 +189,12 @@ describe('Catalog Filter', () => {
         name: 'Test Group 1',
         items: [
           {
-            id: EntityFilterType.ALL,
+            id: EntityGroup.ALL,
             label: 'First Label',
             count: () => <b>BACKSTAGE!</b>,
           },
           {
-            id: EntityFilterType.STARRED,
+            id: EntityGroup.STARRED,
             label: 'Second Label',
             count: 400,
           },
