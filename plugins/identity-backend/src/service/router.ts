@@ -17,21 +17,25 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { StaticJsonAdapter } from '../adapters';
+import { IdentityApiAdapter } from '../adapters/types';
 
 export interface RouterOptions {
   logger: Logger;
 }
 
+const makeRouter = (adapter: IdentityApiAdapter): express.Router => {
+  const router = Router();
+  router.get('/users/:user/groups', adapter.getUserGroups.bind(adapter));
+  return router;
+};
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = Router();
   const logger = options.logger;
 
-  router.use('/ping', (_, res) => {
-    logger.info('heartbeat for identity service');
-    res.send('pong');
-  });
-
-  return router;
+  logger.info('Initializing identity provider');
+  const adapter = new StaticJsonAdapter();
+  return makeRouter(adapter);
 }
