@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import type { Entity } from '@backstage/catalog-model';
-import { LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { NotFoundError } from '@backstage/backend-common';
-
+import { LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import type { Database, DbEntityResponse, EntityFilters } from '../database';
 import type { EntitiesCatalog } from './types';
 

@@ -37,7 +37,7 @@ Component entities are typically defined in YAML descriptor files next to the
 code of the component, and could look like this (actual schema will evolve):
 
 ```yaml
-apiVersion: backstage.io/v1beta1
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: my-component-name
@@ -63,7 +63,7 @@ wouldn't need their own descriptor files, but would be stored in the catalog
 somewhat like this (actual schema will evolve):
 
 ```yaml
-apiVersion: backstage.io/v1beta1
+apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: my-component-api
@@ -97,7 +97,7 @@ files, but would be stored in the catalog somewhat like this (actual schema will
 evolve):
 
 ```yaml
-apiVersion: backstage.io/v1beta1
+apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
   name: my-component-db

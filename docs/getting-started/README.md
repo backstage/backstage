@@ -38,7 +38,7 @@ to look at, and then launch the frontend. These commands are run from the
 project root, not inside the backend directory.
 
 ```bash
-yarn lerna run mock-catalog-data
+yarn lerna run mock-data
 yarn start
 ```
 

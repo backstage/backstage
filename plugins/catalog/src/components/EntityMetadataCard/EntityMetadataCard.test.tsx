@@ -22,7 +22,7 @@ import { EntityMetadataCard } from './EntityMetadataCard';
 describe('EntityMetadataCard component', () => {
   it('should display entity name if provided', async () => {
     const testEntity: Entity = {
-      apiVersion: 'backstage.io/v1beta1',
+      apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
       metadata: { name: 'test' },
     };

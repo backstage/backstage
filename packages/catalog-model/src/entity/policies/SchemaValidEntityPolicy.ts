@@ -23,32 +23,12 @@ const DEFAULT_ENTITY_SCHEMA = yup.object({
   kind: yup.string().required(),
   metadata: yup
     .object({
-      uid: yup
-        .string()
-        .notRequired()
-        .test(
-          'metadata.uid',
-          'The uid must not be empty',
-          value => value === undefined || value.length > 0,
-        ),
-      etag: yup
-        .string()
-        .notRequired()
-        .test(
-          'metadata.etag',
-          'The etag must not be empty',
-          value => value === undefined || value.length > 0,
-        ),
-      generation: yup
-        .number()
-        .notRequired()
-        .test(
-          'metadata.generation',
-          'The generation must be an integer greater than zero',
-          value => value === undefined || (value === (value | 0) && value > 0),
-        ),
+      uid: yup.string().notRequired().min(1),
+      etag: yup.string().notRequired().min(1),
+      generation: yup.number().notRequired().integer().min(1),
       name: yup.string().required(),
       namespace: yup.string().notRequired(),
+      description: yup.string().notRequired(),
       labels: yup.object<Record<string, string>>().notRequired(),
       annotations: yup.object<Record<string, string>>().notRequired(),
     })

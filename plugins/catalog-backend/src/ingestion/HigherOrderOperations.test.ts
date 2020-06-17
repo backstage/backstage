@@ -173,7 +173,7 @@ describe('HigherOrderOperations', () => {
         target: 'thing',
       };
       const desc: Entity = {
-        apiVersion: 'backstage.io/v1beta1',
+        apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: { name: 'c1' },
         spec: { type: 'service' },
@@ -228,7 +228,7 @@ describe('HigherOrderOperations', () => {
         target: 'thing',
       };
       const desc: Entity = {
-        apiVersion: 'backstage.io/v1beta1',
+        apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: { name: 'c1' },
         spec: { type: 'service' },

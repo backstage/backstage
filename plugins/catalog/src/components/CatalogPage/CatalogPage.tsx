@@ -19,14 +19,11 @@ import {
   Content,
   ContentHeader,
   DismissableBanner,
-  Header,
   HeaderTabs,
-  HomepageTimer,
-  Page,
-  pageTheme,
   SupportButton,
   useApi,
 } from '@backstage/core';
+import CatalogLayout from './CatalogLayout';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, Link, makeStyles, Typography } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
@@ -163,10 +160,7 @@ export const CatalogPage: FC<{}> = () => {
   ];
 
   return (
-    <Page theme={pageTheme.home}>
-      <Header title="Service Catalog" subtitle="Keep track of your software">
-        <HomepageTimer />
-      </Header>
+    <CatalogLayout>
       <HeaderTabs
         tabs={tabs}
         onChange={index => {
@@ -191,7 +185,6 @@ export const CatalogPage: FC<{}> = () => {
           }
           id="catalog_page_welcome_banner"
         />
-
         <ContentHeader title="Services">
           <Button
             component={RouterLink}
@@ -220,6 +213,6 @@ export const CatalogPage: FC<{}> = () => {
           />
         </div>
       </Content>
-    </Page>
+    </CatalogLayout>
   );
 };
