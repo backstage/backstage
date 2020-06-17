@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "start": "backstage-cli watch-deps --build -- tsc-watch --onFirstSuccess \\\"cross-env NODE_ENV=development nodemon -r esm dist/run.js\\\"",
+    "start": "backstage-cli backend:dev",
     "build": "tsc",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",

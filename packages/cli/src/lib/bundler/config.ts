@@ -182,7 +182,11 @@ export function createBackendConfig(
     },
     devtool: isDev ? 'cheap-module-eval-source-map' : 'source-map',
     context: paths.targetPath,
-    entry: ['webpack/hot/poll?100', paths.targetEntry],
+    entry: [
+      'webpack/hot/poll?100',
+      paths.targetEntry,
+      ...(paths.targetRunFile ? [paths.targetRunFile] : []),
+    ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['main:src', 'browser', 'module', 'main'],
