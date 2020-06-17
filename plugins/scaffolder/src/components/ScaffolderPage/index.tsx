@@ -36,7 +36,7 @@ const STATIC_DATA = [
     name: 'Spring Boot Service',
     tags: ['Recommended', 'Java'],
     description:
-      'Standard Spring Boot (Java) micro service with recommended configuation.',
+      'Standard Spring Boot (Java) microservice with recommended configuration.',
     ownerId: 'spotify',
   },
   {
