@@ -14,40 +14,25 @@
  * limitations under the License.
  */
 
-import { PreparerBase, RemoteLocation, PreparerBuilder } from './types';
-import {
-  TemplateEntityV1alpha1,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
+import { PreparerBase, RemoteProtocol, PreparerBuilder } from './types';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { parseLocationAnnotation } from './helpers';
 
 export class Preparers implements PreparerBuilder {
-  private preparerMap = new Map<RemoteLocation, PreparerBase>();
+  private preparerMap = new Map<RemoteProtocol, PreparerBase>();
 
-  register(key: RemoteLocation, processor: PreparerBase) {
-    this.preparerMap.set(key, processor);
+  register(protocol: RemoteProtocol, preparer: PreparerBase) {
+    this.preparerMap.set(protocol, preparer);
   }
 
   get(template: TemplateEntityV1alpha1): PreparerBase {
-    const preparerKey = this.getPreparerKeyFromEntity(template);
-    const preparer = this.preparerMap.get(preparerKey);
+    const { protocol } = parseLocationAnnotation(template);
+    const preparer = this.preparerMap.get(protocol);
 
     if (!preparer) {
-      throw new Error(`No preparer registered for type ${preparerKey}`);
+      throw new Error(`No preparer registered for type: "${protocol}"`);
     }
 
     return preparer;
-  }
-
-  private getPreparerKeyFromEntity(
-    entity: TemplateEntityV1alpha1,
-  ): RemoteLocation {
-    const annotation = entity.metadata.annotations?.[LOCATION_ANNOTATION] ?? '';
-    const [key] = annotation?.split(':');
-
-    if (!key) {
-      throw new Error('Failed to parse the location data');
-    }
-
-    return key as RemoteLocation;
   }
 }

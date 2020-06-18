@@ -15,18 +15,54 @@
  */
 import { Preparers } from '.';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { FilePreparer } from './file';
 
 describe('Preparers', () => {
+  const mockTemplate: TemplateEntityV1alpha1 = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Template',
+    metadata: {
+      annotations: {
+        'backstage.io/managed-by-location':
+          'file:/Users/blam/dev/spotify/backstage/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml',
+      },
+      name: 'react-ssr-template',
+      title: 'React SSR Template',
+      description:
+        'Next.js application skeleton for creating isomorphic web applications.',
+      uid: '7357f4c5-aa58-4a1e-9670-18931eef771f',
+      etag: 'YWUxZWQyY2EtZDkxMC00MDM0LWI0ODAtMDgwMWY0YzdlMWIw',
+      generation: 1,
+    },
+    spec: {
+      type: 'cookiecutter',
+      path: '.',
+    },
+  };
   it('should throw an error when the preparer for the source location is not registered', () => {
     const preparers = new Preparers();
-    const mockTemplate: TemplateEntityV1alpha1 = {
+
+    expect(() => preparers.get(mockTemplate)).toThrow(
+      expect.objectContaining({
+        message: 'No preparer registered for type: "file"',
+      }),
+    );
+  });
+  it('should return the correct preparer when the source matches', () => {
+    const preparers = new Preparers();
+    const preparer = new FilePreparer();
+
+    preparers.register('file', preparer);
+
+    expect(preparers.get(mockTemplate)).toBe(preparer);
+  });
+
+  it('should throw an error if the metadata tag does not exist in the entity', () => {
+    const brokenTemplate: TemplateEntityV1alpha1 = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Template',
       metadata: {
-        annotations: {
-          'backstage.io/managed-by-location':
-            'file:/Users/blam/dev/spotify/backstage/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml',
-        },
+        annotations: {},
         name: 'react-ssr-template',
         title: 'React SSR Template',
         description:
@@ -41,12 +77,12 @@ describe('Preparers', () => {
       },
     };
 
-    expect(() => preparers.get(mockTemplate)).toThrow(
+    const preparers = new Preparers();
+
+    expect(() => preparers.get(brokenTemplate)).toThrow(
       expect.objectContaining({
-        message: 'No preparer registered for type file',
+        message: expect.stringContaining('No location annotation provided'),
       }),
     );
   });
-  it('should return the correct preparer when the source matches');
-  it('should throw an error if the srouce is not available');
 });

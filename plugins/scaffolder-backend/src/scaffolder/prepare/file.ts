@@ -16,32 +16,20 @@
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import {
-  TemplateEntityV1alpha1,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { parseLocationAnnotation } from './helpers';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 
 export class FilePreparer implements PreparerBase {
   async prepare(template: TemplateEntityV1alpha1): Promise<string> {
-    const location = template?.metadata?.annotations?.[LOCATION_ANNOTATION];
+    const { protocol, location } = parseLocationAnnotation(template);
 
-    const [locationType, templateEntityLocation] = (location ?? '').split(
-      /:(.+)/,
-    );
-    if (locationType !== 'file') {
+    if (protocol !== 'file') {
       throw new InputError(
-        `Wrong location type: ${locationType}, should be 'file'`,
+        `Wrong location protocol: ${protocol}, should be 'file'`,
       );
     }
-
-    if (!templateEntityLocation) {
-      throw new InputError(
-        `Couldn't parse location for template: ${template.metadata.name}`,
-      );
-    }
-
     const templateId = template.metadata.name;
 
     const tempDir = await fs.promises.mkdtemp(
@@ -49,12 +37,12 @@ export class FilePreparer implements PreparerBase {
     );
 
     const parentDirectory = path.resolve(
-      path.dirname(templateEntityLocation),
+      path.dirname(location),
       template.spec.path ?? '.',
     );
 
     await fs.copy(parentDirectory, tempDir, {
-      filter: src => src !== templateEntityLocation,
+      filter: src => src !== location,
     });
 
     return tempDir;

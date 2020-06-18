@@ -25,8 +25,8 @@ export type PreparerBase = {
 };
 
 export type PreparerBuilder = {
-  register(key: RemoteLocation, preparer: PreparerBase): void;
-  get(key: TemplateEntityV1alpha1): PreparerBase;
+  register(protocol: RemoteProtocol, preparer: PreparerBase): void;
+  get(template: TemplateEntityV1alpha1): PreparerBase;
 };
 
-export type RemoteLocation = 'file';
+export type RemoteProtocol = 'file';
