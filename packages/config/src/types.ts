@@ -31,11 +31,15 @@ export type Config = {
 
   getConfigArray(key: string): Config[];
 
-  getNumber(key: string): number | undefined;
+  getNumber(key: string): number;
+  getOptionalNumber(key: string): number | undefined;
 
-  getBoolean(key: string): boolean | undefined;
+  getBoolean(key: string): boolean;
+  getOptionalBoolean(key: string): boolean | undefined;
 
-  getString(key: string): string | undefined;
+  getString(key: string): string;
+  getOptionalString(key: string): string | undefined;
 
-  getStringArray(key: string): string[] | undefined;
+  getStringArray(key: string): string[];
+  getOptionalStringArray(key: string): string[] | undefined;
 };

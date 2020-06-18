@@ -92,21 +92,45 @@ export class ConfigReader implements Config {
     return (configs ?? []).map(obj => new ConfigReader(obj));
   }
 
-  getNumber(key: string): number | undefined {
+  getNumber(key: string): number {
+    const value = this.getOptionalNumber(key);
+    if (value === undefined) {
+      throw new Error(`Missing required config value at '${key}'`);
+    }
+    return value;
+  }
+
+  getOptionalNumber(key: string): number | undefined {
     return this.readConfigValue(
       key,
       value => typeof value === 'number' || { expected: 'number' },
     );
   }
 
-  getBoolean(key: string): boolean | undefined {
+  getBoolean(key: string): boolean {
+    const value = this.getOptionalBoolean(key);
+    if (value === undefined) {
+      throw new Error(`Missing required config value at '${key}'`);
+    }
+    return value;
+  }
+
+  getOptionalBoolean(key: string): boolean | undefined {
     return this.readConfigValue(
       key,
       value => typeof value === 'boolean' || { expected: 'boolean' },
     );
   }
 
-  getString(key: string): string | undefined {
+  getString(key: string): string {
+    const value = this.getOptionalString(key);
+    if (value === undefined) {
+      throw new Error(`Missing required config value at '${key}'`);
+    }
+    return value;
+  }
+
+  getOptionalString(key: string): string | undefined {
     return this.readConfigValue(
       key,
       value =>
@@ -114,7 +138,15 @@ export class ConfigReader implements Config {
     );
   }
 
-  getStringArray(key: string): string[] | undefined {
+  getStringArray(key: string): string[] {
+    const value = this.getOptionalStringArray(key);
+    if (value === undefined) {
+      throw new Error(`Missing required config value at '${key}'`);
+    }
+    return value;
+  }
+
+  getOptionalStringArray(key: string): string[] | undefined {
     return this.readConfigValue(key, values => {
       if (!Array.isArray(values)) {
         return { expected: 'string-array' };

@@ -49,6 +49,10 @@ function expectValidValues(config: ConfigReader) {
     'string1',
     'string2',
   ]);
+  expect(config.getNumber('zero')).toBe(0);
+  expect(config.getBoolean('true')).toBe(true);
+  expect(config.getString('string')).toBe('string');
+  expect(config.getStringArray('strings')).toEqual(['string1', 'string2']);
 
   const [config1, config2, config3] = config.getConfigArray('nestlings');
   expect(config1.getBoolean('boolean')).toBe(true);
@@ -57,6 +61,9 @@ function expectValidValues(config: ConfigReader) {
 }
 
 function expectInvalidValues(config: ConfigReader) {
+  expect(() => config.getBoolean('string')).toThrow(
+    'Invalid type in config for key string, got string, wanted boolean',
+  );
   expect(() => config.getNumber('string')).toThrow(
     'Invalid type in config for key string, got string, wanted number',
   );
@@ -87,18 +94,30 @@ function expectInvalidValues(config: ConfigReader) {
   expect(() => config.getConfigArray('one')).toThrow(
     'Invalid type in config for key one, got number, wanted object-array',
   );
+  expect(() => config.getBoolean('missing')).toThrow(
+    "Missing required config value at 'missing'",
+  );
+  expect(() => config.getNumber('missing')).toThrow(
+    "Missing required config value at 'missing'",
+  );
+  expect(() => config.getString('missing')).toThrow(
+    "Missing required config value at 'missing'",
+  );
+  expect(() => config.getStringArray('missing')).toThrow(
+    "Missing required config value at 'missing'",
+  );
 }
 
 describe('ConfigReader', () => {
   it('should read empty config with valid keys', () => {
     const config = new ConfigReader({});
-    expect(config.getString('x')).toBeUndefined();
-    expect(config.getString('x_x')).toBeUndefined();
-    expect(config.getString('x-X')).toBeUndefined();
-    expect(config.getString('x0')).toBeUndefined();
-    expect(config.getString('X-x2')).toBeUndefined();
-    expect(config.getString('x0_x0')).toBeUndefined();
-    expect(config.getString('x_x-x_x')).toBeUndefined();
+    expect(config.getOptionalString('x')).toBeUndefined();
+    expect(config.getOptionalString('x_x')).toBeUndefined();
+    expect(config.getOptionalString('x-X')).toBeUndefined();
+    expect(config.getOptionalString('x0')).toBeUndefined();
+    expect(config.getOptionalString('X-x2')).toBeUndefined();
+    expect(config.getOptionalString('x0_x0')).toBeUndefined();
+    expect(config.getOptionalString('x_x-x_x')).toBeUndefined();
   });
 
   it('should throw on invalid keys', () => {
@@ -135,7 +154,7 @@ describe('ConfigReader', () => {
 describe('ConfigReader with fallback', () => {
   it('should behave as if without fallback', () => {
     const config = new ConfigReader({}, new ConfigReader(DATA));
-    expect(config.getString('x')).toBeUndefined();
+    expect(config.getOptionalString('x')).toBeUndefined();
     expect(() => config.getString('.')).toThrow(/^Invalid config key/);
     expect(() => config.getString('a.')).toThrow(/^Invalid config key/);
   });
@@ -210,8 +229,12 @@ describe('ConfigReader with fallback', () => {
     // Config arrays aren't merged either
     expect(config.getConfigArray('merged.configs').length).toBe(1);
     expect(config.getConfigArray('merged.configs')[0].getString('a')).toBe('a');
+    expect(config.getConfigArray('merged.configs')[0].getString('a')).toBe('a');
+    expect(() =>
+      config.getConfigArray('merged.configs')[0].getString('missing'),
+    ).toThrow("Missing required config value at 'missing'");
     expect(
-      config.getConfigArray('merged.configs')[0].getString('b'),
+      config.getConfigArray('merged.configs')[0].getOptionalString('b'),
     ).toBeUndefined();
 
     // Config arrays aren't merged either
@@ -220,7 +243,10 @@ describe('ConfigReader with fallback', () => {
       config.getConfig('merged').getConfigArray('configs')[0].getString('a'),
     ).toBe('a');
     expect(
-      config.getConfig('merged').getConfigArray('configs')[0].getString('b'),
+      config
+        .getConfig('merged')
+        .getConfigArray('configs')[0]
+        .getOptionalString('b'),
     ).toBeUndefined();
   });
 });
