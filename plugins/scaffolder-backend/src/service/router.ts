@@ -34,16 +34,17 @@ export async function createRouter(
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
   router.post('/v1/jobs', async (_, res) => {
-    // TODO(blam): Actually make this function work
+    // TODO(blam): Create a unique job here and return the ID so that
+    // The end user can poll for updates on the current job
     res.status(201).json({ accepted: true });
 
+    // TODO(blam): Take this entity from the post body sent from the frontend
     const mockEntity: TemplateEntityV1alpha1 = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Template',
       metadata: {
         annotations: {
-          'backstage.io/managed-by-location':
-            'file:/Users/blam/dev/spotify/backstage/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml',
+          'backstage.io/managed-by-location': `file:${__dirname}/../../sample-templates/react-ssr-template/template.yaml`,
         },
         name: 'react-ssr-template',
         title: 'React SSR Template',
@@ -59,12 +60,13 @@ export async function createRouter(
       },
     };
 
-    // fetch the entity from service catalog here.
+    // Get the preparer for the mock entity
     const preparer = preparers.get(mockEntity);
 
-    //
+    // Run the preparer for the mock entity to produce a temporary directory with template in
     const path = await preparer.prepare(mockEntity);
 
+    // Run the templater on the mock directory with values from the post body
     await templater.run({ directory: path, values: { componentId: 'test' } });
   });
 

@@ -25,8 +25,10 @@ import {
 
 const setupTest = async (fixturePath: string) => {
   const locationForTemplateYaml = path.resolve(
-    __dirname,
-    '../../../fixtures',
+    path.dirname(
+      require.resolve('@backstage/plugin-scaffolder-backend/package'),
+    ),
+    'fixtures',
     fixturePath,
   );
 
