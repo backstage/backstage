@@ -21,6 +21,7 @@ import {
   RedirectInfo,
   RefreshTokenResponse,
   ProfileInfo,
+  ProviderStrategy,
 } from '../providers/types';
 
 export const makeProfileInfo = (
@@ -153,7 +154,7 @@ export const executeFetchUserProfileStrategy = async (
   params: any,
 ): Promise<ProfileInfo> => {
   return new Promise((resolve, reject) => {
-    const anyStrategy = providerStrategy as any;
+    const anyStrategy = (providerStrategy as unknown) as ProviderStrategy;
     anyStrategy.userProfile(
       accessToken,
       (error: Error, passportProfile: passport.Profile) => {

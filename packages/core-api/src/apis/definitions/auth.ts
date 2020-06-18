@@ -158,14 +158,14 @@ export type ProfileInfoOptions = {
 };
 
 /**
- * This API provides access to profile information of the signed in user.
+ * This API provides access to profile information of the user from an auth provider.
  */
 export type ProfileInfoApi = {
   getProfile(options?: ProfileInfoOptions): Promise<ProfileInfo | undefined>;
 };
 
 /**
- * Profile information of a signed in user.
+ * Profile information of the user from an auth provider.
  */
 export type ProfileInfo = {
   /**
