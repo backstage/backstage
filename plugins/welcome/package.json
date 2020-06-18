@@ -1,8 +1,7 @@
 {
   "name": "@backstage/plugin-welcome",
   "version": "0.1.1-alpha.9",
-  "main": "dist/index.esm.js",
-  "main:src": "src/index.ts",
+  "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
   "license": "Apache-2.0",

@@ -171,9 +171,7 @@ export async function installWithLocalDeps(dir: string) {
   });
 
   // This takes care of pointing all the installed packages from this repo to
-  // dist instead of the local src.
-  // For example node_modules/@backstage/core/packages.json is rewritten to point
-  // types to dist/index.d.ts and the main:src field is removed.
+  // dist instead of the local src, using the field overrides in publishConfig.
   // Without this we get type checking errors in the e2e test
   if (process.env.BACKSTAGE_E2E_CLI_TEST) {
     Task.section('Patching local dependencies for e2e tests');
@@ -192,7 +190,6 @@ export async function installWithLocalDeps(dir: string) {
           const depJson = await fs.readJson(depJsonPath);
 
           // We want dist to be used for e2e tests
-          delete depJson['main:src'];
           for (const key of Object.keys(depJson.publishConfig)) {
             if (key !== 'access') {
               depJson[key] = depJson.publishConfig[key];
