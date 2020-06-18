@@ -62,6 +62,11 @@ describe('DatabaseEntitiesCatalog', () => {
       const result = await catalog.addOrUpdateEntity(entity);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
+      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
+        { key: 'kind', values: ['b'] },
+        { key: 'name', values: ['c'] },
+        { key: 'namespace', values: ['d'] },
+      ]);
       expect(db.addEntity).toHaveBeenCalledTimes(1);
       expect(result).toBe(entity);
     });
@@ -71,20 +76,52 @@ describe('DatabaseEntitiesCatalog', () => {
         apiVersion: 'a',
         kind: 'b',
         metadata: {
-          uid: 'uuuu',
+          uid: 'u',
           name: 'c',
           namespace: 'd',
         },
       };
 
-      db.entities.mockResolvedValue([]);
+      db.entityByUid.mockResolvedValue({
+        entity: {
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: {
+            uid: 'u',
+            etag: 'e',
+            generation: 1,
+            name: 'c',
+            namespace: 'd',
+          },
+        },
+      });
       db.updateEntity.mockResolvedValue({ entity });
 
       const catalog = new DatabaseEntitiesCatalog(db);
       const result = await catalog.addOrUpdateEntity(entity);
 
       expect(db.entities).toHaveBeenCalledTimes(0);
+      expect(db.entityByUid).toHaveBeenCalledTimes(1);
+      expect(db.entityByUid).toHaveBeenCalledWith(expect.anything(), 'u');
       expect(db.updateEntity).toHaveBeenCalledTimes(1);
+      expect(db.updateEntity).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          entity: {
+            apiVersion: 'a',
+            kind: 'b',
+            metadata: {
+              uid: 'u',
+              etag: 'e',
+              generation: 1,
+              name: 'c',
+              namespace: 'd',
+            },
+          },
+        },
+        'e',
+        1,
+      );
       expect(result).toBe(entity);
     });
 
@@ -101,19 +138,45 @@ describe('DatabaseEntitiesCatalog', () => {
         apiVersion: 'a',
         kind: 'b',
         metadata: {
+          uid: 'u',
+          etag: 'e',
+          generation: 1,
           name: 'c',
           namespace: 'd',
         },
       };
 
       db.entities.mockResolvedValue([{ entity: existing }]);
-      db.updateEntity.mockResolvedValue({ entity: added });
+      db.updateEntity.mockResolvedValue({ entity: existing });
 
       const catalog = new DatabaseEntitiesCatalog(db);
       const result = await catalog.addOrUpdateEntity(added);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
+      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
+        { key: 'kind', values: ['b'] },
+        { key: 'name', values: ['c'] },
+        { key: 'namespace', values: ['d'] },
+      ]);
       expect(db.updateEntity).toHaveBeenCalledTimes(1);
+      expect(db.updateEntity).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          entity: {
+            apiVersion: 'a',
+            kind: 'b',
+            metadata: {
+              uid: 'u',
+              etag: 'e',
+              generation: 1,
+              name: 'c',
+              namespace: 'd',
+            },
+          },
+        },
+        'e',
+        1,
+      );
       expect(result).toEqual(existing);
     });
   });

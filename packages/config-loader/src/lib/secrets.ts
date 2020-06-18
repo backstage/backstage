@@ -122,7 +122,7 @@ export async function readSecret(
     const { path } = secret;
     const parts = typeof path === 'string' ? path.split('.') : path;
 
-    let value: JsonValue = await parser(content);
+    let value: JsonValue | undefined = await parser(content);
     for (const [index, part] of parts.entries()) {
       if (!isObject(value)) {
         const errPath = parts.slice(0, index).join('.');
@@ -132,6 +132,7 @@ export async function readSecret(
       }
       value = value[part];
     }
+
     return String(value);
   }
 

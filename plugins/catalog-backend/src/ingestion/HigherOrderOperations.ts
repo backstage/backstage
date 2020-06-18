@@ -15,8 +15,12 @@
  */
 
 import { InputError } from '@backstage/backend-common';
-import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
-import lodash from 'lodash';
+import {
+  Entity,
+  entityHasChanges,
+  Location,
+  LocationSpec,
+} from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
@@ -173,7 +177,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
         if (!previous) {
           this.logger.debug(`No such entity found, adding`);
           await this.entitiesCatalog.addOrUpdateEntity(entity, location.id);
-        } else if (!this.entitiesAreEqual(previous, entity)) {
+        } else if (entityHasChanges(previous, entity)) {
           this.logger.debug(`Different from existing entity, updating`);
           await this.entitiesCatalog.addOrUpdateEntity(entity, location.id);
         } else {
@@ -198,61 +202,5 @@ export class HigherOrderOperations implements HigherOrderOperation {
         );
       }
     }
-  }
-
-  // Compares entities, ignoring generated and irrelevant data
-  private entitiesAreEqual(previous: Entity, next: Entity): boolean {
-    if (
-      previous.apiVersion !== next.apiVersion ||
-      previous.kind !== next.kind ||
-      !lodash.isEqual(previous.spec, next.spec) // Accept that {} !== undefined
-    ) {
-      return false;
-    }
-
-    // Since the next annotations get merged into the previous, extract only
-    // the overlapping keys and check if their values match.
-    if (next.metadata.annotations) {
-      if (!previous.metadata.annotations) {
-        return false;
-      }
-      if (
-        !lodash.isEqual(
-          next.metadata.annotations,
-          lodash.pick(
-            previous.metadata.annotations,
-            Object.keys(next.metadata.annotations),
-          ),
-        )
-      ) {
-        return false;
-      }
-    }
-
-    const e1 = lodash.cloneDeep(previous);
-    const e2 = lodash.cloneDeep(next);
-
-    if (!e1.metadata.labels) {
-      e1.metadata.labels = {};
-    }
-    if (!e2.metadata.labels) {
-      e2.metadata.labels = {};
-    }
-
-    // Remove generated fields
-    delete e1.metadata.uid;
-    delete e1.metadata.etag;
-    delete e1.metadata.generation;
-    delete e2.metadata.uid;
-    delete e2.metadata.etag;
-    delete e2.metadata.generation;
-
-    // Remove already compared things
-    delete e1.metadata.annotations;
-    delete e1.spec;
-    delete e2.metadata.annotations;
-    delete e2.spec;
-
-    return lodash.isEqual(e1, e2);
   }
 }

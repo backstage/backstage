@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps } from 'react';
-import { render, cleanup } from '@testing-library/react';
-import { RegisterComponentResultDialog } from './RegisterComponentResultDialog';
-import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
+import { cleanup, render } from '@testing-library/react';
+import React, { ComponentProps } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { Entity } from '@backstage/catalog-model';
+import { RegisterComponentResultDialog } from './RegisterComponentResultDialog';
 
 const setup = (
   props?: Partial<ComponentProps<typeof RegisterComponentResultDialog>>,
@@ -52,6 +51,7 @@ it('should show a list of components if success', async () => {
   const { rendered } = setup({
     entities: [
       {
+        apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: {
           name: 'Component1',
@@ -61,6 +61,7 @@ it('should show a list of components if success', async () => {
         },
       },
       {
+        apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: {
           name: 'Component2',
@@ -69,7 +70,7 @@ it('should show a list of components if success', async () => {
           type: 'service',
         },
       },
-    ] as Entity[],
+    ],
   });
 
   expect(
