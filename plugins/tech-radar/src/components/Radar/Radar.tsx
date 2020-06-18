@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import RadarPlot from '../RadarPlot';
 import { Ring, Quadrant, Entry } from '../../utils/types';
 import { adjustQuadrants, adjustRings, adjustEntries } from './utils';
@@ -28,7 +28,7 @@ type Props = {
   svgProps?: object;
 };
 
-const Radar: FC<Props> = props => {
+const Radar = (props: Props): JSX.Element => {
   const { width, height, quadrants, rings, entries } = props;
   const radius = Math.min(width, height) / 2;
 
@@ -38,7 +38,7 @@ const Radar: FC<Props> = props => {
   // TODO(dflemstr): most of this can be heavily memoized if performance becomes a problem
   adjustQuadrants(quadrants, radius, width, height);
   adjustRings(rings, radius);
-  adjustEntries(entries, activeEntry, quadrants, rings, radius);
+  adjustEntries(entries, quadrants, rings, radius, activeEntry);
 
   return (
     <svg ref={node} width={width} height={height} {...props.svgProps}>

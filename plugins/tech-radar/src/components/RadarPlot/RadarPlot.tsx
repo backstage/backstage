@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Quadrant, Ring, Entry } from '../../utils/types';
 
 import RadarGrid from '../RadarGrid';
@@ -36,7 +36,7 @@ type Props = {
 };
 
 // A component that draws the radar circle.
-const RadarPlot: FC<Props> = props => {
+const RadarPlot = (props: Props): JSX.Element => {
   const {
     width,
     height,
@@ -71,7 +71,7 @@ const RadarPlot: FC<Props> = props => {
             x={entry.x || 0}
             y={entry.y || 0}
             color={entry.color || ''}
-            number={((entry && entry.idx) || 0) + 1}
+            value={((entry && entry.idx) || 0) + 1}
             url={entry.url}
             moved={entry.moved}
             onMouseEnter={onEntryMouseEnter && (() => onEntryMouseEnter(entry))}

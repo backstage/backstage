@@ -98,10 +98,10 @@ export const adjustQuadrants = (
 
 export const adjustEntries = (
   entries: Entry[],
-  activeEntry: Entry | null | undefined,
   quadrants: Quadrant[],
   rings: Ring[],
   radius: number,
+  activeEntry?: Entry | null,
 ) => {
   let seed = 42;
   entries.forEach((entry, idx) => {

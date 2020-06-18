@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import { Quadrant, Ring, Entry } from '../../utils/types';
+import { WithLink } from '../../utils/components';
 
 type Segments = {
   [k: number]: { [k: number]: Entry[] };
@@ -29,20 +30,7 @@ type Props = {
   onEntryMouseLeave?: (entry: Entry) => void;
 };
 
-const useStyles = makeStyles<Theme>(() => ({
-  quadrant: {
-    height: '100%',
-    width: '100%',
-    overflow: 'hidden',
-    pointerEvents: 'none',
-  },
-  quadrantHeading: {
-    pointerEvents: 'none',
-    userSelect: 'none',
-    marginTop: 0,
-    marginBottom: 'calc(18px * 0.375)',
-    fontSize: '18px',
-  },
+const ringStyles = {
   rings: {
     columns: 3,
   },
@@ -69,6 +57,25 @@ const useStyles = makeStyles<Theme>(() => ({
     '-webkit-font-feature-settings': 'pnum',
     'font-feature-settings': 'pnum',
   },
+};
+
+const quadrantStyles = {
+  quadrant: {
+    height: '100%',
+    width: '100%',
+    overflow: 'hidden',
+    pointerEvents: 'none',
+  },
+  quadrantHeading: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    marginTop: 0,
+    marginBottom: 'calc(18px * 0.375)',
+    fontSize: '18px',
+  },
+};
+
+const entryStyle = {
   entry: {
     pointerEvents: 'none',
     userSelect: 'none',
@@ -77,12 +84,18 @@ const useStyles = makeStyles<Theme>(() => ({
   entryLink: {
     pointerEvents: 'none',
   },
+};
+
+const useStyles = makeStyles<Theme>(() => ({
+  ringStyles,
+  quadrantStyles,
+  entryStyle,
 }));
 
-const RadarLegend: FC<Props> = props => {
+const RadarLegend = (props: Props): JSX.Element => {
   const classes = useStyles(props);
 
-  const _getSegment = (
+  const getSegment = (
     segmented: Segments,
     quadrant: Quadrant,
     ring: Ring,
@@ -94,7 +107,7 @@ const RadarLegend: FC<Props> = props => {
     return ridx === undefined ? [] : segmentedData[ridx + ringOffset] || [];
   };
 
-  const _renderRing = (
+  const renderRing = (
     ring: Ring,
     entries: Entry[],
     onEntryMouseEnter?: Props['onEntryMouseEnter'],
@@ -107,39 +120,29 @@ const RadarLegend: FC<Props> = props => {
           <p>(empty)</p>
         ) : (
           <ol className={classes.ringList}>
-            {entries.map(entry => {
-              let node = <span className={classes.entry}>{entry.title}</span>;
-
-              if (entry.url) {
-                node = (
-                  <a className={classes.entryLink} href={entry.url}>
-                    {node}
-                  </a>
-                );
-              }
-
-              return (
-                <li
-                  key={entry.id}
-                  value={(entry.idx || 0) + 1}
-                  onMouseEnter={
-                    onEntryMouseEnter && (() => onEntryMouseEnter(entry))
-                  }
-                  onMouseLeave={
-                    onEntryMouseLeave && (() => onEntryMouseLeave(entry))
-                  }
-                >
-                  {node}
-                </li>
-              );
-            })}
+            {entries.map(entry => (
+              <li
+                key={entry.id}
+                value={(entry.idx || 0) + 1}
+                onMouseEnter={
+                  onEntryMouseEnter && (() => onEntryMouseEnter(entry))
+                }
+                onMouseLeave={
+                  onEntryMouseLeave && (() => onEntryMouseLeave(entry))
+                }
+              >
+                <WithLink url={entry.url} className={classes.entryLink}>
+                  <span className={classes.entry}>{entry.title}</span>
+                </WithLink>
+              </li>
+            ))}
           </ol>
         )}
       </div>
     );
   };
 
-  const _renderQuadrant = (
+  const renderQuadrant = (
     segments: Segments,
     quadrant: Quadrant,
     rings: Ring[],
@@ -158,9 +161,9 @@ const RadarLegend: FC<Props> = props => {
           <h2 className={classes.quadrantHeading}>{quadrant.name}</h2>
           <div className={classes.rings}>
             {rings.map(ring =>
-              _renderRing(
+              renderRing(
                 ring,
-                _getSegment(segments, quadrant, ring),
+                getSegment(segments, quadrant, ring),
                 onEntryMouseEnter,
                 onEntryMouseLeave,
               ),
@@ -171,7 +174,7 @@ const RadarLegend: FC<Props> = props => {
     );
   };
 
-  const _setupSegments = (entries: Entry[]) => {
+  const setupSegments = (entries: Entry[]) => {
     const segments: Segments = {};
 
     for (const entry of entries) {
@@ -209,12 +212,12 @@ const RadarLegend: FC<Props> = props => {
     onEntryMouseLeave,
   } = props;
 
-  const segments: Segments = _setupSegments(entries);
+  const segments: Segments = setupSegments(entries);
 
   return (
     <g>
       {quadrants.map(quadrant =>
-        _renderQuadrant(
+        renderQuadrant(
           segments,
           quadrant,
           rings,
