@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
 import { EntityGroup } from '../../data/filters';
@@ -124,7 +124,7 @@ describe('Catalog Filter', () => {
       },
     ];
 
-    render(
+    const { getAllByText } = render(
       wrapInTestApp(
         <CatalogFilter {...defaultFilterProps} groups={mockGroups} />,
       ),
@@ -134,10 +134,8 @@ describe('Catalog Filter', () => {
       const matcher = new RegExp(
         `(${defaultFilterProps.entitiesByFilter[key as EntityGroup].length})`,
       );
-      await waitFor(() => screen.getAllByText(matcher));
-      screen
-        .getAllByText(matcher)
-        .forEach(el => expect(el).toBeInTheDocument());
+      const items = await getAllByText(matcher);
+      items.forEach(el => expect(el).toBeInTheDocument());
     }
   });
 

@@ -43,7 +43,7 @@
     "@backstage/dev-utils": "^0.1.1-alpha.9",
     "@backstage/test-utils": "^0.1.1-alpha.9",
     "@testing-library/jest-dom": "^5.7.0",
-    "@testing-library/react": "^10.2.1",
+    "@testing-library/react": "^9.3.2",
     "@testing-library/react-hooks": "^3.3.0",
     "@testing-library/user-event": "^10.2.4",
     "@types/jest": "^25.2.2",

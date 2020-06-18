@@ -24,7 +24,7 @@ import {
   identityApiRef,
 } from '@backstage/core';
 import { MockErrorApi, wrapInTestApp } from '@backstage/test-utils';
-import { screen, render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { catalogApiRef } from '../..';
 import { CatalogApi } from '../../api/types';
@@ -70,7 +70,7 @@ describe('CatalogPage', () => {
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    render(
+    const { findByText } = render(
       wrapInTestApp(
         <ApiProvider
           apis={ApiRegistry.from([
@@ -84,11 +84,12 @@ describe('CatalogPage', () => {
         </ApiProvider>,
       ),
     );
-    await waitFor(() => screen.getByText(/All Services \(2\)/));
-    expect(screen.getByText(/All Services \(2\)/)).toBeInTheDocument();
+
+    const items = await findByText(/All Services \(2\)/);
+    expect(items).toBeInTheDocument();
   });
   it('should filter by owner', async () => {
-    render(
+    const { findByText, getByText } = render(
       wrapInTestApp(
         <ApiProvider
           apis={ApiRegistry.from([
@@ -102,8 +103,8 @@ describe('CatalogPage', () => {
         </ApiProvider>,
       ),
     );
-    fireEvent.click(screen.getByText(/Owned/));
-    await waitFor(() => screen.getByText(/Owned \(1\)/));
-    expect(screen.getByText(/Owned \(1\)/)).toBeInTheDocument();
+    fireEvent.click(getByText(/Owned/));
+    const items = await findByText(/Owned \(1\)/);
+    expect(items).toBeInTheDocument();
   });
 });
