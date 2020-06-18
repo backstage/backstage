@@ -27,7 +27,7 @@ export const makeProfileInfo = (
   profile: passport.Profile,
   params: any,
 ): ProfileInfo => {
-  const { provider, displayName: name } = profile;
+  const { displayName: name } = profile;
 
   let email = '';
   if (profile.emails) {
@@ -51,7 +51,6 @@ export const makeProfileInfo = (
   }
 
   return {
-    provider,
     name,
     email,
     picture,
@@ -100,12 +99,12 @@ export const executeFrameHandlerStrategy = async (
 };
 
 export const executeRefreshTokenStrategy = async (
-  providerstrategy: passport.Strategy,
+  providerStrategy: passport.Strategy,
   refreshToken: string,
   scope: string,
 ): Promise<RefreshTokenResponse> => {
   return new Promise((resolve, reject) => {
-    const anyStrategy = providerstrategy as any;
+    const anyStrategy = providerStrategy as any;
     const OAuth2 = anyStrategy._oauth2.constructor;
     const oauth2 = new OAuth2(
       anyStrategy._oauth2._clientId,
@@ -149,12 +148,12 @@ export const executeRefreshTokenStrategy = async (
 };
 
 export const executeFetchUserProfileStrategy = async (
-  providerstrategy: passport.Strategy,
+  providerStrategy: passport.Strategy,
   accessToken: string,
   params: any,
 ): Promise<ProfileInfo> => {
   return new Promise((resolve, reject) => {
-    const anyStrategy = providerstrategy as any;
+    const anyStrategy = providerStrategy as any;
     anyStrategy.userProfile(
       accessToken,
       (error: Error, passportProfile: passport.Profile) => {
