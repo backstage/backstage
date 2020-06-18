@@ -2452,16 +2452,7 @@
     is-module "^1.0.0"
     resolve "^1.14.2"
 
-"@rollup/pluginutils@^3.0.8":
-  version "3.0.10"
-  resolved "https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-3.0.10.tgz#a659b9025920378494cd8f8c59fbf9b3a50d5f12"
-  integrity sha512-d44M7t+PjmMrASHbhgpSbVgtL6EFyX7J4mYxwQ/c5eoaE6N2VgCgEcWVzNnwycIloti+/MpwFr8qfw+nRw00sw==
-  dependencies:
-    "@types/estree" "0.0.39"
-    estree-walker "^1.0.1"
-    picomatch "^2.2.2"
-
-"@rollup/pluginutils@^3.1.0":
+"@rollup/pluginutils@^3.0.8", "@rollup/pluginutils@^3.1.0":
   version "3.1.0"
   resolved "https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-3.1.0.tgz#706b4524ee6dc8b103b3c995533e5ad680c02b9b"
   integrity sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==
@@ -8121,10 +8112,10 @@ es6-shim@^0.35.5:
   resolved "https://registry.npmjs.org/es6-shim/-/es6-shim-0.35.5.tgz#46f59dc0a84a1c5029e8ff1166ca0a902077a9ab"
   integrity sha512-E9kK/bjtCQRpN1K28Xh4BlmP8egvZBGJJ+9GtnzOwt7mdqtrjHFuVGr7QJfdjBIKqrlU5duPf3pCBoDrkjVYFg==
 
-esbuild@^0.4.11:
-  version "0.4.14"
-  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.4.14.tgz#19c3ec44fe3bb6c637dd5287d870a87d36352dcc"
-  integrity sha512-8lx+KpHMQM6t3JFutzCWLckcaVQyv5qvdCzWHQdXGGh16SXdv5nfo/+izWcF367PlMkCMfV7iWW7J5I8Skx7ZQ==
+esbuild@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.5.3.tgz#18f5bdb618220c6f14bcb1cf5af528d02d4734c9"
+  integrity sha512-RVzTK62svYjnh+agJRh+NWfZX74iKwFNUX52cF7Mo4QPS6bKxP1o+8GacPUMND2QnodVp2D3nKJs8gLspSfZzA==
 
 escape-goat@^2.0.0:
   version "2.1.1"
@@ -16413,12 +16404,12 @@ rollup-plugin-dts@^1.4.6:
     "@babel/code-frame" "^7.8.3"
 
 rollup-plugin-esbuild@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/rollup-plugin-esbuild/-/rollup-plugin-esbuild-2.0.0.tgz#ec6a779f5680410801ad47be9fa9447d02cef5f0"
-  integrity sha512-a5jeHL9Ay1xc8RUULcqkHQ6poMMYCbcTYmfFlYavLg3ALXeqhlmueWAZMIMvr8YFit0Ru75/uKKpBRmN395gEA==
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/rollup-plugin-esbuild/-/rollup-plugin-esbuild-2.1.0.tgz#8e12337c63a5b1144e0c5e8adf2f1568ad4d7d69"
+  integrity sha512-XYqmwk4X0SPEExgilARbre/PplhLtE3q6wiZtfgIbwxJOVGXWec1Bkcux7TFTHGX3TQozzqEASTsRJCt7py/5Q==
   dependencies:
     "@rollup/pluginutils" "^3.1.0"
-    esbuild "^0.4.11"
+    esbuild "^0.5.3"
 
 rollup-plugin-image-files@^1.4.2:
   version "1.4.2"
