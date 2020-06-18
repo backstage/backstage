@@ -12177,9 +12177,9 @@ linkify-it@^2.0.0:
     uc.micro "^1.0.1"
 
 lint-staged@^10.1.0:
-  version "10.2.9"
-  resolved "https://registry.npmjs.org/lint-staged/-/lint-staged-10.2.9.tgz#6013ecfa80829cd422446b545fd30a96bca3098c"
-  integrity sha512-ziRAuXEqvJLSXg43ezBpHxRW8FOJCXISaXU//BWrxRrp5cBdRkIx7g5IsB3OI45xYGE0S6cOacfekSjDyDKF2g==
+  version "10.2.11"
+  resolved "https://registry.npmjs.org/lint-staged/-/lint-staged-10.2.11.tgz#713c80877f2dc8b609b05bc59020234e766c9720"
+  integrity sha512-LRRrSogzbixYaZItE2APaS4l2eJMjjf5MbclRZpLJtcQJShcvUzKXsNeZgsLIZ0H0+fg2tL4B59fU9wHIHtFIA==
   dependencies:
     chalk "^4.0.0"
     cli-truncate "2.1.0"
