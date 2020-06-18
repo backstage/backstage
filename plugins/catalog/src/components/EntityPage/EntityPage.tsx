@@ -149,11 +149,11 @@ export const EntityPage: FC<{}> = () => {
           <HeaderTabs tabs={tabs} />
 
           <Content>
-            <Grid container spacing={3} direction="column">
-              <Grid item>
+            <Grid container spacing={3}>
+              <Grid item sm={4}>
                 <EntityMetadataCard entity={entity} />
               </Grid>
-              <Grid item>
+              <Grid item sm={8}>
                 <SentryIssuesWidget
                   sentryProjectId="sample-sentry-project-id"
                   statsFor="24h"
