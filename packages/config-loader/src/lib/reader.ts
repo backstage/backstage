@@ -15,15 +15,19 @@
  */
 
 import yaml from 'yaml';
+import { basename } from 'path';
 import { isObject } from './utils';
-import { JsonValue, JsonObject } from '@backstage/config';
+import { JsonValue, JsonObject, AppConfig } from '@backstage/config';
 import { ReaderContext } from './types';
 
 /**
  * Reads and parses, and validates, and transforms a single config file.
  * The transformation rewrites any special values, like the $secret key.
  */
-export async function readConfigFile(filePath: string, ctx: ReaderContext) {
+export async function readConfigFile(
+  filePath: string,
+  ctx: ReaderContext,
+): Promise<AppConfig> {
   const configYaml = await ctx.readFile(filePath);
   const config = yaml.parse(configYaml);
 
@@ -76,5 +80,5 @@ export async function readConfigFile(filePath: string, ctx: ReaderContext) {
   if (!isObject(finalConfig)) {
     throw new TypeError('Expected object at config root');
   }
-  return finalConfig;
+  return { data: finalConfig, context: basename(filePath) };
 }

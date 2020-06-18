@@ -15,6 +15,7 @@
  */
 
 import { defaultConfigLoader } from './createApp';
+import { AppConfig } from '@backstage/config';
 
 describe('defaultConfigLoader', () => {
   afterEach(() => {
@@ -24,24 +25,33 @@ describe('defaultConfigLoader', () => {
   it('loads static config', async () => {
     Object.defineProperty(process.env, 'APP_CONFIG', {
       configurable: true,
-      value: [{ my: 'config' }, { my: 'override-config' }] as any,
+      value: [
+        { data: { my: 'config' }, context: 'a' },
+        { data: { my: 'override-config' }, context: 'b' },
+      ] as AppConfig[],
     });
     const configs = await defaultConfigLoader();
-    expect(configs).toEqual([{ my: 'config' }, { my: 'override-config' }]);
+    expect(configs).toEqual([
+      { data: { my: 'config' }, context: 'a' },
+      { data: { my: 'override-config' }, context: 'b' },
+    ]);
   });
 
   it('loads runtime config', async () => {
     Object.defineProperty(process.env, 'APP_CONFIG', {
       configurable: true,
-      value: [{ my: 'override-config' }, { my: 'config' }] as any,
+      value: [
+        { data: { my: 'override-config' }, context: 'a' },
+        { data: { my: 'config' }, context: 'b' },
+      ] as AppConfig[],
     });
     const configs = await (defaultConfigLoader as any)(
       '{"my":"runtime-config"}',
     );
     expect(configs).toEqual([
-      { my: 'runtime-config' },
-      { my: 'override-config' },
-      { my: 'config' },
+      { data: { my: 'runtime-config' }, context: 'env' },
+      { data: { my: 'override-config' }, context: 'a' },
+      { data: { my: 'config' }, context: 'b' },
     ]);
   });
 
@@ -64,7 +74,7 @@ describe('defaultConfigLoader', () => {
   it('fails to load bad runtime config', async () => {
     Object.defineProperty(process.env, 'APP_CONFIG', {
       configurable: true,
-      value: [{ my: 'config' }] as any,
+      value: [{ data: { my: 'config' }, context: 'a' }] as AppConfig[],
     });
 
     await expect((defaultConfigLoader as any)('}')).rejects.toThrow(
