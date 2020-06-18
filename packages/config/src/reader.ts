@@ -39,12 +39,20 @@ function typeOf(value: JsonValue | undefined): string {
   return type;
 }
 
-export class ConfigReader implements Config {
-  private static readonly nullReader = new ConfigReader({});
+// Separate out a couple of common error messages to reduce bundle size.
+const errors = {
+  type(key: string, typeName: string, expected: string) {
+    return `Invalid type in config for key ${key}, got ${typeName}, wanted ${expected}`;
+  },
+  missing(key: string) {
+    return `Missing required config value at '${key}'`;
+  },
+};
 
+export class ConfigReader implements Config {
   static fromConfigs(configs: AppConfig[]): ConfigReader {
     if (configs.length === 0) {
-      return new ConfigReader({});
+      return new ConfigReader(undefined);
     }
 
     // Merge together all configs info a single config with recursive fallback
@@ -55,24 +63,25 @@ export class ConfigReader implements Config {
   }
 
   constructor(
-    private readonly data: JsonObject,
+    private readonly data: JsonObject | undefined,
     private readonly fallback?: ConfigReader,
+    private readonly prefix: string = '',
   ) {}
 
   getConfig(key: string): ConfigReader {
     const value = this.readValue(key);
     const fallbackConfig = this.fallback?.getConfig(key);
+    const prefix = this.fullKey(key);
+
     if (isObject(value)) {
-      return new ConfigReader(value, fallbackConfig);
+      return new ConfigReader(value, fallbackConfig, prefix);
     }
     if (value !== undefined) {
       throw new TypeError(
-        `Invalid type in config for key ${key}, got ${typeOf(
-          value,
-        )}, wanted object`,
+        errors.type(this.fullKey(key), typeOf(value), 'object'),
       );
     }
-    return fallbackConfig ?? ConfigReader.nullReader;
+    return fallbackConfig ?? new ConfigReader(undefined, undefined, prefix);
   }
 
   getConfigArray(key: string): ConfigReader[] {
@@ -89,13 +98,16 @@ export class ConfigReader implements Config {
       return true;
     });
 
-    return (configs ?? []).map(obj => new ConfigReader(obj));
+    return (configs ?? []).map(
+      (obj, index) =>
+        new ConfigReader(obj, undefined, this.fullKey(`${key}[${index}]`)),
+    );
   }
 
   getNumber(key: string): number {
     const value = this.getOptionalNumber(key);
     if (value === undefined) {
-      throw new Error(`Missing required config value at '${key}'`);
+      throw new Error(errors.missing(this.fullKey(key)));
     }
     return value;
   }
@@ -110,7 +122,7 @@ export class ConfigReader implements Config {
   getBoolean(key: string): boolean {
     const value = this.getOptionalBoolean(key);
     if (value === undefined) {
-      throw new Error(`Missing required config value at '${key}'`);
+      throw new Error(errors.missing(this.fullKey(key)));
     }
     return value;
   }
@@ -125,7 +137,7 @@ export class ConfigReader implements Config {
   getString(key: string): string {
     const value = this.getOptionalString(key);
     if (value === undefined) {
-      throw new Error(`Missing required config value at '${key}'`);
+      throw new Error(errors.missing(this.fullKey(key)));
     }
     return value;
   }
@@ -141,7 +153,7 @@ export class ConfigReader implements Config {
   getStringArray(key: string): string[] {
     const value = this.getOptionalStringArray(key);
     if (value === undefined) {
-      throw new Error(`Missing required config value at '${key}'`);
+      throw new Error(errors.missing(this.fullKey(key)));
     }
     return value;
   }
@@ -158,6 +170,10 @@ export class ConfigReader implements Config {
       }
       return true;
     });
+  }
+
+  private fullKey(key: string): string {
+    return `${this.prefix}${this.prefix ? '.' : ''}${key}`;
   }
 
   private readConfigValue<T extends JsonValue>(
@@ -179,9 +195,8 @@ export class ConfigReader implements Config {
           value: theValue = value,
           expected,
         } = result;
-        const typeName = typeOf(theValue);
         throw new TypeError(
-          `Invalid type in config for key ${keyName}, got ${typeName}, wanted ${expected}`,
+          errors.type(this.fullKey(keyName), typeOf(theValue), expected),
         );
       }
     }
@@ -191,12 +206,18 @@ export class ConfigReader implements Config {
 
   private readValue(key: string): JsonValue | undefined {
     const parts = key.split('.');
-
-    let value: JsonValue | undefined = this.data;
     for (const part of parts) {
       if (!CONFIG_KEY_PART_PATTERN.test(part)) {
         throw new TypeError(`Invalid config key '${key}'`);
       }
+    }
+
+    if (this.data === undefined) {
+      return undefined;
+    }
+
+    let value: JsonValue | undefined = this.data;
+    for (const part of parts) {
       if (isObject(value)) {
         value = value[part];
       } else {
