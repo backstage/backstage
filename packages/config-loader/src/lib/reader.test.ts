@@ -38,11 +38,14 @@ describe('readConfigFile', () => {
     } as ReaderContext);
 
     await expect(config).resolves.toEqual({
-      app: {
-        title: 'Test',
-        x: 1,
-        y: [true],
+      data: {
+        app: {
+          title: 'Test',
+          x: 1,
+          y: [true],
+        },
       },
+      context: 'app-config.yaml',
     });
   });
 
@@ -83,7 +86,10 @@ describe('readConfigFile', () => {
     });
 
     await expect(config).resolves.toEqual({
-      app: 'secret',
+      data: {
+        app: 'secret',
+      },
+      context: 'app-config.yaml',
     });
     expect(readSecret).toHaveBeenCalledWith({ file: './my-secret' });
   });

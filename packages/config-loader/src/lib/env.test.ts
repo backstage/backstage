@@ -45,9 +45,12 @@ describe('readEnv', () => {
       }),
     ).toEqual([
       {
-        foo: 'bar',
-        numbers: { a: 1, b: 2, c: false },
-        very: { deep: { nested: { config: { object: {} } } } },
+        data: {
+          foo: 'bar',
+          numbers: { a: 1, b: 2, c: false },
+          very: { deep: { nested: { config: { object: {} } } } },
+        },
+        context: 'env',
       },
     ]);
   });
