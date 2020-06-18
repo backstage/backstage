@@ -3940,9 +3940,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^16.9":
-  version "16.9.25"
-  resolved "https://registry.npmjs.org/@types/react/-/react-16.9.25.tgz#6ae2159b40138c792058a23c3c04fd3db49e929e"
-  integrity sha512-Dlj2V72cfYLPNscIG3/SMUOzhzj7GK3bpSrfefwt2YT9GLynvLCCZjbhyF6VsT0q0+aRACRX03TDJGb7cA0cqg==
+  version "16.9.37"
+  resolved "https://registry.npmjs.org/@types/react/-/react-16.9.37.tgz#8fb93e7dbd5b1d3796f69aa979a7fe0439bc7bea"
+  integrity sha512-ZqnAXallQiZ08LTSqMfWMNvAfJEzRLOxdlbbbCIJlYGjU98BEU6bE2uBpKPGeWn+v3hIgCraHKtqUcKZBzMP/Q==
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
