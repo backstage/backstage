@@ -32,7 +32,9 @@
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.0",
     "helmet": "^3.22.0",
+    "jose": "^1.27.1",
     "jwt-decode": "2.2.0",
+    "knex": "^0.21.1",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-github2": "^0.1.12",
@@ -46,10 +48,10 @@
     "@types/body-parser": "^1.19.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/jwt-decode": "2.2.1",
+    "@types/passport": "^1.0.3",
     "@types/passport-github2": "^1.2.4",
     "@types/passport-google-oauth20": "^2.0.3",
     "@types/passport-saml": "^1.1.2",
-    "@types/passport": "^1.0.3",
     "jest-fetch-mock": "^3.0.3"
   },
   "files": [
