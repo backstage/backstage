@@ -24,7 +24,10 @@ export type JsonValue =
   | boolean
   | null;
 
-export type AppConfig = JsonObject;
+export type AppConfig = {
+  context: string;
+  data: JsonObject;
+};
 
 export type Config = {
   keys(): string[];
