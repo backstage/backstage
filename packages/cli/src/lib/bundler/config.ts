@@ -109,7 +109,7 @@ export function createConfig(
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
-      mainFields: ['main:src', 'browser', 'module', 'main'],
+      mainFields: ['browser', 'module', 'main'],
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
@@ -183,7 +183,7 @@ export function createBackendConfig(
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
-      mainFields: ['main:src', 'browser', 'module', 'main'],
+      mainFields: ['browser', 'module', 'main'],
       modules: [paths.targetNodeModules, paths.rootNodeModules],
       plugins: [
         new ModuleScopePlugin(
