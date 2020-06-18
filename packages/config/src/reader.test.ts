@@ -38,17 +38,26 @@ const DATA = {
 
 function expectValidValues(config: ConfigReader) {
   expect(config.keys()).toEqual(Object.keys(DATA));
+  expect(config.get('zero')).toBe(0);
   expect(config.getNumber('zero')).toBe(0);
   expect(config.getNumber('one')).toBe(1);
+  expect(config.getOptional('true')).toBe(true);
   expect(config.getBoolean('true')).toBe(true);
   expect(config.getBoolean('false')).toBe(false);
   expect(config.getString('string')).toBe('string');
+  expect(config.get('strings')).toEqual(['string1', 'string2']);
   expect(config.getStringArray('strings')).toEqual(['string1', 'string2']);
   expect(config.getConfig('nested').getNumber('one')).toBe(1);
+  expect(config.get('nested')).toEqual({
+    one: 1,
+    string: 'string',
+    strings: ['string1', 'string2'],
+  });
   expect(config.getConfig('nested').getString('string')).toBe('string');
   expect(
     config.getOptionalConfig('nested')!.getStringArray('strings'),
   ).toEqual(['string1', 'string2']);
+  expect(config.getOptional('missing')).toBe(undefined);
   expect(config.getOptionalConfig('missing')).toBe(undefined);
   expect(config.getOptionalConfigArray('missing')).toBe(undefined);
   expect(config.getNumber('zero')).toBe(0);
@@ -358,5 +367,168 @@ describe('ConfigReader with fallback', () => {
         .getConfigArray('configs')[0]
         .getOptionalString('b'),
     ).toBeUndefined();
+  });
+});
+
+describe('ConfigReader.get()', () => {
+  const config1 = {
+    a: {
+      x: 'x1',
+      y: ['y11', 'y12', 'y13'],
+      z: false,
+    },
+    b: {
+      x: 'x1',
+      y: ['y11'],
+    },
+  };
+  const config2 = {
+    b: {
+      x: 'x2',
+      y: ['y21', 'y22'],
+      z: 'z2',
+    },
+    c: {
+      c1: {
+        c2: 'c2',
+      },
+    },
+  };
+  const config3 = {
+    c: {
+      c1: 'c1',
+    },
+  };
+  const configs = [
+    {
+      data: config1,
+      context: '1',
+    },
+    {
+      data: config2,
+      context: '2',
+    },
+    {
+      data: config3,
+      context: '3',
+    },
+  ];
+
+  it('should be able to select sub-configs', () => {
+    expect(new ConfigReader(config1).get('a')).toEqual(config1.a);
+    expect(new ConfigReader(config1).get('b')).toEqual(config1.b);
+    expect(new ConfigReader(config2).get('b')).toEqual(config2.b);
+    expect(new ConfigReader(config2).get('c')).toEqual(config2.c);
+    expect(new ConfigReader(config3).get('c')).toEqual(config3.c);
+    expect(new ConfigReader(config2).get('c.c1')).toEqual(config2.c.c1);
+    expect(new ConfigReader(config2).getConfig('c').get('c1')).toEqual(
+      config2.c.c1,
+    );
+  });
+
+  it('should merge in fallback configs', () => {
+    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('a')).toEqual(
+      {
+        x: 'x1',
+        y: ['y11', 'y12', 'y13'],
+        z: false,
+      },
+    );
+    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('b')).toEqual(
+      {
+        x: 'x1',
+        y: ['y11'],
+        z: 'z2',
+      },
+    );
+    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('c')).toEqual(
+      {
+        c1: {
+          c2: 'c2',
+        },
+      },
+    );
+    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('a')).toEqual(
+      {
+        x: 'x1',
+        y: ['y11', 'y12', 'y13'],
+        z: false,
+      },
+    );
+    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('b')).toEqual(
+      {
+        x: 'x1',
+        y: ['y11'],
+        z: 'z2',
+      },
+    );
+    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('c')).toEqual(
+      {
+        c1: {
+          c2: 'c2',
+        },
+      },
+    );
+
+    expect(
+      ConfigReader.fromConfigs([configs[2], configs[1]]).getOptional('b'),
+    ).toEqual({
+      x: 'x2',
+      y: ['y21', 'y22'],
+      z: 'z2',
+    });
+    expect(
+      ConfigReader.fromConfigs([configs[2], configs[1]]).getOptional('c'),
+    ).toEqual({
+      c1: 'c1',
+    });
+  });
+
+  it('should not merge non-objects', () => {
+    const config = ConfigReader.fromConfigs([
+      {
+        data: {
+          a: ['1', '2'],
+          c: [],
+          d: {
+            x: 'x',
+          },
+          e: ['3'],
+          f: 'foo',
+          g: { z: 'z' },
+          h: {
+            a: 'a1',
+            c: 'c1',
+          },
+        },
+        context: '1',
+      },
+      {
+        data: {
+          a: ['x', 'y', 'z'],
+          b: ['1'],
+          c: ['1'],
+          d: ['2'],
+          e: {
+            y: 'y',
+          },
+          f: { x: 'x' },
+          g: 'bar',
+          h: {
+            a: 'a2',
+            b: 'b2',
+          },
+        },
+        context: '2',
+      },
+    ]);
+    expect(config.get('a')).toEqual(['1', '2']);
+    expect(config.get('b')).toEqual(['1']);
+    expect(config.get('c')).toEqual([]);
+    expect(config.get('d')).toEqual({ x: 'x' });
+    expect(config.get('e')).toEqual(['3']);
+    expect(config.get('f')).toEqual('foo');
+    expect(config.get('g')).toEqual({ z: 'z' });
+    expect(config.get('h')).toEqual({ a: 'a1', b: 'b2', c: 'c1' });
   });
 });
