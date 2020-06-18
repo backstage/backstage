@@ -4,8 +4,7 @@ app:
 
 backend:
   baseUrl: http://localhost:7000
-  bindPort: 7000
-  bindHost: localhost
+  listen: 0.0.0.0:7000
   cors:
     origin: http://localhost:3000
     methods: [GET, POST, PUT, DELETE]

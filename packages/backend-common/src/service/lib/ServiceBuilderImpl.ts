@@ -57,11 +57,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     }
 
     const baseOptions = readBaseOptions(backendConfig);
-    if (baseOptions.bindPort) {
-      this.port = baseOptions.bindPort;
+    if (baseOptions.listenPort) {
+      this.port = baseOptions.listenPort;
     }
-    if (baseOptions.bindHost) {
-      this.host = baseOptions.bindHost;
+    if (baseOptions.listenHost) {
+      this.host = baseOptions.listenHost;
     }
 
     const corsOptions = readCorsOptions(backendConfig);
@@ -122,7 +122,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
       const server = stoppable(
         app.listen(port, host, () => {
-          logger.info(`Listening on port ${port}`);
+          logger.info(`Listening on ${host}:${port}`);
         }),
         0,
       );
@@ -143,31 +143,10 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     logger: Logger;
     corsOptions?: cors.CorsOptions;
   } {
-    let port: number;
-    if (this.port !== undefined) {
-      port = this.port;
-    } else {
-      port = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
-    }
-
-    let host: string;
-    if (this.host !== undefined) {
-      host = this.host;
-    } else {
-      host = process.env.HOST || DEFAULT_HOST;
-    }
-
-    let logger: Logger;
-    if (this.logger) {
-      logger = this.logger;
-    } else {
-      logger = getRootLogger();
-    }
-
     return {
-      port,
-      host,
-      logger,
+      port: this.port ?? DEFAULT_PORT,
+      host: this.host ?? DEFAULT_HOST,
+      logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
     };
   }

@@ -18,8 +18,8 @@ import { ConfigReader } from '@backstage/config';
 import { CorsOptions } from 'cors';
 
 export type BaseOptions = {
-  bindPort?: number;
-  bindHost?: string;
+  listenPort?: number;
+  listenHost?: string;
 };
 
 /**
@@ -31,16 +31,17 @@ export type BaseOptions = {
  * @example
  * ```json
  * {
- *   baseUrl: "http://localhost:7000"
- *   bindPort: 7000
- *   bindHost: "0.0.0.0"
+ *   baseUrl: "http://localhost:7000",
+ *   listen: "0.0.0.0:7000"
  * }
  * ```
  */
 export function readBaseOptions(config: ConfigReader): BaseOptions {
+  // TODO(freben): Expand this to support more addresses and perhaps optional
+  const { host, port } = parseListenAddress(config.getString('listen'));
   return removeUnknown({
-    bindPort: config.getOptionalNumber('bindPort'),
-    bindHost: config.getOptionalString('bindHost'),
+    listenPort: port,
+    listenHost: host,
   });
 }
 
@@ -109,4 +110,17 @@ function removeUnknown<T extends object>(obj: T): T {
   return Object.fromEntries(
     Object.entries(obj).filter(([, v]) => v !== undefined),
   ) as T;
+}
+
+function parseListenAddress(value: string): { host?: string; port?: number } {
+  const parts = value.split(':');
+  if (parts.length === 1) {
+    return { port: parseInt(parts[0], 10) };
+  }
+  if (parts.length === 2) {
+    return { host: parts[0], port: parseInt(parts[1], 10) };
+  }
+  throw new Error(
+    `Unable to parse listen address ${value}, expected <port> or <host>:<port>`,
+  );
 }
