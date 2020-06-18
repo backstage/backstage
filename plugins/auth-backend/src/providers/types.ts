@@ -34,12 +34,15 @@ export type OAuthProviderOptions = {
 
 export type OAuthProviderConfig = {
   /**
-   * If the cookies set by the provider have to be marked secure. For development environment
-   * we don't mark the cookie as secure.
+   * Cookies can be marked with a secure flag to send cookies only when the request
+   * is over an encrypted channel (HTTPS).
+   *
+   * For development environment we don't mark the cookie as secure since we serve
+   * localhost over HTTP.
    */
   secure: boolean;
   /**
-   * The domain:port where the app (frontend) is hosted. This is used to post messages back
+   * The protocol://domain[:port] where the app (frontend) is hosted. This is used to post messages back
    * to the window that initiates an auth request.
    */
   appOrigin: string;
@@ -68,7 +71,7 @@ export type EnvironmentProviderConfig = {
 
 export type AuthProviderConfig = {
   /**
-   * The domain:port where the app is hosted. This is used to construct the
+   * The protocol://domain[:port] where the app is hosted. This is used to construct the
    * callbackURL to redirect to once the user signs in to the auth provider.
    */
   baseUrl: string;
@@ -259,6 +262,10 @@ export type RefreshTokenResponse = {
    */
   accessToken: string;
   params: any;
+};
+
+export type ProviderStrategy = {
+  userProfile(accessToken: string, callback: Function): void;
 };
 
 export type SAMLProviderConfig = {
