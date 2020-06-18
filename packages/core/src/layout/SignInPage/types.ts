@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { paths } from '../../lib/paths';
+import { ComponentType } from 'react';
+import { SignInPageProps, SignInResult, ApiHolder } from '@backstage/core-api';
 
-export default async function clean() {
-  await fs.remove(paths.resolveTarget('dist'));
-  await fs.remove(paths.resolveTarget('coverage'));
-}
+export type ProviderComponent = ComponentType<SignInPageProps>;
+
+export type ProviderLoader = (
+  apis: ApiHolder,
+) => Promise<SignInResult | undefined>;
+
+export type SignInProvider = {
+  Component: ProviderComponent;
+  loader: ProviderLoader;
+};

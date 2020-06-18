@@ -16,7 +16,7 @@ module.exports = {
     const coreSrc = path.resolve(__dirname, '../../core/src');
 
     // Mirror config in packages/cli/src/lib/bundler
-    config.resolve.mainFields = ['main:src', 'browser', 'module', 'main'];
+    config.resolve.mainFields = ['browser', 'module', 'main'];
 
     // Remove the default babel-loader for js files, we're using sucrase instead
     const [jsLoader] = config.module.rules.splice(0, 1);

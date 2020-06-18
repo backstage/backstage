@@ -27,6 +27,8 @@ import {
   getRootLogger,
   useHotMemoize,
 } from '@backstage/backend-common';
+import { ConfigReader, AppConfig } from '@backstage/config';
+import { loadConfig } from '@backstage/config-loader';
 import knex from 'knex';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -35,20 +37,26 @@ import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
 import { PluginEnvironment } from './types';
 
-function createEnv(plugin: string): PluginEnvironment {
-  const logger = getRootLogger().child({ type: 'plugin', plugin });
-  const database = knex({
-    client: 'sqlite3',
-    connection: ':memory:',
-    useNullAsDefault: true,
-  });
-  database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-    resource.run('PRAGMA foreign_keys = ON', () => {});
-  });
-  return { logger, database };
+function makeCreateEnv(loadedConfigs: AppConfig[]) {
+  const config = ConfigReader.fromConfigs(loadedConfigs);
+
+  return (plugin: string): PluginEnvironment => {
+    const logger = getRootLogger().child({ type: 'plugin', plugin });
+    const database = knex({
+      client: 'sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+    database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+      resource.run('PRAGMA foreign_keys = ON', () => {});
+    });
+    return { logger, database, config };
+  };
 }
 
 async function main() {
+  const createEnv = makeCreateEnv(await loadConfig());
+
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));

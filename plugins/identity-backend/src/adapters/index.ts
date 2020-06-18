@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-import { createLogPipe } from '../logging';
-
-export type ColorFunc = (msg: string) => string;
-
-// A factory for creating log pipes that rotate between different coloring functions
-export function createLogPipeFactory(colorFuncs: ColorFunc[]) {
-  let colorIndex = 0;
-
-  return (name: string) => {
-    const colorFunc = colorFuncs[colorIndex];
-
-    colorIndex = (colorIndex + 1) % colorFuncs.length;
-
-    const prefix = `${colorFunc(name)}: `;
-    return createLogPipe({ prefix });
-  };
-}
+export * from './StaticJsonAdapter';

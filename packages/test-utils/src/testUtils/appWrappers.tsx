@@ -89,12 +89,15 @@ export function wrapInTestApp(
   }
 
   const AppProvider = app.getProvider();
+  const AppRouter = app.getRouter();
 
   return (
     <AppProvider>
-      {/* The path of * here is needed to be set as a catch all, so it will render the wrapper element
-       *  and work with nested routes if they exist too */}
-      <Route path="*" element={<Wrapper />} />
+      <AppRouter>
+        {/* The path of * here is needed to be set as a catch all, so it will render the wrapper element
+         *  and work with nested routes if they exist too */}
+        <Route path="*" element={<Wrapper />} />
+      </AppRouter>
     </AppProvider>
   );
 }

@@ -25,32 +25,13 @@ async function getConfig() {
     return require(path.resolve('jest.config.ts'));
   }
 
-  const moduleNameMapper = {
-    '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
-  };
-
-  // Only point to src/ if we're not in CI, there we just build packages first anyway
-  if (!process.env.CI) {
-    const LernaProject = require('@lerna/project');
-    const project = new LernaProject(path.resolve('.'));
-    const packages = await project.getPackages();
-
-    // To avoid having to build all deps inside the monorepo before running tests,
-    // we point directory to src/ where applicable.
-    // For example, @backstage/core = <repo-root>/packages/core/src/index.ts is added to moduleNameMapper
-    for (const pkg of packages) {
-      const mainSrc = pkg.get('main:src');
-      if (mainSrc) {
-        moduleNameMapper[`^${pkg.name}$`] = path.resolve(pkg.location, mainSrc);
-      }
-    }
-  }
-
   const options = {
     rootDir: path.resolve('src'),
     coverageDirectory: path.resolve('coverage'),
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}', '!**/*.d.ts'],
-    moduleNameMapper,
+    moduleNameMapper: {
+      '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
+    },
 
     // We build .esm.js files with plugin:build, so to be able to load these in tests they need to be transformed
     // TODO: jest is working on module support, it's possible that we can remove this in the future

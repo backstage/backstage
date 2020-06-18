@@ -104,7 +104,7 @@ export const UserProfile: FC<{ open: boolean; setOpen: Function }> = ({
         onClick={handleClick}
         icon={avatar || AccountCircleIcon}
       >
-        {open ? <ExpandLess /> : <ExpandMore />}
+        {open ? <ExpandMore /> : <ExpandLess />}
       </SidebarItem>
     </>
   );

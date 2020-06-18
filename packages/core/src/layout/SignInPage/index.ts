@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './withCache';
-export * from './options';
+export { SignInPage } from './SignInPage';

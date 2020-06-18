@@ -20,9 +20,11 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { Logger } from 'winston';
 import { createAuthProviderRouter } from '../providers';
+import { Config } from '@backstage/config';
 
 export interface RouterOptions {
   logger: Logger;
+  config: Config;
 }
 
 export async function createRouter(
@@ -38,7 +40,7 @@ export async function createRouter(
   // TODO: read from app config
   const config = {
     backend: {
-      baseUrl: 'http://localhost:7000',
+      baseUrl: options.config.getString('backend.baseUrl'),
     },
     auth: {
       providers: {
@@ -77,7 +79,7 @@ export async function createRouter(
   const providerConfigs = config.auth.providers;
 
   for (const [providerId, providerConfig] of Object.entries(providerConfigs)) {
-    const baseUrl = `${config.backend.baseUrl}/auth`;
+    const baseUrl = `${options.config.getString('backend.baseUrl')}/auth`;
     logger.info(`Configuring provider, ${providerId}`);
     try {
       const providerRouter = createAuthProviderRouter(

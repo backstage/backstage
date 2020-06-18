@@ -13,5 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './watchDeps';
+export const userGroups = {
+  groups: [
+    {
+      name: 'engineering',
+      type: 'org',
+      children: [
+        {
+          name: 'authentication',
+          type: 'team',
+          members: [{ name: 'kent' }, { name: 'dobbs' }],
+        },
+        {
+          name: 'checkout',
+          type: 'team',
+          members: [{ name: 'don' }, { name: 'abramev' }],
+        },
+      ],
+    },
+  ],
+};
