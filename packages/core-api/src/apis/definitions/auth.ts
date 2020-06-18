@@ -157,25 +157,47 @@ export type ProfileInfoOptions = {
   optional?: boolean;
 };
 
+/**
+ * This API provides access to profile information of the signed in user.
+ */
 export type ProfileInfoApi = {
   getProfile(options?: ProfileInfoOptions): Promise<ProfileInfo | undefined>;
 };
 
+/**
+ * Profile information of a signed in user.
+ */
 export type ProfileInfo = {
-  provider: string;
+  /**
+   * Email ID.
+   */
   email: string;
+  /**
+   * Display name that can be presented to the user.
+   */
   name?: string;
+  /**
+   * URL to an avatar image of the user.
+   */
   picture?: string;
 };
 
+/**
+ * Session state values passed to subscribers of the SessionStateApi.
+ */
 export enum SessionState {
   SignedIn = 'SignedIn',
   SignedOut = 'SignedOut',
 }
 
+/**
+ * This API provides access to an sessionState$ observable which provides an update when the
+ * user performs a sign in or sign out from an auth provider.
+ */
 export type SessionStateApi = {
   sessionState$(): Observable<SessionState>;
 };
+
 /**
  * Provides authentication towards Google APIs and identities.
  *
