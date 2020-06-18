@@ -79,8 +79,16 @@ export class ConfigReader implements Config {
   }
 
   getConfig(key: string): ConfigReader {
+    const value = this.getOptionalConfig(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptionalConfig(key: string): ConfigReader | undefined {
     const value = this.readValue(key);
-    const fallbackConfig = this.fallback?.getConfig(key);
+    const fallbackConfig = this.fallback?.getOptionalConfig(key);
     const prefix = this.fullKey(key);
 
     if (isObject(value)) {
@@ -91,13 +99,18 @@ export class ConfigReader implements Config {
         errors.type(this.fullKey(key), this.context, typeOf(value), 'object'),
       );
     }
-    return (
-      fallbackConfig ??
-      new ConfigReader(undefined, undefined, undefined, prefix)
-    );
+    return fallbackConfig;
   }
 
   getConfigArray(key: string): ConfigReader[] {
+    const value = this.getOptionalConfigArray(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptionalConfigArray(key: string): ConfigReader[] | undefined {
     const configs = this.readConfigValue<JsonObject[]>(key, values => {
       if (!Array.isArray(values)) {
         return { expected: 'object-array' };
@@ -111,7 +124,11 @@ export class ConfigReader implements Config {
       return true;
     });
 
-    return (configs ?? []).map(
+    if (!configs) {
+      return undefined;
+    }
+
+    return configs.map(
       (obj, index) =>
         new ConfigReader(
           obj,
