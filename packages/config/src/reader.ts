@@ -68,6 +68,12 @@ export class ConfigReader implements Config {
     private readonly prefix: string = '',
   ) {}
 
+  keys(): string[] {
+    const localKeys = this.data ? Object.keys(this.data) : [];
+    const fallbackKeys = this.fallback?.keys() ?? [];
+    return [...new Set([...localKeys, ...fallbackKeys])];
+  }
+
   getConfig(key: string): ConfigReader {
     const value = this.readValue(key);
     const fallbackConfig = this.fallback?.getConfig(key);

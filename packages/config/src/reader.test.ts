@@ -37,6 +37,7 @@ const DATA = {
 };
 
 function expectValidValues(config: ConfigReader) {
+  expect(config.keys()).toEqual(Object.keys(DATA));
   expect(config.getNumber('zero')).toBe(0);
   expect(config.getNumber('one')).toBe(1);
   expect(config.getBoolean('true')).toBe(true);
@@ -111,6 +112,7 @@ function expectInvalidValues(config: ConfigReader) {
 describe('ConfigReader', () => {
   it('should read empty config with valid keys', () => {
     const config = new ConfigReader({});
+    expect(config.keys()).toEqual([]);
     expect(config.getOptionalString('x')).toBeUndefined();
     expect(config.getOptionalString('x_x')).toBeUndefined();
     expect(config.getOptionalString('x-X')).toBeUndefined();
@@ -207,6 +209,17 @@ describe('ConfigReader with fallback', () => {
     };
 
     const config = new ConfigReader(a, new ConfigReader(b));
+
+    expect(config.keys()).toEqual(['merged']);
+    expect(config.getConfig('merged').keys()).toEqual([
+      'x',
+      'z',
+      'arr',
+      'config',
+      'configs',
+      'y',
+    ]);
+    expect(config.getConfig('merged.config').keys()).toEqual(['d', 'e']);
 
     expect(config.getString('merged.x')).toBe('x');
     expect(config.getString('merged.y')).toBe('y');
