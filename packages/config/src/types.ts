@@ -32,6 +32,9 @@ export type AppConfig = {
 export type Config = {
   keys(): string[];
 
+  get(key: string): JsonValue;
+  getOptional(key: string): JsonValue | undefined;
+
   getConfig(key: string): Config;
   getOptionalConfig(key: string): Config | undefined;
 

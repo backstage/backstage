@@ -15,6 +15,8 @@
  */
 
 import { AppConfig, Config, JsonValue, JsonObject } from './types';
+import cloneDeep from 'lodash/cloneDeep';
+import mergeWith from 'lodash/mergeWith';
 
 // Update the same pattern in config-loader package if this is changed
 const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
@@ -76,6 +78,34 @@ export class ConfigReader implements Config {
     const localKeys = this.data ? Object.keys(this.data) : [];
     const fallbackKeys = this.fallback?.keys() ?? [];
     return [...new Set([...localKeys, ...fallbackKeys])];
+  }
+
+  get(key: string): JsonValue {
+    const value = this.getOptional(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptional(key: string): JsonValue | undefined {
+    const value = this.readValue(key);
+    const fallbackValue = this.fallback?.getOptional(key);
+
+    if (value === undefined) {
+      return fallbackValue;
+    } else if (fallbackValue === undefined) {
+      return value;
+    }
+
+    // Avoid merging arrays and primitive values, since that's how merging works for other
+    // methods for reading config.
+    return mergeWith(
+      {},
+      { value: cloneDeep(fallbackValue) },
+      { value },
+      (into, from) => (!isObject(from) || !isObject(into) ? from : undefined),
+    ).value;
   }
 
   getConfig(key: string): ConfigReader {
