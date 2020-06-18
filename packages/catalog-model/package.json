@@ -20,6 +20,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/config": "^0.1.1-alpha.9",
     "@types/yup": "^0.28.2",
     "lodash": "^4.17.15",
     "uuid": "^8.0.0",

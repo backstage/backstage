@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import yaml from 'yaml';
+import { AppConfig, JsonObject, JsonValue } from '@backstage/config';
 import { basename } from 'path';
-import { isObject } from './utils';
-import { JsonValue, JsonObject, AppConfig } from '@backstage/config';
+import yaml from 'yaml';
 import { ReaderContext } from './types';
+import { isObject } from './utils';
 
 /**
  * Reads and parses, and validates, and transforms a single config file.
@@ -67,9 +67,12 @@ export async function readConfigFile(
     const out: JsonObject = {};
 
     for (const [key, value] of Object.entries(obj)) {
-      const result = await transform(value, `${path}.${key}`);
-      if (result !== undefined) {
-        out[key] = result;
+      // undefined covers optional fields
+      if (value !== undefined) {
+        const result = await transform(value, `${path}.${key}`);
+        if (result !== undefined) {
+          out[key] = result;
+        }
       }
     }
 
