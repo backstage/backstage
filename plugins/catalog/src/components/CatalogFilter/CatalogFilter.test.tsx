@@ -131,15 +131,13 @@ describe('Catalog Filter', () => {
     );
 
     for (const key of Object.keys(defaultFilterProps.entitiesByFilter)) {
-      await waitFor(() =>
-        screen.getAllByText(
-          new RegExp(
-            `(${
-              defaultFilterProps.entitiesByFilter[key as EntityGroup].length
-            })`,
-          ),
-        ),
+      const matcher = new RegExp(
+        `(${defaultFilterProps.entitiesByFilter[key as EntityGroup].length})`,
       );
+      await waitFor(() => screen.getAllByText(matcher));
+      screen
+        .getAllByText(matcher)
+        .forEach(el => expect(el).toBeInTheDocument());
     }
   });
 

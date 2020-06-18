@@ -85,6 +85,7 @@ describe('CatalogPage', () => {
       ),
     );
     await waitFor(() => screen.getByText(/All Services \(2\)/));
+    expect(screen.getByText(/All Services \(2\)/)).toBeInTheDocument();
   });
   it('should filter by owner', async () => {
     render(
@@ -103,5 +104,6 @@ describe('CatalogPage', () => {
     );
     fireEvent.click(screen.getByText(/Owned/));
     await waitFor(() => screen.getByText(/Owned \(1\)/));
+    expect(screen.getByText(/Owned \(1\)/)).toBeInTheDocument();
   });
 });
