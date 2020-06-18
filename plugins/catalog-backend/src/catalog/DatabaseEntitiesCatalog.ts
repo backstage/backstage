@@ -49,7 +49,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     const response = await this.database.transaction(tx =>
       this.entityByNameInternal(tx, kind, name, namespace),
     );
-    return response ? response.entity : undefined;
+    return response?.entity;
   }
 
   async addOrUpdateEntity(

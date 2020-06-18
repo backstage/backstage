@@ -22,6 +22,7 @@ import {
 import {
   Entity,
   EntityMeta,
+  entityMetaGeneratedFields,
   generateEntityEtag,
   generateEntityUid,
   Location,
@@ -44,63 +45,9 @@ import type {
   EntityFilters,
 } from './types';
 
-function serializeMetadata(metadata: EntityMeta): string {
-  const withoutGeneratedFields = lodash.cloneDeep(metadata);
-  delete withoutGeneratedFields.uid;
-  delete withoutGeneratedFields.etag;
-  delete withoutGeneratedFields.generation;
-  return JSON.stringify(withoutGeneratedFields);
-}
-
-function serializeSpec(spec: Entity['spec']): DbEntitiesRow['spec'] {
-  if (!spec) {
-    return null;
-  }
-
-  return JSON.stringify(spec);
-}
-
-function toEntityRow(
-  locationId: string | undefined,
-  entity: Entity,
-): DbEntitiesRow {
-  return {
-    id: entity.metadata.uid!,
-    location_id: locationId || null,
-    etag: entity.metadata.etag!,
-    generation: entity.metadata.generation!,
-    api_version: entity.apiVersion,
-    kind: entity.kind,
-    name: entity.metadata.name,
-    namespace: entity.metadata.namespace || null,
-    metadata: serializeMetadata(entity.metadata),
-    spec: serializeSpec(entity.spec),
-  };
-}
-
-function toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
-  const entity: Entity = {
-    apiVersion: row.api_version,
-    kind: row.kind,
-    metadata: {
-      ...(JSON.parse(row.metadata) as Entity['metadata']),
-      uid: row.id,
-      etag: row.etag,
-      generation: Number(row.generation), // cast because of sqlite
-    },
-  };
-
-  if (row.spec) {
-    const spec = JSON.parse(row.spec);
-    entity.spec = spec;
-  }
-
-  return {
-    locationId: row.location_id || undefined,
-    entity,
-  };
-}
-
+/**
+ * The core database implementation.
+ */
 export class CommonDatabase implements Database {
   constructor(
     private readonly database: Knex,
@@ -149,7 +96,7 @@ export class CommonDatabase implements Database {
       generation: 1,
     };
 
-    const newRow = toEntityRow(request.locationId, newEntity);
+    const newRow = this.toEntityRow(request.locationId, newEntity);
     await tx<DbEntitiesRow>('entities').insert(newRow);
     await this.updateEntitiesSearch(tx, newRow.id, newEntity);
 
@@ -202,7 +149,7 @@ export class CommonDatabase implements Database {
 
     // Store the updated entity; select on the old etag to ensure that we do
     // not lose to another writer
-    const newRow = toEntityRow(request.locationId, request.entity);
+    const newRow = this.toEntityRow(request.locationId, request.entity);
     const updatedRows = await tx<DbEntitiesRow>('entities')
       .where({ id: oldRow.id, etag: oldRow.etag })
       .update(newRow);
@@ -270,7 +217,7 @@ export class CommonDatabase implements Database {
       .orderBy('name', 'asc')
       .groupBy('id');
 
-    return rows.map(row => toEntityResponse(row));
+    return rows.map(row => this.toEntityResponse(row));
   }
 
   async entity(
@@ -289,7 +236,7 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return toEntityResponse(rows[0]);
+    return this.toEntityResponse(rows[0]);
   }
 
   async entityByUid(
@@ -304,7 +251,7 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return toEntityResponse(rows[0]);
+    return this.toEntityResponse(rows[0]);
   }
 
   async removeEntity(txOpaque: unknown, uid: string): Promise<void> {
@@ -465,5 +412,48 @@ export class CommonDatabase implements Database {
         }
       }
     }
+  }
+
+  private toEntityRow(
+    locationId: string | undefined,
+    entity: Entity,
+  ): DbEntitiesRow {
+    return {
+      id: entity.metadata.uid!,
+      location_id: locationId || null,
+      etag: entity.metadata.etag!,
+      generation: entity.metadata.generation!,
+      api_version: entity.apiVersion,
+      kind: entity.kind,
+      name: entity.metadata.name,
+      namespace: entity.metadata.namespace || null,
+      metadata: JSON.stringify(
+        lodash.omit(entity.metadata, ...entityMetaGeneratedFields),
+      ),
+      spec: entity.spec ? JSON.stringify(entity.spec) : null,
+    };
+  }
+
+  private toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
+    const entity: Entity = {
+      apiVersion: row.api_version,
+      kind: row.kind,
+      metadata: {
+        ...(JSON.parse(row.metadata) as EntityMeta),
+        uid: row.id,
+        etag: row.etag,
+        generation: Number(row.generation), // cast because of sqlite
+      },
+    };
+
+    if (row.spec) {
+      const spec = JSON.parse(row.spec);
+      entity.spec = spec;
+    }
+
+    return {
+      locationId: row.location_id || undefined,
+      entity,
+    };
   }
 }
