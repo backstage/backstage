@@ -162,7 +162,7 @@ export interface AuthProviderRouteHandlers {
   refresh?(req: express.Request, res: express.Response): Promise<any>;
 
   /**
-   * (Optional) Handles logout requests
+   * (Optional) Handles sign out requests
    *
    * Response
    * - removes the refresh token cookie
