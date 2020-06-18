@@ -33,8 +33,10 @@ export type Config = {
   keys(): string[];
 
   getConfig(key: string): Config;
+  getOptionalConfig(key: string): Config | undefined;
 
   getConfigArray(key: string): Config[];
+  getOptionalConfigArray(key: string): Config[] | undefined;
 
   getNumber(key: string): number;
   getOptionalNumber(key: string): number | undefined;
