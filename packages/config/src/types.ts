@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type JsonObject = { [key in string]: JsonValue };
+export type JsonObject = { [key in string]?: JsonValue };
 export type JsonArray = JsonValue[];
 export type JsonValue =
   | JsonObject
