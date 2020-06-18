@@ -46,10 +46,11 @@ function expectValidValues(config: ConfigReader) {
   expect(config.getStringArray('strings')).toEqual(['string1', 'string2']);
   expect(config.getConfig('nested').getNumber('one')).toBe(1);
   expect(config.getConfig('nested').getString('string')).toBe('string');
-  expect(config.getConfig('nested').getStringArray('strings')).toEqual([
-    'string1',
-    'string2',
-  ]);
+  expect(
+    config.getOptionalConfig('nested')!.getStringArray('strings'),
+  ).toEqual(['string1', 'string2']);
+  expect(config.getOptionalConfig('missing')).toBe(undefined);
+  expect(config.getOptionalConfigArray('missing')).toBe(undefined);
   expect(config.getNumber('zero')).toBe(0);
   expect(config.getBoolean('true')).toBe(true);
   expect(config.getString('string')).toBe('string');
@@ -59,6 +60,9 @@ function expectValidValues(config: ConfigReader) {
   expect(config1.getBoolean('boolean')).toBe(true);
   expect(config2.getString('string')).toBe('string');
   expect(config3.getNumber('number')).toBe(42);
+  expect(
+    config.getOptionalConfigArray('nestlings')![0].getBoolean('boolean'),
+  ).toBe(true);
 }
 
 function expectInvalidValues(config: ConfigReader) {
