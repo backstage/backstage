@@ -25,8 +25,6 @@ const migrationsDir = path.resolve(
   '../migrations',
 );
 
-const KEY_DURATION_MS = 3600 * 1000;
-
 const TABLE = 'signing_keys';
 
 type Row = {
@@ -38,28 +36,32 @@ type Row = {
 type Options = {
   logger: Logger;
   database: Knex;
+  /** Expiration time of signing keys in seconds */
+  keyDuration: number;
 };
 
 export class DatabaseKeyStore {
   static async create(options: Options): Promise<DatabaseKeyStore> {
-    const { logger, database } = options;
+    const { database } = options;
 
     await database.migrate.latest({
       directory: migrationsDir,
     });
 
-    return new DatabaseKeyStore({ logger, database });
+    return new DatabaseKeyStore(options);
   }
 
   private readonly logger: Logger;
   private readonly database: Knex;
+  private readonly keyDuration: number;
 
   private removingExpiredRows: boolean = false;
 
   private constructor(options: Options) {
-    const { logger, database } = options;
+    const { logger, database, keyDuration } = options;
 
     this.database = database;
+    this.keyDuration = keyDuration;
     this.logger = logger.child({ service: 'key-store' });
   }
 
@@ -90,7 +92,7 @@ export class DatabaseKeyStore {
 
     for (const row of rows) {
       const createdAt = utc(row.created_at);
-      const expireAt = createdAt.add(3 * KEY_DURATION_MS, 'ms');
+      const expireAt = createdAt.add(3 * this.keyDuration, 'seconds');
       const isExpired = expireAt.isBefore();
 
       if (isExpired) {

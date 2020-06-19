@@ -19,26 +19,30 @@ import { JSONWebKey, JWK, JWS } from 'jose';
 import { Logger } from 'winston';
 import { v4 as uuid } from 'uuid';
 
-const KEY_DURATION_MS = 3600 * 1000;
-
 type Options = {
-  issuer: string;
   logger: Logger;
+  /** Value of the issuer claim in issued tokens */
+  issuer: string;
+  /** Key store used for storing signing keys */
   keyStore: KeyStore;
+  /** Expiration time of signing keys in seconds */
+  keyDuration: number;
 };
 
 export class TokenFactory implements TokenIssuer {
   private readonly issuer: string;
   private readonly logger: Logger;
   private readonly keyStore: KeyStore;
+  private readonly keyDuration: number;
 
   private keyExpiry?: number;
   private privateKeyPromise?: Promise<JSONWebKey>;
 
   constructor(options: Options) {
-    const { issuer, logger, keyStore } = options;
+    const { issuer, logger, keyStore, keyDuration } = options;
     this.issuer = issuer;
     this.keyStore = keyStore;
+    this.keyDuration = keyDuration;
     this.logger = logger.child({ service: 'issuer' });
   }
 
@@ -68,7 +72,7 @@ export class TokenFactory implements TokenIssuer {
       delete this.privateKeyPromise;
     }
 
-    this.keyExpiry = Date.now() + KEY_DURATION_MS;
+    this.keyExpiry = Date.now() + this.keyDuration * 1000;
     const promise = (async () => {
       const key = await JWK.generate('EC', 'P-256', {
         use: 'sig',
