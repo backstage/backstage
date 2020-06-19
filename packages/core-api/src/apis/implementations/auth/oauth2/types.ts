@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-export { entityMetaGeneratedFields } from './Entity';
-export type { Entity, EntityMeta } from './Entity';
-export * from './policies';
-export {
-  entityHasChanges,
-  generateEntityEtag,
-  generateEntityUid,
-  generateUpdatedEntity,
-} from './util';
+import { ProfileInfo } from '../../../definitions';
+
+export type OAuth2Session = {
+  profile: ProfileInfo;
+  idToken: string;
+  accessToken: string;
+  scopes: Set<string>;
+  expiresAt: Date;
+};

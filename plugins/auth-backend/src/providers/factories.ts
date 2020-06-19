@@ -18,6 +18,7 @@ import Router from 'express-promise-router';
 import { createGithubProvider } from './github';
 import { createGoogleProvider } from './google';
 import { createSamlProvider } from './saml';
+import { createOAuth2Provider } from './oauth2';
 import { AuthProviderFactory, AuthProviderConfig } from './types';
 import { Logger } from 'winston';
 
@@ -25,6 +26,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
   github: createGithubProvider,
   saml: createSamlProvider,
+  oauth2: createOAuth2Provider,
 };
 
 export const createAuthProviderRouter = (
@@ -44,7 +46,9 @@ export const createAuthProviderRouter = (
   router.get('/start', provider.start.bind(provider));
   router.get('/handler/frame', provider.frameHandler.bind(provider));
   router.post('/handler/frame', provider.frameHandler.bind(provider));
-  router.post('/logout', provider.logout.bind(provider));
+  if (provider.logout) {
+    router.post('/logout', provider.logout.bind(provider));
+  }
   if (provider.refresh) {
     router.get('/refresh', provider.refresh.bind(provider));
   }
