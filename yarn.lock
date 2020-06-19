@@ -13169,9 +13169,9 @@ ms@^2.0.0, ms@^2.1.1:
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
 msw@^0.19.0:
-  version "0.19.3"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.19.3.tgz#88f39edbd37313bff15a0e7cd00c71406cbdbbae"
-  integrity sha512-HYLnyrCDDPP72GG/CeHPhBjHsZFYkz36rJLXDWccZWNA24gYjgrcp9iVqqitk2cI6NAJwsupRml9GkfpJBB74w==
+  version "0.19.4"
+  resolved "https://registry.npmjs.org/msw/-/msw-0.19.4.tgz#059026de0cc3303847c27d3aa0e98705a1033df6"
+  integrity sha512-rNfGgIuO0MyfN2F+FOHRqNd2LJIESaaMOJNNiNMcv/Be7Kdzz/ZmghfS/5zFy2SpHWladccqDYgo74JN+YlEyg==
   dependencies:
     "@open-draft/until" "^1.0.0"
     "@types/cookie" "^0.3.3"
