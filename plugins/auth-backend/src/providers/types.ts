@@ -32,6 +32,14 @@ export type OAuthProviderOptions = {
   callbackURL: string;
 };
 
+export type OAuth2ProviderOptions = {
+  clientID: string;
+  clientSecret: string;
+  callbackURL: string;
+  authorizationURL: string;
+  tokenURL: string;
+};
+
 export type OAuthProviderConfig = {
   /**
    * Cookies can be marked with a secure flag to send cookies only when the request
@@ -75,6 +83,15 @@ export type AuthProviderConfig = {
    * callbackURL to redirect to once the user signs in to the auth provider.
    */
   baseUrl: string;
+};
+
+export type OAuth2ProviderConfig = {
+  secure: boolean;
+  appOrigin: string; // http://localhost:3000
+  clientId: string;
+  clientSecret: string;
+  authorizationURL: string;
+  tokenURL: string;
 };
 
 /**
@@ -241,6 +258,22 @@ export type RedirectInfo = {
 };
 
 export type ProfileInfo = {
+  /**
+   * Email ID of the signed in user.
+   */
+  email: string;
+  /**
+   * Display name that can be presented to the signed in user.
+   */
+  name: string;
+  /**
+   * URL to an image that can be used as the display image or avatar of the
+   * signed in user.
+   */
+  picture: string;
+};
+
+export type OAuth2ProfileInfo = {
   /**
    * Email ID of the signed in user.
    */

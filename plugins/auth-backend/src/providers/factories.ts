@@ -18,6 +18,7 @@ import Router from 'express-promise-router';
 import { createGithubProvider } from './github';
 import { createGoogleProvider } from './google';
 import { createSamlProvider } from './saml';
+import { createOAuth2Provider } from './oauth2';
 import { AuthProviderFactory, AuthProviderConfig } from './types';
 import { Logger } from 'winston';
 
@@ -25,6 +26,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
   github: createGithubProvider,
   saml: createSamlProvider,
+  oauth2: createOAuth2Provider,
 };
 
 export const createAuthProviderRouter = (

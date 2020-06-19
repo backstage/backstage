@@ -223,3 +223,12 @@ export const githubAuthApiRef = createApiRef<OAuthApi & SessionStateApi>({
   id: 'core.auth.github',
   description: 'Provides authentication towards Github APIs',
 });
+
+/**
+ * Provides authentication for custom identity providers.
+ *
+ */
+export const oauth2ApiRef = createApiRef<OAuthApi & SessionStateApi>({
+  id: 'core.auth.oauth2',
+  description: 'Provides authentication for custom identity providers',
+});

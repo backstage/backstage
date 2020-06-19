@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export * from './google';
-export * from './github';
-export * from './oauth2';
+export { createOAuth2Provider } from './provider';
