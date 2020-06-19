@@ -56,7 +56,7 @@ export function createOidcRouter(options: Options) {
   router.get('/.well-known/jwks.json', async (_req, res) => {
     logger.info('request certs');
     const keys = await keyStore.listPublicKeys();
-    res.json(keys);
+    res.json({ keys });
   });
 
   router.get('/v1/token', (_req, res) => {
