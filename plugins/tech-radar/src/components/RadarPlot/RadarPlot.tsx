@@ -23,7 +23,7 @@ import RadarBubble from '../RadarBubble';
 import RadarFooter from '../RadarFooter';
 import RadarLegend from '../RadarLegend';
 
-type Props = {
+export type Props = {
   width: number;
   height: number;
   radius: number;

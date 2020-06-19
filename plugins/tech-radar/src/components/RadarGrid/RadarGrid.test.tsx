@@ -20,9 +20,9 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import RadarGrid from './RadarGrid';
+import RadarGrid, { Props } from './RadarGrid';
 
-const minProps = {
+const minProps: Props = {
   radius: 5,
   rings: [{ id: 'use', name: 'USE', color: '#93c47d' }],
 };

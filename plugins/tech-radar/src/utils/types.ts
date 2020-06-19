@@ -61,7 +61,7 @@ export type Entry = {
   // An URL to a longer description as to why this entry is where it is
   url?: string;
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
-  moved?: number;
+  moved?: -1 | 0 | 1;
   active?: boolean;
 };
 

@@ -20,9 +20,9 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import RadarLegend from './RadarLegend';
+import RadarLegend, { Props } from './RadarLegend';
 
-const minProps = {
+const minProps: Props = {
   quadrants: [{ id: 'languages', name: 'Languages' }],
   rings: [{ id: 'use', name: 'USE', color: '#93c47d' }],
   entries: [

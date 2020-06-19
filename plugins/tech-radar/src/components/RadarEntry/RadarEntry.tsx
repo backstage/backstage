@@ -18,7 +18,7 @@ import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import { WithLink } from '../../utils/components';
 
-type Props = {
+export type Props = {
   x: number;
   y: number;
   value: number;

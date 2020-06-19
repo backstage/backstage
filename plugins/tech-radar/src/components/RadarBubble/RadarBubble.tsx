@@ -17,7 +17,7 @@
 import React, { useRef, useLayoutEffect } from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 
-type Props = {
+export type Props = {
   visible: boolean;
   text: string;
   x: number;

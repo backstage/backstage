@@ -20,9 +20,9 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import RadarPlot from './RadarPlot';
+import RadarPlot, { Props } from './RadarPlot';
 
-const minProps = {
+const minProps: Props = {
   width: 500,
   height: 200,
   radius: 50,

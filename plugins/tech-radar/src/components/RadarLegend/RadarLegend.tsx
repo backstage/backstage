@@ -22,7 +22,7 @@ type Segments = {
   [k: number]: { [k: number]: Entry[] };
 };
 
-type Props = {
+export type Props = {
   quadrants: Quadrant[];
   rings: Ring[];
   entries: Entry[];

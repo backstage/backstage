@@ -20,9 +20,9 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import RadarBubble from './RadarBubble';
+import RadarBubble, { Props } from './RadarBubble';
 
-const minProps = {
+const minProps: Props = {
   visible: true,
   text: 'RadarBubble',
   x: 2,

@@ -17,7 +17,7 @@
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 
-type Props = {
+export type Props = {
   x: number;
   y: number;
 };

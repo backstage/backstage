@@ -19,7 +19,7 @@ import RadarPlot from '../RadarPlot';
 import { Ring, Quadrant, Entry } from '../../utils/types';
 import { adjustQuadrants, adjustRings, adjustEntries } from './utils';
 
-type Props = {
+export type Props = {
   width: number;
   height: number;
   quadrants: Quadrant[];
