@@ -53,6 +53,12 @@ export function createOidcRouter(options: Options) {
     res.json(config);
   });
 
+  router.get('/.well-known/jwks.json', async (_req, res) => {
+    logger.info('request certs');
+    const keys = await keyStore.listPublicKeys();
+    res.json(keys);
+  });
+
   router.get('/v1/token', (_req, res) => {
     logger.info('request token');
     res.status(501).send('Not Implemented');
@@ -61,12 +67,6 @@ export function createOidcRouter(options: Options) {
   router.get('/v1/userinfo', (_req, res) => {
     logger.info('request userinfo');
     res.status(501).send('Not Implemented');
-  });
-
-  router.get('/v1/certs', async (_req, res) => {
-    logger.info('request certs');
-    const keys = await keyStore.listPublicKeys();
-    res.json(keys);
   });
 
   return router;
