@@ -16,6 +16,7 @@
 
 import Knex from 'knex';
 import path from 'path';
+import { utc } from 'moment';
 import { Logger } from 'winston';
 import { PublicKey } from './types';
 
@@ -23,6 +24,8 @@ const migrationsDir = path.resolve(
   require.resolve('@backstage/plugin-auth-backend/package.json'),
   '../migrations',
 );
+
+const KEY_DURATION_MS = 3600 * 1000;
 
 const TABLE = 'signing_keys';
 
@@ -51,6 +54,8 @@ export class DatabaseKeyStore {
   private readonly logger: Logger;
   private readonly database: Knex;
 
+  private removingExpiredRows: boolean = false;
+
   private constructor(options: Options) {
     const { logger, database } = options;
 
@@ -65,12 +70,60 @@ export class DatabaseKeyStore {
       kid: key.kid,
       key: JSON.stringify(key),
     });
-    console.log(`DEBUG: stored key`);
   }
 
   async listPublicKeys(): Promise<PublicKey[]> {
     const rows = await this.database<Row>(TABLE).select();
-    console.log('DEBUG: rows =', rows);
-    return rows.map(row => JSON.parse(row.key));
+
+    const [validRows, expiredRows] = this.splitExpiredRows(rows);
+    if (expiredRows.length > 0) {
+      // We don't await this, just let it run in the background
+      this.removeExpiredRows(expiredRows);
+    }
+
+    return validRows.map(row => JSON.parse(row.key));
+  }
+
+  private splitExpiredRows(rows: Row[]) {
+    const validRows = [];
+    const expiredRows = [];
+
+    for (const row of rows) {
+      const createdAt = utc(row.created_at);
+      const expireAt = createdAt.add(3 * KEY_DURATION_MS, 'ms');
+      const isExpired = expireAt.isBefore();
+
+      if (isExpired) {
+        expiredRows.push(row);
+      } else {
+        validRows.push(row);
+      }
+    }
+
+    return [validRows, expiredRows];
+  }
+
+  private async removeExpiredRows(rows: Row[]) {
+    if (this.removingExpiredRows) {
+      return;
+    }
+
+    try {
+      this.removingExpiredRows = true;
+
+      const kids = rows.map(row => row.kid);
+      this.logger.info(`Removing expired signing keys, '${kids.join(', ')}'`);
+
+      const result = await this.database(TABLE).delete().whereIn('kid', kids);
+      if (result !== kids.length) {
+        this.logger.warn(
+          `Wanted to remove ${kids.length} expired signing, but removed ${result} instead`,
+        );
+      }
+    } catch (error) {
+      this.logger.error(`Failed to remove expired signing keys, ${error}`);
+    } finally {
+      this.removingExpiredRows = false;
+    }
   }
 }

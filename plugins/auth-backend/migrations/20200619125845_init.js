@@ -30,7 +30,7 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('ID of the signing key');
     table
-      .timestamp('created_at')
+      .timestamp('created_at', { useTz: false, precision: 0 })
       .notNullable()
       .defaultTo(knex.fn.now())
       .comment('The creation time of the key');
