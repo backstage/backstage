@@ -39,11 +39,10 @@ export class TokenFactory implements TokenIssuer {
   private privateKeyPromise?: Promise<JSONWebKey>;
 
   constructor(options: Options) {
-    const { issuer, logger, keyStore, keyDuration } = options;
-    this.issuer = issuer;
-    this.keyStore = keyStore;
-    this.keyDuration = keyDuration;
-    this.logger = logger.child({ service: 'issuer' });
+    this.issuer = options.issuer;
+    this.logger = options.logger;
+    this.keyStore = options.keyStore;
+    this.keyDuration = options.keyDuration;
   }
 
   async issueToken(claims: TokenParams): Promise<string> {

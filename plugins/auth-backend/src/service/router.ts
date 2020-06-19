@@ -41,13 +41,13 @@ export async function createRouter(
 
   const keyStore = await DatabaseKeyStore.create({
     database: options.database,
-    logger,
+    logger: logger.child({ component: 'db-key-store' }),
     keyDuration,
   });
   const issuer = new TokenFactory({
     issuer: baseUrl,
     keyStore,
-    logger,
+    logger: logger.child({ component: 'token-factory' }),
     keyDuration,
   });
 
@@ -112,7 +112,13 @@ export async function createRouter(
     }
   }
 
-  router.use(createOidcRouter({ logger, keyStore, baseUrl }));
+  router.use(
+    createOidcRouter({
+      logger: logger.child({ component: 'oidc-router' }),
+      keyStore,
+      baseUrl,
+    }),
+  );
 
   return router;
 }

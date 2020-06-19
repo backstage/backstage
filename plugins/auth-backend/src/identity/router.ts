@@ -25,12 +25,7 @@ export type Options = {
 };
 
 export function createOidcRouter(options: Options) {
-  const {
-    logger: baseLogger,
-    keyStore,
-    baseUrl = 'http://localhost:7000/auth',
-  } = options;
-  const logger = baseLogger.child({ router: 'identity' });
+  const { logger, keyStore, baseUrl } = options;
 
   const router = Router();
 
