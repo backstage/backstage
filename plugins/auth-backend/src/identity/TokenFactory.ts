@@ -18,6 +18,8 @@ import { TokenIssuer, TokenParams, KeyStore, PublicKey } from './types';
 import { JSONWebKey, JWK, JWS } from 'jose';
 import { Logger } from 'winston';
 
+const KEY_DURATION_MS = 3600 * 1000;
+
 type Options = {
   issuer: string;
   logger: Logger;
@@ -29,7 +31,8 @@ export class TokenFactory implements TokenIssuer {
   private readonly logger: Logger;
   private readonly keyStore: KeyStore;
 
-  private privateKey?: Promise<JSONWebKey>;
+  private keyExpiry?: number;
+  private privateKeyPromise?: Promise<JSONWebKey>;
 
   constructor(options: Options) {
     const { issuer, logger, keyStore } = options;
@@ -56,11 +59,16 @@ export class TokenFactory implements TokenIssuer {
   }
 
   private async getKey(): Promise<JSONWebKey> {
-    if (this.privateKey) {
-      return this.privateKey;
+    if (this.privateKeyPromise) {
+      if (this.keyExpiry && Date.now() < this.keyExpiry) {
+        return this.privateKeyPromise;
+      }
+      this.logger.info(`Signing key has expired, generating new key`);
+      delete this.privateKeyPromise;
     }
 
-    this.privateKey = (async () => {
+    this.keyExpiry = Date.now() + KEY_DURATION_MS;
+    const promise = (async () => {
       const dateStr = new Date().toISOString();
       const randStr = Math.random().toString(36).slice(2, 6);
       const kid = `key-${dateStr}-${randStr}`;
@@ -74,12 +82,18 @@ export class TokenFactory implements TokenIssuer {
       return key as JSONWebKey;
     })();
 
+    this.privateKeyPromise = promise;
+
     try {
-      await this.privateKey;
+      // If we fail to generate a new key, we need to clear the state so that
+      // the next caller will try to generate another key.
+      await promise;
     } catch (error) {
-      this.logger.error(`Failed to generate signing key, ${error}`);
+      this.logger.error(`Failed to generate new signing key, ${error}`);
+      delete this.keyExpiry;
+      delete this.privateKeyPromise;
     }
 
-    return this.privateKey;
+    return promise;
   }
 }
