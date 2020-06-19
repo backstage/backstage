@@ -32,7 +32,7 @@ const Radar = (props: Props): JSX.Element => {
   const { width, height, quadrants, rings, entries } = props;
   const radius = Math.min(width, height) / 2;
 
-  const [activeEntry, setActiveEntry] = useState<Entry | null>();
+  const [activeEntry, setActiveEntry] = useState<Entry>();
   const node = useRef<SVGSVGElement>(null);
 
   // TODO(dflemstr): most of this can be heavily memoized if performance becomes a problem
@@ -49,9 +49,9 @@ const Radar = (props: Props): JSX.Element => {
         entries={entries}
         quadrants={quadrants}
         rings={rings}
-        activeEntry={activeEntry || undefined}
+        activeEntry={activeEntry}
         onEntryMouseEnter={entry => setActiveEntry(entry)}
-        onEntryMouseLeave={() => setActiveEntry(null)}
+        onEntryMouseLeave={() => setActiveEntry(undefined)}
       />
     </svg>
   );

@@ -101,10 +101,13 @@ const RadarLegend = (props: Props): JSX.Element => {
     ring: Ring,
     ringOffset = 0,
   ) => {
-    const qidx = quadrant.idx;
-    const ridx = ring.idx;
-    const segmentedData = qidx === undefined ? {} : segmented[qidx] || {};
-    return ridx === undefined ? [] : segmentedData[ridx + ringOffset] || [];
+    const quadrantIndex = quadrant.index;
+    const ringIndex = ring.index;
+    const segmentedData =
+      quadrantIndex === undefined ? {} : segmented[quadrantIndex] || {};
+    return ringIndex === undefined
+      ? []
+      : segmentedData[ringIndex + ringOffset] || [];
   };
 
   const renderRing = (
@@ -116,14 +119,14 @@ const RadarLegend = (props: Props): JSX.Element => {
     return (
       <div key={ring.id} className={classes.ring}>
         <h3 className={classes.ringHeading}>{ring.name}</h3>
-        {entries.length === 0 ? (
+        {!entries.length ? (
           <p>(empty)</p>
         ) : (
           <ol className={classes.ringList}>
             {entries.map(entry => (
               <li
                 key={entry.id}
-                value={(entry.idx || 0) + 1}
+                value={(entry.index || 0) + 1}
                 onMouseEnter={
                   onEntryMouseEnter && (() => onEntryMouseEnter(entry))
                 }
@@ -178,24 +181,24 @@ const RadarLegend = (props: Props): JSX.Element => {
     const segments: Segments = {};
 
     for (const entry of entries) {
-      const qidx = entry.quadrant.idx;
-      const ridx = entry.ring.idx;
+      const quadrantIndex = entry.quadrant.index;
+      const ringIndex = entry.ring.index;
       let quadrantData: { [k: number]: Entry[] } = {};
-      if (qidx !== undefined) {
-        if (segments[qidx] === undefined) {
-          segments[qidx] = {};
+      if (quadrantIndex !== undefined) {
+        if (segments[quadrantIndex] === undefined) {
+          segments[quadrantIndex] = {};
         }
 
-        quadrantData = segments[qidx];
+        quadrantData = segments[quadrantIndex];
       }
 
       let ringData = [];
-      if (ridx !== undefined) {
-        if (quadrantData[ridx] === undefined) {
-          quadrantData[ridx] = [];
+      if (ringIndex !== undefined) {
+        if (quadrantData[ringIndex] === undefined) {
+          quadrantData[ringIndex] = [];
         }
 
-        ringData = quadrantData[ridx];
+        ringData = quadrantData[ringIndex];
       }
 
       ringData.push(entry);

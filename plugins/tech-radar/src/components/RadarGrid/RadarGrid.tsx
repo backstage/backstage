@@ -49,7 +49,7 @@ const RadarGrid = (props: Props) => {
   const { radius, rings } = props;
   const classes = useStyles(props);
 
-  const makeRingNode = (ringRadius: number | undefined, ringIndex: number) => [
+  const makeRingNode = (ringIndex: number, ringRadius?: number) => [
     <circle
       key={`c${ringIndex}`}
       cx={0}
@@ -88,7 +88,9 @@ const RadarGrid = (props: Props) => {
     />,
   ];
 
-  const ringNodes = rings.map(r => r.outerRadius).map(makeRingNode);
+  const ringNodes = rings
+    .map(r => r.outerRadius)
+    .map((ringRadius, ringIndex) => makeRingNode(ringIndex, ringRadius));
 
   return <>{axisNodes.concat(...ringNodes)}</>;
 };

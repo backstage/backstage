@@ -71,7 +71,7 @@ const RadarPlot = (props: Props): JSX.Element => {
             x={entry.x || 0}
             y={entry.y || 0}
             color={entry.color || ''}
-            value={((entry && entry.idx) || 0) + 1}
+            value={((entry && entry.index) || 0) + 1}
             url={entry.url}
             moved={entry.moved}
             onMouseEnter={onEntryMouseEnter && (() => onEntryMouseEnter(entry))}

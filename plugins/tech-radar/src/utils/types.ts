@@ -17,7 +17,7 @@
 // Parameters for a ring; its index in an array determines how close to the center this ring is.
 export type Ring = {
   id: string;
-  idx?: number;
+  index?: number;
   name: string;
   color: string;
   outerRadius?: number;
@@ -27,7 +27,7 @@ export type Ring = {
 // Parameters for a quadrant (there should be exactly 4 of course)
 export type Quadrant = {
   id: string;
-  idx?: number;
+  index?: number;
   name: string;
   legendX?: number;
   legendY?: number;
@@ -47,7 +47,7 @@ export type Segment = {
 
 export type Entry = {
   id: string;
-  idx?: number;
+  index?: number;
   x?: number;
   y?: number;
   color?: string;
