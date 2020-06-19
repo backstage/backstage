@@ -17,6 +17,7 @@
 import { TokenIssuer, TokenParams, KeyStore, PublicKey } from './types';
 import { JSONWebKey, JWK, JWS } from 'jose';
 import { Logger } from 'winston';
+import { v4 as uuid } from 'uuid';
 
 const KEY_DURATION_MS = 3600 * 1000;
 
@@ -69,11 +70,11 @@ export class TokenFactory implements TokenIssuer {
 
     this.keyExpiry = Date.now() + KEY_DURATION_MS;
     const promise = (async () => {
-      const dateStr = new Date().toISOString();
-      const randStr = Math.random().toString(36).slice(2, 6);
-      const kid = `key-${dateStr}-${randStr}`;
-
-      const key = await JWK.generate('EC', 'P-384', { use: 'sig', kid });
+      const key = await JWK.generate('EC', 'P-256', {
+        use: 'sig',
+        kid: uuid(),
+        alg: 'ES256',
+      });
 
       await this.keyStore.addPublicKey(
         (key.toJWK(false) as unknown) as PublicKey,
