@@ -2,7 +2,6 @@ import {
   ApiRegistry,
   alertApiRef,
   errorApiRef,
-  identityApiRef,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
