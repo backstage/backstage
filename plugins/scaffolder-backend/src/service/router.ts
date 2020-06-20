@@ -67,7 +67,9 @@ export async function createRouter(
     const path = await preparer.prepare(mockEntity);
 
     // Run the templater on the mock directory with values from the post body
-    await templater.run({ directory: path, values: { componentId: 'test' } });
+    await templater.run({ directory: path, values: { component_id: 'test' } });
+
+    console.warn(path);
   });
 
   const app = express();
