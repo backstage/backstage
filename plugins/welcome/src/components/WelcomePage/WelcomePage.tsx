@@ -39,7 +39,8 @@ import {
 } from '@backstage/core';
 
 const WelcomePage: FC<{}> = () => {
-  const appTitle = useApi(configApiRef).getString('app.title') ?? 'Backstage';
+  const appTitle =
+    useApi(configApiRef).getOptionalString('app.title') ?? 'Backstage';
   const profile = { givenName: '' };
 
   return (

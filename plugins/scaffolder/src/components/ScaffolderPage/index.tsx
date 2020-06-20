@@ -20,6 +20,7 @@ import {
   Content,
   ContentHeader,
   Header,
+  SupportButton,
   Page,
   pageTheme,
   useApi,
@@ -60,7 +61,7 @@ const ScaffolderPage: React.FC<{}> = () => {
         pageTitleOverride="Create a new component"
         title={
           <>
-            Create a new component <Lifecycle alpha shorthand />{' '}
+            Create a new component <Lifecycle alpha shorthand />
           </>
         }
         subtitle="Create new software components using standard templates"
@@ -75,6 +76,11 @@ const ScaffolderPage: React.FC<{}> = () => {
           >
             Register existing component
           </Button>
+          <SupportButton>
+            Create new software components using standard templates. Different
+            templates create different kinds of components (services, websites,
+            documentation, ...).
+          </SupportButton>
         </ContentHeader>
         <Typography variant="body2" paragraph style={{ fontStyle: 'italic' }}>
           <strong>NOTE!</strong> This feature is WIP. You can follow progress{' '}

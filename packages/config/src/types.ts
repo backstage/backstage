@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type JsonObject = { [key in string]: JsonValue };
+export type JsonObject = { [key in string]?: JsonValue };
 export type JsonArray = JsonValue[];
 export type JsonValue =
   | JsonObject
@@ -24,18 +24,32 @@ export type JsonValue =
   | boolean
   | null;
 
-export type AppConfig = JsonObject;
+export type AppConfig = {
+  context: string;
+  data: JsonObject;
+};
 
 export type Config = {
+  keys(): string[];
+
+  get(key: string): JsonValue;
+  getOptional(key: string): JsonValue | undefined;
+
   getConfig(key: string): Config;
+  getOptionalConfig(key: string): Config | undefined;
 
   getConfigArray(key: string): Config[];
+  getOptionalConfigArray(key: string): Config[] | undefined;
 
-  getNumber(key: string): number | undefined;
+  getNumber(key: string): number;
+  getOptionalNumber(key: string): number | undefined;
 
-  getBoolean(key: string): boolean | undefined;
+  getBoolean(key: string): boolean;
+  getOptionalBoolean(key: string): boolean | undefined;
 
-  getString(key: string): string | undefined;
+  getString(key: string): string;
+  getOptionalString(key: string): string | undefined;
 
-  getStringArray(key: string): string[] | undefined;
+  getStringArray(key: string): string[];
+  getOptionalStringArray(key: string): string[] | undefined;
 };

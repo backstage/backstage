@@ -11,12 +11,16 @@ brand.
 
 ### Is Backstage a monitoring platform?
 
-No, but it can be! Backstage is designed to be a developer portal for all your infrastructure tooling, services, and documentation. So, it's not a monitoring platform — but that doesn't mean you can't integrate a monitoring tool into Backstage by writing [a plugin](https://github.com/spotify/backstage/blob/master/docs/FAQ.md#what-is-a-plugin-in-backstage).
+No, but it can be! Backstage is designed to be a developer portal for all your
+infrastructure tooling, services, and documentation. So, it's not a monitoring
+platform — but that doesn't mean you can't integrate a monitoring tool into
+Backstage by writing
+[a plugin](https://github.com/spotify/backstage/blob/master/docs/FAQ.md#what-is-a-plugin-in-backstage).
 
 ### How is Backstage licensed?
 
-Backstage was released as open sourced software by Spotify and is licensed
-under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+Backstage was released as open sourced software by Spotify and is licensed under
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Why did we open source Backstage?
 
@@ -95,7 +99,15 @@ plugins. ​
 
 ### What is a "plugin" in Backstage?
 
-By far, our most-used plugin is our TechDocs plugin, which we use for creating technical documentation. Our philosophy at Spotify is to treat "docs like code", where you write documentation using the same workflow as you write your code. This makes it easier to create, find, and update documentation. We hope to release [the open source version](https://github.com/spotify/backstage/issues/687) in the future. (See also: "[Will Spotify's internal plugins be open sourced, too?](https://github.com/spotify/backstage/blob/master/docs/FAQ.md#what-is-a-plugin-in-backstage)" above)
+By far, our most-used plugin is our TechDocs plugin, which we use for creating
+technical documentation. Our philosophy at Spotify is to treat "docs like code",
+where you write documentation using the same workflow as you write your code.
+This makes it easier to create, find, and update documentation. We hope to
+release
+[the open source version](https://github.com/spotify/backstage/issues/687) in
+the future. (See also:
+"[Will Spotify's internal plugins be open sourced, too?](https://github.com/spotify/backstage/blob/master/docs/FAQ.md#what-is-a-plugin-in-backstage)"
+above)
 
 ### Do I have to write plugins in TypeScript?
 
@@ -144,10 +156,12 @@ Integrators also configure closed source plugins locally from the monorepo. ​
 ​ We chose GitHub because it is the tool that we are most familiar with, so that
 will naturally lead to integrations for GitHub being developed at an early
 stage. ​ Hosting this project on GitHub does not exclude integrations with
-alternatives, such as GitLab or Bitbucket. We believe that in time there will be
-plugins that will provide functionality for these tools as well. Hopefully,
-contributed by the community! ​ Also note, implementations of Backstage can be
-hosted wherever you feel suits your needs best. ​
+alternatives, such as
+[GitLab](https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+GitLab)
+or Bitbucket. We believe that in time there will be plugins that will provide
+functionality for these tools as well. Hopefully, contributed by the community!
+​ Also note, implementations of Backstage can be hosted wherever you feel suits
+your needs best. ​
 
 ### Who maintains Backstage?
 

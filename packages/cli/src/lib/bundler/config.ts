@@ -33,9 +33,6 @@ import { BundlingOptions, BackendBundlingOptions } from './types';
 
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
-  if (!baseUrl) {
-    throw new Error('app.baseUrl must be set in config');
-  }
   try {
     return new URL(baseUrl, 'http://localhost:3000');
   } catch (error) {
@@ -52,9 +49,6 @@ export function createConfig(
   const { plugins, loaders } = transforms(options);
 
   const baseUrl = options.config.getString('app.baseUrl');
-  if (!baseUrl) {
-    throw new Error('app.baseUrl must be set in config');
-  }
   const validBaseUrl = new URL(baseUrl, 'https://backstage-app.dev');
 
   if (checksEnabled) {
@@ -115,7 +109,7 @@ export function createConfig(
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
-      mainFields: ['main:src', 'browser', 'module', 'main'],
+      mainFields: ['browser', 'module', 'main'],
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
@@ -189,7 +183,7 @@ export function createBackendConfig(
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
-      mainFields: ['main:src', 'browser', 'module', 'main'],
+      mainFields: ['browser', 'module', 'main'],
       modules: [paths.targetNodeModules, paths.rootNodeModules],
       plugins: [
         new ModuleScopePlugin(
