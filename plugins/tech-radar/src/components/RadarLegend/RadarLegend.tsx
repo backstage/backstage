@@ -30,7 +30,20 @@ export type Props = {
   onEntryMouseLeave?: (entry: Entry) => void;
 };
 
-const ringStyles = {
+const useStyles = makeStyles<Theme>(theme => ({
+  quadrant: {
+    height: '100%',
+    width: '100%',
+    overflow: 'hidden',
+    pointerEvents: 'none',
+  },
+  quadrantHeading: {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    marginTop: 0,
+    marginBottom: theme.spacing(8 / (18 * 0.375)),
+    fontSize: '18px',
+  },
   rings: {
     columns: 3,
   },
@@ -44,7 +57,7 @@ const ringStyles = {
     pointerEvents: 'none',
     userSelect: 'none',
     marginTop: 0,
-    marginBottom: 'calc(12px * 0.375)',
+    marginBottom: theme.spacing(8 / (12 * 0.375)),
     fontSize: '12px',
     fontWeight: 800,
   },
@@ -57,25 +70,6 @@ const ringStyles = {
     '-webkit-font-feature-settings': 'pnum',
     'font-feature-settings': 'pnum',
   },
-};
-
-const quadrantStyles = {
-  quadrant: {
-    height: '100%',
-    width: '100%',
-    overflow: 'hidden',
-    pointerEvents: 'none',
-  },
-  quadrantHeading: {
-    pointerEvents: 'none',
-    userSelect: 'none',
-    marginTop: 0,
-    marginBottom: 'calc(18px * 0.375)',
-    fontSize: '18px',
-  },
-};
-
-const entryStyle = {
   entry: {
     pointerEvents: 'none',
     userSelect: 'none',
@@ -84,12 +78,6 @@ const entryStyle = {
   entryLink: {
     pointerEvents: 'none',
   },
-};
-
-const useStyles = makeStyles<Theme>(() => ({
-  ringStyles,
-  quadrantStyles,
-  entryStyle,
 }));
 
 const RadarLegend = (props: Props): JSX.Element => {
@@ -126,7 +114,7 @@ const RadarLegend = (props: Props): JSX.Element => {
     return (
       <div data-testid="radar-ring" key={ring.id} className={classes.ring}>
         <h3 className={classes.ringHeading}>{ring.name}</h3>
-        {!entries.length ? (
+        {entries.length === 0 ? (
           <p>(empty)</p>
         ) : (
           <ol className={classes.ringList}>

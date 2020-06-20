@@ -71,7 +71,7 @@ const RadarPlot = (props: Props): JSX.Element => {
             x={entry.x || 0}
             y={entry.y || 0}
             color={entry.color || ''}
-            value={((entry && entry.index) || 0) + 1}
+            value={(entry?.index || 0) + 1}
             url={entry.url}
             moved={entry.moved}
             onMouseEnter={onEntryMouseEnter && (() => onEntryMouseEnter(entry))}
@@ -80,9 +80,9 @@ const RadarPlot = (props: Props): JSX.Element => {
         ))}
         <RadarBubble
           visible={!!activeEntry}
-          text={activeEntry ? activeEntry.title : ''}
-          x={activeEntry ? activeEntry.x || 0 : 0}
-          y={activeEntry ? activeEntry.y || 0 : 0}
+          text={activeEntry?.title || ''}
+          x={activeEntry?.x || 0}
+          y={activeEntry?.y || 0}
         />
       </g>
     </g>
