@@ -4,7 +4,9 @@ metadata:
   name: react-ssr-template
   title: React SSR Template
   description: Next.js application skeleton for creating isomorphic web applications.
+  annotations:
+    tags: Recommended,React
 spec:
-  type: cookiecutter
+  processor: cookiecutter
+  type: website
   path: '.'
-

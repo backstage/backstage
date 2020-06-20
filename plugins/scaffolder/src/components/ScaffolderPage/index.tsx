@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Lifecycle,
   Content,
@@ -24,6 +24,7 @@ import {
   Page,
   pageTheme,
   useApi,
+  errorApiRef,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import {
@@ -35,25 +36,25 @@ import {
 } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 import TemplateCard from '../TemplateCard';
-import { useAsync } from 'react-use';
+import useStaleWhileRevalidate from 'swr';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
 const ScaffolderPage: React.FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
+  const errorApi = useApi(errorApiRef);
 
-  const { value, loading } = useAsync(async () => {
-    const entities = await catalogApi.getEntities({ kind: 'Template' });
-    return (entities as TemplateEntityV1alpha1[]).map(template => ({
-      id: template.metadata.uid,
-      type: template.spec.type,
-      name: template.metadata.name,
-      // TODO(shmidt-i): decide on tags
-      tags: ['not-implemented'],
-      description: template.metadata.description ?? '-',
-      // TODO(shmidt-i): decide on owner
-      ownerId: '-',
-    }));
-  });
+  const { data: templates, isValidating, error } = useStaleWhileRevalidate(
+    'templates/all',
+    async () =>
+      catalogApi.getEntities({ kind: 'Template' }) as Promise<
+        TemplateEntityV1alpha1[]
+      >,
+  );
+
+  useEffect(() => {
+    if (!error) return;
+    errorApi.post(error);
+  }, [error, errorApi]);
 
   return (
     <Page theme={pageTheme.home}>
@@ -89,23 +90,26 @@ const ScaffolderPage: React.FC<{}> = () => {
           </Link>
           .
         </Typography>
-        {loading ? (
-          <LinearProgress />
-        ) : (
-          <Grid container>
-            {value!.map(item => {
+        {isValidating && <LinearProgress />}
+        <Grid container>
+          {templates &&
+            templates.map(template => {
               return (
-                <TemplateCard
-                  key={item.id}
-                  title={item.name}
-                  type={item.type}
-                  description={item.description}
-                  tags={item.tags}
-                />
+                <Grid item xs={12} sm={6} md={3}>
+                  <TemplateCard
+                    key={template.metadata.uid}
+                    title={`${
+                      (template.metadata.title || template.metadata.name) ?? ''
+                    }`}
+                    type={template.spec.type ?? ''}
+                    description={template.metadata.description ?? '-'}
+                    // TODO(shmidt-i): how to store tags
+                    tags={template.metadata.annotations?.tags.split(',') ?? []}
+                  />
+                </Grid>
               );
             })}
-          </Grid>
-        )}
+        </Grid>
       </Content>
     </Page>
   );

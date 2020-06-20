@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: springboot-template
+  title: Spring Boot Service
+  description: Standard Spring Boot (Java) microservice with recommended configuration.
+  annotations:
+    tags: Recommended,Java
+spec:
+  processor: cookiecutter
+  type: service
+  path: '.'
