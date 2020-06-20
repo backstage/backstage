@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** Represents any form of serializable JWK */
 export interface AnyJWK extends Record<string, string> {
   use: 'sig';
   alg: string;
@@ -21,18 +22,34 @@ export interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
+/** A KeyStore can store and keep track of recently used JWKs */
 export type KeyStore = {
+  /**
+   * Store a new key to be used for signing. Before the key has been successfully
+   * stored it should not be used for signing.
+   */
   storeKey(params: { key: AnyJWK }): Promise<void>;
 
+  /**
+   * List all keys that are currently being used to sign tokens, or have been used
+   * in the past within the token expiration time, including a grace period.
+   */
   listKeys(): Promise<{ keys: AnyJWK[] }>;
 };
 
+/** Parameters used to issue new ID Tokens */
 export type TokenParams = {
+  /** The claims that will be embedded within the token */
   claims: {
+    /** The token subject, i.e. User ID */
     sub: string;
   };
 };
 
+/** A TokenIssuer is able to issue verifiable ID Tokens on demand */
 export type TokenIssuer = {
+  /**
+   * Issues a new ID Token
+   */
   issueToken(params: TokenParams): Promise<string>;
 };
