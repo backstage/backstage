@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import {
-  Button,
-  Card,
-  Chip,
-  Grid,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { Button, Card, Chip, Typography, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -59,25 +52,23 @@ const TemplateCard: FC<TemplateCardProps> = ({
   const classes = useStyles();
 
   return (
-    <Grid item xs={12} sm={6} md={3}>
-      <Card>
-        <div className={classes.header}>
-          <Typography variant="subtitle2">{type}</Typography>
-          <Typography variant="h6">{title}</Typography>
+    <Card>
+      <div className={classes.header}>
+        <Typography variant="subtitle2">{type}</Typography>
+        <Typography variant="h6">{title}</Typography>
+      </div>
+      <div className={classes.content}>
+        {tags?.map(tag => (
+          <Chip label={tag} key={tag} />
+        ))}
+        <Typography variant="body2" paragraph className={classes.description}>
+          {description}
+        </Typography>
+        <div className={classes.footer}>
+          <Button color="primary">Choose</Button>
         </div>
-        <div className={classes.content}>
-          {tags?.map(tag => (
-            <Chip label={tag} key={tag} />
-          ))}
-          <Typography variant="body2" paragraph className={classes.description}>
-            {description}
-          </Typography>
-          <div className={classes.footer}>
-            <Button color="primary">Choose</Button>
-          </div>
-        </div>
-      </Card>
-    </Grid>
+      </div>
+    </Card>
   );
 };
 
