@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 
-# curl \
-# --location \
-# --request POST 'localhost:7000/catalog/locations' \
-# --header 'Content-Type: application/json' \
-# --data-raw "{\"type\": \"file\", \"target\": \"$(pwd)/sample-templates/react-ssr-template/template.yaml\"}"
-
-
 curl \
-    --location \
-    --request POST 'localhost:7000/catalog/locations' \
-    --header 'Content-Type: application/json' \
-    --data-raw "{\"type\": \"github\", \"target\": \"https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml\"}"
+--location \
+--request POST 'localhost:7000/catalog/locations' \
+--header 'Content-Type: application/json' \
+--data-raw "{\"type\": \"file\", \"target\": \"$(pwd)/sample-templates/react-ssr-template/template.yaml\"}"
+
