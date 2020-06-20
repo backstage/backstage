@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
-import { Quadrant, Ring, Entry } from '../../utils/types';
+import type { Quadrant, Ring, Entry } from '../../utils/types';
 import { WithLink } from '../../utils/components';
 
 type Segments = {
@@ -110,14 +110,21 @@ const RadarLegend = (props: Props): JSX.Element => {
       : segmentedData[ringIndex + ringOffset] || [];
   };
 
-  const renderRing = (
-    ring: Ring,
-    entries: Entry[],
-    onEntryMouseEnter?: Props['onEntryMouseEnter'],
-    onEntryMouseLeave?: Props['onEntryMouseEnter'],
-  ) => {
+  type RadarLegendRingProps = {
+    ring: Ring;
+    entries: Entry[];
+    onEntryMouseEnter?: Props['onEntryMouseEnter'];
+    onEntryMouseLeave?: Props['onEntryMouseEnter'];
+  };
+
+  const RadarLegendRing = ({
+    ring,
+    entries,
+    onEntryMouseEnter,
+    onEntryMouseLeave,
+  }: RadarLegendRingProps) => {
     return (
-      <div key={ring.id} className={classes.ring}>
+      <div data-testid="radar-ring" key={ring.id} className={classes.ring}>
         <h3 className={classes.ringHeading}>{ring.name}</h3>
         {!entries.length ? (
           <p>(empty)</p>
@@ -145,13 +152,21 @@ const RadarLegend = (props: Props): JSX.Element => {
     );
   };
 
-  const renderQuadrant = (
-    segments: Segments,
-    quadrant: Quadrant,
-    rings: Ring[],
-    onEntryMouseEnter: Props['onEntryMouseEnter'],
-    onEntryMouseLeave: Props['onEntryMouseLeave'],
-  ) => {
+  type RadarLegendQuadrantProps = {
+    segments: Segments;
+    quadrant: Quadrant;
+    rings: Ring[];
+    onEntryMouseEnter: Props['onEntryMouseEnter'];
+    onEntryMouseLeave: Props['onEntryMouseLeave'];
+  };
+
+  const RadarLegendQuadrant = ({
+    segments,
+    quadrant,
+    rings,
+    onEntryMouseEnter,
+    onEntryMouseLeave,
+  }: RadarLegendQuadrantProps) => {
     return (
       <foreignObject
         key={quadrant.id}
@@ -159,18 +174,20 @@ const RadarLegend = (props: Props): JSX.Element => {
         y={quadrant.legendY}
         width={quadrant.legendWidth}
         height={quadrant.legendHeight}
+        data-testid="radar-quadrant"
       >
         <div className={classes.quadrant}>
           <h2 className={classes.quadrantHeading}>{quadrant.name}</h2>
           <div className={classes.rings}>
-            {rings.map(ring =>
-              renderRing(
-                ring,
-                getSegment(segments, quadrant, ring),
-                onEntryMouseEnter,
-                onEntryMouseLeave,
-              ),
-            )}
+            {rings.map(ring => (
+              <RadarLegendRing
+                key={ring.id}
+                ring={ring}
+                entries={getSegment(segments, quadrant, ring)}
+                onEntryMouseEnter={onEntryMouseEnter}
+                onEntryMouseLeave={onEntryMouseLeave}
+              />
+            ))}
           </div>
         </div>
       </foreignObject>
@@ -218,16 +235,17 @@ const RadarLegend = (props: Props): JSX.Element => {
   const segments: Segments = setupSegments(entries);
 
   return (
-    <g>
-      {quadrants.map(quadrant =>
-        renderQuadrant(
-          segments,
-          quadrant,
-          rings,
-          onEntryMouseEnter,
-          onEntryMouseLeave,
-        ),
-      )}
+    <g data-testid="radar-legend">
+      {quadrants.map(quadrant => (
+        <RadarLegendQuadrant
+          key={quadrant.id}
+          segments={segments}
+          quadrant={quadrant}
+          rings={rings}
+          onEntryMouseEnter={onEntryMouseEnter}
+          onEntryMouseLeave={onEntryMouseLeave}
+        />
+      ))}
     </g>
   );
 };

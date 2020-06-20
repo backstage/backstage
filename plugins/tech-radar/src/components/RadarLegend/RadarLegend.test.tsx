@@ -55,6 +55,8 @@ describe('RadarLegend', () => {
       </ThemeProvider>,
     );
 
-    expect(rendered).not.toBeNull();
+    expect(rendered.getByTestId('radar-legend')).toBeInTheDocument();
+    expect(rendered.getAllByTestId('radar-quadrant')).toHaveLength(1);
+    expect(rendered.getAllByTestId('radar-ring')).toHaveLength(1);
   });
 });

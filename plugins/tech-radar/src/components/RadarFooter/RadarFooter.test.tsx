@@ -44,7 +44,9 @@ describe('RadarFooter', () => {
         </svg>
       </ThemeProvider>,
     );
-
-    expect(rendered).not.toBeNull();
+    const radarFooter = rendered.getByTestId('radar-footer');
+    const { x, y } = minProps;
+    expect(radarFooter).toBeInTheDocument();
+    expect(radarFooter.getAttribute('transform')).toBe(`translate(${x}, ${y})`);
   });
 });

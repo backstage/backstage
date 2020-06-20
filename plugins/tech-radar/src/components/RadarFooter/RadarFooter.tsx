@@ -36,7 +36,11 @@ const RadarFooter = (props: Props): JSX.Element => {
   const classes = useStyles(props);
 
   return (
-    <text transform={`translate(${x}, ${y})`} className={classes.text}>
+    <text
+      data-testid="radar-footer"
+      transform={`translate(${x}, ${y})`}
+      className={classes.text}
+    >
       {'▲ moved up\u00a0\u00a0\u00a0\u00a0\u00a0▼ moved down'}
     </text>
   );

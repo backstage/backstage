@@ -47,6 +47,6 @@ describe('RadarBubble', () => {
       </ThemeProvider>,
     );
 
-    expect(rendered).not.toBeNull();
+    expect(rendered.getByText(minProps.text)).toBeInTheDocument();
   });
 });

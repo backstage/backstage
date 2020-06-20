@@ -58,6 +58,10 @@ describe('RadarPlot', () => {
       </ThemeProvider>,
     );
 
-    expect(rendered).not.toBeNull();
+    expect(rendered.getByTestId('radar-plot')).toBeInTheDocument();
+    expect(rendered.getByTestId('radar-legend')).toBeInTheDocument();
+    expect(rendered.getByTestId('radar-footer')).toBeInTheDocument();
+    expect(rendered.getByTestId('radar-bubble')).toBeInTheDocument();
+    expect(rendered.getAllByTestId('radar-entry')).toHaveLength(1);
   });
 });

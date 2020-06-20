@@ -76,6 +76,7 @@ const RadarGrid = (props: Props) => {
       x2={0}
       y2={radius}
       className={classes.axis}
+      data-testid="radar-grid-x-line"
     />,
     // Y axis
     <line
@@ -85,6 +86,7 @@ const RadarGrid = (props: Props) => {
       x2={radius}
       y2={0}
       className={classes.axis}
+      data-testid="radar-grid-y-line"
     />,
   ];
 

@@ -50,7 +50,7 @@ const RadarPlot = (props: Props): JSX.Element => {
   } = props;
 
   return (
-    <g>
+    <g data-testid="radar-plot">
       <RadarLegend
         quadrants={quadrants}
         rings={rings}

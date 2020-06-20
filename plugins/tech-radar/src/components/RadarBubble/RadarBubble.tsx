@@ -98,6 +98,7 @@ const RadarBubble = (props: Props): JSX.Element => {
       x={0}
       y={0}
       className={visible ? classes.visibleBubble : classes.bubble}
+      data-testid="radar-bubble"
     >
       <rect ref={rectElem} rx={4} ry={4} className={classes.background} />
       <text ref={textElem} className={classes.text}>

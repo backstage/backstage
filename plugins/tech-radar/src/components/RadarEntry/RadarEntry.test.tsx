@@ -47,6 +47,10 @@ describe('RadarEntry', () => {
       </ThemeProvider>,
     );
 
-    expect(rendered).not.toBeNull();
+    const radarEntry = rendered.getByTestId('radar-entry');
+    const { x, y } = minProps;
+    expect(radarEntry).toBeInTheDocument();
+    expect(radarEntry.getAttribute('transform')).toBe(`translate(${x}, ${y})`);
+    expect(rendered.getByText(String(minProps.value))).toBeInTheDocument();
   });
 });

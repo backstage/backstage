@@ -45,6 +45,7 @@ describe('RadarGrid', () => {
       </ThemeProvider>,
     );
 
-    expect(rendered).not.toBeNull();
+    expect(rendered.getByTestId('radar-grid-x-line')).toBeInTheDocument();
+    expect(rendered.getByTestId('radar-grid-y-line')).toBeInTheDocument();
   });
 });

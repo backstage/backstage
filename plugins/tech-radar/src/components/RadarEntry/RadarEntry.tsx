@@ -80,6 +80,7 @@ const RadarEntry = (props: Props): JSX.Element => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClick}
+      data-testid="radar-entry"
     >
       <WithLink url={url} className={classes.link}>
         {blip}
