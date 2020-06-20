@@ -37,11 +37,13 @@ const useTechRadarLoader = (props: TechRadarComponentProps) => {
       .then((payload: TechRadarLoaderResponse) => {
         setLoading(false);
         setData(payload);
+        setError(undefined);
       })
       .catch((err: Error) => {
         errorApi.post(err);
         setLoading(false);
         setError(err);
+        setData(undefined);
       });
   }, [getData, errorApi]);
 
