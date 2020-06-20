@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-export interface PublicKey extends Record<string, string> {
-  use: 'sig' | 'enc';
+export interface AnyJWK extends Record<string, string> {
+  use: 'sig';
   alg: string;
   kid: string;
   kty: string;
 }
 
 export type KeyStore = {
-  addPublicKey(key: PublicKey): Promise<void>;
+  storeKey(params: { key: AnyJWK }): Promise<void>;
 
-  listPublicKeys(): Promise<PublicKey[]>;
+  listKeys(): Promise<{ keys: AnyJWK[] }>;
 };
 
 export type TokenParams = {
-  sub: string;
+  claims: {
+    sub: string;
+  };
 };
 
 export type TokenIssuer = {
-  issueToken(claims: TokenParams): Promise<string>;
+  issueToken(params: TokenParams): Promise<string>;
 };

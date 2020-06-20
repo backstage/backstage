@@ -34,10 +34,7 @@ exports.up = async function up(knex) {
       .notNullable()
       .defaultTo(knex.fn.now())
       .comment('The creation time of the key');
-    table
-      .string('key')
-      .notNullable()
-      .comment('The serialized public part of the signing key');
+    table.string('key').notNullable().comment('The serialized signing key');
   });
 };
 

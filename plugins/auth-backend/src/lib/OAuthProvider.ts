@@ -145,7 +145,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       }
 
       user.userIdToken = await this.options.tokenIssuer.issueToken({
-        sub: user.profile.email,
+        claims: { sub: user.profile.email },
       });
 
       // post message back to popup if successful
@@ -206,7 +206,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       );
 
       refreshInfo.userIdToken = await this.options.tokenIssuer.issueToken({
-        sub: refreshInfo.profile?.email,
+        claims: { sub: refreshInfo.profile?.email },
       });
 
       return res.send(refreshInfo);

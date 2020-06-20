@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TokenIssuer, TokenParams, KeyStore, PublicKey } from './types';
+import { TokenIssuer, TokenParams, KeyStore, AnyJWK } from './types';
 import { JSONWebKey, JWK, JWS } from 'jose';
 import { Logger } from 'winston';
 import { v4 as uuid } from 'uuid';
@@ -45,11 +45,11 @@ export class TokenFactory implements TokenIssuer {
     this.keyDuration = options.keyDuration;
   }
 
-  async issueToken(claims: TokenParams): Promise<string> {
+  async issueToken(params: TokenParams): Promise<string> {
     const key = await this.getKey();
 
     const iss = this.issuer;
-    const sub = claims.sub;
+    const sub = params.claims.sub;
     const aud = 'backstage';
     const iat = (Date.now() / 1000) | 0;
     const exp = iat + 3600;
@@ -79,9 +79,9 @@ export class TokenFactory implements TokenIssuer {
         alg: 'ES256',
       });
 
-      await this.keyStore.addPublicKey(
-        (key.toJWK(false) as unknown) as PublicKey,
-      );
+      await this.keyStore.storeKey({
+        key: (key.toJWK(false) as unknown) as AnyJWK,
+      });
 
       return key as JSONWebKey;
     })();

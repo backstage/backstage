@@ -18,7 +18,7 @@ import Knex from 'knex';
 import path from 'path';
 import { utc } from 'moment';
 import { Logger } from 'winston';
-import { PublicKey } from './types';
+import { AnyJWK, KeyStore } from './types';
 
 const migrationsDir = path.resolve(
   require.resolve('@backstage/plugin-auth-backend/package.json'),
@@ -40,7 +40,7 @@ type Options = {
   keyDuration: number;
 };
 
-export class DatabaseKeyStore {
+export class DatabaseKeyStore implements KeyStore {
   static async create(options: Options): Promise<DatabaseKeyStore> {
     const { database } = options;
 
@@ -65,7 +65,7 @@ export class DatabaseKeyStore {
     this.logger = logger.child({ service: 'key-store' });
   }
 
-  async addPublicKey(key: PublicKey): Promise<void> {
+  async storeKey({ key }: { key: AnyJWK }): Promise<void> {
     this.logger.info(`Storing public key ${key.kid}`);
 
     await this.database<Row>(TABLE).insert({
@@ -74,7 +74,7 @@ export class DatabaseKeyStore {
     });
   }
 
-  async listPublicKeys(): Promise<PublicKey[]> {
+  async listKeys(): Promise<{ keys: AnyJWK[] }> {
     const rows = await this.database<Row>(TABLE).select();
 
     const [validRows, expiredRows] = this.splitExpiredRows(rows);
@@ -83,7 +83,9 @@ export class DatabaseKeyStore {
       this.removeExpiredRows(expiredRows);
     }
 
-    return validRows.map(row => JSON.parse(row.key));
+    return {
+      keys: validRows.map(row => JSON.parse(row.key)),
+    };
   }
 
   private splitExpiredRows(rows: Row[]) {
