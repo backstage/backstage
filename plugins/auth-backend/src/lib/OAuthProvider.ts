@@ -23,6 +23,7 @@ import {
   OAuthProviderHandlers,
 } from '../providers/types';
 import { InputError } from '@backstage/backend-common';
+import { TokenIssuer } from '../identity';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -33,6 +34,7 @@ export type Options = {
   disableRefresh?: boolean;
   baseUrl: string;
   appOrigin: string;
+  tokenIssuer: TokenIssuer;
 };
 
 export const verifyNonce = (req: express.Request, providerId: string) => {
@@ -142,6 +144,10 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, refreshToken);
       }
 
+      user.userIdToken = await this.options.tokenIssuer.issueToken({
+        sub: user.profile.email,
+      });
+
       // post message back to popup if successful
       return postMessageResponse(res, this.options.appOrigin, {
         type: 'auth-result',
@@ -198,6 +204,11 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
         refreshToken,
         scope,
       );
+
+      refreshInfo.userIdToken = await this.options.tokenIssuer.issueToken({
+        sub: refreshInfo.profile?.email,
+      });
+
       return res.send(refreshInfo);
     } catch (error) {
       return res.status(401).send(`${error.message}`);
