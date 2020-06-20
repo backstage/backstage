@@ -182,6 +182,7 @@ describe('OAuthProvider', () => {
     appOrigin: 'http://localhost:3000',
     tokenIssuer: {
       issueToken: async () => 'my-id-token',
+      listPublicKeys: async () => ({ keys: [] }),
     },
   };
 

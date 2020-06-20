@@ -18,7 +18,7 @@ import Knex from 'knex';
 import path from 'path';
 import { utc } from 'moment';
 import { Logger } from 'winston';
-import { AnyJWK, KeyStore } from './types';
+import { AnyJWK, KeyStore, StoredKey } from './types';
 
 const migrationsDir = path.resolve(
   require.resolve('@backstage/plugin-auth-backend/package.json'),
@@ -36,8 +36,6 @@ type Row = {
 type Options = {
   logger: Logger;
   database: Knex;
-  /** Expiration time of signing keys in seconds */
-  keyDuration: number;
 };
 
 export class DatabaseKeyStore implements KeyStore {
@@ -53,81 +51,36 @@ export class DatabaseKeyStore implements KeyStore {
 
   private readonly logger: Logger;
   private readonly database: Knex;
-  private readonly keyDuration: number;
-
-  private removingExpiredRows: boolean = false;
 
   private constructor(options: Options) {
-    const { logger, database, keyDuration } = options;
-
-    this.database = database;
-    this.keyDuration = keyDuration;
-    this.logger = logger.child({ service: 'key-store' });
+    this.database = options.database;
+    this.logger = options.logger;
   }
 
-  async storeKey({ key }: { key: AnyJWK }): Promise<void> {
-    this.logger.info(`Storing public key ${key.kid}`);
-
+  async addKey(key: AnyJWK): Promise<void> {
     await this.database<Row>(TABLE).insert({
       kid: key.kid,
       key: JSON.stringify(key),
     });
   }
 
-  async listKeys(): Promise<{ keys: AnyJWK[] }> {
+  async listKeys(): Promise<{ items: StoredKey[] }> {
     const rows = await this.database<Row>(TABLE).select();
 
-    const [validRows, expiredRows] = this.splitExpiredRows(rows);
-    if (expiredRows.length > 0) {
-      // We don't await this, just let it run in the background
-      this.removeExpiredRows(expiredRows);
-    }
-
     return {
-      keys: validRows.map(row => JSON.parse(row.key)),
+      items: rows.map(row => ({
+        key: JSON.parse(row.key),
+        createdAt: utc(row.created_at),
+      })),
     };
   }
 
-  private splitExpiredRows(rows: Row[]) {
-    const validRows = [];
-    const expiredRows = [];
-
-    for (const row of rows) {
-      const createdAt = utc(row.created_at);
-      const expireAt = createdAt.add(3 * this.keyDuration, 'seconds');
-      const isExpired = expireAt.isBefore();
-
-      if (isExpired) {
-        expiredRows.push(row);
-      } else {
-        validRows.push(row);
-      }
-    }
-
-    return [validRows, expiredRows];
-  }
-
-  private async removeExpiredRows(rows: Row[]) {
-    if (this.removingExpiredRows) {
-      return;
-    }
-
-    try {
-      this.removingExpiredRows = true;
-
-      const kids = rows.map(row => row.kid);
-      this.logger.info(`Removing expired signing keys, '${kids.join(', ')}'`);
-
-      const result = await this.database(TABLE).delete().whereIn('kid', kids);
-      if (result !== kids.length) {
-        this.logger.warn(
-          `Wanted to remove ${kids.length} expired signing, but removed ${result} instead`,
-        );
-      }
-    } catch (error) {
-      this.logger.error(`Failed to remove expired signing keys, ${error}`);
-    } finally {
-      this.removingExpiredRows = false;
+  async removeKeys(kids: string[]): Promise<void> {
+    const result = await this.database(TABLE).delete().whereIn('kid', kids);
+    if (result !== kids.length) {
+      this.logger.warn(
+        `Wanted to remove ${kids.length} keys, but only removed ${result}`,
+      );
     }
   }
 }

@@ -22,21 +22,6 @@ export interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
-/** A KeyStore can store and keep track of recently used JWKs */
-export type KeyStore = {
-  /**
-   * Store a new key to be used for signing. Before the key has been successfully
-   * stored it should not be used for signing.
-   */
-  storeKey(params: { key: AnyJWK }): Promise<void>;
-
-  /**
-   * List all keys that are currently being used to sign tokens, or have been used
-   * in the past within the token expiration time, including a grace period.
-   */
-  listKeys(): Promise<{ keys: AnyJWK[] }>;
-};
-
 /** Parameters used to issue new ID Tokens */
 export type TokenParams = {
   /** The claims that will be embedded within the token */
@@ -46,10 +31,46 @@ export type TokenParams = {
   };
 };
 
-/** A TokenIssuer is able to issue verifiable ID Tokens on demand */
+/**
+ * A TokenIssuer is able to issue verifiable ID Tokens on demand.
+ */
 export type TokenIssuer = {
   /**
    * Issues a new ID Token
    */
   issueToken(params: TokenParams): Promise<string>;
+
+  /**
+   * List all public keys that are currently being used to sign tokens, or have been used
+   * in the past within the token expiration time, including a grace period.
+   */
+  listPublicKeys(): Promise<{ keys: AnyJWK[] }>;
+};
+
+/**
+ * A JWK stored by a KeyStore
+ */
+export type StoredKey = {
+  key: AnyJWK;
+  createdAt: moment.Moment;
+};
+
+/**
+ * A KeyStore stores JWKs for later and shared use.
+ */
+export type KeyStore = {
+  /**
+   * Store a new key to be used for signing.
+   */
+  addKey(key: AnyJWK): Promise<void>;
+
+  /**
+   * Remove all keys with the provided kids.
+   */
+  removeKeys(kids: string[]): Promise<void>;
+
+  /**
+   * List all stored keys.
+   */
+  listKeys(): Promise<{ items: StoredKey[] }>;
 };

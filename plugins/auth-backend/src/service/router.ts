@@ -42,13 +42,12 @@ export async function createRouter(
   const keyStore = await DatabaseKeyStore.create({
     database: options.database,
     logger: logger.child({ component: 'db-key-store' }),
-    keyDuration,
   });
-  const issuer = new TokenFactory({
+  const tokenIssuer = new TokenFactory({
     issuer: baseUrl,
     keyStore,
-    logger: logger.child({ component: 'token-factory' }),
     keyDuration,
+    logger: logger.child({ component: 'token-factory' }),
   });
 
   router.use(cookieParser());
@@ -104,7 +103,7 @@ export async function createRouter(
         { baseUrl },
         providerConfig,
         logger,
-        issuer,
+        tokenIssuer,
       );
       router.use(`/${providerId}`, providerRouter);
     } catch (e) {
@@ -115,7 +114,7 @@ export async function createRouter(
   router.use(
     createOidcRouter({
       logger: logger.child({ component: 'oidc-router' }),
-      keyStore,
+      tokenIssuer,
       baseUrl,
     }),
   );

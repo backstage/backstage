@@ -16,16 +16,16 @@
 
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { KeyStore } from './types';
+import { TokenIssuer } from './types';
 
 export type Options = {
   logger: Logger;
   baseUrl: string;
-  keyStore: KeyStore;
+  tokenIssuer: TokenIssuer;
 };
 
 export function createOidcRouter(options: Options) {
-  const { logger, keyStore, baseUrl } = options;
+  const { logger, tokenIssuer, baseUrl } = options;
 
   const router = Router();
 
@@ -50,7 +50,7 @@ export function createOidcRouter(options: Options) {
 
   router.get('/.well-known/jwks.json', async (_req, res) => {
     logger.info('request certs');
-    const { keys } = await keyStore.listKeys();
+    const { keys } = await tokenIssuer.listPublicKeys();
     res.json({ keys });
   });
 

@@ -62,6 +62,37 @@ export class TokenFactory implements TokenIssuer {
     });
   }
 
+  async listPublicKeys(): Promise<{ keys: AnyJWK[] }> {
+    const { items: keys } = await this.keyStore.listKeys();
+
+    const validKeys = [];
+    const expiredKeys = [];
+
+    for (const key of keys) {
+      // Allow for a grace period of another full key duration before we remove the keys from the database
+      const expireAt = key.createdAt.add(3 * this.keyDuration, 'seconds');
+      if (expireAt.isBefore()) {
+        expiredKeys.push(key);
+      } else {
+        validKeys.push(key);
+      }
+    }
+
+    if (expiredKeys.length > 0) {
+      const kids = expiredKeys.map(({ key }) => key.kid);
+
+      this.logger.info(`Removing expired signing keys, '${kids.join("', '")}'`);
+
+      // We don't await this, just let it run in the background
+      this.keyStore.removeKeys(kids).catch(error => {
+        this.logger.error(`Failed to remove expired keys, ${error}`);
+      });
+    }
+
+    // NOTE: we're currently only storing public keys, but if we start storing private keys we'd have to convert here
+    return { keys: validKeys.map(({ key }) => key) };
+  }
+
   private async getKey(): Promise<JSONWebKey> {
     if (this.privateKeyPromise) {
       if (this.keyExpiry && Date.now() < this.keyExpiry) {
@@ -79,9 +110,8 @@ export class TokenFactory implements TokenIssuer {
         alg: 'ES256',
       });
 
-      await this.keyStore.storeKey({
-        key: (key.toJWK(false) as unknown) as AnyJWK,
-      });
+      this.logger.info(`Created new signing key ${key.kid}`);
+      await this.keyStore.addKey((key.toJWK(false) as unknown) as AnyJWK);
 
       return key as JSONWebKey;
     })();
