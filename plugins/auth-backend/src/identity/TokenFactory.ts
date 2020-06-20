@@ -19,6 +19,8 @@ import { JSONWebKey, JWK, JWS } from 'jose';
 import { Logger } from 'winston';
 import { v4 as uuid } from 'uuid';
 
+const MS_IN_S = 1000;
+
 type Options = {
   logger: Logger;
   /** Value of the issuer claim in issued tokens */
@@ -51,8 +53,8 @@ export class TokenFactory implements TokenIssuer {
     const iss = this.issuer;
     const sub = params.claims.sub;
     const aud = 'backstage';
-    const iat = (Date.now() / 1000) | 0;
-    const exp = iat + 3600;
+    const iat = (Date.now() / MS_IN_S) | 0;
+    const exp = iat + this.keyDuration * MS_IN_S;
 
     this.logger.info(`Issuing token for ${sub}`);
 
@@ -102,7 +104,7 @@ export class TokenFactory implements TokenIssuer {
       delete this.privateKeyPromise;
     }
 
-    this.keyExpiry = Date.now() + this.keyDuration * 1000;
+    this.keyExpiry = Date.now() + this.keyDuration * MS_IN_S;
     const promise = (async () => {
       const key = await JWK.generate('EC', 'P-256', {
         use: 'sig',
