@@ -44,19 +44,20 @@ export async function createRouter(
       kind: 'Template',
       metadata: {
         annotations: {
-          'backstage.io/managed-by-location': `file:${__dirname}/../../sample-templates/react-ssr-template/template.yaml`,
+          'backstage.io/managed-by-location':
+            'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
         },
-        name: 'react-ssr-template',
-        title: 'React SSR Template',
+        name: 'graphql-starter',
+        title: 'GraphQL Service',
         description:
-          'Next.js application skeleton for creating isomorphic web applications.',
-        uid: '7357f4c5-aa58-4a1e-9670-18931eef771f',
-        etag: 'YWUxZWQyY2EtZDkxMC00MDM0LWI0ODAtMDgwMWY0YzdlMWIw',
+          'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
+        uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
+        etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
         generation: 1,
       },
       spec: {
         type: 'cookiecutter',
-        path: '.',
+        path: './template',
       },
     };
 
