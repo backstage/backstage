@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Quadrant, Ring, Entry } from '../../utils/types';
+import type { Quadrant, Ring, Entry } from '../../utils/types';
 
 import RadarGrid from '../RadarGrid';
 import RadarEntry from '../RadarEntry';

@@ -17,7 +17,7 @@
 import color from 'color';
 import { forceCollide, forceSimulation } from 'd3-force';
 import Segment from '../../utils/segment';
-import { Ring, Quadrant, Entry } from '../../utils/types';
+import type { Ring, Quadrant, Entry } from '../../utils/types';
 
 export const adjustQuadrants = (
   quadrants: Quadrant[],

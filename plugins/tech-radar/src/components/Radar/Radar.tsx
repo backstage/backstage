@@ -16,7 +16,7 @@
 
 import React, { useState, useRef } from 'react';
 import RadarPlot from '../RadarPlot';
-import { Ring, Quadrant, Entry } from '../../utils/types';
+import type { Ring, Quadrant, Entry } from '../../utils/types';
 import { adjustQuadrants, adjustRings, adjustEntries } from './utils';
 
 export type Props = {

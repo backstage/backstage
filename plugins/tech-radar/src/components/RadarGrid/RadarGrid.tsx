@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
-import { Ring } from '../../utils/types';
+import type { Ring } from '../../utils/types';
 
 export type Props = {
   radius: number;
