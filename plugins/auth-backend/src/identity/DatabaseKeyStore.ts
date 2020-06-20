@@ -17,7 +17,6 @@
 import Knex from 'knex';
 import path from 'path';
 import { utc } from 'moment';
-import { Logger } from 'winston';
 import { AnyJWK, KeyStore, StoredKey } from './types';
 
 const migrationsDir = path.resolve(
@@ -34,7 +33,6 @@ type Row = {
 };
 
 type Options = {
-  logger: Logger;
   database: Knex;
 };
 
@@ -49,12 +47,10 @@ export class DatabaseKeyStore implements KeyStore {
     return new DatabaseKeyStore(options);
   }
 
-  private readonly logger: Logger;
   private readonly database: Knex;
 
   private constructor(options: Options) {
     this.database = options.database;
-    this.logger = options.logger;
   }
 
   async addKey(key: AnyJWK): Promise<void> {
@@ -76,11 +72,6 @@ export class DatabaseKeyStore implements KeyStore {
   }
 
   async removeKeys(kids: string[]): Promise<void> {
-    const result = await this.database(TABLE).delete().whereIn('kid', kids);
-    if (result !== kids.length) {
-      this.logger.warn(
-        `Wanted to remove ${kids.length} keys, but only removed ${result}`,
-      );
-    }
+    await this.database(TABLE).delete().whereIn('kid', kids);
   }
 }

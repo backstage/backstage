@@ -17,7 +17,6 @@
 import Knex from 'knex';
 import moment from 'moment';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
-import { getVoidLogger } from '@backstage/backend-common';
 
 function createDB() {
   const knex = Knex({
@@ -37,12 +36,10 @@ const keyBase = {
   alg: 'Base64',
 } as const;
 
-const logger = getVoidLogger();
-
 describe('DatabaseKeyStore', () => {
   it('should store a key', async () => {
     const database = createDB();
-    const store = await DatabaseKeyStore.create({ database, logger });
+    const store = await DatabaseKeyStore.create({ database });
 
     const key = {
       kid: '123',
@@ -59,7 +56,7 @@ describe('DatabaseKeyStore', () => {
 
   it('should remove stored keys', async () => {
     const database = createDB();
-    const store = await DatabaseKeyStore.create({ database, logger });
+    const store = await DatabaseKeyStore.create({ database });
 
     const key1 = { kid: '1', ...keyBase };
     const key2 = { kid: '2', ...keyBase };

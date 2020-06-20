@@ -41,7 +41,6 @@ export async function createRouter(
 
   const keyStore = await DatabaseKeyStore.create({
     database: options.database,
-    logger: logger.child({ component: 'db-key-store' }),
   });
   const tokenIssuer = new TokenFactory({
     issuer: baseUrl,
