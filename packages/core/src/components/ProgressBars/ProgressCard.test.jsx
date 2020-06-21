@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 
-import ProgressCard from './ProgressCard';
+import { ProgressCard } from './ProgressCard';
 
 const minProps = { title: 'Tingle upgrade', progress: 0.12 };
 

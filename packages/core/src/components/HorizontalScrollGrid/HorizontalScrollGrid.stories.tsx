@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import HorizontalScrollGrid from './HorizontalScrollGrid';
+import { HorizontalScrollGrid } from './HorizontalScrollGrid';
 
 const cardContentStyle = { height: 0, padding: 150, margin: 20 };
 const containerStyle = { width: 800, height: 400, margin: 20 };

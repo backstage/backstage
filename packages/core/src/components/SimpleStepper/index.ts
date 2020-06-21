@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-import SimpleStepper from './SimpleStepper';
-import SimpleStepperStep from './SimpleStepperStep';
-
-export { SimpleStepper, SimpleStepperStep };
+export { SimpleStepper } from './SimpleStepper';
+export { SimpleStepperStep } from './SimpleStepperStep';

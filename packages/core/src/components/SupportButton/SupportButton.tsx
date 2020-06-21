@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SupportButton: FC<Props> = ({
+export const SupportButton: FC<Props> = ({
   slackChannel = '#backstage',
   email = [],
   children,
@@ -155,5 +155,3 @@ const SupportButton: FC<Props> = ({
     </Fragment>
   );
 };
-
-export default SupportButton;
