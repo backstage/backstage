@@ -293,8 +293,6 @@ export class PrivateAppImpl implements BackstageApp {
       if (!SignInPageComponent) {
         this.identityApi.setSignInResult({
           userId: 'guest',
-          idToken: undefined,
-          logout: async () => {},
         });
 
         return (
