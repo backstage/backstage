@@ -1,15 +1,22 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { renderWithEffects } from '@backstage/test-utils';
 import App from './App';
 
 describe('App', () => {
-  it('should render', () => {
+  it('should render', async () => {
     Object.defineProperty(process.env, 'APP_CONFIG', {
       configurable: true,
-      value: [],
+      value: [
+        {
+          data: {
+            app: { title: 'Test' },
+          },
+          context: 'test',
+        },
+      ],
     });
 
-    const rendered = render(<App />);
+    const rendered = await renderWithEffects(<App />);
     expect(rendered.baseElement).toBeInTheDocument();
   });
 });
