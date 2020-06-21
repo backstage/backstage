@@ -22,7 +22,7 @@ import { ContentHeader } from '../ContentHeader/ContentHeader';
 import { Grid } from '@material-ui/core';
 import { SignInPageProps, useApi, configApiRef } from '@backstage/core-api';
 import { useSignInProviders, SignInProviderId } from './providers';
-import Progress from '../../components/Progress';
+import { Progress } from '../../components/Progress';
 
 export type Props = SignInPageProps & {
   providers: SignInProviderId[];

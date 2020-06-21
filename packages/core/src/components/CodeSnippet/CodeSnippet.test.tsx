@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 
-import CodeSnippet from './CodeSnippet';
+import { CodeSnippet } from './CodeSnippet';
 
 const JAVASCRIPT = `const greeting = "Hello";
 const world = "World";

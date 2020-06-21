@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 
-import WarningPanel from './WarningPanel';
+import { WarningPanel } from './WarningPanel';
 
 const minProps = { title: 'Mock title', message: 'Some more info' };
 

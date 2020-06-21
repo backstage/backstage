@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import Table from './';
+import { Table } from './Table';
 
 const minProps = {
   columns: [

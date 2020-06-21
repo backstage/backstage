@@ -25,7 +25,7 @@ import privateExports, {
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 import { ErrorPage } from '../layout/ErrorPage';
-import Progress from '../components/Progress';
+import { Progress } from '../components/Progress';
 import { lightTheme, darkTheme } from '@backstage/theme';
 import { AppConfig, JsonObject } from '@backstage/config';
 
