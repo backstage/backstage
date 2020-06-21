@@ -25,11 +25,8 @@ export const App = () => {
     <AppStateProvider>
       <>
         <Routes>
-          <Route path="/circleci" element={<BuildsPage />} />
-          <Route
-            path="/circleci/build/:buildId"
-            element={<DetailedViewPage />}
-          />
+          <Route path="*" element={<BuildsPage />} />
+          <Route path="/build/:buildId" element={<DetailedViewPage />} />
         </Routes>
         <Settings />
       </>
