@@ -67,7 +67,7 @@ export class TokenFactory implements TokenIssuer {
     const iss = this.issuer;
     const sub = params.claims.sub;
     const aud = 'backstage';
-    const iat = (Date.now() / MS_IN_S) | 0;
+    const iat = Math.floor(Date.now() / MS_IN_S);
     const exp = iat + this.keyDuration * MS_IN_S;
 
     this.logger.info(`Issuing token for ${sub}`);

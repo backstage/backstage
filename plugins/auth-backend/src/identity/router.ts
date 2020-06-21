@@ -15,17 +15,15 @@
  */
 
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { TokenIssuer } from './types';
 
 export type Options = {
-  logger: Logger;
   baseUrl: string;
   tokenIssuer: TokenIssuer;
 };
 
 export function createOidcRouter(options: Options) {
-  const { logger, tokenIssuer, baseUrl } = options;
+  const { baseUrl, tokenIssuer } = options;
 
   const router = Router();
 
@@ -44,23 +42,19 @@ export function createOidcRouter(options: Options) {
   };
 
   router.get('/.well-known/openid-configuration', (_req, res) => {
-    logger.info('request configuration');
     res.json(config);
   });
 
   router.get('/.well-known/jwks.json', async (_req, res) => {
-    logger.info('request certs');
     const { keys } = await tokenIssuer.listPublicKeys();
     res.json({ keys });
   });
 
   router.get('/v1/token', (_req, res) => {
-    logger.info('request token');
     res.status(501).send('Not Implemented');
   });
 
   router.get('/v1/userinfo', (_req, res) => {
-    logger.info('request userinfo');
     res.status(501).send('Not Implemented');
   });
 

@@ -112,7 +112,6 @@ export async function createRouter(
 
   router.use(
     createOidcRouter({
-      logger: logger.child({ component: 'oidc-router' }),
       tokenIssuer,
       baseUrl,
     }),
