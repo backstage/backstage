@@ -15,23 +15,25 @@
  */
 
 import React, { FC } from 'react';
-import { Header, HomepageTimer, Page, pageTheme } from '@backstage/core';
+import {
+  Header,
+  HomepageTimer,
+  Page,
+  pageTheme,
+  identityApiRef,
+  useApi,
+} from '@backstage/core';
 import { getTimeBasedGreeting } from './utils/timeUtil';
 
 const CatalogLayout: FC<{}> = props => {
   const { children } = props;
-  // const profile = useProfile();
-  const profile = { givenName: 'friend' };
   const greeting = getTimeBasedGreeting();
+  const identityApi = useApi(identityApiRef);
 
   return (
     <Page theme={pageTheme.home}>
       <Header
-        title={
-          profile
-            ? `${greeting.greeting}, ${profile.givenName}!`
-            : greeting.greeting
-        }
+        title={`${greeting.greeting}, ${identityApi.getUserId()}!`}
         subtitle="Backstage Service Catalog"
         tooltip={greeting.language}
         pageTitleOverride="Home"
