@@ -62,7 +62,13 @@ export class GithubReaderProcessor implements LocationProcessor {
   // to:   https://raw.githubusercontent.com/a/b/master/c.yaml
   private buildRawUrl(target: string): URL {
     try {
-      const url = new URL(target);
+      // the "blob" that should be removed always comes between the 5th and the 6th slash, so we filter that out and join the string back together
+      const parsedUrl = target
+        .replace('//github.com/', '//raw.githubusercontent.com/')
+        .split('/')
+        .filter((_, index) => index !== 5)
+        .join('/');
+      const url = new URL(parsedUrl);
 
       const [
         empty,
@@ -73,7 +79,7 @@ export class GithubReaderProcessor implements LocationProcessor {
       ] = url.pathname.split('/');
 
       if (
-        url.hostname !== 'github.com' ||
+        url.hostname !== 'raw.githubusercontent.com' ||
         empty !== '' ||
         userOrOrg === '' ||
         repoName === '' ||
@@ -82,11 +88,6 @@ export class GithubReaderProcessor implements LocationProcessor {
       ) {
         throw new Error('Wrong GitHub URL');
       }
-
-      // Removing the "blob" part
-      url.pathname = [empty, userOrOrg, repoName, ...restOfPath].join('/');
-      url.hostname = 'raw.githubusercontent.com';
-      url.protocol = 'https';
 
       return url;
     } catch (e) {
