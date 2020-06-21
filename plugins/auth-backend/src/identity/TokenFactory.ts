@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import moment from 'moment';
 import { TokenIssuer, TokenParams, KeyStore, AnyJWK } from './types';
 import { JSONWebKey, JWK, JWS } from 'jose';
 import { Logger } from 'winston';
@@ -28,7 +29,7 @@ type Options = {
   /** Key store used for storing signing keys */
   keyStore: KeyStore;
   /** Expiration time of signing keys in seconds */
-  keyDuration: number;
+  keyDurationSeconds: number;
 };
 
 /**
@@ -49,16 +50,16 @@ export class TokenFactory implements TokenIssuer {
   private readonly issuer: string;
   private readonly logger: Logger;
   private readonly keyStore: KeyStore;
-  private readonly keyDuration: number;
+  private readonly keyDurationSeconds: number;
 
-  private keyExpiry?: number;
+  private keyExpiry?: moment.Moment;
   private privateKeyPromise?: Promise<JSONWebKey>;
 
   constructor(options: Options) {
     this.issuer = options.issuer;
     this.logger = options.logger;
     this.keyStore = options.keyStore;
-    this.keyDuration = options.keyDuration;
+    this.keyDurationSeconds = options.keyDurationSeconds;
   }
 
   async issueToken(params: TokenParams): Promise<string> {
@@ -68,7 +69,7 @@ export class TokenFactory implements TokenIssuer {
     const sub = params.claims.sub;
     const aud = 'backstage';
     const iat = Math.floor(Date.now() / MS_IN_S);
-    const exp = iat + this.keyDuration * MS_IN_S;
+    const exp = iat + this.keyDurationSeconds * MS_IN_S;
 
     this.logger.info(`Issuing token for ${sub}`);
 
@@ -89,7 +90,7 @@ export class TokenFactory implements TokenIssuer {
 
     for (const key of keys) {
       // Allow for a grace period of another full key duration before we remove the keys from the database
-      const expireAt = key.createdAt.add(3 * this.keyDuration, 'seconds');
+      const expireAt = key.createdAt.add(3 * this.keyDurationSeconds, 's');
       if (expireAt.isBefore()) {
         expiredKeys.push(key);
       } else {
@@ -116,14 +117,14 @@ export class TokenFactory implements TokenIssuer {
   private async getKey(): Promise<JSONWebKey> {
     // Make sure that we only generate one key at a time
     if (this.privateKeyPromise) {
-      if (this.keyExpiry && Date.now() < this.keyExpiry) {
+      if (this.keyExpiry?.isAfter()) {
         return this.privateKeyPromise;
       }
       this.logger.info(`Signing key has expired, generating new key`);
       delete this.privateKeyPromise;
     }
 
-    this.keyExpiry = Date.now() + this.keyDuration * MS_IN_S;
+    this.keyExpiry = moment().add(this.keyDurationSeconds, 'seconds');
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
       const key = await JWK.generate('EC', 'P-256', {

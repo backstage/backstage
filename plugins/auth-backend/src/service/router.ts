@@ -37,7 +37,7 @@ export async function createRouter(
   const logger = options.logger.child({ plugin: 'auth' });
 
   const baseUrl = `${options.config.getString('backend.baseUrl')}/auth`;
-  const keyDuration = 3600;
+  const keyDurationSeconds = 3600;
 
   const keyStore = await DatabaseKeyStore.create({
     database: options.database,
@@ -45,7 +45,7 @@ export async function createRouter(
   const tokenIssuer = new TokenFactory({
     issuer: baseUrl,
     keyStore,
-    keyDuration,
+    keyDurationSeconds,
     logger: logger.child({ component: 'token-factory' }),
   });
 

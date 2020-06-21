@@ -60,11 +60,11 @@ function jwtKid(jwt: string): string {
 
 describe('TokenFactory', () => {
   it('should issue valid tokens signed by a listed key', async () => {
-    const keyDuration = 5;
+    const keyDurationSeconds = 5;
     const factory = new TokenFactory({
       issuer: 'my-issuer',
       keyStore: new MemoryKeyStore(),
-      keyDuration,
+      keyDurationSeconds,
       logger,
     });
 
@@ -87,7 +87,7 @@ describe('TokenFactory', () => {
       iat: expect.any(Number),
       exp: expect.any(Number),
     });
-    expect(payload.exp).toBe(payload.iat + keyDuration * 1000);
+    expect(payload.exp).toBe(payload.iat + keyDurationSeconds * 1000);
   });
 
   it('should generate new signing keys when the current one expires', async () => {
@@ -97,7 +97,7 @@ describe('TokenFactory', () => {
     const factory = new TokenFactory({
       issuer: 'my-issuer',
       keyStore: new MemoryKeyStore(),
-      keyDuration: 5,
+      keyDurationSeconds: 5,
       logger,
     });
 
