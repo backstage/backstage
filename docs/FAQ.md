@@ -15,7 +15,7 @@ No, but it can be! Backstage is designed to be a developer portal for all your
 infrastructure tooling, services, and documentation. So, it's not a monitoring
 platform — but that doesn't mean you can't integrate a monitoring tool into
 Backstage by writing
-[a plugin](https://github.com/spotify/faq#what-is-a-plugin-in-backstage).
+[a plugin](https://github.com/spotify/backstage/faq#what-is-a-plugin-in-backstage).
 
 ### How is Backstage licensed?
 
