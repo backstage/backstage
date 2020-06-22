@@ -90,7 +90,7 @@ export const entityFilters: Record<string, EntityFilter> = {
 export const entityTypeFilter = (e: Entity, type: string) =>
   (e.spec as any)?.type === type;
 
-type EntityType = 'service' | 'website' | 'lib' | 'documentation' | 'other';
+type EntityType = 'service' | 'website' | 'library' | 'documentation' | 'other';
 
 type LabeledEntityType = {
   id: EntityType;
@@ -107,7 +107,7 @@ export const labeledEntityTypes: LabeledEntityType[] = [
     label: 'Websites',
   },
   {
-    id: 'lib',
+    id: 'library',
     label: 'Libraries',
   },
   {
