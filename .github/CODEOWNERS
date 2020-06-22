@@ -5,4 +5,4 @@
 # https://help.github.com/articles/about-codeowners/
 
 *                 @spotify/backstage-core
-/plugins/techdocs @spotify/pulp-fiction
+/plugins/techdocs @spotify/techdocs-core
