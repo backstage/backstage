@@ -178,8 +178,7 @@ export function createBackendConfig(
     context: paths.targetPath,
     entry: [
       'webpack/hot/poll?100',
-      paths.targetEntry,
-      ...(paths.targetRunFile ? [paths.targetRunFile] : []),
+      paths.targetRunFile ? paths.targetRunFile : paths.targetEntry,
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],

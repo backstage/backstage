@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import ProgressCard from './ProgressCard';
+import { ProgressCard } from './ProgressCard';
 import { Grid } from '@material-ui/core';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };

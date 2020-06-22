@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { Tabs as default } from './Tabs';
+export { Tabs } from './Tabs';

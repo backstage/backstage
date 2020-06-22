@@ -16,20 +16,13 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { StarredCount } from './StarredCount';
-import * as Hooks from '../../hooks/useStarredEntites';
+import mockFetch from 'jest-fetch-mock';
+import ExampleFetchComponent from './ExampleFetchComponent';
 
-describe('Starred Count', () => {
-  it('should render the count returned from the hook', async () => {
-    jest.spyOn(Hooks, 'useStarredEntities').mockReturnValue({
-      starredEntities: new Set(['id1', 'id2', 'id3', 'id4']),
-      isStarredEntity: () => false,
-      toggleStarredEntity: () => undefined,
-    });
-
-    const { findByText } = render(wrapInTestApp(<StarredCount />));
-
-    expect(await findByText('4')).toBeInTheDocument();
+describe('ExampleFetchComponent', () => {
+  it('should render', async () => {
+    mockFetch.mockResponse(() => new Promise(() => {}));
+    const rendered = render(<ExampleFetchComponent />);
+    expect(await rendered.findByTestId('progress')).toBeInTheDocument();
   });
 });

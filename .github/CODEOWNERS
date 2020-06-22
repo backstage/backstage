@@ -4,4 +4,5 @@
 # The last matching pattern takes precedence.
 # https://help.github.com/articles/about-codeowners/
 
-*                @spotify/backstage-core
+*                 @spotify/backstage-core
+/plugins/techdocs @spotify/techdocs-core

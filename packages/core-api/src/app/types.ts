@@ -32,9 +32,9 @@ export type SignInResult = {
    */
   userId: string;
   /**
-   * ID token that will be returned by the IdentityApi
+   * Function used to retrieve an ID token for the signed in user.
    */
-  idToken?: string;
+  getIdToken?: () => Promise<string>;
   /**
    * Logout handler that will be called if the user requests a logout.
    */

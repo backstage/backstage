@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default } from './Progress';
+export { Progress } from './Progress';

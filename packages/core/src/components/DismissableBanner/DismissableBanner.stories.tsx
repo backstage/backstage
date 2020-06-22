@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import DismissableBanner from './DismissableBanner';
+import { DismissableBanner } from './DismissableBanner';
 import { Link, Typography } from '@material-ui/core';
 import {
   ApiProvider,

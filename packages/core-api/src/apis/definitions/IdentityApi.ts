@@ -35,7 +35,7 @@ export type IdentityApi = {
    * The ID token will be undefined if the signed in user does not have a verified
    * identity, such as a demo user or mocked user for e2e tests.
    */
-  getIdToken(): string | undefined;
+  getIdToken(): Promise<string | undefined>;
 
   // TODO: getProfile(): Promise<Profile> - We want this to be async when added, but needs more work.
 

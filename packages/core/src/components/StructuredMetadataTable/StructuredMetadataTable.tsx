@@ -56,7 +56,7 @@ function renderMap(
   nested?: boolean,
   options?: any,
 ) {
-  const values = Object.keys(map).map((key) => {
+  const values = Object.keys(map).map(key => {
     const value = toValue(map[key], true);
     const fmtKey =
       options && options.titleFormat
@@ -98,7 +98,7 @@ function toValue(
 }
 
 function mapToItems(info: { [key: string]: string }, options: any) {
-  return Object.keys(info).map((key) => (
+  return Object.keys(info).map(key => (
     <TableItem key={key} title={key} value={info[key]} options={options} />
   ));
 }
@@ -147,7 +147,8 @@ interface ComponentProps {
   dense?: boolean;
   options?: any;
 }
-export default class StructuredMetadataTable extends Component<ComponentProps> {
+
+export class StructuredMetadataTable extends Component<ComponentProps> {
   render() {
     const { metadata, dense, options } = this.props;
     const metadataItems = mapToItems(metadata, options || {});
