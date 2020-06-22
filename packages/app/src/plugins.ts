@@ -23,3 +23,4 @@ export { plugin as Circleci } from '@backstage/plugin-circleci';
 export { plugin as RegisterComponent } from '@backstage/plugin-register-component';
 export { plugin as Sentry } from '@backstage/plugin-sentry';
 export { plugin as GitopsProfiles } from '@backstage/plugin-gitops-profiles';
+export { plugin as TechDocs } from '@backstage/plugin-techdocs';
