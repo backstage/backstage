@@ -53,6 +53,7 @@ export async function createRouter(
           'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
         uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
         etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
+
         generation: 1,
       },
       spec: {

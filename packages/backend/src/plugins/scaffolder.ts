@@ -32,5 +32,7 @@ export default async function createPlugin({ logger }: PluginEnvironment) {
   preparers.register('file', filePreparer);
   preparers.register('github', githubPreparer);
 
+  const preparers = new Preparers();
+
   return await createRouter({ preparers, templater, logger });
 }
