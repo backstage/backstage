@@ -74,6 +74,12 @@ describe('GitHubPreparer', () => {
       { checkoutOpts: {} },
     );
   });
-  it('resolves relative path from the template', async () => {});
-  it('resolves relative path from the nested template', async () => {});
+
+  it('return the temp directory with the path to the folder if it is specified', async () => {
+    const preparer = new GithubPreparer();
+    mockEntity.spec.path = './template/test/1/2/3';
+    const response = await preparer.prepare(mockEntity);
+
+    expect(response).toMatch(new RegExp(/\/template\/test\/1\/2\/3$/));
+  });
 });
