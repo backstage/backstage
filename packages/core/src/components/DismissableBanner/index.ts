@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default } from './DismissableBanner';
+export { DismissableBanner } from './DismissableBanner';

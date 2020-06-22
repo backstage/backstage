@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useStarredEntities } from '../../hooks/useStarredEntites';
-
-export const StarredCount: React.FC<{}> = () => {
-  const { starredEntities } = useStarredEntities();
-  return <span>{starredEntities.size}</span>;
-};
+export { createOidcRouter } from './router';
+export { TokenFactory } from './TokenFactory';
+export { DatabaseKeyStore } from './DatabaseKeyStore';
+export type { KeyStore, TokenIssuer, TokenParams } from './types';

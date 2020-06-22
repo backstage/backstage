@@ -162,7 +162,7 @@ export interface TableProps extends MaterialTableProps<{}> {
   subtitle?: string;
 }
 
-const Table: FC<TableProps> = ({
+export const Table: FC<TableProps> = ({
   columns,
   options,
   title,
@@ -212,5 +212,3 @@ const Table: FC<TableProps> = ({
     />
   );
 };
-
-export default Table;

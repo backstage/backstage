@@ -57,6 +57,8 @@ export class EnvironmentHandler implements AuthProviderRouteHandlers {
 
   async logout(req: express.Request, res: express.Response): Promise<void> {
     const provider = this.getProviderForEnv(req);
-    await provider.logout(req, res);
+    if (provider.logout) {
+      await provider.logout(req, res);
+    }
   }
 }

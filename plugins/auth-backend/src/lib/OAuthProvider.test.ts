@@ -180,6 +180,10 @@ describe('OAuthProvider', () => {
     disableRefresh: true,
     baseUrl: 'http://localhost:7000/auth',
     appOrigin: 'http://localhost:3000',
+    tokenIssuer: {
+      issueToken: async () => 'my-id-token',
+      listPublicKeys: async () => ({ keys: [] }),
+    },
   };
 
   it('sets the correct headers in start', async () => {

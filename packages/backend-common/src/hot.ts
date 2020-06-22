@@ -14,10 +14,38 @@
  * limitations under the License.
  */
 
+// Find all active hot module APIs of all ancestors of a module, including the module itself
+function findAllAncestors(_module: NodeModule): NodeModule[] {
+  const ancestors = new Array<NodeModule>();
+  const parentIds = new Set<string | number>();
+
+  function add(id: string | number, m: NodeModule) {
+    if (parentIds.has(id)) {
+      return;
+    }
+    parentIds.add(id);
+    ancestors.push(m);
+
+    for (const parentId of (m as any).parents) {
+      const parent = require.cache[parentId];
+      if (parent) {
+        add(parentId, parent);
+      }
+    }
+  }
+
+  add(_module.id, _module);
+
+  return ancestors;
+}
+
 /**
- * This function allows devs to cleanup
- * ongoing effects when module gets hot-reloaded
+ * useHotCleanup allows cleanup of ongoing effects when a module is
+ * hot-reloaded during development. The cleanup function will be called
+ * whenever the module itself or any of its parent modules is hot-reloaded.
+ *
  * Useful for cleaning intervals, timers, requests etc
+ *
  * @example
  * ```ts
  * const intervalId = setInterval(doStuff, 1000);
@@ -28,9 +56,19 @@
  */
 export function useHotCleanup(_module: NodeModule, cancelEffect: () => void) {
   if (_module.hot) {
-    _module.hot.addDisposeHandler(() => {
-      cancelEffect();
-    });
+    const ancestors = findAllAncestors(_module);
+    let cancelled = false;
+
+    const handler = () => {
+      if (!cancelled) {
+        cancelled = true;
+        cancelEffect();
+      }
+    };
+
+    for (const m of ancestors) {
+      m.hot?.addDisposeHandler(handler);
+    }
   }
 }
 

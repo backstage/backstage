@@ -31,7 +31,7 @@ const defaultProps = {
   showLineNumbers: false,
 };
 
-const CodeSnippet: FC<Props> = props => {
+export const CodeSnippet: FC<Props> = props => {
   const { text, language, showLineNumbers } = {
     ...defaultProps,
     ...props,
@@ -57,5 +57,3 @@ CodeSnippet.propTypes = {
   language: PropTypes.string.isRequired,
   showLineNumbers: PropTypes.bool,
 };
-
-export default CodeSnippet;

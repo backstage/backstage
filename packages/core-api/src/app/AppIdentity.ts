@@ -24,7 +24,7 @@ import { SignInResult } from './types';
 export class AppIdentity implements IdentityApi {
   private hasIdentity = false;
   private userId?: string;
-  private idToken?: string;
+  private idTokenFunc?: () => Promise<string>;
   private logoutFunc?: () => Promise<void>;
 
   getUserId(): string {
@@ -36,13 +36,13 @@ export class AppIdentity implements IdentityApi {
     return this.userId!;
   }
 
-  getIdToken(): string | undefined {
+  async getIdToken(): Promise<string | undefined> {
     if (!this.hasIdentity) {
       throw new Error(
         'Tried to access IdentityApi idToken before app was loaded',
       );
     }
-    return this.idToken;
+    return this.idTokenFunc?.();
   }
 
   async logout(): Promise<void> {
@@ -64,7 +64,7 @@ export class AppIdentity implements IdentityApi {
     }
     this.hasIdentity = true;
     this.userId = result.userId;
-    this.idToken = result.idToken;
+    this.idTokenFunc = result.getIdToken;
     this.logoutFunc = result.logout;
   }
 }
