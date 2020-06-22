@@ -20,9 +20,11 @@ import {
   errorApiRef,
   storageApiRef,
   WebStorage,
+  IdentityApi,
+  identityApiRef,
 } from '@backstage/core';
 import { MockErrorApi, wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { catalogApiRef } from '../..';
 import { CatalogApi } from '../../api/types';
@@ -40,31 +42,69 @@ describe('CatalogPage', () => {
           },
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Component',
+          spec: {
+            owner: 'tools@example.com',
+            type: 'service',
+          },
+        },
+        {
+          metadata: {
+            name: 'Entity2',
+          },
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          spec: {
+            owner: 'not-tools@example.com',
+            type: 'service',
+          },
         },
       ] as Entity[]),
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
+  };
+  const mockIndentityApi: Partial<IdentityApi> = {
+    getUserId: () => 'tools@example.com',
   };
 
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    const rendered = render(
+    const { findByText } = render(
       wrapInTestApp(
         <ApiProvider
           apis={ApiRegistry.from([
             [errorApiRef, mockErrorApi],
             [catalogApiRef, catalogApi],
             [storageApiRef, new WebStorage('@mock', mockErrorApi)],
+            [identityApiRef, mockIndentityApi],
           ])}
         >
           <CatalogPage />
         </ApiProvider>,
       ),
     );
-    expect(
-      await rendered.findByText('Backstage Service Catalog'),
-    ).toBeInTheDocument();
+
+    const items = await findByText(/All Services \(2\)/);
+    expect(items).toBeInTheDocument();
+  });
+  it('should filter by owner', async () => {
+    const { findByText, getByText } = render(
+      wrapInTestApp(
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [errorApiRef, mockErrorApi],
+            [catalogApiRef, catalogApi],
+            [storageApiRef, new WebStorage('@mock', mockErrorApi)],
+            [identityApiRef, mockIndentityApi],
+          ])}
+        >
+          <CatalogPage />
+        </ApiProvider>,
+      ),
+    );
+    fireEvent.click(getByText(/Owned/));
+    const items = await findByText(/Owned \(1\)/);
+    expect(items).toBeInTheDocument();
   });
 });
