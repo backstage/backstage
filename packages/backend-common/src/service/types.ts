@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/config';
 import cors from 'cors';
 import { Router } from 'express';
 import { Server } from 'http';
 import { Logger } from 'winston';
 
 export type ServiceBuilder = {
+  /**
+   * Sets the service parameters based on configuration.
+   *
+   * @param config The configuration to read
+   */
+  loadConfig(config: ConfigReader): ServiceBuilder;
+
   /**
    * Sets the port to listen on.
    *

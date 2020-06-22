@@ -17,13 +17,17 @@
 import {
   CookieCutter,
   createRouter,
-  DiskStorage,
+  FilePreparer,
+  Preparers,
 } from '@backstage/plugin-scaffolder-backend';
 import type { PluginEnvironment } from '../types';
 
 export default async function createPlugin({ logger }: PluginEnvironment) {
-  const storage = new DiskStorage({ logger });
   const templater = new CookieCutter();
+  const filePreparer = new FilePreparer();
+  const preparers = new Preparers();
 
-  return await createRouter({ storage, templater, logger });
+  preparers.register('file', filePreparer);
+
+  return await createRouter({ preparers, templater, logger });
 }

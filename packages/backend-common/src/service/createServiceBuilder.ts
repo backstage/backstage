@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ServiceBuilderImpl } from './ServiceBuilderImpl';
+import { ServiceBuilderImpl } from './lib/ServiceBuilderImpl';
 
 /**
  * Creates a new service builder.

@@ -17,10 +17,11 @@
 import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
-import { StorageBase, TemplaterBase } from '../scaffolder';
+import { PreparerBuilder, TemplaterBase } from '../scaffolder';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
 export interface RouterOptions {
-  storage: StorageBase;
+  preparers: PreparerBuilder;
   templater: TemplaterBase;
   logger: Logger;
 }
@@ -29,22 +30,47 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const { storage, templater, logger: parentLogger } = options;
+  const { preparers, templater, logger: parentLogger } = options;
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
-  router
-    .get('/v1/templates', async (_, res) => {
-      const templates = await storage.list();
-      res.status(200).json(templates);
-    })
-    .post('/v1/jobs', async (_, res) => {
-      // TODO(blam): Actually make this function work
-      const mock = 'templateid';
-      res.status(201).json({ accepted: true });
+  router.post('/v1/jobs', async (_, res) => {
+    // TODO(blam): Create a unique job here and return the ID so that
+    // The end user can poll for updates on the current job
+    res.status(201).json({ accepted: true });
 
-      const path = await storage.prepare(mock);
-      await templater.run({ directory: path, values: { componentId: 'test' } });
-    });
+    // TODO(blam): Take this entity from the post body sent from the frontend
+    const mockEntity: TemplateEntityV1alpha1 = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Template',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': `file:${__dirname}/../../sample-templates/react-ssr-template/template.yaml`,
+        },
+        name: 'react-ssr-template',
+        title: 'React SSR Template',
+        description:
+          'Next.js application skeleton for creating isomorphic web applications.',
+        uid: '7357f4c5-aa58-4a1e-9670-18931eef771f',
+        etag: 'YWUxZWQyY2EtZDkxMC00MDM0LWI0ODAtMDgwMWY0YzdlMWIw',
+        generation: 1,
+      },
+      spec: {
+        type: 'cookiecutter',
+        path: '.',
+      },
+    };
+
+    // Get the preparer for the mock entity
+    const preparer = preparers.get(mockEntity);
+
+    // Run the preparer for the mock entity to produce a temporary directory with template in
+    const path = await preparer.prepare(mockEntity);
+
+    // Run the templater on the mock directory with values from the post body
+    await templater.run({ directory: path, values: { component_id: 'test' } });
+
+    console.warn(path);
+  });
 
   const app = express();
   app.set('logger', logger);
