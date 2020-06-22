@@ -15,7 +15,7 @@
  */
 
 export interface RequiredTemplateValues {
-  componentId: string;
+  component_id: string;
 }
 
 export interface TemplaterRunOptions {
