@@ -24,6 +24,7 @@ import {
   pageTheme,
   Progress,
   useApi,
+  PageTheme,
 } from '@backstage/core';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
@@ -55,6 +56,11 @@ function headerProps(
     })(),
   };
 }
+
+export const getPageTheme = (entity?: Entity): PageTheme => {
+  const themeKey = entity?.spec?.type?.toString() ?? 'home';
+  return pageTheme[themeKey] ?? pageTheme.home;
+};
 
 export const EntityPage: FC<{}> = () => {
   const { optionalNamespaceAndName, kind } = useParams() as {
@@ -130,8 +136,7 @@ export const EntityPage: FC<{}> = () => {
   );
 
   return (
-    // TODO: Switch theme and type props based on component type (website, library, ...)
-    <Page theme={pageTheme.service}>
+    <Page theme={getPageTheme(entity)}>
       <Header title={headerTitle} type={headerType}>
         {entity && <EntityContextMenu onUnregisterEntity={showRemovalDialog} />}
       </Header>
