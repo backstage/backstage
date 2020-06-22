@@ -1,8 +1,8 @@
-# techdocs
+# TechDocs Plugin
 
-Welcome to the techdocs plugin!
+Welcome to the TechDocs plugin - Spotify's docs-like-code approach built directly into [Backstage](https://backstage.io). Watch [a video of our approach on YouTube](https://www.youtube.com/watch?v=uFGCaZmA6d4) to learn more.
 
-_This plugin was created through the Backstage CLI_
+**WIP: This plugin is a work in progress. It is not ready for use yet. Follow our progress on [the Backstage Discord](https://discord.gg/MUpMjP2) under #docs-like-code or on [our GitHub Milestone](https://github.com/spotify/backstage/milestone/15).**
 
 ## Getting started
 
