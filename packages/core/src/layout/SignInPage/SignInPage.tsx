@@ -22,7 +22,7 @@ import { ContentHeader } from '../ContentHeader/ContentHeader';
 import { Grid } from '@material-ui/core';
 import { SignInPageProps, useApi, configApiRef } from '@backstage/core-api';
 import { useSignInProviders, SignInProviderId } from './providers';
-import Progress from '../../components/Progress';
+import { Progress } from '../../components/Progress';
 
 export type Props = SignInPageProps & {
   providers: SignInProviderId[];
@@ -39,7 +39,7 @@ export const SignInPage: FC<Props> = ({ onResult, providers }) => {
 
   return (
     <Page>
-      <Header title={configApi.getString('app.title') ?? 'Backstage'} />
+      <Header title={configApi.getString('app.title')} />
       <Content>
         <ContentHeader title="Select a sign-in method" />
         <Grid container>{providerElements}</Grid>

@@ -24,7 +24,13 @@ import {
 } from '@backstage/core';
 import CatalogLayout from './CatalogLayout';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import { Button, Link, makeStyles, Typography } from '@material-ui/core';
+import {
+  Button,
+  Link,
+  makeStyles,
+  Typography,
+  withStyles,
+} from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import Star from '@material-ui/icons/Star';
@@ -71,6 +77,12 @@ export const CatalogPage: FC<{}> = () => {
 
   const styles = useStyles();
 
+  const YellowStar = withStyles({
+    root: {
+      color: '#f3ba37',
+    },
+  })(Star);
+
   const actions = [
     (rowData: Entity) => {
       const location = findLocationForEntityMeta(rowData.metadata);
@@ -110,7 +122,7 @@ export const CatalogPage: FC<{}> = () => {
     (rowData: Entity) => {
       const isStarred = isStarredEntity(rowData);
       return {
-        icon: isStarred ? Star : StarOutline,
+        icon: isStarred ? YellowStar : StarOutline,
         tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
         onClick: () => toggleStarredEntity(rowData),
       };

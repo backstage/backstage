@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import WarningPanel from '.';
+import { WarningPanel } from './WarningPanel';
 import { Link, Button } from '@material-ui/core';
 
 export default {

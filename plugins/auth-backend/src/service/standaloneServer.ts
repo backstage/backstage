@@ -17,6 +17,8 @@
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createStandaloneApplication } from './standaloneApplication';
+import { ConfigReader } from '@backstage/config';
+import { loadConfig } from '@backstage/config-loader';
 
 export interface ServerOptions {
   port: number;
@@ -28,11 +30,13 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'auth-backend' });
+  const config = ConfigReader.fromConfigs(await loadConfig());
 
   logger.debug('Creating application...');
   const app = await createStandaloneApplication({
     enableCors: options.enableCors,
     logger,
+    config,
   });
 
   logger.debug('Starting application server...');

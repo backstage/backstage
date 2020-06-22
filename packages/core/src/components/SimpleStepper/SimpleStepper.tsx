@@ -40,13 +40,17 @@ export interface StepperProps {
   onStepChange?: (prevIndex: number, nextIndex: number) => void;
 }
 
-const Stepper: FC<StepperProps> = ({ children, elevated, onStepChange }) => {
+export const SimpleStepper: FC<StepperProps> = ({
+  children,
+  elevated,
+  onStepChange,
+}) => {
   const [stepIndex, setStepIndex] = useState<number>(0);
   const [stepHistory, setStepHistory] = useState<number[]>([0]);
 
   const steps: React.ReactNode[] = [];
   let endStep;
-  Children.forEach(children, (child) => {
+  Children.forEach(children, child => {
     if (isValidElement(child)) {
       if (child.props.end) {
         endStep = child;
@@ -80,5 +84,3 @@ const Stepper: FC<StepperProps> = ({ children, elevated, onStepChange }) => {
     </>
   );
 };
-
-export default Stepper;

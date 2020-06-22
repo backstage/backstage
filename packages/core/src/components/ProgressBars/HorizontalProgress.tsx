@@ -28,7 +28,7 @@ type Props = {
   value: number;
 };
 
-const HorizontalProgress: FC<Props> = ({ value }) => {
+export const HorizontalProgress: FC<Props> = ({ value }) => {
   const theme = useTheme<BackstageTheme>();
   if (isNaN(value)) {
     return null;
@@ -49,5 +49,3 @@ const HorizontalProgress: FC<Props> = ({ value }) => {
     </Tooltip>
   );
 };
-
-export default HorizontalProgress;

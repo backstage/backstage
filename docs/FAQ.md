@@ -156,7 +156,7 @@ Integrators also configure closed source plugins locally from the monorepo. ​
 ​ We chose GitHub because it is the tool that we are most familiar with, so that
 will naturally lead to integrations for GitHub being developed at an early
 stage. ​ Hosting this project on GitHub does not exclude integrations with
-alternatives, such as GitLab or Bitbucket. We believe that in time there will be
+alternatives, such as [GitLab](https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+GitLab) or Bitbucket. We believe that in time there will be
 plugins that will provide functionality for these tools as well. Hopefully,
 contributed by the community! ​ Also note, implementations of Backstage can be
 hosted wherever you feel suits your needs best. ​

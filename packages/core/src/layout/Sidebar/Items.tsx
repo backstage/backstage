@@ -233,5 +233,5 @@ export const SidebarDivider = styled('hr')({
   width: '100%',
   background: '#383838',
   border: 'none',
-  margin: 0,
+  margin: '12px 0px',
 });

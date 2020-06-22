@@ -16,8 +16,8 @@
 import React from 'react';
 import { render, fireEvent, within } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import Stepper from './SimpleStepper';
-import Step from './SimpleStepperStep';
+import { SimpleStepper as Stepper } from './SimpleStepper';
+import { SimpleStepperStep as Step } from './SimpleStepperStep';
 
 const getTextInSlide = (rendered: any, index: number) =>
   within(rendered.getByTestId(`step${index}`)).getByText;

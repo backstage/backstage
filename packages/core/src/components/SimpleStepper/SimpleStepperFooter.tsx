@@ -18,7 +18,7 @@ import { Button, makeStyles } from '@material-ui/core';
 import { StepActions } from './SimpleStepperStep';
 import { VerticalStepperContext } from './SimpleStepper';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     marginTop: theme.spacing(3),
     '& button': {
@@ -71,7 +71,7 @@ export type SimpleStepperFooterProps = {
   children?: ReactNode;
 };
 
-const SimpleStepperFooter: FC<SimpleStepperFooterProps> = ({
+export const SimpleStepperFooter: FC<SimpleStepperFooterProps> = ({
   actions = {},
   children,
 }) => {
@@ -145,5 +145,3 @@ const SimpleStepperFooter: FC<SimpleStepperFooterProps> = ({
     </div>
   );
 };
-
-export default SimpleStepperFooter;

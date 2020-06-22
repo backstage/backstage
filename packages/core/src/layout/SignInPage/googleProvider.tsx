@@ -35,12 +35,12 @@ const Component: ProviderComponent = ({ onResult }) => {
 
   const handleLogin = async () => {
     try {
-      const idToken = await googleAuthApi.getIdToken({ instantPopup: true });
+      await googleAuthApi.getIdToken({ instantPopup: true });
       const profile = await googleAuthApi.getProfile();
 
       onResult({
         userId: parseUserId(profile!),
-        idToken,
+        getIdToken: () => googleAuthApi.getIdToken(),
         logout: async () => {
           await googleAuthApi.logout();
         },
@@ -69,14 +69,11 @@ const Component: ProviderComponent = ({ onResult }) => {
 const loader: ProviderLoader = async apis => {
   const googleAuthApi = apis.get(googleAuthApiRef)!;
 
-  const [idToken, profile] = await Promise.all([
-    googleAuthApi.getIdToken({ optional: true }),
-    googleAuthApi.getProfile({ optional: true }),
-  ]);
+  const profile = await googleAuthApi.getProfile({ optional: true });
 
   return {
     userId: parseUserId(profile!),
-    idToken,
+    getIdToken: () => googleAuthApi.getIdToken(),
     logout: async () => {
       await googleAuthApi.logout();
     },

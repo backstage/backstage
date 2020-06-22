@@ -19,7 +19,7 @@ import { Typography, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 
-const useErrorOutlineStyles = makeStyles<BackstageTheme>((theme) => ({
+const useErrorOutlineStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     marginRight: theme.spacing(1),
     fill: theme.palette.warningText,
@@ -30,7 +30,7 @@ const ErrorOutlineStyled = () => {
   return <ErrorOutline classes={classes} />;
 };
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   message: {
     display: 'flex',
     flexDirection: 'column',
@@ -62,7 +62,7 @@ type Props = {
   title?: string;
 };
 
-const WarningPanel: FC<Props> = (props) => {
+export const WarningPanel: FC<Props> = props => {
   const classes = useStyles(props);
   const { title, message, children } = props;
   return (
@@ -82,5 +82,3 @@ const WarningPanel: FC<Props> = (props) => {
     </div>
   );
 };
-
-export default WarningPanel;

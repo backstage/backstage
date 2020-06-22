@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export { CodeSnippet } from './CodeSnippet';
+export { ProgressCard } from './ProgressCard';
+export { CircleProgress } from './CircleProgress';
+export { HorizontalProgress } from './HorizontalProgress';
