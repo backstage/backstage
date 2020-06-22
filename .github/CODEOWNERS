@@ -6,4 +6,4 @@
 
 *                     @spotify/backstage-core
 /plugins/techdocs     @spotify/techdocs-core
-/plugins/techdocs-cli @spotify/techdocs-core
+/packages/techdocs-cli @spotify/techdocs-core
