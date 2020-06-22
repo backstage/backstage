@@ -4,7 +4,7 @@
   "version": "0.1.1-alpha.9",
   "private": true,
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   },
   "repository": {
     "type": "git",
