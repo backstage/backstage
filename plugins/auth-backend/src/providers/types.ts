@@ -89,25 +89,30 @@ export interface OAuthProviderHandlers {
    * @param {express.Request} req
    * @param options
    */
-  start(req: express.Request, options: any): Promise<any>;
+  start(
+    req: express.Request,
+    options: Record<string, string>,
+  ): Promise<RedirectInfo>;
 
   /**
    * Handles the redirect from the auth provider when the user has signed in.
    * @param {express.Request} req
    */
-  handler(req: express.Request): Promise<any>;
+  handler(
+    req: express.Request,
+  ): Promise<{ response: OAuthResponse; refreshToken?: string }>;
 
   /**
    * (Optional) Given a refresh token and scope fetches a new access token from the auth provider.
    * @param {string} refreshToken
    * @param {string} scope
    */
-  refresh?(refreshToken: string, scope: string): Promise<any>;
+  refresh?(refreshToken: string, scope: string): Promise<OAuthResponse>;
 
   /**
    * (Optional) Sign out of the auth provider.
    */
-  logout?(): Promise<any>;
+  logout?(): Promise<void>;
 }
 
 /**
@@ -134,7 +139,7 @@ export interface AuthProviderRouteHandlers {
    * @param {express.Request} req
    * @param {express.Response} res
    */
-  start(req: express.Request, res: express.Response): Promise<any>;
+  start(req: express.Request, res: express.Response): Promise<void>;
 
   /**
    * Once the user signs in or consents in the OAuth screen, the auth provider redirects to the
@@ -149,7 +154,7 @@ export interface AuthProviderRouteHandlers {
    * @param {express.Request} req
    * @param {express.Response} res
    */
-  frameHandler(req: express.Request, res: express.Response): Promise<any>;
+  frameHandler(req: express.Request, res: express.Response): Promise<void>;
 
   /**
    * (Optional) If the auth provider supports refresh tokens then this method handles
@@ -163,7 +168,7 @@ export interface AuthProviderRouteHandlers {
    * @param {express.Request} req
    * @param {express.Response} res
    */
-  refresh?(req: express.Request, res: express.Response): Promise<any>;
+  refresh?(req: express.Request, res: express.Response): Promise<void>;
 
   /**
    * (Optional) Handles sign out requests
@@ -174,7 +179,7 @@ export interface AuthProviderRouteHandlers {
    * @param {express.Request} req
    * @param {express.Response} res
    */
-  logout?(req: express.Request, res: express.Response): Promise<any>;
+  logout?(req: express.Request, res: express.Response): Promise<void>;
 }
 
 export type AuthProviderFactory = (
@@ -184,7 +189,18 @@ export type AuthProviderFactory = (
   issuer: TokenIssuer,
 ) => AuthProviderRouteHandlers;
 
-export type AuthInfoBase = {
+export type AuthResponse<ProviderInfo> = {
+  providerInfo: ProviderInfo;
+  profile: ProfileInfo;
+  userIdToken: string;
+};
+
+export type OAuthResponse = Omit<
+  AuthResponse<OAuthProviderInfo>,
+  'userIdToken'
+>;
+
+export type OAuthProviderInfo = {
   /**
    * An access token issued for the signed in user.
    */
@@ -203,33 +219,34 @@ export type AuthInfoBase = {
   scope: string;
 };
 
-export type AuthInfoWithProfile = AuthInfoBase & {
-  /**
-   * Profile information of the signed in user.
-   */
-  profile: ProfileInfo | undefined;
-};
-
-export type AuthInfoPrivate = {
+export type OAuthPrivateInfo = {
   /**
    * A refresh token issued for the signed in user.
    */
   refreshToken: string;
 };
 
+// {type: 'authorization_response', response: {...}}
+
 /**
  * Payload sent as a post message after the auth request is complete.
  * If successful then has a valid payload with Auth information else contains an error.
  */
-export type AuthResponse =
+export type WebMessageResponse =
   | {
-      type: 'auth-result';
-      payload: AuthInfoBase | AuthInfoWithProfile;
+      type: 'authorization_response';
+      response: AuthResponse<unknown>;
     }
   | {
-      type: 'auth-result';
+      type: 'authorization_response';
       error: Error;
     };
+
+export type PassportDoneCallback<Res, Private = never> = (
+  err?: Error,
+  response?: Res,
+  privateInfo?: Private,
+) => void;
 
 export type RedirectInfo = {
   /**
@@ -242,6 +259,22 @@ export type RedirectInfo = {
   status?: number;
 };
 
+/* 
+metadata:
+  name: john
+spec:
+  profile:
+    email: john.doe@example.com
+    displayName: John Doe
+    picture: https://example.com/avatars/john.doe
+
+  identities:
+    - type: google
+      email: john.doe@gmail.com
+ */
+
+// 1. Link to identity in catalog / within backstage
+// 2. Display login information to user, i.e. sidebar popup
 export type ProfileInfo = {
   /**
    * Email ID of the signed in user.
@@ -250,12 +283,12 @@ export type ProfileInfo = {
   /**
    * Display name that can be presented to the signed in user.
    */
-  name: string;
+  displayName?: string;
   /**
    * URL to an image that can be used as the display image or avatar of the
    * signed in user.
    */
-  picture: string;
+  picture?: string;
 };
 
 export type RefreshTokenResponse = {

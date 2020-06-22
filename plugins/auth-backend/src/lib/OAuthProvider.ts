@@ -21,6 +21,7 @@ import {
   AuthResponse,
   AuthProviderRouteHandlers,
   OAuthProviderHandlers,
+  WebMessageResponse,
 } from '../providers/types';
 import { InputError } from '@backstage/backend-common';
 import { TokenIssuer } from '../identity';
@@ -53,9 +54,9 @@ export const verifyNonce = (req: express.Request, providerId: string) => {
 export const postMessageResponse = (
   res: express.Response,
   appOrigin: string,
-  data: AuthResponse,
+  response: WebMessageResponse,
 ) => {
-  const jsonData = JSON.stringify(data);
+  const jsonData = JSON.stringify(response);
   const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
 
   res.setHeader('Content-Type', 'text/html');
@@ -96,7 +97,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     this.basePath = url.pathname;
   }
 
-  async start(req: express.Request, res: express.Response): Promise<any> {
+  async start(req: express.Request, res: express.Response): Promise<void> {
     // retrieve scopes from request
     const scope = req.query.scope?.toString() ?? '';
 
@@ -108,14 +109,15 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce);
 
-    const options = {
+    const queryParameters = {
       scope,
-      accessType: 'offline',
-      prompt: 'consent',
       state: nonce,
     };
 
-    const { url, status } = await this.providerHandlers.start(req, options);
+    const { url, status } = await this.providerHandlers.start(
+      req,
+      queryParameters,
+    );
 
     res.statusCode = status || 302;
     res.setHeader('Location', url);
@@ -126,16 +128,17 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
   async frameHandler(
     req: express.Request,
     res: express.Response,
-  ): Promise<any> {
+  ): Promise<void> {
     try {
       // verify nonce cookie and state cookie on callback
       verifyNonce(req, this.options.providerId);
 
-      const { user, info } = await this.providerHandlers.handler(req);
+      const { response, refreshToken } = await this.providerHandlers.handler(
+        req,
+      );
 
       if (!this.options.disableRefresh) {
         // throw error if missing refresh token
-        const { refreshToken } = info;
         if (!refreshToken) {
           throw new Error('Missing refresh token');
         }
@@ -144,19 +147,23 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, refreshToken);
       }
 
-      user.userIdToken = await this.options.tokenIssuer.issueToken({
-        claims: { sub: user.profile.email },
+      const userIdToken = await this.options.tokenIssuer.issueToken({
+        claims: { sub: response.profile.email },
       });
+      const fullResponse: AuthResponse<unknown> = {
+        ...response,
+        userIdToken,
+      };
 
       // post message back to popup if successful
       return postMessageResponse(res, this.options.appOrigin, {
-        type: 'auth-result',
-        payload: user,
+        type: 'authorization_response',
+        response: fullResponse,
       });
     } catch (error) {
       // post error message back to popup if failure
       return postMessageResponse(res, this.options.appOrigin, {
-        type: 'auth-result',
+        type: 'authorization_response',
         error: {
           name: error.name,
           message: error.message,
@@ -165,27 +172,30 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     }
   }
 
-  async logout(req: express.Request, res: express.Response): Promise<any> {
+  async logout(req: express.Request, res: express.Response): Promise<void> {
     if (!ensuresXRequestedWith(req)) {
-      return res.status(401).send('Invalid X-Requested-With header');
+      res.status(401).send('Invalid X-Requested-With header');
+      return;
     }
 
     if (!this.options.disableRefresh) {
       // remove refresh token cookie before logout
       this.removeRefreshTokenCookie(res);
     }
-    return res.send('logout!');
+    res.send('logout!');
   }
 
-  async refresh(req: express.Request, res: express.Response): Promise<any> {
+  async refresh(req: express.Request, res: express.Response): Promise<void> {
     if (!ensuresXRequestedWith(req)) {
-      return res.status(401).send('Invalid X-Requested-With header');
+      res.status(401).send('Invalid X-Requested-With header');
+      return;
     }
 
     if (!this.providerHandlers.refresh || this.options.disableRefresh) {
-      return res.send(
+      res.send(
         `Refresh token not supported for provider: ${this.options.providerId}`,
       );
+      return;
     }
 
     try {
@@ -200,18 +210,19 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       const scope = req.query.scope?.toString() ?? '';
 
       // get new access_token
-      const refreshInfo = await this.providerHandlers.refresh(
-        refreshToken,
-        scope,
-      );
+      const response = await this.providerHandlers.refresh(refreshToken, scope);
 
-      refreshInfo.userIdToken = await this.options.tokenIssuer.issueToken({
-        claims: { sub: refreshInfo.profile?.email },
+      const userIdToken = await this.options.tokenIssuer.issueToken({
+        claims: { sub: response.profile.email },
       });
+      const fullResponse: AuthResponse<unknown> = {
+        ...response,
+        userIdToken,
+      };
 
-      return res.send(refreshInfo);
+      res.send(fullResponse);
     } catch (error) {
-      return res.status(401).send(`${error.message}`);
+      res.status(401).send(`${error.message}`);
     }
   }
 
