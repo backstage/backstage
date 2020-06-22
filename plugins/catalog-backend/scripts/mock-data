@@ -6,6 +6,8 @@ for URL in \
   'podcast-api-component.yaml' \
   'queue-proxy-component.yaml' \
   'searcher-component.yaml' \
+  'playback-api-component.yaml' \
+  'www-artist-component.yaml' \
   'shuffle-api-component.yaml' \
 ; do \
   curl \
