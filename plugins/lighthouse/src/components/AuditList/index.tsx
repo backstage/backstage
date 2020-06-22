@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useMemo, FC, ReactNode } from 'react';
+import React, { useState, useMemo, FC, ReactNode, ChangeEvent } from 'react';
 import { useLocalStorage, useAsync } from 'react-use';
 import { useNavigate } from 'react-router-dom';
 import { Grid, Button } from '@material-ui/core';
@@ -76,7 +76,7 @@ const AuditList: FC<{}> = () => {
           <Pagination
             page={page}
             count={pageCount}
-            onChange={(_event: Event, newPage: number) => {
+            onChange={(_event: ChangeEvent<unknown>, newPage: number) => {
               navigate(`/lighthouse?page=${newPage}`);
             }}
           />
