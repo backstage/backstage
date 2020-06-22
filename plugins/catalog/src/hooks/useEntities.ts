@@ -40,6 +40,88 @@ type UseEntities = {
   selectTypeFilter: (id: string) => void;
 };
 
+type EntityFilterGroupOutput<T> = {
+  selectItems: (items: string[]) => void;
+  filteredItems: T[];
+  states: OutputState;
+};
+
+type OutputState = { [key: string]: { isSelected: boolean; count: number } };
+
+type FilterDefinition<T> = {
+  [key: string]: {
+    isSelected: boolean;
+    filterFunction: (entity: T) => boolean;
+  };
+};
+
+export const useEntityFilterGroup = <T>(
+  entities: T[],
+  filterFunctions: FilterDefinition<T>,
+): EntityFilterGroupOutput<T> => {
+  const [filterFuncs, setFilterFuncs] = useState<FilterDefinition<T>>(
+    filterFunctions,
+  );
+
+  // and
+  // Object.entries(filterFuncs).filter(([_, {isSelected}]) => isSelected).map(([_, {filterFunction}]) => filterFunction).reduce((acc, func) => (acc.filter(func)), entities)
+
+  return {
+    selectItems: (functionNames: Array<any>) => {
+      const selectedFilterFunctions = Object.fromEntries(
+        Object.entries(filterFunctions).map(([key, { filterFunction }]) => [
+          key,
+          { isSelected: functionNames.includes(key), filterFunction },
+        ]),
+      );
+      setFilterFuncs(selectedFilterFunctions);
+    },
+    filteredItems: entities.filter(entity =>
+      Object.entries(filterFuncs)
+        .filter(([_, { isSelected }]) => isSelected)
+        .map(([_, { filterFunction }]) => filterFunction)
+        .map(filter => filter(entity))
+        .some(v => v === true),
+    ),
+    states: Object.keys(filterFuncs).reduce(
+      (acc, val) => ({
+        ...acc,
+        [val]: {
+          ...filterFuncs[val],
+          count: entities.filter(filterFuncs[val].filterFunction).length,
+        },
+      }),
+      {} as OutputState,
+    ),
+  };
+};
+
+// const MyFilterGroup = () => {
+//   const { selectedItems, selectItems, counts } = useEntityFilterGroup(
+//     'lifecycle',
+//     {
+//       production: e => e.spec?.lifecyle === 'production',
+//     },
+//   );
+
+//   return (
+//     <FilterSet>
+//       <FilterSetItem
+//         selected={selectedItems.production}
+//         onClick={() => selectItem('production')}
+//       >
+//         Production ({counts.production})
+//       </FilterSetItem>
+//     </FilterSet>
+//   );
+// };
+
+export const useUser = () => {
+  const indentityApi = useApi(identityApiRef);
+  const userId = indentityApi.getUserId();
+  return { userId };
+};
+
 export const useEntities = (): UseEntities => {
   const [selectedFilter, setSelectedFilter] = useState<
     EntityGroup | undefined
@@ -51,8 +133,7 @@ export const useEntities = (): UseEntities => {
     async () => catalogApi.getEntities(),
   );
 
-  const indentityApi = useApi(identityApiRef);
-  const userId = indentityApi.getUserId();
+  const { userId } = useUser();
 
   const [selectedTypeFilter, selectTypeFilter] = useState<string>(
     labeledEntityTypes[0].id,

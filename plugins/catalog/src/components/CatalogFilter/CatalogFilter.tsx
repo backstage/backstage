@@ -20,6 +20,7 @@ import {
   List,
   ListItemIcon,
   ListItemText,
+  ListItemSecondaryAction,
   MenuItem,
   Typography,
   Theme,
@@ -109,7 +110,9 @@ export const CatalogFilter: FC<{
                       {item.label}
                     </Typography>
                   </ListItemText>
-                  {entitiesByFilter[item.id]?.length ?? '-'}
+                  <ListItemSecondaryAction>
+                    {entitiesByFilter[item.id]?.length ?? '-'}
+                  </ListItemSecondaryAction>
                 </MenuItem>
               ))}
             </List>

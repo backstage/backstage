@@ -162,7 +162,7 @@ export const CatalogPage: FC<{}> = () => {
             color="primary"
             to={scaffolderRootRoute.path}
           >
-            Create Service
+            Create Component
           </Button>
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
