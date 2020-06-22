@@ -46,7 +46,9 @@ export class GithubPreparer implements PreparerBase {
     );
 
     const checkoutOptions = new CheckoutOptions();
-    checkoutOptions.paths = [templateDirectory];
+    if (template.spec.path) {
+      checkoutOptions.paths = [templateDirectory];
+    }
 
     await Clone.clone(repositoryCheckoutUrl, tempDir, {
       checkoutOpts: checkoutOptions,
