@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-import { getRootLogger } from '@backstage/backend-common';
-import { startStandaloneServer } from './service/standaloneServer';
-
-const logger = getRootLogger();
-
-startStandaloneServer({ logger }).catch(err => {
-  logger.error(err);
-  process.exit(1);
-});
-
-process.on('SIGINT', () => {
-  logger.info('CTRL+C pressed; exiting.');
-  process.exit(0);
-});
-
-module.hot?.accept();
+export { createOidcRouter } from './router';
+export { TokenFactory } from './TokenFactory';
+export { DatabaseKeyStore } from './DatabaseKeyStore';
+export type { KeyStore, TokenIssuer, TokenParams } from './types';

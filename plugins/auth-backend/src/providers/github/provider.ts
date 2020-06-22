@@ -36,6 +36,7 @@ import {
   EnvironmentHandler,
 } from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
+import { TokenIssuer } from '../../identity';
 
 export class GithubAuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: GithubStrategy;
@@ -69,6 +70,7 @@ export function createGithubProvider(
   { baseUrl }: AuthProviderConfig,
   providerConfig: EnvironmentProviderConfig,
   logger: Logger,
+  tokenIssuer: TokenIssuer,
 ) {
   const envProviders: EnvironmentHandlers = {};
 
@@ -101,6 +103,7 @@ export function createGithubProvider(
       secure,
       baseUrl,
       appOrigin,
+      tokenIssuer,
     });
   }
   return new EnvironmentHandler(envProviders);

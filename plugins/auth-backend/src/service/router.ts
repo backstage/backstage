@@ -18,12 +18,15 @@ import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+import Knex from 'knex';
 import { Logger } from 'winston';
 import { createAuthProviderRouter } from '../providers';
 import { Config } from '@backstage/config';
+import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
 
 export interface RouterOptions {
   logger: Logger;
+  database: Knex;
   config: Config;
 }
 
@@ -32,6 +35,19 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
+
+  const baseUrl = `${options.config.getString('backend.baseUrl')}/auth`;
+  const keyDurationSeconds = 3600;
+
+  const keyStore = await DatabaseKeyStore.create({
+    database: options.database,
+  });
+  const tokenIssuer = new TokenFactory({
+    issuer: baseUrl,
+    keyStore,
+    keyDurationSeconds,
+    logger: logger.child({ component: 'token-factory' }),
+  });
 
   router.use(cookieParser());
   router.use(bodyParser.urlencoded({ extended: false }));
@@ -79,7 +95,6 @@ export async function createRouter(
   const providerConfigs = config.auth.providers;
 
   for (const [providerId, providerConfig] of Object.entries(providerConfigs)) {
-    const baseUrl = `${options.config.getString('backend.baseUrl')}/auth`;
     logger.info(`Configuring provider, ${providerId}`);
     try {
       const providerRouter = createAuthProviderRouter(
@@ -87,11 +102,20 @@ export async function createRouter(
         { baseUrl },
         providerConfig,
         logger,
+        tokenIssuer,
       );
       router.use(`/${providerId}`, providerRouter);
     } catch (e) {
       logger.error(e.message);
     }
   }
+
+  router.use(
+    createOidcRouter({
+      tokenIssuer,
+      baseUrl,
+    }),
+  );
+
   return router;
 }

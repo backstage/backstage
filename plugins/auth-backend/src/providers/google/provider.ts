@@ -41,6 +41,7 @@ import {
   EnvironmentHandlers,
 } from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
+import { TokenIssuer } from '../../identity';
 
 export class GoogleAuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: GoogleStrategy;
@@ -116,6 +117,7 @@ export function createGoogleProvider(
   { baseUrl }: AuthProviderConfig,
   providerConfig: EnvironmentProviderConfig,
   logger: Logger,
+  tokenIssuer: TokenIssuer,
 ) {
   const envProviders: EnvironmentHandlers = {};
 
@@ -148,6 +150,7 @@ export function createGoogleProvider(
       secure,
       baseUrl,
       appOrigin,
+      tokenIssuer,
     });
   }
   return new EnvironmentHandler(envProviders);

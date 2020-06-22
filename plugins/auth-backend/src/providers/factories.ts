@@ -20,6 +20,7 @@ import { createGoogleProvider } from './google';
 import { createSamlProvider } from './saml';
 import { AuthProviderFactory, AuthProviderConfig } from './types';
 import { Logger } from 'winston';
+import { TokenIssuer } from '../identity';
 
 const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
@@ -32,13 +33,14 @@ export const createAuthProviderRouter = (
   globalConfig: AuthProviderConfig,
   providerConfig: any, // TODO: make this a config reader object of sorts
   logger: Logger,
+  issuer: TokenIssuer,
 ) => {
   const factory = factories[providerId];
   if (!factory) {
     throw Error(`No auth provider available for '${providerId}'`);
   }
 
-  const provider = factory(globalConfig, providerConfig, logger);
+  const provider = factory(globalConfig, providerConfig, logger, issuer);
 
   const router = Router();
   router.get('/start', provider.start.bind(provider));

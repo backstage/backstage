@@ -16,6 +16,7 @@
 
 import express from 'express';
 import { Logger } from 'winston';
+import { TokenIssuer } from '../identity';
 
 export type OAuthProviderOptions = {
   /**
@@ -180,6 +181,7 @@ export type AuthProviderFactory = (
   globalConfig: AuthProviderConfig,
   providerConfig: EnvironmentProviderConfig,
   logger: Logger,
+  issuer: TokenIssuer,
 ) => AuthProviderRouteHandlers;
 
 export type AuthInfoBase = {
