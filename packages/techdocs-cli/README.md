@@ -1,13 +1,5 @@
-# techdocs-cli
+# TechDocs CLI
 
-Welcome to the techdocs-cli plugin!
+Check out the [TechDocs README](https://github.com/spotify/backstage/blob/master/plugins/techdocs/README.md) to learn more.
 
-_This plugin was created through the Backstage CLI_
-
-## Getting started
-
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/techdocs-cli](http://localhost:3000/techdocs-cli).
-
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+**WIP: This cli is a work in progress. It is not ready for use yet. Follow our progress on [the Backstage Discord](https://discord.gg/MUpMjP2) under #docs-like-code or on [our GitHub Milestone](https://github.com/spotify/backstage/milestone/15).**
