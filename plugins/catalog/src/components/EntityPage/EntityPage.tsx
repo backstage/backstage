@@ -58,8 +58,8 @@ function headerProps(
 }
 
 export const getPageTheme = (entity?: Entity): PageTheme => {
-  const themeKey = entity?.spec?.type?.toString() ?? 'other';
-  return pageTheme[themeKey] ?? pageTheme.other;
+  const themeKey = entity?.spec?.type?.toString() ?? 'home';
+  return pageTheme[themeKey] ?? pageTheme.home;
 };
 
 export const EntityPage: FC<{}> = () => {
