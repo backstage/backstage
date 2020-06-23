@@ -30,14 +30,18 @@
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.0",
+    "git-url-parse": "^11.1.2",
     "globby": "^11.0.0",
     "helmet": "^3.22.0",
     "morgan": "^1.10.0",
+    "nodegit": "0.26.5",
     "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.9",
     "@types/fs-extra": "^9.0.1",
+    "@types/git-url-parse": "^9.0.0",
+    "@types/nodegit": "0.26.5",
     "@types/supertest": "^2.0.8",
     "supertest": "^4.0.2",
     "yaml": "^1.10.0"
