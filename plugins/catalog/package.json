@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog",
-  "version": "0.1.1-alpha.11",
+  "version": "0.1.1-alpha.12",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -21,11 +21,11 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^0.1.1-alpha.11",
-    "@backstage/core": "^0.1.1-alpha.11",
-    "@backstage/plugin-scaffolder": "^0.1.1-alpha.11",
-    "@backstage/plugin-sentry": "^0.1.1-alpha.11",
-    "@backstage/theme": "^0.1.1-alpha.11",
+    "@backstage/catalog-model": "^0.1.1-alpha.12",
+    "@backstage/core": "^0.1.1-alpha.12",
+    "@backstage/plugin-scaffolder": "^0.1.1-alpha.12",
+    "@backstage/plugin-sentry": "^0.1.1-alpha.12",
+    "@backstage/theme": "^0.1.1-alpha.12",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -38,9 +38,9 @@
     "swr": "^0.2.2"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.11",
-    "@backstage/dev-utils": "^0.1.1-alpha.11",
-    "@backstage/test-utils": "^0.1.1-alpha.11",
+    "@backstage/cli": "^0.1.1-alpha.12",
+    "@backstage/dev-utils": "^0.1.1-alpha.12",
+    "@backstage/test-utils": "^0.1.1-alpha.12",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^9.3.2",
     "@testing-library/react-hooks": "^3.3.0",
