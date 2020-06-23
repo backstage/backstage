@@ -50,6 +50,14 @@ declare module '*.webp' {
   export default src;
 }
 
+declare module '*.icon.svg' {
+  import { ComponentType } from 'react';
+  import { SvgIconProps } from '@material-ui/core';
+
+  const Icon: ComponentType<SvgIconProps>;
+  export default Icon;
+}
+
 declare module '*.svg' {
   const src: string;
   export default src;
