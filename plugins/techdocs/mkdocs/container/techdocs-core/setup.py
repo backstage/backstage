@@ -31,7 +31,7 @@ setup(
         'mkdocs>=1.1.2'
     ],
     classifiers=[
-        # 'Development Status :: 4 - Beta',
+        'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
         'License :: OSI Approved :: Apache Software License',
