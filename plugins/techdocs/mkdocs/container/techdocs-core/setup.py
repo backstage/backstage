@@ -26,7 +26,7 @@ setup(
     author='Spotify',
     author_email='fossboard@spotify.com',
     license='Apache-2.0',
-    python_requires='>=3.7,<3.8',
+    python_requires='>=3.7',
     install_requires=[
         'mkdocs>=1.1.2'
     ],
