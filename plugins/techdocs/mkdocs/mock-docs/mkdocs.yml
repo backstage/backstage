@@ -1,0 +1,4 @@
+site_name: 'mock-docs'
+
+nav: 
+  - Home: index.md
