@@ -11,3 +11,5 @@ docker build ./container -t mkdocs-container
 
 docker run -w /content -v $(pwd)/mock-docs:/content -p 8000:8000 -it mkdocs-container serve -a 0.0.0.0:8000
 ```
+
+Then open up `http://localhost:8000` on your local machine.
