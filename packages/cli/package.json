@@ -116,6 +116,7 @@
     "zombie": "^6.1.4"
   },
   "files": [
+    "asset-types",
     "templates",
     "config",
     "bin",
