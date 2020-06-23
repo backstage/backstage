@@ -16,15 +16,10 @@ import { TemplaterBase, TemplaterRunOptions } from '.';
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import Docker from 'dockerode';
 import { JsonValue } from '@backstage/config';
-import { PassThrough } from 'stream';
-export class CookieCutter implements TemplaterBase {
-  private docker: Docker;
-  constructor() {
-    this.docker = new Docker();
-  }
+import { runDockerContainer } from './helpers';
 
+export class CookieCutter implements TemplaterBase {
   private async fetchTemplateCookieCutter(
     directory: string,
   ): Promise<Record<string, JsonValue>> {
@@ -48,35 +43,20 @@ export class CookieCutter implements TemplaterBase {
 
     await fs.writeJSON(`${options.directory}/cookiecutter.json`, cookieInfo);
 
-    const realTemplatePath = await fs.promises.realpath(options.directory);
-    const outDir = `${realTemplatePath}/result`;
+    const templateDir = options.directory;
 
-    const [
-      { Error: dockerError, StatusCode: containerStatusCode },
-    ] = await this.docker.run(
-      'backstage/cookiecutter',
-      ['cookiecutter', '--no-input', '-o', '/result', '/template'],
-      options.logStream ?? new PassThrough(),
-      {
-        Volumes: { '/result': {}, '/template': {} },
-        HostConfig: {
-          Binds: [`${outDir}:/result`, `${realTemplatePath}:/template`],
-        },
-      },
-    );
+    // TODO(blam): This should be an entirely different directory on the host machine
+    // not in the template directory
+    const resultDir = `${templateDir}/result`;
 
-    if (dockerError) {
-      throw new Error(
-        `Docker failed to run with the following error message: ${dockerError}`,
-      );
-    }
+    await runDockerContainer({
+      imageName: 'backstage/cookiecutter',
+      args: ['cookiecutter', '--no-input', '-o', '/result', '/template'],
+      templateDir,
+      resultDir,
+      logStream: options.logStream,
+    });
 
-    if (containerStatusCode !== 0) {
-      throw new Error(
-        `Docker container returned a non-zero exit code (${containerStatusCode})`,
-      );
-    }
-
-    return outDir;
+    return resultDir;
   }
 }

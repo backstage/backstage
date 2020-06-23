@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+jest.mock('./helpers', () => ({ runDockerContainer: jest.fn() }));
+
 import { CookieCutter } from './cookiecutter';
 import fs from 'fs-extra';
 import os from 'os';
-import Stream, { PassThrough } from 'stream';
-
-const mockDocker = {
-  run: jest.fn<any, any>(() => [{ Error: null, StatusCode: 0 }]),
-};
-jest.mock(
-  'dockerode',
-  () =>
-    class {
-      constructor() {
-        return mockDocker;
-      }
-    },
-);
+import { RunDockerContainerOptions } from './helpers';
+import { PassThrough } from 'stream';
 
 describe('CookieCutter Templater', () => {
   const cookie = new CookieCutter();
+
+  const {
+    runDockerContainer,
+  }: {
+    runDockerContainer: jest.Mock<RunDockerContainerOptions>;
+  } = require('./helpers');
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -82,29 +78,14 @@ describe('CookieCutter Templater', () => {
 
     await cookie.run({ directory: tempdir, values });
 
-    const realpath = await fs.realpath(tempdir);
-
-    // TODO(blam): This might change when we publish our own cookiecutter image
-    // to @backstage/cookiecutter in docker hub.
-    expect(mockDocker.run).toHaveBeenCalledWith(
-      'backstage/cookiecutter',
-      ['cookiecutter', '--no-input', '-o', '/result', '/template'],
-      expect.any(Stream),
-      expect.objectContaining({
-        HostConfig: {
-          Binds: expect.arrayContaining([
-            `${realpath}:/template`,
-            `${realpath}/result:/result`,
-          ]),
-        },
-        Volumes: {
-          '/template': {},
-          '/result': {},
-        },
-      }),
-    );
+    expect(runDockerContainer).toHaveBeenCalledWith({
+      imageName: 'backstage/cookiecutter',
+      args: ['cookiecutter', '--no-input', '-o', '/result', '/template'],
+      templateDir: tempdir,
+      resultDir: `${tempdir}/result`,
+      logStream: undefined,
+    });
   });
-
   it('should return the result path to the end templated folder', async () => {
     const tempdir = os.tmpdir();
 
@@ -115,18 +96,11 @@ describe('CookieCutter Templater', () => {
 
     const path = await cookie.run({ directory: tempdir, values });
 
-    const realpath = await fs.realpath(tempdir);
-
-    expect(path).toBe(`${realpath}/result`);
+    expect(path).toBe(`${tempdir}/result`);
   });
 
-  it('throws a correct error if the templating fails in docker', async () => {
-    mockDocker.run.mockResolvedValueOnce([
-      {
-        Error: new Error('Something went wrong with docker'),
-        StatusCode: 0,
-      },
-    ]);
+  it('should pass through the streamer to the run docker helper', async () => {
+    const stream = new PassThrough();
 
     const tempdir = os.tmpdir();
 
@@ -135,47 +109,14 @@ describe('CookieCutter Templater', () => {
       description: 'description',
     };
 
-    await expect(cookie.run({ directory: tempdir, values })).rejects.toThrow(
-      /Something went wrong with docker/,
-    );
-  });
+    await cookie.run({ directory: tempdir, values, logStream: stream });
 
-  it('uses the passed stream as a log stream', async () => {
-    const logStream = new PassThrough();
-    const tempdir = os.tmpdir();
-
-    const values = {
-      component_id: 'test',
-      description: 'description',
-    };
-
-    await cookie.run({ directory: tempdir, values, logStream });
-
-    expect(mockDocker.run).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.any(Array),
-      logStream,
-      expect.any(Object),
-    );
-  });
-
-  it('throws a correct error if the container returns a non-zero exit code', async () => {
-    mockDocker.run.mockResolvedValueOnce([
-      {
-        Error: null,
-        StatusCode: 1,
-      },
-    ]);
-
-    const tempdir = os.tmpdir();
-
-    const values = {
-      component_id: 'test',
-      description: 'description',
-    };
-
-    await expect(cookie.run({ directory: tempdir, values })).rejects.toThrow(
-      /Docker container returned a non-zero exit code \(1\)/,
-    );
+    expect(runDockerContainer).toHaveBeenCalledWith({
+      imageName: 'backstage/cookiecutter',
+      args: ['cookiecutter', '--no-input', '-o', '/result', '/template'],
+      templateDir: tempdir,
+      resultDir: `${tempdir}/result`,
+      logStream: stream,
+    });
   });
 });
