@@ -23,12 +23,14 @@ import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import esbuild from 'rollup-plugin-esbuild';
 import imageFiles from 'rollup-plugin-image-files';
+import svgr from '@svgr/rollup';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
 import { RollupOptions, OutputOptions } from 'rollup';
 
 import { BuildOptions, Output } from './types';
 import { paths } from '../paths';
+import { svgrTemplate } from '../svgrTemplate';
 
 export const makeConfigs = async (
   options: BuildOptions,
@@ -89,8 +91,12 @@ export const makeConfigs = async (
           exclude: ['**/*.stories.*', '**/*.test.*'],
         }),
         postcss(),
-        imageFiles(),
+        imageFiles({ exclude: '**/*.icon.svg' }),
         json(),
+        svgr({
+          include: '**/*.icon.svg',
+          template: svgrTemplate,
+        }),
         esbuild({
           target: 'es2019',
         }),

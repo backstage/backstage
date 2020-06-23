@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
+/* eslint-disable import/no-extraneous-dependencies */
+
 /// <reference types="node" />
 /// <reference types="react" />
 /// <reference types="react-dom" />
-
-declare namespace NodeJS {
-  interface ProcessEnv {
-    readonly NODE_ENV: 'development' | 'production' | 'test';
-  }
-}
 
 declare module '*.bmp' {
   const src: string;
@@ -54,13 +50,15 @@ declare module '*.webp' {
   export default src;
 }
 
+declare module '*.icon.svg' {
+  import { ComponentType } from 'react';
+  import { SvgIconProps } from '@material-ui/core';
+
+  const Icon: ComponentType<SvgIconProps>;
+  export default Icon;
+}
+
 declare module '*.svg' {
-  import * as React from 'react';
-
-  export const ReactComponent: React.FunctionComponent<React.SVGProps<
-    SVGSVGElement
-  > & { title?: string }>;
-
   const src: string;
   export default src;
 }
@@ -93,8 +91,4 @@ declare module '*.module.scss' {
 declare module '*.module.sass' {
   const classes: { readonly [key: string]: string };
   export default classes;
-}
-
-declare module 'rollup-plugin-image-files' {
-  export default function image(): any;
 }

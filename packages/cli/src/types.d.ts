@@ -14,4 +14,16 @@
  * limitations under the License.
  */
 
-declare module 'rollup-plugin-image-files';
+declare namespace NodeJS {
+  interface ProcessEnv {
+    readonly NODE_ENV: 'development' | 'production' | 'test';
+  }
+}
+
+declare module 'rollup-plugin-image-files' {
+  export default function image(options?: any): any;
+}
+
+declare module '@svgr/rollup' {
+  export default function svgr(options?: any): any;
+}
