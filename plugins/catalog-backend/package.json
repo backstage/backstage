@@ -49,7 +49,7 @@
     "supertest": "^4.0.2"
   },
   "files": [
-    "dist/**/*.{js,d.ts}",
+    "dist",
     "migrations/**/*.{js,d.ts}"
   ]
 }

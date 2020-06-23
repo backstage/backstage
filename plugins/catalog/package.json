@@ -54,6 +54,6 @@
     "whatwg-fetch": "^3.0.0"
   },
   "files": [
-    "dist/**/*.{js,d.ts}"
+    "dist"
   ]
 }

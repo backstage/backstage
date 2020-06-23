@@ -57,6 +57,6 @@
     "react-router-dom": "6.0.0-alpha.5"
   },
   "files": [
-    "dist/**/*.{js,d.ts}"
+    "dist"
   ]
 }

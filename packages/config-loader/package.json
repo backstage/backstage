@@ -41,6 +41,6 @@
     "@types/yup": "^0.28.2"
   },
   "files": [
-    "dist/**/*.{js,d.ts}"
+    "dist"
   ]
 }

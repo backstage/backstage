@@ -47,6 +47,6 @@
     "yaml": "^1.10.0"
   },
   "files": [
-    "dist/**/*.{js,d.ts}"
+    "dist"
   ]
 }
