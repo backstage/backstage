@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config",
   "description": "Config API used by Backstage core, backend, and CLI",
-  "version": "0.1.1-alpha.11",
+  "version": "0.1.1-alpha.12",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -37,6 +37,6 @@
     "@types/node": "^12.0.0"
   },
   "files": [
-    "dist/**/*.{js,d.ts}"
+    "dist"
   ]
 }
