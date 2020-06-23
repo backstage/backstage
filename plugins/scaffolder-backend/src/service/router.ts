@@ -69,7 +69,7 @@ export async function createRouter(
     // Run the templater on the mock directory with values from the post body
     const templatedPath = await templater.run({
       directory: skeletonPath,
-      values: { component_id: 'test', description: "Something for now" },
+      values: { component_id: 'test' },
     });
 
     console.warn(templatedPath);

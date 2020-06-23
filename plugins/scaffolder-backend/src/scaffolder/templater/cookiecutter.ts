@@ -18,7 +18,7 @@ import { TemplaterBase, TemplaterRunOptions } from '.';
 import fs from 'fs-extra';
 import Docker from 'dockerode';
 import { JsonValue } from '@backstage/config';
-
+import { PassThrough } from 'stream';
 export class CookieCutter implements TemplaterBase {
   private docker: Docker;
   constructor() {
@@ -51,10 +51,12 @@ export class CookieCutter implements TemplaterBase {
     const realTemplatePath = await fs.promises.realpath(options.directory);
     const outDir = `${realTemplatePath}/result`;
 
-    await this.docker.run(
+    const [
+      { Error: dockerError, StatusCode: containerStatusCode },
+    ] = await this.docker.run(
       'backstage/cookiecutter',
-      ['cookiecutter', '--no-input', '-o', '/result', '/template', '--verbose'],
-      process.stdout,
+      ['cookiecutter', '--no-input', '-o', '/result', '/template'],
+      options.logStream ?? new PassThrough(),
       {
         Volumes: { '/result': {}, '/template': {} },
         HostConfig: {
@@ -62,6 +64,18 @@ export class CookieCutter implements TemplaterBase {
         },
       },
     );
+
+    if (dockerError) {
+      throw new Error(
+        `Docker failed to run with the following error message: ${dockerError}`,
+      );
+    }
+
+    if (containerStatusCode !== 0) {
+      throw new Error(
+        `Docker container returned a non-zero exit code (${containerStatusCode})`,
+      );
+    }
 
     return outDir;
   }

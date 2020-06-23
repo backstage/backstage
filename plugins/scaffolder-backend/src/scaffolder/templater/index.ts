@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { Writable } from 'stream';
+
 export interface RequiredTemplateValues {
   component_id: string;
 }
@@ -21,6 +23,7 @@ export interface RequiredTemplateValues {
 export interface TemplaterRunOptions {
   directory: string;
   values: RequiredTemplateValues & object;
+  logStream?: Writable;
 }
 
 export abstract class TemplaterBase {

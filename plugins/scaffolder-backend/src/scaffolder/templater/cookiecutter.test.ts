@@ -16,8 +16,11 @@
 import { CookieCutter } from './cookiecutter';
 import fs from 'fs-extra';
 import os from 'os';
+import Stream, { PassThrough } from 'stream';
 
-const mockDocker = { run: jest.fn() };
+const mockDocker = {
+  run: jest.fn<any, any>(() => [{ Error: null, StatusCode: 0 }]),
+};
 jest.mock(
   'dockerode',
   () =>
@@ -32,7 +35,7 @@ describe('CookieCutter Templater', () => {
   const cookie = new CookieCutter();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('should write a cookiecutter.json file with the values from the entitiy', async () => {
@@ -85,8 +88,8 @@ describe('CookieCutter Templater', () => {
     // to @backstage/cookiecutter in docker hub.
     expect(mockDocker.run).toHaveBeenCalledWith(
       'backstage/cookiecutter',
-      ['cookiecutter', '--no-input', '-o', '/result', '/template', '--verbose'],
-      process.stdout,
+      ['cookiecutter', '--no-input', '-o', '/result', '/template'],
+      expect.any(Stream),
       expect.objectContaining({
         HostConfig: {
           Binds: expect.arrayContaining([
@@ -115,5 +118,64 @@ describe('CookieCutter Templater', () => {
     const realpath = await fs.realpath(tempdir);
 
     expect(path).toBe(`${realpath}/result`);
+  });
+
+  it('throws a correct error if the templating fails in docker', async () => {
+    mockDocker.run.mockResolvedValueOnce([
+      {
+        Error: new Error('Something went wrong with docker'),
+        StatusCode: 0,
+      },
+    ]);
+
+    const tempdir = os.tmpdir();
+
+    const values = {
+      component_id: 'test',
+      description: 'description',
+    };
+
+    await expect(cookie.run({ directory: tempdir, values })).rejects.toThrow(
+      /Something went wrong with docker/,
+    );
+  });
+
+  it('uses the passed stream as a log stream', async () => {
+    const logStream = new PassThrough();
+    const tempdir = os.tmpdir();
+
+    const values = {
+      component_id: 'test',
+      description: 'description',
+    };
+
+    await cookie.run({ directory: tempdir, values, logStream });
+
+    expect(mockDocker.run).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(Array),
+      logStream,
+      expect.any(Object),
+    );
+  });
+
+  it('throws a correct error if the container returns a non-zero exit code', async () => {
+    mockDocker.run.mockResolvedValueOnce([
+      {
+        Error: null,
+        StatusCode: 1,
+      },
+    ]);
+
+    const tempdir = os.tmpdir();
+
+    const values = {
+      component_id: 'test',
+      description: 'description',
+    };
+
+    await expect(cookie.run({ directory: tempdir, values })).rejects.toThrow(
+      /Docker container returned a non-zero exit code \(1\)/,
+    );
   });
 });
