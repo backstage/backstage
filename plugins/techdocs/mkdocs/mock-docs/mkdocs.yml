@@ -1,0 +1,4 @@
+site_name: 'moc-doc'
+
+nav: 
+  - Home: index.md
