@@ -16,9 +16,18 @@ import { TemplaterBase, TemplaterRunOptions } from '.';
  * limitations under the License.
  */
 import fs from 'fs-extra';
+import Docker from 'dockerode';
 
 export class CookieCutter implements TemplaterBase {
+  private docker:Docker;
+  constructor() {
+    this.docker = new Docker();
+  }
+
   public async run(options: TemplaterRunOptions): Promise<string> {
+    
+      
+    
     // first we need to make cookiecutter.json in the directory provided with the input values.
     const cookieInfo = {
       _copy_without_render: ['.github/workflows/*'],
@@ -26,7 +35,14 @@ export class CookieCutter implements TemplaterBase {
     };
 
     await fs.writeJSON(`${options.directory}/cookiecutter.json`, cookieInfo);
-    return '';
-    // run cookie cutter with new json
+    const realTemplatePath = await fs.promises.realpath(options.directory);
+    const outDir = realTemplatePath + '/result';
+
+
+    await this.docker.run('backstage/cookiecutter', ['cookiecutter', '--no-input', '-o', '/result', '/template', '--verbose'], process.stdout, {Volumes: { '/result': {}, '/template': {}}, HostConfig: {
+      Binds: [`${outDir}:/result`, `${realTemplatePath}:/template`],
+    }});
+    
+    return outDir;
   }
 }

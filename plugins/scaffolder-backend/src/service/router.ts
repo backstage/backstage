@@ -64,12 +64,15 @@ export async function createRouter(
     const preparer = preparers.get(mockEntity);
 
     // Run the preparer for the mock entity to produce a temporary directory with template in
-    const path = await preparer.prepare(mockEntity);
+    const skeletonPath = await preparer.prepare(mockEntity);
 
     // Run the templater on the mock directory with values from the post body
-    await templater.run({ directory: path, values: { component_id: 'test' } });
+    const templatedPath = await templater.run({
+      directory: skeletonPath,
+      values: { component_id: 'test', description: "Something for now" },
+    });
 
-    console.warn(path);
+    console.warn(templatedPath);
   });
 
   const app = express();
