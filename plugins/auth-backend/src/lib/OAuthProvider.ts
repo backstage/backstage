@@ -147,12 +147,13 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, refreshToken);
       }
 
-      const userIdToken = await this.options.tokenIssuer.issueToken({
-        claims: { sub: response.profile.email },
+      const id = response.profile.email;
+      const idToken = await this.options.tokenIssuer.issueToken({
+        claims: { sub: id },
       });
       const fullResponse: AuthResponse<unknown> = {
         ...response,
-        userIdToken,
+        backstageIdentity: { id, idToken },
       };
 
       // post message back to popup if successful
@@ -212,12 +213,13 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       // get new access_token
       const response = await this.providerHandlers.refresh(refreshToken, scope);
 
-      const userIdToken = await this.options.tokenIssuer.issueToken({
-        claims: { sub: response.profile.email },
+      const id = response.profile.email;
+      const idToken = await this.options.tokenIssuer.issueToken({
+        claims: { sub: id },
       });
       const fullResponse: AuthResponse<unknown> = {
         ...response,
-        userIdToken,
+        backstageIdentity: { id, idToken },
       };
 
       res.send(fullResponse);

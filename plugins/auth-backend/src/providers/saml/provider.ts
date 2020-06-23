@@ -84,8 +84,9 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
         response: { userId, profile },
       } = await executeFrameHandlerStrategy<SamlInfo>(req, this.strategy);
 
-      const userIdToken = await this.tokenIssuer.issueToken({
-        claims: { sub: userId },
+      const id = userId;
+      const idToken = await this.tokenIssuer.issueToken({
+        claims: { sub: id },
       });
 
       return postMessageResponse(res, 'http://localhost:3000', {
@@ -93,7 +94,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
         response: {
           providerInfo: {},
           profile,
-          userIdToken,
+          backstageIdentity: { id, idToken },
         },
       });
     } catch (error) {

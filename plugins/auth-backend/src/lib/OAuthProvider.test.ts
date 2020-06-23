@@ -116,7 +116,10 @@ describe('OAuthProvider Utils', () => {
           profile: {
             email: 'foo@bar.com',
           },
-          userIdToken: 'a.b.c',
+          backstageIdentity: {
+            id: 'a',
+            idToken: 'a.b.c',
+          },
         },
       };
       const jsonData = JSON.stringify(data);
@@ -346,7 +349,10 @@ describe('OAuthProvider', () => {
     expect(mockResponse.send).toHaveBeenCalledTimes(1);
     expect(mockResponse.send).toHaveBeenCalledWith({
       ...mockResponseData,
-      userIdToken: 'my-id-token',
+      backstageIdentity: {
+        id: mockResponseData.profile.email,
+        idToken: 'my-id-token',
+      },
     });
   });
 

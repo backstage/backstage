@@ -293,6 +293,10 @@ export class PrivateAppImpl implements BackstageApp {
       if (!SignInPageComponent) {
         this.identityApi.setSignInResult({
           userId: 'guest',
+          profile: {
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          },
         });
 
         return (

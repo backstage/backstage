@@ -56,6 +56,9 @@ const Component: ProviderComponent = ({ onResult }) => {
   const handleResult = ({ userId, idToken }: Data) => {
     onResult({
       userId,
+      profile: {
+        email: `${userId}@example.com`,
+      },
       getIdToken: idToken ? async () => idToken : undefined,
     });
   };

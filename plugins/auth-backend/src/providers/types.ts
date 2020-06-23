@@ -192,13 +192,25 @@ export type AuthProviderFactory = (
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
-  userIdToken: string;
+  backstageIdentity: BackstageIdentity;
 };
 
 export type OAuthResponse = Omit<
   AuthResponse<OAuthProviderInfo>,
-  'userIdToken'
+  'backstageIdentity'
 >;
+
+export type BackstageIdentity = {
+  /**
+   * The backstage user ID.
+   */
+  id: string;
+
+  /**
+   * An ID token that can be used to authenticate the user within Backstage.
+   */
+  idToken: string;
+};
 
 export type OAuthProviderInfo = {
   /**

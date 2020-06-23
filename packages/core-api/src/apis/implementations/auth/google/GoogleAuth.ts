@@ -20,13 +20,13 @@ import { GoogleSession } from './types';
 import {
   OAuthApi,
   OpenIdConnectApi,
-  IdTokenOptions,
-  AccessTokenOptions,
   ProfileInfoApi,
-  ProfileInfoOptions,
   ProfileInfo,
   SessionStateApi,
   SessionState,
+  BackstageIdentityApi,
+  AuthRequestOptions,
+  BackstageIdentity,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
@@ -46,11 +46,14 @@ type CreateOptions = {
 };
 
 export type GoogleAuthResponse = {
+  providerInfo: {
+    accessToken: string;
+    idToken: string;
+    scope: string;
+    expiresInSeconds: number;
+  };
   profile: ProfileInfo;
-  accessToken: string;
-  idToken: string;
-  scope: string;
-  expiresInSeconds: number;
+  backstageIdentity: BackstageIdentity;
 };
 
 const DEFAULT_PROVIDER = {
@@ -62,7 +65,12 @@ const DEFAULT_PROVIDER = {
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
 class GoogleAuth
-  implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, SessionStateApi {
+  implements
+    OAuthApi,
+    OpenIdConnectApi,
+    ProfileInfoApi,
+    BackstageIdentityApi,
+    SessionStateApi {
   static create({
     apiOrigin,
     basePath,
@@ -78,11 +86,15 @@ class GoogleAuth
       oauthRequestApi: oauthRequestApi,
       sessionTransform(res: GoogleAuthResponse): GoogleSession {
         return {
-          profile: res.profile,
-          idToken: res.idToken,
-          accessToken: res.accessToken,
-          scopes: GoogleAuth.normalizeScopes(res.scope),
-          expiresAt: new Date(Date.now() + res.expiresInSeconds * 1000),
+          ...res,
+          providerInfo: {
+            idToken: res.providerInfo.idToken,
+            accessToken: res.providerInfo.accessToken,
+            scopes: GoogleAuth.normalizeScopes(res.providerInfo.scope),
+            expiresAt: new Date(
+              Date.now() + res.providerInfo.expiresInSeconds * 1000,
+            ),
+          },
         };
       },
     });
@@ -94,9 +106,10 @@ class GoogleAuth
         `${SCOPE_PREFIX}userinfo.email`,
         `${SCOPE_PREFIX}userinfo.profile`,
       ]),
-      sessionScopes: session => session.scopes,
-      sessionShouldRefresh: session => {
-        const expiresInSec = (session.expiresAt.getTime() - Date.now()) / 1000;
+      sessionScopes: (session: GoogleSession) => session.providerInfo.scopes,
+      sessionShouldRefresh: (session: GoogleSession) => {
+        const expiresInSec =
+          (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000;
         return expiresInSec < 60 * 5;
       },
     });
@@ -114,7 +127,7 @@ class GoogleAuth
 
   async getAccessToken(
     scope?: string | string[],
-    options?: AccessTokenOptions,
+    options?: AuthRequestOptions,
   ) {
     const normalizedScopes = GoogleAuth.normalizeScopes(scope);
     const session = await this.sessionManager.getSession({
@@ -123,16 +136,16 @@ class GoogleAuth
     });
     this.sessionStateTracker.setIsSignedId(!!session);
     if (session) {
-      return session.accessToken;
+      return session.providerInfo.accessToken;
     }
     return '';
   }
 
-  async getIdToken(options: IdTokenOptions = {}) {
+  async getIdToken(options: AuthRequestOptions = {}) {
     const session = await this.sessionManager.getSession(options);
     this.sessionStateTracker.setIsSignedId(!!session);
     if (session) {
-      return session.idToken;
+      return session.providerInfo.idToken;
     }
     return '';
   }
@@ -142,13 +155,18 @@ class GoogleAuth
     this.sessionStateTracker.setIsSignedId(false);
   }
 
-  async getProfile(options: ProfileInfoOptions = {}) {
+  async getBackstageIdentity(
+    options: AuthRequestOptions = {},
+  ): Promise<BackstageIdentity | undefined> {
     const session = await this.sessionManager.getSession(options);
     this.sessionStateTracker.setIsSignedId(!!session);
-    if (!session) {
-      return undefined;
-    }
-    return session.profile;
+    return session?.backstageIdentity;
+  }
+
+  async getProfile(options: AuthRequestOptions = {}) {
+    const session = await this.sessionManager.getSession(options);
+    this.sessionStateTracker.setIsSignedId(!!session);
+    return session?.profile;
   }
 
   static normalizeScopes(scopes?: string | string[]): Set<string> {
