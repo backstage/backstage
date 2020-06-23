@@ -35,14 +35,11 @@ In the parent `Dockerfile` we add this folder to the build and install the packa
 
 See the `README.md` located in the `mkdocs/` folder for more details on how to build and run the Docker container.
 
-## Linting and Tests
-
-To run the tests, you'll need `tox` installed with our dependencies installed:
+## Linting
 
 ```bash
-pip install tox
 pip install -r requirements.txt
-tox
+python -m black src/
 ```
 
-This will invoke our linter and tests. You can configure this by editing the `tox.ini` folder located in this folder.
+**Note:** This will write to all Python files in `src/` with the formatted code. If you would like to only check to see if it passes, simply append the `--check` flag.
