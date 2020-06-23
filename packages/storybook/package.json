@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "0.1.1-alpha.10",
+  "version": "0.1.1-alpha.11",
   "description": "Storybook build for core package",
   "private": true,
   "scripts": {
@@ -14,7 +14,7 @@
     ]
   },
   "dependencies": {
-    "@backstage/theme": "^0.1.1-alpha.10"
+    "@backstage/theme": "^0.1.1-alpha.11"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^5.3.17",

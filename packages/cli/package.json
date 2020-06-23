@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.10",
+  "version": "0.1.1-alpha.11",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -29,8 +29,8 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.10",
-    "@backstage/config-loader": "^0.1.1-alpha.10",
+    "@backstage/config": "^0.1.1-alpha.11",
+    "@backstage/config-loader": "^0.1.1-alpha.11",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -116,6 +116,7 @@
     "zombie": "^6.1.4"
   },
   "files": [
+    "asset-types",
     "templates",
     "config",
     "bin",
