@@ -37,10 +37,11 @@ See the `README.md` located in the `mkdocs/` folder for more details on how to b
 
 ## Linting and Tests
 
-To run the tests, you'll need `tox` installed:
+To run the tests, you'll need `tox` installed with our dependencies installed:
 
 ```bash
 pip install tox
+pip install -r requirements.txt
 tox
 ```
 
