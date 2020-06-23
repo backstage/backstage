@@ -6,8 +6,8 @@ Welcome to MkDocs. This is the TechDocs implementation of MkDocs.
 
 ## Getting started
 
-```
-  docker build ./container -t mkdocs-container
+```bash
+docker build ./container -t mkdocs-container
 
-  docker run -w /content -v $(pwd)/mock-docs:/content -p 8000:8000 -it mkdocs-container serve -a 0.0.0.0:8000
+docker run -w /content -v $(pwd)/mock-docs:/content -p 8000:8000 -it mkdocs-container serve -a 0.0.0.0:8000
 ```
