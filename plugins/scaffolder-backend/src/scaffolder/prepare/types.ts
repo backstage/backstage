@@ -29,4 +29,4 @@ export type PreparerBuilder = {
   get(template: TemplateEntityV1alpha1): PreparerBase;
 };
 
-export type RemoteProtocol = 'file';
+export type RemoteProtocol = 'file' | 'github';

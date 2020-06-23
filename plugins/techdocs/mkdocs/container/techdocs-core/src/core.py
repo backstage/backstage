@@ -1,4 +1,4 @@
-/*
+"""
  * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+"""
 
-import { createRouteRef } from '@backstage/core';
-import GraphiQLIcon from './assets/graphiql.icon.svg';
+from mkdocs.plugins import BasePlugin, PluginCollection
+from mkdocs.theme import Theme
 
-export const graphiQLRouteRef = createRouteRef({
-  icon: GraphiQLIcon,
-  path: '/graphiql',
-  title: 'GraphiQL',
-});
+from mkdocs.contrib.search import SearchPlugin
+
+class TechDocsCore(BasePlugin):
+    def on_config(self, config):
+       # Theme
+       config['theme'] = Theme(name="material")
+
+       # Plugins
+       del config['plugins']['techdocs-core']
+
+       search_plugin = SearchPlugin()
+       search_plugin.load_config({})
+       config['plugins']['search'] = search_plugin
+
+       return config
+

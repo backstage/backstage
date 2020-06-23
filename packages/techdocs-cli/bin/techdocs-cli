@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * Copyright 2020 Spotify AB
  *
@@ -14,4 +15,20 @@
  * limitations under the License.
  */
 
-declare module 'rollup-plugin-image-files';
+const path = require('path');
+
+// Figure out whether we're running inside the backstage repo or as an installed dependency
+const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
+
+if (!isLocal) {
+  require('..');
+} else {
+  require('ts-node').register({
+    transpileOnly: true,
+    compilerOptions: {
+      module: 'CommonJS',
+    },
+  });
+
+  require('../src');
+}

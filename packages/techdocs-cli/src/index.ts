@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core';
-import GraphiQLIcon from './assets/graphiql.icon.svg';
-
-export const graphiQLRouteRef = createRouteRef({
-  icon: GraphiQLIcon,
-  path: '/graphiql',
-  title: 'GraphiQL',
-});
+export const techDocsCli = () => {};
