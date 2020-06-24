@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Content,
   ContentHeader,
@@ -25,32 +25,28 @@ import {
   Progress,
   HeaderLabel,
   useApi,
+  githubAuthApiRef,
 } from '@backstage/core';
 
 import ClusterTable from '../ClusterTable/ClusterTable';
 import { Button } from '@material-ui/core';
-import { useAsync, useLocalStorage } from 'react-use';
+import { useAsync } from 'react-use';
 import { gitOpsApiRef, ListClusterStatusesResponse } from '../../api';
 import { Alert } from '@material-ui/lab';
 
 const ClusterList: FC<{}> = () => {
-  const [loginInfo] = useLocalStorage<{
-    token: string;
-    username: string;
-    name: string;
-  }>('githubLoginDetails', {
-    token: '',
-    username: '',
-    name: 'Guest',
-  });
-
   const api = useApi(gitOpsApiRef);
+  const githubAuth = useApi(githubAuthApiRef);
+  const [githubUsername, setGithubUsername] = useState(String);
 
   const { loading, error, value } = useAsync<ListClusterStatusesResponse>(
-    () => {
+    async () => {
+      const accessToken = await githubAuth.getAccessToken();
+      const userInfo = await api.fetchUserInfo({ accessToken });
+      setGithubUsername(userInfo.login);
       return api.listClusters({
-        gitHubToken: loginInfo.token,
-        gitHubUser: loginInfo.username,
+        gitHubToken: accessToken,
+        gitHubUser: githubUsername,
       });
     },
   );
@@ -72,9 +68,6 @@ const ClusterList: FC<{}> = () => {
           <Alert severity="info">
             Please make sure that you start GitOps-API backend on localhost port
             3008 before using this plugin.
-          </Alert>
-          <Alert severity="info">
-            If you're Guest, please login via GitHub first.
           </Alert>
         </div>
       </Content>
@@ -100,7 +93,7 @@ const ClusterList: FC<{}> = () => {
   return (
     <Page theme={pageTheme.home}>
       <Header title="GitOps-managed Clusters">
-        <HeaderLabel label="Welcome" value={loginInfo.name} />
+        <HeaderLabel label="Welcome" value={githubUsername} />
       </Header>
       {content}
     </Page>

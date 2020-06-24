@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
-import ProfileCatalog from './components/ProfileCatalog';
-import ClusterPage from './components/ClusterPage';
-import ClusterList from './components/ClusterList';
-import {
-  gitOpsClusterListRoute,
-  gitOpsClusterDetailsRoute,
-  gitOpsClusterCreateRoute,
-} from './routes';
+import { createRouteRef } from '@backstage/core';
 
-export const plugin = createPlugin({
-  id: 'gitops-profiles',
-  register({ router }) {
-    router.addRoute(gitOpsClusterListRoute, ClusterList);
-    router.addRoute(gitOpsClusterDetailsRoute, ClusterPage);
-    router.addRoute(gitOpsClusterCreateRoute, ProfileCatalog);
-  },
+const NoIcon = () => null;
+
+export const gitOpsClusterListRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/gitops-clusters',
+  title: 'GitOps Clusters',
+});
+
+export const gitOpsClusterDetailsRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/gitops-cluster/:owner/:repo',
+  title: 'GitOps Cluster details',
+});
+
+export const gitOpsClusterCreateRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/gitops-cluster-create',
+  title: 'GitOps Cluster create',
 });

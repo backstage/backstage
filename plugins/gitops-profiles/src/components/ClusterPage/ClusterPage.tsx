@@ -24,21 +24,16 @@ import {
   Progress,
   HeaderLabel,
   useApi,
+  githubAuthApiRef,
 } from '@backstage/core';
 
 import { Link } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
-import { useLocalStorage } from 'react-use';
 import { gitOpsApiRef, Status } from '../../api';
 import { transformRunStatus } from '../ProfileCatalog';
 
 const ClusterPage: FC<{}> = () => {
   const params = useParams() as { owner: string; repo: string };
-  const [loginInfo] = useLocalStorage<{
-    token: string;
-    username: string;
-    name: string;
-  }>('githubLoginDetails');
 
   const [pollingLog, setPollingLog] = useState(true);
   const [runStatus, setRunStatus] = useState<Status[]>([]);
@@ -46,6 +41,9 @@ const ClusterPage: FC<{}> = () => {
   const [showProgress, setShowProgress] = useState(true);
 
   const api = useApi(gitOpsApiRef);
+  const githubAuth = useApi(githubAuthApiRef);
+  const [githubAccessToken, setGithubAccessToken] = useState(String);
+  const [githubUsername, setGithubUsername] = useState(String);
 
   const columns = [
     { field: 'status', title: 'Status' },
@@ -53,11 +51,22 @@ const ClusterPage: FC<{}> = () => {
   ];
 
   useEffect(() => {
+    const fetchGithubUserInfo = async () => {
+      const accessToken = await githubAuth.getAccessToken();
+      const userInfo = await api.fetchUserInfo({ accessToken });
+      setGithubAccessToken(accessToken);
+      setGithubUsername(userInfo.login);
+    };
+
+    if (!githubAccessToken || !githubUsername) {
+      fetchGithubUserInfo();
+    }
+
     if (pollingLog) {
       const interval = setInterval(async () => {
         const resp = await api.fetchLog({
-          gitHubToken: loginInfo.token,
-          gitHubUser: loginInfo.username,
+          gitHubToken: githubAccessToken,
+          gitHubUser: githubUsername,
           targetOrg: params.owner,
           targetRepo: params.repo,
         });
@@ -72,12 +81,12 @@ const ClusterPage: FC<{}> = () => {
       return () => clearInterval(interval);
     }
     return () => {};
-  }, [pollingLog, api, loginInfo, params]);
+  }, [pollingLog, api, params, githubAuth, githubAccessToken, githubUsername]);
 
   return (
     <Page theme={pageTheme.home}>
       <Header title={`Cluster ${params.owner}/${params.repo}`}>
-        <HeaderLabel label="Welcome" value={loginInfo.name} />
+        <HeaderLabel label="Welcome" value={githubUsername} />
       </Header>
       <Content>
         <Progress hidden={!showProgress} />
