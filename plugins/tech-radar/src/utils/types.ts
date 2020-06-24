@@ -45,6 +45,12 @@ export type Segment = {
   random: Function;
 };
 
+export enum MovedState {
+  Down = -1,
+  NoChange = 0,
+  Up = 1,
+}
+
 export type Entry = {
   id: string;
   index?: number;
@@ -61,7 +67,7 @@ export type Entry = {
   // An URL to a longer description as to why this entry is where it is
   url?: string;
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
-  moved?: -1 | 0 | 1;
+  moved?: MovedState;
   active?: boolean;
 };
 
