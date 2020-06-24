@@ -19,23 +19,24 @@ import {
   Content,
   errorApiRef,
   Header,
+  HeaderLabel,
   HeaderTabs,
   Page,
   pageTheme,
+  PageTheme,
   Progress,
   useApi,
-  PageTheme,
 } from '@backstage/core';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
-import { useParams, useNavigate } from 'react-router-dom';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -138,7 +139,19 @@ export const EntityPage: FC<{}> = () => {
   return (
     <Page theme={getPageTheme(entity)}>
       <Header title={headerTitle} type={headerType}>
-        {entity && <EntityContextMenu onUnregisterEntity={showRemovalDialog} />}
+        {entity && (
+          <>
+            <HeaderLabel
+              label="Owner"
+              value={entity.spec?.owner || 'unknown'}
+            />
+            <HeaderLabel
+              label="Lifecycle"
+              value={entity.spec?.lifecycle || 'unknown'}
+            />
+            <EntityContextMenu onUnregisterEntity={showRemovalDialog} />
+          </>
+        )}
       </Header>
 
       {loading && <Progress />}
