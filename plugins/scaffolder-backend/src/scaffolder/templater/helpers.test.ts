@@ -16,26 +16,16 @@
 import Stream, { PassThrough } from 'stream';
 import os from 'os';
 import fs from 'fs';
-
-const mockDocker = {
-  run: jest.fn<any, any>(() => [{ Error: null, StatusCode: 0 }]),
-};
-
-jest.mock(
-  'dockerode',
-  () =>
-    class {
-      constructor() {
-        return mockDocker;
-      }
-    },
-);
-
+import Docker from 'dockerode';
 import { runDockerContainer } from './helpers';
 
 describe('helpers', () => {
+  const mockDocker = new Docker() as jest.Mocked<Docker>;
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest
+      .spyOn(mockDocker, 'run')
+      .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
   });
 
   describe('runDockerContainer', () => {
@@ -50,6 +40,7 @@ describe('helpers', () => {
         args,
         templateDir,
         resultDir,
+        dockerClient: mockDocker,
       });
 
       expect(mockDocker.run).toHaveBeenCalledWith(
@@ -80,7 +71,13 @@ describe('helpers', () => {
       ]);
 
       await expect(
-        runDockerContainer({ imageName, args, templateDir, resultDir }),
+        runDockerContainer({
+          imageName,
+          args,
+          templateDir,
+          resultDir,
+          dockerClient: mockDocker,
+        }),
       ).rejects.toThrow(/Something went wrong with docker/);
     });
 
@@ -93,7 +90,13 @@ describe('helpers', () => {
       ]);
 
       await expect(
-        runDockerContainer({ imageName, args, templateDir, resultDir }),
+        runDockerContainer({
+          imageName,
+          args,
+          templateDir,
+          resultDir,
+          dockerClient: mockDocker,
+        }),
       ).rejects.toThrow(
         /Docker container returned a non-zero exit code \(123\)/,
       );
@@ -107,6 +110,7 @@ describe('helpers', () => {
         templateDir,
         resultDir,
         logStream,
+        dockerClient: mockDocker,
       });
 
       expect(mockDocker.run).toHaveBeenCalledWith(

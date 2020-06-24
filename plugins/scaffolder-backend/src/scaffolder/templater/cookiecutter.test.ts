@@ -20,18 +20,21 @@ import fs from 'fs-extra';
 import os from 'os';
 import { RunDockerContainerOptions } from './helpers';
 import { PassThrough } from 'stream';
+import Docker from 'dockerode';
 
 describe('CookieCutter Templater', () => {
   const cookie = new CookieCutter();
-
+  const mockDocker = {} as Docker;
   const {
     runDockerContainer,
   }: {
     runDockerContainer: jest.Mock<RunDockerContainerOptions>;
   } = require('./helpers');
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
+
+    await fs.remove(`${os.tmpdir()}/cookiecutter.json`);
   });
 
   it('should write a cookiecutter.json file with the values from the entitiy', async () => {
@@ -42,7 +45,7 @@ describe('CookieCutter Templater', () => {
       description: 'description',
     };
 
-    await cookie.run({ directory: tempdir, values });
+    await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
 
     const cookieCutterJson = await fs.readJSON(`${tempdir}/cookiecutter.json`);
 
@@ -61,11 +64,26 @@ describe('CookieCutter Templater', () => {
       description: 'im something cool',
     };
 
-    await cookie.run({ directory: tempdir, values });
+    await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
 
     const cookieCutterJson = await fs.readJSON(`${tempdir}/cookiecutter.json`);
 
     expect(cookieCutterJson).toEqual({ ...existingJson, ...values });
+  });
+
+  it('should throw an error if the cookiecutter json is malformed and not missing', async () => {
+    const tempdir = os.tmpdir();
+
+    await fs.writeFile(`${tempdir}/cookiecutter.json`, "{'");
+
+    const values = {
+      component_id: 'hello',
+      description: 'im something cool',
+    };
+
+    await expect(
+      cookie.run({ directory: tempdir, values, dockerClient: mockDocker }),
+    ).rejects.toThrow(/Unexpected token ' in JSON at position 1/);
   });
 
   it('should run the correct docker container with the correct bindings for the volumes', async () => {
@@ -76,7 +94,7 @@ describe('CookieCutter Templater', () => {
       description: 'description',
     };
 
-    await cookie.run({ directory: tempdir, values });
+    await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
 
     expect(runDockerContainer).toHaveBeenCalledWith({
       imageName: 'backstage/cookiecutter',
@@ -84,6 +102,7 @@ describe('CookieCutter Templater', () => {
       templateDir: tempdir,
       resultDir: `${tempdir}/result`,
       logStream: undefined,
+      dockerClient: mockDocker,
     });
   });
   it('should return the result path to the end templated folder', async () => {
@@ -94,7 +113,11 @@ describe('CookieCutter Templater', () => {
       description: 'description',
     };
 
-    const path = await cookie.run({ directory: tempdir, values });
+    const path = await cookie.run({
+      directory: tempdir,
+      values,
+      dockerClient: mockDocker,
+    });
 
     expect(path).toBe(`${tempdir}/result`);
   });
@@ -109,7 +132,12 @@ describe('CookieCutter Templater', () => {
       description: 'description',
     };
 
-    await cookie.run({ directory: tempdir, values, logStream: stream });
+    await cookie.run({
+      directory: tempdir,
+      values,
+      logStream: stream,
+      dockerClient: mockDocker,
+    });
 
     expect(runDockerContainer).toHaveBeenCalledWith({
       imageName: 'backstage/cookiecutter',
@@ -117,6 +145,7 @@ describe('CookieCutter Templater', () => {
       templateDir: tempdir,
       resultDir: `${tempdir}/result`,
       logStream: stream,
+      dockerClient: mockDocker,
     });
   });
 });

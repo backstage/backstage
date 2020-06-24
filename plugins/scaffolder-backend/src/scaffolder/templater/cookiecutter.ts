@@ -26,6 +26,10 @@ export class CookieCutter implements TemplaterBase {
     try {
       return await fs.readJSON(`${directory}/cookiecutter.json`);
     } catch (ex) {
+      if (ex.code !== 'ENOENT') {
+        throw ex;
+      }
+
       return {};
     }
   }
@@ -55,6 +59,7 @@ export class CookieCutter implements TemplaterBase {
       templateDir,
       resultDir,
       logStream: options.logStream,
+      dockerClient: options.dockerClient,
     });
 
     return resultDir;

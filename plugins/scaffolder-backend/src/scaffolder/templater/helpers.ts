@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Docker from 'dockerode';
 import { Writable, PassThrough } from 'stream';
+import Docker from 'dockerode';
 import fs from 'fs';
 
 export type RunDockerContainerOptions = {
@@ -23,9 +23,9 @@ export type RunDockerContainerOptions = {
   logStream?: Writable;
   resultDir: string;
   templateDir: string;
+  dockerClient: Docker;
 };
 
-const dockerClient = new Docker();
 /**
  *
  * @param options the options object
@@ -34,6 +34,7 @@ const dockerClient = new Docker();
  * @param options.logStream the log streamer to capture log messages
  * @param options.resultDir the /result path inside the container
  * @param options.templateDir the /template path inside the container
+ * @param options.dockerClient the dockerClient to use
  */
 export const runDockerContainer = async ({
   imageName,
@@ -41,6 +42,7 @@ export const runDockerContainer = async ({
   logStream = new PassThrough(),
   resultDir,
   templateDir,
+  dockerClient,
 }: RunDockerContainerOptions) => {
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
