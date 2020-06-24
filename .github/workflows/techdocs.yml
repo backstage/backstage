@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    env:
+      TECHDOCS_CONTAINER_PATH: /plugins/techdocs/mkdocs/container
 
     strategy:
       matrix:
@@ -22,7 +24,7 @@ jobs:
 
       # Validate Docker Container
       - name: prepare docker build
-        working-directory: /plugins/techdocs/mkdocs/container
+        working-directory: ${{env:TECHDOCS_CONTAINER_PATH}}
         run: ls
       - name: verify docker build
         uses: docker/build-push-action@v1
@@ -32,7 +34,7 @@ jobs:
 
       # Lint Python code for techdocs-core package
       - name: lint techdocs-core package
-        working-directory: /plugins/techdocs/mkdocs/container/techdocs-core
+        working-directory: ${{env:TECHDOCS_CONTAINER_PATH}}/techdocs-core
         run: |
           pip install -r requirements.txt
           python -m black --check src/
