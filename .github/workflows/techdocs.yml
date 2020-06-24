@@ -8,23 +8,7 @@ on:
       - 'plugins/techdocs/**'
 
 jobs:
-  build-container:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ${{ runner.temp }}/plugins/techdocs/mkdocs/container
-
-    name: Python ${{ matrix.node-version }} on ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: verify docker build
-        uses: docker/build-push-action@v1
-        with:
-          repository: spotify/techdocs
-          push: false
-
-  lint:
+  build:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -32,14 +16,22 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.7]
 
-    defaults:
-      run:
-        working-directory: ${{ runner.temp }}/plugins/techdocs/mkdocs/container/techdocs-core
-
     name: Python ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - name: lint mkdocs-core package
+
+      # Validate Docker Container
+      - name: prepare docker build
+        working-directory: ${{ runner.temp }}/plugins/techdocs/mkdocs/container
+        run: ''
+      - name: verify docker build
+        uses: docker/build-push-action@v1
+        with:
+          repository: spotify/techdocs
+          push: false
+
+      # Lint Python code for techdocs-core package
+      - name: lint techdocs-core package
         working-directory: ${{ runner.temp }}/plugins/techdocs/mkdocs/container/techdocs-core
         run: |
           pip install -r requirements.txt
