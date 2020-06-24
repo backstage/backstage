@@ -72,15 +72,13 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
     return await executeRedirectStrategy(req, this._strategy, options);
   }
 
-  async handler(req: express.Request): Promise<{ response: OAuthResponse }> {
-    const result = await executeFrameHandlerStrategy<OAuthResponse>(
+  async handler(req: express.Request) {
+    const { response } = await executeFrameHandlerStrategy<OAuthResponse>(
       req,
       this._strategy,
     );
 
-    return {
-      response: result.response,
-    };
+    return { response };
   }
 }
 

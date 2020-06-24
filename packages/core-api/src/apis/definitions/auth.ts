@@ -173,7 +173,7 @@ export type ProfileInfo = {
   /**
    * Email ID.
    */
-  email: string;
+  email?: string;
 
   /**
    * Display name that can be presented to the user.
