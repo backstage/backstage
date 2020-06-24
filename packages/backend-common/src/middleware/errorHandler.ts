@@ -53,7 +53,10 @@ export function errorHandler(
     next: NextFunction,
   ) => {
     if (response.headersSent) {
+      // If the headers have already been sent, do not send the response again
+      // as this will throw an error in the backend.
       next(error);
+      return;
     }
 
     const status = getStatusCode(error);
