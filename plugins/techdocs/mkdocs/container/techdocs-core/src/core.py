@@ -48,13 +48,6 @@ class TechDocsCore(BasePlugin):
         }
         config['markdown_extensions'].append('footnotes')
         config['markdown_extensions'].append('markdown.extensions.tables')
-        config['markdown_extensions'].append('markdown_inline_graphviz')
-        config['markdown_extensions'].append('plantuml_markdown')
-        #config['markdown_extensions'].append('markdown_katex')
-        #config['mdx_configs']['markdown_katex'] = {
-        #    'no_inline_svg': True,
-        #    'insert_fonts_css': True,
-        #}
         config['markdown_extensions'].append('pymdownx.betterem')
         config['mdx_configs']['pymdownx.betterem'] = {
             'smart_enable': 'all',

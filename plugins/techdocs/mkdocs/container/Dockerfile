@@ -15,8 +15,8 @@
 
 FROM python:3.7.7-alpine3.12
 
-RUN apk update && apk --no-cache add gcc musl-dev graphviz
-RUN pip install --upgrade pip && pip install mkdocs==1.1.2 mkdocs-material==5.3.2 pymdown-extensions==7.1 markdown_inline_graphviz_extension==1.1 plantuml-markdown==3.2.2 markdown-katex==202006.1021
+RUN apk update && apk --no-cache add gcc musl-dev graphviz git
+RUN pip install --upgrade pip && pip install mkdocs==1.1.2 mkdocs-material==5.3.2 pymdown-extensions==7.1
 
 ADD ./techdocs-core /techdocs-core
 RUN pip install --no-index /techdocs-core
