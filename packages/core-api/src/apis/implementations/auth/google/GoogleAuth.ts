@@ -32,7 +32,6 @@ import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
-import { SessionStateTracker } from '../../../../lib/AuthSessionManager/SessionStateTracker';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
@@ -117,10 +116,8 @@ class GoogleAuth
     return new GoogleAuth(sessionManager);
   }
 
-  private readonly sessionStateTracker = new SessionStateTracker();
-
   sessionState$(): Observable<SessionState> {
-    return this.sessionStateTracker.observable;
+    return this.sessionManager.sessionState$();
   }
 
   constructor(private readonly sessionManager: SessionManager<GoogleSession>) {}
@@ -129,43 +126,31 @@ class GoogleAuth
     scope?: string | string[],
     options?: AuthRequestOptions,
   ) {
-    const normalizedScopes = GoogleAuth.normalizeScopes(scope);
     const session = await this.sessionManager.getSession({
       ...options,
-      scopes: normalizedScopes,
+      scopes: GoogleAuth.normalizeScopes(scope),
     });
-    this.sessionStateTracker.setIsSignedId(!!session);
-    if (session) {
-      return session.providerInfo.accessToken;
-    }
-    return '';
+    return session?.providerInfo.accessToken ?? '';
   }
 
   async getIdToken(options: AuthRequestOptions = {}) {
     const session = await this.sessionManager.getSession(options);
-    this.sessionStateTracker.setIsSignedId(!!session);
-    if (session) {
-      return session.providerInfo.idToken;
-    }
-    return '';
+    return session?.providerInfo.idToken ?? '';
   }
 
   async logout() {
     await this.sessionManager.removeSession();
-    this.sessionStateTracker.setIsSignedId(false);
   }
 
   async getBackstageIdentity(
     options: AuthRequestOptions = {},
   ): Promise<BackstageIdentity | undefined> {
     const session = await this.sessionManager.getSession(options);
-    this.sessionStateTracker.setIsSignedId(!!session);
     return session?.backstageIdentity;
   }
 
   async getProfile(options: AuthRequestOptions = {}) {
     const session = await this.sessionManager.getSession(options);
-    this.sessionStateTracker.setIsSignedId(!!session);
     return session?.profile;
   }
 
