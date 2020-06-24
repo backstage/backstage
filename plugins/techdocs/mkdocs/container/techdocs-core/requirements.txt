@@ -1,6 +1,3 @@
-# Fixes an error related to using Setuptools.
-setuptools==47.3.1
-
 # The "base" version of the Mkdocs project.
 # Note: if you update this, also update `install_requires` in setup.py
 # https://github.com/mkdocs/mkdocs
