@@ -32,7 +32,6 @@ class TechDocsCore(BasePlugin):
         config['plugins']['search'] = search_plugin
 
         # Markdown Extensions
-        print(config)
         config['markdown_extensions'].append('admonition')
         config['markdown_extensions'].append('abbr')
         config['markdown_extensions'].append('attr_list')
@@ -51,11 +50,11 @@ class TechDocsCore(BasePlugin):
         config['markdown_extensions'].append('markdown.extensions.tables')
         config['markdown_extensions'].append('markdown_inline_graphviz')
         config['markdown_extensions'].append('plantuml_markdown')
-        config['markdown_extensions'].append('markdown_katex')
-        config['mdx_configs']['markdown_katex'] = {
-            'no_inline_svg': True,
-            'insert_fonts_css': True,
-        }
+        #config['markdown_extensions'].append('markdown_katex')
+        #config['mdx_configs']['markdown_katex'] = {
+        #    'no_inline_svg': True,
+        #    'insert_fonts_css': True,
+        #}
         config['markdown_extensions'].append('pymdownx.betterem')
         config['mdx_configs']['pymdownx.betterem'] = {
             'smart_enable': 'all',
@@ -77,7 +76,6 @@ class TechDocsCore(BasePlugin):
             'custom_checkbox': True,
         }
         config['markdown_extensions'].append('pymdownx.tilde')
-        print(config)
 
         return config
 
