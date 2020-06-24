@@ -19,16 +19,17 @@ import { Strategy as GithubStrategy } from 'passport-github2';
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
+  makeProfileInfo,
 } from '../../lib/PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
   AuthProviderConfig,
   RedirectInfo,
-  AuthInfoBase,
-  AuthInfoPrivate,
   EnvironmentProviderConfig,
   OAuthProviderOptions,
   OAuthProviderConfig,
+  OAuthResponse,
+  PassportDoneCallback,
 } from '../types';
 import { OAuthProvider } from '../../lib/OAuthProvider';
 import {
@@ -36,6 +37,7 @@ import {
   EnvironmentHandler,
 } from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
+import { TokenIssuer } from '../../identity';
 
 export class GithubAuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: GithubStrategy;
@@ -43,25 +45,40 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
   constructor(options: OAuthProviderOptions) {
     this._strategy = new GithubStrategy(
       { ...options },
-      (accessToken: any, _: any, params: any, profile: any, done: any) => {
+      (
+        accessToken: any,
+        _: any,
+        params: any,
+        rawProfile: any,
+        done: PassportDoneCallback<OAuthResponse>,
+      ) => {
+        const profile = makeProfileInfo(rawProfile);
         done(undefined, {
+          providerInfo: {
+            accessToken,
+            scope: params.scope,
+            expiresInSeconds: params.expires_in,
+          },
           profile,
-          accessToken,
-          scope: params.scope,
-          expiresInSeconds: params.expires_in,
         });
       },
     );
   }
 
-  async start(req: express.Request, options: any): Promise<RedirectInfo> {
+  async start(
+    req: express.Request,
+    options: Record<string, string>,
+  ): Promise<RedirectInfo> {
     return await executeRedirectStrategy(req, this._strategy, options);
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ user: AuthInfoBase; info: AuthInfoPrivate }> {
-    return await executeFrameHandlerStrategy(req, this._strategy);
+  async handler(req: express.Request) {
+    const { response } = await executeFrameHandlerStrategy<OAuthResponse>(
+      req,
+      this._strategy,
+    );
+
+    return { response };
   }
 }
 
@@ -69,6 +86,7 @@ export function createGithubProvider(
   { baseUrl }: AuthProviderConfig,
   providerConfig: EnvironmentProviderConfig,
   logger: Logger,
+  tokenIssuer: TokenIssuer,
 ) {
   const envProviders: EnvironmentHandlers = {};
 
@@ -101,6 +119,7 @@ export function createGithubProvider(
       secure,
       baseUrl,
       appOrigin,
+      tokenIssuer,
     });
   }
   return new EnvironmentHandler(envProviders);

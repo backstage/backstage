@@ -17,18 +17,15 @@
 import { Entity } from '@backstage/catalog-model';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
-import { AllServicesCount } from '../components/CatalogFilter/AllServicesCount';
 import {
   CatalogFilterGroup,
   CatalogFilterItem,
 } from '../components/CatalogFilter/CatalogFilter';
-import { StarredCount } from '../components/CatalogFilter/StarredCount';
 
-export enum EntityFilterType {
+export enum EntityGroup {
   ALL = 'ALL',
   STARRED = 'STARRED',
   OWNED = 'OWNED',
-  TYPE = 'TYPE',
 }
 
 export const filterGroups: CatalogFilterGroup[] = [
@@ -36,15 +33,13 @@ export const filterGroups: CatalogFilterGroup[] = [
     name: 'Personal',
     items: [
       {
-        id: EntityFilterType.OWNED,
+        id: EntityGroup.OWNED,
         label: 'Owned',
-        count: 0,
         icon: SettingsIcon,
       },
       {
-        id: EntityFilterType.STARRED,
+        id: EntityGroup.STARRED,
         label: 'Starred',
-        count: StarredCount,
         icon: StarIcon,
       },
     ],
@@ -54,26 +49,75 @@ export const filterGroups: CatalogFilterGroup[] = [
     name: 'Company',
     items: [
       {
-        id: EntityFilterType.ALL,
-        label: 'All Entities',
-        count: AllServicesCount,
+        id: EntityGroup.ALL,
+        label: 'All Services',
       },
     ],
   },
 ];
 
+export const getCatalogFilterItemByType = (filterType: EntityGroup) => {
+  for (const group of filterGroups) {
+    for (const filter of group.items) {
+      if (filter.id === filterType) {
+        return filter;
+      }
+    }
+  }
+  return null;
+};
+
 type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
 
-type EntityFilterOptions = {
-  isStarred?: boolean;
-  type?: string;
+type EntityFilterOptions = Partial<{
+  isStarred: boolean;
+  userId: string;
+}>;
+
+type Owned = {
+  owner: string;
 };
 
 export const entityFilters: Record<string, EntityFilter> = {
-  [EntityFilterType.OWNED]: () => false,
-  [EntityFilterType.ALL]: () => true,
-  [EntityFilterType.STARRED]: (_, { isStarred }) => !!isStarred,
-  [EntityFilterType.TYPE]: (e, { type }) => (e.spec as any)?.type === type,
+  [EntityGroup.OWNED]: (e, { userId }) => {
+    const owner = (e.spec! as Owned).owner;
+    return owner === userId;
+  },
+  [EntityGroup.ALL]: () => true,
+  [EntityGroup.STARRED]: (_, { isStarred }) => !!isStarred,
 };
+
+export const entityTypeFilter = (e: Entity, type: string) =>
+  (e.spec as any)?.type === type;
+
+type EntityType = 'service' | 'website' | 'library' | 'documentation' | 'other';
+
+type LabeledEntityType = {
+  id: EntityType;
+  label: string;
+};
+
+export const labeledEntityTypes: LabeledEntityType[] = [
+  {
+    id: 'service',
+    label: 'Services',
+  },
+  {
+    id: 'website',
+    label: 'Websites',
+  },
+  {
+    id: 'library',
+    label: 'Libraries',
+  },
+  {
+    id: 'documentation',
+    label: 'Documentation',
+  },
+  {
+    id: 'other',
+    label: 'Other',
+  },
+];
 
 export const defaultFilter: CatalogFilterItem = filterGroups[0].items[0];

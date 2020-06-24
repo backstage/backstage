@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.1.1-alpha.9",
+  "version": "0.1.1-alpha.12",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -20,9 +20,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.9",
-    "@backstage/config": "^0.1.1-alpha.9",
-    "@backstage/config-loader": "^0.1.1-alpha.9",
+    "@backstage/backend-common": "^0.1.1-alpha.12",
+    "@backstage/config": "^0.1.1-alpha.12",
+    "@backstage/config-loader": "^0.1.1-alpha.12",
     "@types/express": "^4.17.6",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
@@ -32,27 +32,31 @@
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.0",
     "helmet": "^3.22.0",
+    "jose": "^1.27.1",
     "jwt-decode": "2.2.0",
+    "knex": "^0.21.1",
+    "moment": "^2.26.0",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
     "passport-saml": "^1.3.3",
+    "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.9",
+    "@backstage/cli": "^0.1.1-alpha.12",
     "@types/body-parser": "^1.19.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/jwt-decode": "2.2.1",
+    "@types/passport": "^1.0.3",
     "@types/passport-github2": "^1.2.4",
     "@types/passport-google-oauth20": "^2.0.3",
     "@types/passport-saml": "^1.1.2",
-    "@types/passport": "^1.0.3",
     "jest-fetch-mock": "^3.0.3"
   },
   "files": [
-    "dist/**/*.{js,d.ts}"
+    "dist"
   ]
 }

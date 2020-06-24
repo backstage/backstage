@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
+import { ProfileInfo } from '../../..';
+import { BackstageIdentity } from '../../../definitions';
+
 export type GithubSession = {
-  accessToken: string;
-  scopes: Set<string>;
-  expiresAt: Date;
+  providerInfo: {
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
 };

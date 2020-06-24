@@ -97,17 +97,9 @@ app and configures which plugins are available to use in the app. ​ The
 **software engineer** uses the app's functionality and interacts with its
 plugins. ​
 
-### What is a "plugin" in Backstage?
+### What is the use of a "plugin" in Backstage?
 
-By far, our most-used plugin is our TechDocs plugin, which we use for creating
-technical documentation. Our philosophy at Spotify is to treat "docs like code",
-where you write documentation using the same workflow as you write your code.
-This makes it easier to create, find, and update documentation. We hope to
-release
-[the open source version](https://github.com/spotify/backstage/issues/687) in
-the future. (See also:
-"[Will Spotify's internal plugins be open sourced, too?](https://github.com/spotify/backstage/blob/master/docs/FAQ.md#what-is-a-plugin-in-backstage)"
-above)
+​ A Backstage Plugin adds functionality to Backstage. ​
 
 ### Do I have to write plugins in TypeScript?
 

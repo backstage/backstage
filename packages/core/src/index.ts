@@ -17,28 +17,5 @@
 export * from '@backstage/core-api';
 
 export * from './api-wrappers';
+export * from './components';
 export * from './layout';
-
-export { default as CodeSnippet } from './components/CodeSnippet';
-export { default as DismissableBanner } from './components/DismissableBanner';
-export { AlertDisplay } from './components/AlertDisplay';
-export { default as HorizontalScrollGrid } from './components/HorizontalScrollGrid';
-export { default as ProgressCard } from './components/ProgressBars/ProgressCard';
-export { default as CircleProgress } from './components/ProgressBars/CircleProgress';
-export { default as HorizontalProgress } from './components/ProgressBars/HorizontalProgress';
-export { default as CopyTextButton } from './components/CopyTextButton';
-export { default as Progress } from './components/Progress';
-export * from './components/SimpleStepper';
-export { OAuthRequestDialog } from './components/OAuthRequestDialog';
-export { Lifecycle } from './components/Lifecycle';
-export { default as SupportButton } from './components/SupportButton';
-export { default as Table, SubvalueCell } from './components/Table';
-export type { TableColumn } from './components/Table/Table';
-export { default as StructuredMetadataTable } from './components/StructuredMetadataTable';
-export { default as TrendLine } from './components/TrendLine';
-export { FeatureCalloutCircular } from './components/FeatureDiscovery/FeatureCalloutCircular';
-export * from './components/Status';
-export * from './components/Button';
-export * from './components/Link';
-export { default as WarningPanel } from './components/WarningPanel';
-export { default as Tabs } from './components/Tabs';

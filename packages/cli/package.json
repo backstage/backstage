@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.9",
+  "version": "0.1.1-alpha.12",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -29,16 +29,20 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/config": "0.1.1-alpha.9",
-    "@backstage/config-loader": "^0.1.1-alpha.9",
+    "@backstage/config": "^0.1.1-alpha.12",
+    "@backstage/config-loader": "^0.1.1-alpha.12",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
-    "@rollup/plugin-commonjs": "^12.0.0",
+    "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-json": "^4.0.2",
-    "@rollup/plugin-node-resolve": "^7.1.1",
+    "@rollup/plugin-node-resolve": "^8.1.0",
     "@spotify/eslint-config": "^7.0.1",
     "@sucrase/webpack-loader": "^2.0.0",
+    "@svgr/plugin-jsx": "4.3.x",
+    "@svgr/plugin-svgo": "4.3.x",
+    "@svgr/rollup": "4.3.x",
+    "@svgr/webpack": "4.3.x",
     "@types/start-server-webpack-plugin": "^2.2.0",
     "@types/webpack-env": "^1.15.2",
     "@types/webpack-node-externals": "^1.7.1",
@@ -112,6 +116,7 @@
     "zombie": "^6.1.4"
   },
   "files": [
+    "asset-types",
     "templates",
     "config",
     "bin",

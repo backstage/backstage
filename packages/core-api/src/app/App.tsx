@@ -17,7 +17,6 @@ import React, {
   ComponentType,
   FC,
   useMemo,
-  useCallback,
   useState,
   ReactElement,
 } from 'react';
@@ -258,24 +257,14 @@ export class PrivateAppImpl implements BackstageApp {
       component: ComponentType<SignInPageProps>;
       children: ReactElement;
     }> = ({ component: Component, children }) => {
-      const [done, setDone] = useState(false);
+      const [result, setResult] = useState<SignInResult>();
 
-      const onResult = useCallback(
-        (result: SignInResult) => {
-          if (done) {
-            throw new Error('Identity result callback was called twice');
-          }
-          this.identityApi.setSignInResult(result);
-          setDone(true);
-        },
-        [done],
-      );
-
-      if (done) {
+      if (result) {
+        this.identityApi.setSignInResult(result);
         return children;
       }
 
-      return <Component onResult={onResult} />;
+      return <Component onResult={setResult} />;
     };
 
     const AppRouter: FC<{}> = ({ children }) => {
@@ -293,8 +282,10 @@ export class PrivateAppImpl implements BackstageApp {
       if (!SignInPageComponent) {
         this.identityApi.setSignInResult({
           userId: 'guest',
-          idToken: undefined,
-          logout: async () => {},
+          profile: {
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          },
         });
 
         return (

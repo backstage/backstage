@@ -2,7 +2,6 @@ import {
   ApiRegistry,
   alertApiRef,
   errorApiRef,
-  identityApiRef,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
@@ -12,6 +11,7 @@ import {
   ErrorAlerter,
   GoogleAuth,
   GithubAuth,
+  identityApiRef,
 } from '@backstage/core';
 
 const builder = ApiRegistry.builder();
@@ -22,6 +22,7 @@ builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
 
 builder.add(identityApiRef, {
   getUserId: () => 'guest',
+  getProfile: () => ({ email: 'guest@example.com' }),
   getIdToken: () => undefined,
   logout: async () => {},
 });

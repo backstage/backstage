@@ -106,7 +106,7 @@ describe('CreateAudit', () => {
       fireEvent.click(rendered.getByText(/Create Audit/));
 
       expect(rendered.getByLabelText(/URL/)).toBeDisabled();
-      expect(rendered.getByText(/Create Audit/)).toBeDisabled();
+      expect(rendered.getByText(/Create Audit/).parentElement).toBeDisabled();
     });
   });
 

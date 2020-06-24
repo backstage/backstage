@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import TrendLine from '.';
-import Table from '../Table';
+import { Table } from '../Table';
+import { TrendLine } from './TrendLine';
 import { InfoCard } from '../../layout/InfoCard';
 
 export default {

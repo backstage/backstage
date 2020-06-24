@@ -27,7 +27,7 @@ function color(data: number[], theme: BackstageTheme): string | undefined {
   return theme.palette.status.error;
 }
 
-const Trendline: FC<SparklinesProps & { title?: string }> = props => {
+export const TrendLine: FC<SparklinesProps & { title?: string }> = props => {
   const theme = useTheme<BackstageTheme>();
 
   if (!props.data) return null;
@@ -38,5 +38,3 @@ const Trendline: FC<SparklinesProps & { title?: string }> = props => {
     </Sparklines>
   );
 };
-
-export default Trendline;

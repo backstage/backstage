@@ -21,9 +21,9 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
-import SimpleStepperFooter from './SimpleStepperFooter';
+import { SimpleStepperFooter } from './SimpleStepperFooter';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   end: {
     padding: theme.spacing(3),
   },
@@ -53,7 +53,7 @@ export type StepProps = {
   actions?: StepActions;
 };
 
-const Step: FC<StepProps> = ({
+export const SimpleStepperStep: FC<StepProps> = ({
   title,
   children,
   end,
@@ -82,5 +82,3 @@ const Step: FC<StepProps> = ({
     </MuiStep>
   );
 };
-
-export default Step;

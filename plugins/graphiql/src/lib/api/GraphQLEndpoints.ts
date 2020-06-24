@@ -15,6 +15,7 @@
  */
 
 import { GraphQLBrowseApi, GraphQLEndpoint } from './types';
+import { ErrorApi, OAuthApi } from '@backstage/core';
 
 // Helper for generic http endpoints
 export type EndpointConfig = {
@@ -26,6 +27,23 @@ export type EndpointConfig = {
   method?: 'POST';
   // Defaults to setting Content-Type to application/json
   headers?: { [name in string]: string };
+};
+
+export type GithubEndpointConfig = {
+  id: string;
+  title: string;
+  /**
+   * Github GraphQL API url, defaults to https://api.github.com/graphql
+   */
+  url?: string;
+  /**
+   * Errors will be posted to the ErrorApi if it is provided.
+   */
+  errorApi?: ErrorApi;
+  /**
+   * GitHub Auth API used to authenticate requests.
+   */
+  githubAuthApi: OAuthApi;
 };
 
 export class GraphQLEndpoints implements GraphQLBrowseApi {
@@ -47,6 +65,84 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
           body,
         });
         return res.json();
+      },
+    };
+  }
+
+  /**
+   * Creates a GitHub GraphQL endpoint that uses the GithubAuth API to authenticate requests.
+   *
+   * If a request requires more permissions than is granted by the existing session,
+   * the fetcher will automatically ask for the additional scopes that are required.
+   */
+  static github(config: GithubEndpointConfig): GraphQLEndpoint {
+    const {
+      id,
+      title,
+      url = 'https://api.github.com/graphql',
+      errorApi,
+      githubAuthApi,
+    } = config;
+    type ResponseBody = {
+      errors?: Array<{ type: string; message: string }>;
+    };
+
+    return {
+      id,
+      title,
+      fetcher: async (params: any) => {
+        let retried = false;
+
+        const doRequest = async (): Promise<any> => {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${await githubAuthApi.getAccessToken()}`,
+            },
+            body: JSON.stringify(params),
+          });
+          if (!res.ok) {
+            throw new Error(
+              `Request failed with status ${res.status} ${res.statusText}`,
+            );
+          }
+          const data = (await res.json()) as ResponseBody;
+
+          if (!data.errors || retried) {
+            return data;
+          }
+          retried = true;
+
+          const missingScopes = data.errors
+            .filter(({ type }) => type === 'INSUFFICIENT_SCOPES')
+            .flatMap(({ message }) => {
+              const scopesMatch = message.match(
+                /one of the following scopes: (\[.*?\])/,
+              );
+              if (!scopesMatch) {
+                return [];
+              }
+              try {
+                const scopes = JSON.parse(scopesMatch[1].replace(/'/g, '"'));
+                return scopes;
+              } catch (error) {
+                if (errorApi) {
+                  errorApi.post(
+                    new Error(
+                      `Failed to parse scope string "${scopesMatch[1]}", ${error}`,
+                    ),
+                  );
+                }
+                return [];
+              }
+            });
+
+          await githubAuthApi.getAccessToken(missingScopes);
+          return doRequest();
+        };
+
+        return await doRequest();
       },
     };
   }

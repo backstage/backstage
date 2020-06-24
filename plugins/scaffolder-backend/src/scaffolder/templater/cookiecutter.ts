@@ -25,7 +25,7 @@ export class CookieCutter implements TemplaterBase {
       ...options.values,
     };
 
-    await fs.writeJSON(options.directory, cookieInfo);
+    await fs.writeJSON(`${options.directory}/cookiecutter.json`, cookieInfo);
     return '';
     // run cookie cutter with new json
   }
