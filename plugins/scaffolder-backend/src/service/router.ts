@@ -17,10 +17,10 @@
 import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
-import { PreparerBuilder, TemplaterBase } from '../scaffolder';
+import { PreparerBuilder, TemplaterBase, JobProcessor } from '../scaffolder';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
-
+import {} from '@backstage/backend-common';
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templater: TemplaterBase;
@@ -35,10 +35,32 @@ export async function createRouter(
   const { preparers, templater, logger: parentLogger, dockerClient } = options;
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
+  const jobProcessor = new JobProcessor({
+    preparers,
+    templater,
+    logger,
+    dockerClient,
+  });
+
+  router.get('/v1/job/:jobId', ({ params }, res) => {
+    const job = jobProcessor.get(params.jobId);
+
+    if (!job) {
+      return res.status(404).send({ error: 'job not found' });
+    }
+
+    res.send({
+      id: job.id,
+      metadata: job.metadata,
+      status: job.status,
+      log: job.log,
+      error: job.error,
+    });
+  });
+
   router.post('/v1/jobs', async (_, res) => {
     // TODO(blam): Create a unique job here and return the ID so that
     // The end user can poll for updates on the current job
-    res.status(201).json({ accepted: true });
 
     // TODO(blam): Take this entity from the post body sent from the frontend
     const mockEntity: TemplateEntityV1alpha1 = {
@@ -64,20 +86,12 @@ export async function createRouter(
       },
     };
 
-    // Get the preparer for the mock entity
-    const preparer = preparers.get(mockEntity);
+    const job = jobProcessor.create(mockEntity, { component_id: 'test' });
+    res.status(201).json({ jobId: job.id });
 
-    // Run the preparer for the mock entity to produce a temporary directory with template in
-    const skeletonPath = await preparer.prepare(mockEntity);
+    jobProcessor.run(job);
 
-    // Run the templater on the mock directory with values from the post body
-    const templatedPath = await templater.run({
-      directory: skeletonPath,
-      values: { component_id: 'test' },
-      dockerClient,
-    });
-
-    console.warn(templatedPath);
+    // console.warn(templatedPath);
   });
 
   const app = express();

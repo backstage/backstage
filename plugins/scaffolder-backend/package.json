@@ -36,6 +36,7 @@
     "helmet": "^3.22.0",
     "morgan": "^1.10.0",
     "nodegit": "0.26.5",
+    "uuid": "^8.2.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
