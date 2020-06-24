@@ -1,0 +1,46 @@
+name: TechDocs
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/techdocs.yml'
+      - 'packages/techdocs-cli/**'
+      - 'plugins/techdocs/**'
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ runner.temp }}/plugins/techdocs/mkdocs/container
+
+    name: Python ${{ matrix.node-version }} on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: verify docker build
+        uses: docker/build-push-action@v1
+        with:
+          repository: spotify/techdocs
+          push: false
+
+  lint:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.7]
+
+    defaults:
+      run:
+        working-directory: ${{ runner.temp }}/plugins/techdocs/mkdocs/container/techdocs-core
+
+    name: Python ${{ matrix.node-version }} on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: lint mkdocs-core package
+        working-directory: ${{ runner.temp }}/plugins/techdocs/mkdocs/container/techdocs-core
+        run: |
+          pip install -r requirements.txt
+          python -m black --check src/
