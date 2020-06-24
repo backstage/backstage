@@ -67,12 +67,6 @@ export async function createRouter(
             clientId: process.env.AUTH_GOOGLE_CLIENT_ID!,
             clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET!,
           },
-          production: {
-            appOrigin: 'http://localhost:3000',
-            secure: false,
-            clientId: '',
-            clientSecret: '',
-          },
         },
         github: {
           development: {

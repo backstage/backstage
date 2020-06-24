@@ -19,16 +19,17 @@ import { Strategy as GithubStrategy } from 'passport-github2';
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
+  makeProfileInfo,
 } from '../../lib/PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
   AuthProviderConfig,
   RedirectInfo,
-  AuthInfoBase,
-  AuthInfoPrivate,
   EnvironmentProviderConfig,
   OAuthProviderOptions,
   OAuthProviderConfig,
+  OAuthResponse,
+  PassportDoneCallback,
 } from '../types';
 import { OAuthProvider } from '../../lib/OAuthProvider';
 import {
@@ -44,25 +45,42 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
   constructor(options: OAuthProviderOptions) {
     this._strategy = new GithubStrategy(
       { ...options },
-      (accessToken: any, _: any, params: any, profile: any, done: any) => {
+      (
+        accessToken: any,
+        _: any,
+        params: any,
+        rawProfile: any,
+        done: PassportDoneCallback<OAuthResponse>,
+      ) => {
+        const profile = makeProfileInfo(rawProfile);
         done(undefined, {
+          providerInfo: {
+            accessToken,
+            scope: params.scope,
+            expiresInSeconds: params.expires_in,
+          },
           profile,
-          accessToken,
-          scope: params.scope,
-          expiresInSeconds: params.expires_in,
         });
       },
     );
   }
 
-  async start(req: express.Request, options: any): Promise<RedirectInfo> {
+  async start(
+    req: express.Request,
+    options: Record<string, string>,
+  ): Promise<RedirectInfo> {
     return await executeRedirectStrategy(req, this._strategy, options);
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ user: AuthInfoBase; info: AuthInfoPrivate }> {
-    return await executeFrameHandlerStrategy(req, this._strategy);
+  async handler(req: express.Request): Promise<{ response: OAuthResponse }> {
+    const result = await executeFrameHandlerStrategy<OAuthResponse>(
+      req,
+      this._strategy,
+    );
+
+    return {
+      response: result.response,
+    };
   }
 }
 

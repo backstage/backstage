@@ -37,13 +37,13 @@ import { Observable } from '../..';
  */
 export type OAuthScope = string | string[];
 
-export type AccessTokenOptions = {
+export type AuthRequestOptions = {
   /**
    * If this is set to true, the user will not be prompted to log in,
-   * and an empty access token will be returned if there is no existing session.
+   * and an empty response will be returned if there is no existing session.
    *
-   * This can be used to perform a check whether the user is logged in with a set of scopes,
-   * or if you don't want to force a user to be logged in, but provide functionality if they already are.
+   * This can be used to perform a check whether the user is logged in, or if you don't
+   * want to force a user to be logged in, but provide functionality if they already are.
    *
    * @default false
    */
@@ -88,36 +88,13 @@ export type OAuthApi = {
    */
   getAccessToken(
     scope?: OAuthScope,
-    options?: AccessTokenOptions,
+    options?: AuthRequestOptions,
   ): Promise<string>;
 
   /**
    * Log out the user's session. This will reload the page.
    */
   logout(): Promise<void>;
-};
-
-export type IdTokenOptions = {
-  /**
-   * If this is set to true, the user will not be prompted to log in,
-   * and an empty id token will be returned if there is no existing session.
-   *
-   * This can be used to perform a check whether the user is logged in, or if you don't
-   * want to force a user to be logged in, but provide functionality if they already are.
-   *
-   * @default false
-   */
-  optional?: boolean;
-
-  /**
-   * If this is set to true, the request will bypass the regular oauth login modal
-   * and open the login popup directly.
-   *
-   * The method must be called synchronously from a user action for this to work in all browsers.
-   *
-   * @default false
-   */
-  instantPopup?: boolean;
 };
 
 /**
@@ -136,7 +113,7 @@ export type OpenIdConnectApi = {
    * to log in. The returned promise will not resolve until the user has successfully logged in.
    * The returned promise can be rejected, but only if the user rejects the login request.
    */
-  getIdToken(options?: IdTokenOptions): Promise<string>;
+  getIdToken(options?: AuthRequestOptions): Promise<string>;
 
   /**
    * Log out the user's session. This will reload the page.
@@ -144,38 +121,65 @@ export type OpenIdConnectApi = {
   logout(): Promise<void>;
 };
 
-export type ProfileInfoOptions = {
-  /**
-   * If this is set to true, the user will not be prompted to log in,
-   * and an empty profile will be returned if there is no existing session.
-   *
-   * This can be used to perform a check whether the user is logged in, or if you don't
-   * want to force a user to be logged in, but provide functionality if they already are.
-   *
-   * @default false
-   */
-  optional?: boolean;
-};
-
 /**
  * This API provides access to profile information of the user from an auth provider.
  */
 export type ProfileInfoApi = {
-  getProfile(options?: ProfileInfoOptions): Promise<ProfileInfo | undefined>;
+  /**
+   * Get profile information for the user as supplied by this auth provider.
+   *
+   * If the optional flag is not set, a session is guaranteed to be returned, while if
+   * the optional flag is set, the session may be undefined. See @AuthRequestOptions for more details.
+   */
+  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
 };
 
 /**
- * Profile information of the user from an auth provider.
+ * This API provides access to the user's identity within Backstage.
+ *
+ * An auth provider that implements this interface can be used to sign-in to backstage. It is
+ * not intended to be used directly from a plugin, but instead serves as a connection between
+ * this authentication method and the app's @IdentityApi
+ */
+export type BackstageIdentityApi = {
+  /**
+   * Get the user's identity within Backstage. This should normally not be called directly,
+   * use the @IdentityApi instead.
+   *
+   * If the optional flag is not set, a session is guaranteed to be returned, while if
+   * the optional flag is set, the session may be undefined. See @AuthRequestOptions for more details.
+   */
+  getBackstageIdentity(
+    options?: AuthRequestOptions,
+  ): Promise<BackstageIdentity | undefined>;
+};
+
+export type BackstageIdentity = {
+  /**
+   * The backstage user ID.
+   */
+  id: string;
+
+  /**
+   * An ID token that can be used to authenticate the user within Backstage.
+   */
+  idToken: string;
+};
+
+/**
+ * Profile information of the user.
  */
 export type ProfileInfo = {
   /**
    * Email ID.
    */
   email: string;
+
   /**
    * Display name that can be presented to the user.
    */
-  name?: string;
+  displayName?: string;
+
   /**
    * URL to an avatar image of the user.
    */
@@ -207,7 +211,11 @@ export type SessionStateApi = {
  * email and expiration information. Do not rely on any other fields, as they might not be present.
  */
 export const googleAuthApiRef = createApiRef<
-  OAuthApi & OpenIdConnectApi & ProfileInfoApi & SessionStateApi
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionStateApi
 >({
   id: 'core.auth.google',
   description: 'Provides authentication towards Google APIs and identities',
@@ -219,7 +227,9 @@ export const googleAuthApiRef = createApiRef<
  * See https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
  * for a full list of supported scopes.
  */
-export const githubAuthApiRef = createApiRef<OAuthApi & SessionStateApi>({
+export const githubAuthApiRef = createApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
+>({
   id: 'core.auth.github',
   description: 'Provides authentication towards Github APIs',
 });

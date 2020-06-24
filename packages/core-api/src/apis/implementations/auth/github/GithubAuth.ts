@@ -19,9 +19,11 @@ import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { GithubSession } from './types';
 import {
   OAuthApi,
-  AccessTokenOptions,
   SessionStateApi,
   SessionState,
+  ProfileInfo,
+  BackstageIdentity,
+  AuthRequestOptions,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
@@ -41,10 +43,13 @@ type CreateOptions = {
 };
 
 export type GithubAuthResponse = {
-  accessToken: string;
-  idToken: string;
-  scope: string;
-  expiresInSeconds: number;
+  providerInfo: {
+    accessToken: string;
+    scope: string;
+    expiresInSeconds: number;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
 };
 
 const DEFAULT_PROVIDER = {
@@ -69,9 +74,14 @@ class GithubAuth implements OAuthApi, SessionStateApi {
       oauthRequestApi: oauthRequestApi,
       sessionTransform(res: GithubAuthResponse): GithubSession {
         return {
-          accessToken: res.accessToken,
-          scopes: GithubAuth.normalizeScope(res.scope),
-          expiresAt: new Date(Date.now() + res.expiresInSeconds * 1000),
+          ...res,
+          providerInfo: {
+            accessToken: res.providerInfo.accessToken,
+            scopes: GithubAuth.normalizeScope(res.providerInfo.scope),
+            expiresAt: new Date(
+              Date.now() + res.providerInfo.expiresInSeconds * 1000,
+            ),
+          },
         };
       },
     });
@@ -79,7 +89,7 @@ class GithubAuth implements OAuthApi, SessionStateApi {
     const sessionManager = new StaticAuthSessionManager({
       connector,
       defaultScopes: new Set(['user']),
-      sessionScopes: session => session.scopes,
+      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 
     return new GithubAuth(sessionManager);
@@ -93,7 +103,7 @@ class GithubAuth implements OAuthApi, SessionStateApi {
 
   constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
 
-  async getAccessToken(scope?: string, options?: AccessTokenOptions) {
+  async getAccessToken(scope?: string, options?: AuthRequestOptions) {
     const normalizedScopes = GithubAuth.normalizeScope(scope);
     const session = await this.sessionManager.getSession({
       ...options,
@@ -101,9 +111,23 @@ class GithubAuth implements OAuthApi, SessionStateApi {
     });
     this.sessionStateTracker.setIsSignedId(!!session);
     if (session) {
-      return session.accessToken;
+      return session.providerInfo.accessToken;
     }
     return '';
+  }
+
+  async getBackstageIdentity(
+    options: AuthRequestOptions = {},
+  ): Promise<BackstageIdentity | undefined> {
+    const session = await this.sessionManager.getSession(options);
+    this.sessionStateTracker.setIsSignedId(!!session);
+    return session?.backstageIdentity;
+  }
+
+  async getProfile(options: AuthRequestOptions = {}) {
+    const session = await this.sessionManager.getSession(options);
+    this.sessionStateTracker.setIsSignedId(!!session);
+    return session?.profile;
   }
 
   async logout() {
