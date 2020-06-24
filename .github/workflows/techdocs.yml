@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     env:
-      TECHDOCS_CONTAINER_PATH: /plugins/techdocs/mkdocs/container
+      TECHDOCS_CONTAINER_PATH: plugins/techdocs/mkdocs/container
 
     strategy:
       matrix:
