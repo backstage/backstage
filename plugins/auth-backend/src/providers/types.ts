@@ -238,8 +238,6 @@ export type OAuthPrivateInfo = {
   refreshToken: string;
 };
 
-// {type: 'authorization_response', response: {...}}
-
 /**
  * Payload sent as a post message after the auth request is complete.
  * If successful then has a valid payload with Auth information else contains an error.
@@ -271,22 +269,12 @@ export type RedirectInfo = {
   status?: number;
 };
 
-/* 
-metadata:
-  name: john
-spec:
-  profile:
-    email: john.doe@example.com
-    displayName: John Doe
-    picture: https://example.com/avatars/john.doe
-
-  identities:
-    - type: google
-      email: john.doe@gmail.com
+/**
+ * Used to display login information to user, i.e. sidebar popup.
+ *
+ * It is also temporarily used as the profile of the signed-in user's Backstage
+ * identity, but we want to replace that with data from identity and/org catalog service
  */
-
-// 1. Link to identity in catalog / within backstage
-// 2. Display login information to user, i.e. sidebar popup
 export type ProfileInfo = {
   /**
    * Email ID of the signed in user.

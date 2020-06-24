@@ -31,7 +31,7 @@ export const makeProfileInfo = (
   const { displayName } = profile;
 
   let email: string | undefined = undefined;
-  if (profile.emails) {
+  if (profile.emails && profile.emails.length > 0) {
     const [firstEmail] = profile.emails;
     email = firstEmail.value;
   }
