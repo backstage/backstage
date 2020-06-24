@@ -82,6 +82,10 @@ export class AuthSessionStore<T> implements SessionManager<T> {
     await this.manager.removeSession();
   }
 
+  sessionState$() {
+    return this.manager.sessionState$();
+  }
+
   private loadSession(): T | undefined {
     try {
       const sessionJson = localStorage.getItem(this.storageKey);
