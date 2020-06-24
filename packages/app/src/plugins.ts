@@ -24,3 +24,4 @@ export { plugin as RegisterComponent } from '@backstage/plugin-register-componen
 export { plugin as Sentry } from '@backstage/plugin-sentry';
 export { plugin as GitopsProfiles } from '@backstage/plugin-gitops-profiles';
 export { plugin as TechDocs } from '@backstage/plugin-techdocs';
+export { plugin as GraphiQL } from '@backstage/plugin-graphiql';
