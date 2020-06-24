@@ -21,9 +21,12 @@ jobs:
       - uses: actions/checkout@v2
 
       # Lint Python code for techdocs-core package
-      - name: lint techdocs-core package
-        working-directory: ./plugins/techdocs/mkdocs/container/techdocs-core
+      - name: prepare python environment
         run: |
+          python3 -m pip install --index-url https://pypi.org/simple/ setuptools
           python3 -m pip install --upgrade pip
           python3 -m pip install --index-url https://pypi.org/simple/ -r requirements.txt
-          python3 -m black --check src/
+
+      - name: lint techdocs-core package
+        run: |
+          python3 -m black --check ./plugins/techdocs/mkdocs/container/techdocs-core/src/
