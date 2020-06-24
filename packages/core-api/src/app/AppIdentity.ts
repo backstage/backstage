@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IdentityApi } from '../apis';
+import { IdentityApi, ProfileInfo } from '../apis';
 import { SignInResult } from './types';
 
 /**
@@ -24,6 +24,7 @@ import { SignInResult } from './types';
 export class AppIdentity implements IdentityApi {
   private hasIdentity = false;
   private userId?: string;
+  private profile?: ProfileInfo;
   private idTokenFunc?: () => Promise<string>;
   private logoutFunc?: () => Promise<void>;
 
@@ -34,6 +35,15 @@ export class AppIdentity implements IdentityApi {
       );
     }
     return this.userId!;
+  }
+
+  getProfile(): ProfileInfo {
+    if (!this.hasIdentity) {
+      throw new Error(
+        'Tried to access IdentityApi profile before app was loaded',
+      );
+    }
+    return this.profile!;
   }
 
   async getIdToken(): Promise<string | undefined> {
@@ -55,6 +65,7 @@ export class AppIdentity implements IdentityApi {
     location.reload();
   }
 
+  // This is indirectly called by the sign-in page to continue into the app.
   setSignInResult(result: SignInResult) {
     if (this.hasIdentity) {
       return;
@@ -62,8 +73,12 @@ export class AppIdentity implements IdentityApi {
     if (!result.userId) {
       throw new Error('Invalid sign-in result, userId not set');
     }
+    if (!result.profile) {
+      throw new Error('Invalid sign-in result, profile not set');
+    }
     this.hasIdentity = true;
     this.userId = result.userId;
+    this.profile = result.profile;
     this.idTokenFunc = result.getIdToken;
     this.logoutFunc = result.logout;
   }

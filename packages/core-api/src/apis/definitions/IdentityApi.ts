@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { createApiRef } from '../ApiRef';
+import { ProfileInfo } from './auth';
 
 /**
  * The Identity API used to identify and get information about the signed in user.
@@ -28,6 +29,11 @@ export type IdentityApi = {
    *       be possible to fetch all owned components using this ID.
    */
   getUserId(): string;
+
+  /**
+   * The profile of the signed in user.
+   */
+  getProfile(): ProfileInfo;
 
   /**
    * An OpenID Connect ID Token which proves the identity of the signed in user.

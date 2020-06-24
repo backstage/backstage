@@ -22,6 +22,7 @@ builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
 
 builder.add(identityApiRef, {
   getUserId: () => 'guest',
+  getProfile: () => ({ email: 'guest@example.com' }),
   getIdToken: () => undefined,
   logout: async () => {},
 });

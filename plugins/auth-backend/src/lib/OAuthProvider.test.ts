@@ -23,7 +23,23 @@ import {
   verifyNonce,
   OAuthProvider,
 } from './OAuthProvider';
-import { AuthResponse, OAuthProviderHandlers } from '../providers/types';
+import {
+  WebMessageResponse,
+  OAuthProviderHandlers,
+  OAuthResponse,
+} from '../providers/types';
+
+const mockResponseData: OAuthResponse = {
+  providerInfo: {
+    accessToken: 'ACCESS_TOKEN',
+    idToken: 'ID_TOKEN',
+    expiresInSeconds: 10,
+    scope: 'email',
+  },
+  profile: {
+    email: 'foo@bar.com',
+  },
+};
 
 describe('OAuthProvider Utils', () => {
   describe('verifyNonce', () => {
@@ -38,6 +54,7 @@ describe('OAuthProvider Utils', () => {
         verifyNonce(mockRequest, 'providera');
       }).toThrowError('Missing nonce');
     });
+
     it('should throw error if state nonce missing', () => {
       const mockRequest = ({
         cookies: {
@@ -49,6 +66,7 @@ describe('OAuthProvider Utils', () => {
         verifyNonce(mockRequest, 'providera');
       }).toThrowError('Missing nonce');
     });
+
     it('should throw error if nonce mismatch', () => {
       const mockRequest = ({
         cookies: {
@@ -62,6 +80,7 @@ describe('OAuthProvider Utils', () => {
         verifyNonce(mockRequest, 'providera');
       }).toThrowError('Invalid nonce');
     });
+
     it('should not throw any error if nonce matches', () => {
       const mockRequest = ({
         cookies: {
@@ -85,13 +104,22 @@ describe('OAuthProvider Utils', () => {
         setHeader: jest.fn().mockReturnThis(),
       } as unknown) as express.Response;
 
-      const data: AuthResponse = {
-        type: 'auth-result',
-        payload: {
-          accessToken: 'ACCESS_TOKEN',
-          idToken: 'ID_TOKEN',
-          expiresInSeconds: 10,
-          scope: 'email',
+      const data: WebMessageResponse = {
+        type: 'authorization_response',
+        response: {
+          providerInfo: {
+            accessToken: 'ACCESS_TOKEN',
+            idToken: 'ID_TOKEN',
+            expiresInSeconds: 10,
+            scope: 'email',
+          },
+          profile: {
+            email: 'foo@bar.com',
+          },
+          backstageIdentity: {
+            id: 'a',
+            idToken: 'a.b.c',
+          },
         },
       };
       const jsonData = JSON.stringify(data);
@@ -111,8 +139,8 @@ describe('OAuthProvider Utils', () => {
         setHeader: jest.fn().mockReturnThis(),
       } as unknown) as express.Response;
 
-      const data: AuthResponse = {
-        type: 'auth-result',
+      const data: WebMessageResponse = {
+        type: 'authorization_response',
         error: new Error('Unknown error occured'),
       };
       const jsonData = JSON.stringify(data);
@@ -161,16 +189,12 @@ describe('OAuthProvider', () => {
     }
     async handler() {
       return {
-        user: {},
-        info: {
-          refreshToken: 'token',
-        },
+        response: mockResponseData,
+        refreshToken: 'token',
       };
     }
     async refresh() {
-      return {
-        accessToken: 'token',
-      };
+      return mockResponseData;
     }
   }
   const providerInstance = new MyAuthProvider();
@@ -323,11 +347,13 @@ describe('OAuthProvider', () => {
 
     await oauthProvider.refresh(mockRequest, mockResponse);
     expect(mockResponse.send).toHaveBeenCalledTimes(1);
-    expect(mockResponse.send).toHaveBeenCalledWith(
-      expect.objectContaining({
-        accessToken: 'token',
-      }),
-    );
+    expect(mockResponse.send).toHaveBeenCalledWith({
+      ...mockResponseData,
+      backstageIdentity: {
+        id: mockResponseData.profile.email,
+        idToken: 'my-id-token',
+      },
+    });
   });
 
   it('handles refresh without capabilities', async () => {

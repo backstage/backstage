@@ -18,7 +18,7 @@ import { ComponentType } from 'react';
 import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
 import { BackstagePlugin } from '../plugin';
 import { ApiHolder } from '../apis';
-import { AppTheme, ConfigApi } from '../apis/definitions';
+import { AppTheme, ConfigApi, ProfileInfo } from '../apis/definitions';
 import { AppConfig } from '@backstage/config';
 
 export type BootErrorPageProps = {
@@ -31,6 +31,9 @@ export type SignInResult = {
    * User ID that will be returned by the IdentityApi
    */
   userId: string;
+
+  profile: ProfileInfo;
+
   /**
    * Function used to retrieve an ID token for the signed in user.
    */

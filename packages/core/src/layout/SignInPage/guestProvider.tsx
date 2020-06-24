@@ -19,6 +19,14 @@ import { Grid, Typography, Button } from '@material-ui/core';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 
+const result = {
+  userId: 'guest',
+  profile: {
+    email: 'guest@example.com',
+    displayName: 'Guest',
+  },
+};
+
 const Component: ProviderComponent = ({ onResult }) => (
   <Grid item>
     <InfoCard
@@ -27,7 +35,7 @@ const Component: ProviderComponent = ({ onResult }) => (
         <Button
           color="primary"
           variant="outlined"
-          onClick={() => onResult({ userId: 'guest' })}
+          onClick={() => onResult(result)}
         >
           Enter
         </Button>
@@ -45,7 +53,7 @@ const Component: ProviderComponent = ({ onResult }) => (
 );
 
 const loader: ProviderLoader = async () => {
-  return { userId: 'guest' };
+  return result;
 };
 
 export const guestProvider: SignInProvider = { Component, loader };

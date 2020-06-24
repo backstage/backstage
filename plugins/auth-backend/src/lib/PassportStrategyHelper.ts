@@ -26,42 +26,52 @@ import {
 
 export const makeProfileInfo = (
   profile: passport.Profile,
-  params: any,
+  idToken?: string,
 ): ProfileInfo => {
-  const { displayName: name } = profile;
+  const { displayName } = profile;
 
-  let email = '';
-  if (profile.emails) {
+  let email: string | undefined = undefined;
+  if (profile.emails && profile.emails.length > 0) {
     const [firstEmail] = profile.emails;
     email = firstEmail.value;
   }
 
-  if (!email && params.id_token) {
-    try {
-      const decoded: { email: string } = jwtDecoder(params.id_token);
-      email = decoded.email;
-    } catch (e) {
-      console.error('Failed to parse id token and get profile info');
-    }
-  }
-
-  let picture = '';
+  let picture: string | undefined = undefined;
   if (profile.photos) {
     const [firstPhoto] = profile.photos;
     picture = firstPhoto.value;
   }
 
+  if ((!email || !picture) && idToken) {
+    try {
+      const decoded: Record<string, string> = jwtDecoder(idToken);
+
+      if (!email && decoded.email) {
+        email = decoded.email;
+      }
+      if (!picture && decoded.picture) {
+        picture = decoded.picture;
+      }
+    } catch (e) {
+      throw new Error(`Failed to parse id token and get profile info, ${e}`);
+    }
+  }
+
+  if (!email) {
+    throw new Error('No email received in profile info');
+  }
+
   return {
-    name,
     email,
     picture,
+    displayName,
   };
 };
 
 export const executeRedirectStrategy = async (
   req: express.Request,
   providerStrategy: passport.Strategy,
-  options: any,
+  options: Record<string, string>,
 ): Promise<RedirectInfo> => {
   return new Promise(resolve => {
     const strategy = Object.create(providerStrategy);
@@ -73,30 +83,32 @@ export const executeRedirectStrategy = async (
   });
 };
 
-export const executeFrameHandlerStrategy = async (
+export const executeFrameHandlerStrategy = async <T, PrivateInfo = never>(
   req: express.Request,
   providerStrategy: passport.Strategy,
 ) => {
-  return new Promise<{ user: any; info: any }>((resolve, reject) => {
-    const strategy = Object.create(providerStrategy);
-    strategy.success = (user: any, info: any) => {
-      resolve({ user, info });
-    };
-    strategy.fail = (
-      info: { type: 'success' | 'error'; message?: string },
-      // _status: number,
-    ) => {
-      reject(new Error(`Authentication rejected, ${info.message ?? ''}`));
-    };
-    strategy.error = (error: Error) => {
-      reject(new Error(`Authentication failed, ${error}`));
-    };
-    strategy.redirect = () => {
-      reject(new Error('Unexpected redirect'));
-    };
+  return new Promise<{ response: T; privateInfo: PrivateInfo }>(
+    (resolve, reject) => {
+      const strategy = Object.create(providerStrategy);
+      strategy.success = (response: any, privateInfo: any) => {
+        resolve({ response, privateInfo });
+      };
+      strategy.fail = (
+        info: { type: 'success' | 'error'; message?: string },
+        // _status: number,
+      ) => {
+        reject(new Error(`Authentication rejected, ${info.message ?? ''}`));
+      };
+      strategy.error = (error: Error) => {
+        reject(new Error(`Authentication failed, ${error}`));
+      };
+      strategy.redirect = () => {
+        reject(new Error('Unexpected redirect'));
+      };
 
-    strategy.authenticate(req, {});
-  });
+      strategy.authenticate(req, {});
+    },
+  );
 };
 
 export const executeRefreshTokenStrategy = async (
@@ -151,7 +163,7 @@ export const executeRefreshTokenStrategy = async (
 export const executeFetchUserProfileStrategy = async (
   providerStrategy: passport.Strategy,
   accessToken: string,
-  params: any,
+  idToken?: string,
 ): Promise<ProfileInfo> => {
   return new Promise((resolve, reject) => {
     const anyStrategy = (providerStrategy as unknown) as ProviderStrategy;
@@ -162,7 +174,7 @@ export const executeFetchUserProfileStrategy = async (
           reject(error);
         }
 
-        const profile = makeProfileInfo(passportProfile, params);
+        const profile = makeProfileInfo(passportProfile, idToken);
         resolve(profile);
       },
     );
