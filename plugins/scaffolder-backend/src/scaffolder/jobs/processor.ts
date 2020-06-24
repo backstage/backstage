@@ -104,7 +104,7 @@ export class JobProcessor implements Processor {
     } catch (ex) {
       job.error = ex;
       job.status = 'FAILED';
-      logger.error(`job ${job.id} failed with reason`, { ex });
+      logger.error(`job ${job.id} failed with reason: ${ex}`);
     }
   }
 }
