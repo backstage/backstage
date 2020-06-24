@@ -24,6 +24,6 @@ jobs:
       - name: lint techdocs-core package
         working-directory: ./plugins/techdocs/mkdocs/container/techdocs-core
         run: |
-          python3 -m pip3 install --upgrade pip
-          python3 -m pip3 install --index-url https://pypi.org/simple/ -r requirements.txt
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --index-url https://pypi.org/simple/ -r requirements.txt
           python3 -m black --check src/
