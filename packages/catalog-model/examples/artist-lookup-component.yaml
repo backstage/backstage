@@ -6,4 +6,4 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: tools@example.com
+  owner: artists@example.com
