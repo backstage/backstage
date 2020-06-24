@@ -31,6 +31,5 @@ jobs:
           python3 -m pip install --index-url https://pypi.org/simple/ -r ${env:TECHDOCS_CORE_PATH}/requirements.txt
 
       - name: lint techdocs-core package
-        working-directory: ./plugins/techdocs/mkdocs/container/techdocs-core
         run: |
           python3 -m black --check ${env:TECHDOCS_CORE_PATH}/src
