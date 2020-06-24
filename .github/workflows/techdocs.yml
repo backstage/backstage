@@ -16,6 +16,9 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.7]
 
+    env:
+      TECHDOCS_CORE_PATH: ./plugins/techdocs/mkdocs/container/techdocs-core
+
     name: Python ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -25,8 +28,9 @@ jobs:
         run: |
           python3 -m pip install --index-url https://pypi.org/simple/ setuptools
           python3 -m pip install --upgrade pip
-          python3 -m pip install --index-url https://pypi.org/simple/ -r requirements.txt
+          python3 -m pip install --index-url https://pypi.org/simple/ -r ${env:TECHDOCS_CORE_PATH}/requirements.txt
 
       - name: lint techdocs-core package
+        working-directory: ./plugins/techdocs/mkdocs/container/techdocs-core
         run: |
-          python3 -m black --check ./plugins/techdocs/mkdocs/container/techdocs-core/src/
+          python3 -m black --check ${env:TECHDOCS_CORE_PATH}/src
