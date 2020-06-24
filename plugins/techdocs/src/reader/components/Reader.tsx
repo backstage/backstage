@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export { default } from './ExampleFetchComponent';
+import React from 'react';
+
+export default function Reader() {
+  return <h1>Hello world</h1>;
+}
