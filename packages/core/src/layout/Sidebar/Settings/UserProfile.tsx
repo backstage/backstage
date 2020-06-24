@@ -34,14 +34,16 @@ export const UserProfile: FC<{ open: boolean; setOpen: Function }> = ({
 }) => {
   const ref = useRef<Element>(); // for scrolling down when collapse item opens
   const classes = useStyles();
-  const profile = useApi(identityApiRef).getProfile();
+  const identityApi = useApi(identityApiRef);
 
   const handleClick = () => {
     setOpen(!open);
     setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth' }), 300);
   };
 
-  const displayName = profile.displayName ?? profile.email;
+  const userId = identityApi.getUserId();
+  const profile = identityApi.getProfile();
+  const displayName = profile.displayName ?? userId;
   const SignInAvatar = () => (
     <Avatar src={profile.picture} className={classes.avatar}>
       {displayName[0]}
