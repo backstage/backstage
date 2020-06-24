@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { Observable } from '../../types';
+import { SessionState } from '../../apis';
+
 export type GetSessionOptions = {
   optional?: boolean;
   instantPopup?: boolean;
@@ -29,6 +32,8 @@ export type SessionManager<T> = {
   getSession(options: GetSessionOptions): Promise<T | undefined>;
 
   removeSession(): Promise<void>;
+
+  sessionState$(): Observable<SessionState>;
 };
 
 /**

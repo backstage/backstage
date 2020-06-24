@@ -23,13 +23,9 @@ import {
   verifyNonce,
   OAuthProvider,
 } from './OAuthProvider';
-import {
-  WebMessageResponse,
-  OAuthProviderHandlers,
-  OAuthResponse,
-} from '../providers/types';
+import { WebMessageResponse, OAuthProviderHandlers } from '../providers/types';
 
-const mockResponseData: OAuthResponse = {
+const mockResponseData = {
   providerInfo: {
     accessToken: 'ACCESS_TOKEN',
     idToken: 'ID_TOKEN',
@@ -38,6 +34,9 @@ const mockResponseData: OAuthResponse = {
   },
   profile: {
     email: 'foo@bar.com',
+  },
+  backstageIdentity: {
+    id: 'foo',
   },
 };
 
@@ -350,7 +349,7 @@ describe('OAuthProvider', () => {
     expect(mockResponse.send).toHaveBeenCalledWith({
       ...mockResponseData,
       backstageIdentity: {
-        id: mockResponseData.profile.email,
+        id: mockResponseData.backstageIdentity.id,
         idToken: 'my-id-token',
       },
     });

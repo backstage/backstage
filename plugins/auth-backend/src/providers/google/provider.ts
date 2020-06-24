@@ -97,14 +97,14 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
   async handler(
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken: string }> {
-    const result = await executeFrameHandlerStrategy<
+    const { response, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResponse,
       PrivateInfo
     >(req, this._strategy);
 
     return {
-      response: result.response,
-      refreshToken: result.privateInfo.refreshToken,
+      response: await this.populateIdentity(response),
+      refreshToken: privateInfo.refreshToken,
     };
   }
 
@@ -121,7 +121,7 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
       params.id_token,
     );
 
-    return {
+    return this.populateIdentity({
       providerInfo: {
         accessToken,
         idToken: params.id_token,
@@ -129,7 +129,22 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
         scope: params.scope,
       },
       profile,
-    };
+    });
+  }
+
+  private async populateIdentity(
+    response: OAuthResponse,
+  ): Promise<OAuthResponse> {
+    const { profile } = response;
+
+    if (!profile.email) {
+      throw new Error('Google profile contained no email');
+    }
+
+    // TODO(Rugvip): Hardcoded to the local part of the email for now
+    const id = profile.email.split('@')[0];
+
+    return { ...response, backstageIdentity: { id } };
   }
 }
 
