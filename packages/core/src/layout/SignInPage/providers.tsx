@@ -93,8 +93,9 @@ export const useSignInProviders = (
         }
         if (result) {
           handleWrappedResult(result);
+        } else {
+          setLoading(false);
         }
-        setLoading(false);
       })
       .catch(error => {
         if (didCancel) {

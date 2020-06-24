@@ -25,14 +25,13 @@ import {
 } from '../../lib/PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
-  AuthInfoBase,
-  AuthInfoPrivate,
   RedirectInfo,
   AuthProviderConfig,
-  AuthInfoWithProfile,
   EnvironmentProviderConfig,
   OAuthProviderOptions,
   OAuthProviderConfig,
+  OAuthResponse,
+  PassportDoneCallback,
 } from '../types';
 import { OAuthProvider } from '../../lib/OAuthProvider';
 import passport from 'passport';
@@ -42,6 +41,10 @@ import {
 } from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
+
+type PrivateInfo = {
+  refreshToken: string;
+};
 
 export class GoogleAuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: GoogleStrategy;
@@ -56,18 +59,20 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
         accessToken: any,
         refreshToken: any,
         params: any,
-        profile: passport.Profile,
-        done: any,
+        rawProfile: passport.Profile,
+        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
       ) => {
-        const profileInfo = makeProfileInfo(profile, params);
+        const profile = makeProfileInfo(rawProfile, params.id_token);
         done(
           undefined,
           {
-            profile: profileInfo,
-            idToken: params.id_token,
-            accessToken,
-            scope: params.scope,
-            expiresInSeconds: params.expires_in,
+            providerInfo: {
+              idToken: params.id_token,
+              accessToken,
+              scope: params.scope,
+              expiresInSeconds: params.expires_in,
+            },
+            profile,
           },
           {
             refreshToken,
@@ -77,20 +82,33 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
     );
   }
 
-  async start(req: express.Request, options: any): Promise<RedirectInfo> {
-    return await executeRedirectStrategy(req, this._strategy, options);
+  async start(
+    req: express.Request,
+    options: Record<string, string>,
+  ): Promise<RedirectInfo> {
+    const providerOptions = {
+      ...options,
+      accessType: 'offline',
+      prompt: 'consent',
+    };
+    return await executeRedirectStrategy(req, this._strategy, providerOptions);
   }
 
   async handler(
     req: express.Request,
-  ): Promise<{ user: AuthInfoBase; info: AuthInfoPrivate }> {
-    return await executeFrameHandlerStrategy(req, this._strategy);
+  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+    const { response, privateInfo } = await executeFrameHandlerStrategy<
+      OAuthResponse,
+      PrivateInfo
+    >(req, this._strategy);
+
+    return {
+      response: await this.populateIdentity(response),
+      refreshToken: privateInfo.refreshToken,
+    };
   }
 
-  async refresh(
-    refreshToken: string,
-    scope: string,
-  ): Promise<AuthInfoWithProfile> {
+  async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
     const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
@@ -100,16 +118,33 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
     const profile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
-      params,
+      params.id_token,
     );
 
-    return {
-      accessToken,
-      idToken: params.id_token,
-      expiresInSeconds: params.expires_in,
-      scope: params.scope,
+    return this.populateIdentity({
+      providerInfo: {
+        accessToken,
+        idToken: params.id_token,
+        expiresInSeconds: params.expires_in,
+        scope: params.scope,
+      },
       profile,
-    };
+    });
+  }
+
+  private async populateIdentity(
+    response: OAuthResponse,
+  ): Promise<OAuthResponse> {
+    const { profile } = response;
+
+    if (!profile.email) {
+      throw new Error('Google profile contained no email');
+    }
+
+    // TODO(Rugvip): Hardcoded to the local part of the email for now
+    const id = profile.email.split('@')[0];
+
+    return { ...response, backstageIdentity: { id } };
   }
 }
 

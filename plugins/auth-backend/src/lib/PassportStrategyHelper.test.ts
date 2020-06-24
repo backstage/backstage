@@ -82,8 +82,8 @@ describe('PassportStrategyHelper', () => {
       expect(spyAuthenticate).toBeCalledTimes(1);
       await expect(frameHandlerStrategyPromise).resolves.toStrictEqual(
         expect.objectContaining({
-          user: { accessToken: 'ACCESS_TOKEN' },
-          info: { refreshToken: 'REFRESH_TOKEN' },
+          response: { accessToken: 'ACCESS_TOKEN' },
+          privateInfo: { refreshToken: 'REFRESH_TOKEN' },
         }),
       );
     });

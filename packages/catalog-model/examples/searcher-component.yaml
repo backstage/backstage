@@ -1,9 +1,9 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: shuffle-api
-  description: Shuffle API
+  name: searcher
+  description: Searcher
 spec:
   type: service
   lifecycle: production
-  owner: tools@example.com
+  owner: guest
