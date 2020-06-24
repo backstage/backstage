@@ -103,8 +103,7 @@ const ScaffolderPage: React.FC<{}> = () => {
                     }`}
                     type={template.spec.type ?? ''}
                     description={template.metadata.description ?? '-'}
-                    // TODO(shmidt-i): how to store tags
-                    tags={template.metadata.annotations?.tags.split(',') ?? []}
+                    tags={template.metadata?.tags ?? []}
                   />
                 </Grid>
               );
