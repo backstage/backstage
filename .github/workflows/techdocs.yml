@@ -23,7 +23,7 @@ jobs:
       # Validate Docker Container
       - name: prepare docker build
         working-directory: ${{ runner.temp }}/plugins/techdocs/mkdocs/container
-        run: ''
+        run: ls
       - name: verify docker build
         uses: docker/build-push-action@v1
         with:
