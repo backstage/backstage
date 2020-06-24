@@ -14,5 +14,5 @@ for URL in \
     --location \
     --request POST 'localhost:7000/catalog/locations' \
     --header 'Content-Type: application/json' \
-    --data-raw "{\"type\": \"github\", \"target\": \"https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/examples/${URL}\"}"
+    --data-raw "{\"type\": \"github\", \"target\": \"https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/${URL}\"}"
 done
