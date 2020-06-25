@@ -100,7 +100,7 @@ describe('CookieCutter Templater', () => {
       imageName: 'backstage/cookiecutter',
       args: ['cookiecutter', '--no-input', '-o', '/result', '/template'],
       templateDir: tempdir,
-      resultDir: `${tempdir}/result`,
+      resultDir: `${tempdir}-result`,
       logStream: undefined,
       dockerClient: mockDocker,
     });
@@ -119,7 +119,7 @@ describe('CookieCutter Templater', () => {
       dockerClient: mockDocker,
     });
 
-    expect(path).toBe(`${tempdir}/result`);
+    expect(path).toBe(`${tempdir}-result`);
   });
 
   it('should pass through the streamer to the run docker helper', async () => {
@@ -143,7 +143,7 @@ describe('CookieCutter Templater', () => {
       imageName: 'backstage/cookiecutter',
       args: ['cookiecutter', '--no-input', '-o', '/result', '/template'],
       templateDir: tempdir,
-      resultDir: `${tempdir}/result`,
+      resultDir: `${tempdir}-result`,
       logStream: stream,
       dockerClient: mockDocker,
     });
