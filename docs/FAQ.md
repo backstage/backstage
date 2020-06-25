@@ -36,7 +36,7 @@ more, read our blog post,
 
 Yes, we've already started releasing open source versions of some of the plugins
 we use here, and we'll continue to do so.
-[Plugins](https://github.com/spotify/faq#what-is-a-plugin-in-backstage) are the
+[Plugins](https://github.com/spotify/backstage/blob/master/docs/FAQ.md#what-is-a-plugin-in-backstage) are the
 building blocks of functionality in Backstage. We have over 120 plugins inside
 Spotify — many of those are specialized for our use, so will remain internal and
 proprietary to us. But we estimate that about a third of our existing plugins
@@ -122,15 +122,7 @@ can browse and search for all available plugins. ​
 
 ### Which plugin is used the most at Spotify?
 
-​ By far, our most-used plugin is our TechDocs plugin, which we use for creating
-technical documentation. Our philosophy at Spotify is to treat "docs like code",
-where you write documentation using the same workflow as you write your code.
-This makes it easier to create, find, and update documentation. We hope to
-release
-[the open source version](https://github.com/spotify/backstage/issues/687) in
-the future. (See also:
-"[Will Spotify's internal plugins be open sourced, too?](https://github.com/spotify/faq#will-spotifys-internal-plugins-be-open-sourced-too)"
-above) ​
+By far, our most-used plugin is our TechDocs plugin, which we use for creating technical documentation. Our philosophy at Spotify is to treat "docs like code", where you write documentation using the same workflow as you write your code. This makes it easier to create, find, and update documentation. We hope to release [the open source version](https://github.com/spotify/backstage/issues/687) in the future. (See also: "[Will Spotify's internal plugins be open sourced, too?](https://github.com/spotify/backstage/blob/master/docs/FAQ.md#will-spotifys-internal-plugins-be-open-sourced-too)" above)
 
 ### Are you planning to have plugins baked into the repo? Or should they be developed in separate repos?
 
