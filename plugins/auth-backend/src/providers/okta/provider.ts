@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import express, { Request } from 'express';
+import express from 'express';
 import { OAuthProvider } from '../../lib/OAuthProvider';
 import { Strategy as OktaStrategy } from 'passport-okta-oauth';
 import passport from 'passport';
