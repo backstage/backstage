@@ -16,7 +16,7 @@
 import { Processor, Job, ProcessorContstructorArgs } from './types';
 import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { PassThrough, Writable } from 'stream';
+import { PassThrough } from 'stream';
 import uuid from 'uuid';
 import winston from 'winston';
 import { RequiredTemplateValues } from '../templater';
@@ -45,9 +45,16 @@ export class JobProcessor implements Processor {
   ): Job {
     const id = uuid.v4();
     const log: string[] = [];
+
+    // Create an empty stream to collect all the log lines into
+    // one variable for the API.
     const logStream = new PassThrough();
     logStream.on('data', chunk => log.push(chunk.toString()));
 
+    // TODO(blam): Maybe this is not the right way to build the logger
+    // Maybe we want to be more ux specific and drop the json support.
+    // Child loggers can not have specific transports which sucks, so we have to
+    // create another here.
     const logger = createNewRootLogger();
     logger.add(new winston.transports.Stream({ stream: logStream }));
 
@@ -64,6 +71,7 @@ export class JobProcessor implements Processor {
     };
 
     this.jobs.set(job.id, job);
+
     return job;
   }
   get(id: string): Job | undefined {
@@ -77,6 +85,7 @@ export class JobProcessor implements Processor {
     const { logger, logStream } = job;
 
     try {
+      // Prepare a folder for the templater to run in
       logger.debug('Prepare started');
       job.status = 'PREPARING';
       const entity = job.metadata.entity;
@@ -86,9 +95,9 @@ export class JobProcessor implements Processor {
         skeletonPath,
       });
 
+      // Run the templater on the directory with values passed in
       logger.debug('Templating started');
       job.status = 'TEMPLATING';
-      // Run the templater on the mock directory with values from the post body
       const templatedPath = await this.templater.run({
         directory: skeletonPath,
         values: job.metadata.values,
@@ -97,14 +106,15 @@ export class JobProcessor implements Processor {
       });
       logger.debug('Template finished', { templatedPath });
 
+      // Store the template somewhere when finished
       job.status = 'STORING';
       // TODO(blam): Implement VCS Push here
 
       job.status = 'COMPLETE';
-    } catch (ex) {
-      job.error = ex;
+    } catch (error) {
+      job.error = error;
       job.status = 'FAILED';
-      logger.error(`job ${job.id} failed with reason`, { ex });
+      logger.error(`Job failed with error ${error.message}`);
     }
   }
 }
