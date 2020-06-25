@@ -19,7 +19,7 @@ Backstage by writing
 
 ### How is Backstage licensed?
 
-Backstage was released as open sourced software by Spotify and is licensed under
+Backstage was released as open source software by Spotify and is licensed under
 [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Why did we open source Backstage?
