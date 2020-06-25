@@ -57,8 +57,8 @@ export function SidebarUserSettings() {
           apiRef={githubAuthApiRef}
           icon={Star}
         />
-        <OAuthProviderSettings
-          title="OAuth2"
+        <OIDCProviderSettings
+          title="YourOrg"
           apiRef={oauth2ApiRef}
           icon={Star}
         />

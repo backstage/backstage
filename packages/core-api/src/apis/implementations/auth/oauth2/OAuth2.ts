@@ -159,23 +159,7 @@ class OAuth2
       ? scopes
       : scopes.split(/[\s]/).filter(Boolean);
 
-    const normalizedScopes = scopeList.map(scope => {
-      if (scope === 'openid') {
-        return scope;
-      }
-
-      if (scope === 'profile' || scope === 'email') {
-        return `${SCOPE_PREFIX}userinfo.${scope}`;
-      }
-
-      if (scope.startsWith(SCOPE_PREFIX)) {
-        return scope;
-      }
-
-      return `${SCOPE_PREFIX}${scope}`;
-    });
-
-    return new Set(normalizedScopes);
+    return new Set(scopeList);
   }
 }
 export default OAuth2;
