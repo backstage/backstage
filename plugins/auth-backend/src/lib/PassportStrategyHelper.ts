@@ -21,13 +21,15 @@ import {
   RedirectInfo,
   RefreshTokenResponse,
   ProfileInfo,
+  OAuth2ProfileInfo,
+  ProviderStrategy,
 } from '../providers/types';
 
 export const makeProfileInfo = (
   profile: passport.Profile,
   params: any,
 ): ProfileInfo => {
-  const { provider, displayName: name } = profile;
+  const { displayName: name } = profile;
 
   let email = '';
   if (profile.emails) {
@@ -51,7 +53,40 @@ export const makeProfileInfo = (
   }
 
   return {
-    provider,
+    name,
+    email,
+    picture,
+  };
+};
+
+export const makeOAuth2ProfileInfo = (
+  profile: passport.Profile,
+  params: any,
+): OAuth2ProfileInfo => {
+  const { displayName: name } = profile;
+
+  let email = '';
+  if (profile.emails) {
+    const [firstEmail] = profile.emails;
+    email = firstEmail.value;
+  }
+
+  if (!email && params.id_token) {
+    try {
+      const decoded: { email: string } = jwtDecoder(params.id_token);
+      email = decoded.email;
+    } catch (e) {
+      console.error('Failed to parse id token and get profile info');
+    }
+  }
+
+  let picture = '';
+  if (profile.photos) {
+    const [firstPhoto] = profile.photos;
+    picture = firstPhoto.value;
+  }
+
+  return {
     name,
     email,
     picture,
@@ -100,12 +135,12 @@ export const executeFrameHandlerStrategy = async (
 };
 
 export const executeRefreshTokenStrategy = async (
-  providerstrategy: passport.Strategy,
+  providerStrategy: passport.Strategy,
   refreshToken: string,
   scope: string,
 ): Promise<RefreshTokenResponse> => {
   return new Promise((resolve, reject) => {
-    const anyStrategy = providerstrategy as any;
+    const anyStrategy = providerStrategy as any;
     const OAuth2 = anyStrategy._oauth2.constructor;
     const oauth2 = new OAuth2(
       anyStrategy._oauth2._clientId,
@@ -149,6 +184,27 @@ export const executeRefreshTokenStrategy = async (
 };
 
 export const executeFetchUserProfileStrategy = async (
+  providerStrategy: passport.Strategy,
+  accessToken: string,
+  params: any,
+): Promise<ProfileInfo> => {
+  return new Promise((resolve, reject) => {
+    const anyStrategy = (providerStrategy as unknown) as ProviderStrategy;
+    anyStrategy.userProfile(
+      accessToken,
+      (error: Error, passportProfile: passport.Profile) => {
+        if (error) {
+          reject(error);
+        }
+
+        const profile = makeProfileInfo(passportProfile, params);
+        resolve(profile);
+      },
+    );
+  });
+};
+
+export const executeFetchOAuth2UserProfileStrategy = async (
   providerstrategy: passport.Strategy,
   accessToken: string,
   params: any,
@@ -161,8 +217,7 @@ export const executeFetchUserProfileStrategy = async (
         if (error) {
           reject(error);
         }
-
-        const profile = makeProfileInfo(passportProfile, params);
+        const profile = makeOAuth2ProfileInfo(passportProfile, params);
         resolve(profile);
       },
     );

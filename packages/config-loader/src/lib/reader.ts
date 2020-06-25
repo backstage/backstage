@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
+import { AppConfig, JsonObject, JsonValue } from '@backstage/config';
+import { basename } from 'path';
 import yaml from 'yaml';
-import { isObject } from './utils';
-import { JsonValue, JsonObject } from '@backstage/config';
 import { ReaderContext } from './types';
+import { isObject } from './utils';
 
 /**
  * Reads and parses, and validates, and transforms a single config file.
  * The transformation rewrites any special values, like the $secret key.
  */
-export async function readConfigFile(filePath: string, ctx: ReaderContext) {
+export async function readConfigFile(
+  filePath: string,
+  ctx: ReaderContext,
+): Promise<AppConfig> {
   const configYaml = await ctx.readFile(filePath);
   const config = yaml.parse(configYaml);
 
@@ -63,9 +67,12 @@ export async function readConfigFile(filePath: string, ctx: ReaderContext) {
     const out: JsonObject = {};
 
     for (const [key, value] of Object.entries(obj)) {
-      const result = await transform(value, `${path}.${key}`);
-      if (result !== undefined) {
-        out[key] = result;
+      // undefined covers optional fields
+      if (value !== undefined) {
+        const result = await transform(value, `${path}.${key}`);
+        if (result !== undefined) {
+          out[key] = result;
+        }
       }
     }
 
@@ -76,5 +83,5 @@ export async function readConfigFile(filePath: string, ctx: ReaderContext) {
   if (!isObject(finalConfig)) {
     throw new TypeError('Expected object at config root');
   }
-  return finalConfig;
+  return { data: finalConfig, context: basename(filePath) };
 }

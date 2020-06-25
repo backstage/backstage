@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 import { createApiRef } from '../ApiRef';
-
-export type Config = {
-  getConfig(key: string): Config;
-
-  getConfigArray(key: string): Config[];
-
-  getNumber(key: string): number | undefined;
-
-  getBoolean(key: string): boolean | undefined;
-
-  getString(key: string): string | undefined;
-
-  getStringArray(key: string): string[] | undefined;
-};
+import { Config } from '@backstage/config';
 
 // Using interface to make the ConfigApi name show up in docs
 export interface ConfigApi extends Config {}

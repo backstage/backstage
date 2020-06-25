@@ -26,10 +26,12 @@ import {
   FeatureFlags,
   GoogleAuth,
   GithubAuth,
+  OAuth2,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
   githubAuthApiRef,
+  oauth2ApiRef,
   storageApiRef,
   WebStorage,
 } from '@backstage/core';
@@ -81,6 +83,15 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     githubAuthApiRef,
     GithubAuth.create({
+      apiOrigin: 'http://localhost:7000',
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+  );
+
+  builder.add(
+    oauth2ApiRef,
+    OAuth2.create({
       apiOrigin: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
