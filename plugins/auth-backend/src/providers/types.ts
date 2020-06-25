@@ -33,6 +33,14 @@ export type OAuthProviderOptions = {
   callbackURL: string;
 };
 
+export type OAuth2ProviderOptions = {
+  clientID: string;
+  clientSecret: string;
+  callbackURL: string;
+  authorizationURL: string;
+  tokenURL: string;
+};
+
 export type OAuthProviderConfig = {
   /**
    * Cookies can be marked with a secure flag to send cookies only when the request
@@ -76,6 +84,15 @@ export type AuthProviderConfig = {
    * callbackURL to redirect to once the user signs in to the auth provider.
    */
   baseUrl: string;
+};
+
+export type OAuth2ProviderConfig = {
+  secure: boolean;
+  appOrigin: string; // http://localhost:3000
+  clientId: string;
+  clientSecret: string;
+  authorizationURL: string;
+  tokenURL: string;
 };
 
 /**

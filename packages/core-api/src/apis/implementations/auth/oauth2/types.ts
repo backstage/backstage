@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-export * from './google';
-export * from './github';
-export * from './oauth2';
+import { ProfileInfo } from '../../../definitions';
+
+export type OAuth2Session = {
+  profile: ProfileInfo;
+  idToken: string;
+  accessToken: string;
+  scopes: Set<string>;
+  expiresAt: Date;
+};
