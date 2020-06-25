@@ -1,1 +1,9 @@
+# The "base" version of the Mkdocs project.
+# Note: if you update this, also update `install_requires` in setup.py
+# https://github.com/mkdocs/mkdocs
 mkdocs==1.1.2
+
+# The linter using for Python
+# Note: This requires Python 3.6+ to run, but can format Python 2 code too.
+# https://github.com/psf/black
+black==19.10b0

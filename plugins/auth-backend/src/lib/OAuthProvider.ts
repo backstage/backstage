@@ -18,10 +18,10 @@ import express from 'express';
 import crypto from 'crypto';
 import { URL } from 'url';
 import {
-  AuthResponse,
   AuthProviderRouteHandlers,
   OAuthProviderHandlers,
   WebMessageResponse,
+  BackstageIdentity,
 } from '../providers/types';
 import { InputError } from '@backstage/backend-common';
 import { TokenIssuer } from '../identity';
@@ -147,19 +147,12 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, refreshToken);
       }
 
-      const id = response.profile.email;
-      const idToken = await this.options.tokenIssuer.issueToken({
-        claims: { sub: id },
-      });
-      const fullResponse: AuthResponse<unknown> = {
-        ...response,
-        backstageIdentity: { id, idToken },
-      };
+      await this.populateIdentity(response.backstageIdentity);
 
       // post message back to popup if successful
       return postMessageResponse(res, this.options.appOrigin, {
         type: 'authorization_response',
-        response: fullResponse,
+        response,
       });
     } catch (error) {
       // post error message back to popup if failure
@@ -213,18 +206,27 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       // get new access_token
       const response = await this.providerHandlers.refresh(refreshToken, scope);
 
-      const id = response.profile.email;
-      const idToken = await this.options.tokenIssuer.issueToken({
-        claims: { sub: id },
-      });
-      const fullResponse: AuthResponse<unknown> = {
-        ...response,
-        backstageIdentity: { id, idToken },
-      };
+      await this.populateIdentity(response.backstageIdentity);
 
-      res.send(fullResponse);
+      res.send(response);
     } catch (error) {
       res.status(401).send(`${error.message}`);
+    }
+  }
+
+  /**
+   * If the response from the OAuth provider includes a Backstage identity, we
+   * make sure it's populated with all the information we can derive from the user ID.
+   */
+  private async populateIdentity(identity?: BackstageIdentity) {
+    if (!identity) {
+      return;
+    }
+
+    if (!identity.idToken) {
+      identity.idToken = await this.options.tokenIssuer.issueToken({
+        claims: { sub: identity.id },
+      });
     }
   }
 

@@ -6,4 +6,4 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: tools@example.com
+  owner: guest

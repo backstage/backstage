@@ -38,6 +38,7 @@ class LocalStorage {
 class MockManager implements SessionManager<string> {
   getSession = jest.fn();
   removeSession = jest.fn();
+  sessionState$ = jest.fn();
 }
 
 describe('GheAuth AuthSessionStore', () => {
@@ -118,5 +119,12 @@ describe('GheAuth AuthSessionStore', () => {
     store.removeSession();
 
     expect(localStorage.getItem('my-key')).toBe(null);
+  });
+
+  it('should forward sessionState calls', () => {
+    const manager = new MockManager();
+    const store = new AuthSessionStore({ manager, ...defaultOptions });
+    store.sessionState$();
+    expect(manager.sessionState$).toHaveBeenCalled();
   });
 });

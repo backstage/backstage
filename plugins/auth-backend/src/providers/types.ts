@@ -100,14 +100,20 @@ export interface OAuthProviderHandlers {
    */
   handler(
     req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken?: string }>;
+  ): Promise<{
+    response: AuthResponse<OAuthProviderInfo>;
+    refreshToken?: string;
+  }>;
 
   /**
    * (Optional) Given a refresh token and scope fetches a new access token from the auth provider.
    * @param {string} refreshToken
    * @param {string} scope
    */
-  refresh?(refreshToken: string, scope: string): Promise<OAuthResponse>;
+  refresh?(
+    refreshToken: string,
+    scope: string,
+  ): Promise<AuthResponse<OAuthProviderInfo>>;
 
   /**
    * (Optional) Sign out of the auth provider.
@@ -192,13 +198,10 @@ export type AuthProviderFactory = (
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity?: BackstageIdentity;
 };
 
-export type OAuthResponse = Omit<
-  AuthResponse<OAuthProviderInfo>,
-  'backstageIdentity'
->;
+export type OAuthResponse = AuthResponse<OAuthProviderInfo>;
 
 export type BackstageIdentity = {
   /**
@@ -209,7 +212,7 @@ export type BackstageIdentity = {
   /**
    * An ID token that can be used to authenticate the user within Backstage.
    */
-  idToken: string;
+  idToken?: string;
 };
 
 export type OAuthProviderInfo = {
@@ -279,7 +282,7 @@ export type ProfileInfo = {
   /**
    * Email ID of the signed in user.
    */
-  email: string;
+  email?: string;
   /**
    * Display name that can be presented to the signed in user.
    */

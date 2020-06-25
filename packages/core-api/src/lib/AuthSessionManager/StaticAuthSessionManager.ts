@@ -17,6 +17,7 @@
 import { SessionManager, GetSessionOptions } from './types';
 import { AuthConnector } from '../AuthConnector';
 import { SessionScopeHelper } from './common';
+import { SessionStateTracker } from './SessionStateTracker';
 
 type Options<T> = {
   /** The connector used for acting on the auth session */
@@ -33,6 +34,7 @@ type Options<T> = {
 export class StaticAuthSessionManager<T> implements SessionManager<T> {
   private readonly connector: AuthConnector<T>;
   private readonly helper: SessionScopeHelper<T>;
+  private readonly stateTracker = new SessionStateTracker();
 
   private currentSession: T | undefined;
 
@@ -60,11 +62,17 @@ export class StaticAuthSessionManager<T> implements SessionManager<T> {
       ...options,
       scopes: this.helper.getExtendedScope(this.currentSession, options.scopes),
     });
+    this.stateTracker.setIsSignedIn(true);
     return this.currentSession;
   }
 
   async removeSession() {
     this.currentSession = undefined;
     await this.connector.removeSession();
+    this.stateTracker.setIsSignedIn(false);
+  }
+
+  sessionState$() {
+    return this.stateTracker.sessionState$();
   }
 }

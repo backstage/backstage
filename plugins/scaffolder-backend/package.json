@@ -25,6 +25,7 @@
     "@backstage/catalog-model": "^0.1.1-alpha.12",
     "@backstage/config": "^0.1.1-alpha.12",
     "@types/express": "^4.17.6",
+    "@types/dockerode": "^2.5.32",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dockerode": "^3.2.0",
@@ -41,7 +42,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.12",
-    "@types/dockerode": "^2.5.32",
     "@types/fs-extra": "^9.0.1",
     "@types/git-url-parse": "^9.0.0",
     "@types/nodegit": "0.26.5",

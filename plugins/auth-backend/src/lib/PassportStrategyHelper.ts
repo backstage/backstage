@@ -57,10 +57,6 @@ export const makeProfileInfo = (
     }
   }
 
-  if (!email) {
-    throw new Error('No email received in profile info');
-  }
-
   return {
     email,
     picture,
