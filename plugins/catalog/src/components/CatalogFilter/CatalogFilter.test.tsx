@@ -14,63 +14,78 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
+import {
+  ApiProvider,
+  ApiRegistry,
+  IdentityApi,
+  identityApiRef,
+  storageApiRef,
+} from '@backstage/core';
+import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
+import { CatalogApi, catalogApiRef } from '../../api/types';
 import { EntityGroup } from '../../data/filters';
+import { EntityFilterGroupsProvider } from '../../filter';
+import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
 
 describe('Catalog Filter', () => {
-  const comp1 = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'my-component-1',
-    },
-    spec: {
-      owner: 'team',
-    },
+  const catalogApi: Partial<CatalogApi> = {
+    getEntities: () =>
+      Promise.resolve([
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'Entity1',
+          },
+          spec: {
+            owner: 'tools@example.com',
+            type: 'service',
+          },
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'Entity2',
+          },
+          spec: {
+            owner: 'not-tools@example.com',
+            type: 'service',
+          },
+        },
+      ] as Entity[]),
   };
-  const comp2 = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'my-component-2',
-    },
-    spec: {
-      owner: 'team',
-    },
+
+  const indentityApi: Partial<IdentityApi> = {
+    getUserId: () => 'tools@example.com',
   };
-  const comp3 = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'my-component-3',
-    },
-    spec: {
-      owner: '',
-    },
-  };
-  const defaultFilterProps = {
-    selectedFilter: EntityGroup.ALL,
-    onFilterChange: (type: EntityGroup) => type,
-    entitiesByFilter: {
-      [EntityGroup.ALL]: [comp1, comp2, comp3],
-      [EntityGroup.STARRED]: [comp1],
-      [EntityGroup.OWNED]: [comp1],
-    },
-  };
+
+  const renderWrapped = (children: React.ReactNode) =>
+    render(
+      wrapInTestApp(
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [catalogApiRef, catalogApi],
+            [identityApiRef, indentityApi],
+            [storageApiRef, MockStorageApi.create()],
+          ])}
+        >
+          <EntityFilterGroupsProvider>{children}</EntityFilterGroupsProvider>,
+        </ApiProvider>,
+      ),
+    );
+
   it('should render the different groups', async () => {
     const mockGroups: CatalogFilterGroup[] = [
       { name: 'Test Group 1', items: [] },
       { name: 'Test Group 2', items: [] },
     ];
-    const { findByText } = render(
-      wrapInTestApp(
-        <CatalogFilter {...defaultFilterProps} groups={mockGroups} />,
-      ),
+    const { findByText } = renderWrapped(
+      <CatalogFilter filterGroups={mockGroups} />,
     );
-
     for (const group of mockGroups) {
       expect(await findByText(group.name)).toBeInTheDocument();
     }
@@ -93,19 +108,16 @@ describe('Catalog Filter', () => {
       },
     ];
 
-    const { findByText } = render(
-      wrapInTestApp(
-        <CatalogFilter {...defaultFilterProps} groups={mockGroups} />,
-      ),
+    const { findByText } = renderWrapped(
+      <CatalogFilter filterGroups={mockGroups} />,
     );
 
-    const [group] = mockGroups;
-    for (const item of group.items) {
+    for (const item of mockGroups[0].items) {
       expect(await findByText(item.label)).toBeInTheDocument();
     }
   });
 
-  it('should render the count in each item', async () => {
+  it('selects the first item if no desired initial one is set', async () => {
     const mockGroups: CatalogFilterGroup[] = [
       {
         name: 'Test Group 1',
@@ -113,33 +125,30 @@ describe('Catalog Filter', () => {
           {
             id: EntityGroup.ALL,
             label: 'First Label',
-            count: 3,
           },
           {
             id: EntityGroup.STARRED,
             label: 'Second Label',
-            count: 1,
           },
         ],
       },
     ];
 
-    const { getAllByText } = render(
-      wrapInTestApp(
-        <CatalogFilter {...defaultFilterProps} groups={mockGroups} />,
-      ),
+    const onChange = jest.fn();
+
+    renderWrapped(
+      <CatalogFilter filterGroups={mockGroups} onChange={onChange} />,
     );
 
-    for (const key of Object.keys(defaultFilterProps.entitiesByFilter)) {
-      const matcher = new RegExp(
-        `(${defaultFilterProps.entitiesByFilter[key as EntityGroup].length})`,
-      );
-      const items = await getAllByText(matcher);
-      items.forEach(el => expect(el).toBeInTheDocument());
-    }
+    await waitFor(() => {
+      expect(onChange).toHaveBeenLastCalledWith({
+        id: EntityGroup.ALL,
+        label: 'First Label',
+      });
+    });
   });
 
-  it('should fire the callback when an item is clicked', async () => {
+  it('selects the initial item', async () => {
     const mockGroups: CatalogFilterGroup[] = [
       {
         name: 'Test Group 1',
@@ -147,39 +156,34 @@ describe('Catalog Filter', () => {
           {
             id: EntityGroup.ALL,
             label: 'First Label',
-            count: 100,
           },
           {
             id: EntityGroup.STARRED,
             label: 'Second Label',
-            count: 400,
           },
         ],
       },
     ];
 
-    const onSelectedChangeHandler = jest.fn();
+    const onChange = jest.fn();
 
-    const { findByText } = render(
-      wrapInTestApp(
-        <CatalogFilter
-          {...defaultFilterProps}
-          groups={mockGroups}
-          onFilterChange={onSelectedChangeHandler}
-        />,
-      ),
+    renderWrapped(
+      <CatalogFilter
+        filterGroups={mockGroups}
+        onChange={onChange}
+        initiallySelected={EntityGroup.STARRED}
+      />,
     );
 
-    const item = mockGroups[0].items[0];
-
-    const element = await findByText(item.label);
-
-    fireEvent.click(element);
-
-    expect(onSelectedChangeHandler).toHaveBeenCalledWith(item.id);
+    await waitFor(() => {
+      expect(onChange).toHaveBeenLastCalledWith({
+        id: EntityGroup.STARRED,
+        label: 'Second Label',
+      });
+    });
   });
 
-  it('should render a component when a function is passed to the count component', async () => {
+  it('can change the selected item', async () => {
     const mockGroups: CatalogFilterGroup[] = [
       {
         name: 'Test Group 1',
@@ -187,22 +191,55 @@ describe('Catalog Filter', () => {
           {
             id: EntityGroup.ALL,
             label: 'First Label',
-            count: () => <b>BACKSTAGE!</b>,
           },
           {
             id: EntityGroup.STARRED,
             label: 'Second Label',
-            count: 400,
           },
         ],
       },
     ];
-    const { findByText } = render(
-      wrapInTestApp(
-        <CatalogFilter {...defaultFilterProps} groups={mockGroups} />,
-      ),
+
+    const onChange = jest.fn();
+
+    const { findByText } = renderWrapped(
+      <CatalogFilter filterGroups={mockGroups} onChange={onChange} />,
     );
 
-    expect(await findByText('Test Group 1')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(onChange).toHaveBeenLastCalledWith({
+        id: EntityGroup.ALL,
+        label: 'First Label',
+      });
+    });
+
+    fireEvent.click(await findByText('Second Label'));
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenLastCalledWith({
+        id: EntityGroup.STARRED,
+        label: 'Second Label',
+      });
+    });
+  });
+
+  it('displays match counts properly', async () => {
+    const mockGroups: CatalogFilterGroup[] = [
+      {
+        name: 'Test Group 1',
+        items: [
+          {
+            id: EntityGroup.OWNED,
+            label: 'First Label',
+          },
+        ],
+      },
+    ];
+
+    const { findByText } = renderWrapped(
+      <CatalogFilter filterGroups={mockGroups} />,
+    );
+
+    expect(await findByText('1')).toBeInTheDocument();
   });
 });

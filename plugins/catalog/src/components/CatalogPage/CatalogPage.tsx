@@ -15,38 +15,31 @@
  */
 
 import { Entity, LocationSpec } from '@backstage/catalog-model';
-import {
-  Content,
-  ContentHeader,
-  DismissableBanner,
-  HeaderTabs,
-  SupportButton,
-} from '@backstage/core';
-import CatalogLayout from './CatalogLayout';
+import { Content, ContentHeader, SupportButton } from '@backstage/core';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import {
-  Button,
-  Link,
-  makeStyles,
-  Typography,
-  withStyles,
-} from '@material-ui/core';
+import { Button, makeStyles, withStyles } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import Star from '@material-ui/icons/Star';
 import StarOutline from '@material-ui/icons/StarBorder';
-import React, { FC } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
-import { CatalogTable } from '../CatalogTable/CatalogTable';
-import { useEntities } from '../../hooks/useEntities';
-import { findLocationForEntityMeta } from '../../data/utils';
 import {
-  getCatalogFilterItemByType,
   EntityGroup,
   filterGroups,
-  labeledEntityTypes,
+  LabeledEntityType,
 } from '../../data/filters';
+import { findLocationForEntityMeta } from '../../data/utils';
+import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
+import {
+  CatalogFilter,
+  CatalogFilterItem,
+} from '../CatalogFilter/CatalogFilter';
+import { CatalogTable } from '../CatalogTable/CatalogTable';
+import CatalogLayout from './CatalogLayout';
+import { CatalogTabs } from './CatalogTabs';
+import { WelcomeBanner } from './WelcomeBanner';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -55,27 +48,14 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
   },
-  emoji: {
-    fontSize: '125%',
-    marginRight: theme.spacing(2),
-  },
 }));
 
-export const CatalogPage: FC<{}> = () => {
-  const {
-    entitiesByFilter,
-    error,
-    loading,
-    selectedFilter,
-    setSelectedFilter,
-    toggleStarredEntity,
-    isStarredEntity,
-    selectTypeFilter,
-  } = useEntities();
-
-  const filteredEntities = entitiesByFilter[selectedFilter ?? EntityGroup.ALL];
-
+const CatalogPageContents = () => {
   const styles = useStyles();
+  const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
+  const { loading, error, matchingEntities } = useFilteredEntities();
+  const [selectedTab, setSelectedTab] = useState<string>();
+  const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
 
   const YellowStar = withStyles({
     root: {
@@ -105,9 +85,7 @@ export const CatalogPage: FC<{}> = () => {
             return location.target;
         }
       };
-
       const location = findLocationForEntityMeta(rowData.metadata);
-
       return {
         icon: Edit,
         tooltip: 'Edit',
@@ -129,33 +107,19 @@ export const CatalogPage: FC<{}> = () => {
     },
   ];
 
+  const onTabChanged = useCallback((type: LabeledEntityType) => {
+    setSelectedTab(type.label);
+  }, []);
+  const onSidebarChanged = useCallback((filterItem: CatalogFilterItem) => {
+    setSelectedSidebarItem(filterItem.label);
+  }, []);
+
   return (
     <CatalogLayout>
-      <HeaderTabs
-        tabs={labeledEntityTypes}
-        onChange={(index: Number) => {
-          selectTypeFilter(labeledEntityTypes[index as number].id);
-        }}
-      />
+      <CatalogTabs onChange={onTabChanged} />
       <Content>
-        <DismissableBanner
-          variant="info"
-          message={
-            <Typography>
-              <span role="img" aria-label="wave" className={styles.emoji}>
-                👋🏼
-              </span>
-              Welcome to Backstage, we are happy to have you. Start by checking
-              out our{' '}
-              <Link href="/welcome" color="textSecondary">
-                getting started
-              </Link>{' '}
-              page.
-            </Typography>
-          }
-          id="catalog_page_welcome_banner"
-        />
-        <ContentHeader title="Services">
+        <WelcomeBanner />
+        <ContentHeader title={selectedTab ?? ''}>
           <Button
             component={RouterLink}
             variant="contained"
@@ -169,19 +133,15 @@ export const CatalogPage: FC<{}> = () => {
         <div className={styles.contentWrapper}>
           <div>
             <CatalogFilter
-              groups={filterGroups}
-              selectedFilter={selectedFilter ?? EntityGroup.ALL}
-              onFilterChange={setSelectedFilter}
-              entitiesByFilter={entitiesByFilter}
+              filterGroups={filterGroups}
+              onChange={onSidebarChanged}
+              initiallySelected={EntityGroup.OWNED}
             />
           </div>
           <CatalogTable
-            titlePreamble={
-              getCatalogFilterItemByType(selectedFilter ?? EntityGroup.ALL)
-                ?.label ?? ''
-            }
-            entities={filteredEntities || []}
-            loading={loading && !error}
+            titlePreamble={selectedSidebarItem ?? ''}
+            entities={matchingEntities}
+            loading={loading}
             error={error}
             actions={actions}
           />
@@ -190,3 +150,9 @@ export const CatalogPage: FC<{}> = () => {
     </CatalogLayout>
   );
 };
+
+export const CatalogPage = () => (
+  <EntityFilterGroupsProvider>
+    <CatalogPageContents />
+  </EntityFilterGroupsProvider>
+);

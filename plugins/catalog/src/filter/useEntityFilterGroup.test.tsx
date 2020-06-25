@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
+import { ApiProvider, ApiRegistry, storageApiRef } from '@backstage/core';
+import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { renderHook, act } from '@testing-library/react-hooks';
-import {
-  EntityFilterGroupsProvider,
-  useEntityFilterGroup,
-  FilterGroupStatesReady,
-} from './useEntityFilterGroup';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { catalogApiRef } from '..';
+import { catalogApiRef } from '../api/types';
+import { EntityFilterGroupsProvider } from './EntityFilterGroupsProvider';
+import { FilterGroupStatesReady, FilterGroup } from './types';
+import { useEntityFilterGroup } from './useEntityFilterGroup';
+import { MockStorageApi } from '@backstage/test-utils';
 
 describe('useEntityFilterGroup', () => {
   let catalogApi: jest.Mocked<typeof catalogApiRef.T>;
@@ -38,8 +37,12 @@ describe('useEntityFilterGroup', () => {
       removeEntityByUid: jest.fn(),
       getEntityByName: jest.fn(),
     };
+    const apis = ApiRegistry.with(catalogApiRef, catalogApi).with(
+      storageApiRef,
+      MockStorageApi.create(),
+    );
     wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
+      <ApiProvider apis={apis}>
         <EntityFilterGroupsProvider>{children}</EntityFilterGroupsProvider>
       </ApiProvider>
     );
@@ -47,8 +50,9 @@ describe('useEntityFilterGroup', () => {
 
   it('works for an empty set of filters', async () => {
     catalogApi.getEntities.mockResolvedValue([]);
+    const group: FilterGroup = { filters: {} };
     const { result, wait } = renderHook(
-      () => useEntityFilterGroup('g1', { filters: {} }),
+      () => useEntityFilterGroup('g1', group),
       { wrapper },
     );
 
@@ -63,14 +67,14 @@ describe('useEntityFilterGroup', () => {
         metadata: { name: 'n' },
       },
     ]);
+    const group: FilterGroup = {
+      filters: {
+        f1: e => e.metadata.name === 'n',
+        f2: e => e.metadata.name !== 'n',
+      },
+    };
     const { result, wait } = renderHook(
-      () =>
-        useEntityFilterGroup('g1', {
-          filters: {
-            f1: e => e.metadata.name === 'n',
-            f2: e => e.metadata.name !== 'n',
-          },
-        }),
+      () => useEntityFilterGroup('g1', group),
       { wrapper },
     );
 
@@ -85,7 +89,7 @@ describe('useEntityFilterGroup', () => {
       matchCount: 0,
     });
 
-    act(() => result.current.selectItems(['f1']));
+    act(() => result.current.setSelectedFilters(['f1']));
 
     await wait(() => expect(result.current.state.type).toEqual('ready'));
     state = result.current.state as FilterGroupStatesReady;
@@ -98,7 +102,7 @@ describe('useEntityFilterGroup', () => {
       matchCount: 0,
     });
 
-    act(() => result.current.selectItems(['f2']));
+    act(() => result.current.setSelectedFilters(['f2']));
 
     await wait(() => expect(result.current.state.type).toEqual('ready'));
     state = result.current.state as FilterGroupStatesReady;
