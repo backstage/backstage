@@ -1,19 +1,27 @@
 {
   "name": "example-backend",
   "version": "0.1.1-alpha.12",
-  "main": "dist/index.cjs.js",
+  "main": "src/index.ts",
   "types": "src/index.ts",
   "private": true,
   "license": "Apache-2.0",
   "engines": {
     "node": ">=12"
   },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
   "scripts": {
     "build": "backstage-cli backend:build",
+    "build-image": "backstage-cli backend:build-image example-backend",
     "start": "backstage-cli backend:dev",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "clean": "backstage-cli clean",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
