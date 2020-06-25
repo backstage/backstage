@@ -25,6 +25,7 @@ type LernaPackage = {
   name: string;
   private: boolean;
   location: string;
+  scripts: Record<string, string>;
 };
 
 type FileEntry =
@@ -92,7 +93,9 @@ async function moveToDistWorkspace(
         cwd: target.location,
       });
       // TODO(Rugvip): yarn pack doesn't call postpack, once the bug is fixed this can be removed
-      await run('yarn', ['postpack'], { cwd: target.location });
+      if (target.scripts.postpack) {
+        await run('yarn', ['postpack'], { cwd: target.location });
+      }
 
       const outputDir = relativePath(paths.targetRoot, target.location);
       const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
