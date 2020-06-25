@@ -15,23 +15,24 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { renderWithEffects } from '@backstage/test-utils';
 import App from './App';
 
 describe('App', () => {
-  beforeAll(() => {
-    Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn(() => {
-        return {
-          matches: true,
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
-        };
-      }),
+  it('should render', async () => {
+    Object.defineProperty(process.env, 'APP_CONFIG', {
+      configurable: true,
+      value: [
+        {
+          data: {
+            app: { title: 'Test' },
+          },
+          context: 'test',
+        },
+      ],
     });
-  });
-  it('should render', () => {
-    const rendered = render(<App />);
+
+    const rendered = await renderWithEffects(<App />);
     expect(rendered.baseElement).toBeInTheDocument();
   });
 });

@@ -15,6 +15,7 @@
  */
 
 import { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
+import { SessionState } from '../../apis';
 
 const defaultOptions = {
   sessionScopes: (session: { scopes: Set<string> }) => session.scopes,
@@ -22,21 +23,44 @@ const defaultOptions = {
 };
 
 describe('RefreshingAuthSessionManager', () => {
-  it('should save result form createSession', async () => {
+  it('should save result from createSession', async () => {
     const createSession = jest.fn().mockResolvedValue({ expired: false });
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const removeSession = jest.fn();
     const manager = new RefreshingAuthSessionManager({
-      connector: { createSession, refreshSession },
+      connector: { createSession, refreshSession, removeSession },
       ...defaultOptions,
     } as any);
+    const stateSubscriber = jest.fn();
+    manager.sessionState$().subscribe(stateSubscriber);
 
+    await Promise.resolve(); // Wait a tick for observer to post a value
+
+    expect(stateSubscriber.mock.calls).toEqual([[SessionState.SignedOut]]);
     await manager.getSession({});
     expect(createSession).toBeCalledTimes(1);
 
+    expect(stateSubscriber.mock.calls).toEqual([
+      [SessionState.SignedOut],
+      [SessionState.SignedIn],
+    ]);
     await manager.getSession({});
     expect(createSession).toBeCalledTimes(1);
 
     expect(refreshSession).toBeCalledTimes(1);
+    expect(stateSubscriber.mock.calls).toEqual([
+      [SessionState.SignedOut],
+      [SessionState.SignedIn],
+    ]);
+
+    expect(removeSession).toHaveBeenCalledTimes(0);
+    await manager.removeSession();
+    expect(removeSession).toHaveBeenCalledTimes(1);
+    expect(stateSubscriber.mock.calls).toEqual([
+      [SessionState.SignedOut],
+      [SessionState.SignedIn],
+      [SessionState.SignedOut],
+    ]);
   });
 
   it('should ask consent only if scopes have changed', async () => {
@@ -130,7 +154,7 @@ describe('RefreshingAuthSessionManager', () => {
     expect(refreshSession).toBeCalledTimes(1);
   });
 
-  it('should remove session and reload', async () => {
+  it('should remove session straight away', async () => {
     const removeSession = jest.fn();
     const manager = new RefreshingAuthSessionManager({
       connector: { removeSession },

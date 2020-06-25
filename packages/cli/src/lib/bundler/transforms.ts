@@ -17,6 +17,7 @@
 import webpack, { Module, Plugin } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { BundlingOptions, BackendBundlingOptions } from './types';
+import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
   loaders: Module['rules'];
@@ -46,7 +47,28 @@ export const transforms = (
       },
     },
     {
-      test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.frag/, /\.xml/],
+      test: [/\.icon\.svg$/],
+      use: [
+        {
+          loader: require.resolve('@sucrase/webpack-loader'),
+          options: { transforms: ['jsx'] },
+        },
+        {
+          loader: require.resolve('@svgr/webpack'),
+          options: { babel: false, template: svgrTemplate },
+        },
+      ],
+    },
+    {
+      test: [
+        /\.bmp$/,
+        /\.gif$/,
+        /\.jpe?g$/,
+        /\.png$/,
+        /\.frag/,
+        { test: /\.svg/, not: [/\.icon\.svg/] },
+        /\.xml/,
+      ],
       loader: require.resolve('url-loader'),
       options: {
         limit: 10000,

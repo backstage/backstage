@@ -16,7 +16,7 @@
 import React, { FC } from 'react';
 import { InfoCard } from '../../layout/InfoCard';
 import { Grid } from '@material-ui/core';
-import StructuredMetadataTable from '.';
+import { StructuredMetadataTable } from './StructuredMetadataTable';
 
 const cardContentStyle = { heightX: 200, width: 500 };
 

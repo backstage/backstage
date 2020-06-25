@@ -17,7 +17,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import { LinearProgress, LinearProgressProps } from '@material-ui/core';
 
-const Progress: FC<LinearProgressProps> = props => {
+export const Progress: FC<LinearProgressProps> = props => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -31,5 +31,3 @@ const Progress: FC<LinearProgressProps> = props => {
     <div style={{ display: 'none' }} data-testid="progress" />
   );
 };
-
-export default Progress;

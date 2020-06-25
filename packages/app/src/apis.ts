@@ -47,6 +47,10 @@ import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
 import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
 import { gitOpsApiRef, GitOpsRestApi } from '@backstage/plugin-gitops-profiles';
+import {
+  graphQlBrowseApiRef,
+  GraphQLEndpoints,
+} from '@backstage/plugin-graphiql';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -80,7 +84,7 @@ export const apis = (config: ConfigApi) => {
     }),
   );
 
-  builder.add(
+  const githubAuthApi = builder.add(
     githubAuthApiRef,
     GithubAuth.create({
       apiOrigin: 'http://localhost:7000',
@@ -115,6 +119,23 @@ export const apis = (config: ConfigApi) => {
   );
 
   builder.add(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008'));
+
+  builder.add(
+    graphQlBrowseApiRef,
+    GraphQLEndpoints.from([
+      GraphQLEndpoints.create({
+        id: 'gitlab',
+        title: 'GitLab',
+        url: 'https://gitlab.com/api/graphql',
+      }),
+      GraphQLEndpoints.github({
+        id: 'github',
+        title: 'GitHub',
+        errorApi,
+        githubAuthApi,
+      }),
+    ]),
+  );
 
   return builder.build();
 };
