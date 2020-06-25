@@ -59,10 +59,10 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
    * allowing us to avoid using express-session in order to integrate with Okta.
   */
   private _store: StateStore = {
-    store({}, cb: any) {
+    store(_req: express.Request, cb: any) {
       cb(null, null);
     },
-    verify({}, {}, cb: any) {
+    verify(_req: express.Request, _state: string, cb: any) {
       cb(null, true);
     },
   }
@@ -104,7 +104,12 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
     req: express.Request,
     options: Record<string, string>
   ): Promise<RedirectInfo> {
-    return await executeRedirectStrategy(req, this._strategy, options);
+    const providerOptions = {
+      ...options,
+      accessType: 'offline',
+      prompt: 'consent',
+    };
+    return await executeRedirectStrategy(req, this._strategy, providerOptions);
   }
 
   async handler(
