@@ -7,4 +7,3 @@ metadata:
 spec:
   type: cookiecutter
   path: '.'
-
