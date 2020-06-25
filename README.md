@@ -10,29 +10,39 @@
 
 ## What is Backstage?
 
-Backstage is an open platform for building developer portals.
-
-The philosophy behind Backstage is simple: Don't expose your engineers to the full complexity of your infrastructure tooling. Engineers should be shipping code — not figuring out a whole new toolset every time they want to implement the basics. Backstage allows you add "stuff" (tooling, services, features, etc.) by adding a plugin, instead of building a new tool. This saves you work and avoids the need of your team to learn how to use and support yet another tool.
+[Backstage](https://backstage.io/) is an open platform for building developer portals. It’s based on the developer portal we’ve been using internally at Spotify for over four years. Backstage can be as simple as a services catalog or as powerful as the UX layer for your entire tech infrastructure.
 
 For more information go to [backstage.io](https://backstage.io) or join our [Discord chatroom](https://discord.gg/EBHEGzX).
 
-## What problem does Backstage solve?
+### Features
+* Create and manage all of your organization’s software and microservices in one place
+* Services catalog keeps track of all software and its ownership
+* Visualizations provide information about your backend services and tooling, and help you monitor them
+* A unified method for managing microservices offers both visibility and control 
+* Preset templates allow engineers to quickly create microservices in a standardized way ([coming soon](https://github.com/spotify/backstage/milestone/11))
+* Centralized, full-featured technical documentation with integrated tooling that makes it easy for developers to set up, publish, and maintain alongside their code ([coming soon](https://github.com/spotify/backstage/milestone/15))
 
-As companies grow, their infrastructure systems get messier. Backstage unifies all your infrastructure tooling, services, and documentation with a single, consistent UI.
+### Benefits
+* For engineering managers, it allows you to maintain standards and best practices across the organization, and can help you manage your whole tech ecosystem, from migrations to test certification.
+* For end users (developers), it makes it fast and simple to build software components in a standardized way, and it provides a central place to manage all projects and documentation.
+* For platform engineers, it enables extensibility and scalability by letting you easily integrate new tools and services (via plugins), as well as extending the functionality of existing ones. 
+* For everyone, it’s a single, consistent experience that ties all your infrastructure tooling, resources, standards, owners, contributors, and administrators together in one place.
 
-This blog post provides more examples of how Backstage is used inside Spotify:
+## Backstage Service Catalog (alpha)
 
-https://labs.spotify.com/2020/03/17/what-the-heck-is-backstage-anyway/
+The Backstage Service Catalog — actually, a software catalog, since it includes more than just services — is a centralized system that keeps track of ownership and metadata for all the software in your ecosystem (services, websites, libraries, data pipelines, etc). The catalog is built around the concept of [metadata yaml files](https://github.com/spotify/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md#format) stored together with the code, which are then harvested and visualized in Backstage.
 
-https://backstage.io/demos
+![servce-catalog](https://backstage.io/blog/assets/6/header.png)
+
+We have also found that the service catalog is a great way to organise the infrastructure tools you use to manage the software as well. This is how Backstage creates one developer portal for all your tools. Rather than asking teams to jump between different infrastructure UI’s (and incurring additional cognitive overhead each time they make a context switch), most of these tools can be organised around the entities in the catalog.
 
 ## Project roadmap
 
 We created Backstage about 4 years ago. While our internal version of Backstage has had the benefit of time to mature and evolve, the first iteration of our open source version is still nascent. We are envisioning three phases of the project and we have already begun work on various aspects of these phases:
 
-- 🐣 **Phase 1:** Extensible frontend platform (Done ✅) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable UX patterns and components help ensure a consistent experience between tools.
+- 🐣 **Phase 1:** Extensible frontend platform (Done ✅) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable [UX patterns and components](http://storybook.backstage.io) help ensure a consistent experience between tools.
 
-- 🐢 **Phase 2:** Manage your stuff ([current focus](https://backstage.io/blog/2020/05/22/phase-2-service-catalog)) - Manage anything from microservices to software components to infrastructure and your service catalog. Regardless of whether you want to create a new library, view service deployment status in Kubernetes, or check the test coverage for a website -- Backstage will provide all of those tools - and many more - in a single developer portal.
+- 🐢 **Phase 2:** Service Catalog ([alpha released](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)) - With a single catalog, Backstage makes it easy for a team to manage ten services — and makes it possible for your company to manage thousands of them. Developers can get a uniform overview of all their software and related resources, regardless of how and where they are running, as well as an easy way to onboard and manage those resources.
 
 - 🐇 **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
 
@@ -46,13 +56,11 @@ The Backstage platform consists of a number of different components:
 
 - **app** - Main web application that users interact with. It's built up by a number of different _Plugins_. This repo contains an example implementation of an app (located in `packages/example-app`) and you can easily get started with your own app by [creating one](docs/create-an-app.md).
 - [**plugins**](https://github.com/spotify/backstage/tree/master/plugins) - Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform API's and reusable UI components. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
-- [**backend**](https://github.com/spotify/backstage/tree/master/packages/backend) - GraphQL aggregation service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
+- [**service catalog**](https://github.com/spotify/backstage/tree/master/packages/backend) - Service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
 - **proxy** \* - Terminates HTTPS and exposes any RESTful API to Plugins.
-- **identity** \* - A backend service that holds your organisation's metadata.
+- **identity** - A backend service that holds your organisation's metadata.
 
 _\* not yet released_
-
-![overview](backstage_overview.png)
 
 ## Getting started
 
@@ -100,6 +108,7 @@ We would love your help in building Backstage! See [CONTRIBUTING](CONTRIBUTING.m
 - [FAQ](docs/FAQ.md) - Frequently Asked Questions
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
 - [Blog](https://backstage.io/blog/) - Announcements and updates
+- [Newsletter](https://mailchi.mp/spotify/backstage-community)
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
 
 Or, if you are an open source developer and are interested in joining our team, please reach out to [foss-opportunities@spotify.com ](mailto:foss-opportunities@spotify.com)
