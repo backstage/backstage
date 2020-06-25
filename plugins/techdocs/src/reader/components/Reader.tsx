@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-const mockHtml = `
+const mockHtml: string = `
 
 
 
@@ -795,25 +795,27 @@ unzip master.zip
 </html>
 `;
 
-const useShadowDom = () => {
-  const ref = React.useRef();
+type IShadowDOMRefObject = React.RefObject<HTMLDivElement>;
+const useShadowDom: () => IShadowDOMRefObject = () => {
+  const ref: IShadowDOMRefObject = React.useRef(null);
 
   React.useEffect(() => {
     const divElement = ref.current;
-    divElement.attachShadow({ mode: 'open' });
+    divElement?.attachShadow({ mode: 'open' });
   }, [ref]);
 
   return ref;
 };
 
-export default function Reader() {
+export const Reader = () => {
   const shadowDomRef = useShadowDom();
 
   React.useEffect(() => {
     const divElement = shadowDomRef.current;
-    const divShadowRoot = divElement.shadowRoot;
-
-    divShadowRoot.innerHTML = mockHtml;
+    if (!divElement?.shadowRoot) {
+      return;
+    }
+    divElement.shadowRoot.innerHTML = mockHtml;
   }, [shadowDomRef]);
 
   return (
@@ -822,4 +824,4 @@ export default function Reader() {
       <div ref={shadowDomRef} />
     </>
   );
-}
+};
