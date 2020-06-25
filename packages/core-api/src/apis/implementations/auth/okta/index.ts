@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export * from './google';
-export * from './github';
-export * from './okta';
+export * from './types';
+export { default as OktaAuth } from './OktaAuth'; 
