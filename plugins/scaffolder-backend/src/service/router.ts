@@ -42,57 +42,57 @@ export async function createRouter(
     dockerClient,
   });
 
-  router.get('/v1/job/:jobId', ({ params }, res) => {
-    const job = jobProcessor.get(params.jobId);
+  router
+    .get('/v1/job/:jobId', ({ params }, res) => {
+      const job = jobProcessor.get(params.jobId);
 
-    if (!job) {
-      return res.status(404).send({ error: 'job not found' });
-    }
+      if (!job) {
+        return res.status(404).send({ error: 'job not found' });
+      }
 
-    res.send({
-      id: job.id,
-      metadata: job.metadata,
-      status: job.status,
-      log: job.log,
-      error: job.error,
-    });
-  });
+      res.send({
+        id: job.id,
+        metadata: job.metadata,
+        status: job.status,
+        log: job.log,
+        error: job.error,
+      });
+    })
+    .post('/v1/jobs', async (_, res) => {
+      // TODO(blam): Create a unique job here and return the ID so that
+      // The end user can poll for updates on the current job
 
-  router.post('/v1/jobs', async (_, res) => {
-    // TODO(blam): Create a unique job here and return the ID so that
-    // The end user can poll for updates on the current job
+      // TODO(blam): Take this entity from the post body sent from the frontend
+      const mockEntity: TemplateEntityV1alpha1 = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Template',
+        metadata: {
+          annotations: {
+            'backstage.io/managed-by-location':
+              'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
+          },
+          name: 'graphql-starter',
+          title: 'GraphQL Service',
+          description:
+            'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
+          uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
+          etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
 
-    // TODO(blam): Take this entity from the post body sent from the frontend
-    const mockEntity: TemplateEntityV1alpha1 = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Template',
-      metadata: {
-        annotations: {
-          'backstage.io/managed-by-location':
-            'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
+          generation: 1,
         },
-        name: 'graphql-starter',
-        title: 'GraphQL Service',
-        description:
-          'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
-        uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
-        etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
+        spec: {
+          type: 'cookiecutter',
+          path: './template',
+        },
+      };
 
-        generation: 1,
-      },
-      spec: {
-        type: 'cookiecutter',
-        path: './template',
-      },
-    };
+      const job = jobProcessor.create(mockEntity, { component_id: 'test' });
+      res.status(201).json({ jobId: job.id });
 
-    const job = jobProcessor.create(mockEntity, { component_id: 'test' });
-    res.status(201).json({ jobId: job.id });
+      jobProcessor.run(job);
 
-    jobProcessor.run(job);
-
-    // console.warn(templatedPath);
-  });
+      // console.warn(templatedPath);
+    });
 
   const app = express();
   app.set('logger', logger);

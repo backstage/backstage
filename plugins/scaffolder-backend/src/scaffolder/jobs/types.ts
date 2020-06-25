@@ -16,9 +16,7 @@
 import type { Writable } from 'stream';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
-import { PreparerBuilder } from '../prepare';
-import Docker from 'dockerode';
-import { TemplaterBase, RequiredTemplateValues } from '../templater';
+import { RequiredTemplateValues } from '../templater';
 import { Logger } from 'winston';
 
 export type Job = {
@@ -38,13 +36,6 @@ export type Job = {
   log: string[];
   logger: Logger;
   error?: Error;
-};
-
-export type ProcessorContstructorArgs = {
-  preparers: PreparerBuilder;
-  templater: TemplaterBase;
-  logger: Logger;
-  dockerClient: Docker;
 };
 
 export type Processor = {

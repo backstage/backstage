@@ -13,30 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Processor, Job, ProcessorContstructorArgs } from './types';
+import { Processor, Job } from './types';
 import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { PassThrough } from 'stream';
 import uuid from 'uuid';
+import Docker from 'dockerode';
 import winston from 'winston';
-import { RequiredTemplateValues } from '../templater';
+import { RequiredTemplateValues, TemplaterBase } from '../templater';
 import { createNewRootLogger } from '@backstage/backend-common';
+import { PreparerBuilder } from '../prepare';
+
+export type JobProcessorArguments = {
+  preparers: PreparerBuilder;
+  templater: TemplaterBase;
+  dockerClient: Docker;
+};
+
+export type JobAndDirectoryTuple = {
+  job: Job;
+  directory: string;
+};
 
 export class JobProcessor implements Processor {
-  private preparers: ProcessorContstructorArgs['preparers'];
-  private templater: ProcessorContstructorArgs['templater'];
-  private dockerClient: ProcessorContstructorArgs['dockerClient'];
+  private preparers: PreparerBuilder;
+  private templater: TemplaterBase;
+  private dockerClient: Docker;
   private jobs = new Map<string, Job>();
 
-  constructor({
-    preparers,
-    templater,
-    dockerClient,
-  }: ProcessorContstructorArgs) {
+  constructor({ preparers, templater, dockerClient }: JobProcessorArguments) {
     this.preparers = preparers;
     this.templater = templater;
     this.dockerClient = dockerClient;
-    return this;
   }
 
   create(
@@ -74,47 +82,50 @@ export class JobProcessor implements Processor {
 
     return job;
   }
+
   get(id: string): Job | undefined {
     return this.jobs.get(id);
   }
-  async run(job: Job) {
+
+  private async prepare(job: Job): Promise<string> {
+    job.status = 'PREPARING';
+    const entity = job.metadata.entity;
+    const preparer = this.preparers.get(entity);
+    return await preparer.prepare(entity);
+  }
+
+  private async run(job: Job, directory: string): Promise<string> {
+    job.status = 'TEMPLATING';
+    return await this.templater.run({
+      directory,
+      values: job.metadata.values,
+      dockerClient: this.dockerClient,
+      logStream: job.logStream,
+    });
+  }
+
+  private async store(job: Job): Promise<void> {
+    job.status = 'STORING';
+  }
+
+  private async complete(job: Job): Promise<void> {
+    job.status = 'COMPLETE';
+  }
+
+  async process(job: Job) {
     if (job.status !== 'PENDING') {
       throw new Error('Job is not in pending state');
     }
 
-    const { logger, logStream } = job;
-
     try {
-      // Prepare a folder for the templater to run in
-      logger.debug('Prepare started');
-      job.status = 'PREPARING';
-      const entity = job.metadata.entity;
-      const preparer = this.preparers.get(entity);
-      const skeletonPath = await preparer.prepare(entity);
-      logger.debug('Prepare finished', {
-        skeletonPath,
-      });
-
-      // Run the templater on the directory with values passed in
-      logger.debug('Templating started');
-      job.status = 'TEMPLATING';
-      const templatedPath = await this.templater.run({
-        directory: skeletonPath,
-        values: job.metadata.values,
-        dockerClient: this.dockerClient,
-        logStream,
-      });
-      logger.debug('Template finished', { templatedPath });
-
-      // Store the template somewhere when finished
-      job.status = 'STORING';
-      // TODO(blam): Implement VCS Push here
-
-      job.status = 'COMPLETE';
+      const skeletonPath = await this.prepare(job);
+      await this.run(job, skeletonPath);
+      await this.store(job);
+      await this.complete(job);
     } catch (error) {
       job.error = error;
       job.status = 'FAILED';
-      logger.error(`Job failed with error ${error.message}`);
+      job.logger.error(`Job failed with error ${error.message}`);
     }
   }
 }

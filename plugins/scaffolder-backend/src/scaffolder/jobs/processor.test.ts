@@ -13,4 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-describe('JobProcessor', () => {});
+import { JobProcessor } from './processor';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+describe('JobProcessor', () => {
+  describe('create', () => {
+    const mockEntity: TemplateEntityV1alpha1 = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Template',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location':
+            'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
+        },
+        name: 'graphql-starter',
+        title: 'GraphQL Service',
+        description:
+          'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
+        uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
+        etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
+
+        generation: 1,
+      },
+      spec: {
+        type: 'cookiecutter',
+        path: './template',
+      },
+    };
+    const processor = new JobProcessor();
+
+    it('should create a unique id for the job', async () => {
+      const job = processor.create();
+    });
+  });
+});
