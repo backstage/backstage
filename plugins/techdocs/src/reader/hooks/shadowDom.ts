@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-export { default } from './ExampleFetchComponent';
+import { useEffect, useRef } from 'react';
+import type { RefObject } from 'react';
+
+type IShadowDOMRefObject = RefObject<HTMLDivElement>;
+export const useShadowDom: () => IShadowDOMRefObject = () => {
+  const ref: IShadowDOMRefObject = useRef(null);
+
+  useEffect(() => {
+    const divElement = ref.current;
+    divElement?.attachShadow({ mode: 'open' });
+  }, [ref]);
+
+  return ref;
+};
