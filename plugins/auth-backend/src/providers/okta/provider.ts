@@ -59,10 +59,10 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
    * allowing us to avoid using express-session in order to integrate with Okta.
   */
   private _store: StateStore = {
-    store(req: Request, cb: any) {
+    store({}, cb: any) {
       cb(null, null);
     },
-    verify(req: Request, state: string, cb: any) {
+    verify({}, {}, cb: any) {
       cb(null, true);
     },
   }

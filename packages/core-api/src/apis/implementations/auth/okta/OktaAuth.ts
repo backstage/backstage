@@ -60,6 +60,12 @@ const DEFAULT_PROVIDER = {
   icon: OktaIcon,
 };
 
+const OKTA_OIDC_SCOPES: Set<String> = new Set(
+  ['openid', 'profile', 'email', 'phone', 'address', 'groups', 'offline_access']
+)
+
+const OKTA_SCOPE_PREFIX: string = 'okta.'
+
 class OktaAuth implements
   OAuthApi,
   OpenIdConnectApi,
@@ -152,7 +158,7 @@ class OktaAuth implements
     return session?.profile;
   }
 
-  static normalizeScopes(scope?: string): Set<string> {
+  static normalizeScopes(scope?: string | string[]): Set<string> {
     if (!scope) {
       return new Set();
     }
@@ -161,7 +167,19 @@ class OktaAuth implements
       ? scope
       : scope.split(/[\s|,]/).filter(Boolean);
 
-    return new Set(scopeList);
+    const normalizedScopes = scopeList.map(scope => {
+      if (OKTA_OIDC_SCOPES.has(scope)) {
+        return scope;
+      }
+
+      if (scope.startsWith(OKTA_SCOPE_PREFIX)) {
+        return scope;
+      }
+      
+      return `${OKTA_SCOPE_PREFIX}${scope}`
+    });
+
+    return new Set(normalizedScopes);
   }
 }
 
