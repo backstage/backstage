@@ -1,5 +1,5 @@
 {
-  "name": "__component_id__",
+  "name": "{{ cookiecutter.component_id }}",
   "version": "0.0.0",
   "description": "{{ cookiecutter.description }}",
   "license": "UNLICENSED",
