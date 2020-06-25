@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { useShadowDom } from '..';
 
 const mockHtml: string = `
 
@@ -794,18 +795,6 @@ unzip master.zip
   </body>
 </html>
 `;
-
-type IShadowDOMRefObject = React.RefObject<HTMLDivElement>;
-const useShadowDom: () => IShadowDOMRefObject = () => {
-  const ref: IShadowDOMRefObject = React.useRef(null);
-
-  React.useEffect(() => {
-    const divElement = ref.current;
-    divElement?.attachShadow({ mode: 'open' });
-  }, [ref]);
-
-  return ref;
-};
 
 export const Reader = () => {
   const shadowDomRef = useShadowDom();
