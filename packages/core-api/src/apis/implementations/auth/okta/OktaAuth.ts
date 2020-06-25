@@ -158,14 +158,14 @@ class OktaAuth implements
     return session?.profile;
   }
 
-  static normalizeScopes(scope?: string | string[]): Set<string> {
-    if (!scope) {
+  static normalizeScopes(scopes?: string | string[]): Set<string> {
+    if (!scopes) {
       return new Set();
     }
 
-    const scopeList = Array.isArray(scope)
-      ? scope
-      : scope.split(/[\s|,]/).filter(Boolean);
+    const scopeList = Array.isArray(scopes)
+      ? scopes
+      : scopes.split(/[\s|,]/).filter(Boolean);
 
     const normalizedScopes = scopeList.map(scope => {
       if (OKTA_OIDC_SCOPES.has(scope)) {
