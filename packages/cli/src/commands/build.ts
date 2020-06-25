@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { buildPackage, Output } from '../lib/packager';
+import { buildPackage, Output } from '../lib/builder';
 import { Command } from 'commander';
 
 export default async (cmd: Command) => {
