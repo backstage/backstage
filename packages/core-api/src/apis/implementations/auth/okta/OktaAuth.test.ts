@@ -18,6 +18,8 @@ import OktaAuth from './OktaAuth';
 const theFuture = new Date(Date.now() + 3600000);
 const thePast = new Date(Date.now() - 10);
 
+const PREFIX = 'okta.';
+
 describe('OktaAuth', () => {
   it('should get refreshed access token', async () => {
     const getSession = jest.fn().mockResolvedValue({
@@ -107,5 +109,21 @@ describe('OktaAuth', () => {
     await expect(promise2).resolves.toBe('token2');
     await expect(promise3).resolves.toBe('token2');
     expect(getSession).toBeCalledTimes(4); // De-duping of session requests happens in client
+  });
+
+  it.each([
+    ['openid', ['openid']],
+    ['profile email', ['profile', 'email']],
+    [`${PREFIX}groups.manage`, [`${PREFIX}groups.manage`]],
+    ['groups.read', [`${PREFIX}groups.read`]],
+    [`${PREFIX}groups.manage groups.read, openid`, [`${PREFIX}groups.manage`, `${PREFIX}groups.read`, 'openid']],
+    [`email\t ${PREFIX}groups.read`, ['email', `${PREFIX}groups.read`]],
+
+    // Some incorrect scopes that we don't try to fix
+    [`${PREFIX}email`, [`${PREFIX}email`]],
+    [`${PREFIX}profile`, [`${PREFIX}profile`]],
+    [`${PREFIX}openid`, [`${PREFIX}openid`]],
+  ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
+    expect(OktaAuth.normalizeScopes(scope)).toEqual(new Set(scopes));
   });
 }); 

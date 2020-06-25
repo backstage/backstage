@@ -6,11 +6,13 @@ import {
   OAuthRequestManager,
   googleAuthApiRef,
   githubAuthApiRef,
+  oktaAuthApiRef,
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
   GoogleAuth,
   GithubAuth,
+  OktaAuth,
   identityApiRef,
 } from '@backstage/core';
 
@@ -44,6 +46,15 @@ builder.add(
 builder.add(
   githubAuthApiRef,
   GithubAuth.create({
+    apiOrigin: 'http://localhost:7000',
+    basePath: '/auth/',
+    oauthRequestApi,
+  }),
+);
+
+builder.add(
+  oktaAuthApiRef,
+  OktaAuth.create({
     apiOrigin: 'http://localhost:7000',
     basePath: '/auth/',
     oauthRequestApi,
