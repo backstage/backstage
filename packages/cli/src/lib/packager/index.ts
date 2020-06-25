@@ -75,6 +75,7 @@ export async function createDistWorkspace(
     const dest = typeof file === 'string' ? file : file.dest;
     await fs.copy(paths.resolveTargetRoot(src), resolvePath(targetDir, dest));
   }
+  return targetDir;
 }
 
 async function moveToDistWorkspace(
