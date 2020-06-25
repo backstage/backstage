@@ -20,19 +20,17 @@ import { OAuth2Session } from './types';
 import {
   OAuthApi,
   OpenIdConnectApi,
-  IdTokenOptions,
-  AccessTokenOptions,
   ProfileInfoApi,
-  ProfileInfoOptions,
   ProfileInfo,
   SessionStateApi,
   SessionState,
+  AuthRequestOptions,
+  BackstageIdentity,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
-import { SessionStateTracker } from '../../../../lib/AuthSessionManager/SessionStateTracker';
 
 type CreateOptions = {
   apiOrigin: string;
@@ -45,11 +43,14 @@ type CreateOptions = {
 };
 
 export type OAuth2Response = {
+  providerInfo: {
+    accessToken: string;
+    idToken: string;
+    scope: string;
+    expiresInSeconds: number;
+  };
   profile: ProfileInfo;
-  accessToken: string;
-  idToken: string;
-  scope: string;
-  expiresInSeconds: number;
+  backstageIdentity: BackstageIdentity;
 };
 
 const DEFAULT_PROVIDER = {
@@ -77,11 +78,15 @@ class OAuth2
       oauthRequestApi: oauthRequestApi,
       sessionTransform(res: OAuth2Response): OAuth2Session {
         return {
-          profile: res.profile,
-          idToken: res.idToken,
-          accessToken: res.accessToken,
-          scopes: OAuth2.normalizeScopes(res.scope),
-          expiresAt: new Date(Date.now() + res.expiresInSeconds * 1000),
+          ...res,
+          providerInfo: {
+            idToken: res.providerInfo.idToken,
+            accessToken: res.providerInfo.accessToken,
+            scopes: OAuth2.normalizeScopes(res.providerInfo.scope),
+            expiresAt: new Date(
+              Date.now() + res.providerInfo.expiresInSeconds * 1000,
+            ),
+          },
         };
       },
     });
@@ -93,9 +98,10 @@ class OAuth2
         `${SCOPE_PREFIX}userinfo.email`,
         `${SCOPE_PREFIX}userinfo.profile`,
       ]),
-      sessionScopes: session => session.scopes,
-      sessionShouldRefresh: session => {
-        const expiresInSec = (session.expiresAt.getTime() - Date.now()) / 1000;
+      sessionScopes: (session: OAuth2Session) => session.providerInfo.scopes,
+      sessionShouldRefresh: (session: OAuth2Session) => {
+        const expiresInSec =
+          (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000;
         return expiresInSec < 60 * 5;
       },
     });
@@ -103,51 +109,43 @@ class OAuth2
     return new OAuth2(sessionManager);
   }
 
-  private readonly sessionStateTracker = new SessionStateTracker();
-
   sessionState$(): Observable<SessionState> {
-    return this.sessionStateTracker.observable;
+    return this.sessionManager.sessionState$();
   }
 
   constructor(private readonly sessionManager: SessionManager<OAuth2Session>) {}
 
   async getAccessToken(
     scope?: string | string[],
-    options?: AccessTokenOptions,
+    options?: AuthRequestOptions,
   ) {
     const normalizedScopes = OAuth2.normalizeScopes(scope);
     const session = await this.sessionManager.getSession({
       ...options,
       scopes: normalizedScopes,
     });
-    this.sessionStateTracker.setIsSignedId(!!session);
-    if (session) {
-      return session.accessToken;
-    }
-    return '';
+    return session?.providerInfo.accessToken ?? '';
   }
 
-  async getIdToken(options: IdTokenOptions = {}) {
+  async getIdToken(options: AuthRequestOptions = {}) {
     const session = await this.sessionManager.getSession(options);
-    this.sessionStateTracker.setIsSignedId(!!session);
-    if (session) {
-      return session.idToken;
-    }
-    return '';
+    return session?.providerInfo.idToken ?? '';
   }
 
   async logout() {
     await this.sessionManager.removeSession();
-    this.sessionStateTracker.setIsSignedId(false);
   }
 
-  async getProfile(options: ProfileInfoOptions = {}) {
+  async getBackstageIdentity(
+    options: AuthRequestOptions = {},
+  ): Promise<BackstageIdentity | undefined> {
     const session = await this.sessionManager.getSession(options);
-    this.sessionStateTracker.setIsSignedId(!!session);
-    if (!session) {
-      return undefined;
-    }
-    return session.profile;
+    return session?.backstageIdentity;
+  }
+
+  async getProfile(options: AuthRequestOptions = {}) {
+    const session = await this.sessionManager.getSession(options);
+    return session?.profile;
   }
 
   static normalizeScopes(scopes?: string | string[]): Set<string> {

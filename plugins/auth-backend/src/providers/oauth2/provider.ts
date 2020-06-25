@@ -20,17 +20,16 @@ import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   executeRefreshTokenStrategy,
-  makeOAuth2ProfileInfo,
-  executeFetchOAuth2UserProfileStrategy,
+  makeProfileInfo,
+  executeFetchUserProfileStrategy,
 } from '../../lib/PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
-  AuthProviderConfig,
   RedirectInfo,
-  AuthInfoBase,
-  AuthInfoPrivate,
+  AuthProviderConfig,
   EnvironmentProviderConfig,
-  AuthInfoWithProfile,
+  OAuthResponse,
+  PassportDoneCallback,
   OAuth2ProviderConfig,
   OAuth2ProviderOptions,
 } from '../types';
@@ -40,32 +39,37 @@ import {
   EnvironmentHandler,
 } from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
+import passport from 'passport';
+import { TokenIssuer } from '../../identity';
+
+type PrivateInfo = {
+  refreshToken: string;
+};
 
 export class OAuth2AuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: OAuth2Strategy;
 
   constructor(options: OAuth2ProviderOptions) {
     this._strategy = new OAuth2Strategy(
-      {
-        ...options,
-        passReqToCallback: false as true,
-      },
+      { ...options, passReqToCallback: false as true },
       (
         accessToken: any,
         refreshToken: any,
         params: any,
-        profile: any,
-        done: any,
+        rawProfile: passport.Profile,
+        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
       ) => {
-        const profileInfo = makeOAuth2ProfileInfo(profile, params);
+        const profile = makeProfileInfo(rawProfile, params.id_token);
         done(
           undefined,
           {
-            profile: profileInfo,
-            idToken: params.id_token,
-            accessToken,
-            scope: params.scope,
-            expiresInSeconds: params.expires_in,
+            providerInfo: {
+              idToken: params.id_token,
+              accessToken,
+              scope: params.scope,
+              expiresInSeconds: params.expires_in,
+            },
+            profile,
           },
           {
             refreshToken,
@@ -75,39 +79,70 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
     );
   }
 
-  async start(req: express.Request, options: any): Promise<RedirectInfo> {
-    return await executeRedirectStrategy(req, this._strategy, options);
+  async start(
+    req: express.Request,
+    options: Record<string, string>,
+  ): Promise<RedirectInfo> {
+    const providerOptions = {
+      ...options,
+      accessType: 'offline',
+      prompt: 'consent',
+    };
+    return await executeRedirectStrategy(req, this._strategy, providerOptions);
   }
 
   async handler(
     req: express.Request,
-  ): Promise<{ user: AuthInfoBase; info: AuthInfoPrivate }> {
-    return await executeFrameHandlerStrategy(req, this._strategy);
+  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+    const { response, privateInfo } = await executeFrameHandlerStrategy<
+      OAuthResponse,
+      PrivateInfo
+    >(req, this._strategy);
+
+    return {
+      response: await this.populateIdentity(response),
+      refreshToken: privateInfo.refreshToken,
+    };
   }
 
-  async refresh(
-    refreshToken: string,
-    scope: string,
-  ): Promise<AuthInfoWithProfile> {
+  async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
     const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
       scope,
     );
 
-    const profile = await executeFetchOAuth2UserProfileStrategy(
+    const profile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
-      params,
+      params.id_token,
     );
 
-    return {
-      accessToken,
-      idToken: params.id_token,
-      expiresInSeconds: params.expires_in,
-      scope: params.scope,
+    return this.populateIdentity({
+      providerInfo: {
+        accessToken,
+        idToken: params.id_token,
+        expiresInSeconds: params.expires_in,
+        scope: params.scope,
+      },
       profile,
-    };
+    });
+  }
+
+  // Use this function to grab the user profile info from the token
+  // Then populate the profile with it
+  private async populateIdentity(
+    response: OAuthResponse,
+  ): Promise<OAuthResponse> {
+    const { profile } = response;
+
+    if (!profile.email) {
+      throw new Error('Profile does not contain a profile');
+    }
+
+    const id = profile.email.split('@')[0];
+
+    return { ...response, backstageIdentity: { id } };
   }
 }
 
@@ -115,6 +150,7 @@ export function createOAuth2Provider(
   { baseUrl }: AuthProviderConfig,
   providerConfig: EnvironmentProviderConfig,
   logger: Logger,
+  tokenIssuer: TokenIssuer,
 ) {
   const envProviders: EnvironmentHandlers = {};
 
@@ -149,10 +185,12 @@ export function createOAuth2Provider(
     }
 
     envProviders[env] = new OAuthProvider(new OAuth2AuthProvider(opts), {
+      disableRefresh: false,
       providerId: 'oauth2',
       secure,
       baseUrl,
       appOrigin,
+      tokenIssuer,
     });
   }
 

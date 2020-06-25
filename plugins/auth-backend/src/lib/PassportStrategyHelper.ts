@@ -21,7 +21,6 @@ import {
   RedirectInfo,
   RefreshTokenResponse,
   ProfileInfo,
-  OAuth2ProfileInfo,
   ProviderStrategy,
 } from '../providers/types';
 
@@ -172,26 +171,6 @@ export const executeFetchUserProfileStrategy = async (
         }
 
         const profile = makeProfileInfo(passportProfile, idToken);
-        resolve(profile);
-      },
-    );
-  });
-};
-
-export const executeFetchOAuth2UserProfileStrategy = async (
-  providerstrategy: passport.Strategy,
-  accessToken: string,
-  params: any,
-): Promise<ProfileInfo> => {
-  return new Promise((resolve, reject) => {
-    const anyStrategy = providerstrategy as any;
-    anyStrategy.userProfile(
-      accessToken,
-      (error: Error, passportProfile: passport.Profile) => {
-        if (error) {
-          reject(error);
-        }
-        const profile = makeOAuth2ProfileInfo(passportProfile, params);
         resolve(profile);
       },
     );
