@@ -237,7 +237,7 @@ export const githubAuthApiRef = createApiRef<
 /**
  * Provides authentication towards Okta APIs.
  *
- * See https://developer.okta.com/docs/reference/api/oidc/
+ * See https://developer.okta.com/docs/guides/implement-oauth-for-okta/scopes/
  * for a full list of supported scopes.
  */
 export const oktaAuthApiRef = createApiRef<
