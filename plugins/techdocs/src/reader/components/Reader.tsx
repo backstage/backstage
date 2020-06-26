@@ -21,6 +21,7 @@ import transformer, { addBaseUrl, rewriteDocLinks } from '../transformers';
 import { docStorageURL } from '../../config';
 import { Link } from '@backstage/core';
 import { useLocation, useParams } from 'react-router-dom';
+import URLParser from '../urlParser';
 
 const useFetch = (url: string) => {
   const state = useAsync(async () => {
@@ -36,6 +37,17 @@ const normalizeUrl = (path: string) => {
   return path.replace(/\/\/index.html$/, '/index.html');
 };
 
+const useEnforcedTrailingSlash = (): void => {
+  React.useEffect(() => {
+    const actualUrl = window.location.href;
+    const expectedUrl = new URLParser(window.location.href, '.').parse();
+
+    if (actualUrl !== expectedUrl) {
+      window.history.replaceState({}, document.title, expectedUrl);
+    }
+  }, []);
+};
+
 export const Reader = () => {
   const location = useLocation();
   const { componentId, '*': path } = useParams();
@@ -45,6 +57,8 @@ export const Reader = () => {
       `${docStorageURL}${location.pathname.replace('/docs', '')}/index.html`,
     ),
   );
+
+  useEnforcedTrailingSlash();
 
   React.useEffect(() => {
     const divElement = shadowDomRef.current;
