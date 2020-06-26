@@ -18,6 +18,7 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
 import { CookieCutter } from '../templater/cookiecutter';
 import { Preparers } from '../';
+import { Job } from './types';
 
 describe('JobProcessor', () => {
   const mockEntity: TemplateEntityV1alpha1 = {
@@ -43,6 +44,8 @@ describe('JobProcessor', () => {
     },
   };
 
+  const mockValues = { component_id: 'bob' };
+
   describe('create', () => {
     const templater = new CookieCutter();
     const preparers = new Preparers();
@@ -54,18 +57,87 @@ describe('JobProcessor', () => {
         templater,
       });
 
-      const job = processor.create(mockEntity, { component_id: 'bob' });
+      const job = processor.create(mockEntity, mockValues);
 
       expect(job.id).toMatch(
         /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
       );
+
+      expect(job.log).toEqual([]);
+      expect(job.status).toBe('PENDING');
+      expect(job.metadata.entity).toBe(mockEntity);
+      expect(job.metadata.values).toBe(mockValues);
     });
   });
 
   describe('process', () => {
-    it.todo('allows running of a job in a pending state');
-    it.todo('fails when the job is not in a pending state');
-    it.todo('calls the preparer with the entity');
-    it.todo('calls the templater with the correct directory');
+    const preparers = new Preparers();
+    const mockDocker = {} as jest.Mocked<Docker>;
+    const mockPreparer = { prepare: jest.fn() };
+    const templater = { run: jest.fn() };
+
+    const createJob = (): { job: Job; processor: JobProcessor } => {
+      preparers.register('github', mockPreparer);
+
+      const processor = new JobProcessor({
+        preparers,
+        dockerClient: mockDocker,
+        templater,
+      });
+
+      return { job: processor.create(mockEntity, mockValues), processor };
+    };
+
+    // TODO(blam): make this better.
+    // Wait 10ms for processor to finish.
+    const waitForProcessor = () =>
+      new Promise(resolve => setTimeout(resolve, 10));
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('fails when the job is not in a pending state', async () => {
+      const { job, processor } = createJob();
+      job.status = 'TEMPLATING';
+
+      await expect(processor.process(job)).rejects.toThrow(
+        /Job is not in a 'PENDING' state/,
+      );
+    });
+
+    it('calls the preparer with the entity', async () => {
+      const { job, processor } = createJob();
+
+      // Create a promise to hold it at this step so we can test
+      mockPreparer.prepare.mockImplementationOnce(() => new Promise(() => {}));
+
+      processor.process(job);
+
+      await waitForProcessor();
+
+      expect(mockPreparer.prepare).toHaveBeenCalledWith(mockEntity);
+      expect(job.status).toBe('PREPARING');
+    });
+
+    it('calls the templater with the correct directory', async () => {
+      const { job, processor } = createJob();
+      const mockDirectory = '/test/blam/bo';
+      mockPreparer.prepare.mockResolvedValueOnce(mockDirectory);
+
+      // Create a promise to hold it at this step so we can test
+      templater.run.mockImplementationOnce(() => new Promise(() => {}));
+
+      processor.process(job);
+
+      await waitForProcessor();
+
+      expect(templater.run).toHaveBeenCalledWith({
+        directory: mockDirectory,
+        values: mockValues,
+        dockerClient: mockDocker,
+        logStream: job.logStream,
+      });
+    });
   });
 });

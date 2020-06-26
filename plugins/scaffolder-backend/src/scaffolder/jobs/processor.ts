@@ -114,7 +114,7 @@ export class JobProcessor implements Processor {
 
   async process(job: Job) {
     if (job.status !== 'PENDING') {
-      throw new Error('Job is not in pending state');
+      throw new Error("Job is not in a 'PENDING' state");
     }
 
     try {
