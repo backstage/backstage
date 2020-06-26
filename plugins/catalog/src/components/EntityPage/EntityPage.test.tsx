@@ -25,11 +25,13 @@ jest.mock('react-router-dom', () => {
 });
 
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render, wait } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogApi, catalogApiRef } from '../../api/types';
-import { EntityPage } from './EntityPage';
+import { EntityPage, getPageTheme } from './EntityPage';
+
 const {
   useParams,
   useNavigate,
@@ -65,5 +67,34 @@ describe('EntityPage', () => {
     );
 
     await wait(() => expect(useNavigate()).toHaveBeenCalledWith('/catalog'));
+  });
+});
+
+describe('getPageTheme', () => {
+  const defaultPageTheme = getPageTheme();
+  it.each(['service', 'app', 'library', 'tool', 'documentation', 'website'])(
+    'should select right theme for predefined type: %p ̰ ',
+    type => {
+      const theme = getPageTheme(({
+        spec: {
+          type,
+        },
+      } as any) as Entity);
+      expect(theme).toBeDefined();
+      expect(theme).not.toBe(defaultPageTheme);
+    },
+  );
+
+  it('should select default theme for unknown/unspecified types', () => {
+    const theme1 = getPageTheme(({
+      spec: {
+        type: 'unknown-type',
+      },
+    } as any) as Entity);
+    const theme2 = getPageTheme(({
+      spec: {},
+    } as any) as Entity);
+    expect(theme1).toBe(defaultPageTheme);
+    expect(theme2).toBe(defaultPageTheme);
   });
 });

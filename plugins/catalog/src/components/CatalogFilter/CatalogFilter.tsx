@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { FC } from 'react';
 import {
   Card,
   List,
@@ -26,23 +26,19 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import type { IconComponent } from '@backstage/core';
-import { EntityFilterType } from '../../data/filters';
+import { EntityGroup } from '../../data/filters';
+import { EntitiesByFilter } from '../../hooks/useEntities';
+
 export type CatalogFilterItem = {
-  id: EntityFilterType;
+  id: EntityGroup;
   label: string;
   icon?: IconComponent;
-  count?: number | React.FC;
+  count?: number | FC;
 };
 
 export type CatalogFilterGroup = {
   name: string;
   items: CatalogFilterItem[];
-};
-
-export type CatalogFilterProps = {
-  groups: CatalogFilterGroup[];
-  selectedId?: string;
-  onSelectedChange?: (item: CatalogFilterItem) => void;
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -71,10 +67,16 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const CatalogFilter: React.FC<CatalogFilterProps> = ({
+export const CatalogFilter: FC<{
+  selectedFilter: EntityGroup;
+  onFilterChange: (type: EntityGroup) => void;
+  entitiesByFilter: EntitiesByFilter;
+  groups: CatalogFilterGroup[];
+}> = ({
+  selectedFilter: selectedId,
+  onFilterChange: setSelectedFilter,
+  entitiesByFilter,
   groups,
-  selectedId,
-  onSelectedChange,
 }) => {
   const classes = useStyles();
   return (
@@ -91,7 +93,9 @@ export const CatalogFilter: React.FC<CatalogFilterProps> = ({
                   key={item.id}
                   button
                   divider
-                  onClick={() => onSelectedChange?.(item)}
+                  onClick={() => {
+                    setSelectedFilter(item.id);
+                  }}
                   selected={item.id === selectedId}
                   className={classes.menuItem}
                 >
@@ -105,11 +109,7 @@ export const CatalogFilter: React.FC<CatalogFilterProps> = ({
                       {item.label}
                     </Typography>
                   </ListItemText>
-                  {typeof item.count === 'function' ? (
-                    <item.count />
-                  ) : (
-                    item.count
-                  )}
+                  {entitiesByFilter[item.id]?.length ?? '-'}
                 </MenuItem>
               ))}
             </List>

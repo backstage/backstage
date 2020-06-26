@@ -16,17 +16,25 @@
 
 import { BehaviorSubject } from '..';
 import { SessionState } from '../../apis';
+import { Observable } from '../../types';
 
 export class SessionStateTracker {
-  private signedIn: boolean = false;
-  observable = new BehaviorSubject<SessionState>(SessionState.SignedOut);
+  private readonly subject = new BehaviorSubject<SessionState>(
+    SessionState.SignedOut,
+  );
 
-  setIsSignedId(isSignedIn: boolean) {
+  private signedIn: boolean = false;
+
+  setIsSignedIn(isSignedIn: boolean) {
     if (this.signedIn !== isSignedIn) {
       this.signedIn = isSignedIn;
-      this.observable.next(
+      this.subject.next(
         this.signedIn ? SessionState.SignedIn : SessionState.SignedOut,
       );
     }
+  }
+
+  sessionState$(): Observable<SessionState> {
+    return this.subject;
   }
 }

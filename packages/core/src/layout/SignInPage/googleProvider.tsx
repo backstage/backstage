@@ -18,16 +18,7 @@ import React from 'react';
 import { Grid, Typography, Button } from '@material-ui/core';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
-import {
-  useApi,
-  googleAuthApiRef,
-  errorApiRef,
-  ProfileInfo,
-} from '@backstage/core-api';
-
-function parseUserId(profile: ProfileInfo) {
-  return profile!.email.replace(/@.*/, '');
-}
+import { useApi, googleAuthApiRef, errorApiRef } from '@backstage/core-api';
 
 const Component: ProviderComponent = ({ onResult }) => {
   const googleAuthApi = useApi(googleAuthApiRef);
@@ -35,12 +26,17 @@ const Component: ProviderComponent = ({ onResult }) => {
 
   const handleLogin = async () => {
     try {
-      const idToken = await googleAuthApi.getIdToken({ instantPopup: true });
+      const identity = await googleAuthApi.getBackstageIdentity({
+        instantPopup: true,
+      });
+
       const profile = await googleAuthApi.getProfile();
 
       onResult({
-        userId: parseUserId(profile!),
-        idToken,
+        userId: identity!.id,
+        profile: profile!,
+        getIdToken: () =>
+          googleAuthApi.getBackstageIdentity().then(i => i!.idToken),
         logout: async () => {
           await googleAuthApi.logout();
         },
@@ -69,14 +65,21 @@ const Component: ProviderComponent = ({ onResult }) => {
 const loader: ProviderLoader = async apis => {
   const googleAuthApi = apis.get(googleAuthApiRef)!;
 
-  const [idToken, profile] = await Promise.all([
-    googleAuthApi.getIdToken({ optional: true }),
-    googleAuthApi.getProfile({ optional: true }),
-  ]);
+  const identity = await googleAuthApi.getBackstageIdentity({
+    optional: true,
+  });
+
+  if (!identity) {
+    return undefined;
+  }
+
+  const profile = await googleAuthApi.getProfile();
 
   return {
-    userId: parseUserId(profile!),
-    idToken,
+    userId: identity.id,
+    profile: profile!,
+    getIdToken: () =>
+      googleAuthApi.getBackstageIdentity().then(i => i!.idToken),
     logout: async () => {
       await googleAuthApi.logout();
     },

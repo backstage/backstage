@@ -55,7 +55,9 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 }
 
 async function main() {
-  const createEnv = makeCreateEnv(await loadConfig());
+  const configs = await loadConfig();
+  const configReader = ConfigReader.fromConfigs(configs);
+  const createEnv = makeCreateEnv(configs);
 
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
@@ -63,10 +65,7 @@ async function main() {
   const identityEnv = useHotMemoize(module, () => createEnv('identity'));
 
   const service = createServiceBuilder(module)
-    .enableCors({
-      origin: 'http://localhost:3000',
-      credentials: true,
-    })
+    .loadConfig(configReader)
     .addRouter('/catalog', await catalog(catalogEnv))
     .addRouter('/scaffolder', await scaffolder(scaffolderEnv))
     .addRouter(

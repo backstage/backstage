@@ -44,13 +44,13 @@ const Settings = () => {
 
   useEffect(() => {
     if (tokenFromStore !== token) {
-      setToken(tokenFromStore);
+      setToken(token);
     }
     if (ownerFromStore !== owner) {
-      setOwner(ownerFromStore);
+      setOwner(owner);
     }
     if (repoFromStore !== repo) {
-      setRepo(repoFromStore);
+      setRepo(repo);
     }
   }, [ownerFromStore, repoFromStore, tokenFromStore, token, owner, repo]);
 

@@ -42,7 +42,7 @@ const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
 export function readEnv(env: {
   [name: string]: string | undefined;
 }): AppConfig[] {
-  let config: JsonObject | undefined = undefined;
+  let data: JsonObject | undefined = undefined;
 
   for (const [name, value] of Object.entries(env)) {
     if (!value) {
@@ -52,7 +52,7 @@ export function readEnv(env: {
       const key = name.replace(ENV_PREFIX, '');
       const keyParts = key.split('_');
 
-      let obj = (config = config ?? {});
+      let obj = (data = data ?? {});
       for (const [index, part] of keyParts.entries()) {
         if (!CONFIG_KEY_PART_PATTERN.test(part)) {
           throw new TypeError(`Invalid env config key '${key}'`);
@@ -87,5 +87,5 @@ export function readEnv(env: {
     }
   }
 
-  return config ? [config] : [];
+  return data ? [{ data, context: 'env' }] : [];
 }

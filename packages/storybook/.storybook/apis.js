@@ -2,16 +2,18 @@ import {
   ApiRegistry,
   alertApiRef,
   errorApiRef,
-  identityApiRef,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
   githubAuthApiRef,
+  oktaAuthApiRef,
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
   GoogleAuth,
   GithubAuth,
+  OktaAuth,
+  identityApiRef,
 } from '@backstage/core';
 
 const builder = ApiRegistry.builder();
@@ -22,6 +24,7 @@ builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
 
 builder.add(identityApiRef, {
   getUserId: () => 'guest',
+  getProfile: () => ({ email: 'guest@example.com' }),
   getIdToken: () => undefined,
   logout: async () => {},
 });
@@ -43,6 +46,15 @@ builder.add(
 builder.add(
   githubAuthApiRef,
   GithubAuth.create({
+    apiOrigin: 'http://localhost:7000',
+    basePath: '/auth/',
+    oauthRequestApi,
+  }),
+);
+
+builder.add(
+  oktaAuthApiRef,
+  OktaAuth.create({
     apiOrigin: 'http://localhost:7000',
     basePath: '/auth/',
     oauthRequestApi,

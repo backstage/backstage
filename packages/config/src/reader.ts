@@ -15,6 +15,8 @@
  */
 
 import { AppConfig, Config, JsonValue, JsonObject } from './types';
+import cloneDeep from 'lodash/cloneDeep';
+import mergeWith from 'lodash/mergeWith';
 
 // Update the same pattern in config-loader package if this is changed
 const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
@@ -39,43 +41,106 @@ function typeOf(value: JsonValue | undefined): string {
   return type;
 }
 
-export class ConfigReader implements Config {
-  private static readonly nullReader = new ConfigReader({});
+// Separate out a couple of common error messages to reduce bundle size.
+const errors = {
+  type(key: string, context: string, typeName: string, expected: string) {
+    return `Invalid type in config for key '${key}' in '${context}', got ${typeName}, wanted ${expected}`;
+  },
+  missing(key: string) {
+    return `Missing required config value at '${key}'`;
+  },
+};
 
+export class ConfigReader implements Config {
   static fromConfigs(configs: AppConfig[]): ConfigReader {
     if (configs.length === 0) {
-      return new ConfigReader({});
+      return new ConfigReader(undefined);
     }
 
     // Merge together all configs info a single config with recursive fallback
     // readers, giving the first config object in the array the highest priority.
-    return configs.reduceRight<ConfigReader>((previousReader, nextConfig) => {
-      return new ConfigReader(nextConfig, previousReader);
-    }, undefined!);
+    return configs.reduceRight<ConfigReader>(
+      (previousReader, { data, context }) => {
+        return new ConfigReader(data, context, previousReader);
+      },
+      undefined!,
+    );
   }
 
   constructor(
-    private readonly data: JsonObject,
+    private readonly data: JsonObject | undefined,
+    private readonly context: string = 'empty-config',
     private readonly fallback?: ConfigReader,
+    private readonly prefix: string = '',
   ) {}
 
-  getConfig(key: string): ConfigReader {
+  keys(): string[] {
+    const localKeys = this.data ? Object.keys(this.data) : [];
+    const fallbackKeys = this.fallback?.keys() ?? [];
+    return [...new Set([...localKeys, ...fallbackKeys])];
+  }
+
+  get(key: string): JsonValue {
+    const value = this.getOptional(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptional(key: string): JsonValue | undefined {
     const value = this.readValue(key);
-    const fallbackConfig = this.fallback?.getConfig(key);
+    const fallbackValue = this.fallback?.getOptional(key);
+
+    if (value === undefined) {
+      return fallbackValue;
+    } else if (fallbackValue === undefined) {
+      return value;
+    }
+
+    // Avoid merging arrays and primitive values, since that's how merging works for other
+    // methods for reading config.
+    return mergeWith(
+      {},
+      { value: cloneDeep(fallbackValue) },
+      { value },
+      (into, from) => (!isObject(from) || !isObject(into) ? from : undefined),
+    ).value;
+  }
+
+  getConfig(key: string): ConfigReader {
+    const value = this.getOptionalConfig(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptionalConfig(key: string): ConfigReader | undefined {
+    const value = this.readValue(key);
+    const fallbackConfig = this.fallback?.getOptionalConfig(key);
+    const prefix = this.fullKey(key);
+
     if (isObject(value)) {
-      return new ConfigReader(value, fallbackConfig);
+      return new ConfigReader(value, this.context, fallbackConfig, prefix);
     }
     if (value !== undefined) {
       throw new TypeError(
-        `Invalid type in config for key ${key}, got ${typeOf(
-          value,
-        )}, wanted object`,
+        errors.type(this.fullKey(key), this.context, typeOf(value), 'object'),
       );
     }
-    return fallbackConfig ?? ConfigReader.nullReader;
+    return fallbackConfig;
   }
 
   getConfigArray(key: string): ConfigReader[] {
+    const value = this.getOptionalConfigArray(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptionalConfigArray(key: string): ConfigReader[] | undefined {
     const configs = this.readConfigValue<JsonObject[]>(key, values => {
       if (!Array.isArray(values)) {
         return { expected: 'object-array' };
@@ -89,24 +154,60 @@ export class ConfigReader implements Config {
       return true;
     });
 
-    return (configs ?? []).map(obj => new ConfigReader(obj));
+    if (!configs) {
+      return undefined;
+    }
+
+    return configs.map(
+      (obj, index) =>
+        new ConfigReader(
+          obj,
+          this.context,
+          undefined,
+          this.fullKey(`${key}[${index}]`),
+        ),
+    );
   }
 
-  getNumber(key: string): number | undefined {
+  getNumber(key: string): number {
+    const value = this.getOptionalNumber(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptionalNumber(key: string): number | undefined {
     return this.readConfigValue(
       key,
       value => typeof value === 'number' || { expected: 'number' },
     );
   }
 
-  getBoolean(key: string): boolean | undefined {
+  getBoolean(key: string): boolean {
+    const value = this.getOptionalBoolean(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptionalBoolean(key: string): boolean | undefined {
     return this.readConfigValue(
       key,
       value => typeof value === 'boolean' || { expected: 'boolean' },
     );
   }
 
-  getString(key: string): string | undefined {
+  getString(key: string): string {
+    const value = this.getOptionalString(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptionalString(key: string): string | undefined {
     return this.readConfigValue(
       key,
       value =>
@@ -114,7 +215,15 @@ export class ConfigReader implements Config {
     );
   }
 
-  getStringArray(key: string): string[] | undefined {
+  getStringArray(key: string): string[] {
+    const value = this.getOptionalStringArray(key);
+    if (value === undefined) {
+      throw new Error(errors.missing(this.fullKey(key)));
+    }
+    return value;
+  }
+
+  getOptionalStringArray(key: string): string[] | undefined {
     return this.readConfigValue(key, values => {
       if (!Array.isArray(values)) {
         return { expected: 'string-array' };
@@ -126,6 +235,10 @@ export class ConfigReader implements Config {
       }
       return true;
     });
+  }
+
+  private fullKey(key: string): string {
+    return `${this.prefix}${this.prefix ? '.' : ''}${key}`;
   }
 
   private readConfigValue<T extends JsonValue>(
@@ -147,9 +260,13 @@ export class ConfigReader implements Config {
           value: theValue = value,
           expected,
         } = result;
-        const typeName = typeOf(theValue);
         throw new TypeError(
-          `Invalid type in config for key ${keyName}, got ${typeName}, wanted ${expected}`,
+          errors.type(
+            this.fullKey(keyName),
+            this.context,
+            typeOf(theValue),
+            expected,
+          ),
         );
       }
     }
@@ -159,16 +276,25 @@ export class ConfigReader implements Config {
 
   private readValue(key: string): JsonValue | undefined {
     const parts = key.split('.');
-
-    let value: JsonValue | undefined = this.data;
     for (const part of parts) {
       if (!CONFIG_KEY_PART_PATTERN.test(part)) {
         throw new TypeError(`Invalid config key '${key}'`);
       }
+    }
+
+    if (this.data === undefined) {
+      return undefined;
+    }
+
+    let value: JsonValue | undefined = this.data;
+    for (const [index, part] of parts.entries()) {
       if (isObject(value)) {
         value = value[part];
-      } else {
-        value = undefined;
+      } else if (value !== undefined) {
+        const badKey = this.fullKey(parts.slice(0, index).join('.'));
+        throw new TypeError(
+          errors.type(badKey, this.context, typeOf(value), 'object'),
+        );
       }
     }
 

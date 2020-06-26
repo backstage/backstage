@@ -104,21 +104,27 @@ export type Database = {
   /**
    * Updates an existing entity in the catalog.
    *
-   * The given entity must contain enough information to identify an already
-   * stored entity in the catalog - either by uid, or by kind + namespace +
-   * name. If no matching entity is found, the operation fails.
+   * The given entity must contain an uid to identify an already stored entity
+   * in the catalog. If it is missing or if no matching entity is found, the
+   * operation fails.
    *
-   * If etag or generation are given, they are taken into account. Attempts to
-   * update a matching entity, but where the etag and/or generation are not
-   * equal to the passed values, will fail.
+   * If matchingEtag or matchingGeneration are given, they are taken into
+   * account. Attempts to update a matching entity, but where the etag and/or
+   * generation are not equal to the passed values, will fail.
    *
    * @param tx An ongoing transaction
    * @param request The entity being updated
+   * @param matchingEtag If specified, reject with ConflictError if not
+   *                     matching the entry in the database
+   * @param matchingGeneration If specified, reject with ConflictError if not
+   *                           matching the entry in the database
    * @returns The updated entity
    */
   updateEntity(
     tx: unknown,
     request: DbEntityRequest,
+    matchingEtag?: string,
+    matchingGeneration?: number,
   ): Promise<DbEntityResponse>;
 
   entities(tx: unknown, filters?: EntityFilters): Promise<DbEntityResponse[]>;

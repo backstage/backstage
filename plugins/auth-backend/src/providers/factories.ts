@@ -18,13 +18,16 @@ import Router from 'express-promise-router';
 import { createGithubProvider } from './github';
 import { createGoogleProvider } from './google';
 import { createSamlProvider } from './saml';
+import { createOktaProvider } from './okta';
 import { AuthProviderFactory, AuthProviderConfig } from './types';
 import { Logger } from 'winston';
+import { TokenIssuer } from '../identity';
 
 const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
   github: createGithubProvider,
   saml: createSamlProvider,
+  okta: createOktaProvider,
 };
 
 export const createAuthProviderRouter = (
@@ -32,19 +35,22 @@ export const createAuthProviderRouter = (
   globalConfig: AuthProviderConfig,
   providerConfig: any, // TODO: make this a config reader object of sorts
   logger: Logger,
+  issuer: TokenIssuer,
 ) => {
   const factory = factories[providerId];
   if (!factory) {
     throw Error(`No auth provider available for '${providerId}'`);
   }
 
-  const provider = factory(globalConfig, providerConfig, logger);
+  const provider = factory(globalConfig, providerConfig, logger, issuer);
 
   const router = Router();
   router.get('/start', provider.start.bind(provider));
   router.get('/handler/frame', provider.frameHandler.bind(provider));
   router.post('/handler/frame', provider.frameHandler.bind(provider));
-  router.post('/logout', provider.logout.bind(provider));
+  if (provider.logout) {
+    router.post('/logout', provider.logout.bind(provider));
+  }
   if (provider.refresh) {
     router.get('/refresh', provider.refresh.bind(provider));
   }

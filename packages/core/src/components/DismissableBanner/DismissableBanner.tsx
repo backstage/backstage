@@ -59,7 +59,7 @@ type Props = {
   id: string;
 };
 
-const DismissableBanner: FC<Props> = ({ variant, message, id }) => {
+export const DismissableBanner: FC<Props> = ({ variant, message, id }) => {
   const classes = useStyles();
   const storageApi = useApi(storageApiRef);
   const notificationsStore = storageApi.forBucket('notifications');
@@ -111,5 +111,3 @@ const DismissableBanner: FC<Props> = ({ variant, message, id }) => {
     </Snackbar>
   );
 };
-
-export default DismissableBanner;

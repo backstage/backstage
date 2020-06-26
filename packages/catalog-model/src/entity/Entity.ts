@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/config';
+
 /**
  * The format envelope that's common to all versions/kinds of entity.
  *
@@ -39,7 +41,7 @@ export type Entity = {
   /**
    * The specification data describing the entity itself.
    */
-  spec?: object;
+  spec?: JsonObject;
 };
 
 /**
@@ -48,7 +50,7 @@ export type Entity = {
  * @see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
  */
-export type EntityMeta = {
+export type EntityMeta = JsonObject & {
   /**
    * A globally unique ID for the entity.
    *
@@ -112,3 +114,8 @@ export type EntityMeta = {
    */
   annotations?: Record<string, string>;
 };
+
+/**
+ * The keys of EntityMeta that are auto-generated.
+ */
+export const entityMetaGeneratedFields = ['uid', 'etag', 'generation'] as const;

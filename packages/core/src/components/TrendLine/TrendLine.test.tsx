@@ -19,7 +19,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 
-import TrendLine from '.';
+import { TrendLine } from './TrendLine';
 
 describe('TrendLine', () => {
   describe('when no data is present', () => {

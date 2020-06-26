@@ -14,39 +14,55 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Lifecycle,
   Content,
   ContentHeader,
   Header,
+  SupportButton,
   Page,
   pageTheme,
+  useApi,
+  errorApiRef,
 } from '@backstage/core';
-import { Typography, Link, Button } from '@material-ui/core';
+import { catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  Typography,
+  Link,
+  Button,
+  Grid,
+  LinearProgress,
+} from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 import TemplateCard from '../TemplateCard';
+import useStaleWhileRevalidate from 'swr';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
-// TODO(blam): Connect to backend
-const STATIC_DATA = [
-  {
-    id: 'react-ssr-template',
-    type: 'web-infra',
-    name: 'SSR React Website',
-    tags: ['Experimental'],
-    description:
-      'Next.js application skeleton for creating isomorphic web applications.',
-    ownerId: 'something',
-  },
-];
 const ScaffolderPage: React.FC<{}> = () => {
+  const catalogApi = useApi(catalogApiRef);
+  const errorApi = useApi(errorApiRef);
+
+  const { data: templates, isValidating, error } = useStaleWhileRevalidate(
+    'templates/all',
+    async () =>
+      catalogApi.getEntities({ kind: 'Template' }) as Promise<
+        TemplateEntityV1alpha1[]
+      >,
+  );
+
+  useEffect(() => {
+    if (!error) return;
+    errorApi.post(error);
+  }, [error, errorApi]);
+
   return (
     <Page theme={pageTheme.home}>
       <Header
         pageTitleOverride="Create a new component"
         title={
           <>
-            Create a new component <Lifecycle alpha shorthand />{' '}
+            Create a new component <Lifecycle alpha shorthand />
           </>
         }
         subtitle="Create new software components using standard templates"
@@ -61,6 +77,11 @@ const ScaffolderPage: React.FC<{}> = () => {
           >
             Register existing component
           </Button>
+          <SupportButton>
+            Create new software components using standard templates. Different
+            templates create different kinds of components (services, websites,
+            documentation, ...).
+          </SupportButton>
         </ContentHeader>
         <Typography variant="body2" paragraph style={{ fontStyle: 'italic' }}>
           <strong>NOTE!</strong> This feature is WIP. You can follow progress{' '}
@@ -69,19 +90,25 @@ const ScaffolderPage: React.FC<{}> = () => {
           </Link>
           .
         </Typography>
-        <div style={{ display: 'flex' }}>
-          {STATIC_DATA.map(item => {
-            return (
-              <TemplateCard
-                key={item.id}
-                title={item.name}
-                type={item.type}
-                description={item.description}
-                tags={item.tags}
-              />
-            );
-          })}
-        </div>
+        {!templates && isValidating && <LinearProgress />}
+        <Grid container>
+          {templates &&
+            templates.map(template => {
+              return (
+                <Grid item xs={12} sm={6} md={3}>
+                  <TemplateCard
+                    key={template.metadata.uid}
+                    title={`${
+                      (template.metadata.title || template.metadata.name) ?? ''
+                    }`}
+                    type={template.spec.type ?? ''}
+                    description={template.metadata.description ?? '-'}
+                    tags={(template.metadata?.tags as string[]) ?? []}
+                  />
+                </Grid>
+              );
+            })}
+        </Grid>
       </Content>
     </Page>
   );

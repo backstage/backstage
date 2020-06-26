@@ -39,6 +39,7 @@ import {
   SidebarPinButton,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
+import { graphiQLRouteRef } from '@backstage/plugin-graphiql';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -94,6 +95,11 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
       <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
       <SidebarItem icon={BuildIcon} to="circleci" text="CircleCI" />
+      <SidebarItem
+        icon={graphiQLRouteRef.icon!}
+        to={graphiQLRouteRef.path}
+        text={graphiQLRouteRef.title}
+      />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarThemeToggle />

@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
+import type { Writable } from 'stream';
+import Docker from 'dockerode';
+
 export interface RequiredTemplateValues {
-  componentId: string;
+  component_id: string;
 }
 
 export interface TemplaterRunOptions {
   directory: string;
   values: RequiredTemplateValues & object;
+  logStream?: Writable;
+  dockerClient: Docker;
 }
 
-export abstract class TemplaterBase {
+export type TemplaterBase = {
   // runs the templating with the values and returns the directory to push the VCS
-  abstract async run(opts: TemplaterRunOptions): Promise<string>;
-}
+  run(opts: TemplaterRunOptions): Promise<string>;
+};
 
 export interface TemplaterConfig {
   templater?: TemplaterBase;

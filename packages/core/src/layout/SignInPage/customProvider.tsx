@@ -28,7 +28,6 @@ import {
 import isEmpty from 'lodash/isEmpty';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
-import { SignInResult } from '@backstage/core-api';
 
 const ID_TOKEN_REGEX = /^[a-z0-9+/]+\.[a-z0-9+/]+\.[a-z0-9+/]+$/i;
 
@@ -43,11 +42,26 @@ const useFormStyles = makeStyles(theme => ({
   },
 }));
 
+type Data = {
+  userId: string;
+  idToken?: string;
+};
+
 const Component: ProviderComponent = ({ onResult }) => {
   const classes = useFormStyles();
-  const { register, handleSubmit, errors, formState } = useForm<SignInResult>({
+  const { register, handleSubmit, errors, formState } = useForm<Data>({
     mode: 'onChange',
   });
+
+  const handleResult = ({ userId, idToken }: Data) => {
+    onResult({
+      userId,
+      profile: {
+        email: `${userId}@example.com`,
+      },
+      getIdToken: idToken ? async () => idToken : undefined,
+    });
+  };
 
   return (
     <Grid item>
@@ -58,7 +72,7 @@ const Component: ProviderComponent = ({ onResult }) => {
           This selection will not be stored.
         </Typography>
 
-        <form className={classes.form} onSubmit={handleSubmit(onResult)}>
+        <form className={classes.form} onSubmit={handleSubmit(handleResult)}>
           <FormControl>
             <TextField
               name="userId"

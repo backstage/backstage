@@ -17,7 +17,7 @@
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import DismissableBanner from './DismissableBanner';
+import { DismissableBanner } from './DismissableBanner';
 import {
   ApiRegistry,
   ApiProvider,

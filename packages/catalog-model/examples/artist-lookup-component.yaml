@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: artist-lookup
+  description: Artist Lookup
+spec:
+  type: service
+  lifecycle: experimental
+  owner: artists@example.com

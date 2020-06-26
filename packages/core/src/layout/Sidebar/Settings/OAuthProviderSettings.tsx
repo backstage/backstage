@@ -41,22 +41,29 @@ export const OAuthProviderSettings: FC<OAuthProviderSidebarProps> = ({
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
+    let didCancel = false;
+
     const checkSession = async () => {
       const session = await api.getAccessToken('', { optional: true });
-      setSignedIn(!!session);
+      if (!didCancel) {
+        setSignedIn(!!session);
+      }
     };
     let subscription: Subscription;
     const observeSession = () => {
       subscription = api
         .sessionState$()
         .subscribe((sessionState: SessionState) => {
-          setSignedIn(sessionState === SessionState.SignedIn);
+          if (!didCancel) {
+            setSignedIn(sessionState === SessionState.SignedIn);
+          }
         });
     };
 
     checkSession();
     observeSession();
     return () => {
+      didCancel = true;
       subscription.unsubscribe();
     };
   }, [api]);

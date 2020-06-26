@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { buildPackage, Output } from '../../lib/packager';
+import { buildPackage, Output } from '../../lib/builder';
 
 export default async () => {
   await buildPackage({

@@ -19,10 +19,15 @@ import { paths } from '../lib/paths';
 
 const SKIPPED_KEYS = ['access', 'registry', 'tag'];
 
-export const pre = async () => {
-  const pkgPath = paths.resolveTarget('package.json');
+const PKG_PATH = 'package.json';
+const PKG_BACKUP_PATH = 'package.json-prepack';
 
-  const pkg = await fs.readJson(pkgPath);
+export const pre = async () => {
+  const pkgPath = paths.resolveTarget(PKG_PATH);
+
+  const pkgContent = await fs.readFile(pkgPath, 'utf8');
+  const pkg = JSON.parse(pkgContent);
+  await fs.writeFile(PKG_BACKUP_PATH, pkgContent);
 
   for (const key of Object.keys(pkg.publishConfig ?? {})) {
     if (!SKIPPED_KEYS.includes(key)) {
@@ -33,5 +38,6 @@ export const pre = async () => {
 };
 
 export const post = async () => {
-  // postpack is a noop for now, since it's not called anyway
+  // postpack isn't called by yarn right now, so it needs to be called manually
+  await fs.move(PKG_BACKUP_PATH, PKG_PATH, { overwrite: true });
 };

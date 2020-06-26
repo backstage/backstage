@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { ProfileInfo } from '../../../definitions';
+import { ProfileInfo, BackstageIdentity } from '../../../definitions';
 
 export type GoogleSession = {
+  providerInfo: {
+    idToken: string;
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt: Date;
+  };
   profile: ProfileInfo;
-  idToken: string;
-  accessToken: string;
-  scopes: Set<string>;
-  expiresAt: Date;
+  backstageIdentity: BackstageIdentity;
 };
