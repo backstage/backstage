@@ -17,8 +17,8 @@
 import React from 'react';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
-import transformer, { addBaseUrl, rewriteDocLinks } from '../../transformers';
-import { baseUrl } from '../../config';
+import transformer, { addBaseUrl, rewriteDocLinks } from '../transformers';
+import { docStorageURL } from '../../config';
 import { Link } from '@backstage/core';
 import { useLocation, useParams } from 'react-router-dom';
 
@@ -42,16 +42,16 @@ export const Reader = () => {
   const shadowDomRef = useShadowDom();
   const state = useFetch(
     normalizeUrl(
-      `${baseUrl}${location.pathname.replace('/docs', '')}/index.html`,
+      `${docStorageURL}${location.pathname.replace('/docs', '')}/index.html`,
     ),
   );
-  // https://techdocs-mock-sites.storage.googleapis.com/mkdocs/user-guide/configuration/custom-themes/index.html
+
   React.useEffect(() => {
     const divElement = shadowDomRef.current;
     if (divElement?.shadowRoot && state.value) {
-      divElement.shadowRoot.innerHTML = transformer(state.value, [
+      const transformedElement = transformer(state.value, [
         addBaseUrl({
-          baseUrl,
+          docStorageURL,
           componentId,
           path,
         }),
@@ -59,14 +59,18 @@ export const Reader = () => {
           componentId,
         }),
       ]);
+
+      divElement.shadowRoot.innerHTML = '';
+      if (transformedElement)
+        divElement.shadowRoot.appendChild(transformedElement);
     }
   }, [shadowDomRef, state, componentId, path]);
 
   return (
     <>
       <nav>
-        <Link to="/docs/mkdocs">mkdocs</Link>
-        <Link to="/docs/backstage-microsite">Backstage docs</Link>
+        <Link to="/docs/mkdocs/">mkdocs</Link>
+        <Link to="/docs/backstage-microsite/">Backstage docs</Link>
       </nav>
       <div ref={shadowDomRef} />
     </>

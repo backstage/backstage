@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-type AddBaseUrlOptions = {
-  componentId: string;
-};
 
-export const rewriteDocLinks = ({ componentId }: AddBaseUrlOptions) => {
+import URLParser from '../urlParser';
+
+type AddBaseUrlOptions = {};
+
+export const rewriteDocLinks = ({}: AddBaseUrlOptions) => {
   return (dom: Document): Document => {
     const updateDom = <T extends Element>(
       list: Array<T>,
       attributeName: string,
     ): void => {
       Array.from(list)
-        .filter(elem => !!elem.getAttribute(attributeName))
+        .filter(elem => elem.hasAttribute(attributeName))
         .forEach((elem: T) => {
-          const newUrl = `${componentId}/${elem.getAttribute(attributeName)}`;
-          elem.setAttribute(attributeName, newUrl);
+          elem.setAttribute(
+            attributeName,
+            new URLParser(
+              window.location.href,
+              elem.getAttribute(attributeName)!,
+            ).parse(),
+          );
         });
     };
 

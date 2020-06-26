@@ -13,5 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const docStorageURL =
-  'https://techdocs-mock-sites.storage.googleapis.com';
+
+const normalizeBaseURL = (baseURL: string): string => {
+  const url = new URL(baseURL);
+  url.pathname = url.pathname.replace(/([^/])$/, '$1/');
+  return url.toString();
+};
+
+export default class URLParser {
+  constructor(public baseURL: string, public pathname: string) {
+    this.baseURL = normalizeBaseURL(baseURL);
+  }
+
+  parse(): string {
+    return new URL(this.pathname, this.baseURL).toString();
+  }
+}

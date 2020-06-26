@@ -19,10 +19,13 @@ export * from './rewriteDocLinks';
 
 type Transformer = (dom: Document) => Document;
 
-export default (html: string, transformers: Transformer[]): string => {
+export default (
+  html: string,
+  transformers: Transformer[],
+): HTMLElement | undefined => {
   const dom = new DOMParser().parseFromString(html, 'text/html');
 
   transformers.forEach(transformer => transformer(dom));
 
-  return dom.body.parentElement?.outerHTML ?? '';
+  return dom.body.parentElement ?? undefined;
 };

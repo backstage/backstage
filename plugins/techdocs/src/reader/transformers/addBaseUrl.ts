@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import URLParser from '../urlParser';
+
 type AddBaseUrlOptions = {
-  baseUrl: string;
+  docStorageURL: string;
   componentId: string;
   path: string;
 };
 
 export const addBaseUrl = ({
-  baseUrl,
+  docStorageURL,
   componentId,
   path,
 }: AddBaseUrlOptions) => {
@@ -32,10 +35,10 @@ export const addBaseUrl = ({
       Array.from(list)
         .filter(elem => !!elem.getAttribute(attributeName))
         .forEach((elem: T) => {
-          const newUrl = new URL(
+          const newUrl = new URLParser(
+            `${docStorageURL}/${componentId}/${path}`,
             elem.getAttribute(attributeName)!,
-            `${baseUrl}/${componentId}/${path}`,
-          ).toString();
+          ).parse();
           elem.setAttribute(attributeName, newUrl);
         });
     };
