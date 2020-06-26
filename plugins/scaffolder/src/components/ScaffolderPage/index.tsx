@@ -90,7 +90,7 @@ const ScaffolderPage: React.FC<{}> = () => {
           </Link>
           .
         </Typography>
-        {isValidating && <LinearProgress />}
+        {!templates && isValidating && <LinearProgress />}
         <Grid container>
           {templates &&
             templates.map(template => {
@@ -103,7 +103,7 @@ const ScaffolderPage: React.FC<{}> = () => {
                     }`}
                     type={template.spec.type ?? ''}
                     description={template.metadata.description ?? '-'}
-                    tags={template.metadata?.tags ?? []}
+                    tags={(template.metadata?.tags as string[]) ?? []}
                   />
                 </Grid>
               );
