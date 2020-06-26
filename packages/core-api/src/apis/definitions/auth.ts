@@ -233,3 +233,20 @@ export const githubAuthApiRef = createApiRef<
   id: 'core.auth.github',
   description: 'Provides authentication towards Github APIs',
 });
+
+/**
+ * Provides authentication towards Okta APIs.
+ *
+ * See https://developer.okta.com/docs/guides/implement-oauth-for-okta/scopes/
+ * for a full list of supported scopes.
+ */
+export const oktaAuthApiRef = createApiRef<
+  OAuthApi &
+  OpenIdConnectApi &
+  ProfileInfoApi &
+  BackstageIdentityApi &
+  SessionStateApi
+>({
+  id: 'core.auth.okta',
+  description: 'Provides authentication towards Okta APIs',
+}); 

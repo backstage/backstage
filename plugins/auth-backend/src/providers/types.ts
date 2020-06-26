@@ -55,6 +55,10 @@ export type OAuthProviderConfig = {
    * Client Secret of the auth provider.
    */
   clientSecret: string;
+  /**
+   * The location of the OAuth Authorization Server
+   */
+  audience?: string;
 };
 
 export type EnvironmentProviderConfig = {

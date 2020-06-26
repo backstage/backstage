@@ -82,6 +82,15 @@ export async function createRouter(
             issuer: 'passport-saml',
           },
         },
+        okta: {
+          development: {
+            appOrigin: 'http://localhost:3000',
+            secure: false,
+            clientId: process.env.AUTH_OKTA_CLIENT_ID!,
+            clientSecret: process.env.AUTH_OKTA_CLIENT_SECRET!,
+            audience: process.env.AUTH_OKTA_AUDIENCE,
+          }
+        }
       },
     },
   };
