@@ -79,6 +79,7 @@ describe('JobProcessor', () => {
     const createJob = (): { job: Job; processor: JobProcessor } => {
       preparers.register('github', mockPreparer);
 
+      new JobProcessor(1);
       const processor = new JobProcessor({
         preparers,
         dockerClient: mockDocker,

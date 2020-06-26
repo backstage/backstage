@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Processor, Job } from './types';
+import { Processor, Job, Stage, StageContext } from './types';
 import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { PassThrough } from 'stream';
 import * as uuid from 'uuid';
 import Docker from 'dockerode';
 import winston from 'winston';
-import { RequiredTemplateValues, TemplaterBase } from '../templater';
+import { RequiredTemplateValues, TemplaterBase } from '../stages/templater';
 import { createNewRootLogger } from '@backstage/backend-common';
-import { PreparerBuilder } from '../prepare';
+import { PreparerBuilder } from '../stages/prepare';
 
 export type JobProcessorArguments = {
   preparers: PreparerBuilder;
@@ -36,15 +36,10 @@ export type JobAndDirectoryTuple = {
 };
 
 export class JobProcessor implements Processor {
-  private preparers: PreparerBuilder;
-  private templater: TemplaterBase;
-  private dockerClient: Docker;
   private jobs = new Map<string, Job>();
-
-  constructor({ preparers, templater, dockerClient }: JobProcessorArguments) {
-    this.preparers = preparers;
-    this.templater = templater;
-    this.dockerClient = dockerClient;
+  private stages: Stage[];
+  constructor({ stages }: { stages: Stage[] }) {
+    this.stages = stages;
   }
 
   create(
@@ -66,11 +61,17 @@ export class JobProcessor implements Processor {
     const logger = createNewRootLogger();
     logger.add(new winston.transports.Stream({ stream: logStream }));
 
+    const context: StageContext = {
+      entity,
+      values,
+      logger,
+    };
+
     const job: Job = {
       id,
       logStream,
-      logger,
-      log,
+      context,
+      stages: this.stages.map((stage) => ({}))
       status: 'PENDING',
       metadata: {
         entity,
