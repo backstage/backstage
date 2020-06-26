@@ -140,6 +140,11 @@ const main = (argv: string[]) => {
     .description('Delete cache directories')
     .action(lazyAction(() => import('./commands/clean/clean'), 'default'));
 
+  program
+    .command('build-workspace <workspace-dir> ...<packages>')
+    .description('Builds a temporary dist workspace from the provided packages')
+    .action(lazyAction(() => import('./commands/buildWorkspace'), 'default'));
+
   program.on('command:*', () => {
     console.log();
     console.log(
