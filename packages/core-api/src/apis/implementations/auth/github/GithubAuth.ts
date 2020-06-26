@@ -27,7 +27,10 @@ import {
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
+import {
+  AuthSessionStore,
+  StaticAuthSessionManager,
+} from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
 
 type CreateOptions = {
@@ -91,7 +94,13 @@ class GithubAuth implements OAuthApi, SessionStateApi {
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 
-    return new GithubAuth(sessionManager);
+    const authSessionStore = new AuthSessionStore<GithubSession>({
+      manager: sessionManager,
+      storageKey: 'githubSession',
+      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
+    });
+
+    return new GithubAuth(authSessionStore);
   }
 
   sessionState$(): Observable<SessionState> {
