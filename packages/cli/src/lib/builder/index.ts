@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import { buildPackage, Output } from '../../lib/builder';
-
-export default async () => {
-  await buildPackage({
-    outputs: new Set([Output.cjs, Output.types]),
-  });
-};
+export { buildPackage } from './packager';
+export { Output } from './types';
+export type { BuildOptions } from './types';
