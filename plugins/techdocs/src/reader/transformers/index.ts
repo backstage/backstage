@@ -39,25 +39,4 @@ function transform(
   return dom;
 }
 
-// function transform(
-//   html: string,
-//   transformers: Transformer[],
-// ): HTMLElement {
-//   const dom = new DOMParser().parseFromString(html, 'text/html');
-
-//   transformers.forEach(transformer => transformer(dom));
-
-//   return dom.documentElement;
-// };
-
-// function transform(
-//   html: HTMLElement,
-//   transformers: Transformer[],
-// ): HTMLElement {
-
-//   transformers.forEach(transformer => transformer(element));
-
-//   return html;
-// };
-
 export default transform;
