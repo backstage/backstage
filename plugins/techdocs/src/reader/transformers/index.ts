@@ -16,16 +16,48 @@
 
 export * from './addBaseUrl';
 export * from './rewriteDocLinks';
+export * from './addEventListener';
 
-type Transformer = (dom: Document) => Document;
+export type Transformer = (dom: Element) => Element;
 
-export default (
-  html: string,
+function transform(
+  html: string | Element,
   transformers: Transformer[],
-): HTMLElement | undefined => {
-  const dom = new DOMParser().parseFromString(html, 'text/html');
+): Element {
+  let dom: Element;
+
+  if (typeof html === 'string') {
+    dom = new DOMParser().parseFromString(html, 'text/html').documentElement;
+  } else if (html instanceof Element) {
+    dom = html;
+  } else {
+    throw new Error('dom is not a recognized type');
+  }
 
   transformers.forEach(transformer => transformer(dom));
 
-  return dom.body.parentElement ?? undefined;
-};
+  return dom;
+}
+
+// function transform(
+//   html: string,
+//   transformers: Transformer[],
+// ): HTMLElement {
+//   const dom = new DOMParser().parseFromString(html, 'text/html');
+
+//   transformers.forEach(transformer => transformer(dom));
+
+//   return dom.documentElement;
+// };
+
+// function transform(
+//   html: HTMLElement,
+//   transformers: Transformer[],
+// ): HTMLElement {
+
+//   transformers.forEach(transformer => transformer(element));
+
+//   return html;
+// };
+
+export default transform;

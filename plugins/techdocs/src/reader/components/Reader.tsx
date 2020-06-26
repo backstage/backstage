@@ -17,10 +17,14 @@
 import React from 'react';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
-import transformer, { addBaseUrl, rewriteDocLinks } from '../transformers';
+import transformer, {
+  addBaseUrl,
+  rewriteDocLinks,
+  addEventListener,
+} from '../transformers';
 import { docStorageURL } from '../../config';
 import { Link } from '@backstage/core';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import URLParser from '../urlParser';
 
 const useFetch = (url: string) => {
@@ -31,10 +35,6 @@ const useFetch = (url: string) => {
   }, [url]);
 
   return state;
-};
-
-const normalizeUrl = (path: string) => {
-  return path.replace(/\/\/index.html$/, '/index.html');
 };
 
 const useEnforcedTrailingSlash = (): void => {
@@ -52,11 +52,12 @@ export const Reader = () => {
   const location = useLocation();
   const { componentId, '*': path } = useParams();
   const shadowDomRef = useShadowDom();
-  const state = useFetch(
-    normalizeUrl(
-      `${docStorageURL}${location.pathname.replace('/docs', '')}/index.html`,
-    ),
-  );
+  const navigate = useNavigate();
+  const normalizedUrl = new URLParser(
+    `${docStorageURL}${location.pathname.replace('/docs', '')}`,
+    '.',
+  ).parse();
+  const state = useFetch(`${normalizedUrl}index.html`);
 
   useEnforcedTrailingSlash();
 
@@ -75,10 +76,16 @@ export const Reader = () => {
       ]);
 
       divElement.shadowRoot.innerHTML = '';
-      if (transformedElement)
+      if (transformedElement) {
         divElement.shadowRoot.appendChild(transformedElement);
+        transformer(divElement.shadowRoot.children[0], [
+          addEventListener({
+            onClick: navigate,
+          }),
+        ]);
+      }
     }
-  }, [shadowDomRef, state, componentId, path]);
+  }, [shadowDomRef, state, componentId, path, navigate]);
 
   return (
     <>
