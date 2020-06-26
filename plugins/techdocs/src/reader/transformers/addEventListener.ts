@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-import URLParser from '../urlParser';
 import type { Transformer } from './index';
 
-type AddBaseUrlOptions = {};
+type AddEventListenerOptions = {
+  onClick: (newUrl: string) => void;
+};
 
-export const rewriteDocLinks = ({}: AddBaseUrlOptions): Transformer => {
+export const addEventListener = ({
+  onClick,
+}: AddEventListenerOptions): Transformer => {
   return dom => {
-    const updateDom = <T extends Element>(
-      list: Array<T>,
-      attributeName: string,
-    ): void => {
-      Array.from(list)
-        .filter(elem => elem.hasAttribute(attributeName))
-        .forEach((elem: T) => {
-          elem.setAttribute(
-            attributeName,
-            new URLParser(
-              window.location.href,
-              elem.getAttribute(attributeName)!,
-            ).parse(),
+    Array.from(dom.getElementsByTagName('a')).forEach(elem => {
+      elem.addEventListener('click', (e: MouseEvent) => {
+        e.preventDefault();
+        const target = e.target as HTMLAnchorElement;
+        if (target?.getAttribute('href')) {
+          onClick(
+            target.getAttribute('href')!.replace(window.location.origin, ''),
           );
-        });
-    };
-
-    updateDom(Array.from(dom.getElementsByTagName('a')), 'href');
+        }
+      });
+    });
 
     return dom;
   };

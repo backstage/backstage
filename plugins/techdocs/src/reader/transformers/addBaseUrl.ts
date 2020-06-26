@@ -15,6 +15,7 @@
  */
 
 import URLParser from '../urlParser';
+import type { Transformer } from './index';
 
 type AddBaseUrlOptions = {
   docStorageURL: string;
@@ -26,10 +27,10 @@ export const addBaseUrl = ({
   docStorageURL,
   componentId,
   path,
-}: AddBaseUrlOptions) => {
-  return (dom: Document): Document => {
+}: AddBaseUrlOptions): Transformer => {
+  return dom => {
     const updateDom = <T extends Element>(
-      list: Array<T>,
+      list: HTMLCollectionOf<T> | NodeListOf<T>,
       attributeName: string,
     ): void => {
       Array.from(list)
@@ -43,12 +44,9 @@ export const addBaseUrl = ({
         });
     };
 
-    updateDom<HTMLImageElement>(Array.from(dom.images), 'src');
-    updateDom<HTMLScriptElement>(Array.from(dom.scripts), 'src');
-    updateDom<HTMLLinkElement>(
-      Array.from(dom.querySelectorAll('link')),
-      'href',
-    );
+    updateDom<HTMLImageElement>(dom.querySelectorAll('img'), 'src');
+    updateDom<HTMLScriptElement>(dom.querySelectorAll('script'), 'src');
+    updateDom<HTMLLinkElement>(dom.querySelectorAll('link'), 'href');
 
     return dom;
   };
