@@ -14,14 +14,5 @@
  * limitations under the License.
  */
 
-import { ApiTestRegistry } from '@backstage/core-api';
-import { MockErrorApi, MockStorageApi } from './apis';
-
-export function createMockApiRegistry(): ApiTestRegistry {
-  const registry = new ApiTestRegistry();
-
-  registry.register(MockErrorApi.factory);
-  registry.register(MockStorageApi.factory);
-
-  return registry;
-}
+export { MockStorageApi } from './MockStorageApi';
+export type { MockStorageBucket } from './MockStorageApi';
