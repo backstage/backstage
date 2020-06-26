@@ -38,7 +38,6 @@ export async function createRouter(
   const jobProcessor = new JobProcessor({
     preparers,
     templater,
-    logger,
     dockerClient,
   });
 
@@ -47,7 +46,8 @@ export async function createRouter(
       const job = jobProcessor.get(params.jobId);
 
       if (!job) {
-        return res.status(404).send({ error: 'job not found' });
+        res.status(404).send({ error: 'job not found' });
+        return;
       }
 
       res.send({
@@ -89,9 +89,7 @@ export async function createRouter(
       const job = jobProcessor.create(mockEntity, { component_id: 'test' });
       res.status(201).json({ jobId: job.id });
 
-      jobProcessor.run(job);
-
-      // console.warn(templatedPath);
+      jobProcessor.process(job);
     });
 
   const app = express();

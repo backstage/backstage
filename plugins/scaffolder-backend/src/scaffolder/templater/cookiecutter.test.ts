@@ -105,6 +105,7 @@ describe('CookieCutter Templater', () => {
       dockerClient: mockDocker,
     });
   });
+
   it('should return the result path to the end templated folder', async () => {
     const tempdir = os.tmpdir();
 

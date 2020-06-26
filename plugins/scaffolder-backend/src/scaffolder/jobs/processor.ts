@@ -17,7 +17,7 @@ import { Processor, Job } from './types';
 import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { PassThrough } from 'stream';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 import Docker from 'dockerode';
 import winston from 'winston';
 import { RequiredTemplateValues, TemplaterBase } from '../templater';

@@ -15,6 +15,10 @@
  */
 import { JobProcessor } from './processor';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import Docker from 'dockerode';
+import { CookieCutter } from '../templater/cookiecutter';
+import { Preparers } from '../';
+
 describe('JobProcessor', () => {
   const mockEntity: TemplateEntityV1alpha1 = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -40,7 +44,22 @@ describe('JobProcessor', () => {
   };
 
   describe('create', () => {
-    it.todo('creates a new job');
+    const templater = new CookieCutter();
+    const preparers = new Preparers();
+    const mockDocker = {} as jest.Mocked<Docker>;
+    it('creates a new job', async () => {
+      const processor = new JobProcessor({
+        dockerClient: mockDocker,
+        preparers,
+        templater,
+      });
+
+      const job = processor.create(mockEntity, { component_id: 'bob' });
+
+      expect(job.id).toMatch(
+        /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
+      );
+    });
   });
 
   describe('process', () => {
