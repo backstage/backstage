@@ -15,7 +15,7 @@
  */
 
 import { createTheme } from './baseTheme';
-import { blue, yellow, red } from '@material-ui/core/colors';
+import { blue, yellow } from '@material-ui/core/colors';
 
 export const lightTheme = createTheme({
   palette: {
