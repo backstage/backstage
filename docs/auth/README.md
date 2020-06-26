@@ -80,7 +80,7 @@ sign-in methods.
 
 More details are provided in dedicated sections of the documentation.
 
-- [OAuth](./oauth): Description of the generic OAuth flow implemented by the
+- [OAuth](./oauth.md): Description of the generic OAuth flow implemented by the
   [auth-backend](../../plugins/auth-backend).
-- [Glossary](./glossary): Glossary of some common terms related to the auth
+- [Glossary](./glossary.md): Glossary of some common terms related to the auth
   flows.
