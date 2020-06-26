@@ -33,7 +33,7 @@ import { createPlugin, createRouteRef } from '@backstage/core';
 import { Reader } from './reader/components/Reader';
 
 export const rootRouteRef = createRouteRef({
-  path: '/docs',
+  path: '/docs/:componentId/*',
   title: 'Docs',
 });
 

@@ -17,6 +17,10 @@
 import React from 'react';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
+import transformer, { addBaseUrl, rewriteDocLinks } from '../../transformers';
+import { baseUrl } from '../../config';
+import { Link } from '@backstage/core';
+import { useLocation, useParams } from 'react-router-dom';
 
 const useFetch = (url: string) => {
   const state = useAsync(async () => {
@@ -28,54 +32,42 @@ const useFetch = (url: string) => {
   return state;
 };
 
-const addBaseUrl = (htmlString: string, baseUrl: string): string => {
-  const domParser = new DOMParser().parseFromString(htmlString, 'text/html');
-
-  const updateDom = <T extends Element>(
-    list: Array<T>,
-    attributeName: string,
-  ): void => {
-    Array.from(list).forEach((elem: T) => {
-      const newUrl = new URL(
-        elem.getAttribute(attributeName)!,
-        baseUrl,
-      ).toString();
-      elem.setAttribute(attributeName, newUrl);
-    });
-  };
-
-  updateDom<HTMLImageElement>(Array.from(domParser.images), 'src');
-  updateDom<HTMLAnchorElement | HTMLAreaElement>(
-    Array.from(domParser.links),
-    'href',
-  );
-  updateDom<HTMLLinkElement>(
-    Array.from(domParser.querySelectorAll('link')),
-    'href',
-  );
-
-  return domParser.body.parentElement?.outerHTML || htmlString;
+const normalizeUrl = (path: string) => {
+  return path.replace(/\/\/index.html$/, '/index.html');
 };
 
 export const Reader = () => {
+  const location = useLocation();
+  const { componentId, '*': path } = useParams();
   const shadowDomRef = useShadowDom();
   const state = useFetch(
-    'https://techdocs-mock-sites.storage.googleapis.com/mkdocs/index.html',
+    normalizeUrl(
+      `${baseUrl}${location.pathname.replace('/docs', '')}/index.html`,
+    ),
   );
-
+  // https://techdocs-mock-sites.storage.googleapis.com/mkdocs/user-guide/configuration/custom-themes/index.html
   React.useEffect(() => {
     const divElement = shadowDomRef.current;
     if (divElement?.shadowRoot && state.value) {
-      divElement.shadowRoot.innerHTML = addBaseUrl(
-        state.value,
-        'https://techdocs-mock-sites.storage.googleapis.com/mkdocs/',
-      );
+      divElement.shadowRoot.innerHTML = transformer(state.value, [
+        addBaseUrl({
+          baseUrl,
+          componentId,
+          path,
+        }),
+        rewriteDocLinks({
+          componentId,
+        }),
+      ]);
     }
-  }, [shadowDomRef, state]);
+  }, [shadowDomRef, state, componentId, path]);
 
   return (
     <>
-      <h3>Shadow DOM should be underneath</h3>
+      <nav>
+        <Link to="/docs/mkdocs">mkdocs</Link>
+        <Link to="/docs/backstage-microsite">Backstage docs</Link>
+      </nav>
       <div ref={shadowDomRef} />
     </>
   );
