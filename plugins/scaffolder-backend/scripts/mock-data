@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-curl \
---location \
---request POST 'localhost:7000/catalog/locations' \
---header 'Content-Type: application/json' \
---data-raw "{\"type\": \"file\", \"target\": \"$(pwd)/sample-templates/react-ssr-template/template.yaml\"}"
-
+for URL in \
+  'react-ssr-template' \
+  'springboot-template' \
+; do \
+  curl \
+    --location \
+    --request POST 'localhost:7000/catalog/locations' \
+    --header 'Content-Type: application/json' \
+    --data-raw "{\"type\": \"file\", \"target\": \"$(pwd)/sample-templates/${URL}/template.yaml\"}"
+done

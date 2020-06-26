@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ProfileInfo, BackstageIdentity } from '../../../definitions';
 
-export * from './google';
-export * from './github';
-export * from './okta';
+export type OktaSession = {
+  providerInfo: {
+    idToken: string;
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
+};

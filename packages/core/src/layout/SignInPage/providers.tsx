@@ -18,6 +18,7 @@ import React, { useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import { guestProvider } from './guestProvider';
 import { googleProvider } from './googleProvider';
 import { customProvider } from './customProvider';
+import { oktaProvider } from './oktaProvider';
 import {
   SignInPageProps,
   SignInResult,
@@ -30,12 +31,13 @@ import { SignInProvider } from './types';
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
 // Separate list here to avoid exporting internal types
-export type SignInProviderId = 'guest' | 'google' | 'custom';
+export type SignInProviderId = 'guest' | 'google' | 'custom' | 'okta';
 
 const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
   guest: guestProvider,
   google: googleProvider,
   custom: customProvider,
+  okta: oktaProvider,
 };
 
 export const useSignInProviders = (
