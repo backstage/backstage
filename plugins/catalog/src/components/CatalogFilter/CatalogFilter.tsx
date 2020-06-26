@@ -26,7 +26,14 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import React, { FC, useCallback, useMemo, useState, useEffect } from 'react';
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   EntityFilterOptions,
   entityFilters,
@@ -35,7 +42,7 @@ import {
 import { FilterGroup, useEntityFilterGroup } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 
-export type CatalogFilterItem = {
+type CatalogFilterItem = {
   id: EntityGroup;
   label: string;
   icon?: IconComponent;
@@ -73,9 +80,11 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
+type OnChangeCallback = (item: { id: string; label: string }) => void;
+
 type Props = {
   filterGroups: CatalogFilterGroup[];
-  onChange?: (filterItem: CatalogFilterItem) => void;
+  onChange?: OnChangeCallback;
   initiallySelected?: EntityGroup;
 };
 
@@ -87,12 +96,17 @@ export const CatalogFilter = ({
   const classes = useStyles();
   const { currentFilter, setCurrentFilter, getFilterCount } = useFilter();
 
+  const onChangeRef = useRef<OnChangeCallback>();
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   const setCurrent = useCallback(
     (item: CatalogFilterItem) => {
       setCurrentFilter(item.id);
-      onChange?.(item);
+      onChangeRef.current?.(item);
     },
-    [onChange, setCurrentFilter],
+    [setCurrentFilter],
   );
 
   // Make one initial onChange to inform the surroundings about the selected
@@ -101,7 +115,7 @@ export const CatalogFilter = ({
     const items = filterGroups.flatMap(g => g.items);
     const item = items.find(i => i.id === initiallySelected) || items[0];
     if (item) {
-      onChange?.(item);
+      onChangeRef.current?.(item);
     }
     // intentionally only happens on startup
     // eslint-disable-next-line react-hooks/exhaustive-deps

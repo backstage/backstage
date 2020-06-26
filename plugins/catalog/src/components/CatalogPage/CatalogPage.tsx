@@ -22,16 +22,13 @@ import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import Star from '@material-ui/icons/Star';
 import StarOutline from '@material-ui/icons/StarBorder';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { EntityGroup, filterGroups } from '../../data/filters';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
-import {
-  CatalogFilter,
-  CatalogFilterItem,
-} from '../CatalogFilter/CatalogFilter';
+import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs } from './CatalogTabs';
@@ -103,10 +100,6 @@ const CatalogPageContents = () => {
     },
   ];
 
-  const onSidebarChanged = useCallback((filterItem: CatalogFilterItem) => {
-    setSelectedSidebarItem(filterItem.label);
-  }, []);
-
   return (
     <CatalogLayout>
       <CatalogTabs onChange={({ label }) => setSelectedTab(label)} />
@@ -127,7 +120,7 @@ const CatalogPageContents = () => {
           <div>
             <CatalogFilter
               filterGroups={filterGroups}
-              onChange={onSidebarChanged}
+              onChange={({ label }) => setSelectedSidebarItem(label)}
               initiallySelected={EntityGroup.OWNED}
             />
           </div>
