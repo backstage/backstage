@@ -24,11 +24,7 @@ import Star from '@material-ui/icons/Star';
 import StarOutline from '@material-ui/icons/StarBorder';
 import React, { useCallback, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import {
-  EntityGroup,
-  filterGroups,
-  LabeledEntityType,
-} from '../../data/filters';
+import { EntityGroup, filterGroups } from '../../data/filters';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
@@ -107,16 +103,13 @@ const CatalogPageContents = () => {
     },
   ];
 
-  const onTabChanged = useCallback((type: LabeledEntityType) => {
-    setSelectedTab(type.label);
-  }, []);
   const onSidebarChanged = useCallback((filterItem: CatalogFilterItem) => {
     setSelectedSidebarItem(filterItem.label);
   }, []);
 
   return (
     <CatalogLayout>
-      <CatalogTabs onChange={onTabChanged} />
+      <CatalogTabs onChange={({ label }) => setSelectedTab(label)} />
       <Content>
         <WelcomeBanner />
         <ContentHeader title={selectedTab ?? ''}>

@@ -14,11 +14,45 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from 'react';
-import { HeaderTabs } from '@backstage/core';
-import { labeledEntityTypes, LabeledEntityType } from '../../data/filters';
-import { useEntityFilterGroup, FilterGroup } from '../../filter';
 import { Entity } from '@backstage/catalog-model';
+import { HeaderTabs } from '@backstage/core';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FilterGroup, useEntityFilterGroup } from '../../filter';
+
+type ComponentType =
+  | 'service'
+  | 'website'
+  | 'library'
+  | 'documentation'
+  | 'other';
+
+export type LabeledComponentType = {
+  id: ComponentType;
+  label: string;
+};
+
+const labeledEntityTypes: LabeledComponentType[] = [
+  {
+    id: 'service',
+    label: 'Services',
+  },
+  {
+    id: 'website',
+    label: 'Websites',
+  },
+  {
+    id: 'library',
+    label: 'Libraries',
+  },
+  {
+    id: 'documentation',
+    label: 'Documentation',
+  },
+  {
+    id: 'other',
+    label: 'Other',
+  },
+];
 
 const filterGroup: FilterGroup = {
   filters: Object.fromEntries(
@@ -29,27 +63,39 @@ const filterGroup: FilterGroup = {
   ),
 };
 
+type OnChangeCallback = (item: { type: string; label: string }) => void;
+
 type Props = {
-  onChange?: (type: LabeledEntityType) => void;
+  onChange?: OnChangeCallback;
 };
 
+/**
+ * The tabs at the top of the catalog list page, for component type filtering.
+ */
 export const CatalogTabs = ({ onChange }: Props) => {
   const { setSelectedFilters } = useEntityFilterGroup('type', filterGroup, [
     labeledEntityTypes[0].id,
   ]);
+  const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
 
-  const onChangeFn = useCallback(
+  const onChangeRef = useRef<OnChangeCallback>();
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+  useEffect(() => {
+    const type = labeledEntityTypes[currentTabIndex];
+    onChangeRef.current?.({ type: type.id, label: type.label });
+  }, [currentTabIndex]);
+
+  const switchTab = useCallback(
     (index: Number) => {
       const type = labeledEntityTypes[index as number];
       setSelectedFilters([type.id]);
-      onChange?.(type);
+      setCurrentTabIndex(index as number);
+      onChangeRef.current?.({ type: type.id, label: type.label });
     },
-    [onChange, setSelectedFilters],
+    [setSelectedFilters],
   );
 
-  useEffect(() => {
-    onChange?.(labeledEntityTypes[0]);
-  }, [onChange]);
-
-  return <HeaderTabs tabs={labeledEntityTypes} onChange={onChangeFn} />;
+  return <HeaderTabs tabs={labeledEntityTypes} onChange={switchTab} />;
 };
