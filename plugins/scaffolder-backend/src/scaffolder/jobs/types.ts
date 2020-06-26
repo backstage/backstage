@@ -19,21 +19,31 @@ import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Logger } from 'winston';
 
+// Context will be a mutable object which is passed between stages
+// To share data, but also thinking that we can pass in functions here too
+// To maybe create sub steps or fail the entire thing, or skip stages down the line.
+export type StageContext<T> = T & {
+  values: RequiredTemplateValues & Record<string, JsonValue>;
+  entity: TemplateEntityV1alpha1;
+  logger: Logger;
+};
+
+export type Stage<T = {}> = {
+  log: string[];
+  status: 'PENDING' | 'STARTED' | 'COMPLETE' | 'FAILED';
+  name: string;
+  handler: (ctx: StageContext<T>) => Promise<void>;
+};
+
 export type Job = {
   id: string;
   metadata: {
     entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;
   };
-  status:
-    | 'PENDING'
-    | 'PREPARING'
-    | 'TEMPLATING'
-    | 'STORING'
-    | 'COMPLETE'
-    | 'FAILED';
+  status: 'PENDING' | 'STARTED' | 'COMPLETE' | 'FAILED';
+  stages: Stage[];
   logStream: Writable;
-  log: string[];
   logger: Logger;
   error?: Error;
 };
