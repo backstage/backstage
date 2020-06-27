@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './templater';
-export * from './prepare';
-export * from './templater/cookiecutter';
+export * from './stages/templater';
+export * from './stages/prepare';
+export * from './stages/templater/cookiecutter';
 export * from './jobs';

@@ -52,13 +52,19 @@ export class JobProcessor implements Processor {
       entity,
       values,
       logger,
+      logStream: stream,
     };
 
     const job: Job = {
       id,
       logStream: stream,
       context,
-      stages,
+      stages: stages.map(stage => ({
+        handler: stage.handler,
+        log: [],
+        name: stage.name,
+        status: 'PENDING',
+      })),
       status: 'PENDING',
     };
 
@@ -71,45 +77,49 @@ export class JobProcessor implements Processor {
     return this.jobs.get(id);
   }
 
-  private async prepare(job: Job): Promise<string> {
-    job.status = 'PREPARING';
-    const entity = job.metadata.entity;
-    const preparer = this.preparers.get(entity);
-    return await preparer.prepare(entity);
-  }
-
-  private async run(job: Job, directory: string): Promise<string> {
-    job.status = 'TEMPLATING';
-    return await this.templater.run({
-      directory,
-      values: job.metadata.values,
-      dockerClient: this.dockerClient,
-      logStream: job.logStream,
-    });
-  }
-
-  private async store(job: Job): Promise<void> {
-    job.status = 'STORING';
-  }
-
-  private async complete(job: Job): Promise<void> {
-    job.status = 'COMPLETE';
-  }
-
-  async process(job: Job) {
+  async run(job: Job): Promise<void> {
     if (job.status !== 'PENDING') {
       throw new Error("Job is not in a 'PENDING' state");
     }
 
+    job.status = 'STARTED';
+
     try {
-      const skeletonPath = await this.prepare(job);
-      await this.run(job, skeletonPath);
-      await this.store(job);
-      await this.complete(job);
+      for (const entry of job.stages) {
+        const { logger, log, stream } = useLogStream({
+          id: job.id,
+          stage: entry.name,
+        });
+        try {
+          entry.startedAt = Date.now();
+
+          entry.log = log;
+
+          const handler = await entry.handler({
+            ...job.context,
+            logger,
+            logStream: stream,
+          });
+
+          job.context = {
+            ...job.context,
+            ...handler,
+          };
+
+          entry.status = 'COMPLETED';
+        } catch (error) {
+          logger.error(error);
+          entry.status = 'FAILED';
+          throw error;
+        } finally {
+          entry.endedAt = Date.now();
+        }
+      }
+      job.status = 'COMPLETED';
     } catch (error) {
-      job.error = error;
+      job.error = { name: error.name, message: error.message };
       job.status = 'FAILED';
-      job.logger.error(`Job failed with error ${error.message}`);
+      job.context.logger.error(`Job failed with error ${error.message}`);
     }
   }
 }

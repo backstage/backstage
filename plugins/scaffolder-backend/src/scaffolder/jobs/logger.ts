@@ -30,6 +30,7 @@ export const useLogStream = (meta: Record<string, JsonValue>) => {
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.timestamp(),
+      winston.format.simple(),
     ),
     defaultMeta: meta,
   });

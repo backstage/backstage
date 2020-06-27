@@ -64,4 +64,6 @@ export type Processor = {
   }): Job;
 
   get(id: string): Job | undefined;
+
+  run(job: Job): Promise<void>;
 };

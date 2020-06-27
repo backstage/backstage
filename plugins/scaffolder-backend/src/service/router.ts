@@ -49,9 +49,16 @@ export async function createRouter(
 
       res.send({
         id: job.id,
-        metadata: job.metadata,
+        metadata: {
+          ...job.context,
+          logger: undefined,
+          logStream: undefined,
+        },
         status: job.status,
-        log: job.log,
+        stages: job.stages.map(stage => ({
+          ...stage,
+          handler: undefined,
+        })),
         error: job.error,
       });
     })
@@ -66,7 +73,7 @@ export async function createRouter(
         metadata: {
           annotations: {
             'backstage.io/managed-by-location':
-              'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
+              'github:https://github.com/benjdlambert/backstage-graphqsl-template/blob/master/template.yaml',
           },
           name: 'graphql-starter',
           title: 'GraphQL Service',
@@ -91,7 +98,9 @@ export async function createRouter(
             name: 'Prepare the skeleton',
             handler: async ctx => {
               const preparer = preparers.get(ctx.entity);
-              const skeletonDir = await preparer.prepare(ctx.entity);
+              const skeletonDir = await preparer.prepare(ctx.entity, {
+                logger: ctx.logger,
+              });
               return { skeletonDir };
             },
           },
@@ -122,9 +131,10 @@ export async function createRouter(
           },
         ],
       });
+
       res.status(201).json({ jobId: job.id });
 
-      jobProcessor.process(job);
+      jobProcessor.run(job);
     });
 
   const app = express();
