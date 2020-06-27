@@ -21,7 +21,7 @@ import { PreparerBuilder, TemplaterBase, JobProcessor } from '../scaffolder';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
 import {} from '@backstage/backend-common';
-import { StageContext, Stage } from '../scaffolder/jobs/types';
+import { StageContext } from '../scaffolder/jobs/types';
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templater: TemplaterBase;
@@ -39,6 +39,16 @@ export async function createRouter(
   const jobProcessor = new JobProcessor();
 
   router
+    .get('/v1/job/:jobId/stage/:index/log', ({ params }, res) => {
+      const job = jobProcessor.get(params.jobId);
+
+      if (!job) {
+        res.status(404).send({ error: 'job not found' });
+        return;
+      }
+
+      res.send(job.stages[Number(params.index)].log.join(''));
+    })
     .get('/v1/job/:jobId', ({ params }, res) => {
       const job = jobProcessor.get(params.jobId);
 
@@ -73,7 +83,7 @@ export async function createRouter(
         metadata: {
           annotations: {
             'backstage.io/managed-by-location':
-              'github:https://github.com/benjdlambert/backstage-graphqsl-template/blob/master/template.yaml',
+              'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
           },
           name: 'graphql-starter',
           title: 'GraphQL Service',
@@ -132,7 +142,7 @@ export async function createRouter(
         ],
       });
 
-      res.status(201).json({ jobId: job.id });
+      res.status(201).json({ id: job.id });
 
       jobProcessor.run(job);
     });

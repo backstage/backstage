@@ -48,7 +48,6 @@ export type Job = {
   context: StageContext;
   status: ProcessorStatus;
   stages: Stage[];
-  logStream: Writable;
   error?: Error;
 };
 

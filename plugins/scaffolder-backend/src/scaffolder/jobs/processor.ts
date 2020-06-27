@@ -57,7 +57,6 @@ export class JobProcessor implements Processor {
 
     const job: Job = {
       id,
-      logStream: stream,
       context,
       stages: stages.map(stage => ({
         handler: stage.handler,
@@ -85,41 +84,56 @@ export class JobProcessor implements Processor {
     job.status = 'STARTED';
 
     try {
-      for (const entry of job.stages) {
+      for (const stage of job.stages) {
+        // Create a logger for each stage so we can create seperate
+        // Streams for each step.
         const { logger, log, stream } = useLogStream({
           id: job.id,
-          stage: entry.name,
+          stage: stage.name,
         });
+        // Attach the logger to the stage, and setup some timestamps.
+        stage.log = log;
+        stage.startedAt = Date.now();
+
         try {
-          entry.startedAt = Date.now();
-
-          entry.log = log;
-
-          const handler = await entry.handler({
+          // Run the handler with the context created for the Job and some
+          // Additional logging helpers.
+          const handlerResponse = await stage.handler({
             ...job.context,
             logger,
             logStream: stream,
           });
 
-          job.context = {
-            ...job.context,
-            ...handler,
-          };
+          // If the handler returns something, then let's merge this onto the ontext
+          // For the next stage to use as it might be relevant.
+          if (handlerResponse) {
+            job.context = {
+              ...job.context,
+              ...handlerResponse,
+            };
+          }
 
-          entry.status = 'COMPLETED';
+          // Complete the current stage
+          stage.status = 'COMPLETED';
         } catch (error) {
-          logger.error(error);
-          entry.status = 'FAILED';
+          // Log to the current stage the error that occured and fail the stage.
+          logger.error(`Stage failed with error: ${error.message}`);
+          stage.status = 'FAILED';
+
+          // Throw the error so the job can be failed too.
           throw error;
         } finally {
-          entry.endedAt = Date.now();
+          // Always set the stage end timestamp.
+          stage.endedAt = Date.now();
         }
       }
+
+      // If all went to plan, complete the job.
       job.status = 'COMPLETED';
     } catch (error) {
+      // If something went wrong, fail the job, and set the error property on the job.
       job.error = { name: error.name, message: error.message };
       job.status = 'FAILED';
-      job.context.logger.error(`Job failed with error ${error.message}`);
     }
   }
 }
