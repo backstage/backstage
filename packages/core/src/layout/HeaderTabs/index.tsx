@@ -42,16 +42,17 @@ export type Tab = {
   id: string;
   label: string;
 };
+
 export const HeaderTabs: React.FC<{
   tabs: Tab[];
-  onChange?: (index: Number) => void;
+  onChange?: (index: number) => void;
 }> = ({ tabs, onChange }) => {
   const [selectedTab, setSelectedTab] = useState<Number>(0);
   const styles = useStyles();
 
   const handleChange = (_: React.ChangeEvent<{}>, index: Number) => {
     setSelectedTab(index);
-    if (onChange) onChange(index);
+    if (onChange) onChange(index.valueOf());
   };
 
   return (

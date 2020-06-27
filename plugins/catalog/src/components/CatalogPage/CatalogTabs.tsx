@@ -70,10 +70,10 @@ export const CatalogTabs = ({ tabs, onChange }: Props) => {
   }, [tabs, currentTabIndex]);
 
   const switchTab = useCallback(
-    (index: Number) => {
-      const tab = tabs[index as number];
+    (index: number) => {
+      const tab = tabs[index];
       setSelectedFilters([tab.id]);
-      setCurrentTabIndex(index as number);
+      setCurrentTabIndex(index);
       onChangeRef.current?.(tab);
     },
     [tabs, setSelectedFilters],
