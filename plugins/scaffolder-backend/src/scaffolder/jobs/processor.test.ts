@@ -15,10 +15,7 @@
  */
 import { JobProcessor } from './processor';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import Docker from 'dockerode';
-import { CookieCutter } from '../templater/cookiecutter';
-import { Preparers } from '../';
-import { Job } from './types';
+import { StageInput } from './types';
 
 describe('JobProcessor', () => {
   const mockEntity: TemplateEntityV1alpha1 = {
@@ -47,98 +44,160 @@ describe('JobProcessor', () => {
   const mockValues = { component_id: 'bob' };
 
   describe('create', () => {
-    const templater = new CookieCutter();
-    const preparers = new Preparers();
-    const mockDocker = {} as jest.Mocked<Docker>;
-    it('creates a new job', async () => {
-      const processor = new JobProcessor({
-        dockerClient: mockDocker,
-        preparers,
-        templater,
-      });
+    it('creates should create a new job with a unique id', async () => {
+      const processor = new JobProcessor();
 
-      const job = processor.create(mockEntity, mockValues);
+      const job = processor.create({
+        entity: mockEntity,
+        values: mockValues,
+        stages: [],
+      });
 
       expect(job.id).toMatch(
         /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
       );
+    });
 
-      expect(job.log).toEqual([]);
+    it('should setup the correct context for the job', async () => {
+      const processor = new JobProcessor();
+
+      const job = processor.create({
+        entity: mockEntity,
+        values: mockValues,
+        stages: [],
+      });
+
+      console.warn(job.context);
+      expect(job.context.entity).toBe(mockEntity);
+      expect(job.context.values).toBe(mockValues);
+    });
+
+    it('should set the status as pending', async () => {
+      const processor = new JobProcessor();
+
+      const job = processor.create({
+        entity: mockEntity,
+        values: mockValues,
+        stages: [],
+      });
+
       expect(job.status).toBe('PENDING');
-      expect(job.metadata.entity).toBe(mockEntity);
-      expect(job.metadata.values).toBe(mockValues);
+    });
+
+    it('should create the correct stages', async () => {
+      const stages: StageInput[] = [
+        {
+          name: 'Do something cool step 1',
+          handler: jest.fn(),
+        },
+        {
+          name: 'Do something cool step 2',
+          handler: jest.fn(),
+        },
+      ];
+
+      const processor = new JobProcessor();
+
+      const job = processor.create({
+        entity: mockEntity,
+        values: mockValues,
+        stages,
+      });
+
+      expect(job.stages).toHaveLength(stages.length);
+
+      for (let i = 0; i < job.stages.length; i++) {
+        expect(job.stages[i].name).toBe(stages[i].name);
+        expect(job.stages[i].status).toBe('PENDING');
+      }
     });
   });
 
-  describe('process', () => {
-    const preparers = new Preparers();
-    const mockDocker = {} as jest.Mocked<Docker>;
-    const mockPreparer = { prepare: jest.fn() };
-    const templater = { run: jest.fn() };
-
-    const createJob = (): { job: Job; processor: JobProcessor } => {
-      preparers.register('github', mockPreparer);
-
-      new JobProcessor(1);
-      const processor = new JobProcessor({
-        preparers,
-        dockerClient: mockDocker,
-        templater,
-      });
-
-      return { job: processor.create(mockEntity, mockValues), processor };
-    };
-
-    // TODO(blam): make this better.
-    // Wait 10ms for processor to finish.
-    const waitForProcessor = () =>
-      new Promise(resolve => setTimeout(resolve, 10));
-
-    beforeEach(() => {
-      jest.clearAllMocks();
+  describe('get', () => {
+    it('return undefined for when the job does not exist', () => {
+      const processor = new JobProcessor();
+      expect(processor.get('123')).not.toBeDefined();
     });
 
-    it('fails when the job is not in a pending state', async () => {
-      const { job, processor } = createJob();
-      job.status = 'TEMPLATING';
+    it('should return the exact same instance of the job when one is created', async () => {
+      const processor = new JobProcessor();
+      const job = processor.create({
+        entity: mockEntity,
+        values: mockValues,
+        stages: [],
+      });
 
-      await expect(processor.process(job)).rejects.toThrow(
+      expect(processor.get(job.id)).toBe(job);
+    });
+  });
+  describe('process', () => {
+    it('throws an error when the status of the job is not in pending state', async () => {
+      const processor = new JobProcessor();
+      const job = processor.create({
+        entity: mockEntity,
+        values: mockValues,
+        stages: [],
+      });
+
+      job.status = 'STARTED';
+
+      await expect(processor.run(job)).rejects.toThrow(
         /Job is not in a 'PENDING' state/,
       );
     });
 
-    it('calls the preparer with the entity', async () => {
-      const { job, processor } = createJob();
+    it('will call each of the handlers in the stages', async () => {
+      const stages: StageInput[] = [
+        {
+          name: 'c/o',
+          handler: jest.fn(),
+        },
+        {
+          name: 'g/p',
+          handler: jest.fn(),
+        },
+      ];
 
-      // Create a promise to hold it at this step so we can test
-      mockPreparer.prepare.mockImplementationOnce(() => new Promise(() => {}));
+      const processor = new JobProcessor();
+      const job = processor.create({
+        entity: mockEntity,
+        values: mockValues,
+        stages,
+      });
 
-      processor.process(job);
+      await processor.run(job);
 
-      await waitForProcessor();
-
-      expect(mockPreparer.prepare).toHaveBeenCalledWith(mockEntity);
-      expect(job.status).toBe('PREPARING');
+      for (const stage of stages) {
+        expect(stage.handler).toHaveBeenCalled();
+      }
     });
 
-    it('calls the templater with the correct directory', async () => {
-      const { job, processor } = createJob();
-      const mockDirectory = '/test/blam/bo';
-      mockPreparer.prepare.mockResolvedValueOnce(mockDirectory);
+    it('should set all stages to complete and the job to complete when finishes without errors', async () => {
+      const stages: StageInput[] = [
+        {
+          name: 'c/o',
+          handler: jest.fn(),
+        },
+        {
+          name: 'g/p',
+          handler: jest.fn(),
+        },
+      ];
 
-      // Create a promise to hold it at this step so we can test
-      templater.run.mockImplementationOnce(() => new Promise(() => {}));
-
-      processor.process(job);
-
-      await waitForProcessor();
-
-      expect(templater.run).toHaveBeenCalledWith({
-        directory: mockDirectory,
+      const processor = new JobProcessor();
+      const job = processor.create({
+        entity: mockEntity,
         values: mockValues,
-        dockerClient: mockDocker,
-        logStream: job.logStream,
+        stages,
       });
+
+      await processor.run(job);
+
+      for (const stage of job.stages) {
+        expect(stage.status).toBe('COMPLETED');
+      }
+
+      expect(job.status).toBe('COMPLETED');
     });
   });
 });

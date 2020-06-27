@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Processor, Job, Stage, StageContext, StageInput } from './types';
+import { Processor, Job, StageContext, StageInput } from './types';
 import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import * as uuid from 'uuid';
