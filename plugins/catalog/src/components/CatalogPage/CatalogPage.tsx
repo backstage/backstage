@@ -24,7 +24,7 @@ import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
 import CatalogLayout from './CatalogLayout';
-import { CatalogTabs } from './CatalogTabs';
+import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
 import { WelcomeBanner } from './WelcomeBanner';
 
 const useStyles = makeStyles(theme => ({
@@ -36,6 +36,29 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const tabs: LabeledComponentType[] = [
+  {
+    id: 'service',
+    label: 'Services',
+  },
+  {
+    id: 'website',
+    label: 'Websites',
+  },
+  {
+    id: 'library',
+    label: 'Libraries',
+  },
+  {
+    id: 'documentation',
+    label: 'Documentation',
+  },
+  {
+    id: 'other',
+    label: 'Other',
+  },
+];
+
 const CatalogPageContents = () => {
   const styles = useStyles();
   const { loading, error, matchingEntities } = useFilteredEntities();
@@ -44,7 +67,10 @@ const CatalogPageContents = () => {
 
   return (
     <CatalogLayout>
-      <CatalogTabs onChange={({ label }) => setSelectedTab(label)} />
+      <CatalogTabs
+        tabs={tabs}
+        onChange={({ label }) => setSelectedTab(label)}
+      />
       <Content>
         <WelcomeBanner />
         <ContentHeader title={selectedTab ?? ''}>
