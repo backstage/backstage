@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
 
@@ -66,11 +66,11 @@ describe('CatalogTable component', () => {
         />,
       ),
     );
-    expect(
-      await rendered.findByText(`Owned (${entites.length})`),
-    ).toBeInTheDocument();
-    expect(await rendered.findByText('component1')).toBeInTheDocument();
-    expect(await rendered.findByText('component2')).toBeInTheDocument();
-    expect(await rendered.findByText('component3')).toBeInTheDocument();
+    waitFor(() => {
+      expect(rendered.queryByText(/Owned \(3\)/)).toBeInTheDocument();
+      expect(rendered.queryByText(/component1/)).toBeInTheDocument();
+      expect(rendered.queryByText(/component2/)).toBeInTheDocument();
+      expect(rendered.queryByText(/component3/)).toBeInTheDocument();
+    });
   });
 });

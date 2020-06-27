@@ -42,7 +42,7 @@ import {
 import { FilterGroup, useEntityFilterGroup } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 
-type CatalogFilterItem = {
+export type CatalogFilterItem = {
   id: EntityGroup;
   label: string;
   icon?: IconComponent;
@@ -88,6 +88,9 @@ type Props = {
   initiallySelected?: EntityGroup;
 };
 
+/**
+ * The main filter group in the sidebar, toggling owned/starred/all.
+ */
 export const CatalogFilter = ({
   filterGroups,
   onChange,
