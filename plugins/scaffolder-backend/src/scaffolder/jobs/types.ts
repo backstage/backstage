@@ -22,45 +22,46 @@ import { Logger } from 'winston';
 // Context will be a mutable object which is passed between stages
 // To share data, but also thinking that we can pass in functions here too
 // To maybe create sub steps or fail the entire thing, or skip stages down the line.
-export type StageContext<T = {}> = T & {
+export type StageContext<T = {}> = {
   values: RequiredTemplateValues & Record<string, JsonValue>;
   entity: TemplateEntityV1alpha1;
   logger: Logger;
-};
+  logStream: Writable;
+} & T;
 
-export type Stage<T = {}> = {
+export type ProcessorStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
+
+export interface Stage extends StageInput {
   log: string[];
-  status: 'PENDING' | 'STARTED' | 'COMPLETE' | 'FAILED';
-  name: string;
-  handler: (ctx: StageContext<T>) => Promise<void>;
-};
+  status: ProcessorStatus;
+  startedAt?: number;
+  endedAt?: number;
+}
 
-export type Job<T = {}> = {
+export interface StageInput<T = {}> {
+  name: string;
+  handler(ctx: StageContext<T>): Promise<void | object>;
+}
+
+export type Job = {
   id: string;
-  context: StageContext<T>;
-  status: 'PENDING' | 'STARTED' | 'COMPLETE' | 'FAILED';
+  context: StageContext;
+  status: ProcessorStatus;
   stages: Stage[];
   logStream: Writable;
-  logger: Logger;
   error?: Error;
 };
 
-export interface ProcessorConstructor {
-  new (t: string): Processor;
-}
-
-export interface Processor {
-  create<T = {}>({
+export type Processor = {
+  create({
     entity,
     values,
     stages,
   }: {
     entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;
-    stages: Stage[];
-  }): Job<T>;
+    stages: StageInput[];
+  }): Job;
 
   get(id: string): Job | undefined;
-}
-
-declare let Processor: ProcessorConstructor;
+};

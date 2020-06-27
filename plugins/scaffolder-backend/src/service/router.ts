@@ -21,6 +21,7 @@ import { PreparerBuilder, TemplaterBase, JobProcessor } from '../scaffolder';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
 import {} from '@backstage/backend-common';
+import { StageContext, Stage } from '../scaffolder/jobs/types';
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templater: TemplaterBase;
@@ -35,11 +36,7 @@ export async function createRouter(
   const { preparers, templater, logger: parentLogger, dockerClient } = options;
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
-  const jobProcessor = new JobProcessor({
-    preparers,
-    templater,
-    dockerClient,
-  });
+  const jobProcessor = new JobProcessor();
 
   router
     .get('/v1/job/:jobId', ({ params }, res) => {
@@ -86,7 +83,45 @@ export async function createRouter(
         },
       };
 
-      const job = jobProcessor.create(mockEntity, { component_id: 'test' });
+      const job = jobProcessor.create({
+        entity: mockEntity,
+        values: { component_id: 'blob' },
+        stages: [
+          {
+            name: 'Prepare the skeleton',
+            handler: async ctx => {
+              const preparer = preparers.get(ctx.entity);
+              const skeletonDir = await preparer.prepare(ctx.entity);
+              return { skeletonDir };
+            },
+          },
+          {
+            name: 'Run the templater',
+            handler: async (ctx: StageContext<{ skeletonDir: string }>) => {
+              const resultDir = await templater.run({
+                directory: ctx.skeletonDir,
+                dockerClient,
+                logStream: ctx.logStream,
+                values: ctx.values,
+              });
+
+              return { resultDir };
+            },
+          },
+          {
+            name: 'Create VCS Repo',
+            handler: async (ctx: StageContext<{ resultDir: string }>) => {
+              ctx.logger.info('Should now create the VCS repo');
+            },
+          },
+          {
+            name: 'Push to remote',
+            handler: async ctx => {
+              ctx.logger.info('Should now push to the remote');
+            },
+          },
+        ],
+      });
       res.status(201).json({ jobId: job.id });
 
       jobProcessor.process(job);

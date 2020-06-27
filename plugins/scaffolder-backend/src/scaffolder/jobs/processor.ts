@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Processor, Job, Stage, StageContext } from './types';
+import { Processor, Job, Stage, StageContext, StageInput } from './types';
 import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { PassThrough } from 'stream';
 import * as uuid from 'uuid';
 import Docker from 'dockerode';
-import winston from 'winston';
 import { RequiredTemplateValues, TemplaterBase } from '../stages/templater';
-import { createNewRootLogger } from '@backstage/backend-common';
 import { PreparerBuilder } from '../stages/prepare';
+import { useLogStream } from './logger';
 
 export type JobProcessorArguments = {
   preparers: PreparerBuilder;
@@ -37,29 +35,18 @@ export type JobAndDirectoryTuple = {
 
 export class JobProcessor implements Processor {
   private jobs = new Map<string, Job>();
-  private stages: Stage[];
-  constructor({ stages }: { stages: Stage[] }) {
-    this.stages = stages;
-  }
 
-  create(
-    entity: TemplateEntityV1alpha1,
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ): Job {
+  create({
+    entity,
+    values,
+    stages,
+  }: {
+    entity: TemplateEntityV1alpha1;
+    values: RequiredTemplateValues & Record<string, JsonValue>;
+    stages: StageInput[];
+  }): Job {
     const id = uuid.v4();
-    const log: string[] = [];
-
-    // Create an empty stream to collect all the log lines into
-    // one variable for the API.
-    const logStream = new PassThrough();
-    logStream.on('data', chunk => log.push(chunk.toString()));
-
-    // TODO(blam): Maybe this is not the right way to build the logger
-    // Maybe we want to be more ux specific and drop the json support.
-    // Child loggers can not have specific transports which sucks, so we have to
-    // create another here.
-    const logger = createNewRootLogger();
-    logger.add(new winston.transports.Stream({ stream: logStream }));
+    const { logger, stream } = useLogStream({ id });
 
     const context: StageContext = {
       entity,
@@ -69,14 +56,10 @@ export class JobProcessor implements Processor {
 
     const job: Job = {
       id,
-      logStream,
+      logStream: stream,
       context,
-      stages: this.stages.map((stage) => ({}))
+      stages,
       status: 'PENDING',
-      metadata: {
-        entity,
-        values,
-      },
     };
 
     this.jobs.set(job.id, job);
