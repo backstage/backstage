@@ -67,7 +67,6 @@ describe('JobProcessor', () => {
         stages: [],
       });
 
-      console.warn(job.context);
       expect(job.context.entity).toBe(mockEntity);
       expect(job.context.values).toBe(mockValues);
     });
@@ -198,6 +197,82 @@ describe('JobProcessor', () => {
       }
 
       expect(job.status).toBe('COMPLETED');
+    });
+
+    it('should merge the return value from previous steps into the context of the next step', async () => {
+      const stages: StageInput[] = [
+        {
+          name: 'c/o',
+          handler: jest
+            .fn()
+            .mockResolvedValue({ first: 'ben', second: 'lambert' }),
+        },
+        {
+          name: 'g/p',
+          handler: jest
+            .fn()
+            .mockResolvedValue({ second: 'linus', third: 'lambert' }),
+        },
+        {
+          name: 'go',
+          handler: jest.fn(),
+        },
+      ];
+
+      const processor = new JobProcessor();
+      const job = processor.create({
+        entity: mockEntity,
+        values: mockValues,
+        stages,
+      });
+
+      await processor.run(job);
+
+      expect(stages[1].handler).toHaveBeenCalledWith(
+        expect.objectContaining({ first: 'ben', second: 'lambert' }),
+      );
+
+      expect(stages[2].handler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          first: 'ben',
+          second: 'linus',
+          third: 'lambert',
+        }),
+      );
+    });
+
+    it('should fail the job and the step if one of them fails', async () => {
+      const fail = new Error('something went wrong here');
+      const stages: StageInput[] = [
+        {
+          name: 'c/o',
+          handler: jest.fn(),
+        },
+        {
+          name: 'g/p',
+          handler: jest.fn().mockRejectedValue(fail),
+        },
+        {
+          name: 'go',
+          handler: jest.fn(),
+        },
+      ];
+
+      const processor = new JobProcessor();
+      const job = processor.create({
+        entity: mockEntity,
+        values: mockValues,
+        stages,
+      });
+
+      await processor.run(job);
+
+      expect(job.status).toBe('FAILED');
+      expect(job.stages[0].status).toBe('COMPLETED');
+      expect(job.stages[1].status).toBe('FAILED');
+      expect(job.stages[2].status).toBe('PENDING');
+      expect(job.error?.message).toBe('something went wrong here');
+      expect(job.stages[1].log.join()).toContain('something went wrong here');
     });
   });
 });
