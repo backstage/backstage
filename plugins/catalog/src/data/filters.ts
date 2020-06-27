@@ -50,7 +50,7 @@ export const filterGroups: CatalogFilterGroup[] = [
     items: [
       {
         id: EntityGroup.ALL,
-        label: 'All Services',
+        label: 'All',
       },
     ],
   },
@@ -69,22 +69,15 @@ export const getCatalogFilterItemByType = (filterType: EntityGroup) => {
 
 type EntityFilter = (entity: Entity, options: EntityFilterOptions) => boolean;
 
-type EntityFilterOptions = Partial<{
-  isStarred: boolean;
+export type EntityFilterOptions = {
+  isStarred: (entity: Entity) => boolean;
   userId: string;
-}>;
-
-type Owned = {
-  owner: string;
 };
 
 export const entityFilters: Record<string, EntityFilter> = {
-  [EntityGroup.OWNED]: (e, { userId }) => {
-    const owner = (e.spec! as Owned).owner;
-    return owner === userId;
-  },
+  [EntityGroup.OWNED]: (e, { userId }) => e.spec?.owner === userId,
   [EntityGroup.ALL]: () => true,
-  [EntityGroup.STARRED]: (_, { isStarred }) => !!isStarred,
+  [EntityGroup.STARRED]: (e, { isStarred }) => isStarred(e),
 };
 
 export const entityTypeFilter = (e: Entity, type: string) =>
@@ -92,7 +85,7 @@ export const entityTypeFilter = (e: Entity, type: string) =>
 
 type EntityType = 'service' | 'website' | 'library' | 'documentation' | 'other';
 
-type LabeledEntityType = {
+export type LabeledEntityType = {
   id: EntityType;
   label: string;
 };

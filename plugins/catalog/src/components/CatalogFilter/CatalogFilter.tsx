@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import { IconComponent, identityApiRef, useApi } from '@backstage/core';
 import {
   Card,
   List,
   ListItemIcon,
+  ListItemSecondaryAction,
   ListItemText,
-  MenuItem,
-  Typography,
-  Theme,
   makeStyles,
+  MenuItem,
+  Theme,
+  Typography,
 } from '@material-ui/core';
-import type { IconComponent } from '@backstage/core';
-import { EntityGroup } from '../../data/filters';
-import { EntitiesByFilter } from '../../hooks/useEntities';
+import React, { FC, useCallback, useMemo, useState, useEffect } from 'react';
+import {
+  EntityFilterOptions,
+  entityFilters,
+  EntityGroup,
+} from '../../data/filters';
+import { FilterGroup, useEntityFilterGroup } from '../../filter';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
 
 export type CatalogFilterItem = {
   id: EntityGroup;
@@ -67,21 +73,43 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const CatalogFilter: FC<{
-  selectedFilter: EntityGroup;
-  onFilterChange: (type: EntityGroup) => void;
-  entitiesByFilter: EntitiesByFilter;
-  groups: CatalogFilterGroup[];
-}> = ({
-  selectedFilter: selectedId,
-  onFilterChange: setSelectedFilter,
-  entitiesByFilter,
-  groups,
-}) => {
+type Props = {
+  filterGroups: CatalogFilterGroup[];
+  onChange?: (filterItem: CatalogFilterItem) => void;
+  initiallySelected?: EntityGroup;
+};
+
+export const CatalogFilter = ({
+  filterGroups,
+  onChange,
+  initiallySelected,
+}: Props) => {
   const classes = useStyles();
+  const { currentFilter, setCurrentFilter, getFilterCount } = useFilter();
+
+  const setCurrent = useCallback(
+    (item: CatalogFilterItem) => {
+      setCurrentFilter(item.id);
+      onChange?.(item);
+    },
+    [onChange, setCurrentFilter],
+  );
+
+  // Make one initial onChange to inform the surroundings about the selected
+  // item
+  useEffect(() => {
+    const items = filterGroups.flatMap(g => g.items);
+    const item = items.find(i => i.id === initiallySelected) || items[0];
+    if (item) {
+      onChange?.(item);
+    }
+    // intentionally only happens on startup
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Card className={classes.root}>
-      {groups.map(group => (
+      {filterGroups.map(group => (
         <React.Fragment key={group.name}>
           <Typography variant="subtitle2" className={classes.title}>
             {group.name}
@@ -93,10 +121,8 @@ export const CatalogFilter: FC<{
                   key={item.id}
                   button
                   divider
-                  onClick={() => {
-                    setSelectedFilter(item.id);
-                  }}
-                  selected={item.id === selectedId}
+                  onClick={() => setCurrent(item)}
+                  selected={item.id === currentFilter}
                   className={classes.menuItem}
                 >
                   {item.icon && (
@@ -109,7 +135,9 @@ export const CatalogFilter: FC<{
                       {item.label}
                     </Typography>
                   </ListItemText>
-                  {entitiesByFilter[item.id]?.length ?? '-'}
+                  <ListItemSecondaryAction>
+                    {getFilterCount(item.id) ?? '-'}
+                  </ListItemSecondaryAction>
                 </MenuItem>
               ))}
             </List>
@@ -119,3 +147,55 @@ export const CatalogFilter: FC<{
     </Card>
   );
 };
+
+function useFilter(): {
+  currentFilter: string;
+  setCurrentFilter: (filterId: string) => void;
+  getFilterCount: (filterId: string) => number | undefined;
+} {
+  const [currentFilter, setCurrentFilter] = useState('OWNED');
+  const { isStarredEntity } = useStarredEntities();
+  const userId = useApi(identityApiRef).getUserId();
+
+  const filterGroup = useMemo<FilterGroup>(() => {
+    const result: FilterGroup = { filters: {} };
+    const options: EntityFilterOptions = {
+      userId,
+      isStarred: isStarredEntity,
+    };
+    for (const [filterId, filterFn] of Object.entries(entityFilters)) {
+      result.filters[filterId] = entity => filterFn(entity, options);
+    }
+    return result;
+  }, [isStarredEntity, userId]);
+
+  const { setSelectedFilters, state } = useEntityFilterGroup(
+    'primary-sidebar',
+    filterGroup,
+    ['OWNED'],
+  );
+
+  const setCurrent = useCallback(
+    (filterId: string) => {
+      setCurrentFilter(filterId);
+      setSelectedFilters([filterId]);
+    },
+    [setCurrentFilter, setSelectedFilters],
+  );
+
+  const getFilterCount = useCallback(
+    (filterId: string) => {
+      if (state.type !== 'ready') {
+        return undefined;
+      }
+      return state.state.filters[filterId].matchCount;
+    },
+    [state],
+  );
+
+  return {
+    currentFilter,
+    setCurrentFilter: setCurrent,
+    getFilterCount,
+  };
+}
