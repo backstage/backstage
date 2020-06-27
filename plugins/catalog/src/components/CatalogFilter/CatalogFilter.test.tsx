@@ -26,9 +26,8 @@ import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { CatalogApi, catalogApiRef } from '../../api/types';
-import { EntityGroup } from '../../data/filters';
 import { EntityFilterGroupsProvider } from '../../filter';
-import { CatalogFilter, CatalogFilterGroup } from './CatalogFilter';
+import { ButtonGroup, CatalogFilter } from './CatalogFilter';
 
 describe('Catalog Filter', () => {
   const catalogApi: Partial<CatalogApi> = {
@@ -79,12 +78,12 @@ describe('Catalog Filter', () => {
     );
 
   it('should render the different groups', async () => {
-    const mockGroups: CatalogFilterGroup[] = [
+    const mockGroups: ButtonGroup[] = [
       { name: 'Test Group 1', items: [] },
       { name: 'Test Group 2', items: [] },
     ];
     const { findByText } = renderWrapped(
-      <CatalogFilter filterGroups={mockGroups} />,
+      <CatalogFilter buttonGroups={mockGroups} initiallySelected="" />,
     );
     for (const group of mockGroups) {
       expect(await findByText(group.name)).toBeInTheDocument();
@@ -92,24 +91,26 @@ describe('Catalog Filter', () => {
   });
 
   it('should render the different items and their names', async () => {
-    const mockGroups: CatalogFilterGroup[] = [
+    const mockGroups: ButtonGroup[] = [
       {
         name: 'Test Group 1',
         items: [
           {
-            id: EntityGroup.ALL,
+            id: 'all',
             label: 'First Label',
+            filterFn: () => true,
           },
           {
-            id: EntityGroup.STARRED,
+            id: 'starred',
             label: 'Second Label',
+            filterFn: () => false,
           },
         ],
       },
     ];
 
     const { findByText } = renderWrapped(
-      <CatalogFilter filterGroups={mockGroups} />,
+      <CatalogFilter buttonGroups={mockGroups} initiallySelected="all" />,
     );
 
     for (const item of mockGroups[0].items) {
@@ -118,48 +119,19 @@ describe('Catalog Filter', () => {
   });
 
   it('selects the first item if no desired initial one is set', async () => {
-    const mockGroups: CatalogFilterGroup[] = [
+    const mockGroups: ButtonGroup[] = [
       {
         name: 'Test Group 1',
         items: [
           {
-            id: EntityGroup.ALL,
+            id: 'all',
             label: 'First Label',
+            filterFn: () => true,
           },
           {
-            id: EntityGroup.STARRED,
+            id: 'starred',
             label: 'Second Label',
-          },
-        ],
-      },
-    ];
-
-    const onChange = jest.fn();
-
-    renderWrapped(
-      <CatalogFilter filterGroups={mockGroups} onChange={onChange} />,
-    );
-
-    await waitFor(() => {
-      expect(onChange).toHaveBeenLastCalledWith({
-        id: EntityGroup.ALL,
-        label: 'First Label',
-      });
-    });
-  });
-
-  it('selects the initial item', async () => {
-    const mockGroups: CatalogFilterGroup[] = [
-      {
-        name: 'Test Group 1',
-        items: [
-          {
-            id: EntityGroup.ALL,
-            label: 'First Label',
-          },
-          {
-            id: EntityGroup.STARRED,
-            label: 'Second Label',
+            filterFn: () => false,
           },
         ],
       },
@@ -169,32 +141,71 @@ describe('Catalog Filter', () => {
 
     renderWrapped(
       <CatalogFilter
-        filterGroups={mockGroups}
+        buttonGroups={mockGroups}
+        initiallySelected="all"
         onChange={onChange}
-        initiallySelected={EntityGroup.STARRED}
       />,
     );
 
     await waitFor(() => {
       expect(onChange).toHaveBeenLastCalledWith({
-        id: EntityGroup.STARRED,
+        id: 'all',
+        label: 'First Label',
+      });
+    });
+  });
+
+  it('selects the initial item', async () => {
+    const mockGroups: ButtonGroup[] = [
+      {
+        name: 'Test Group 1',
+        items: [
+          {
+            id: 'all',
+            label: 'First Label',
+            filterFn: () => true,
+          },
+          {
+            id: 'starred',
+            label: 'Second Label',
+            filterFn: () => false,
+          },
+        ],
+      },
+    ];
+
+    const onChange = jest.fn();
+
+    renderWrapped(
+      <CatalogFilter
+        buttonGroups={mockGroups}
+        onChange={onChange}
+        initiallySelected="starred"
+      />,
+    );
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenLastCalledWith({
+        id: 'starred',
         label: 'Second Label',
       });
     });
   });
 
   it('can change the selected item', async () => {
-    const mockGroups: CatalogFilterGroup[] = [
+    const mockGroups: ButtonGroup[] = [
       {
         name: 'Test Group 1',
         items: [
           {
-            id: EntityGroup.ALL,
+            id: 'all',
             label: 'First Label',
+            filterFn: () => true,
           },
           {
-            id: EntityGroup.STARRED,
+            id: 'starred',
             label: 'Second Label',
+            filterFn: () => false,
           },
         ],
       },
@@ -203,12 +214,16 @@ describe('Catalog Filter', () => {
     const onChange = jest.fn();
 
     const { findByText } = renderWrapped(
-      <CatalogFilter filterGroups={mockGroups} onChange={onChange} />,
+      <CatalogFilter
+        buttonGroups={mockGroups}
+        initiallySelected="all"
+        onChange={onChange}
+      />,
     );
 
     await waitFor(() => {
       expect(onChange).toHaveBeenLastCalledWith({
-        id: EntityGroup.ALL,
+        id: 'all',
         label: 'First Label',
       });
     });
@@ -217,27 +232,28 @@ describe('Catalog Filter', () => {
 
     await waitFor(() => {
       expect(onChange).toHaveBeenLastCalledWith({
-        id: EntityGroup.STARRED,
+        id: 'starred',
         label: 'Second Label',
       });
     });
   });
 
   it('displays match counts properly', async () => {
-    const mockGroups: CatalogFilterGroup[] = [
+    const mockGroups: ButtonGroup[] = [
       {
         name: 'Test Group 1',
         items: [
           {
-            id: EntityGroup.OWNED,
+            id: 'owned',
             label: 'First Label',
+            filterFn: entity => entity.spec?.owner === 'tools@example.com',
           },
         ],
       },
     ];
 
     const { findByText } = renderWrapped(
-      <CatalogFilter filterGroups={mockGroups} />,
+      <CatalogFilter buttonGroups={mockGroups} initiallySelected="owned" />,
     );
 
     expect(await findByText('1')).toBeInTheDocument();

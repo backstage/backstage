@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { IconComponent, identityApiRef, useApi } from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
+import { IconComponent } from '@backstage/core';
 import {
   Card,
   List,
@@ -27,31 +28,22 @@ import {
   Typography,
 } from '@material-ui/core';
 import React, {
-  FC,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import {
-  EntityFilterOptions,
-  entityFilters,
-  EntityGroup,
-} from '../../data/filters';
 import { FilterGroup, useEntityFilterGroup } from '../../filter';
-import { useStarredEntities } from '../../hooks/useStarredEntites';
 
-export type CatalogFilterItem = {
-  id: EntityGroup;
-  label: string;
-  icon?: IconComponent;
-  count?: number | FC;
-};
-
-export type CatalogFilterGroup = {
+export type ButtonGroup = {
   name: string;
-  items: CatalogFilterItem[];
+  items: {
+    id: string;
+    label: string;
+    icon?: IconComponent;
+    filterFn: (entity: Entity) => boolean;
+  }[];
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -83,21 +75,24 @@ const useStyles = makeStyles<Theme>(theme => ({
 type OnChangeCallback = (item: { id: string; label: string }) => void;
 
 type Props = {
-  filterGroups: CatalogFilterGroup[];
+  buttonGroups: ButtonGroup[];
+  initiallySelected: string;
   onChange?: OnChangeCallback;
-  initiallySelected?: EntityGroup;
 };
 
 /**
  * The main filter group in the sidebar, toggling owned/starred/all.
  */
 export const CatalogFilter = ({
-  filterGroups,
+  buttonGroups,
   onChange,
   initiallySelected,
 }: Props) => {
   const classes = useStyles();
-  const { currentFilter, setCurrentFilter, getFilterCount } = useFilter();
+  const { currentFilter, setCurrentFilter, getFilterCount } = useFilter(
+    buttonGroups,
+    initiallySelected,
+  );
 
   const onChangeRef = useRef<OnChangeCallback>();
   useEffect(() => {
@@ -105,9 +100,9 @@ export const CatalogFilter = ({
   }, [onChange]);
 
   const setCurrent = useCallback(
-    (item: CatalogFilterItem) => {
+    (item: { id: string; label: string }) => {
       setCurrentFilter(item.id);
-      onChangeRef.current?.(item);
+      onChangeRef.current?.({ id: item.id, label: item.label });
     },
     [setCurrentFilter],
   );
@@ -115,10 +110,10 @@ export const CatalogFilter = ({
   // Make one initial onChange to inform the surroundings about the selected
   // item
   useEffect(() => {
-    const items = filterGroups.flatMap(g => g.items);
+    const items = buttonGroups.flatMap(g => g.items);
     const item = items.find(i => i.id === initiallySelected) || items[0];
     if (item) {
-      onChangeRef.current?.(item);
+      onChangeRef.current?.({ id: item.id, label: item.label });
     }
     // intentionally only happens on startup
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -126,7 +121,7 @@ export const CatalogFilter = ({
 
   return (
     <Card className={classes.root}>
-      {filterGroups.map(group => (
+      {buttonGroups.map(group => (
         <React.Fragment key={group.name}>
           <Typography variant="subtitle2" className={classes.title}>
             {group.name}
@@ -165,31 +160,29 @@ export const CatalogFilter = ({
   );
 };
 
-function useFilter(): {
+function useFilter(
+  buttonGroups: ButtonGroup[],
+  initiallySelected: string,
+): {
   currentFilter: string;
   setCurrentFilter: (filterId: string) => void;
   getFilterCount: (filterId: string) => number | undefined;
 } {
-  const [currentFilter, setCurrentFilter] = useState('OWNED');
-  const { isStarredEntity } = useStarredEntities();
-  const userId = useApi(identityApiRef).getUserId();
+  const [currentFilter, setCurrentFilter] = useState(initiallySelected);
 
-  const filterGroup = useMemo<FilterGroup>(() => {
-    const result: FilterGroup = { filters: {} };
-    const options: EntityFilterOptions = {
-      userId,
-      isStarred: isStarredEntity,
-    };
-    for (const [filterId, filterFn] of Object.entries(entityFilters)) {
-      result.filters[filterId] = entity => filterFn(entity, options);
-    }
-    return result;
-  }, [isStarredEntity, userId]);
+  const filterGroup = useMemo<FilterGroup>(
+    () => ({
+      filters: Object.fromEntries(
+        buttonGroups.flatMap(g => g.items).map(i => [i.id, i.filterFn]),
+      ),
+    }),
+    [buttonGroups],
+  );
 
   const { setSelectedFilters, state } = useEntityFilterGroup(
     'primary-sidebar',
     filterGroup,
-    ['OWNED'],
+    [initiallySelected],
   );
 
   const setCurrent = useCallback(

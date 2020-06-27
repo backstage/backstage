@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-import { Content, ContentHeader, SupportButton } from '@backstage/core';
+import {
+  Content,
+  ContentHeader,
+  identityApiRef,
+  SupportButton,
+  useApi,
+} from '@backstage/core';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles } from '@material-ui/core';
-import React, { useState } from 'react';
+import SettingsIcon from '@material-ui/icons/Settings';
+import StarIcon from '@material-ui/icons/Star';
+import React, { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { EntityGroup, filterGroups } from '../../data/filters';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
-import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
+import { CatalogFilter, ButtonGroup } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
@@ -36,34 +44,72 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const tabs: LabeledComponentType[] = [
-  {
-    id: 'service',
-    label: 'Services',
-  },
-  {
-    id: 'website',
-    label: 'Websites',
-  },
-  {
-    id: 'library',
-    label: 'Libraries',
-  },
-  {
-    id: 'documentation',
-    label: 'Documentation',
-  },
-  {
-    id: 'other',
-    label: 'Other',
-  },
-];
-
 const CatalogPageContents = () => {
   const styles = useStyles();
   const { loading, error, matchingEntities } = useFilteredEntities();
+  const { isStarredEntity } = useStarredEntities();
+  const userId = useApi(identityApiRef).getUserId();
   const [selectedTab, setSelectedTab] = useState<string>();
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
+
+  const tabs = useMemo<LabeledComponentType[]>(
+    () => [
+      {
+        id: 'service',
+        label: 'Services',
+      },
+      {
+        id: 'website',
+        label: 'Websites',
+      },
+      {
+        id: 'library',
+        label: 'Libraries',
+      },
+      {
+        id: 'documentation',
+        label: 'Documentation',
+      },
+      {
+        id: 'other',
+        label: 'Other',
+      },
+    ],
+    [],
+  );
+
+  const filterGroups = useMemo<ButtonGroup[]>(
+    () => [
+      {
+        name: 'Personal',
+        items: [
+          {
+            id: 'owned',
+            label: 'Owned',
+            icon: SettingsIcon,
+            filterFn: entity => entity.spec?.owner === userId,
+          },
+          {
+            id: 'starred',
+            label: 'Starred',
+            icon: StarIcon,
+            filterFn: isStarredEntity,
+          },
+        ],
+      },
+      {
+        name: 'Company', // TODO: Replace with Company name, read from app config.
+        items: [
+          {
+            id: 'all',
+            label: 'All',
+            filterFn: () => true,
+          },
+        ],
+      },
+    ],
+    [isStarredEntity, userId],
+  );
 
   return (
     <CatalogLayout>
@@ -87,9 +133,9 @@ const CatalogPageContents = () => {
         <div className={styles.contentWrapper}>
           <div>
             <CatalogFilter
-              filterGroups={filterGroups}
+              buttonGroups={filterGroups}
               onChange={({ label }) => setSelectedSidebarItem(label)}
-              initiallySelected={EntityGroup.OWNED}
+              initiallySelected="owned"
             />
           </div>
           <CatalogTable
