@@ -27,8 +27,8 @@ export function useFilteredEntities() {
   }
 
   return {
-    loading: false,
-    error: undefined,
+    loading: context.loading,
+    error: context.error,
     matchingEntities: context.matchingEntities,
   };
 }

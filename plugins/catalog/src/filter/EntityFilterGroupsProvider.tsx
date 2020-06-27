@@ -113,6 +113,8 @@ function useProvideEntityFilters(): FilterGroupsContext {
     register,
     unregister,
     setGroupSelectedFilters,
+    loading: !error && !entities,
+    error,
     filterGroupStates,
     matchingEntities,
   };

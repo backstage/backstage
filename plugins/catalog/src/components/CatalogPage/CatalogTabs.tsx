@@ -61,10 +61,12 @@ export const CatalogTabs = ({ tabs, onChange }: Props) => {
 
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
 
+  // Hold a reference to the callback
   const onChangeRef = useRef<OnChangeCallback>();
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
+
   useEffect(() => {
     onChangeRef.current?.(tabs[currentTabIndex]);
   }, [tabs, currentTabIndex]);
