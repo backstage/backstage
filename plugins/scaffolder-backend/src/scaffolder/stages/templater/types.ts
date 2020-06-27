@@ -13,6 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './cookiecutter';
-export * from './types';
-export * from './helpers';
+
+import type { Writable } from 'stream';
+import Docker from 'dockerode';
+import { JsonValue } from '@backstage/config';
+
+export type RequiredTemplateValues = {
+  component_id: string;
+};
+
+export type TemplaterRunOptions = {
+  directory: string;
+  values: RequiredTemplateValues & Record<string, JsonValue>;
+  logStream?: Writable;
+  dockerClient: Docker;
+};
+
+export type TemplaterBase = {
+  // runs the templating with the values and returns the directory to push the VCS
+  run(opts: TemplaterRunOptions): Promise<string>;
+};
+
+export type TemplaterConfig = {
+  templater?: TemplaterBase;
+};

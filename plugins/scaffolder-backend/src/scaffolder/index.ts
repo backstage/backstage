@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 export * from './stages/templater';
-export * from './stages/templater/cookiecutter';
 export * from './stages/prepare';
 export * from './jobs';
