@@ -18,6 +18,7 @@ jest.mock('./helpers', () => ({ runDockerContainer: jest.fn() }));
 import { CookieCutter } from './cookiecutter';
 import fs from 'fs-extra';
 import os from 'os';
+import path from 'path';
 import { RunDockerContainerOptions } from './helpers';
 import { PassThrough } from 'stream';
 import Docker from 'dockerode';
@@ -37,7 +38,7 @@ describe('CookieCutter Templater', () => {
 
   const mkTemp = async () => {
     const tempDir = os.tmpdir();
-    return await fs.promises.mkdtemp(tempDir);
+    return await fs.promises.mkdtemp(path.join(tempDir, 'temp'));
   };
 
   it('should write a cookiecutter.json file with the values from the entitiy', async () => {
