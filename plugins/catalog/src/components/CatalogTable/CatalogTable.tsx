@@ -92,7 +92,7 @@ export const CatalogTable = ({
     (rowData: Entity) => {
       const location = findLocationForEntityMeta(rowData.metadata);
       return {
-        icon: GitHub,
+        icon: () => <GitHub fontSize="small" />,
         tooltip: 'View on GitHub',
         onClick: () => {
           if (!location) return;
@@ -112,9 +112,8 @@ export const CatalogTable = ({
       };
       const location = findLocationForEntityMeta(rowData.metadata);
       return {
-        icon: Edit,
+        icon: () => <Edit fontSize="small" />,
         tooltip: 'Edit',
-        // iconProps: { size: 'small' },
         onClick: () => {
           if (!location) return;
           window.open(createEditLink(location), '_blank');
@@ -125,7 +124,13 @@ export const CatalogTable = ({
     (rowData: Entity) => {
       const isStarred = isStarredEntity(rowData);
       return {
-        icon: isStarred ? () => <Star htmlColor="#f3ba37" /> : StarOutline,
+        cellStyle: { paddingLeft: '1em' },
+        icon: () =>
+          isStarred ? (
+            <Star htmlColor="#f3ba37" fontSize="small" />
+          ) : (
+            <StarOutline fontSize="small" />
+          ),
         tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
         onClick: () => toggleStarredEntity(rowData),
       };
