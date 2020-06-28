@@ -43,6 +43,7 @@ export class FilePreparer implements PreparerBase {
 
     await fs.copy(parentDirectory, tempDir, {
       filter: src => src !== location,
+      recursive: true,
     });
 
     return tempDir;

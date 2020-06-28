@@ -22,6 +22,8 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
 import {} from '@backstage/backend-common';
 import { StageContext } from '../scaffolder/jobs/types';
+import { Octokit } from '@octokit/rest';
+import { GithubStorer } from '../scaffolder/stages/store/github';
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templater: TemplaterBase;
@@ -33,9 +35,11 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const { preparers, templater, logger: parentLogger, dockerClient } = options;
-  const logger = parentLogger.child({ plugin: 'scaffolder' });
 
+  const githubClient = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
+  const { preparers, templater, logger: parentLogger, dockerClient } = options;
+  const githubStorer = new GithubStorer({ client: githubClient });
+  const logger = parentLogger.child({ plugin: 'scaffolder' });
   const jobProcessor = new JobProcessor();
 
   router
@@ -83,7 +87,7 @@ export async function createRouter(
         metadata: {
           annotations: {
             'backstage.io/managed-by-location':
-              'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
+              'file:/Users/blam/dev/spotify/backstage/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml',
           },
           name: 'graphql-starter',
           title: 'GraphQL Service',
@@ -96,13 +100,17 @@ export async function createRouter(
         },
         spec: {
           type: 'cookiecutter',
-          path: './template',
+          path: '.',
         },
       };
 
       const job = jobProcessor.create({
         entity: mockEntity,
-        values: { component_id: 'blob' },
+        values: {
+          component_id: `blob${Date.now()}`,
+          org: 'hojden',
+          description: 'test',
+        },
         stages: [
           {
             name: 'Prepare the skeleton',
@@ -131,12 +139,21 @@ export async function createRouter(
             name: 'Create VCS Repo',
             handler: async (ctx: StageContext<{ resultDir: string }>) => {
               ctx.logger.info('Should now create the VCS repo');
+              const remoteUrl = await githubStorer.createRemote({
+                values: ctx.values,
+                entity: ctx.entity,
+              });
+
+              return { remoteUrl };
             },
           },
           {
             name: 'Push to remote',
-            handler: async ctx => {
+            handler: async (
+              ctx: StageContext<{ resultDir: string; remoteUrl: string }>,
+            ) => {
               ctx.logger.info('Should now push to the remote');
+              await githubStorer.pushToRemote(ctx.resultDir, ctx.remoteUrl);
             },
           },
         ],

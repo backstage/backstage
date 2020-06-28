@@ -13,3 +13,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Storer } from './types';
+import { Octokit } from '@octokit/rest';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { JsonValue } from '@backstage/config';
+import { RequiredTemplateValues } from '../templater';
+import { Repository, Remote, Signature, Cred } from 'nodegit';
+import gitUrlParse from 'git-url-parse';
+
+export class GithubStorer implements Storer {
+  private client: Octokit;
+  constructor({ client }: { client: Octokit }) {
+    this.client = client;
+  }
+
+  async createRemote({
+    values,
+  }: {
+    entity: TemplateEntityV1alpha1;
+    values: RequiredTemplateValues & Record<string, JsonValue>;
+  }) {
+    const {
+      data: { clone_url: cloneUrl },
+    } = await this.client.repos.createInOrg({
+      name: values.component_id,
+      org: values.org as string,
+    });
+
+    console.warn(cloneUrl);
+
+    return cloneUrl;
+  }
+
+  async pushToRemote(directory: string, remote: string): Promise<void> {
+    const repo = await Repository.init(directory, 0);
+    const index = await repo.refreshIndex();
+    await index.addAll();
+    await index.write();
+    const oid = await index.writeTree();
+    await repo.createCommit(
+      'HEAD',
+      Signature.now('Foo bar', 'foo@bar.com'),
+      Signature.now('Foo bar', 'foo@bar.com'),
+      'initial commit',
+      oid,
+      [],
+    );
+
+    const remoteRepo = await Remote.create(repo, 'origin', remote);
+    await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
+      callbacks: {
+        credentials: () => {
+          return Cred.userpassPlaintextNew(
+            process.env.GITHUB_ACCESS_TOKEN as string,
+            'x-oauth-basic',
+          );
+        },
+      },
+    });
+  }
+}

@@ -1,5 +1,3 @@
-import { TemplaterBase, TemplaterRunOptions } from '.';
-
 /*
  * Copyright 2020 Spotify AB
  *
@@ -18,7 +16,8 @@ import { TemplaterBase, TemplaterRunOptions } from '.';
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/config';
 import { runDockerContainer } from './helpers';
-
+import { TemplaterBase, TemplaterRunOptions } from '.';
+import path from 'path';
 export class CookieCutter implements TemplaterBase {
   private async fetchTemplateCookieCutter(
     directory: string,
@@ -66,6 +65,6 @@ export class CookieCutter implements TemplaterBase {
       dockerClient: options.dockerClient,
     });
 
-    return resultDir;
+    return path.resolve(resultDir, options.values.component_id);
   }
 }
