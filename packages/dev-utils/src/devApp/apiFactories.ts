@@ -28,6 +28,8 @@ import {
   googleAuthApiRef,
   GithubAuth,
   githubAuthApiRef,
+  GitlabAuth,
+  gitlabAuthApiRef,
 } from '@backstage/core';
 
 // TODO(rugvip): We should likely figure out how to reuse all of these between apps
@@ -70,6 +72,17 @@ export const githubAuthApiFactory = createApiFactory({
   deps: { oauthRequestApi: oauthRequestApiRef },
   factory: ({ oauthRequestApi }) =>
     GithubAuth.create({
+      apiOrigin: 'http://localhost:7000',
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+});
+
+export const gitlabAuthApiFactory = createApiFactory({
+  implements: gitlabAuthApiRef,
+  deps: { oauthRequestApi: oauthRequestApiRef },
+  factory: ({ oauthRequestApi }) =>
+    GitlabAuth.create({
       apiOrigin: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,

@@ -137,7 +137,9 @@ export const executeRefreshTokenStrategy = async (
         params: any,
       ) => {
         if (err) {
-          reject(new Error(`Failed to refresh access token ${err}`));
+          reject(
+            new Error(`Failed to refresh access token: ${JSON.stringify(err)}`),
+          );
         }
         if (!accessToken) {
           reject(
