@@ -80,9 +80,9 @@ export async function createRouter(
           development: {
             appOrigin: 'http://localhost:3000',
             secure: false,
-            baseUrl: process.env.GITLAB_BASE_URL || 'https://gitlab.com',
             clientId: process.env.AUTH_GITLAB_CLIENT_ID!,
             clientSecret: process.env.AUTH_GITLAB_CLIENT_SECRET!,
+            audience: process.env.GITLAB_BASE_URL! || 'https://gitlab.com',
           },
         },
         saml: {

@@ -129,15 +129,20 @@ export function createGitlabProvider(
   const envProviders: EnvironmentHandlers = {};
 
   for (const [env, envConfig] of Object.entries(providerConfig)) {
-    const config = (envConfig as unknown) as OAuthProviderConfig;
-    const { secure, appOrigin, baseUrl: oauthBaseUrl } = config;
+    const {
+      secure,
+      appOrigin,
+      clientId,
+      clientSecret,
+      audience,
+    } = (envConfig as unknown) as OAuthProviderConfig;
     const callbackURLParam = `?env=${env}`;
 
     const opts = {
-      clientID: config.clientId,
-      clientSecret: config.clientSecret,
+      clientID: clientId,
+      clientSecret: clientSecret,
       callbackURL: `${baseUrl}/gitlab/handler/frame${callbackURLParam}`,
-      baseURL: oauthBaseUrl,
+      baseURL: audience,
     };
 
     if (!opts.clientID || !opts.clientSecret) {

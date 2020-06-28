@@ -48,10 +48,6 @@ export type OAuthProviderConfig = {
    */
   appOrigin: string;
   /**
-   * Base URL of the auth provider.
-   */
-  baseUrl: string;
-  /**
    * Client ID of the auth provider.
    */
   clientId: string;
