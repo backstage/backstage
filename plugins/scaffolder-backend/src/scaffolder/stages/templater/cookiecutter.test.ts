@@ -48,6 +48,7 @@ describe('CookieCutter Templater', () => {
       owner: 'blobby',
       storePath: 'spotify/end-repo',
       description: 'description',
+      component_id: 'newthing',
     };
 
     await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
@@ -68,6 +69,7 @@ describe('CookieCutter Templater', () => {
     const values = {
       owner: 'blobby',
       storePath: 'spotify/end-repo',
+      component_id: 'something',
     };
 
     await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
@@ -98,6 +100,7 @@ describe('CookieCutter Templater', () => {
     const values = {
       owner: 'blobby',
       storePath: 'spotify/end-repo',
+      component_id: 'newthing',
     };
 
     await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
@@ -125,6 +128,7 @@ describe('CookieCutter Templater', () => {
     const values = {
       owner: 'blobby',
       storePath: 'spotify/end-repo',
+      component_id: 'newthing',
     };
 
     const returnPath = await cookie.run({
@@ -144,6 +148,7 @@ describe('CookieCutter Templater', () => {
     const values = {
       owner: 'blobby',
       storePath: 'spotify/end-repo',
+      component_id: 'newthing',
     };
 
     await cookie.run({
