@@ -56,7 +56,7 @@
     "eslint": "^7.1.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-monorepo": "^0.2.1",
-    "fork-ts-checker-webpack-plugin": "^4.0.5",
+    "fork-ts-checker-webpack-plugin": "^5.0.5",
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.3",
     "html-webpack-plugin": "^4.3.0",
