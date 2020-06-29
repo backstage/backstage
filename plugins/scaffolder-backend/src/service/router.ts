@@ -17,13 +17,19 @@
 import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
-import { PreparerBuilder, TemplaterBase, JobProcessor } from '../scaffolder';
+import {
+  PreparerBuilder,
+  TemplaterBase,
+  JobProcessor,
+  RequiredTemplateValues,
+} from '../scaffolder';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
 import { InputError } from '@backstage/backend-common';
 import { StageContext } from '../scaffolder/jobs/types';
 import { Octokit } from '@octokit/rest';
 import { GithubStorer } from '../scaffolder/stages/store/github';
+import { JsonValue } from '@backstage/config';
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templater: TemplaterBase;
@@ -51,7 +57,9 @@ export async function createRouter(
         return;
       }
 
-      res.send(job.stages[Number(params.index)].log.join(''));
+      const { log } = job.stages[Number(params.index)] ?? { log: [] };
+
+      res.send(log.join(''));
     })
     .get('/v1/job/:jobId', ({ params }, res) => {
       const job = jobProcessor.get(params.jobId);
@@ -77,27 +85,13 @@ export async function createRouter(
       });
     })
     .post('/v1/jobs', async (req, res) => {
-      // TODO(blam): Create a unique job here and return the ID so that
-      // The end user can poll for updates on the current job
-
-      // TODO(blam): Take this entity from the post body sent from the frontend
-      console.log(req.body);
       const template: TemplateEntityV1alpha1 = req.body.template;
-
-      if (!template) {
-        throw new InputError(
-          'You should specify the template to scaffold from',
-        );
-      }
+      const values: RequiredTemplateValues & Record<string, JsonValue> =
+        req.body.values;
 
       const job = jobProcessor.create({
         entity: template,
-        values: {
-          component_id: `blob${Date.now()}`,
-          org: 'shmidt-i-test',
-          description: 'test',
-          owner: 'somebody',
-        },
+        values,
         stages: [
           {
             name: 'Prepare the skeleton',

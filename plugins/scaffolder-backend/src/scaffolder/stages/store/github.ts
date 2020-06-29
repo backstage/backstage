@@ -33,14 +33,14 @@ export class GithubStorer implements Storer {
     entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;
   }) {
+    const [owner, name] = values.storePath.split('/');
+
     const {
       data: { clone_url: cloneUrl },
     } = await this.client.repos.createInOrg({
-      name: values.component_id,
-      org: values.org as string,
+      name,
+      org: owner,
     });
-
-    console.warn(cloneUrl);
 
     return cloneUrl;
   }
@@ -53,8 +53,8 @@ export class GithubStorer implements Storer {
     const oid = await index.writeTree();
     await repo.createCommit(
       'HEAD',
-      Signature.now('Foo bar', 'foo@bar.com'),
-      Signature.now('Foo bar', 'foo@bar.com'),
+      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
+      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
       'initial commit',
       oid,
       [],

@@ -13,37 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
 
-export type Props = {
-  x: number;
-  y: number;
+type WithLinkProps = {
+  url?: string;
+  className: string;
+  children: React.ReactNode;
 };
 
-const useStyles = makeStyles<Theme>(() => ({
-  text: {
-    pointerEvents: 'none',
-    userSelect: 'none',
-    fontSize: '10px',
-    fill: '#000',
-  },
-}));
-
-const RadarFooter = (props: Props): JSX.Element => {
-  const { x, y } = props;
-  const classes = useStyles(props);
-
-  return (
-    <text
-      data-testid="radar-footer"
-      transform={`translate(${x}, ${y})`}
-      className={classes.text}
-    >
-      {'▲ moved up\u00a0\u00a0\u00a0\u00a0\u00a0▼ moved down'}
-    </text>
+export const WithLink = ({
+  url,
+  className,
+  children,
+}: WithLinkProps): JSX.Element =>
+  url ? (
+    <a href={url} className={className}>
+      {children}
+    </a>
+  ) : (
+    <>{children}</>
   );
-};
-
-export default RadarFooter;

@@ -20,7 +20,7 @@ import * as uuid from 'uuid';
 import Docker from 'dockerode';
 import { RequiredTemplateValues, TemplaterBase } from '../stages/templater';
 import { PreparerBuilder } from '../stages/prepare';
-import { useLogStream } from './logger';
+import { makeLogStream } from './logger';
 
 export type JobProcessorArguments = {
   preparers: PreparerBuilder;
@@ -46,7 +46,7 @@ export class JobProcessor implements Processor {
     stages: StageInput[];
   }): Job {
     const id = uuid.v4();
-    const { logger, stream } = useLogStream({ id });
+    const { logger, stream } = makeLogStream({ id });
 
     const context: StageContext = {
       entity,
@@ -87,7 +87,7 @@ export class JobProcessor implements Processor {
       for (const stage of job.stages) {
         // Create a logger for each stage so we can create seperate
         // Streams for each step.
-        const { logger, log, stream } = useLogStream({
+        const { logger, log, stream } = makeLogStream({
           id: job.id,
           stage: stage.name,
         });

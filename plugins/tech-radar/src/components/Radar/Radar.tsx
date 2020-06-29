@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { FC, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import RadarPlot from '../RadarPlot';
-import { Ring, Quadrant, Entry } from '../../utils/types';
+import type { Ring, Quadrant, Entry } from '../../utils/types';
 import { adjustQuadrants, adjustRings, adjustEntries } from './utils';
 
-type Props = {
+export type Props = {
   width: number;
   height: number;
   quadrants: Quadrant[];
@@ -28,17 +28,17 @@ type Props = {
   svgProps?: object;
 };
 
-const Radar: FC<Props> = props => {
+const Radar = (props: Props): JSX.Element => {
   const { width, height, quadrants, rings, entries } = props;
   const radius = Math.min(width, height) / 2;
 
-  const [activeEntry, setActiveEntry] = useState<Entry | null>();
+  const [activeEntry, setActiveEntry] = useState<Entry>();
   const node = useRef<SVGSVGElement>(null);
 
   // TODO(dflemstr): most of this can be heavily memoized if performance becomes a problem
   adjustQuadrants(quadrants, radius, width, height);
   adjustRings(rings, radius);
-  adjustEntries(entries, activeEntry, quadrants, rings, radius);
+  adjustEntries(entries, quadrants, rings, radius, activeEntry);
 
   return (
     <svg ref={node} width={width} height={height} {...props.svgProps}>
@@ -49,9 +49,9 @@ const Radar: FC<Props> = props => {
         entries={entries}
         quadrants={quadrants}
         rings={rings}
-        activeEntry={activeEntry || undefined}
+        activeEntry={activeEntry}
         onEntryMouseEnter={entry => setActiveEntry(entry)}
-        onEntryMouseLeave={() => setActiveEntry(null)}
+        onEntryMouseLeave={() => setActiveEntry(undefined)}
       />
     </svg>
   );

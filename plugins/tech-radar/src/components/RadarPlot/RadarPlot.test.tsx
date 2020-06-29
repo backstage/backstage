@@ -20,11 +20,12 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import Radar, { Props } from './Radar';
+import RadarPlot, { Props } from './RadarPlot';
 
 const minProps: Props = {
   width: 500,
   height: 200,
+  radius: 50,
   quadrants: [{ id: 'languages', name: 'Languages' }],
   rings: [{ id: 'use', name: 'USE', color: '#93c47d' }],
   entries: [
@@ -39,7 +40,7 @@ const minProps: Props = {
   ],
 };
 
-describe('Radar', () => {
+describe('RadarPlot', () => {
   beforeAll(() => {
     GetBBoxPolyfill.create(0, 0, 1000, 500);
   });
@@ -51,13 +52,16 @@ describe('Radar', () => {
   it('should render', () => {
     const rendered = render(
       <ThemeProvider theme={lightTheme}>
-        <Radar {...minProps} />
+        <svg>
+          <RadarPlot {...minProps} />
+        </svg>
       </ThemeProvider>,
     );
 
-    const svg = rendered.container.querySelector('svg');
-    expect(svg).not.toBeNull();
-    expect(svg!.getAttribute('width')).toEqual('500');
-    expect(svg!.getAttribute('height')).toEqual('200');
+    expect(rendered.getByTestId('radar-plot')).toBeInTheDocument();
+    expect(rendered.getByTestId('radar-legend')).toBeInTheDocument();
+    expect(rendered.getByTestId('radar-footer')).toBeInTheDocument();
+    expect(rendered.getByTestId('radar-bubble')).toBeInTheDocument();
+    expect(rendered.getAllByTestId('radar-entry')).toHaveLength(1);
   });
 });
