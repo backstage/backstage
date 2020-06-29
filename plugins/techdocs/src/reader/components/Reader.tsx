@@ -21,6 +21,8 @@ import transformer, {
   addBaseUrl,
   rewriteDocLinks,
   addEventListener,
+  removeMkdocsHeader,
+  modifyCssTransformer,
 } from '../transformers';
 import { docStorageURL } from '../../config';
 import { Grid } from '@material-ui/core';
@@ -74,6 +76,16 @@ export const Reader = () => {
         rewriteDocLinks({
           componentId,
         }),
+        modifyCssTransformer({
+          cssTransforms: {
+            '.md-main__inner': [{ 'margin-top': '0' }],
+            '.md-sidebar': [{ top: '0' }, { width: '20rem' }],
+            '.md-typeset': [{ 'font-size': '1rem' }],
+            '.md-nav': [{ 'font-size': '1rem' }],
+            '.md-grid': [{ 'max-width': '80vw' }],
+          },
+        }),
+        removeMkdocsHeader({}),
       ]);
 
       divElement.shadowRoot.innerHTML = '';
@@ -90,39 +102,37 @@ export const Reader = () => {
 
   return (
     <>
-      {componentId ? (
-        <div ref={shadowDomRef} />
-      ) : (
-        <>
-          <Header
-            title="Documentation"
-            subtitle="Documentation available in Backstage"
-          />
+      <Header
+        title={componentId ?? 'Documentation'}
+        subtitle={componentId ?? 'Documentation available in Backstage'}
+      />
 
-          <Content>
-            <Grid container>
-              <Grid item xs={12} sm={6} md={3}>
-                <ItemCard
-                  onClick={() => navigate('/docs/mkdocs')}
-                  tags={['Developer Tool']}
-                  title="MkDocs"
-                  label="Read Docs"
-                  description="MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. "
-                />
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <ItemCard
-                  onClick={() => navigate('/docs/backstage-microsite')}
-                  tags={['Service']}
-                  title="Backstage"
-                  label="Read Docs"
-                  description="Getting started guides, API Overview, documentation around how to Create a Plugin and more. "
-                />
-              </Grid>
+      <Content>
+        {componentId ? (
+          <div ref={shadowDomRef} />
+        ) : (
+          <Grid container>
+            <Grid item xs={12} sm={6} md={3}>
+              <ItemCard
+                onClick={() => navigate('/docs/mkdocs')}
+                tags={['Developer Tool']}
+                title="MkDocs"
+                label="Read Docs"
+                description="MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. "
+              />
             </Grid>
-          </Content>
-        </>
-      )}
+            <Grid item xs={12} sm={6} md={3}>
+              <ItemCard
+                onClick={() => navigate('/docs/backstage-microsite')}
+                tags={['Service']}
+                title="Backstage"
+                label="Read Docs"
+                description="Getting started guides, API Overview, documentation around how to Create a Plugin and more. "
+              />
+            </Grid>
+          </Grid>
+        )}
+      </Content>
     </>
   );
 };
