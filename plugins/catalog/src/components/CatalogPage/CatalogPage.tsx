@@ -39,7 +39,10 @@ import {
   filterGroups,
   labeledEntityTypes,
 } from '../../data/filters';
-import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
+import {
+  favouriteEntityIcon,
+  favouriteEntityTooltip,
+} from '../FavouriteEntity/FavouriteEntity';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -106,7 +109,14 @@ export const CatalogPage: FC<{}> = () => {
         hidden: location?.type !== 'github',
       };
     },
-    (rowData: Entity) => <FavouriteEntity entity={rowData} />,
+    (rowData: Entity) => {
+      const isStarred = isStarredEntity(rowData);
+      return {
+        icon: favouriteEntityIcon(isStarred),
+        tooltip: favouriteEntityTooltip(isStarred),
+        onClick: () => toggleStarredEntity(rowData),
+      };
+    },
   ];
 
   return (
