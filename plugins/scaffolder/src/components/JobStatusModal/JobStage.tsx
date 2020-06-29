@@ -87,16 +87,10 @@ type Props = {
   className?: string;
   log: string[];
   startedAt: string;
-  finishedAt?: string;
+  endedAt?: string;
   status?: Job['status'];
 };
-export const JobStage = ({
-  finishedAt,
-  startedAt,
-  name,
-  log,
-  status,
-}: Props) => {
+export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
   const classes = useStyles();
 
   const [expanded, setExpanded] = useState(false);
@@ -104,18 +98,23 @@ export const JobStage = ({
     if (status === 'FAILED') setExpanded(true);
   }, [status === 'FAILED', setExpanded]);
 
-  const timeElapsed = moment
-    .duration(moment(finishedAt ?? moment()).diff(moment(startedAt)))
-    .humanize();
+  const timeElapsed =
+    status !== 'PENDING'
+      ? moment
+          .duration(moment(endedAt ?? moment()).diff(moment(startedAt)))
+          .humanize()
+      : null;
 
   return (
     <ExpansionPanel
       TransitionProps={{ unmountOnExit: true }}
       className={
-        status === 'COMPLETE'
-          ? classes.success
+        status === 'STARTED'
+          ? classes.running
           : status === 'FAILED'
           ? classes.failed
+          : status === 'COMPLETED'
+          ? classes.success
           : classes.neutral
       }
       expanded={expanded}
@@ -130,7 +129,7 @@ export const JobStage = ({
         }}
       >
         <Typography variant="button">
-          {name} ({timeElapsed})
+          {name} {timeElapsed && `(${timeElapsed})`}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionPanelDetails}>

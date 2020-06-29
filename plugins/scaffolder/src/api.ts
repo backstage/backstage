@@ -42,11 +42,18 @@ export class ScaffolderApi {
     values: Record<string, any>,
   ) {
     const url = `${this.apiOrigin}${this.basePath}/jobs`;
-    const jobId = await fetch(url, {
+    const { id: jobId } = await fetch(url, {
       method: 'POST',
       body: JSON.stringify({ template, values }),
     }).then(x => x.json());
 
     return jobId;
+  }
+
+  async getJob(jobId: string) {
+    const url = `${this.apiOrigin}${this.basePath}/job/${encodeURIComponent(
+      jobId,
+    )}`;
+    return fetch(url).then(x => x.json());
   }
 }
