@@ -17,6 +17,7 @@
 import fs from 'fs-extra';
 import { promisify } from 'util';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
@@ -40,7 +41,7 @@ async function checkExists(rootDir: string, name: string) {
   });
 }
 
-export async function createTemporaryAppFolder(tempDir: string) {
+async function createTemporaryAppFolder(tempDir: string) {
   await Task.forItem('creating', 'temporary directory', async () => {
     try {
       await fs.mkdir(tempDir);
@@ -76,11 +77,7 @@ async function buildApp(appDir: string) {
   await runCmd('yarn build');
 }
 
-export async function moveApp(
-  tempDir: string,
-  destination: string,
-  id: string,
-) {
+async function moveApp(tempDir: string, destination: string, id: string) {
   await Task.forItem('moving', id, async () => {
     await fs.move(tempDir, destination).catch(error => {
       throw new Error(
@@ -90,7 +87,7 @@ export async function moveApp(
   });
 }
 
-export default async () => {
+export default async (cmd: Command): Promise<void> => {
   const questions: Question[] = [
     {
       type: 'input',
@@ -130,8 +127,10 @@ export default async () => {
     Task.section('Moving to final location');
     await moveApp(tempDir, appDir, answers.name);
 
-    Task.section('Building the app');
-    await buildApp(appDir);
+    if (!cmd.skipInstall) {
+      Task.section('Building the app');
+      await buildApp(appDir);
+    }
 
     Task.log();
     Task.log(

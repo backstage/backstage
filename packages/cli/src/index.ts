@@ -25,6 +25,10 @@ const main = (argv: string[]) => {
   program
     .command('create-app')
     .description('Creates a new app in a new directory')
+    .option(
+      '--skip-install',
+      'Skip the install and builds steps after creating the app',
+    )
     .action(
       lazyAction(() => import('./commands/create-app/createApp'), 'default'),
     );
