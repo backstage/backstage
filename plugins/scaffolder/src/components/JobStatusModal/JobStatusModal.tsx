@@ -6,7 +6,7 @@ import {
   DialogContent,
 } from '@material-ui/core';
 import { JobStage } from './JobStage';
-import { useJob } from './jobMocks';
+import { useJobPolling } from './useJobPolling';
 
 type Props = {
   onClose: () => void;
@@ -14,7 +14,8 @@ type Props = {
 };
 
 export const JobStatusModal = ({ onClose, jobId }: Props) => {
-  const job = useJob(jobId);
+  console.log({ jobId });
+  const job = useJobPolling(jobId);
   return (
     <Dialog open onClose={onClose} fullWidth>
       <DialogTitle id="responsive-dialog-title">
@@ -30,7 +31,7 @@ export const JobStatusModal = ({ onClose, jobId }: Props) => {
               name={step.name}
               key={step.name}
               startedAt={step.startedAt}
-              finishedAt={step.finishedAt}
+              endedAt={step.endedAt}
               status={step.status}
             />
           ))
