@@ -23,7 +23,6 @@ import {
 } from '../../lib/PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
-  OAuthPrivateInfo,
   AuthProviderConfig,
   RedirectInfo,
   EnvironmentProviderConfig,
@@ -89,7 +88,7 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
         _: any,
         params: any,
         rawProfile: any,
-        done: PassportDoneCallback<OAuthResponse, OAuthPrivateInfo>,
+        done: PassportDoneCallback<OAuthResponse>,
       ) => {
         const oauthResponse = GitlabAuthProvider.transformOAuthResponse(
           accessToken,
@@ -108,15 +107,11 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
     return await executeRedirectStrategy(req, this._strategy, options);
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
-    const { response } = await executeFrameHandlerStrategy<
-      OAuthResponse,
-      OAuthPrivateInfo
-    >(req, this._strategy);
-
-    return { response };
+  async handler(req: express.Request): Promise<{ response: OAuthResponse }> {
+    return await executeFrameHandlerStrategy<OAuthResponse>(
+      req,
+      this._strategy,
+    );
   }
 }
 
