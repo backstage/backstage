@@ -20,7 +20,6 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
-import gitUrlParse from 'git-url-parse';
 
 export class GithubStorer implements Storer {
   private client: Octokit;

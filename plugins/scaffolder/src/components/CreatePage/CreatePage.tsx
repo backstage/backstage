@@ -16,26 +16,25 @@
 import React, { useState } from 'react';
 import useStaleWhileRevalidate from 'swr';
 import { useParams } from 'react-router-dom';
-import { LinearProgress, Button } from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import {
   useApi,
-  SimpleStepper,
-  SimpleStepperStep,
   Page,
   Content,
-  ContentHeader,
   Header,
   Lifecycle,
+  InfoCard,
 } from '@backstage/core';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { withTheme, IChangeEvent } from '@rjsf/core';
-import { Theme as MuiTheme } from '@rjsf/material-ui';
+import {
+  TemplateEntityV1alpha1,
+  ComponentEntityV1alpha1,
+} from '@backstage/catalog-model';
+import { IChangeEvent } from '@rjsf/core';
 import { JobStatusModal } from '../JobStatusModal';
 import { scaffolderApiRef } from '../../api';
-
-const Form = withTheme(MuiTheme);
-
+import { MultistepJsonForm } from '../MultistepJsonForm';
+import { Job } from '../JobStatusModal/types';
 export const CreatePage = () => {
   const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -53,6 +52,7 @@ export const CreatePage = () => {
   );
   const [formState, setFormState] = useState({});
 
+  const handleFormReset = () => setFormState({});
   const handleChange = (e: IChangeEvent) =>
     setFormState({ ...formState, ...e.formData });
 
@@ -67,6 +67,22 @@ export const CreatePage = () => {
     setJobId(job);
   };
 
+  const [entity, setEntity] = React.useState<ComponentEntityV1alpha1 | null>(
+    null,
+  );
+  const handleCreateComplete = async (job: Job) => {
+    console.log('DEBUG:', { job });
+    const {
+      entities: [createdEntity],
+    } = await catalogApi.addLocation(
+      'github',
+      job.metadata.remoteUrl.replace(
+        /\.git$/,
+        '/blob/master/component-info.yaml',
+      ),
+    );
+    setEntity(createdEntity);
+  };
   return (
     <Page>
       <Header
@@ -79,47 +95,47 @@ export const CreatePage = () => {
         subtitle="Create new software components using standard templates"
       />
       <Content>
-        <ContentHeader title={template.metadata.title as string} />
-        {jobId && <JobStatusModal jobId={jobId} onClose={handleClose} />}
-        {/* <JSSONFormsStepper schemas={} */}
-        <SimpleStepper
-          onStepChange={(_prevStep, nextStep) => {
-            if (nextStep === 2) {
-              handleCreate();
-            }
-          }}
-        >
-          <SimpleStepperStep title="Configure your component">
-            <Form
-              formData={formState}
-              onChange={handleChange}
-              schema={{
-                $schema: 'http://json-schema.org/draft-07/schema#',
-                ...template?.spec?.schema,
-              }}
-            >
-              <Button hidden />
-            </Form>
-          </SimpleStepperStep>
-          <SimpleStepperStep title="Choose repository">
-            <Form
-              formData={formState}
-              onChange={handleChange}
-              schema={{
-                $schema: 'http://json-schema.org/draft-07/schema#',
-                properties: {
-                  repo: {
-                    type: 'string',
-                    description:
-                      'Path to the repo where to upload created component',
+        {jobId && (
+          <JobStatusModal
+            onComplete={handleCreateComplete}
+            jobId={jobId}
+            onClose={handleClose}
+            entity={entity}
+          />
+        )}
+        <InfoCard title={template.metadata.title as string} noPadding>
+          <MultistepJsonForm
+            formData={formState}
+            onChange={handleChange}
+            onReset={handleFormReset}
+            onFinish={handleCreate}
+            steps={[
+              {
+                label: 'Fill in template parameters',
+                schema: template.spec.schema,
+              },
+              {
+                label: 'Choose owner and repo',
+                schema: {
+                  $schema: 'http://json-schema.org/draft-07/schema#',
+                  required: ['repo', 'owner'],
+                  properties: {
+                    owner: {
+                      type: 'string',
+                      title: 'Owner',
+                      description: 'Who is going to own this component',
+                    },
+                    repo: {
+                      type: 'string',
+                      title: 'GitHub repository',
+                      description: 'Repo where to upload created component',
+                    },
                   },
                 },
-              }}
-            >
-              <Button hidden />
-            </Form>
-          </SimpleStepperStep>
-        </SimpleStepper>
+              },
+            ]}
+          />
+        </InfoCard>
       </Content>
     </Page>
   );

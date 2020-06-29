@@ -94,8 +94,9 @@ export async function createRouter(
         entity: template,
         values: {
           component_id: `blob${Date.now()}`,
-          org: 'hojden',
+          org: 'shmidt-i-test',
           description: 'test',
+          owner: 'somebody',
         },
         stages: [
           {
