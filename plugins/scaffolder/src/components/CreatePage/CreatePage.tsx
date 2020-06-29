@@ -118,17 +118,17 @@ export const CreatePage = () => {
                 label: 'Choose owner and repo',
                 schema: {
                   $schema: 'http://json-schema.org/draft-07/schema#',
-                  required: ['repo', 'owner'],
+                  required: ['storePath', 'owner'],
                   properties: {
                     owner: {
                       type: 'string',
                       title: 'Owner',
                       description: 'Who is going to own this component',
                     },
-                    repo: {
+                    storePath: {
                       type: 'string',
-                      title: 'GitHub repository',
-                      description: 'Repo where to upload created component',
+                      title: 'Store path',
+                      description: 'GitHub store path in org/repo format',
                     },
                   },
                 },
