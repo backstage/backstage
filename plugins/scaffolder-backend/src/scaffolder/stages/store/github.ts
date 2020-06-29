@@ -20,7 +20,6 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
-import gitParse from 'git-url-parse';
 
 export class GithubStorer implements Storer {
   private client: Octokit;
@@ -34,7 +33,7 @@ export class GithubStorer implements Storer {
     entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;
   }) {
-    const [owner, name] = values.owner.split('/');
+    const [owner, name] = values.storePath.split('/');
 
     const {
       data: { clone_url: cloneUrl },

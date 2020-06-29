@@ -65,6 +65,6 @@ export class CookieCutter implements TemplaterBase {
       dockerClient: options.dockerClient,
     });
 
-    return path.resolve(resultDir, options.values.component_id);
+    return path.resolve(resultDir, options.values.component_id as string);
   }
 }
