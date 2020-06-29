@@ -20,26 +20,16 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import Radar, { Props } from './Radar';
+import RadarEntry, { Props } from './RadarEntry';
 
 const minProps: Props = {
-  width: 500,
-  height: 200,
-  quadrants: [{ id: 'languages', name: 'Languages' }],
-  rings: [{ id: 'use', name: 'USE', color: '#93c47d' }],
-  entries: [
-    {
-      id: 'typescript',
-      title: 'TypeScript',
-      quadrant: { id: 'languages', name: 'Languages' },
-      moved: 0,
-      ring: { id: 'use', name: 'USE', color: '#93c47d' },
-      url: '#',
-    },
-  ],
+  x: 2,
+  y: 2,
+  value: 2,
+  color: 'red',
 };
 
-describe('Radar', () => {
+describe('RadarEntry', () => {
   beforeAll(() => {
     GetBBoxPolyfill.create(0, 0, 1000, 500);
   });
@@ -51,13 +41,16 @@ describe('Radar', () => {
   it('should render', () => {
     const rendered = render(
       <ThemeProvider theme={lightTheme}>
-        <Radar {...minProps} />
+        <svg>
+          <RadarEntry {...minProps} />
+        </svg>
       </ThemeProvider>,
     );
 
-    const svg = rendered.container.querySelector('svg');
-    expect(svg).not.toBeNull();
-    expect(svg!.getAttribute('width')).toEqual('500');
-    expect(svg!.getAttribute('height')).toEqual('200');
+    const radarEntry = rendered.getByTestId('radar-entry');
+    const { x, y } = minProps;
+    expect(radarEntry).toBeInTheDocument();
+    expect(radarEntry.getAttribute('transform')).toBe(`translate(${x}, ${y})`);
+    expect(rendered.getByText(String(minProps.value))).toBeInTheDocument();
   });
 });

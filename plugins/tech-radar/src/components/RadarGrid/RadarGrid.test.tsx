@@ -20,26 +20,14 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import Radar, { Props } from './Radar';
+import RadarGrid, { Props } from './RadarGrid';
 
 const minProps: Props = {
-  width: 500,
-  height: 200,
-  quadrants: [{ id: 'languages', name: 'Languages' }],
+  radius: 5,
   rings: [{ id: 'use', name: 'USE', color: '#93c47d' }],
-  entries: [
-    {
-      id: 'typescript',
-      title: 'TypeScript',
-      quadrant: { id: 'languages', name: 'Languages' },
-      moved: 0,
-      ring: { id: 'use', name: 'USE', color: '#93c47d' },
-      url: '#',
-    },
-  ],
 };
 
-describe('Radar', () => {
+describe('RadarGrid', () => {
   beforeAll(() => {
     GetBBoxPolyfill.create(0, 0, 1000, 500);
   });
@@ -51,13 +39,13 @@ describe('Radar', () => {
   it('should render', () => {
     const rendered = render(
       <ThemeProvider theme={lightTheme}>
-        <Radar {...minProps} />
+        <svg>
+          <RadarGrid {...minProps} />
+        </svg>
       </ThemeProvider>,
     );
 
-    const svg = rendered.container.querySelector('svg');
-    expect(svg).not.toBeNull();
-    expect(svg!.getAttribute('width')).toEqual('500');
-    expect(svg!.getAttribute('height')).toEqual('200');
+    expect(rendered.getByTestId('radar-grid-x-line')).toBeInTheDocument();
+    expect(rendered.getByTestId('radar-grid-y-line')).toBeInTheDocument();
   });
 });

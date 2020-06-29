@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Grid } from '@material-ui/core';
 import {
   Content,
@@ -29,7 +29,7 @@ import {
 import RadarComponent from '../components/RadarComponent';
 import { techRadarApiRef, TechRadarApi } from '../api';
 
-const RadarPage: FC<{}> = () => {
+const RadarPage = (): JSX.Element => {
   const techRadarApi = useApi<TechRadarApi>(techRadarApiRef);
 
   return (
