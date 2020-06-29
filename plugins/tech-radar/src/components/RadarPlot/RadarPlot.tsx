@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import { Quadrant, Ring, Entry } from '../../utils/types';
+import React from 'react';
+import type { Quadrant, Ring, Entry } from '../../utils/types';
 
 import RadarGrid from '../RadarGrid';
 import RadarEntry from '../RadarEntry';
@@ -23,7 +23,7 @@ import RadarBubble from '../RadarBubble';
 import RadarFooter from '../RadarFooter';
 import RadarLegend from '../RadarLegend';
 
-type Props = {
+export type Props = {
   width: number;
   height: number;
   radius: number;
@@ -36,7 +36,7 @@ type Props = {
 };
 
 // A component that draws the radar circle.
-const RadarPlot: FC<Props> = props => {
+const RadarPlot = (props: Props): JSX.Element => {
   const {
     width,
     height,
@@ -50,7 +50,7 @@ const RadarPlot: FC<Props> = props => {
   } = props;
 
   return (
-    <g>
+    <g data-testid="radar-plot">
       <RadarLegend
         quadrants={quadrants}
         rings={rings}
@@ -71,7 +71,7 @@ const RadarPlot: FC<Props> = props => {
             x={entry.x || 0}
             y={entry.y || 0}
             color={entry.color || ''}
-            number={((entry && entry.idx) || 0) + 1}
+            value={(entry?.index || 0) + 1}
             url={entry.url}
             moved={entry.moved}
             onMouseEnter={onEntryMouseEnter && (() => onEntryMouseEnter(entry))}
@@ -80,9 +80,9 @@ const RadarPlot: FC<Props> = props => {
         ))}
         <RadarBubble
           visible={!!activeEntry}
-          text={activeEntry ? activeEntry.title : ''}
-          x={activeEntry ? activeEntry.x || 0 : 0}
-          y={activeEntry ? activeEntry.y || 0 : 0}
+          text={activeEntry?.title || ''}
+          x={activeEntry?.x || 0}
+          y={activeEntry?.y || 0}
         />
       </g>
     </g>

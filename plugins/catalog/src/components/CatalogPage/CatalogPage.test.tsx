@@ -14,45 +14,43 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import {
   ApiProvider,
   ApiRegistry,
-  errorApiRef,
-  storageApiRef,
-  WebStorage,
   IdentityApi,
   identityApiRef,
+  storageApiRef,
 } from '@backstage/core';
-import { MockErrorApi, wrapInTestApp } from '@backstage/test-utils';
-import { render, fireEvent } from '@testing-library/react';
+import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { catalogApiRef } from '../..';
 import { CatalogApi } from '../../api/types';
+import { EntityFilterGroupsProvider } from '../../filter';
 import { CatalogPage } from './CatalogPage';
-import { Entity } from '@backstage/catalog-model';
 
 describe('CatalogPage', () => {
-  const mockErrorApi = new MockErrorApi();
   const catalogApi: Partial<CatalogApi> = {
     getEntities: () =>
       Promise.resolve([
         {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
           metadata: {
             name: 'Entity1',
           },
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
           spec: {
             owner: 'tools@example.com',
             type: 'service',
           },
         },
         {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
           metadata: {
             name: 'Entity2',
           },
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
           spec: {
             owner: 'not-tools@example.com',
             type: 'service',
@@ -62,49 +60,32 @@ describe('CatalogPage', () => {
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
   };
-  const mockIndentityApi: Partial<IdentityApi> = {
+  const indentityApi: Partial<IdentityApi> = {
     getUserId: () => 'tools@example.com',
   };
+
+  const renderWrapped = (children: React.ReactNode) =>
+    render(
+      wrapInTestApp(
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [catalogApiRef, catalogApi],
+            [identityApiRef, indentityApi],
+            [storageApiRef, MockStorageApi.create()],
+          ])}
+        >
+          <EntityFilterGroupsProvider>{children}</EntityFilterGroupsProvider>,
+        </ApiProvider>,
+      ),
+    );
 
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    const { findByText } = render(
-      wrapInTestApp(
-        <ApiProvider
-          apis={ApiRegistry.from([
-            [errorApiRef, mockErrorApi],
-            [catalogApiRef, catalogApi],
-            [storageApiRef, new WebStorage('@mock', mockErrorApi)],
-            [identityApiRef, mockIndentityApi],
-          ])}
-        >
-          <CatalogPage />
-        </ApiProvider>,
-      ),
-    );
-
-    const items = await findByText(/All Services \(2\)/);
-    expect(items).toBeInTheDocument();
-  });
-  it('should filter by owner', async () => {
-    const { findByText, getByText } = render(
-      wrapInTestApp(
-        <ApiProvider
-          apis={ApiRegistry.from([
-            [errorApiRef, mockErrorApi],
-            [catalogApiRef, catalogApi],
-            [storageApiRef, new WebStorage('@mock', mockErrorApi)],
-            [identityApiRef, mockIndentityApi],
-          ])}
-        >
-          <CatalogPage />
-        </ApiProvider>,
-      ),
-    );
-    fireEvent.click(getByText(/Owned/));
-    const items = await findByText(/Owned \(1\)/);
-    expect(items).toBeInTheDocument();
+    const { findByText, getByText } = renderWrapped(<CatalogPage />);
+    expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
+    fireEvent.click(getByText(/All/));
+    expect(await findByText(/All \(2\)/)).toBeInTheDocument();
   });
 });

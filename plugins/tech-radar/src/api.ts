@@ -15,6 +15,7 @@
  */
 
 import { createApiRef } from '@backstage/core';
+import { MovedState } from './utils/types';
 
 /**
  * Types related to the Radar's visualization.
@@ -34,7 +35,7 @@ export interface RadarQuadrant {
 export interface RadarEntry {
   key: string; // react key
   id: string;
-  moved: number;
+  moved: MovedState;
   quadrant: RadarQuadrant;
   ring: RadarRing;
   title: string;

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 
-type Props = {
+export type Props = {
   x: number;
   y: number;
 };
@@ -31,12 +31,16 @@ const useStyles = makeStyles<Theme>(() => ({
   },
 }));
 
-const RadarFooter: FC<Props> = props => {
+const RadarFooter = (props: Props): JSX.Element => {
   const { x, y } = props;
   const classes = useStyles(props);
 
   return (
-    <text transform={`translate(${x}, ${y})`} className={classes.text}>
+    <text
+      data-testid="radar-footer"
+      transform={`translate(${x}, ${y})`}
+      className={classes.text}
+    >
       {'▲ moved up\u00a0\u00a0\u00a0\u00a0\u00a0▼ moved down'}
     </text>
   );

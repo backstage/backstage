@@ -66,11 +66,9 @@ describe('CatalogTable component', () => {
         />,
       ),
     );
-    expect(
-      await rendered.findByText(`Owned (${entites.length})`),
-    ).toBeInTheDocument();
-    expect(await rendered.findByText('component1')).toBeInTheDocument();
-    expect(await rendered.findByText('component2')).toBeInTheDocument();
-    expect(await rendered.findByText('component3')).toBeInTheDocument();
+    expect(rendered.getByText(/Owned \(3\)/)).toBeInTheDocument();
+    expect(rendered.getByText(/component1/)).toBeInTheDocument();
+    expect(rendered.getByText(/component2/)).toBeInTheDocument();
+    expect(rendered.getByText(/component3/)).toBeInTheDocument();
   });
 });

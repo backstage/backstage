@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Lifecycle,
   Content,
@@ -23,33 +23,39 @@ import {
   SupportButton,
   Page,
   pageTheme,
+  useApi,
+  errorApiRef,
 } from '@backstage/core';
-import { Button, Grid, Link, Typography } from '@material-ui/core';
+import { catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  Typography,
+  Link,
+  Button,
+  Grid,
+  LinearProgress,
+} from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 import TemplateCard from '../TemplateCard';
+import useStaleWhileRevalidate from 'swr';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
-// TODO(blam): Connect to backend
-const STATIC_DATA = [
-  {
-    id: 'springboot-template',
-    type: 'service',
-    name: 'Spring Boot Service',
-    tags: ['Recommended', 'Java'],
-    description:
-      'Standard Spring Boot (Java) microservice with recommended configuration.',
-    ownerId: 'spotify',
-  },
-  {
-    id: 'react-ssr-template',
-    type: 'website',
-    name: 'SSR React Website',
-    tags: ['Recommended', 'React'],
-    description:
-      'Next.js application skeleton for creating isomorphic web applications.',
-    ownerId: 'spotify',
-  },
-];
 const ScaffolderPage: React.FC<{}> = () => {
+  const catalogApi = useApi(catalogApiRef);
+  const errorApi = useApi(errorApiRef);
+
+  const { data: templates, isValidating, error } = useStaleWhileRevalidate(
+    'templates/all',
+    async () =>
+      catalogApi.getEntities({ kind: 'Template' }) as Promise<
+        TemplateEntityV1alpha1[]
+      >,
+  );
+
+  useEffect(() => {
+    if (!error) return;
+    errorApi.post(error);
+  }, [error, errorApi]);
+
   return (
     <Page theme={pageTheme.home}>
       <Header
@@ -84,18 +90,24 @@ const ScaffolderPage: React.FC<{}> = () => {
           </Link>
           .
         </Typography>
+        {!templates && isValidating && <LinearProgress />}
         <Grid container>
-          {STATIC_DATA.map(item => {
-            return (
-              <TemplateCard
-                key={item.id}
-                title={item.name}
-                type={item.type}
-                description={item.description}
-                tags={item.tags}
-              />
-            );
-          })}
+          {templates &&
+            templates.map(template => {
+              return (
+                <Grid item xs={12} sm={6} md={3}>
+                  <TemplateCard
+                    key={template.metadata.uid}
+                    title={`${
+                      (template.metadata.title || template.metadata.name) ?? ''
+                    }`}
+                    type={template.spec.type ?? ''}
+                    description={template.metadata.description ?? '-'}
+                    tags={(template.metadata?.tags as string[]) ?? []}
+                  />
+                </Grid>
+              );
+            })}
         </Grid>
       </Content>
     </Page>

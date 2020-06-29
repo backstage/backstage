@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
 import {
   Header,
   HomepageTimer,
+  identityApiRef,
   Page,
   pageTheme,
-  identityApiRef,
   useApi,
 } from '@backstage/core';
+import React from 'react';
 import { getTimeBasedGreeting } from './utils/timeUtil';
 
-const CatalogLayout: FC<{}> = props => {
-  const { children } = props;
+type Props = {
+  children?: React.ReactNode;
+};
+
+const CatalogLayout = ({ children }: Props) => {
   const greeting = getTimeBasedGreeting();
-  const identityApi = useApi(identityApiRef);
+  const userId = useApi(identityApiRef).getUserId();
 
   return (
     <Page theme={pageTheme.home}>
       <Header
-        title={`${greeting.greeting}, ${identityApi.getUserId()}!`}
+        title={`${greeting.greeting}, ${userId}!`}
         subtitle="Backstage Service Catalog"
         tooltip={greeting.language}
         pageTitleOverride="Home"

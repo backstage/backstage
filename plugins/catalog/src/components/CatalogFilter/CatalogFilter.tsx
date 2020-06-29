@@ -14,31 +14,36 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import { Entity } from '@backstage/catalog-model';
+import { IconComponent } from '@backstage/core';
 import {
   Card,
   List,
   ListItemIcon,
+  ListItemSecondaryAction,
   ListItemText,
-  MenuItem,
-  Typography,
-  Theme,
   makeStyles,
+  MenuItem,
+  Theme,
+  Typography,
 } from '@material-ui/core';
-import type { IconComponent } from '@backstage/core';
-import { EntityGroup } from '../../data/filters';
-import { EntitiesByFilter } from '../../hooks/useEntities';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { FilterGroup, useEntityFilterGroup } from '../../filter';
 
-export type CatalogFilterItem = {
-  id: EntityGroup;
-  label: string;
-  icon?: IconComponent;
-  count?: number | FC;
-};
-
-export type CatalogFilterGroup = {
+export type ButtonGroup = {
   name: string;
-  items: CatalogFilterItem[];
+  items: {
+    id: string;
+    label: string;
+    icon?: IconComponent;
+    filterFn: (entity: Entity) => boolean;
+  }[];
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -67,21 +72,56 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const CatalogFilter: FC<{
-  selectedFilter: EntityGroup;
-  onFilterChange: (type: EntityGroup) => void;
-  entitiesByFilter: EntitiesByFilter;
-  groups: CatalogFilterGroup[];
-}> = ({
-  selectedFilter: selectedId,
-  onFilterChange: setSelectedFilter,
-  entitiesByFilter,
-  groups,
-}) => {
+type OnChangeCallback = (item: { id: string; label: string }) => void;
+
+type Props = {
+  buttonGroups: ButtonGroup[];
+  initiallySelected: string;
+  onChange?: OnChangeCallback;
+};
+
+/**
+ * The main filter group in the sidebar, toggling owned/starred/all.
+ */
+export const CatalogFilter = ({
+  buttonGroups,
+  onChange,
+  initiallySelected,
+}: Props) => {
   const classes = useStyles();
+  const { currentFilter, setCurrentFilter, getFilterCount } = useFilter(
+    buttonGroups,
+    initiallySelected,
+  );
+
+  const onChangeRef = useRef<OnChangeCallback>();
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  const setCurrent = useCallback(
+    (item: { id: string; label: string }) => {
+      setCurrentFilter(item.id);
+      onChangeRef.current?.({ id: item.id, label: item.label });
+    },
+    [setCurrentFilter],
+  );
+
+  // Make one initial onChange to inform the surroundings about the selected
+  // item
+  useEffect(() => {
+    const items = buttonGroups.flatMap(g => g.items);
+    const item = items.find(i => i.id === initiallySelected) || items[0];
+    if (item) {
+      onChangeRef.current?.({ id: item.id, label: item.label });
+    }
+    // intentionally only happens on startup
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Card className={classes.root}>
-      {groups.map(group => (
+      {buttonGroups.map(group => (
         <React.Fragment key={group.name}>
           <Typography variant="subtitle2" className={classes.title}>
             {group.name}
@@ -93,10 +133,8 @@ export const CatalogFilter: FC<{
                   key={item.id}
                   button
                   divider
-                  onClick={() => {
-                    setSelectedFilter(item.id);
-                  }}
-                  selected={item.id === selectedId}
+                  onClick={() => setCurrent(item)}
+                  selected={item.id === currentFilter}
                   className={classes.menuItem}
                 >
                   {item.icon && (
@@ -109,7 +147,9 @@ export const CatalogFilter: FC<{
                       {item.label}
                     </Typography>
                   </ListItemText>
-                  {entitiesByFilter[item.id]?.length ?? '-'}
+                  <ListItemSecondaryAction>
+                    {getFilterCount(item.id) ?? '-'}
+                  </ListItemSecondaryAction>
                 </MenuItem>
               ))}
             </List>
@@ -119,3 +159,53 @@ export const CatalogFilter: FC<{
     </Card>
   );
 };
+
+function useFilter(
+  buttonGroups: ButtonGroup[],
+  initiallySelected: string,
+): {
+  currentFilter: string;
+  setCurrentFilter: (filterId: string) => void;
+  getFilterCount: (filterId: string) => number | undefined;
+} {
+  const [currentFilter, setCurrentFilter] = useState(initiallySelected);
+
+  const filterGroup = useMemo<FilterGroup>(
+    () => ({
+      filters: Object.fromEntries(
+        buttonGroups.flatMap(g => g.items).map(i => [i.id, i.filterFn]),
+      ),
+    }),
+    [buttonGroups],
+  );
+
+  const { setSelectedFilters, state } = useEntityFilterGroup(
+    'primary-sidebar',
+    filterGroup,
+    [initiallySelected],
+  );
+
+  const setCurrent = useCallback(
+    (filterId: string) => {
+      setCurrentFilter(filterId);
+      setSelectedFilters([filterId]);
+    },
+    [setCurrentFilter, setSelectedFilters],
+  );
+
+  const getFilterCount = useCallback(
+    (filterId: string) => {
+      if (state.type !== 'ready') {
+        return undefined;
+      }
+      return state.state.filters[filterId].matchCount;
+    },
+    [state],
+  );
+
+  return {
+    currentFilter,
+    setCurrentFilter: setCurrent,
+    getFilterCount,
+  };
+}
