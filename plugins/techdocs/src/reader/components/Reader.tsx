@@ -24,7 +24,7 @@ import transformer, {
 } from '../transformers';
 import { docStorageURL } from '../../config';
 import { Grid } from '@material-ui/core';
-import { Link, InfoCard, Header, Content, ItemCard } from '@backstage/core';
+import { Header, Content, ItemCard } from '@backstage/core';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import URLParser from '../urlParser';
 
