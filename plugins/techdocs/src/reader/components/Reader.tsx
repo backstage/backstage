@@ -17,16 +17,19 @@
 import React from 'react';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
+
+import { Grid } from '@material-ui/core';
+import { Header, Content } from '@backstage/core';
+
 import transformer, {
   addBaseUrl,
   rewriteDocLinks,
   addEventListener,
 } from '../transformers';
 import { docStorageURL } from '../../config';
-import { Grid } from '@material-ui/core';
-import { Header, Content, ItemCard } from '@backstage/core';
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import URLParser from '../urlParser';
+import { DocsCard } from './DocsCard';
 
 const useFetch = (url: string) => {
   const state = useAsync(async () => {
@@ -102,7 +105,7 @@ export const Reader = () => {
           <Content>
             <Grid container>
               <Grid item xs={12} sm={6} md={3}>
-                <ItemCard
+                <DocsCard
                   onClick={() => navigate('/docs/mkdocs')}
                   tags={['Developer Tool']}
                   title="MkDocs"
@@ -111,7 +114,7 @@ export const Reader = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <ItemCard
+                <DocsCard
                   onClick={() => navigate('/docs/backstage-microsite')}
                   tags={['Service']}
                   title="Backstage"

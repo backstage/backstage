@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type ItemCardProps = {
+type DocsCardProps = {
   description: string;
   tags?: string[];
   title: string;
@@ -45,7 +45,7 @@ type ItemCardProps = {
   label: string;
   onClick?: () => void;
 };
-export const ItemCard: FC<ItemCardProps> = ({
+export const DocsCard: FC<DocsCardProps> = ({
   description,
   tags,
   title,

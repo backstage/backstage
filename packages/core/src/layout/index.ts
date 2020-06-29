@@ -26,4 +26,3 @@ export * from './Sidebar';
 export * from './SignInPage';
 export * from './TabbedCard';
 export * from './HeaderTabs';
-export * from './ItemCard';
