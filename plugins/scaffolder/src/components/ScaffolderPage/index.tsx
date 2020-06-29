@@ -35,11 +35,11 @@ import {
   LinearProgress,
 } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
-import TemplateCard from '../TemplateCard';
+import TemplateCard from './TemplateCard';
 import useStaleWhileRevalidate from 'swr';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
-const ScaffolderPage: React.FC<{}> = () => {
+export const ScaffolderPage: React.FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -98,6 +98,7 @@ const ScaffolderPage: React.FC<{}> = () => {
                 <Grid item xs={12} sm={6} md={3}>
                   <TemplateCard
                     key={template.metadata.uid}
+                    name={template.metadata.name}
                     title={`${
                       (template.metadata.title || template.metadata.name) ?? ''
                     }`}
@@ -113,5 +114,3 @@ const ScaffolderPage: React.FC<{}> = () => {
     </Page>
   );
 };
-
-export default ScaffolderPage;
