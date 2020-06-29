@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { Children, isValidElement, FC, useState } from 'react';
+import React, {
+  Children,
+  isValidElement,
+  FC,
+  useState,
+  useEffect,
+} from 'react';
 import { Stepper as MuiStepper } from '@material-ui/core';
 
 type InternalState = {
@@ -38,15 +44,21 @@ export const VerticalStepperContext = React.createContext<InternalState>({
 export interface StepperProps {
   elevated?: boolean;
   onStepChange?: (prevIndex: number, nextIndex: number) => void;
+  activeStep?: number;
 }
 
 export const SimpleStepper: FC<StepperProps> = ({
   children,
   elevated,
   onStepChange,
+  activeStep = 0,
 }) => {
-  const [stepIndex, setStepIndex] = useState<number>(0);
+  const [stepIndex, setStepIndex] = useState<number>(activeStep);
   const [stepHistory, setStepHistory] = useState<number[]>([0]);
+
+  useEffect(() => {
+    setStepIndex(activeStep);
+  }, [activeStep]);
 
   const steps: React.ReactNode[] = [];
   let endStep;
