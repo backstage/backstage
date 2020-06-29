@@ -131,7 +131,7 @@ const ProfileCatalog: FC<{}> = () => {
 
   useEffect(() => {
     const fetchGithubUserInfo = async () => {
-      const accessToken = await githubAuth.getAccessToken();
+      const accessToken = await githubAuth.getAccessToken(['repo', 'user']);
       const userInfo = await api.fetchUserInfo({ accessToken });
       setGithubAccessToken(accessToken);
       setGithubUsername(userInfo.login);
@@ -140,26 +140,27 @@ const ProfileCatalog: FC<{}> = () => {
 
     if (!githubAccessToken || !githubUsername) {
       fetchGithubUserInfo();
+    } else {
+      if (pollingLog) {
+        const interval = setInterval(async () => {
+          const resp = await api.fetchLog({
+            gitHubToken: githubAccessToken,
+            gitHubUser: githubUsername,
+            targetOrg: gitHubOrg,
+            targetRepo: gitHubRepo,
+          });
+
+          setRunStatus(resp.result);
+          setRunLink(resp.link);
+          if (resp.status === 'completed') {
+            setPollingLog(false);
+            setShowProgress(false);
+          }
+        }, 10000);
+        return () => clearInterval(interval);
+      }
     }
 
-    if (pollingLog) {
-      const interval = setInterval(async () => {
-        const resp = await api.fetchLog({
-          gitHubToken: githubAccessToken,
-          gitHubUser: githubUsername,
-          targetOrg: gitHubOrg,
-          targetRepo: gitHubRepo,
-        });
-
-        setRunStatus(resp.result);
-        setRunLink(resp.link);
-        if (resp.status === 'completed') {
-          setPollingLog(false);
-          setShowProgress(false);
-        }
-      }, 10000);
-      return () => clearInterval(interval);
-    }
     return () => {};
   }, [
     pollingLog,

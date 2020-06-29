@@ -115,6 +115,7 @@ export function createGithubProvider(
 
     envProviders[env] = new OAuthProvider(new GithubAuthProvider(opts), {
       disableRefresh: true,
+      persistScopes: true,
       providerId: 'github',
       secure,
       baseUrl,
