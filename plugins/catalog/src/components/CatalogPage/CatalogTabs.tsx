@@ -14,42 +14,72 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from 'react';
-import { HeaderTabs } from '@backstage/core';
-import { labeledEntityTypes, LabeledEntityType } from '../../data/filters';
-import { useEntityFilterGroup, FilterGroup } from '../../filter';
 import { Entity } from '@backstage/catalog-model';
+import { HeaderTabs } from '@backstage/core';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { FilterGroup, useEntityFilterGroup } from '../../filter';
 
-const filterGroup: FilterGroup = {
-  filters: Object.fromEntries(
-    labeledEntityTypes.map(t => [
-      t.id,
-      (entity: Entity) => entity.spec?.type === t.id,
-    ]),
-  ),
+/**
+ * A component type, and a human readable label for it.
+ */
+export type LabeledComponentType = {
+  id: string;
+  label: string;
 };
+
+/**
+ * Called on mount, and when the selected tab changes.
+ */
+export type OnChangeCallback = (tab: LabeledComponentType) => void;
 
 type Props = {
-  onChange?: (type: LabeledEntityType) => void;
+  tabs: LabeledComponentType[];
+  onChange?: OnChangeCallback;
 };
 
-export const CatalogTabs = ({ onChange }: Props) => {
+/**
+ * The tabs at the top of the catalog list page, for component type filtering.
+ */
+export const CatalogTabs = ({ tabs, onChange }: Props) => {
+  const filterGroup = useMemo<FilterGroup>(() => {
+    return {
+      filters: Object.fromEntries(
+        tabs.map(t => [t.id, (entity: Entity) => entity.spec?.type === t.id]),
+      ),
+    };
+  }, [tabs]);
+
   const { setSelectedFilters } = useEntityFilterGroup('type', filterGroup, [
-    labeledEntityTypes[0].id,
+    tabs[0].id,
   ]);
 
-  const onChangeFn = useCallback(
-    (index: Number) => {
-      const type = labeledEntityTypes[index as number];
-      setSelectedFilters([type.id]);
-      onChange?.(type);
-    },
-    [onChange, setSelectedFilters],
-  );
+  const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
 
+  // Hold a reference to the callback
+  const onChangeRef = useRef<OnChangeCallback>();
   useEffect(() => {
-    onChange?.(labeledEntityTypes[0]);
+    onChangeRef.current = onChange;
   }, [onChange]);
 
-  return <HeaderTabs tabs={labeledEntityTypes} onChange={onChangeFn} />;
+  useEffect(() => {
+    onChangeRef.current?.(tabs[currentTabIndex]);
+  }, [tabs, currentTabIndex]);
+
+  const switchTab = useCallback(
+    (index: number) => {
+      const tab = tabs[index];
+      setSelectedFilters([tab.id]);
+      setCurrentTabIndex(index);
+      onChangeRef.current?.(tab);
+    },
+    [tabs, setSelectedFilters],
+  );
+
+  return <HeaderTabs tabs={tabs} onChange={switchTab} />;
 };

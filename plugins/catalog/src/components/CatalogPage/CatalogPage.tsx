@@ -14,31 +14,25 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
-import { Content, ContentHeader, SupportButton } from '@backstage/core';
-import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import { Button, makeStyles, withStyles } from '@material-ui/core';
-import Edit from '@material-ui/icons/Edit';
-import GitHub from '@material-ui/icons/GitHub';
-import Star from '@material-ui/icons/Star';
-import StarOutline from '@material-ui/icons/StarBorder';
-import React, { useCallback, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import {
-  EntityGroup,
-  filterGroups,
-  LabeledEntityType,
-} from '../../data/filters';
-import { findLocationForEntityMeta } from '../../data/utils';
+  Content,
+  ContentHeader,
+  identityApiRef,
+  SupportButton,
+  useApi,
+} from '@backstage/core';
+import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
+import { Button, makeStyles } from '@material-ui/core';
+import SettingsIcon from '@material-ui/icons/Settings';
+import StarIcon from '@material-ui/icons/Star';
+import React, { useMemo, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
-import {
-  CatalogFilter,
-  CatalogFilterItem,
-} from '../CatalogFilter/CatalogFilter';
+import { CatalogFilter, ButtonGroup } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
 import CatalogLayout from './CatalogLayout';
-import { CatalogTabs } from './CatalogTabs';
+import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
 import { WelcomeBanner } from './WelcomeBanner';
 
 const useStyles = makeStyles(theme => ({
@@ -52,71 +46,77 @@ const useStyles = makeStyles(theme => ({
 
 const CatalogPageContents = () => {
   const styles = useStyles();
-  const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, matchingEntities } = useFilteredEntities();
+  const { isStarredEntity } = useStarredEntities();
+  const userId = useApi(identityApiRef).getUserId();
   const [selectedTab, setSelectedTab] = useState<string>();
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
 
-  const YellowStar = withStyles({
-    root: {
-      color: '#f3ba37',
-    },
-  })(Star);
+  const tabs = useMemo<LabeledComponentType[]>(
+    () => [
+      {
+        id: 'service',
+        label: 'Services',
+      },
+      {
+        id: 'website',
+        label: 'Websites',
+      },
+      {
+        id: 'library',
+        label: 'Libraries',
+      },
+      {
+        id: 'documentation',
+        label: 'Documentation',
+      },
+      {
+        id: 'other',
+        label: 'Other',
+      },
+    ],
+    [],
+  );
 
-  const actions = [
-    (rowData: Entity) => {
-      const location = findLocationForEntityMeta(rowData.metadata);
-      return {
-        icon: GitHub,
-        tooltip: 'View on GitHub',
-        onClick: () => {
-          if (!location) return;
-          window.open(location.target, '_blank');
-        },
-        hidden: location?.type !== 'github',
-      };
-    },
-    (rowData: Entity) => {
-      const createEditLink = (location: LocationSpec): string => {
-        switch (location.type) {
-          case 'github':
-            return location.target.replace('/blob/', '/edit/');
-          default:
-            return location.target;
-        }
-      };
-      const location = findLocationForEntityMeta(rowData.metadata);
-      return {
-        icon: Edit,
-        tooltip: 'Edit',
-        iconProps: { size: 'small' },
-        onClick: () => {
-          if (!location) return;
-          window.open(createEditLink(location), '_blank');
-        },
-        hidden: location?.type !== 'github',
-      };
-    },
-    (rowData: Entity) => {
-      const isStarred = isStarredEntity(rowData);
-      return {
-        icon: isStarred ? YellowStar : StarOutline,
-        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
-        onClick: () => toggleStarredEntity(rowData),
-      };
-    },
-  ];
-
-  const onTabChanged = useCallback((type: LabeledEntityType) => {
-    setSelectedTab(type.label);
-  }, []);
-  const onSidebarChanged = useCallback((filterItem: CatalogFilterItem) => {
-    setSelectedSidebarItem(filterItem.label);
-  }, []);
+  const filterGroups = useMemo<ButtonGroup[]>(
+    () => [
+      {
+        name: 'Personal',
+        items: [
+          {
+            id: 'owned',
+            label: 'Owned',
+            icon: SettingsIcon,
+            filterFn: entity => entity.spec?.owner === userId,
+          },
+          {
+            id: 'starred',
+            label: 'Starred',
+            icon: StarIcon,
+            filterFn: isStarredEntity,
+          },
+        ],
+      },
+      {
+        name: 'Company', // TODO: Replace with Company name, read from app config.
+        items: [
+          {
+            id: 'all',
+            label: 'All',
+            filterFn: () => true,
+          },
+        ],
+      },
+    ],
+    [isStarredEntity, userId],
+  );
 
   return (
     <CatalogLayout>
-      <CatalogTabs onChange={onTabChanged} />
+      <CatalogTabs
+        tabs={tabs}
+        onChange={({ label }) => setSelectedTab(label)}
+      />
       <Content>
         <WelcomeBanner />
         <ContentHeader title={selectedTab ?? ''}>
@@ -133,9 +133,9 @@ const CatalogPageContents = () => {
         <div className={styles.contentWrapper}>
           <div>
             <CatalogFilter
-              filterGroups={filterGroups}
-              onChange={onSidebarChanged}
-              initiallySelected={EntityGroup.OWNED}
+              buttonGroups={filterGroups}
+              onChange={({ label }) => setSelectedSidebarItem(label)}
+              initiallySelected="owned"
             />
           </div>
           <CatalogTable
@@ -143,7 +143,6 @@ const CatalogPageContents = () => {
             entities={matchingEntities}
             loading={loading}
             error={error}
-            actions={actions}
           />
         </div>
       </Content>
