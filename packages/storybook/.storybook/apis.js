@@ -13,6 +13,7 @@ import {
   ErrorAlerter,
   GoogleAuth,
   GithubAuth,
+  GitlabAuth,
   OktaAuth,
   identityApiRef,
 } from '@backstage/core';
