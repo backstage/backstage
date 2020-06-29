@@ -98,6 +98,7 @@ export class JobProcessor implements Processor {
         try {
           // Run the handler with the context created for the Job and some
           // Additional logging helpers.
+          stage.status = 'STARTED';
           const handlerResponse = await stage.handler({
             ...job.context,
             logger,
