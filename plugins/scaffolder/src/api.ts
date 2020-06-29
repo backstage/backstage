@@ -44,6 +44,9 @@ export class ScaffolderApi {
     const url = `${this.apiOrigin}${this.basePath}/jobs`;
     const { id: jobId } = await fetch(url, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ template, values }),
     }).then(x => x.json());
 

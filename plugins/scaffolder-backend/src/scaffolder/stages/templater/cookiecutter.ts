@@ -50,7 +50,7 @@ export class CookieCutter implements TemplaterBase {
     const resultDir = await fs.promises.mkdtemp(`${options.directory}-result`);
 
     await runDockerContainer({
-      imageName: 'spotify/backstage-cookiecutter',
+      imageName: 'backstage/cookiecutter',
       args: [
         'cookiecutter',
         '--no-input',
