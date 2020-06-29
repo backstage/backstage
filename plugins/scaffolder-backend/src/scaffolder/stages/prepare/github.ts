@@ -21,7 +21,7 @@ import { parseLocationAnnotation } from './helpers';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 import GitUriParser from 'git-url-parse';
-import { Clone, CheckoutOptions } from 'nodegit';
+import { Clone } from 'nodegit';
 
 export class GithubPreparer implements PreparerBase {
   async prepare(template: TemplateEntityV1alpha1): Promise<string> {
@@ -45,13 +45,7 @@ export class GithubPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const checkoutOptions = new CheckoutOptions();
-    if (template.spec.path) {
-      checkoutOptions.paths = [templateDirectory];
-    }
-
     await Clone.clone(repositoryCheckoutUrl, tempDir, {
-      checkoutOpts: checkoutOptions,
       // TODO(blam): Maybe need some auth here?
     });
 

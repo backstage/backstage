@@ -60,7 +60,7 @@ describe('GitHubPreparer', () => {
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
       expect.any(String),
-      { checkoutOpts: { paths: ['template'] } },
+      {},
     );
   });
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
@@ -71,7 +71,7 @@ describe('GitHubPreparer', () => {
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
       expect.any(String),
-      { checkoutOpts: {} },
+      {},
     );
   });
 
