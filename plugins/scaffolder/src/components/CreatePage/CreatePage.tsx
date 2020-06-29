@@ -59,9 +59,6 @@ export const CreatePage = () => {
   const [jobId, setJobId] = useState<string | null>(null);
   const handleClose = () => setJobId(null);
 
-  if (!template && isValidating) return <LinearProgress />;
-  if (!template || !template?.spec?.schema) return null;
-
   const handleCreate = async () => {
     const job = await scaffolderApi.scaffold(template, formState);
     setJobId(job);
@@ -71,7 +68,6 @@ export const CreatePage = () => {
     null,
   );
   const handleCreateComplete = async (job: Job) => {
-    console.log('DEBUG:', { job });
     const {
       entities: [createdEntity],
     } = await catalogApi.addLocation(
@@ -83,6 +79,10 @@ export const CreatePage = () => {
     );
     setEntity(createdEntity);
   };
+
+  if (!template && isValidating) return <LinearProgress />;
+  if (!template || !template?.spec?.schema) return null;
+
   return (
     <Page>
       <Header
