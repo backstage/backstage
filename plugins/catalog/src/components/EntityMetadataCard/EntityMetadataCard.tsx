@@ -17,13 +17,20 @@
 import { Entity } from '@backstage/catalog-model';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core';
 import React, { FC } from 'react';
+import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 
 type Props = {
   entity: Entity;
 };
 
+const InfoCardHeaderStyle = { display: 'inline-flex', alignItems: 'baseline' };
+
 export const EntityMetadataCard: FC<Props> = ({ entity }) => (
-  <InfoCard title="Information">
+  <InfoCard
+    title="Information"
+    headerProps={{ action: <FavouriteEntity entity={entity} /> }}
+    headerStyle={InfoCardHeaderStyle}
+  >
     <StructuredMetadataTable metadata={entity.metadata} />
   </InfoCard>
 );

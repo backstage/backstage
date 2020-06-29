@@ -24,17 +24,9 @@ import {
 } from '@backstage/core';
 import CatalogLayout from './CatalogLayout';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import {
-  Button,
-  Link,
-  makeStyles,
-  Typography,
-  withStyles,
-} from '@material-ui/core';
+import { Button, Link, makeStyles, Typography } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
-import Star from '@material-ui/icons/Star';
-import StarOutline from '@material-ui/icons/StarBorder';
 import React, { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
@@ -47,6 +39,7 @@ import {
   filterGroups,
   labeledEntityTypes,
 } from '../../data/filters';
+import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -76,12 +69,6 @@ export const CatalogPage: FC<{}> = () => {
   const filteredEntities = entitiesByFilter[selectedFilter ?? EntityGroup.ALL];
 
   const styles = useStyles();
-
-  const YellowStar = withStyles({
-    root: {
-      color: '#f3ba37',
-    },
-  })(Star);
 
   const actions = [
     (rowData: Entity) => {
@@ -119,14 +106,7 @@ export const CatalogPage: FC<{}> = () => {
         hidden: location?.type !== 'github',
       };
     },
-    (rowData: Entity) => {
-      const isStarred = isStarredEntity(rowData);
-      return {
-        icon: isStarred ? YellowStar : StarOutline,
-        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
-        onClick: () => toggleStarredEntity(rowData),
-      };
-    },
+    (rowData: Entity) => <FavouriteEntity entity={rowData} />,
   ];
 
   return (
