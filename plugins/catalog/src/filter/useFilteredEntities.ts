@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import { ApiTestRegistry } from '@backstage/core-api';
-import { MockErrorApi, MockStorageApi } from './apis';
+import { useContext } from 'react';
+import { filterGroupsContext } from './context';
 
-export function createMockApiRegistry(): ApiTestRegistry {
-  const registry = new ApiTestRegistry();
+/**
+ * Hook that exposes the result of applying a set of filter groups.
+ */
+export function useFilteredEntities() {
+  const context = useContext(filterGroupsContext);
+  if (!context) {
+    throw new Error(`Must be used inside an EntityFilterGroupsProvider`);
+  }
 
-  registry.register(MockErrorApi.factory);
-  registry.register(MockStorageApi.factory);
-
-  return registry;
+  return {
+    loading: context.loading,
+    error: context.error,
+    matchingEntities: context.matchingEntities,
+  };
 }

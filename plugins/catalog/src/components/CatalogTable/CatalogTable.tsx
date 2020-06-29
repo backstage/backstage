@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Entity } from '@backstage/catalog-model';
-import { Table, TableColumn } from '@backstage/core';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Table, TableColumn, TableProps } from '@backstage/core';
 import { Link } from '@material-ui/core';
+import Edit from '@material-ui/icons/Edit';
+import GitHub from '@material-ui/icons/GitHub';
+import Star from '@material-ui/icons/Star';
+import StarOutline from '@material-ui/icons/StarBorder';
 import { Alert } from '@material-ui/lab';
-import React, { FC } from 'react';
+import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
+import { findLocationForEntityMeta } from '../../data/utils';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
 import { entityRoute } from '../../routes';
 
-const columns: TableColumn[] = [
+const columns: TableColumn<Entity>[] = [
   {
     title: 'Name',
     field: 'metadata.name',
@@ -63,16 +68,16 @@ type CatalogTableProps = {
   titlePreamble: string;
   loading: boolean;
   error?: any;
-  actions?: any;
 };
 
-export const CatalogTable: FC<CatalogTableProps> = ({
+export const CatalogTable = ({
   entities,
   loading,
   error,
   titlePreamble,
-  actions,
-}) => {
+}: CatalogTableProps) => {
+  const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
+
   if (error) {
     return (
       <div>
@@ -83,8 +88,57 @@ export const CatalogTable: FC<CatalogTableProps> = ({
     );
   }
 
+  const actions: TableProps<Entity>['actions'] = [
+    (rowData: Entity) => {
+      const location = findLocationForEntityMeta(rowData.metadata);
+      return {
+        icon: () => <GitHub fontSize="small" />,
+        tooltip: 'View on GitHub',
+        onClick: () => {
+          if (!location) return;
+          window.open(location.target, '_blank');
+        },
+        hidden: location?.type !== 'github',
+      };
+    },
+    (rowData: Entity) => {
+      const createEditLink = (location: LocationSpec): string => {
+        switch (location.type) {
+          case 'github':
+            return location.target.replace('/blob/', '/edit/');
+          default:
+            return location.target;
+        }
+      };
+      const location = findLocationForEntityMeta(rowData.metadata);
+      return {
+        icon: () => <Edit fontSize="small" />,
+        tooltip: 'Edit',
+        onClick: () => {
+          if (!location) return;
+          window.open(createEditLink(location), '_blank');
+        },
+        hidden: location?.type !== 'github',
+      };
+    },
+    (rowData: Entity) => {
+      const isStarred = isStarredEntity(rowData);
+      return {
+        cellStyle: { paddingLeft: '1em' },
+        icon: () =>
+          isStarred ? (
+            <Star htmlColor="#f3ba37" fontSize="small" />
+          ) : (
+            <StarOutline fontSize="small" />
+          ),
+        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
+        onClick: () => toggleStarredEntity(rowData),
+      };
+    },
+  ];
+
   return (
-    <Table
+    <Table<Entity>
       isLoading={loading}
       columns={columns}
       options={{

@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-import { ApiTestRegistry } from '@backstage/core-api';
-import { MockErrorApi, MockStorageApi } from './apis';
+export * from './addBaseUrl';
+export * from './rewriteDocLinks';
+export * from './addEventListener';
 
-export function createMockApiRegistry(): ApiTestRegistry {
-  const registry = new ApiTestRegistry();
+export type Transformer = (dom: Element) => Element;
 
-  registry.register(MockErrorApi.factory);
-  registry.register(MockStorageApi.factory);
+function transform(
+  html: string | Element,
+  transformers: Transformer[],
+): Element {
+  let dom: Element;
 
-  return registry;
+  if (typeof html === 'string') {
+    dom = new DOMParser().parseFromString(html, 'text/html').documentElement;
+  } else if (html instanceof Element) {
+    dom = html;
+  } else {
+    throw new Error('dom is not a recognized type');
+  }
+
+  transformers.forEach(transformer => transformer(dom));
+
+  return dom;
 }
+
+export default transform;

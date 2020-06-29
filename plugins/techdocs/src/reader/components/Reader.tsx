@@ -17,6 +17,15 @@
 import React from 'react';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
+import transformer, {
+  addBaseUrl,
+  rewriteDocLinks,
+  addEventListener,
+} from '../transformers';
+import { docStorageURL } from '../../config';
+import { Link } from '@backstage/core';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import URLParser from '../urlParser';
 
 const useFetch = (url: string) => {
   const state = useAsync(async () => {
@@ -28,54 +37,62 @@ const useFetch = (url: string) => {
   return state;
 };
 
-const addBaseUrl = (htmlString: string, baseUrl: string): string => {
-  const domParser = new DOMParser().parseFromString(htmlString, 'text/html');
+const useEnforcedTrailingSlash = (): void => {
+  React.useEffect(() => {
+    const actualUrl = window.location.href;
+    const expectedUrl = new URLParser(window.location.href, '.').parse();
 
-  const updateDom = <T extends Element>(
-    list: Array<T>,
-    attributeName: string,
-  ): void => {
-    Array.from(list).forEach((elem: T) => {
-      const newUrl = new URL(
-        elem.getAttribute(attributeName)!,
-        baseUrl,
-      ).toString();
-      elem.setAttribute(attributeName, newUrl);
-    });
-  };
-
-  updateDom<HTMLImageElement>(Array.from(domParser.images), 'src');
-  updateDom<HTMLAnchorElement | HTMLAreaElement>(
-    Array.from(domParser.links),
-    'href',
-  );
-  updateDom<HTMLLinkElement>(
-    Array.from(domParser.querySelectorAll('link')),
-    'href',
-  );
-
-  return domParser.body.parentElement?.outerHTML || htmlString;
+    if (actualUrl !== expectedUrl) {
+      window.history.replaceState({}, document.title, expectedUrl);
+    }
+  }, []);
 };
 
 export const Reader = () => {
+  const location = useLocation();
+  const { componentId, '*': path } = useParams();
   const shadowDomRef = useShadowDom();
-  const state = useFetch(
-    'https://techdocs-mock-sites.storage.googleapis.com/mkdocs/index.html',
-  );
+  const navigate = useNavigate();
+  const normalizedUrl = new URLParser(
+    `${docStorageURL}${location.pathname.replace('/docs', '')}`,
+    '.',
+  ).parse();
+  const state = useFetch(`${normalizedUrl}index.html`);
+
+  useEnforcedTrailingSlash();
 
   React.useEffect(() => {
     const divElement = shadowDomRef.current;
     if (divElement?.shadowRoot && state.value) {
-      divElement.shadowRoot.innerHTML = addBaseUrl(
-        state.value,
-        'https://techdocs-mock-sites.storage.googleapis.com/mkdocs/',
-      );
+      const transformedElement = transformer(state.value, [
+        addBaseUrl({
+          docStorageURL,
+          componentId,
+          path,
+        }),
+        rewriteDocLinks({
+          componentId,
+        }),
+      ]);
+
+      divElement.shadowRoot.innerHTML = '';
+      if (transformedElement) {
+        divElement.shadowRoot.appendChild(transformedElement);
+        transformer(divElement.shadowRoot.children[0], [
+          addEventListener({
+            onClick: navigate,
+          }),
+        ]);
+      }
     }
-  }, [shadowDomRef, state]);
+  }, [shadowDomRef, state, componentId, path, navigate]);
 
   return (
     <>
-      <h3>Shadow DOM should be underneath</h3>
+      <nav>
+        <Link to="/docs/mkdocs/">mkdocs</Link>
+        <Link to="/docs/backstage-microsite/">Backstage docs</Link>
+      </nav>
       <div ref={shadowDomRef} />
     </>
   );

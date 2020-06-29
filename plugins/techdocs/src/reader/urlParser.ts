@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { ApiTestRegistry } from '@backstage/core-api';
-import { MockErrorApi, MockStorageApi } from './apis';
+const normalizeBaseURL = (baseURL: string): string => {
+  const url = new URL(baseURL);
+  url.pathname = url.pathname.replace(/([^/])$/, '$1/');
+  return url.toString();
+};
 
-export function createMockApiRegistry(): ApiTestRegistry {
-  const registry = new ApiTestRegistry();
+export default class URLParser {
+  constructor(public baseURL: string, public pathname: string) {
+    this.baseURL = normalizeBaseURL(baseURL);
+  }
 
-  registry.register(MockErrorApi.factory);
-  registry.register(MockStorageApi.factory);
-
-  return registry;
+  parse(): string {
+    return new URL(this.pathname, this.baseURL).toString();
+  }
 }

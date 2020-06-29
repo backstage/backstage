@@ -13,15 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ApiTestRegistry } from '@backstage/core-api';
-import { MockErrorApi, MockStorageApi } from './apis';
-
-export function createMockApiRegistry(): ApiTestRegistry {
-  const registry = new ApiTestRegistry();
-
-  registry.register(MockErrorApi.factory);
-  registry.register(MockStorageApi.factory);
-
-  return registry;
-}
+export const docStorageURL =
+  'https://techdocs-mock-sites.storage.googleapis.com';

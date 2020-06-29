@@ -15,3 +15,4 @@
  */
 
 export * from './ErrorApi';
+export * from './StorageApi';
