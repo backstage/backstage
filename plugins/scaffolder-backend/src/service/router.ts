@@ -17,13 +17,19 @@
 import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
-import { PreparerBuilder, TemplaterBase, JobProcessor } from '../scaffolder';
+import {
+  PreparerBuilder,
+  TemplaterBase,
+  JobProcessor,
+  RequiredTemplateValues,
+} from '../scaffolder';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
 import {} from '@backstage/backend-common';
 import { StageContext } from '../scaffolder/jobs/types';
 import { Octokit } from '@octokit/rest';
 import { GithubStorer } from '../scaffolder/stages/store/github';
+import { JsonValue } from '@backstage/config';
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templater: TemplaterBase;
@@ -51,7 +57,9 @@ export async function createRouter(
         return;
       }
 
-      res.send(job.stages[Number(params.index)].log.join(''));
+      const { log } = job.stages[Number(params.index)] ?? { log: [] };
+
+      res.send(log.join(''));
     })
     .get('/v1/job/:jobId', ({ params }, res) => {
       const job = jobProcessor.get(params.jobId);
@@ -76,41 +84,14 @@ export async function createRouter(
         error: job.error,
       });
     })
-    .post('/v1/jobs', async (_, res) => {
-      // TODO(blam): Create a unique job here and return the ID so that
-      // The end user can poll for updates on the current job
-
-      // TODO(blam): Take this entity from the post body sent from the frontend
-      const mockEntity: TemplateEntityV1alpha1 = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Template',
-        metadata: {
-          annotations: {
-            'backstage.io/managed-by-location':
-              'file:/Users/blam/dev/spotify/backstage/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml',
-          },
-          name: 'graphql-starter',
-          title: 'GraphQL Service',
-          description:
-            'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
-          uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
-          etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
-
-          generation: 1,
-        },
-        spec: {
-          type: 'cookiecutter',
-          path: '.',
-        },
-      };
+    .post('/v1/jobs', async (req, res) => {
+      const template: TemplateEntityV1alpha1 = req.body.template;
+      const values: RequiredTemplateValues & Record<string, JsonValue> =
+        req.body.values;
 
       const job = jobProcessor.create({
-        entity: mockEntity,
-        values: {
-          component_id: `blob${Date.now()}`,
-          org: 'hojden',
-          description: 'test',
-        },
+        entity: template,
+        values,
         stages: [
           {
             name: 'Prepare the skeleton',

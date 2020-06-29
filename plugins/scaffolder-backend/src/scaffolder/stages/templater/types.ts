@@ -19,7 +19,8 @@ import Docker from 'dockerode';
 import { JsonValue } from '@backstage/config';
 
 export type RequiredTemplateValues = {
-  component_id: string;
+  owner: string;
+  storePath: string;
 };
 
 export type TemplaterRunOptions = {

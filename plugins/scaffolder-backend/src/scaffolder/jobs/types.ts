@@ -31,7 +31,7 @@ export type StageContext<T = {}> = {
 
 export type ProcessorStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
 
-export interface Stage extends StageInput {
+export interface StageResult extends StageInput {
   log: string[];
   status: ProcessorStatus;
   startedAt?: number;
@@ -47,7 +47,7 @@ export type Job = {
   id: string;
   context: StageContext;
   status: ProcessorStatus;
-  stages: Stage[];
+  stages: StageResult[];
   error?: Error;
 };
 
