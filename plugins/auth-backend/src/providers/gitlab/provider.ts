@@ -42,7 +42,6 @@ import passport from 'passport';
 
 export class GitlabAuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: GitlabStrategy;
-  private static _defaultExpiresInSeconds = 2 * 3600;
 
   static transformPassportProfile(rawProfile: any): passport.Profile {
     const profile: passport.Profile = {
@@ -51,12 +50,14 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
       provider: rawProfile.provider,
       displayName: rawProfile.displayName,
     };
+
     if (rawProfile.emails && rawProfile.emails.length > 0) {
       profile.emails = rawProfile.emails;
     }
     if (rawProfile.avatarUrl) {
       profile.photos = [{ value: rawProfile.avatarUrl }];
     }
+
     return profile;
   }
 
@@ -68,14 +69,23 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
     const passportProfile = GitlabAuthProvider.transformPassportProfile(
       rawProfile,
     );
+
     const profile = makeProfileInfo(passportProfile, params.id_token);
+    const providerInfo = {
+      accessToken,
+      scope: params.scope,
+      expiresInSeconds: params.expires_in,
+      idToken: params.id_token,
+    };
+
+    if (params.expires_in) {
+      providerInfo.expiresInSeconds = params.expires_in;
+    }
+    if (params.id_token) {
+      providerInfo.idToken = params.id_token;
+    }
     return {
-      providerInfo: {
-        accessToken,
-        scope: params.scope,
-        expiresInSeconds:
-          params.expires_in || GitlabAuthProvider._defaultExpiresInSeconds,
-      },
+      providerInfo,
       profile,
     };
   }
