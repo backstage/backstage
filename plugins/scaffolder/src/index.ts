@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { plugin, rootRoute } from './plugin';
+export { plugin } from './plugin';
+export { rootRoute, createTemplateRoute } from './routes';

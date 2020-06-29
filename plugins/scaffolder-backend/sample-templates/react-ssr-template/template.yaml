@@ -11,3 +11,8 @@ spec:
   processor: cookiecutter
   type: website
   path: '.'
+  parameters:
+    component_name:
+      title: Component name
+      type: string
+      description: Name of the component
