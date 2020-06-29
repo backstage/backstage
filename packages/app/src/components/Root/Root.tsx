@@ -22,6 +22,7 @@ import ExploreIcon from '@material-ui/icons/Explore';
 import BuildIcon from '@material-ui/icons/BuildRounded';
 import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
 import MapIcon from '@material-ui/icons/MyLocation';
+import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
@@ -89,6 +90,7 @@ const Root: FC<{}> = ({ children }) => (
       {/* Global nav, not org-specific */}
       <SidebarItem icon={HomeIcon} to="./" text="Home" />
       <SidebarItem icon={ExploreIcon} to="explore" text="Explore" />
+      <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
       <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
       {/* End global nav */}
       <SidebarDivider />
