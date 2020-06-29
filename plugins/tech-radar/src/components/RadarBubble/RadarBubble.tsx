@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { FC, useRef, useLayoutEffect } from 'react';
+import React, { useRef, useLayoutEffect } from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 
-type Props = {
+export type Props = {
   visible: boolean;
   text: string;
   x: number;
@@ -46,7 +46,7 @@ const useStyles = makeStyles<Theme>(() => ({
   },
 }));
 
-const RadarBubble: FC<Props> = props => {
+const RadarBubble = (props: Props): JSX.Element => {
   const classes = useStyles(props);
   const { visible, text } = props;
 
@@ -98,6 +98,7 @@ const RadarBubble: FC<Props> = props => {
       x={0}
       y={0}
       className={visible ? classes.visibleBubble : classes.bubble}
+      data-testid="radar-bubble"
     >
       <rect ref={rectElem} rx={4} ry={4} className={classes.background} />
       <text ref={textElem} className={classes.text}>

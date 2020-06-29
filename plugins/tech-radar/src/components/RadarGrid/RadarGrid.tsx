@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
-import { Ring } from '../../utils/types';
+import type { Ring } from '../../utils/types';
 
-type Props = {
+export type Props = {
   radius: number;
   rings: Ring[];
 };
@@ -49,7 +49,7 @@ const RadarGrid = (props: Props) => {
   const { radius, rings } = props;
   const classes = useStyles(props);
 
-  const makeRingNode = (ringRadius: number | undefined, ringIndex: number) => [
+  const makeRingNode = (ringIndex: number, ringRadius?: number) => [
     <circle
       key={`c${ringIndex}`}
       cx={0}
@@ -76,6 +76,7 @@ const RadarGrid = (props: Props) => {
       x2={0}
       y2={radius}
       className={classes.axis}
+      data-testid="radar-grid-x-line"
     />,
     // Y axis
     <line
@@ -85,10 +86,13 @@ const RadarGrid = (props: Props) => {
       x2={radius}
       y2={0}
       className={classes.axis}
+      data-testid="radar-grid-y-line"
     />,
   ];
 
-  const ringNodes = rings.map(r => r.outerRadius).map(makeRingNode);
+  const ringNodes = rings
+    .map(r => r.outerRadius)
+    .map((ringRadius, ringIndex) => makeRingNode(ringIndex, ringRadius));
 
   return <>{axisNodes.concat(...ringNodes)}</>;
 };

@@ -13,23 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { ItemCard } from '.';
-import { Grid } from '@material-ui/core';
-
-export default {
-  title: 'Item Card',
-  component: ItemCard,
-};
-
-const Wrapper: FC<{}> = ({ children }) => (
-  <Grid container spacing={4}>
-    <Grid item>{children}</Grid>
-  </Grid>
-);
-
-export const Default = () => (
-  <Wrapper>
-    <ItemCard description="Test" title="Item Card" label="Button" />
-  </Wrapper>
-);
+export * from './processor';
+export * from './types';

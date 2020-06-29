@@ -13,7 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './stages/templater';
-export * from './stages/templater/cookiecutter';
-export * from './stages/prepare';
-export * from './jobs';
+import React from 'react';
+
+type WithLinkProps = {
+  url?: string;
+  className: string;
+  children: React.ReactNode;
+};
+
+export const WithLink = ({
+  url,
+  className,
+  children,
+}: WithLinkProps): JSX.Element =>
+  url ? (
+    <a href={url} className={className}>
+      {children}
+    </a>
+  ) : (
+    <>{children}</>
+  );
