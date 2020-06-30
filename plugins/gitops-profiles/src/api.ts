@@ -79,6 +79,14 @@ export interface ListClusterRequest {
   gitHubToken: string;
 }
 
+export interface GithubUserInfoRequest {
+  accessToken: string;
+}
+
+export interface GithubUserInfoResponse {
+  login: string;
+}
+
 export class FetchError extends Error {
   get name(): string {
     return this.constructor.name;
@@ -100,6 +108,7 @@ export type GitOpsApi = {
   cloneClusterFromTemplate(req: CloneFromTemplateRequest): Promise<any>;
   applyProfiles(req: ApplyProfileRequest): Promise<any>;
   listClusters(req: ListClusterRequest): Promise<ListClusterStatusesResponse>;
+  fetchUserInfo(req: GithubUserInfoRequest): Promise<GithubUserInfoResponse>;
 };
 
 export const gitOpsApiRef = createApiRef<GitOpsApi>({
@@ -112,6 +121,19 @@ export class GitOpsRestApi implements GitOpsApi {
 
   private async fetch<T = any>(path: string, init?: RequestInit): Promise<T> {
     const resp = await fetch(`${this.url}${path}`, init);
+    if (!resp.ok) throw await FetchError.forResponse(resp);
+    return await resp.json();
+  }
+
+  async fetchUserInfo(
+    req: GithubUserInfoRequest,
+  ): Promise<GithubUserInfoResponse> {
+    const resp = await fetch(`https://api.github.com/user`, {
+      method: 'get',
+      headers: new Headers({
+        Authorization: `token ${req.accessToken}`,
+      }),
+    });
     if (!resp.ok) throw await FetchError.forResponse(resp);
     return await resp.json();
   }

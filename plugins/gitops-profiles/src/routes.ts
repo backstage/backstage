@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
-export { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
-export { StaticAuthSessionManager } from './StaticAuthSessionManager';
-export { AuthSessionStore } from './AuthSessionStore';
-export * from './types';
+import { createRouteRef } from '@backstage/core';
+
+const NoIcon = () => null;
+
+export const gitOpsClusterListRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/gitops-clusters',
+  title: 'GitOps Clusters',
+});
+
+export const gitOpsClusterDetailsRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/gitops-cluster/:owner/:repo',
+  title: 'GitOps Cluster details',
+});
+
+export const gitOpsClusterCreateRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/gitops-cluster-create',
+  title: 'GitOps Cluster create',
+});
