@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { ItemCard } from '.';
 import { Grid } from '@material-ui/core';
 
@@ -22,32 +22,46 @@ export default {
   component: ItemCard,
 };
 
-const Wrapper: FC<{}> = ({ children }) => (
+export const Default = () => (
   <Grid container spacing={4}>
     <Grid item xs={6} sm={4} md={2}>
-      {children}
+      <ItemCard
+        title="Item Card"
+        description="This is the description of an Item Card"
+        label="Button"
+        type="Pretitle"
+        onClick={() => {}}
+      />
+    </Grid>
+    <Grid item xs={6} sm={4} md={2}>
+      <ItemCard
+        title="Item Card"
+        description="This is the description of an Item Card"
+        label="Button"
+        type="Pretitle"
+        onClick={() => {}}
+      />
     </Grid>
   </Grid>
 );
 
-export const Default = () => (
-  <Wrapper>
-    <ItemCard
-      title="Item Card"
-      description="This is the description of an Item Card"
-      label="Button"
-      type="Pretitle"
-    />
-  </Wrapper>
-);
-
 export const Tags = () => (
-  <Wrapper>
-    <ItemCard
-      title="Item Card"
-      description="This is a Item Card"
-      tags={['one tag', 'two tag']}
-      label="Button"
-    />
-  </Wrapper>
+  <Grid container spacing={4}>
+    <Grid item xs={6} sm={4} md={2}>
+      <ItemCard
+        title="Item Card"
+        description="This is a Item Card"
+        tags={['one tag', 'two tag']}
+        label="Button"
+      />
+    </Grid>
+    <Grid item xs={6} sm={4} md={2}>
+      <ItemCard
+        title="Item Card"
+        description="This is a Item Card"
+        tags={['one tag', 'two tag']}
+        label="Button"
+      />
+    </Grid>
+  </Grid>
 );
