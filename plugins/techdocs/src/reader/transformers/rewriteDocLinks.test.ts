@@ -18,7 +18,7 @@ import { createTestShadowDom, getSample } from '../../test-utils';
 import { rewriteDocLinks } from '../transformers';
 
 describe('rewriteDocLinks', () => {
-  it('contains relative paths', () => {
+  it('should not do anything', () => {
     const shadowDom = createTestShadowDom(`
         <a href="http://example.org/">Test</a>
         <a href="../example">Test</a>
@@ -34,7 +34,7 @@ describe('rewriteDocLinks', () => {
     ]);
   });
 
-  it('contains transformed absolute paths', () => {
+  it('should transform a href with licalhost as baseUrl', () => {
     const shadowDom = createTestShadowDom(
       `
         <a href="http://example.org/">Test</a>
