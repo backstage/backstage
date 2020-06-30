@@ -64,7 +64,7 @@ const SentryIssuesTable: FC<SentryIssuesTableProps> = ({ sentryIssues }) => {
   return (
     <Table
       columns={columns}
-      options={{ paging: true, search: false, pageSize: 5 }}
+      options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
       title="Sentry issues"
       data={sentryIssues}
     />
