@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backstage-backend
-  labes:
+  labels:
     app: backstage
     component: backend
 spec:
