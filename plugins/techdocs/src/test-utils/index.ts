@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// @ts-ignore
-import { JSDOM } from 'jsdom';
-
 import FIXTURE_STANDARD_PAGE from './fixtures/mkdocs-index';
 import transformer from '../reader/transformers';
 import type { Transformer } from '../reader/transformers';
