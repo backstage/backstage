@@ -75,9 +75,7 @@ export const Reader = () => {
           componentId,
           path,
         }),
-        rewriteDocLinks({
-          componentId,
-        }),
+        rewriteDocLinks(),
         modifyCss({
           cssTransforms: {
             '.md-main__inner': [{ 'margin-top': '0' }],
