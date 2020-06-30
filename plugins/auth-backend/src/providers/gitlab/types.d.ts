@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export * from './google';
-export * from './github';
-export * from './gitlab';
-export * from './okta';
+declare module 'passport-gitlab2' {
+  import { Request } from 'express';
+  import { StrategyCreated } from 'passport';
+
+  export class Strategy {
+    constructor(options: any, verify: any);
+    authenticate(this: StrategyCreated<this>, req: Request, options?: any): any;
+  }
+}

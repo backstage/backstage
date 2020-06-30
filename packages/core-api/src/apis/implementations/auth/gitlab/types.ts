@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export * from './google';
-export * from './github';
-export * from './gitlab';
-export * from './okta';
+import { ProfileInfo, BackstageIdentity } from '../../../definitions';
+
+export type GitlabSession = {
+  providerInfo: {
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
+};

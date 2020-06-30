@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export * from './google';
-export * from './github';
-export * from './gitlab';
-export * from './okta';
+export { createGitlabProvider } from './provider';

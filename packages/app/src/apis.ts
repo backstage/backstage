@@ -27,11 +27,13 @@ import {
   GoogleAuth,
   GithubAuth,
   OktaAuth,
+  GitlabAuth,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
   githubAuthApiRef,
   oktaAuthApiRef,
+  gitlabAuthApiRef,
   storageApiRef,
   WebStorage,
 } from '@backstage/core';
@@ -99,6 +101,15 @@ export const apis = (config: ConfigApi) => {
     oktaAuthApiRef,
     OktaAuth.create({
       apiOrigin: backendUrl,
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+  );
+
+  builder.add(
+    gitlabAuthApiRef,
+    GitlabAuth.create({
+      apiOrigin: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
     }),

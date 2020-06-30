@@ -39,6 +39,7 @@
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-github2": "^0.1.12",
+    "passport-gitlab2": "^5.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-oauth2": "^1.5.0",
     "passport-okta-oauth": "^0.0.1",
