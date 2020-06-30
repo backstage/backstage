@@ -18,7 +18,7 @@ import React, { ComponentProps } from 'react';
 import { IconButton, Tooltip, withStyles, SvgIcon } from '@material-ui/core';
 import StarBorder from '@material-ui/icons/StarBorder';
 import Star from '@material-ui/icons/Star';
-import { useEntities } from '../../hooks/useEntities';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
 import { Entity } from '@backstage/catalog-model';
 
 type Props = ComponentProps<typeof IconButton> & { entity: Entity };
@@ -40,7 +40,7 @@ export const favouriteEntityIcon = (isStarred: boolean) =>
  * @param props MaterialUI IconButton props extended by required `entity` prop
  */
 export const FavouriteEntity: React.FC<Props> = props => {
-  const { toggleStarredEntity, isStarredEntity } = useEntities();
+  const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
   const isStarred = isStarredEntity(props.entity);
   return (
     <IconButton
