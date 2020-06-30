@@ -34,7 +34,7 @@ describe('rewriteDocLinks', () => {
     ]);
   });
 
-  it('should transform a href with licalhost as baseUrl', () => {
+  it('should transform a href with localhost as baseUrl', () => {
     const shadowDom = createTestShadowDom(
       `
         <a href="http://example.org/">Test</a>

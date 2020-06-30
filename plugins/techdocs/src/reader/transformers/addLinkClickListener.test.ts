@@ -15,14 +15,14 @@
  */
 
 import { createTestShadowDom, FIXTURES } from '../../test-utils';
-import { addEventListener } from '../transformers';
+import { addLinkClickListener } from '.';
 
-describe('addEventListener', () => {
+describe('addLinkClickListener', () => {
   it('calls onClick when a link has been clicked', () => {
     const fn = jest.fn();
     const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
       transformers: [
-        addEventListener({
+        addLinkClickListener({
           onClick: fn,
         }),
       ],

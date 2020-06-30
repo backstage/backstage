@@ -25,7 +25,7 @@ import { Header, Content, ItemCard } from '@backstage/core';
 import transformer, {
   addBaseUrl,
   rewriteDocLinks,
-  addEventListener,
+  addLinkClickListener,
   removeMkdocsHeader,
   modifyCss,
 } from '../transformers';
@@ -92,8 +92,15 @@ export const Reader = () => {
       if (transformedElement) {
         divElement.shadowRoot.appendChild(transformedElement);
         transformer(divElement.shadowRoot.children[0], [
-          addEventListener({
-            onClick: navigate,
+          addLinkClickListener({
+            onClick: url => {
+              const parsedUrl = new URL(url);
+              navigate(parsedUrl.pathname);
+
+              divElement.shadowRoot
+                ?.querySelector(parsedUrl.hash)
+                ?.scrollIntoView();
+            },
           }),
         ]);
       }
