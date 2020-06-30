@@ -118,8 +118,11 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
         verticalAlign: 'middle',
         lineHeight: '1',
         margin: 0,
-        padding: '8px',
+        padding: theme.spacing(3, 2, 3, 2.5),
         borderBottom: 0,
+      },
+      sizeSmall: {
+        padding: theme.spacing(1, 2, 1, 2.5),
       },
       head: {
         wordBreak: 'break-word',

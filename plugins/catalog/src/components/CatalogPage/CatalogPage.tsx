@@ -14,35 +14,26 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
-  DismissableBanner,
-  HeaderTabs,
+  identityApiRef,
   SupportButton,
+  useApi,
 } from '@backstage/core';
-import CatalogLayout from './CatalogLayout';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
-import { Button, Link, makeStyles, Typography } from '@material-ui/core';
-import Edit from '@material-ui/icons/Edit';
-import GitHub from '@material-ui/icons/GitHub';
-import React, { FC } from 'react';
+import { Button, makeStyles } from '@material-ui/core';
+import SettingsIcon from '@material-ui/icons/Settings';
+import StarIcon from '@material-ui/icons/Star';
+import React, { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { CatalogFilter } from '../CatalogFilter/CatalogFilter';
+import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
+import { CatalogFilter, ButtonGroup } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
-import { useEntities } from '../../hooks/useEntities';
-import { findLocationForEntityMeta } from '../../data/utils';
-import {
-  getCatalogFilterItemByType,
-  EntityGroup,
-  filterGroups,
-  labeledEntityTypes,
-} from '../../data/filters';
-import {
-  favouriteEntityIcon,
-  favouriteEntityTooltip,
-} from '../FavouriteEntity/FavouriteEntity';
+import CatalogLayout from './CatalogLayout';
+import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
+import { WelcomeBanner } from './WelcomeBanner';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -51,132 +42,116 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
   },
-  emoji: {
-    fontSize: '125%',
-    marginRight: theme.spacing(2),
-  },
 }));
 
-export const CatalogPage: FC<{}> = () => {
-  const {
-    entitiesByFilter,
-    error,
-    loading,
-    selectedFilter,
-    setSelectedFilter,
-    toggleStarredEntity,
-    isStarredEntity,
-    selectTypeFilter,
-  } = useEntities();
-
-  const filteredEntities = entitiesByFilter[selectedFilter ?? EntityGroup.ALL];
-
+const CatalogPageContents = () => {
   const styles = useStyles();
+  const { loading, error, matchingEntities } = useFilteredEntities();
+  const { isStarredEntity } = useStarredEntities();
+  const userId = useApi(identityApiRef).getUserId();
+  const [selectedTab, setSelectedTab] = useState<string>();
+  const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
 
-  const actions = [
-    (rowData: Entity) => {
-      const location = findLocationForEntityMeta(rowData.metadata);
-      return {
-        icon: GitHub,
-        tooltip: 'View on GitHub',
-        onClick: () => {
-          if (!location) return;
-          window.open(location.target, '_blank');
-        },
-        hidden: location?.type !== 'github',
-      };
-    },
-    (rowData: Entity) => {
-      const createEditLink = (location: LocationSpec): string => {
-        switch (location.type) {
-          case 'github':
-            return location.target.replace('/blob/', '/edit/');
-          default:
-            return location.target;
-        }
-      };
+  const tabs = useMemo<LabeledComponentType[]>(
+    () => [
+      {
+        id: 'service',
+        label: 'Services',
+      },
+      {
+        id: 'website',
+        label: 'Websites',
+      },
+      {
+        id: 'library',
+        label: 'Libraries',
+      },
+      {
+        id: 'documentation',
+        label: 'Documentation',
+      },
+      {
+        id: 'other',
+        label: 'Other',
+      },
+    ],
+    [],
+  );
 
-      const location = findLocationForEntityMeta(rowData.metadata);
-
-      return {
-        icon: Edit,
-        tooltip: 'Edit',
-        iconProps: { size: 'small' },
-        onClick: () => {
-          if (!location) return;
-          window.open(createEditLink(location), '_blank');
-        },
-        hidden: location?.type !== 'github',
-      };
-    },
-    (rowData: Entity) => {
-      const isStarred = isStarredEntity(rowData);
-      return {
-        icon: favouriteEntityIcon(isStarred),
-        tooltip: favouriteEntityTooltip(isStarred),
-        onClick: () => toggleStarredEntity(rowData),
-      };
-    },
-  ];
+  const filterGroups = useMemo<ButtonGroup[]>(
+    () => [
+      {
+        name: 'Personal',
+        items: [
+          {
+            id: 'owned',
+            label: 'Owned',
+            icon: SettingsIcon,
+            filterFn: entity => entity.spec?.owner === userId,
+          },
+          {
+            id: 'starred',
+            label: 'Starred',
+            icon: StarIcon,
+            filterFn: isStarredEntity,
+          },
+        ],
+      },
+      {
+        name: 'Company', // TODO: Replace with Company name, read from app config.
+        items: [
+          {
+            id: 'all',
+            label: 'All',
+            filterFn: () => true,
+          },
+        ],
+      },
+    ],
+    [isStarredEntity, userId],
+  );
 
   return (
     <CatalogLayout>
-      <HeaderTabs
-        tabs={labeledEntityTypes}
-        onChange={(index: Number) => {
-          selectTypeFilter(labeledEntityTypes[index as number].id);
-        }}
+      <CatalogTabs
+        tabs={tabs}
+        onChange={({ label }) => setSelectedTab(label)}
       />
       <Content>
-        <DismissableBanner
-          variant="info"
-          message={
-            <Typography>
-              <span role="img" aria-label="wave" className={styles.emoji}>
-                👋🏼
-              </span>
-              Welcome to Backstage, we are happy to have you. Start by checking
-              out our{' '}
-              <Link href="/welcome" color="textSecondary">
-                getting started
-              </Link>{' '}
-              page.
-            </Typography>
-          }
-          id="catalog_page_welcome_banner"
-        />
-        <ContentHeader title="Services">
+        <WelcomeBanner />
+        <ContentHeader title={selectedTab ?? ''}>
           <Button
             component={RouterLink}
             variant="contained"
             color="primary"
             to={scaffolderRootRoute.path}
           >
-            Create Service
+            Create Component
           </Button>
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>
           <div>
             <CatalogFilter
-              groups={filterGroups}
-              selectedFilter={selectedFilter ?? EntityGroup.ALL}
-              onFilterChange={setSelectedFilter}
-              entitiesByFilter={entitiesByFilter}
+              buttonGroups={filterGroups}
+              onChange={({ label }) => setSelectedSidebarItem(label)}
+              initiallySelected="owned"
             />
           </div>
           <CatalogTable
-            titlePreamble={
-              getCatalogFilterItemByType(selectedFilter ?? EntityGroup.ALL)
-                ?.label ?? ''
-            }
-            entities={filteredEntities || []}
-            loading={loading && !error}
+            titlePreamble={selectedSidebarItem ?? ''}
+            entities={matchingEntities}
+            loading={loading}
             error={error}
-            actions={actions}
           />
         </div>
       </Content>
     </CatalogLayout>
   );
 };
+
+export const CatalogPage = () => (
+  <EntityFilterGroupsProvider>
+    <CatalogPageContents />
+  </EntityFilterGroupsProvider>
+);

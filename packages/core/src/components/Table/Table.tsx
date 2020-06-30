@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FC, forwardRef } from 'react';
-import MTable, {
-  MTableCell,
-  MTableHeader,
-  MTableToolbar,
-  MaterialTableProps,
-  Options,
-  Column,
-} from 'material-table';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, useTheme, Typography } from '@material-ui/core';
-
+import { makeStyles, Typography, useTheme } from '@material-ui/core';
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -42,6 +32,14 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+import MTable, {
+  Column,
+  MaterialTableProps,
+  MTableHeader,
+  MTableToolbar,
+  Options,
+} from 'material-table';
+import React, { forwardRef } from 'react';
 
 const tableIcons = {
   Add: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
@@ -97,14 +95,6 @@ const tableIcons = {
   )),
 };
 
-const useCellStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    color: theme.palette.grey[500],
-    padding: theme.spacing(0, 2, 0, 2.5),
-    height: '56px',
-  },
-}));
-
 const useHeaderStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
     padding: theme.spacing(1, 2, 1, 2.5),
@@ -131,10 +121,10 @@ const useToolbarStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-const convertColumns = (
-  columns: TableColumn[],
+function convertColumns<T extends object>(
+  columns: TableColumn<T>[],
   theme: BackstageTheme,
-): TableColumn[] => {
+): TableColumn<T>[] {
   return columns.map(column => {
     const headerStyle: React.CSSProperties = {};
     const cellStyle: React.CSSProperties = {};
@@ -150,26 +140,26 @@ const convertColumns = (
       cellStyle,
     };
   });
-};
+}
 
-export interface TableColumn extends Column<{}> {
+export interface TableColumn<T extends object = {}> extends Column<T> {
   highlight?: boolean;
   width?: string;
 }
 
-export interface TableProps extends MaterialTableProps<{}> {
-  columns: TableColumn[];
+export interface TableProps<T extends object = {}>
+  extends MaterialTableProps<T> {
+  columns: TableColumn<T>[];
   subtitle?: string;
 }
 
-export const Table: FC<TableProps> = ({
+export function Table<T extends object = {}>({
   columns,
   options,
   title,
   subtitle,
   ...props
-}) => {
-  const cellClasses = useCellStyles();
+}: TableProps<T>) {
   const headerClasses = useHeaderStyles();
   const toolbarClasses = useToolbarStyles();
   const theme = useTheme<BackstageTheme>();
@@ -183,11 +173,8 @@ export const Table: FC<TableProps> = ({
   };
 
   return (
-    <MTable
+    <MTable<T>
       components={{
-        Cell: cellProps => (
-          <MTableCell className={cellClasses.root} {...cellProps} />
-        ),
         Header: headerProps => (
           <MTableHeader classes={headerClasses} {...headerProps} />
         ),
@@ -211,4 +198,4 @@ export const Table: FC<TableProps> = ({
       {...props}
     />
   );
-};
+}

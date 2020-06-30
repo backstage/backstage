@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { Logger } from 'winston';
 
 export type PreparerBase = {
   /**
@@ -21,7 +22,10 @@ export type PreparerBase = {
    * with contents from the remote location in temporary storage and return the path
    * @param template The template entity from the Service Catalog
    */
-  prepare(template: TemplateEntityV1alpha1): Promise<string>;
+  prepare(
+    template: TemplateEntityV1alpha1,
+    opts: { logger: Logger },
+  ): Promise<string>;
 };
 
 export type PreparerBuilder = {

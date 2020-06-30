@@ -16,6 +16,7 @@
 
 import type { Writable } from 'stream';
 import Docker from 'dockerode';
+import { JsonValue } from '@backstage/config';
 
 export interface RequiredTemplateValues {
   component_id: string;
@@ -23,7 +24,7 @@ export interface RequiredTemplateValues {
 
 export interface TemplaterRunOptions {
   directory: string;
-  values: RequiredTemplateValues & object;
+  values: RequiredTemplateValues & Record<string, JsonValue>;
   logStream?: Writable;
   dockerClient: Docker;
 }

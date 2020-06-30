@@ -15,5 +15,5 @@
  */
 
 export { Table } from './Table';
-export type { TableColumn } from './Table';
+export type { TableColumn, TableProps } from './Table';
 export { SubvalueCell } from './SubvalueCell';

@@ -48,14 +48,18 @@ export class CookieCutter implements TemplaterBase {
     await fs.writeJSON(`${options.directory}/cookiecutter.json`, cookieInfo);
 
     const templateDir = options.directory;
-
-    // TODO(blam): This should be an entirely different directory on the host machine
-    // not in the template directory
-    const resultDir = `${templateDir}/result`;
+    const resultDir = await fs.promises.mkdtemp(`${options.directory}-result`);
 
     await runDockerContainer({
-      imageName: 'backstage/cookiecutter',
-      args: ['cookiecutter', '--no-input', '-o', '/result', '/template'],
+      imageName: 'spotify/backstage-cookiecutter',
+      args: [
+        'cookiecutter',
+        '--no-input',
+        '-o',
+        '/result',
+        '/template',
+        '--verbose',
+      ],
       templateDir,
       resultDir,
       logStream: options.logStream,

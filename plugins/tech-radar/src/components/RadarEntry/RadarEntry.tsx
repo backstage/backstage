@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
+import { WithLink } from '../../utils/components';
 
-type Props = {
+export type Props = {
   x: number;
   y: number;
-  number: number;
+  value: number;
   color: string;
   url?: string;
   moved?: number;
@@ -43,14 +44,27 @@ const useStyles = makeStyles<Theme>(() => ({
   },
 }));
 
-const RadarEntry: FC<Props> = props => {
+const makeBlip = (color: string, moved?: number) => {
+  const style = { fill: color };
+
+  let blip = <circle r={9} style={style} />;
+  if (moved && moved > 0) {
+    blip = <path d="M -11,5 11,5 0,-13 z" style={style} />; // triangle pointing up
+  } else if (moved && moved < 0) {
+    blip = <path d="M -11,-5 11,-5 0,13 z" style={style} />; // triangle pointing down
+  }
+
+  return blip;
+};
+
+const RadarEntry = (props: Props): JSX.Element => {
   const classes = useStyles(props);
 
   const {
     moved,
     color,
     url,
-    number,
+    value,
     x,
     y,
     onMouseEnter,
@@ -58,24 +72,7 @@ const RadarEntry: FC<Props> = props => {
     onClick,
   } = props;
 
-  const style = { fill: color };
-
-  let blip;
-  if (moved && moved > 0) {
-    blip = <path d="M -11,5 11,5 0,-13 z" style={style} />; // triangle pointing up
-  } else if (moved && moved < 0) {
-    blip = <path d="M -11,-5 11,-5 0,13 z" style={style} />; // triangle pointing down
-  } else {
-    blip = <circle r={9} style={style} />;
-  }
-
-  if (url) {
-    blip = (
-      <a href={url} className={classes.link}>
-        {blip}
-      </a>
-    );
-  }
+  const blip = makeBlip(color, moved);
 
   return (
     <g
@@ -83,10 +80,13 @@ const RadarEntry: FC<Props> = props => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClick}
+      data-testid="radar-entry"
     >
-      {blip}
+      <WithLink url={url} className={classes.link}>
+        {blip}
+      </WithLink>
       <text y={3} className={classes.text}>
-        {number}
+        {value}
       </text>
     </g>
   );

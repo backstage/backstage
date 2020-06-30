@@ -33,6 +33,7 @@ export type Options = {
   providerId: string;
   secure: boolean;
   disableRefresh?: boolean;
+  persistScopes?: boolean;
   baseUrl: string;
   appOrigin: string;
   tokenIssuer: TokenIssuer;
@@ -105,6 +106,10 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       throw new InputError('missing scope parameter');
     }
 
+    if (this.options.persistScopes) {
+      this.setScopesCookie(res, scope);
+    }
+
     const nonce = crypto.randomBytes(16).toString('base64');
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce);
@@ -136,6 +141,14 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       const { response, refreshToken } = await this.providerHandlers.handler(
         req,
       );
+
+      if (this.options.persistScopes) {
+        const grantedScopes = this.getScopesFromCookie(
+          req,
+          this.options.providerId,
+        );
+        response.providerInfo.scope = grantedScopes;
+      }
 
       if (!this.options.disableRefresh) {
         // throw error if missing refresh token
@@ -239,6 +252,21 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       path: `${this.basePath}/${this.options.providerId}/handler`,
       httpOnly: true,
     });
+  };
+
+  private setScopesCookie = (res: express.Response, scope: string) => {
+    res.cookie(`${this.options.providerId}-scope`, scope, {
+      maxAge: TEN_MINUTES_MS,
+      secure: this.options.secure,
+      sameSite: 'none',
+      domain: this.domain,
+      path: `${this.basePath}/${this.options.providerId}/handler`,
+      httpOnly: true,
+    });
+  };
+
+  private getScopesFromCookie = (req: express.Request, providerId: string) => {
+    return req.cookies[`${providerId}-scope`];
   };
 
   private setRefreshTokenCookie = (
