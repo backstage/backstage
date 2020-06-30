@@ -51,8 +51,8 @@ export const getSample = (
   shadowDom: ShadowRoot,
   elementName: string,
   elementAttribute: string,
+  sampleSize = 2,
 ) => {
-  const sampleSize = 2;
   const rootElement = shadowDom.children[0];
 
   return Array.from(rootElement.getElementsByTagName(elementName))
