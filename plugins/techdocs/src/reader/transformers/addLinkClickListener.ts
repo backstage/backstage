@@ -16,13 +16,13 @@
 
 import type { Transformer } from './index';
 
-type addLinkClickListenerOptions = {
+type AddLinkClickListenerOptions = {
   onClick: (newUrl: string) => void;
 };
 
 export const addLinkClickListener = ({
   onClick,
-}: addLinkClickListenerOptions): Transformer => {
+}: AddLinkClickListenerOptions): Transformer => {
   return dom => {
     Array.from(dom.getElementsByTagName('a')).forEach(elem => {
       elem.addEventListener('click', (e: MouseEvent) => {
