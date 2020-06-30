@@ -17,6 +17,8 @@
 export * from './addBaseUrl';
 export * from './rewriteDocLinks';
 export * from './addEventListener';
+export * from './removeMkdocsHeader';
+export * from './modifyCss';
 
 export type Transformer = (dom: Element) => Element;
 
