@@ -127,7 +127,7 @@ export const CatalogTable = ({
       const isStarred = isStarredEntity(rowData);
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: favouriteEntityIcon(isStarred),
+        icon: () => favouriteEntityIcon(isStarred),
         tooltip: favouriteEntityTooltip(isStarred),
         onClick: () => toggleStarredEntity(rowData),
       };
