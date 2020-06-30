@@ -27,7 +27,7 @@ import transformer, {
   rewriteDocLinks,
   addEventListener,
   removeMkdocsHeader,
-  modifyCssTransformer,
+  modifyCss,
 } from '../transformers';
 import { docStorageURL } from '../../config';
 import URLParser from '../urlParser';
@@ -78,7 +78,7 @@ export const Reader = () => {
         rewriteDocLinks({
           componentId,
         }),
-        modifyCssTransformer({
+        modifyCss({
           cssTransforms: {
             '.md-main__inner': [{ 'margin-top': '0' }],
             '.md-sidebar': [{ top: '0' }, { width: '20rem' }],

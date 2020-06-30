@@ -16,14 +16,12 @@
 
 import type { Transformer } from './index';
 
-type ModifyCssTransformerOptions = {
+type ModifyCssOptions = {
   // Example: { '.md-container': { 'marginTop': '10px' }}
   cssTransforms: { [key: string]: { [key: string]: string }[] };
 };
 
-export const modifyCssTransformer = ({
-  cssTransforms,
-}: ModifyCssTransformerOptions): Transformer => {
+export const modifyCss = ({ cssTransforms }: ModifyCssOptions): Transformer => {
   return dom => {
     Object.entries(cssTransforms).forEach(([cssSelector, cssChanges]) => {
       const elementsToChange = Array.from(
