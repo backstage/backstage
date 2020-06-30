@@ -18,7 +18,7 @@ spec:
           component: backend
       spec:
         containers:
-        - name: app
+        - name: backend
           image: spotify/backstage-backend:latest
           imagePullPolicy: Always
           ports:
