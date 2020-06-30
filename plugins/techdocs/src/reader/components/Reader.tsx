@@ -30,7 +30,7 @@ import transformer, {
   modifyCss,
 } from '../transformers';
 import { docStorageURL } from '../../config';
-import URLParser from '../urlParser';
+import URLFormatter from '../urlFormatter';
 
 const useFetch = (url: string) => {
   const state = useAsync(async () => {
@@ -45,7 +45,7 @@ const useFetch = (url: string) => {
 const useEnforcedTrailingSlash = (): void => {
   React.useEffect(() => {
     const actualUrl = window.location.href;
-    const expectedUrl = new URLParser(window.location.href, '.').parse();
+    const expectedUrl = new URLFormatter(window.location.href).formatBaseURL();
 
     if (actualUrl !== expectedUrl) {
       window.history.replaceState({}, document.title, expectedUrl);
@@ -58,10 +58,9 @@ export const Reader = () => {
   const { componentId, '*': path } = useParams();
   const shadowDomRef = useShadowDom();
   const navigate = useNavigate();
-  const normalizedUrl = new URLParser(
+  const normalizedUrl = new URLFormatter(
     `${docStorageURL}${location.pathname.replace('/docs', '')}`,
-    '.',
-  ).parse();
+  ).formatBaseURL();
   const state = useFetch(`${normalizedUrl}index.html`);
 
   useEnforcedTrailingSlash();
@@ -89,13 +88,23 @@ export const Reader = () => {
       ]);
 
       divElement.shadowRoot.innerHTML = '';
+
       if (transformedElement) {
         divElement.shadowRoot.appendChild(transformedElement);
         transformer(divElement.shadowRoot.children[0], [
+          dom => {
+            setTimeout(() => {
+              if (window.location.hash) {
+                const hash = window.location.hash.slice(1);
+                divElement.shadowRoot?.getElementById(hash)?.scrollIntoView();
+              }
+            }, 200);
+            return dom;
+          },
           addLinkClickListener({
-            onClick: url => {
+            onClick: (_: MouseEvent, url: string) => {
               const parsedUrl = new URL(url);
-              navigate(parsedUrl.pathname);
+              navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
 
               divElement.shadowRoot
                 ?.querySelector(parsedUrl.hash)

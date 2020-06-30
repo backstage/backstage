@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import URLParser from '../urlParser';
+import URLFormatter from '../urlFormatter';
 import type { Transformer } from './index';
 
 export const rewriteDocLinks = (): Transformer => {
@@ -26,12 +26,10 @@ export const rewriteDocLinks = (): Transformer => {
       Array.from(list)
         .filter(elem => elem.hasAttribute(attributeName))
         .forEach((elem: T) => {
+          const urlFormatter = new URLFormatter(window.location.href);
           elem.setAttribute(
             attributeName,
-            new URLParser(
-              window.location.href,
-              elem.getAttribute(attributeName)!,
-            ).parse(),
+            urlFormatter.formatURL(elem.getAttribute(attributeName)!),
           );
         });
     };

@@ -17,7 +17,7 @@
 import type { Transformer } from './index';
 
 type AddLinkClickListenerOptions = {
-  onClick: (newUrl: string) => void;
+  onClick: (e: MouseEvent, newUrl: string) => void;
 };
 
 export const addLinkClickListener = ({
@@ -29,7 +29,7 @@ export const addLinkClickListener = ({
         e.preventDefault();
         const target = e.target as HTMLAnchorElement;
         if (target?.getAttribute('href')) {
-          onClick(target.getAttribute('href')!);
+          onClick(e, target.getAttribute('href')!);
         }
       });
     });
