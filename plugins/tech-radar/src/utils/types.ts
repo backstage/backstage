@@ -17,7 +17,7 @@
 // Parameters for a ring; its index in an array determines how close to the center this ring is.
 export type Ring = {
   id: string;
-  idx?: number;
+  index?: number;
   name: string;
   color: string;
   outerRadius?: number;
@@ -27,7 +27,7 @@ export type Ring = {
 // Parameters for a quadrant (there should be exactly 4 of course)
 export type Quadrant = {
   id: string;
-  idx?: number;
+  index?: number;
   name: string;
   legendX?: number;
   legendY?: number;
@@ -45,9 +45,15 @@ export type Segment = {
   random: Function;
 };
 
+export enum MovedState {
+  Down = -1,
+  NoChange = 0,
+  Up = 1,
+}
+
 export type Entry = {
   id: string;
-  idx?: number;
+  index?: number;
   x?: number;
   y?: number;
   color?: string;
@@ -61,7 +67,7 @@ export type Entry = {
   // An URL to a longer description as to why this entry is where it is
   url?: string;
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
-  moved?: number;
+  moved?: MovedState;
   active?: boolean;
 };
 

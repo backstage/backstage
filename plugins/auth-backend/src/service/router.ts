@@ -76,10 +76,28 @@ export async function createRouter(
             clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET!,
           },
         },
+        gitlab: {
+          development: {
+            appOrigin: 'http://localhost:3000',
+            secure: false,
+            clientId: process.env.AUTH_GITLAB_CLIENT_ID!,
+            clientSecret: process.env.AUTH_GITLAB_CLIENT_SECRET!,
+            audience: process.env.GITLAB_BASE_URL! || 'https://gitlab.com',
+          },
+        },
         saml: {
           development: {
             entryPoint: 'http://localhost:7001/',
             issuer: 'passport-saml',
+          },
+        },
+        okta: {
+          development: {
+            appOrigin: 'http://localhost:3000',
+            secure: false,
+            clientId: process.env.AUTH_OKTA_CLIENT_ID!,
+            clientSecret: process.env.AUTH_OKTA_CLIENT_SECRET!,
+            audience: process.env.AUTH_OKTA_AUDIENCE,
           },
         },
       },

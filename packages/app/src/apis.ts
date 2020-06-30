@@ -26,10 +26,14 @@ import {
   FeatureFlags,
   GoogleAuth,
   GithubAuth,
+  OktaAuth,
+  GitlabAuth,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
   githubAuthApiRef,
+  oktaAuthApiRef,
+  gitlabAuthApiRef,
   storageApiRef,
   WebStorage,
 } from '@backstage/core';
@@ -54,6 +58,8 @@ export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
   console.log(`Creating APIs for ${config.getString('app.title')}`);
 
+  const backendUrl = config.getString('backend.baseUrl');
+
   const builder = ApiRegistry.builder();
 
   const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
@@ -76,7 +82,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     googleAuthApiRef,
     GoogleAuth.create({
-      apiOrigin: 'http://localhost:7000',
+      apiOrigin: backendUrl,
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -85,6 +91,24 @@ export const apis = (config: ConfigApi) => {
   const githubAuthApi = builder.add(
     githubAuthApiRef,
     GithubAuth.create({
+      apiOrigin: backendUrl,
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+  );
+
+  builder.add(
+    oktaAuthApiRef,
+    OktaAuth.create({
+      apiOrigin: backendUrl,
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+  );
+
+  builder.add(
+    gitlabAuthApiRef,
+    GitlabAuth.create({
       apiOrigin: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
@@ -102,8 +126,8 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     catalogApiRef,
     new CatalogClient({
-      apiOrigin: 'http://localhost:3000',
-      basePath: '/catalog/api',
+      apiOrigin: backendUrl,
+      basePath: '/catalog',
     }),
   );
 

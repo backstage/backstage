@@ -17,7 +17,7 @@
 import color from 'color';
 import { forceCollide, forceSimulation } from 'd3-force';
 import Segment from '../../utils/segment';
-import { Ring, Quadrant, Entry } from '../../utils/types';
+import type { Ring, Quadrant, Entry } from '../../utils/types';
 
 export const adjustQuadrants = (
   quadrants: Quadrant[],
@@ -81,14 +81,14 @@ export const adjustQuadrants = (
     },
   ];
 
-  quadrants.forEach((quadrant, idx) => {
-    const legendParam = legendParams[idx % 4];
+  quadrants.forEach((quadrant, index) => {
+    const legendParam = legendParams[index % 4];
 
-    quadrant.idx = idx;
-    quadrant.radialMin = (idx * Math.PI) / 2;
-    quadrant.radialMax = ((idx + 1) * Math.PI) / 2;
-    quadrant.offsetX = idx % 4 === 0 || idx % 4 === 3 ? 1 : -1;
-    quadrant.offsetY = idx % 4 === 0 || idx % 4 === 1 ? 1 : -1;
+    quadrant.index = index;
+    quadrant.radialMin = (index * Math.PI) / 2;
+    quadrant.radialMax = ((index + 1) * Math.PI) / 2;
+    quadrant.offsetX = index % 4 === 0 || index % 4 === 3 ? 1 : -1;
+    quadrant.offsetY = index % 4 === 0 || index % 4 === 1 ? 1 : -1;
     quadrant.legendX = legendParam.x;
     quadrant.legendY = legendParam.y;
     quadrant.legendWidth = legendParam.width;
@@ -98,13 +98,13 @@ export const adjustQuadrants = (
 
 export const adjustEntries = (
   entries: Entry[],
-  activeEntry: Entry | null | undefined,
   quadrants: Quadrant[],
   rings: Ring[],
   radius: number,
+  activeEntry?: Entry,
 ) => {
   let seed = 42;
-  entries.forEach((entry, idx) => {
+  entries.forEach((entry, index) => {
     const quadrant = quadrants.find(q => {
       const match =
         typeof entry.quadrant === 'object' ? entry.quadrant.id : entry.quadrant;
@@ -124,7 +124,7 @@ export const adjustEntries = (
       throw new Error(`Unknown ring ${entry.ring} for entry ${entry.id}!`);
     }
 
-    entry.idx = idx;
+    entry.index = index;
     entry.quadrant = quadrant;
     entry.ring = ring;
     entry.segment = new Segment(quadrant, ring, radius, () => seed++);
@@ -163,10 +163,10 @@ export const adjustEntries = (
 };
 
 export const adjustRings = (rings: Ring[], radius: number) => {
-  rings.forEach((ring, idx) => {
-    ring.idx = idx;
-    ring.outerRadius = ((idx + 2) / (rings.length + 1)) * radius;
+  rings.forEach((ring, index) => {
+    ring.index = index;
+    ring.outerRadius = ((index + 2) / (rings.length + 1)) * radius;
     ring.innerRadius =
-      ((idx === 0 ? 0 : idx + 1) / (rings.length + 1)) * radius;
+      ((index === 0 ? 0 : index + 1) / (rings.length + 1)) * radius;
   });
 };

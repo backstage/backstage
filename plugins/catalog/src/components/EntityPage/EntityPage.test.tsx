@@ -27,7 +27,7 @@ jest.mock('react-router-dom', () => {
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { render, wait } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogApi, catalogApiRef } from '../../api/types';
 import { EntityPage, getPageTheme } from './EntityPage';
@@ -66,7 +66,7 @@ describe('EntityPage', () => {
       ),
     );
 
-    await wait(() => expect(useNavigate()).toHaveBeenCalledWith('/catalog'));
+    await waitFor(() => expect(useNavigate()).toHaveBeenCalledWith('/catalog'));
   });
 });
 

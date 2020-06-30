@@ -16,3 +16,5 @@
 
 export * from './google';
 export * from './github';
+export * from './gitlab';
+export * from './okta';

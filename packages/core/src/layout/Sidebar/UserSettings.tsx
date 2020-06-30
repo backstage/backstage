@@ -22,7 +22,9 @@ import { SidebarContext } from './config';
 import {
   googleAuthApiRef,
   githubAuthApiRef,
+  gitlabAuthApiRef,
   identityApiRef,
+  oktaAuthApiRef,
   useApi,
 } from '@backstage/core-api';
 import {
@@ -54,6 +56,16 @@ export function SidebarUserSettings() {
         <OAuthProviderSettings
           title="Github"
           apiRef={githubAuthApiRef}
+          icon={Star}
+        />
+        <OAuthProviderSettings
+          title="Gitlab"
+          apiRef={gitlabAuthApiRef}
+          icon={Star}
+        />
+        <OIDCProviderSettings
+          title="Okta"
+          apiRef={oktaAuthApiRef}
           icon={Star}
         />
         <SidebarItem

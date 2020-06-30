@@ -17,7 +17,9 @@
 import Router from 'express-promise-router';
 import { createGithubProvider } from './github';
 import { createGoogleProvider } from './google';
+import { createGitlabProvider } from './gitlab';
 import { createSamlProvider } from './saml';
+import { createOktaProvider } from './okta';
 import { AuthProviderFactory, AuthProviderConfig } from './types';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
@@ -25,7 +27,9 @@ import { TokenIssuer } from '../identity';
 const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
   github: createGithubProvider,
+  gitlab: createGitlabProvider,
   saml: createSamlProvider,
+  okta: createOktaProvider,
 };
 
 export const createAuthProviderRouter = (
