@@ -43,7 +43,11 @@ export const FavouriteEntity: React.FC<Props> = props => {
   const { toggleStarredEntity, isStarredEntity } = useEntities();
   const isStarred = isStarredEntity(props.entity);
   return (
-    <IconButton {...props} onClick={() => toggleStarredEntity(props.entity)}>
+    <IconButton
+      color="inherit"
+      {...props}
+      onClick={() => toggleStarredEntity(props.entity)}
+    >
       <Tooltip title={favouriteEntityTooltip(isStarred)}>
         <SvgIcon component={favouriteEntityIcon(isStarred)} />
       </Tooltip>
