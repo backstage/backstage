@@ -16,9 +16,7 @@
 
 import type { Transformer } from './index';
 
-type AddBaseUrlOptions = {};
-
-export const removeMkdocsHeader = ({}: AddBaseUrlOptions): Transformer => {
+export const removeMkdocsHeader = (): Transformer => {
   return dom => {
     // Remove the header
     dom.querySelector('.md-header')?.remove();

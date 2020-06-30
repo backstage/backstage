@@ -87,7 +87,7 @@ export const Reader = () => {
             '.md-grid': [{ 'max-width': '80vw' }],
           },
         }),
-        removeMkdocsHeader({}),
+        removeMkdocsHeader(),
       ]);
 
       divElement.shadowRoot.innerHTML = '';
