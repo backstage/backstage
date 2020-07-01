@@ -1,4 +1,4 @@
-# ADR006: Avoid React.FC
+# ADR006: Avoid React.FC and React.SFC
 
 ## Context
 
@@ -8,21 +8,35 @@ The main reasons were:
 - **children props** were implicitly added
 - **Generic Type** lacked support
 
+Read more about the removal in [this PR](https://github.com/facebook/create-react-app/pull/8177).
+
 ## Decision
 
 To keep our codebase up to date, we have decided that React.FC should be avoided in our codebase when adding new code.
 
 Here is an example:
 ````
-type MyType = { text: string }
+/* Avoid this: */
+type BadProps = { text: string; };
 
-// avoid React.FC
-const ComponentWithReactFC = React.FC<MyType> = ({text} => <div>{text}</div>)
+const BadComponent: FC<BadProps> = ({ text, children }) => (
+  <div>
+    <div>{text}</div>
+    {children}
+  </div>
+)
 
-// do this instead
-const ComponentWithoutReactFC = ({text} : MyType) => <div>{text}</div>
+
+/* Do this instead: */
+type GoodProps = { text: string; children?: React.ReactNode };
+const GoodComponent = ({ text, children }: GoodProps) => (
+  <div>
+    <div>{text}</div>
+    {children}
+  </div>
+)
 ````
 
 ## Consequences
 
-We will gradually remove the current usage of React.FC from our codebase.
+We will gradually remove the current usage of React.FC and React.SFC from our codebase.
