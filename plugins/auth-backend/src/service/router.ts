@@ -36,14 +36,17 @@ export async function createRouter(
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
 
-  const baseUrl = `${options.config.getString('backend.baseUrl')}/auth`;
+  const appUrl = options.config.getString('app.baseUrl');
+  const backendUrl = options.config.getString('backend.baseUrl');
+  const authUrl = `${backendUrl}/auth`;
+
   const keyDurationSeconds = 3600;
 
   const keyStore = await DatabaseKeyStore.create({
     database: options.database,
   });
   const tokenIssuer = new TokenFactory({
-    issuer: baseUrl,
+    issuer: authUrl,
     keyStore,
     keyDurationSeconds,
     logger: logger.child({ component: 'token-factory' }),
@@ -56,13 +59,13 @@ export async function createRouter(
   // TODO: read from app config
   const config = {
     backend: {
-      baseUrl: options.config.getString('backend.baseUrl'),
+      baseUrl: backendUrl,
     },
     auth: {
       providers: {
         google: {
           development: {
-            appOrigin: 'http://localhost:3000',
+            appOrigin: appUrl,
             secure: false,
             clientId: process.env.AUTH_GOOGLE_CLIENT_ID!,
             clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET!,
@@ -70,7 +73,7 @@ export async function createRouter(
         },
         github: {
           development: {
-            appOrigin: 'http://localhost:3000',
+            appOrigin: appUrl,
             secure: false,
             clientId: process.env.AUTH_GITHUB_CLIENT_ID!,
             clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET!,
@@ -78,7 +81,7 @@ export async function createRouter(
         },
         gitlab: {
           development: {
-            appOrigin: 'http://localhost:3000',
+            appOrigin: appUrl,
             secure: false,
             clientId: process.env.AUTH_GITLAB_CLIENT_ID!,
             clientSecret: process.env.AUTH_GITLAB_CLIENT_SECRET!,
@@ -93,7 +96,7 @@ export async function createRouter(
         },
         okta: {
           development: {
-            appOrigin: 'http://localhost:3000',
+            appOrigin: appUrl,
             secure: false,
             clientId: process.env.AUTH_OKTA_CLIENT_ID!,
             clientSecret: process.env.AUTH_OKTA_CLIENT_SECRET!,
@@ -121,7 +124,7 @@ export async function createRouter(
     try {
       const providerRouter = createAuthProviderRouter(
         providerId,
-        { baseUrl },
+        { baseUrl: authUrl },
         providerConfig,
         logger,
         tokenIssuer,
@@ -135,7 +138,7 @@ export async function createRouter(
   router.use(
     createOidcRouter({
       tokenIssuer,
-      baseUrl,
+      baseUrl: authUrl,
     }),
   );
 

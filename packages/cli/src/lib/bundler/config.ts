@@ -34,7 +34,7 @@ import { BundlingOptions, BackendBundlingOptions } from './types';
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
   try {
-    return new URL(baseUrl, 'http://localhost:3000');
+    return new URL(baseUrl);
   } catch (error) {
     throw new Error(`Invalid app.baseUrl, ${error}`);
   }
@@ -49,7 +49,7 @@ export function createConfig(
   const { plugins, loaders } = transforms(options);
 
   const baseUrl = options.config.getString('app.baseUrl');
-  const validBaseUrl = new URL(baseUrl, 'https://backstage-app.dev');
+  const validBaseUrl = new URL(baseUrl);
 
   if (checksEnabled) {
     plugins.push(
