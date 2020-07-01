@@ -24,7 +24,7 @@ import {
 import { JobStage } from '../JobStage/JobStage';
 import { useJobPolling } from './useJobPolling';
 import { Job } from '../../types';
-import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Button } from '@backstage/core';
 import { entityRoute } from '@backstage/plugin-catalog';
 import { generatePath } from 'react-router-dom';
@@ -33,7 +33,7 @@ type Props = {
   onClose: () => void;
   onComplete: (job: Job) => void;
   jobId: string;
-  entity: ComponentEntityV1alpha1 | null;
+  entity: TemplateEntityV1alpha1 | null;
 };
 
 export const JobStatusModal = ({

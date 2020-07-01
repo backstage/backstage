@@ -34,18 +34,13 @@ export interface CatalogApi {
   getEntityByName(
     compoundName: EntityCompoundName,
   ): Promise<Entity | undefined>;
-  getEntities<EntityType extends Entity = Entity>(
-    filter?: Record<string, string | string[]>,
-  ): Promise<EntityType[]>;
-  addLocation<EntityType extends Entity = Entity>(
-    type: string,
-    target: string,
-  ): Promise<AddLocationResponse<EntityType>>;
+  getEntities(filter?: Record<string, string | string[]>): Promise<Entity[]>;
+  addLocation(type: string, target: string): Promise<AddLocationResponse>;
   getLocationByEntity(entity: Entity): Promise<Location | undefined>;
   removeEntityByUid(uid: string): Promise<void>;
 }
 
-export type AddLocationResponse<EntityType extends Entity = Entity> = {
+export type AddLocationResponse = {
   location: Location;
-  entities: EntityType[];
+  entities: Entity[];
 };

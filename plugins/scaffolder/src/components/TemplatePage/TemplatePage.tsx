@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ComponentEntityV1alpha1,
-  TemplateEntityV1alpha1,
-} from '@backstage/catalog-model';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   Content,
   errorApiRef,
@@ -46,10 +43,10 @@ const useTemplate = (
   const { data, error } = useStaleWhileRevalidate(
     `templates/${templateName}`,
     async () =>
-      catalogApi.getEntities<TemplateEntityV1alpha1>({
+      catalogApi.getEntities({
         kind: 'Template',
         'metadata.name': templateName,
-      }),
+      }) as Promise<TemplateEntityV1alpha1[]>,
   );
   return { template: data?.[0], loading: !error && !data, error };
 };
@@ -97,7 +94,7 @@ export const TemplatePage = () => {
     setJobId(job);
   };
 
-  const [entity, setEntity] = React.useState<ComponentEntityV1alpha1 | null>(
+  const [entity, setEntity] = React.useState<TemplateEntityV1alpha1 | null>(
     null,
   );
 
@@ -118,12 +115,9 @@ export const TemplatePage = () => {
 
     const {
       entities: [createdEntity],
-    } = await catalogApi.addLocation<ComponentEntityV1alpha1>(
-      'github',
-      componentYaml,
-    );
+    } = await catalogApi.addLocation('github', componentYaml);
 
-    setEntity(createdEntity);
+    setEntity((createdEntity as any) as TemplateEntityV1alpha1);
   };
 
   if (!loading && !template) {
@@ -152,7 +146,7 @@ export const TemplatePage = () => {
         subtitle="Create new software components using standard templates"
       />
       <Content>
-        {loading && <LinearProgress />}
+        {loading && <LinearProgress data-testid="loading-progress" />}
         {jobId && (
           <JobStatusModal
             onComplete={handleCreateComplete}
