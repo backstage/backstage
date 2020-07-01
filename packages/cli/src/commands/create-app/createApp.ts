@@ -22,7 +22,7 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
-import { Task, templatingTask, installWithLocalDeps } from '../../lib/tasks';
+import { Task, templatingTask } from '../../lib/tasks';
 import { paths } from '../../lib/paths';
 import { version } from '../../lib/version';
 
@@ -72,7 +72,7 @@ async function buildApp(appDir: string) {
     });
   };
 
-  await installWithLocalDeps(appDir);
+  await runCmd('yarn install');
   await runCmd('yarn tsc');
   await runCmd('yarn build');
 }
