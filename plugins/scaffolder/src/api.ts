@@ -37,20 +37,30 @@ export class ScaffolderApi {
     this.basePath = basePath;
   }
 
+  /**
+   *
+   * @param template Template entity for the scaffolder to use. New project is going to be created out of this template.
+   * @param values Parameters for the template, e.g. name, description
+   */
   async scaffold(
     template: TemplateEntityV1alpha1,
     values: Record<string, any>,
   ) {
     const url = `${this.apiOrigin}${this.basePath}/jobs`;
-    const { id: jobId } = await fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ template, values }),
-    }).then(x => x.json());
+    });
 
-    return jobId;
+    if (response.status !== 201) {
+      throw new Error(await response.text());
+    }
+
+    const { id } = await response.json();
+    return id;
   }
 
   async getJob(jobId: string) {
