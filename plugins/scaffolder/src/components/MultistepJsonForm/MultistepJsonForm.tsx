@@ -33,7 +33,7 @@ const Form = withTheme(MuiTheme);
 type Step = {
   schema: JSONSchema;
   label: string;
-} & Partial<FormProps>;
+} & Partial<Omit<FormProps<any>, 'schema'>>;
 
 type Props = {
   /**

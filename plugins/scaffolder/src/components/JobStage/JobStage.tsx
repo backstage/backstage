@@ -79,7 +79,7 @@ type Props = {
   log: string[];
   startedAt: string;
   endedAt?: string;
-  status?: Job['status'];
+  status: Job['status'];
 };
 
 export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
@@ -102,7 +102,8 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
       TransitionProps={{ unmountOnExit: true }}
       className={cn(
         classes.expansionPanel,
-        classes[status.toLowerCase()] ?? classes.neutral,
+        classes[status.toLowerCase() as keyof ReturnType<typeof useStyles>] ??
+          classes.neutral,
       )}
       expanded={expanded}
       onChange={(_, newState) => setExpanded(newState)}
