@@ -12,7 +12,7 @@ Read more about the removal in [this PR](https://github.com/facebook/create-reac
 
 ## Decision
 
-To keep our codebase up to date, we have decided that React.FC should be avoided in our codebase when adding new code.
+To keep our codebase up to date, we have decided that React.FC and React.SFC should be avoided in our codebase when adding new code.
 
 Here is an example:
 ````
