@@ -44,7 +44,6 @@ jobs:
       - run: yarn tsc
       - run: yarn build
       - name: verify app and plugin creation
-        working-directory: ${{ runner.temp }}
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
           node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js

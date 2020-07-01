@@ -43,5 +43,4 @@ jobs:
       - run: yarn tsc
       - run: yarn build
       - name: verify app and plugin creation
-        working-directory: ${{ runner.temp }}
         run: node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
