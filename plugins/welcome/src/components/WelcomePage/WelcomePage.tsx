@@ -38,7 +38,7 @@ import {
   configApiRef,
 } from '@backstage/core';
 
-const WelcomePage = ({}) => {
+const WelcomePage = () => {
   const appTitle =
     useApi(configApiRef).getOptionalString('app.title') ?? 'Backstage';
   const profile = { givenName: '' };
