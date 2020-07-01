@@ -16,22 +16,20 @@
 
 import type { Transformer } from './index';
 
-type AddEventListenerOptions = {
-  onClick: (newUrl: string) => void;
+type AddLinkClickListenerOptions = {
+  onClick: (e: MouseEvent, newUrl: string) => void;
 };
 
-export const addEventListener = ({
+export const addLinkClickListener = ({
   onClick,
-}: AddEventListenerOptions): Transformer => {
+}: AddLinkClickListenerOptions): Transformer => {
   return dom => {
     Array.from(dom.getElementsByTagName('a')).forEach(elem => {
       elem.addEventListener('click', (e: MouseEvent) => {
         e.preventDefault();
         const target = e.target as HTMLAnchorElement;
         if (target?.getAttribute('href')) {
-          onClick(
-            target.getAttribute('href')!.replace(window.location.origin, ''),
-          );
+          onClick(e, target.getAttribute('href')!);
         }
       });
     });
