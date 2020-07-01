@@ -56,7 +56,6 @@ export async function createRouter(
   router.use(bodyParser.urlencoded({ extended: false }));
   router.use(bodyParser.json());
 
-  // TODO: read from app config
   const config = {
     backend: {
       baseUrl: backendUrl,
