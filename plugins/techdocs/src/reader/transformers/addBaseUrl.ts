@@ -37,8 +37,11 @@ export const addBaseUrl = ({
         .filter(elem => !!elem.getAttribute(attributeName))
         .forEach((elem: T) => {
           const urlFormatter = new URLFormatter(
-            `${docStorageURL}/${componentId}/${path}`,
+            path.length < 1 || path.endsWith('/')
+              ? `${docStorageURL}/${componentId}/${path}`
+              : `${docStorageURL}/${componentId}/${path}/`,
           );
+
           elem.setAttribute(
             attributeName,
             urlFormatter.formatURL(elem.getAttribute(attributeName)!),
