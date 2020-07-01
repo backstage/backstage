@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState, useEffect } from 'react';
-import { Job } from './types';
+import { Job } from '../../types';
 import { useApi } from '@backstage/core';
 import { scaffolderApiRef } from '../../api';
 
@@ -42,6 +42,7 @@ export const useJobPolling = (
 
   useEffect(() => {
     if (!jobId) return () => {};
+
     const stopPolling = poll(async () => {
       const nextJobState = await scaffolderApi.getJob(jobId);
       if (

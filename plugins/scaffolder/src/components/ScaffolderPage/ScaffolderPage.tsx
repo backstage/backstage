@@ -14,31 +14,43 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
-  Lifecycle,
   Content,
   ContentHeader,
+  errorApiRef,
   Header,
-  SupportButton,
+  Lifecycle,
   Page,
   pageTheme,
+  SupportButton,
   useApi,
-  errorApiRef,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import {
-  Typography,
-  Link,
   Button,
   Grid,
   LinearProgress,
+  Link,
+  Typography,
 } from '@material-ui/core';
+import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import TemplateCard from './TemplateCard';
 import useStaleWhileRevalidate from 'swr';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { TemplateCard, TemplateCardProps } from '../TemplateCard';
 
+const getTemplateCardProps = (
+  template: TemplateEntityV1alpha1,
+): TemplateCardProps & { key: string } => {
+  return {
+    key: template.metadata.uid!,
+    name: template.metadata.name,
+    title: `${(template.metadata.title || template.metadata.name) ?? ''}`,
+    type: template.spec.type ?? '',
+    description: template.metadata.description ?? '-',
+    tags: (template.metadata?.tags as string[]) ?? [],
+  };
+};
 export const ScaffolderPage: React.FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
@@ -96,16 +108,7 @@ export const ScaffolderPage: React.FC<{}> = () => {
             templates.map(template => {
               return (
                 <Grid item xs={12} sm={6} md={3}>
-                  <TemplateCard
-                    key={template.metadata.uid}
-                    name={template.metadata.name}
-                    title={`${
-                      (template.metadata.title || template.metadata.name) ?? ''
-                    }`}
-                    type={template.spec.type ?? ''}
-                    description={template.metadata.description ?? '-'}
-                    tags={(template.metadata?.tags as string[]) ?? []}
-                  />
+                  <TemplateCard {...getTemplateCardProps(template)} />
                 </Grid>
               );
             })}

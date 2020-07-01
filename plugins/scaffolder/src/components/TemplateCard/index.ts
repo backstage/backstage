@@ -13,15 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef } from '@backstage/core';
-
-export const rootRoute = createRouteRef({
-  icon: () => null,
-  path: '/create',
-  title: 'Create new entity',
-});
-export const templateRoute = createRouteRef({
-  icon: () => null,
-  path: '/create/:templateName',
-  title: 'Entity creation',
-});
+export { TemplateCard } from './TemplateCard';
+export type { TemplateCardProps } from './TemplateCard';

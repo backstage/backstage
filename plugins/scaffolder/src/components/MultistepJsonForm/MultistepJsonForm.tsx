@@ -13,34 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
-import { withTheme, IChangeEvent, FormProps } from '@rjsf/core';
-import { Theme as MuiTheme } from '@rjsf/material-ui';
+import { JSONSchema } from '@backstage/catalog-model';
+import { Content, StructuredMetadataTable } from '@backstage/core';
 import {
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent,
+  Box,
   Button,
   Paper,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
   Typography,
-  Box,
 } from '@material-ui/core';
-import { Content, StructuredMetadataTable } from '@backstage/core';
-import { JSONSchema } from '@backstage/catalog-model';
+import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
+import React, { useState } from 'react';
 
 const Form = withTheme(MuiTheme);
 type Step = {
   schema: JSONSchema;
   label: string;
-};
+} & Partial<FormProps>;
+
 type Props = {
+  /**
+   * Steps for the form, each contains label and form schema
+   */
   steps: Step[];
   formData: Record<string, any>;
   onChange: (e: IChangeEvent) => void;
   onReset: () => void;
   onFinish: () => void;
 };
+
 export const MultistepJsonForm = ({
   steps,
   formData,
@@ -57,10 +62,11 @@ export const MultistepJsonForm = ({
   const handleNext = () =>
     setActiveStep(Math.min(activeStep + 1, steps.length));
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
+
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map(({ label, schema }) => (
+        {steps.map(({ label, schema, ...formProps }) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
             <StepContent>
@@ -72,17 +78,14 @@ export const MultistepJsonForm = ({
                 onSubmit={e => {
                   if (e.errors.length === 0) handleNext();
                 }}
+                {...formProps}
               >
-                <div>
-                  <div>
-                    <Button disabled={activeStep === 0} onClick={handleBack}>
-                      Back
-                    </Button>
-                    <Button variant="contained" color="primary" type="submit">
-                      {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                    </Button>
-                  </div>
-                </div>
+                <Button disabled={activeStep === 0} onClick={handleBack}>
+                  Back
+                </Button>
+                <Button variant="contained" color="primary" type="submit">
+                  Next step
+                </Button>
               </Form>
             </StepContent>
           </Step>

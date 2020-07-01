@@ -15,4 +15,4 @@
  */
 
 export { plugin } from './plugin';
-export { rootRoute, createTemplateRoute } from './routes';
+export { rootRoute, templateRoute } from './routes';
