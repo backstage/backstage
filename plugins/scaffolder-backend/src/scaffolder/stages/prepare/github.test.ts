@@ -19,7 +19,6 @@ const mocks = {
   CheckoutOptions: jest.fn(() => {}),
 };
 jest.doMock('nodegit', () => mocks);
-// require('nodegit');
 
 import { GithubPreparer } from './github';
 import {

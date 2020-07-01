@@ -40,17 +40,18 @@ export class GithubPublisher implements Publisher {
     return { remoteUrl };
   }
 
-  private async createRemote(values: RequiredTemplateValues) {
+  private async createRemote(
+    values: RequiredTemplateValues & Record<string, JsonValue>,
+  ) {
     const [owner, name] = values.storePath.split('/');
 
-    const {
-      data: { clone_url: cloneUrl },
-    } = await this.client.repos.createInOrg({
-      name,
-      org: owner,
-    });
+    const repoCreationPromise = values.isOrg
+      ? this.client.repos.createInOrg({ name, org: owner })
+      : this.client.repos.createForAuthenticatedUser({ name });
 
-    return cloneUrl;
+    const { data } = await repoCreationPromise;
+
+    return data?.clone_url;
   }
 
   private async pushToRemote(directory: string, remote: string): Promise<void> {
