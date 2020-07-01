@@ -26,14 +26,23 @@ const { mockGithubClient } = require('@octokit/rest') as {
   mockGithubClient: { repos: jest.Mocked<Octokit['repos']> };
 };
 
-const { Repository, mockRepo, mockIndex, Signature } = require('nodegit') as {
+const {
+  Repository,
+  mockRepo,
+  mockIndex,
+  Signature,
+  Remote,
+  mockRemote,
+  Cred,
+} = require('nodegit') as {
   Repository: jest.Mocked<{ init: any }>;
   Signature: jest.Mocked<{ now: any }>;
-  Cred: jest.Mocked<{ init: any }>;
-  Remote: jest.Mocked<{ push: any }>;
+  Cred: jest.Mocked<{ userpassPlaintextNew: any }>;
+  Remote: jest.Mocked<{ create: any }>;
 
   mockIndex: jest.Mocked<NodeGit.Index>;
   mockRepo: jest.Mocked<NodeGit.Repository>;
+  mockRemote: jest.Mocked<NodeGit.Remote>;
 };
 
 describe('Github Publisher', () => {
@@ -154,6 +163,40 @@ describe('Github Publisher', () => {
         'initial commit',
         'mockoid',
         [],
+      );
+    });
+
+    it('creates a remote with the repo and remote', async () => {
+      await publisher.publish({
+        values,
+        directory: mockDir,
+      });
+
+      expect(Remote.create).toHaveBeenCalledWith(
+        mockRepo,
+        'origin',
+        'mockclone',
+      );
+    });
+
+    it('shoud push to the remote repo', async () => {
+      await publisher.publish({
+        values,
+        directory: mockDir,
+      });
+
+      const [remotes, { callbacks }] = mockRemote.push.mock
+        .calls[0] as NodeGit.PushOptions[];
+
+      expect(remotes).toEqual(['refs/heads/master:refs/heads/master']);
+
+      process.env.GITHUb_ACCESS_TOKEN = 'blob';
+
+      callbacks?.credentials?.();
+
+      expect(Cred.userpassPlaintextNew).toHaveBeenCalledWith(
+        process.env.GITHUB_ACCESS_TOKEN,
+        'x-oauth-basic',
       );
     });
   });
