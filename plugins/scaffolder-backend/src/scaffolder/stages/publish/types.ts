@@ -13,5 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './stages';
-export * from './jobs';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { RequiredTemplateValues } from '../templater';
+import { JsonValue } from '@backstage/config';
+
+export type Publisher = {
+  publish(opts: {
+    entity: TemplateEntityV1alpha1;
+    values: RequiredTemplateValues & Record<string, JsonValue>;
+    directory: string;
+  }): Promise<{ remoteUrl: string }>;
+};

@@ -22,13 +22,14 @@ import {
   TemplaterBase,
   JobProcessor,
   RequiredTemplateValues,
+  StageContext,
+  GithubPublisher,
 } from '../scaffolder';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
 import {} from '@backstage/backend-common';
-import { StageContext } from '../scaffolder/jobs/types';
 import { Octokit } from '@octokit/rest';
-import { GithubStorer } from '../scaffolder/stages/store/github';
+
 import { JsonValue } from '@backstage/config';
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -44,7 +45,7 @@ export async function createRouter(
 
   const githubClient = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
   const { preparers, templater, logger: parentLogger, dockerClient } = options;
-  const githubStorer = new GithubStorer({ client: githubClient });
+  const githubPulisher = new GithubPublisher({ client: githubClient });
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const jobProcessor = new JobProcessor();
 
@@ -117,24 +118,14 @@ export async function createRouter(
             },
           },
           {
-            name: 'Create VCS Repo',
+            name: 'Publish template',
             handler: async (ctx: StageContext<{ resultDir: string }>) => {
-              ctx.logger.info('Should now create the VCS repo');
-              const remoteUrl = await githubStorer.createRemote({
+              ctx.logger.info('Should not store the template');
+              const { remoteUrl } = await githubPulisher.publish({
                 values: ctx.values,
-                entity: ctx.entity,
+                directory: ctx.resultDir,
               });
-
               return { remoteUrl };
-            },
-          },
-          {
-            name: 'Push to remote',
-            handler: async (
-              ctx: StageContext<{ resultDir: string; remoteUrl: string }>,
-            ) => {
-              ctx.logger.info('Should now push to the remote');
-              await githubStorer.pushToRemote(ctx.resultDir, ctx.remoteUrl);
             },
           },
         ],

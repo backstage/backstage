@@ -14,25 +14,33 @@
  * limitations under the License.
  */
 
-import { Storer } from './types';
+import { Publisher } from './types';
 import { Octokit } from '@octokit/rest';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
 
-export class GithubStorer implements Storer {
+export class GithubPublisher implements Publisher {
   private client: Octokit;
   constructor({ client }: { client: Octokit }) {
     this.client = client;
   }
 
-  async createRemote({
+  async publish({
     values,
+    directory,
   }: {
-    entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;
-  }) {
+    directory: string;
+  }): Promise<{ remoteUrl: string }> {
+    const remoteUrl = await this.createRemote(values);
+    await this.pushToRemote(directory, remoteUrl);
+
+    return { remoteUrl };
+  }
+
+  private async createRemote(values: RequiredTemplateValues) {
     const [owner, name] = values.storePath.split('/');
 
     const {
@@ -45,7 +53,7 @@ export class GithubStorer implements Storer {
     return cloneUrl;
   }
 
-  async pushToRemote(directory: string, remote: string): Promise<void> {
+  private async pushToRemote(directory: string, remote: string): Promise<void> {
     const repo = await Repository.init(directory, 0);
     const index = await repo.refreshIndex();
     await index.addAll();
