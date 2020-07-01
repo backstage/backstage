@@ -18,12 +18,17 @@ import { createPlugin } from '@backstage/core';
 import ProfileCatalog from './components/ProfileCatalog';
 import ClusterPage from './components/ClusterPage';
 import ClusterList from './components/ClusterList';
+import {
+  gitOpsClusterListRoute,
+  gitOpsClusterDetailsRoute,
+  gitOpsClusterCreateRoute,
+} from './routes';
 
 export const plugin = createPlugin({
   id: 'gitops-profiles',
   register({ router }) {
-    router.registerRoute('/gitops-clusters', ClusterList);
-    router.registerRoute('/gitops-cluster/:owner/:repo', ClusterPage);
-    router.registerRoute('/gitops-cluster-create', ProfileCatalog);
+    router.addRoute(gitOpsClusterListRoute, ClusterList);
+    router.addRoute(gitOpsClusterDetailsRoute, ClusterPage);
+    router.addRoute(gitOpsClusterCreateRoute, ProfileCatalog);
   },
 });

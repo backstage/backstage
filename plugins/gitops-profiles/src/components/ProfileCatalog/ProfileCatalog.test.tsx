@@ -20,13 +20,28 @@ import mockFetch from 'jest-fetch-mock';
 import ProfileCatalog from './ProfileCatalog';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
+import {
+  ApiProvider,
+  ApiRegistry,
+  githubAuthApiRef,
+  GithubAuth,
+  OAuthRequestManager,
+} from '@backstage/core';
 import { gitOpsApiRef, GitOpsRestApi } from '../../api';
 
 describe('ProfileCatalog', () => {
   it('should render', () => {
+    const oauthRequestApi = new OAuthRequestManager();
     const apis = ApiRegistry.from([
       [gitOpsApiRef, new GitOpsRestApi('http://localhost:3008')],
+      [
+        githubAuthApiRef,
+        GithubAuth.create({
+          apiOrigin: 'http://localhost:7000',
+          basePath: '/auth/',
+          oauthRequestApi,
+        }),
+      ],
     ]);
     mockFetch.mockResponse(() => new Promise(() => {}));
     const rendered = render(

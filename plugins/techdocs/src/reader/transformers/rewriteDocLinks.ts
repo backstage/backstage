@@ -17,9 +17,7 @@
 import URLParser from '../urlParser';
 import type { Transformer } from './index';
 
-type AddBaseUrlOptions = {};
-
-export const rewriteDocLinks = ({}: AddBaseUrlOptions): Transformer => {
+export const rewriteDocLinks = (): Transformer => {
   return dom => {
     const updateDom = <T extends Element>(
       list: Array<T>,

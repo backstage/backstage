@@ -70,9 +70,9 @@ export class CatalogClient implements CatalogApi {
     return await this.getOptional(`/locations/${id}`);
   }
 
-  async getEntities(
+  async getEntities<EntityType extends Entity = Entity>(
     filter?: Record<string, string | string[]>,
-  ): Promise<Entity[]> {
+  ): Promise<EntityType[]> {
     let path = `/entities`;
     if (filter) {
       const params = new URLSearchParams();

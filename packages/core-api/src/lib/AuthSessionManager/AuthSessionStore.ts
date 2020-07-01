@@ -36,6 +36,8 @@ type Options<T> = {
 /**
  * AuthSessionStore decorates another SessionManager with a functionality
  * to store the session in local storage.
+ *
+ * Session is serialized to JSON with special support for following types: Set.
  */
 export class AuthSessionStore<T> implements SessionManager<T> {
   private readonly manager: SessionManager<T>;
@@ -90,7 +92,12 @@ export class AuthSessionStore<T> implements SessionManager<T> {
     try {
       const sessionJson = localStorage.getItem(this.storageKey);
       if (sessionJson) {
-        const session = JSON.parse(sessionJson);
+        const session = JSON.parse(sessionJson, (_key, value) => {
+          if (value?.__type === 'Set') {
+            return new Set(value.__value);
+          }
+          return value;
+        });
         return session;
       }
 
@@ -105,7 +112,18 @@ export class AuthSessionStore<T> implements SessionManager<T> {
     if (session === undefined) {
       localStorage.removeItem(this.storageKey);
     } else {
-      localStorage.setItem(this.storageKey, JSON.stringify(session));
+      localStorage.setItem(
+        this.storageKey,
+        JSON.stringify(session, (_key, value) => {
+          if (value instanceof Set) {
+            return {
+              __type: 'Set',
+              __value: Array.from(value),
+            };
+          }
+          return value;
+        }),
+      );
     }
   }
 }

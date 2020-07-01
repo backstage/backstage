@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateEntityV1alpha1 } from "@backstage/catalog-model";
-import { RequiredTemplateValues } from "../templater";
-import { JsonValue } from "@backstage/config";
 
-export type Storer = {
-  createRemote(opts: { entity: TemplateEntityV1alpha1, values: RequiredTemplateValues & Record<string, JsonValue>}): Promise<string>;
-  pushToRemote(directory: string, remote: string): Promise<void>;
-}
+import transform, { Transformer } from '.';
+
+describe('transform', () => {
+  it('calls the transformers', () => {
+    const fn = jest.fn();
+    const mockTransformer = (): Transformer => (dom: Element) => {
+      fn(dom);
+      return dom;
+    };
+
+    transform('<html></html>', [mockTransformer()]);
+
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledWith(expect.any(Element));
+  });
+});

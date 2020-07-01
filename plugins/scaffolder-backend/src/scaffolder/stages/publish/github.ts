@@ -14,38 +14,47 @@
  * limitations under the License.
  */
 
-import { Storer } from './types';
+import { Publisher } from './types';
 import { Octokit } from '@octokit/rest';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
 
-export class GithubStorer implements Storer {
+export class GithubPublisher implements Publisher {
   private client: Octokit;
   constructor({ client }: { client: Octokit }) {
     this.client = client;
   }
 
-  async createRemote({
+  async publish({
     values,
+    directory,
   }: {
-    entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;
-  }) {
-    const [owner, name] = values.storePath.split('/');
+    directory: string;
+  }): Promise<{ remoteUrl: string }> {
+    const remoteUrl = await this.createRemote(values);
+    await this.pushToRemote(directory, remoteUrl);
 
-    const {
-      data: { clone_url: cloneUrl },
-    } = await this.client.repos.createInOrg({
-      name,
-      org: owner,
-    });
-
-    return cloneUrl;
+    return { remoteUrl };
   }
 
-  async pushToRemote(directory: string, remote: string): Promise<void> {
+  private async createRemote(
+    values: RequiredTemplateValues & Record<string, JsonValue>,
+  ) {
+    const [owner, name] = values.storePath.split('/');
+
+    const repoCreationPromise = values.isOrg
+      ? this.client.repos.createInOrg({ name, org: owner })
+      : this.client.repos.createForAuthenticatedUser({ name });
+
+    const { data } = await repoCreationPromise;
+
+    return data?.clone_url;
+  }
+
+  private async pushToRemote(directory: string, remote: string): Promise<void> {
     const repo = await Repository.init(directory, 0);
     const index = await repo.refreshIndex();
     await index.addAll();

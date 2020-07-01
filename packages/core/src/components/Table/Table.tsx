@@ -35,7 +35,6 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import MTable, {
   Column,
   MaterialTableProps,
-  MTableCell,
   MTableHeader,
   MTableToolbar,
   Options,
@@ -95,14 +94,6 @@ const tableIcons = {
     <ViewColumn {...props} ref={ref} />
   )),
 };
-
-const useCellStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    color: theme.palette.grey[500],
-    padding: theme.spacing(0, 2, 0, 2.5),
-    height: '56px',
-  },
-}));
 
 const useHeaderStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
@@ -169,7 +160,6 @@ export function Table<T extends object = {}>({
   subtitle,
   ...props
 }: TableProps<T>) {
-  const cellClasses = useCellStyles();
   const headerClasses = useHeaderStyles();
   const toolbarClasses = useToolbarStyles();
   const theme = useTheme<BackstageTheme>();
@@ -185,9 +175,6 @@ export function Table<T extends object = {}>({
   return (
     <MTable<T>
       components={{
-        Cell: cellProps => (
-          <MTableCell className={cellClasses.root} {...cellProps} />
-        ),
         Header: headerProps => (
           <MTableHeader classes={headerClasses} {...headerProps} />
         ),
