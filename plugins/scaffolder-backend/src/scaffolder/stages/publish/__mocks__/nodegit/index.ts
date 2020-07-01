@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-const mockIndex = {
+export const mockIndex = {
   addAll: jest.fn(),
   write: jest.fn(),
   writeTree: jest.fn().mockResolvedValue('mockoid'),
 };
 
-const mockRepo = {
+export const mockRepo = {
   refreshIndex: jest.fn().mockResolvedValue(mockIndex),
   createCommit: jest.fn(),
 };
 
-const mockRemote = {
+export const mockRemote = {
   push: jest.fn(),
 };
 

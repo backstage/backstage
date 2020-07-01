@@ -18,11 +18,22 @@ jest.mock('@octokit/rest');
 jest.mock('nodegit');
 
 import { Octokit } from '@octokit/rest';
+import * as NodeGit from 'nodegit';
 import { OctokitResponse, ReposCreateInOrgResponseData } from '@octokit/types';
 import { GithubPublisher } from './github';
 
 const { mockGithubClient } = require('@octokit/rest') as {
   mockGithubClient: { repos: jest.Mocked<Octokit['repos']> };
+};
+
+const { Repository, mockRepo, mockIndex, Signature } = require('nodegit') as {
+  Repository: jest.Mocked<{ init: any }>;
+  Signature: jest.Mocked<{ now: any }>;
+  Cred: jest.Mocked<{ init: any }>;
+  Remote: jest.Mocked<{ push: any }>;
+
+  mockIndex: jest.Mocked<NodeGit.Index>;
+  mockRepo: jest.Mocked<NodeGit.Repository>;
 };
 
 describe('Github Publisher', () => {
@@ -78,5 +89,72 @@ describe('Github Publisher', () => {
     });
   });
 
-  describe('publish: createGitDirectory', () => {});
+  describe('publish: createGitDirectory', () => {
+    const values = {
+      isOrg: true,
+      storePath: 'blam/test',
+      owner: 'lols',
+    };
+
+    const mockDir = '/tmp/test/dir';
+
+    mockGithubClient.repos.createInOrg.mockResolvedValue({
+      data: {
+        clone_url: 'mockclone',
+      },
+    } as OctokitResponse<ReposCreateInOrgResponseData>);
+    it('should call init on the repo with the directory', async () => {
+      await publisher.publish({
+        values,
+        directory: mockDir,
+      });
+
+      expect(Repository.init).toHaveBeenCalledWith(mockDir, 0);
+    });
+
+    it('should call refresh index on the index and write the new files', async () => {
+      await publisher.publish({
+        values,
+        directory: mockDir,
+      });
+
+      expect(mockRepo.refreshIndex).toHaveBeenCalled();
+    });
+
+    it('should call add all files and write', async () => {
+      await publisher.publish({
+        values,
+        directory: mockDir,
+      });
+
+      expect(mockIndex.addAll).toHaveBeenCalled();
+      expect(mockIndex.write).toHaveBeenCalled();
+      expect(mockIndex.writeTree).toHaveBeenCalled();
+    });
+
+    it('should create a commit with on head with the right name and commiter', async () => {
+      const mockSignature = { mockSignature: 'bloblly' };
+      Signature.now.mockReturnValue(mockSignature);
+
+      await publisher.publish({
+        values,
+        directory: mockDir,
+      });
+
+      expect(Signature.now).toHaveBeenCalledTimes(2);
+      expect(Signature.now).toHaveBeenCalledWith(
+        'Scaffolder',
+        'scaffolder@backstage.io',
+      );
+
+      expect(mockRepo.createCommit).toHaveBeenCalledWith(
+        'HEAD',
+        mockSignature,
+        mockSignature,
+        'initial commit',
+        'mockoid',
+        [],
+      );
+    });
+  });
 });
