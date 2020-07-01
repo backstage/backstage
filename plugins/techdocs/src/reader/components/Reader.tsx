@@ -19,9 +19,6 @@ import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
-import { Grid } from '@material-ui/core';
-import { Header, Content, ItemCard } from '@backstage/core';
-
 import transformer, {
   addBaseUrl,
   rewriteDocLinks,
@@ -31,10 +28,13 @@ import transformer, {
 } from '../transformers';
 import { docStorageURL } from '../../config';
 import URLFormatter from '../urlFormatter';
+import { TechDocsNotFound } from './TechDocsNotFound';
+import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
 const useFetch = (url: string) => {
   const state = useAsync(async () => {
     const response = await fetch(url);
+    if (response.status === 404) return '404';
     const raw = await response.text();
     return raw;
   }, [url]);
@@ -116,39 +116,13 @@ export const Reader = () => {
     }
   }, [shadowDomRef, state, componentId, path, navigate]);
 
+  if (state.value === '404') return <TechDocsNotFound />;
+
   return (
     <>
-      <Header
-        title={componentId ?? 'Documentation'}
-        subtitle={componentId ?? 'Documentation available in Backstage'}
-      />
-
-      <Content>
-        {componentId ? (
-          <div ref={shadowDomRef} />
-        ) : (
-          <Grid container>
-            <Grid item xs={12} sm={6} md={3}>
-              <ItemCard
-                onClick={() => navigate('/docs/mkdocs')}
-                tags={['Developer Tool']}
-                title="MkDocs"
-                label="Read Docs"
-                description="MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. "
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <ItemCard
-                onClick={() => navigate('/docs/backstage-microsite')}
-                tags={['Service']}
-                title="Backstage"
-                label="Read Docs"
-                description="Getting started guides, API Overview, documentation around how to Create a Plugin and more. "
-              />
-            </Grid>
-          </Grid>
-        )}
-      </Content>
+      <TechDocsPageWrapper title={componentId} subtitle={componentId}>
+        <div ref={shadowDomRef} />
+      </TechDocsPageWrapper>
     </>
   );
 };

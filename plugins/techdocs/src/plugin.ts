@@ -30,6 +30,7 @@
  */
 
 import { createPlugin, createRouteRef } from '@backstage/core';
+import { TechDocsHome } from './reader/components/TechDocsHome';
 import { Reader } from './reader/components/Reader';
 
 export const rootRouteRef = createRouteRef({
@@ -45,7 +46,7 @@ export const rootDocsRouteRef = createRouteRef({
 export const plugin = createPlugin({
   id: 'techdocs',
   register({ router }) {
-    router.addRoute(rootRouteRef, Reader);
+    router.addRoute(rootRouteRef, TechDocsHome);
     router.addRoute(rootDocsRouteRef, Reader);
   },
 });
