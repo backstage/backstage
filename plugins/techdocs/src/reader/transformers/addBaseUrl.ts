@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import URLParser from '../urlParser';
+import URLFormatter from '../urlFormatter';
 import type { Transformer } from './index';
 
 type AddBaseUrlOptions = {
@@ -36,11 +36,16 @@ export const addBaseUrl = ({
       Array.from(list)
         .filter(elem => !!elem.getAttribute(attributeName))
         .forEach((elem: T) => {
-          const newUrl = new URLParser(
-            `${docStorageURL}/${componentId}/${path}`,
-            elem.getAttribute(attributeName)!,
-          ).parse();
-          elem.setAttribute(attributeName, newUrl);
+          const urlFormatter = new URLFormatter(
+            path.length < 1 || path.endsWith('/')
+              ? `${docStorageURL}/${componentId}/${path}`
+              : `${docStorageURL}/${componentId}/${path}/`,
+          );
+
+          elem.setAttribute(
+            attributeName,
+            urlFormatter.formatURL(elem.getAttribute(attributeName)!),
+          );
         });
     };
 
