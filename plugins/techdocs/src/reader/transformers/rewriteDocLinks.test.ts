@@ -49,9 +49,9 @@ describe('rewriteDocLinks', () => {
 
     expect(getSample(shadowDom, 'a', 'href', 6)).toEqual([
       'http://example.org/',
-      'http://localhost/example',
-      'http://localhost/example-docs',
-      'http://localhost/example-docs/example-page',
+      'http://localhost/example/',
+      'http://localhost/example-docs/',
+      'http://localhost/example-docs/example-page/',
     ]);
   });
 });
