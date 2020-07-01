@@ -36,7 +36,7 @@ export async function createRouter(
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
 
-  const appUrl = options.config.getString('app.baseUrl');
+  const appOrigin = options.config.getString('app.baseUrl');
   const backendUrl = options.config.getString('backend.baseUrl');
   const authUrl = `${backendUrl}/auth`;
 
@@ -64,7 +64,7 @@ export async function createRouter(
       providers: {
         google: {
           development: {
-            appOrigin: appUrl,
+            appOrigin,
             secure: false,
             clientId: process.env.AUTH_GOOGLE_CLIENT_ID!,
             clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET!,
@@ -72,7 +72,7 @@ export async function createRouter(
         },
         github: {
           development: {
-            appOrigin: appUrl,
+            appOrigin,
             secure: false,
             clientId: process.env.AUTH_GITHUB_CLIENT_ID!,
             clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET!,
@@ -80,7 +80,7 @@ export async function createRouter(
         },
         gitlab: {
           development: {
-            appOrigin: appUrl,
+            appOrigin,
             secure: false,
             clientId: process.env.AUTH_GITLAB_CLIENT_ID!,
             clientSecret: process.env.AUTH_GITLAB_CLIENT_SECRET!,
@@ -95,7 +95,7 @@ export async function createRouter(
         },
         okta: {
           development: {
-            appOrigin: appUrl,
+            appOrigin,
             secure: false,
             clientId: process.env.AUTH_OKTA_CLIENT_ID!,
             clientSecret: process.env.AUTH_OKTA_CLIENT_SECRET!,
