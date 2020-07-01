@@ -41,6 +41,22 @@ describe('Helpers', () => {
         spec: {
           type: 'cookiecutter',
           path: './template',
+          schema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            required: ['storePath', 'owner'],
+            properties: {
+              owner: {
+                type: 'string',
+                title: 'Owner',
+                description: 'Who is going to own this component',
+              },
+              storePath: {
+                type: 'string',
+                title: 'Store path',
+                description: 'GitHub store path in org/repo format',
+              },
+            },
+          },
         },
       };
 
@@ -72,6 +88,22 @@ describe('Helpers', () => {
         spec: {
           type: 'cookiecutter',
           path: './template',
+          schema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            required: ['storePath', 'owner'],
+            properties: {
+              owner: {
+                type: 'string',
+                title: 'Owner',
+                description: 'Who is going to own this component',
+              },
+              storePath: {
+                type: 'string',
+                title: 'Store path',
+                description: 'GitHub store path in org/repo format',
+              },
+            },
+          },
         },
       };
 
@@ -101,6 +133,22 @@ describe('Helpers', () => {
         spec: {
           type: 'cookiecutter',
           path: './template',
+          schema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            required: ['storePath', 'owner'],
+            properties: {
+              owner: {
+                type: 'string',
+                title: 'Owner',
+                description: 'Who is going to own this component',
+              },
+              storePath: {
+                type: 'string',
+                title: 'Store path',
+                description: 'GitHub store path in org/repo format',
+              },
+            },
+          },
         },
       };
 
@@ -131,6 +179,22 @@ describe('Helpers', () => {
         spec: {
           type: 'cookiecutter',
           path: './template',
+          schema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            required: ['storePath', 'owner'],
+            properties: {
+              owner: {
+                type: 'string',
+                title: 'Owner',
+                description: 'Who is going to own this component',
+              },
+              storePath: {
+                type: 'string',
+                title: 'Store path',
+                description: 'GitHub store path in org/repo format',
+              },
+            },
+          },
         },
       };
 
@@ -159,6 +223,22 @@ describe('Helpers', () => {
         spec: {
           type: 'cookiecutter',
           path: './template',
+          schema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            required: ['storePath', 'owner'],
+            properties: {
+              owner: {
+                type: 'string',
+                title: 'Owner',
+                description: 'Who is going to own this component',
+              },
+              storePath: {
+                type: 'string',
+                title: 'Store path',
+                description: 'GitHub store path in org/repo format',
+              },
+            },
+          },
         },
       };
 

@@ -25,6 +25,7 @@ import {
   Header,
   Lifecycle,
   InfoCard,
+  errorApiRef,
 } from '@backstage/core';
 import {
   TemplateEntityV1alpha1,
@@ -36,6 +37,7 @@ import { scaffolderApiRef } from '../../api';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { Job } from '../JobStatusModal/types';
 export const CreatePage = () => {
+  const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
@@ -68,16 +70,24 @@ export const CreatePage = () => {
     null,
   );
   const handleCreateComplete = async (job: Job) => {
+    const componentYaml = job.metadata.remoteUrl?.replace(
+      /\.git$/,
+      '/blob/master/component-info.yaml',
+    );
+    if (!componentYaml) {
+      errorApi.post(
+        new Error(
+          `Failed to find component-info.yaml file in ${job.metadata.remoteUrl}`,
+        ),
+      );
+      return;
+    }
+
     const {
       entities: [createdEntity],
-    } = await catalogApi.addLocation(
-      'github',
-      job.metadata.remoteUrl.replace(
-        /\.git$/,
-        '/blob/master/component-info.yaml',
-      ),
-    );
-    setEntity(createdEntity);
+    } = await catalogApi.addLocation('github', componentYaml);
+
+    setEntity(createdEntity as ComponentEntityV1alpha1);
   };
 
   if (!template && isValidating) return <LinearProgress />;

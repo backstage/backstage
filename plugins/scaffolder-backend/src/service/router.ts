@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import Router from 'express-promise-router';
-import express from 'express';
-import {
-  PreparerBuilder,
-  TemplaterBase,
-  JobProcessor,
-  RequiredTemplateValues,
-} from '../scaffolder';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import Docker from 'dockerode';
-import { InputError } from '@backstage/backend-common';
-import { StageContext } from '../scaffolder/jobs/types';
-import { Octokit } from '@octokit/rest';
-import { GithubStorer } from '../scaffolder/stages/store/github';
 import { JsonValue } from '@backstage/config';
+import { Octokit } from '@octokit/rest';
+import Docker from 'dockerode';
+import express from 'express';
+import Router from 'express-promise-router';
+import { Logger } from 'winston';
+import {
+  JobProcessor,
+  PreparerBuilder,
+  RequiredTemplateValues,
+  TemplaterBase,
+} from '../scaffolder';
+import { StageContext } from '../scaffolder/jobs/types';
+import { GithubStorer } from '../scaffolder/stages/store/github';
+
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templater: TemplaterBase;

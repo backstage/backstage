@@ -1,8 +1,24 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { useState, useEffect } from 'react';
 import { Job } from './types';
 import { useApi } from '@backstage/core';
 import { scaffolderApiRef } from '../../api';
 
+const DEFAULT_POLLING_INTERVAL = 1000;
 const poll = (thunk: () => Promise<void>, ms: number) => {
   let shouldStop = false;
   (async () => {
@@ -17,12 +33,15 @@ const poll = (thunk: () => Promise<void>, ms: number) => {
   };
 };
 
-export const useJobPolling = (jobId: string | null) => {
+export const useJobPolling = (
+  jobId: string | null,
+  pollingInterval = DEFAULT_POLLING_INTERVAL,
+) => {
   const scaffolderApi = useApi(scaffolderApiRef);
+  const [job, setJob] = useState<Job | null>(null);
 
-  const [job, setJob] = useState<Job | void>(undefined);
   useEffect(() => {
-    if (!jobId) return;
+    if (!jobId) return () => {};
     const stopPolling = poll(async () => {
       const nextJobState = await scaffolderApi.getJob(jobId);
       if (
@@ -32,10 +51,11 @@ export const useJobPolling = (jobId: string | null) => {
         stopPolling();
       }
       setJob(nextJobState);
-    }, 500);
+    }, pollingInterval);
     return () => {
       stopPolling();
     };
-  }, [jobId, setJob]);
+  }, [jobId, setJob, scaffolderApi, pollingInterval]);
+
   return job;
 };
