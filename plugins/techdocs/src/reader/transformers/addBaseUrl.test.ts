@@ -63,52 +63,72 @@ describe('addBaseUrl', () => {
   });
 
   it('includes path option without slash', () => {
-    const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      transformers: [
-        addBaseUrl({
-          docStorageURL: DOC_STORAGE_URL,
-          componentId: 'example-docs',
-          path: 'examplepath',
-        }),
-      ],
-    });
+    const shadowDom = createTestShadowDom(
+      `
+      <img src="../img/win-py-install.png" />
+      <img src="../img/initial-layout.png" />
+      <link href="https://www.mkdocs.org/" />
+      <link href="../assets/images/favicon.png" />
+      <script src="https://www.google-analytics.com/analytics.js"></script>
+      <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
+    `,
+      {
+        transformers: [
+          addBaseUrl({
+            docStorageURL: DOC_STORAGE_URL,
+            componentId: 'example-docs',
+            path: 'examplepath',
+          }),
+        ],
+      },
+    );
 
     expect(getSample(shadowDom, 'img', 'src')).toEqual([
-      'https://example-host.storage.googleapis.com/example-docs/examplepath/img/win-py-install.png',
-      'https://example-host.storage.googleapis.com/example-docs/examplepath/img/initial-layout.png',
+      'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
+      'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
     ]);
     expect(getSample(shadowDom, 'link', 'href')).toEqual([
       'https://www.mkdocs.org/',
-      'https://example-host.storage.googleapis.com/example-docs/examplepath/assets/images/favicon.png',
+      'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
     ]);
     expect(getSample(shadowDom, 'script', 'src')).toEqual([
       'https://www.google-analytics.com/analytics.js',
-      'https://example-host.storage.googleapis.com/example-docs/examplepath/assets/javascripts/vendor.d710d30a.min.js',
+      'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
     ]);
   });
 
   it('includes path option with slash', () => {
-    const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      transformers: [
-        addBaseUrl({
-          docStorageURL: DOC_STORAGE_URL,
-          componentId: 'example-docs',
-          path: 'examplepath/',
-        }),
-      ],
-    });
+    const shadowDom = createTestShadowDom(
+      `
+      <img src="../img/win-py-install.png" />
+      <img src="../img/initial-layout.png" />
+      <link href="https://www.mkdocs.org/" />
+      <link href="../assets/images/favicon.png" />
+      <script src="https://www.google-analytics.com/analytics.js"></script>
+      <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
+    `,
+      {
+        transformers: [
+          addBaseUrl({
+            docStorageURL: DOC_STORAGE_URL,
+            componentId: 'example-docs',
+            path: 'examplepath/',
+          }),
+        ],
+      },
+    );
 
     expect(getSample(shadowDom, 'img', 'src')).toEqual([
-      'https://example-host.storage.googleapis.com/example-docs/examplepath/img/win-py-install.png',
-      'https://example-host.storage.googleapis.com/example-docs/examplepath/img/initial-layout.png',
+      'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
+      'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
     ]);
     expect(getSample(shadowDom, 'link', 'href')).toEqual([
       'https://www.mkdocs.org/',
-      'https://example-host.storage.googleapis.com/example-docs/examplepath/assets/images/favicon.png',
+      'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
     ]);
     expect(getSample(shadowDom, 'script', 'src')).toEqual([
       'https://www.google-analytics.com/analytics.js',
-      'https://example-host.storage.googleapis.com/example-docs/examplepath/assets/javascripts/vendor.d710d30a.min.js',
+      'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
     ]);
   });
 });
