@@ -18,17 +18,15 @@ const os = require('os');
 const fs = require('fs-extra');
 const { resolve: resolvePath, join: joinPath } = require('path');
 const Browser = require('zombie');
-const { execFile: execFileCb } = require('child_process');
-const { promisify } = require('util');
 const {
   spawnPiped,
+  runPlain,
   handleError,
   waitForPageWithText,
   waitFor,
   waitForExit,
   print,
 } = require('./helpers');
-const execFile = promisify(execFileCb);
 
 async function main() {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
@@ -58,7 +56,8 @@ async function buildDistWorkspace(workspaceName, rootDir) {
   await fs.ensureDir(workspaceDir);
 
   print(`Preparing workspace`);
-  await execFile('yarn', [
+  await runPlain([
+    'yarn',
     'backstage-cli',
     'build-workspace',
     workspaceDir,
@@ -72,7 +71,7 @@ async function buildDistWorkspace(workspaceName, rootDir) {
   await pinYarnVersion(workspaceDir);
 
   print('Installing workspace dependencies');
-  await execFile('yarn', ['install', '--production', '--frozen-lockfile'], {
+  await runPlain(['yarn', 'install', '--production', '--frozen-lockfile'], {
     cwd: workspaceDir,
   });
 
@@ -137,11 +136,11 @@ async function createApp(appName, workspaceDir, rootDir) {
 
     for (const cmd of ['install', 'tsc', 'build', 'lint:all', 'test:all']) {
       print(`Running 'yarn ${cmd}' in newly created app`);
-      await execFile('yarn', [cmd], { cwd: appDir });
+      await runPlain(['yarn', cmd], { cwd: appDir });
     }
 
     print(`Running 'yarn test:e2e:ci' in newly created app`);
-    await execFile('yarn', ['test:e2e:ci'], {
+    await runPlain(['yarn', 'test:e2e:ci'], {
       cwd: resolvePath(appDir, 'packages', 'app'),
       env: {
         ...process.env,
@@ -202,7 +201,7 @@ async function createPlugin(pluginName, appDir) {
     const pluginDir = resolvePath(appDir, 'plugins', pluginName);
     for (const cmd of [['lint'], ['test', '--no-watch']]) {
       print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
-      await execFile('yarn', cmd, { cwd: pluginDir });
+      await runPlain(['yarn', ...cmd], { cwd: pluginDir });
     }
 
     return pluginName;
