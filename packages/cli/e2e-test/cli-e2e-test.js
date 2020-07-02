@@ -16,6 +16,7 @@
 
 const os = require('os');
 const fs = require('fs-extra');
+const killTree = require('tree-kill');
 const { resolve: resolvePath, join: joinPath } = require('path');
 const Browser = require('zombie');
 const {
@@ -217,7 +218,6 @@ async function createPlugin(pluginName, appDir) {
 async function testAppServe(pluginName, appDir) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
-    detached: true,
   });
   Browser.localhost('localhost', 3000);
 
@@ -236,7 +236,7 @@ async function testAppServe(pluginName, appDir) {
     throw new Error(`App serve test failed, ${error}`);
   } finally {
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    process.kill(-startApp.pid, 'SIGTERM');
+    killTree(startApp.pid);
   }
 
   await waitForExit(startApp);
