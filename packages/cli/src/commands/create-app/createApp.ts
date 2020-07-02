@@ -24,6 +24,7 @@ import os from 'os';
 import { Task, templatingTask, installWithLocalDeps } from '../../lib/tasks';
 import { paths } from '../../lib/paths';
 import { version } from '../../lib/version';
+
 const exec = promisify(execCb);
 
 async function checkExists(rootDir: string, name: string) {

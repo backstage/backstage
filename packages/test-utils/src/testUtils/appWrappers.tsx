@@ -25,6 +25,7 @@ import privateExports, {
 import { RenderResult } from '@testing-library/react';
 import { renderWithEffects } from '@backstage/test-utils-core';
 import { createMockApiRegistry } from './mockApiRegistry';
+
 const { PrivateAppImpl } = privateExports;
 
 const NotFoundErrorPage = () => {

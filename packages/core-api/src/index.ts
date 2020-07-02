@@ -16,4 +16,5 @@
 
 export * from './public';
 import * as privateExports from './private';
+
 export default privateExports;
