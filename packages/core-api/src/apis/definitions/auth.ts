@@ -263,3 +263,13 @@ export const gitlabAuthApiRef = createApiRef<
   id: 'core.auth.gitlab',
   description: 'Provides authentication towards Gitlab APIs',
 });
+
+/**
+ * Provides authentication for custom identity providers.
+ */
+export const oauth2ApiRef = createApiRef<
+  OAuthApi & OpenIdConnectApi & ProfileInfoApi & SessionStateApi
+>({
+  id: 'core.auth.oauth2',
+  description: 'Example of how to use oauth2 custom provider',
+});
