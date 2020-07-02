@@ -23,6 +23,7 @@ import {
 import { ExitCodeError } from './errors';
 import { promisify } from 'util';
 import { LogFunc } from './logging';
+
 const execFile = promisify(execFileCb);
 
 type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {

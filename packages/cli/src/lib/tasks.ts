@@ -23,6 +23,7 @@ import recursive from 'recursive-readdir';
 import { promisify } from 'util';
 import { exec as execCb } from 'child_process';
 import { paths } from './paths';
+
 const exec = promisify(execCb);
 
 const TASK_NAME_MAX_LENGTH = 14;

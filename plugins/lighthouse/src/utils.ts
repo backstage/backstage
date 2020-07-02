@@ -15,6 +15,7 @@
  */
 import { useLocation } from 'react-router-dom';
 import { Website, Audit, LighthouseCategoryId, AuditCompleted } from './api';
+
 export function useQuery(): URLSearchParams {
   return new URLSearchParams(useLocation().search);
 }
@@ -53,13 +54,13 @@ export function buildSparklinesDataForItem(
       (audit: Audit): audit is AuditCompleted => audit.status === 'COMPLETED',
     )
     .reduce((scores, audit) => {
-      Object.values(audit.categories).forEach((category) => {
+      Object.values(audit.categories).forEach(category => {
         scores[category.id] = scores[category.id] || [];
         scores[category.id].unshift(category.score);
       });
 
       // edge case: if only one audit exists, force a "flat" sparkline
-      Object.values(scores).forEach((arr) => {
+      Object.values(scores).forEach(arr => {
         if (arr.length === 1) arr.push(arr[0]);
       });
 

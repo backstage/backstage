@@ -15,6 +15,7 @@
  */
 
 const childProcess = require('child_process');
+
 const { spawn } = childProcess;
 
 const EXPECTED_LOAD_ERRORS = /ECONNREFUSED|ECONNRESET|did not get to load all resources/;
@@ -133,7 +134,7 @@ async function waitForPageWithText(
       if (findTextAttempts <= maxFindTextAttempts) {
         await browser.visit(path);
         await new Promise(resolve => setTimeout(resolve, intervalMs));
-        continue
+        continue;
       } else {
         throw error;
       }
