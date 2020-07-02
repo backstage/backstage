@@ -18,14 +18,16 @@ import { Table, TableColumn, TableProps } from '@backstage/core';
 import { Link } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
-import Star from '@material-ui/icons/Star';
-import StarOutline from '@material-ui/icons/StarBorder';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import { entityRoute } from '../../routes';
+import {
+  favouriteEntityIcon,
+  favouriteEntityTooltip,
+} from '../FavouriteEntity/FavouriteEntity';
 
 const columns: TableColumn<Entity>[] = [
   {
@@ -125,13 +127,8 @@ export const CatalogTable = ({
       const isStarred = isStarredEntity(rowData);
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () =>
-          isStarred ? (
-            <Star htmlColor="#f3ba37" fontSize="small" />
-          ) : (
-            <StarOutline fontSize="small" />
-          ),
-        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
+        icon: () => favouriteEntityIcon(isStarred),
+        tooltip: favouriteEntityTooltip(isStarred),
         onClick: () => toggleStarredEntity(rowData),
       };
     },
