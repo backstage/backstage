@@ -1,13 +1,13 @@
-<svg id="Assets" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 337.46 428.5">
+<svg id="favicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 337.46 428.5">
     <title>
-        favicon
+        Backstage favicon
     </title>
     <style>
-        path {
+        #favicon path {
             fill: #121212;
         }
         @media (prefers-color-scheme: dark) {
-            path {
+            #favicon path {
                 fill: #7df3e1;
             }
         }
