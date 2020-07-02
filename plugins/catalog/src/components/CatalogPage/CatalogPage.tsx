@@ -82,7 +82,7 @@ const CatalogPageContents = () => {
   );
 
   const filterGroups = useMemo<ButtonGroup[]>(
-    (org: orgName) => [
+    () => [
       {
         name: 'Personal',
         items: [
@@ -101,7 +101,7 @@ const CatalogPageContents = () => {
         ],
       },
       {
-        name: org,
+        name: orgName,
         items: [
           {
             id: 'all',
@@ -111,7 +111,7 @@ const CatalogPageContents = () => {
         ],
       },
     ],
-    [isStarredEntity, userId],
+    [isStarredEntity, userId, orgName],
   );
 
   return (
