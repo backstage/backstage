@@ -99,6 +99,7 @@ async function pinYarnVersion(dir) {
 async function createApp(appName, workspaceDir, rootDir) {
   const child = spawnPiped(
     [
+      'node',
       resolvePath(workspaceDir, 'packages/cli/bin/backstage-cli'),
       'create-app',
       '--skip-install',
