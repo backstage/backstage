@@ -221,6 +221,7 @@ async function testAppServe(pluginName, appDir) {
   });
   Browser.localhost('localhost', 3000);
 
+  let successful = false;
   try {
     const browser = new Browser();
 
@@ -232,6 +233,7 @@ async function testAppServe(pluginName, appDir) {
     );
 
     print('Both App and Plugin loaded correctly');
+    successful = true;
   } catch (error) {
     throw new Error(`App serve test failed, ${error}`);
   } finally {
@@ -239,7 +241,13 @@ async function testAppServe(pluginName, appDir) {
     killTree(startApp.pid);
   }
 
-  await waitForExit(startApp);
+  try {
+    await waitForExit(startApp);
+  } catch (error) {
+    if (!successful) {
+      throw error;
+    }
+  }
 }
 
 process.on('unhandledRejection', handleError);

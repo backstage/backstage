@@ -38,12 +38,6 @@ function spawnPiped(cmd, options) {
     ...options,
   });
   child.on('error', handleError);
-  child.on('exit', code => {
-    if (code) {
-      print(`Child '${cmd.join(' ')}' exited with code ${code}`);
-      process.exit(code);
-    }
-  });
 
   const logPrefix = cmd.map(s => s.replace(/.+\//, '')).join(' ');
   child.stdout.on(
