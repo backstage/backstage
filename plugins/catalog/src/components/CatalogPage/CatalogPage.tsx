@@ -19,6 +19,7 @@ import {
   ContentHeader,
   identityApiRef,
   SupportButton,
+  configApiRef,
   useApi,
 } from '@backstage/core';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
@@ -51,6 +52,8 @@ const CatalogPageContents = () => {
   const userId = useApi(identityApiRef).getUserId();
   const [selectedTab, setSelectedTab] = useState<string>();
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Company';
 
   const tabs = useMemo<LabeledComponentType[]>(
     () => [
@@ -79,7 +82,7 @@ const CatalogPageContents = () => {
   );
 
   const filterGroups = useMemo<ButtonGroup[]>(
-    () => [
+    (org: orgName) => [
       {
         name: 'Personal',
         items: [
@@ -98,7 +101,7 @@ const CatalogPageContents = () => {
         ],
       },
       {
-        name: 'Company', // TODO: Replace with Company name, read from app config.
+        name: org,
         items: [
           {
             id: 'all',
