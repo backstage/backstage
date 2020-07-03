@@ -105,7 +105,7 @@ export async function createRouter(
         },
         oauth2: {
           development: {
-            appOrigin: 'http://localhost:3000',
+            appOrigin,
             secure: false,
             clientId: process.env.AUTH_OAUTH2_CLIENT_ID!,
             clientSecret: process.env.AUTH_OAUTH2_CLIENT_SECRET!,
