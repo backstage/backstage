@@ -19,6 +19,7 @@ export * from './rewriteDocLinks';
 export * from './addLinkClickListener';
 export * from './removeMkdocsHeader';
 export * from './modifyCss';
+export * from './onCssReady';
 
 export type Transformer = (dom: Element) => Element;
 
