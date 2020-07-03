@@ -35,15 +35,22 @@ import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
 const useFetch = (url: string): AsyncState<string | Error> => {
   const state = useAsync(async () => {
-    const response = await fetch(url);
-    if (response.status === 404) {
-      return new Error('Page not found');
+    const request = await fetch(url);
+    if (request.status === 404) {
+      return [request.url, new Error('Page not found')];
     }
-    const raw = await response.text();
-    return raw;
+    const response = await request.text();
+    return [request.url, response];
   }, [url]);
 
-  return state;
+  const [fetchedUrl, fetchedValue] = state.value ?? [];
+
+  if (url !== fetchedUrl) {
+    // Fixes a race condition between two pages
+    return { loading: true };
+  }
+
+  return Object.assign(state, fetchedValue ? { value: fetchedValue } : {});
 };
 
 const useEnforcedTrailingSlash = (): void => {
@@ -60,7 +67,7 @@ const useEnforcedTrailingSlash = (): void => {
 export const Reader = () => {
   const location = useLocation();
   const { componentId, '*': path } = useParams();
-  const shadowDomRef = useShadowDom();
+  const [ref, shadowRoot] = useShadowDom(componentId, path);
   const navigate = useNavigate();
   const normalizedUrl = new URLFormatter(
     `${docStorageURL}${location.pathname.replace('/docs', '')}`,
