@@ -34,7 +34,9 @@ import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 const useFetch = (url: string) => {
   const state = useAsync(async () => {
     const response = await fetch(url);
-    if (response.status === 404) return '404';
+    if (response.status === 404) {
+      return new Error('Page not found');
+    }
     const raw = await response.text();
     return raw;
   }, [url]);
@@ -116,7 +118,7 @@ export const Reader = () => {
     }
   }, [shadowDomRef, state, componentId, path, navigate]);
 
-  if (state.value === '404') return <TechDocsNotFound />;
+  if (state.value instanceof Error) return <TechDocsNotFound />;
 
   return (
     <>
