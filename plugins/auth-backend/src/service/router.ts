@@ -36,7 +36,8 @@ export async function createRouter(
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
 
-  const appOrigin = options.config.getString('app.baseUrl');
+  const appUrl = new URL(options.config.getString('app.baseUrl'));
+  const appOrigin = appUrl.origin;
   const backendUrl = options.config.getString('backend.baseUrl');
   const authUrl = `${backendUrl}/auth`;
 
