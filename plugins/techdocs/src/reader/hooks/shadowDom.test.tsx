@@ -23,7 +23,7 @@ const ComponentWithoutHook = () => {
 };
 
 const ComponentWithHook = () => {
-  const ref = useShadowDom();
+  const [ref] = useShadowDom();
   return <div data-testid="shadow-dom" ref={ref} />;
 };
 

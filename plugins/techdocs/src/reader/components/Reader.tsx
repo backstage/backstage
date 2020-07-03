@@ -35,15 +35,22 @@ import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
 const useFetch = (url: string): AsyncState<string | Error> => {
   const state = useAsync(async () => {
-    const response = await fetch(url);
-    if (response.status === 404) {
-      return new Error('Page not found');
+    const request = await fetch(url);
+    if (request.status === 404) {
+      return [request.url, new Error('Page not found')];
     }
-    const raw = await response.text();
-    return raw;
+    const response = await request.text();
+    return [request.url, response];
   }, [url]);
 
-  return state;
+  const [fetchedUrl, fetchedValue] = state.value ?? [];
+
+  if (url !== fetchedUrl) {
+    // Fixes a race condition between two pages
+    return { loading: true };
+  }
+
+  return Object.assign(state, fetchedValue ? { value: fetchedValue } : {});
 };
 
 const useEnforcedTrailingSlash = (): void => {
@@ -58,71 +65,76 @@ const useEnforcedTrailingSlash = (): void => {
 };
 
 export const Reader = () => {
+  useEnforcedTrailingSlash();
+
   const location = useLocation();
   const { componentId, '*': path } = useParams();
-  const shadowDomRef = useShadowDom();
+  const [shadowDomRef, shadowRoot] = useShadowDom();
   const navigate = useNavigate();
   const normalizedUrl = new URLFormatter(
     `${docStorageURL}${location.pathname.replace('/docs', '')}`,
   ).formatBaseURL();
   const state = useFetch(`${normalizedUrl}index.html`);
 
-  useEnforcedTrailingSlash();
-
   React.useEffect(() => {
-    const divElement = shadowDomRef.current;
-    if (
-      divElement?.shadowRoot &&
-      state.value &&
-      !(state.value instanceof Error)
-    ) {
-      const transformedElement = transformer(state.value, [
-        addBaseUrl({
-          docStorageURL,
-          componentId,
-          path,
-        }),
-        rewriteDocLinks(),
-        modifyCss({
-          cssTransforms: {
-            '.md-main__inner': [{ 'margin-top': '0' }],
-            '.md-sidebar': [{ top: '0' }, { width: '20rem' }],
-            '.md-typeset': [{ 'font-size': '1rem' }],
-            '.md-nav': [{ 'font-size': '1rem' }],
-            '.md-grid': [{ 'max-width': '80vw' }],
-          },
-        }),
-        removeMkdocsHeader(),
-      ]);
-
-      divElement.shadowRoot.innerHTML = '';
-
-      if (transformedElement) {
-        divElement.shadowRoot.appendChild(transformedElement);
-        transformer(divElement.shadowRoot.children[0], [
-          dom => {
-            setTimeout(() => {
-              if (window.location.hash) {
-                const hash = window.location.hash.slice(1);
-                divElement.shadowRoot?.getElementById(hash)?.scrollIntoView();
-              }
-            }, 200);
-            return dom;
-          },
-          addLinkClickListener({
-            onClick: (_: MouseEvent, url: string) => {
-              const parsedUrl = new URL(url);
-              navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
-
-              divElement.shadowRoot
-                ?.querySelector(parsedUrl.hash)
-                ?.scrollIntoView();
-            },
-          }),
-        ]);
-      }
+    if (!shadowRoot) {
+      return; // Shadow DOM isn't ready
     }
-  }, [shadowDomRef, state, componentId, path, navigate]);
+
+    if (state.loading) {
+      return; // Page isn't ready
+    }
+
+    // Pre-render
+    const transformedElement = transformer(state.value as string, [
+      addBaseUrl({
+        docStorageURL,
+        componentId,
+        path,
+      }),
+      rewriteDocLinks(),
+      modifyCss({
+        cssTransforms: {
+          '.md-main__inner': [{ 'margin-top': '0' }],
+          '.md-sidebar': [{ top: '0' }, { width: '20rem' }],
+          '.md-typeset': [{ 'font-size': '1rem' }],
+          '.md-nav': [{ 'font-size': '1rem' }],
+          '.md-grid': [{ 'max-width': '80vw' }],
+        },
+      }),
+      removeMkdocsHeader(),
+    ]);
+
+    if (!transformedElement) {
+      return; // An unexpected error occurred
+    }
+
+    Array.from(shadowRoot.children).forEach(child =>
+      shadowRoot.removeChild(child),
+    );
+    shadowRoot.appendChild(transformedElement);
+
+    // Post-render
+    transformer(shadowRoot.children[0], [
+      dom => {
+        setTimeout(() => {
+          if (window.location.hash) {
+            const hash = window.location.hash.slice(1);
+            shadowRoot?.getElementById(hash)?.scrollIntoView();
+          }
+        }, 200);
+        return dom;
+      },
+      addLinkClickListener({
+        onClick: (_: MouseEvent, url: string) => {
+          const parsedUrl = new URL(url);
+          navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+
+          shadowRoot?.querySelector(parsedUrl.hash)?.scrollIntoView();
+        },
+      }),
+    ]);
+  }, [componentId, path, shadowRoot, state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (state.value instanceof Error) return <TechDocsNotFound />;
 
