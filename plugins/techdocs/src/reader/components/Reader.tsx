@@ -65,6 +65,8 @@ const useEnforcedTrailingSlash = (): void => {
 };
 
 export const Reader = () => {
+  useEnforcedTrailingSlash();
+
   const location = useLocation();
   const { componentId, '*': path } = useParams();
   const [ref, shadowRoot] = useShadowDom(componentId, path);
@@ -73,8 +75,6 @@ export const Reader = () => {
     `${docStorageURL}${location.pathname.replace('/docs', '')}`,
   ).formatBaseURL();
   const state = useFetch(`${normalizedUrl}index.html`);
-
-  useEnforcedTrailingSlash();
 
   React.useEffect(() => {
     const divElement = shadowDomRef.current;
