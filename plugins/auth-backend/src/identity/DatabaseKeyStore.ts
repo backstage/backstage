@@ -42,6 +42,7 @@ export class DatabaseKeyStore implements KeyStore {
 
     await database.migrate.latest({
       directory: migrationsDir,
+      tableName: 'knex_migrations_auth',
     });
 
     return new DatabaseKeyStore(options);
