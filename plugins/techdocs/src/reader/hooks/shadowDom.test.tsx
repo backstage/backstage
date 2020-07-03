@@ -19,26 +19,26 @@ import { renderWithEffects } from '@backstage/test-utils';
 import { useShadowDom } from './shadowDom';
 
 const ComponentWithoutHook = () => {
-  return <div data-testid="root" />;
+  return <div data-testid="shadow-dom" />;
 };
 
 const ComponentWithHook = () => {
   const [ref] = useShadowDom();
-  return <div data-testid="root" ref={ref} />;
+  return <div data-testid="shadow-dom" ref={ref} />;
 };
 
 describe('useShadowDom', () => {
   it('does not create a Shadow DOM instance', async () => {
     const rendered = await renderWithEffects(<ComponentWithoutHook />);
 
-    const divElement = rendered.getByTestId('root');
+    const divElement = rendered.getByTestId('shadow-dom');
     expect(divElement.shadowRoot).not.toBeInstanceOf(ShadowRoot);
   });
 
   it('create a Shadow DOM instance', async () => {
     const rendered = await renderWithEffects(<ComponentWithHook />);
 
-    const divElement = rendered.getByTestId('root');
+    const divElement = rendered.getByTestId('shadow-dom');
     expect(divElement.shadowRoot).toBeInstanceOf(ShadowRoot);
   });
 });
