@@ -19,7 +19,7 @@ import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 
 describe('TechDocs Home', () => {
-  it('should render a TechDocs home page', async () => {
+  it('should render a TechDocs home page', () => {
     const { getByTestId, queryByText } = render(
       wrapInTestApp(<TechDocsHome />),
     );
