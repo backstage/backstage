@@ -69,7 +69,7 @@ export const Reader = () => {
 
   const location = useLocation();
   const { componentId, '*': path } = useParams();
-  const [ref, shadowRoot] = useShadowDom(componentId, path);
+  const [ref, shadowRoot] = useShadowDom();
   const navigate = useNavigate();
   const normalizedUrl = new URLFormatter(
     `${docStorageURL}${location.pathname.replace('/docs', '')}`,

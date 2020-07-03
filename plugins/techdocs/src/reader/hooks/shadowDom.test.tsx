@@ -23,7 +23,7 @@ const ComponentWithoutHook = () => {
 };
 
 const ComponentWithHook = () => {
-  const [ref] = useShadowDom('mkdocs', 'about/license/');
+  const [ref] = useShadowDom();
   return <div data-testid="root" ref={ref} />;
 };
 
@@ -31,19 +31,14 @@ describe('useShadowDom', () => {
   it('does not create a Shadow DOM instance', async () => {
     const rendered = await renderWithEffects(<ComponentWithoutHook />);
 
-    const outerDivElement = rendered.getByTestId('root');
-    expect(outerDivElement.shadowRoot).not.toBeInstanceOf(ShadowRoot);
-    expect(outerDivElement.children.length).toBe(0);
+    const divElement = rendered.getByTestId('root');
+    expect(divElement.shadowRoot).not.toBeInstanceOf(ShadowRoot);
   });
 
   it('create a Shadow DOM instance', async () => {
     const rendered = await renderWithEffects(<ComponentWithHook />);
 
-    const outerDivElement = rendered.getByTestId('root');
-    expect(outerDivElement.shadowRoot).not.toBeInstanceOf(ShadowRoot);
-    expect(outerDivElement.children.length).toBe(1);
-
-    const innerDivElement = outerDivElement.children[0];
-    expect(innerDivElement.shadowRoot).toBeInstanceOf(ShadowRoot);
+    const divElement = rendered.getByTestId('root');
+    expect(divElement.shadowRoot).toBeInstanceOf(ShadowRoot);
   });
 });
