@@ -25,6 +25,10 @@ const main = (argv: string[]) => {
   program
     .command('create-app')
     .description('Creates a new app in a new directory')
+    .option(
+      '--skip-install',
+      'Skip the install and builds steps after creating the app',
+    )
     .action(
       lazyAction(() => import('./commands/create-app/createApp'), 'default'),
     );
@@ -139,6 +143,11 @@ const main = (argv: string[]) => {
     .command('clean')
     .description('Delete cache directories')
     .action(lazyAction(() => import('./commands/clean/clean'), 'default'));
+
+  program
+    .command('build-workspace <workspace-dir> ...<packages>')
+    .description('Builds a temporary dist workspace from the provided packages')
+    .action(lazyAction(() => import('./commands/buildWorkspace'), 'default'));
 
   program.on('command:*', () => {
     console.log();

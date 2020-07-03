@@ -28,7 +28,7 @@ import {
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
 import { version } from '../../lib/version';
-import { Task, templatingTask, installWithLocalDeps } from '../../lib/tasks';
+import { Task, templatingTask } from '../../lib/tasks';
 
 const exec = promisify(execCb);
 
@@ -142,9 +142,7 @@ async function cleanUp(tempDir: string) {
 }
 
 async function buildPlugin(pluginFolder: string) {
-  await installWithLocalDeps(paths.targetRoot);
-
-  const commands = ['yarn tsc', 'yarn build'];
+  const commands = ['yarn install', 'yarn tsc', 'yarn build'];
   for (const command of commands) {
     await Task.forItem('executing', command, async () => {
       process.chdir(pluginFolder);
