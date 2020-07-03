@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
+export { default as OAuth2 } from './OAuth2';
+export * from './types';

@@ -33,6 +33,11 @@ export type OAuthProviderOptions = {
   callbackURL: string;
 };
 
+export type GenericOAuth2ProviderOptions = OAuthProviderOptions & {
+  authorizationURL: string;
+  tokenURL: string;
+};
+
 export type OAuthProviderConfig = {
   /**
    * Cookies can be marked with a secure flag to send cookies only when the request
@@ -59,6 +64,11 @@ export type OAuthProviderConfig = {
    * The location of the OAuth Authorization Server
    */
   audience?: string;
+};
+
+export type GenericOAuth2ProviderConfig = OAuthProviderConfig & {
+  authorizationURL: string;
+  tokenURL: string;
 };
 
 export type EnvironmentProviderConfig = {

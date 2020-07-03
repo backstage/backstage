@@ -15,14 +15,15 @@
  */
 
 import Router from 'express-promise-router';
-import { createGithubProvider } from './github';
-import { createGoogleProvider } from './google';
-import { createGitlabProvider } from './gitlab';
-import { createSamlProvider } from './saml';
-import { createOktaProvider } from './okta';
-import { AuthProviderFactory, AuthProviderConfig } from './types';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
+import { createGithubProvider } from './github';
+import { createGitlabProvider } from './gitlab';
+import { createGoogleProvider } from './google';
+import { createOAuth2Provider } from './oauth2';
+import { createOktaProvider } from './okta';
+import { createSamlProvider } from './saml';
+import { AuthProviderConfig, AuthProviderFactory } from './types';
 
 const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
@@ -30,6 +31,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   gitlab: createGitlabProvider,
   saml: createSamlProvider,
   okta: createOktaProvider,
+  oauth2: createOAuth2Provider,
 };
 
 export const createAuthProviderRouter = (
