@@ -20,6 +20,32 @@ import { Grid } from '@material-ui/core';
 import { ItemCard } from '@backstage/core';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
+type DocumentationSite = {
+  title: string;
+  description: string;
+  tags: Array<string>;
+  path: string;
+  btnLabel: string;
+};
+
+const documentationSites: Array<DocumentationSite> = [
+  {
+    title: 'MkDocs',
+    description:
+      "MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. ",
+    tags: ['Developer Tool'],
+    path: '/docs/mkdocs',
+    btnLabel: 'Read Docs',
+  },
+  {
+    title: 'Backstage Docs',
+    description:
+      'Getting started guides, API Overview, documentation around how to Create a Plugin and more. ',
+    tags: ['Service'],
+    path: '/docs/backstage-microsite',
+    btnLabel: 'Read Docs',
+  },
+];
 export const TechDocsHome = () => {
   const navigate = useNavigate();
 
@@ -30,24 +56,17 @@ export const TechDocsHome = () => {
         subtitle="Documentation available in Backstage"
       >
         <Grid container data-testid="docs-explore">
-          <Grid item xs={12} sm={6} md={3}>
-            <ItemCard
-              onClick={() => navigate('/docs/mkdocs')}
-              tags={['Developer Tool']}
-              title="MkDocs"
-              label="Read Docs"
-              description="MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. "
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <ItemCard
-              onClick={() => navigate('/docs/backstage-microsite')}
-              tags={['Service']}
-              title="Backstage"
-              label="Read Docs"
-              description="Getting started guides, API Overview, documentation around how to Create a Plugin and more. "
-            />
-          </Grid>
+          {documentationSites.map((site: DocumentationSite, index: number) => (
+            <Grid key={index} item xs={12} sm={6} md={3}>
+              <ItemCard
+                onClick={() => navigate(site.path)}
+                tags={site.tags}
+                title={site.title}
+                label={site.btnLabel}
+                description={site.description}
+              />
+            </Grid>
+          ))}
         </Grid>
       </TechDocsPageWrapper>
     </>
