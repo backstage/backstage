@@ -21,6 +21,6 @@ import { wrapInTestApp } from '@backstage/test-utils';
 describe('TechDocs Not Found', () => {
   it('should render a Documentation not found page', async () => {
     const { queryByText } = render(wrapInTestApp(<TechDocsNotFound />));
-    expect(queryByText(/Error: Documentation not found/i)).toBeInTheDocument();
+    expect(queryByText(/error: documentation not found/i)).toBeInTheDocument();
   });
 });
