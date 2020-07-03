@@ -19,26 +19,31 @@ import { renderWithEffects } from '@backstage/test-utils';
 import { useShadowDom } from './shadowDom';
 
 const ComponentWithoutHook = () => {
-  return <div data-testid="shadow-dom" />;
+  return <div data-testid="root" />;
 };
 
 const ComponentWithHook = () => {
-  const ref = useShadowDom();
-  return <div data-testid="shadow-dom" ref={ref} />;
+  const [ref] = useShadowDom('mkdocs', 'about/license/');
+  return <div data-testid="root" ref={ref} />;
 };
 
 describe('useShadowDom', () => {
   it('does not create a Shadow DOM instance', async () => {
     const rendered = await renderWithEffects(<ComponentWithoutHook />);
 
-    const divElement = rendered.getByTestId('shadow-dom');
-    expect(divElement.shadowRoot).not.toBeInstanceOf(ShadowRoot);
+    const outerDivElement = rendered.getByTestId('root');
+    expect(outerDivElement.shadowRoot).not.toBeInstanceOf(ShadowRoot);
+    expect(outerDivElement.children.length).toBe(0);
   });
 
   it('create a Shadow DOM instance', async () => {
     const rendered = await renderWithEffects(<ComponentWithHook />);
 
-    const divElement = rendered.getByTestId('shadow-dom');
-    expect(divElement.shadowRoot).toBeInstanceOf(ShadowRoot);
+    const outerDivElement = rendered.getByTestId('root');
+    expect(outerDivElement.shadowRoot).not.toBeInstanceOf(ShadowRoot);
+    expect(outerDivElement.children.length).toBe(1);
+
+    const innerDivElement = outerDivElement.children[0];
+    expect(innerDivElement.shadowRoot).toBeInstanceOf(ShadowRoot);
   });
 });
