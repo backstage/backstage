@@ -17,6 +17,8 @@
 import React from 'react';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
+import { AsyncState } from 'react-use/lib/useAsync';
+
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 import transformer, {
@@ -31,7 +33,7 @@ import URLFormatter from '../urlFormatter';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
-const useFetch = (url: string) => {
+const useFetch = (url: string): AsyncState<string | Error> => {
   const state = useAsync(async () => {
     const response = await fetch(url);
     if (response.status === 404) {
@@ -69,7 +71,11 @@ export const Reader = () => {
 
   React.useEffect(() => {
     const divElement = shadowDomRef.current;
-    if (divElement?.shadowRoot && state.value) {
+    if (
+      divElement?.shadowRoot &&
+      state.value &&
+      !(state.value instanceof Error)
+    ) {
       const transformedElement = transformer(state.value, [
         addBaseUrl({
           docStorageURL,
