@@ -28,7 +28,7 @@ import {
   useApi,
 } from '@backstage/core';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
-import { Grid } from '@material-ui/core';
+import { Grid, Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -37,6 +37,7 @@ import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -62,6 +63,16 @@ export const getPageTheme = (entity?: Entity): PageTheme => {
   const themeKey = entity?.spec?.type?.toString() ?? 'home';
   return pageTheme[themeKey] ?? pageTheme.home;
 };
+
+const EntityPageTitle: FC<{ title: string; entity: Entity | undefined }> = ({
+  entity,
+  title,
+}) => (
+  <Box display="inline-flex" alignItems="center" height="1em">
+    {title}
+    {entity && <FavouriteEntity entity={entity} />}
+  </Box>
+);
 
 export const EntityPage: FC<{}> = () => {
   const { optionalNamespaceAndName, kind } = useParams() as {
@@ -138,7 +149,11 @@ export const EntityPage: FC<{}> = () => {
 
   return (
     <Page theme={getPageTheme(entity)}>
-      <Header title={headerTitle} type={headerType}>
+      <Header
+        title={<EntityPageTitle title={headerTitle} entity={entity} />}
+        pageTitleOverride={headerTitle}
+        type={headerType}
+      >
         {entity && (
           <>
             <HeaderLabel

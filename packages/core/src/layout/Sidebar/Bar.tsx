@@ -44,6 +44,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.shortest,
     }),
+    '& > *': {
+      flexShrink: 0,
+    },
   },
   drawerOpen: {
     width: sidebarConfig.drawerWidthOpen,

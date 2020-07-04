@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Typography,
@@ -38,7 +38,7 @@ import {
   configApiRef,
 } from '@backstage/core';
 
-const WelcomePage: FC<{}> = () => {
+const WelcomePage = () => {
   const appTitle =
     useApi(configApiRef).getOptionalString('app.title') ?? 'Backstage';
   const profile = { givenName: '' };

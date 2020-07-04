@@ -16,6 +16,7 @@
 import { SentryIssue } from './sentry-issue';
 import { SentryApi } from './sentry-api';
 import mockData from './sentry-issue-mock.json';
+
 function getMockIssue(): SentryIssue {
   const randomizedStats = {
     '12h': new Array(12)

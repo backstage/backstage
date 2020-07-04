@@ -34,7 +34,7 @@ describe('rewriteDocLinks', () => {
     ]);
   });
 
-  it('should transform a href with licalhost as baseUrl', () => {
+  it('should transform a href with localhost as baseUrl', () => {
     const shadowDom = createTestShadowDom(
       `
         <a href="http://example.org/">Test</a>
@@ -49,9 +49,9 @@ describe('rewriteDocLinks', () => {
 
     expect(getSample(shadowDom, 'a', 'href', 6)).toEqual([
       'http://example.org/',
-      'http://localhost/example',
-      'http://localhost/example-docs',
-      'http://localhost/example-docs/example-page',
+      'http://localhost/example/',
+      'http://localhost/example-docs/',
+      'http://localhost/example-docs/example-page/',
     ]);
   });
 });

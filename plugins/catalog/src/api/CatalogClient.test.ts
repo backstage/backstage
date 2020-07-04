@@ -18,6 +18,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
 import { Entity } from '@backstage/catalog-model';
+
 const server = setupServer();
 
 describe('CatalogClient', () => {
