@@ -87,6 +87,7 @@ export const SupportButton: FC<Props> = ({
         Support
       </Button>
       <Popover
+        data-testid="support-button-popover"
         open={popoverOpen}
         anchorEl={anchorEl}
         anchorOrigin={{
@@ -120,7 +121,8 @@ export const SupportButton: FC<Props> = ({
                 <GroupIcon />
               </ListItemIcon>
               <ListItemText
-                primary="Support"
+                disableTypography
+                primary={<Typography>Support</Typography>}
                 secondary={
                   <div>
                     {slackChannels.map((channel, i) => (
@@ -137,7 +139,8 @@ export const SupportButton: FC<Props> = ({
                 <GroupIcon />
               </ListItemIcon>
               <ListItemText
-                primary="Contact"
+                disableTypography
+                primary={<Typography>Contact</Typography>}
                 secondary={
                   <div>
                     {contactEmails.map((em, index) => (
