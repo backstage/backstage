@@ -21,7 +21,7 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.raw(
-    `CREATE VIEW location_update_log_latest AS select * from (select * from "location_update_log" order by "location_update_log"."created_at" desc) as myalias group by "location_id";`
+    `CREATE VIEW location_update_log_latest AS select * from (select * from "location_update_log" order by "location_update_log"."created_at" desc) as myalias group by "location_id", "id", "status", "created_at", "message", "entity_name";`
   );
 };
 
