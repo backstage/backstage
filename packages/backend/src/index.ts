@@ -42,11 +42,23 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 
   return (plugin: string): PluginEnvironment => {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
+
+    // const database = knex({
+    //   client: 'sqlite3',
+    //   connection: ':memory:',
+    //   useNullAsDefault: true,
+    // });
+
+    // My local development PG database has no password and is on the defalt port and localhost.
     const database = knex({
-      client: 'sqlite3',
-      connection: ':memory:',
+      client: 'pg',
+      connection: {
+        user: process.env.PGUSER,
+        database: process.env.PGDATABASE,
+      },
       useNullAsDefault: true,
     });
+
     database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });

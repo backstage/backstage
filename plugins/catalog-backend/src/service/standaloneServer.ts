@@ -17,6 +17,7 @@
 import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
+import knex from 'knex';
 import { HigherOrderOperations } from '..';
 import { DatabaseEntitiesCatalog } from '../catalog/DatabaseEntitiesCatalog';
 import { DatabaseLocationsCatalog } from '../catalog/DatabaseLocationsCatalog';
@@ -36,7 +37,16 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'catalog-backend' });
 
   logger.debug('Creating application...');
-  const db = await DatabaseManager.createInMemoryDatabase({ logger });
+  const database = knex({
+    client: 'pg',
+    connection: {
+      user: process.env.PGUSER,
+      database: process.env.PGDATABASE,
+    },
+    useNullAsDefault: true,
+  });
+
+  const db = await DatabaseManager.createDatabase(database, { logger });
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
   const locationReader = new LocationReaders();
