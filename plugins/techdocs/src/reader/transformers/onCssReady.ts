@@ -34,7 +34,9 @@ export const onCssReady = ({
 
     let count = cssPages.length;
 
-    onLoad(dom);
+    if (count > 0) {
+      onLoading(dom);
+    }
 
     cssPages.forEach(cssPage =>
       cssPage.addEventListener('load', () => {
