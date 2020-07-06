@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-const normalizeBaseURL = (baseURL: string): string => {
-  const url = new URL(baseURL);
-  url.pathname = url.pathname.replace(/([^/])$/, '$1/');
-  return url.toString();
-};
+import { createTestShadowDom, FIXTURES } from '../../test-utils';
+import { addLinkClickListener } from '.';
 
-export default class URLParser {
-  constructor(public baseURL: string, public pathname: string) {
-    this.baseURL = normalizeBaseURL(baseURL);
-  }
+describe('addLinkClickListener', () => {
+  it('calls onClick when a link has been clicked', () => {
+    const fn = jest.fn();
+    const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
+      transformers: [
+        addLinkClickListener({
+          onClick: fn,
+        }),
+      ],
+    });
 
-  parse(): string {
-    return new URL(this.pathname, this.baseURL).toString();
-  }
-}
+    shadowDom.querySelector('a')?.click();
+
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+});

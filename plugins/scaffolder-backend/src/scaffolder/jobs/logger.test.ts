@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { makeLogStream } from './logger';
+
 describe('Logger', () => {
   const mockMeta = { test: 'blob' };
 

@@ -112,6 +112,7 @@
     "@types/webpack-dev-server": "^3.10.0",
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
+    "tree-kill": "^1.2.2",
     "ts-node": "^8.6.2",
     "zombie": "^6.1.4"
   },

@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-import { createTestShadowDom, FIXTURES } from '../../test-utils';
-import { addEventListener } from '../transformers';
+import { ProfileInfo, BackstageIdentity } from '../../../definitions';
 
-describe('addEventListener', () => {
-  it('calls onClick when a link has been clicked', () => {
-    const fn = jest.fn();
-    const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      transformers: [
-        addEventListener({
-          onClick: fn,
-        }),
-      ],
-    });
-
-    shadowDom.querySelector('a')?.click();
-
-    expect(fn).toHaveBeenCalledTimes(1);
-  });
-});
+export type OAuth2Session = {
+  providerInfo: {
+    idToken: string;
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
+};

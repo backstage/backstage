@@ -100,6 +100,16 @@ export async function createRouter(
             audience: process.env.AUTH_OKTA_AUDIENCE,
           },
         },
+        oauth2: {
+          development: {
+            appOrigin: 'http://localhost:3000',
+            secure: false,
+            clientId: process.env.AUTH_OAUTH2_CLIENT_ID!,
+            clientSecret: process.env.AUTH_OAUTH2_CLIENT_SECRET!,
+            authorizationURL: process.env.AUTH_OAUTH2_AUTH_URL!,
+            tokenURL: process.env.AUTH_OAUTH2_TOKEN_URL!,
+          },
+        },
       },
     },
   };

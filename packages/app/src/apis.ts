@@ -26,12 +26,14 @@ import {
   FeatureFlags,
   GoogleAuth,
   GithubAuth,
+  OAuth2,
   OktaAuth,
   GitlabAuth,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
   githubAuthApiRef,
+  oauth2ApiRef,
   oktaAuthApiRef,
   gitlabAuthApiRef,
   storageApiRef,
@@ -110,7 +112,16 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     gitlabAuthApiRef,
     GitlabAuth.create({
-      apiOrigin: 'http://localhost:7000',
+      apiOrigin: backendUrl,
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+  );
+
+  builder.add(
+    oauth2ApiRef,
+    OAuth2.create({
+      apiOrigin: backendUrl,
       basePath: '/auth/',
       oauthRequestApi,
     }),

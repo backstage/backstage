@@ -18,6 +18,8 @@ import { JsonValue } from '@backstage/config';
 import { runDockerContainer } from './helpers';
 import { TemplaterBase, TemplaterRunOptions } from '.';
 import path from 'path';
+import { TemplaterRunResult } from './types';
+
 export class CookieCutter implements TemplaterBase {
   private async fetchTemplateCookieCutter(
     directory: string,
@@ -33,7 +35,7 @@ export class CookieCutter implements TemplaterBase {
     }
   }
 
-  public async run(options: TemplaterRunOptions): Promise<string> {
+  public async run(options: TemplaterRunOptions): Promise<TemplaterRunResult> {
     // First lets grab the default cookiecutter.json file
     const cookieCutterJson = await this.fetchTemplateCookieCutter(
       options.directory,
@@ -65,6 +67,8 @@ export class CookieCutter implements TemplaterBase {
       dockerClient: options.dockerClient,
     });
 
-    return path.resolve(resultDir, options.values.component_id as string);
+    return {
+      resultDir: path.resolve(resultDir, options.values.component_id as string),
+    };
   }
 }

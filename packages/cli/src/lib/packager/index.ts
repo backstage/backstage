@@ -59,7 +59,7 @@ type Options = {
  */
 export async function createDistWorkspace(
   packageNames: string[],
-  options: Options,
+  options: Options = {},
 ) {
   const targetDir =
     options.targetDir ??

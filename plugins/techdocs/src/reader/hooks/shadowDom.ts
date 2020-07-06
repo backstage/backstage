@@ -17,14 +17,15 @@
 import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 
-type IShadowDOMRefObject = RefObject<HTMLDivElement>;
-export const useShadowDom: () => IShadowDOMRefObject = () => {
-  const ref: IShadowDOMRefObject = useRef(null);
+type IUseShadowDOM = () => [RefObject<HTMLDivElement>, ShadowRoot?];
+
+export const useShadowDom: IUseShadowDOM = () => {
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const divElement = ref.current;
     divElement?.attachShadow({ mode: 'open' });
-  }, [ref]);
+  }, []);
 
-  return ref;
+  return [ref, ref.current?.shadowRoot || undefined];
 };

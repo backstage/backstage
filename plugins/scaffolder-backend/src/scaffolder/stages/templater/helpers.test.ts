@@ -26,6 +26,9 @@ describe('helpers', () => {
     jest
       .spyOn(mockDocker, 'run')
       .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
+    jest
+      .spyOn(mockDocker, 'pull')
+      .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
   });
 
   describe('runDockerContainer', () => {
@@ -34,6 +37,17 @@ describe('helpers', () => {
     const templateDir = os.tmpdir();
     const resultDir = os.tmpdir();
 
+    it('will pull the docker container before running', async () => {
+      await runDockerContainer({
+        imageName,
+        args,
+        templateDir,
+        resultDir,
+        dockerClient: mockDocker,
+      });
+
+      expect(mockDocker.pull).toHaveBeenCalledWith(imageName, {});
+    });
     it('should call the dockerClient run command with the correct arguments passed through', async () => {
       await runDockerContainer({
         imageName,

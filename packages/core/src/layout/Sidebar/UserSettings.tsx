@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect } from 'react';
-import Collapse from '@material-ui/core/Collapse';
-import Star from '@material-ui/icons/Star';
-import SignOutIcon from '@material-ui/icons/MeetingRoom';
-import { SidebarContext } from './config';
 import {
-  googleAuthApiRef,
   githubAuthApiRef,
   gitlabAuthApiRef,
+  googleAuthApiRef,
   identityApiRef,
+  oauth2ApiRef,
   oktaAuthApiRef,
   useApi,
 } from '@backstage/core-api';
+import Collapse from '@material-ui/core/Collapse';
+import SignOutIcon from '@material-ui/icons/MeetingRoom';
+import Star from '@material-ui/icons/Star';
+import React, { useContext, useEffect } from 'react';
+import { SidebarContext } from './config';
+import { SidebarItem } from './Items';
 import {
   OAuthProviderSettings,
   OIDCProviderSettings,
   UserProfile as SidebarUserProfile,
 } from './Settings';
-import { SidebarItem } from './Items';
 
 export function SidebarUserSettings() {
   const { isOpen: sidebarOpen } = useContext(SidebarContext);
@@ -66,6 +67,11 @@ export function SidebarUserSettings() {
         <OIDCProviderSettings
           title="Okta"
           apiRef={oktaAuthApiRef}
+          icon={Star}
+        />
+        <OIDCProviderSettings
+          title="YourOrg"
+          apiRef={oauth2ApiRef}
           icon={Star}
         />
         <SidebarItem

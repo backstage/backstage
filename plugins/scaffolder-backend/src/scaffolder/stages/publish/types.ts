@@ -17,7 +17,17 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { RequiredTemplateValues } from '../templater';
 import { JsonValue } from '@backstage/config';
 
+/**
+ * Publisher is in charge of taking a folder created by
+ * the templater, and pushing it to a remote storage
+ */
 export type Publisher = {
+  /**
+   *
+   * @param opts object containing the template entity from the service
+   *             catalog, plus the values from the form and the directory that has
+   *             been templated
+   */
   publish(opts: {
     entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;

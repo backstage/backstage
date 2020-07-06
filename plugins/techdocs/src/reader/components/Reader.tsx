@@ -17,35 +17,46 @@
 import React from 'react';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { AsyncState } from 'react-use/lib/useAsync';
 
-import { Grid } from '@material-ui/core';
-import { Header, Content, ItemCard } from '@backstage/core';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 import transformer, {
   addBaseUrl,
   rewriteDocLinks,
-  addEventListener,
+  addLinkClickListener,
   removeMkdocsHeader,
   modifyCss,
 } from '../transformers';
 import { docStorageURL } from '../../config';
-import URLParser from '../urlParser';
+import URLFormatter from '../urlFormatter';
+import { TechDocsNotFound } from './TechDocsNotFound';
+import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
-const useFetch = (url: string) => {
+const useFetch = (url: string): AsyncState<string | Error> => {
   const state = useAsync(async () => {
-    const response = await fetch(url);
-    const raw = await response.text();
-    return raw;
+    const request = await fetch(url);
+    if (request.status === 404) {
+      return [request.url, new Error('Page not found')];
+    }
+    const response = await request.text();
+    return [request.url, response];
   }, [url]);
 
-  return state;
+  const [fetchedUrl, fetchedValue] = state.value ?? [];
+
+  if (url !== fetchedUrl) {
+    // Fixes a race condition between two pages
+    return { loading: true };
+  }
+
+  return Object.assign(state, fetchedValue ? { value: fetchedValue } : {});
 };
 
 const useEnforcedTrailingSlash = (): void => {
   React.useEffect(() => {
     const actualUrl = window.location.href;
-    const expectedUrl = new URLParser(window.location.href, '.').parse();
+    const expectedUrl = new URLFormatter(window.location.href).formatBaseURL();
 
     if (actualUrl !== expectedUrl) {
       window.history.replaceState({}, document.title, expectedUrl);
@@ -54,85 +65,84 @@ const useEnforcedTrailingSlash = (): void => {
 };
 
 export const Reader = () => {
-  const location = useLocation();
-  const { componentId, '*': path } = useParams();
-  const shadowDomRef = useShadowDom();
-  const navigate = useNavigate();
-  const normalizedUrl = new URLParser(
-    `${docStorageURL}${location.pathname.replace('/docs', '')}`,
-    '.',
-  ).parse();
-  const state = useFetch(`${normalizedUrl}index.html`);
-
   useEnforcedTrailingSlash();
 
-  React.useEffect(() => {
-    const divElement = shadowDomRef.current;
-    if (divElement?.shadowRoot && state.value) {
-      const transformedElement = transformer(state.value, [
-        addBaseUrl({
-          docStorageURL,
-          componentId,
-          path,
-        }),
-        rewriteDocLinks(),
-        modifyCss({
-          cssTransforms: {
-            '.md-main__inner': [{ 'margin-top': '0' }],
-            '.md-sidebar': [{ top: '0' }, { width: '20rem' }],
-            '.md-typeset': [{ 'font-size': '1rem' }],
-            '.md-nav': [{ 'font-size': '1rem' }],
-            '.md-grid': [{ 'max-width': '80vw' }],
-          },
-        }),
-        removeMkdocsHeader(),
-      ]);
+  const location = useLocation();
+  const { componentId, '*': path } = useParams();
+  const [shadowDomRef, shadowRoot] = useShadowDom();
+  const navigate = useNavigate();
+  const normalizedUrl = new URLFormatter(
+    `${docStorageURL}${location.pathname.replace('/docs', '')}`,
+  ).formatBaseURL();
+  const state = useFetch(`${normalizedUrl}index.html`);
 
-      divElement.shadowRoot.innerHTML = '';
-      if (transformedElement) {
-        divElement.shadowRoot.appendChild(transformedElement);
-        transformer(divElement.shadowRoot.children[0], [
-          addEventListener({
-            onClick: navigate,
-          }),
-        ]);
-      }
+  React.useEffect(() => {
+    if (!shadowRoot) {
+      return; // Shadow DOM isn't ready
     }
-  }, [shadowDomRef, state, componentId, path, navigate]);
+
+    if (state.loading) {
+      return; // Page isn't ready
+    }
+
+    // Pre-render
+    const transformedElement = transformer(state.value as string, [
+      addBaseUrl({
+        docStorageURL,
+        componentId,
+        path,
+      }),
+      rewriteDocLinks(),
+      modifyCss({
+        cssTransforms: {
+          '.md-main__inner': [{ 'margin-top': '0' }],
+          '.md-sidebar': [{ top: '0' }, { width: '20rem' }],
+          '.md-typeset': [{ 'font-size': '1rem' }],
+          '.md-nav': [{ 'font-size': '1rem' }],
+          '.md-grid': [{ 'max-width': '80vw' }],
+        },
+      }),
+      removeMkdocsHeader(),
+    ]);
+
+    if (!transformedElement) {
+      return; // An unexpected error occurred
+    }
+
+    Array.from(shadowRoot.children).forEach(child =>
+      shadowRoot.removeChild(child),
+    );
+    shadowRoot.appendChild(transformedElement);
+
+    // Post-render
+    transformer(shadowRoot.children[0], [
+      dom => {
+        setTimeout(() => {
+          if (window.location.hash) {
+            const hash = window.location.hash.slice(1);
+            shadowRoot?.getElementById(hash)?.scrollIntoView();
+          }
+        }, 200);
+        return dom;
+      },
+      addLinkClickListener({
+        onClick: (_: MouseEvent, url: string) => {
+          const parsedUrl = new URL(url);
+          navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+
+          shadowRoot?.querySelector(parsedUrl.hash)?.scrollIntoView();
+        },
+      }),
+    ]);
+  }, [componentId, path, shadowRoot, state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (state.value instanceof Error) return <TechDocsNotFound />;
 
   return (
     <>
-      <Header
-        title={componentId ?? 'Documentation'}
-        subtitle={componentId ?? 'Documentation available in Backstage'}
-      />
-
-      <Content>
-        {componentId ? (
-          <div ref={shadowDomRef} />
-        ) : (
-          <Grid container>
-            <Grid item xs={12} sm={6} md={3}>
-              <ItemCard
-                onClick={() => navigate('/docs/mkdocs')}
-                tags={['Developer Tool']}
-                title="MkDocs"
-                label="Read Docs"
-                description="MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. "
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <ItemCard
-                onClick={() => navigate('/docs/backstage-microsite')}
-                tags={['Service']}
-                title="Backstage"
-                label="Read Docs"
-                description="Getting started guides, API Overview, documentation around how to Create a Plugin and more. "
-              />
-            </Grid>
-          </Grid>
-        )}
-      </Content>
+      <TechDocsPageWrapper title={componentId} subtitle={componentId}>
+        <div ref={shadowDomRef} />
+      </TechDocsPageWrapper>
     </>
   );
 };

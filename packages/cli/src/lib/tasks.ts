@@ -18,12 +18,8 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
 import ora from 'ora';
-import { resolve as resolvePath, basename, dirname } from 'path';
+import { basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
-import { promisify } from 'util';
-import { exec as execCb } from 'child_process';
-import { paths } from './paths';
-const exec = promisify(execCb);
 
 const TASK_NAME_MAX_LENGTH = 14;
 
@@ -104,107 +100,6 @@ export async function templatingTask(
           );
         });
       });
-    }
-  }
-}
-
-// List of local packages that we need to modify as a part of an E2E test
-const PATCH_PACKAGES = [
-  'cli',
-  'config',
-  'config-loader',
-  'core',
-  'core-api',
-  'dev-utils',
-  'test-utils',
-  'test-utils-core',
-  'theme',
-];
-
-// This runs a `yarn install` task, but with special treatment for e2e tests
-export async function installWithLocalDeps(dir: string) {
-  // This makes us install any package inside this repo as a local file dependency.
-  // For example, instead of trying to fetch @backstage/core from npm, we point it
-  // to <repo-root>/packages/core. This makes yarn use a simple file copy to install it instead.
-  if (process.env.BACKSTAGE_E2E_CLI_TEST) {
-    Task.section('Linking packages locally for e2e tests');
-
-    const pkgJsonPath = resolvePath(dir, 'package.json');
-    const pkgJson = await fs.readJson(pkgJsonPath);
-
-    pkgJson.resolutions = pkgJson.resolutions || {};
-    pkgJson.dependencies = pkgJson.dependencies || {};
-
-    if (!pkgJson.resolutions[`@backstage/${PATCH_PACKAGES[0]}`]) {
-      for (const name of PATCH_PACKAGES) {
-        await Task.forItem(
-          'adding',
-          `@backstage/${name} link to package.json`,
-          async () => {
-            const pkgPath = paths.resolveOwnRoot('packages', name);
-            // Add to both resolutions and dependencies, or transitive dependencies will still be fetched from the registry.
-            pkgJson.dependencies[`@backstage/${name}`] = `file:${pkgPath}`;
-            pkgJson.resolutions[`@backstage/${name}`] = `file:${pkgPath}`;
-            delete pkgJson.devDependencies[`@backstage/${name}`];
-
-            await fs
-              .writeJSON(pkgJsonPath, pkgJson, { encoding: 'utf8', spaces: 2 })
-              .catch(error => {
-                throw new Error(
-                  `Failed to add resolutions to package.json: ${error.message}`,
-                );
-              });
-          },
-        );
-      }
-    }
-  }
-
-  await Task.forItem('executing', 'yarn install', async () => {
-    await exec('yarn install', { cwd: dir }).catch(error => {
-      process.stdout.write(error.stderr);
-      process.stdout.write(error.stdout);
-      throw new Error(
-        `Could not execute command ${chalk.cyan('yarn install')}`,
-      );
-    });
-  });
-
-  // This takes care of pointing all the installed packages from this repo to
-  // dist instead of the local src, using the field overrides in publishConfig.
-  // Without this we get type checking errors in the e2e test
-  if (process.env.BACKSTAGE_E2E_CLI_TEST) {
-    Task.section('Patching local dependencies for e2e tests');
-
-    for (const name of PATCH_PACKAGES) {
-      await Task.forItem(
-        'patching',
-        `node_modules/@backstage/${name} package.json`,
-        async () => {
-          const depJsonPath = resolvePath(
-            dir,
-            'node_modules/@backstage',
-            name,
-            'package.json',
-          );
-          const depJson = await fs.readJson(depJsonPath);
-
-          // We want dist to be used for e2e tests
-          for (const key of Object.keys(depJson.publishConfig)) {
-            if (key !== 'access') {
-              depJson[key] = depJson.publishConfig[key];
-            }
-          }
-
-          await fs
-            .writeJSON(depJsonPath, depJson, { encoding: 'utf8', spaces: 2 })
-            .catch(error => {
-              throw new Error(
-                `Failed to add resolutions to package.json: ${error.message}`,
-              );
-            });
-        },
-      );
     }
   }
 }

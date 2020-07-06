@@ -131,13 +131,13 @@ describe('CookieCutter Templater', () => {
       component_id: 'newthing',
     };
 
-    const returnPath = await cookie.run({
+    const { resultDir } = await cookie.run({
       directory: tempdir,
       values,
       dockerClient: mockDocker,
     });
 
-    expect(returnPath.startsWith(`${tempdir}-result`)).toBeTruthy();
+    expect(resultDir.startsWith(`${tempdir}-result`)).toBeTruthy();
   });
 
   it('should pass through the streamer to the run docker helper', async () => {

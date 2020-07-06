@@ -18,11 +18,28 @@ import type { Writable } from 'stream';
 import Docker from 'dockerode';
 import { JsonValue } from '@backstage/config';
 
+/**
+ * Currently the required template values. The owner
+ * and where to store the result from templating
+ */
 export type RequiredTemplateValues = {
   owner: string;
   storePath: string;
 };
 
+/**
+ * The returned directory from the templater which is ready
+ * to pass to the next stage of the scaffolder which is publishing
+ */
+export type TemplaterRunResult = {
+  resultDir: string;
+};
+
+/**
+ * The values that the templater will recieve. The directory of the
+ * skeleton, with the values from the frontend. A dedicated log stream and a docker
+ * client to run any templater on top of your directory.
+ */
 export type TemplaterRunOptions = {
   directory: string;
   values: RequiredTemplateValues & Record<string, JsonValue>;
@@ -32,7 +49,7 @@ export type TemplaterRunOptions = {
 
 export type TemplaterBase = {
   // runs the templating with the values and returns the directory to push the VCS
-  run(opts: TemplaterRunOptions): Promise<string>;
+  run(opts: TemplaterRunOptions): Promise<TemplaterRunResult>;
 };
 
 export type TemplaterConfig = {
