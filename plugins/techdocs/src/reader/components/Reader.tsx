@@ -137,10 +137,10 @@ export const Reader = () => {
       onCssReady({
         docStorageURL,
         onLoading: (dom: Element) => {
-          dom.style.setProperty('opacity', '0');
+          (dom as HTMLElement).style.setProperty('opacity', '0');
         },
         onLoaded: (dom: Element) => {
-          dom.style.removeProperty('opacity');
+          (dom as HTMLElement).style.removeProperty('opacity');
         },
       }),
     ]);
