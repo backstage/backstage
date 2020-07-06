@@ -45,8 +45,10 @@ describe('CookieCutter Templater', () => {
     const tempdir = await mkTemp();
 
     const values = {
-      component_id: 'test',
+      owner: 'blobby',
+      storePath: 'spotify/end-repo',
       description: 'description',
+      component_id: 'newthing',
     };
 
     await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
@@ -65,8 +67,9 @@ describe('CookieCutter Templater', () => {
     await fs.writeJSON(`${tempdir}/cookiecutter.json`, existingJson);
 
     const values = {
-      component_id: 'hello',
-      description: 'im something cool',
+      owner: 'blobby',
+      storePath: 'spotify/end-repo',
+      component_id: 'something',
     };
 
     await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
@@ -82,8 +85,8 @@ describe('CookieCutter Templater', () => {
     await fs.writeFile(`${tempdir}/cookiecutter.json`, "{'");
 
     const values = {
-      component_id: 'hello',
-      description: 'im something cool',
+      owner: 'blobby',
+      storePath: 'spotify/end-repo',
     };
 
     await expect(
@@ -95,8 +98,9 @@ describe('CookieCutter Templater', () => {
     const tempdir = await mkTemp();
 
     const values = {
-      component_id: 'test',
-      description: 'description',
+      owner: 'blobby',
+      storePath: 'spotify/end-repo',
+      component_id: 'newthing',
     };
 
     await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
@@ -122,17 +126,18 @@ describe('CookieCutter Templater', () => {
     const tempdir = await mkTemp();
 
     const values = {
-      component_id: 'test',
-      description: 'description',
+      owner: 'blobby',
+      storePath: 'spotify/end-repo',
+      component_id: 'newthing',
     };
 
-    const returnPath = await cookie.run({
+    const { resultDir } = await cookie.run({
       directory: tempdir,
       values,
       dockerClient: mockDocker,
     });
 
-    expect(returnPath.startsWith(`${tempdir}-result`)).toBeTruthy();
+    expect(resultDir.startsWith(`${tempdir}-result`)).toBeTruthy();
   });
 
   it('should pass through the streamer to the run docker helper', async () => {
@@ -141,8 +146,9 @@ describe('CookieCutter Templater', () => {
     const tempdir = await mkTemp();
 
     const values = {
-      component_id: 'test',
-      description: 'description',
+      owner: 'blobby',
+      storePath: 'spotify/end-repo',
+      component_id: 'newthing',
     };
 
     await cookie.run({

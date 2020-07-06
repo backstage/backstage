@@ -17,7 +17,7 @@ import { PassThrough } from 'stream';
 import winston from 'winston';
 import { JsonValue } from '@backstage/config';
 
-export const useLogStream = (meta: Record<string, JsonValue>) => {
+export const makeLogStream = (meta: Record<string, JsonValue>) => {
   const log: string[] = [];
 
   // Create an empty stream to collect all the log lines into

@@ -16,6 +16,7 @@
 import { JobProcessor } from './processor';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { StageInput } from './types';
+import { RequiredTemplateValues } from '../stages/templater';
 
 describe('JobProcessor', () => {
   const mockEntity: TemplateEntityV1alpha1 = {
@@ -41,7 +42,10 @@ describe('JobProcessor', () => {
     },
   };
 
-  const mockValues = { component_id: 'bob' };
+  const mockValues: RequiredTemplateValues = {
+    owner: 'blobby',
+    storePath: 'spotify/mock-repo',
+  };
 
   describe('create', () => {
     it('creates should create a new job with a unique id', async () => {

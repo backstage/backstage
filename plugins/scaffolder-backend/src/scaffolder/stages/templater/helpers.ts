@@ -44,6 +44,7 @@ export const runDockerContainer = async ({
   templateDir,
   dockerClient,
 }: RunDockerContainerOptions) => {
+  await dockerClient.pull(imageName, {});
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
     args,

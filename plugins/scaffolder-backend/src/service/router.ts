@@ -17,11 +17,19 @@
 import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
-import { PreparerBuilder, TemplaterBase, JobProcessor } from '../scaffolder';
+import {
+  PreparerBuilder,
+  TemplaterBase,
+  JobProcessor,
+  RequiredTemplateValues,
+  StageContext,
+  GithubPublisher,
+} from '../scaffolder';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
 import {} from '@backstage/backend-common';
-import { StageContext } from '../scaffolder/jobs/types';
+import { Octokit } from '@octokit/rest';
+import { JsonValue } from '@backstage/config';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -34,9 +42,11 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const { preparers, templater, logger: parentLogger, dockerClient } = options;
-  const logger = parentLogger.child({ plugin: 'scaffolder' });
 
+  const githubClient = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
+  const { preparers, templater, logger: parentLogger, dockerClient } = options;
+  const githubPulisher = new GithubPublisher({ client: githubClient });
+  const logger = parentLogger.child({ plugin: 'scaffolder' });
   const jobProcessor = new JobProcessor();
 
   router
@@ -48,7 +58,9 @@ export async function createRouter(
         return;
       }
 
-      res.send(job.stages[Number(params.index)].log.join(''));
+      const { log } = job.stages[Number(params.index)] ?? { log: [] };
+
+      res.send(log.join(''));
     })
     .get('/v1/job/:jobId', ({ params }, res) => {
       const job = jobProcessor.get(params.jobId);
@@ -73,37 +85,14 @@ export async function createRouter(
         error: job.error,
       });
     })
-    .post('/v1/jobs', async (_, res) => {
-      // TODO(blam): Create a unique job here and return the ID so that
-      // The end user can poll for updates on the current job
-
-      // TODO(blam): Take this entity from the post body sent from the frontend
-      const mockEntity: TemplateEntityV1alpha1 = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Template',
-        metadata: {
-          annotations: {
-            'backstage.io/managed-by-location':
-              'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
-          },
-          name: 'graphql-starter',
-          title: 'GraphQL Service',
-          description:
-            'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
-          uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
-          etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
-
-          generation: 1,
-        },
-        spec: {
-          type: 'cookiecutter',
-          path: './template',
-        },
-      };
+    .post('/v1/jobs', async (req, res) => {
+      const template: TemplateEntityV1alpha1 = req.body.template;
+      const values: RequiredTemplateValues & Record<string, JsonValue> =
+        req.body.values;
 
       const job = jobProcessor.create({
-        entity: mockEntity,
-        values: { component_id: 'blob' },
+        entity: template,
+        values,
         stages: [
           {
             name: 'Prepare the skeleton',
@@ -129,15 +118,14 @@ export async function createRouter(
             },
           },
           {
-            name: 'Create VCS Repo',
+            name: 'Publish template',
             handler: async (ctx: StageContext<{ resultDir: string }>) => {
-              ctx.logger.info('Should now create the VCS repo');
-            },
-          },
-          {
-            name: 'Push to remote',
-            handler: async ctx => {
-              ctx.logger.info('Should now push to the remote');
+              ctx.logger.info('Should not store the template');
+              const { remoteUrl } = await githubPulisher.publish({
+                values: ctx.values,
+                directory: ctx.resultDir,
+              });
+              return { remoteUrl };
             },
           },
         ],

@@ -13,6 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './cookiecutter';
-export * from './types';
-export * from './helpers';
+
+export const mockIndex = {
+  addAll: jest.fn(),
+  write: jest.fn(),
+  writeTree: jest.fn().mockResolvedValue('mockoid'),
+};
+
+export const mockRepo = {
+  refreshIndex: jest.fn().mockResolvedValue(mockIndex),
+  createCommit: jest.fn(),
+};
+
+export const mockRemote = {
+  push: jest.fn(),
+};
+
+const Repository = { init: jest.fn().mockResolvedValue(mockRepo) };
+const Remote = { create: jest.fn().mockResolvedValue(mockRemote) };
+const Signature = { now: jest.fn() };
+const Cred = {
+  userpassPlaintextNew: jest.fn(),
+};
+
+export { Repository, Remote, Signature, Cred };

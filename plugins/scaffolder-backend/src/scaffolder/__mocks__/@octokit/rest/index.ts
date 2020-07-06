@@ -13,6 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './cookiecutter';
-export * from './types';
-export * from './helpers';
+
+export const mockGithubClient = {
+  repos: {
+    createInOrg: jest.fn(),
+    createForAuthenticatedUser: jest.fn(),
+  },
+};
+
+export class Octokit {
+  constructor() {
+    return mockGithubClient;
+  }
+}
