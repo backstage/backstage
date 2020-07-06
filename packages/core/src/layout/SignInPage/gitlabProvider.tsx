@@ -32,7 +32,7 @@ const Component: ProviderComponent = ({ onResult }) => {
 
       const profile = await gitlabAuthApi.getProfile();
       onResult({
-        userId: identity?.id || profile.email,
+        userId: identity!.id,
         profile: profile!,
         getIdToken: () =>
           gitlabAuthApi.getBackstageIdentity().then(i => i!.idToken),
