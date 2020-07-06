@@ -78,6 +78,14 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
       idToken: params.id_token,
     };
 
+    // gitlab provides an id numeric value (123)
+    // as a fallback
+    let id = passportProfile!.id;
+
+    if (profile.email) {
+      id = profile.email.split('@')[0];
+    }
+
     if (params.expires_in) {
       providerInfo.expiresInSeconds = params.expires_in;
     }
@@ -87,6 +95,9 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
     return {
       providerInfo,
       profile,
+      backstageIdentity: {
+        id,
+      },
     };
   }
 
