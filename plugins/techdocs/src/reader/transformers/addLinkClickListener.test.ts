@@ -21,7 +21,8 @@ describe('addLinkClickListener', () => {
   it('calls onClick when a link has been clicked', () => {
     const fn = jest.fn();
     const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      transformers: [
+      preTransformers: [],
+      postTransformers: [
         addLinkClickListener({
           onClick: fn,
         }),
