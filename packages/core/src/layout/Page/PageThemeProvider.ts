@@ -24,28 +24,28 @@ export type PageTheme = {
 
 export const gradients: Record<string, Gradient> = {
   darkGrey: {
-    colors: ['#181818', '#404040'],
+    colors: ['#181818', '#404040', '#757575'],
   },
   marineBlue: {
-    colors: ['#00759A', '#004EAC'],
+    colors: ['#00759A', '#004EAC', '#BDDBFF'],
   },
   veryBlue: {
-    colors: ['#0B2B9C', '#311288'],
+    colors: ['#0B2B9C', '#311288', '#8960FD'],
   },
   rubyRed: {
-    colors: ['#A4284B', '#8D1134'],
+    colors: ['#A4284B', '#8D1134', '#FFBFF5'],
   },
   toastyOrange: {
-    colors: ['#CC3707', '#9A2500'],
+    colors: ['#CC3707', '#9A2500', '#FFE175'],
   },
   purpleSky: {
-    colors: ['#AF29F8', '#4100F4'],
+    colors: ['#AF29F8', '#4100F4', '#AF29F8'],
   },
   eveningSea: {
     colors: ['#00FFF2', '#035355'],
   },
   teal: {
-    colors: ['#005E4D', '#9BF0E1'],
+    colors: ['#005E4D', '#1F8A77', '#9BF0E1'],
   },
 };
 
