@@ -18,6 +18,7 @@ import { JsonValue } from '@backstage/config';
 import { runDockerContainer } from './helpers';
 import { TemplaterBase, TemplaterRunOptions } from '.';
 import path from 'path';
+
 export class CookieCutter implements TemplaterBase {
   private async fetchTemplateCookieCutter(
     directory: string,
