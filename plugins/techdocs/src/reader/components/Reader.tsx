@@ -28,6 +28,7 @@ import transformer, {
   removeMkdocsHeader,
   modifyCss,
   onCssReady,
+  sanitizeDOM,
 } from '../transformers';
 import { docStorageURL } from '../../config';
 import URLFormatter from '../urlFormatter';
@@ -88,6 +89,7 @@ export const Reader = () => {
 
     // Pre-render
     const transformedElement = transformer(state.value as string, [
+      sanitizeDOM(),
       addBaseUrl({
         docStorageURL,
         componentId,
