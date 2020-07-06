@@ -38,14 +38,14 @@ describe('modifyCss', () => {
     const shadowDom = createTestShadowDom(
       `<div class="md-typeset" style="font-size: 1px"></div>`,
       {
-        preTransformers: [],
-        postTransformers: [
+        preTransformers: [
           modifyCss({
             cssTransforms: {
               '.md-typeset': [{ 'font-size': '1em' }],
             },
           }),
         ],
+        postTransformers: [],
       },
     );
 

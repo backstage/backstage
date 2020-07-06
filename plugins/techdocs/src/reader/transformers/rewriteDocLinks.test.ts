@@ -43,8 +43,8 @@ describe('rewriteDocLinks', () => {
         <a href="example-docs/example-page">Test Sub Page</a>
     `,
       {
-        preTransformers: [],
-        postTransformers: [rewriteDocLinks()],
+        preTransformers: [rewriteDocLinks()],
+        postTransformers: [],
       },
     );
 

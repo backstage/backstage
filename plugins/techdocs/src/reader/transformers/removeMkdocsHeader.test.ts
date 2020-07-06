@@ -29,8 +29,8 @@ describe('removeMkdocsHeader', () => {
 
   it('does remove mkdocs header', () => {
     const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      preTransformers: [],
-      postTransformers: [removeMkdocsHeader()],
+      preTransformers: [removeMkdocsHeader()],
+      postTransformers: [],
     });
 
     expect(shadowDom.querySelector('.md-header')).toBeFalsy();

@@ -39,14 +39,14 @@ describe('addBaseUrl', () => {
 
   it('contains transformed absolute paths', () => {
     const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      preTransformers: [],
-      postTransformers: [
+      preTransformers: [
         addBaseUrl({
           docStorageURL: DOC_STORAGE_URL,
           componentId: 'example-docs',
           path: '',
         }),
       ],
+      postTransformers: [],
     });
 
     expect(getSample(shadowDom, 'img', 'src')).toEqual([
@@ -74,14 +74,14 @@ describe('addBaseUrl', () => {
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
     `,
       {
-        preTransformers: [],
-        postTransformers: [
+        preTransformers: [
           addBaseUrl({
             docStorageURL: DOC_STORAGE_URL,
             componentId: 'example-docs',
             path: 'examplepath',
           }),
         ],
+        postTransformers: [],
       },
     );
 
@@ -110,14 +110,14 @@ describe('addBaseUrl', () => {
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
     `,
       {
-        preTransformers: [],
-        postTransformers: [
+        preTransformers: [
           addBaseUrl({
             docStorageURL: DOC_STORAGE_URL,
             componentId: 'example-docs',
             path: 'examplepath/',
           }),
         ],
+        postTransformers: [],
       },
     );
 
