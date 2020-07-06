@@ -146,13 +146,13 @@ export const Reader = () => {
     ]);
   }, [componentId, path, shadowRoot, state]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (state.value instanceof Error) return <TechDocsNotFound />;
+  if (state.value instanceof Error) {
+    return <TechDocsNotFound />;
+  }
 
   return (
-    <>
-      <TechDocsPageWrapper title={componentId} subtitle={componentId}>
-        <div ref={shadowDomRef} />
-      </TechDocsPageWrapper>
-    </>
+    <TechDocsPageWrapper title={componentId} subtitle={componentId}>
+      <div ref={shadowDomRef} />
+    </TechDocsPageWrapper>
   );
 };

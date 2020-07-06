@@ -18,19 +18,19 @@ import type { Transformer } from './index';
 
 type OnCssReadyOptions = {
   docStorageURL: string;
-  onCssLoading: (dom: Element) => void;
-  onCssReady: (dom: Element) => void;
+  onLoading: (dom: Element) => void;
+  onLoaded: (dom: Element) => void;
 };
 
 export const onCssReady = ({
   docStorageURL,
-  onLoad,
-  onReady,
+  onLoading,
+  onLoaded,
 }: OnCssReadyOptions): Transformer => {
   return dom => {
     const cssPages = Array.from(
       dom.querySelectorAll('head > link[rel="stylesheet"]'),
-    ).filter(elem => elem.getAttribute('href').startsWith(docStorageURL));
+    ).filter(elem => elem.getAttribute('href')?.startsWith(docStorageURL));
 
     let count = cssPages.length;
 
@@ -43,9 +43,11 @@ export const onCssReady = ({
         count -= 1;
 
         if (count === 0) {
-          onReady(dom);
+          onLoaded(dom);
         }
       }),
     );
+
+    return dom;
   };
 };
