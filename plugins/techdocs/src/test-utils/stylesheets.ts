@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-import FIXTURE_STANDARD_PAGE from './fixtures/mkdocs-index';
-
-export const FIXTURES = {
-  FIXTURE_STANDARD_PAGE,
+export const mockStylesheetEventListener = (timeToCallbackMs: number): void => {
+  HTMLLinkElement.prototype.addEventListener = (
+    _eventName: string,
+    eventCallback: any,
+  ) => {
+    setTimeout(() => {
+      eventCallback();
+    }, timeToCallbackMs);
+  };
 };
 
-export * from './stylesheets';
-export * from './shadowDom';
+export const executeStylesheetEventListeners = (): void => {
+  jest.runOnlyPendingTimers();
+};
+
+export const clearStylesheetEventListeners = (): void => {
+  HTMLLinkElement.prototype.addEventListener =
+    Element.prototype.addEventListener;
+};
