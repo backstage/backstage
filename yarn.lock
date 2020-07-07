@@ -3727,15 +3727,10 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@>= 8", "@types/node@^13.7.2":
-  version "13.9.2"
-  resolved "https://registry.npmjs.org/@types/node/-/node-13.9.2.tgz#ace1880c03594cc3e80206d96847157d8e7fa349"
-  integrity sha512-bnoqK579sAYrQbp73wwglccjJ4sfRdKU7WNEZ5FW4K2U6Kc0/eZ5kvXG0JKsEKFB50zrFmfFt52/cvBbZa7eXg==
-
-"@types/node@^12.0.0":
-  version "12.12.30"
-  resolved "https://registry.npmjs.org/@types/node/-/node-12.12.30.tgz#3501e6f09b954de9c404671cefdbcc5d9d7c45f6"
-  integrity sha512-sz9MF/zk6qVr3pAnM0BSQvYIBK44tS75QC5N+VbWSE4DjCV/pJ+UzCW/F+vVnl7TkOPcuwQureKNtSSwjBTaMg==
+"@types/node@*", "@types/node@>= 8", "@types/node@^14.0.18":
+  version "14.0.18"
+  resolved "https://registry.npmjs.org/@types/node/-/node-14.0.18.tgz#5111b2285659442f9f95697386a2b42b875bd7e9"
+  integrity sha512-0Z3nS5acM0cIV4JPzrj9g/GH0Et5vmADWtip3YOXOp1NpOLU8V3KoZDc8ny9c1pe/YSYYzQkAWob6dyV/EWg4g==
 
 "@types/nodegit@0.26.5":
   version "0.26.5"
@@ -3959,13 +3954,6 @@
     "@types/cssnano" "*"
     "@types/node" "*"
     rollup "^0.63.4"
-
-"@types/sanitize-html@^1.23.3":
-  version "1.23.3"
-  resolved "https://registry.npmjs.org/@types/sanitize-html/-/sanitize-html-1.23.3.tgz#26527783aba3bf195ad8a3c3e51bd3713526fc0d"
-  integrity sha512-Isg8N0ifKdDq6/kaNlIcWfapDXxxquMSk2XC5THsOICRyOIhQGds95XH75/PL/g9mExi4bL8otIqJM/Wo96WxA==
-  dependencies:
-    htmlparser2 "^4.1.0"
 
 "@types/serve-static@*":
   version "1.13.3"
