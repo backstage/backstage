@@ -40,4 +40,7 @@ export interface CatalogApi {
   removeEntityByUid(uid: string): Promise<void>;
 }
 
-export type AddLocationResponse = { location: Location; entities: Entity[] };
+export type AddLocationResponse = {
+  location: Location;
+  entities: Entity[];
+};

@@ -37,6 +37,22 @@ describe('Preparers', () => {
     spec: {
       type: 'cookiecutter',
       path: '.',
+      schema: {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        required: ['storePath', 'owner'],
+        properties: {
+          owner: {
+            type: 'string',
+            title: 'Owner',
+            description: 'Who is going to own this component',
+          },
+          storePath: {
+            type: 'string',
+            title: 'Store path',
+            description: 'GitHub store path in org/repo format',
+          },
+        },
+      },
     },
   };
   it('should throw an error when the preparer for the source location is not registered', () => {
@@ -74,6 +90,22 @@ describe('Preparers', () => {
       spec: {
         type: 'cookiecutter',
         path: '.',
+        schema: {
+          $schema: 'http://json-schema.org/draft-07/schema#',
+          required: ['storePath', 'owner'],
+          properties: {
+            owner: {
+              type: 'string',
+              title: 'Owner',
+              description: 'Who is going to own this component',
+            },
+            storePath: {
+              type: 'string',
+              title: 'Store path',
+              description: 'GitHub store path in org/repo format',
+            },
+          },
+        },
       },
     };
 

@@ -16,7 +16,7 @@
 
 import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import type { EntityPolicy } from '../types';
+import type { EntityPolicy, JSONSchema } from '../types';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'Template' as const;
@@ -27,6 +27,7 @@ export interface TemplateEntityV1alpha1 extends Entity {
   spec: {
     type: string;
     path?: string;
+    schema: JSONSchema;
   };
 }
 
@@ -41,6 +42,7 @@ export class TemplateEntityV1alpha1Policy implements EntityPolicy {
         .object({
           type: yup.string().required().min(1),
           path: yup.string(),
+          schema: yup.object().required(),
         })
         .required(),
     });
