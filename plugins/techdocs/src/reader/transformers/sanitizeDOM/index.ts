@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-import { createTestShadowDom, FIXTURES } from '../../test-utils';
-import { addLinkClickListener } from '.';
+// @ts-ignore
+import sanitizeHtml from 'sanitize-html';
+import type { Transformer } from '..';
+import { TECHDOCS_ALLOWED_TAGS } from './tags';
+import { TECHDOCS_ALLOWED_ATTRIBUTES } from './attributes';
 
-describe('addLinkClickListener', () => {
-  it('calls onClick when a link has been clicked', () => {
-    const fn = jest.fn();
-    const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      preTransformers: [],
-      postTransformers: [
-        addLinkClickListener({
-          onClick: fn,
-        }),
-      ],
+export const sanitizeDOM = (): Transformer => {
+  return dom => {
+    const sanitizedHtml = sanitizeHtml(dom.innerHTML, {
+      allowedTags: TECHDOCS_ALLOWED_TAGS,
+      allowedAttributes: TECHDOCS_ALLOWED_ATTRIBUTES,
+      allowedSchemes: ['http', 'https', 'ftp', 'mailto', 'data', 'blob'],
     });
 
-    shadowDom.querySelector('a')?.click();
-
-    expect(fn).toHaveBeenCalledTimes(1);
-  });
-});
+    return new DOMParser().parseFromString(sanitizedHtml, 'text/html')
+      .documentElement;
+  };
+};

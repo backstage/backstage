@@ -18,22 +18,36 @@ import transformer from '../reader/transformers';
 import type { Transformer } from '../reader/transformers';
 
 export type CreateTestShadowDomOptions = {
-  transformers: Transformer[];
+  preTransformers: Transformer[];
+  postTransformers: Transformer[];
 };
 
 export const createTestShadowDom = (
   fixture: string,
-  opts: CreateTestShadowDomOptions = { transformers: [] },
+  opts: CreateTestShadowDomOptions = {
+    preTransformers: [],
+    postTransformers: [],
+  },
 ): ShadowRoot => {
   const divElement = document.createElement('div');
   divElement.attachShadow({ mode: 'open' });
   document.body.appendChild(divElement);
 
-  const domParser = new DOMParser().parseFromString(fixture, 'text/html');
-  divElement.shadowRoot?.appendChild(domParser.documentElement);
+  // Transformers before the UI is rendered
+  let dom: Element | HTMLElement = new DOMParser().parseFromString(
+    fixture,
+    'text/html',
+  ).documentElement;
+  if (opts.preTransformers) {
+    dom = transformer(dom, opts.preTransformers);
+  }
 
-  if (opts.transformers) {
-    transformer(divElement.shadowRoot!.children[0], opts.transformers);
+  // Mount the UI
+  divElement.shadowRoot?.appendChild(dom);
+
+  // Transformers after the UI is rendered
+  if (opts.postTransformers) {
+    transformer(dom, opts.postTransformers);
   }
 
   return divElement.shadowRoot!;

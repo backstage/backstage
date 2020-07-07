@@ -42,7 +42,8 @@ describe('onCssReady', () => {
     const onLoaded = jest.fn();
 
     createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      transformers: [
+      preTransformers: [],
+      postTransformers: [
         onCssReady({
           docStorageURL,
           onLoading,
@@ -61,7 +62,8 @@ describe('onCssReady', () => {
     const onLoaded = jest.fn();
 
     createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      transformers: [
+      preTransformers: [],
+      postTransformers: [
         addBaseUrl({
           docStorageURL,
           componentId: 'mkdocs',

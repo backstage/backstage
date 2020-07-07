@@ -20,6 +20,7 @@ export * from './addLinkClickListener';
 export * from './removeMkdocsHeader';
 export * from './modifyCss';
 export * from './onCssReady';
+export * from './sanitizeDOM';
 
 export type Transformer = (dom: Element) => Element;
 
@@ -37,7 +38,9 @@ function transform(
     throw new Error('dom is not a recognized type');
   }
 
-  transformers.forEach(transformer => transformer(dom));
+  transformers.forEach(transformer => {
+    dom = transformer(dom);
+  });
 
   return dom;
 }

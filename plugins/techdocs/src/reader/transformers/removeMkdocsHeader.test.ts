@@ -20,7 +20,8 @@ import { removeMkdocsHeader } from '../transformers';
 describe('removeMkdocsHeader', () => {
   it('does not remove mkdocs header', () => {
     const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      transformers: [],
+      preTransformers: [],
+      postTransformers: [],
     });
 
     expect(shadowDom.querySelector('.md-header')).toBeTruthy();
@@ -28,7 +29,8 @@ describe('removeMkdocsHeader', () => {
 
   it('does remove mkdocs header', () => {
     const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      transformers: [removeMkdocsHeader()],
+      preTransformers: [removeMkdocsHeader()],
+      postTransformers: [],
     });
 
     expect(shadowDom.querySelector('.md-header')).toBeFalsy();
