@@ -53,7 +53,7 @@ export class ScaffolderApi {
         'Content-Type': 'application/json',
       },
       // TODO(shmidt-i): when repo picker is implemented, take isOrg from it
-      body: JSON.stringify({ template, ...values, isOrg: true }),
+      body: JSON.stringify({ template, values: { ...values, isOrg: true } }),
     });
 
     if (response.status !== 201) {
