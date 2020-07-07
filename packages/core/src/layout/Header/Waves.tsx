@@ -42,6 +42,7 @@ export const Waves: FC<Props> = ({ theme }) => {
     backgroundColor2,
     gradientColor,
   ] = theme.gradient.colors;
+  const opacity = theme.gradient.opacity;
 
   return (
     <svg
@@ -97,7 +98,7 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="59.5001"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity="0.72" />
+          <stop stopColor={gradientColor} stopOpacity={opacity} />
           <stop offset="1" stopColor={gradientColor} stopOpacity="0" />
         </linearGradient>
         <linearGradient
@@ -108,7 +109,7 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="241.925"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity="0.72" />
+          <stop stopColor={gradientColor} stopOpacity={opacity} />
           <stop offset="1" stopColor={gradientColor} stopOpacity="0" />
         </linearGradient>
         <linearGradient
@@ -119,7 +120,7 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="-103.806"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity="0.72" />
+          <stop stopColor={gradientColor} stopOpacity={opacity} />
           <stop offset="1" stopColor={gradientColor} stopOpacity="0" />
         </linearGradient>
         <linearGradient
@@ -130,7 +131,7 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="104.375"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity="0.72" />
+          <stop stopColor={gradientColor} stopOpacity={opacity} />
           <stop offset="1" stopColor={gradientColor} stopOpacity="0" />
         </linearGradient>
         <linearGradient
@@ -141,7 +142,7 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="194.894"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity="0.72" />
+          <stop stopColor={gradientColor} stopOpacity={opacity} />
           <stop offset="1" stopColor={gradientColor} stopOpacity="0" />
         </linearGradient>
       </defs>
