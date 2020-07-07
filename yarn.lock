@@ -3960,13 +3960,6 @@
     "@types/node" "*"
     rollup "^0.63.4"
 
-"@types/sanitize-html@^1.23.3":
-  version "1.23.3"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@types/sanitize-html/-/sanitize-html-1.23.3.tgz#26527783aba3bf195ad8a3c3e51bd3713526fc0d"
-  integrity sha1-JlJ3g6ujvxla2KPD5RvTcTUm/A0=
-  dependencies:
-    htmlparser2 "^4.1.0"
-
 "@types/serve-static@*":
   version "1.13.3"
   resolved "https://registry.npmjs.org/@types/serve-static/-/serve-static-1.13.3.tgz#eb7e1c41c4468272557e897e9171ded5e2ded9d1"

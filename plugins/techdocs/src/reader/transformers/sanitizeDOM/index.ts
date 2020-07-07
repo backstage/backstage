@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// @ts-ignore
 import sanitizeHtml from 'sanitize-html';
 import type { Transformer } from '..';
 import { TECHDOCS_ALLOWED_TAGS } from './tags';
