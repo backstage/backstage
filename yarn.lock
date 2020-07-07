@@ -3960,6 +3960,13 @@
     "@types/node" "*"
     rollup "^0.63.4"
 
+"@types/sanitize-html@^1.23.3":
+  version "1.23.3"
+  resolved "https://registry.npmjs.org/@types/sanitize-html/-/sanitize-html-1.23.3.tgz#26527783aba3bf195ad8a3c3e51bd3713526fc0d"
+  integrity sha512-Isg8N0ifKdDq6/kaNlIcWfapDXxxquMSk2XC5THsOICRyOIhQGds95XH75/PL/g9mExi4bL8otIqJM/Wo96WxA==
+  dependencies:
+    htmlparser2 "^4.1.0"
+
 "@types/serve-static@*":
   version "1.13.3"
   resolved "https://registry.npmjs.org/@types/serve-static/-/serve-static-1.13.3.tgz#eb7e1c41c4468272557e897e9171ded5e2ded9d1"
@@ -16539,8 +16546,8 @@ sane@^4.0.3:
 
 sanitize-html@^1.27.0:
   version "1.27.0"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/sanitize-html/-/sanitize-html-1.27.0.tgz#42104a2d59f1a48b616b5165ad5349824861e580"
-  integrity sha1-QhBKLVnxpItha1FlrVNJgkhh5YA=
+  resolved "https://registry.npmjs.org/sanitize-html/-/sanitize-html-1.27.0.tgz#42104a2d59f1a48b616b5165ad5349824861e580"
+  integrity sha512-U1btucGeYVpg0GoK43jPpe/bDCV4cBOGuxzv5NBd0bOjyZdMKY0n98S/vNlO1wVwre0VCj8H3hbzE7gD2+RjKA==
   dependencies:
     chalk "^2.4.1"
     htmlparser2 "^4.1.0"
@@ -17168,8 +17175,8 @@ sqlite3@^4.2.0:
 
 srcset@^2.0.1:
   version "2.0.1"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/srcset/-/srcset-2.0.1.tgz#8f842d357487eb797f413d9c309de7a5149df5ac"
-  integrity sha1-j4QtNXSH63l/QT2cMJ3npRSd9aw=
+  resolved "https://registry.npmjs.org/srcset/-/srcset-2.0.1.tgz#8f842d357487eb797f413d9c309de7a5149df5ac"
+  integrity sha512-00kZI87TdRKwt+P8jj8UZxbfp7mK2ufxcIMWvhAOZNJTRROimpHeruWrGvCZneiuVDLqdyHefVp748ECTnyUBQ==
 
 ssh2-streams@~0.4.10:
   version "0.4.10"
