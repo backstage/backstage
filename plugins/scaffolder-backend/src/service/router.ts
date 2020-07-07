@@ -106,7 +106,7 @@ export async function createRouter(
           {
             name: 'Run the templater',
             handler: async (ctx: StageContext<{ skeletonDir: string }>) => {
-              const resultDir = await templater.run({
+              const { resultDir } = await templater.run({
                 directory: ctx.skeletonDir,
                 dockerClient,
                 logStream: ctx.logStream,
