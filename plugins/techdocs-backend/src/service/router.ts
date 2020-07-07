@@ -16,9 +16,19 @@
 import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
+import Knex from 'knex';
 
-export async function createRouter(_: Logger): Promise<express.Router> {
+type RouterOptions = {
+  logger: Logger;
+  database?: Knex; // TODO: Make database required when we're implementing database stuff.
+};
+
+export async function createRouter({}: RouterOptions): Promise<express.Router> {
   const router = Router();
+
+  router.get('/', (_, res) => {
+    res.status(200).send('Hello TechDocs Backend');
+  });
 
   return router;
 }

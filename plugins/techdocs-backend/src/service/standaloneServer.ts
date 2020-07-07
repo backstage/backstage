@@ -33,7 +33,7 @@ export async function startStandaloneServer(
   logger.debug('Creating application...');
 
   logger.debug('Starting application server...');
-  const router = await createRouter(logger);
+  const router = await createRouter({ logger });
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })
     .addRouter('/techdocs', router);
