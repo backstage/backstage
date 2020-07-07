@@ -1,8 +1,8 @@
 {
-  "name": "@backstage/techdocs-cli",
+  "name": "@techdocs/cli",
   "description": "CLI for running TechDocs locally.",
   "version": "0.1.1-alpha.13",
-  "private": true,
+  "private": false,
   "publishConfig": {
     "access": "public"
   },
@@ -38,5 +38,11 @@
     "watch": "./src",
     "exec": "bin/techdocs-cli",
     "ext": "ts"
+  },
+  "dependencies": {
+    "@spotify/eslint-config": "^8.0.1",
+    "chalk": "^4.1.0",
+    "commander": "^5.1.0",
+    "fs-extra": "^9.0.1"
   }
 }
