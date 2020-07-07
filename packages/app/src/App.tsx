@@ -31,7 +31,10 @@ const app = createApp({
   plugins: Object.values(plugins),
   components: {
     SignInPage: props => (
-      <SignInPage {...props} providers={['guest', 'google', 'custom', 'okta']} />
+      <SignInPage
+        {...props}
+        providers={['guest', 'google', 'custom', 'okta', 'gitlab']}
+      />
     ),
   },
 });

@@ -27,6 +27,7 @@ import transformer, {
   addLinkClickListener,
   removeMkdocsHeader,
   modifyCss,
+  onCssReady,
 } from '../transformers';
 import { docStorageURL } from '../../config';
 import URLFormatter from '../urlFormatter';
@@ -133,16 +134,25 @@ export const Reader = () => {
           shadowRoot?.querySelector(parsedUrl.hash)?.scrollIntoView();
         },
       }),
+      onCssReady({
+        docStorageURL,
+        onLoading: (dom: Element) => {
+          (dom as HTMLElement).style.setProperty('opacity', '0');
+        },
+        onLoaded: (dom: Element) => {
+          (dom as HTMLElement).style.removeProperty('opacity');
+        },
+      }),
     ]);
   }, [componentId, path, shadowRoot, state]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (state.value instanceof Error) return <TechDocsNotFound />;
+  if (state.value instanceof Error) {
+    return <TechDocsNotFound />;
+  }
 
   return (
-    <>
-      <TechDocsPageWrapper title={componentId} subtitle={componentId}>
-        <div ref={shadowDomRef} />
-      </TechDocsPageWrapper>
-    </>
+    <TechDocsPageWrapper title={componentId} subtitle={componentId}>
+      <div ref={shadowDomRef} />
+    </TechDocsPageWrapper>
   );
 };

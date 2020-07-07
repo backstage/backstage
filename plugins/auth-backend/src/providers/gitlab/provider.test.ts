@@ -41,6 +41,9 @@ describe('GitlabAuthProvider', () => {
           },
         },
         expect: {
+          backstageIdentity: {
+            id: 'jimmymarkum',
+          },
           providerInfo: {
             accessToken: '19xasczxcm9n7gacn9jdgm19me',
             expiresInSeconds: 100,
@@ -74,6 +77,9 @@ describe('GitlabAuthProvider', () => {
           },
         },
         expect: {
+          backstageIdentity: {
+            id: 'daveboyle',
+          },
           providerInfo: {
             accessToken:
               'ajakljsdoiahoawxbrouawucmbawe.awkxjemaneasdxwe.sodijxqeqwexeqwxe',
