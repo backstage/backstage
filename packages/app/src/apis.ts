@@ -55,6 +55,7 @@ import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
+import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -139,6 +140,14 @@ export const apis = (config: ConfigApi) => {
     new CatalogClient({
       apiOrigin: backendUrl,
       basePath: '/catalog',
+    }),
+  );
+
+  builder.add(
+    scaffolderApiRef,
+    new ScaffolderApi({
+      apiOrigin: backendUrl,
+      basePath: '/scaffolder/v1',
     }),
   );
 

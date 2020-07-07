@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { Button, Card, Chip, Typography, makeStyles } from '@material-ui/core';
+import { Button } from '@backstage/core';
+import { Card, Chip, makeStyles, Typography } from '@material-ui/core';
+import React from 'react';
+import { generatePath } from 'react-router-dom';
+import { templateRoute } from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -37,19 +40,23 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type TemplateCardProps = {
+export type TemplateCardProps = {
   description: string;
   tags: string[];
   title: string;
   type: string;
+  name: string;
 };
-const TemplateCard: FC<TemplateCardProps> = ({
+
+export const TemplateCard = ({
   description,
   tags,
   title,
   type,
-}) => {
+  name,
+}: TemplateCardProps) => {
   const classes = useStyles();
+  const href = generatePath(templateRoute.path, { templateName: name });
 
   return (
     <Card>
@@ -65,11 +72,11 @@ const TemplateCard: FC<TemplateCardProps> = ({
           {description}
         </Typography>
         <div className={classes.footer}>
-          <Button color="primary">Choose</Button>
+          <Button color="primary" variant="contained" to={href}>
+            Choose
+          </Button>
         </div>
       </div>
     </Card>
   );
 };
-
-export default TemplateCard;

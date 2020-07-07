@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createRouteRef } from '@backstage/core';
 
-import { createPlugin } from '@backstage/core';
-import { ScaffolderPage } from './components/ScaffolderPage';
-import { TemplatePage } from './components/TemplatePage';
-import { rootRoute, templateRoute } from './routes';
-
-export const plugin = createPlugin({
-  id: 'scaffolder',
-  register({ router }) {
-    router.addRoute(rootRoute, ScaffolderPage);
-    router.addRoute(templateRoute, TemplatePage);
-  },
+export const rootRoute = createRouteRef({
+  icon: () => null,
+  path: '/create',
+  title: 'Create new entity',
+});
+export const templateRoute = createRouteRef({
+  icon: () => null,
+  path: '/create/:templateName',
+  title: 'Entity creation',
 });

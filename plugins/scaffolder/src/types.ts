@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export type Job = {
+  id: string;
+  metadata: {
+    entity: any;
+    values: any;
+    remoteUrl?: string;
+  };
+  status: 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
+  stages: Stage[];
+  error?: Error;
+};
 
-import { createPlugin } from '@backstage/core';
-import { ScaffolderPage } from './components/ScaffolderPage';
-import { TemplatePage } from './components/TemplatePage';
-import { rootRoute, templateRoute } from './routes';
-
-export const plugin = createPlugin({
-  id: 'scaffolder',
-  register({ router }) {
-    router.addRoute(rootRoute, ScaffolderPage);
-    router.addRoute(templateRoute, TemplatePage);
-  },
-});
+export type Stage = {
+  name: string;
+  log: string[];
+  status: 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
+  startedAt: string;
+  endedAt?: string;
+};

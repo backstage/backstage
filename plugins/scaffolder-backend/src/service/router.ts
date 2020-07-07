@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import Router from 'express-promise-router';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { JsonValue } from '@backstage/config';
+import { Octokit } from '@octokit/rest';
+import Docker from 'dockerode';
 import express from 'express';
+import Router from 'express-promise-router';
+import { Logger } from 'winston';
 import {
-  PreparerBuilder,
-  TemplaterBase,
+  GithubPublisher,
   JobProcessor,
+  PreparerBuilder,
   RequiredTemplateValues,
   StageContext,
-  GithubPublisher,
+  TemplaterBase,
 } from '../scaffolder';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import Docker from 'dockerode';
-import {} from '@backstage/backend-common';
-import { Octokit } from '@octokit/rest';
-import { JsonValue } from '@backstage/config';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -107,7 +106,7 @@ export async function createRouter(
           {
             name: 'Run the templater',
             handler: async (ctx: StageContext<{ skeletonDir: string }>) => {
-              const resultDir = await templater.run({
+              const { resultDir } = await templater.run({
                 directory: ctx.skeletonDir,
                 dockerClient,
                 logStream: ctx.logStream,
