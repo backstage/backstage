@@ -35,6 +35,7 @@ import catalog from './plugins/catalog';
 import identity from './plugins/identity';
 import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
+import techdocs from './plugins/techdocs';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(loadedConfigs: AppConfig[]) {
@@ -63,6 +64,7 @@ async function main() {
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const identityEnv = useHotMemoize(module, () => createEnv('identity'));
+  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
 
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
@@ -73,7 +75,8 @@ async function main() {
       await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
     )
     .addRouter('/auth', await auth(authEnv))
-    .addRouter('/identity', await identity(identityEnv));
+    .addRouter('/identity', await identity(identityEnv))
+    .addRouter('/techdocs', await techdocs(techdocsEnv));
 
   await service.start().catch(err => {
     console.log(err);
