@@ -28,7 +28,9 @@
     "techdocs": "bin/techdocs-cli"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.13"
+    "@spotify/eslint-config": "^7.0.1",
+    "eslint": "^7.1.0",
+    "eslint-plugin-import": "^2.22.0"
   },
   "files": [
     "bin",
@@ -40,8 +42,8 @@
     "ext": "ts"
   },
   "dependencies": {
+    "@backstage/cli": "^0.1.1-alpha.13",
     "@backstage/plugin-techdocs": "^0.1.1-alpha.13",
-    "@spotify/eslint-config": "^8.0.1",
     "chalk": "^4.1.0",
     "commander": "^5.1.0",
     "fs-extra": "^9.0.1"

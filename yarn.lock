@@ -2542,11 +2542,6 @@
   resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-7.0.0.tgz#36804ae09ec938f1aa5f9464ea993f3f151cfaa8"
   integrity sha512-XRTrTRyRRYBxPYINKNHw4B8QWlA3p4I+id/Po2sMdejtXH3LZgDgIjdschUZSdQ6J6dVYDdaVykdizRM9I+G6Q==
 
-"@spotify/eslint-config-base@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-8.0.0.tgz#c3d10d8a05ad9129d579952cb80063e4c4fa216e"
-  integrity sha512-07Fo+KoTMl4AaZJPD6deFnYmG634wzgeqfFcWdFlIrOLAasvWSH8Lp6ZE9cJBKuffOAy8kuEE1SwFo34+5X8bQ==
-
 "@spotify/eslint-config-oss@^1.0.1":
   version "1.0.2"
   resolved "https://registry.npmjs.org/@spotify/eslint-config-oss/-/eslint-config-oss-1.0.2.tgz#b0e56e549c78dcdd79063ce48521f10c3420f701"
@@ -2559,20 +2554,10 @@
   resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-7.0.1.tgz#2e70de9d7911ea9aeaa55a83a332220a28f6c431"
   integrity sha512-HNDHvm19EaBXiDgsg52mjMgKWZTeA0hO2Q75ACNwb8UtjIKkANqyyuzyDGo8jiGMbWIm6wJjShlRtT95emNlqQ==
 
-"@spotify/eslint-config-react@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-8.0.0.tgz#68aa5c4f0cfa15438c1a16efb38bba777cbf4dab"
-  integrity sha512-ta8Phx00RNwVhSIg4qIVX3cIyLumW3w+WrT6snZzIqLmToZjBdvoZbpRbUfG15BPuH99Q+X1yYuEOvqwlTSXaQ==
-
 "@spotify/eslint-config-typescript@^7.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-7.0.0.tgz#fc5227e3344f74b41ac3a530df24a95ac13254e4"
   integrity sha512-28I/SAf68NKbWZ5IY0WYMa0D18PxWdC9DP9gRbOTlZufmsS8jEgqf3zBUWmP6XOf1nihpKWcqvbFUG5H7/JYXA==
-
-"@spotify/eslint-config-typescript@^8.0.1":
-  version "8.0.1"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-8.0.1.tgz#2d3ee56a8a3f945454109086639cde47251d1e62"
-  integrity sha512-ALkA4WA2ZikX7grkptZ36J1N/iap0IJeViy6/ZcxSkm6yEy2BYslmS2MdoJ5PV/DfZ3Z/21d/+XYFqVEpcbrXg==
 
 "@spotify/eslint-config@^7.0.1":
   version "7.0.1"
@@ -2591,23 +2576,6 @@
     eslint-plugin-react "^7.12.4"
     eslint-plugin-react-hooks "^4.0.0"
 
-"@spotify/eslint-config@^8.0.1":
-  version "8.0.1"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config/-/eslint-config-8.0.1.tgz#b949c5d486bda1d4ef9cd631ec56d8f880d108cd"
-  integrity sha512-lJcnAmCi2rWAAFbEJET4syfbX0ftJQbg3KMyeF8LXCGkaOp0ILDwBjscZ61NbS0/3Pp4sl2+bnIxRQ6Vl3jmPw==
-  dependencies:
-    "@spotify/eslint-config-base" "^8.0.0"
-    "@spotify/eslint-config-react" "^8.0.0"
-    "@spotify/eslint-config-typescript" "^8.0.1"
-    "@spotify/web-scripts-utils" "^8.0.0"
-    "@typescript-eslint/eslint-plugin" "^3.4.0"
-    "@typescript-eslint/parser" "^3.4.0"
-    eslint-config-prettier "^6.0.0"
-    eslint-plugin-jest "^23.17.1"
-    eslint-plugin-jsx-a11y "^6.2.1"
-    eslint-plugin-react "^7.12.4"
-    eslint-plugin-react-hooks "^4.0.0"
-
 "@spotify/prettier-config@^8.0.0":
   version "8.0.0"
   resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-8.0.0.tgz#8b6c2bd579ddc54887155a0721fe04e96c89f7f2"
@@ -2617,14 +2585,6 @@
   version "7.0.0"
   resolved "https://registry.npmjs.org/@spotify/web-scripts-utils/-/web-scripts-utils-7.0.0.tgz#8c6b8039fc645a36ac48629eb9ba06600f4d828a"
   integrity sha512-McMy0j60lxOHjgDjegthZqEWN/PabphiM30A/mI/Y7xh9+JFnYWBTSm/wgn6EW2BsPpV631xSYYkk6B1Ph14Fw==
-  dependencies:
-    glob "^7.1.4"
-    read-pkg-up "^7.0.1"
-
-"@spotify/web-scripts-utils@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/@spotify/web-scripts-utils/-/web-scripts-utils-8.0.0.tgz#83e49a0050e0ca553769cea4052fe438bc0378a7"
-  integrity sha512-5ADUaRRW+ZJHYhfSiaJVVq+9hVfAin+WYaJzEd/3oTvd6P1BrVsAdyxBdmXtacTHu+vjlVoye/kxdpUhlIq9Iw==
   dependencies:
     glob "^7.1.4"
     read-pkg-up "^7.0.1"
@@ -4234,18 +4194,6 @@
     regexpp "^3.0.0"
     tsutils "^3.17.1"
 
-"@typescript-eslint/eslint-plugin@^3.4.0":
-  version "3.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-3.6.0.tgz#ba2b6cae478b8fca3f2e58ff1313e4198eea2d8a"
-  integrity sha512-ubHlHVt1lsPQB/CZdEov9XuOFhNG9YRC//kuiS1cMQI6Bs1SsqKrEmZnpgRwthGR09/kEDtr9MywlqXyyYd8GA==
-  dependencies:
-    "@typescript-eslint/experimental-utils" "3.6.0"
-    debug "^4.1.1"
-    functional-red-black-tree "^1.0.1"
-    regexpp "^3.0.0"
-    semver "^7.3.2"
-    tsutils "^3.17.1"
-
 "@typescript-eslint/experimental-utils@2.24.0", "@typescript-eslint/experimental-utils@^2.5.0":
   version "2.24.0"
   resolved "https://registry.npmjs.org/@typescript-eslint/experimental-utils/-/experimental-utils-2.24.0.tgz#a5cb2ed89fedf8b59638dc83484eb0c8c35e1143"
@@ -4254,17 +4202,6 @@
     "@types/json-schema" "^7.0.3"
     "@typescript-eslint/typescript-estree" "2.24.0"
     eslint-scope "^5.0.0"
-
-"@typescript-eslint/experimental-utils@3.6.0":
-  version "3.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/experimental-utils/-/experimental-utils-3.6.0.tgz#0138152d66e3e53a6340f606793fb257bf2d76a1"
-  integrity sha512-4Vdf2hvYMUnTdkCNZu+yYlFtL2v+N2R7JOynIOkFbPjf9o9wQvRwRkzUdWlFd2YiiUwJLbuuLnl5civNg5ykOQ==
-  dependencies:
-    "@types/json-schema" "^7.0.3"
-    "@typescript-eslint/types" "3.6.0"
-    "@typescript-eslint/typescript-estree" "3.6.0"
-    eslint-scope "^5.0.0"
-    eslint-utils "^2.0.0"
 
 "@typescript-eslint/parser@^2.14.0":
   version "2.24.0"
@@ -4275,22 +4212,6 @@
     "@typescript-eslint/experimental-utils" "2.24.0"
     "@typescript-eslint/typescript-estree" "2.24.0"
     eslint-visitor-keys "^1.1.0"
-
-"@typescript-eslint/parser@^3.4.0":
-  version "3.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-3.6.0.tgz#79b5232e1a2d06f1fc745942b690cd87aca7b60e"
-  integrity sha512-taghDxuLhbDAD1U5Fk8vF+MnR0yiFE9Z3v2/bYScFb0N1I9SK8eKHkdJl1DAD48OGFDMFTeOTX0z7g0W6SYUXw==
-  dependencies:
-    "@types/eslint-visitor-keys" "^1.0.0"
-    "@typescript-eslint/experimental-utils" "3.6.0"
-    "@typescript-eslint/types" "3.6.0"
-    "@typescript-eslint/typescript-estree" "3.6.0"
-    eslint-visitor-keys "^1.1.0"
-
-"@typescript-eslint/types@3.6.0":
-  version "3.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/types/-/types-3.6.0.tgz#4bd6eee55d2f9d35a4b36c4804be1880bf68f7bc"
-  integrity sha512-JwVj74ohUSt0ZPG+LZ7hb95fW8DFOqBuR6gE7qzq55KDI3BepqsCtHfBIoa0+Xi1AI7fq5nCu2VQL8z4eYftqg==
 
 "@typescript-eslint/typescript-estree@2.24.0":
   version "2.24.0"
@@ -4304,27 +4225,6 @@
     lodash "^4.17.15"
     semver "^6.3.0"
     tsutils "^3.17.1"
-
-"@typescript-eslint/typescript-estree@3.6.0":
-  version "3.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-3.6.0.tgz#9b4cab43f1192b64ff51530815b8919f166ce177"
-  integrity sha512-G57NDSABHjvob7zVV09ehWyD1K6/YUKjz5+AufObFyjNO4DVmKejj47MHjVHHlZZKgmpJD2yyH9lfCXHrPITFg==
-  dependencies:
-    "@typescript-eslint/types" "3.6.0"
-    "@typescript-eslint/visitor-keys" "3.6.0"
-    debug "^4.1.1"
-    glob "^7.1.6"
-    is-glob "^4.0.1"
-    lodash "^4.17.15"
-    semver "^7.3.2"
-    tsutils "^3.17.1"
-
-"@typescript-eslint/visitor-keys@3.6.0":
-  version "3.6.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-3.6.0.tgz#44185eb0cc47651034faa95c5e2e8b314ecebb26"
-  integrity sha512-p1izllL2Ubwunite0ITjubuMQRBGgjdVYwyG7lXPX8GbrA6qF0uwSRz9MnXZaHMxID4948gX0Ez8v9tUDi/KfQ==
-  dependencies:
-    eslint-visitor-keys "^1.1.0"
 
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
@@ -8230,12 +8130,24 @@ eslint-plugin-import@^2.20.2:
     resolve "^1.17.0"
     tsconfig-paths "^3.9.0"
 
-eslint-plugin-jest@^23.17.1:
-  version "23.18.0"
-  resolved "https://registry.npmjs.org/eslint-plugin-jest/-/eslint-plugin-jest-23.18.0.tgz#4813eacb181820ed13c5505f400956d176b25af8"
-  integrity sha512-wLPM/Rm1SGhxrFQ2TKM/BYsYPhn7ch6ZEK92S2o/vGkAAnDXM0I4nTIo745RIX+VlCRMFgBuJEax6XfTHMdeKg==
+eslint-plugin-import@^2.22.0:
+  version "2.22.0"
+  resolved "https://registry.npmjs.org/eslint-plugin-import/-/eslint-plugin-import-2.22.0.tgz#92f7736fe1fde3e2de77623c838dd992ff5ffb7e"
+  integrity sha512-66Fpf1Ln6aIS5Gr/55ts19eUuoDhAbZgnr6UxK5hbDx6l/QgQgx61AePq+BV4PP2uXQFClgMVzep5zZ94qqsxg==
   dependencies:
-    "@typescript-eslint/experimental-utils" "^2.5.0"
+    array-includes "^3.1.1"
+    array.prototype.flat "^1.2.3"
+    contains-path "^0.1.0"
+    debug "^2.6.9"
+    doctrine "1.5.0"
+    eslint-import-resolver-node "^0.3.3"
+    eslint-module-utils "^2.6.0"
+    has "^1.0.3"
+    minimatch "^3.0.4"
+    object.values "^1.1.1"
+    read-pkg-up "^2.0.0"
+    resolve "^1.17.0"
+    tsconfig-paths "^3.9.0"
 
 eslint-plugin-jest@^23.6.0:
   version "23.8.2"

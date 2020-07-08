@@ -65,6 +65,7 @@ const main = (argv: string[]) => {
         '..',
         '..',
       );
+
       run(
         pluginPath,
         path.join(require.resolve('@backstage/cli'), '../../bin/backstage-cli'),
