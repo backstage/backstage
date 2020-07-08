@@ -26,7 +26,6 @@ import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEn
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
-import { GithubV3ReaderProcessor } from './processors/GithubV3ReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
 import * as result from './processors/results';

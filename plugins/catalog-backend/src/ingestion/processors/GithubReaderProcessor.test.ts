@@ -32,7 +32,7 @@ describe('GithubReaderProcessor', () => {
         target: 'https://api.com/a/b/blob/master/path/to/c.yaml',
         url: null,
         err:
-          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong GitHub URL',
+          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong GitHub URL or Invalid file path',
       },
       {
         target: 'com/a/b/blob/master/path/to/c.yaml',
