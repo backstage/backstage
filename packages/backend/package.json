@@ -24,6 +24,7 @@
     "@backstage/config-loader": "^0.1.1-alpha.13",
     "@backstage/plugin-auth-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-catalog-backend": "^0.1.1-alpha.13",
+    "@backstage/plugin-gh-app-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-identity-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-scaffolder-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-sentry-backend": "^0.1.1-alpha.13",

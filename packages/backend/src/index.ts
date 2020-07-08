@@ -36,6 +36,7 @@ import identity from './plugins/identity';
 import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
 import techdocs from './plugins/techdocs';
+import ghapp from './plugins/ghapp';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(loadedConfigs: AppConfig[]) {
@@ -76,7 +77,8 @@ async function main() {
     )
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
-    .addRouter('/techdocs', await techdocs(techdocsEnv));
+    .addRouter('/techdocs', await techdocs(techdocsEnv))
+    .addRouter('/gh-app', await ghapp());
 
   await service.start().catch(err => {
     console.log(err);
