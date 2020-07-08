@@ -16,6 +16,8 @@ default_events:
   - create
   - delete
   - push
+  - repository
+
   # - issues
   # - check_run
   # - check_suite
@@ -40,7 +42,6 @@ default_events:
   # - pull_request_review
   # - pull_request_review_comment
   # - release
-  # - repository
   # - repository_import
   # - status
   # - team
