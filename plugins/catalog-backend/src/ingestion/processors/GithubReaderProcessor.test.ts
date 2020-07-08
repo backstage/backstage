@@ -60,6 +60,30 @@ describe('GithubReaderProcessor', () => {
   });
 
   it('should return request options', () => {
-    // todo
+    const tests = [
+      {
+        token: '0123456789',
+        expect: {
+          headers: {
+            Accept: 'application/vnd.github.v3.raw',
+            Authorization: 'token 0123456789',
+          },
+        },
+      },
+      {
+        token: '',
+        expect: {
+          headers: {
+            Accept: 'application/vnd.github.v3.raw',
+          },
+        },
+      },
+    ];
+
+    for (const test of tests) {
+      process.env.GITHUB_PRIVATE_TOKEN = test.token;
+      const processor = new GithubReaderProcessor();
+      expect(processor.getRequestOptions()).toEqual(test.expect);
+    }
   });
 });

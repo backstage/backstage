@@ -19,15 +19,16 @@ import fetch, { RequestInit, HeadersInit } from 'node-fetch';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
-const privateToken: string = process.env.GITHUB_PRIVATE_TOKEN || '';
-
 export class GithubReaderProcessor implements LocationProcessor {
+  private privateToken: string = process.env.GITHUB_PRIVATE_TOKEN || '';
+
   getRequestOptions(): RequestInit {
     const headers: HeadersInit = {
       Accept: 'application/vnd.github.v3.raw',
     };
-    if (privateToken) {
-      headers.Authorization = `token ${privateToken}`;
+
+    if (this.privateToken !== '') {
+      headers.Authorization = `token ${this.privateToken}`;
     }
 
     const requestOptions: RequestInit = {
