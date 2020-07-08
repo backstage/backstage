@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.1.1-alpha.12",
+  "version": "0.1.1-alpha.13",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "private": true,
@@ -18,16 +18,17 @@
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.12",
-    "@backstage/catalog-model": "^0.1.1-alpha.12",
-    "@backstage/config": "^0.1.1-alpha.12",
-    "@backstage/config-loader": "^0.1.1-alpha.12",
-    "@backstage/plugin-auth-backend": "^0.1.1-alpha.12",
-    "@backstage/plugin-catalog-backend": "^0.1.1-alpha.12",
-    "@backstage/plugin-identity-backend": "^0.1.1-alpha.12",
-    "@backstage/plugin-proxy-backend": "^0.1.1-alpha.12",
-    "@backstage/plugin-scaffolder-backend": "^0.1.1-alpha.12",
-    "@backstage/plugin-sentry-backend": "^0.1.1-alpha.12",
+    "@backstage/plugin-proxy-backend": "^0.1.1-alpha.13",
+    "@backstage/backend-common": "^0.1.1-alpha.13",
+    "@backstage/catalog-model": "^0.1.1-alpha.13",
+    "@backstage/config": "^0.1.1-alpha.13",
+    "@backstage/config-loader": "^0.1.1-alpha.13",
+    "@backstage/plugin-auth-backend": "^0.1.1-alpha.13",
+    "@backstage/plugin-catalog-backend": "^0.1.1-alpha.13",
+    "@backstage/plugin-identity-backend": "^0.1.1-alpha.13",
+    "@backstage/plugin-scaffolder-backend": "^0.1.1-alpha.13",
+    "@backstage/plugin-sentry-backend": "^0.1.1-alpha.13",
+    "@backstage/plugin-techdocs-backend": "^0.1.1-alpha.13",
     "dockerode": "^3.2.0",
     "express": "^4.17.1",
     "knex": "^0.21.1",
@@ -35,10 +36,10 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.12",
+    "@backstage/cli": "^0.1.1-alpha.13",
+    "@types/dockerode": "^2.5.32",
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
-    "@types/helmet": "^0.0.47",
-    "@types/dockerode": "^2.5.32"
+    "@types/helmet": "^0.0.47"
   }
 }
