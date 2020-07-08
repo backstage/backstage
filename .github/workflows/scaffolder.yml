@@ -1,4 +1,4 @@
-name: TechDocs
+name: Scaffolder
 
 on:
   pull_request:
