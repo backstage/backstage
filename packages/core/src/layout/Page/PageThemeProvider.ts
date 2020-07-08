@@ -16,6 +16,7 @@
 
 export type Gradient = {
   colors: string[];
+  waveColor: string;
   opacity: string[];
 };
 
@@ -25,35 +26,43 @@ export type PageTheme = {
 
 export const gradients: Record<string, Gradient> = {
   darkGrey: {
-    colors: ['#181818', '#404040', '#757575'],
+    colors: ['#181818', '#404040'],
+    waveColor: '#757575',
     opacity: ['1.0', '0.0'],
   },
   marineBlue: {
-    colors: ['#00759A', '#004EAC', '#BDDBFF'],
+    colors: ['#00759A', '#004EAC'],
+    waveColor: '#BDDBFF',
     opacity: ['0.72', '0.0'],
   },
   veryBlue: {
-    colors: ['#0B2B9C', '#311288', '#8960FD'],
+    colors: ['#0B2B9C', '#311288'],
+    waveColor: '#8960FD',
     opacity: ['0.72', '0.0'],
   },
   rubyRed: {
-    colors: ['#A4284B', '#8D1134', '#FFBFF5'],
+    colors: ['#A4284B', '#8D1134'],
+    waveColor: '#FFBFF5',
     opacity: ['0.28', '0.10'],
   },
   toastyOrange: {
-    colors: ['#CC3707', '#9A2500', '#FF784E'],
+    colors: ['#CC3707', '#9A2500'],
+    waveColor: '#FF784E',
     opacity: ['0.72', '0.0'],
   },
   purpleSky: {
-    colors: ['#AF29F8', '#4100F4', '#AF29F8'],
+    colors: ['#AF29F8', '#4100F4'],
+    waveColor: '#AF29F8',
     opacity: ['0.72', '0.0'],
   },
   eveningSea: {
     colors: ['#00FFF2', '#035355'],
+    waveColor: '',
     opacity: ['0.72', '0.0'],
   },
   teal: {
-    colors: ['#005E4D', '#004E40', '#9BF0E1'],
+    colors: ['#005E4D', '#004E40'],
+    waveColor: '#9BF0E1',
     opacity: ['0.72', '0.0'],
   },
 };

@@ -37,11 +37,8 @@ type Props = {
 
 export const Waves: FC<Props> = ({ theme }) => {
   const classes = useStyles();
-  const [
-    backgroundColor1,
-    backgroundColor2,
-    gradientColor,
-  ] = theme.gradient.colors;
+  const [backgroundColor1, backgroundColor2] = theme.gradient.colors;
+  const waveColor = theme.gradient.waveColor;
   const [opacityStart, opacityStop] = theme.gradient.opacity;
 
   return (
@@ -98,12 +95,8 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="59.5001"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity={opacityStart} />
-          <stop
-            offset="1"
-            stopColor={gradientColor}
-            stopOpacity={opacityStop}
-          />
+          <stop stopColor={waveColor} stopOpacity={opacityStart} />
+          <stop offset="1" stopColor={waveColor} stopOpacity={opacityStop} />
         </linearGradient>
         <linearGradient
           id="paint1_linear"
@@ -113,12 +106,8 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="241.925"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity={opacityStart} />
-          <stop
-            offset="1"
-            stopColor={gradientColor}
-            stopOpacity={opacityStop}
-          />
+          <stop stopColor={waveColor} stopOpacity={opacityStart} />
+          <stop offset="1" stopColor={waveColor} stopOpacity={opacityStop} />
         </linearGradient>
         <linearGradient
           id="paint2_linear"
@@ -128,12 +117,8 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="-103.806"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity={opacityStart} />
-          <stop
-            offset="1"
-            stopColor={gradientColor}
-            stopOpacity={opacityStop}
-          />
+          <stop stopColor={waveColor} stopOpacity={opacityStart} />
+          <stop offset="1" stopColor={waveColor} stopOpacity={opacityStop} />
         </linearGradient>
         <linearGradient
           id="paint3_linear"
@@ -143,12 +128,8 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="104.375"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity={opacityStart} />
-          <stop
-            offset="1"
-            stopColor={gradientColor}
-            stopOpacity={opacityStop}
-          />
+          <stop stopColor={waveColor} stopOpacity={opacityStart} />
+          <stop offset="1" stopColor={waveColor} stopOpacity={opacityStop} />
         </linearGradient>
         <linearGradient
           id="paint4_linear"
@@ -158,12 +139,8 @@ export const Waves: FC<Props> = ({ theme }) => {
           y2="194.894"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor={gradientColor} stopOpacity={opacityStart} />
-          <stop
-            offset="1"
-            stopColor={gradientColor}
-            stopOpacity={opacityStop}
-          />
+          <stop stopColor={waveColor} stopOpacity={opacityStart} />
+          <stop offset="1" stopColor={waveColor} stopOpacity={opacityStop} />
         </linearGradient>
       </defs>
     </svg>
