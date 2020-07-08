@@ -15,7 +15,7 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import { AppConfig } from '@backstage/config';
+import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { createProxyMiddleware } from 'http-proxy-middleware';
@@ -23,7 +23,7 @@ import { Logger } from 'winston';
 
 export interface RouterOptions {
   logger: Logger;
-  config: AppConfig;
+  config: Config;
 }
 
 export async function createRouter(
@@ -32,7 +32,7 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
-  const proxyConfig = options.config.data.proxy ?? {};
+  const proxyConfig = options.config.get('proxy') ?? {};
   Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     router.use(createProxyMiddleware(route, proxyRouteConfig));
   });
