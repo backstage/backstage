@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "backstage-cli plugin:build",
+    "export": "backstage-cli plugin:export",
     "start": "backstage-cli plugin:serve",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
