@@ -72,7 +72,7 @@ export const apis = (config: ConfigApi) => {
   );
 
   builder.add(storageApiRef, WebStorage.create({ errorApi }));
-  builder.add(circleCIApiRef, new CircleCIApi());
+  builder.add(circleCIApiRef, new CircleCIApi(`${backendUrl}/circleci/api`));
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
