@@ -44,7 +44,6 @@ export class DatabaseManager {
   ): Promise<Database> {
     await knex.migrate.latest({
       directory: migrationsDir,
-      tableName: 'knex_migrations_catalog',
     });
     const { logger, fieldNormalizer } = { ...defaultOptions, ...options };
     return new CommonDatabase(knex, fieldNormalizer, logger);
@@ -75,7 +74,6 @@ export class DatabaseManager {
     });
     await knex.migrate.latest({
       directory: migrationsDir,
-      tableName: 'knex_migrations_catalog',
     });
     const { logger, fieldNormalizer } = defaultOptions;
     return new CommonDatabase(knex, fieldNormalizer, logger);
