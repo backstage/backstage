@@ -24,7 +24,7 @@ jobs:
         uses: docker/build-push-action@v1.1.0
         with:
           path: plugins/scaffolder-backend/scripts
-          dockerfile: Cookiecutter.dockerfile
+          dockerfile: ./Cookiecutter.dockerfile
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/cookiecutter
           username: ${{ github.actor }}
