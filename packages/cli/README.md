@@ -16,6 +16,8 @@ or
 $ yarn add @backstage/cli
 ```
 
+s
+
 ## Development
 
 For local development the cli can be used directly, even from other packages in this repo. The `bin/backstage-cli` entrypoint contains a switch that will load the implementation from the `src` directory when executed inside this repo.
