@@ -15,11 +15,28 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import fetch from 'node-fetch';
+import fetch, { RequestInit, HeadersInit } from 'node-fetch';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
+const privateToken: string = process.env.GITHUB_PRIVATE_TOKEN || '';
+
 export class GithubReaderProcessor implements LocationProcessor {
+  getRequestOptions(): RequestInit {
+    const headers: HeadersInit = {
+      Accept: 'application/vnd.github.v3.raw',
+    };
+    if (privateToken) {
+      headers.Authorization = `token ${privateToken}`;
+    }
+
+    const requestOptions: RequestInit = {
+      headers,
+    };
+
+    return requestOptions;
+  }
+
   async readLocation(
     location: LocationSpec,
     optional: boolean,
@@ -34,7 +51,7 @@ export class GithubReaderProcessor implements LocationProcessor {
 
       // TODO(freben): Should "hard" errors thrown by this line be treated as
       // notFound instead of fatal?
-      const response = await fetch(url.toString());
+      const response = await fetch(url.toString(), this.getRequestOptions());
 
       if (response.ok) {
         const data = await response.buffer();
@@ -58,9 +75,9 @@ export class GithubReaderProcessor implements LocationProcessor {
   }
 
   // Converts
-  // from: https://github.com/a/b/blob/master/c.yaml
-  // to:   https://raw.githubusercontent.com/a/b/master/c.yaml
-  private buildRawUrl(target: string): URL {
+  // from: https://github.com/a/b/blob/master/path/to/c.yaml
+  // to:   https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=master
+  buildRawUrl(target: string): URL {
     try {
       const url = new URL(target);
 
@@ -69,6 +86,7 @@ export class GithubReaderProcessor implements LocationProcessor {
         userOrOrg,
         repoName,
         blobKeyword,
+        ref,
         ...restOfPath
       ] = url.pathname.split('/');
 
@@ -80,13 +98,21 @@ export class GithubReaderProcessor implements LocationProcessor {
         blobKeyword !== 'blob' ||
         !restOfPath.join('/').match(/\.yaml$/)
       ) {
-        throw new Error('Wrong GitHub URL');
+        throw new Error('Wrong GitHub URL or Invalid file path');
       }
 
-      // Removing the "blob" part
-      url.pathname = [empty, userOrOrg, repoName, ...restOfPath].join('/');
-      url.hostname = 'raw.githubusercontent.com';
+      // transform to api
+      url.pathname = [
+        empty,
+        'repos',
+        userOrOrg,
+        repoName,
+        'contents',
+        ...restOfPath,
+      ].join('/');
+      url.hostname = 'api.github.com';
       url.protocol = 'https';
+      url.search = `ref=${ref}`;
 
       return url;
     } catch (e) {

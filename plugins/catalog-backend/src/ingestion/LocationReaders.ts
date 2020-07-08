@@ -58,7 +58,6 @@ export class LocationReaders implements LocationReader {
     return [
       new FileReaderProcessor(),
       new GithubReaderProcessor(),
-      new GithubV3ReaderProcessor(),
       new GitlabReaderProcessor(),
       new YamlProcessor(),
       new EntityPolicyProcessor(entityPolicy),
