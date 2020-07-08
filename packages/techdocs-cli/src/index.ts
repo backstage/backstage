@@ -17,9 +17,11 @@ import program from 'commander';
 import { version } from './lib/version';
 // import chalk from 'chalk';
 import { spawn } from 'child_process';
+import path from 'path';
 
-const run = (name: string, args: string[] = []) => {
+const run = (workingDirectory: string, name: string, args: string[] = []) => {
   const child = spawn(name, args, {
+    cwd: workingDirectory,
     stdio: ['inherit', 'inherit', 'inherit'],
     shell: true,
     env: {
@@ -43,7 +45,7 @@ const main = (argv: string[]) => {
     .command('serve')
     .description('Serve a documentation project locally')
     .action(() => {
-      run('docker', [
+      run(process.env.PWD!, 'docker', [
         'run',
         '-it',
         '-w',
@@ -57,19 +59,18 @@ const main = (argv: string[]) => {
         '-a',
         '0.0.0.0:8000',
       ]);
-    });
 
-  program
-    .command('do-thing')
-    .description('Does the thing')
-    .option(
-      '--skip-install',
-      'Skip the install and builds steps after creating the app',
-    )
-    .action(() => console.log('testing thing'));
-  /* .action(
-        lazyAction(() => import('./commands/create-app/createApp'), 'default'),
-      );*/
+      const pluginPath = path.join(
+        require.resolve('@backstage/plugin-techdocs'),
+        '..',
+        '..',
+      );
+      run(
+        pluginPath,
+        path.join(require.resolve('@backstage/cli'), '../../bin/backstage-cli'),
+        ['plugin:serve'],
+      );
+    });
 
   program.parse(argv);
 };
