@@ -38,11 +38,10 @@ export const WelcomeBanner = () => {
       variant="info"
       message={
         <Typography>
-          <span role="img" aria-label="wave" className={classes.emoji}>
-            👋🏼
+          <span role="img" aria-label="tada" className={classes.emoji}>
+            🎉
           </span>
-          Welcome to Backstage, we are happy to have you. Start by checking out
-          our{' '}
+          Welcome to Backstage! Take a look around and check out our{' '}
           <Link href="/welcome" color="textSecondary">
             getting started
           </Link>{' '}

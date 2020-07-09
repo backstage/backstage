@@ -1,8 +1,8 @@
 {
-  "name": "@backstage/techdocs-cli",
+  "name": "@techdocs/cli",
   "description": "CLI for running TechDocs locally.",
   "version": "0.1.1-alpha.13",
-  "private": true,
+  "private": false,
   "publishConfig": {
     "access": "public"
   },
@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "scripts": {
-    "build": "backstage-cli build --outputs cjs",
+    "build": "./bin/build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test --passWithNoTests",
     "clean": "backstage-cli clean",
@@ -28,7 +28,11 @@
     "techdocs": "bin/techdocs-cli"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.13"
+    "@spotify/eslint-config": "^7.0.0",
+    "@spotify/prettier-config": "^7.0.0",
+    "@types/serve-handler": "^6.1.0",
+    "eslint": "^7.1.0",
+    "eslint-plugin-import": "^2.22.0"
   },
   "files": [
     "bin",
@@ -36,7 +40,15 @@
   ],
   "nodemonConfig": {
     "watch": "./src",
-    "exec": "bin/techdocs-cli",
+    "exec": "bin/build && bin/techdocs-cli",
     "ext": "ts"
+  },
+  "dependencies": {
+    "@backstage/cli": "^0.1.1-alpha.13",
+    "@backstage/plugin-techdocs": "^0.1.1-alpha.13",
+    "chalk": "^4.1.0",
+    "commander": "^5.1.0",
+    "fs-extra": "^9.0.1",
+    "serve-handler": "^6.1.3"
   }
 }

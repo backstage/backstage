@@ -13,6 +13,7 @@
     "@backstage/plugin-graphiql": "^0.1.1-alpha.13",
     "@backstage/plugin-lighthouse": "^0.1.1-alpha.13",
     "@backstage/plugin-register-component": "^0.1.1-alpha.13",
+    "@backstage/plugin-rollbar": "^0.1.1-alpha.13",
     "@backstage/plugin-scaffolder": "^0.1.1-alpha.13",
     "@backstage/plugin-sentry": "^0.1.1-alpha.13",
     "@backstage/plugin-tech-radar": "^0.1.1-alpha.13",
