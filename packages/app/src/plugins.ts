@@ -26,3 +26,4 @@ export { plugin as GitopsProfiles } from '@backstage/plugin-gitops-profiles';
 export { plugin as TechDocs } from '@backstage/plugin-techdocs';
 export { plugin as GraphiQL } from '@backstage/plugin-graphiql';
 export { plugin as GithubActions } from '@backstage/plugin-github-actions';
+export { plugin as Rollbar } from '@backstage/plugin-rollbar';

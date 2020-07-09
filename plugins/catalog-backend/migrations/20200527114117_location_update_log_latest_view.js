@@ -20,18 +20,21 @@
  * @param {import('knex')} knex
  */
 exports.up = async function up(knex) {
-  // Need to first order by date of creation
-  const query = knex
-    .select()
-    .from('location_update_log')
-    .orderBy('location_update_log.created_at', 'desc');
-
-  // And only then to do the grouping to get the latest per location
-  const groupedQuery = knex(query).groupBy('location_id').select();
-
-  await knex.schema.raw(
-    `CREATE VIEW location_update_log_latest AS ${groupedQuery.toString()};`,
-  );
+  // Get list sorted by created_at timestamp in descending order
+  // Grouped by location_id
+  return knex.schema.raw(`
+    CREATE VIEW location_update_log_latest AS
+    SELECT t1.* FROM location_update_log t1
+    JOIN 
+    (
+       SELECT location_id, MAX(created_at) AS MAXDATE
+       FROM location_update_log
+       GROUP BY location_id
+    ) t2
+    ON t1.location_id = t2.location_id
+    AND t1.created_at = t2.MAXDATE
+    ORDER BY created_at DESC;
+  `);
 };
 
 /**

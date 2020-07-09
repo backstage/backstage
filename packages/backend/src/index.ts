@@ -33,6 +33,7 @@ import knex from 'knex';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import identity from './plugins/identity';
+import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
 import proxy from './plugins/proxy';
@@ -71,6 +72,12 @@ async function main() {
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
     .addRouter('/catalog', await catalog(catalogEnv))
+    .addRouter(
+      '/rollbar',
+      await rollbar(
+        getRootLogger().child({ type: 'plugin', plugin: 'rollbar' }),
+      ),
+    )
     .addRouter('/scaffolder', await scaffolder(scaffolderEnv))
     .addRouter(
       '/sentry',

@@ -104,6 +104,12 @@ const main = (argv: string[]) => {
     .action(lazyAction(() => import('./commands/plugin/serve'), 'default'));
 
   program
+    .command('plugin:export')
+    .description('Exports the dev/ folder of a plugin')
+    .option('--stats', 'Write bundle stats to output directory')
+    .action(lazyAction(() => import('./commands/plugin/export'), 'default'));
+
+  program
     .command('plugin:diff')
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')

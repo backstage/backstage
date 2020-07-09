@@ -57,6 +57,8 @@ import {
 } from '@backstage/plugin-graphiql';
 import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
 
+import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
+
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
   console.log(`Creating APIs for ${config.getString('app.title')}`);
@@ -168,6 +170,14 @@ export const apis = (config: ConfigApi) => {
         githubAuthApi,
       }),
     ]),
+  );
+
+  builder.add(
+    rollbarApiRef,
+    new RollbarClient({
+      apiOrigin: backendUrl,
+      basePath: '/rollbar',
+    }),
   );
 
   return builder.build();
