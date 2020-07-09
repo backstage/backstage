@@ -3965,6 +3965,13 @@
     "@types/node" "*"
     rollup "^0.63.4"
 
+"@types/serve-handler@^6.1.0":
+  version "6.1.0"
+  resolved "https://registry.npmjs.org/@types/serve-handler/-/serve-handler-6.1.0.tgz#6952aaf864e542297ce8a2480b3e0d9ea59de7f6"
+  integrity sha512-F9BpWotLZrQvq1CdE3oCnVmQUb6dWq20HSB/qjF4mG7WkZjPQ6fye8veznMKoBPhFJve4yz9C1NOITdTcoLngQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/serve-static@*":
   version "1.13.3"
   resolved "https://registry.npmjs.org/@types/serve-static/-/serve-static-1.13.3.tgz#eb7e1c41c4468272557e897e9171ded5e2ded9d1"
