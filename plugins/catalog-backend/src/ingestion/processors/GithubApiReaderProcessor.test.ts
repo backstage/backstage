@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { GithubReaderProcessor } from './GithubReaderProcessor';
+import { GithubApiReaderProcessor } from './GithubApiReaderProcessor';
 
-describe('GithubReaderProcessor', () => {
+describe('GithubApiReaderProcessor', () => {
   it('should build raw api', () => {
-    const processor = new GithubReaderProcessor();
+    const processor = new GithubApiReaderProcessor();
 
     const tests = [
       {
@@ -82,7 +82,7 @@ describe('GithubReaderProcessor', () => {
 
     for (const test of tests) {
       process.env.GITHUB_PRIVATE_TOKEN = test.token;
-      const processor = new GithubReaderProcessor();
+      const processor = new GithubApiReaderProcessor();
       expect(processor.getRequestOptions()).toEqual(test.expect);
     }
   });
