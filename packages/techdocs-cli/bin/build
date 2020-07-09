@@ -17,3 +17,9 @@ set -xe
 # Build the CLI
 backstage-cli build --outputs cjs
 
+# Create export of the TechDocs plugin
+yarn workspace @backstage/plugin-techdocs export 
+
+# Copy over export to techdocs-cli dist/ folder
+ROOT_DIR=$(git rev-parse --show-toplevel)
+cp -r $ROOT_DIR/plugins/techdocs/dist $ROOT_DIR/packages/techdocs-cli/dist/techdocs-preview-bundle
