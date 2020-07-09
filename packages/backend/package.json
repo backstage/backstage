@@ -25,6 +25,7 @@
     "@backstage/plugin-auth-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-catalog-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-identity-backend": "^0.1.1-alpha.13",
+    "@backstage/plugin-rollbar-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-scaffolder-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-sentry-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-techdocs-backend": "^0.1.1-alpha.13",
