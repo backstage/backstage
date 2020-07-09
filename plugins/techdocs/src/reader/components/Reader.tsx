@@ -30,7 +30,7 @@ import transformer, {
   onCssReady,
   sanitizeDOM,
 } from '../transformers';
-import { docStorageURL } from '../../config';
+import { docStorageUrl } from '../../config';
 import URLFormatter from '../urlFormatter';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
@@ -74,7 +74,7 @@ export const Reader = () => {
   const [shadowDomRef, shadowRoot] = useShadowDom();
   const navigate = useNavigate();
   const normalizedUrl = new URLFormatter(
-    `${docStorageURL}${location.pathname.replace('/docs', '')}`,
+    `${docStorageUrl}${location.pathname.replace('/docs', '')}`,
   ).formatBaseURL();
   const state = useFetch(`${normalizedUrl}index.html`);
 
@@ -91,7 +91,7 @@ export const Reader = () => {
     const transformedElement = transformer(state.value as string, [
       sanitizeDOM(),
       addBaseUrl({
-        docStorageURL,
+        docStorageUrl,
         componentId,
         path,
       }),
@@ -137,7 +137,7 @@ export const Reader = () => {
         },
       }),
       onCssReady({
-        docStorageURL,
+        docStorageUrl,
         onLoading: (dom: Element) => {
           (dom as HTMLElement).style.setProperty('opacity', '0');
         },

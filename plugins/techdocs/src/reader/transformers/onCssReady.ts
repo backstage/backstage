@@ -17,20 +17,20 @@
 import type { Transformer } from './index';
 
 type OnCssReadyOptions = {
-  docStorageURL: string;
+  docStorageUrl: string;
   onLoading: (dom: Element) => void;
   onLoaded: (dom: Element) => void;
 };
 
 export const onCssReady = ({
-  docStorageURL,
+  docStorageUrl,
   onLoading,
   onLoaded,
 }: OnCssReadyOptions): Transformer => {
   return dom => {
     const cssPages = Array.from(
       dom.querySelectorAll('head > link[rel="stylesheet"]'),
-    ).filter(elem => elem.getAttribute('href')?.startsWith(docStorageURL));
+    ).filter(elem => elem.getAttribute('href')?.startsWith(docStorageUrl));
 
     let count = cssPages.length;
 
