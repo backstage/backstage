@@ -18,6 +18,7 @@ import { version } from './lib/version';
 // import chalk from 'chalk';
 import { spawn } from 'child_process';
 import path from 'path';
+import HTTPServer from './lib/httpServer';
 
 const run = (workingDirectory: string, name: string, args: string[] = []) => {
   const child = spawn(name, args, {
@@ -45,6 +46,15 @@ const main = (argv: string[]) => {
     .command('serve')
     .description('Serve a documentation project locally')
     .action(() => {
+      // const techdocsPreviewBundlePath = path.join(
+      //   __dirname,
+      //   '..',
+      //   'dist',
+      //   'techdocs-preview-bundle',
+      // );
+
+      // new HTTPServer(techdocsPreviewBundlePath, 3000).serve();
+
       run(process.env.PWD!, 'docker', [
         'run',
         '-it',
