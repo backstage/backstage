@@ -44,6 +44,6 @@ To point TechDocs to your own server, simply set the environment variable `APP_C
 git clone git@github.com:spotify/backstage.git
 cd backstage/
 yarn install
-export APP_CONFIG_techdocs_baseurl=http://example-docs-site-server.com
+export APP_CONFIG_techdocs_baseurl='"http://example-docs-site-server.com"'
 yarn start
 ```
