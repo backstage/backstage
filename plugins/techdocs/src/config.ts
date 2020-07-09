@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { AppConfig } from '@backstage/config';
+import { AppConfig, ConfigReader } from '@backstage/config';
 
 export function getDocumentationStorageUrlFromAppConfig(): string | undefined {
-  const appConfigs = (process.env.APP_CONFIG as unknown) as AppConfig[];
-  const envAppConfigs = appConfigs.filter(config => config.context === 'env');
-  if (envAppConfigs.length === 0) {
+  const appConfigs = (process.env.APP_CONFIG as unknown) as
+    | AppConfig[]
+    | undefined;
+  if (!appConfigs) {
     return undefined;
   }
 
-  const getBaseUrl = (appConfig: any) => appConfig?.data?.techdocs?.baseurl;
-  return getBaseUrl(envAppConfigs.find(getBaseUrl));
+  return ConfigReader.fromConfigs(appConfigs).getOptionalString(
+    'techdocs.baseurl',
+  );
 }
 
 export function getDocumentationStorageUrl(): string {
