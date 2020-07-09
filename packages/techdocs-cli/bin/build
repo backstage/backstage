@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -xe
+set -e
+
+ROOT_DIR=$(git rev-parse --show-toplevel)
+TECHDOCS_PREVIEW_SOURCE=$ROOT_DIR/plugins/techdocs/dist
+TECHDOCS_PREVIEW_DEST=$ROOT_DIR/packages/techdocs-cli/dist/techdocs-preview-bundle
 
 # Build the CLI
 backstage-cli build --outputs cjs
@@ -21,5 +25,11 @@ backstage-cli build --outputs cjs
 yarn workspace @backstage/plugin-techdocs export 
 
 # Copy over export to techdocs-cli dist/ folder
-ROOT_DIR=$(git rev-parse --show-toplevel)
-cp -r $ROOT_DIR/plugins/techdocs/dist $ROOT_DIR/packages/techdocs-cli/dist/techdocs-preview-bundle
+cp -r $TECHDOCS_PREVIEW_SOURCE $TECHDOCS_PREVIEW_DEST
+
+# Clean output
+yarn workspace @backstage/plugin-techdocs clean
+
+# Write to console
+echo "[techdocs-cli]: Built the dist/ folder"
+echo "[techdocs-cli]: Imported @backstage/plugin-techdocs dist/ folder into techdocs-preview-bundle/"

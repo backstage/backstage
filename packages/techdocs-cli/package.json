@@ -38,7 +38,7 @@
   ],
   "nodemonConfig": {
     "watch": "./src",
-    "exec": "bin/techdocs-cli",
+    "exec": "bin/build && bin/techdocs-cli",
     "ext": "ts"
   },
   "dependencies": {
