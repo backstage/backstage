@@ -28,7 +28,8 @@
     "techdocs": "bin/techdocs-cli"
   },
   "devDependencies": {
-    "@spotify/eslint-config": "^7.0.1",
+    "@spotify/prettier-config": "^8.0.0",
+    "@spotify/eslint-config": "^8.0.0",
     "eslint": "^7.1.0",
     "eslint-plugin-import": "^2.22.0"
   },
