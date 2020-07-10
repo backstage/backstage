@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { useApi, configApiRef } from '@backstage/core';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
@@ -30,7 +31,6 @@ import transformer, {
   onCssReady,
   sanitizeDOM,
 } from '../transformers';
-import { docStorageUrl } from '../../config';
 import URLFormatter from '../urlFormatter';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
@@ -68,6 +68,10 @@ const useEnforcedTrailingSlash = (): void => {
 
 export const Reader = () => {
   useEnforcedTrailingSlash();
+
+  const docStorageUrl =
+    useApi(configApiRef).getOptionalString('techdocs.storageUrl') ??
+    'https://techdocs-mock-sites.storage.googleapis.com';
 
   const location = useLocation();
   const { componentId, '*': path } = useParams();

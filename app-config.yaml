@@ -12,7 +12,6 @@ backend:
 
 organization:
   name: Spotify
-  
-techdocs:
-  baseurl: https://techdocs-mock-sites.storage.googleapis.com
 
+techdocs:
+  storageUrl: https://techdocs-mock-sites.storage.googleapis.com
