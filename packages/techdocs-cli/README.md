@@ -4,6 +4,16 @@ Check out the [TechDocs README](https://github.com/spotify/backstage/blob/master
 
 **WIP: This cli is a work in progress. It is not ready for use yet. Follow our progress on [the Backstage Discord](https://discord.gg/MUpMjP2) under #docs-like-code or on [our GitHub Milestone](https://github.com/spotify/backstage/milestone/15).**
 
+## Commands
+
+```bash
+# Serve localhost:3000 (and localhost:8000)
+yarn serve
+
+# Serve localhost:8000 containing your Mkdocs documentation.
+yarn serve:mkdocs
+```
+
 ## Getting Started
 
 You'll need Docker installed and running to use this. You will also need to build the container located at `plugins/techdocs/mkdocs/container` under the tag `mkdocs:local-dev`, as you can see in the commands from below:
