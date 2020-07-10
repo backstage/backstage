@@ -49,6 +49,7 @@
     "chalk": "^4.1.0",
     "commander": "^5.1.0",
     "fs-extra": "^9.0.1",
+    "http-proxy": "^1.18.1",
     "serve-handler": "^6.1.3"
   }
 }
