@@ -29,13 +29,8 @@ jobs:
       - name: Build and push Docker images
         uses: docker/build-push-action@v1.1.0
         with:
-          path: plugins/techdocs/mkdocs/container
-          registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/mkdocs
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
-          tag_with_ref: true
-          push: true
+          path: packages/techdocs-container
+          push: false
 
       # Lint Python code for techdocs-core package
       - name: prepare python environment
