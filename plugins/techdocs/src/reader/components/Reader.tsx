@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { useApi, configApiRef } from '@backstage/core';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
@@ -30,7 +31,6 @@ import transformer, {
   onCssReady,
   sanitizeDOM,
 } from '../transformers';
-import { docStorageURL } from '../../config';
 import URLFormatter from '../urlFormatter';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
@@ -69,12 +69,16 @@ const useEnforcedTrailingSlash = (): void => {
 export const Reader = () => {
   useEnforcedTrailingSlash();
 
+  const docStorageUrl =
+    useApi(configApiRef).getOptionalString('techdocs.storageUrl') ??
+    'https://techdocs-mock-sites.storage.googleapis.com';
+
   const location = useLocation();
   const { componentId, '*': path } = useParams();
   const [shadowDomRef, shadowRoot] = useShadowDom();
   const navigate = useNavigate();
   const normalizedUrl = new URLFormatter(
-    `${docStorageURL}${location.pathname.replace('/docs', '')}`,
+    `${docStorageUrl}${location.pathname.replace('/docs', '')}`,
   ).formatBaseURL();
   const state = useFetch(`${normalizedUrl}index.html`);
 
@@ -91,7 +95,7 @@ export const Reader = () => {
     const transformedElement = transformer(state.value as string, [
       sanitizeDOM(),
       addBaseUrl({
-        docStorageURL,
+        docStorageUrl,
         componentId,
         path,
       }),
@@ -137,7 +141,7 @@ export const Reader = () => {
         },
       }),
       onCssReady({
-        docStorageURL,
+        docStorageUrl,
         onLoading: (dom: Element) => {
           (dom as HTMLElement).style.setProperty('opacity', '0');
         },
