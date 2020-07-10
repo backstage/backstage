@@ -22,7 +22,6 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.13",
     "@backstage/core": "^0.1.1-alpha.13",
     "@backstage/test-utils": "^0.1.1-alpha.13",
     "@backstage/theme": "^0.1.1-alpha.13",
