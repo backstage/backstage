@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/techdocs.yml'
+      - 'packages/techdocs-container/**'
       - 'packages/techdocs-cli/**'
       - 'plugins/techdocs/**'
       - 'plugins/techdocs-backend/**'
