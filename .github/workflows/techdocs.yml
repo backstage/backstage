@@ -19,7 +19,7 @@ jobs:
         python-version: [3.7]
 
     env:
-      TECHDOCS_CORE_PATH: ./plugins/techdocs/mkdocs/container/techdocs-core
+      TECHDOCS_CORE_PATH: ./packages/techdocs-container/techdocs-core
 
     name: Python ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:

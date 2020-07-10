@@ -16,25 +16,25 @@ yarn serve:mkdocs
 
 ## Getting Started
 
-You'll need Docker installed and running to use this. You will also need to build the container located at `plugins/techdocs/mkdocs/container` under the tag `mkdocs:local-dev`, as you can see in the commands from below:
+You'll need Docker installed and running to use this. You will also need to build the container located at `/packages/techdocs-container` under the tag `mkdocs:local-dev`, as you can see in the commands from below:
 
 ```bash
-docker build plugins/techdocs/mkdocs/container -t mkdocs:local-dev
+docker build packages/techdocs-container -t mkdocs:local-dev
 ```
 
 From that point, you can invoke the CLI from any project with a docs folder. Try out our example!
 
 ```bash
-cd plugins/techdocs/mkdocs/mock-docs
+cd packages/techdocs-container/mock-docs
 npx @techdocs/cli serve
 ```
 
 ## Local Development
 
-You'll need Docker installed and running to use this. You will also need to build the container located at `plugins/techdocs/mkdocs/container` under the tag `mkdocs:local-dev`, as you can see in the commands from below:
+You'll need Docker installed and running to use this. You will also need to build the container located at `packages/techdocs-container` under the tag `mkdocs:local-dev`, as you can see in the commands from below:
 
 ```bash
-docker build plugins/techdocs/mkdocs/container -t mkdocs:local-dev
+docker build packages/techdocs-container -t mkdocs:local-dev
 ```
 
 Once that is built, you'll need to manually create an `alias` for running the CLI locally:
@@ -52,7 +52,7 @@ alias techdocs="[HERE]"
 From that point, you can invoke `techdocs` from any project with a docs folder. Try out our example!
 
 ```bash
-cd plugins/techdocs/mkdocs/mock-docs
+cd packages/techdocs-container/mock-docs
 techdocs serve
 ```
 
