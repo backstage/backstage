@@ -31,10 +31,9 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { BuildsClient } from '../../apis/builds';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
-
-const client = BuildsClient.create();
+import { githubActionsApiRef } from '../../api';
+import { useApi } from '@backstage/core-api';
 
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
@@ -57,8 +56,9 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 const PageContents = () => {
+  const api = useApi(githubActionsApiRef);
   const { loading, error, value } = useAsync(() =>
-    client.listBuilds('entity:spotify:backstage'),
+    api.listBuilds('entity:spotify:backstage'),
   );
 
   if (loading) {

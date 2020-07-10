@@ -32,8 +32,9 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { BuildsClient } from '../../apis/builds';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
+import { useApi } from '@backstage/core-api';
+import { githubActionsApiRef } from '../../api';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -48,12 +49,11 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const client = BuildsClient.create();
-
 export const BuildDetailsPage = () => {
+  const api = useApi(githubActionsApiRef);
   const classes = useStyles();
   const { buildUri } = useParams();
-  const status = useAsync(() => client.getBuild(buildUri), [buildUri]);
+  const status = useAsync(() => api.getBuild(buildUri), [buildUri]);
 
   if (status.loading) {
     return <LinearProgress />;

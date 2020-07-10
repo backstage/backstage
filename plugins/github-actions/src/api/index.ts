@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { BuildsClient } from './BuildsClient';
+export * from './GithubActionsApi';
+export * from './MockGithubActionsClient';
 export * from './types';
