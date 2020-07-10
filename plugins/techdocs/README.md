@@ -36,7 +36,7 @@ https://techdocs-mock-sites.storage.googleapis.com/mkdocs/index.html
 https://techdocs-mock-sites.storage.googleapis.com/backstage-microsite/index.html
 ```
 
-Using your own setup (or ours which is being worked on as of Q3 2020), you can point it to your own server with your own hosted documentation sites. The only requirement is that it the output is from [Mkdocs](https://mkdocs.org) with the Material theme. You can always use our documentation generation tool located at `/packages/techdocs-container` for easy setup.
+Using your own setup (or ours which is being worked on as of Q3 2020), you can point it to your own server with your own hosted documentation sites. The only requirement is that it the output is from [Mkdocs](https://mkdocs.org) with the Material theme. You can always use our documentation generation tool located at `packages/techdocs-container` for easy setup.
 
 To point TechDocs to your own server, simply update the `techdocs.storageUrl` value in your `app-config.yaml` file or set the environment variable `APP_CONFIG_techdocs_storageUrl` in your application:
 
