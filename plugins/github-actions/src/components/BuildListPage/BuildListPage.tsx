@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Link } from '@backstage/core';
+import { Link, useApi, githubAuthApiRef } from '@backstage/core';
 import {
   LinearProgress,
   makeStyles,
@@ -29,13 +29,10 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
-import { githubActionsApiRef } from '../../api';
-import { useApi, githubAuthApiRef } from '@backstage/core-api';
-import { Entity } from '@backstage/catalog-model';
-
+import { githubActionsApiRef, Build } from '../../api';
 
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
@@ -57,14 +54,15 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const PageContents: FC<{ entity: Entity }> = ({ entity }) => {
+const PageContents = ({ owner, repo }: { owner: string; repo: string }) => {
   const api = useApi(githubActionsApiRef);
   const githubApi = useApi(githubAuthApiRef);
-  const token = githubApi.getAccessToken('repo');
 
-  const { loading, error, value } = useAsync(() =>
-    api.listBuilds(entity, token),
-  );
+  const { loading, error, value } = useAsync(async () => {
+    const token = await githubApi.getAccessToken('repo');
+
+    return api.listBuilds({ owner, repo, token });
+  }, [githubApi, owner, repo]);
 
   if (loading) {
     return <LinearProgress />;
@@ -90,7 +88,7 @@ const PageContents: FC<{ entity: Entity }> = ({ entity }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {value!.map(build => (
+          {value?.map((build: Build) => (
             <TableRow key={build.uri}>
               <TableCell>
                 <BuildStatusIndicator status={build.status} />
@@ -101,7 +99,7 @@ const PageContents: FC<{ entity: Entity }> = ({ entity }) => {
                 </Typography>
               </TableCell>
               <TableCell>
-                <Link to={`builds/${encodeURIComponent(build.uri)}`}>
+                <Link to={`builds?uri=${encodeURIComponent(build.uri)}`}>
                   <Typography color="primary">
                     <LongText text={build.message} max={60} />
                   </Typography>
@@ -120,14 +118,15 @@ const PageContents: FC<{ entity: Entity }> = ({ entity }) => {
   );
 };
 
-export const BuildListPage: FC<{ entity: Entity }> = ({ entity }) => {
+export const BuildListPage = () => {
   const classes = useStyles();
+
   return (
     <div className={classes.root}>
       <Typography variant="h3" className={classes.title}>
         CI/CD Builds
       </Typography>
-      <PageContents entity={entity} />
+      <PageContents owner="spotify" repo="backstage" />
     </div>
   );
 };

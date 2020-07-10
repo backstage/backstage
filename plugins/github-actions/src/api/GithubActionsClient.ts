@@ -16,26 +16,34 @@
 
 import { GithubActionsApi } from './GithubActionsApi';
 import { Build, BuildDetails, BuildStatus, WorkflowRun } from './types';
-import { Entity } from '@backstage/catalog-model';
+
+const statusToBuildStatus: { [status: string]: BuildStatus } = {
+  success: BuildStatus.Success,
+  failure: BuildStatus.Failure,
+  pending: BuildStatus.Pending,
+  running: BuildStatus.Running,
+  in_progress: BuildStatus.Running,
+  completed: BuildStatus.Success,
+};
+
+const conclusionToStatus = (conslusion: string): BuildStatus =>
+  statusToBuildStatus[conslusion] ?? BuildStatus.Null;
 
 export class GithubActionsClient implements GithubActionsApi {
-  async listBuilds(entity: Entity, token: Promise<string>): Promise<Build[]> {
-    // ### Feedback request ###
-    // I asumed the following: (maybe not the best. Ideally this should come from the link to the component.yaml file)
-    // entity.metadata.namespace => org name
-    // entity.metadata.name => repo name
-    // entityUri -> entity:spotify:backstage
-
-    let url: string;
-    if (entity.metadata.name !== '') {
-      url = `https://api.github.com/repos/${entity.metadata.namespace}/${entity.metadata.name}/runs`;
-    } else {
-      url = 'https://api.github.com/repos/spotify/backstage/actions/runs';
-    }
+  async listBuilds({
+    owner,
+    repo,
+    token,
+  }: {
+    owner: string;
+    repo: string;
+    token: string;
+  }): Promise<Build[]> {
+    const url = `https://api.github.com/repos/${owner}/${repo}/actions/runs`;
 
     const response = await fetch(url, {
       headers: new Headers({
-        Authorization: `Bearer ${await token}`,
+        Authorization: `Bearer ${token}`,
       }),
     });
 
@@ -67,24 +75,7 @@ export class GithubActionsClient implements GithubActionsApi {
       };
       transData.commitId = String(element.head_commit.id);
       transData.branch = element.head_branch;
-
-      // ### Feedback request ###
-      // TODO: I am not sure about this part. Looks ugly. Maybe there is a better way of doing this.
-      if (element.conclusion === 'success') {
-        transData.status = BuildStatus.Success;
-      } else if (element.conclusion === 'failure') {
-        transData.status = BuildStatus.Failure;
-      } else if (element.conclusion === 'pending') {
-        transData.status = BuildStatus.Pending;
-      } else if (element.conclusion === 'running') {
-        transData.status = BuildStatus.Running;
-      } else {
-        if (element.status === 'in_progress') {
-          transData.status = BuildStatus.Running;
-        } else {
-          transData.status = BuildStatus.Null;
-        }
-      }
+      transData.status = conclusionToStatus(element.conclusion);
       transData.message = element.head_commit.message;
       transData.uri = element.url;
       endData[index] = transData;
@@ -130,21 +121,7 @@ export class GithubActionsClient implements GithubActionsApi {
     dataBlank.build.branch = newData.head_branch;
     dataBlank.build.commitId = newData.head_commit.id;
     dataBlank.build.message = newData.head_commit.message;
-
-    // ### Feedback request ###
-    // TODO: I am not sure about this part. Look ugly. Maybe there is a better way of doing this.
-    if (newData.status === 'completed') {
-      dataBlank.build.status = BuildStatus.Success;
-    } else if (newData.status === 'in_progress') {
-      dataBlank.build.status = BuildStatus.Running;
-    } else if (newData.status === 'pending') {
-      dataBlank.build.status = BuildStatus.Pending;
-    } else if (newData.status === 'failure') {
-      dataBlank.build.status = BuildStatus.Failure;
-    } else {
-      dataBlank.build.status = BuildStatus.Null;
-    }
-
+    dataBlank.build.status = conclusionToStatus(newData.status);
     dataBlank.build.uri = newData.url;
     dataBlank.logUrl = newData.logs_url;
     dataBlank.overviewUrl = newData.html_url;

@@ -59,7 +59,7 @@ import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
 
 import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
 import {
-  MockGithubActionsClient,
+  GithubActionsClient,
   githubActionsApiRef,
 } from '@backstage/plugin-github-actions';
 
@@ -79,7 +79,7 @@ export const apis = (config: ConfigApi) => {
 
   builder.add(storageApiRef, WebStorage.create({ errorApi }));
   builder.add(circleCIApiRef, new CircleCIApi());
-  builder.add(githubActionsApiRef, new MockGithubActionsClient());
+  builder.add(githubActionsApiRef, new GithubActionsClient());
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
