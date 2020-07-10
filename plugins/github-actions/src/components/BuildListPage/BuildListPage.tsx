@@ -36,6 +36,7 @@ import { githubActionsApiRef } from '../../api';
 import { useApi, githubAuthApiRef } from '@backstage/core-api';
 import { Entity } from '@backstage/catalog-model';
 
+
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
     return <span>{text}</span>;

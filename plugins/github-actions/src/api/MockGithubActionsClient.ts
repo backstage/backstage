@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
+import { GithubActionsApi } from './GithubActionsApi';
 import { Build, BuildDetails, BuildStatus } from './types';
 
-export class BuildsClient {
-  static create(): BuildsClient {
-    return new BuildsClient();
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async listBuilds(_entityUri: string): Promise<Build[]> {
+export class MockGithubActionsClient implements GithubActionsApi {
+  async listBuilds(): Promise<Build[]> {
     return [];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getBuild(_buildUri: string): Promise<BuildDetails> {
+  async getBuild(): Promise<BuildDetails> {
     return {
       build: {
         commitId: 'TODO',
