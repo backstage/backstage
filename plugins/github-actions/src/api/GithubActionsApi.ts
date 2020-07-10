@@ -16,6 +16,8 @@
 
 import { createApiRef } from '@backstage/core';
 import { Build, BuildDetails } from './types';
+import { Entity } from '@backstage/catalog-model';
+
 
 export const githubActionsApiRef = createApiRef<GithubActionsApi>({
   id: 'plugin.githubactions.service',
@@ -23,6 +25,6 @@ export const githubActionsApiRef = createApiRef<GithubActionsApi>({
 });
 
 export type GithubActionsApi = {
-  listBuilds: (_entityUri: string) => Promise<Build[]>;
-  getBuild: (_buildUri: string) => Promise<BuildDetails>;
+  listBuilds: (entity: Entity, token: Promise<string>) => Promise<Build[]>;
+  getBuild: (buildUri: string, token: Promise<string>) => Promise<BuildDetails>;
 };

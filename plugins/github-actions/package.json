@@ -21,6 +21,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/catalog-model": "^0.1.1-alpha.13",
     "@backstage/core": "^0.1.1-alpha.13",
     "@backstage/core-api": "^0.1.1-alpha.13",
     "@backstage/theme": "^0.1.1-alpha.13",

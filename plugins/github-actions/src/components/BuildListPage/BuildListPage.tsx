@@ -29,11 +29,13 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
-import React from 'react';
+import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
 import { githubActionsApiRef } from '../../api';
-import { useApi } from '@backstage/core-api';
+import { useApi, githubAuthApiRef } from '@backstage/core-api';
+import { Entity } from '@backstage/catalog-model';
+
 
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
@@ -55,10 +57,13 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const PageContents = () => {
+const PageContents: FC<{ entity: Entity }> = ({ entity }) => {
   const api = useApi(githubActionsApiRef);
+  const githubApi = useApi(githubAuthApiRef);
+  const token = githubApi.getAccessToken('repo');
+
   const { loading, error, value } = useAsync(() =>
-    api.listBuilds('entity:spotify:backstage'),
+    api.listBuilds(entity, token),
   );
 
   if (loading) {
@@ -115,14 +120,14 @@ const PageContents = () => {
   );
 };
 
-export const BuildListPage = () => {
+export const BuildListPage: FC<{ entity: Entity }> = ({ entity }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <Typography variant="h3" className={classes.title}>
         CI/CD Builds
       </Typography>
-      <PageContents />
+      <PageContents entity={entity} />
     </div>
   );
 };

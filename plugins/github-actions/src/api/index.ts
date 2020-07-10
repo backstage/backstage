@@ -15,5 +15,5 @@
  */
 
 export * from './GithubActionsApi';
-export * from './MockGithubActionsClient';
+export * from './GithubActionsClient';
 export * from './types';

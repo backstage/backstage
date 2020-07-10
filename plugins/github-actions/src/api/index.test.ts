@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { MockGithubActionsClient } from './MockGithubActionsClient';
+import { GithubActionsClient } from './GithubActionsClient';
 import { BuildStatus } from './types';
 
 describe('Github Actions API', () => {
-  let client: MockGithubActionsClient;
+  let client: GithubActionsClient;
   beforeEach(() => {
-    client = new MockGithubActionsClient();
+    client = new GithubActionsClient();
   });
   describe('Mock client', () => {
     it('gets a list of builds by a project id', async () => {
