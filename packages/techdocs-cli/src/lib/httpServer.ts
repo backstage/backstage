@@ -30,7 +30,7 @@ export default class HTTPServer {
       target: 'http://localhost:8000',
     });
 
-    return (request, response) => {
+    return (request: http.IncomingMessage, response: http.ServerResponse) => {
       const [, ...pathChunks] = request.url
         .substring(this.proxyEndpoint.length)
         .split('/');
@@ -41,27 +41,29 @@ export default class HTTPServer {
   }
 
   public async serve(): Promise<http.Server> {
-    return new Promise((resolve, reject) => {
+    return new Promise<http.Server>((resolve, reject) => {
       const proxyHandler = this.createProxy();
 
-      const server = http.createServer((request, response) => {
-        if (request.url.startsWith(this.proxyEndpoint)) {
-          const [proxy, forwardPath] = proxyHandler(request, response);
+      const server = http.createServer(
+        (request: http.IncomingMessage, response: http.ServerResponse) => {
+          if (request.url.startsWith(this.proxyEndpoint)) {
+            const [proxy, forwardPath] = proxyHandler(request, response);
 
-          proxy.on('error', error => {
-            reject(error);
+            proxy.on('error', (error: Error) => {
+              reject(error);
+            });
+
+            request.url = forwardPath;
+            return proxy.web(request, response);
+          }
+
+          return serveHandler(request, response, {
+            public: this.dir,
+            trailingSlash: true,
+            rewrites: [{ source: '**', destination: 'index.html' }],
           });
-
-          request.url = forwardPath;
-          return proxy.web(request, response);
-        }
-
-        return serveHandler(request, response, {
-          public: this.dir,
-          trailingSlash: true,
-          rewrites: [{ source: '**', destination: 'index.html' }],
-        });
-      });
+        },
+      );
 
       server.listen(this.port, () => {
         console.log(
@@ -70,7 +72,7 @@ export default class HTTPServer {
         resolve(server);
       });
 
-      server.on('error', error => {
+      server.on('error', (error: Error) => {
         reject(error);
       });
     });

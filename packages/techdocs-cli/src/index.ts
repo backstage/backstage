@@ -26,7 +26,12 @@ const run = (
   name: string,
   args: string[] = [],
 ): ChildProcess => {
-  const [stdin, stdout, stderr] = ['inherit', 'pipe', 'inherit'];
+  const [stdin, stdout, stderr] = [
+    'inherit' as const,
+    'pipe' as const,
+    'inherit' as const,
+  ];
+
   const childProcess = spawn(name, args, {
     cwd: workingDirectory,
     stdio: [stdin, stdout, stderr],
@@ -70,7 +75,7 @@ const runMkdocsServer = (options?: {
       devAddr,
     ]);
 
-    childProcess.stdout.on('data', rawData => {
+    childProcess.stdout?.on('data', rawData => {
       const data = rawData.toString().split('\n')[0];
       console.log('[mkdocs] ', data);
 
