@@ -64,7 +64,9 @@ export default class HTTPServer {
       });
 
       server.listen(this.port, () => {
-        console.log('Running at http://localhost:3000');
+        console.log(
+          '[techdocs-preview-bundle] Running local version of Backstage at http://localhost:3000',
+        );
         resolve(server);
       });
 
