@@ -30,10 +30,9 @@ export default class HTTPServer {
       target: 'http://localhost:8000',
     });
 
-    return (request: http.IncomingMessage, response: http.ServerResponse) => {
-      const [, ...pathChunks] = request.url
-        .substring(this.proxyEndpoint.length)
-        .split('/');
+    return (request: http.IncomingMessage): [httpProxy, string] => {
+      const [, ...pathChunks] =
+        request.url?.substring(this.proxyEndpoint.length).split('/') ?? [];
       const forwardPath = pathChunks.join('/');
 
       return [proxy, forwardPath];
@@ -46,8 +45,8 @@ export default class HTTPServer {
 
       const server = http.createServer(
         (request: http.IncomingMessage, response: http.ServerResponse) => {
-          if (request.url.startsWith(this.proxyEndpoint)) {
-            const [proxy, forwardPath] = proxyHandler(request, response);
+          if (request.url?.startsWith(this.proxyEndpoint)) {
+            const [proxy, forwardPath] = proxyHandler(request);
 
             proxy.on('error', (error: Error) => {
               reject(error);
