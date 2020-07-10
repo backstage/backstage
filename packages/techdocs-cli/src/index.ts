@@ -13,17 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { spawn, ChildProcess } from 'child_process';
 import program from 'commander';
 import { version } from './lib/version';
 // import chalk from 'chalk';
-import { spawn } from 'child_process';
 import path from 'path';
-// import HTTPServer from './lib/httpServer';
+import HTTPServer from './lib/httpServer';
+import openBrowser from 'react-dev-utils/openBrowser';
 
-const run = (workingDirectory: string, name: string, args: string[] = []) => {
-  const child = spawn(name, args, {
+const run = (
+  workingDirectory: string,
+  name: string,
+  args: string[] = [],
+): ChildProcess => {
+  const [stdin, stdout, stderr] = [
+    'inherit' as const,
+    'pipe' as const,
+    'inherit' as const,
+  ];
+
+  const childProcess = spawn(name, args, {
     cwd: workingDirectory,
-    stdio: ['inherit', 'inherit', 'inherit'],
+    stdio: [stdin, stdout, stderr],
     shell: true,
     env: {
       ...process.env,
@@ -31,11 +42,47 @@ const run = (workingDirectory: string, name: string, args: string[] = []) => {
     },
   });
 
-  child.once('error', error => {
+  childProcess.once('error', error => {
     console.error(error);
+    childProcess.kill();
   });
-  child.once('exit', code => {
-    console.log('exited!', code);
+
+  childProcess.once('exit', () => {
+    process.exit(0);
+  });
+
+  return childProcess;
+};
+
+const runMkdocsServer = (options?: {
+  devAddr: string;
+}): Promise<ChildProcess> => {
+  const devAddr = options?.devAddr ?? '0.0.0.0:8000';
+
+  return new Promise(resolve => {
+    const childProcess = run(process.env.PWD!, 'docker', [
+      'run',
+      '-it',
+      '-w',
+      '/content',
+      '-v',
+      '$(pwd):/content',
+      '-p',
+      '8000:8000',
+      'mkdocs:local-dev',
+      'serve',
+      '-a',
+      devAddr,
+    ]);
+
+    childProcess.stdout?.on('data', rawData => {
+      const data = rawData.toString().split('\n')[0];
+      console.log('[mkdocs] ', data);
+
+      if (data.includes(`Serving on http://${devAddr}`)) {
+        resolve(childProcess);
+      }
+    });
   });
 };
 
@@ -43,44 +90,39 @@ const main = (argv: string[]) => {
   program.name('techdocs-cli').version(version);
 
   program
+    .command('serve:mkdocs')
+    .description('Serve a documentation project locally')
+    .action(() => {
+      runMkdocsServer().then(() => {
+        openBrowser('http://localhost:8000');
+      });
+    });
+
+  program
     .command('serve')
     .description('Serve a documentation project locally')
     .action(() => {
-      // const techdocsPreviewBundlePath = path.join(
-      //   __dirname,
-      //   '..',
-      //   'dist',
-      //   'techdocs-preview-bundle',
-      // );
+      // Mkdocs server
+      const mkdocsServer = runMkdocsServer();
 
-      // new HTTPServer(techdocsPreviewBundlePath, 3000).serve();
-
-      run(process.env.PWD!, 'docker', [
-        'run',
-        '-it',
-        '-w',
-        '/content',
-        '-v',
-        '$(pwd):/content',
-        '-p',
-        '8000:8000',
-        'mkdocs:local-dev',
-        'serve',
-        '-a',
-        '0.0.0.0:8000',
-      ]);
-
-      const pluginPath = path.join(
-        require.resolve('@backstage/plugin-techdocs'),
+      // Local Backstage Preview
+      const techdocsPreviewBundlePath = path.join(
+        __dirname,
         '..',
-        '..',
+        'dist',
+        'techdocs-preview-bundle',
       );
 
-      run(
-        pluginPath,
-        path.join(require.resolve('@backstage/cli'), '../../bin/backstage-cli'),
-        ['plugin:serve'],
-      );
+      const httpServer = new HTTPServer(techdocsPreviewBundlePath, 3000)
+        .serve()
+        .catch(err => {
+          console.error(err);
+          mkdocsServer.then(childProcess => childProcess.kill());
+        });
+
+      Promise.all([mkdocsServer, httpServer]).then(() => {
+        openBrowser('http://localhost:3000/docs/local-dev/');
+      });
     });
 
   program.parse(argv);

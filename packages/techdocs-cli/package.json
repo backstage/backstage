@@ -49,6 +49,8 @@
     "chalk": "^4.1.0",
     "commander": "^5.1.0",
     "fs-extra": "^9.0.1",
+    "http-proxy": "^1.18.1",
+    "react-dev-utils": "^10.2.1",
     "serve-handler": "^6.1.3"
   }
 }
