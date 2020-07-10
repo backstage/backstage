@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './api';
+import { createApiRef } from '@backstage/core';
+import { Build, BuildDetails } from './types';
+import { Entity } from '@backstage/catalog-model';
+
+export const githubActionsApiRef = createApiRef<GithubActionsApi>({
+  id: 'plugin.githubactions.service',
+  description: 'Used by the Github Actions plugin to make requests',
+});
+
+export type GithubActionsApi = {
+  listBuilds: (entity: Entity, token: Promise<string>) => Promise<Build[]>;
+  getBuild: (buildUri: string, token: Promise<string>) => Promise<BuildDetails>;
+};

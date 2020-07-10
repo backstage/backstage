@@ -27,10 +27,9 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { BuildsClient } from '../../apis/builds';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
-
-const client = BuildsClient.create();
+import { githubActionsApiRef } from '../../api';
+import { useApi } from '@backstage/core-api';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -43,7 +42,8 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 export const BuildInfoCard = () => {
   const classes = useStyles();
-  const status = useAsync(() => client.listBuilds('entity:spotify:backstage'));
+  const api = useApi(githubActionsApiRef);
+  const status = useAsync(() => api.listBuilds('entity:spotify:backstage'));
 
   let content: JSX.Element;
 

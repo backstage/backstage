@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './api';
+export * from './GithubActionsApi';
+export * from './GithubActionsClient';
+export * from './types';
