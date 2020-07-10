@@ -31,29 +31,15 @@ npx @techdocs/cli serve
 
 ## Local Development
 
-You'll need Docker installed and running to use this. You will also need to build the container located at `packages/techdocs-container` under the tag `mkdocs:local-dev`, as you can see in the commands from below:
+You'll need Docker installed and running to use this. You will also need to build the container located at `packages/techdocs-container` under the tag `mkdocs:local-dev` (for now until we deploy the container to a centralized Docker registry), as you can see in the commands from below:
 
 ```bash
 docker build packages/techdocs-container -t mkdocs:local-dev
 ```
 
-Once that is built, you'll need to manually create an `alias` for running the CLI locally:
-
-```bash
-cd packages/techdocs-cli
-echo "$(pwd)/bin/techdocs"
-
-# Copy the value from above and add it in [HERE] below
-# For more convenience, add it to your ~/.zshrc or ~/.bash_profile
-# otherwise you'll lose it when you open a new Terminal
-alias techdocs="[HERE]"
-```
-
-From that point, you can invoke `techdocs` from any project with a docs folder. Try out our example!
-
 ```bash
 cd packages/techdocs-container/mock-docs
-techdocs serve
+npx techdocs serve
 ```
 
 You should have a `localhost:3000` serving TechDocs in Backstage, as well as `localhost:8000` serving Mkdocs (which won't open up and be exposed to the user).
