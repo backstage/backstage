@@ -38,12 +38,12 @@ https://techdocs-mock-sites.storage.googleapis.com/backstage-microsite/index.htm
 
 Using your own setup (or ours which is being worked on as of Q3 2020), you can point it to your own server with your own hosted documentation sites. The only requirement is that it the output is from [Mkdocs](https://mkdocs.org) with the Material theme. You can always use our documentation generation tool located at `plugins/techdocs/mkdocs/container` for easy setup.
 
-To point TechDocs to your own server, simply set the environment variable `APP_CONFIG_techdocs_baseurl` in your application:
+To point TechDocs to your own server, simply set the environment variable `APP_CONFIG_techdocs_storageUrl` in your application:
 
 ```bash
 git clone git@github.com:spotify/backstage.git
 cd backstage/
 yarn install
-export APP_CONFIG_techdocs_baseurl='"http://example-docs-site-server.com"'
+export APP_CONFIG_techdocs_storageUrl='"http://example-docs-site-server.com"'
 yarn start
 ```
