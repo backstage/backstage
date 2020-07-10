@@ -279,16 +279,13 @@ export function useBuilds() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
-  const getBuilds = useCallback(async (_options: any) => buildsMock, []);
+  const getBuilds = useCallback(async () => buildsMock, []);
 
-  const restartBuild = async (_buildId: number) => {};
+  const restartBuild = async () => {};
 
   const { loading, value: builds, retry } = useAsyncRetry(
     () =>
-      getBuilds({
-        perPage: pageSize,
-        page: page,
-      }).then((allBuilds): Build[] => {
+      getBuilds().then((allBuilds): Build[] => {
         setTotal(allBuilds.total_count);
         // Transformation here
         return allBuilds.workflow_runs.map(run => ({
