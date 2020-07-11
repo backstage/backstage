@@ -20,6 +20,7 @@ import { googleProvider } from './googleProvider';
 import { customProvider } from './customProvider';
 import { gitlabProvider } from './gitlabProvider';
 import { oktaProvider } from './oktaProvider';
+import { githubProvider } from './githubProvider';
 import {
   SignInPageProps,
   SignInResult,
@@ -37,7 +38,8 @@ export type SignInProviderId =
   | 'google'
   | 'gitlab'
   | 'custom'
-  | 'okta';
+  | 'okta'
+  | 'github';
 
 const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
   guest: guestProvider,
@@ -45,6 +47,7 @@ const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
   gitlab: gitlabProvider,
   custom: customProvider,
   okta: oktaProvider,
+  github: githubProvider,
 };
 
 export const useSignInProviders = (

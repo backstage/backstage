@@ -33,7 +33,7 @@ const app = createApp({
     SignInPage: props => (
       <SignInPage
         {...props}
-        providers={['guest', 'google', 'custom', 'okta', 'gitlab']}
+        providers={['guest', 'google', 'custom', 'okta', 'gitlab', 'github']}
       />
     ),
   },
