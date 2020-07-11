@@ -25,6 +25,7 @@
 import {
   createServiceBuilder,
   getRootLogger,
+  statusCheckHandler,
   useHotMemoize,
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
@@ -73,6 +74,7 @@ async function main() {
 
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
+    .addRouter('/healthcheck', await statusCheckHandler())
     .addRouter('/catalog', await catalog(catalogEnv))
     .addRouter('/rollbar', await rollbar(rollbarEnv))
     .addRouter('/scaffolder', await scaffolder(scaffolderEnv))
