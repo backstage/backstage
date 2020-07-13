@@ -58,6 +58,10 @@ import {
 import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
 
 import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
+import {
+  GithubActionsClient,
+  githubActionsApiRef,
+} from '@backstage/plugin-github-actions';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -78,6 +82,7 @@ export const apis = (config: ConfigApi) => {
     circleCIApiRef,
     new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
   );
+  builder.add(githubActionsApiRef, new GithubActionsClient());
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));

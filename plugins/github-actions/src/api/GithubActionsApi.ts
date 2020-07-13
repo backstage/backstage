@@ -13,5 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const docStorageURL =
-  'https://techdocs-mock-sites.storage.googleapis.com';
+
+import { createApiRef } from '@backstage/core';
+import { Build, BuildDetails } from './types';
+
+export const githubActionsApiRef = createApiRef<GithubActionsApi>({
+  id: 'plugin.githubactions.service',
+  description: 'Used by the Github Actions plugin to make requests',
+});
+
+export type GithubActionsApi = {
+  listBuilds: ({
+    owner,
+    repo,
+    token,
+  }: {
+    owner: string;
+    repo: string;
+    token: string;
+  }) => Promise<Build[]>;
+  getBuild: (buildUri: string, token: Promise<string>) => Promise<BuildDetails>;
+};

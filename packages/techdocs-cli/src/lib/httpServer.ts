@@ -16,20 +16,64 @@
 
 import serveHandler from 'serve-handler';
 import http from 'http';
+import httpProxy from 'http-proxy';
 
 export default class HTTPServer {
-  constructor(public dir: string, public port: number) {}
+  proxyEndpoint: string;
 
-  serve() {
-    const server = http.createServer((request, response) => {
-      return serveHandler(request, response, {
-        public: this.dir,
-        trailingSlash: true,
-      });
+  constructor(public dir: string, public port: number) {
+    this.proxyEndpoint = '/api/';
+  }
+
+  private createProxy() {
+    const proxy = httpProxy.createProxyServer({
+      target: 'http://localhost:8000',
     });
 
-    server.listen(this.port, () => {
-      console.log('Running at http://localhost:3000');
+    return (request: http.IncomingMessage): [httpProxy, string] => {
+      const [, ...pathChunks] =
+        request.url?.substring(this.proxyEndpoint.length).split('/') ?? [];
+      const forwardPath = pathChunks.join('/');
+
+      return [proxy, forwardPath];
+    };
+  }
+
+  public async serve(): Promise<http.Server> {
+    return new Promise<http.Server>((resolve, reject) => {
+      const proxyHandler = this.createProxy();
+
+      const server = http.createServer(
+        (request: http.IncomingMessage, response: http.ServerResponse) => {
+          if (request.url?.startsWith(this.proxyEndpoint)) {
+            const [proxy, forwardPath] = proxyHandler(request);
+
+            proxy.on('error', (error: Error) => {
+              reject(error);
+            });
+
+            request.url = forwardPath;
+            return proxy.web(request, response);
+          }
+
+          return serveHandler(request, response, {
+            public: this.dir,
+            trailingSlash: true,
+            rewrites: [{ source: '**', destination: 'index.html' }],
+          });
+        },
+      );
+
+      server.listen(this.port, () => {
+        console.log(
+          '[techdocs-preview-bundle] Running local version of Backstage at http://localhost:3000',
+        );
+        resolve(server);
+      });
+
+      server.on('error', (error: Error) => {
+        reject(error);
+      });
     });
   }
 }

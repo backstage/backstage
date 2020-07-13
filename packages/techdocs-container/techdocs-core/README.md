@@ -33,7 +33,7 @@ You'll then have the `techdocs-core` package available to use in Mkdocs and `pip
 
 In the parent `Dockerfile` we add this folder to the build and install the package locally in the container. In the future, we'll probably move away from this approach and have it download directly from a Python registry (and this folder will publish to one).
 
-See the `README.md` located in the `mkdocs/` folder for more details on how to build and run the Docker container.
+See the `README.md` located in the `techdocs-container/` folder for more details on how to build and run the Docker container.
 
 ## Linting
 
