@@ -36,6 +36,7 @@ import identity from './plugins/identity';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
+import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import { PluginEnvironment } from './types';
 
@@ -65,6 +66,7 @@ async function main() {
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const identityEnv = useHotMemoize(module, () => createEnv('identity'));
+  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
 
   const service = createServiceBuilder(module)
@@ -83,7 +85,8 @@ async function main() {
     )
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
-    .addRouter('/techdocs', await techdocs(techdocsEnv));
+    .addRouter('/techdocs', await techdocs(techdocsEnv))
+    .addRouter('/proxy', await proxy(proxyEnv));
 
   await service.start().catch(err => {
     console.log(err);
