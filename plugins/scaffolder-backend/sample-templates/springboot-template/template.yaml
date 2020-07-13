@@ -8,7 +8,7 @@ metadata:
     - Recommended
     - Java
 spec:
-  processor: cookiecutter
+  templater: cookiecutter
   type: service
   path: '.'
   schema:
