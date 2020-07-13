@@ -95,4 +95,13 @@ There are two things needed for a Backstage app to start making use of a plugin.
 Luckily these two steps happen automatically when you create a plugin with the
 Backstage CLI.
 
+## Talking to the outside world
+
+If your plugin needs to communicate with services outside the backstage
+environment you will probably face challenges like CORS policies and/or
+backend-side authorization. To smooth this process out you can use proxy -
+either the one you already have (like nginx/haproxy/etc) or the proxy-backend
+plugin that we provide for the backstage backend.
+[Read more](../../plugins/proxy-backend/README.md)
+
 [Back to Getting Started](README.md)
