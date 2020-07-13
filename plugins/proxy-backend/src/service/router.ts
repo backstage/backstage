@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import createProxyMiddleware from 'http-proxy-middleware';
 import { Logger } from 'winston';
 
 export interface RouterOptions {
@@ -30,13 +29,10 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  router.use(express.json());
-
   const proxyConfig = options.config.get('proxy') ?? {};
   Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     router.use(createProxyMiddleware(route, proxyRouteConfig));
   });
 
-  router.use(errorHandler());
   return router;
 }
