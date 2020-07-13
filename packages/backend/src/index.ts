@@ -67,22 +67,16 @@ async function main() {
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const identityEnv = useHotMemoize(module, () => createEnv('identity'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
+  const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
+  const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
 
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
     .addRouter('/catalog', await catalog(catalogEnv))
-    .addRouter(
-      '/rollbar',
-      await rollbar(
-        getRootLogger().child({ type: 'plugin', plugin: 'rollbar' }),
-      ),
-    )
+    .addRouter('/rollbar', await rollbar(rollbarEnv))
     .addRouter('/scaffolder', await scaffolder(scaffolderEnv))
-    .addRouter(
-      '/sentry',
-      await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
-    )
+    .addRouter('/sentry', await sentry(sentryEnv))
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
     .addRouter('/techdocs', await techdocs(techdocsEnv))
