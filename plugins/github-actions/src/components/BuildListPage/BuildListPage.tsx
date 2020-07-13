@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Link } from '@backstage/core';
+import { Link, useApi, githubAuthApiRef } from '@backstage/core';
 import {
   LinearProgress,
   makeStyles,
@@ -31,10 +31,8 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { BuildsClient } from '../../apis/builds';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
-
-const client = BuildsClient.create();
+import { githubActionsApiRef, Build } from '../../api';
 
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
@@ -56,10 +54,15 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const PageContents = () => {
-  const { loading, error, value } = useAsync(() =>
-    client.listBuilds('entity:spotify:backstage'),
-  );
+const PageContents = ({ owner, repo }: { owner: string; repo: string }) => {
+  const api = useApi(githubActionsApiRef);
+  const githubApi = useApi(githubAuthApiRef);
+
+  const { loading, error, value } = useAsync(async () => {
+    const token = await githubApi.getAccessToken('repo');
+
+    return api.listBuilds({ owner, repo, token });
+  }, [githubApi, owner, repo]);
 
   if (loading) {
     return <LinearProgress />;
@@ -85,7 +88,7 @@ const PageContents = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {value!.map(build => (
+          {value?.map((build: Build) => (
             <TableRow key={build.uri}>
               <TableCell>
                 <BuildStatusIndicator status={build.status} />
@@ -96,7 +99,7 @@ const PageContents = () => {
                 </Typography>
               </TableCell>
               <TableCell>
-                <Link to={`builds/${encodeURIComponent(build.uri)}`}>
+                <Link to={`builds?uri=${encodeURIComponent(build.uri)}`}>
                   <Typography color="primary">
                     <LongText text={build.message} max={60} />
                   </Typography>
@@ -117,12 +120,13 @@ const PageContents = () => {
 
 export const BuildListPage = () => {
   const classes = useStyles();
+
   return (
     <div className={classes.root}>
       <Typography variant="h3" className={classes.title}>
         CI/CD Builds
       </Typography>
-      <PageContents />
+      <PageContents owner="spotify" repo="backstage" />
     </div>
   );
 };
