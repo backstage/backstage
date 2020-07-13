@@ -24,7 +24,7 @@ describe('Preparers', () => {
     metadata: {
       annotations: {
         'backstage.io/managed-by-location':
-          'file:/Users/blam/dev/spotify/backstage/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml',
+          'file:/Users/bingo/spotify/backstage/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml',
       },
       name: 'react-ssr-template',
       title: 'React SSR Template',
