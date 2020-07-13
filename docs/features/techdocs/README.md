@@ -17,11 +17,12 @@ Intro, backstory, etc.
 
 ## Tech Stack
 
-- Frontend: [`@backstage/plugin-techdocs`][techdocs/frontend]
-- Backend: [`@backstage/plugin-techdocs-backend`][techdocs/backend]
-- Docker Container (for generating documentation sites):
-  [`packages/techdocs-container`][techdocs/container]
-- CLI (for local development): [`packages/techdocs-cli`][techdocs/cli]
+| Stack                                       | Location                                                 |
+| ------------------------------------------- | -------------------------------------------------------- |
+| Frontend                                    | [`@backstage/plugin-techdocs`][techdocs/frontend]        |
+| Backend                                     | [`@backstage/plugin-techdocs-backend`][techdocs/backend] |
+| Docker Container (for generating doc sites) | [`packages/techdocs-container`][techdocs/container]      |
+| CLI (for local development)                 | [`packages/techdocs-cli`][techdocs/cli]                  |
 
 [getting started]: getting-started.md
 [concepts]: concepts.md
