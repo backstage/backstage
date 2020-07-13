@@ -15,7 +15,7 @@
  */
 
 import { createTheme } from './baseTheme';
-import { blue, yellow } from '@material-ui/core/colors';
+import { yellow } from '@material-ui/core/colors';
 
 export const lightTheme = createTheme({
   palette: {
@@ -39,7 +39,14 @@ export const lightTheme = createTheme({
       },
     },
     primary: {
-      main: blue[500],
+      main: '#2E77D0',
+    },
+    error: {
+      main: '#E22134',
+      dark: '#E22134',
+    },
+    text: {
+      secondary: '#000000',
     },
     border: '#E6E6E6',
     textContrast: '#000000',
@@ -88,7 +95,14 @@ export const darkTheme = createTheme({
       },
     },
     primary: {
-      main: blue[500],
+      main: '#2E77D0',
+    },
+    error: {
+      main: '#E22134',
+      dark: '#E22134',
+    },
+    text: {
+      secondary: '#000000',
     },
     border: '#E6E6E6',
     textContrast: '#FFFFFF',
