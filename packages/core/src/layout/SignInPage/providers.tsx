@@ -21,6 +21,7 @@ import { customProvider } from './customProvider';
 import { gitlabProvider } from './gitlabProvider';
 import { oktaProvider } from './oktaProvider';
 import { githubProvider } from './githubProvider';
+import { auth0Provider } from './auth0Provider';
 import {
   SignInPageProps,
   SignInResult,
@@ -39,7 +40,8 @@ export type SignInProviderId =
   | 'gitlab'
   | 'custom'
   | 'okta'
-  | 'github';
+  | 'github'
+  | 'auth0';
 
 const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
   guest: guestProvider,
@@ -48,6 +50,7 @@ const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
   custom: customProvider,
   okta: oktaProvider,
   github: githubProvider,
+  auth0: auth0Provider,
 };
 
 export const useSignInProviders = (

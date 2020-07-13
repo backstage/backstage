@@ -113,6 +113,15 @@ export async function createRouter(
             tokenURL: process.env.AUTH_OAUTH2_TOKEN_URL!,
           },
         },
+        auth0: {
+          development: {
+            appOrigin,
+            secure: false,
+            domain: process.env.AUTH_AUTH0_DOMAIN!,
+            clientId: process.env.AUTH_AUTH0_CLIENT_ID!,
+            clientSecret: process.env.AUTH_AUTH0_CLIENT_SECRET!
+          },
+        },
       },
     },
   };

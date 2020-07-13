@@ -21,6 +21,7 @@ import {
   identityApiRef,
   oauth2ApiRef,
   oktaAuthApiRef,
+  auth0AuthApiRef,
   useApi,
 } from '@backstage/core-api';
 import Collapse from '@material-ui/core/Collapse';
@@ -67,6 +68,11 @@ export function SidebarUserSettings() {
         <OIDCProviderSettings
           title="Okta"
           apiRef={oktaAuthApiRef}
+          icon={Star}
+        />
+        <OIDCProviderSettings
+          title="Auth0"
+          apiRef={auth0AuthApiRef}
           icon={Star}
         />
         <OIDCProviderSettings

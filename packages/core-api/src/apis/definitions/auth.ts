@@ -265,6 +265,17 @@ export const gitlabAuthApiRef = createApiRef<
 });
 
 /**
+ * Provides authentication towards Auth0 APIs.
+ *
+ * See https://auth0.com/docs/scopes/current/oidc-scopes
+ * for a full list of supported scopes.
+ */
+export const auth0AuthApiRef = createApiRef<OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi>({
+  id: 'core.auth.auth0',
+  description: 'Provides authentication towards Auth0 APIs',
+});
+
+/**
  * Provides authentication for custom identity providers.
  */
 export const oauth2ApiRef = createApiRef<
