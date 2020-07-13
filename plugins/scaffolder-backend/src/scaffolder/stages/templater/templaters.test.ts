@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Preparers } from '.';
+import { Templaters } from '.';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { FilePreparer } from './file';
+import { CookieCutter } from './cookiecutter';
 
-describe('Preparers', () => {
+describe('Templaters', () => {
   const mockTemplate: TemplateEntityV1alpha1 = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Template',
@@ -56,25 +56,25 @@ describe('Preparers', () => {
       },
     },
   };
-  it('should throw an error when the preparer for the source location is not registered', () => {
-    const preparers = new Preparers();
+  it('should throw an error when the templater is not registered', () => {
+    const templaters = new Templaters();
 
-    expect(() => preparers.get(mockTemplate)).toThrow(
+    expect(() => templaters.get(mockTemplate)).toThrow(
       expect.objectContaining({
-        message: 'No preparer registered for type: "file"',
+        message: 'No templater registered for template: "cookiecutter"',
       }),
     );
   });
-  it('should return the correct preparer when the source matches', () => {
-    const preparers = new Preparers();
-    const preparer = new FilePreparer();
+  it('should return the correct templater when the templater matches', () => {
+    const templaters = new Templaters();
+    const templater = new CookieCutter();
 
-    preparers.register('file', preparer);
+    templaters.register('cookiecutter', templater);
 
-    expect(preparers.get(mockTemplate)).toBe(preparer);
+    expect(templaters.get(mockTemplate)).toBe(templater);
   });
 
-  it('should throw an error if the metadata tag does not exist in the entity', () => {
+  it('should throw an error if the templater does not exist in the entity', () => {
     const brokenTemplate: TemplateEntityV1alpha1 = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Template',
@@ -90,8 +90,8 @@ describe('Preparers', () => {
       },
       spec: {
         type: 'website',
-        templater: 'cookiecutter',
         path: '.',
+        templater: '',
         schema: {
           $schema: 'http://json-schema.org/draft-07/schema#',
           required: ['storePath', 'owner'],
@@ -111,11 +111,14 @@ describe('Preparers', () => {
       },
     };
 
-    const preparers = new Preparers();
+    const templaters = new Templaters();
 
-    expect(() => preparers.get(brokenTemplate)).toThrow(
+    expect(() => templaters.get(brokenTemplate)).toThrow(
       expect.objectContaining({
-        message: expect.stringContaining('No location annotation provided'),
+        name: 'InputError',
+        message: expect.stringContaining(
+          'Template does not have a required templating key',
+        ),
       }),
     );
   });
