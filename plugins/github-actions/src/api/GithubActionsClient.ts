@@ -47,11 +47,11 @@ export class GithubActionsClient implements GithubActionsApi {
       }),
     });
 
-    if (response.status > 200) {
+    if (!response.ok) {
       return [
         {
           commitId: 'Error',
-          message: 'ResponseCode > 200',
+          message: 'Response status is not OK',
           branch: 'Error',
           status: BuildStatus.Failure,
           uri: 'Error',
@@ -109,7 +109,7 @@ export class GithubActionsClient implements GithubActionsApi {
       overviewUrl: '',
     };
 
-    if (response.status > 200) {
+    if (!response.ok) {
       return dataBlank;
     }
 
