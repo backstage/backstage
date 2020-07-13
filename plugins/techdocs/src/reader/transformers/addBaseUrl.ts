@@ -18,13 +18,13 @@ import URLFormatter from '../urlFormatter';
 import type { Transformer } from './index';
 
 type AddBaseUrlOptions = {
-  docStorageURL: string;
+  docStorageUrl: string;
   componentId: string;
   path: string;
 };
 
 export const addBaseUrl = ({
-  docStorageURL,
+  docStorageUrl,
   componentId,
   path,
 }: AddBaseUrlOptions): Transformer => {
@@ -38,8 +38,8 @@ export const addBaseUrl = ({
         .forEach((elem: T) => {
           const urlFormatter = new URLFormatter(
             path.length < 1 || path.endsWith('/')
-              ? `${docStorageURL}/${componentId}/${path}`
-              : `${docStorageURL}/${componentId}/${path}/`,
+              ? `${docStorageUrl}/${componentId}/${path}`
+              : `${docStorageUrl}/${componentId}/${path}/`,
           );
 
           elem.setAttribute(

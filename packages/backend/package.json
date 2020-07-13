@@ -6,7 +6,7 @@
   "private": true,
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=12"
+    "node": "12"
   },
   "scripts": {
     "build": "backstage-cli backend:build",
@@ -18,6 +18,7 @@
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
+    "@backstage/plugin-proxy-backend": "^0.1.1-alpha.13",
     "@backstage/backend-common": "^0.1.1-alpha.13",
     "@backstage/catalog-model": "^0.1.1-alpha.13",
     "@backstage/config": "^0.1.1-alpha.13",
@@ -29,6 +30,7 @@
     "@backstage/plugin-scaffolder-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-sentry-backend": "^0.1.1-alpha.13",
     "@backstage/plugin-techdocs-backend": "^0.1.1-alpha.13",
+    "@octokit/rest": "^18.0.0",
     "dockerode": "^3.2.0",
     "express": "^4.17.1",
     "knex": "^0.21.1",

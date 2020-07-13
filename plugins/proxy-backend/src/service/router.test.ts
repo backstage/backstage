@@ -14,5 +14,19 @@
  * limitations under the License.
  */
 
-export { BuildsClient } from './BuildsClient';
-export * from './types';
+import { createRouter } from './router';
+import winston from 'winston';
+import { ConfigReader } from '@backstage/config';
+import { loadConfig } from '@backstage/config-loader';
+
+describe('createRouter', () => {
+  it('works', async () => {
+    const logger = winston.createLogger();
+    const config = ConfigReader.fromConfigs(await loadConfig());
+    const router = await createRouter({
+      config,
+      logger,
+    });
+    expect(router).toBeDefined();
+  });
+});

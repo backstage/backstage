@@ -41,7 +41,7 @@ describe('addBaseUrl', () => {
     const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
       preTransformers: [
         addBaseUrl({
-          docStorageURL: DOC_STORAGE_URL,
+          docStorageUrl: DOC_STORAGE_URL,
           componentId: 'example-docs',
           path: '',
         }),
@@ -76,7 +76,7 @@ describe('addBaseUrl', () => {
       {
         preTransformers: [
           addBaseUrl({
-            docStorageURL: DOC_STORAGE_URL,
+            docStorageUrl: DOC_STORAGE_URL,
             componentId: 'example-docs',
             path: 'examplepath',
           }),
@@ -112,7 +112,7 @@ describe('addBaseUrl', () => {
       {
         preTransformers: [
           addBaseUrl({
-            docStorageURL: DOC_STORAGE_URL,
+            docStorageUrl: DOC_STORAGE_URL,
             componentId: 'example-docs',
             path: 'examplepath/',
           }),

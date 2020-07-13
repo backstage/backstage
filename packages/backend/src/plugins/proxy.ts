@@ -13,5 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const docStorageURL =
-  'https://techdocs-mock-sites.storage.googleapis.com';
+// @ts-ignore
+import { createRouter } from '@backstage/plugin-proxy-backend';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin({
+  logger,
+  config,
+}: PluginEnvironment) {
+  return await createRouter({ logger, config });
+}

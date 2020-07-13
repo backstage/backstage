@@ -23,7 +23,7 @@ import {
 } from '../../test-utils';
 import { addBaseUrl, onCssReady } from '../transformers';
 
-const docStorageURL: string =
+const docStorageUrl: string =
   'https://techdocs-mock-sites.storage.googleapis.com';
 
 jest.useFakeTimers();
@@ -45,7 +45,7 @@ describe('onCssReady', () => {
       preTransformers: [],
       postTransformers: [
         onCssReady({
-          docStorageURL,
+          docStorageUrl,
           onLoading,
           onLoaded,
         }),
@@ -65,12 +65,12 @@ describe('onCssReady', () => {
       preTransformers: [],
       postTransformers: [
         addBaseUrl({
-          docStorageURL,
+          docStorageUrl,
           componentId: 'mkdocs',
           path: '',
         }),
         onCssReady({
-          docStorageURL,
+          docStorageUrl,
           onLoading,
           onLoaded,
         }),

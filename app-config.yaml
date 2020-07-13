@@ -10,5 +10,15 @@ backend:
     methods: [GET, POST, PUT, DELETE]
     credentials: true
 
+proxy:
+  '/circleci/api':
+    target: 'https://circleci.com/api/v1.1'
+    changeOrigin: true
+    pathRewrite:
+      '^/circleci/api/': '/'
+
 organization:
   name: Spotify
+
+techdocs:
+  storageUrl: https://techdocs-mock-sites.storage.googleapis.com
