@@ -42,78 +42,68 @@ export const NewProjectPage: FC<{}> = () => {
   };
 
   return (
-    <Page theme={pageTheme.tool}>
-      <Header title="GCP - Projects" subtitle="Create new GCP Project">
-        <HeaderLabel label="Owner" value="Infrastructure Operations" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content>
-        <ContentHeader title="Create new GCP Project">
-          <SupportButton>
-            This plugin will help you create a project in gcp.
-          </SupportButton>
-        </ContentHeader>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <InfoCard>
-              <SimpleStepper>
-                <SimpleStepperStep title="Project Name">
-                  <TextField
-                    variant="outlined"
-                    name="projectName"
-                    label="Project Name"
-                    helperText="The name of the new project."
-                    inputProps={{ 'aria-label': 'Project Name' }}
-                    onChange={e => setProjectName(e.target.value)}
-                    value={projectName}
-                    fullWidth
-                  />
-                </SimpleStepperStep>
-                <SimpleStepperStep title="Project ID">
-                  <TextField
-                    variant="outlined"
-                    name="projectId"
-                    label="projectId"
-                    onChange={e => setProjectId(e.target.value)}
-                    value={projectId}
-                    fullWidth
-                  />
-                </SimpleStepperStep>
-                <SimpleStepperStep title="" end>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setDone(true)}
-                  >
-                    Finish
-                  </Button>
-                </SimpleStepperStep>
-              </SimpleStepper>
-            </InfoCard>
-          </Grid>
-          {done === true ? (
-            <Grid item xs={12} md={8}>
-              <InfoCard title="Project Info:">
-                <StructuredMetadataTable metadata={metadata} />
-                <br />
-                <br />
-                <br />
+    <Content>
+      <ContentHeader title="Create new GCP Project" />
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <InfoCard>
+            <SimpleStepper>
+              <SimpleStepperStep title="Project Name">
+                <TextField
+                  variant="outlined"
+                  name="projectName"
+                  label="Project Name"
+                  helperText="The name of the new project."
+                  inputProps={{ 'aria-label': 'Project Name' }}
+                  onChange={e => setProjectName(e.target.value)}
+                  value={projectName}
+                  fullWidth
+                />
+              </SimpleStepperStep>
+              <SimpleStepperStep title="Project ID">
+                <TextField
+                  variant="outlined"
+                  name="projectId"
+                  label="projectId"
+                  onChange={e => setProjectId(e.target.value)}
+                  value={projectId}
+                  fullWidth
+                />
+              </SimpleStepperStep>
+              <SimpleStepperStep title="" end>
                 <Button
                   variant="contained"
                   color="primary"
-                  href={`newProject?projectName=${encodeURIComponent(
-                    projectName,
-                  )},projectId=${encodeURIComponent(projectId)}`}
+                  onClick={() => setDone(true)}
                 >
-                  Confirm
+                  Finish
                 </Button>
-              </InfoCard>
-            </Grid>
-          ) : (
-            <br />
-          )}
+              </SimpleStepperStep>
+            </SimpleStepper>
+          </InfoCard>
         </Grid>
-      </Content>
-    </Page>
+        {done === true ? (
+          <Grid item xs={12} md={8}>
+            <InfoCard title="Project Info:">
+              <StructuredMetadataTable metadata={metadata} />
+              <br />
+              <br />
+              <br />
+              <Button
+                variant="contained"
+                color="primary"
+                href={`newProject?projectName=${encodeURIComponent(
+                  projectName,
+                )},projectId=${encodeURIComponent(projectId)}`}
+              >
+                Confirm
+              </Button>
+            </InfoCard>
+          </Grid>
+        ) : (
+          <br />
+        )}
+      </Grid>
+    </Content>
   );
 };
