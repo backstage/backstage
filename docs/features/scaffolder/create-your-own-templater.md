@@ -93,3 +93,54 @@ Now it's up to you to implement the `run` function, and then return a
 Some good examples exist here:
 
 - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/templater/cookiecutter.ts
+
+### Registering your own Templater
+
+If you try to process a
+[Template Entity](../software-catalog/descriptor-format.md#kind-template) with a
+new `spec.templater` value, you'll need to register that with the
+`TemplaterBuilder`.
+
+For example let's say you have the following
+[Template Entity](../software-catalog/descriptor-format.md#kind-template):
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: react-ssr-template
+  title: React SSR Template
+  description:
+    Next.js application skeleton for creating isomorphic web applications.
+  tags:
+    - Recommended
+    - React
+spec:
+  owner: web@example.com
+  templater: handlebars
+  type: website
+  path: '.'
+  schema:
+    required:
+      - component_id
+      - description
+    properties:
+      component_id:
+        title: Name
+        type: string
+        description: Unique name of the component
+      description:
+        title: Description
+        type: string
+        description: Description of the component
+```
+
+You see that the `spec.templater` is set as `handlebars`, you'll need to
+register this with the `TemplaterBuilder` like so:
+
+```ts
+const templaters = new Templaters();
+templaters.register('handlebars', new HandlebarsTemplater());
+```
+
+And then pass this in to the `createRouter` function.
