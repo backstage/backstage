@@ -1,0 +1,68 @@
+## Scaffolder
+
+Welcome. Take a seat. You're at the Scaffolder Documentation.
+
+So - You wanna create stuff inside your company from some prebaked templates?
+You're at the right place.
+
+This guide is gonna take you through how the Scaffolder in Backstage works. Both
+the frontend, and the backend. At it's core, theres 3 simple stages.
+
+1. Pick a skeleton
+
+2. Template some variables into the skeleton
+
+3. Send the templated skeleton somewhere
+
+Underneath, theres a little bit more going on.
+
+### Glossary and Jargon
+
+**Preparer** - The preparer is responsible for fetching the skeleton code and
+placing it into a directory and then will return that directory. It is
+registered with the `Preparers` with a particular type, which is then used in
+the router to pick the correct `Preparer` to run for the `Template` entity.
+
+**Templater** - The templater is responsible for actually running the chosen
+templater on top of the previously returned temporary directory from the
+**Preprarer**. We advise making these docker containers as it can keep all
+dependencies, for example Cookiecutter, self contained and not a dependency on
+the host machine.
+
+**Publisher** - The publisher is responsible for taking the finished directory,
+and publishing it to a remote registry. This could be a Git repository or
+something similar. Right now, the scaffolder only supports one publishing method
+for the entire lifecycle, but it could be configured from the frontend and
+passed through to the scaffolder backend.
+
+### How it works
+
+The main of the heavy lifting is done in the
+[router.ts](https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/service/router.ts#L93)
+file in the `scaffolder-backend` plugin.
+
+There are 2 routes defined in the router. `POST /v1/jobs` and
+`GET /v1/job/:jobId`
+
+To create a scaffolding job, a JSON object containing the **Template Entity** +
+additional templating values must be posted as the post body.
+
+```json
+{
+	"template": {
+		"apiVersion": "backstage/v1alpha1",
+    "kind": "Template",
+		...,
+	"values": {
+		"component_id": "test",
+		"description": "somethingelse"
+	}
+}
+```
+
+The values should represent something that is valid with the `schema` part of
+the [Template Entity](../software-catalog/descriptor-format.md#"Kind: Template")
+
+Once that has been posted, a job will be setup with different stages. And the
+job processor will complete each stage before moving onto the next stage, whilst
+collecting logs and mutating the running job.
