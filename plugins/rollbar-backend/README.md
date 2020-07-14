@@ -4,7 +4,7 @@ Simple plugin that proxies requests to the [Rollbar](https://rollbar.com) API.
 
 ## Setup
 
-A `ROLLBAR_TOKEN` environment variable must be set to a read access account token.
+A `ROLLBAR_ACCOUNT_TOKEN` environment variable must be set to a read access account token.
 
 ## Links
 

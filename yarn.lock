@@ -8137,26 +8137,7 @@ eslint-plugin-cypress@^2.10.3:
   dependencies:
     globals "^11.12.0"
 
-eslint-plugin-import@^2.20.2:
-  version "2.21.1"
-  resolved "https://registry.npmjs.org/eslint-plugin-import/-/eslint-plugin-import-2.21.1.tgz#3398318e5e4abbd23395c4964ce61538705154c8"
-  integrity sha512-qYOOsgUv63vHof7BqbzuD+Ud34bXHxFJxntuAC1ZappFZXYbRIek3aJ7jc9i2dHDGDyZ/0zlO0cpioES265Lsw==
-  dependencies:
-    array-includes "^3.1.1"
-    array.prototype.flat "^1.2.3"
-    contains-path "^0.1.0"
-    debug "^2.6.9"
-    doctrine "1.5.0"
-    eslint-import-resolver-node "^0.3.3"
-    eslint-module-utils "^2.6.0"
-    has "^1.0.3"
-    minimatch "^3.0.4"
-    object.values "^1.1.1"
-    read-pkg-up "^2.0.0"
-    resolve "^1.17.0"
-    tsconfig-paths "^3.9.0"
-
-eslint-plugin-import@^2.22.0:
+eslint-plugin-import@^2.20.2, eslint-plugin-import@^2.22.0:
   version "2.22.0"
   resolved "https://registry.npmjs.org/eslint-plugin-import/-/eslint-plugin-import-2.22.0.tgz#92f7736fe1fde3e2de77623c838dd992ff5ffb7e"
   integrity sha512-66Fpf1Ln6aIS5Gr/55ts19eUuoDhAbZgnr6UxK5hbDx6l/QgQgx61AePq+BV4PP2uXQFClgMVzep5zZ94qqsxg==
@@ -10181,6 +10162,16 @@ http-proxy-middleware@0.19.1:
   integrity sha512-yHYTgWMQO8VvwNS22eLLloAkvungsKdKTLO8AJlftYIKNfJr3GK3zK0ZCfzDDGUBttdGc8xFy1mCitvNKQtC3Q==
   dependencies:
     http-proxy "^1.17.0"
+    is-glob "^4.0.0"
+    lodash "^4.17.11"
+    micromatch "^3.1.10"
+
+http-proxy-middleware@^0.19.1:
+  version "0.19.2"
+  resolved "https://registry.npmjs.org/http-proxy-middleware/-/http-proxy-middleware-0.19.2.tgz#ee73dcc8348165afefe8de2ff717751d181608ee"
+  integrity sha512-aYk1rTKqLTus23X3L96LGNCGNgWpG4cG0XoZIT1GUPhhulEHX/QalnO6Vbo+WmKWi4AL2IidjuC0wZtbpg0yhQ==
+  dependencies:
+    http-proxy "^1.18.1"
     is-glob "^4.0.0"
     lodash "^4.17.11"
     micromatch "^3.1.10"
@@ -13139,9 +13130,9 @@ ms@^2.0.0, ms@^2.1.1:
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
 msw@^0.19.0:
-  version "0.19.4"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.19.4.tgz#059026de0cc3303847c27d3aa0e98705a1033df6"
-  integrity sha512-rNfGgIuO0MyfN2F+FOHRqNd2LJIESaaMOJNNiNMcv/Be7Kdzz/ZmghfS/5zFy2SpHWladccqDYgo74JN+YlEyg==
+  version "0.19.5"
+  resolved "https://registry.npmjs.org/msw/-/msw-0.19.5.tgz#7d2a1a852ccf1644d3db6735d69fff6777aac33f"
+  integrity sha512-J5eQ++gDVZoHPC8gVXtWcakLjgmPipvFj/sEnlRV/WViXuiq2CamSqO3Wbh6H8bAmj+k2vUWCfcVT1HjMdKB2Q==
   dependencies:
     "@open-draft/until" "^1.0.0"
     "@types/cookie" "^0.3.3"

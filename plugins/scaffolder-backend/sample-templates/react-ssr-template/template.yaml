@@ -8,7 +8,7 @@ metadata:
     - Recommended
     - React
 spec:
-  processor: cookiecutter
+  templater: cookiecutter
   type: website
   path: '.'
   schema:

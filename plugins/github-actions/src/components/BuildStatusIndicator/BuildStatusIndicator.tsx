@@ -21,7 +21,7 @@ import SuccessIcon from '@material-ui/icons/CheckCircle';
 import FailureIcon from '@material-ui/icons/Error';
 import UnknownIcon from '@material-ui/icons/Help';
 import React from 'react';
-import { BuildStatus } from '../../apis/builds';
+import { BuildStatus } from '../../api/types';
 
 type Props = {
   status?: BuildStatus;

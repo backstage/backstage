@@ -10,15 +10,6 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "proxy": {
-    "/circleci/api": {
-      "target": "https://circleci.com/api/v1.1",
-      "changeOrigin": true,
-      "pathRewrite": {
-        "^/circleci/api/": "/"
-      }
-    }
-  },
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
