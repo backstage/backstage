@@ -43,9 +43,8 @@ export default async function createPlugin({ logger }: PluginEnvironment) {
 }
 ```
 
-As you can see in the above code, a `Preparers` repository is created, and then
-two of the preparers are registered with the different protocols that they
-accept.
+As you can see in the above code, a `PreparerBuilder` is created, and then two
+of the `preparers` are registered with the different protocols that they accept.
 
 The `protocol` is set on the
 [Template Entity](../software-catalog/descriptor-format.md#kind-template) when
@@ -94,3 +93,5 @@ by using the `PreparerKey` from the Catalog, for example like this:
 const preparers = new Preparers();
 preparers.register('gcs', new GoogleCloudStoragePreparer());
 ```
+
+And then pass this in to the `createRouter` function.
