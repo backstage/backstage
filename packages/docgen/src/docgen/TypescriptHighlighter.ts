@@ -56,7 +56,7 @@ export default class TypescriptHighlighter implements Highlighter {
     ], // keywords
   ] as readonly [RegExp, string][];
 
-  highlight(text: string): string {
+  highlight(fullText: string): string {
     // Each part is either plain text that can be highlighted or text that is already highlighted
     type HighlightPart = { text: string; highlighted?: boolean };
 
@@ -80,7 +80,7 @@ export default class TypescriptHighlighter implements Highlighter {
     // Order here is important, e.g. comments must be first to avoid string literals inside comments being highlighted
     return TypescriptHighlighter.highlighters
       .reduce((parts, highlighter) => flatMap(parts, painter(...highlighter)), [
-        { text },
+        { text: fullText },
       ])
       .map(({ text }) => text)
       .join('');

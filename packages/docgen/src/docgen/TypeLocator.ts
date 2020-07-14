@@ -95,30 +95,30 @@ export default class TypeLocator {
     | { constructorType: ts.Type; initializer: ts.NewExpression; name: string }
     | undefined {
     if (!ts.isVariableStatement(node)) {
-      return;
+      return undefined;
     }
     if (
       !node.modifiers ||
       !node.modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)
     ) {
-      return;
+      return undefined;
     }
     const { declarations } = node.declarationList;
     if (declarations.length !== 1) {
-      return;
+      return undefined;
     }
 
     const [declaration] = declarations;
     const { initializer, name } = declaration;
 
     if (!initializer || !name) {
-      return;
+      return undefined;
     }
     if (!ts.isNewExpression(initializer)) {
-      return;
+      return undefined;
     }
     if (!ts.isIdentifier(name)) {
-      return;
+      return undefined;
     }
 
     const constructorType = this.checker.getTypeAtLocation(

@@ -108,7 +108,7 @@ export default class MarkdownPrinter {
 
     const parts: Array<{ text: string; path?: string }> = [];
 
-    const end = sortedLinks.reduce((prev, link) => {
+    const endLocation = sortedLinks.reduce((prev, link) => {
       const [start, end] = link.location;
       parts.push(
         { text: text.slice(prev, start) },
@@ -117,15 +117,14 @@ export default class MarkdownPrinter {
       return end;
     }, 0);
 
-    parts.push({ text: text.slice(end) });
+    parts.push({ text: text.slice(endLocation) });
 
     return parts
       .map(part => {
         if (part.path) {
           return `<a href="#${part.path}">${this.escapeText(part.text)}</a>`;
-        } else {
-          return this.highlighter.highlight(this.escapeText(part.text));
         }
+        return this.highlighter.highlight(this.escapeText(part.text));
       })
       .join('');
   }

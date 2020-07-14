@@ -116,18 +116,18 @@ export default class ApiDocGenerator {
     objectLiteral: ts.ObjectLiteralExpression,
     propertyName: string,
   ): string {
-    const prop = objectLiteral.properties.filter(
+    const matchingProp = objectLiteral.properties.filter(
       prop =>
         ts.isPropertyAssignment(prop) &&
         ts.isIdentifier(prop.name) &&
         prop.name.text === propertyName,
     )[0] as ts.PropertyAssignment;
 
-    if (!prop) {
+    if (!matchingProp) {
       throw new Error(`no identifier found for property ${propertyName}`);
     }
 
-    const { initializer } = prop;
+    const { initializer } = matchingProp;
     if (!ts.isStringLiteral(initializer)) {
       throw new Error(`no string literal for ${propertyName}`);
     }
@@ -238,22 +238,22 @@ export default class ApiDocGenerator {
     type: ts.Type | undefined,
   ): undefined | { symbol: ts.Symbol; declaration: ts.Declaration } {
     if (!type) {
-      return;
+      return undefined;
     }
     const symbol = type.aliasSymbol || type.symbol;
     if (!symbol) {
-      return;
+      return undefined;
     }
 
     const [declaration] = symbol.declarations;
 
     // Don't generate standalone infos for type paramters
     if (ts.isTypeParameterDeclaration(declaration)) {
-      return;
+      return undefined;
     }
 
     if (!declaration.getSourceFile().fileName.startsWith(this.sourcePath)) {
-      return;
+      return undefined;
     }
 
     return { symbol, declaration };

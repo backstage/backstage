@@ -21,14 +21,13 @@ export default function sortSelector<T>(
   selector: (x: T) => any,
 ): (a: T, b: T) => -1 | 1 | 0 {
   return (a: T, b: T) => {
-    let aV = selector(a);
-    let bV = selector(b);
+    const aV = selector(a);
+    const bV = selector(b);
     if (aV < bV) {
       return -1;
     } else if (aV > bV) {
       return 1;
-    } else {
-      return 0;
     }
+    return 0;
   };
 }

@@ -17,28 +17,28 @@
 import * as ts from 'typescript';
 import { resolve, join, dirname } from 'path';
 import { promisify } from 'util';
-import fs from 'fs';
+import fs from 'fs-extra';
 import ApiDocGenerator from './docgen/ApiDocGenerator';
 import sortSelector from './docgen/sortSelector';
 import TypeLocator from './docgen/TypeLocator';
 import ApiDocPrinter from './docgen/ApiDocPrinter';
 import TypescriptHighlighter from './docgen/TypescriptHighlighter';
 import MarkdownPrinter from './docgen/MarkdownPrinter';
-import { sync as mkdirpSync } from 'mkdirp';
 
 const writeFile = promisify(fs.writeFile);
 
 function loadOptions(path: string): ts.CompilerOptions {
-  let { extends: parent, compilerOptions }: any = require(path);
+  const config: any = require(path);
+  let parent = config.extends as string | undefined;
 
   if (!parent) {
-    return compilerOptions;
+    return config.compilerOptions;
   }
   if (parent.startsWith('.')) {
     parent = join(dirname(path), parent);
   }
 
-  return { ...loadOptions(parent), ...compilerOptions };
+  return { ...loadOptions(parent), ...config.compilerOptions };
 }
 
 async function main() {
@@ -84,7 +84,7 @@ async function main() {
     () => new MarkdownPrinter(new TypescriptHighlighter()),
   );
 
-  mkdirpSync(resolve(apiRefsDir, 'docs'));
+  fs.ensureDirSync(resolve(apiRefsDir, 'docs'));
 
   await Promise.all(
     apiDocs.map(apiDoc => {
