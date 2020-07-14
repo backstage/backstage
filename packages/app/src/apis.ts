@@ -58,6 +58,7 @@ import {
 import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
 
 import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
+import { GCPClient, GCPApiRef } from '@backstage/plugin-gcp-projects';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -75,6 +76,7 @@ export const apis = (config: ConfigApi) => {
 
   builder.add(storageApiRef, WebStorage.create({ errorApi }));
   builder.add(circleCIApiRef, new CircleCIApi());
+  builder.add(GCPApiRef, new GCPClient());
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));

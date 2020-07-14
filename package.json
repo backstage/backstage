@@ -53,5 +53,8 @@
     "*.{json,md}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "ts-node": "^8.10.2"
   }
 }
