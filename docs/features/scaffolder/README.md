@@ -47,12 +47,12 @@ There are 2 routes defined in the router. `POST /v1/jobs` and
 To create a scaffolding job, a JSON object containing the **Template Entity** +
 additional templating values must be posted as the post body.
 
-```json
+```js
 {
 	"template": {
 		"apiVersion": "backstage/v1alpha1",
     "kind": "Template",
-		...,
+		// more stuff here
 	"values": {
 		"component_id": "test",
 		"description": "somethingelse"
