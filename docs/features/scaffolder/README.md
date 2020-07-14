@@ -5,16 +5,26 @@ Welcome. Take a seat. You're at the Scaffolder Documentation.
 So - You wanna create stuff inside your company from some prebaked templates?
 You're at the right place.
 
-This guide is gonna take you through how the Scaffolder in Backstage works. Both
-the frontend, and the backend. At it's core, theres 3 simple stages.
+This guide is gonna take you through how the Scaffolder in Backstage works.
+We'll dive into some jargon and run through whats going on in the backend to be
+able to create these templates. There's also more guides that you might find
+useful at the bottom of this document. At it's core, theres 3 simple stages.
 
 1. Pick a skeleton
-
 2. Template some variables into the skeleton
-
 3. Send the templated skeleton somewhere
 
-Underneath, theres a little bit more going on.
+These three steps are translated to the folllowing stages under the hood in the
+scaffolder that you will need to know:
+
+1. Prepare
+2. Template
+3. Publish
+
+Each of these steps can be configured for your own use case, but we provide some
+sensible defaults too.
+
+Lets dive a little deeper into these phases.
 
 ### Glossary and Jargon
 
@@ -44,8 +54,8 @@ file in the `scaffolder-backend` plugin.
 There are 2 routes defined in the router. `POST /v1/jobs` and
 `GET /v1/job/:jobId`
 
-To create a scaffolding job, a JSON object containing
-the[Template Entity](../software-catalog/descriptor-format.md#kind-template) +
+To create a scaffolding job, a JSON object containing the
+[Template Entity](../software-catalog/descriptor-format.md#kind-template) +
 additional templating values must be posted as the post body.
 
 ```js
