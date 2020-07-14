@@ -17,11 +17,12 @@
 import { GCPApi } from './GCPApi';
 import { Project, Operation, Status } from './types';
 
+const BaseURL =
+  'https://content-cloudresourcemanager.googleapis.com/v1/projects';
+
 export class GCPClient implements GCPApi {
   async listProjects({ token }: { token: string }): Promise<Project[]> {
-    const url = `https://content-cloudresourcemanager.googleapis.com/v1/projects`;
-
-    const response = await fetch(url, {
+    const response = await fetch(BaseURL, {
       headers: new Headers({
         Accept: '*/*',
         Authorization: `Bearer ${token}`,
@@ -50,7 +51,7 @@ export class GCPClient implements GCPApi {
     projectId: string,
     token: Promise<string>,
   ): Promise<Project> {
-    const url = `https://content-cloudresourcemanager.googleapis.com/v1/projects/${projectId}`;
+    const url = `${BaseURL}/${projectId}`;
     const response = await fetch(url, {
       headers: new Headers({
         Authorization: `Bearer ${await token}`,
@@ -59,7 +60,7 @@ export class GCPClient implements GCPApi {
 
     const dataBlank: Project = {
       name: 'Error',
-      projectNumber: `Response status is${response.status}`,
+      projectNumber: `Response status is ${response.status}`,
       projectId: 'Error',
       lifecycleState: 'error',
       createTime: 'Error',
@@ -102,9 +103,7 @@ export class GCPClient implements GCPApi {
 
     const body = JSON.stringify(newProject);
 
-    const url = `https://content-cloudresourcemanager.googleapis.com/v1/projects`;
-
-    const response = await fetch(url, {
+    const response = await fetch(BaseURL, {
       headers: new Headers({
         Accept: '*/*',
         Authorization: `Bearer ${token}`,
