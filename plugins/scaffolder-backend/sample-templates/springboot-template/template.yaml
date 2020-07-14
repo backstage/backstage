@@ -8,6 +8,7 @@ metadata:
     - Recommended
     - Java
 spec:
+  owner: service@example.com
   templater: cookiecutter
   type: service
   path: '.'

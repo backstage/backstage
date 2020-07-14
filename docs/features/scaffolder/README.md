@@ -52,7 +52,8 @@ additional templating values must be posted as the post body.
 	"template": {
 		"apiVersion": "backstage/v1alpha1",
     "kind": "Template",
-		// more stuff here
+    // more stuff here
+  },
 	"values": {
 		"component_id": "test",
 		"description": "somethingelse"

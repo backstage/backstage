@@ -8,6 +8,7 @@ metadata:
     - Recommended
     - React
 spec:
+  owner: web@example.com
   templater: cookiecutter
   type: website
   path: '.'
