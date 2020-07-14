@@ -88,3 +88,15 @@ yarn lerna run mock-data
 The `type` field which is chosen in the request to add the `template.yaml` to
 the Service Catalog here, will be come the `PreparerKey` which will be used to
 select the `Preparer` when creating a job.
+
+### Adding form values in the Scaffolder Wizard
+
+The `spec.schema` property in the
+[Template Entity](../software-catalog/descriptor-format.md#kind-template) is a
+`yaml` version of the JSON Form Schema standard.
+
+Here you can define the key/values and then the wizard will convert this to a
+form for the user to fill in when your template is selected.
+
+You can find out much more about the standard and how to use it here:
+https://jsonforms.io

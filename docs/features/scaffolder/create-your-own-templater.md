@@ -51,3 +51,45 @@ If you wish to add a new templater you'll need to register it with the
 ### Creating your own Templater to add to the `TemplaterBuilder`
 
 All templaters need to implement the `TemplaterBase` type.
+
+That type looks like the following:
+
+```ts
+export type TemplaterRunOptions = {
+  directory: string;
+  values: RequiredTemplateValues & Record<string, JsonValue>;
+  logStream?: Writable;
+  dockerClient: Docker;
+};
+
+export type TemplaterBase = {
+  run(opts: TemplaterRunOptions): Promise<TemplaterRunResult>;
+};
+```
+
+The `run` function will be given a `TemplaterRunOptions` object which is as
+follows:
+
+- `directory`- the skeleton directory returned from the `Preparer`, more info at
+  [Create your own preparer](./create-your-own-preparer.md).
+- `values` - a json object which will resemble the schema from the
+  [Template Entity](../software-catalog/descriptor-format.md#kind-template)
+  which is defined here under spec.schema`. More info can be found here
+  [Register your own template](./register-your-own-template.md#adding-form-values-in-the-scaffolder-wizard)
+- `logStream` - a stream that you can write to for displaying in the frontend.
+- `dockerClient` - a [dockerode](https://github.com/apocas/dockerode) client to
+  be able to run docker containers.
+
+_note_ currently the templaters that we provide are basically docker action
+containers that are run on top of the skeleton folder. This keeps dependencies
+to a minimal for running backstage scaffolder, but you don't /have/ to use
+docker. You could create your own templater that spins up an EC2 instance and
+downloads the folder and does everything using an AMI if you want. It's entirely
+up to you!
+
+Now it's up to you to implement the `run` function, and then return a
+`TemplaterRunResult` which is `{ resultDir: string }`.
+
+Some good examples exist here:
+
+- https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/templater/cookiecutter.ts
