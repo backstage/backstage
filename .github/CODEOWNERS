@@ -5,5 +5,5 @@
 # https://help.github.com/articles/about-codeowners/
 
 *                      @spotify/backstage-core
-/packages/techdocs-cli @spotify/techdocs-core
 /plugins/techdocs      @spotify/techdocs-core
+/packages/techdocs-cli @spotify/techdocs-core
