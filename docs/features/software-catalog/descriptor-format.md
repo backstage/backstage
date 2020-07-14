@@ -312,14 +312,14 @@ Apart from being a string, the software catalog leaves the format of this field
 open to implementers to choose. Most commonly, it is set to the ID or email of a
 group of people in an organizational structure.
 
-## Kind: Template
+##
 
 Describes the following entity kind:
 
-| Field        | Value                   |
-| ------------ | ----------------------- |
-| `apiVersion` | `backstage.io/v1alpha1` |
-| `kind`       | `Template`              |
+| Field                | Value                   |
+| -------------------- | ----------------------- |
+| `apiVersion`         | `backstage.io/v1alpha1` |
+| `Kind: Templatekind` | `Template`              |
 
 A Template describes a skeleton for use with the Scaffolder. It is used for
 describing what templating library is supported, and also for documenting the

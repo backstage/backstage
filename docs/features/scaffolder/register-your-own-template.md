@@ -21,7 +21,7 @@ metadata:
     - Recommended
     - React
 spec:
-  # which templater key to use in the templaters registry
+  # which templater key to use in the templaters builder
   templater: cookiecutter
 	# what does this template create
   type: website
@@ -84,3 +84,7 @@ already provided for you, you can run the following to load those templates:
 ```
 yarn lerna run mock-data
 ```
+
+The `type` field which is chosen in the request to add the `template.yaml` to
+the Service Catalog here, will be come the `PreparerKey` which will be used to
+select the `Preparer` when creating a job.
