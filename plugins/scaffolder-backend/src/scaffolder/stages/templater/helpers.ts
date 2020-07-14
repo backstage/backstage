@@ -16,6 +16,8 @@
 import { Writable, PassThrough } from 'stream';
 import Docker from 'dockerode';
 import fs from 'fs';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { InputError } from '@backstage/backend-common';
 
 export type RunDockerContainerOptions = {
   imageName: string;
@@ -24,6 +26,20 @@ export type RunDockerContainerOptions = {
   resultDir: string;
   templateDir: string;
   dockerClient: Docker;
+};
+
+/**
+ * Gets the templater key to use for templating from the entity
+ * @param entity Template entity
+ */
+export const getTemplaterKey = (entity: TemplateEntityV1alpha1): string => {
+  const { templater } = entity.spec;
+
+  if (!templater) {
+    throw new InputError('Template does not have a required templating key');
+  }
+
+  return templater;
 };
 
 /**

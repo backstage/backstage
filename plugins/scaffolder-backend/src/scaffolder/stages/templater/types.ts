@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import type { Writable } from 'stream';
 import Docker from 'dockerode';
 import { JsonValue } from '@backstage/config';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
 /**
  * Currently the required template values. The owner
@@ -54,4 +54,17 @@ export type TemplaterBase = {
 
 export type TemplaterConfig = {
   templater?: TemplaterBase;
+};
+
+/**
+ * List of supported templating options
+ */
+export type SupportedTemplatingKey = 'cookiecutter' | string;
+
+/**
+ * The templater builder holds the templaters ready for run time
+ */
+export type TemplaterBuilder = {
+  register(protocol: SupportedTemplatingKey, templater: TemplaterBase): void;
+  get(template: TemplateEntityV1alpha1): TemplaterBase;
 };

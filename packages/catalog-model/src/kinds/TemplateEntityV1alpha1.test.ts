@@ -32,7 +32,8 @@ describe('TemplateEntityV1alpah1', () => {
         name: 'test',
       },
       spec: {
-        type: 'cookiecutter',
+        type: 'website',
+        templater: 'cookiecutter',
         schema: {
           $schema: 'http://json-schema.org/draft-07/schema#',
           required: ['storePath', 'owner'],
@@ -78,7 +79,7 @@ describe('TemplateEntityV1alpah1', () => {
     await expect(policy.enforce(entity)).rejects.toThrow(/type/);
   });
 
-  it('acceptps any other type', async () => {
+  it('accepts any other type', async () => {
     (entity as any).spec.type = 'hallo';
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
@@ -86,5 +87,10 @@ describe('TemplateEntityV1alpah1', () => {
   it('rejects empty type', async () => {
     (entity as any).spec.type = '';
     await expect(policy.enforce(entity)).rejects.toThrow(/type/);
+  });
+
+  it('rejects missing templater', async () => {
+    (entity as any).spec.templater = '';
+    await expect(policy.enforce(entity)).rejects.toThrow(/templater/);
   });
 });

@@ -13,26 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export enum BuildStatus {
-  Null,
-  Success,
-  Failure,
-  Pending,
-  Running,
-}
-
-export type Build = {
-  commitId: string;
-  message: string;
-  branch: string;
-  status: BuildStatus;
-  uri: string;
-};
-
-export type BuildDetails = {
-  build: Build;
-  author: string;
-  logUrl: string;
-  overviewUrl: string;
-};
+export { BuildListTable } from './BuildListTable';
+export type { Build } from './BuildListTable';

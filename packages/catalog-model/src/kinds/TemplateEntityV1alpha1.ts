@@ -26,6 +26,7 @@ export interface TemplateEntityV1alpha1 extends Entity {
   kind: typeof KIND;
   spec: {
     type: string;
+    templater: string;
     path?: string;
     schema: JSONSchema;
   };
@@ -43,6 +44,7 @@ export class TemplateEntityV1alpha1Policy implements EntityPolicy {
           type: yup.string().required().min(1),
           path: yup.string(),
           schema: yup.object().required(),
+          templater: yup.string().required(),
         })
         .required(),
     });
