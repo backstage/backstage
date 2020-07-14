@@ -50,19 +50,19 @@ additional templating values must be posted as the post body.
 ```js
 {
 	"template": {
-		"apiVersion": "backstage/v1alpha1",
+    "apiVersion": "backstage/v1alpha1",
     "kind": "Template",
     // more stuff here
   },
-	"values": {
-		"component_id": "test",
-		"description": "somethingelse"
-	}
+  "values": {
+    "component_id": "test",
+    "description": "somethingelse"
+  }
 }
 ```
 
 The values should represent something that is valid with the `schema` part of
-the [Template Entity](../software-catalog/descriptor-format.md#"Kind: Template")
+the [Template Entity](../software-catalog/descriptor-format.md#kind-template)
 
 Once that has been posted, a job will be setup with different stages. And the
 job processor will complete each stage before moving onto the next stage, whilst
