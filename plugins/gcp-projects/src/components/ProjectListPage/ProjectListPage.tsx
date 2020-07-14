@@ -103,7 +103,7 @@ const PageContents = () => {
               </TableCell>
               <TableCell>
                 <Typography>
-                  <LongText text={project.projectNumber} max={30} />
+                  <LongText text={project?.projectNumber || 'Error'} max={30} />
                 </Typography>
               </TableCell>
               <TableCell>
@@ -119,12 +119,15 @@ const PageContents = () => {
               </TableCell>
               <TableCell>
                 <Typography>
-                  <LongText text={project.lifecycleState} max={30} />
+                  <LongText
+                    text={project?.lifecycleState || 'Error'}
+                    max={30}
+                  />
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography>
-                  <LongText text={project.createTime} max={30} />
+                  <LongText text={project?.createTime || 'Error'} max={30} />
                 </Typography>
               </TableCell>
             </TableRow>
