@@ -3,7 +3,6 @@ site_description: 'Main documentation for Backstage features and platform APIs'
 
 nav:
   - Overview:
-      - Documentation structure: README.md
       - What is Backstage?: 'overview/what-is-backstage.md'
       - Introduction: 'overview/introduction.md'
       - Architecture and concepts: 'overview/arch-and-concepts.md'
