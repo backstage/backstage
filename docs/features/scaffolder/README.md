@@ -78,3 +78,10 @@ the [Template Entity](../software-catalog/descriptor-format.md#kind-template)
 Once that has been posted, a job will be setup with different stages. And the
 job processor will complete each stage before moving onto the next stage, whilst
 collecting logs and mutating the running job.
+
+Here's some futher reading that you might find useful:
+
+- [Registering your own Template](./register-your-own-template.md)
+- [Creating your own Templater](./create-your-own-templater.md)
+- [Creating your own Publisher](./create-your-own-publisher.md)
+- [Creating your own Preparer](./create-your-own-preparer.md)
