@@ -83,3 +83,6 @@ nav:
   - Contribute: '../CONTRIBUTING.md'
   - Support: 'overview/support.md'
   - FAQ: FAQ.md
+
+plugins:
+  - techdocs-core
