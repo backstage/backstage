@@ -48,7 +48,7 @@ export const NewProjectPage: FC<{}> = () => {
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       <Content>
-        <ContentHeader title="Create new GCP Project at trivago">
+        <ContentHeader title="Create new GCP Project">
           <SupportButton>
             This plugin will help you create a project in gcp.
           </SupportButton>
