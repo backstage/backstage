@@ -19,13 +19,8 @@ import { Grid, Button, TextField } from '@material-ui/core';
 
 import {
   InfoCard,
-  Header,
-  Page,
-  pageTheme,
   Content,
   ContentHeader,
-  HeaderLabel,
-  SupportButton,
   SimpleStepper,
   SimpleStepperStep,
   StructuredMetadataTable,
