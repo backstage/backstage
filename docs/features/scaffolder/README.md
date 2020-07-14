@@ -44,12 +44,13 @@ file in the `scaffolder-backend` plugin.
 There are 2 routes defined in the router. `POST /v1/jobs` and
 `GET /v1/job/:jobId`
 
-To create a scaffolding job, a JSON object containing the **Template Entity** +
+To create a scaffolding job, a JSON object containing
+the[Template Entity](../software-catalog/descriptor-format.md#kind-template) +
 additional templating values must be posted as the post body.
 
 ```js
 {
-	"template": {
+  "template": {
     "apiVersion": "backstage/v1alpha1",
     "kind": "Template",
     // more stuff here
