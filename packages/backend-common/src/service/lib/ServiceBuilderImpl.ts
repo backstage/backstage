@@ -45,9 +45,9 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   // reloading
   private module: NodeModule;
 
-  constructor(module: NodeModule) {
+  constructor(_module: NodeModule) {
     this.routers = [];
-    this.module = module;
+    this.module = _module;
   }
 
   loadConfig(config: ConfigReader): ServiceBuilder {
