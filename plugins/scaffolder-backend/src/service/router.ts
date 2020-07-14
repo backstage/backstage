@@ -26,13 +26,13 @@ import {
   RequiredTemplateValues,
   StageContext,
   TemplaterBuilder,
-  Publisher,
+  PublisherBase,
 } from '../scaffolder';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templaters: TemplaterBuilder;
-  publisher: Publisher;
+  publisher: PublisherBase;
 
   logger: Logger;
   dockerClient: Docker;

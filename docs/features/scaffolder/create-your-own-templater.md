@@ -46,7 +46,7 @@ This `TemplaterKey` is used to select the correct templater from the
 [Template Entity](../software-catalog/descriptor-format.md#kind-template).
 
 If you wish to add a new templater you'll need to register it with the
-`TemplaterBuilder` here.
+`TemplaterBuilder`.
 
 ### Creating your own Templater to add to the `TemplaterBuilder`
 
@@ -72,7 +72,7 @@ follows:
 
 - `directory`- the skeleton directory returned from the `Preparer`, more info at
   [Create your own preparer](./create-your-own-preparer.md).
-- `values` - a json object which will resemble the schema from the
+- `values` - a json object which will resemble the `spec.schema` from the
   [Template Entity](../software-catalog/descriptor-format.md#kind-template)
   which is defined here under spec.schema`. More info can be found here
   [Register your own template](./register-your-own-template.md#adding-form-values-in-the-scaffolder-wizard)
