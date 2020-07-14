@@ -122,3 +122,6 @@ dist
 
 # Temporary change files created by Vim
 *.swp
+
+# MkDocs build output
+site
