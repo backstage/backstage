@@ -27,8 +27,8 @@ import {
 import React from 'react';
 import { useAsync } from 'react-use';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
-import { githubActionsApiRef } from '../../api';
-import { Link, useApi, githubAuthApiRef } from '@backstage/core';
+import { githubActionsApiRef, BuildStatus } from '../../api';
+import { Link, useApi } from '@backstage/core';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -41,11 +41,9 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 const BuildInfoCardContent = () => {
   const api = useApi(githubActionsApiRef);
-  const githubApi = useApi(githubAuthApiRef);
 
   const status = useAsync(async () => {
-    const token = await githubApi.getAccessToken('repo');
-    return api.listBuilds({ owner: 'spotify', repo: 'backstage', token });
+    return api.listWorkflowRuns({ owner: 'spotify', repo: 'backstage' });
   });
 
   if (status.loading) {
@@ -58,8 +56,8 @@ const BuildInfoCardContent = () => {
     );
   }
 
-  const [build] =
-    status.value?.filter(({ branch }) => branch === 'master') ?? [];
+  // const [build] =
+  // status.value?.filter(({ branch }) => branch === 'master') ?? [];
 
   return (
     <Table>
@@ -69,8 +67,8 @@ const BuildInfoCardContent = () => {
             <Typography noWrap>Message</Typography>
           </TableCell>
           <TableCell>
-            <Link to={`builds/${encodeURIComponent(build?.uri || '')}`}>
-              <Typography color="primary">{build?.message}</Typography>
+            <Link to="builds/123">
+              <Typography color="primary">build message</Typography>
             </Link>
           </TableCell>
         </TableRow>
@@ -78,14 +76,14 @@ const BuildInfoCardContent = () => {
           <TableCell>
             <Typography noWrap>Commit ID</Typography>
           </TableCell>
-          <TableCell>{build?.commitId}</TableCell>
+          <TableCell>build commit id</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>
             <Typography noWrap>Status</Typography>
           </TableCell>
           <TableCell>
-            <BuildStatusIndicator status={build?.status} />
+            <BuildStatusIndicator status={BuildStatus.Success} />
           </TableCell>
         </TableRow>
       </TableBody>

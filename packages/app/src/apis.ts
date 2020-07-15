@@ -58,6 +58,7 @@ import {
 import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
 
 import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
+import { Octokit } from '@octokit/rest';
 import {
   GithubActionsClient,
   githubActionsApiRef,
@@ -82,7 +83,10 @@ export const apis = (config: ConfigApi) => {
     circleCIApiRef,
     new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
   );
-  builder.add(githubActionsApiRef, new GithubActionsClient());
+
+  const octokit = new Octokit();
+  const client = new GithubActionsClient({ api: octokit });
+  builder.add(githubActionsApiRef, client);
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
