@@ -97,12 +97,12 @@ Some good examples exist here:
 ### Registering your own Templater
 
 If you try to process a
-[Template Entity](../software-catalog/descriptor-format.md#kind-template) with a
-new `spec.templater` value, you'll need to register that with the
+[Template Entity](../../software-catalog/descriptor-format.md#kind-template)
+with a new `spec.templater` value, you'll need to register that with the
 `TemplaterBuilder`.
 
 For example let's say you have the following
-[Template Entity](../software-catalog/descriptor-format.md#kind-template):
+[Template Entity](../../software-catalog/descriptor-format.md#kind-template):
 
 ```yaml
 apiVersion: backstage.io/v1alpha1

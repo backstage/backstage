@@ -1,7 +1,7 @@
 # Create your own Preparer
 
 Preparers are responsible for reading the location of the definition of a
-[Template Entity](../software-catalog/descriptor-format.md#kind-template) and
+[Template Entity](../../software-catalog/descriptor-format.md#kind-template) and
 making a temporary folder with the contents of the selected skeleton.
 
 Currently, we provide two different providers that can parse two different
@@ -47,9 +47,9 @@ As you can see in the above code, a `PreparerBuilder` is created, and then two
 of the `preparers` are registered with the different protocols that they accept.
 
 The `protocol` is set on the
-[Template Entity](../software-catalog/descriptor-format.md#kind-template) when
-added to the service catalog. You can see more about this `PreparerKey` here in
-[Register your own template](./register-your-own-template.md)
+[Template Entity](../../software-catalog/descriptor-format.md#kind-template)
+when added to the service catalog. You can see more about this `PreparerKey`
+here in [Register your own template](../adding-templates.md)
 
 **note:** Currently the catalog supports loading definitions from Github + Local
 Files, which translate into the two `PreparerKeys` `file` and `github`. To load
@@ -72,8 +72,8 @@ export type PreparerBase = {
 ```
 
 The `prepare` function will be given the
-[Template Entity](../software-catalog/descriptor-format.md#kind-template) along
-with the source of where the `template.yaml` was loaded from under the
+[Template Entity](../../software-catalog/descriptor-format.md#kind-template)
+along with the source of where the `template.yaml` was loaded from under the
 `metedata.annotations.managed-by-location` property.
 
 Now it's up to you to implement a function which can go and fetch the skeleton

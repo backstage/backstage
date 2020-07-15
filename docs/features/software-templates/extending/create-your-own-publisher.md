@@ -63,12 +63,12 @@ The `publisher` function will be called with an `options` object which contains
 the following:
 
 - `entity` - the
-  [Template Entity](../software-catalog/descriptor-format.md#kind-template)
+  [Template Entity](../../software-catalog/descriptor-format.md#kind-template)
   which is currently being scaffolded
 - `values` - a json object which will resemble the `spec.schema` from the
-  [Template Entity](../software-catalog/descriptor-format.md#kind-template)
+  [Template Entity](../../software-catalog/descriptor-format.md#kind-template)
   which is defined here under spec.schema`. More info can be found here
-  [Register your own template](./register-your-own-template.md#adding-form-values-in-the-scaffolder-wizard)
+  [Register your own template](../adding-templates.md#adding-form-values-in-the-scaffolder-wizard)
 - `directory` - a string containing the returned path from the `templater`. See
   more information here in
   [Create your own templater](./create-your-own-templater.md)

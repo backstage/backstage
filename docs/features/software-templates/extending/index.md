@@ -1,4 +1,4 @@
-## Scaffolder
+## Extending the Scaffolder
 
 Welcome. Take a seat. You're at the Scaffolder Documentation.
 
@@ -55,7 +55,7 @@ There are 2 routes defined in the router. `POST /v1/jobs` and
 `GET /v1/job/:jobId`
 
 To create a scaffolding job, a JSON object containing the
-[Template Entity](../software-catalog/descriptor-format.md#kind-template) +
+[Template Entity](../../software-catalog/descriptor-format.md#kind-template) +
 additional templating values must be posted as the post body.
 
 ```js
@@ -73,7 +73,7 @@ additional templating values must be posted as the post body.
 ```
 
 The values should represent something that is valid with the `schema` part of
-the [Template Entity](../software-catalog/descriptor-format.md#kind-template)
+the [Template Entity](../../software-catalog/descriptor-format.md#kind-template)
 
 Once that has been posted, a job will be setup with different stages. And the
 job processor will complete each stage before moving onto the next stage, whilst
@@ -81,7 +81,7 @@ collecting logs and mutating the running job.
 
 Here's some futher reading that you might find useful:
 
-- [Registering your own Template](./register-your-own-template.md)
+- [Adding your own Template](../adding-templates.md)
 - [Creating your own Templater](./create-your-own-templater.md)
 - [Creating your own Publisher](./create-your-own-publisher.md)
 - [Creating your own Preparer](./create-your-own-preparer.md)
