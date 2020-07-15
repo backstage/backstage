@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright 2020 Spotify AB
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,11 +20,8 @@ ROOT_DIR=$(git rev-parse --show-toplevel)
 TECHDOCS_PREVIEW_SOURCE=$ROOT_DIR/plugins/techdocs/dist
 TECHDOCS_PREVIEW_DEST=$ROOT_DIR/packages/techdocs-cli/dist/techdocs-preview-bundle
 
-# Clean output
-yarn workspace @backstage/plugin-techdocs clean
-
 # Build the CLI
-backstage-cli build --outputs cjs
+yarn run backstage-cli -- build --outputs cjs
 
 # Create export of the TechDocs plugin
 APP_CONFIG_techdocs_storageUrl='"http://localhost:3000/api"' yarn workspace @backstage/plugin-techdocs export
