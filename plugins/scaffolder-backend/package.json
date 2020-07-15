@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
-  "version": "0.1.1-alpha.13",
+  "version": "0.1.1-alpha.14",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -21,8 +21,8 @@
     "mock-data": "./scripts/mock-data.sh"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.13",
-    "@backstage/catalog-model": "^0.1.1-alpha.13",
+    "@backstage/backend-common": "^0.1.1-alpha.14",
+    "@backstage/catalog-model": "^0.1.1-alpha.14",
     "@backstage/config": "^0.1.1-alpha.13",
     "@octokit/rest": "^18.0.0",
     "@types/dockerode": "^2.5.32",
@@ -42,7 +42,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.13",
+    "@backstage/cli": "^0.1.1-alpha.14",
     "@octokit/types": "^5.0.1",
     "@types/fs-extra": "^9.0.1",
     "@types/git-url-parse": "^9.0.0",
