@@ -43,14 +43,14 @@ function loadOptions(path: string): ts.CompilerOptions {
 
 async function main() {
   const rootDir = resolve(__dirname, '..');
-  const srcDir = resolve(rootDir, 'src');
-  const entrypoint = resolve(srcDir, 'index.js');
-  const apiRefsDir = resolve(rootDir, 'docgen', 'build', 'api-refs');
+  const srcDir = resolve(rootDir, '..', 'core-api', 'src');
+  const entrypoint = resolve(srcDir, 'index.ts');
+  const apiRefsDir = resolve(rootDir, 'dist');
   const mkdocsYaml = resolve(apiRefsDir, 'mkdocs.yml');
 
   process.chdir(rootDir);
 
-  const options = loadOptions('../tsconfig.json');
+  const options = loadOptions('../../../tsconfig.json');
 
   delete options.moduleResolution;
   options.removeComments = false;
@@ -60,11 +60,12 @@ async function main() {
 
   const typeLocator = TypeLocator.fromProgram(program);
 
-  const { apis } = typeLocator.findExportedInstances({
-    apis: typeLocator.getExportedType(
-      resolve(srcDir, 'core', 'api', 'ApiRef.ts'),
-    ),
-  });
+  const { apis } = typeLocator.findExportedInstances(
+    {
+      apis: typeLocator.getExportedType(entrypoint, 'createApiRef'),
+    },
+    [srcDir],
+  );
 
   const apiDocGenerator = ApiDocGenerator.fromProgram(program, rootDir, srcDir);
 

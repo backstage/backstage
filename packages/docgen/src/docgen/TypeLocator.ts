@@ -54,6 +54,7 @@ export default class TypeLocator {
 
   findExportedInstances<T extends string>(
     typeLookupTable: { [key in T]: ts.Type },
+    roots: string[],
   ): { [key in T]: ExportedInstance[] } {
     const docMap = new Map<ts.Type, ExportedInstance[]>();
     for (const type of Object.values<ts.Type>(typeLookupTable)) {
@@ -61,6 +62,10 @@ export default class TypeLocator {
     }
 
     this.program.getSourceFiles().forEach(source => {
+      const inRoot = roots.some(root => source.fileName.startsWith(root));
+      if (!inRoot) {
+        return;
+      }
       ts.forEachChild(source, node => {
         const decl = this.getExportedConstructorDeclaration(node);
         if (!decl || !docMap.has(decl.constructorType)) {
