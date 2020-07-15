@@ -6,8 +6,8 @@
   here if you want to contribute
 - [RFCs](https://github.com/spotify/backstage/labels/rfc) - Help shape the
   technical direction
-- [FAQ](docs/FAQ.md) - Frequently Asked Questions
-- [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
+- [FAQ](../FAQ.md) - Frequently Asked Questions
+- [Code of Conduct](../../CODE_OF_CONDUCT.md) - This is how we roll
 - [Blog](https://backstage.io/blog/) - Announcements and updates
 - [Newsletter](https://mailchi.mp/spotify/backstage-community)
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting
