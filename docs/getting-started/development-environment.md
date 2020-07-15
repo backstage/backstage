@@ -80,17 +80,6 @@ yarn diff # Make sure all plugins are up to date with the latest plugin template
 yarn create-plugin # Create a new plugin
 ```
 
-### (Optional)Try on Docker
-
-Run the following commands if you have Docker environment
-
-```bash
-$ yarn docker-build
-$ docker run --rm -it -p 80:80 spotify/backstage
-```
-
-Then open http://localhost/ on your browser.
-
 > See [package.json](/package.json) for other yarn commands/options.
 
 [Next Step - Create a Backstage plugin](../plugins/create-a-plugin.md)
