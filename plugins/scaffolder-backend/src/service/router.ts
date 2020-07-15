@@ -26,13 +26,13 @@ import {
   RequiredTemplateValues,
   StageContext,
   TemplaterBuilder,
-  Publisher,
+  PublisherBase,
 } from '../scaffolder';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templaters: TemplaterBuilder;
-  publisher: Publisher;
+  publisher: PublisherBase;
 
   logger: Logger;
   dockerClient: Docker;
@@ -55,18 +55,6 @@ export async function createRouter(
   const jobProcessor = new JobProcessor();
 
   router
-    .get('/v1/job/:jobId/stage/:index/log', ({ params }, res) => {
-      const job = jobProcessor.get(params.jobId);
-
-      if (!job) {
-        res.status(404).send({ error: 'job not found' });
-        return;
-      }
-
-      const { log } = job.stages[Number(params.index)] ?? { log: [] };
-
-      res.send(log.join(''));
-    })
     .get('/v1/job/:jobId', ({ params }, res) => {
       const job = jobProcessor.get(params.jobId);
 
@@ -126,7 +114,7 @@ export async function createRouter(
           {
             name: 'Publish template',
             handler: async (ctx: StageContext<{ resultDir: string }>) => {
-              ctx.logger.info('Should not store the template');
+              ctx.logger.info('Will now store the template');
               const { remoteUrl } = await publisher.publish({
                 entity: ctx.entity,
                 values: ctx.values,

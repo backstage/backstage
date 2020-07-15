@@ -32,6 +32,11 @@ nav:
           - Overview: 'features/software-templates/index.md'
           - Configure templates: 'features/software-templates/configure-templates.md'
           - Adding templates: 'features/software-templates/adding-templates.md'
+          - Extending the Scaffolder:
+              - Overview: 'features/software-templates/extending/index.md'
+              - Create your own Templater: 'features/software-templates/extending/create-your-own-templater.md'
+              - Create your own Publisher: 'features/software-templates/extending/create-your-own-publisher.md'
+              - Create your own Preparer: 'features/software-templates/extending/create-your-own-preparer.md'
       - Docs-like-code:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'
