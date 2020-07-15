@@ -29,13 +29,16 @@ export const transforms = (
 ): Transforms => {
   const { isDev } = options;
 
+  const extraTransforms = isDev ? ['react-hot-loader'] : [];
+
   const loaders = [
     {
       test: /\.(tsx?)$/,
       exclude: /node_modules/,
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
-        transforms: ['typescript', 'jsx', 'react-hot-loader'],
+        transforms: ['typescript', 'jsx', ...extraTransforms],
+        production: !isDev,
       },
     },
     {
@@ -43,7 +46,8 @@ export const transforms = (
       exclude: /node_modules/,
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
-        transforms: ['jsx', 'react-hot-loader'],
+        transforms: ['jsx', ...extraTransforms],
+        production: !isDev,
       },
     },
     {
@@ -51,7 +55,10 @@ export const transforms = (
       use: [
         {
           loader: require.resolve('@sucrase/webpack-loader'),
-          options: { transforms: ['jsx'] },
+          options: {
+            transforms: ['jsx', ...extraTransforms],
+            production: !isDev,
+          },
         },
         {
           loader: require.resolve('@svgr/webpack'),
