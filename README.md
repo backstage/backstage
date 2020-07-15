@@ -90,13 +90,12 @@ Take a look at the [Getting Started](docs/getting-started/README.md) guide to le
 
 ## Documentation
 
-- [Getting Started](docs/getting-started/README.md)
-- [Create a Backstage App](docs/create-an-app.md)
-- [Architecture](docs/overview/architecture-terminology.md) ([Decisions](docs/architecture-decisions))
-- [API references](docs/reference/README.md)
-- [Designing for Backstage](docs/design.md)
+- [Main documentation](docs/README.md)
+- [Service Catalog](docs/features/software-catalog/index.md)
+- [Create a Backstage App](docs/getting-started/create-an-app.md)
+- [Architecture](docs/overview/architecture-terminology.md) ([Decisions](docs/architecture-decisions/index.md))
+- [Designing for Backstage](docs/dls/design.md)
 - [Storybook - UI components](http://storybook.backstage.io)
-- [Contributing to Storybook](docs/getting-started/contributing-to-storybook.md)
 
 ## Contributing
 
