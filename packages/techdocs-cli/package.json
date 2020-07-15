@@ -36,7 +36,7 @@
   },
   "files": [
     "bin",
-    "dist/**/*.js"
+    "dist"
   ],
   "nodemonConfig": {
     "watch": "./src",
