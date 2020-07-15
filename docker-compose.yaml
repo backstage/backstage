@@ -1,3 +1,6 @@
+# Make sure that before you
+# run the docker-compose that you have run
+# $ yarn docker-build:all
 version: '3'
 
 services:
