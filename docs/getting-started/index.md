@@ -62,8 +62,8 @@ collection of tutorials that will guide you through setting up and extending an
 instance of Backstage with your own plugins.
 
 - [Development Environment](development-environment.md)
-- [Create a Backstage Plugin](create-a-plugin.md)
-- [Structure of a Plugin](structure-of-a-plugin.md)
-- [Utility APIs](utility-apis.md)
+- [Create a Backstage Plugin](../plugins/create-a-plugin.md)
+- [Structure of a Plugin](../plugins/structure-of-a-plugin.md)
+- [Utility APIs](../api/utility-apis.md)
 
 [Back to Docs](../README.md)
