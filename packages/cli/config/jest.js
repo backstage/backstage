@@ -58,13 +58,37 @@ async function getConfig() {
     options.setupFilesAfterEnv = ['<rootDir>/setupTests.ts'];
   }
 
-  return {
-    ...options,
+  // We read all "jest" config fields in package.json files all the way to the filesystem root.
+  // All configs are merged together to create the final config, with longer paths taking precedence.
+  // The merging of the configs is shallow, meaning e.g. all transforms are replaced if new ones are defined.
+  const pkgJsonConfigs = [];
+  let currentPath = process.cwd();
 
-    // If the package has a jest object in package.json we merge that config in. This is the recommended
-    // location for configuring tests.
-    ...require(path.resolve('package.json')).jest,
-  };
+  // Some sanity check to avoid infinite loop
+  for (let i = 0; i < 100; i++) {
+    const packagePath = path.resolve(currentPath, 'package.json');
+    const exists = fs.pathExistsSync(packagePath);
+    if (exists) {
+      try {
+        const data = fs.readJsonSync(packagePath);
+        if (data.jest) {
+          pkgJsonConfigs.unshift(data.jest);
+        }
+      } catch (error) {
+        throw new Error(
+          `Failed to parse package.json file reading jest configs, ${error}`,
+        );
+      }
+    }
+
+    const newPath = path.dirname(currentPath);
+    if (newPath === currentPath) {
+      break;
+    }
+    currentPath = newPath;
+  }
+
+  return Object.assign(options, ...pkgJsonConfigs);
 }
 
 module.exports = getConfig();
