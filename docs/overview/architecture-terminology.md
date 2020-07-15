@@ -14,5 +14,3 @@ different ways.
   Spotify we have over 100 plugins built by over 50 different teams. It has been
   very powerful to get contributions from various infrastructure teams added
   into a single unified developer experience.
-
-[Back to Docs](README.md)

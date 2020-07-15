@@ -1,16 +1,20 @@
 # Documentation structure
 
+**Note!** This documentation structure is very much work in progress. If (when,
+really 😆) you find broken links or missing content, please create an issue or,
+better yet, a pull request.
+
 - Overview
   - [What is Backstage?](overview/what-is-backstage.md)
   - [Introduction](overview/introduction.md)
-  - [Architecture and concepts](overview/arch-and-concepts.md)
+  - [Architecture and terminology](overview/architecture-terminology.md)
   - Getting started
-    - [Overview](getting-started/index.md)
+    - [Running Backstage locally](getting-started/index.md)
     - [Installation](getting-started/installation.md)
-    - [Local development](getting-started/local-development.md)
-    - [Demo deployment](https://demo.backstage.io)
+    - [Local development](getting-started/development-environment.md)
+    - [Demo deployment](https://backstage-demo.roadie.io)
     - Production deployments
-      - [Create an App](getting-started/create-app.md)
+      - [Create an App](getting-started/create-an-app.md)
       - App configuration
         - [Configuring App with plugins](getting-started/configure-app-with-plugins.md)
         - [Customize the look-and-feel of your App](getting-started/customize-app-look-and-feel.md)
@@ -66,8 +70,10 @@
     - [Storybook -- reusable UI components](dls/storybook.md)
     - [Figma resources](dls/figma.md)
   - API references
-    - [JavaScript/TypeScript API](api/javascript.md)
-    - [Backend APIs](api/backend.md)
+    - TypeScript API
+      - [Utilities](api/utility-apis.md)
+    - Backend APIs
+      - [Backend](api/backend.md)
   - Tutorials
     - [Overview](tutorials/index.md)
   - Architecture Decision Records (ADRs)
