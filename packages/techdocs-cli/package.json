@@ -22,8 +22,7 @@
     "lint": "backstage-cli lint",
     "test": "backstage-cli test --passWithNoTests",
     "clean": "backstage-cli clean",
-    "start": "nodemon --",
-    "backstage-cli": "backstage-cli --"
+    "start": "nodemon --"
   },
   "bin": {
     "techdocs": "bin/techdocs-cli"
