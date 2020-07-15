@@ -118,8 +118,11 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
         verticalAlign: 'middle',
         lineHeight: '1',
         margin: 0,
-        padding: '8px',
+        padding: theme.spacing(3, 2, 3, 2.5),
         borderBottom: 0,
+      },
+      sizeSmall: {
+        padding: theme.spacing(1, 2, 1, 2.5),
       },
       head: {
         wordBreak: 'break-word',
@@ -141,6 +144,7 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
         color: theme.palette.link,
         minHeight: 24,
         textTransform: 'initial',
+        letterSpacing: '0.07em',
         '&:hover': {
           color: darken(theme.palette.link, 0.3),
           background: lighten(theme.palette.link, 0.95),

@@ -14,43 +14,45 @@
  * limitations under the License.
  */
 
-import { createApp, AlertDisplay, OAuthRequestDialog } from '@backstage/core';
+import {
+  createApp,
+  AlertDisplay,
+  OAuthRequestDialog,
+  SignInPage,
+} from '@backstage/core';
 import React, { FC } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
 import Root from './components/Root';
 import * as plugins from './plugins';
-import apis from './apis';
+import { apis } from './apis';
+import { hot } from 'react-hot-loader/root';
 
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
-  configLoader: async () => ({
-    app: {
-      title: 'Backstage Example App',
-      baseUrl: 'http://localhost:3000',
-    },
-    backend: {
-      baseUrl: 'http://localhost:7000',
-    },
-    organization: {
-      name: 'Spotify',
-    },
-  }),
+  components: {
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        providers={['guest', 'google', 'custom', 'okta', 'gitlab']}
+      />
+    ),
+  },
 });
 
 const AppProvider = app.getProvider();
-const AppComponent = app.getRootComponent();
+const AppRouter = app.getRouter();
+const AppRoutes = app.getRoutes();
 
 const App: FC<{}> = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
-    <Router>
+    <AppRouter>
       <Root>
-        <AppComponent />
+        <AppRoutes />
       </Root>
-    </Router>
+    </AppRouter>
   </AppProvider>
 );
 
-export default App;
+export default hot(App);

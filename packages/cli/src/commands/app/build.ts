@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { buildBundle } from '../../lib/bundler';
 import { Command } from 'commander';
+import { loadConfig } from '@backstage/config-loader';
+import { ConfigReader } from '@backstage/config';
+import { buildBundle } from '../../lib/bundler';
 
 export default async (cmd: Command) => {
+  const appConfigs = await loadConfig();
   await buildBundle({
     entry: 'src/index',
     statsJsonEnabled: cmd.stats,
+    config: ConfigReader.fromConfigs(appConfigs),
+    appConfigs,
   });
 };

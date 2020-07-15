@@ -56,7 +56,7 @@ const defaultProps = {
   tooltipText: 'Text copied to clipboard',
 };
 
-const CopyTextButton: FC<Props> = props => {
+export const CopyTextButton: FC<Props> = props => {
   const { text, tooltipDelay, tooltipText } = {
     ...defaultProps,
     ...props,
@@ -110,5 +110,3 @@ CopyTextButton.propTypes = {
   tooltipDelay: PropTypes.number,
   tooltipText: PropTypes.string,
 };
-
-export default CopyTextButton;

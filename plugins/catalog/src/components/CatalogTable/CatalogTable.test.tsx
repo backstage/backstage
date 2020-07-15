@@ -13,61 +13,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
-import CatalogTable from './CatalogTable';
-import { Component } from '../../data/component';
 
-const components: Component[] = [
-  { name: 'component1', kind: 'Component', description: 'Placeholder' },
-  { name: 'component2', kind: 'Component', description: 'Placeholder' },
-  { name: 'component3', kind: 'Component', description: 'Placeholder' },
+import { Entity } from '@backstage/catalog-model';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { render } from '@testing-library/react';
+import * as React from 'react';
+import { CatalogTable } from './CatalogTable';
+
+const entites: Entity[] = [
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: { name: 'component1' },
+  },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: { name: 'component2' },
+  },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: { name: 'component3' },
+  },
 ];
 
 describe('CatalogTable component', () => {
-  it('should render loading when loading prop it set to true', async () => {
-    const rendered = render(
-      wrapInThemedTestApp(
-        <CatalogTable titlePreamble="Owned" components={[]} loading />,
-      ),
-    );
-    const progress = await rendered.findByTestId('progress');
-    expect(progress).toBeInTheDocument();
-  });
-
   it('should render error message when error is passed in props', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <CatalogTable
           titlePreamble="Owned"
-          components={[]}
+          entities={[]}
           loading={false}
           error={{ code: 'error' }}
         />,
       ),
     );
     const errorMessage = await rendered.findByText(
-      'Error encountered while fetching components.',
+      /Error encountered while fetching catalog entities./,
     );
     expect(errorMessage).toBeInTheDocument();
   });
 
-  it('should display component names when loading has finished and no error occurred', async () => {
+  it('should display entity names when loading has finished and no error occurred', async () => {
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <CatalogTable
           titlePreamble="Owned"
-          components={components}
+          entities={entites}
           loading={false}
         />,
       ),
     );
-    expect(
-      await rendered.findByText(`Owned (${components.length})`),
-    ).toBeInTheDocument();
-    expect(await rendered.findByText('component1')).toBeInTheDocument();
-    expect(await rendered.findByText('component2')).toBeInTheDocument();
-    expect(await rendered.findByText('component3')).toBeInTheDocument();
+    expect(rendered.getByText(/Owned \(3\)/)).toBeInTheDocument();
+    expect(rendered.getByText(/component1/)).toBeInTheDocument();
+    expect(rendered.getByText(/component2/)).toBeInTheDocument();
+    expect(rendered.getByText(/component3/)).toBeInTheDocument();
   });
 });

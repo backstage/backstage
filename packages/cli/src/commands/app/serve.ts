@@ -15,12 +15,17 @@
  */
 
 import { Command } from 'commander';
+import { loadConfig } from '@backstage/config-loader';
+import { ConfigReader } from '@backstage/config';
 import { serveBundle } from '../../lib/bundler';
 
 export default async (cmd: Command) => {
+  const appConfigs = await loadConfig();
   const waitForExit = await serveBundle({
     entry: 'src/index',
     checksEnabled: cmd.check,
+    config: ConfigReader.fromConfigs(appConfigs),
+    appConfigs,
   });
 
   await waitForExit();

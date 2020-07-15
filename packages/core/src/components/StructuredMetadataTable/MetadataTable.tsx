@@ -25,6 +25,7 @@ import {
   WithStyles,
   Theme,
 } from '@material-ui/core';
+
 const tableTitleCellStyles = (theme: Theme) =>
   createStyles({
     root: {

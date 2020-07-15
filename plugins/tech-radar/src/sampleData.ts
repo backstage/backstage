@@ -36,48 +36,48 @@ quadrants.push({ id: 'process', name: 'Process' });
 const entries = new Array<RadarEntry>();
 entries.push({
   moved: 0,
-  ring: 'use',
+  ring: { id: 'use', name: 'USE', color: '#93c47d' },
   url: '#',
   key: 'javascript',
   id: 'javascript',
   title: 'JavaScript',
-  quadrant: 'languages',
+  quadrant: { id: 'languages', name: 'Languages' },
 });
 entries.push({
   moved: 0,
-  ring: 'use',
+  ring: { id: 'use', name: 'USE', color: '#93c47d' },
   url: '#',
   key: 'typescript',
   id: 'typescript',
   title: 'TypeScript',
-  quadrant: 'languages',
+  quadrant: { id: 'languages', name: 'Languages' },
 });
 entries.push({
   moved: 0,
-  ring: 'use',
+  ring: { id: 'use', name: 'USE', color: '#93c47d' },
   url: '#',
   key: 'webpack',
   id: 'webpack',
   title: 'Webpack',
-  quadrant: 'frameworks',
+  quadrant: { id: 'frameworks', name: 'Frameworks' },
 });
 entries.push({
   moved: 0,
-  ring: 'use',
+  ring: { id: 'use', name: 'USE', color: '#93c47d' },
   url: '#',
   key: 'react',
   id: 'react',
   title: 'React',
-  quadrant: 'frameworks',
+  quadrant: { id: 'frameworks', name: 'Frameworks' },
 });
 entries.push({
   moved: 0,
-  ring: 'use',
+  ring: { id: 'use', name: 'USE', color: '#93c47d' },
   url: '#',
   key: 'code-reviews',
   id: 'code-reviews',
   title: 'Code Reviews',
-  quadrant: 'process',
+  quadrant: { id: 'process', name: 'Process' },
 });
 entries.push({
   moved: 0,
@@ -85,17 +85,35 @@ entries.push({
   key: 'mob-programming',
   id: 'mob-programming',
   title: 'Mob Programming',
-  quadrant: 'process',
-  ring: 'assess',
+  quadrant: { id: 'process', name: 'Process' },
+  ring: { id: 'assess', name: 'ASSESS', color: '#fbdb84' },
 });
 entries.push({
   moved: 0,
-  ring: 'use',
+  url: '#',
+  key: 'docs-like-code',
+  id: 'docs-like-code',
+  title: 'Docs-like-code',
+  quadrant: { id: 'process', name: 'Process' },
+  ring: { id: 'use', name: 'USE', color: '#93c47d' },
+});
+entries.push({
+  moved: 0,
+  url: '#',
+  key: 'force-push',
+  id: 'force-push',
+  title: 'Force push to master',
+  quadrant: { id: 'process', name: 'Process' },
+  ring: { id: 'hold', name: 'HOLD', color: '#93c47d' },
+});
+entries.push({
+  moved: 0,
+  ring: { id: 'use', name: 'USE', color: '#93c47d' },
   url: '#',
   key: 'github-actions',
   id: 'github-actions',
   title: 'GitHub Actions',
-  quadrant: 'infrastructure',
+  quadrant: { id: 'infrastructure', name: 'Infrastructure' },
 });
 
 export default function getSampleData(): Promise<TechRadarLoaderResponse> {

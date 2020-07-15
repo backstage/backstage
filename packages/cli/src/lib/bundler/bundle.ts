@@ -23,7 +23,7 @@ import {
   printFileSizesAfterBuild,
 } from 'react-dev-utils/FileSizeReporter';
 import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
-import { createConfig } from './config';
+import { createConfig, resolveBaseUrl } from './config';
 import { BuildOptions } from './types';
 import { resolveBundlingPaths } from './paths';
 import chalk from 'chalk';
@@ -40,6 +40,7 @@ export async function buildBundle(options: BuildOptions) {
     ...options,
     checksEnabled: false,
     isDev: false,
+    baseUrl: resolveBaseUrl(options.config),
   });
   const compiler = webpack(config);
 
@@ -47,6 +48,13 @@ export async function buildBundle(options: BuildOptions) {
 
   const previousFileSizes = await measureFileSizesBeforeBuild(paths.targetDist);
   await fs.emptyDir(paths.targetDist);
+
+  if (paths.targetPublic) {
+    await fs.copy(paths.targetPublic, paths.targetDist, {
+      dereference: true,
+      filter: file => file !== paths.targetHtml,
+    });
+  }
 
   const { stats } = await build(compiler, isCi).catch(error => {
     console.log(chalk.red('Failed to compile.\n'));

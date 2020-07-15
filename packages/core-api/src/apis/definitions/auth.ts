@@ -15,6 +15,7 @@
  */
 
 import { createApiRef } from '../ApiRef';
+import { Observable } from '../..';
 
 /**
  * This file contains declarations for common interfaces of auth-related APIs.
@@ -36,13 +37,13 @@ import { createApiRef } from '../ApiRef';
  */
 export type OAuthScope = string | string[];
 
-export type AccessTokenOptions = {
+export type AuthRequestOptions = {
   /**
    * If this is set to true, the user will not be prompted to log in,
-   * and an empty access token will be returned if there is no existing session.
+   * and an empty response will be returned if there is no existing session.
    *
-   * This can be used to perform a check whether the user is logged in with a set of scopes,
-   * or if you don't want to force a user to be logged in, but provide functionality if they already are.
+   * This can be used to perform a check whether the user is logged in, or if you don't
+   * want to force a user to be logged in, but provide functionality if they already are.
    *
    * @default false
    */
@@ -87,36 +88,13 @@ export type OAuthApi = {
    */
   getAccessToken(
     scope?: OAuthScope,
-    options?: AccessTokenOptions,
+    options?: AuthRequestOptions,
   ): Promise<string>;
 
   /**
    * Log out the user's session. This will reload the page.
    */
   logout(): Promise<void>;
-};
-
-export type IdTokenOptions = {
-  /**
-   * If this is set to true, the user will not be prompted to log in,
-   * and an empty id token will be returned if there is no existing session.
-   *
-   * This can be used to perform a check whether the user is logged in, or if you don't
-   * want to force a user to be logged in, but provide functionality if they already are.
-   *
-   * @default false
-   */
-  optional?: boolean;
-
-  /**
-   * If this is set to true, the request will bypass the regular oauth login modal
-   * and open the login popup directly.
-   *
-   * The method must be called synchronously from a user action for this to work in all browsers.
-   *
-   * @default false
-   */
-  instantPopup?: boolean;
 };
 
 /**
@@ -135,12 +113,93 @@ export type OpenIdConnectApi = {
    * to log in. The returned promise will not resolve until the user has successfully logged in.
    * The returned promise can be rejected, but only if the user rejects the login request.
    */
-  getIdToken(options?: IdTokenOptions): Promise<string>;
+  getIdToken(options?: AuthRequestOptions): Promise<string>;
 
   /**
    * Log out the user's session. This will reload the page.
    */
   logout(): Promise<void>;
+};
+
+/**
+ * This API provides access to profile information of the user from an auth provider.
+ */
+export type ProfileInfoApi = {
+  /**
+   * Get profile information for the user as supplied by this auth provider.
+   *
+   * If the optional flag is not set, a session is guaranteed to be returned, while if
+   * the optional flag is set, the session may be undefined. See @AuthRequestOptions for more details.
+   */
+  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
+};
+
+/**
+ * This API provides access to the user's identity within Backstage.
+ *
+ * An auth provider that implements this interface can be used to sign-in to backstage. It is
+ * not intended to be used directly from a plugin, but instead serves as a connection between
+ * this authentication method and the app's @IdentityApi
+ */
+export type BackstageIdentityApi = {
+  /**
+   * Get the user's identity within Backstage. This should normally not be called directly,
+   * use the @IdentityApi instead.
+   *
+   * If the optional flag is not set, a session is guaranteed to be returned, while if
+   * the optional flag is set, the session may be undefined. See @AuthRequestOptions for more details.
+   */
+  getBackstageIdentity(
+    options?: AuthRequestOptions,
+  ): Promise<BackstageIdentity | undefined>;
+};
+
+export type BackstageIdentity = {
+  /**
+   * The backstage user ID.
+   */
+  id: string;
+
+  /**
+   * An ID token that can be used to authenticate the user within Backstage.
+   */
+  idToken: string;
+};
+
+/**
+ * Profile information of the user.
+ */
+export type ProfileInfo = {
+  /**
+   * Email ID.
+   */
+  email?: string;
+
+  /**
+   * Display name that can be presented to the user.
+   */
+  displayName?: string;
+
+  /**
+   * URL to an avatar image of the user.
+   */
+  picture?: string;
+};
+
+/**
+ * Session state values passed to subscribers of the SessionStateApi.
+ */
+export enum SessionState {
+  SignedIn = 'SignedIn',
+  SignedOut = 'SignedOut',
+}
+
+/**
+ * This API provides access to an sessionState$ observable which provides an update when the
+ * user performs a sign in or sign out from an auth provider.
+ */
+export type SessionStateApi = {
+  sessionState$(): Observable<SessionState>;
 };
 
 /**
@@ -151,7 +210,13 @@ export type OpenIdConnectApi = {
  * Note that the ID token payload is only guaranteed to contain the user's numerical Google ID,
  * email and expiration information. Do not rely on any other fields, as they might not be present.
  */
-export const googleAuthApiRef = createApiRef<OAuthApi & OpenIdConnectApi>({
+export const googleAuthApiRef = createApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionStateApi
+>({
   id: 'core.auth.google',
   description: 'Provides authentication towards Google APIs and identities',
 });
@@ -162,7 +227,49 @@ export const googleAuthApiRef = createApiRef<OAuthApi & OpenIdConnectApi>({
  * See https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
  * for a full list of supported scopes.
  */
-export const githubAuthApiRef = createApiRef<OAuthApi>({
+export const githubAuthApiRef = createApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
+>({
   id: 'core.auth.github',
   description: 'Provides authentication towards Github APIs',
+});
+
+/**
+ * Provides authentication towards Okta APIs.
+ *
+ * See https://developer.okta.com/docs/guides/implement-oauth-for-okta/scopes/
+ * for a full list of supported scopes.
+ */
+export const oktaAuthApiRef = createApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionStateApi
+>({
+  id: 'core.auth.okta',
+  description: 'Provides authentication towards Okta APIs',
+});
+
+/**
+ * Provides authentication towards Gitlab APIs.
+ *
+ * See https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#limiting-scopes-of-a-personal-access-token
+ * for a full list of supported scopes.
+ */
+export const gitlabAuthApiRef = createApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
+>({
+  id: 'core.auth.gitlab',
+  description: 'Provides authentication towards Gitlab APIs',
+});
+
+/**
+ * Provides authentication for custom identity providers.
+ */
+export const oauth2ApiRef = createApiRef<
+  OAuthApi & OpenIdConnectApi & ProfileInfoApi & SessionStateApi
+>({
+  id: 'core.auth.oauth2',
+  description: 'Example of how to use oauth2 custom provider',
 });

@@ -16,3 +16,4 @@
 
 export * from './types';
 export { createRouteRef } from './RouteRef';
+export type { MutableRouteRef } from './RouteRef';

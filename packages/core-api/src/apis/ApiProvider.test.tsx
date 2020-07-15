@@ -51,6 +51,35 @@ describe('ApiProvider', () => {
     renderedHoc.getByText('hoc message: hello');
   });
 
+  it('should provide nested access to apis', () => {
+    const aRef = createApiRef<string>({ id: 'a', description: '' });
+    const bRef = createApiRef<string>({ id: 'b', description: '' });
+
+    const MyComponent = () => {
+      const a = useApi(aRef);
+      const b = useApi(bRef);
+      return (
+        <div>
+          a={a} b={b}
+        </div>
+      );
+    };
+
+    const renderedHook = render(
+      <ApiProvider
+        apis={ApiRegistry.from([
+          [aRef, 'x'],
+          [bRef, 'y'],
+        ])}
+      >
+        <ApiProvider apis={ApiRegistry.from([[aRef, 'z']])}>
+          <MyComponent />
+        </ApiProvider>
+      </ApiProvider>,
+    );
+    renderedHook.getByText('a=z b=y');
+  });
+
   it('should ignore deps in prototype', () => {
     // 100% coverage + happy typescript = hasOwnProperty + this atrocity
     const xRef = createApiRef<number>({ id: 'x', description: '' });

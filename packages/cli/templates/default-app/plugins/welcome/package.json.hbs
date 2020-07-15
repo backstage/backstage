@@ -1,10 +1,13 @@
 {
   "name": "plugin-welcome",
   "version": "0.0.0",
-  "main": "dist/index.esm.js",
-  "main:src": "src/index.ts",
+  "main": "src/index.ts",
   "types": "src/index.ts",
   "private": true,
+  "publishConfig": {
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
   "scripts": {
     "build": "backstage-cli plugin:build",
     "start": "backstage-cli plugin:serve",
@@ -23,17 +26,16 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-use": "^14.2.0",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "6.0.0-beta.0"
   },
   "devDependencies": {
     "@backstage/cli": "^{{version}}",
     "@backstage/dev-utils": "^{{version}}",
-    "@testing-library/jest-dom": "^5.7.0",
-    "@testing-library/react": "^9.3.2",
-    "@types/testing-library__jest-dom": "^5.0.4",
+    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/react": "^10.4.1",
     "jest-fetch-mock": "^3.0.3"
   },
   "files": [
-    "dist/**/*.{js,d.ts}"
+    "dist"
   ]
 }

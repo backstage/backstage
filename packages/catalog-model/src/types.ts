@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/config';
+import { JSONSchema7 } from 'json-schema';
 import type { Entity } from './entity/Entity';
 
 /**
@@ -30,3 +32,5 @@ export type EntityPolicy = {
    */
   enforce(entity: Entity): Promise<Entity>;
 };
+
+export type JSONSchema = JSONSchema7 & { [key in string]?: JsonValue };

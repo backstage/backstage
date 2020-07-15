@@ -20,9 +20,9 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
-import Radar from './Radar';
+import Radar, { Props } from './Radar';
 
-const minProps = {
+const minProps: Props = {
   width: 500,
   height: 200,
   quadrants: [{ id: 'languages', name: 'Languages' }],
@@ -31,9 +31,9 @@ const minProps = {
     {
       id: 'typescript',
       title: 'TypeScript',
-      quadrant: 'languages',
+      quadrant: { id: 'languages', name: 'Languages' },
       moved: 0,
-      ring: 'use',
+      ring: { id: 'use', name: 'USE', color: '#93c47d' },
       url: '#',
     },
   ],

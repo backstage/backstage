@@ -43,7 +43,7 @@ export const SentryPluginWidget: FC<{
     if (error) {
       errorApi.post(error);
     }
-  }, [error]);
+  }, [error, errorApi]);
 
   if (loading) {
     return (

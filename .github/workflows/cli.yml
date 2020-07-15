@@ -6,7 +6,7 @@ on:
       - '.github/workflows/cli.yml'
       - 'packages/cli/**'
       - 'packages/core/**'
-      - 'scripts/**'
+      - 'packages/core-api/**'
       - 'yarn.lock'
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         node-version: [12.x]
 
     env:
@@ -29,7 +29,7 @@ jobs:
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - name: cache global yarn cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -43,33 +43,7 @@ jobs:
         run: yarn install --frozen-lockfile
       - run: yarn tsc
       - run: yarn build
-      - name: verify app and plugin creation on Windows
-        working-directory: ${{ runner.temp }}
-        if: runner.os == 'Windows'
-        run: node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
-        env:
-          BACKSTAGE_E2E_CLI_TEST: true
-      - name: verify app and plugin creation on Linux
-        working-directory: ${{ runner.temp }}
-        if: runner.os == 'Linux'
+      - name: verify app and plugin creation
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
           node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
-        env:
-          BACKSTAGE_E2E_CLI_TEST: true
-      - name: lint newly created app and plugin
-        run: yarn lint:all
-        working-directory: ${{ runner.temp }}/test-app
-        env:
-          BACKSTAGE_E2E_CLI_TEST: true
-      - name: test newly created app and plugin
-        run: yarn test:all
-        working-directory: ${{ runner.temp }}/test-app
-        env:
-          BACKSTAGE_E2E_CLI_TEST: true
-      - name: e2e test newly created app
-        run: yarn test:e2e:ci
-        working-directory: ${{ runner.temp }}/test-app/packages/app
-        env:
-          PORT: 3001
-          BACKSTAGE_E2E_CLI_TEST: true

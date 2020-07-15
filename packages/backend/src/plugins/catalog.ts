@@ -19,30 +19,38 @@ import {
   DatabaseEntitiesCatalog,
   DatabaseLocationsCatalog,
   DatabaseManager,
-  DescriptorParsers,
+  HigherOrderOperations,
   LocationReaders,
-  IngestionModels,
   runPeriodically,
 } from '@backstage/plugin-catalog-backend';
 import { PluginEnvironment } from '../types';
-import { EntityPolicies } from '@backstage/catalog-model';
+import { useHotCleanup } from '@backstage/backend-common';
 
-export default async function ({ logger, database }: PluginEnvironment) {
-  const policy = new EntityPolicies();
-  const ingestion = new IngestionModels(
-    new LocationReaders(),
-    new DescriptorParsers(),
-    new EntityPolicies(),
-  );
+export default async function createPlugin({
+  logger,
+  database,
+}: PluginEnvironment) {
+  const locationReader = new LocationReaders(logger);
 
-  const db = await DatabaseManager.createDatabase(database, logger);
-  runPeriodically(
-    () => DatabaseManager.refreshLocations(db, ingestion, policy, logger),
-    10000,
-  );
-
+  const db = await DatabaseManager.createDatabase(database, { logger });
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
-  const locationsCatalog = new DatabaseLocationsCatalog(db, ingestion);
+  const locationsCatalog = new DatabaseLocationsCatalog(db);
+  const higherOrderOperation = new HigherOrderOperations(
+    entitiesCatalog,
+    locationsCatalog,
+    locationReader,
+    logger,
+  );
 
-  return await createRouter({ entitiesCatalog, locationsCatalog, logger });
+  useHotCleanup(
+    module,
+    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 10000),
+  );
+
+  return await createRouter({
+    entitiesCatalog,
+    locationsCatalog,
+    higherOrderOperation,
+    logger,
+  });
 }

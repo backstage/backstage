@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { default } from './Table';
-export type { TableColumn } from './Table';
-export { default as SubvalueCell } from './SubvalueCell';
+export { Table } from './Table';
+export type { TableColumn, TableProps } from './Table';
+export { SubvalueCell } from './SubvalueCell';

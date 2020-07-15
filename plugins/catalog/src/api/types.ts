@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createApiRef } from '@backstage/core';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, Location } from '@backstage/catalog-model';
 
 export const catalogApiRef = createApiRef<CatalogApi>({
   id: 'plugin.catalog.service',
@@ -22,7 +23,24 @@ export const catalogApiRef = createApiRef<CatalogApi>({
     'Used by the Catalog plugin to make requests to accompanying backend',
 });
 
+export type EntityCompoundName = {
+  kind: string;
+  namespace?: string;
+  name: string;
+};
+
 export interface CatalogApi {
-  getEntities(): Promise<Entity[]>;
-  getEntityByName(name: string): Promise<Entity>;
+  getLocationById(id: String): Promise<Location | undefined>;
+  getEntityByName(
+    compoundName: EntityCompoundName,
+  ): Promise<Entity | undefined>;
+  getEntities(filter?: Record<string, string | string[]>): Promise<Entity[]>;
+  addLocation(type: string, target: string): Promise<AddLocationResponse>;
+  getLocationByEntity(entity: Entity): Promise<Location | undefined>;
+  removeEntityByUid(uid: string): Promise<void>;
 }
+
+export type AddLocationResponse = {
+  location: Location;
+  entities: Entity[];
+};

@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as winston from 'winston';
 
-import winston, { Logger } from 'winston';
-
-let rootLogger: Logger = winston.createLogger({
+let rootLogger: winston.Logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format:
     process.env.NODE_ENV === 'production'
@@ -35,10 +34,10 @@ let rootLogger: Logger = winston.createLogger({
   ],
 });
 
-export function getRootLogger(): Logger {
+export function getRootLogger(): winston.Logger {
   return rootLogger;
 }
 
-export function setRootLogger(newLogger: Logger) {
+export function setRootLogger(newLogger: winston.Logger) {
   rootLogger = newLogger;
 }

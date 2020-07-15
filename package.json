@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "engines": {
-    "node": ">=12.0.0"
+    "node": "12"
   },
   "scripts": {
     "start": "yarn workspace example-app start",
@@ -15,6 +15,7 @@
     "test:all": "lerna run test -- --coverage",
     "lint": "lerna run lint --since origin/master --",
     "lint:all": "lerna run lint --",
+    "lint:type-deps": "node scripts/check-type-dependencies.js",
     "docker-build": "yarn bundle && docker build . -t spotify/backstage",
     "create-plugin": "backstage-cli create-plugin",
     "remove-plugin": "backstage-cli remove-plugin",
@@ -32,7 +33,7 @@
   "version": "1.0.0",
   "devDependencies": {
     "@spotify/eslint-config-oss": "^1.0.1",
-    "@spotify/prettier-config": "^7.0.0",
+    "@spotify/prettier-config": "^8.0.0",
     "husky": "^4.2.3",
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.0",

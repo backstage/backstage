@@ -17,12 +17,17 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import Knex from 'knex';
 import { Logger } from 'winston';
-import { providers } from './../providers/config';
-import { makeProvider } from '../providers';
+import { createAuthProviderRouter } from '../providers';
+import { Config } from '@backstage/config';
+import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
 
 export interface RouterOptions {
   logger: Logger;
+  database: Knex;
+  config: Config;
 }
 
 export async function createRouter(
@@ -31,14 +36,111 @@ export async function createRouter(
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
 
-  router.use(cookieParser());
+  const appUrl = new URL(options.config.getString('app.baseUrl'));
+  const appOrigin = appUrl.origin;
+  const backendUrl = options.config.getString('backend.baseUrl');
+  const authUrl = `${backendUrl}/auth`;
 
-  // configure all the providers
-  for (const providerConfig of providers) {
-    const { providerId, providerRouter } = makeProvider(providerConfig);
+  const keyDurationSeconds = 3600;
+
+  const keyStore = await DatabaseKeyStore.create({
+    database: options.database,
+  });
+  const tokenIssuer = new TokenFactory({
+    issuer: authUrl,
+    keyStore,
+    keyDurationSeconds,
+    logger: logger.child({ component: 'token-factory' }),
+  });
+
+  router.use(cookieParser());
+  router.use(bodyParser.urlencoded({ extended: false }));
+  router.use(bodyParser.json());
+
+  const config = {
+    backend: {
+      baseUrl: backendUrl,
+    },
+    auth: {
+      providers: {
+        google: {
+          development: {
+            appOrigin,
+            secure: false,
+            clientId: process.env.AUTH_GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET!,
+          },
+        },
+        github: {
+          development: {
+            appOrigin,
+            secure: false,
+            clientId: process.env.AUTH_GITHUB_CLIENT_ID!,
+            clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET!,
+          },
+        },
+        gitlab: {
+          development: {
+            appOrigin,
+            secure: false,
+            clientId: process.env.AUTH_GITLAB_CLIENT_ID!,
+            clientSecret: process.env.AUTH_GITLAB_CLIENT_SECRET!,
+            audience: process.env.GITLAB_BASE_URL! || 'https://gitlab.com',
+          },
+        },
+        saml: {
+          development: {
+            entryPoint: 'http://localhost:7001/',
+            issuer: 'passport-saml',
+          },
+        },
+        okta: {
+          development: {
+            appOrigin,
+            secure: false,
+            clientId: process.env.AUTH_OKTA_CLIENT_ID!,
+            clientSecret: process.env.AUTH_OKTA_CLIENT_SECRET!,
+            audience: process.env.AUTH_OKTA_AUDIENCE,
+          },
+        },
+        oauth2: {
+          development: {
+            appOrigin,
+            secure: false,
+            clientId: process.env.AUTH_OAUTH2_CLIENT_ID!,
+            clientSecret: process.env.AUTH_OAUTH2_CLIENT_SECRET!,
+            authorizationURL: process.env.AUTH_OAUTH2_AUTH_URL!,
+            tokenURL: process.env.AUTH_OAUTH2_TOKEN_URL!,
+          },
+        },
+      },
+    },
+  };
+
+  const providerConfigs = config.auth.providers;
+
+  for (const [providerId, providerConfig] of Object.entries(providerConfigs)) {
     logger.info(`Configuring provider, ${providerId}`);
-    router.use(`/${providerId}`, providerRouter);
+    try {
+      const providerRouter = createAuthProviderRouter(
+        providerId,
+        { baseUrl: authUrl },
+        providerConfig,
+        logger,
+        tokenIssuer,
+      );
+      router.use(`/${providerId}`, providerRouter);
+    } catch (e) {
+      logger.error(e.message);
+    }
   }
+
+  router.use(
+    createOidcRouter({
+      tokenIssuer,
+      baseUrl: authUrl,
+    }),
+  );
 
   return router;
 }

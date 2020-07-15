@@ -16,6 +16,7 @@ To run the example backend, first go to the project root and run
 
 ```bash
 yarn install
+yarn tsc
 yarn build
 ```
 
@@ -24,7 +25,13 @@ You should only need to do this once.
 After that, go to the `packages/backend` directory and run
 
 ```bash
-AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x SENTRY_TOKEN=x yarn start
+AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x \
+AUTH_GITHUB_CLIENT_ID=x AUTH_GITHUB_CLIENT_SECRET=x \
+AUTH_OAUTH2_CLIENT_ID=x AUTH_OAUTH2_CLIENT_SECRET=x \
+AUTH_OAUTH2_AUTH_URL=x AUTH_OAUTH2_TOKEN_URL=x \
+SENTRY_TOKEN=x \
+LOG_LEVEL=debug \
+yarn start
 ```
 
 Substitute `x` for actual values, or leave them as
@@ -38,22 +45,23 @@ If you want to use the catalog functionality, you need to add so called location
 to the backend. These are places where the backend can find some entity descriptor
 data to consume and serve.
 
-To get started, you can issue the following after starting the backend:
+To get started, you can issue the following after starting the backend, from inside
+the `plugins/catalog-backend` directory:
 
 ```bash
-curl -i \
-  -H "Content-Type: application/json" \
-  -d '{"type":"github","target":"https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/fixtures/two_components.yaml"}' \
-  localhost:7000/catalog/locations
+yarn mock-data
 ```
 
-After a short while, you should start seeing data on `localhost:7000/catalog/entities`.
-
-If you changed the `type` to `file` in the command above, and set the `target`
-to the absolute path of a YAML file on disk, you could consume your own experimental data.
+You should then start seeing data on `localhost:7000/catalog/entities`.
 
 The catalog currently runs in-memory only, so feel free to try it out, but it will
 need to be re-populated on next startup.
+
+## Authentication
+
+We chose [Passport](http://www.passportjs.org/) as authentication platform due to its comprehensive set of supported authentication [strategies](http://www.passportjs.org/packages/).
+
+Read more about the [auth-backend](https://github.com/spotify/backstage/blob/master/plugins/auth-backend/README.md) and [how to add a new provider](https://github.com/spotify/backstage/blob/master/docs/auth/add-auth-provider.md)
 
 ## Documentation
 

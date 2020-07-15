@@ -14,36 +14,133 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import Router from 'express-promise-router';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { JsonValue } from '@backstage/config';
+import Docker from 'dockerode';
 import express from 'express';
-import { StorageBase, TemplaterBase } from '../scaffolder';
+import Router from 'express-promise-router';
+import { Logger } from 'winston';
+import {
+  JobProcessor,
+  PreparerBuilder,
+  RequiredTemplateValues,
+  StageContext,
+  TemplaterBuilder,
+  Publisher,
+} from '../scaffolder';
 
 export interface RouterOptions {
-  storage: StorageBase;
-  templater: TemplaterBase;
+  preparers: PreparerBuilder;
+  templaters: TemplaterBuilder;
+  publisher: Publisher;
+
   logger: Logger;
+  dockerClient: Docker;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const { storage, templater, logger: parentLogger } = options;
+
+  const {
+    preparers,
+    templaters,
+    publisher,
+    logger: parentLogger,
+    dockerClient,
+  } = options;
+
   const logger = parentLogger.child({ plugin: 'scaffolder' });
+  const jobProcessor = new JobProcessor();
 
   router
-    .get('/v1/templates', async (_, res) => {
-      const templates = await storage.list();
-      res.status(200).json(templates);
-    })
-    .post('/v1/jobs', async (_, res) => {
-      // TODO(blam): Actually make this function work
-      const mock = 'templateid';
-      res.status(201).json({ accepted: true });
+    .get('/v1/job/:jobId/stage/:index/log', ({ params }, res) => {
+      const job = jobProcessor.get(params.jobId);
 
-      const path = await storage.prepare(mock);
-      await templater.run({ directory: path, values: { componentId: 'test' } });
+      if (!job) {
+        res.status(404).send({ error: 'job not found' });
+        return;
+      }
+
+      const { log } = job.stages[Number(params.index)] ?? { log: [] };
+
+      res.send(log.join(''));
+    })
+    .get('/v1/job/:jobId', ({ params }, res) => {
+      const job = jobProcessor.get(params.jobId);
+
+      if (!job) {
+        res.status(404).send({ error: 'job not found' });
+        return;
+      }
+
+      res.send({
+        id: job.id,
+        metadata: {
+          ...job.context,
+          logger: undefined,
+          logStream: undefined,
+        },
+        status: job.status,
+        stages: job.stages.map(stage => ({
+          ...stage,
+          handler: undefined,
+        })),
+        error: job.error,
+      });
+    })
+    .post('/v1/jobs', async (req, res) => {
+      const template: TemplateEntityV1alpha1 = req.body.template;
+      const values: RequiredTemplateValues & Record<string, JsonValue> =
+        req.body.values;
+
+      const job = jobProcessor.create({
+        entity: template,
+        values,
+        stages: [
+          {
+            name: 'Prepare the skeleton',
+            handler: async ctx => {
+              const preparer = preparers.get(ctx.entity);
+              const skeletonDir = await preparer.prepare(ctx.entity, {
+                logger: ctx.logger,
+              });
+              return { skeletonDir };
+            },
+          },
+          {
+            name: 'Run the templater',
+            handler: async (ctx: StageContext<{ skeletonDir: string }>) => {
+              const templater = templaters.get(ctx.entity);
+              const { resultDir } = await templater.run({
+                directory: ctx.skeletonDir,
+                dockerClient,
+                logStream: ctx.logStream,
+                values: ctx.values,
+              });
+
+              return { resultDir };
+            },
+          },
+          {
+            name: 'Publish template',
+            handler: async (ctx: StageContext<{ resultDir: string }>) => {
+              ctx.logger.info('Should not store the template');
+              const { remoteUrl } = await publisher.publish({
+                entity: ctx.entity,
+                values: ctx.values,
+                directory: ctx.resultDir,
+              });
+              return { remoteUrl };
+            },
+          },
+        ],
+      });
+
+      res.status(201).json({ id: job.id });
+
+      jobProcessor.run(job);
     });
 
   const app = express();

@@ -1,0 +1,106 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { GitlabAuthProvider } from './provider';
+
+describe('GitlabAuthProvider', () => {
+  it('should transform to type OAuthResponse', () => {
+    const tests = [
+      {
+        arguments: {
+          accessToken: '19xasczxcm9n7gacn9jdgm19me',
+          rawProfile: {
+            id: 'uid-123',
+            username: 'jimmymarkum',
+            provider: 'gitlab',
+            displayName: 'Jimmy Markum',
+            emails: [
+              {
+                value: 'jimmymarkum@gmail.com',
+              },
+            ],
+            avatarUrl:
+              'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
+          },
+          params: {
+            scope: 'user_read write_repository',
+            expires_in: 100,
+          },
+        },
+        expect: {
+          backstageIdentity: {
+            id: 'jimmymarkum',
+          },
+          providerInfo: {
+            accessToken: '19xasczxcm9n7gacn9jdgm19me',
+            expiresInSeconds: 100,
+            scope: 'user_read write_repository',
+          },
+          profile: {
+            email: 'jimmymarkum@gmail.com',
+            displayName: 'Jimmy Markum',
+            picture:
+              'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
+          },
+        },
+      },
+      {
+        arguments: {
+          accessToken:
+            'ajakljsdoiahoawxbrouawucmbawe.awkxjemaneasdxwe.sodijxqeqwexeqwxe',
+          rawProfile: {
+            id: 'ipd12039',
+            username: 'daveboyle',
+            provider: 'gitlab',
+            displayName: 'Dave Boyle',
+            emails: [
+              {
+                value: 'daveboyle@gitlab.org',
+              },
+            ],
+          },
+          params: {
+            scope: 'read_repository',
+          },
+        },
+        expect: {
+          backstageIdentity: {
+            id: 'daveboyle',
+          },
+          providerInfo: {
+            accessToken:
+              'ajakljsdoiahoawxbrouawucmbawe.awkxjemaneasdxwe.sodijxqeqwexeqwxe',
+            scope: 'read_repository',
+          },
+          profile: {
+            displayName: 'Dave Boyle',
+            email: 'daveboyle@gitlab.org',
+          },
+        },
+      },
+    ];
+
+    for (const test of tests) {
+      expect(
+        GitlabAuthProvider.transformOAuthResponse(
+          test.arguments.accessToken,
+          test.arguments.rawProfile,
+          test.arguments.params,
+        ),
+      ).toEqual(test.expect);
+    }
+  });
+});

@@ -17,13 +17,37 @@
 import {
   CookieCutter,
   createRouter,
-  DiskStorage,
+  FilePreparer,
+  GithubPreparer,
+  Preparers,
+  GithubPublisher,
+  Templaters,
 } from '@backstage/plugin-scaffolder-backend';
+import { Octokit } from '@octokit/rest';
 import type { PluginEnvironment } from '../types';
+import Docker from 'dockerode';
 
-export default async function ({ logger }: PluginEnvironment) {
-  const storage = new DiskStorage({ logger });
-  const templater = new CookieCutter();
+export default async function createPlugin({ logger }: PluginEnvironment) {
+  const cookiecutterTemplater = new CookieCutter();
+  const templaters = new Templaters();
+  templaters.register('cookiecutter', cookiecutterTemplater);
 
-  return await createRouter({ storage, templater, logger });
+  const filePreparer = new FilePreparer();
+  const githubPreparer = new GithubPreparer();
+  const preparers = new Preparers();
+
+  preparers.register('file', filePreparer);
+  preparers.register('github', githubPreparer);
+
+  const githubClient = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
+  const publisher = new GithubPublisher({ client: githubClient });
+
+  const dockerClient = new Docker();
+  return await createRouter({
+    preparers,
+    templaters,
+    publisher,
+    logger,
+    dockerClient,
+  });
 }

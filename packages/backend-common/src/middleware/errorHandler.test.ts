@@ -34,6 +34,29 @@ describe('errorHandler', () => {
     expect(response.text).toBe('some message');
   });
 
+  it('doesnt try to send the response again if its already been sent', async () => {
+    const app = express();
+    const mockSend = jest.fn();
+
+    app.use('/works_with_async_fail', (_, res) => {
+      res.status(200).send('hello');
+
+      // mutate the response object to test the middlware.
+      // it's hard to catch errors inside middleware from the outside.
+      // @ts-ignore
+      res.send = mockSend;
+      throw new Error('some message');
+    });
+
+    app.use(errorHandler());
+    const response = await request(app).get('/works_with_async_fail');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('hello');
+
+    expect(mockSend).not.toHaveBeenCalled();
+  });
+
   it('takes code from http-errors library errors', async () => {
     const app = express();
     app.use('/breaks', () => {

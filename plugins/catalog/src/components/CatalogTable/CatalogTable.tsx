@@ -13,61 +13,140 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { Component } from '../../data/component';
-import { InfoCard, Progress, Table, TableColumn } from '@backstage/core';
-import { Typography, Link } from '@material-ui/core';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Table, TableColumn, TableProps } from '@backstage/core';
+import { Link } from '@material-ui/core';
+import Edit from '@material-ui/icons/Edit';
+import GitHub from '@material-ui/icons/GitHub';
+import { Alert } from '@material-ui/lab';
+import React from 'react';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
+import { findLocationForEntityMeta } from '../../data/utils';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
+import { entityRoute } from '../../routes';
+import {
+  favouriteEntityIcon,
+  favouriteEntityTooltip,
+} from '../FavouriteEntity/FavouriteEntity';
 
-const columns: TableColumn[] = [
+const columns: TableColumn<Entity>[] = [
   {
     title: 'Name',
-    field: 'name',
+    field: 'metadata.name',
     highlight: true,
-    render: (componentData: any) => (
-      <Link href={`/catalog/${componentData.name}`}>{componentData.name}</Link>
+    render: (entity: any) => (
+      <Link
+        component={RouterLink}
+        to={generatePath(entityRoute.path, {
+          optionalNamespaceAndName: [
+            entity.metadata.namespace,
+            entity.metadata.name,
+          ]
+            .filter(Boolean)
+            .join(':'),
+          kind: entity.kind,
+        })}
+      >
+        {entity.metadata.name}
+      </Link>
     ),
   },
   {
-    title: 'Kind',
-    field: 'kind',
+    title: 'Owner',
+    field: 'spec.owner',
+  },
+  {
+    title: 'Lifecycle',
+    field: 'spec.lifecycle',
   },
   {
     title: 'Description',
-    field: 'description',
+    field: 'metadata.description',
   },
 ];
 
 type CatalogTableProps = {
-  components: Component[];
+  entities: Entity[];
   titlePreamble: string;
   loading: boolean;
   error?: any;
 };
-const CatalogTable: FC<CatalogTableProps> = ({
-  components,
+
+export const CatalogTable = ({
+  entities,
   loading,
   error,
   titlePreamble,
-}) => {
-  if (loading) {
-    return <Progress />;
-  }
+}: CatalogTableProps) => {
+  const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
+
   if (error) {
     return (
-      <InfoCard>
-        <Typography variant="subtitle1" paragraph>
-          Error encountered while fetching components.
-        </Typography>
-      </InfoCard>
+      <div>
+        <Alert severity="error">
+          Error encountered while fetching catalog entities. {error.toString()}
+        </Alert>
+      </div>
     );
   }
+
+  const actions: TableProps<Entity>['actions'] = [
+    (rowData: Entity) => {
+      const location = findLocationForEntityMeta(rowData.metadata);
+      return {
+        icon: () => <GitHub fontSize="small" />,
+        tooltip: 'View on GitHub',
+        onClick: () => {
+          if (!location) return;
+          window.open(location.target, '_blank');
+        },
+        hidden: location?.type !== 'github',
+      };
+    },
+    (rowData: Entity) => {
+      const createEditLink = (location: LocationSpec): string => {
+        switch (location.type) {
+          case 'github':
+            return location.target.replace('/blob/', '/edit/');
+          default:
+            return location.target;
+        }
+      };
+      const location = findLocationForEntityMeta(rowData.metadata);
+      return {
+        icon: () => <Edit fontSize="small" />,
+        tooltip: 'Edit',
+        onClick: () => {
+          if (!location) return;
+          window.open(createEditLink(location), '_blank');
+        },
+        hidden: location?.type !== 'github',
+      };
+    },
+    (rowData: Entity) => {
+      const isStarred = isStarredEntity(rowData);
+      return {
+        cellStyle: { paddingLeft: '1em' },
+        icon: () => favouriteEntityIcon(isStarred),
+        tooltip: favouriteEntityTooltip(isStarred),
+        onClick: () => toggleStarredEntity(rowData),
+      };
+    },
+  ];
+
   return (
-    <Table
+    <Table<Entity>
+      isLoading={loading}
       columns={columns}
-      options={{ paging: false }}
-      title={`${titlePreamble} (${(components && components.length) || 0})`}
-      data={components}
+      options={{
+        paging: false,
+        actionsColumnIndex: -1,
+        loadingType: 'linear',
+        showEmptyDataSourceMessage: !loading,
+      }}
+      title={`${titlePreamble} (${(entities && entities.length) || 0})`}
+      data={entities}
+      actions={actions}
     />
   );
 };
-export default CatalogTable;

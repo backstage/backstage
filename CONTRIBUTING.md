@@ -68,4 +68,4 @@ This project adheres to the [Spotify FOSS Code of Conduct][code-of-conduct]. By 
 
 # Security Issues?
 
-Please report sensitive security issues via Spotify's [bug-bounty program](https://hackerone.com/spotify) rather than GitHub.
+See [SECURITY](SECURITY.md).

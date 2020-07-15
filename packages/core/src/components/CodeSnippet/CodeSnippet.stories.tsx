@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import CodeSnippet from './CodeSnippet';
+import { CodeSnippet } from './CodeSnippet';
 import { InfoCard } from '../../layout/InfoCard';
 
 export default {

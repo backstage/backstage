@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInThemedTestApp } from '@backstage/test-utils';
-import CopyTextButton from './CopyTextButton';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { CopyTextButton } from './CopyTextButton';
 import {
   ApiRegistry,
   errorApiRef,
@@ -57,7 +57,7 @@ const apiRegistry = ApiRegistry.from([
 describe('<CopyTextButton />', () => {
   it('renders without exploding', () => {
     const { getByDisplayValue } = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
           <CopyTextButton {...props} />
         </ApiProvider>,
@@ -69,7 +69,7 @@ describe('<CopyTextButton />', () => {
   it('displays tooltip on click', async () => {
     document.execCommand = jest.fn();
     const rendered = render(
-      wrapInThemedTestApp(
+      wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
           <CopyTextButton {...props} />
         </ApiProvider>,

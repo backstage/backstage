@@ -18,16 +18,20 @@ import React, { FC, createContext, useContext, ReactNode } from 'react';
 import PropTypes from 'prop-types';
 import { ApiRef } from './ApiRef';
 import { ApiHolder, TypesToApiRefs } from './types';
+import { ApiAggregator } from './ApiAggregator';
 
-type Props = {
+type ApiProviderProps = {
   apis: ApiHolder;
   children: ReactNode;
 };
 
 const Context = createContext<ApiHolder | undefined>(undefined);
 
-export const ApiProvider: FC<Props> = ({ apis, children }) => {
-  return <Context.Provider value={apis} children={children} />;
+export const ApiProvider: FC<ApiProviderProps> = ({ apis, children }) => {
+  const parentHolder = useContext(Context);
+  const holder = parentHolder ? new ApiAggregator(apis, parentHolder) : apis;
+
+  return <Context.Provider value={holder} children={children} />;
 };
 
 ApiProvider.propTypes = {
@@ -35,12 +39,18 @@ ApiProvider.propTypes = {
   children: PropTypes.node,
 };
 
-export function useApi<T>(apiRef: ApiRef<T>): T {
+export function useApiHolder(): ApiHolder {
   const apiHolder = useContext(Context);
 
   if (!apiHolder) {
     throw new Error('No ApiProvider available in react context');
   }
+
+  return apiHolder;
+}
+
+export function useApi<T>(apiRef: ApiRef<T>): T {
+  const apiHolder = useApiHolder();
 
   const api = apiHolder.get(apiRef);
   if (!api) {

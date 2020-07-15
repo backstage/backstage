@@ -19,6 +19,10 @@ import PropTypes from 'prop-types';
 import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
+import BuildIcon from '@material-ui/icons/BuildRounded';
+import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
+import MapIcon from '@material-ui/icons/MyLocation';
+import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
@@ -31,9 +35,12 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-  SidebarUserBadge,
+  SidebarUserSettings,
   SidebarThemeToggle,
+  SidebarPinButton,
 } from '@backstage/core';
+import { NavLink } from 'react-router-dom';
+import { graphiQLRouteRef } from '@backstage/plugin-graphiql';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -56,7 +63,12 @@ const SidebarLogo: FC<{}> = () => {
 
   return (
     <div className={classes.root}>
-      <Link href="/" underline="none" className={classes.link}>
+      <Link
+        component={NavLink}
+        to="/"
+        underline="none"
+        className={classes.link}
+      >
         {isOpen ? <LogoFull /> : <LogoIcon />}
       </Link>
     </div>
@@ -76,15 +88,25 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarSearchField onSearch={handleSearch} />
       <SidebarDivider />
       {/* Global nav, not org-specific */}
-      <SidebarItem icon={HomeIcon} to="/" text="Home" />
-      <SidebarItem icon={ExploreIcon} to="/explore" text="Explore" />
-      <SidebarItem icon={CreateComponentIcon} to="/create" text="Create..." />
+      <SidebarItem icon={HomeIcon} to="./" text="Home" />
+      <SidebarItem icon={ExploreIcon} to="explore" text="Explore" />
+      <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+      <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
       {/* End global nav */}
       <SidebarDivider />
+      <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+      <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
+      <SidebarItem icon={BuildIcon} to="circleci" text="CircleCI" />
+      <SidebarItem
+        icon={graphiQLRouteRef.icon!}
+        to={graphiQLRouteRef.path}
+        text={graphiQLRouteRef.title}
+      />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarThemeToggle />
-      <SidebarUserBadge />
+      <SidebarUserSettings />
+      <SidebarPinButton />
     </Sidebar>
     {children}
   </SidebarPage>

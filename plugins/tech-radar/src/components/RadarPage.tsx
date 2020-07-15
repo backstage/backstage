@@ -14,19 +14,38 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Grid } from '@material-ui/core';
-import { Page, Header, Content, pageTheme, useApi } from '@backstage/core';
+import {
+  Content,
+  ContentHeader,
+  Page,
+  Header,
+  HeaderLabel,
+  SupportButton,
+  pageTheme,
+  useApi,
+} from '@backstage/core';
 import RadarComponent from '../components/RadarComponent';
 import { techRadarApiRef, TechRadarApi } from '../api';
 
-const RadarPage: FC<{}> = () => {
+const RadarPage = (): JSX.Element => {
   const techRadarApi = useApi<TechRadarApi>(techRadarApiRef);
 
   return (
-    <Page theme={pageTheme.home}>
-      <Header title={techRadarApi.title} subtitle={techRadarApi.subtitle} />
+    <Page theme={pageTheme.tool}>
+      <Header title={techRadarApi.title} subtitle={techRadarApi.subtitle}>
+        <HeaderLabel label="Owner" value="Spotify" />
+        <HeaderLabel label="Lifecycle" value="Beta" />
+      </Header>
       <Content>
+        <ContentHeader title={techRadarApi.pageTitle}>
+          <SupportButton>
+            This is used for visualizing the official guidelines of different
+            areas of software development such as languages, frameworks,
+            infrastructure and processes.
+          </SupportButton>
+        </ContentHeader>
         <Grid container spacing={3} direction="row">
           <Grid item xs={12} sm={6} md={4}>
             <RadarComponent {...techRadarApi} />

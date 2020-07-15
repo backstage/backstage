@@ -14,54 +14,38 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, FC } from 'react';
+import React, { useEffect } from 'react';
 import { Progress, useApi, errorApiRef, ErrorApi } from '@backstage/core';
+import { useAsync } from 'react-use';
 import Radar from '../components/Radar';
 import { TechRadarComponentProps, TechRadarLoaderResponse } from '../api';
 import getSampleData from '../sampleData';
 
 const useTechRadarLoader = (props: TechRadarComponentProps) => {
-  const [state, setState] = useState<{
-    loading: boolean;
-    error?: Error;
-    data?: TechRadarLoaderResponse;
-  }>({
-    loading: true,
-    error: undefined,
-    data: undefined,
-  });
+  const errorApi = useApi<ErrorApi>(errorApiRef);
+
+  const { getData } = props;
+
+  const state = useAsync(async () => {
+    if (getData) {
+      const response: TechRadarLoaderResponse = await getData();
+      return response;
+    }
+    return undefined;
+  }, [getData, errorApi]);
 
   useEffect(() => {
-    if (!props.getData) {
-      return;
+    const { error } = state;
+    if (error) {
+      errorApi.post(error);
     }
-
-    props
-      .getData()
-      .then((payload: TechRadarLoaderResponse) => {
-        setState({ loading: false, error: undefined, data: payload });
-      })
-      .catch((err: Error) => {
-        setState({
-          loading: false,
-          error: err,
-          data: undefined,
-        });
-      });
-  }, []);
+  }, [errorApi, state]);
 
   return state;
 };
 
-const RadarComponent: FC<TechRadarComponentProps> = (props) => {
-  const errorApi = useApi<ErrorApi>(errorApiRef);
-  const { loading, error, data } = useTechRadarLoader(props);
-
-  useEffect(() => {
-    if (error) {
-      errorApi.post(error);
-    }
-  }, [error && error.message]);
+const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
+  const { loading, error, value: data } = useTechRadarLoader(props);
 
   return (
     <>

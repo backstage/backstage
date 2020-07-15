@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-export * from './descriptor';
-export { IngestionModels } from './IngestionModels';
-export * from './source';
-export type { IngestionModel } from './types';
+export { HigherOrderOperations } from './HigherOrderOperations';
+export { LocationReaders } from './LocationReaders';
+export type {
+  AddLocationResult,
+  HigherOrderOperation,
+  LocationReader,
+  ReadLocationEntity,
+  ReadLocationError,
+  ReadLocationResult,
+} from './types';

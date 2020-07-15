@@ -49,4 +49,20 @@ describe('ApiRegistry', () => {
     expect(registry.get(x1Ref)).toBe(3);
     expect(registry.get(x2Ref)).toBe('y');
   });
+
+  it('should be created with API', () => {
+    const reg1 = ApiRegistry.with(x1Ref, 3);
+    const reg2 = reg1.with(x2Ref, 'y');
+    const reg3 = reg2.with(x2Ref, 'z');
+    const reg4 = reg3.with(x1Ref, 2);
+
+    expect(reg1.get(x1Ref)).toBe(3);
+    expect(reg1.get(x2Ref)).toBe(undefined);
+    expect(reg2.get(x1Ref)).toBe(3);
+    expect(reg2.get(x2Ref)).toBe('y');
+    expect(reg3.get(x1Ref)).toBe(3);
+    expect(reg3.get(x2Ref)).toBe('z');
+    expect(reg4.get(x1Ref)).toBe(2);
+    expect(reg4.get(x2Ref)).toBe('z');
+  });
 });

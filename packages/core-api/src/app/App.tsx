@@ -13,14 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { ComponentType, FC } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import React, {
+  ComponentType,
+  FC,
+  useMemo,
+  useState,
+  ReactElement,
+} from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
-import { BackstageApp, AppComponents, AppConfigLoader } from './types';
+import {
+  BackstageApp,
+  AppComponents,
+  AppConfigLoader,
+  Apis,
+  SignInResult,
+  SignInPageProps,
+} from './types';
 import { BackstagePlugin } from '../plugin';
 import { FeatureFlagsRegistryItem } from './FeatureFlags';
-import { featureFlagsApiRef } from '../apis/definitions';
+import {
+  featureFlagsApiRef,
+  AppThemeApi,
+  ConfigApi,
+  identityApiRef,
+} from '../apis/definitions';
 import { AppThemeProvider } from './AppThemeProvider';
 
 import { IconComponent, SystemIcons, SystemIconKey } from '../icons';
@@ -33,29 +50,70 @@ import {
   appThemeApiRef,
   configApiRef,
   ConfigReader,
+  useApi,
 } from '../apis';
 import { ApiAggregator } from '../apis/ApiAggregator';
 import { useAsync } from 'react-use';
+import { AppIdentity } from './AppIdentity';
 
 type FullAppOptions = {
-  apis: ApiHolder;
+  apis: Apis;
   icons: SystemIcons;
   plugins: BackstagePlugin[];
   components: AppComponents;
   themes: AppTheme[];
-  configLoader: AppConfigLoader;
+  configLoader?: AppConfigLoader;
 };
 
+function useConfigLoader(
+  configLoader: AppConfigLoader | undefined,
+  components: AppComponents,
+  appThemeApi: AppThemeApi,
+): { api: ConfigApi } | { node: JSX.Element } {
+  // Keeping this synchronous when a config loader isn't set simplifies tests a lot
+  const hasConfig = Boolean(configLoader);
+  const config = useAsync(configLoader || (() => Promise.resolve([])));
+
+  let noConfigNode = undefined;
+
+  if (hasConfig && config.loading) {
+    const { Progress } = components;
+    noConfigNode = <Progress />;
+  } else if (config.error) {
+    const { BootErrorPage } = components;
+    noConfigNode = <BootErrorPage step="load-config" error={config.error} />;
+  }
+
+  // Before the config is loaded we can't use a router, so exit early
+  if (noConfigNode) {
+    return {
+      node: (
+        <ApiProvider apis={ApiRegistry.from([[appThemeApiRef, appThemeApi]])}>
+          <AppThemeProvider>{noConfigNode}</AppThemeProvider>
+        </ApiProvider>
+      ),
+    };
+  }
+
+  const configReader = ConfigReader.fromConfigs(config.value ?? []);
+
+  return { api: configReader };
+}
+
 export class PrivateAppImpl implements BackstageApp {
-  private readonly apis: ApiHolder;
+  private apis?: ApiHolder = undefined;
   private readonly icons: SystemIcons;
   private readonly plugins: BackstagePlugin[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
-  private readonly configLoader: AppConfigLoader;
+  private readonly configLoader?: AppConfigLoader;
+
+  private readonly identityApi = new AppIdentity();
+
+  private apisOrFactory: Apis;
 
   constructor(options: FullAppOptions) {
-    this.apis = options.apis;
+    this.apisOrFactory = options.apis;
     this.icons = options.icons;
     this.plugins = options.plugins;
     this.components = options.components;
@@ -64,6 +122,9 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getApis(): ApiHolder {
+    if (!this.apis) {
+      throw new Error('Tried to access APIs before app was loaded');
+    }
     return this.apis;
   }
 
@@ -75,7 +136,7 @@ export class PrivateAppImpl implements BackstageApp {
     return this.icons[key];
   }
 
-  getRootComponent(): ComponentType<{}> {
+  getRoutes(): ComponentType<{}> {
     const routes = new Array<JSX.Element>();
     const registeredFeatureFlags = new Array<FeatureFlagsRegistryItem>();
 
@@ -85,37 +146,31 @@ export class PrivateAppImpl implements BackstageApp {
       for (const output of plugin.output()) {
         switch (output.type) {
           case 'legacy-route': {
-            const { path, component, options = {} } = output;
-            const { exact = true } = options;
+            const { path, component: Component } = output;
             routes.push(
-              <Route
-                key={path}
-                path={path}
-                component={component}
-                exact={exact}
-              />,
+              <Route key={path} path={path} element={<Component />} />,
             );
             break;
           }
           case 'route': {
-            const { target, component, options = {} } = output;
-            const { exact = true } = options;
+            const { target, component: Component } = output;
             routes.push(
               <Route
                 key={`${plugin.getId()}-${target.path}`}
                 path={target.path}
-                component={component}
-                exact={exact}
+                element={<Component />}
               />,
             );
             break;
           }
+          case 'legacy-redirect-route': {
+            const { path, target } = output;
+            routes.push(<Navigate key={path} to={target} />);
+            break;
+          }
           case 'redirect-route': {
-            const { path, target, options = {} } = output;
-            const { exact = true } = options;
-            routes.push(
-              <Redirect key={path} path={path} to={target} exact={exact} />,
-            );
+            const { from, to } = output;
+            routes.push(<Navigate key={from.path} to={to.path} />);
             break;
           }
           case 'feature-flag': {
@@ -137,10 +192,10 @@ export class PrivateAppImpl implements BackstageApp {
     }
 
     const rendered = (
-      <Switch>
+      <Routes>
         {routes}
-        <Route component={NotFoundErrorPage} />
-      </Switch>
+        <Route element={<NotFoundErrorPage />} />
+      </Routes>
     );
 
     return () => rendered;
@@ -148,33 +203,112 @@ export class PrivateAppImpl implements BackstageApp {
 
   getProvider(): ComponentType<{}> {
     const Provider: FC<{}> = ({ children }) => {
-      const config = useAsync(this.configLoader);
+      const appThemeApi = useMemo(
+        () => AppThemeSelector.createWithStorage(this.themes),
+        [],
+      );
 
-      let childNode = children;
+      const loadedConfig = useConfigLoader(
+        this.configLoader,
+        this.components,
+        appThemeApi,
+      );
 
-      if (config.loading) {
-        const { Progress } = this.components;
-        childNode = <Progress />;
-      } else if (config.error) {
-        const { BootErrorPage } = this.components;
-        childNode = <BootErrorPage step="load-config" error={config.error} />;
+      if ('node' in loadedConfig) {
+        return loadedConfig.node;
       }
+      const configApi = loadedConfig.api;
 
       const appApis = ApiRegistry.from([
-        [appThemeApiRef, AppThemeSelector.createWithStorage(this.themes)],
-        [configApiRef, new ConfigReader(config.value ?? {})],
+        [appThemeApiRef, appThemeApi],
+        [configApiRef, configApi],
+        [identityApiRef, this.identityApi],
       ]);
+
+      if (!this.apis) {
+        if ('get' in this.apisOrFactory) {
+          this.apis = this.apisOrFactory;
+        } else {
+          this.apis = this.apisOrFactory(configApi);
+        }
+      }
+
       const apis = new ApiAggregator(this.apis, appApis);
 
       return (
         <ApiProvider apis={apis}>
           <AppContextProvider app={this}>
-            <AppThemeProvider>{childNode}</AppThemeProvider>
+            <AppThemeProvider>{children}</AppThemeProvider>
           </AppContextProvider>
         </ApiProvider>
       );
     };
     return Provider;
+  }
+
+  getRouter(): ComponentType<{}> {
+    const {
+      Router: RouterComponent,
+      SignInPage: SignInPageComponent,
+    } = this.components;
+
+    // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
+    const SignInPageWrapper: FC<{
+      component: ComponentType<SignInPageProps>;
+      children: ReactElement;
+    }> = ({ component: Component, children }) => {
+      const [result, setResult] = useState<SignInResult>();
+
+      if (result) {
+        this.identityApi.setSignInResult(result);
+        return children;
+      }
+
+      return <Component onResult={setResult} />;
+    };
+
+    const AppRouter: FC<{}> = ({ children }) => {
+      const configApi = useApi(configApiRef);
+
+      let { pathname } = new URL(
+        configApi.getOptionalString('app.baseUrl') ?? '/',
+        'http://dummy.dev', // baseUrl can be specified as just a path
+      );
+      if (pathname.endsWith('/')) {
+        pathname = pathname.replace(/\/$/, '');
+      }
+
+      // If the app hasn't configured a sign-in page, we just continue as guest.
+      if (!SignInPageComponent) {
+        this.identityApi.setSignInResult({
+          userId: 'guest',
+          profile: {
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          },
+        });
+
+        return (
+          <RouterComponent>
+            <Routes>
+              <Route path={`${pathname}/*`} element={<>{children}</>} />
+            </Routes>
+          </RouterComponent>
+        );
+      }
+
+      return (
+        <RouterComponent>
+          <SignInPageWrapper component={SignInPageComponent}>
+            <Routes>
+              <Route path={`${pathname}/*`} element={<>{children}</>} />
+            </Routes>
+          </SignInPageWrapper>
+        </RouterComponent>
+      );
+    };
+
+    return AppRouter;
   }
 
   verify() {

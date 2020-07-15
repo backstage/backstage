@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
+import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { StaticEntitiesCatalog } from '../catalog';
-import { createStandaloneApplication } from './standaloneApplication';
+import { HigherOrderOperations } from '..';
+import { DatabaseEntitiesCatalog } from '../catalog/DatabaseEntitiesCatalog';
+import { DatabaseLocationsCatalog } from '../catalog/DatabaseLocationsCatalog';
+import { DatabaseManager } from '../database/DatabaseManager';
+import { createRouter } from './router';
+import { LocationReaders } from '../ingestion';
 
 export interface ServerOptions {
   port: number;
@@ -30,38 +35,32 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'catalog-backend' });
 
-  const entitiesCatalog = new StaticEntitiesCatalog([
-    {
-      apiVersion: 'backstage.io/v1beta1',
-      kind: 'Component',
-      metadata: { name: 'c1' },
-      spec: { type: 'service' },
-    },
-    {
-      apiVersion: 'backstage.io/v1beta1',
-      kind: 'Component',
-      metadata: { name: 'c2' },
-      spec: { type: 'service' },
-    },
-  ]);
-
   logger.debug('Creating application...');
-  const app = await createStandaloneApplication({
-    enableCors: options.enableCors,
+  const db = await DatabaseManager.createInMemoryDatabase({ logger });
+  const entitiesCatalog = new DatabaseEntitiesCatalog(db);
+  const locationsCatalog = new DatabaseLocationsCatalog(db);
+  const locationReader = new LocationReaders();
+  const higherOrderOperation = new HigherOrderOperations(
     entitiesCatalog,
+    locationsCatalog,
+    locationReader,
     logger,
-  });
+  );
 
   logger.debug('Starting application server...');
-  return await new Promise((resolve, reject) => {
-    const server = app.listen(options.port, (err?: Error) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      logger.info(`Listening on port ${options.port}`);
-      resolve(server);
-    });
+  const router = await createRouter({
+    entitiesCatalog,
+    locationsCatalog,
+    higherOrderOperation,
+    logger,
+  });
+  const service = createServiceBuilder(module)
+    .enableCors({ origin: 'http://localhost:3000' })
+    .addRouter('/catalog', router);
+  return await service.start().catch(err => {
+    logger.error(err);
+    process.exit(1);
   });
 }
+
+module.hot?.accept();

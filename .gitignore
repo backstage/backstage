@@ -61,6 +61,9 @@ typings/
 # Optional npm cache directory
 .npm
 
+# Node version directives
+.nvmrc
+
 # Optional eslint cache
 .eslintcache
 
@@ -116,3 +119,9 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Temporary change files created by Vim
+*.swp
+
+# MkDocs build output
+site

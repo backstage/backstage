@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import winston from 'winston';
+import * as winston from 'winston';
 import { getRootLogger, setRootLogger } from './rootLogger';
 
 describe('rootLogger', () => {

@@ -42,15 +42,12 @@ export type RouterHooks = {
     options?: RouteOptions,
   ): void;
 
+  /**
+   * @deprecated See the `addRoute` method
+   */
   registerRoute(
     path: RoutePath,
     Component: ComponentType<any>,
-    options?: RouteOptions,
-  ): void;
-
-  registerRedirect(
-    path: RoutePath,
-    target: RoutePath,
     options?: RouteOptions,
   ): void;
 };
@@ -90,9 +87,6 @@ export class PluginImpl {
         },
         registerRoute(path, component, options) {
           outputs.push({ type: 'legacy-route', path, component, options });
-        },
-        registerRedirect(path, target, options) {
-          outputs.push({ type: 'redirect-route', path, target, options });
         },
       },
       featureFlags: {

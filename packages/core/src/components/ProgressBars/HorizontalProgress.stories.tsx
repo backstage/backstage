@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import HorizontalProgress from './HorizontalProgress';
+import { HorizontalProgress } from './HorizontalProgress';
 
 const containerStyle = { width: 300 };
 

@@ -15,3 +15,5 @@
  */
 
 export { plugin } from './plugin';
+export { ScaffolderApi, scaffolderApiRef } from './api';
+export { rootRoute, templateRoute } from './routes';

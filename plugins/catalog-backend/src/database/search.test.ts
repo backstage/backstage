@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import { buildEntitySearch, visitEntityPart } from './search';
-import { DbEntitiesSearchRow } from './types';
+import type { DbEntitiesSearchRow } from './types';
 
 describe('search', () => {
   describe('visitEntityPart', () => {

@@ -1,0 +1,27 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: react-ssr-template
+  title: React SSR Template
+  description: Next.js application skeleton for creating isomorphic web applications.
+  tags:
+    - Recommended
+    - React
+spec:
+  templater: cookiecutter
+  type: website
+  path: '.'
+  schema:
+    required: 
+      - component_id
+      - description
+    properties:
+      component_id:
+        title: Name
+        type: string
+        description: Unique name of the component
+      description:
+        title:  Description
+        type: string
+        description: Description of the component
+

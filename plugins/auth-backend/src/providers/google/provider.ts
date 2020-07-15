@@ -20,39 +20,59 @@ import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   executeRefreshTokenStrategy,
-} from '../PassportStrategyHelper';
+  makeProfileInfo,
+  executeFetchUserProfileStrategy,
+} from '../../lib/PassportStrategyHelper';
 import {
   OAuthProviderHandlers,
-  AuthInfoBase,
-  AuthInfoPrivate,
   RedirectInfo,
   AuthProviderConfig,
+  EnvironmentProviderConfig,
+  OAuthProviderOptions,
+  OAuthProviderConfig,
+  OAuthResponse,
+  PassportDoneCallback,
 } from '../types';
+import { OAuthProvider } from '../../lib/OAuthProvider';
+import passport from 'passport';
+import {
+  EnvironmentHandler,
+  EnvironmentHandlers,
+} from '../../lib/EnvironmentHandler';
+import { Logger } from 'winston';
+import { TokenIssuer } from '../../identity';
+
+type PrivateInfo = {
+  refreshToken: string;
+};
 
 export class GoogleAuthProvider implements OAuthProviderHandlers {
-  private readonly providerConfig: AuthProviderConfig;
   private readonly _strategy: GoogleStrategy;
 
-  constructor(providerConfig: AuthProviderConfig) {
-    this.providerConfig = providerConfig;
+  constructor(options: OAuthProviderOptions) {
     // TODO: throw error if env variables not set?
     this._strategy = new GoogleStrategy(
-      { ...this.providerConfig.options },
+      // We need passReqToCallback set to false to get params, but there's
+      // no matching type signature for that, so instead behold this beauty
+      { ...options, passReqToCallback: false as true },
       (
         accessToken: any,
         refreshToken: any,
         params: any,
-        profile: any,
-        done: any,
+        rawProfile: passport.Profile,
+        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
       ) => {
+        const profile = makeProfileInfo(rawProfile, params.id_token);
         done(
           undefined,
           {
+            providerInfo: {
+              idToken: params.id_token,
+              accessToken,
+              scope: params.scope,
+              expiresInSeconds: params.expires_in,
+            },
             profile,
-            idToken: params.id_token,
-            accessToken,
-            scope: params.scope,
-            expiresInSeconds: params.expires_in,
           },
           {
             refreshToken,
@@ -62,28 +82,111 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
     );
   }
 
-  async start(req: express.Request, options: any): Promise<RedirectInfo> {
-    return await executeRedirectStrategy(req, this._strategy, options);
+  async start(
+    req: express.Request,
+    options: Record<string, string>,
+  ): Promise<RedirectInfo> {
+    const providerOptions = {
+      ...options,
+      accessType: 'offline',
+      prompt: 'consent',
+    };
+    return await executeRedirectStrategy(req, this._strategy, providerOptions);
   }
 
   async handler(
     req: express.Request,
-  ): Promise<{ user: AuthInfoBase; info: AuthInfoPrivate }> {
-    return await executeFrameHandlerStrategy(req, this._strategy);
+  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+    const { response, privateInfo } = await executeFrameHandlerStrategy<
+      OAuthResponse,
+      PrivateInfo
+    >(req, this._strategy);
+
+    return {
+      response: await this.populateIdentity(response),
+      refreshToken: privateInfo.refreshToken,
+    };
   }
 
-  async refresh(refreshToken: string, scope: string): Promise<AuthInfoBase> {
+  async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
     const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
       scope,
     );
 
-    return {
+    const profile = await executeFetchUserProfileStrategy(
+      this._strategy,
       accessToken,
-      idToken: params.id_token,
-      expiresInSeconds: params.expires_in,
-      scope: params.scope,
-    };
+      params.id_token,
+    );
+
+    return this.populateIdentity({
+      providerInfo: {
+        accessToken,
+        idToken: params.id_token,
+        expiresInSeconds: params.expires_in,
+        scope: params.scope,
+      },
+      profile,
+    });
   }
+
+  private async populateIdentity(
+    response: OAuthResponse,
+  ): Promise<OAuthResponse> {
+    const { profile } = response;
+
+    if (!profile.email) {
+      throw new Error('Google profile contained no email');
+    }
+
+    // TODO(Rugvip): Hardcoded to the local part of the email for now
+    const id = profile.email.split('@')[0];
+
+    return { ...response, backstageIdentity: { id } };
+  }
+}
+
+export function createGoogleProvider(
+  { baseUrl }: AuthProviderConfig,
+  providerConfig: EnvironmentProviderConfig,
+  logger: Logger,
+  tokenIssuer: TokenIssuer,
+) {
+  const envProviders: EnvironmentHandlers = {};
+
+  for (const [env, envConfig] of Object.entries(providerConfig)) {
+    const config = (envConfig as unknown) as OAuthProviderConfig;
+    const { secure, appOrigin } = config;
+    const callbackURLParam = `?env=${env}`;
+    const opts = {
+      clientID: config.clientId,
+      clientSecret: config.clientSecret,
+      callbackURL: `${baseUrl}/google/handler/frame${callbackURLParam}`,
+    };
+
+    if (!opts.clientID || !opts.clientSecret) {
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          'Failed to initialize Google auth provider, set AUTH_GOOGLE_CLIENT_ID and AUTH_GOOGLE_CLIENT_SECRET env vars',
+        );
+      }
+
+      logger.warn(
+        'Google auth provider disabled, set AUTH_GOOGLE_CLIENT_ID and AUTH_GOOGLE_CLIENT_SECRET env vars to enable',
+      );
+      continue;
+    }
+
+    envProviders[env] = new OAuthProvider(new GoogleAuthProvider(opts), {
+      disableRefresh: false,
+      providerId: 'google',
+      secure,
+      baseUrl,
+      appOrigin,
+      tokenIssuer,
+    });
+  }
+  return new EnvironmentHandler(envProviders);
 }

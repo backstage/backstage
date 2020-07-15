@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Progress from '.';
+import { Progress } from '.';
 
 export default {
   title: 'Progress',

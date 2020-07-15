@@ -17,18 +17,27 @@
 import fs from 'fs-extra';
 import { paths } from '../lib/paths';
 
-export const pre = async () => {
-  const pkgPath = paths.resolveTarget('package.json');
+const SKIPPED_KEYS = ['access', 'registry', 'tag'];
 
-  const pkg = await fs.readJson(pkgPath);
-  pkg.types = 'dist/index.d.ts';
+const PKG_PATH = 'package.json';
+const PKG_BACKUP_PATH = 'package.json-prepack';
+
+export const pre = async () => {
+  const pkgPath = paths.resolveTarget(PKG_PATH);
+
+  const pkgContent = await fs.readFile(pkgPath, 'utf8');
+  const pkg = JSON.parse(pkgContent);
+  await fs.writeFile(PKG_BACKUP_PATH, pkgContent);
+
+  for (const key of Object.keys(pkg.publishConfig ?? {})) {
+    if (!SKIPPED_KEYS.includes(key)) {
+      pkg[key] = pkg.publishConfig[key];
+    }
+  }
   await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
 };
 
 export const post = async () => {
-  const pkgPath = paths.resolveTarget('package.json');
-
-  const pkg = await fs.readJson(pkgPath);
-  pkg.types = 'src/index.ts';
-  await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
+  // postpack isn't called by yarn right now, so it needs to be called manually
+  await fs.move(PKG_BACKUP_PATH, PKG_PATH, { overwrite: true });
 };

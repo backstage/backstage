@@ -58,7 +58,11 @@ const useStyles = makeStyles<Theme>(theme => {
       // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
       fontWeight: 'bold',
       whiteSpace: 'nowrap',
-      lineHeight: 1.0,
+      lineHeight: 'auto',
+      flex: '3 1 auto',
+      width: '110px',
+      overflow: 'hidden',
+      'text-overflow': 'ellipsis',
     },
     iconContainer: {
       boxSizing: 'border-box',
@@ -84,6 +88,11 @@ const useStyles = makeStyles<Theme>(theme => {
     searchContainer: {
       width: drawerWidthOpen - iconContainerWidth,
     },
+    secondaryAction: {
+      width: theme.spacing(6),
+      textAlign: 'center',
+      marginRight: theme.spacing(1),
+    },
     selected: {
       '&$root': {
         borderLeft: `solid ${selectedIndicatorWidth}px #9BF0E1`,
@@ -102,8 +111,8 @@ const useStyles = makeStyles<Theme>(theme => {
 type SidebarItemProps = {
   icon: IconComponent;
   text?: string;
+  // If 'to' is set the item will act as a nav link with highlight, otherwise it's just a button
   to?: string;
-  disableSelected?: boolean;
   hasNotifications?: boolean;
   onClick?: () => void;
 };
@@ -111,8 +120,7 @@ type SidebarItemProps = {
 export const SidebarItem: FC<SidebarItemProps> = ({
   icon: Icon,
   text,
-  to = '#',
-  disableSelected = false,
+  to,
   hasNotifications = false,
   onClick,
   children,
@@ -134,30 +142,25 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     </Badge>
   );
 
+  const childProps = {
+    onClick,
+    className: clsx(classes.root, isOpen ? classes.open : classes.closed),
+  };
+
   if (!isOpen) {
+    if (to === undefined) {
+      return <div {...childProps}>{itemIcon}</div>;
+    }
+
     return (
-      <NavLink
-        className={clsx(classes.root, classes.closed)}
-        activeClassName={classes.selected}
-        isActive={match => Boolean(match && !disableSelected)}
-        exact
-        to={to}
-        onClick={onClick}
-      >
+      <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
         {itemIcon}
       </NavLink>
     );
   }
 
-  return (
-    <NavLink
-      className={clsx(classes.root, classes.open)}
-      activeClassName={classes.selected}
-      isActive={match => Boolean(match && !disableSelected)}
-      exact
-      to={to}
-      onClick={onClick}
-    >
+  const content = (
+    <>
       <div data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
       </div>
@@ -166,7 +169,17 @@ export const SidebarItem: FC<SidebarItemProps> = ({
           {text}
         </Typography>
       )}
-      {children}
+      <div className={classes.secondaryAction}>{children}</div>
+    </>
+  );
+
+  if (to === undefined) {
+    return <div {...childProps}>{content}</div>;
+  }
+
+  return (
+    <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
+      {content}
     </NavLink>
   );
 };
@@ -191,7 +204,7 @@ export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
 
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon} disableSelected>
+      <SidebarItem icon={SearchIcon}>
         <TextField
           placeholder="Search"
           onChange={handleInput}
@@ -220,5 +233,5 @@ export const SidebarDivider = styled('hr')({
   width: '100%',
   background: '#383838',
   border: 'none',
-  margin: 0,
+  margin: '12px 0px',
 });

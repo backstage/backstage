@@ -15,10 +15,9 @@
  */
 
 import webpack, { Module, Plugin } from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { BundlingOptions } from './types';
-import { BundlingPaths } from './paths';
+import { BundlingOptions, BackendBundlingOptions } from './types';
+import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
   loaders: Module['rules'];
@@ -26,8 +25,7 @@ type Transforms = {
 };
 
 export const transforms = (
-  paths: BundlingPaths,
-  options: BundlingOptions,
+  options: BundlingOptions | BackendBundlingOptions,
 ): Transforms => {
   const { isDev } = options;
 
@@ -49,7 +47,28 @@ export const transforms = (
       },
     },
     {
-      test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.frag/, /\.xml/],
+      test: [/\.icon\.svg$/],
+      use: [
+        {
+          loader: require.resolve('@sucrase/webpack-loader'),
+          options: { transforms: ['jsx'] },
+        },
+        {
+          loader: require.resolve('@svgr/webpack'),
+          options: { babel: false, template: svgrTemplate },
+        },
+      ],
+    },
+    {
+      test: [
+        /\.bmp$/,
+        /\.gif$/,
+        /\.jpe?g$/,
+        /\.png$/,
+        /\.frag/,
+        { test: /\.svg/, not: [/\.icon\.svg/] },
+        /\.xml/,
+      ],
       loader: require.resolve('url-loader'),
       options: {
         limit: 10000,
@@ -79,12 +98,6 @@ export const transforms = (
   ];
 
   const plugins = new Array<Plugin>();
-
-  plugins.push(
-    new HtmlWebpackPlugin({
-      template: paths.targetHtml,
-    }),
-  );
 
   if (isDev) {
     plugins.push(new webpack.HotModuleReplacementPlugin());

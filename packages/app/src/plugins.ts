@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin as HomePagePlugin } from '@backstage/plugin-home-page';
 export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
 export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
 export { plugin as CatalogPlugin } from '@backstage/plugin-catalog';
@@ -24,3 +23,8 @@ export { plugin as Circleci } from '@backstage/plugin-circleci';
 export { plugin as RegisterComponent } from '@backstage/plugin-register-component';
 export { plugin as Sentry } from '@backstage/plugin-sentry';
 export { plugin as ReleaseManager } from '@backstage/plugin-release-manager';
+export { plugin as GitopsProfiles } from '@backstage/plugin-gitops-profiles';
+export { plugin as TechDocs } from '@backstage/plugin-techdocs';
+export { plugin as GraphiQL } from '@backstage/plugin-graphiql';
+export { plugin as GithubActions } from '@backstage/plugin-github-actions';
+export { plugin as Rollbar } from '@backstage/plugin-rollbar';

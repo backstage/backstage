@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { ApiProvider, useApi } from './ApiProvider';
+export { ApiProvider, useApi, useApiHolder } from './ApiProvider';
 export { ApiRegistry } from './ApiRegistry';
 export { ApiTestRegistry } from './ApiTestRegistry';
 export * from './ApiRef';

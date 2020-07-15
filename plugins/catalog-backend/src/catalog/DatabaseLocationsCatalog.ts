@@ -14,45 +14,24 @@
  * limitations under the License.
  */
 
-import { Database, DatabaseLocationUpdateLogEvent } from '../database';
-import { IngestionModel } from '../ingestion/types';
+import { Location } from '@backstage/catalog-model';
+import type { Database } from '../database';
 import {
-  AddLocation,
-  Location,
-  LocationsCatalog,
-  LocationResponse,
-} from './types';
+  DatabaseLocationUpdateLogEvent,
+  DatabaseLocationUpdateLogStatus,
+} from '../database/types';
+import { LocationResponse, LocationsCatalog } from './types';
 
 export class DatabaseLocationsCatalog implements LocationsCatalog {
-  constructor(
-    private readonly database: Database,
-    private readonly ingestionModel: IngestionModel,
-  ) {}
+  constructor(private readonly database: Database) {}
 
-  async addLocation(location: AddLocation): Promise<Location> {
-    const outputs = await this.ingestionModel.readLocation(
-      location.type,
-      location.target,
-    );
-    if (!outputs) {
-      throw new Error(
-        `Unknown location type ${location.type} ${location.target}`,
-      );
-    }
-    outputs.forEach(output => {
-      if (output.type === 'error') {
-        throw new Error(
-          `Can't read location at ${location.target}, ${output.error}`,
-        );
-      }
-    });
-
+  async addLocation(location: Location): Promise<Location> {
     const added = await this.database.addLocation(location);
     return added;
   }
 
   async removeLocation(id: string): Promise<void> {
-    await this.database.removeLocation(id);
+    await this.database.transaction(tx => this.database.removeLocation(tx, id));
   }
 
   async locations(): Promise<LocationResponse[]> {
@@ -86,5 +65,29 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
       },
       data,
     };
+  }
+
+  async logUpdateSuccess(
+    locationId: string,
+    entityName?: string,
+  ): Promise<void> {
+    await this.database.addLocationUpdateLogEvent(
+      locationId,
+      DatabaseLocationUpdateLogStatus.SUCCESS,
+      entityName,
+    );
+  }
+
+  async logUpdateFailure(
+    locationId: string,
+    error?: Error,
+    entityName?: string,
+  ): Promise<void> {
+    await this.database.addLocationUpdateLogEvent(
+      locationId,
+      DatabaseLocationUpdateLogStatus.FAIL,
+      entityName,
+      error?.message,
+    );
   }
 }

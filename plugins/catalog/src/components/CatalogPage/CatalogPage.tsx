@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
 import {
   Content,
   ContentHeader,
-  DismissableBanner,
-  Header,
-  HomepageTimer,
+  identityApiRef,
   SupportButton,
-  Page,
-  pageTheme,
+  configApiRef,
   useApi,
 } from '@backstage/core';
-import { useAsync } from 'react-use';
-import CatalogTable from '../CatalogTable/CatalogTable';
-import {
-  CatalogFilter,
-  CatalogFilterItem,
-} from '../CatalogFilter/CatalogFilter';
-import { Button, makeStyles, Typography, Link } from '@material-ui/core';
-import { filterGroups, defaultFilter } from '../../data/filters';
+import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
+import { Button, makeStyles } from '@material-ui/core';
+import SettingsIcon from '@material-ui/icons/Settings';
+import StarIcon from '@material-ui/icons/Star';
+import React, { useMemo, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
+import { useStarredEntities } from '../../hooks/useStarredEntites';
+import { CatalogFilter, ButtonGroup } from '../CatalogFilter/CatalogFilter';
+import { CatalogTable } from '../CatalogTable/CatalogTable';
+import CatalogLayout from './CatalogLayout';
+import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
+import { WelcomeBanner } from './WelcomeBanner';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -44,68 +45,116 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-import { catalogApiRef } from '../..';
-import { envelopeToComponent } from '../../data/utils';
+const CatalogPageContents = () => {
+  const styles = useStyles();
+  const { loading, error, matchingEntities } = useFilteredEntities();
+  const { isStarredEntity } = useStarredEntities();
+  const userId = useApi(identityApiRef).getUserId();
+  const [selectedTab, setSelectedTab] = useState<string>();
+  const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Company';
 
-const CatalogPage: FC<{}> = () => {
-  const catalogApi = useApi(catalogApiRef);
-  const { value, error, loading } = useAsync(() => catalogApi.getEntities());
-  const [selectedFilter, setSelectedFilter] = React.useState<CatalogFilterItem>(
-    defaultFilter,
-  );
-
-  const onFilterSelected = React.useCallback(
-    selected => setSelectedFilter(selected),
+  const tabs = useMemo<LabeledComponentType[]>(
+    () => [
+      {
+        id: 'service',
+        label: 'Services',
+      },
+      {
+        id: 'website',
+        label: 'Websites',
+      },
+      {
+        id: 'library',
+        label: 'Libraries',
+      },
+      {
+        id: 'documentation',
+        label: 'Documentation',
+      },
+      {
+        id: 'other',
+        label: 'Other',
+      },
+    ],
     [],
   );
-  const styles = useStyles();
+
+  const filterGroups = useMemo<ButtonGroup[]>(
+    () => [
+      {
+        name: 'Personal',
+        items: [
+          {
+            id: 'owned',
+            label: 'Owned',
+            icon: SettingsIcon,
+            filterFn: entity => entity.spec?.owner === userId,
+          },
+          {
+            id: 'starred',
+            label: 'Starred',
+            icon: StarIcon,
+            filterFn: isStarredEntity,
+          },
+        ],
+      },
+      {
+        name: orgName,
+        items: [
+          {
+            id: 'all',
+            label: 'All',
+            filterFn: () => true,
+          },
+        ],
+      },
+    ],
+    [isStarredEntity, userId, orgName],
+  );
 
   return (
-    <Page theme={pageTheme.home}>
-      <Header title="Service Catalog" subtitle="Keep track of your software">
-        <HomepageTimer />
-      </Header>
+    <CatalogLayout>
+      <CatalogTabs
+        tabs={tabs}
+        onChange={({ label }) => setSelectedTab(label)}
+      />
       <Content>
-        <DismissableBanner
-          variant="info"
-          message={
-            <Typography>
-              <span role="img" aria-label="wave" style={{ fontSize: '125%' }}>
-                👋🏼
-              </span>{' '}
-              Welcome to Backstage, we are happy to have you. Start by checking
-              out our{' '}
-              <Link href="/welcome" color="textSecondary">
-                getting started
-              </Link>{' '}
-              page.
-            </Typography>
-          }
-        />
-        <ContentHeader title="Services">
-          <Button variant="contained" color="primary" href="/create">
-            Create Service
+        <WelcomeBanner />
+        <ContentHeader title={selectedTab ?? ''}>
+          <Button
+            component={RouterLink}
+            variant="contained"
+            color="primary"
+            to={scaffolderRootRoute.path}
+          >
+            Create Component
           </Button>
-          <SupportButton>All your components</SupportButton>
+          <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>
           <div>
             <CatalogFilter
-              groups={filterGroups}
-              selectedId={selectedFilter.id}
-              onSelectedChange={onFilterSelected}
+              buttonGroups={filterGroups}
+              onChange={({ label }) => setSelectedSidebarItem(label)}
+              initiallySelected="owned"
             />
           </div>
           <CatalogTable
-            titlePreamble={selectedFilter.label}
-            components={(value && value.map(envelopeToComponent)) || []}
+            titlePreamble={selectedSidebarItem ?? ''}
+            entities={matchingEntities}
             loading={loading}
             error={error}
           />
         </div>
       </Content>
-    </Page>
+    </CatalogLayout>
   );
 };
 
-export default CatalogPage;
+export const CatalogPage = () => (
+  <EntityFilterGroupsProvider>
+    <CatalogPageContents />
+  </EntityFilterGroupsProvider>
+);

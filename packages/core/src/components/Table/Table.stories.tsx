@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Table, { SubvalueCell, TableColumn } from './';
+import { Table, SubvalueCell, TableColumn } from './';
 
 export default {
   title: 'Table',
@@ -182,6 +182,41 @@ export const SubvalueTable = () => {
   return (
     <div style={containerStyle}>
       <Table options={{ paging: false }} data={testData10} columns={columns} />
+    </div>
+  );
+};
+
+export const DenseTable = () => {
+  const columns: TableColumn[] = [
+    {
+      title: 'Column 1',
+      field: 'col1',
+      highlight: true,
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
+  return (
+    <div style={containerStyle}>
+      <Table
+        options={{ paging: false, padding: 'dense' }}
+        data={testData10}
+        columns={columns}
+        title="Backstage Table"
+      />
     </div>
   );
 };

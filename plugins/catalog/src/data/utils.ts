@@ -13,13 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component } from './component';
-import { Entity } from '@backstage/catalog-model';
 
-export function envelopeToComponent(envelope: Entity): Component {
+import {
+  EntityMeta,
+  LocationSpec,
+  LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
+
+export function findLocationForEntityMeta(
+  meta: EntityMeta,
+): LocationSpec | undefined {
+  if (!meta) {
+    return undefined;
+  }
+
+  const annotation = meta.annotations?.[LOCATION_ANNOTATION];
+  if (!annotation) {
+    return undefined;
+  }
+
+  const separatorIndex = annotation.indexOf(':');
+  if (separatorIndex === -1) {
+    return undefined;
+  }
+
   return {
-    name: envelope.metadata?.name ?? '',
-    kind: envelope.kind ?? 'unknown',
-    description: envelope.metadata?.annotations?.description ?? 'placeholder',
+    type: annotation.substring(0, separatorIndex),
+    target: annotation.substring(separatorIndex + 1),
   };
 }

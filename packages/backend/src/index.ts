@@ -23,65 +23,73 @@
  */
 
 import {
-  errorHandler,
+  createServiceBuilder,
   getRootLogger,
-  notFoundHandler,
-  requestLoggingHandler,
+  useHotMemoize,
 } from '@backstage/backend-common';
-import compression from 'compression';
-import cors from 'cors';
-import express from 'express';
-import helmet from 'helmet';
+import { ConfigReader, AppConfig } from '@backstage/config';
+import { loadConfig } from '@backstage/config-loader';
 import knex from 'knex';
+import auth from './plugins/auth';
 import catalog from './plugins/catalog';
+import identity from './plugins/identity';
+import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
-import auth from './plugins/auth';
-import identity from './plugins/identity';
+import proxy from './plugins/proxy';
+import techdocs from './plugins/techdocs';
 import { PluginEnvironment } from './types';
 
-const DEFAULT_PORT = 7000;
-const PORT = parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT;
+function makeCreateEnv(loadedConfigs: AppConfig[]) {
+  const config = ConfigReader.fromConfigs(loadedConfigs);
 
-function createEnv(plugin: string): PluginEnvironment {
-  const logger = getRootLogger().child({ type: 'plugin', plugin });
-  const database = knex({
-    client: 'sqlite3',
-    connection: ':memory:',
-    useNullAsDefault: true,
-  });
-  database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-    resource.run('PRAGMA foreign_keys = ON', () => {});
-  });
-  return { logger, database };
+  return (plugin: string): PluginEnvironment => {
+    const logger = getRootLogger().child({ type: 'plugin', plugin });
+    const database = knex({
+      client: 'sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+    database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+      resource.run('PRAGMA foreign_keys = ON', () => {});
+    });
+    return { logger, database, config };
+  };
 }
 
 async function main() {
-  const app = express();
-  const corsOptions: cors.CorsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true,
-  };
+  const configs = await loadConfig();
+  const configReader = ConfigReader.fromConfigs(configs);
+  const createEnv = makeCreateEnv(configs);
 
-  app.use(helmet());
-  app.use(cors(corsOptions));
-  app.use(compression());
-  app.use(express.json());
-  app.use(requestLoggingHandler());
-  app.use('/catalog', await catalog(createEnv('catalog')));
-  app.use('/scaffolder', await scaffolder(createEnv('scaffolder')));
-  app.use(
-    '/sentry',
-    await sentry(getRootLogger().child({ type: 'plugin', plugin: 'sentry' })),
-  );
-  app.use('/auth', await auth(createEnv('auth')));
-  app.use('/identity', await identity(createEnv('identity')));
-  app.use(notFoundHandler());
-  app.use(errorHandler());
+  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
+  const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
+  const authEnv = useHotMemoize(module, () => createEnv('auth'));
+  const identityEnv = useHotMemoize(module, () => createEnv('identity'));
+  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
+  const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
+  const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
+  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
 
-  app.listen(PORT, () => {
-    getRootLogger().info(`Listening on port ${PORT}`);
+  const service = createServiceBuilder(module)
+    .loadConfig(configReader)
+    .addRouter('/catalog', await catalog(catalogEnv))
+    .addRouter('/rollbar', await rollbar(rollbarEnv))
+    .addRouter('/scaffolder', await scaffolder(scaffolderEnv))
+    .addRouter('/sentry', await sentry(sentryEnv))
+    .addRouter('/auth', await auth(authEnv))
+    .addRouter('/identity', await identity(identityEnv))
+    .addRouter('/techdocs', await techdocs(techdocsEnv))
+    .addRouter('/proxy', await proxy(proxyEnv));
+
+  await service.start().catch(err => {
+    console.log(err);
+    process.exit(1);
   });
 }
 
-main();
+module.hot?.accept();
+main().catch(error => {
+  console.error(`Backend failed to start up, ${error}`);
+  process.exit(1);
+});

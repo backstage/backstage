@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { NotFoundError } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import lodash from 'lodash';
-import { EntitiesCatalog } from './types';
+import type { EntitiesCatalog } from './types';
 
 export class StaticEntitiesCatalog implements EntitiesCatalog {
   private _entities: Entity[];
@@ -32,10 +31,7 @@ export class StaticEntitiesCatalog implements EntitiesCatalog {
 
   async entityByUid(uid: string): Promise<Entity | undefined> {
     const item = this._entities.find(e => uid === e.metadata.uid);
-    if (!item) {
-      throw new NotFoundError('Entity cannot be found');
-    }
-    return lodash.cloneDeep(item);
+    return item ? lodash.cloneDeep(item) : undefined;
   }
 
   async entityByName(
@@ -49,9 +45,14 @@ export class StaticEntitiesCatalog implements EntitiesCatalog {
         name === e.metadata.name &&
         namespace === e.metadata.namespace,
     );
-    if (!item) {
-      throw new NotFoundError('Entity cannot be found');
-    }
-    return lodash.cloneDeep(item);
+    return item ? lodash.cloneDeep(item) : undefined;
+  }
+
+  async addOrUpdateEntity(): Promise<Entity> {
+    throw new Error('Not supported');
+  }
+
+  async removeEntityByUid(): Promise<void> {
+    throw new Error('Not supported');
   }
 }

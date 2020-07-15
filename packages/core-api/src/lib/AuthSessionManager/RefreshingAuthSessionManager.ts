@@ -22,6 +22,7 @@ import {
 } from './types';
 import { AuthConnector } from '../AuthConnector';
 import { SessionScopeHelper, hasScopes } from './common';
+import { SessionStateTracker } from './SessionStateTracker';
 
 type Options<T> = {
   /** The connector used for acting on the auth session */
@@ -43,6 +44,7 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
   private readonly helper: SessionScopeHelper<T>;
   private readonly sessionScopesFunc: SessionScopesFunc<T>;
   private readonly sessionShouldRefreshFunc: SessionShouldRefreshFunc<T>;
+  private readonly stateTracker = new SessionStateTracker();
 
   private refreshPromise?: Promise<T>;
   private currentSession: T | undefined;
@@ -109,12 +111,18 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
       ...options,
       scopes: this.helper.getExtendedScope(this.currentSession, options.scopes),
     });
+    this.stateTracker.setIsSignedIn(true);
     return this.currentSession;
   }
 
   async removeSession() {
+    this.currentSession = undefined;
     await this.connector.removeSession();
-    window.location.reload(); // TODO(Rugvip): make this work without reload?
+    this.stateTracker.setIsSignedIn(false);
+  }
+
+  sessionState$() {
+    return this.stateTracker.sessionState$();
   }
 
   private async collapsedSessionRefresh(): Promise<T> {
@@ -125,7 +133,9 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     this.refreshPromise = this.connector.refreshSession();
 
     try {
-      return await this.refreshPromise;
+      const session = await this.refreshPromise;
+      this.stateTracker.setIsSignedIn(true);
+      return session;
     } finally {
       delete this.refreshPromise;
     }

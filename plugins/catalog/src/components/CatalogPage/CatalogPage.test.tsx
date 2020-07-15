@@ -14,35 +14,78 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
+import {
+  ApiProvider,
+  ApiRegistry,
+  IdentityApi,
+  identityApiRef,
+  storageApiRef,
+} from '@backstage/core';
+import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import { render } from '@testing-library/react';
-import CatalogPage from './CatalogPage';
-import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
-import { wrapInTheme } from '@backstage/test-utils';
 import { catalogApiRef } from '../..';
-
-const errorApi = { post: () => {} };
-const catalogApi = { getEntities: () => Promise.resolve([{ kind: '' }]) };
+import { CatalogApi } from '../../api/types';
+import { EntityFilterGroupsProvider } from '../../filter';
+import { CatalogPage } from './CatalogPage';
 
 describe('CatalogPage', () => {
+  const catalogApi: Partial<CatalogApi> = {
+    getEntities: () =>
+      Promise.resolve([
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'Entity1',
+          },
+          spec: {
+            owner: 'tools@example.com',
+            type: 'service',
+          },
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'Entity2',
+          },
+          spec: {
+            owner: 'not-tools@example.com',
+            type: 'service',
+          },
+        },
+      ] as Entity[]),
+    getLocationByEntity: () =>
+      Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
+  };
+  const indentityApi: Partial<IdentityApi> = {
+    getUserId: () => 'tools@example.com',
+  };
+
+  const renderWrapped = (children: React.ReactNode) =>
+    render(
+      wrapInTestApp(
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [catalogApiRef, catalogApi],
+            [identityApiRef, indentityApi],
+            [storageApiRef, MockStorageApi.create()],
+          ])}
+        >
+          <EntityFilterGroupsProvider>{children}</EntityFilterGroupsProvider>,
+        </ApiProvider>,
+      ),
+    );
+
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    const rendered = render(
-      wrapInTheme(
-        <ApiProvider
-          apis={ApiRegistry.from([
-            [errorApiRef, errorApi],
-            [catalogApiRef, catalogApi],
-          ])}
-        >
-          <CatalogPage />
-        </ApiProvider>,
-      ),
-    );
-    expect(
-      await rendered.findByText('Keep track of your software'),
-    ).toBeInTheDocument();
+    const { findByText, getByText } = renderWrapped(<CatalogPage />);
+    expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
+    fireEvent.click(getByText(/All/));
+    expect(await findByText(/All \(2\)/)).toBeInTheDocument();
   });
 });

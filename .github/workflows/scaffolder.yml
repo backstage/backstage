@@ -1,0 +1,33 @@
+name: Scaffolder
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/scaffolder.yml'
+      - './plugins/scaffolder-backend/scripts'
+  push:
+    branches: [master]
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.7]
+
+    name: Build Container
+    steps:
+      - uses: actions/checkout@v2
+      # Build Docker Image
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v1.1.0
+        with:
+          path: plugins/scaffolder-backend/scripts
+          dockerfile: plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/cookiecutter
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+          tag_with_ref: true
+          push: true

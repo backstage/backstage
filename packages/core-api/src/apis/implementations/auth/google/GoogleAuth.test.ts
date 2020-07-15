@@ -23,9 +23,9 @@ const PREFIX = 'https://www.googleapis.com/auth/';
 
 describe('GoogleAuth', () => {
   it('should get refreshed access token', async () => {
-    const getSession = jest
-      .fn()
-      .mockResolvedValue({ accessToken: 'access-token', expiresAt: theFuture });
+    const getSession = jest.fn().mockResolvedValue({
+      providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
+    });
     const googleAuth = new GoogleAuth({ getSession } as any);
 
     expect(await googleAuth.getAccessToken()).toBe('access-token');
@@ -33,9 +33,9 @@ describe('GoogleAuth', () => {
   });
 
   it('should get refreshed id token', async () => {
-    const getSession = jest
-      .fn()
-      .mockResolvedValue({ idToken: 'id-token', expiresAt: theFuture });
+    const getSession = jest.fn().mockResolvedValue({
+      providerInfo: { idToken: 'id-token', expiresAt: theFuture },
+    });
     const googleAuth = new GoogleAuth({ getSession } as any);
 
     expect(await googleAuth.getIdToken()).toBe('id-token');
@@ -43,9 +43,9 @@ describe('GoogleAuth', () => {
   });
 
   it('should get optional id token', async () => {
-    const getSession = jest
-      .fn()
-      .mockResolvedValue({ idToken: 'id-token', expiresAt: theFuture });
+    const getSession = jest.fn().mockResolvedValue({
+      providerInfo: { idToken: 'id-token', expiresAt: theFuture },
+    });
     const googleAuth = new GoogleAuth({ getSession } as any);
 
     expect(await googleAuth.getIdToken({ optional: true })).toBe('id-token');
@@ -58,9 +58,11 @@ describe('GoogleAuth', () => {
     const getSession = jest
       .fn()
       .mockResolvedValueOnce({
-        accessToken: 'access-token',
-        expiresAt: theFuture,
-        scopes: new Set([`${PREFIX}not-enough`]),
+        providerInfo: {
+          accessToken: 'access-token',
+          expiresAt: theFuture,
+          scopes: new Set([`${PREFIX}not-enough`]),
+        },
       })
       .mockRejectedValue(error);
     const googleAuth = new GoogleAuth({ getSession } as any);
@@ -77,17 +79,21 @@ describe('GoogleAuth', () => {
 
   it('should wait for all session refreshes', async () => {
     const initialSession = {
-      idToken: 'token1',
-      expiresAt: theFuture,
-      scopes: new Set(),
+      providerInfo: {
+        idToken: 'token1',
+        expiresAt: theFuture,
+        scopes: new Set(),
+      },
     };
     const getSession = jest
       .fn()
       .mockResolvedValueOnce(initialSession)
       .mockResolvedValue({
-        idToken: 'token2',
-        expiresAt: theFuture,
-        scopes: new Set(),
+        providerInfo: {
+          idToken: 'token2',
+          expiresAt: theFuture,
+          scopes: new Set(),
+        },
       });
     const googleAuth = new GoogleAuth({ getSession } as any);
 
@@ -95,7 +101,7 @@ describe('GoogleAuth', () => {
     await expect(googleAuth.getIdToken()).resolves.toBe('token1');
     expect(getSession).toBeCalledTimes(1);
 
-    initialSession.expiresAt = thePast;
+    initialSession.providerInfo.expiresAt = thePast;
 
     const promise1 = googleAuth.getIdToken();
     const promise2 = googleAuth.getIdToken();

@@ -15,9 +15,8 @@
  */
 
 import { hot } from 'react-hot-loader/root';
-import React, { FC, ComponentType } from 'react';
+import React, { FC, ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import {
   createApp,
@@ -30,8 +29,10 @@ import {
   ApiTestRegistry,
   ApiHolder,
   AlertDisplay,
+  OAuthRequestDialog,
 } from '@backstage/core';
 import * as defaultApiFactories from './apiFactories';
+import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
 
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
 type BackstagePlugin = ReturnType<typeof createPlugin>;
@@ -43,6 +44,7 @@ type BackstagePlugin = ReturnType<typeof createPlugin>;
 class DevAppBuilder {
   private readonly plugins = new Array<BackstagePlugin>();
   private readonly factories = new Array<ApiFactory<any, any, any>>();
+  private readonly rootChildren = new Array<ReactNode>();
 
   /**
    * Register one or more plugins to render in the dev app
@@ -63,6 +65,16 @@ class DevAppBuilder {
   }
 
   /**
+   * Adds a React node to place just inside the App Provider.
+   *
+   * Useful for adding more global components like the AlertDisplay.
+   */
+  addRootChild(node: ReactNode): DevAppBuilder {
+    this.rootChildren.push(node);
+    return this;
+  }
+
+  /**
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
@@ -70,8 +82,10 @@ class DevAppBuilder {
       apis: this.setupApiRegistry(this.factories),
       plugins: this.plugins,
     });
+
     const AppProvider = app.getProvider();
-    const AppComponent = app.getRootComponent();
+    const AppRouter = app.getRouter();
+    const AppRoutes = app.getRoutes();
 
     const sidebar = this.setupSidebar(this.plugins);
 
@@ -79,12 +93,15 @@ class DevAppBuilder {
       return (
         <AppProvider>
           <AlertDisplay />
-          <BrowserRouter>
+          <OAuthRequestDialog />
+          {this.rootChildren}
+
+          <AppRouter>
             <SidebarPage>
               {sidebar}
-              <AppComponent />
+              <AppRoutes />
             </SidebarPage>
-          </BrowserRouter>
+          </AppRouter>
         </AppProvider>
       );
     };
@@ -134,7 +151,7 @@ class DevAppBuilder {
                 key={target.path}
                 to={target.path}
                 text={target.title}
-                icon={target.icon}
+                icon={target.icon ?? SentimentDissatisfiedIcon}
               />,
             );
             break;

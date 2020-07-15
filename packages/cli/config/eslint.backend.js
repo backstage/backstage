@@ -32,10 +32,11 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  ignorePatterns: ['**/dist/**', '**/build/**'],
+  ignorePatterns: ['.eslintrc.js', '**/dist/**'],
   rules: {
     'no-console': 0, // Permitted in console programs
     'new-cap': ['error', { capIsNew: false }], // Because Express constructs things e.g. like 'const r = express.Router()'
+    'import/newline-after-import': 'error',
     'import/no-duplicates': 'warn',
     'import/no-extraneous-dependencies': [
       'error',
@@ -52,6 +53,8 @@ module.exports = {
       'warn',
       { vars: 'all', args: 'after-used', ignoreRestSiblings: true },
     ],
+    // Avoid cross-package imports
+    'no-restricted-imports': [2, { patterns: ['**/../../**/*/src/**'] }],
   },
   overrides: [
     {

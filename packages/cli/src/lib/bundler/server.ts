@@ -15,53 +15,50 @@
  */
 
 import fs from 'fs-extra';
-import yn from 'yn';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import openBrowser from 'react-dev-utils/openBrowser';
-import { choosePort, prepareUrls } from 'react-dev-utils/WebpackDevServerUtils';
-import { createConfig } from './config';
+import { createConfig, resolveBaseUrl } from './config';
 import { ServeOptions } from './types';
 import { resolveBundlingPaths } from './paths';
 
 export async function serveBundle(options: ServeOptions) {
-  const host = process.env.HOST ?? '0.0.0.0';
-  const defaultPort = parseInt(process.env.PORT ?? '', 10) || 3000;
+  const url = resolveBaseUrl(options.config);
 
-  const port = await choosePort(host, defaultPort);
-  if (!port) {
-    throw new Error(`Invalid or no port set: '${port}'`);
-  }
-
-  const protocol = yn(process.env.HTTPS, { default: false }) ? 'https' : 'http';
-  const urls = prepareUrls(protocol, host, port);
+  const port = Number(url.port) || (url.protocol === 'https:' ? 443 : 80);
 
   const paths = resolveBundlingPaths(options);
   const pkgPath = paths.targetPackageJson;
   const pkg = await fs.readJson(pkgPath);
-  const config = createConfig(paths, { ...options, isDev: true });
+  const config = createConfig(paths, {
+    ...options,
+    isDev: true,
+    baseUrl: url,
+  });
   const compiler = webpack(config);
 
   const server = new WebpackDevServer(compiler, {
     hot: true,
-    publicPath: '/',
+    contentBase: paths.targetPublic,
+    contentBasePublicPath: config.output?.publicPath,
+    publicPath: config.output?.publicPath,
     historyApiFallback: true,
     clientLogLevel: 'warning',
     stats: 'errors-warnings',
-    https: protocol === 'https',
-    host,
+    https: url.protocol === 'https:',
+    host: url.hostname,
     port,
     proxy: pkg.proxy,
   });
 
   await new Promise((resolve, reject) => {
-    server.listen(port, host, (err?: Error) => {
+    server.listen(port, url.hostname, (err?: Error) => {
       if (err) {
         reject(err);
         return;
       }
 
-      openBrowser(urls.localUrlForBrowser);
+      openBrowser(url.href);
       resolve();
     });
   });

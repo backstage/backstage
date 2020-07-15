@@ -18,13 +18,13 @@ import { IconComponent } from '../icons';
 
 export type RouteRef = {
   path: string;
-  icon: IconComponent;
+  icon?: IconComponent;
   title: string;
 };
 
 export type RouteRefConfig = {
   path: string;
-  icon: IconComponent;
+  icon?: IconComponent;
   title: string;
 };
 

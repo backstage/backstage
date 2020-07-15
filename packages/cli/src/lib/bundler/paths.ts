@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { existsSync } from 'fs';
+import fs from 'fs-extra';
 import { paths } from '../paths';
 
 export type BundlingPathsOptions = {
@@ -28,21 +28,35 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
   const resolveTargetModule = (path: string) => {
     for (const ext of ['mjs', 'js', 'ts', 'tsx', 'jsx']) {
       const filePath = paths.resolveTarget(`${path}.${ext}`);
-      if (existsSync(filePath)) {
+      if (fs.pathExistsSync(filePath)) {
         return filePath;
       }
     }
     return paths.resolveTarget(`${path}.js`);
   };
 
-  let targetHtml = paths.resolveTarget(`${entry}.html`);
-  if (!existsSync(targetHtml)) {
-    targetHtml = paths.resolveOwn('templates/serve_index.html');
+  let targetPublic = undefined;
+  let targetHtml = paths.resolveTarget('public/index.html');
+
+  // Prefer public folder
+  if (fs.pathExistsSync(targetHtml)) {
+    targetPublic = paths.resolveTarget('public');
+  } else {
+    targetHtml = paths.resolveTarget(`${entry}.html`);
+    if (!fs.pathExistsSync(targetHtml)) {
+      targetHtml = paths.resolveOwn('templates/serve_index.html');
+    }
   }
+
+  // Backend plugin dev run file
+  const targetRunFile = paths.resolveTarget('src/run.ts');
+  const runFileExists = fs.pathExistsSync(targetRunFile);
 
   return {
     targetHtml,
+    targetPublic,
     targetPath: paths.resolveTarget('.'),
+    targetRunFile: runFileExists ? targetRunFile : undefined,
     targetDist: paths.resolveTarget('dist'),
     targetAssets: paths.resolveTarget('assets'),
     targetSrc: paths.resolveTarget('src'),
@@ -51,6 +65,8 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     targetTsConfig: paths.resolveTargetRoot('tsconfig.json'),
     targetNodeModules: paths.resolveTarget('node_modules'),
     targetPackageJson: paths.resolveTarget('package.json'),
+    rootNodeModules: paths.resolveTargetRoot('node_modules'),
+    root: paths.targetRoot,
   };
 }
 

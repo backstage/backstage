@@ -20,12 +20,18 @@ import { GoogleSession } from './types';
 import {
   OAuthApi,
   OpenIdConnectApi,
-  IdTokenOptions,
-  AccessTokenOptions,
+  ProfileInfoApi,
+  ProfileInfo,
+  SessionStateApi,
+  SessionState,
+  BackstageIdentityApi,
+  AuthRequestOptions,
+  BackstageIdentity,
 } from '../../../definitions/auth';
 import { OAuthRequestApi, AuthProvider } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
+import { Observable } from '../../../../types';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
@@ -39,10 +45,14 @@ type CreateOptions = {
 };
 
 export type GoogleAuthResponse = {
-  accessToken: string;
-  idToken: string;
-  scope: string;
-  expiresInSeconds: number;
+  providerInfo: {
+    accessToken: string;
+    idToken: string;
+    scope: string;
+    expiresInSeconds: number;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
 };
 
 const DEFAULT_PROVIDER = {
@@ -53,11 +63,17 @@ const DEFAULT_PROVIDER = {
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
-class GoogleAuth implements OAuthApi, OpenIdConnectApi {
+class GoogleAuth
+  implements
+    OAuthApi,
+    OpenIdConnectApi,
+    ProfileInfoApi,
+    BackstageIdentityApi,
+    SessionStateApi {
   static create({
     apiOrigin,
     basePath,
-    environment = 'dev',
+    environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
@@ -69,10 +85,15 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
       oauthRequestApi: oauthRequestApi,
       sessionTransform(res: GoogleAuthResponse): GoogleSession {
         return {
-          idToken: res.idToken,
-          accessToken: res.accessToken,
-          scopes: GoogleAuth.normalizeScopes(res.scope),
-          expiresAt: new Date(Date.now() + res.expiresInSeconds * 1000),
+          ...res,
+          providerInfo: {
+            idToken: res.providerInfo.idToken,
+            accessToken: res.providerInfo.accessToken,
+            scopes: GoogleAuth.normalizeScopes(res.providerInfo.scope),
+            expiresAt: new Date(
+              Date.now() + res.providerInfo.expiresInSeconds * 1000,
+            ),
+          },
         };
       },
     });
@@ -84,9 +105,10 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
         `${SCOPE_PREFIX}userinfo.email`,
         `${SCOPE_PREFIX}userinfo.profile`,
       ]),
-      sessionScopes: session => session.scopes,
-      sessionShouldRefresh: session => {
-        const expiresInSec = (session.expiresAt.getTime() - Date.now()) / 1000;
+      sessionScopes: (session: GoogleSession) => session.providerInfo.scopes,
+      sessionShouldRefresh: (session: GoogleSession) => {
+        const expiresInSec =
+          (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000;
         return expiresInSec < 60 * 5;
       },
     });
@@ -94,33 +116,42 @@ class GoogleAuth implements OAuthApi, OpenIdConnectApi {
     return new GoogleAuth(sessionManager);
   }
 
+  sessionState$(): Observable<SessionState> {
+    return this.sessionManager.sessionState$();
+  }
+
   constructor(private readonly sessionManager: SessionManager<GoogleSession>) {}
 
   async getAccessToken(
     scope?: string | string[],
-    options?: AccessTokenOptions,
+    options?: AuthRequestOptions,
   ) {
-    const normalizedScopes = GoogleAuth.normalizeScopes(scope);
     const session = await this.sessionManager.getSession({
       ...options,
-      scopes: normalizedScopes,
+      scopes: GoogleAuth.normalizeScopes(scope),
     });
-    if (session) {
-      return session.accessToken;
-    }
-    return '';
+    return session?.providerInfo.accessToken ?? '';
   }
 
-  async getIdToken(options: IdTokenOptions = {}) {
+  async getIdToken(options: AuthRequestOptions = {}) {
     const session = await this.sessionManager.getSession(options);
-    if (session) {
-      return session.idToken;
-    }
-    return '';
+    return session?.providerInfo.idToken ?? '';
   }
 
   async logout() {
     await this.sessionManager.removeSession();
+  }
+
+  async getBackstageIdentity(
+    options: AuthRequestOptions = {},
+  ): Promise<BackstageIdentity | undefined> {
+    const session = await this.sessionManager.getSession(options);
+    return session?.backstageIdentity;
+  }
+
+  async getProfile(options: AuthRequestOptions = {}) {
+    const session = await this.sessionManager.getSession(options);
+    return session?.profile;
   }
 
   static normalizeScopes(scopes?: string | string[]): Set<string> {
