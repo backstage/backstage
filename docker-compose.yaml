@@ -11,6 +11,4 @@ services:
     ports:
       - '7000:7000'
     environment:
-      ROLLBAR_ACCOUNT_TOKEN: TOKEN
-      SENTRY_TOKEN: TOKEN
-      GITHUB_ACCESS_TOKEN: TOKEN
+      NODE_ENV: development
