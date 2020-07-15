@@ -38,9 +38,59 @@ import {
 } from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
+import passport from 'passport';
 
 export class GithubAuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: GithubStrategy;
+
+  static transformPassportProfile(rawProfile: any): passport.Profile {
+    const profile: passport.Profile = {
+      id: rawProfile.username,
+      username: rawProfile.username,
+      provider: rawProfile.provider,
+      displayName: rawProfile.displayName || rawProfile.username,
+      photos: rawProfile.photos,
+      emails: rawProfile.emails,
+    };
+
+    return profile;
+  }
+
+  static transformOAuthResponse(
+    accessToken: string,
+    rawProfile: any,
+    params: any = {},
+  ): OAuthResponse {
+    const passportProfile = GithubAuthProvider.transformPassportProfile(
+      rawProfile,
+    );
+
+    const profile = makeProfileInfo(passportProfile, params.id_token);
+    const providerInfo = {
+      accessToken,
+      scope: params.scope,
+      expiresInSeconds: params.expires_in,
+      idToken: params.id_token,
+    };
+
+    // Github provides an id numeric value (123)
+    // as a fallback
+    const id = passportProfile!.id;
+
+    if (params.expires_in) {
+      providerInfo.expiresInSeconds = params.expires_in;
+    }
+    if (params.id_token) {
+      providerInfo.idToken = params.id_token;
+    }
+    return {
+      providerInfo,
+      profile,
+      backstageIdentity: {
+        id,
+      },
+    };
+  }
 
   constructor(options: OAuthProviderOptions) {
     this._strategy = new GithubStrategy(
@@ -52,15 +102,12 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
         rawProfile: any,
         done: PassportDoneCallback<OAuthResponse>,
       ) => {
-        const profile = makeProfileInfo(rawProfile);
-        done(undefined, {
-          providerInfo: {
-            accessToken,
-            scope: params.scope,
-            expiresInSeconds: params.expires_in,
-          },
-          profile,
-        });
+        const oauthResponse = GithubAuthProvider.transformOAuthResponse(
+          accessToken,
+          rawProfile,
+          params,
+        );
+        done(undefined, oauthResponse);
       },
     );
   }
