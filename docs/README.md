@@ -6,7 +6,6 @@ better yet, a pull request.
 
 - Overview
   - [What is Backstage?](overview/what-is-backstage.md)
-  - [Introduction](overview/introduction.md)
   - [Architecture and terminology](overview/architecture-terminology.md)
   - [Roadmap](overview/roadmap.md)
   - Getting started
@@ -53,12 +52,12 @@ better yet, a pull request.
     - [Structure of a plugin](plugins/structure-of-a-plugin.md)
     - Backends and APIs
       - [Proxying](plugins/proxying.md)
-      - [Backstage backend plugin](plugins/proxying.md)
+      - [Backstage backend plugin](plugins/backend-plugin.md)
       - [Call existing API](plugins/call-existing-api.md)
     - Testing
       - [Overview](plugins/testing.md)
     - Publishing
-      - [Open source and NPM](plugins/publish-open-source.md)
+      - [Open source and NPM](plugins/publishing.md)
       - [Private/internal (non-open source)](plugins/publish-private.md)
   - Authentication and identity
     - [Overview](auth/index.md)
