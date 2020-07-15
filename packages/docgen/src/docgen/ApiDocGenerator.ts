@@ -24,7 +24,6 @@ import {
   TypeInfo,
   TypeLink,
 } from './types';
-import { flatMap } from './flatMap';
 
 /**
  * The ApiDocGenerator uses the typescript compiler API to build the data structure that
@@ -103,14 +102,13 @@ export default class ApiDocGenerator {
     );
     const docs = this.getNodeDocs(declaration);
 
-    const membersAndTypes = flatMap(
-      Array.from(interfaceMembers.values()),
-      fieldSymbol => this.getMemberInfo(name, fieldSymbol),
-    );
+    const membersAndTypes = Array.from(
+      interfaceMembers.values(),
+    ).flatMap(fieldSymbol => this.getMemberInfo(name, fieldSymbol));
 
     const members = membersAndTypes.map(t => t.member);
     const dependentTypes = this.flattenTypes(
-      flatMap(membersAndTypes, t => t.dependentTypes),
+      membersAndTypes.flatMap(t => t.dependentTypes),
     );
 
     return { name, docs, file, lineInFile: line + 1, members, dependentTypes };
@@ -184,14 +182,14 @@ export default class ApiDocGenerator {
     // It doesn't exclude repeated types, e.g. Array<Array<MyType>>, since we're exiting on duplicate nodes, not types.
     visited.add(node);
 
-    const children = flatMap(node.getChildren(), child =>
-      this.findAllTypeReferences(child, visited),
-    );
+    const children = node
+      .getChildren()
+      .flatMap(child => this.findAllTypeReferences(child, visited));
 
     if (!ts.isTypeReferenceNode(node)) {
       return {
-        links: flatMap(children, child => child.links),
-        infos: flatMap(children, child => child.infos),
+        links: children.flatMap(child => child.links),
+        infos: children.flatMap(child => child.infos),
       };
     }
 
@@ -200,8 +198,8 @@ export default class ApiDocGenerator {
     const info = this.validateTypeDeclaration(type);
     if (!info) {
       return {
-        links: flatMap(children, child => child.links),
-        infos: flatMap(children, child => child.infos),
+        links: children.flatMap(child => child.links),
+        infos: children.flatMap(child => child.infos),
       };
     }
     const { symbol, declaration } = info;
@@ -233,8 +231,8 @@ export default class ApiDocGenerator {
     };
 
     return {
-      links: [link, ...flatMap(children, child => child.links)],
-      infos: [typeInfo, ...flatMap(children, child => child.infos)],
+      links: [link, ...children.flatMap(child => child.links)],
+      infos: [typeInfo, ...children.flatMap(child => child.infos)],
     };
   };
 
@@ -270,11 +268,11 @@ export default class ApiDocGenerator {
           ...parent,
           children: [],
         },
-        ...flatMap(parent.children, getChildren),
+        ...parent.children.flatMap(getChildren),
       ];
     }
 
-    const flatDescs = flatMap(descs, getChildren);
+    const flatDescs = descs.flatMap(getChildren);
     const seenTypes = new Set<number>();
     return flatDescs.filter(desc => {
       if (seenTypes.has(desc.id)) {

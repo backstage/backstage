@@ -15,7 +15,6 @@
  */
 
 import { Highlighter } from './types';
-import { flatMap } from './flatMap';
 
 // Simple syntax highlighter that mimics hilite
 export default class TypescriptHighlighter implements Highlighter {
@@ -79,7 +78,7 @@ export default class TypescriptHighlighter implements Highlighter {
 
     // Order here is important, e.g. comments must be first to avoid string literals inside comments being highlighted
     return TypescriptHighlighter.highlighters
-      .reduce((parts, highlighter) => flatMap(parts, painter(...highlighter)), [
+      .reduce((parts, highlighter) => parts.flatMap(painter(...highlighter)), [
         { text: fullText },
       ])
       .map(({ text }) => text)
