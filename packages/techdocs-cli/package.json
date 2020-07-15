@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "scripts": {
-    "build": "./bin/build",
+    "build": "./bin/build.sh",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test --passWithNoTests",
     "clean": "backstage-cli clean",
