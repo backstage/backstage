@@ -17,16 +17,16 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import mockFetch from 'jest-fetch-mock';
-import ExampleComponent from './ExampleComponent';
+import DfdsWebApiComponentWrapper from './DfdsWebApiComponentWrapper';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 
-describe('ExampleComponent', () => {
+describe('DfdsWebApiComponentWrapper', () => {
   it('should render', () => {
     mockFetch.mockResponse(() => new Promise(() => {}));
     const rendered = render(
       <ThemeProvider theme={lightTheme}>
-        <ExampleComponent />
+        <DfdsWebApiComponentWrapper />
       </ThemeProvider>,
     );
     expect(rendered.getByText('Welcome to dfds-web-api!')).toBeInTheDocument();

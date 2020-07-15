@@ -26,32 +26,28 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core';
-import ExampleFetchComponent from '../ExampleFetchComponent';
+import DfdsWebApiComponent from '../DfdsWebApiComponent/DfdsWebApiComponent';
 
-const ExampleComponent: FC<{}> = () => (
+const DfdsWebApiComponentWrapper: FC<{}> = () => (
   <Page theme={pageTheme.tool}>
     <Header title="Welcome to dfds-web-api!" subtitle="Optional subtitle">
-      <HeaderLabel label="Owner" value="Team X" />
+      <HeaderLabel label="Owner" value="Team DFDS" />
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
     <Content>
       <ContentHeader title="Plugin title">
-        <SupportButton>A description of your plugin goes here.</SupportButton>
+        <SupportButton>Deploy your WebAPI here!!</SupportButton>
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>
           <InfoCard title="Information card">
-            <Typography variant="body1">
-              All content should be wrapped in a card like this.
-            </Typography>
+            <Typography variant="body1">Lorem ipsum</Typography>
           </InfoCard>
         </Grid>
-        <Grid item>
-          <ExampleFetchComponent />
-        </Grid>
+        <Grid item>{new DfdsWebApiComponent().render().getHTML()}</Grid>
       </Grid>
     </Content>
   </Page>
 );
 
-export default ExampleComponent;
+export default DfdsWebApiComponentWrapper;

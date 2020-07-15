@@ -15,7 +15,7 @@
  */
 
 import { createPlugin, createRouteRef } from '@backstage/core';
-import ExampleComponent from './components/ExampleComponent';
+import DfdsWebApiComponentWrapper from './components/DfdsWebApiComponentWrapper';
 
 export const rootRouteRef = createRouteRef({
   path: '/dfds-web-api',
@@ -25,6 +25,6 @@ export const rootRouteRef = createRouteRef({
 export const plugin = createPlugin({
   id: 'dfds-web-api',
   register({ router }) {
-    router.addRoute(rootRouteRef, ExampleComponent);
+    router.addRoute(rootRouteRef, DfdsWebApiComponentWrapper);
   },
 });
