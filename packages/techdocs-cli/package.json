@@ -36,7 +36,7 @@
   },
   "files": [
     "bin",
-    "dist/**/*.js"
+    "dist"
   ],
   "nodemonConfig": {
     "watch": "./src",
@@ -45,7 +45,6 @@
   },
   "dependencies": {
     "@backstage/cli": "^0.1.1-alpha.13",
-    "chalk": "^4.1.0",
     "commander": "^5.1.0",
     "fs-extra": "^9.0.1",
     "http-proxy": "^1.18.1",
