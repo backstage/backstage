@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  frontend:
+    image: 'spotify/backstage:latest'
+    ports:
+      - '3000:80'
+    environment: &environment
+      ROLLBAR_ACCOUNT_TOKEN: TOKEN
+      SENTRY_TOKEN: TOKEN
+      GITHUB_ACCESS_TOKEN: TOKEN
+  backend:
+    image: 'example-backend:latest'
+    ports:
+      - '7000:7000'
+    environment: *environment
