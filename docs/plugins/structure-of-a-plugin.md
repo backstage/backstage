@@ -104,4 +104,4 @@ either the one you already have (like nginx/haproxy/etc) or the proxy-backend
 plugin that we provide for the backstage backend.
 [Read more](../../plugins/proxy-backend/README.md)
 
-[Back to Getting Started](README.md)
+[Back to Getting Started](../README.md)

@@ -3,9 +3,9 @@
 ## NPM
 
 NPM packages are published through CI/CD in the
-[.github/workflows/master.yml](../.github/workflows/master.yml) workflow. Every
-commit that is merged to master will be checked for new versions of all public
-packages, and any new versions will automatically be published to NPM.
+[.github/workflows/master.yml](../../.github/workflows/master.yml) workflow.
+Every commit that is merged to master will be checked for new versions of all
+public packages, and any new versions will automatically be published to NPM.
 
 ### Creating a new release
 
@@ -35,4 +35,4 @@ $ git push origin -u new-release
 And then create a PR. Once the PR is approved and merged into master, the master
 build will publish new versions of all bumped packages.
 
-[Back to Docs](README.md)
+[Back to Docs](../README.md)

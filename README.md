@@ -92,7 +92,7 @@ Take a look at the [Getting Started](docs/getting-started/README.md) guide to le
 
 - [Getting Started](docs/getting-started/README.md)
 - [Create a Backstage App](docs/create-an-app.md)
-- [Architecture](docs/architecture-terminology.md) ([Decisions](docs/architecture-decisions))
+- [Architecture](docs/overview/architecture-terminology.md) ([Decisions](docs/architecture-decisions))
 - [API references](docs/reference/README.md)
 - [Designing for Backstage](docs/design.md)
 - [Storybook - UI components](http://storybook.backstage.io)
