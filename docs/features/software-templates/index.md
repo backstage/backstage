@@ -47,7 +47,7 @@ step that failed which can be helpful to debug.
 
 ![Templating failed](./assets/failed.png)
 
-### View in the Catalog
+### View Component in Catalog
 
 When it's been created you'll see the `View in Catalog` button, which will take
 you to the registered component in the catalog:
