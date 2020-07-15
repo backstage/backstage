@@ -147,5 +147,5 @@ export function createSamlProvider(
     envProviders[env] = new SamlAuthProvider(opts);
   }
 
-  return new EnvironmentHandler(envProviders);
+  return new EnvironmentHandler('saml', envProviders);
 }

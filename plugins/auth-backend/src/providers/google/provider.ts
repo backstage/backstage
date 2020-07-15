@@ -154,16 +154,16 @@ export function createGoogleProvider(
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
+  const providerId = 'google';
   const envProviders: EnvironmentHandlers = {};
 
   for (const [env, envConfig] of Object.entries(providerConfig)) {
     const config = (envConfig as unknown) as OAuthProviderConfig;
     const { secure, appOrigin } = config;
-    const callbackURLParam = `?env=${env}`;
     const opts = {
       clientID: config.clientId,
       clientSecret: config.clientSecret,
-      callbackURL: `${baseUrl}/google/handler/frame${callbackURLParam}`,
+      callbackURL: `${baseUrl}/${providerId}/handler/frame?env=${env}`,
     };
 
     if (!opts.clientID || !opts.clientSecret) {
@@ -181,12 +181,12 @@ export function createGoogleProvider(
 
     envProviders[env] = new OAuthProvider(new GoogleAuthProvider(opts), {
       disableRefresh: false,
-      providerId: 'google',
+      providerId,
       secure,
       baseUrl,
       appOrigin,
       tokenIssuer,
     });
   }
-  return new EnvironmentHandler(envProviders);
+  return new EnvironmentHandler(providerId, envProviders);
 }
