@@ -39,10 +39,9 @@ const documentationSites: Array<DocumentationSite> = [
   },
   {
     title: 'Backstage Docs',
-    description:
-      'Getting started guides, API Overview, documentation around how to Create a Plugin and more. ',
+    description: 'Main documentation for Backstage features and platform APIs.',
     tags: ['Service'],
-    path: '/docs/backstage-microsite',
+    path: '/docs/backstage',
     btnLabel: 'Read Docs',
   },
 ];
