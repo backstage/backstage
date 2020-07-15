@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Link } from '@backstage/core';
 import {
   LinearProgress,
   makeStyles,
@@ -27,10 +26,9 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { BuildsClient } from '../../apis/builds';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
-
-const client = BuildsClient.create();
+import { githubActionsApiRef } from '../../api';
+import { Link, useApi, githubAuthApiRef } from '@backstage/core';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -41,62 +39,69 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const BuildInfoCard = () => {
-  const classes = useStyles();
-  const status = useAsync(() => client.listBuilds('entity:spotify:backstage'));
+const BuildInfoCardContent = () => {
+  const api = useApi(githubActionsApiRef);
+  const githubApi = useApi(githubAuthApiRef);
 
-  let content: JSX.Element;
+  const status = useAsync(async () => {
+    const token = await githubApi.getAccessToken('repo');
+    return api.listBuilds({ owner: 'spotify', repo: 'backstage', token });
+  });
 
   if (status.loading) {
-    content = <LinearProgress />;
+    return <LinearProgress />;
   } else if (status.error) {
-    content = (
+    return (
       <Typography variant="h2" color="error">
         Failed to load builds, {status.error.message}
       </Typography>
     );
-  } else {
-    const [build] =
-      status.value?.filter(({ branch }) => branch === 'master') ?? [];
-
-    content = (
-      <Table>
-        <TableBody>
-          <TableRow>
-            <TableCell>
-              <Typography noWrap>Message</Typography>
-            </TableCell>
-            <TableCell>
-              <Link to={`builds/${encodeURIComponent(build?.uri || '')}`}>
-                <Typography color="primary">{build?.message}</Typography>
-              </Link>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography noWrap>Commit ID</Typography>
-            </TableCell>
-            <TableCell>{build?.commitId}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography noWrap>Status</Typography>
-            </TableCell>
-            <TableCell>
-              <BuildStatusIndicator status={build?.status} />
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    );
   }
+
+  const [build] =
+    status.value?.filter(({ branch }) => branch === 'master') ?? [];
+
+  return (
+    <Table>
+      <TableBody>
+        <TableRow>
+          <TableCell>
+            <Typography noWrap>Message</Typography>
+          </TableCell>
+          <TableCell>
+            <Link to={`builds/${encodeURIComponent(build?.uri || '')}`}>
+              <Typography color="primary">{build?.message}</Typography>
+            </Link>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>
+            <Typography noWrap>Commit ID</Typography>
+          </TableCell>
+          <TableCell>{build?.commitId}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>
+            <Typography noWrap>Status</Typography>
+          </TableCell>
+          <TableCell>
+            <BuildStatusIndicator status={build?.status} />
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  );
+};
+
+export const BuildInfoCard = () => {
+  const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <Typography variant="h2" className={classes.title}>
         Master Build
       </Typography>
-      {content}
+      <BuildInfoCardContent />
     </div>
   );
 };

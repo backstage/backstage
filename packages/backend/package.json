@@ -18,6 +18,7 @@
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
+    "@backstage/plugin-proxy-backend": "^0.1.1-alpha.13",
     "@backstage/backend-common": "^0.1.1-alpha.13",
     "@backstage/catalog-model": "^0.1.1-alpha.13",
     "@backstage/config": "^0.1.1-alpha.13",

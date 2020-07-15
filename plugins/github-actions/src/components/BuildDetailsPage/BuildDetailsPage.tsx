@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Link } from '@backstage/core';
 import {
   Button,
   ButtonGroup,
@@ -30,10 +29,11 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { BuildsClient } from '../../apis/builds';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
+import { Link, useApi, githubAuthApiRef } from '@backstage/core';
+import { githubActionsApiRef } from '../../api';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -48,12 +48,18 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const client = BuildsClient.create();
-
 export const BuildDetailsPage = () => {
+  const api = useApi(githubActionsApiRef);
+  const githubApi = useApi(githubAuthApiRef);
+  const token = githubApi.getAccessToken('repo');
+
   const classes = useStyles();
-  const { buildUri } = useParams();
-  const status = useAsync(() => client.getBuild(buildUri), [buildUri]);
+  const location = useLocation();
+  const status = useAsync(
+    () =>
+      api.getBuild(decodeURIComponent(location.search.split('uri=')[1]), token),
+    [location.search],
+  );
 
   if (status.loading) {
     return <LinearProgress />;
@@ -70,7 +76,7 @@ export const BuildDetailsPage = () => {
   return (
     <div className={classes.root}>
       <Typography className={classes.title} variant="h3">
-        <Link to="/builds">
+        <Link to="/github-actions">
           <Typography component="span" variant="h3" color="primary">
             &lt;
           </Typography>
@@ -124,12 +130,12 @@ export const BuildDetailsPage = () => {
                 >
                   {details?.overviewUrl && (
                     <Button>
-                      <Link to={details.overviewUrl}>GitHub</Link>
+                      <a href={details.overviewUrl}>GitHub</a>
                     </Button>
                   )}
                   {details?.logUrl && (
                     <Button>
-                      <Link to={details.logUrl}>Logs</Link>
+                      <a href={details.logUrl}>Logs</a>
                     </Button>
                   )}
                 </ButtonGroup>

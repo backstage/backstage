@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// @ts-ignore
+import { createRouter } from '@backstage/plugin-proxy-backend';
+import { PluginEnvironment } from '../types';
 
-export { BuildsClient } from './BuildsClient';
-export * from './types';
+export default async function createPlugin({
+  logger,
+  config,
+}: PluginEnvironment) {
+  return await createRouter({ logger, config });
+}
