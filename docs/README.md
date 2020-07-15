@@ -73,6 +73,9 @@ better yet, a pull request.
   - API references
     - TypeScript API
       - [Utilities](api/utility-apis.md)
+      - [createPlugin](reference/createPlugin.md)
+      - [createPlugin-feature-flags](reference/createPlugin-feature-flags.md)
+      - [createPlugin-router](reference/createPlugin-router.md)
     - Backend APIs
       - [Backend](api/backend.md)
   - Tutorials
