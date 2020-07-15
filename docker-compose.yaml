@@ -8,7 +8,6 @@ services:
     image: 'spotify/backstage:latest'
     ports:
       - '3000:80'
-
   backend:
     image: 'example-backend:latest'
     ports:
