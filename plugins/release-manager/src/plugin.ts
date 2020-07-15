@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
+import { createPlugin, createRouteRef } from '@backstage/core';
 import ReleaseManagerPage from './ReleaseManagerPage';
+
+export const rootRouteRef = createRouteRef({
+  path: '/release-manager',
+  title: 'Release Manager',
+});
 
 export const plugin = createPlugin({
   id: 'release-manager',
   register({ router }) {
-    router.registerRoute('/release-manager', ReleaseManagerPage);
+    router.addRoute(rootRouteRef, ReleaseManagerPage);
   },
 });
