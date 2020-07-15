@@ -225,7 +225,7 @@ export default class ApiDocGenerator {
       id: typeInfo.id,
       path: typeInfo.path,
       name: typeInfo.name,
-      location: [node.getStart(), node.getEnd()] as const,
+      location: [node.typeName.getStart(), node.typeName.getEnd()] as const,
     };
 
     return {
