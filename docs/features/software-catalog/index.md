@@ -21,4 +21,6 @@ can be organised around the entities in the catalog.
 
 ## Using the Service Catalog
 
+TODO
+
 ![](service-catalog-home.png)

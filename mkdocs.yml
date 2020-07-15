@@ -15,7 +15,7 @@ nav:
           - Create an App: 'getting-started/create-an-app.md'
           - App configuration:
               - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
-              - Customize the look-and-feel of your App: 'getting-started/customize-app-look-and-feel.md'
+              - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
           - Deployment scenarios:
               - Kubernetes: 'getting-started/deployment-k8s.md'
               - Other: 'getting-started/deployment-other.md'
@@ -70,7 +70,7 @@ nav:
       - Glossary: 'auth/glossary.md'
   - Designing for Backstage:
       - Backstage Design Language System (DLS): 'dls/design.md'
-      - Storybook -- reusable UI components: 'dls/storybook.md'
+      - Storybook -- reusable UI components: 'http://storybook.backstage.io'
       - Contributing to Storybook: 'dls/contributing-to-storybook.md'
       - Figma resources: 'dls/figma.md'
   - API references:
