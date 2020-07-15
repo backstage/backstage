@@ -8,6 +8,7 @@ better yet, a pull request.
   - [What is Backstage?](overview/what-is-backstage.md)
   - [Introduction](overview/introduction.md)
   - [Architecture and terminology](overview/architecture-terminology.md)
+  - [Roadmap](overview/roadmap.md)
   - Getting started
     - [Running Backstage locally](getting-started/index.md)
     - [Installation](getting-started/installation.md)
