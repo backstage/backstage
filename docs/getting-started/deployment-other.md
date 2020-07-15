@@ -23,5 +23,5 @@ $ yarn docker-build:all
 $ docker-compose up
 ```
 
-Then open http://localhost/ on your browser to see the example app with an
+Then open http://localhost:3000 on your browser to see the example app with an
 example backend.
