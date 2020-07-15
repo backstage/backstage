@@ -97,7 +97,11 @@ export default class TypeLocator {
   private getExportedConstructorDeclaration(
     node: ts.Node,
   ):
-    | { constructorType: ts.Type; initializer: ts.NewExpression; name: string }
+    | {
+        constructorType: ts.Type;
+        initializer: ts.CallExpression | ts.NewExpression;
+        name: string;
+      }
     | undefined {
     if (!ts.isVariableStatement(node)) {
       return undefined;
@@ -119,7 +123,7 @@ export default class TypeLocator {
     if (!initializer || !name) {
       return undefined;
     }
-    if (!ts.isNewExpression(initializer)) {
+    if (!ts.isCallOrNewExpression(initializer)) {
       return undefined;
     }
     if (!ts.isIdentifier(name)) {
