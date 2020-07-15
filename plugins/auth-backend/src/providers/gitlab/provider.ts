@@ -142,6 +142,7 @@ export function createGitlabProvider(
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
+  const providerId = 'gitlab';
   const envProviders: EnvironmentHandlers = {};
 
   for (const [env, envConfig] of Object.entries(providerConfig)) {
@@ -152,12 +153,10 @@ export function createGitlabProvider(
       clientSecret,
       audience,
     } = (envConfig as unknown) as OAuthProviderConfig;
-    const callbackURLParam = `?env=${env}`;
-
     const opts = {
       clientID: clientId,
       clientSecret: clientSecret,
-      callbackURL: `${baseUrl}/gitlab/handler/frame${callbackURLParam}`,
+      callbackURL: `${baseUrl}/${providerId}/handler/frame?env=${env}`,
       baseURL: audience,
     };
 
@@ -176,12 +175,12 @@ export function createGitlabProvider(
 
     envProviders[env] = new OAuthProvider(new GitlabAuthProvider(opts), {
       disableRefresh: true,
-      providerId: 'gitlab',
+      providerId,
       secure,
       baseUrl,
       appOrigin,
       tokenIssuer,
     });
   }
-  return new EnvironmentHandler(envProviders);
+  return new EnvironmentHandler(providerId, envProviders);
 }

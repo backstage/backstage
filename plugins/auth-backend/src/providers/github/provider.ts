@@ -135,16 +135,16 @@ export function createGithubProvider(
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
+  const providerId = 'github';
   const envProviders: EnvironmentHandlers = {};
 
   for (const [env, envConfig] of Object.entries(providerConfig)) {
     const config = (envConfig as unknown) as OAuthProviderConfig;
     const { secure, appOrigin } = config;
-    const callbackURLParam = `?env=${env}`;
     const opts = {
       clientID: config.clientId,
       clientSecret: config.clientSecret,
-      callbackURL: `${baseUrl}/github/handler/frame${callbackURLParam}`,
+      callbackURL: `${baseUrl}/${providerId}/handler/frame?env=${env}`,
     };
 
     if (!opts.clientID || !opts.clientSecret) {
@@ -163,12 +163,12 @@ export function createGithubProvider(
     envProviders[env] = new OAuthProvider(new GithubAuthProvider(opts), {
       disableRefresh: true,
       persistScopes: true,
-      providerId: 'github',
+      providerId,
       secure,
       baseUrl,
       appOrigin,
       tokenIssuer,
     });
   }
-  return new EnvironmentHandler(envProviders);
+  return new EnvironmentHandler(providerId, envProviders);
 }
