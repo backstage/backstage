@@ -64,5 +64,3 @@ const ExampleButton: FC<{}> = () => {
   );
 };
 ```
-
-[Back to References](README.md)
