@@ -25,8 +25,8 @@ as possible to create new plugins, and an auth solution based on user-to-server
 OAuth helps in that regard.
 
 The method with which frontend plugins request access to third party services is
-through [Utility APIs](../getting-started/utility-apis.md) for each service
-provider. For a full list of providers, see [TODO](#TODO).
+through [Utility APIs](../api/utility-apis.md) for each service provider. For a
+full list of providers, see [TODO](#TODO).
 
 ### Identity - WIP
 

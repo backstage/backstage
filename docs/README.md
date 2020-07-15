@@ -68,6 +68,7 @@ better yet, a pull request.
   - Designing for Backstage
     - [Backstage Design Language System (DLS)](dls/design.md)
     - [Storybook -- reusable UI components](dls/storybook.md)
+    - [Contributing to Storybook](dls/contributing-to-storybook.md)
     - [Figma resources](dls/figma.md)
   - API references
     - TypeScript API

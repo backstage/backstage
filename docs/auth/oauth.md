@@ -8,7 +8,7 @@ to various third party APIs.
 
 There are occasions when the user wants to perform actions towards third party
 services that require authorization via OAuth. Backstage provides standardized
-[Utility APIs](../getting-started/utility-apis.md) such as the
+[Utility APIs](../api/utility-apis.md) such as the
 [GoogleAuthApi](../../packages/core-api/src/apis/definitions/auth.ts) for that
 use-case. Backstage also includes a set of implementations of these APIs that
 integrate with the [auth-backend](../../plugins/auth-backend) plugin to provide
