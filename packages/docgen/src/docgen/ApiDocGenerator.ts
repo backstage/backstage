@@ -61,12 +61,16 @@ export default class ApiDocGenerator {
 
     const id = this.getObjectPropertyLiteral(info, 'id');
     const description = this.getObjectPropertyLiteral(info, 'description');
-    const interfaceInfo = this.getInterfaceInfo(typeArgs[0]);
-    if (!interfaceInfo) {
-      throw new Error('api has no info type argument');
-    }
 
-    return { id, name, source, description, interfaceInfo };
+    const rootTypeNode = typeArgs[0];
+    const typeNodes = ts.isIntersectionTypeNode(rootTypeNode)
+      ? rootTypeNode.types.slice()
+      : [rootTypeNode];
+    const interfaceInfos = typeNodes.map(typeNode =>
+      this.getInterfaceInfo(typeNode),
+    );
+
+    return { id, name, source, description, interfaceInfos };
   }
 
   private getNodeDocs(node: ts.Node): string[] {

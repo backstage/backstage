@@ -47,9 +47,9 @@ export default class ApiDocPrinter {
     // Remove line numbers from codeblocks
     printer.style('.linenodiv{ display: none }');
 
-    printer.header(1, `shared/apis/${apiDoc.id}`);
+    printer.header(1, apiDoc.id);
 
-    const ifInfo = apiDoc.interfaceInfo;
+    const ifInfo = apiDoc.interfaceInfos[0];
 
     if (ifInfo.docs.length) {
       for (const doc of ifInfo.docs) {
