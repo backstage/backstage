@@ -1,0 +1,105 @@
+name: $(Build.BuildId)
+
+# Triggers Pipeline only on Master
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    # Changes to these files does not trigger a new build / release
+    exclude:
+    - README.md
+    - LICENSE
+    - azure-pipelines.yaml
+
+# Disables triggering Pipeline run at creation of every Pull Request
+pr: none
+
+# Default agent pool to use for build pipeline
+pool:
+  vmImage: 'ubuntu-latest'
+
+# Global variables for the pipeline
+variables:
+  k8s-service-connection: 'Kubernetes-Hellman'
+  kubernetes-namespace: 'backstage'
+
+stages:
+# Continuous Integration steps
+- stage: CI
+  displayName: 'Continuous Integration'
+  jobs:
+
+  - job: Build
+    # Use multistage image to compile code and build image
+    displayName: 'Build image and push to ECR'
+    steps:
+    - task: Docker@2
+      displayName: 'Build Container Image'
+      inputs:
+        command: 'build'
+        Dockerfile: 'Dockerfile-dfds'
+        arguments: '-t backstage'
+
+    # Push the image to ECR with a tag based on the current BuildID
+    - task: ECRPushImage@1
+      displayName: 'Push Image to Shared ECR'
+      inputs:
+        awsCredentials: 'Shared-Prod ECR-Push'
+        regionName: 'eu-central-1'
+        imageSource: 'imagename'
+        sourceImageName: 'backstage'
+        repositoryName: 'selfservice/backstage'
+        pushTag: '$(Build.BuildId)'
+
+
+  - job: Publish
+    steps:
+    # Upload Kubernetes manifests to current artifact Pipeline from folder /k8s
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/install-dfds/kubernetes'
+        artifact: 'manifests'
+        publishLocation: 'pipeline'
+        displayName: 'Publish Artifact: manifests'    
+
+# Continuous Deployment steps
+- stage: CD
+  displayName: 'Continuous Deployment'
+  dependsOn: CI
+  # Run CD only if CI succeeds and if pipeline runs from Master branch
+  condition: and(succeeded('CI'), eq(variables['Build.SourceBranch'], 'refs/heads/master')) 
+
+  jobs:  
+  # Deployment job for kubernetes deployments
+  - deployment: K8s
+    displayName: 'Deploy to Kubernetes'
+    environment: 'Hellman'
+    strategy: 
+      runOnce:
+        deploy:
+          steps:
+
+          # Download manifest from current artifacts pipeline
+          - download: current
+            artifact: manifests
+            displayName: 'Download Artifact: manifests'
+          
+          # Replace token values in yaml files with pipeline variables
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in yaml files'
+            inputs:
+              rootDirectory: '$(Pipeline.Workspace)/manifests/'
+              targetFiles: '*.yaml'
+              tokenPrefix: '$('
+              tokenSuffix: ')'
+          
+          # Apply Kubernetes manifests
+          - task: Kubernetes@1
+            displayName: 'Apply manifests'
+            inputs:
+              connectionType: Kubernetes Service Connection
+              kubernetesServiceEndpoint: '$(k8s-service-connection)'
+              namespace: '$(kubernetes-namespace)'
+              command: apply
+              arguments: '-f $(Pipeline.Workspace)/manifests/'
