@@ -8,7 +8,7 @@ development tool as a plugin in Backstage. By following strong
 [design guidelines](https://github.com/spotify/backstage/blob/master/docs/design.md)
 we ensure the the overall user experience stays consistent between plugins.
 
-![plugin](../docs/getting-started/my-plugin_screenshot.png)
+![plugin](my-plugin_screenshot.png)
 
 ## Creating a plugin
 

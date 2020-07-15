@@ -40,4 +40,4 @@ for it can be found inside the plugin's `dev/` directory.
 
 [Next Step - Structure of a plugin](structure-of-a-plugin.md)
 
-[Back to Getting Started](README.md)
+[Back to Getting Started](../README.md)

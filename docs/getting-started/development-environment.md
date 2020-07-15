@@ -93,6 +93,6 @@ Then open http://localhost/ on your browser.
 
 > See [package.json](/package.json) for other yarn commands/options.
 
-[Next Step - Create a Backstage plugin](create-a-plugin.md)
+[Next Step - Create a Backstage plugin](../plugins/create-a-plugin.md)
 
-[Back to Docs](README.md)
+[Back to Docs](../README.md)
