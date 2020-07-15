@@ -1,0 +1,480 @@
+{
+  "config": [
+    {
+      "type": "Gitlab",
+      "src": "assets/img/logos/GitLab_logo.png",
+      "caption": "\u201cFrom project planning and source code management to CI/CD and monitoring, GitLab is a complete DevOps platform, delivered as a single application. Only GitLab enables Concurrent DevOps to make the software lifecycle 200% faster.\u201d",
+      "homepage": "https://gitlab.com/"
+    },
+    {
+      "type": "GitHub",
+      "src": "assets/img/logos/github.png",
+      "caption": "GitHub brings together the world\u2019s largest community of developers to discover, share, and build better software. From open source projects to private team repositories, we\u2019re your all-in-one platform for collaborative development.",
+      "homepage": "https://github.com"
+    },
+    {
+      "type": "Jenkins",
+      "src": "assets/img/logos/jenkins.png",
+      "caption": "Jenkins \u2013 an open source automation server which enables developers around the world to reliably build, test, and deploy their software",
+      "homepage": "https://jenkins.io/"
+    },
+    {
+      "type": "Rundeck",
+      "src": "assets/img/logos/rundeck.png",
+      "caption": "Rundeck is runbook automation for incident management, business continuity, and self-service operations. Shorter incidents. Fewer interruptions. Get more done.",
+      "homepage": "https://www.rundeck.com/"
+    },
+    {
+      "type": "K8s",
+      "src": "assets/img/logos/kubernetes.png",
+      "caption": "Kubernetes (K8s) is an open-source system for automating deployment, scaling, and management of containerized applications. It groups containers that make up an application into logical units for easy management and discovery. Kubernetes builds upon 15 years of experience of running production workloads at Google, combined with best-of-breed ideas and practices from the community.\n   Planet Scale Designed on the same principles that allows Google to run billions of containers a week, Kubernetes can scale without increasing your ops team.",
+      "homepage": "https://kubernetes.io/"
+    },
+    {
+      "type": "istio",
+      "src": "assets/img/logos/istio.png",
+      "caption": "Connect, secure, control, and observe services.",
+      "homepage": "https://istio.io/"
+    },
+    {
+      "type": "kiali",
+      "src": "assets/img/logos/kiali.png",
+      "caption": "Kiali is an observability console for Istio with service mesh configuration capabilities. It helps you to understand the structure of your service mesh by inferring the topology, and also provides the health of your mesh. Kiali provides detailed metrics, and a basic Grafana integration is available for advanced queries. Distributed tracing is provided by integrating Jaeger.",
+      "caption_custom": "Kiali is an observability console for Istio with service mesh configuration capabilities. It helps you to understand the structure of your service mesh by inferring the topology, and also provides the health of your mesh. Kiali provides detailed metrics, and a basic Grafana integration is available for advanced queries. Distributed tracing is provided by integrating Jaeger.",
+      "homepage": "https://kiali.io/"
+    },
+    {
+      "type": "Kong",
+      "src": "assets/img/logos/kong.png",
+      "caption": "The world's most popular open source microservice API gateway, Kong is blazingly fast, free to use and backed by a large community.",
+      "homepage": "https://konghq.com/kong/"
+    },
+    {
+      "type": "apigee",
+      "src": "assets/img/logos/apigee.png",
+      "caption": "Apigee, part of Google Cloud, helps leading companies design, secure, and scale application programming interfaces (APIs). Try Apigee Edge for free.",
+      "homepage": "https://cloud.google.com/apigee"
+    },
+    {
+      "type": "AWS",
+      "src": "assets/img/logos/aws.png",
+      "caption": "Amazon Web Services offers reliable, scalable, and  inexpensive cloud computing services. Free to join, pay only for what you use.",
+      "homepage": "https://aws.amazon.com/"
+    },
+    {
+      "type": "GCP",
+      "src": "assets/img/logos/TBD",
+      "caption": "Meet your business challenges head on with cloud computing services from Google, including data management, hybrid & multi-cloud, and AI & ML.",
+      "homepage": "https://cloud.google.com/"
+    },
+    {
+      "type": "Azure",
+      "src": "assets/img/logos/TBD",
+      "caption": "Invent with purpose, realize cost savings, and make your organization more efficient with Microsoft Azure\u2019s open and flexible cloud computing platform.",
+      "homepage": "https://azure.microsoft.com/"
+    },
+    {
+      "type": "Yodeck",
+      "src": "assets/img/logos/TBD",
+      "caption": "Yodeck enables you to design and schedule your digital signage on Raspberry Pi easily from the web, using your computer, tablet or smartphone.",
+      "homepage": "https://www.yodeck.com/"
+    },
+    {
+      "type": "keycloak",
+      "src": "assets/img/logos/TBD",
+      "caption": "Keycloak is an open source identity and access management solution",
+      "homepage": "https://www.keycloak.org/"
+    },
+    {
+      "type": "Prometheus",
+      "src": "assets/img/logos/prometheus.png",
+      "caption": "An open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach.",
+      "homepage": "https://prometheus.io/"
+    },
+    {
+      "type": "alertmanager",
+      "src": "assets/img/logos/alertmanager.png",
+      "caption_custom": "The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing them to the correct receiver integration such as email, PagerDuty, or OpsGenie. It also takes care of silencing and inhibition of alerts.",
+      "homepage": "https://prometheus.io/docs/alerting/alertmanager/",
+      "caption": "The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing them to the correct receiver integration such as email, PagerDuty, or OpsGenie. It also takes care of silencing and inhibition of alerts."
+    },
+    {
+      "type": "Grafana",
+      "src": "assets/img/logos/grafana.png",
+      "caption": "Grafana is the open source analytics & monitoring solution for every database",
+      "homepage": "https://grafana.com/"
+    },
+    {
+      "type": "elasticsearch",
+      "src": "assets/img/logos/elasticsearch-logo.png",
+      "caption": "Elasticsearch is the leading distributed, RESTful, open source search and analytics engine designed for speed, horizontal scalability, reliability, and easy management. Get started for free.",
+      "homepage": "https://www.elastic.co/elasticsearch/"
+    },
+    {
+      "type": "kibana",
+      "src": "assets/img/logos/kibana.png",
+      "caption": "Download Kibana or the complete Elastic Stack for free and start visualizing, analyzing, and exploring your data with Elastic in minutes.",
+      "homepage": "https://www.elastic.co/kibana"
+    },
+    {
+      "type": "ldap",
+      "src": "assets/img/logos/TBD",
+      "caption": "The Open Source for LDAP software and information. Home of OpenLDAP.",
+      "homepage": "https://www.openldap.org/"
+    },
+    {
+      "type": "phpldapadmin",
+      "src": "assets/img/logos/phpldapadmin.png",
+      "caption": null,
+      "homepage": "http://phpldapadmin.sourceforge.net/"
+    },
+    {
+      "type": "phpmyadmin",
+      "src": "assets/img/logos/TBD",
+      "caption": null,
+      "homepage": "https://www.phpmyadmin.net/"
+    },
+    {
+      "type": "activedirectory",
+      "src": "assets/img/logos/TBD",
+      "caption": null,
+      "homepage": "https://en.wikipedia.org/wiki/Active_Directory"
+    },
+    {
+      "type": "anemometer",
+      "src": "assets/img/logos/anemometer.png",
+      "caption": "Box SQL Slow Query Monitor. Contribute to box/Anemometer development by creating an account on GitHub.",
+      "homepage": "https://github.com/box/Anemometer"
+    },
+    {
+      "type": "pgbadger",
+      "src": "assets/img/logos/pgbadger.png",
+      "caption": "A fast PostgreSQL Log Analyzer. Contribute to darold/pgbadger development by creating an account on GitHub.",
+      "homepage": "https://github.com/darold/pgbadger"
+    },
+    {
+      "type": "ansible",
+      "src": "assets/img/logos/ansible.png",
+      "caption": "Ansible is the simplest way to automate apps and IT infrastructure. Application Deployment + Configuration Management + Continuous Delivery.",
+      "homepage": "https://www.ansible.com/"
+    },
+    {
+      "type": "apache-kafka",
+      "src": "assets/img/logos/apache-kafka.png",
+      "caption": "Apache Kafka: A Distributed Streaming Platform.",
+      "homepage": "https://kafka.apache.org/"
+    },
+    {
+      "type": "apache-pulsar",
+      "src": "assets/img/logos/TBD",
+      "caption": "",
+      "homepage": "https://pulsar.apache.org/"
+    },
+    {
+      "type": "artifactory",
+      "src": "assets/img/logos/artifactory.png",
+      "caption": "Artifactory supports all major packages, enterprise ready secure, clustered, HA, Docker registry, multi-site replication and scalable.",
+      "homepage": "https://jfrog.com/artifactory/"
+    },
+    {
+      "type": "artillery",
+      "src": "assets/img/logos/artillery.png",
+      "caption": "",
+      "homepage": "https://artillery.io/"
+    },
+    {
+      "type": "gatling",
+      "src": "assets/img/logos/gatling-frontline-logo.png",
+      "caption": "Gatling is an open-source load testing tool for web applications, designed for DevOps and Continuous Integration. Download Gatling now!",
+      "homepage": "https://gatling.io/"
+    },
+    {
+      "type": "bluejeans",
+      "src": "assets/img/logos/bluejeans.png",
+      "caption": "BlueJeans is the world's leader in cloud video conferencing. Easily and securely hold live video calls, webinars, conference calls, and online meetings.",
+      "homepage": "https://www.bluejeans.com/"
+    },
+    {
+      "type": "botify",
+      "src": "assets/img/logos/botify.png",
+      "caption": "Search engines miss about half the content on enterprise websites. Uncover those hidden opportunities with Botify, the leading enterprise SEO platform!",
+      "homepage": "https://www.botify.com/"
+    },
+    {
+      "type": "oncrawl",
+      "src": "assets/img/logos/TDB.png",
+      "caption": "Technical SEO Platform to open Google's blackbox. Combine your content, log files and search data at scale. Increase traffic, rankings & revenues. Start your free trial",
+      "homepage": "https://www.oncrawl.com/"
+    },
+    {
+      "type": "catchpoint",
+      "src": "assets/img/logos/catchpoint.png",
+      "caption": "Catchpoint provides a unified User Experience Measurement and Monitoring platform for Web, DNS, APIs, SSL, SaaS, networks and legacy applications using Advanced Synthetic Monitoring and RUM.\u000bso you can confidently fix issues faster than ever, Reduce MTTR and improve customer experiences.",
+      "homepage": "https://www.catchpoint.com/"
+    },
+    {
+      "type": "cloudera-impala",
+      "src": "assets/img/logos/cloudera-impala.png",
+      "caption": "Integrated into CDH and supported with Cloudera Enterprise, Impala is the open source, analytic MPP database for Apache Hadoop\u2014providing the fastest time-to-insight.",
+      "homepage": "https://www.cloudera.com/products/open-source/apache-hadoop/impala.html"
+    },
+    {
+      "type": "airflow",
+      "src": "assets/img/logos/airflow.png",
+      "caption": "Platform created by community to programmatically author, schedule and monitor workflows.",
+      "homepage": "https://airflow.apache.org/"
+    },
+    {
+      "type": "cloudflare",
+      "src": "assets/img/logos/cloudflare.png",
+      "caption": "Here at Cloudflare, we make the Internet work the way it should. Offering CDN, DNS, DDoS protection and security, find out how we can help your site.\n",
+      "homepage": "https://www.cloudflare.com/"
+    },
+    {
+      "type": "confluence",
+      "src": "assets/img/logos/confluence.png",
+      "caption": "Where knowledge and collaboration meet. Equipped with the right information, teams can make quick decisions, gain alignment, &amp; transform the way they work.",
+      "homepage": "https://www.atlassian.com/software/confluence"
+    },
+    {
+      "type": "jira",
+      "src": "assets/img/logos/jira.png",
+      "caption": "Plan, track, and manage your agile and software development projects in Jira. Customize your workflow, collaborate, and release great software.",
+      "homepage": "https://www.atlassian.com/software/jira"
+    },
+    {
+      "type": "consul",
+      "src": "assets/img/logos/consul.png",
+      "caption": "Consul is a service networking solution to connect and secure services across any runtime platform and public or private cloud",
+      "homepage": "https://www.consul.io/"
+    },
+    {
+      "type": "dashing",
+      "src": "assets/img/logos/dashing.png",
+      "caption": "",
+      "homepage": "http://dashing.io/"
+    },
+    {
+      "type": "dashkiosk",
+      "src": "assets/img/logos/dashkiosk.png",
+      "caption": null,
+      "homepage": "https://dashkiosk.readthedocs.io/en/latest/"
+    },
+    {
+      "type": "datadome",
+      "src": "assets/img/logos/datadome.png",
+      "caption": "The #1 SaaS solution for e-commerce and classifieds businesses. Unmatched detection speed and accuracy. Deploy in minutes on any web infrastructure.",
+      "homepage": "https://datadome.co/"
+    },
+    {
+      "type": "datawarehouse",
+      "src": "assets/img/logos/datawarehouse.png",
+      "caption": "Hello LR After Rain (Jeshu John - designerspics.com)",
+      "homepage": ""
+    },
+    {
+      "type": "debezium",
+      "src": "assets/img/logos/debezium.png",
+      "caption": "",
+      "homepage": "https://debezium.io/"
+    },
+    {
+      "type": "digicert",
+      "src": "assets/img/logos/digicert.png",
+      "caption": "SSL certificates by DigiCert secure unlimited servers with the strongest encryption and highest authentication available.",
+      "homepage": "https://www.digicert.com/"
+    },
+    {
+      "type": "edgecast",
+      "src": "assets/img/logos/edgecast.png",
+      "caption": null,
+      "homepage": "https://my.edgecast.com/"
+    },
+    {
+      "type": "fastly",
+      "src": "assets/img/logos/fastly.svg",
+      "caption": "Fastly's edge cloud platform delivers faster, safer, and more scalable sites and apps to customers. Elevate your edge CDN, video delivery, security, and more.",
+      "homepage": "https://www.fastly.com/"
+    },
+    {
+      "type": "firebase",
+      "src": "assets/img/logos/firebase.png",
+      "caption": "Firebase is Google\u2019s mobile platform that helps you quickly develop high-quality apps and grow your business.",
+      "homepage": "https://firebase.google.com/"
+    },
+    {
+      "type": "gandi",
+      "src": "assets/img/logos/gandi.png",
+      "caption": "Your web presence starts with a great domain name. Choose from over 750 different domain extensions at Gandi.net, one of the world's leading domain name registrars. Buy the perfect domain name for your website now!",
+      "homepage": "https://www.gandi.net/en"
+    },
+    {
+      "type": "haproxy",
+      "src": "assets/img/logos/haproxy.png",
+      "caption": "HAProxy products and services deliver websites and applications with the utmost performance, observability, and security at any scale and in any environment.",
+      "homepage": "https://www.haproxy.com/"
+    },
+    {
+      "type": "hue",
+      "src": "assets/img/logos/hue.png",
+      "caption": null,
+      "homepage": "https://gethue.com/"
+    },
+    {
+      "type": "jupyterhub",
+      "src": "assets/img/logos/jupyterhub.png",
+      "caption": "",
+      "homepage": "https://jupyter.org/hub"
+    },
+    {
+      "type": "letsencrypt",
+      "src": "assets/img/logos/lets_encrypt.png",
+      "caption": " Let's Encrypt is a free, automated, and open certificate authority brought to you by the nonprofit Internet Security Research Group (ISRG). ",
+      "homepage": "https://letsencrypt.org/"
+    },
+    {
+      "type": "metabase",
+      "src": "assets/img/logos/metabase.png",
+      "caption": "The fastest, easiest way to share data and analytics inside your company. An open source Business Intelligence server you can install in 5 minutes that connects to MySQL, PostgreSQL, MongoDB and more! Anyone can use it to build charts, dashboards and nightly email reports.",
+      "homepage": "https://metabase.com/"
+    },
+    {
+      "type": "NewRelic",
+      "src": "assets/img/logos/NewRelic.png",
+      "caption": "Work smarter and solve problems faster with a unified view of your software and systems.",
+      "homepage": "https://newrelic.com/"
+    },
+    {
+      "type": "PagerDuty",
+      "src": "assets/img/logos/pagerduty.png",
+      "caption": "See how PagerDuty's Platform for Real-Time Operations integrates machine data & human intelligence to improve visibility & agility across organizations. Sign up for a free 14 day trial!",
+      "homepage": "https://www.pagerduty.com/"
+    },
+    {
+      "type": "StatusHub",
+      "src": "assets/img/logos/TBD.png",
+      "caption": "StatusHub helps you to establish clear and flexible communication with end users to reduce IT disruption and downtime impact. Sign up for free",
+      "homepage": "https://statushub.com/"
+    },
+    {
+      "type": "RabbitMQ",
+      "src": "assets/img/logos/rabbitmq.png",
+      "caption": null,
+      "homepage": "https://www.rabbitmq.com/"
+    },
+    {
+      "type": "Rancher",
+      "src": "assets/img/logos/rancher.png",
+      "caption": "Rancher, the open-source multi-cluster orchestration platform, lets operations teams deploy, manage and secure enterprise Kubernetes. Request a demo!",
+      "homepage": "https://rancher.com/"
+    },
+    {
+      "type": "Rancher2",
+      "src": "assets/img/logos/rancher.png",
+      "caption": "Rancher, the open-source multi-cluster orchestration platform, lets operations teams deploy, manage and secure enterprise Kubernetes. Request a demo!",
+      "homepage": "https://rancher.com/"
+    },
+    {
+      "type": "Samson",
+      "src": "assets/img/logos/samson.png",
+      "caption": "Web interface for deployments, with plugin architecture and kubernetes support - zendesk/samson",
+      "homepage": "https://github.com/zendesk/samson"
+    },
+    {
+      "type": "Selenium",
+      "src": "assets/img/logos/selenium.png",
+      "caption": null,
+      "homepage": "https://www.selenium.dev/"
+    },
+    {
+      "type": "sonarqube",
+      "src": "assets/img/logos/sonarqube.png",
+      "caption": "Catch bugs and vulnerabilities in your app, with thousands of automated Static Code Analysis rules.",
+      "homepage": "https://www.sonarqube.org/"
+    },
+    {
+      "type": "StatusCake",
+      "src": "assets/img/logos/statuscake.png",
+      "caption": null,
+      "homepage": "https://www.statuscake.com/"
+    },
+    {
+      "type": "Staytus",
+      "src": "assets/img/logos/staytus.png",
+      "caption": null,
+      "homepage": "https://staytus.co/"
+    },
+    {
+      "type": "Superset",
+      "src": "assets/img/logos/superset.png",
+      "caption": null,
+      "homepage": "https://superset.apache.org/"
+    },
+    {
+      "type": "translate",
+      "src": "assets/img/logos/translate.png",
+      "caption": "Google's free service instantly translates words, phrases, and web pages between English and over 100 other languages.",
+      "homepage": "https://translate.google.com/"
+    },
+    {
+      "type": "Traefik",
+      "src": "assets/img/logos/traefik.png",
+      "caption": "Traefik is the leading open-source reverse proxy and load balancer for HTTP and TCP-based applications that is easy, dynamic and full-featured.",
+      "homepage": "https://containo.us/traefik/"
+    },
+    {
+      "type": "Tyk",
+      "src": "assets/img/logos/tyk.png",
+      "caption": "Our open source API Gateway is fast, scalable and modern. We offer an API Management Platform with an API Gateway, API Analytics, Dev Portal and Dashboard. Try Tyk today!",
+      "homepage": "https://tyk.io/"
+    },
+    {
+      "type": "udemy",
+      "src": "assets/img/logos/TBD",
+      "caption": "Udemy is an online learning and teaching marketplace with over 100,000 courses and 24 million students. Learn programming, marketing, data science and more.",
+      "homepage": "https://www.udemy.com/"
+    },
+    {
+      "type": "udemy-pro",
+      "src": "assets/img/logos/udemy.png",
+      "caption": "Get the engaging workplace learning solution. Improve your employees' skills in data science, IT, management and more from 4,000+ online courses.",
+      "homepage": "https://business.udemy.com/"
+    },
+    {
+      "type": "Vault",
+      "src": "assets/img/logos/vault.png",
+      "caption": "Vault secures, stores, and tightly controls access to tokens, passwords, certificates, API keys, and other secrets in modern computing. Vault handles leasing, key revocation, key rolling, auditing, and provides secrets as a service through a unified API.",
+      "homepage": "https://www.vaultproject.io/"
+    },
+    {
+      "type": "webistrano",
+      "src": "assets/img/logos/webistrano.png",
+      "caption": "Webistrano is a Web UI for managing Capistrano deployments - peritor/webistrano",
+      "homepage": "https://github.com/peritor/webistrano/wiki"
+    },
+    {
+      "type": "workday",
+      "src": "assets/img/logos/workday.png",
+      "caption": "Workday offers enterprise-level software solutions for financial management, human resources, and planning. Gain business insights from the Workday cloud ERP system today. Learn more.",
+      "homepage": "https://www.workday.com/en-us/homepage.html"
+    },
+    {
+      "type": "Snowflake",
+      "src": "assets/img/logos/snowflake.png",
+      "caption": "Snowflake is the only data platform built for the cloud for all your data & all your users. Learn more about our purpose-built SQL cloud data warehouse.",
+      "homepage": "https://www.snowflake.com/"
+    },
+    {
+      "type": "Docusaurus",
+      "src": "assets/img/logos/TBD.png",
+      "caption": "Easy to Maintain Open Source Documentation Websites",
+      "homepage": "https://docusaurus.io/"
+    },
+    {
+      "type": "custom",
+      "src": "assets/img/logos/devops-process.png",
+      "caption": "Hello LR After Rain (Jeshu John - designerspics.com)",
+      "homepage": ""
+    }
+  ]
+}
