@@ -19,13 +19,13 @@ import { render } from '@testing-library/react';
 import mockFetch from 'jest-fetch-mock';
 import ToolsCardComponent from './ToolsCardComponent';
 import { ThemeProvider } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/core';
+import { lightTheme } from '@backstage/theme';
 
 describe('ToolsCardComponent', () => {
   it('should render', () => {
     mockFetch.mockResponse(() => new Promise(() => {}));
     const rendered = render(
-      <ThemeProvider theme={BackstageTheme}>
+      <ThemeProvider theme={lightTheme}>
         <ToolsCardComponent />
       </ThemeProvider>,
     );

@@ -19,16 +19,16 @@ import { render } from '@testing-library/react';
 import mockFetch from 'jest-fetch-mock';
 import ToolsComponent from './ToolsComponent';
 import { ThemeProvider } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/core';
+import { lightTheme } from '@backstage/theme';
 
 describe('ToolsComponent', () => {
   it('should render', () => {
     mockFetch.mockResponse(() => new Promise(() => {}));
     const rendered = render(
-      <ThemeProvider theme={BackstageTheme}>
+      <ThemeProvider theme={lightTheme}>
         <ToolsComponent />
       </ThemeProvider>,
     );
-    expect(rendered.getByText('Welcome to tools-list!')).toBeInTheDocument();
+    expect(rendered.getByText('Our Tech Stacks')).toBeInTheDocument();
   });
 });
