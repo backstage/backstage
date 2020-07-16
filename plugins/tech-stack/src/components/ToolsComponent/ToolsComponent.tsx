@@ -47,8 +47,10 @@ import { ToolsListConfig } from '../../ToolsListConfig';
 
 import * as ToolsDefaultConfig from '../../ToolsDefaultConfig.json';
 
-ToolsListConfig.forEach(function (ToolsListItem) {
-  ToolsDefaultConfig.config.forEach(function (ToolsDefaultItem) {
+ToolsListConfig.forEach(function loadToolsListConfig(ToolsListItem) {
+  ToolsDefaultConfig.config.forEach(function loadToolsDefaultConfig(
+    ToolsDefaultItem,
+  ) {
     if (
       ToolsListItem.type !== 'custom' &&
       ToolsListItem.type.toLowerCase() === ToolsDefaultItem?.type.toLowerCase()
