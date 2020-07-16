@@ -85,8 +85,7 @@ export const apis = (config: ConfigApi) => {
   );
 
   const octokit = new Octokit();
-  const client = new GithubActionsClient({ api: octokit });
-  builder.add(githubActionsApiRef, client);
+  builder.add(githubActionsApiRef, new GithubActionsClient({ api: octokit }));
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
