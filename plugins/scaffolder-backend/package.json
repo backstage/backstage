@@ -39,7 +39,8 @@
     "morgan": "^1.10.0",
     "nodegit": "0.26.5",
     "uuid": "^8.2.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "yaml": "^1.10.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.14",
