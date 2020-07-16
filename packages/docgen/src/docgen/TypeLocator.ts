@@ -34,6 +34,9 @@ export default class TypeLocator {
     private readonly sourcePath: string,
   ) {}
 
+  /**
+   * Get the type of a symbol by export path and name
+   */
   getExportedType(path: string, exportedName: string = 'default'): ts.Type {
     const source = this.program.getSourceFile(path);
     if (!source) {
@@ -50,6 +53,10 @@ export default class TypeLocator {
     return type;
   }
 
+  /**
+   * Find exported instances and return values from calls using the types
+   * provided in the lookup table.
+   */
   findExportedInstances<T extends string>(
     typeLookupTable: { [key in T]: ts.Type },
   ): { [key in T]: ExportedInstance[] } {

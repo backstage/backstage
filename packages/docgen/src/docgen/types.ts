@@ -96,6 +96,9 @@ export type Highlighter = {
   highlight(test: string): string;
 };
 
+/**
+ * Markdown printer is an abstraction for printing markdown documents of different flavors.
+ */
 export type MarkdownPrinter = {
   text(text: string): void;
   header(level: number, text: string, id?: string): void;

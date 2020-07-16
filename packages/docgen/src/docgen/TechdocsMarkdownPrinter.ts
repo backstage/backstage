@@ -25,7 +25,7 @@ const COMMIT_SHA =
   process.env.COMMIT_SHA || execSync('git rev-parse HEAD').toString('utf8');
 
 /**
- * The MarkdownPrinter is a helper class for building markdown documents.
+ * The TechdocsMarkdownPrinter is a MarkdownPrinter for building TechDocs markdown documents.
  */
 export default class TechdocsMarkdownPrinter implements MarkdownPrinter {
   private str: string = '';

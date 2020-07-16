@@ -28,6 +28,9 @@ export default class ApiDocPrinter {
     this.printerFactory = printerFactory;
   }
 
+  /**
+   * Print an index file with all ApiRefs and what types they implement.
+   */
   printApiIndex(apiDocs: ApiDoc[]): Buffer {
     const printer = this.printerFactory();
 
@@ -58,6 +61,9 @@ export default class ApiDocPrinter {
     return printer.toBuffer();
   }
 
+  /**
+   * Print documentation page for a type implemented by an ApiRef and
+   */
   printInterface(apiType: InterfaceInfo, apiDocs: ApiDoc[]): Buffer {
     const printer = this.printerFactory();
 

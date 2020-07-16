@@ -26,7 +26,7 @@ const COMMIT_SHA =
   execSync('git rev-parse HEAD').toString('utf8').trim();
 
 /**
- * The MarkdownPrinter is a helper class for building markdown documents.
+ * The GithubMarkdownPrinter is a MarkdownPrinter for printing Github-flavored markdown documents.
  */
 export default class GithubMarkdownPrinter implements MarkdownPrinter {
   private str: string = '';

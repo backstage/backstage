@@ -30,7 +30,7 @@ import {
  * describes a Backstage API and all of it's related types.
  *
  * It receives an exported instance that of the form
- * `export name = new Api<Interface>({id: ..., description: ...})`.
+ * `export name = createApiRef<Interface>({id: ..., description: ...})`.
  * It will then traverse all fields and methods on the interface type, and also
  * types and declaration of all types that are used by those, both directly and indirectly.
  * While traversing, it collects information such as names, location in source, docs, etc.
@@ -45,6 +45,9 @@ export default class ApiDocGenerator {
     private readonly basePath: string,
   ) {}
 
+  /**
+   * Generate documentation information for a given exported symbol.
+   */
   toDoc(apiInstance: ExportedInstance): ApiDoc {
     const { name, source, args, typeArgs } = apiInstance;
 
@@ -78,12 +81,18 @@ export default class ApiDocGenerator {
     };
   }
 
+  /**
+   * Grab jsDoc and regular comments for a node
+   */
   private getNodeDocs(node: ts.Node): string[] {
     const docNodes = ((node && (node as any).jsDoc) || []) as ts.JSDoc[];
     const docs = docNodes.map(docNode => docNode.comment || '').filter(Boolean);
     return docs;
   }
 
+  /**
+   * Collect information about a top-level type.
+   */
   private getInterfaceInfo(typeNode: ts.TypeNode): InterfaceInfo {
     if (ts.isTypeQueryNode(typeNode)) {
       throw new Error(
@@ -120,6 +129,9 @@ export default class ApiDocGenerator {
     return { name, docs, file, lineInFile: line + 1, members, dependentTypes };
   }
 
+  /**
+   * Grab primitive values from an object literal expression.
+   */
   private getObjectPropertyLiteral(
     objectLiteral: ts.ObjectLiteralExpression,
     propertyName: string,
@@ -143,6 +155,9 @@ export default class ApiDocGenerator {
     return initializer.text;
   }
 
+  /**
+   * Get field definitions for a given symbol.
+   */
   private getMemberInfo(
     parentName: string,
     symbol: ts.Symbol,
@@ -177,6 +192,9 @@ export default class ApiDocGenerator {
     };
   }
 
+  /**
+   * Recursively search for references to types that we care about and want to include in the documentation.
+   */
   private findAllTypeReferences = (
     node: ts.Node | undefined,
     visited: Set<ts.Node> = new Set(),
@@ -242,6 +260,9 @@ export default class ApiDocGenerator {
     };
   };
 
+  /**
+   * Check if a given type declaration is one that we care about.
+   */
   private validateTypeDeclaration(
     type: ts.Type | undefined,
   ): undefined | { symbol: ts.Symbol; declaration: ts.Declaration } {
@@ -267,6 +288,10 @@ export default class ApiDocGenerator {
     return { symbol, declaration };
   }
 
+  /**
+   * Flatten a tree of TypeInfos with children into a flat
+   * list of TypeInfos with duplicates removed.
+   */
   private flattenTypes(descs: TypeInfo[]): TypeInfo[] {
     function getChildren(parent: TypeInfo): TypeInfo[] {
       return [
@@ -289,6 +314,10 @@ export default class ApiDocGenerator {
     });
   }
 
+  /**
+   * Calculate link positions within a block of code, with 0 being
+   * the first character in the block.
+   */
   private recalculateLinkOffsets(
     parent: ts.Node,
     links: TypeLink[],
