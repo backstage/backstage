@@ -39,7 +39,7 @@ describe('ApiDocGenerator', () => {
       },
     );
 
-    const typeLocator = TypeLocator.fromProgram(program);
+    const typeLocator = TypeLocator.fromProgram(program, '/');
 
     const { apiInstances } = typeLocator.findExportedInstances({
       apiInstances: typeLocator.getExportedType('/mem/type.ts'),
@@ -48,19 +48,24 @@ describe('ApiDocGenerator', () => {
     expect(apiInstances.length).toBe(1);
     const [apiInstance] = apiInstances;
 
-    const docGenerator = ApiDocGenerator.fromProgram(program, '/mem', '/mem');
+    const docGenerator = ApiDocGenerator.fromProgram(program, '/');
     const doc = docGenerator.toDoc(apiInstance);
 
     expect(doc.id).toBe('my-id');
     expect(doc.description).toBe('my-description');
     expect(doc.name).toBe('myApi');
-    expect(doc.source.fileName).toBe('/mem/index.ts');
-    expect(doc.interfaceInfo.dependentTypes).toEqual([]);
-    expect(doc.interfaceInfo.docs).toEqual([]);
-    expect(doc.interfaceInfo.file).toBe('index.ts');
-    expect(doc.interfaceInfo.lineInFile).toBe(4);
-    expect(doc.interfaceInfo.members).toEqual([]);
-    expect(doc.interfaceInfo.name).toBe('MyApiType');
+    expect(doc.file).toBe('mem/index.ts');
+    expect(doc.lineInFile).toBe(6);
+    expect(doc.interfaceInfos).toEqual([
+      {
+        dependentTypes: [],
+        docs: [],
+        file: 'mem/index.ts',
+        lineInFile: 4,
+        members: [],
+        name: 'MyApiType',
+      },
+    ]);
   });
 
   it('should generate API docs', () => {
@@ -132,7 +137,7 @@ describe('ApiDocGenerator', () => {
       return ids;
     }, {} as { [key in string]: number });
 
-    const typeLocator = TypeLocator.fromProgram(program);
+    const typeLocator = TypeLocator.fromProgram(program, '/mem');
 
     const { apiInstances } = typeLocator.findExportedInstances({
       apiInstances: typeLocator.getExportedType('/mem/type.ts'),
@@ -141,18 +146,19 @@ describe('ApiDocGenerator', () => {
     expect(apiInstances.length).toBe(1);
     const [apiInstance] = apiInstances;
 
-    const docGenerator = ApiDocGenerator.fromProgram(program, '/mem', '/mem');
+    const docGenerator = ApiDocGenerator.fromProgram(program, '/mem');
     const doc = docGenerator.toDoc(apiInstance);
 
     expect(doc.id).toBe('my-id');
     expect(doc.description).toBe('my-description');
     expect(doc.name).toBe('myApi');
-    expect(doc.source.fileName).toBe('/mem/index.ts');
-    expect(doc.interfaceInfo.docs).toEqual(['MyApiType Docs']);
-    expect(doc.interfaceInfo.file).toBe('index.ts');
-    expect(doc.interfaceInfo.lineInFile).toBe(24);
-    expect(doc.interfaceInfo.name).toBe('MyApiType');
-    expect(doc.interfaceInfo.members).toEqual([
+    expect(doc.file).toBe('index.ts');
+    expect(doc.interfaceInfos.length).toBe(1);
+    expect(doc.interfaceInfos[0].docs).toEqual(['MyApiType Docs']);
+    expect(doc.interfaceInfos[0].file).toBe('index.ts');
+    expect(doc.interfaceInfos[0].lineInFile).toBe(24);
+    expect(doc.interfaceInfos[0].name).toBe('MyApiType');
+    expect(doc.interfaceInfos[0].members).toEqual([
       {
         type: 'prop',
         name: 'x',
@@ -199,7 +205,7 @@ describe('ApiDocGenerator', () => {
         ],
       },
     ]);
-    expect(doc.interfaceInfo.dependentTypes).toEqual([
+    expect(doc.interfaceInfos[0].dependentTypes).toEqual([
       {
         id: Ids.MySubType,
         name: 'MySubType',

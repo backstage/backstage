@@ -22,7 +22,7 @@ describe('TypeLocator', () => {
   it('should find a default export', () => {
     const program = createMemProgram('export default class MyApi<T> {}');
 
-    const typeLocator = TypeLocator.fromProgram(program);
+    const typeLocator = TypeLocator.fromProgram(program, '/mem');
 
     const apiType = typeLocator.getExportedType('/mem/index.ts');
     expect(apiType.symbol.name).toBe('default');
@@ -46,7 +46,7 @@ describe('TypeLocator', () => {
       },
     );
 
-    const typeLocator = TypeLocator.fromProgram(program);
+    const typeLocator = TypeLocator.fromProgram(program, '/mem');
 
     const { apiInstances } = typeLocator.findExportedInstances({
       apiInstances: typeLocator.getExportedType('/mem/type.ts'),
