@@ -17,7 +17,7 @@
 import { execSync } from 'child_process';
 import MarkdownPrinter from './MarkdownPrinter';
 import sortSelector from './sortSelector';
-import { ApiDoc } from './types';
+import { ApiDoc, InterfaceInfo } from './types';
 
 const GH_BASE_URL = 'https://github.com/spotify/backstage';
 
@@ -67,7 +67,88 @@ export default class ApiDocPrinter {
     );
     printer.paragraph('All members of the interface are listed below.');
 
-    for (const member of ifInfo.members) {
+    this.addInterfaceMembers(printer, ifInfo);
+
+    if (ifInfo.dependentTypes.length) {
+      printer.header(2, 'Types');
+
+      this.addInterfaceTypes(printer, ifInfo);
+    }
+
+    return printer.toBuffer();
+  }
+
+  printApiIndex(apiDocs: ApiDoc[]): Buffer {
+    const printer = this.printerFactory();
+
+    printer.header(1, 'Backstage Utility APIs');
+
+    for (const api of apiDocs) {
+      printer.header(3, `${api.name.replace(/ApiRef$/, '')}`, api.id);
+
+      printer.paragraph(api.description);
+
+      const typeLinks = api.interfaceInfos.map(i => `[${i.name}](${i.name})`);
+      printer.paragraph(
+        `Implemented type${typeLinks.length > 1 ? 's' : ''}: ${typeLinks.join(
+          ', ',
+        )}`,
+      );
+
+      printer.paragraph(`ApiRef: ${api.name}`);
+    }
+
+    return printer.toBuffer();
+  }
+
+  printInterface(apiType: InterfaceInfo, apiDocs: ApiDoc[]): Buffer {
+    const printer = this.printerFactory();
+
+    // Remove line numbers from codeblocks
+    printer.style('.linenodiv{ display: none }');
+
+    printer.header(1, apiType.name);
+
+    printer.paragraph(
+      `The ${apiType.name} type is defined at ${this.mkTypeLink(apiType)}.`,
+    );
+
+    const apiLinks = apiDocs
+      .filter(ad => ad.interfaceInfos.some(i => i.name === apiType.name))
+      .map(ad => `[${ad.name}](../#${ad.id})`);
+
+    if (apiLinks.length === 1) {
+      printer.paragraph(
+        `The following Utility API implements this type: ${apiLinks}`,
+      );
+    } else {
+      printer.paragraph(`The following Utility APIs implement this type:`);
+      for (const link of apiLinks) {
+        printer.text(`  - ${link}`);
+      }
+    }
+
+    printer.header(2, 'Members');
+
+    this.addInterfaceMembers(printer, apiType);
+
+    if (apiType.dependentTypes.length) {
+      printer.header(2, 'Supporting types');
+      printer.paragraph(
+        'These types are part of the API declaration, but may not be unique to this API.',
+      );
+
+      this.addInterfaceTypes(printer, apiType);
+    }
+
+    return printer.toBuffer();
+  }
+
+  private addInterfaceMembers(
+    printer: MarkdownPrinter,
+    apiType: InterfaceInfo,
+  ) {
+    for (const member of apiType.members) {
       printer.header(
         3,
         `${member.name}${member.type === 'method' ? '()' : ''}`,
@@ -80,11 +161,10 @@ export default class ApiDocPrinter {
 
       printer.codeWithLinks(member);
     }
+  }
 
-    if (ifInfo.dependentTypes.length) {
-      printer.header(2, 'Types');
-    }
-    for (const type of ifInfo.dependentTypes
+  private addInterfaceTypes(printer: MarkdownPrinter, apiType: InterfaceInfo) {
+    for (const type of apiType.dependentTypes
       .slice()
       .sort(sortSelector(x => x.name))) {
       printer.header(3, `${type.name}`, type.path);
@@ -96,7 +176,7 @@ export default class ApiDocPrinter {
 
       printer.paragraph(`Defined at ${this.mkTypeLink(type)}.`);
 
-      const usageLinks = [...ifInfo.members, ...ifInfo.dependentTypes]
+      const usageLinks = [...apiType.members, ...apiType.dependentTypes]
         .filter(member => {
           return member.links.some(link => link.id === type.id);
         })
@@ -106,7 +186,5 @@ export default class ApiDocPrinter {
         printer.paragraph(`Referenced by: ${usageLinks.join(', ')}.`);
       }
     }
-
-    return printer.toBuffer();
   }
 }

@@ -68,7 +68,6 @@ async function main() {
   );
 
   const apiDocGenerator = ApiDocGenerator.fromProgram(program, rootDir, srcDir);
-
   const apiDocs = apis
     .map(api => {
       try {
@@ -79,7 +78,13 @@ async function main() {
         );
       }
     })
-    .sort(sortSelector(x => x.id));
+    .sort(sortSelector(x => x.name));
+
+  const apiTypes = Object.values(
+    Object.fromEntries(
+      apiDocs.flatMap(d => d.interfaceInfos).map(i => [i.name, i]),
+    ),
+  ).sort(sortSelector(i => i.name));
 
   const apiDocPrinter = new ApiDocPrinter(
     () => new MarkdownPrinter(new TypescriptHighlighter()),
@@ -87,11 +92,16 @@ async function main() {
 
   fs.ensureDirSync(resolve(apiRefsDir, 'docs'));
 
-  await Promise.all(
-    apiDocs.map(apiDoc => {
-      const data = apiDocPrinter.print(apiDoc);
+  await writeFile(
+    join(apiRefsDir, 'docs', 'README.md'),
+    apiDocPrinter.printApiIndex(apiDocs),
+  );
 
-      return writeFile(join(apiRefsDir, 'docs', `${apiDoc.name}.md`), data);
+  await Promise.all(
+    Object.values(apiTypes).map(apiType => {
+      const data = apiDocPrinter.printInterface(apiType, apiDocs);
+
+      return writeFile(join(apiRefsDir, 'docs', `${apiType.name}.md`), data);
     }),
   );
 
@@ -100,7 +110,10 @@ async function main() {
     [
       'site_name: api-references',
       'nav:',
-      ...apiDocs.map(({ id, name }) => `  - ${id}: '${name}.md'`),
+      `  - Utility API Index: 'README.md'`,
+      ...apiTypes.map(({ name }) => `  - ${name}: '${name}.md'`),
+      'plugins:',
+      '  - techdocs-core',
     ].join('\n'),
     'utf8',
   );
