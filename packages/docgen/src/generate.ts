@@ -25,8 +25,8 @@ import TypescriptHighlighter from './docgen/TypescriptHighlighter';
 import MarkdownPrinter from './docgen/MarkdownPrinter';
 
 export async function generate(targetPath: string) {
-  const rootDir = resolvePath(__dirname, '..');
-  const srcDir = resolvePath(rootDir, '..', 'core-api', 'src');
+  const rootDir = resolvePath(__dirname, '../../..');
+  const srcDir = resolvePath(rootDir, 'packages', 'core-api', 'src');
   const targetDir = resolvePath(targetPath);
   const docsDir = resolvePath(targetDir, 'docs');
 
@@ -46,7 +46,7 @@ export async function generate(targetPath: string) {
     ),
   });
 
-  const apiDocGenerator = ApiDocGenerator.fromProgram(program, srcDir);
+  const apiDocGenerator = ApiDocGenerator.fromProgram(program, rootDir);
   const apiDocs = apis
     .map(api => {
       try {

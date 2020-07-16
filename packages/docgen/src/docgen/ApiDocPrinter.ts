@@ -21,7 +21,6 @@ import { ApiDoc, InterfaceInfo } from './types';
 
 // TODO(Rugvip): provide through options?
 const GH_BASE_URL = 'https://github.com/spotify/backstage';
-const SRC_PATH = 'packages/core-api/src';
 
 const COMMIT_SHA =
   process.env.COMMIT_SHA || execSync('git rev-parse HEAD').toString('utf8');
@@ -42,7 +41,7 @@ export default class ApiDocPrinter {
     text?: string,
   ) {
     const linkText = text ?? `${file}:${lineInFile}`;
-    const href = `${GH_BASE_URL}/blob/${COMMIT_SHA}/${SRC_PATH}/${file}#L${lineInFile}`;
+    const href = `${GH_BASE_URL}/blob/${COMMIT_SHA}/${file}#L${lineInFile}`;
     return `[${linkText}](${href}){:target="_blank"}`;
   }
 

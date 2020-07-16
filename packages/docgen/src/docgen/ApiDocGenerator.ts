@@ -42,7 +42,7 @@ export default class ApiDocGenerator {
 
   constructor(
     private readonly checker: ts.TypeChecker,
-    private readonly sourcePath: string,
+    private readonly basePath: string,
   ) {}
 
   toDoc(apiInstance: ExportedInstance): ApiDoc {
@@ -55,7 +55,7 @@ export default class ApiDocGenerator {
 
     const id = this.getObjectPropertyLiteral(info, 'id');
     const description = this.getObjectPropertyLiteral(info, 'description');
-    const file = relative(this.sourcePath, source.fileName);
+    const file = relative(this.basePath, source.fileName);
     const { line } = source.getLineAndCharacterOfPosition(
       apiInstance.node.getStart(),
     );
@@ -102,7 +102,7 @@ export default class ApiDocGenerator {
     const name = (type.aliasSymbol || type.symbol).name;
     const [declaration] = (type.aliasSymbol || type.symbol).declarations;
     const sourceFile = declaration.getSourceFile();
-    const file = relative(this.sourcePath, sourceFile.fileName);
+    const file = relative(this.basePath, sourceFile.fileName);
     const { line } = sourceFile.getLineAndCharacterOfPosition(
       declaration.getStart(),
     );
@@ -216,7 +216,7 @@ export default class ApiDocGenerator {
     const { line } = sourceFile.getLineAndCharacterOfPosition(
       declaration.getStart(),
     );
-    const file = relative(this.sourcePath, sourceFile.fileName);
+    const file = relative(this.basePath, sourceFile.fileName);
     const typeInfo = {
       id: (symbol as any).id,
       name: symbol.name,
@@ -260,7 +260,7 @@ export default class ApiDocGenerator {
       return undefined;
     }
 
-    if (!declaration.getSourceFile().fileName.startsWith(this.sourcePath)) {
+    if (declaration.getSourceFile().fileName.includes('node_modules')) {
       return undefined;
     }
 
