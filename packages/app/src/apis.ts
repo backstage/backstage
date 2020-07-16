@@ -84,8 +84,9 @@ export const apis = (config: ConfigApi) => {
     new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
   );
 
-  const octokit = new Octokit();
+  const octokit = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
   builder.add(githubActionsApiRef, new GithubActionsClient({ api: octokit }));
+
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));

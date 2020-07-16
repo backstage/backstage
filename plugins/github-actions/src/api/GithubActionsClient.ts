@@ -22,18 +22,6 @@ import {
   ActionsGetWorkflowRunResponseData,
 } from '@octokit/types';
 
-// const statusToBuildStatus: { [status: string]: BuildStatus } = {
-//   success: BuildStatus.Success,
-//   failure: BuildStatus.Failure,
-//   pending: BuildStatus.Pending,
-//   running: BuildStatus.Running,
-//   in_progress: BuildStatus.Running,
-//   completed: BuildStatus.Success,
-// };
-
-// const conclusionToStatus = (conslusion: string): BuildStatus =>
-//   statusToBuildStatus[conslusion] ?? BuildStatus.Null;
-
 export class GithubActionsClient implements GithubActionsApi {
   private api: Octokit;
   constructor({ api }: { api: Octokit }) {
