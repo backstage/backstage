@@ -52,7 +52,7 @@ better yet, a pull request.
     - [Overview](plugins/index.md)
     - [Existing plugins](plugins/existing-plugins.md)
     - [Creating a new plugin](plugins/create-a-plugin.md)
-    - [Developing a plugin](plugins/developing-plugins.md)
+    - [Developing a plugin](plugins/plugin-development.md)
     - [Structure of a plugin](plugins/structure-of-a-plugin.md)
     - Backends and APIs
       - [Proxying](plugins/proxying.md)
