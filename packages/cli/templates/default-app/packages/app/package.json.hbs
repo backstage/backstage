@@ -35,8 +35,8 @@
     "bundle": "backstage-cli app:build",
     "test": "backstage-cli test",
     "lint": "backstage-cli lint",
-    "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
-    "test:e2e:ci": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
+    "test:e2e": "cross-env APP_CONFIG_app_baseUrl='\"\"http://localhost:3001\"\"' start-server-and-test start http://localhost:3001 cy:dev",
+    "test:e2e:ci": "cross-env APP_CONFIG_app_baseUrl='\"\"http://localhost:3001\"\"' start-server-and-test start http://localhost:3001 cy:run",
     "cy:dev": "cypress open",
     "cy:run": "cypress run"
   },
