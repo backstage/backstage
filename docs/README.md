@@ -17,7 +17,7 @@ better yet, a pull request.
       - [Create an App](getting-started/create-an-app.md)
       - App configuration
         - [Configuring App with plugins](getting-started/configure-app-with-plugins.md)
-        - [Customize the look-and-feel of your App](getting-started/customize-app-look-and-feel.md)
+        - [Customize the look-and-feel of your App](getting-started/app-custom-theme.md)
       - Deployment scenarios
         - [Kubernetes](getting-started/deployment-k8s.md)
         - [Other](getting-started/deployment-other.md)
@@ -32,8 +32,12 @@ better yet, a pull request.
       - [API](features/software-catalog/api.md)
     - Software creation templates
       - [Overview](features/software-templates/index.md)
-      - [Configure templates](features/software-templates/configure-templates.md)
       - [Adding templates](features/software-templates/adding-templates.md)
+        - Extending the Scaffolder:
+          - [Overview](features/software-templates/extending/index.md)
+          - [Create your own Templater](features/software-templates/extending/create-your-own-templater.md)
+          - [Create your own Publisher](features/software-templates/extending/create-your-own-publisher.md)
+          - [Create your own Preparer](features/software-templates/extending/create-your-own-preparer.md)
     - Docs-like-code
       - [Overview](features/techdocs/README.md)
       - [Getting Started](features/techdocs/getting-started.md)
@@ -48,7 +52,7 @@ better yet, a pull request.
     - [Overview](plugins/index.md)
     - [Existing plugins](plugins/existing-plugins.md)
     - [Creating a new plugin](plugins/create-a-plugin.md)
-    - [Developing a plugin](plugins/developing-plugins.md)
+    - [Developing a plugin](plugins/plugin-development.md)
     - [Structure of a plugin](plugins/structure-of-a-plugin.md)
     - Backends and APIs
       - [Proxying](plugins/proxying.md)
@@ -67,7 +71,7 @@ better yet, a pull request.
     - [Glossary](auth/glossary.md)
   - Designing for Backstage
     - [Backstage Design Language System (DLS)](dls/design.md)
-    - [Storybook -- reusable UI components](dls/storybook.md)
+    - [Storybook -- reusable UI components](http://storybook.backstage.io)
     - [Contributing to Storybook](dls/contributing-to-storybook.md)
     - [Figma resources](dls/figma.md)
   - API references

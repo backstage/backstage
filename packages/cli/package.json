@@ -54,6 +54,7 @@
     "dashify": "^2.0.0",
     "diff": "^4.0.2",
     "eslint": "^7.1.0",
+    "eslint-formatter-friendly": "^7.0.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-monorepo": "^0.2.1",
     "fork-ts-checker-webpack-plugin": "^4.0.5",

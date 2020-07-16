@@ -152,16 +152,16 @@ export function createOAuth2Provider(
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
+  const providerId = 'oauth2';
   const envProviders: EnvironmentHandlers = {};
 
   for (const [env, envConfig] of Object.entries(providerConfig)) {
     const config = (envConfig as unknown) as GenericOAuth2ProviderConfig;
     const { secure, appOrigin } = config;
-    const callbackURLParam = `?env=${env}`;
     const opts = {
       clientID: config.clientId,
       clientSecret: config.clientSecret,
-      callbackURL: `${baseUrl}/oauth2/handler/frame${callbackURLParam}`,
+      callbackURL: `${baseUrl}/${providerId}/handler/frame?env=${env}`,
       authorizationURL: config.authorizationURL,
       tokenURL: config.tokenURL,
     };
@@ -186,7 +186,7 @@ export function createOAuth2Provider(
 
     envProviders[env] = new OAuthProvider(new OAuth2AuthProvider(opts), {
       disableRefresh: false,
-      providerId: 'oauth2',
+      providerId,
       secure,
       baseUrl,
       appOrigin,
@@ -194,5 +194,5 @@ export function createOAuth2Provider(
     });
   }
 
-  return new EnvironmentHandler(envProviders);
+  return new EnvironmentHandler(providerId, envProviders);
 }
