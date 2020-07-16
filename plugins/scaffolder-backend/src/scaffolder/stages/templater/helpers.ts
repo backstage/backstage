@@ -68,6 +68,7 @@ export const runDockerContainer = async ({
       stream.pipe(logStream, { end: false });
       stream.on('end', () => resolve());
       stream.on('error', (error: Error) => reject(error));
+      return undefined;
     });
   });
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
