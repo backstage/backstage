@@ -48,9 +48,10 @@ export default class MarkdownPrinter {
     this.line();
   }
 
-  paragraph(text: string) {
+  paragraph(...text: string[]) {
     this.line(
       text
+        .join('\n')
         .trim()
         .split('\n')
         .map(line => line.trim())

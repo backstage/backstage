@@ -87,7 +87,7 @@ export async function generate(targetPath: string) {
     [
       'site_name: api-references',
       'nav:',
-      `  - Utility API Index: 'README.md'`,
+      `  - API Index: 'README.md'`,
       ...apiTypes.map(({ name }) => `  - ${name}: '${name}.md'`),
       'plugins:',
       '  - techdocs-core',

@@ -88,6 +88,13 @@ export default class ApiDocPrinter {
 
     printer.header(1, 'Backstage Utility APIs');
 
+    printer.paragraph(
+      'The following is a list of all Utility APIs defined by `@backstage/core`.',
+      'They are available to use by plugins and components, and need to be provided by the app',
+      'They can be accessed using the `useApi` hook, also provided by `@backstage/core`.',
+      'For more information, see https://github.com/spotify/backstage/blob/master/docs/api/utility-apis.md.',
+    );
+
     for (const api of apiDocs) {
       printer.header(3, `${api.name.replace(/ApiRef$/, '')}`, api.id);
 
