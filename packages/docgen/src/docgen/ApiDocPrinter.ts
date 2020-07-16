@@ -85,7 +85,7 @@ export default class ApiDocPrinter {
   printApiIndex(apiDocs: ApiDoc[]): Buffer {
     const printer = this.printerFactory();
 
-    printer.header(1, 'Backstage Utility APIs');
+    printer.header(1, 'Backstage Core Utility APIs');
 
     printer.paragraph(
       'The following is a list of all Utility APIs defined by `@backstage/core`.',

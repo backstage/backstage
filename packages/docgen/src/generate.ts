@@ -85,7 +85,7 @@ export async function generate(targetPath: string) {
   await fs.writeFile(
     resolvePath(targetDir, 'mkdocs.yml'),
     [
-      'site_name: api-references',
+      'site_name: Backstage Core Utility API References',
       'nav:',
       `  - API Index: 'README.md'`,
       ...apiTypes.map(({ name }) => `  - ${name}: '${name}.md'`),
