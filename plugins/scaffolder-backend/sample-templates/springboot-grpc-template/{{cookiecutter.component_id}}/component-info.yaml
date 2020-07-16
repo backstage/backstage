@@ -4,6 +4,6 @@ metadata:
   name: {{cookiecutter.component_id}}
   description: {{cookiecutter.description}}
 spec:
-  type: website
+  type: service
   lifecycle: experimental
   owner: {{cookiecutter.owner}}
