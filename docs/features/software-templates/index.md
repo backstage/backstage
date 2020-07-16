@@ -29,7 +29,7 @@ are required for backstage usage. The owner, which is a `user` in the backstage
 system, and the `storePath` which right now must be a Github Organisation and a
 non-existing github repository name in the format `organistaion/reponame`.
 
-![Enter backstage vars](./assets/template-picked-1.png)
+![Enter backstage vars](./assets/template-picked-2.png)
 
 ### Run!
 
