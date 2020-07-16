@@ -3,9 +3,10 @@
 ## NPM
 
 NPM packages are published through CI/CD in the
-[.github/workflows/master.yml](../../.github/workflows/master.yml) workflow.
-Every commit that is merged to master will be checked for new versions of all
-public packages, and any new versions will automatically be published to NPM.
+[.github/workflows/master.yml](https://github.com/spotify/backstage/blob/master/.github/workflows/master.yml)
+workflow. Every commit that is merged to master will be checked for new versions
+of all public packages, and any new versions will automatically be published to
+NPM.
 
 ### Creating a new release
 
