@@ -2472,9 +2472,9 @@
     shortid "^2.2.14"
 
 "@rjsf/material-ui@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.1.0.tgz#a361b125af3a383b7f671634b8d254345f9f9311"
-  integrity sha512-9mMttnPNP6GiP7BtZGimYcYsbWwjyviqg/PD8oxrkEtZykULXOIdC3WDMJ3nPSym8RvZsgSnB8bajCpa5iSYQQ==
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.2.1.tgz#f8cffcf887db22fe79c18f1b371b2e52200c1b35"
+  integrity sha512-YVIArRyewy9dBN6a0ordQX6uLBZvAG9d4YhZpMpbOwzsI9+8A6ZJ29Q3eJel+g27QoykllVw6ccOIdr9/vWV3w==
 
 "@rollup/plugin-commonjs@^13.0.0":
   version "13.0.0"
