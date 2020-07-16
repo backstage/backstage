@@ -37,10 +37,13 @@ export default class ApiDocPrinter {
     this.printerFactory = printerFactory;
   }
 
-  mkTypeLink({ file, lineInFile }: { file: string; lineInFile: number }) {
-    const text = `${file}:${lineInFile}`;
+  mkLink(
+    { file, lineInFile }: { file: string; lineInFile: number },
+    text?: string,
+  ) {
+    const linkText = text ?? `${file}:${lineInFile}`;
     const href = `${GH_BASE_URL}/blob/${COMMIT_SHA}/${SRC_PATH}/${file}#L${lineInFile}`;
-    return `[${text}](${href}){:target="_blank"}`;
+    return `[${linkText}](${href}){:target="_blank"}`;
   }
 
   print(apiDoc: ApiDoc): Buffer {
@@ -63,7 +66,7 @@ export default class ApiDocPrinter {
 
     printer.header(2, 'API Interface');
     printer.paragraph(
-      `The API interface type is defined at ${this.mkTypeLink(ifInfo)} as ${
+      `The API interface type is defined at ${this.mkLink(ifInfo)} as ${
         ifInfo.name
       }.`,
     );
@@ -97,7 +100,7 @@ export default class ApiDocPrinter {
         )}`,
       );
 
-      printer.paragraph(`ApiRef: ${api.name}`);
+      printer.paragraph(`ApiRef: ${this.mkLink(api, api.name)}`);
     }
 
     return printer.toBuffer();
@@ -112,7 +115,7 @@ export default class ApiDocPrinter {
     printer.header(1, apiType.name);
 
     printer.paragraph(
-      `The ${apiType.name} type is defined at ${this.mkTypeLink(apiType)}.`,
+      `The ${apiType.name} type is defined at ${this.mkLink(apiType)}.`,
     );
 
     const apiLinks = apiDocs
@@ -176,7 +179,7 @@ export default class ApiDocPrinter {
       }
       printer.codeWithLinks(type);
 
-      printer.paragraph(`Defined at ${this.mkTypeLink(type)}.`);
+      printer.paragraph(`Defined at ${this.mkLink(type)}.`);
 
       const usageLinks = [...apiType.members, ...apiType.dependentTypes]
         .filter(member => {

@@ -55,6 +55,10 @@ export default class ApiDocGenerator {
 
     const id = this.getObjectPropertyLiteral(info, 'id');
     const description = this.getObjectPropertyLiteral(info, 'description');
+    const file = relative(this.sourcePath, source.fileName);
+    const { line } = source.getLineAndCharacterOfPosition(
+      apiInstance.node.getStart(),
+    );
 
     const rootTypeNode = typeArgs[0];
     const typeNodes = ts.isIntersectionTypeNode(rootTypeNode)
@@ -64,7 +68,14 @@ export default class ApiDocGenerator {
       this.getInterfaceInfo(typeNode),
     );
 
-    return { id, name, source, description, interfaceInfos };
+    return {
+      id,
+      name,
+      file,
+      lineInFile: line + 1,
+      description,
+      interfaceInfos,
+    };
   }
 
   private getNodeDocs(node: ts.Node): string[] {

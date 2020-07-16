@@ -75,8 +75,9 @@ export type InterfaceInfo = {
 export type ApiDoc = {
   id: string;
   name: string;
-  source: ts.SourceFile;
   description: string;
+  file: string;
+  lineInFile: number;
   interfaceInfos: InterfaceInfo[];
 };
 
