@@ -58,7 +58,6 @@ import {
 import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
 
 import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
-import { Octokit } from '@octokit/rest';
 import {
   GithubActionsClient,
   githubActionsApiRef,
@@ -84,8 +83,7 @@ export const apis = (config: ConfigApi) => {
     new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
   );
 
-  const octokit = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
-  builder.add(githubActionsApiRef, new GithubActionsClient({ api: octokit }));
+  builder.add(githubActionsApiRef, new GithubActionsClient());
 
   builder.add(featureFlagsApiRef, new FeatureFlags());
 

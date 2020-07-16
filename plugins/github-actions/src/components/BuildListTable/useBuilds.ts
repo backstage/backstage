@@ -17,11 +17,12 @@ import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { Build } from './BuildListTable';
 import { githubActionsApiRef } from '../../api/GithubActionsApi';
-import { useApi } from '@backstage/core';
+import { useApi, githubAuthApiRef } from '@backstage/core';
 import { ActionsListWorkflowRunsForRepoResponseData } from '@octokit/types';
 
 export function useBuilds({ repo, owner }: { repo: string; owner: string }) {
   const api = useApi(githubActionsApiRef);
+  const auth = useApi(githubAuthApiRef);
 
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
@@ -29,11 +30,13 @@ export function useBuilds({ repo, owner }: { repo: string; owner: string }) {
 
   const restartBuild = async () => {};
 
-  const { loading, value: builds, retry } = useAsyncRetry<Build[]>(
-    () =>
+  const { loading, value: builds, retry } = useAsyncRetry<Build[]>(async () => {
+    const token = await auth.getAccessToken(['repo', 'user']);
+
+    return (
       api
         // GitHub API pagination count starts from 1
-        .listWorkflowRuns({ owner, repo, pageSize, page: page + 1 })
+        .listWorkflowRuns({ token, owner, repo, pageSize, page: page + 1 })
         .then(
           (allBuilds: ActionsListWorkflowRunsForRepoResponseData): Build[] => {
             setTotal(allBuilds.total_count);
@@ -43,6 +46,7 @@ export function useBuilds({ repo, owner }: { repo: string; owner: string }) {
               id: `${run.id}`,
               onRestartClick: () => {
                 api.reRunWorkflow({
+                  token,
                   owner,
                   repo,
                   runId: run.id,
@@ -62,9 +66,9 @@ export function useBuilds({ repo, owner }: { repo: string; owner: string }) {
               buildUrl: run.url,
             }));
           },
-        ),
-    [page, pageSize],
-  );
+        )
+    );
+  }, [page, pageSize]);
 
   const projectName = `${owner}/${repo}`;
   return [

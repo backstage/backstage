@@ -23,37 +23,39 @@ import {
 } from '@octokit/types';
 
 export class GithubActionsClient implements GithubActionsApi {
-  private api: Octokit;
-  constructor({ api }: { api: Octokit }) {
-    this.api = api;
-  }
   reRunWorkflow({
+    token,
     owner,
     repo,
     runId,
   }: {
+    token: string;
     owner: string;
     repo: string;
     runId: number;
   }) {
-    this.api.actions.reRunWorkflow({
+    new Octokit({ auth: token }).actions.reRunWorkflow({
       owner,
       repo,
       run_id: runId,
     });
   }
   async listWorkflowRuns({
+    token,
     owner,
     repo,
     pageSize = 100,
     page = 0,
   }: {
+    token: string;
     owner: string;
     repo: string;
     pageSize?: number;
     page?: number;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
-    const workflowRuns = await this.api.actions.listWorkflowRunsForRepo({
+    const workflowRuns = await new Octokit({
+      auth: token,
+    }).actions.listWorkflowRunsForRepo({
       owner,
       repo,
       per_page: pageSize,
@@ -62,15 +64,17 @@ export class GithubActionsClient implements GithubActionsApi {
     return workflowRuns.data;
   }
   async getWorkflow({
+    token,
     owner,
     repo,
     id,
   }: {
+    token: string;
     owner: string;
     repo: string;
     id: number;
   }): Promise<ActionsGetWorkflowResponseData> {
-    const workflow = await this.api.actions.getWorkflow({
+    const workflow = await new Octokit({ auth: token }).actions.getWorkflow({
       owner,
       repo,
       workflow_id: id,
@@ -78,15 +82,17 @@ export class GithubActionsClient implements GithubActionsApi {
     return workflow.data;
   }
   async getWorkflowRun({
+    token,
     owner,
     repo,
     id,
   }: {
+    token: string;
     owner: string;
     repo: string;
     id: number;
   }): Promise<ActionsGetWorkflowRunResponseData> {
-    const run = await this.api.actions.getWorkflowRun({
+    const run = await new Octokit({ auth: token }).actions.getWorkflowRun({
       owner,
       repo,
       run_id: id,

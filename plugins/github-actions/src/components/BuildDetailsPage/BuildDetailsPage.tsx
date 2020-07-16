@@ -30,7 +30,7 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { Link, useApi } from '@backstage/core';
+import { Link, useApi, githubAuthApiRef } from '@backstage/core';
 import { githubActionsApiRef } from '../../api';
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -50,22 +50,23 @@ export const BuildDetailsPage = () => {
   const repo = 'try-ssr';
   const owner = 'CircleCITest3';
   const api = useApi(githubActionsApiRef);
+  const auth = useApi(githubAuthApiRef);
 
   const classes = useStyles();
   const { id } = useParams();
-  const status = useAsync(
-    () =>
-      api
-        .getWorkflowRun({
-          owner,
-          repo,
-          id: parseInt(id, 10),
-        })
-        .then(data => {
-          return data;
-        }),
-    [location.search],
-  );
+  const status = useAsync(async () => {
+    const token = await auth.getAccessToken(['repo', 'user']);
+    return api
+      .getWorkflowRun({
+        token,
+        owner,
+        repo,
+        id: parseInt(id, 10),
+      })
+      .then(data => {
+        return data;
+      });
+  }, [location.search]);
 
   if (status.loading) {
     return <LinearProgress />;

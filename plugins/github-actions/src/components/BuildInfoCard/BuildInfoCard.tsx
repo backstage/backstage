@@ -28,7 +28,7 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import { BuildStatusIndicator } from '../BuildStatusIndicator';
 import { githubActionsApiRef, BuildStatus } from '../../api';
-import { Link, useApi } from '@backstage/core';
+import { Link, useApi, githubAuthApiRef } from '@backstage/core';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -41,9 +41,11 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 const BuildInfoCardContent = () => {
   const api = useApi(githubActionsApiRef);
+  const auth = useApi(githubAuthApiRef);
 
   const status = useAsync(async () => {
-    return api.listWorkflowRuns({ owner: 'spotify', repo: 'backstage' });
+    const token = await auth.getAccessToken(['repo', 'user']);
+    return api.listWorkflowRuns({ token, owner: 'spotify', repo: 'backstage' });
   });
 
   if (status.loading) {

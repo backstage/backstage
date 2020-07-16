@@ -28,39 +28,47 @@ export const githubActionsApiRef = createApiRef<GithubActionsApi>({
 
 export type GithubActionsApi = {
   listWorkflowRuns: ({
+    token,
     owner,
     repo,
     pageSize,
     page,
   }: {
+    token: string;
     owner: string;
     repo: string;
     pageSize?: number;
     page?: number;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
   getWorkflow: ({
+    token,
     owner,
     repo,
     id,
   }: {
+    token: string;
     owner: string;
     repo: string;
     id: number;
   }) => Promise<ActionsGetWorkflowResponseData>;
   getWorkflowRun: ({
+    token,
     owner,
     repo,
     id,
   }: {
+    token: string;
     owner: string;
     repo: string;
     id: number;
   }) => Promise<ActionsGetWorkflowRunResponseData>;
   reRunWorkflow: ({
+    token,
     owner,
     repo,
     runId,
   }: {
+    token: string;
     owner: string;
     repo: string;
     runId: number;
