@@ -13,6 +13,7 @@ spec:
   templater: cra
   type: website
   path: '.'
+  
   schema:
     required: 
       - component_id
