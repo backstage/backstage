@@ -20,15 +20,26 @@ import { resolve as resolvePath, join as joinPath } from 'path';
 import ApiDocGenerator from './docgen/ApiDocGenerator';
 import sortSelector from './docgen/sortSelector';
 import TypeLocator from './docgen/TypeLocator';
-import ApiDocPrinter from './docgen/ApiDocPrinter';
+import ApiDocPrinter from './docgen/ApiDocsPrinter';
 import TypescriptHighlighter from './docgen/TypescriptHighlighter';
-import MarkdownPrinter from './docgen/MarkdownPrinter';
+import GitHubMarkdownPrinter from './docgen/GitHubMarkdownPrinter';
+import TechdocsMarkdownPrinter from './docgen/TechdocsMarkdownPrinter';
 
-export async function generate(targetPath: string) {
+const FORMATS = ['github', 'techdocs'] as const;
+
+export async function generate(
+  targetPath: string,
+  format: typeof FORMATS[number],
+) {
+  if (!FORMATS.includes(format)) {
+    throw new TypeError(
+      `Invalid format, '${format}', must be one of ${FORMATS.join(', ')}`,
+    );
+  }
+
   const rootDir = resolvePath(__dirname, '../../..');
   const srcDir = resolvePath(rootDir, 'packages', 'core-api', 'src');
   const targetDir = resolvePath(targetPath);
-  const docsDir = resolvePath(targetDir, 'docs');
 
   const options = await fs.readJson(resolvePath('../cli/config/tsconfig.json'));
 
@@ -65,33 +76,51 @@ export async function generate(targetPath: string) {
     ),
   ).sort(sortSelector(i => i.name));
 
-  const apiDocPrinter = new ApiDocPrinter(
-    () => new MarkdownPrinter(new TypescriptHighlighter()),
-  );
+  if (format === 'techdocs') {
+    const docsDir = resolvePath(targetDir, 'docs');
+    await fs.ensureDir(docsDir);
 
-  fs.ensureDirSync(docsDir);
+    const apiDocPrinter = new ApiDocPrinter(
+      () => new TechdocsMarkdownPrinter(new TypescriptHighlighter()),
+    );
 
-  await fs.writeFile(
-    joinPath(docsDir, 'README.md'),
-    apiDocPrinter.printApiIndex(apiDocs),
-  );
+    await fs.writeFile(
+      joinPath(docsDir, 'README.md'),
+      apiDocPrinter.printApiIndex(apiDocs),
+    );
 
-  for (const apiType of Object.values(apiTypes)) {
-    const data = apiDocPrinter.printInterface(apiType, apiDocs);
+    for (const apiType of Object.values(apiTypes)) {
+      const data = apiDocPrinter.printInterface(apiType, apiDocs);
 
-    await fs.writeFile(joinPath(docsDir, `${apiType.name}.md`), data);
+      await fs.writeFile(joinPath(docsDir, `${apiType.name}.md`), data);
+    }
+
+    await fs.writeFile(
+      resolvePath(targetDir, 'mkdocs.yml'),
+      [
+        'site_name: Backstage Core Utility API References',
+        'nav:',
+        `  - API Index: 'README.md'`,
+        ...apiTypes.map(({ name }) => `  - ${name}: '${name}.md'`),
+        'plugins:',
+        '  - techdocs-core',
+      ].join('\n'),
+      'utf8',
+    );
+  } else {
+    await fs.ensureDir(targetDir);
+
+    const apiDocPrinter = new ApiDocPrinter(() => new GitHubMarkdownPrinter());
+
+    await fs.writeFile(
+      joinPath(targetDir, 'README.md'),
+      apiDocPrinter.printApiIndex(apiDocs),
+    );
+
+    for (const apiType of Object.values(apiTypes)) {
+      const data = apiDocPrinter.printInterface(apiType, apiDocs);
+
+      await fs.writeFile(joinPath(targetDir, `${apiType.name}.md`), data);
+    }
   }
-
-  await fs.writeFile(
-    resolvePath(targetDir, 'mkdocs.yml'),
-    [
-      'site_name: Backstage Core Utility API References',
-      'nav:',
-      `  - API Index: 'README.md'`,
-      ...apiTypes.map(({ name }) => `  - ${name}: '${name}.md'`),
-      'plugins:',
-      '  - techdocs-core',
-    ].join('\n'),
-    'utf8',
-  );
 }

@@ -15,17 +15,27 @@
  */
 
 import sortSelector from './sortSelector';
-import { Highlighter, TypeLink } from './types';
+import { Highlighter, MarkdownPrinter, TypeLink } from './types';
+import { execSync } from 'child_process';
+
+// TODO(Rugvip): provide through options?
+const GH_BASE_URL = 'https://github.com/spotify/backstage';
+
+const COMMIT_SHA =
+  process.env.COMMIT_SHA || execSync('git rev-parse HEAD').toString('utf8');
 
 /**
  * The MarkdownPrinter is a helper class for building markdown documents.
  */
-export default class MarkdownPrinter {
+export default class TechdocsMarkdownPrinter implements MarkdownPrinter {
   private str: string = '';
   private readonly highlighter: Highlighter;
 
   constructor(highlighter: Highlighter) {
     this.highlighter = highlighter;
+
+    // Remove line numbers from codeblocks
+    this.style('.linenodiv{ display: none }');
   }
 
   private line(line: string = '') {
@@ -48,6 +58,23 @@ export default class MarkdownPrinter {
     this.line();
   }
 
+  headerLink(heading: string, id?: string): string {
+    return `#${id ?? heading}`;
+  }
+
+  indexLink() {
+    return '../';
+  }
+
+  srcLink(
+    { file, lineInFile }: { file: string; lineInFile: number },
+    text?: string,
+  ): string {
+    const linkText = text ?? `${file}:${lineInFile}`;
+    const href = `${GH_BASE_URL}/blob/${COMMIT_SHA}/${file}#L${lineInFile}`;
+    return `[${linkText}](${href})`;
+  }
+
   paragraph(...text: string[]) {
     this.line(
       text
@@ -60,14 +87,7 @@ export default class MarkdownPrinter {
     this.line();
   }
 
-  code(syntax: string = '', block: string) {
-    this.line(`\`\`\`${syntax}`);
-    this.line(block);
-    this.line('```');
-    this.line();
-  }
-
-  codeWithLinks({ text, links = [] }: { text: string; links?: TypeLink[] }) {
+  code({ text, links = [] }: { text: string; links?: TypeLink[] }) {
     this.line('<div class="code">');
     this.line(
       '<div class="codehilite" style="background: #f0f0f0; padding: 0.225rem 0.6rem">',
@@ -123,7 +143,8 @@ export default class MarkdownPrinter {
     return parts
       .map(part => {
         if (part.path) {
-          return `<a href="#${part.path}">${this.escapeText(part.text)}</a>`;
+          const link = this.headerLink(part.text, part.path);
+          return `<a href="${link}">${this.escapeText(part.text)}</a>`;
         }
         return this.highlighter.highlight(this.escapeText(part.text));
       })

@@ -95,3 +95,19 @@ export type ExportedInstance = {
 export type Highlighter = {
   highlight(test: string): string;
 };
+
+export type MarkdownPrinter = {
+  text(text: string): void;
+  header(level: number, text: string, id?: string): void;
+  paragraph(...text: string[]): void;
+  code(options: { text: string; links?: TypeLink[] }): void;
+
+  headerLink(header: string, id?: string): string;
+  indexLink(): string;
+  srcLink(
+    { file, lineInFile }: { file: string; lineInFile: number },
+    text?: string,
+  ): string;
+
+  toBuffer(): Buffer;
+};

@@ -30,8 +30,12 @@ const main = (argv: string[]) => {
       'Generate documentation for the declarations in the core-api package',
     )
     .option('--output <output>', 'Output directory [./dist]')
+    .option(
+      '--format <format>',
+      'Output format, either techdocs or github [techdocs]',
+    )
     .action(async cmd => {
-      await generate(cmd.output ?? './dist');
+      await generate(cmd.output ?? './dist', cmd.format ?? 'techdocs');
     });
 
   program.on('command:*', () => {
