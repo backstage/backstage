@@ -24,17 +24,15 @@ import { ExportedInstance } from './types';
  * This is used to e.g. find exported APIs that we should generate documentation for.
  */
 export default class TypeLocator {
-  private readonly checker: ts.TypeChecker;
-  private readonly program: ts.Program;
-
-  static fromProgram(program: ts.Program) {
-    return new TypeLocator(program.getTypeChecker(), program);
+  static fromProgram(program: ts.Program, sourcePath: string) {
+    return new TypeLocator(program.getTypeChecker(), program, sourcePath);
   }
 
-  constructor(checker: ts.TypeChecker, program: ts.Program) {
-    this.checker = checker;
-    this.program = program;
-  }
+  constructor(
+    private readonly checker: ts.TypeChecker,
+    private readonly program: ts.Program,
+    private readonly sourcePath: string,
+  ) {}
 
   getExportedType(path: string, exportedName: string = 'default'): ts.Type {
     const source = this.program.getSourceFile(path);
@@ -54,7 +52,6 @@ export default class TypeLocator {
 
   findExportedInstances<T extends string>(
     typeLookupTable: { [key in T]: ts.Type },
-    roots: string[],
   ): { [key in T]: ExportedInstance[] } {
     const docMap = new Map<ts.Type, ExportedInstance[]>();
     for (const type of Object.values<ts.Type>(typeLookupTable)) {
@@ -62,7 +59,7 @@ export default class TypeLocator {
     }
 
     this.program.getSourceFiles().forEach(source => {
-      const inRoot = roots.some(root => source.fileName.startsWith(root));
+      const inRoot = source.fileName.startsWith(this.sourcePath);
       if (!inRoot) {
         return;
       }

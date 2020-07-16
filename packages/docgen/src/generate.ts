@@ -15,9 +15,8 @@
  */
 
 import * as ts from 'typescript';
-import { resolve, join, dirname } from 'path';
-import { promisify } from 'util';
 import fs from 'fs-extra';
+import { resolve as resolvePath, join as joinPath } from 'path';
 import ApiDocGenerator from './docgen/ApiDocGenerator';
 import sortSelector from './docgen/sortSelector';
 import TypeLocator from './docgen/TypeLocator';
@@ -25,49 +24,29 @@ import ApiDocPrinter from './docgen/ApiDocPrinter';
 import TypescriptHighlighter from './docgen/TypescriptHighlighter';
 import MarkdownPrinter from './docgen/MarkdownPrinter';
 
-const writeFile = promisify(fs.writeFile);
+export async function generate(targetPath: string) {
+  const rootDir = resolvePath(__dirname, '..');
+  const srcDir = resolvePath(rootDir, '..', 'core-api', 'src');
+  const targetDir = resolvePath(targetPath);
+  const docsDir = resolvePath(targetDir, 'docs');
 
-function loadOptions(path: string): ts.CompilerOptions {
-  const config: any = require(path);
-  let parent = config.extends as string | undefined;
-
-  if (!parent) {
-    return config.compilerOptions;
-  }
-  if (parent.startsWith('.')) {
-    parent = join(dirname(path), parent);
-  }
-
-  return { ...loadOptions(parent), ...config.compilerOptions };
-}
-
-async function main() {
-  const rootDir = resolve(__dirname, '..');
-  const srcDir = resolve(rootDir, '..', 'core-api', 'src');
-  const entrypoint = resolve(srcDir, 'index.ts');
-  const apiRefsDir = resolve(rootDir, 'dist');
-  const mkdocsYaml = resolve(apiRefsDir, 'mkdocs.yml');
-
-  process.chdir(rootDir);
-
-  const options = loadOptions('../../../tsconfig.json');
+  const options = await fs.readJson(resolvePath('../cli/config/tsconfig.json'));
 
   delete options.moduleResolution;
-  options.removeComments = false;
   options.noEmit = true;
 
-  const program = ts.createProgram([entrypoint], options);
+  const program = ts.createProgram([resolvePath(srcDir, 'index.ts')], options);
 
-  const typeLocator = TypeLocator.fromProgram(program);
+  const typeLocator = TypeLocator.fromProgram(program, srcDir);
 
-  const { apis } = typeLocator.findExportedInstances(
-    {
-      apis: typeLocator.getExportedType(entrypoint, 'createApiRef'),
-    },
-    [srcDir],
-  );
+  const { apis } = typeLocator.findExportedInstances({
+    apis: typeLocator.getExportedType(
+      resolvePath(srcDir, 'index.ts'),
+      'createApiRef',
+    ),
+  });
 
-  const apiDocGenerator = ApiDocGenerator.fromProgram(program, rootDir, srcDir);
+  const apiDocGenerator = ApiDocGenerator.fromProgram(program, srcDir);
   const apiDocs = apis
     .map(api => {
       try {
@@ -90,23 +69,21 @@ async function main() {
     () => new MarkdownPrinter(new TypescriptHighlighter()),
   );
 
-  fs.ensureDirSync(resolve(apiRefsDir, 'docs'));
+  fs.ensureDirSync(docsDir);
 
-  await writeFile(
-    join(apiRefsDir, 'docs', 'README.md'),
+  await fs.writeFile(
+    joinPath(docsDir, 'README.md'),
     apiDocPrinter.printApiIndex(apiDocs),
   );
 
-  await Promise.all(
-    Object.values(apiTypes).map(apiType => {
-      const data = apiDocPrinter.printInterface(apiType, apiDocs);
+  for (const apiType of Object.values(apiTypes)) {
+    const data = apiDocPrinter.printInterface(apiType, apiDocs);
 
-      return writeFile(join(apiRefsDir, 'docs', `${apiType.name}.md`), data);
-    }),
-  );
+    await fs.writeFile(joinPath(docsDir, `${apiType.name}.md`), data);
+  }
 
-  fs.writeFileSync(
-    mkdocsYaml,
+  await fs.writeFile(
+    resolvePath(targetDir, 'mkdocs.yml'),
     [
       'site_name: api-references',
       'nav:',
@@ -118,8 +95,3 @@ async function main() {
     'utf8',
   );
 }
-
-main().catch(error => {
-  console.error(error.stack || error);
-  process.exit(1);
-});

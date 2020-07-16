@@ -36,17 +36,12 @@ import {
  * While traversing, it collects information such as names, location in source, docs, etc.
  */
 export default class ApiDocGenerator {
-  static fromProgram(
-    program: ts.Program,
-    basePath: string,
-    sourcePath: string,
-  ) {
-    return new ApiDocGenerator(program.getTypeChecker(), basePath, sourcePath);
+  static fromProgram(program: ts.Program, sourcePath: string) {
+    return new ApiDocGenerator(program.getTypeChecker(), sourcePath);
   }
 
   constructor(
     private readonly checker: ts.TypeChecker,
-    private readonly basePath: string,
     private readonly sourcePath: string,
   ) {}
 
@@ -96,7 +91,7 @@ export default class ApiDocGenerator {
     const name = (type.aliasSymbol || type.symbol).name;
     const [declaration] = (type.aliasSymbol || type.symbol).declarations;
     const sourceFile = declaration.getSourceFile();
-    const file = relative(this.basePath, sourceFile.fileName);
+    const file = relative(this.sourcePath, sourceFile.fileName);
     const { line } = sourceFile.getLineAndCharacterOfPosition(
       declaration.getStart(),
     );
@@ -210,7 +205,7 @@ export default class ApiDocGenerator {
     const { line } = sourceFile.getLineAndCharacterOfPosition(
       declaration.getStart(),
     );
-    const file = relative(this.basePath, sourceFile.fileName);
+    const file = relative(this.sourcePath, sourceFile.fileName);
     const typeInfo = {
       id: (symbol as any).id,
       name: symbol.name,
