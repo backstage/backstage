@@ -26,7 +26,7 @@ export type PageTheme = {
 
 export const gradients: Record<string, Gradient> = {
   darkGrey: {
-    colors: ['#181818', '#404040'],
+    colors: ['#171717', '#383838'],
     waveColor: '#757575',
     opacity: ['1.0', '0.0'],
   },
@@ -67,7 +67,17 @@ export const gradients: Record<string, Gradient> = {
   },
 };
 
-export const pageTheme: Record<string, PageTheme> = {
+export type PageType =
+  | 'home'
+  | 'documentation'
+  | 'tool'
+  | 'service'
+  | 'website'
+  | 'library'
+  | 'other'
+  | 'app';
+
+export const pageTheme: Record<PageType, PageTheme> = {
   home: {
     gradient: gradients.teal,
   },
