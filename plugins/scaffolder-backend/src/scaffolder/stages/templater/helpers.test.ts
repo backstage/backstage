@@ -17,7 +17,6 @@ import Stream, { PassThrough } from 'stream';
 import os from 'os';
 import fs from 'fs';
 import Docker from 'dockerode';
-import { Writable } from 'stream';
 import { runDockerContainer } from './helpers';
 
 describe('helpers', () => {
@@ -30,9 +29,9 @@ describe('helpers', () => {
     jest.spyOn(mockDocker, 'pull').mockImplementation((async (
       _image: string,
       _something: any,
-      handler: (err: Error | undefined, stream: Writable) => void,
+      handler: (err: Error | undefined, stream: PassThrough) => void,
     ) => {
-      const mockStream = new Writable();
+      const mockStream = new PassThrough();
       handler(undefined, mockStream);
       mockStream.end();
     }) as any);
@@ -53,7 +52,11 @@ describe('helpers', () => {
         dockerClient: mockDocker,
       });
 
-      expect(mockDocker.pull).toHaveBeenCalledWith(imageName, {});
+      expect(mockDocker.pull).toHaveBeenCalledWith(
+        imageName,
+        {},
+        expect.any(Function),
+      );
     });
     it('should call the dockerClient run command with the correct arguments passed through', async () => {
       await runDockerContainer({
