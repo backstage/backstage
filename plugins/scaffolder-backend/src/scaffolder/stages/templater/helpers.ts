@@ -62,16 +62,14 @@ export const runDockerContainer = async ({
   dockerClient,
   createOptions = {},
 }: RunDockerContainerOptions) => {
-  await new Promise((resolve, reject) =>
-    dockerClient.pull(imageName, {}, (err, res) => {
-      console.warn(err, res);
-      if (err) {
-        reject(err);
-      } else {
-        resolve(res);
-      }
-    }),
-  );
+  await new Promise((resolve, reject) => {
+    dockerClient.pull(imageName, {}, (err, stream) => {
+      if (err) return reject(err);
+      stream.pipe(logStream);
+      stream.on('end', () => resolve());
+      stream.on('error', (error: Error) => reject(error));
+    });
+  });
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
     args,
