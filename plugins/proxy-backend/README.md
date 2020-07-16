@@ -14,7 +14,7 @@ To run it within the backend do:
 
 1. Register the router in `packages/backend/src/index.ts`:
 
-```tsx
+```ts
 const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
 
 const service = createServiceBuilder(module)

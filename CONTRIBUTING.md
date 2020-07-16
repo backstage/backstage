@@ -54,7 +54,7 @@ If you are proposing a feature:
 - Remember that this is a volunteer-driven project, and that contributions
   are welcome :)
 
-## Add you company to ADOPTERS
+## Add your company to ADOPTERS
 
 Have you started using Backstage? Adding your company to [ADOPTERS](ADOPTERS.md) really helps the project.
 
