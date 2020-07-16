@@ -9,10 +9,11 @@ to various third party APIs.
 There are occasions when the user wants to perform actions towards third party
 services that require authorization via OAuth. Backstage provides standardized
 [Utility APIs](../api/utility-apis.md) such as the
-[GoogleAuthApi](../../packages/core-api/src/apis/definitions/auth.ts) for that
-use-case. Backstage also includes a set of implementations of these APIs that
-integrate with the [auth-backend](../../plugins/auth-backend) plugin to provide
-a popup-based OAuth flow.
+[GoogleAuthApi](https://github.com/spotify/backstage/blob/master/packages/core-api/src/apis/definitions/auth.ts)
+for that use-case. Backstage also includes a set of implementations of these
+APIs that integrate with the
+[auth-backend](https://github.com/spotify/backstage/tree/master/plugins/auth-backend)
+plugin to provide a popup-based OAuth flow.
 
 ## Background
 
@@ -51,8 +52,9 @@ easier to make authenticated requests inside a plugin.
 ## OAuth Flow
 
 The following describes the OAuth flow implemented by the
-[auth-backend](../../plugins/auth-backend) and
-[DefaultAuthConnector](../../packages/core-api/src/lib/AuthConnector/DefaultAuthConnector.ts)
+[auth-backend](https://github.com/spotify/backstage/tree/master/plugins/auth-backend)
+and
+[DefaultAuthConnector](https://github.com/spotify/backstage/blob/master/packages/core-api/src/lib/AuthConnector/DefaultAuthConnector.ts)
 in `@backstage/core-api`.
 
 Component and APIs can request Access or ID Tokens from any available Auth

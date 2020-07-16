@@ -14,13 +14,13 @@ To run it within the backend do:
 
 1. Register the router in `packages/backend/src/index.ts`:
 
-```
+```ts
 const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
 
 const service = createServiceBuilder(module)
-    .loadConfig(configReader)
-    /** several different routers */
-    .addRouter('/', await proxy(proxyEnv));
+  .loadConfig(configReader)
+  /** several different routers */
+  .addRouter('/', await proxy(proxyEnv));
 ```
 
 2. Start the backend
@@ -33,5 +33,4 @@ This will launch the full example backend.
 
 ## Links
 
-- (http-proxy-middleware)[https://www.npmjs.com/package/http-proxy-middleware]
-- (The Backstage homepage)[https://backstage.io]
+- [http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware)

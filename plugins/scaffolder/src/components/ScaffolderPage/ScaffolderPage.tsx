@@ -23,17 +23,12 @@ import {
   Lifecycle,
   Page,
   pageTheme,
+  Progress,
   SupportButton,
   useApi,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
-import {
-  Button,
-  Grid,
-  LinearProgress,
-  Link,
-  Typography,
-} from '@material-ui/core';
+import { Button, Grid, Typography, Link } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import useStaleWhileRevalidate from 'swr';
@@ -95,13 +90,7 @@ export const ScaffolderPage: React.FC<{}> = () => {
             documentation, ...).
           </SupportButton>
         </ContentHeader>
-        <Typography variant="body2" paragraph style={{ fontStyle: 'italic' }}>
-          <strong>NOTE!</strong> This feature is WIP. You can follow progress{' '}
-          <Link href="https://github.com/spotify/backstage/milestone/11">
-            here
-          </Link>
-          .
-        </Typography>
+        {!templates && isValidating && <Progress />}
         {templates && !templates.length && (
           <Typography variant="body2">
             Shoot! Looks like you don't have any templates. Check out the
@@ -111,7 +100,6 @@ export const ScaffolderPage: React.FC<{}> = () => {
             </Link>
           </Typography>
         )}
-        {!templates && isValidating && <LinearProgress />}
         <Grid container>
           {templates &&
             templates?.length > 0 &&

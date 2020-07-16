@@ -59,10 +59,8 @@ The Backstage platform consists of a number of different components:
 - **app** - Main web application that users interact with. It's built up by a number of different _Plugins_. This repo contains an example implementation of an app (located in `packages/app`) and you can easily get started with your own app by [creating one](docs/create-an-app.md).
 - [**plugins**](https://github.com/spotify/backstage/tree/master/plugins) - Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform API's and reusable UI components. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
 - [**service catalog**](https://github.com/spotify/backstage/tree/master/packages/backend) - Service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
-- **proxy** \* - Terminates HTTPS and exposes any RESTful API to Plugins.
+- [**proxy**](https://github.com/spotify/backstage/tree/master/plugins/proxy-backend) - Terminates HTTPS and exposes any RESTful API to Plugins.
 - **identity** - A backend service that holds your organisation's metadata.
-
-_\* not yet released_
 
 ## Getting started
 
@@ -86,7 +84,7 @@ And that's it! You are good to go 👍
 
 ### Next step
 
-Take a look at the [Getting Started](docs/getting-started/README.md) guide to learn more about how to extend the functionality with Plugins.
+Take a look at the [Getting Started](docs/getting-started/index.md) guide to learn how to set up Backstage, and how to develop on the platform.
 
 ## Documentation
 
@@ -108,6 +106,7 @@ We would love your help in building Backstage! See [CONTRIBUTING](CONTRIBUTING.m
 - [RFCs](https://github.com/spotify/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](docs/FAQ.md) - Frequently Asked Questions
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
+- [Adopters](ADOPTERS.md) - Companies already using Backstage
 - [Blog](https://backstage.io/blog/) - Announcements and updates
 - [Newsletter](https://mailchi.mp/spotify/backstage-community)
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️

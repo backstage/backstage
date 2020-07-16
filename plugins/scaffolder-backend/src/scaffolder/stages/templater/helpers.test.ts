@@ -17,6 +17,7 @@ import Stream, { PassThrough } from 'stream';
 import os from 'os';
 import fs from 'fs';
 import Docker from 'dockerode';
+import { Writable } from 'stream';
 import { runDockerContainer } from './helpers';
 
 describe('helpers', () => {
@@ -26,9 +27,15 @@ describe('helpers', () => {
     jest
       .spyOn(mockDocker, 'run')
       .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
-    jest
-      .spyOn(mockDocker, 'pull')
-      .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
+    jest.spyOn(mockDocker, 'pull').mockImplementation((async (
+      _image: string,
+      _something: any,
+      handler: (err: Error | undefined, stream: Writable) => void,
+    ) => {
+      const mockStream = new Writable();
+      handler(undefined, mockStream);
+      mockStream.end();
+    }) as any);
   });
 
   describe('runDockerContainer', () => {

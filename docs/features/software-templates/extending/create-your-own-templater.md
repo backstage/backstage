@@ -43,7 +43,7 @@ As you can see in the above code a `TemplaterBuilder` is created and the default
 
 This `TemplaterKey` is used to select the correct templater from the
 `spec.templater` in the
-[Template Entity](../software-catalog/descriptor-format.md#kind-template).
+[Template Entity](../../software-catalog/descriptor-format.md#kind-template).
 
 If you wish to add a new templater you'll need to register it with the
 `TemplaterBuilder`.
@@ -73,9 +73,9 @@ follows:
 - `directory`- the skeleton directory returned from the `Preparer`, more info at
   [Create your own preparer](./create-your-own-preparer.md).
 - `values` - a json object which will resemble the `spec.schema` from the
-  [Template Entity](../software-catalog/descriptor-format.md#kind-template)
+  [Template Entity](../../software-catalog/descriptor-format.md#kind-template)
   which is defined here under spec.schema`. More info can be found here
-  [Register your own template](./register-your-own-template.md#adding-form-values-in-the-scaffolder-wizard)
+  [Register your own template](../adding-templates.md#adding-form-values-in-the-scaffolder-wizard)
 - `logStream` - a stream that you can write to for displaying in the frontend.
 - `dockerClient` - a [dockerode](https://github.com/apocas/dockerode) client to
   be able to run docker containers.

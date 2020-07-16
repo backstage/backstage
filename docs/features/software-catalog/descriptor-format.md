@@ -312,7 +312,7 @@ Apart from being a string, the software catalog leaves the format of this field
 open to implementers to choose. Most commonly, it is set to the ID or email of a
 group of people in an organizational structure.
 
-##
+## Kind: Template
 
 Describes the following entity kind:
 
