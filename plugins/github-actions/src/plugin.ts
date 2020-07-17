@@ -24,7 +24,7 @@ export const rootRouteRef = createRouteRef({
   title: 'GitHub Actions',
 });
 export const buildRouteRef = createRouteRef({
-  path: '/github-actions/builds',
+  path: '/github-actions/build/:id',
   title: 'GitHub Actions Build',
 });
 

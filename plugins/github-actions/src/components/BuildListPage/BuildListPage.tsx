@@ -47,7 +47,7 @@ export const BuildListPage = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <BuildListTable />
+            <BuildListTable repo="try-ssr" owner="CircleCITest3" />
           </Grid>
         </Grid>
       </Content>
