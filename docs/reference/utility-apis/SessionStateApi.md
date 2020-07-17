@@ -1,19 +1,19 @@
 # SessionStateApi
 
 The SessionStateApi type is defined at
-[packages/core-api/src/apis/definitions/auth.ts:201](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/apis/definitions/auth.ts#L201).
+[packages/core-api/src/apis/definitions/auth.ts:201](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/auth.ts#L201).
 
 The following Utility APIs implement this type:
 
-- [githubAuthApiRef](./README.md#githubauthapiref)
+- [githubAuthApiRef](./README.md#githubauth)
 
-- [gitlabAuthApiRef](./README.md#gitlabauthapiref)
+- [gitlabAuthApiRef](./README.md#gitlabauth)
 
-- [googleAuthApiRef](./README.md#googleauthapiref)
+- [googleAuthApiRef](./README.md#googleauth)
 
-- [oauth2ApiRef](./README.md#oauth2apiref)
+- [oauth2ApiRef](./README.md#oauth2)
 
-- [oktaAuthApiRef](./README.md#oktaauthapiref)
+- [oktaAuthApiRef](./README.md#oktaauth)
 
 ## Members
 
@@ -52,9 +52,9 @@ export type Observable&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/types.ts#L53).
+[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L53).
 
-Referenced by: [sessionState\$](#sessionstate-).
+Referenced by: [sessionState\$](#sessionstate).
 
 ### Observer
 
@@ -71,7 +71,7 @@ export type Observer&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/types.ts#L24).
+[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L24).
 
 Referenced by: [Observable](#observable).
 
@@ -87,9 +87,9 @@ export enum SessionState {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:192](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/apis/definitions/auth.ts#L192).
+[packages/core-api/src/apis/definitions/auth.ts:192](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/auth.ts#L192).
 
-Referenced by: [sessionState\$](#sessionstate-).
+Referenced by: [sessionState\$](#sessionstate).
 
 ### Subscription
 
@@ -110,6 +110,6 @@ export type Subscription = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/types.ts#L33).
+[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L33).
 
 Referenced by: [Observable](#observable).

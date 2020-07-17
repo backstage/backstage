@@ -1,10 +1,9 @@
 # AlertApi
 
 The AlertApi type is defined at
-[packages/core-api/src/apis/definitions/AlertApi.ts:29](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/apis/definitions/AlertApi.ts#L29).
+[packages/core-api/src/apis/definitions/AlertApi.ts:29](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/AlertApi.ts#L29).
 
-The following Utility API implements this type:
-[alertApiRef](./README.md#alertapiref)
+The following Utility API implements this type: [alertApiRef](./README.md#alert)
 
 ## Members
 
@@ -39,9 +38,9 @@ export type AlertMessage = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/AlertApi.ts:19](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/apis/definitions/AlertApi.ts#L19).
+[packages/core-api/src/apis/definitions/AlertApi.ts:19](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/AlertApi.ts#L19).
 
-Referenced by: [post](#post), [alert\$](#alert-).
+Referenced by: [post](#post), [alert\$](#alert).
 
 ### Observable
 
@@ -68,9 +67,9 @@ export type Observable&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/types.ts#L53).
+[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L53).
 
-Referenced by: [alert\$](#alert-).
+Referenced by: [alert\$](#alert).
 
 ### Observer
 
@@ -87,7 +86,7 @@ export type Observer&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/types.ts#L24).
+[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L24).
 
 Referenced by: [Observable](#observable).
 
@@ -110,6 +109,6 @@ export type Subscription = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/4df02a253f6903e1ca20184369f5655e2d49d893/packages/core-api/src/types.ts#L33).
+[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L33).
 
 Referenced by: [Observable](#observable).
