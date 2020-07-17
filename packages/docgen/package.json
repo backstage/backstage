@@ -18,7 +18,7 @@
     "build": "backstage-cli build --outputs cjs",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
-    "docgen": "backstage-docgen generate --output ../../docs/reference/utility-apis --format github",
+    "docgen": "backstage-docgen generate --output ../../docs/reference/utility-apis --format github && prettier --write ../../docs/reference/utility-apis",
     "clean": "backstage-cli clean",
     "start": "nodemon --"
   },
