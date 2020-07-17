@@ -34,8 +34,8 @@ const app = createApp({
   components: {
     SignInPage: props => {
       const configApi = useApi(configApiRef);
-      const providersConfig = configApi.getConfig('auth.providers');
-      const providers = providersConfig.keys();
+      const providersConfig = configApi.getOptionalConfig('auth.providers');
+      const providers = providersConfig?.keys() ?? [];
 
       return <SignInPage {...props} providers={['guest', ...providers]} />;
     },

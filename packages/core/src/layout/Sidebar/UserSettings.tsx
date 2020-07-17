@@ -41,8 +41,8 @@ export function SidebarUserSettings() {
   const [open, setOpen] = React.useState(false);
   const identityApi = useApi(identityApiRef);
   const configApi = useApi(configApiRef);
-  const providersConfig = configApi.getConfig('auth.providers');
-  const providers = providersConfig.keys();
+  const providersConfig = configApi.getOptionalConfig('auth.providers');
+  const providers = providersConfig?.keys() ?? [];
 
   // Close the provider list when sidebar collapse
   useEffect(() => {
