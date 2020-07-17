@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import GithubSlugger from 'github-slugger';
 import sortSelector from './sortSelector';
 import { MarkdownPrinter, TypeLink } from './types';
 import { execSync } from 'child_process';
@@ -46,7 +47,7 @@ export default class GithubMarkdownPrinter implements MarkdownPrinter {
   }
 
   headerLink(heading: string): string {
-    const slug = heading.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const slug = GithubSlugger.slug(heading);
     return `#${slug}`;
   }
 
