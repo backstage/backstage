@@ -4,6 +4,7 @@ site_description: 'Main documentation for Backstage features and platform APIs'
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
+      - Backstage architecture: 'overview/architecture-overview.md'
       - Architecture and terminology: 'overview/architecture-terminology.md'
       - Roadmap: 'overview/roadmap.md'
   - Getting started:
