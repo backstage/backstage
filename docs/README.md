@@ -76,7 +76,8 @@ better yet, a pull request.
     - [Figma resources](dls/figma.md)
   - API references
     - TypeScript API
-      - [Utilities](api/utility-apis.md)
+      - [Utility APIs](api/utility-apis.md)
+      - [Utility API References](reference/utility-apis/README.md)
       - [createPlugin](reference/createPlugin.md)
       - [createPlugin-feature-flags](reference/createPlugin-feature-flags.md)
       - [createPlugin-router](reference/createPlugin-router.md)
