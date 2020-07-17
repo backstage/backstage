@@ -141,9 +141,9 @@ export function createGitlabProvider(
   const providerId = 'gitlab';
   const secure = envConfig.getBoolean('secure');
   const appOrigin = envConfig.getString('appOrigin');
-  const clientID = envConfig.getOptionalString('clientId');
-  const clientSecret = envConfig.getOptionalString('clientSecret');
-  const audience = envConfig.getOptionalString('audience');
+  const clientID = envConfig.getString('clientId');
+  const clientSecret = envConfig.getString('clientSecret');
+  const audience = envConfig.getString('audience');
   const baseURL = audience || 'https://gitlab.com';
   const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
 

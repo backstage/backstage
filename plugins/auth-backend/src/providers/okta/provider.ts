@@ -173,9 +173,9 @@ export function createOktaProvider(
   const providerId = 'okta';
   const secure = envConfig.getBoolean('secure');
   const appOrigin = envConfig.getString('appOrigin');
-  const clientID = envConfig.getOptionalString('clientId');
-  const clientSecret = envConfig.getOptionalString('clientSecret');
-  const audience = envConfig.getOptionalString('audience');
+  const clientID = envConfig.getString('clientId');
+  const clientSecret = envConfig.getString('clientSecret');
+  const audience = envConfig.getString('audience');
   const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
 
   const opts = {

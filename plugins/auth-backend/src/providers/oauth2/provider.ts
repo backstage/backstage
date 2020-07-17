@@ -151,11 +151,11 @@ export function createOAuth2Provider(
   const providerId = 'oauth2';
   const secure = envConfig.getBoolean('secure');
   const appOrigin = envConfig.getString('appOrigin');
-  const clientID = envConfig.getOptionalString('clientId');
-  const clientSecret = envConfig.getOptionalString('clientSecret');
+  const clientID = envConfig.getString('clientId');
+  const clientSecret = envConfig.getString('clientSecret');
   const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
-  const authorizationURL = envConfig.getOptionalString('authorizationURL');
-  const tokenURL = envConfig.getOptionalString('tokenURL');
+  const authorizationURL = envConfig.getString('authorizationURL');
+  const tokenURL = envConfig.getString('tokenURL');
 
   const opts = {
     clientID,
