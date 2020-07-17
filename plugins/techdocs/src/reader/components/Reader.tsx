@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useApi, configApiRef } from '@backstage/core';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
@@ -30,7 +30,14 @@ import transformer, {
   modifyCss,
   onCssReady,
   sanitizeDOM,
+  insertWidget,
 } from '../transformers';
+
+import { create } from 'jss';
+
+import {
+  HelloWorld
+} from '../widgets';
 import URLFormatter from '../urlFormatter';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
@@ -81,6 +88,8 @@ export const Reader = () => {
     `${docStorageUrl}${location.pathname.replace('/docs', '')}`,
   ).formatBaseURL();
   const state = useFetch(`${normalizedUrl}index.html`);
+
+  const widgetAnchor = document.createElement('div');
 
   React.useEffect(() => {
     if (!shadowRoot) {
@@ -149,6 +158,7 @@ export const Reader = () => {
           (dom as HTMLElement).style.removeProperty('opacity');
         },
       }),
+      insertWidget({widget: widgetAnchor, insertAt: '.md-sidebar.md-sidebar--secondary'}),
     ]);
   }, [componentId, path, shadowRoot, state]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -159,6 +169,7 @@ export const Reader = () => {
   return (
     <TechDocsPageWrapper title={componentId} subtitle={componentId}>
       <div ref={shadowDomRef} />
+      <HelloWorld element={widgetAnchor} />
     </TechDocsPageWrapper>
   );
 };
