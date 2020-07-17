@@ -64,7 +64,7 @@ export const ScaffolderPage: React.FC<{}> = () => {
   }, [error, errorApi]);
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page theme={pageTheme.other}>
       <Header
         pageTitleOverride="Create a new component"
         title={
