@@ -18,7 +18,7 @@
     "build": "backstage-cli build --outputs cjs",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
-    "test:e2e": "node e2e-test/cli-e2e-test.js",
+    "docgen": "backstage-docgen generate --output ../../docs/reference/utility-apis --format github",
     "clean": "backstage-cli clean",
     "start": "nodemon --"
   },
