@@ -19,9 +19,12 @@ import { createDistWorkspace } from '../../lib/packager';
 import { paths } from '../../lib/paths';
 import { run } from '../../lib/run';
 
+const PKG_PATH = 'package.json';
+
 export default async (imageTag: string) => {
-  const packageName: string = process.env.npm_package_name!;
-  const tempDistWorkspace = await createDistWorkspace([packageName], {
+  const pkgPath = paths.resolveTarget(PKG_PATH);
+  const pkg = await fs.readJson(pkgPath);
+  const tempDistWorkspace = await createDistWorkspace([pkg.name], {
     files: [
       'package.json',
       'yarn.lock',
