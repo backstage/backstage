@@ -20,7 +20,8 @@ import { paths } from '../../lib/paths';
 import { run } from '../../lib/run';
 
 export default async (imageTag: string) => {
-  const tempDistWorkspace = await createDistWorkspace(['example-backend'], {
+  const packageName: string = process.env.npm_package_name!;
+  const tempDistWorkspace = await createDistWorkspace([packageName], {
     files: [
       'package.json',
       'yarn.lock',
@@ -28,7 +29,6 @@ export default async (imageTag: string) => {
       { src: paths.resolveTarget('Dockerfile'), dest: 'Dockerfile' },
     ],
   });
-
   console.log(`Dist workspace ready at ${tempDistWorkspace}`);
 
   await run('docker', ['build', '.', '-t', imageTag], {
