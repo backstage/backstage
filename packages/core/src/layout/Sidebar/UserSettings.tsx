@@ -22,6 +22,7 @@ import {
   oauth2ApiRef,
   oktaAuthApiRef,
   useApi,
+  configApiRef,
 } from '@backstage/core-api';
 import Collapse from '@material-ui/core/Collapse';
 import SignOutIcon from '@material-ui/icons/MeetingRoom';
@@ -39,6 +40,9 @@ export function SidebarUserSettings() {
   const { isOpen: sidebarOpen } = useContext(SidebarContext);
   const [open, setOpen] = React.useState(false);
   const identityApi = useApi(identityApiRef);
+  const configApi = useApi(configApiRef);
+  const providersConfig = configApi.getConfig('auth.providers');
+  const providers = providersConfig.keys();
 
   // Close the provider list when sidebar collapse
   useEffect(() => {
@@ -49,31 +53,41 @@ export function SidebarUserSettings() {
     <>
       <SidebarUserProfile open={open} setOpen={setOpen} />
       <Collapse in={open} timeout="auto">
-        <OIDCProviderSettings
-          title="Google"
-          apiRef={googleAuthApiRef}
-          icon={Star}
-        />
-        <OAuthProviderSettings
-          title="Github"
-          apiRef={githubAuthApiRef}
-          icon={Star}
-        />
-        <OAuthProviderSettings
-          title="Gitlab"
-          apiRef={gitlabAuthApiRef}
-          icon={Star}
-        />
-        <OIDCProviderSettings
-          title="Okta"
-          apiRef={oktaAuthApiRef}
-          icon={Star}
-        />
-        <OIDCProviderSettings
-          title="YourOrg"
-          apiRef={oauth2ApiRef}
-          icon={Star}
-        />
+        {providers.includes('google') && (
+          <OIDCProviderSettings
+            title="Google"
+            apiRef={googleAuthApiRef}
+            icon={Star}
+          />
+        )}
+        {providers.includes('github') && (
+          <OAuthProviderSettings
+            title="Github"
+            apiRef={githubAuthApiRef}
+            icon={Star}
+          />
+        )}
+        {providers.includes('gitlab') && (
+          <OAuthProviderSettings
+            title="Gitlab"
+            apiRef={gitlabAuthApiRef}
+            icon={Star}
+          />
+        )}
+        {providers.includes('okta') && (
+          <OIDCProviderSettings
+            title="Okta"
+            apiRef={oktaAuthApiRef}
+            icon={Star}
+          />
+        )}
+        {providers.includes('oauth2') && (
+          <OIDCProviderSettings
+            title="YourOrg"
+            apiRef={oauth2ApiRef}
+            icon={Star}
+          />
+        )}
         <SidebarItem
           icon={SignOutIcon}
           text="Sign Out"

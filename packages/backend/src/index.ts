@@ -58,7 +58,7 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 }
 
 async function main() {
-  const configs = await loadConfig();
+  const configs = await loadConfig({ shouldReadSecrets: true });
   const configReader = ConfigReader.fromConfigs(configs);
   const createEnv = makeCreateEnv(configs);
 
