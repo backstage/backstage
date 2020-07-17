@@ -66,6 +66,10 @@ export default class TechdocsMarkdownPrinter implements MarkdownPrinter {
     return '../';
   }
 
+  pageLink(name: string) {
+    return `./${name}/`;
+  }
+
   srcLink(
     { file, lineInFile }: { file: string; lineInFile: number },
     text?: string,

@@ -106,7 +106,10 @@ export type MarkdownPrinter = {
   code(options: { text: string; links?: TypeLink[] }): void;
 
   headerLink(header: string, id?: string): string;
+  /** Link from pages to index */
   indexLink(): string;
+  /** Link from index to pages */
+  pageLink(name: string): string;
   srcLink(
     { file, lineInFile }: { file: string; lineInFile: number },
     text?: string,

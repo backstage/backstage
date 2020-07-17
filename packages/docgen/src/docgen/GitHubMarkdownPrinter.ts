@@ -54,6 +54,10 @@ export default class GithubMarkdownPrinter implements MarkdownPrinter {
     return './README.md';
   }
 
+  pageLink(name: string) {
+    return `./${name}.md`;
+  }
+
   srcLink(
     { file, lineInFile }: { file: string; lineInFile: number },
     text?: string,

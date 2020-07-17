@@ -44,11 +44,13 @@ export default class ApiDocPrinter {
     );
 
     for (const api of apiDocs) {
-      printer.header(3, `${api.name.replace(/ApiRef$/, '')}`, api.id);
+      printer.header(3, `${this.apiDisplayName(api)}`, api.id);
 
       printer.paragraph(api.description);
 
-      const typeLinks = api.interfaceInfos.map(i => `[${i.name}](./${i.name})`);
+      const typeLinks = api.interfaceInfos.map(
+        i => `[${i.name}](${printer.pageLink(i.name)})`,
+      );
       printer.paragraph(
         `Implemented type${typeLinks.length > 1 ? 's' : ''}: ${typeLinks.join(
           ', ',
@@ -76,7 +78,9 @@ export default class ApiDocPrinter {
     const apiLinks = apiDocs
       .filter(ad => ad.interfaceInfos.some(i => i.name === apiType.name))
       .map(ad => {
-        const link = printer.indexLink() + printer.headerLink(ad.name, ad.id);
+        const link =
+          printer.indexLink() +
+          printer.headerLink(this.apiDisplayName(ad), ad.id);
         return `[${ad.name}](${link})`;
       });
 
@@ -151,5 +155,9 @@ export default class ApiDocPrinter {
         printer.paragraph(`Referenced by: ${usageLinks.join(', ')}.`);
       }
     }
+  }
+
+  private apiDisplayName(api: ApiDoc): string {
+    return api.name.replace(/ApiRef$/, '');
   }
 }
