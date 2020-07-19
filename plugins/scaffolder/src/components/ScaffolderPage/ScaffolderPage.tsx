@@ -103,7 +103,7 @@ export const ScaffolderPage: React.FC<{}> = () => {
         <Grid container>
           {templates &&
             templates?.length > 0 &&
-            templates!.map(template => {
+            templates.map(template => {
               return (
                 <Grid item xs={12} sm={6} md={3}>
                   <TemplateCard {...getTemplateCardProps(template)} />
