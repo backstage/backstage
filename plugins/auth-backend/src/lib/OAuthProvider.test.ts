@@ -51,7 +51,7 @@ describe('OAuthProvider Utils', () => {
       } as unknown) as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Missing nonce');
+      }).toThrowError('Auth response is missing cookie nonce');
     });
 
     it('should throw error if state nonce missing', () => {
@@ -63,7 +63,7 @@ describe('OAuthProvider Utils', () => {
       } as unknown) as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Missing nonce');
+      }).toThrowError('Auth response is missing state nonce');
     });
 
     it('should throw error if nonce mismatch', () => {

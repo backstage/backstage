@@ -43,10 +43,12 @@ export const verifyNonce = (req: express.Request, providerId: string) => {
   const cookieNonce = req.cookies[`${providerId}-nonce`];
   const stateNonce = req.query.state;
 
-  if (!cookieNonce || !stateNonce) {
-    throw new Error('Missing nonce');
+  if (!cookieNonce) {
+    throw new Error('Auth response is missing cookie nonce');
   }
-
+  if (!stateNonce) {
+    throw new Error('Auth response is missing state nonce');
+  }
   if (cookieNonce !== stateNonce) {
     throw new Error('Invalid nonce');
   }
@@ -151,9 +153,8 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       }
 
       if (!this.options.disableRefresh) {
-        // throw error if missing refresh token
         if (!refreshToken) {
-          throw new Error('Missing refresh token');
+          throw new InputError('Missing refresh token');
         }
 
         // set new refresh token

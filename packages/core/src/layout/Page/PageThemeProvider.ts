@@ -26,7 +26,7 @@ export type PageTheme = {
 
 export const gradients: Record<string, Gradient> = {
   darkGrey: {
-    colors: ['#181818', '#404040'],
+    colors: ['#171717', '#383838'],
     waveColor: '#757575',
     opacity: ['1.0', '0.0'],
   },

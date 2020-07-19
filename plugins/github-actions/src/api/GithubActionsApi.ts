@@ -15,7 +15,11 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import { Build, BuildDetails } from './types';
+import {
+  ActionsListWorkflowRunsForRepoResponseData,
+  ActionsGetWorkflowResponseData,
+  ActionsGetWorkflowRunResponseData,
+} from '@octokit/types';
 
 export const githubActionsApiRef = createApiRef<GithubActionsApi>({
   id: 'plugin.githubactions.service',
@@ -23,14 +27,50 @@ export const githubActionsApiRef = createApiRef<GithubActionsApi>({
 });
 
 export type GithubActionsApi = {
-  listBuilds: ({
+  listWorkflowRuns: ({
+    token,
     owner,
     repo,
-    token,
+    pageSize,
+    page,
   }: {
+    token: string;
     owner: string;
     repo: string;
+    pageSize?: number;
+    page?: number;
+  }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
+  getWorkflow: ({
+    token,
+    owner,
+    repo,
+    id,
+  }: {
     token: string;
-  }) => Promise<Build[]>;
-  getBuild: (buildUri: string, token: Promise<string>) => Promise<BuildDetails>;
+    owner: string;
+    repo: string;
+    id: number;
+  }) => Promise<ActionsGetWorkflowResponseData>;
+  getWorkflowRun: ({
+    token,
+    owner,
+    repo,
+    id,
+  }: {
+    token: string;
+    owner: string;
+    repo: string;
+    id: number;
+  }) => Promise<ActionsGetWorkflowRunResponseData>;
+  reRunWorkflow: ({
+    token,
+    owner,
+    repo,
+    runId,
+  }: {
+    token: string;
+    owner: string;
+    repo: string;
+    runId: number;
+  }) => void;
 };
