@@ -100,6 +100,11 @@ export const ScaffolderPage: React.FC<{}> = () => {
             </Link>
           </Typography>
         )}
+        {error && (
+          <Typography variant="body2">
+            Oops! Something went wrong loading the templates: {error.message}
+          </Typography>
+        )}
         <Grid container>
           {templates &&
             templates?.length > 0 &&
