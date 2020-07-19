@@ -20,6 +20,7 @@ import Docker from 'dockerode';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import Ajv from 'ajv';
 import {
   JobProcessor,
   PreparerBuilder,
@@ -28,6 +29,7 @@ import {
   TemplaterBuilder,
   PublisherBase,
 } from '../scaffolder';
+import { InputError } from '@backstage/backend-common';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -42,6 +44,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
+  router.use(express.json());
 
   const {
     preparers,
@@ -53,6 +56,7 @@ export async function createRouter(
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const jobProcessor = new JobProcessor();
+  const ajv = new Ajv();
 
   router
     .get('/v1/job/:jobId', ({ params }, res) => {
@@ -79,9 +83,25 @@ export async function createRouter(
       });
     })
     .post('/v1/jobs', async (req, res) => {
-      const template: TemplateEntityV1alpha1 = req.body.template;
+      const body = req.body as {
+        template: TemplateEntityV1alpha1;
+        values: RequiredTemplateValues & Record<string, JsonValue>;
+      };
+      const template: TemplateEntityV1alpha1 = body.template;
       const values: RequiredTemplateValues & Record<string, JsonValue> =
-        req.body.values;
+        body.values;
+      const schema = template.spec.schema;
+
+      try {
+        const valid = ajv.validate(schema, values);
+        if (!valid) {
+          throw new Error('not valid');
+        }
+      } catch (ex) {
+        throw new InputError(
+          `The input values do not validate with the schema: ${ex}`,
+        );
+      }
 
       const job = jobProcessor.create({
         entity: template,
