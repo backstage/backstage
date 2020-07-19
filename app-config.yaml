@@ -22,3 +22,6 @@ organization:
 
 techdocs:
   storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+
+catalog:
+  shadowSrc: /Users/ishmidt/Developer/Spotify/backstage/packages/app/src/catalog

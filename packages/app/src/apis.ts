@@ -48,7 +48,12 @@ import {
 import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
 
 import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
-import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
+import {
+  catalogApiRef,
+  CatalogClient,
+  CatalogShadowRegistry,
+  catalogShadowRegistryApiRef,
+} from '@backstage/plugin-catalog';
 
 import { gitOpsApiRef, GitOpsRestApi } from '@backstage/plugin-gitops-profiles';
 import {
@@ -188,5 +193,9 @@ export const apis = (config: ConfigApi) => {
     }),
   );
 
+  builder.add(
+    catalogShadowRegistryApiRef,
+    new CatalogShadowRegistry(require.context(`${__dirname}/catalog`), config),
+  );
   return builder.build();
 };

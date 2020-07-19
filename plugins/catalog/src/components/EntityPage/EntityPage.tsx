@@ -38,6 +38,7 @@ import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
+import { catalogShadowRegistryApiRef } from '../../api/CatalogShadowRegistry';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -112,34 +113,23 @@ export const EntityPage: FC<{}> = () => {
 
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
 
-  // TODO - Replace with proper tabs implementation
-  const tabs = [
-    {
-      id: 'overview',
-      label: 'Overview',
-    },
-    {
-      id: 'ci',
-      label: 'CI/CD',
-    },
-    {
-      id: 'tests',
-      label: 'Tests',
-    },
-    {
-      id: 'api',
-      label: 'API',
-    },
-    {
-      id: 'monitoring',
-      label: 'Monitoring',
-    },
-    {
-      id: 'quality',
-      label: 'Quality',
-    },
-  ];
+  const shadowComponentsRegistry = useApi(catalogShadowRegistryApiRef);
+  const components = shadowComponentsRegistry.getRegistry(entity?.spec?.type);
 
+  const tabs = shadowComponentsRegistry
+    .getRegistryKeys(entity?.spec?.type)
+    .map(key => ({
+      id: key.toLowerCase(),
+      label: components?.get(key)?.tab?.label ?? key,
+      component: components?.get(key),
+    }))
+    .sort((a, b) => a.component?.tab?.order - b.component?.tab?.order);
+
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const handleTabChange = (newIndex: number) => {
+    setSelectedTab(newIndex);
+  };
   const { headerTitle, headerType } = headerProps(
     kind,
     namespace,
@@ -179,21 +169,13 @@ export const EntityPage: FC<{}> = () => {
 
       {entity && (
         <>
-          <HeaderTabs tabs={tabs} />
+          <HeaderTabs
+            tabs={tabs}
+            selectedTab={selectedTab}
+            onChange={handleTabChange}
+          />
 
-          <Content>
-            <Grid container spacing={3}>
-              <Grid item sm={4}>
-                <EntityMetadataCard entity={entity} />
-              </Grid>
-              <Grid item sm={8}>
-                <SentryIssuesWidget
-                  sentryProjectId="sample-sentry-project-id"
-                  statsFor="24h"
-                />
-              </Grid>
-            </Grid>
-          </Content>
+          <Content>{tabs[selectedTab].component?.({ entity })}</Content>
 
           <UnregisterEntityDialog
             open={confirmationDialogOpen}

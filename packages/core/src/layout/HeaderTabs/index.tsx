@@ -17,7 +17,7 @@
 // TODO(blam): Remove this implementation when the Tabs are ready
 // This is just a temporary solution to implementing tabs for now
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, Tabs, Tab } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -45,9 +45,11 @@ export type Tab = {
 
 export const HeaderTabs: React.FC<{
   tabs: Tab[];
+  selectedTab: number;
   onChange?: (index: number) => void;
-}> = ({ tabs, onChange }) => {
-  const [selectedTab, setSelectedTab] = useState<number>(0);
+}> = ({ tabs, onChange, selectedTab: initialSelectedTab = 0 }) => {
+  const [selectedTab, setSelectedTab] = useState<number>(initialSelectedTab);
+  useEffect(() => setSelectedTab(initialSelectedTab), [initialSelectedTab]);
   const styles = useStyles();
 
   const handleChange = (_: React.ChangeEvent<{}>, index: number) => {
