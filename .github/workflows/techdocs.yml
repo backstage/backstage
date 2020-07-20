@@ -33,13 +33,13 @@ jobs:
           push: false
 
       # Lint Python code for techdocs-core package
-      - name: prepare python environment
+      - name: Prepare Python environment
         run: |
           python3 -m pip install --index-url https://pypi.org/simple/ setuptools
           python3 -m pip install --upgrade pip
           python3 -m pip install --index-url https://pypi.org/simple/ -r $TECHDOCS_CORE_PATH/requirements.txt
 
-      - name: lint techdocs-core package
+      - name: Lint techdocs-core package
         run: |
           python3 -m black --check $TECHDOCS_CORE_PATH/src
       
@@ -53,7 +53,7 @@ jobs:
         run: |
           pip install wheel
           rm -rf $TECHDOCS_CORE_PATH/dist
-          python $TECHDOCS_CORE_PATH/setup.py bdist_wheel sdist --formats gztar
+          python $TECHDOCS_CORE_PATH/setup.py bdist_wheel sdist --formats gztar -d $TECHDOCS_CORE_PATH/dist
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
