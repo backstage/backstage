@@ -83,8 +83,8 @@ jobs:
           rm -rf dist
           python setup.py bdist_wheel sdist --formats gztar
       - name: Publish a Python distribution to PyPI
-        working-directory: ./packages/techdocs-container/techdocs-core
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_KEY }}
+          packages_dir: ./packages/techdocs-container/techdocs-core/dist

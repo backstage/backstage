@@ -42,21 +42,3 @@ jobs:
       - name: Lint techdocs-core package
         run: |
           python3 -m black --check $TECHDOCS_CORE_PATH/src
-      # Publish techdocs-core to PyPI
-      - uses: actions/checkout@master
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@master
-        with:
-          python-version: 3.7
-      - name: Build Python distribution
-        working-directory: ./packages/techdocs-container/techdocs-core
-        run: |
-          pip install wheel
-          rm -rf dist
-          python setup.py bdist_wheel sdist --formats gztar
-      - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_KEY }}
-          packages_dir: ./packages/techdocs-container/techdocs-core/dist
