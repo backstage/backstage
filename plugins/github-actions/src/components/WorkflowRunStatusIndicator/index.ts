@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { BuildStatusIndicator } from './BuildStatusIndicator';
+export { WorkflowRunStatusIndicator } from './WorkflowRunStatusIndicator';

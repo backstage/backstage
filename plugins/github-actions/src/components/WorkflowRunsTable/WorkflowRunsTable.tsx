@@ -19,20 +19,18 @@ import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink } from 'react-router-dom';
 import {
-  StatusError,
-  StatusWarning,
   StatusOK,
   StatusPending,
   StatusRunning,
   Table,
   TableColumn,
 } from '@backstage/core';
-import { useBuilds } from './useBuilds';
+import { useWorkflowRuns } from './useWorkflowRuns';
 
-export type Build = {
+export type WorkflowRun = {
   id: string;
-  buildName: string;
-  buildUrl?: string;
+  message: string;
+  url?: string;
   source: {
     branchName: string;
     commit: {
@@ -41,24 +39,20 @@ export type Build = {
     };
   };
   status: string;
-  onRestartClick: () => void;
+  onReRunClick: () => void;
 };
 
 // retried, canceled, infrastructure_fail, timedout, not_run, running, failed, queued, scheduled, not_running, no_tests, fixed, success
 const getStatusComponent = (status: string | undefined = '') => {
   switch (status.toLowerCase()) {
     case 'queued':
-    case 'scheduled':
       return <StatusPending />;
-    case 'running':
+    case 'in_progress':
       return <StatusRunning />;
-    case 'failed':
-      return <StatusError />;
-    case 'success':
+    case 'completed':
       return <StatusOK />;
-    case 'canceled':
     default:
-      return <StatusWarning />;
+      return <StatusPending />;
   }
 };
 
@@ -70,18 +64,21 @@ const generatedColumns: TableColumn[] = [
     width: '150px',
   },
   {
-    title: 'Build',
-    field: 'buildName',
+    title: 'Message',
+    field: 'message',
     highlight: true,
-    render: (row: Partial<Build>) => (
-      <Link component={RouterLink} to={`/github-actions/build/${row.id}`}>
-        {row.buildName}
+    render: (row: Partial<WorkflowRun>) => (
+      <Link
+        component={RouterLink}
+        to={`/github-actions/workflow-run/${row.id}`}
+      >
+        {row.message}
       </Link>
     ),
   },
   {
     title: 'Source',
-    render: (row: Partial<Build>) => (
+    render: (row: Partial<WorkflowRun>) => (
       <>
         <p>{row.source?.branchName}</p>
         <p>{row.source?.commit.hash}</p>
@@ -90,7 +87,7 @@ const generatedColumns: TableColumn[] = [
   },
   {
     title: 'Status',
-    render: (row: Partial<Build>) => (
+    render: (row: Partial<WorkflowRun>) => (
       <Box display="flex" alignItems="center">
         {getStatusComponent(row.status)}
         <Box mr={1} />
@@ -100,8 +97,8 @@ const generatedColumns: TableColumn[] = [
   },
   {
     title: 'Actions',
-    render: (row: Partial<Build>) => (
-      <IconButton onClick={row.onRestartClick}>
+    render: (row: Partial<WorkflowRun>) => (
+      <IconButton onClick={row.onReRunClick}>
         <RetryIcon />
       </IconButton>
     ),
@@ -112,7 +109,7 @@ const generatedColumns: TableColumn[] = [
 type Props = {
   loading: boolean;
   retry: () => void;
-  builds?: Build[];
+  runs?: WorkflowRun[];
   projectName: string;
   page: number;
   onChangePage: (page: number) => void;
@@ -121,13 +118,13 @@ type Props = {
   onChangePageSize: (pageSize: number) => void;
 };
 
-const BuildListTableView: FC<Props> = ({
+const WorkflowRunsTableView: FC<Props> = ({
   projectName,
   loading,
   pageSize,
   page,
   retry,
-  builds,
+  runs,
   onChangePage,
   onChangePageSize,
   total,
@@ -146,7 +143,7 @@ const BuildListTableView: FC<Props> = ({
           onClick: () => retry(),
         },
       ]}
-      data={builds ?? []}
+      data={runs ?? []}
       onChangePage={onChangePage}
       onChangeRowsPerPage={onChangePageSize}
       title={
@@ -161,19 +158,19 @@ const BuildListTableView: FC<Props> = ({
   );
 };
 
-export const BuildListTable = ({
+export const WorkflowRunsTable = ({
   repo,
   owner,
 }: {
   repo: string;
   owner: string;
 }) => {
-  const [tableProps, { retry, setPage, setPageSize }] = useBuilds({
+  const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
     repo,
     owner,
   });
   return (
-    <BuildListTableView
+    <WorkflowRunsTableView
       {...tableProps}
       retry={retry}
       onChangePageSize={setPageSize}
