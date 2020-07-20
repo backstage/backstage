@@ -59,4 +59,4 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.pypi_api_key }}
-          packages_dir: ${{ github.workspace }}/dist
+          packages_dir: ${{ github.workspace }}/packages/techdocs-container/techdocs-core/dist
