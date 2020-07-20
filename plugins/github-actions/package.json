@@ -30,8 +30,10 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "@octokit/rest": "^18.0.0",
     "@octokit/types": "^5.0.1",
+    "moment": "^2.27.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-lazylog": "^4.5.2",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^14.2.0"
   },

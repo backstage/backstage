@@ -13,5 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useAsync } from 'react-use';
+import { Jobs } from '../types';
 
-export { BuildDetailsPage } from './BuildDetailsPage';
+export const useWorkflowRunJobs = (jobsUrl?: string) => {
+  const jobs = useAsync<Jobs>(async () => {
+    if (jobsUrl === undefined) return [];
+    const data = await fetch(jobsUrl).then(d => d.json());
+    return data;
+  }, [jobsUrl]);
+  return jobs;
+};

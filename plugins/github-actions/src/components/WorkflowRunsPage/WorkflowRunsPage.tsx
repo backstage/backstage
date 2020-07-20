@@ -22,24 +22,29 @@ import {
   Content,
   ContentHeader,
   SupportButton,
+  useApi,
+  configApiRef,
 } from '@backstage/core';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 
-import { BuildListTable } from '../BuildListTable';
+import { WorkflowRunsTable } from '../WorkflowRunsTable';
 
-export const BuildListPage = () => {
+export const WorkflowRunsPage = () => {
+  const configApi = useApi(configApiRef);
+  const repo = configApi.getString('github-actions.repo');
+  const owner = configApi.getString('github-actions.owner');
   return (
     <Page theme={pageTheme.tool}>
       <Header
         title="GitHub Actions"
-        subtitle="See recent builds and their status"
+        subtitle="See recent worflow runs and their status"
       >
         <HeaderLabel label="Owner" value="Spotify" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       <Content>
-        <ContentHeader title="All builds">
+        <ContentHeader title="Workflow runs">
           <SupportButton>
             This plugin allows you to view and interact with your builds within
             the GitHub Actions environment.
@@ -47,7 +52,7 @@ export const BuildListPage = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <BuildListTable repo="try-ssr" owner="CircleCITest3" />
+            <WorkflowRunsTable repo={repo} owner={owner} />
           </Grid>
         </Grid>
       </Content>

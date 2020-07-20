@@ -20,6 +20,10 @@ proxy:
 organization:
   name: Spotify
 
+github-actions:
+  owner: CircleCITest3
+  repo: try-ssr
+
 techdocs:
   storageUrl: https://techdocs-mock-sites.storage.googleapis.com
 

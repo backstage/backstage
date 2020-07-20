@@ -15,16 +15,14 @@
  */
 
 import { IconComponent } from '@backstage/core';
-import { makeStyles, Theme } from '@material-ui/core';
+import { makeStyles, Theme, Typography } from '@material-ui/core';
 import ProgressIcon from '@material-ui/icons/Autorenew';
 import SuccessIcon from '@material-ui/icons/CheckCircle';
-import FailureIcon from '@material-ui/icons/Error';
 import UnknownIcon from '@material-ui/icons/Help';
 import React from 'react';
-import { BuildStatus } from '../../api/types';
 
 type Props = {
-  status?: BuildStatus;
+  status?: string;
 };
 
 type StatusStyle = {
@@ -32,27 +30,27 @@ type StatusStyle = {
   color: string;
 };
 
-const styles: { [key in BuildStatus]: StatusStyle } = {
-  [BuildStatus.Null]: {
+const styles: { [key: string]: StatusStyle } = {
+  unknown: {
     icon: UnknownIcon,
     color: '#f49b20',
   },
-  [BuildStatus.Success]: {
+  completed: {
     icon: SuccessIcon,
     color: '#1db855',
   },
-  [BuildStatus.Failure]: {
-    icon: FailureIcon,
-    color: '#CA001B',
-  },
-  [BuildStatus.Pending]: {
+  queued: {
     icon: UnknownIcon,
     color: '#5BC0DE',
   },
-  [BuildStatus.Running]: {
+  in_progress: {
     icon: ProgressIcon,
     color: '#BEBEBE',
   },
+};
+
+const getIconStyle = (status?: string): StatusStyle => {
+  return styles[status ?? 'unknown'] ?? styles.unknown;
 };
 
 const useStyles = makeStyles<Theme, StatusStyle>({
@@ -61,14 +59,21 @@ const useStyles = makeStyles<Theme, StatusStyle>({
   }),
 });
 
-export const BuildStatusIndicator = ({ status }: Props) => {
-  const style = (status && styles[status]) || styles[BuildStatus.Null];
+export const WorkflowRunStatusIndicator = ({ status }: Props) => {
+  const style = getIconStyle(status);
   const classes = useStyles(style);
   const Icon = style.icon;
 
   return (
-    <div className={classes.icon}>
-      <Icon />
-    </div>
+    <Typography
+      className={classes.icon}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        textTransform: 'capitalize',
+      }}
+    >
+      <Icon /> &nbsp;{`${status}`}
+    </Typography>
   );
 };

@@ -33,8 +33,8 @@ export class GithubActionsClient implements GithubActionsApi {
     owner: string;
     repo: string;
     runId: number;
-  }) {
-    new Octokit({ auth: token }).actions.reRunWorkflow({
+  }): Promise<any> {
+    return new Octokit({ auth: token }).actions.reRunWorkflow({
       owner,
       repo,
       run_id: runId,
