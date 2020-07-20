@@ -9,3 +9,4 @@
 | [H-E-B](https://www.heb.com)       | [@german-j-rodriguez](https://github.com/german-j-rodriguez) | Initial work on Engineering Portal service platform.                                 |
 | [American Airlines](https://www.aa.com) | [@paulpach](https://github.com/paulpach) | Central place for developers to develop and maintain applications |
 | [Kiwi.com](https://kiwi.com)       | [@aexvir](https://github.com/aexvir)       | Replacing the frontend of [The Zoo](https://github.com/kiwicom/the-zoo), their service registry.     |
+| [Voi](https://www.voiscooters.com/) | [@K-Phoen](https://github.com/K-Phoen)     | Developer portal, main gateway to our infrastructure, documentation and internal tooling. |
