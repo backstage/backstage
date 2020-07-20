@@ -33,6 +33,7 @@ exports.up = async function up(knex) {
     ) t2
     ON t1.location_id = t2.location_id
     AND t1.created_at = t2.MAXDATE
+    GROUP BY t1.location_id
     ORDER BY created_at DESC;
   `);
 };
