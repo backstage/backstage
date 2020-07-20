@@ -23,8 +23,8 @@ setup(
     long_description='',
     keywords='mkdocs',
     url='https://github.com/spotify/backstage',
-    author='Spotify',
-    author_email='fossboard@spotify.com',
+    author='TechDocs Core',
+    author_email='pulp-fiction@spotify.com',
     license='Apache-2.0',
     python_requires='>=3.7',
     install_requires=[
