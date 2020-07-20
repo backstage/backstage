@@ -95,8 +95,8 @@ export const darkTheme = createTheme({
       main: blue[500],
     },
     banner: {
-      info: '2E77D0',
-      error: 'E22134',
+      info: '#2E77D0',
+      error: '#E22134',
     },
     border: '#E6E6E6',
     textContrast: '#FFFFFF',
