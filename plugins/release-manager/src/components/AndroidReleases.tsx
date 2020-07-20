@@ -13,4 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
+import React, { FC } from 'react';
+import { AndroidRelease } from '../types';
+import { AndroidReleasePanel } from './AndroidReleasePanel';
+
+type Props = {
+  releases: AndroidRelease[];
+};
+
+export const AndroidReleases: FC<Props> = ({ releases }) => {
+  return (
+    <>
+      {releases.map((release, i) => {
+        if (release.status !== 'completed') return null;
+
+        return (
+          <AndroidReleasePanel
+            key={i}
+            release={release}
+            version={release.name}
+          />
+        );
+      })}
+    </>
+  );
+};

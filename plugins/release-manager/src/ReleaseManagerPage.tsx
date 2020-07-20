@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import useAxios from 'axios-hooks';
 import { SpacedProgress } from './components/SpacedProgress';
 import { stores, mode } from './utils/config';
@@ -26,32 +25,35 @@ import {
   Page,
   pageTheme,
 } from '@backstage/core';
-import { ReleasePanel } from './components/ReleasePanel';
-import { AndroidTracks, AndroidRelease } from './types';
+import { AndroidTrack } from './types';
 import { RmErrorMessage } from './components/RmErrorMessage';
+import { AndroidReleases } from './components/AndroidReleases';
 
 const ReleaseManagerPage: FC<{}> = () => {
   const [
     { data: androidData, loading: androidLoading, error: androidError },
   ] = useAxios(`${stores.android.baseUrl[mode]}/com.spotify.music/tracks`);
 
-  const AndroidReleases = () => {
+  const AndroidTracks = () => {
     if (androidError) {
       return (
         <RmErrorMessage
           error={String(androidError)}
-          message="Could not load Android releases."
+          message="Could not load Android tracks."
         />
       );
     }
 
-    return androidLoading ? (
-      <SpacedProgress />
-    ) : (
-      androidData.tracks.map((track, i) => (
-        <ReleasePanel key={i} data={track} />
-      ))
-    );
+    if (androidLoading) return <SpacedProgress />;
+
+    return androidData.tracks.map((track: AndroidTrack, i: number) => {
+      return (
+        <div key={i}>
+          <h3>{track.track}</h3>
+          <AndroidReleases releases={track.releases} />
+        </div>
+      );
+    });
   };
 
   return (
@@ -63,7 +65,7 @@ const ReleaseManagerPage: FC<{}> = () => {
       <Content>
         <ContentHeader title="Overview" />
         <h2>Android</h2>
-        <AndroidReleases />
+        <AndroidTracks />
       </Content>
     </Page>
   );

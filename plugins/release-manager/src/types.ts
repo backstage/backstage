@@ -13,23 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export type AndroidReleaseNote = {
+  language: string;
+  text: string;
+};
+
+export type AndroidVersionCode = string;
+export type AndroidReleaseStatus =
+  | 'completed'
+  | 'draft'
+  | 'halted'
+  | 'inProgress';
 
 export type AndroidRelease = {
   name: string;
-  releaseNotes: [
-    {
-      language: string;
-      text: string;
-    },
-  ];
-  status: 'completed' | 'draft' | 'halted' | 'inProgress';
-  versionCodes: string[];
+  releaseNotes: AndroidReleaseNote[];
+  status: AndroidReleaseStatus;
+  versionCodes: AndroidVersionCode[];
 };
 
-export type AndroidTracks = {
+export type AndroidTrack = {
   releases: AndroidRelease[];
   track: string;
 };
 
 export type Status = 'loading' | 'ok' | 'warning' | 'error' | 'no-data';
 export type Maybe<T> = T | null;
+
+export type Release = {
+  platform: string;
+  version: string;
+};

@@ -30,16 +30,16 @@ const BlankIcon = styled('div')({
 });
 
 export const RmExpansionPanel: FC<{
-  children: React.ReactNode;
-  status: Status;
-  loading: boolean;
+  children?: React.ReactNode;
+  status?: Status;
+  loading?: boolean;
   title: string | React.ReactNode;
   expandable?: boolean;
   flexDirection?: 'row' | 'column';
 }> = ({
   children,
   status,
-  loading,
+  loading = false,
   title,
   expandable,
   flexDirection = 'row',
@@ -59,13 +59,17 @@ export const RmExpansionPanel: FC<{
         onClick={handleExpansionClick}
         expandIcon={_expandable ? <ExpandMoreIcon /> : <BlankIcon />}
       >
-        <StatusIndicator status={status} />
+        {status && <StatusIndicator status={status} />}
         {title}
       </ExpansionPanelSummary>
       <RmErrorBoundary>
-        <ExpansionPanelDetails style={{ flexDirection }}>
-          {children}
-        </ExpansionPanelDetails>
+        <>
+          {children && (
+            <ExpansionPanelDetails style={{ flexDirection }}>
+              {children}
+            </ExpansionPanelDetails>
+          )}
+        </>
       </RmErrorBoundary>
     </ExpansionPanel>
   );

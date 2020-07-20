@@ -13,8 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  AndroidRelease,
+  AndroidReleaseNote,
+  AndroidReleaseStatus,
+  Maybe,
+  Status,
+} from '../types';
 
-import { LatestBuild, Maybe, Status } from '../types';
+const statusMap: { [key: string]: number } = {
+  loading: 0,
+  'no-data': 1,
+  ok: 2,
+  warning: 3,
+  error: 4,
+};
+
+const androidStatusMap: { [key: string]: Status } = {
+  completed: 'ok',
+  draft: 'no-data',
+  halted: 'error',
+  inProgress: 'warning',
+};
 
 const handleStatus = ({
   setStatus,
@@ -26,34 +46,41 @@ const handleStatus = ({
   status: Status;
 }) => {
   if (!newStatus) return;
-
-  const statusMap: { [key: string]: number } = {
-    loading: 0,
-    'no-data': 1,
-    ok: 2,
-    warning: 3,
-    error: 4,
-  };
-
   if (statusMap[newStatus] > statusMap[status]) setStatus(newStatus);
 };
 
-export const androidBuildStatus = (build: LatestBuild): Maybe<Status> => {
-  return 'ok';
+export const getAndroidReleaseStatus = (
+  androidReleaseStatus: AndroidReleaseStatus,
+): Maybe<Status> => {
+  return androidStatusMap[androidReleaseStatus];
+};
+
+export const getAndroidReleaseNotesStatus = (
+  androidReleaseNotes: AndroidReleaseNote[],
+): Maybe<Status> => {
+  if (!androidReleaseNotes) return 'error';
+  if (androidReleaseNotes && androidReleaseNotes.length > 0) return 'ok';
+
+  return null;
 };
 
 export const findStatuses = ({
   setStatus,
   status,
-  androidBuild,
+  androidRelease,
 }: {
   setStatus: Function;
   status: Status;
-  androidBuild: LatestBuild;
+  androidRelease: AndroidRelease;
 }) => {
   handleStatus({
     setStatus,
     status,
-    newStatus: androidBuildStatus(androidBuild),
+    newStatus: getAndroidReleaseStatus(androidRelease.status),
+  });
+  handleStatus({
+    setStatus,
+    status,
+    newStatus: getAndroidReleaseNotesStatus(androidRelease.releaseNotes),
   });
 };
