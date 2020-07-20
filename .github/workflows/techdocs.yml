@@ -59,4 +59,9 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.pypi_api_key }}
-          packages_dir: ${{ env.TECHDOCS_CORE_PATH }}/dist
+          packages_dir: ${{jobs.build.env.TECHDOCS_CORE_PATH}}/dist
+
+
+
+
+          jobs.build.steps.env.TECHDOCS_CORE_PATH
