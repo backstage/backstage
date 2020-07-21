@@ -26,7 +26,7 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core';
-import DfdsWebApiComponent from '../DfdsWebApiComponent/DfdsWebApiComponent';
+import ConcretComponent from '@dfds-devex/dfds-blaster-v2/lib/components/ConcretComponent';
 
 const DfdsWebApiComponentWrapper: FC<{}> = () => (
   <Page theme={pageTheme.tool}>
@@ -44,7 +44,9 @@ const DfdsWebApiComponentWrapper: FC<{}> = () => (
             <Typography variant="body1">Lorem ipsum</Typography>
           </InfoCard>
         </Grid>
-        <Grid item>{new DfdsWebApiComponent().render().getHTML()}</Grid>
+        <Grid item>
+          <dfds-concret-component />
+        </Grid>
       </Grid>
     </Content>
   </Page>
