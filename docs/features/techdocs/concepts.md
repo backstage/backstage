@@ -13,9 +13,10 @@ of MkDocs used for TechDocs.
 
 ### TechDocs container
 
-The TechDocs container is a Docker container that builds the HTML documentation
-pages from Python flavoured markdown through MkDocs, including e.g. buttons
-(more here) and styles.
+The TechDocs container is a Docker container available at
+[DockerHub](https://hub.docker.com/r/spotify/techdocs). It builds static HTML
+pages, including stylesheets and scripts from Python flavored Markdown, through
+MkDocs.
 
 [TechDocs Container](../../../packages/techdocs-container/README.md)
 
