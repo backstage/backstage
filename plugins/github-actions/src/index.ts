@@ -16,3 +16,5 @@
 
 export { plugin } from './plugin';
 export * from './api';
+export * from './routes';
+export { GithubActionsWidget } from './components/Widget';

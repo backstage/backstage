@@ -34,16 +34,20 @@ import {
   List,
   ListItemText,
   CircularProgress,
+  IconButton,
 } from '@material-ui/core';
 import moment from 'moment';
 
 import React from 'react';
-import { Link, useApi, configApiRef } from '@backstage/core';
+import { useApi, configApiRef } from '@backstage/core';
+import { Link as RouterLink } from 'react-router-dom';
 import { Job, Step, Jobs } from '../types';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ArrowBack from '@material-ui/icons/ArrowBack';
 import { WorkflowRunStatusIndicator } from '../WorkflowRunStatusIndicator';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
+import { rootRouteRef } from '../../routes';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -131,6 +135,12 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
   );
 };
 
+const ButtonBack = () => (
+  <IconButton component={RouterLink} to={rootRouteRef.path}>
+    <ArrowBack />
+  </IconButton>
+);
+
 /**
  * A component for Jobs visualization. Jobs are a property of a Workflow Run.
  */
@@ -156,11 +166,7 @@ export const WorkflowRunDetailsPage = () => {
   return (
     <div className={classes.root}>
       <Typography className={classes.title} variant="h3">
-        <Link to="/github-actions">
-          <Typography component="span" variant="h3" color="primary">
-            &lt;
-          </Typography>
-        </Link>
+        <ButtonBack />
         Workflow Run Details
       </Typography>
       <TableContainer component={Paper} className={classes.table}>

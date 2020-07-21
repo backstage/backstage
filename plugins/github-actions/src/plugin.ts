@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
+import { createPlugin } from '@backstage/core';
 import { WorkflowRunDetailsPage } from './components/WorkflowRunDetailsPage';
 import { WorkflowRunsPage } from './components/WorkflowRunsPage';
 
 // TODO(freben): This is just a demo route for now
-export const rootRouteRef = createRouteRef({
-  path: '/github-actions',
-  title: 'GitHub Actions',
-});
-export const buildRouteRef = createRouteRef({
-  path: '/github-actions/workflow-run/:id',
-  title: 'GitHub Actions Workflow Run',
-});
+import { buildRouteRef, rootRouteRef } from './routes';
 
 export const plugin = createPlugin({
   id: 'github-actions',

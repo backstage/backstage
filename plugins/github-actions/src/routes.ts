@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { createRouteRef } from '@backstage/core';
 
-const NoIcon = () => null;
-
-export const rootRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/',
-  title: 'Catalog',
+export const rootRouteRef = createRouteRef({
+  path: '/github-actions',
+  title: 'GitHub Actions',
 });
-export const entityRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/catalog/:kind/:optionalNamespaceAndName/*',
-  title: 'Entity',
+export const buildRouteRef = createRouteRef({
+  path: '/github-actions/workflow-run/:id',
+  title: 'GitHub Actions Workflow Run',
 });

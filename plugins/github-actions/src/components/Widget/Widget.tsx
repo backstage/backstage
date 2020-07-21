@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { buildRouteRef, rootRouteRef } from '../../routes';
+import { WorkflowRunDetailsPage } from '../WorkflowRunDetailsPage';
+import { WorkflowRunsTable } from '../WorkflowRunsTable';
 
-import { createRouteRef } from '@backstage/core';
-
-const NoIcon = () => null;
-
-export const rootRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/',
-  title: 'Catalog',
-});
-export const entityRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/catalog/:kind/:optionalNamespaceAndName/*',
-  title: 'Entity',
-});
+export const GithubActionsWidget = () => (
+  <MemoryRouter initialEntries={[rootRouteRef.path]}>
+    <Routes>
+      <Route path={rootRouteRef.path} element={<WorkflowRunsTable />} />
+      <Route path={buildRouteRef.path} element={<WorkflowRunDetailsPage />} />
+    </Routes>
+  </MemoryRouter>
+);

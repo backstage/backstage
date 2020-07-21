@@ -24,6 +24,8 @@ import {
   StatusRunning,
   Table,
   TableColumn,
+  configApiRef,
+  useApi,
 } from '@backstage/core';
 import { useWorkflowRuns } from './useWorkflowRuns';
 
@@ -158,13 +160,10 @@ const WorkflowRunsTableView: FC<Props> = ({
   );
 };
 
-export const WorkflowRunsTable = ({
-  repo,
-  owner,
-}: {
-  repo: string;
-  owner: string;
-}) => {
+export const WorkflowRunsTable = () => {
+  const configApi = useApi(configApiRef);
+  const repo = configApi.getString('github-actions.repo');
+  const owner = configApi.getString('github-actions.owner');
   const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
     repo,
     owner,
