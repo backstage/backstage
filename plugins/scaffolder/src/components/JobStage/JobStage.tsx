@@ -126,7 +126,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
         ) : (
           <Suspense fallback={<LinearProgress />}>
             <div style={{ height: '20vh', width: '100%' }}>
-              <LazyLog text={log.join('\n')} extraLines={1} />
+              <LazyLog text={log.join('\n')} extraLines={1} follow />
             </div>
           </Suspense>
         )}
