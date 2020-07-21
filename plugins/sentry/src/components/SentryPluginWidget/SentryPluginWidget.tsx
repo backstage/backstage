@@ -21,18 +21,20 @@ import {
   InfoCard,
   Progress,
   useApi,
+  configApiRef,
 } from '@backstage/core';
 import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
 import { useAsync } from 'react-use';
 import { sentryApiFactory } from '../../data/api-factory';
-
-const api = sentryApiFactory('spotify');
 
 export const SentryPluginWidget: FC<{
   sentryProjectId: string;
   statsFor: '24h' | '12h';
 }> = ({ sentryProjectId, statsFor }) => {
   const errorApi = useApi<ErrorApi>(errorApiRef);
+  const configApi = useApi(configApiRef);
+  const org = configApi.getString('sentry.organization');
+  const api = sentryApiFactory(org);
 
   const { loading, value, error } = useAsync(
     () => api.fetchIssues(sentryProjectId, statsFor),
