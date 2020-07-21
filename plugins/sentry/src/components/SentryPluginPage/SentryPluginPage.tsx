@@ -30,6 +30,7 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 const SentryPluginPage: FC<{}> = () => {
   const [statsFor, setStatsFor] = useState<'12h' | '24h'>('12h');
   const toggleStatsFor = () => setStatsFor(statsFor === '12h' ? '12h' : '24h');
+  const sentryProjectId = 'sample-sentry-project-id';
 
   return (
     <Page theme={pageTheme.tool}>
@@ -56,7 +57,7 @@ const SentryPluginPage: FC<{}> = () => {
         <Grid container spacing={3} direction="column">
           <Grid item>
             <SentryPluginWidget
-              sentryProjectId="home-hub"
+              sentryProjectId={sentryProjectId}
               statsFor={statsFor}
             />
           </Grid>
