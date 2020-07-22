@@ -56,7 +56,7 @@ Spotify’s developer experience offering with 2,400+ documentation sites and
 [concepts]: concepts.md
 [reading documentation]: reading-documentation.md
 [writing documentation]: writing-documentation.md
-[publishing documentation]: writing-and-publishing.md
+[publishing documentation]: creating-and-publishing.md
 [contributing]: contributing.md
 [debugging]: debugging.md
 [faq]: FAQ.md 'Frequently asked questions'
