@@ -104,6 +104,7 @@ export class LocationReaders implements LocationReader {
           });
         }
       }
+
       if (newItems.length === 0) {
         return output;
       }

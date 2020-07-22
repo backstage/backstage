@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { LocationSpec } from '@backstage/catalog-model';
 import fetch, { RequestInit, HeadersInit } from 'node-fetch';
-import lodash from 'lodash';
-import yaml from 'yaml';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
@@ -47,8 +45,8 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
     }
 
     try {
-      // const url = this.buildRawUrl(location.target);
-      const url = new URL(location.target);
+      const projectID = await this.getProjectID(location.target);
+      const url = this.buildRawUrl(location.target, projectID);
       const response = await fetch(url.toString(), this.getRequestOptions());
       if (response.ok) {
         const data = await response.buffer();
@@ -70,40 +68,66 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
     return true;
   }
 
-  // We need our own parseData because the gitlab api url has `/raw?ref=branch`
-  // on the end which doesn't match the regex in YamlProcessor (.ya?ml$)
-  async parseData(
-    data: Buffer,
-    location: LocationSpec,
-    emit: LocationProcessorEmit,
-  ): Promise<boolean> {
-    if (!location.target.match(/\.ya?ml/)) {
-      return false;
-    }
-
-    let documents: yaml.Document.Parsed[];
+  // convert https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
+  // to https://gitlab.com/api/v4/projects/<PROJECTID>/repository/files/filepath?ref=branch
+  buildRawUrl(target: string, projectID: Number): URL {
     try {
-      documents = yaml.parseAllDocuments(data.toString('utf8')).filter(d => d);
-    } catch (e) {
-      emit(result.generalError(location, `Failed to parse YAML, ${e}`));
-      return true;
-    }
+      const url = new URL(target);
 
-    for (const document of documents) {
-      if (document.errors?.length) {
-        const message = `YAML error, ${document.errors[0]}`;
-        emit(result.generalError(location, message));
-      } else {
-        const json = document.toJSON();
-        if (lodash.isPlainObject(json)) {
-          emit(result.entity(location, json as Entity));
-        } else {
-          const message = `Expected object at root, got ${typeof json}`;
-          emit(result.generalError(location, message));
-        }
+      const branchAndfilePath = url.pathname.split('/-/blob/')[1];
+
+      if (!branchAndfilePath.match(/\.ya?ml$/)) {
+        throw new Error('Gitlab url does not end in .ya?ml');
       }
-    }
 
-    return true;
+      const [branch, ...filePath] = branchAndfilePath.split('/');
+
+      url.pathname = [
+        '/api/v4/projects',
+        projectID,
+        'repository/files',
+        encodeURIComponent(filePath.join('/')),
+        'raw',
+      ].join('/');
+      url.search = `?ref=${branch}`;
+
+      return url;
+    } catch (e) {
+      throw new Error(`Incorrect url: ${target}, ${e}`);
+    }
+  }
+
+  async getProjectID(target: string): Promise<Number> {
+    const url = new URL(target);
+
+    if (
+      // absPaths to gitlab files should contain /-/blob
+      // ex: https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
+      !url.pathname.match(/\/\-\/blob\//)
+    ) {
+      throw new Error('Please provide full path to yaml file from Gitlab');
+    }
+    try {
+      const repo = url.pathname.split('/-/blob/')[0];
+
+      // Find ProjectID from url
+      // convert 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath'
+      // to 'https://gitlab.com/api/v4/projects/groupA%2Fteams%2FsubgroupA%2FteamA%2Frepo'
+      const repoIDLookup = new URL(
+        `${url.protocol + url.hostname}/api/v4/projects/${encodeURIComponent(
+          repo.replace(/^\//, ''),
+        )}`,
+      );
+      const response = await fetch(
+        repoIDLookup.toString(),
+        this.getRequestOptions(),
+      );
+      const projectIDJson = await response.json();
+      const projectID: Number = projectIDJson.id;
+
+      return projectID;
+    } catch (e) {
+      throw new Error(`Could not get Gitlab ProjectID for: ${target}, ${e}`);
+    }
   }
 }
