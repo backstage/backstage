@@ -105,7 +105,13 @@ export default async (cmd: Command): Promise<void> => {
       },
     },
   ];
-  const answers: Answers = await inquirer.prompt(questions);
+
+  let answers: Answers;
+  if (cmd.projectName) {
+    answers = {name: cmd.projectName};
+  } else {
+    answers = await inquirer.prompt(questions);
+  }
 
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
@@ -133,9 +139,7 @@ export default async (cmd: Command): Promise<void> => {
     }
 
     Task.log();
-    Task.log(
-      chalk.green(`🥇  Successfully created ${chalk.cyan(answers.name)}`),
-    );
+    Task.log(chalk.green(`🥇  Successfully created ${chalk.cyan(answers.name)}`));
     Task.log();
     Task.exit();
   } catch (error) {

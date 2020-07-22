@@ -29,6 +29,10 @@ const main = (argv: string[]) => {
       '--skip-install',
       'Skip the install and builds steps after creating the app',
     )
+    .option(
+      '--project-name <name>',
+      'Configure app name by parameter instead of interactive prompt',
+    )
     .action(
       lazyAction(() => import('./commands/create-app/createApp'), 'default'),
     );
