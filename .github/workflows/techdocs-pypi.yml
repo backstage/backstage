@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
     paths:
-      - '.github/workflows/techdocs-master.yml'
+      - '.github/workflows/techdocs-pypi.yml'
       - 'packages/techdocs-container/**'
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
 
     steps:
       # Publish techdocs-core to PyPI
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@master
         with:
