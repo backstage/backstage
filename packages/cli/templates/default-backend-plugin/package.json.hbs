@@ -1,46 +1,37 @@
 {
-"name": "@backstage/plugin-{{id}}",
-"version": "{{version}}",
-"main": "src/index.ts",
-"types": "src/index.ts",
-"license": "Apache-2.0",
-"private": true,
-"publishConfig": {
-"access": "public",
-"main": "dist/index.esm.js",
-"types": "dist/index.d.ts"
-},
-"scripts": {
-"build": "backstage-cli backend:build",
-"start": "backstage-cli plugin:serve",
-"lint": "backstage-cli lint",
-"test": "backstage-cli test",
-"diff": "backstage-cli plugin:diff",
-"prepack": "backstage-cli prepack",
-"postpack": "backstage-cli postpack",
-"clean": "backstage-cli clean"
-},
-"dependencies": {
-"@backstage/core": "^{{version}}",
-"@backstage/theme": "^{{version}}",
-"@material-ui/core": "^4.9.1",
-"@material-ui/icons": "^4.9.1",
-"@material-ui/lab": "4.0.0-alpha.45",
-"react": "^16.13.1",
-"react-dom": "^16.13.1",
-"react-use": "^14.2.0"
-},
-"devDependencies": {
-"@backstage/cli": "^{{version}}",
-"@backstage/dev-utils": "^{{version}}",
-"@testing-library/jest-dom": "^5.10.1",
-"@testing-library/react": "^10.4.1",
-"@testing-library/user-event": "^12.0.7",
-"@types/jest": "^25.2.2",
-"@types/node": "^12.0.0",
-"jest-fetch-mock": "^3.0.3"
-},
-"files": [
-"dist"
-]
+  "name": "@backstage/plugin-{{id}}-backend",
+  "version": "{{version}}",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "scripts": {
+    "start": "backstage-cli backend:dev",
+    "build": "backstage-cli backend:build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean",
+    "mock-data": "./scripts/mock-data.sh"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^{{version}}",
+    "@types/express": "^4.17.6",
+    "express": "^4.17.1",
+    "express-promise-router": "^3.0.3"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^{{version}}",
+    "@types/supertest": "^2.0.8",
+    "supertest": "^4.0.2"
+  },
+  "files": [
+    "dist"
+  ]
 }
