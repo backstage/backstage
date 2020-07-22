@@ -17,7 +17,8 @@
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "clean": "backstage-cli clean",
+    "mock-data": "./scripts/mock-data.sh"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.1.1-alpha.15",
