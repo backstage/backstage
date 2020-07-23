@@ -45,11 +45,35 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 
   return (plugin: string): PluginEnvironment => {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
-    const database = knex({
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
+    // Supported DBs are sqlite and postgres
+    const isPg = [
+      'POSTGRES_USER',
+      'POSTGRES_HOST',
+      'POSTGRES_PASSWORD',
+    ].every(key => Object.keys(process.env).includes(key));
+
+    let knexConfig;
+
+    if (isPg) {
+      knexConfig = {
+        client: 'pg',
+        useNullAsDefault: true,
+        connection: {
+          host: process.env.PG_HOST,
+          user: process.env.PG_USER,
+          password: process.env.PG_PASSWORD,
+          database: `backstage_plugin_${plugin}`,
+        },
+      };
+    } else {
+      knexConfig = {
+        client: 'sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      };
+    }
+
+    const database = knex(knexConfig);
     database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });
