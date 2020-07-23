@@ -18,6 +18,9 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import fs from 'fs';
+import path from 'path';
+import { ApolloServer } from 'apollo-server-express';
 
 export interface RouterOptions {
   logger: Logger;
@@ -26,15 +29,22 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
+  const typeDefs = await fs.promises.readFile(
+    path.resolve(__dirname, '..', 'schema.gql'),
+    'utf-8',
+  );
 
+  const server = new ApolloServer({ typeDefs, logger: options.logger });
   const router = Router();
-  router.use(express.json());
+
+  const apolloMiddlware = server.getMiddleware({ path: '/' });
+  router.use(apolloMiddlware);
 
   router.get('/health', (_, response) => {
-    logger.info('PONG!');
     response.send({ status: 'ok' });
   });
+
   router.use(errorHandler());
+
   return router;
 }
