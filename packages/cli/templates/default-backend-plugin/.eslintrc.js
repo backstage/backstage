@@ -1,3 +1,3 @@
 module.exports = {
-  extends: [require.resolve('@backstage/cli/config/eslint')],
+  extends: [require.resolve('@backstage/cli/config/eslint.backend')],
 };
