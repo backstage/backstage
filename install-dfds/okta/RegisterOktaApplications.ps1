@@ -4,11 +4,11 @@ $url = "https://services.customer-iam.dfds.cloud/dev/customeriam-selfservice/api
 
 $backstageApplicationBody = @"
 {
-	"name": "CloudEngineering.Selfservice.Application.Backstage",
-	"applicationType": "Browser",
-	"redirectUri": [TODO],
-	"postLogoutRedirectUri": [TODO],
-	"applicationAdmins": [TODO]
+	"name": "Core.Selfservice.Application.Backstage4",
+	"applicationType": "Service",
+	"redirectUri": ["https://localhost:7000/auth/okta/handler/frame?env=development"],
+	"postLogoutRedirectUri": ["https://localhost:3000"],
+	"applicationAdmins": []
 }
 "@
 
@@ -16,16 +16,14 @@ $request = Invoke-RestMethod -Uri $url -Headers $header -Body $backstageApplicat
 
 Write-Host $request
 
-$k8sApplicationBody = @"
 {
-	"name": "CloudEngineering.Selfservice.Application.Kubernetes",
-	"applicationType": "Service",
-	"redirectUri": [TODO],
-	"postLogoutRedirectUri": [TODO],
-	"applicationAdmins": [TODO]
-}
-"@
-
-$request = Invoke-RestMethod -Uri $url -Headers $header -Body $k8sApplicationBody -ContentType "application/json" -Method Post
-
-Write-Host $request
+	"id": "0oaofm6dvWx9aFfFb0x6",
+	"clientId": "0oaofm6dvWx9aFfFb0x6",
+	"clientSecret": "0Q6XsfJpwdCrpntCMts4CdB_0bTxSbSbkTY4xykF",
+	"redirectUri": [
+	  "https://localhost:7000/auth/okta/handler/frame?env=development"
+	],
+	"postLogoutRedirectUri": [
+	  "https://localhost:3000"
+	]
+  }

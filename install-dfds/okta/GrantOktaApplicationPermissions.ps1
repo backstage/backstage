@@ -1,13 +1,13 @@
 ﻿$token = "abcdef123456"
-$url = "https://services.customer-iam.dfds.cloud/dev/customeriam-selfservice/api/v1/AuthorizationServer/CloudEngineering.Selfservice/permisions"
+$url = "https://services.customer-iam.dfds.cloud/dev/customeriam-selfservice/api/v1/AuthorizationServer/Core.Selfservice/permisions"
 $header = @{"Authorization"=$token}
 
 $GrantBackstagePermissionBody = @"
 {
-    "applicationId": "TODO",
+    "applicationId": "0oaofm6dvWx9aFfFb0x6",
     "scopes": [
-        "CloudEngineering.Selfservice.Read",
-	    "CloudEngineering.Selfservice.Write"
+        "Core.Selfservice.Read",
+	    "Core.Selfservice.Write"
     ],
 	"grantTypes": [
 		"ClientCredentials"
@@ -19,19 +19,15 @@ $request = Invoke-RestMethod -Uri $url -Headers $header -Body $GrantBackstagePer
 
 Write-Host $request
 
-$GrantKubernetesPermissionBody = @"
 {
-    "applicationId": "TODO",
-    "scopes": [
-        "CloudEngineering.Selfservice.Read",
-	    "CloudEngineering.Selfservice.Write"
+    "policyId": "00poflvo2FufpMaOl0x6",
+    "clientId": "0oaofm6dvWx9aFfFb0x6",
+    "grantTypes": [
+      "ClientCredentials"
     ],
-	"grantTypes": [
-		"ClientCredentials"
-	]
-}
-"@
-
-$request = Invoke-RestMethod -Uri $url -Headers $header -Body $GrantKubernetesPermissionBody -ContentType "application/json" -Method Post
-
-Write-Host $request
+    "scopes": [
+      "Core.Selfservice.Read",
+      "Core.Selfservice.Write"
+    ],
+    "groups": []
+  }

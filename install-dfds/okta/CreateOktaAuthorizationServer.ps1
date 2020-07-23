@@ -4,16 +4,24 @@ $header = @{"Authorization"=$token}
 
 $AuthorizationServerBody = @"
 {
-    "name": "CloudEngineering.Selfservice",
+    "name": "Core.Selfservice3",
     "scopes": [
-        "CloudEngineering.Selfservice.Read",
-	    "CloudEngineering.Selfservice.Write"
+        "Core.Selfservice.Read",
+	    "Core.Selfservice.Write"
     ],
     "createSwaggerApp": false,
-    "authorizationServerAdmins": [TODO]
+    "authorizationServerAdmins": []
 }
 "@
 
 $request = Invoke-RestMethod -Uri $url -Headers $header -Body $AuthorizationServerBody -ContentType "application/json" -Method Post
 
 Write-Host $request
+
+{
+    "id": "ausofi70gN6YUe1Wc0x6",
+    "metadataUrl": "https://dev-accounts.dfds.com/oauth2/ausofi70gN6YUe1Wc0x6/.well-known/oauth-authorization-server",
+    "audiences": [
+      "api://Core.Selfservice3"
+    ]
+  }
