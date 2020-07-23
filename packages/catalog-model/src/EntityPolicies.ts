@@ -23,6 +23,7 @@ import {
   SchemaValidEntityPolicy,
 } from './entity';
 import {
+  ApiEntityV1alpha1Policy,
   ComponentEntityV1alpha1Policy,
   LocationEntityV1alpha1Policy,
   TemplateEntityV1alpha1Policy,
@@ -76,6 +77,7 @@ export class EntityPolicies implements EntityPolicy {
         new ComponentEntityV1alpha1Policy(),
         new LocationEntityV1alpha1Policy(),
         new TemplateEntityV1alpha1Policy(),
+        new ApiEntityV1alpha1Policy(),
       ]),
     ]);
   }
