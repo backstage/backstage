@@ -43,31 +43,11 @@ import {
 
 import ToolsCardComponent from '../ToolsCardComponent';
 
-import { ToolsListConfig } from '../../ToolsListConfig';
+import { ToolsListConfig } from '../../config/ToolsListConfig';
 
-import * as ToolsDefaultConfig from '../../ToolsDefaultConfig.json';
+import { toolsListConfigFill } from '../../utils/ToolsComponentUtils';
 
-ToolsListConfig.forEach(function loadToolsListConfig(ToolsListItem) {
-  ToolsDefaultConfig.config.forEach(function loadToolsDefaultConfig(
-    ToolsDefaultItem,
-  ) {
-    if (
-      ToolsListItem.type !== 'custom' &&
-      ToolsListItem.type.toLowerCase() === ToolsDefaultItem?.type.toLowerCase()
-    ) {
-      ToolsListItem.type = ToolsDefaultItem!.type;
-      ToolsListItem.src = ToolsDefaultItem!.src;
-      ToolsListItem.caption = ToolsDefaultItem!.caption!;
-      ToolsListItem.homepage = ToolsDefaultItem!.homepage;
-      if (
-        typeof ToolsListItem.scm === 'undefined' ||
-        ToolsListItem.scm?.length === 0
-      ) {
-        ToolsListItem.scm = '';
-      }
-    }
-  });
-});
+const ToolsListConfigFilled = toolsListConfigFill(ToolsListConfig);
 
 const ToolsComponent: FC<{}> = () => {
   return (
@@ -81,8 +61,8 @@ const ToolsComponent: FC<{}> = () => {
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="row">
-          {ToolsListConfig.map(tool => (
-            <ToolsCardComponent tool={tool} />
+          {ToolsListConfigFilled.map((tool: Tools, index: Number) => (
+            <ToolsCardComponent tool={tool} key={index.toString()} />
           ))}
         </Grid>
       </Content>

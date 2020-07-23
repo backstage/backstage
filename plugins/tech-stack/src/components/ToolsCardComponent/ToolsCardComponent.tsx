@@ -118,8 +118,9 @@ const ToolsCardComponent: FC<Props> = props => {
           </CardContent>
         </CardActionArea>
         <CardActions className={classes.cardActions}>
-          {tool.actions.map(action => (
+          {tool.actions.map((action: any, index: Number) => (
             <ToolsCardActionsComponent
+              key={index.toString()}
               action={action}
               className={classes.toolsCardActions}
             />
