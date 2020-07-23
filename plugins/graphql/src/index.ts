@@ -15,4 +15,5 @@
  */
 
 require('whatwg-fetch');
+
 export * from './service/router';
