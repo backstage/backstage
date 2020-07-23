@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-export { HigherOrderOperations } from './HigherOrderOperations';
-export { LocationReaders } from './LocationReaders';
-export type {
-  AddLocationResult,
-  HigherOrderOperation,
-  LocationReader,
-  ReadLocationEntity,
-  ReadLocationError,
-  ReadLocationResult,
-} from './types';
-export * from './processors';
+import * as results from './results';
+
+export { results };
+export * from './types';
