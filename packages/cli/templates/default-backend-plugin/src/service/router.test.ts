@@ -34,9 +34,9 @@ describe('createRouter', () => {
     jest.resetAllMocks();
   });
 
-  describe('GET /ping', () => {
+  describe('GET /health', () => {
     it('returns ok', async () => {
-      const response = await request(app).get('/ping');
+      const response = await request(app).get('/health');
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
