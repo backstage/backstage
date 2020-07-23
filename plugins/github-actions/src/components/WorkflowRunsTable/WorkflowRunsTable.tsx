@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { Link, Typography, Box, IconButton } from '@material-ui/core';
+import { Link, Typography, Box, IconButton, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink } from 'react-router-dom';
 import { Table, TableColumn } from '@backstage/core';
 import { useWorkflowRuns } from './useWorkflowRuns';
 import { WorkflowRunStatusIcon } from '../WorkflowRunStatusIcon';
+import SyncIcon from '@material-ui/icons/Sync';
 
 export type WorkflowRun = {
   id: string;
@@ -81,9 +82,11 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Actions',
     render: (row: Partial<WorkflowRun>) => (
-      <IconButton onClick={row.onReRunClick}>
-        <RetryIcon />
-      </IconButton>
+      <Tooltip title="Rerun workflow">
+        <IconButton onClick={row.onReRunClick}>
+          <RetryIcon />
+        </IconButton>
+      </Tooltip>
     ),
     width: '10%',
   },
@@ -120,8 +123,8 @@ const WorkflowRunsTableView: FC<Props> = ({
       page={page}
       actions={[
         {
-          icon: () => <RetryIcon />,
-          tooltip: 'Refresh Data',
+          icon: () => <SyncIcon />,
+          tooltip: 'Reload workflow runs',
           isFreeAction: true,
           onClick: () => retry(),
         },
@@ -141,17 +144,8 @@ const WorkflowRunsTableView: FC<Props> = ({
   );
 };
 
-export const WorkflowRunsTable = ({
-  repo,
-  owner,
-}: {
-  repo: string;
-  owner: string;
-}) => {
-  const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
-    repo,
-    owner,
-  });
+export const WorkflowRunsTable = () => {
+  const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns();
   return (
     <WorkflowRunsTableView
       {...tableProps}

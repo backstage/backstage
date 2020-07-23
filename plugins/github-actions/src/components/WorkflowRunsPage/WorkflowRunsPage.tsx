@@ -22,8 +22,6 @@ import {
   Content,
   ContentHeader,
   SupportButton,
-  useApi,
-  configApiRef,
 } from '@backstage/core';
 import { Grid } from '@material-ui/core';
 import React from 'react';
@@ -31,14 +29,11 @@ import React from 'react';
 import { WorkflowRunsTable } from '../WorkflowRunsTable';
 
 export const WorkflowRunsPage = () => {
-  const configApi = useApi(configApiRef);
-  const repo = configApi.getString('github-actions.repo');
-  const owner = configApi.getString('github-actions.owner');
   return (
     <Page theme={pageTheme.tool}>
       <Header
         title="GitHub Actions"
-        subtitle="See recent worflow runs and their status"
+        subtitle="See recent workflow runs and their status"
       >
         <HeaderLabel label="Owner" value="Spotify" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
@@ -52,7 +47,7 @@ export const WorkflowRunsPage = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <WorkflowRunsTable repo={repo} owner={owner} />
+            <WorkflowRunsTable />
           </Grid>
         </Grid>
       </Content>

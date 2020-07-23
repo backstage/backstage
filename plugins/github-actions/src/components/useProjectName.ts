@@ -13,33 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type Step = {
-  name: string;
-  status: string;
-  conclusion: string;
-  number: number; // starts from 1
-  started_at: string;
-  completed_at: string;
-};
 
-export type Job = {
-  html_url: string;
-  status: string;
-  conclusion: string;
-  started_at: string;
-  completed_at: string;
-  name: string;
-  steps: Step[];
-};
+import { useAsync } from 'react-use';
+import { catalogApiRef, EntityCompoundName } from '@backstage/plugin-catalog';
+import { useApi } from '@backstage/core';
 
-export type Jobs = {
-  total_count: number;
-  jobs: Job[];
-};
+export const useProjectName = (name: EntityCompoundName) => {
+  const catalogApi = useApi(catalogApiRef);
 
-export enum BuildStatus {
-  'success',
-  'failure',
-  'pending',
-  'running',
-}
+  const { value } = useAsync<string>(async () => {
+    const entity = await catalogApi.getEntityByName(name);
+    return (
+      entity?.metadata.annotations?.['backstage.io/github-actions-id'] ?? ''
+    );
+  });
+  return value;
+};

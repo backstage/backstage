@@ -23,13 +23,13 @@ export const useWorkflowRunsDetails = (repo: string, owner: string) => {
   const auth = useApi(githubAuthApiRef);
   const { id } = useParams();
   const details = useAsync(async () => {
-    const token = await auth.getAccessToken(['repo', 'user']);
+    const token = await auth.getAccessToken(['repo']);
     return api.getWorkflowRun({
       token,
       owner,
       repo,
       id: parseInt(id, 10),
     });
-  }, [id]);
+  }, [repo, owner, id]);
   return details;
 };

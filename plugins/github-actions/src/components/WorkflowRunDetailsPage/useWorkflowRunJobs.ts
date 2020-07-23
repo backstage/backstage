@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useAsync } from 'react-use';
-import { Jobs } from '../types';
+import { Jobs } from '../../api/types';
 
 export const useWorkflowRunJobs = (jobsUrl?: string) => {
   const jobs = useAsync<Jobs>(async () => {

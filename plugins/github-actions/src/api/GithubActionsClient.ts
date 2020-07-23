@@ -23,7 +23,7 @@ import {
 } from '@octokit/types';
 
 export class GithubActionsClient implements GithubActionsApi {
-  reRunWorkflow({
+  async reRunWorkflow({
     token,
     owner,
     repo,
