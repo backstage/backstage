@@ -42,7 +42,7 @@ export const WelcomeBanner = () => {
             🎉
           </span>
           Welcome to Backstage! Take a look around and check out our{' '}
-          <Link href="/welcome" color="textSecondary">
+          <Link href="/welcome" color="textPrimary">
             getting started
           </Link>{' '}
           page.
