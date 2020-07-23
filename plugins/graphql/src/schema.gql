@@ -7,5 +7,5 @@ type CatalogQuery {
 }
 
 type Query {
-  catalog: CatalogQuery
+  catalog: CatalogQuery!
 }
