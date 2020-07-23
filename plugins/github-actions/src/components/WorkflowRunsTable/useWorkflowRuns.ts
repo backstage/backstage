@@ -19,6 +19,7 @@ import { WorkflowRun } from './WorkflowRunsTable';
 import { githubActionsApiRef } from '../../api/GithubActionsApi';
 import { useApi, githubAuthApiRef, errorApiRef } from '@backstage/core';
 import { ActionsListWorkflowRunsForRepoResponseData } from '@octokit/types';
+import { catalogApiRef } from '@backstage/plugin-catalog';
 
 export function useWorkflowRuns({
   repo,
@@ -27,6 +28,7 @@ export function useWorkflowRuns({
   repo: string;
   owner: string;
 }) {
+  const catalogApi = useApi(catalogApiRef);
   const api = useApi(githubActionsApiRef);
   const auth = useApi(githubAuthApiRef);
 
@@ -42,7 +44,11 @@ export function useWorkflowRuns({
     WorkflowRun[]
   >(async () => {
     const token = await auth.getAccessToken(['repo', 'user']);
-
+    const entity = await catalogApi.getEntityByName({
+      kind: 'Component',
+      name: 'backstage-site',
+    });
+    console.log(entity);
     return (
       api
         // GitHub API pagination count starts from 1
