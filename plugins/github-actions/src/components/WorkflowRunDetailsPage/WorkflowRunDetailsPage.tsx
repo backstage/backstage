@@ -30,20 +30,30 @@ import {
   ExpansionPanelDetails,
   ExpansionPanel,
   ExpansionPanelSummary,
-  ListItem,
-  List,
   ListItemText,
   CircularProgress,
+  Grid,
 } from '@material-ui/core';
 import moment from 'moment';
 
 import React from 'react';
-import { Link, useApi, configApiRef } from '@backstage/core';
+import {
+  Link,
+  useApi,
+  configApiRef,
+  Page,
+  Header,
+  HeaderLabel,
+  Content,
+  ContentHeader,
+  SupportButton,
+  pageTheme,
+} from '@backstage/core';
 import { Job, Step, Jobs } from '../types';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { WorkflowRunStatusIndicator } from '../WorkflowRunStatusIndicator';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
+import { WorkflowRunStatusIcon } from '../WorkflowRunStatusIcon/WorkflowRunStatusIcon';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -92,12 +102,18 @@ const getElapsedTime = (start: string, end: string) => {
 
 const StepView = ({ step }: { step: Step }) => {
   return (
-    <ListItem>
-      <ListItemText
-        primary={step.name}
-        secondary={getElapsedTime(step.started_at, step.completed_at)}
-      />
-    </ListItem>
+    <TableRow>
+      <TableCell>
+        <ListItemText
+          primary={step.name}
+          secondary={getElapsedTime(step.started_at, step.completed_at)}
+        />
+      </TableCell>
+      <TableCell>
+        <WorkflowRunStatusIcon status={step.status.toUpperCase()} />
+        {step.status}
+      </TableCell>
+    </TableRow>
   );
 };
 
@@ -121,11 +137,13 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionPanelDetails}>
-        <List>
-          {job.steps.map((step: Step) => (
-            <StepView step={step} />
-          ))}
-        </List>
+        <TableContainer>
+          <Table>
+            {job.steps.map((step: Step) => (
+              <StepView step={step} />
+            ))}
+          </Table>
+        </TableContainer>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
@@ -154,75 +172,98 @@ export const WorkflowRunDetailsPage = () => {
   }
 
   return (
-    <div className={classes.root}>
-      <Typography className={classes.title} variant="h3">
-        <Link to="/github-actions">
-          <Typography component="span" variant="h3" color="primary">
-            &lt;
-          </Typography>
-        </Link>
-        Workflow Run Details
-      </Typography>
-      <TableContainer component={Paper} className={classes.table}>
-        <Table>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Branch</Typography>
-              </TableCell>
-              <TableCell>{details.value?.head_branch}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Message</Typography>
-              </TableCell>
-              <TableCell>{details.value?.head_commit.message}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Commit ID</Typography>
-              </TableCell>
-              <TableCell>{details.value?.head_commit.id}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Status</Typography>
-              </TableCell>
-              <TableCell>
-                <WorkflowRunStatusIndicator status={details.value?.status} />
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Author</Typography>
-              </TableCell>
-              <TableCell>{`${details.value?.head_commit.author.name} (${details.value?.head_commit.author.email})`}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Links</Typography>
-              </TableCell>
-              <TableCell>
-                {details.value?.html_url && (
-                  <Button>
-                    <a href={details.value.html_url}>GitHub</a>
-                  </Button>
-                )}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <Typography noWrap>Jobs</Typography>
-                {jobs.loading ? (
-                  <CircularProgress />
-                ) : (
-                  <JobsList jobs={jobs.value} />
-                )}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+    <Page theme={pageTheme.tool}>
+      <Header
+        title="GitHub Actions"
+        subtitle="See recent worflow runs and their status"
+      >
+        <HeaderLabel label="Owner" value="Spotify" />
+        <HeaderLabel label="Lifecycle" value="Alpha" />
+      </Header>
+      <Content>
+        <ContentHeader title="Workflow run details">
+          <SupportButton>
+            This plugin allows you to view and interact with your builds within
+            the GitHub Actions environment.
+          </SupportButton>
+        </ContentHeader>
+        <Grid container spacing={3} direction="column">
+          <Grid item>
+            <div className={classes.root}>
+              <Typography className={classes.title} variant="h3">
+                <Link to="/github-actions">
+                  <Typography component="span" variant="h3" color="primary">
+                    &lt; Back
+                  </Typography>
+                </Link>
+              </Typography>
+              <TableContainer component={Paper} className={classes.table}>
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>
+                        <Typography noWrap>Branch</Typography>
+                      </TableCell>
+                      <TableCell>{details.value?.head_branch}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Typography noWrap>Message</Typography>
+                      </TableCell>
+                      <TableCell>
+                        {details.value?.head_commit.message}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Typography noWrap>Commit ID</Typography>
+                      </TableCell>
+                      <TableCell>{details.value?.head_commit.id}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Typography noWrap>Status</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <WorkflowRunStatusIcon status={details.value?.status} />{' '}
+                        {details.value?.status.toUpperCase()}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Typography noWrap>Author</Typography>
+                      </TableCell>
+                      <TableCell>{`${details.value?.head_commit.author.name} (${details.value?.head_commit.author.email})`}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Typography noWrap>Links</Typography>
+                      </TableCell>
+                      <TableCell>
+                        {details.value?.html_url && (
+                          <Button>
+                            <a href={details.value.html_url}>GitHub</a>
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell colSpan={2}>
+                        <Typography noWrap>Jobs</Typography>
+                        {jobs.loading ? (
+                          <CircularProgress />
+                        ) : (
+                          <JobsList jobs={jobs.value} />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </Grid>
+        </Grid>
+      </Content>
+    </Page>
   );
 };

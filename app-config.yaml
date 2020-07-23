@@ -21,8 +21,8 @@ organization:
   name: Spotify
 
 github-actions:
-  owner: CircleCITest3
-  repo: try-ssr
+  owner: spotify
+  repo: backstage
 
 techdocs:
   storageUrl: https://techdocs-mock-sites.storage.googleapis.com

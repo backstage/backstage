@@ -18,14 +18,9 @@ import { Link, Typography, Box, IconButton } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink } from 'react-router-dom';
-import {
-  StatusOK,
-  StatusPending,
-  StatusRunning,
-  Table,
-  TableColumn,
-} from '@backstage/core';
+import { Table, TableColumn } from '@backstage/core';
 import { useWorkflowRuns } from './useWorkflowRuns';
+import { WorkflowRunStatusIcon } from '../WorkflowRunStatusIcon';
 
 export type WorkflowRun = {
   id: string;
@@ -40,20 +35,6 @@ export type WorkflowRun = {
   };
   status: string;
   onReRunClick: () => void;
-};
-
-// retried, canceled, infrastructure_fail, timedout, not_run, running, failed, queued, scheduled, not_running, no_tests, fixed, success
-const getStatusComponent = (status: string | undefined = '') => {
-  switch (status.toLowerCase()) {
-    case 'queued':
-      return <StatusPending />;
-    case 'in_progress':
-      return <StatusRunning />;
-    case 'completed':
-      return <StatusOK />;
-    default:
-      return <StatusPending />;
-  }
 };
 
 const generatedColumns: TableColumn[] = [
@@ -79,19 +60,21 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Source',
     render: (row: Partial<WorkflowRun>) => (
-      <>
+      <Typography variant="body2" noWrap>
         <p>{row.source?.branchName}</p>
         <p>{row.source?.commit.hash}</p>
-      </>
+      </Typography>
     ),
   },
   {
     title: 'Status',
     render: (row: Partial<WorkflowRun>) => (
       <Box display="flex" alignItems="center">
-        {getStatusComponent(row.status)}
+        <WorkflowRunStatusIcon status={row.status} />
         <Box mr={1} />
-        <Typography variant="button">{row.status}</Typography>
+        <Typography variant="button" noWrap>
+          {row.status}
+        </Typography>
       </Box>
     ),
   },
