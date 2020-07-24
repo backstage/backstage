@@ -52,7 +52,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private certificateOptions: CertificateOptions | undefined;
   private routers: [string, Router][];
   // Reference to the module where builder is created - needed for hot module
-  // reloading
+  // reloading.
   private module: NodeModule;
 
   constructor(moduleRef: NodeModule) {
@@ -176,7 +176,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
           certificateAttributes,
           {
             keySize: (certificateOptions?.key as any).data.size || 2048,
-            algorithm:
+            algorithm: 
               (certificateOptions?.key as any).data.algorithm || 'sha256',
             days: (certificateOptions?.key as any).data.days || 30,
           },
