@@ -37,12 +37,13 @@ import {
   useApi,
   configApiRef,
 } from '@backstage/core';
+import work from './test.yaml'
 
 const WelcomePage = () => {
   const appTitle =
     useApi(configApiRef).getOptionalString('app.title') ?? 'Backstage';
   const profile = { givenName: '' };
-
+console.log(work);
   return (
     <Page theme={pageTheme.home}>
       <Header
