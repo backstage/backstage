@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
-import CatalogApiPluginPage from './components/CatalogApiPluginPage';
-
-export const rootRouteRef = createRouteRef({
-  path: '/api-docs',
-  title: 'api-docs',
-});
+import { createPlugin } from '@backstage/core';
+import { ApiCatalogPage } from './components/ApiCatalogPage/ApiCatalogPage';
+import { ApiEntityPage } from './components/ApiEntityPage/ApiEntityPage';
+import { entityRoute, rootRoute } from './routes';
 
 export const plugin = createPlugin({
   id: 'api-docs',
   register({ router }) {
-    router.addRoute(rootRouteRef, CatalogApiPluginPage);
+    router.addRoute(rootRoute, ApiCatalogPage);
+    router.addRoute(entityRoute, ApiEntityPage);
   },
 });

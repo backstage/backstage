@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
-import { render } from '@testing-library/react';
-import mockFetch from 'jest-fetch-mock';
+import { Header, Page, pageTheme } from '@backstage/core';
 import React from 'react';
-import CatalogApiPluginPage from './CatalogApiPluginPage';
 
-describe('CatalogApiPluginPage', () => {
-  it('should render', () => {
-    mockFetch.mockResponse(() => new Promise(() => {}));
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <CatalogApiPluginPage />
-      </ThemeProvider>,
-    );
-    expect(rendered.getByText('Welcome to catalog-api!')).toBeInTheDocument();
-  });
-});
+type Props = {
+  children?: React.ReactNode;
+};
+
+const ApiCatalogLayout = ({ children }: Props) => {
+  return (
+    <Page theme={pageTheme.home}>
+      <Header
+        title="APIs"
+        subtitle="Backstage API Catalog"
+        pageTitleOverride="Home"
+      />
+      {children}
+    </Page>
+  );
+};
+
+export default ApiCatalogLayout;

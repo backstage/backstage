@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-export { default } from './CatalogApiPluginPage';
+import { createRouteRef } from '@backstage/core';
+
+const NoIcon = () => null;
+
+export const rootRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/api-docs',
+  title: 'APIs',
+});
+export const entityRoute = createRouteRef({
+  icon: NoIcon,
+  path: '/api-docs/:optionalNamespaceAndName/',
+  title: 'API',
+});
