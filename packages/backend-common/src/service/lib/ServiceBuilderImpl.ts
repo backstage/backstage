@@ -31,7 +31,12 @@ import {
   requestLoggingHandler,
 } from '../../middleware';
 import { ServiceBuilder } from '../types';
-import { readBaseOptions, readCorsOptions } from './config';
+import {
+  readBaseOptions,
+  readCorsOptions,
+  readCertificateOptions,
+  CertificateOptions,
+} from './config';
 
 const DEFAULT_PROTOCOL = 'https://';
 const DEFAULT_PORT = 7000;
@@ -44,6 +49,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private baseUrl: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
+  private certificateOptions: CertificateOptions | undefined;
   private routers: [string, Router][];
   // Reference to the module where builder is created - needed for hot module
   // reloading
@@ -60,8 +66,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       return this;
     }
 
-    this.baseUrl = backendConfig.getString('baseUrl');
-
     const baseOptions = readBaseOptions(backendConfig);
     if (baseOptions.listenPort) {
       this.port = baseOptions.listenPort;
@@ -69,12 +73,19 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     if (baseOptions.listenHost) {
       this.host = baseOptions.listenHost;
     }
+    if (baseOptions.baseUrl) {
+      this.baseUrl = baseOptions.baseUrl;
+    }
 
     const corsOptions = readCorsOptions(backendConfig);
     if (corsOptions) {
       this.corsOptions = corsOptions;
     }
 
+    const certificateOptions = readCertificateOptions(backendConfig);
+    if (certificateOptions) {
+      this.certificateOptions = certificateOptions;
+    }
     return this;
   }
 
@@ -95,6 +106,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
   setLogger(logger: Logger): ServiceBuilder {
     this.logger = logger;
+    return this;
+  }
+
+  setCertificateOptions(options: CertificateOptions): ServiceBuilder {
+    this.certificateOptions = options;
     return this;
   }
 
@@ -131,20 +147,35 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         reject(e);
       });
 
-      console.log(host, baseUrl);
-
       const useHttps = baseUrl.indexOf(DEFAULT_PROTOCOL) > -1;
       let server: https.Server;
 
       if (useHttps) {
-        const signingAttrs = [{ name: 'commonName', value: 'contoso.com' }];
-        const pems = require('selfsigned').generate(signingAttrs, {
-          keySize: 2048,
-          algorithm: 'sha256',
-          days: 30,
+        const certificateAttributes: Array<any> = [];
+
+        Object.getOwnPropertyNames(
+          (this.certificateOptions?.attributes as any).data,
+        ).forEach(propertyName => {
+          certificateAttributes.push({
+            name: propertyName,
+            value: (this.certificateOptions?.attributes as any).data[
+              propertyName
+            ],
+          });
         });
 
-        const credentials = { key: pems.private, cert: pems.cert };
+        // TODO: Create a type def for selfsigned.
+        const signatures = require('selfsigned').generate(
+          certificateAttributes,
+          {
+            keySize: (this.certificateOptions?.key as any).data.size || 2048,
+            algorithm:
+              (this.certificateOptions?.key as any).data.algorithm || 'sha256',
+            days: (this.certificateOptions?.key as any).data.days || 30,
+          },
+        );
+
+        const credentials = { key: signatures.private, cert: signatures.cert };
 
         server = https.createServer(credentials, app);
       } else {
