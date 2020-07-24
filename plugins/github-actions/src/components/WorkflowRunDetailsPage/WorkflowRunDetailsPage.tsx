@@ -156,7 +156,7 @@ export const WorkflowRunDetailsPage = () => {
   const [owner, repo] = (
     useProjectName({
       kind: 'Component',
-      name: 'backstage-site',
+      name: 'backstage',
     }) ?? '/'
   ).split('/');
   const details = useWorkflowRunsDetails(repo, owner);

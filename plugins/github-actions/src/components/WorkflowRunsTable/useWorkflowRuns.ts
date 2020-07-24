@@ -33,7 +33,7 @@ export function useWorkflowRuns() {
 
   const projectName = useProjectName({
     kind: 'Component',
-    name: 'backstage-site',
+    name: 'backstage',
   });
   const { loading, value: runs, retry } = useAsyncRetry<
     WorkflowRun[]
