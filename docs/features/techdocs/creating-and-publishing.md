@@ -1,11 +1,21 @@
-# Publishing Documentation
+# Creating and publishing your docs
+
+This section will guide you through:
+
+- Creating a basic setup for your documentation
+- Writing and previewing your documentation in a local Backstage environment
+- Creating a build ready for publication
+- Publishing your documentation and making your Backstage instance read from
+  your published docs.
 
 ## Prerequisities
 
 - [Docker](https://docs.docker.com/get-docker/)
 - Static file hosting
+- A working Backstage instance with TechDocs installed
+  [TechDocs getting started](getting-started.md)
 
-## Create documentation
+## Create a basic documentation setup
 
 Create a directory that contains your documentation. Inside this directory you
 should create a file called `mkdocs.yml`. As an example you can create a
@@ -32,7 +42,23 @@ And then the `~/hello-docs/docs/index.md` should have the following content:
 This is a basic example of documentation.
 ```
 
-## Build documentation
+## Writing and previewing your documentation
+
+Using the `techdocs-cli` you can preview your docs inside a local Backstage
+instance and get automatic recompilation on changes. This is useful for when you
+want to write your documentation.
+
+To do this you can run:
+
+```bash
+cd ~/hello-docs/
+npx techdocs-cli serve
+```
+
+## Build production ready documentation
+
+To get a build suitable for publication you can build your docs using the
+`spotify/techdocs` container.
 
 ```bash
 cd ~/hello-docs/

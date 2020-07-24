@@ -36,11 +36,7 @@ Spotify’s developer experience offering with 2,400+ documentation sites and
 
 - [Getting Started]
 - [Concepts]
-- [Reading Documentation]
-- [Writing Documentation]
-- [Publishing Documentation]
-- [Contributing]
-- [Debugging]
+- [Creating and Publishing Documentation]
 - [FAQ]
 
 ## Tech Stack
@@ -54,11 +50,7 @@ Spotify’s developer experience offering with 2,400+ documentation sites and
 
 [getting started]: getting-started.md
 [concepts]: concepts.md
-[reading documentation]: reading-documentation.md
-[writing documentation]: writing-documentation.md
-[publishing documentation]: publishing-documentation.md
-[contributing]: contributing.md
-[debugging]: debugging.md
+[creating and publishing documentation]: creating-and-publishing.md
 [faq]: FAQ.md 'Frequently asked questions'
 [techdocs/frontend]:
   https://github.com/spotify/backstage/blob/master/plugins/techdocs
