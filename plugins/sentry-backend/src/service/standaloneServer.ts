@@ -14,28 +14,33 @@
  * limitations under the License.
  */
 
-import { Server } from 'http';
+import * as https from 'https';
 import { Logger } from 'winston';
 import { createStandaloneApplication } from './standaloneApplication';
 
 export async function startStandaloneServer(
   parentLogger: Logger,
-): Promise<Server> {
+): Promise<https.Server> {
   const logger = parentLogger.child({ service: 'scaffolder-backend' });
+
   logger.debug('Creating application...');
 
   const app = await createStandaloneApplication(logger);
 
   logger.debug('Starting application server...');
   const PORT = parseInt(process.env.PORT || '5001', 10);
+
   return await new Promise((resolve, reject) => {
-    const server = app.listen(PORT, (err?: Error) => {
+    const server = https.createServer(app);
+
+    server.listen(PORT, (err?: Error) => {
       if (err) {
         reject(err);
         return;
       }
 
       logger.info(`Listening on port ${PORT}`);
+
       resolve(server);
     });
   });

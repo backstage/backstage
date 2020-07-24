@@ -15,7 +15,7 @@
  */
 
 import { createServiceBuilder } from '@backstage/backend-common';
-import { Server } from 'http';
+import { Server } from 'https';
 import { Logger } from 'winston';
 import { HigherOrderOperations } from '..';
 import { DatabaseEntitiesCatalog } from '../catalog/DatabaseEntitiesCatalog';

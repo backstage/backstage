@@ -53,3 +53,4 @@ const DfdsWebApiComponentWrapper: FC<{}> = () => (
 );
 
 export default DfdsWebApiComponentWrapper;
+export { ConcretComponent };

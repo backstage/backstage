@@ -19,7 +19,7 @@ import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
 import helmet from 'helmet';
-import { Server } from 'http';
+import * as https from 'https';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
 import { useHotCleanup } from '../../hot';
@@ -97,7 +97,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  start(): Promise<Server> {
+  start(): Promise<https.Server> {
     const app = express();
     const { port, host, logger, corsOptions } = this.getOptions();
 
@@ -120,12 +120,17 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         reject(e);
       });
 
-      const server = stoppable(
-        app.listen(port, host, () => {
-          logger.info(`Listening on ${host}:${port}`);
-        }),
-        0,
-      );
+      const signingAttrs = [{ name: 'commonName', value: 'contoso.com' }];
+      const pems = require('selfsigned').generate(signingAttrs, {
+        keySize: 2048,
+        algorithm: 'sha256',
+        days: 30,
+      });
+      const credentials = { key: pems.private, cert: pems.cert };
+
+      const server = stoppable(https.createServer(credentials, app), 0);
+
+      server.listen(port, host);
 
       useHotCleanup(this.module, () =>
         server.stop((e: any) => {
