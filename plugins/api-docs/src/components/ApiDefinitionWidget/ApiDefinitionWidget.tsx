@@ -15,6 +15,7 @@
  */
 
 import React, { FC } from 'react';
+import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget/AsyncApiDefinitionWidget';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget/OpenApiDefinitionWidget';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget/PlainApiDefinitionWidget';
 
@@ -25,6 +26,9 @@ export const ApiDefinitionWidget: FC<{
   switch (type) {
     case 'openapi':
       return <OpenApiDefinitionWidget definition={definition} />;
+
+    case 'asyncapi':
+      return <AsyncApiDefinitionWidget definition={definition} />;
 
     default:
       return <PlainApiDefinitionWidget definition={definition} />;
