@@ -158,6 +158,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       let server: http.Server;
 
       if (useHttps) {
+        logger.info('Initializing https server');
+
         const certificateAttributes: Array<any> = [];
 
         Object.getOwnPropertyNames(
@@ -184,6 +186,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
         server = https.createServer(credentials, app) as http.Server;
       } else {
+        logger.info('Initializing http server');
+
         server = http.createServer(app);
       }
 
