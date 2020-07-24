@@ -20,6 +20,22 @@ import { CorsOptions } from 'cors';
 export type BaseOptions = {
   listenPort?: number;
   listenHost?: string;
+  baseUrl?: string;
+};
+
+export type CertificateOptions = {
+  key?: CertificateKeyOptions;
+  attributes?: CertificateAttributeOptions;
+};
+
+export type CertificateKeyOptions = {
+  size?: number;
+  algorithm?: string;
+  days?: number;
+};
+
+export type CertificateAttributeOptions = {
+  commonName?: string;
 };
 
 /**
@@ -39,9 +55,11 @@ export type BaseOptions = {
 export function readBaseOptions(config: ConfigReader): BaseOptions {
   // TODO(freben): Expand this to support more addresses and perhaps optional
   const { host, port } = parseListenAddress(config.getString('listen'));
+  const baseUrl = config.getString('baseUrl');
   return removeUnknown({
     listenPort: port,
     listenHost: host,
+    baseUrl: baseUrl,
   });
 }
 
@@ -76,6 +94,38 @@ export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
     maxAge: cc.getOptionalNumber('maxAge'),
     preflightContinue: cc.getOptionalBoolean('preflightContinue'),
     optionsSuccessStatus: cc.getOptionalNumber('optionsSuccessStatus'),
+  });
+}
+
+/**
+ * Attempts to read a certificate options object from the root of a config object.
+ *
+ * @param config The root of a backend config object
+ * @returns A certificate options object, or undefined if not specified
+ *
+ * @example
+ * ```json
+ * {
+ *   certificate: {
+ *    key: ...,
+ *    attributes: ...
+ *   }
+ * }
+ * ```
+ */
+export function readCertificateOptions(
+  config: ConfigReader,
+): CertificateOptions | undefined {
+  const cc = config.getOptionalConfig('certificate');
+  if (!cc) {
+    return undefined;
+  }
+
+  return removeUnknown({
+    key: cc.getOptionalConfig('key') as CertificateKeyOptions,
+    attributes: cc.getOptionalConfig(
+      'attributes',
+    ) as CertificateAttributeOptions,
   });
 }
 
