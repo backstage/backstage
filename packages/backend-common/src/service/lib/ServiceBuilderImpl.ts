@@ -19,7 +19,8 @@ import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
 import helmet from 'helmet';
-import { Server } from 'http';
+import * as http from 'http';
+import * as https from 'https';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
 import { useHotCleanup } from '../../hot';
@@ -30,16 +31,25 @@ import {
   requestLoggingHandler,
 } from '../../middleware';
 import { ServiceBuilder } from '../types';
-import { readBaseOptions, readCorsOptions } from './config';
+import {
+  readBaseOptions,
+  readCorsOptions,
+  readCertificateOptions,
+  CertificateOptions,
+} from './config';
 
+const DEFAULT_PROTOCOL = 'https://';
 const DEFAULT_PORT = 7000;
 const DEFAULT_HOST = 'localhost';
+const DEFAULT_BASEURL = `${DEFAULT_PROTOCOL}${DEFAULT_HOST}:${DEFAULT_PORT}`;
 
 export class ServiceBuilderImpl implements ServiceBuilder {
   private port: number | undefined;
   private host: string | undefined;
+  private baseUrl: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
+  private certificateOptions: CertificateOptions | undefined;
   private routers: [string, Router][];
   // Reference to the module where builder is created - needed for hot module
   // reloading
@@ -63,12 +73,24 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     if (baseOptions.listenHost) {
       this.host = baseOptions.listenHost;
     }
+    if (baseOptions.baseUrl) {
+      this.baseUrl = baseOptions.baseUrl;
+    }
 
     const corsOptions = readCorsOptions(backendConfig);
     if (corsOptions) {
       this.corsOptions = corsOptions;
     }
 
+    const certificateOptions = readCertificateOptions(backendConfig);
+    if (certificateOptions) {
+      this.certificateOptions = certificateOptions;
+    }
+    return this;
+  }
+
+  setBaseUrl(baseUrl: string): ServiceBuilder {
+    this.baseUrl = baseUrl;
     return this;
   }
 
@@ -87,6 +109,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  setCertificateOptions(options: CertificateOptions): ServiceBuilder {
+    this.certificateOptions = options;
+    return this;
+  }
+
   enableCors(options: cors.CorsOptions): ServiceBuilder {
     this.corsOptions = options;
     return this;
@@ -97,9 +124,16 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  start(): Promise<Server> {
+  start(): Promise<http.Server> {
     const app = express();
-    const { port, host, logger, corsOptions } = this.getOptions();
+    const {
+      port,
+      host,
+      logger,
+      corsOptions,
+      baseUrl,
+      certificateOptions,
+    } = this.getOptions();
 
     app.use(helmet());
     if (corsOptions) {
@@ -120,34 +154,68 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         reject(e);
       });
 
-      const server = stoppable(
-        app.listen(port, host, () => {
-          logger.info(`Listening on ${host}:${port}`);
-        }),
-        0,
-      );
+      const useHttps = baseUrl.indexOf(DEFAULT_PROTOCOL) > -1;
+      let server: http.Server;
+
+      if (useHttps) {
+        const certificateAttributes: Array<any> = [];
+
+        Object.getOwnPropertyNames(
+          (certificateOptions?.attributes as any).data,
+        ).forEach(propertyName => {
+          certificateAttributes.push({
+            name: propertyName,
+            value: (certificateOptions?.attributes as any).data[propertyName],
+          });
+        });
+
+        // TODO: Create a type def for selfsigned.
+        const signatures = require('selfsigned').generate(
+          certificateAttributes,
+          {
+            keySize: (certificateOptions?.key as any).data.size || 2048,
+            algorithm:
+              (certificateOptions?.key as any).data.algorithm || 'sha256',
+            days: (certificateOptions?.key as any).data.days || 30,
+          },
+        );
+
+        const credentials = { key: signatures.private, cert: signatures.cert };
+
+        server = https.createServer(credentials, app) as http.Server;
+      } else {
+        server = http.createServer(app);
+      }
+
+      const stoppableServer = stoppable(server, 0);
+
+      stoppableServer.listen(port, host);
 
       useHotCleanup(this.module, () =>
-        server.stop((e: any) => {
+        stoppableServer.stop((e: any) => {
           if (e) console.error(e);
         }),
       );
 
-      resolve(server);
+      resolve(stoppableServer);
     });
   }
 
   private getOptions(): {
     port: number;
     host: string;
+    baseUrl: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
+    certificateOptions?: CertificateOptions;
   } {
     return {
       port: this.port ?? DEFAULT_PORT,
       host: this.host ?? DEFAULT_HOST,
+      baseUrl: this.baseUrl ?? DEFAULT_BASEURL,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
+      certificateOptions: this.certificateOptions,
     };
   }
 }
