@@ -3,8 +3,6 @@ kind: Component
 metadata:
   name: shuffle-api
   description: Shuffle API
-  annotations:
-    backstage.io/github-actions-id: 'spotify/backstage'
 spec:
   type: service
   lifecycle: production
