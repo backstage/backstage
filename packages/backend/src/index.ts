@@ -29,7 +29,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
-import knex from 'knex';
+import knex, { PgConnectionConfig } from 'knex';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import identity from './plugins/identity';
@@ -59,11 +59,12 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
         client: 'pg',
         useNullAsDefault: true,
         connection: {
-          host: process.env.PG_HOST,
-          user: process.env.PG_USER,
-          password: process.env.PG_PASSWORD,
+          port: process.env.POSTGRES_PORT,
+          host: process.env.POSTGRES_HOST,
+          user: process.env.POSTGRES_USER,
+          password: process.env.POSTGRES_PASSWORD,
           database: `backstage_plugin_${plugin}`,
-        },
+        } as PgConnectionConfig,
       };
     } else {
       knexConfig = {

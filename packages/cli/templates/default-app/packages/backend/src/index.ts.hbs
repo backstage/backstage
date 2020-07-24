@@ -29,7 +29,12 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
+{{#if dbTypePG}}
 import knex, { PgConnectionConfig } from 'knex';
+{{/if}}
+{{#if dbTypeSqlite}}
+import knex from 'knex';
+{{/if}}
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import identity from './plugins/identity';
