@@ -15,7 +15,7 @@
  */
 
 import { createServiceBuilder } from '@backstage/backend-common';
-import { Server } from 'https';
+import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 

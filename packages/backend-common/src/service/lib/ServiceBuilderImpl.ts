@@ -124,9 +124,16 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  start(): Promise<https.Server> {
+  start(): Promise<http.Server> {
     const app = express();
-    const { port, host, logger, corsOptions, baseUrl } = this.getOptions();
+    const {
+      port,
+      host,
+      logger,
+      corsOptions,
+      baseUrl,
+      certificateOptions,
+    } = this.getOptions();
 
     app.use(helmet());
     if (corsOptions) {
@@ -148,19 +155,17 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       });
 
       const useHttps = baseUrl.indexOf(DEFAULT_PROTOCOL) > -1;
-      let server: https.Server;
+      let server: http.Server;
 
       if (useHttps) {
         const certificateAttributes: Array<any> = [];
 
         Object.getOwnPropertyNames(
-          (this.certificateOptions?.attributes as any).data,
+          (certificateOptions?.attributes as any).data,
         ).forEach(propertyName => {
           certificateAttributes.push({
             name: propertyName,
-            value: (this.certificateOptions?.attributes as any).data[
-              propertyName
-            ],
+            value: (certificateOptions?.attributes as any).data[propertyName],
           });
         });
 
@@ -168,18 +173,18 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         const signatures = require('selfsigned').generate(
           certificateAttributes,
           {
-            keySize: (this.certificateOptions?.key as any).data.size || 2048,
+            keySize: (certificateOptions?.key as any).data.size || 2048,
             algorithm:
-              (this.certificateOptions?.key as any).data.algorithm || 'sha256',
-            days: (this.certificateOptions?.key as any).data.days || 30,
+              (certificateOptions?.key as any).data.algorithm || 'sha256',
+            days: (certificateOptions?.key as any).data.days || 30,
           },
         );
 
         const credentials = { key: signatures.private, cert: signatures.cert };
 
-        server = https.createServer(credentials, app);
+        server = https.createServer(credentials, app) as http.Server;
       } else {
-        server = http.createServer(app) as https.Server;
+        server = http.createServer(app);
       }
 
       const stoppableServer = stoppable(server, 0);
@@ -202,6 +207,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     baseUrl: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
+    certificateOptions?: CertificateOptions;
   } {
     return {
       port: this.port ?? DEFAULT_PORT,
@@ -209,6 +215,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       baseUrl: this.baseUrl ?? DEFAULT_BASEURL,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
+      certificateOptions: this.certificateOptions,
     };
   }
 }

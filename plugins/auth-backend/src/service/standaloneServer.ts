@@ -15,7 +15,7 @@
  */
 
 import Knex from 'knex';
-import { Server } from 'https';
+import { Server } from 'http';
 import { Logger } from 'winston';
 import { ConfigReader } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';

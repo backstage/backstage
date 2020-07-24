@@ -17,7 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import cors from 'cors';
 import { Router } from 'express';
-import { Server } from 'https';
+import { Server } from 'http';
 import { Logger } from 'winston';
 
 export type ServiceBuilder = {
