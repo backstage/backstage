@@ -19,6 +19,7 @@ import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
 import helmet from 'helmet';
+import * as http from 'http';
 import * as https from 'https';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
@@ -32,12 +33,15 @@ import {
 import { ServiceBuilder } from '../types';
 import { readBaseOptions, readCorsOptions } from './config';
 
+const DEFAULT_PROTOCOL = 'https://';
 const DEFAULT_PORT = 7000;
 const DEFAULT_HOST = 'localhost';
+const DEFAULT_BASEURL = `${DEFAULT_PROTOCOL}${DEFAULT_HOST}:${DEFAULT_PORT}`;
 
 export class ServiceBuilderImpl implements ServiceBuilder {
   private port: number | undefined;
   private host: string | undefined;
+  private baseUrl: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
   private routers: [string, Router][];
@@ -56,6 +60,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       return this;
     }
 
+    this.baseUrl = backendConfig.getString('baseUrl');
+
     const baseOptions = readBaseOptions(backendConfig);
     if (baseOptions.listenPort) {
       this.port = baseOptions.listenPort;
@@ -69,6 +75,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       this.corsOptions = corsOptions;
     }
 
+    return this;
+  }
+
+  setBaseUrl(baseUrl: string): ServiceBuilder {
+    this.baseUrl = baseUrl;
     return this;
   }
 
@@ -99,7 +110,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
   start(): Promise<https.Server> {
     const app = express();
-    const { port, host, logger, corsOptions } = this.getOptions();
+    const { port, host, logger, corsOptions, baseUrl } = this.getOptions();
 
     app.use(helmet());
     if (corsOptions) {
@@ -120,37 +131,51 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         reject(e);
       });
 
-      const signingAttrs = [{ name: 'commonName', value: 'contoso.com' }];
-      const pems = require('selfsigned').generate(signingAttrs, {
-        keySize: 2048,
-        algorithm: 'sha256',
-        days: 30,
-      });
-      const credentials = { key: pems.private, cert: pems.cert };
+      console.log(host, baseUrl);
 
-      const server = stoppable(https.createServer(credentials, app), 0);
+      const useHttps = baseUrl.indexOf(DEFAULT_PROTOCOL) > -1;
+      let server: https.Server;
 
-      server.listen(port, host);
+      if (useHttps) {
+        const signingAttrs = [{ name: 'commonName', value: 'contoso.com' }];
+        const pems = require('selfsigned').generate(signingAttrs, {
+          keySize: 2048,
+          algorithm: 'sha256',
+          days: 30,
+        });
+
+        const credentials = { key: pems.private, cert: pems.cert };
+
+        server = https.createServer(credentials, app);
+      } else {
+        server = http.createServer(app) as https.Server;
+      }
+
+      const stoppableServer = stoppable(server, 0);
+
+      stoppableServer.listen(port, host);
 
       useHotCleanup(this.module, () =>
-        server.stop((e: any) => {
+        stoppableServer.stop((e: any) => {
           if (e) console.error(e);
         }),
       );
 
-      resolve(server);
+      resolve(stoppableServer);
     });
   }
 
   private getOptions(): {
     port: number;
     host: string;
+    baseUrl: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
   } {
     return {
       port: this.port ?? DEFAULT_PORT,
       host: this.host ?? DEFAULT_HOST,
+      baseUrl: this.baseUrl ?? DEFAULT_BASEURL,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
     };
