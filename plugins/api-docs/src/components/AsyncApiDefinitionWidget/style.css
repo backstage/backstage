@@ -15,13 +15,13 @@
  */
 
 .asyncapi {
-  font-family: '72';
+  /*font-family: '72';*/
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;
-  background: #f3f4f5;
+  /*background: #f3f4f5;*/
 }
 
 .asyncapi__toggle {
@@ -80,8 +80,8 @@
   cursor: pointer;
 }
 .asyncapi__toggle-arrow:before {
-  content: '\e0e3';
-  font-family: 'SAP-icons';
+  content: '>';
+  /*font-family: 'SAP-icons';*/
   font-size: 14px;
 }
 .asyncapi__toggle-arrow--expanded {
@@ -106,8 +106,8 @@
   margin-left: 6px;
 }
 .asyncapi__anchor-icon:before {
-  content: '\e0ac';
-  font-family: 'SAP-icons';
+  content: '🔗';
+  /*font-family: 'SAP-icons';*/
 }
 
 .asyncapi__markdown {
@@ -131,7 +131,7 @@
   border-radius: 3px;
   padding: 0px 5px;
   text-align: center;
-  background: #e2eaf2;
+  /*background: #e2eaf2;*/
   color: #18873d;
 }
 
@@ -149,13 +149,13 @@
   font-size: 13px;
   border-radius: 5px;
   border: solid 1px #d4d4d4;
-  background-color: #f9fafa;
+  /*background-color: #f9fafa;*/
 }
 
 .asyncapi__table-header {
   width: 100%;
   color: #939698;
-  background: #f9fafa;
+  /*background: #f9fafa;*/
   text-transform: uppercase;
 }
 
@@ -277,7 +277,7 @@
   padding: 0px 5px;
   text-align: center;
   text-transform: uppercase;
-  background: #e2eaf2;
+  /*background: #e2eaf2;*/
 }
 
 .asyncapi__badge--publish {
@@ -313,7 +313,7 @@
   display: inline-block;
   mix-blend-mode: multiply;
   border-radius: 4px;
-  background-color: #e2eaf2;
+  /*background-color: #e2eaf2;*/
   font-size: 11px;
   font-family: 72;
   font-weight: 300;
@@ -331,7 +331,7 @@
 .asyncapi__code {
   border: solid 1px rgba(137, 145, 154, 0.675);
   border-radius: 5px;
-  background: #fff;
+  /*background: #fff;*/
 }
 
 .asyncapi__code-header {
@@ -349,7 +349,7 @@
   margin: 0;
   font-size: 13px;
   padding: 12px;
-  background: #fafafa;
+  /*background: #fafafa;*/
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
 }
@@ -362,7 +362,7 @@
 }
 
 .asyncapi__info {
-  background: #fff;
+  /*background: #fff;*/
   border-radius: 5px;
   padding: 16px;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.16);
@@ -443,7 +443,7 @@
 }
 .asyncapi__messages > div {
   margin-top: 24px;
-  background: #fff;
+  /*background: #fff;*/
   border-radius: 5px;
   padding: 16px;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.16);
@@ -488,7 +488,7 @@
   position: relative;
   border-radius: 4px;
   border: solid 1px rgba(151, 151, 151, 0.26);
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
 }
 .asyncapi__message:last-child {
   margin-bottom: 0;
@@ -529,7 +529,7 @@
 
 .asyncapi__message-headers-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
 }
 .asyncapi__message-headers-header > h4 {
@@ -567,7 +567,7 @@
 
 .asyncapi__message-payload-oneOf-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
 }
 .asyncapi__message-payload-oneOf-header > h4 {
@@ -591,7 +591,7 @@
   position: relative;
   border-radius: 4px;
   border: solid 1px rgba(151, 151, 151, 0.26);
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
 }
 .asyncapi__message-payload-oneOf-list-item
   .asyncapi__message-payload:last-child {
@@ -603,7 +603,7 @@
 
 .asyncapi__message-payload-anyOf-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
 }
 .asyncapi__message-payload-anyOf-header > h4 {
@@ -627,7 +627,7 @@
   position: relative;
   border-radius: 4px;
   border: solid 1px rgba(151, 151, 151, 0.26);
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
 }
 .asyncapi__message-payload-anyOf-list-item
   .asyncapi__message-payload:last-child {
@@ -640,7 +640,7 @@
 
 .asyncapi__message-payload-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
 }
 .asyncapi__message-payload-header > h4 {
@@ -682,7 +682,7 @@
 }
 .asyncapi__schemas > div {
   margin-top: 24px;
-  background: #fff;
+  /*background: #fff;*/
   border-radius: 5px;
   padding: 16px;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.16);
@@ -715,7 +715,7 @@
   position: relative;
   border-radius: 4px;
   border: solid 1px rgba(151, 151, 151, 0.26);
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
 }
 .asyncapi__schema:last-child {
   margin-bottom: 0;
@@ -752,7 +752,7 @@
 
 .asyncapi__security {
   margin-top: 24px;
-  background: #fff;
+  /*background: #fff;*/
   border-radius: 5px;
   padding: 16px;
 }
@@ -771,7 +771,7 @@
 }
 .asyncapi__servers > div {
   margin-top: 24px;
-  background: #fff;
+  /*background: #fff;*/
   border-radius: 5px;
   padding: 16px;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.16);
@@ -807,7 +807,7 @@
   position: relative;
   border-radius: 4px;
   border: solid 1px rgba(151, 151, 151, 0.26);
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
 }
 
 .asyncapi__server-header {
@@ -841,7 +841,7 @@
 
 .asyncapi__server-variables-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
 }
 .asyncapi__server-variables-header > h4 {
@@ -875,8 +875,8 @@
   cursor: pointer;
 }
 .asyncapi__server-expand-icon:before {
-  content: '';
-  font-family: 'SAP-icons';
+  content: '>';
+  /*font-family: 'SAP-icons';*/
   position: absolute;
   color: #0071d4;
   font-size: 12px;
@@ -902,7 +902,7 @@
 
 .asyncapi__server-security-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
 }
 .asyncapi__server-security-header > h4 {
@@ -942,7 +942,7 @@
 }
 
 .asyncapi__server-security-flow {
-  background: #fafafa;
+  /*background: #fafafa;*/
   border: 1px solid #dae1e7;
   padding: 12px;
   border-radius: 5px;
@@ -998,7 +998,7 @@
   padding: 0px 5px;
   text-align: center;
   text-transform: uppercase;
-  background: #e2eaf2;
+  /*background: #e2eaf2;*/
   color: #18873d;
 }
 
@@ -1006,7 +1006,7 @@
 }
 .asyncapi__channels > div {
   margin-top: 24px;
-  background: #fff;
+  /*background: #fff;*/
   border-radius: 5px;
   padding: 16px;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.16);
@@ -1042,7 +1042,7 @@
   position: relative;
   border-radius: 4px;
   border: solid 1px rgba(151, 151, 151, 0.26);
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
 }
 
 .asyncapi__channel-header {
@@ -1092,7 +1092,7 @@
 
 .asyncapi__channel-operations-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
 }
 .asyncapi__channel-operations-header > h4 {
@@ -1129,7 +1129,7 @@
   position: relative;
   border-radius: 4px;
   border: solid 1px rgba(151, 151, 151, 0.26);
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
 }
 
 .asyncapi__channel-operations-list-item {
@@ -1137,7 +1137,7 @@
 
 .asyncapi__channel-operation-oneOf-subscribe-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
   border-bottom: solid 1px rgba(151, 151, 151, 0.26);
 }
@@ -1151,7 +1151,7 @@
 
 .asyncapi__channel-operation-oneOf-publish-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
   border-bottom: solid 1px rgba(151, 151, 151, 0.26);
 }
@@ -1171,7 +1171,7 @@
 
 .asyncapi__channel-parameters-header {
   color: #32363a;
-  background-color: #fafafa;
+  /*background-color: #fafafa;*/
   border-top: solid 1px rgba(151, 151, 151, 0.26);
 }
 .asyncapi__channel-parameters-header > h4 {
@@ -1211,7 +1211,7 @@
 }
 
 .asyncapi__error {
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
   border-left: 6px solid #f44336;
   border-radius: 4px;
   color: #32363a;
