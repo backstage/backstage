@@ -158,7 +158,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       let server: http.Server;
 
       if (useHttps) {
-        logger.info('Initializing https server');
+        logger.info('Initializing https server.');
 
         const certificateAttributes: Array<any> = [];
 
