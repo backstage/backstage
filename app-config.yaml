@@ -18,14 +18,17 @@ backend:
       commonName: 'contoso.com'
 
 proxy:
-  '/circleci/api':
-    target: 'https://circleci.com/api/v1.1'
+  "/circleci/api":
+    target: "https://circleci.com/api/v1.1"
     changeOrigin: true
     pathRewrite:
-      '^/proxy/circleci/api/': '/'
+      "^/proxy/circleci/api/": "/"
 
 organization:
   name: Spotify
 
 techdocs:
   storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+
+sentry:
+  organization: spotify

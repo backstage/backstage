@@ -2,8 +2,8 @@ apiVersion: backstage.io/v1alpha1
 kind: Template
 metadata:
   name: springboot-template
-  title: Spring Boot Service
-  description: Standard Spring Boot (Java) microservice with recommended configuration.
+  title: Spring Boot GRPC Service
+  description: Standard Spring Boot (Java) microservice with recommended configuration for GRPC
   tags:
     - Recommended
     - Java
@@ -25,3 +25,8 @@ spec:
         title: Description
         type: string
         description: Description of the component
+      http_port:
+        title: Port
+        type: integer
+        default: 8080
+        description: The port to run the GRPC service on
