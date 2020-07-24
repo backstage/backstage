@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as https from 'https';
+import { Server, createServer } from 'http';
 import { Logger } from 'winston';
 import { createStandaloneApplication } from './standaloneApplication';
 
@@ -26,7 +26,7 @@ export interface ServerOptions {
 
 export async function startStandaloneServer(
   options: ServerOptions,
-): Promise<https.Server> {
+): Promise<Server> {
   const logger = options.logger.child({ service: 'identity-backend' });
 
   logger.debug('Creating application...');
@@ -37,7 +37,7 @@ export async function startStandaloneServer(
 
   logger.debug('Starting application server...');
   return await new Promise((resolve, reject) => {
-    const server = https.createServer(app);
+    const server = createServer(app);
 
     server.listen(options.port, (err?: Error) => {
       if (err) {

@@ -18,6 +18,8 @@ import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import { ConfigReader } from '@backstage/config';
+import { loadConfig } from '@backstage/config-loader';
 
 export interface ServerOptions {
   port: number;
@@ -28,13 +30,14 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'rollbar-backend' });
+  const config = ConfigReader.fromConfigs(await loadConfig());
 
   logger.debug('Creating application...');
 
   const router = await createRouter({ logger });
 
   const service = createServiceBuilder(module)
-    .enableCors({ origin: 'http://localhost:3000' })
+    .enableCors({ origin: config.getString('app.baseUrl') })
     .addRouter('/catalog', router);
 
   return await service.start().catch(err => {

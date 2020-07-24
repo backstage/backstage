@@ -52,7 +52,7 @@ export async function startStandaloneServer(
   });
 
   const service = createServiceBuilder(module)
-    .enableCors({ origin: 'http://localhost:3000', credentials: true })
+    .enableCors({ origin: config.getString('app.baseUrl'), credentials: true })
     .addRouter('/auth', router);
 
   return await service.start().catch(err => {

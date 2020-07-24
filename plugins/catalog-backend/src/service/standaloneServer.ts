@@ -23,6 +23,8 @@ import { DatabaseLocationsCatalog } from '../catalog/DatabaseLocationsCatalog';
 import { DatabaseManager } from '../database/DatabaseManager';
 import { createRouter } from './router';
 import { LocationReaders } from '../ingestion';
+import { ConfigReader } from '@backstage/config';
+import { loadConfig } from '@backstage/config-loader';
 
 export interface ServerOptions {
   port: number;
@@ -48,6 +50,7 @@ export async function startStandaloneServer(
   );
 
   logger.debug('Starting application server...');
+  const config = ConfigReader.fromConfigs(await loadConfig());
   const router = await createRouter({
     entitiesCatalog,
     locationsCatalog,
@@ -55,7 +58,7 @@ export async function startStandaloneServer(
     logger,
   });
   const service = createServiceBuilder(module)
-    .enableCors({ origin: 'http://localhost:3000' })
+    .enableCors({ origin: config.getString('app.baseUrl') })
     .addRouter('/catalog', router);
   return await service.start().catch(err => {
     logger.error(err);

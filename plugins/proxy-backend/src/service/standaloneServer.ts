@@ -40,7 +40,7 @@ export async function startStandaloneServer(
     logger,
   });
   const service = createServiceBuilder(module)
-    .enableCors({ origin: 'http://localhost:3000' })
+    .enableCors({ origin: config.getString('app.baseUrl') })
     .addRouter('/proxy', router);
 
   logger.debug('Starting application server...');
