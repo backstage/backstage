@@ -36,9 +36,5 @@
     "@types/recursive-readdir": "^2.2.0",
     "@types/ora": "^3.2.0",
     "ts-node": "^8.6.2"
-  },
-  "nodemonConfig": {
-    "watch": "./src",
-    "ext": "ts"
   }
 }

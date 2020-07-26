@@ -1,6 +1,7 @@
 # @backstage/create-app
 
 This package provides a CLI for creating apps.
+You can use the flag `--skip-install` to skip the install.
 
 ## Installation
 
