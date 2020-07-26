@@ -17,7 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import compression from 'compression';
 import cors from 'cors';
-import express, { Router, RequestHandler } from 'express';
+import express, { Router } from 'express';
 import helmet from 'helmet';
 import { Server } from 'http';
 import stoppable from 'stoppable';
@@ -40,7 +40,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private host: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
-  private routers: [string, Router | RequestHandler][];
+  private routers: [string, Router][];
   // Reference to the module where builder is created - needed for hot module
   // reloading
   private module: NodeModule;
@@ -92,7 +92,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  addRouter(root: string, router: Router | RequestHandler): ServiceBuilder {
+  addRouter(root: string, router: Router): ServiceBuilder {
     this.routers.push([root, router]);
     return this;
   }

@@ -25,12 +25,12 @@
 import {
   createServiceBuilder,
   getRootLogger,
-  statusCheckHandler,
   useHotMemoize,
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
 import knex from 'knex';
+import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import identity from './plugins/identity';
@@ -63,6 +63,7 @@ async function main() {
   const configReader = ConfigReader.fromConfigs(configs);
   const createEnv = makeCreateEnv(configs);
 
+  const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
@@ -74,7 +75,7 @@ async function main() {
 
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
-    .addRouter('/healthcheck', await statusCheckHandler())
+    .addRouter('', await healthcheck(healthcheckEnv))
     .addRouter('/catalog', await catalog(catalogEnv))
     .addRouter('/rollbar', await rollbar(rollbarEnv))
     .addRouter('/scaffolder', await scaffolder(scaffolderEnv))

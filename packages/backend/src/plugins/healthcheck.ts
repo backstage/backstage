@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-export { createServiceBuilder } from './createServiceBuilder';
-export { createStatusCheckRouter } from './createStatusCheckRouter';
-export type { ServiceBuilder } from './types';
+import { createStatusCheckRouter } from '@backstage/backend-common';
+import { PluginEnvironment } from '../types';
+
+export default async function createRouter({ logger }: PluginEnvironment) {
+  return await createStatusCheckRouter({ logger, path: '/healthcheck' });
+}
