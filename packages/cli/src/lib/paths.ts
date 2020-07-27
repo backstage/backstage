@@ -47,7 +47,7 @@ export type Paths = {
   resolveTargetRoot: ResolveFunc;
 };
 
-// Looks for a package.json that has name: "root" to identify the root of the monorepo
+// Looks for a package.json with a workspace config to identify the root of the monorepo
 export function findRootPath(topPath: string): string {
   let path = topPath;
 
@@ -58,7 +58,7 @@ export function findRootPath(topPath: string): string {
     if (exists) {
       try {
         const data = fs.readJsonSync(packagePath);
-        if (data.name === 'root' || data.name.includes('backstage-e2e')) {
+        if (data.workspaces?.packages) {
           return path;
         }
       } catch (error) {
@@ -70,9 +70,7 @@ export function findRootPath(topPath: string): string {
 
     const newPath = dirname(path);
     if (newPath === path) {
-      throw new Error(
-        `No package.json with name "root" found as a parent of ${topPath}`,
-      );
+      return topPath; // We didn't find any root package.json, assume we're not in a monorepo
     }
     path = newPath;
   }

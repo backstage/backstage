@@ -21,6 +21,7 @@ import {
   GithubPreparer,
   Preparers,
   GithubPublisher,
+  CreateReactAppTemplater,
   Templaters,
 } from '@backstage/plugin-scaffolder-backend';
 import { Octokit } from '@octokit/rest';
@@ -29,8 +30,10 @@ import Docker from 'dockerode';
 
 export default async function createPlugin({ logger }: PluginEnvironment) {
   const cookiecutterTemplater = new CookieCutter();
+  const craTemplater = new CreateReactAppTemplater();
   const templaters = new Templaters();
   templaters.register('cookiecutter', cookiecutterTemplater);
+  templaters.register('cra', craTemplater);
 
   const filePreparer = new FilePreparer();
   const githubPreparer = new GithubPreparer();

@@ -82,7 +82,9 @@ export const apis = (config: ConfigApi) => {
     circleCIApiRef,
     new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
   );
+
   builder.add(githubActionsApiRef, new GithubActionsClient());
+
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));

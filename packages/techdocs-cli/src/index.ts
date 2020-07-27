@@ -68,7 +68,7 @@ const runMkdocsServer = (options?: {
       '$(pwd):/content',
       '-p',
       '8000:8000',
-      'mkdocs:local-dev',
+      'spotify/techdocs',
       'serve',
       '-a',
       devAddr,

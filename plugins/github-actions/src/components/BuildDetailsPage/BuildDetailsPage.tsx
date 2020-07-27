@@ -16,7 +16,6 @@
 
 import {
   Button,
-  ButtonGroup,
   LinearProgress,
   makeStyles,
   Paper,
@@ -29,9 +28,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { BuildStatusIndicator } from '../BuildStatusIndicator';
 import { Link, useApi, githubAuthApiRef } from '@backstage/core';
 import { githubActionsApiRef } from '../../api';
 
@@ -49,17 +47,26 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 export const BuildDetailsPage = () => {
+  const repo = 'try-ssr';
+  const owner = 'CircleCITest3';
   const api = useApi(githubActionsApiRef);
-  const githubApi = useApi(githubAuthApiRef);
-  const token = githubApi.getAccessToken('repo');
+  const auth = useApi(githubAuthApiRef);
 
   const classes = useStyles();
-  const location = useLocation();
-  const status = useAsync(
-    () =>
-      api.getBuild(decodeURIComponent(location.search.split('uri=')[1]), token),
-    [location.search],
-  );
+  const { id } = useParams();
+  const status = useAsync(async () => {
+    const token = await auth.getAccessToken(['repo', 'user']);
+    return api
+      .getWorkflowRun({
+        token,
+        owner,
+        repo,
+        id: parseInt(id, 10),
+      })
+      .then(data => {
+        return data;
+      });
+  }, [location.search]);
 
   if (status.loading) {
     return <LinearProgress />;
@@ -90,55 +97,42 @@ export const BuildDetailsPage = () => {
               <TableCell>
                 <Typography noWrap>Branch</Typography>
               </TableCell>
-              <TableCell>{details?.build.branch}</TableCell>
+              <TableCell>{details?.head_branch}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
                 <Typography noWrap>Message</Typography>
               </TableCell>
-              <TableCell>{details?.build.message}</TableCell>
+              <TableCell>{details?.head_commit.message}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
                 <Typography noWrap>Commit ID</Typography>
               </TableCell>
-              <TableCell>{details?.build.commitId}</TableCell>
+              <TableCell>{details?.head_commit.id}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
                 <Typography noWrap>Status</Typography>
               </TableCell>
-              <TableCell>
-                <BuildStatusIndicator status={details?.build.status} />
-              </TableCell>
+              <TableCell>{details?.status}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
                 <Typography noWrap>Author</Typography>
               </TableCell>
-              <TableCell>{details?.author}</TableCell>
+              <TableCell>{`${details?.head_commit.author.name} (${details?.head_commit.author.email})`}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
                 <Typography noWrap>Links</Typography>
               </TableCell>
               <TableCell>
-                <ButtonGroup
-                  variant="text"
-                  color="primary"
-                  aria-label="text primary button group"
-                >
-                  {details?.overviewUrl && (
-                    <Button>
-                      <a href={details.overviewUrl}>GitHub</a>
-                    </Button>
-                  )}
-                  {details?.logUrl && (
-                    <Button>
-                      <a href={details.logUrl}>Logs</a>
-                    </Button>
-                  )}
-                </ButtonGroup>
+                {details?.html_url && (
+                  <Button>
+                    <a href={details.html_url}>GitHub</a>
+                  </Button>
+                )}
               </TableCell>
             </TableRow>
           </TableBody>

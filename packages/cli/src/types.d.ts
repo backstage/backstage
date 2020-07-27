@@ -27,3 +27,5 @@ declare module 'rollup-plugin-image-files' {
 declare module '@svgr/rollup' {
   export default function svgr(options?: any): any;
 }
+
+declare module '@rollup/plugin-yaml';

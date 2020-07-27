@@ -28,7 +28,7 @@ import {
   useApi,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, Typography, Link } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import useStaleWhileRevalidate from 'swr';
@@ -64,7 +64,7 @@ export const ScaffolderPage: React.FC<{}> = () => {
   }, [error, errorApi]);
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page theme={pageTheme.other}>
       <Header
         pageTitleOverride="Create a new component"
         title={
@@ -91,8 +91,23 @@ export const ScaffolderPage: React.FC<{}> = () => {
           </SupportButton>
         </ContentHeader>
         {!templates && isValidating && <Progress />}
+        {templates && !templates.length && (
+          <Typography variant="body2">
+            Shoot! Looks like you don't have any templates. Check out the
+            documentation{' '}
+            <Link href="docs/backstage/features/software-templates/adding-templates">
+              here!
+            </Link>
+          </Typography>
+        )}
+        {error && (
+          <Typography variant="body2">
+            Oops! Something went wrong loading the templates: {error.message}
+          </Typography>
+        )}
         <Grid container>
           {templates &&
+            templates?.length > 0 &&
             templates.map(template => {
               return (
                 <Grid item xs={12} sm={6} md={3}>

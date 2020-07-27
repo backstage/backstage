@@ -74,7 +74,7 @@ const generatedColumns: TableColumn[] = [
     field: 'buildName',
     highlight: true,
     render: (row: Partial<Build>) => (
-      <Link component={RouterLink} to={`/build/${row.id}`}>
+      <Link component={RouterLink} to={`/github-actions/build/${row.id}`}>
         {row.buildName}
       </Link>
     ),
@@ -161,16 +161,23 @@ const BuildListTableView: FC<Props> = ({
   );
 };
 
-const noop = () => {};
-
-export const BuildListTable = () => {
-  const [tableProps] = useBuilds();
+export const BuildListTable = ({
+  repo,
+  owner,
+}: {
+  repo: string;
+  owner: string;
+}) => {
+  const [tableProps, { retry, setPage, setPageSize }] = useBuilds({
+    repo,
+    owner,
+  });
   return (
     <BuildListTableView
       {...tableProps}
-      retry={noop}
-      onChangePageSize={noop}
-      onChangePage={noop}
+      retry={retry}
+      onChangePageSize={setPageSize}
+      onChangePage={setPage}
     />
   );
 };

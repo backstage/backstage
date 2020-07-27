@@ -9,7 +9,7 @@ This is the Docker container that powers the creation of static documentation si
 Using the TechDocs CLI, we can invoke the latest version of `techdocs-container` via Docker Hub:
 
 ```bash
-npx @techdocs/cli serve
+npx techdocs-cli serve
 ```
 
 ## Local Development
