@@ -33,19 +33,13 @@ import { SignInProvider } from './types';
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
 // Separate list here to avoid exporting internal types
-export type SignInProviderId =
-  | 'guest'
-  | 'google'
-  | 'gitlab'
-  | 'custom'
-  | 'okta'
-  | 'github';
+export type SignInProviderId = 'guest' | string;
 
 const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
   guest: guestProvider,
   google: googleProvider,
   gitlab: gitlabProvider,
-  custom: customProvider,
+  oauth2: customProvider,
   okta: oktaProvider,
   github: githubProvider,
 };

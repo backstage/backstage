@@ -1,0 +1,51 @@
+{
+  "name": "backend",
+  "version": "0.0.0",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "private": true,
+  "engines": {
+    "node": "12"
+  },
+  "scripts": {
+    "build": "backstage-cli backend:build",
+    "build-image": "backstage-cli backend:build-image example-backend",
+    "start": "backstage-cli backend:dev",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean",
+    "migrate:create": "knex migrate:make -x ts"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^{{version}}",
+    "@backstage/catalog-model": "^{{version}}",
+    "@backstage/config": "^0.1.1-alpha.13",
+    "@backstage/config-loader": "^0.1.1-alpha.13",
+    "@backstage/plugin-auth-backend": "^{{version}}",
+    "@backstage/plugin-catalog-backend": "^{{version}}",
+    "@backstage/plugin-identity-backend": "^{{version}}",
+    "@backstage/plugin-proxy-backend": "^{{version}}",
+    "@backstage/plugin-rollbar-backend": "^{{version}}",
+    "@backstage/plugin-scaffolder-backend": "^{{version}}",
+    "@backstage/plugin-sentry-backend": "^{{version}}",
+    "@backstage/plugin-techdocs-backend": "^{{version}}",
+    "@octokit/rest": "^18.0.0",
+    "dockerode": "^3.2.0",
+    "express": "^4.17.1",
+    "knex": "^0.21.1",
+    {{#if dbTypePG}}
+    "pg": "^8.3.0",
+    {{/if}}
+    {{#if dbTypeSqlite}}
+    "sqlite3": "^4.2.0",
+    {{/if}}
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.1.1-alpha.15",
+    "@types/dockerode": "^2.5.32",
+    "@types/express": "^4.17.6",
+    "@types/express-serve-static-core": "^4.17.5",
+    "@types/helmet": "^0.0.47"
+  }
+}

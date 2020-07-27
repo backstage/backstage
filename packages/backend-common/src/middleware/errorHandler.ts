@@ -28,9 +28,9 @@ export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
 
   /**
-   * Logger
+   * Logger instance to log any 5xx errors.
    *
-   * If not specified, by default shows stack traces only in development mode.
+   * If not specified, the root logger will be used.
    */
   logger?: Logger;
 };

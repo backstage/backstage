@@ -16,6 +16,7 @@
 
 const os = require('os');
 const fs = require('fs-extra');
+const fetch = require('node-fetch');
 const killTree = require('tree-kill');
 const { resolve: resolvePath, join: joinPath } = require('path');
 const Browser = require('zombie');
@@ -28,6 +29,7 @@ const {
   waitForExit,
   print,
 } = require('./helpers');
+const pgtools = require('pgtools');
 
 async function main() {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
@@ -36,14 +38,18 @@ async function main() {
   print('Building dist workspace');
   const workspaceDir = await buildDistWorkspace('workspace', rootDir);
 
+  const isPostgres = Boolean(process.env.POSTGRES_USER);
   print('Creating a Backstage App');
-  const appDir = await createApp('test-app', workspaceDir, rootDir);
+  const appDir = await createApp('test-app', isPostgres, workspaceDir, rootDir);
 
   print('Creating a Backstage Plugin');
   const pluginName = await createPlugin('test-plugin', appDir);
 
   print('Starting the app');
   await testAppServe(pluginName, appDir);
+
+  print('Testing the backend startup');
+  await testBackendStart(appDir, isPostgres);
 
   print('All tests successful, removing test dir');
   await fs.remove(rootDir);
@@ -97,7 +103,7 @@ async function pinYarnVersion(dir) {
 /**
  * Creates a new app inside rootDir called test-app, using packages from the workspaceDir
  */
-async function createApp(appName, workspaceDir, rootDir) {
+async function createApp(appName, isPostgres, workspaceDir, rootDir) {
   const child = spawnPiped(
     [
       'node',
@@ -118,6 +124,14 @@ async function createApp(appName, workspaceDir, rootDir) {
 
     await waitFor(() => stdout.includes('Enter a name for the app'));
     child.stdin.write(`${appName}\n`);
+
+    await waitFor(() => stdout.includes('Select database for the backend'));
+
+    if (!isPostgres) {
+      // Simulate down arrow press
+      child.stdin.write(`\u001B\u005B\u0042`);
+    }
+    child.stdin.write(`\n`);
 
     print('Waiting for app create script to be done');
     await waitForExit(child);
@@ -247,6 +261,88 @@ async function testAppServe(pluginName, appDir) {
     if (!successful) {
       throw error;
     }
+  }
+}
+
+/** Creates PG databases (drops if exists before) */
+async function createDB(database) {
+  const config = {
+    host: process.env.POSTGRES_HOST,
+    port: process.env.POSTGRES_PORT,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+  };
+
+  try {
+    await pgtools.dropdb({ config }, database);
+  } catch (_) {
+    /* do nothing*/
+  }
+  return pgtools.createdb(config, database);
+}
+
+/**
+ * Start serving the newly created backend and make sure that all db migrations works correctly
+ */
+async function testBackendStart(appDir, isPostgres) {
+  if (isPostgres) {
+    print('Creating DBs');
+    await Promise.all(
+      [
+        'catalog',
+        'scaffolder',
+        'auth',
+        'identity',
+        'proxy',
+        'techdocs',
+      ].map(name => createDB(`backstage_plugin_${name}`)),
+    );
+    print('Created DBs');
+  }
+
+  const child = spawnPiped(['yarn', 'workspace', 'backend', 'start'], {
+    cwd: appDir,
+  });
+
+  let stdout = '';
+  let stderr = '';
+  child.stdout.on('data', data => {
+    stdout = stdout + data.toString('utf8');
+  });
+  child.stderr.on('data', data => {
+    stderr = stderr + data.toString('utf8');
+  });
+  let successful = false;
+
+  try {
+    await waitFor(() => stdout.includes('Listening on ') || stderr !== '');
+    if (stderr !== '') {
+      // Skipping the whole block
+      throw new Error(stderr);
+    }
+
+    print('Try to fetch entities from the backend');
+    // Try fetch entities, should be ok
+    await fetch('http://localhost:7000/catalog/entities').then(res =>
+      res.json(),
+    );
+    print('Entities fetched successfully');
+    successful = true;
+  } catch (error) {
+    throw new Error(`Backend failed to startup: ${error}`);
+  } finally {
+    print('Stopping the child process');
+    // Kill entire process group, otherwise we'll end up with hanging serve processes
+    killTree(child.pid);
+  }
+
+  try {
+    await waitForExit(child);
+  } catch (error) {
+    if (!successful) {
+      throw new Error(`Backend failed to startup: ${stderr}`);
+    }
+    print('Backend startup test finished successfully');
   }
 }
 

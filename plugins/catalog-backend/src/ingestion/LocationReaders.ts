@@ -27,7 +27,9 @@ import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
 import { GithubApiReaderProcessor } from './processors/GithubApiReaderProcessor';
+import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
+import { UrlReaderProcessor } from './processors/UrlReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
 import * as result from './processors/results';
 import {
@@ -59,7 +61,9 @@ export class LocationReaders implements LocationReader {
       new FileReaderProcessor(),
       new GithubReaderProcessor(),
       new GithubApiReaderProcessor(),
+      new GitlabApiReaderProcessor(),
       new GitlabReaderProcessor(),
+      new UrlReaderProcessor(),
       new YamlProcessor(),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
