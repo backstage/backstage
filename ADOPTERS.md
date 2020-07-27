@@ -1,13 +1,13 @@
-| Organization                       | Contact                                    | Description of Use                                                                  |
-| ---------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------- |
-| [Spotify](https://www.spotify.com) | [@stefanalund](https://github.com/stefanalund)         | Main interface towards all of Spotify's infrastructure and technical documentation. |
-| [bol.com](https://www.bol.com)     | [@RoyJacobs](https://github.com/RoyJacobs) | Initial work being done to unify platform tooling.                                  |
-| [DFDS](https://www.dfds.com)       | [@carlsendk](https://github.com/carlsendk) | V2 self-service platform.                                                           |
-| [Roadie](https://roadie.io)        | [@dtuite](https://github.com/dtuite)       | Hosted, managed Backstage with easy set-up                                          |
-| [Roku](https://www.roku.com)       | [@timurista](https://github.com/timurista) | Initial work on Cloud engineering service platform.                                 |
-| [SDA SE](https://sda.se)           | [@Fox32](https://github.com/Fox32)         | Central place for developing and sharing services in our insurance ecosystem.       |
-| [H-E-B](https://www.heb.com)       | [@german-j-rodriguez](https://github.com/german-j-rodriguez) | Initial work on Engineering Portal service platform.                                 |
-| [American Airlines](https://www.aa.com) | [@paulpach](https://github.com/paulpach) | Central place for developers to develop and maintain applications |
-| [Kiwi.com](https://kiwi.com)       | [@aexvir](https://github.com/aexvir)       | Replacing the frontend of [The Zoo](https://github.com/kiwicom/the-zoo), their service registry.     |
-| [Voi](https://www.voiscooters.com/) | [@K-Phoen](https://github.com/K-Phoen)     | Developer portal, main gateway to our infrastructure, documentation and internal tooling. |
-| [Talkdesk](https://www.talkdesk.com) | [@jaime-talkdesk](https://github.com/jaime-talkdesk) | Initial work for Engineering Portal and Self Provisioning to R&D
+| Organization                            | Contact                                                      | Description of Use                                                                               |
+| --------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| [Spotify](https://www.spotify.com)      | [@stefanalund](https://github.com/stefanalund)               | Main interface towards all of Spotify's infrastructure and technical documentation.              |
+| [bol.com](https://www.bol.com)          | [@RoyJacobs](https://github.com/RoyJacobs)                   | Initial work being done to unify platform tooling.                                               |
+| [DFDS](https://www.dfds.com)            | [@carlsendk](https://github.com/carlsendk)                   | V2 self-service platform.                                                                        |
+| [Roadie](https://roadie.io)             | [@dtuite](https://github.com/dtuite)                         | Hosted, managed Backstage with easy set-up                                                       |
+| [Roku](https://www.roku.com)            | [@timurista](https://github.com/timurista)                   | Initial work on Cloud engineering service platform.                                              |
+| [SDA SE](https://sda.se)                | [@Fox32](https://github.com/Fox32)                           | Central place for developing and sharing services in our insurance ecosystem.                    |
+| [H-E-B](https://www.heb.com)            | [@german-j-rodriguez](https://github.com/german-j-rodriguez) | Initial work on Engineering Portal service platform.                                             |
+| [American Airlines](https://www.aa.com) | [@paulpach](https://github.com/paulpach)                     | Central place for developers to develop and maintain applications                                |
+| [Kiwi.com](https://kiwi.com)            | [@aexvir](https://github.com/aexvir)                         | Replacing the frontend of [The Zoo](https://github.com/kiwicom/the-zoo), their service registry. |
+| [Voi](https://www.voiscooters.com/)     | [@K-Phoen](https://github.com/K-Phoen)                       | Developer portal, main gateway to our infrastructure, documentation and internal tooling.        |
+| [Talkdesk](https://www.talkdesk.com)    | [@jaime-talkdesk](https://github.com/jaime-talkdesk)         | Initial work for Engineering Portal and Self Provisioning to R&D                                 |
