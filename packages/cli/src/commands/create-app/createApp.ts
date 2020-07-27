@@ -18,13 +18,14 @@ import fs from 'fs-extra';
 import { promisify } from 'util';
 import chalk from 'chalk';
 import { Command } from 'commander';
-import inquirer, { Answers, Question } from 'inquirer';
+import { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
 import { Task, templatingTask } from '../../lib/tasks';
 import { paths } from '../../lib/paths';
 import { version } from '../../lib/version';
+import { mapInqueryAnswersFromCommanderOptions } from '../../lib/mapping';
 
 const exec = promisify(execCb);
 
@@ -105,8 +106,8 @@ export default async (cmd: Command): Promise<void> => {
       },
     },
   ];
-  const answers: Answers = await inquirer.prompt(questions);
 
+  const answers: Answers = await mapInqueryAnswersFromCommanderOptions(questions, cmd);
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
   const appDir = resolvePath(paths.targetDir, answers.name);

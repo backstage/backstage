@@ -29,6 +29,7 @@ const main = (argv: string[]) => {
       '--skip-install',
       'Skip the install and builds steps after creating the app',
     )
+    .option('--name <name>', 'Please provide a app name.')
     .action(
       lazyAction(() => import('./commands/create-app/createApp'), 'default'),
     );
@@ -74,10 +75,12 @@ const main = (argv: string[]) => {
 
   program
     .command('create-plugin')
+    .option('--id <id>', 'Please provide a plugin ID.')
+    .option('--owner <owner>', 'Please specify the plugin owner.')
     .description('Creates a new plugin in the current repository')
     .action(
       lazyAction(
-        () => import('./commands/create-plugin/createPlugin'),
+        () => import('./commands/create-plugin/createPluginDefault'),
         'default',
       ),
     );
