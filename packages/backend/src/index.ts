@@ -50,7 +50,7 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
       'POSTGRES_USER',
       'POSTGRES_HOST',
       'POSTGRES_PASSWORD',
-    ].every(key => Object.keys(process.env).includes(key));
+    ].every(key => config.getOptional(`backend.${key}`));
 
     let knexConfig;
 
@@ -59,10 +59,10 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
         client: 'pg',
         useNullAsDefault: true,
         connection: {
-          port: process.env.POSTGRES_PORT,
-          host: process.env.POSTGRES_HOST,
-          user: process.env.POSTGRES_USER,
-          password: process.env.POSTGRES_PASSWORD,
+          port: config.getOptionalNumber('backend.POSTGRES_PORT'),
+          host: config.getString('backend.POSTGRES_HOST'),
+          user: config.getString('backend.POSTGRES_USER'),
+          password: config.getString('backend.POSTGRES_PASSWORD'),
           database: `backstage_plugin_${plugin}`,
         } as PgConnectionConfig,
       };

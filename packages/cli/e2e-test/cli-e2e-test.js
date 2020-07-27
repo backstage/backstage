@@ -318,7 +318,7 @@ async function testBackendStart(appDir, isPostgres) {
     await waitFor(() => stdout.includes('Listening on ') || stderr !== '');
     if (stderr !== '') {
       // Skipping the whole block
-      throw new Error();
+      throw new Error(stderr);
     }
 
     print('Try to fetch entities from the backend');
@@ -328,6 +328,8 @@ async function testBackendStart(appDir, isPostgres) {
     );
     print('Entities fetched successfully');
     successful = true;
+  } catch (error) {
+    throw new Error(`Backend failed to startup: ${error}`);
   } finally {
     print('Stopping the child process');
     // Kill entire process group, otherwise we'll end up with hanging serve processes
@@ -338,7 +340,7 @@ async function testBackendStart(appDir, isPostgres) {
     await waitForExit(child);
   } catch (error) {
     if (!successful) {
-      throw error;
+      throw new Error(`Backend failed to startup: ${stderr}`);
     }
     print('Backend startup test finished successfully');
   }
