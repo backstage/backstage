@@ -2,7 +2,8 @@
 
 for URL in \
   'react-ssr-template' \
-  'springboot-template' \
+  'springboot-grpc-template' \
+  'create-react-app' \
 ; do \
   curl \
     --location \

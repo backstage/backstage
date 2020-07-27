@@ -72,5 +72,5 @@ export type GithubActionsApi = {
     owner: string;
     repo: string;
     runId: number;
-  }) => void;
+  }) => Promise<any>;
 };

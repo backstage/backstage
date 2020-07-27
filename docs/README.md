@@ -6,6 +6,7 @@ better yet, a pull request.
 
 - Overview
   - [What is Backstage?](overview/what-is-backstage.md)
+  - [Backstage architecture](overview/architecture-overview.md)
   - [Architecture and terminology](overview/architecture-terminology.md)
   - [Roadmap](overview/roadmap.md)
   - Getting started

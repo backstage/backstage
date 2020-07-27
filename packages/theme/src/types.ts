@@ -58,6 +58,10 @@ type PaletteAdditions = {
     icon: string;
     background: string;
   };
+  banner: {
+    info: string;
+    error: string;
+  };
 };
 
 export type BackstagePalette = Palette & PaletteAdditions;

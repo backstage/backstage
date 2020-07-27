@@ -26,9 +26,15 @@ describe('helpers', () => {
     jest
       .spyOn(mockDocker, 'run')
       .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
-    jest
-      .spyOn(mockDocker, 'pull')
-      .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
+    jest.spyOn(mockDocker, 'pull').mockImplementation((async (
+      _image: string,
+      _something: any,
+      handler: (err: Error | undefined, stream: PassThrough) => void,
+    ) => {
+      const mockStream = new PassThrough();
+      handler(undefined, mockStream);
+      mockStream.end();
+    }) as any);
   });
 
   describe('runDockerContainer', () => {
@@ -46,7 +52,11 @@ describe('helpers', () => {
         dockerClient: mockDocker,
       });
 
-      expect(mockDocker.pull).toHaveBeenCalledWith(imageName, {});
+      expect(mockDocker.pull).toHaveBeenCalledWith(
+        imageName,
+        {},
+        expect.any(Function),
+      );
     });
     it('should call the dockerClient run command with the correct arguments passed through', async () => {
       await runDockerContainer({

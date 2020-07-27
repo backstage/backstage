@@ -15,10 +15,13 @@ proxy:
     target: 'https://circleci.com/api/v1.1'
     changeOrigin: true
     pathRewrite:
-      '^/circleci/api/': '/'
+      '^/proxy/circleci/api/': '/'
 
 organization:
   name: Spotify
 
 techdocs:
   storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+
+sentry:
+  organization: spotify

@@ -6,7 +6,6 @@
   },
   "scripts": {
     "start": "yarn workspace example-app start",
-    "bundle": "yarn workspace example-app bundle",
     "build": "lerna run build",
     "tsc": "tsc",
     "clean": "backstage-cli clean && lerna run clean",
@@ -17,7 +16,7 @@
     "lint:all": "lerna run lint --",
     "lint:type-deps": "node scripts/check-type-dependencies.js",
     "docgen": "lerna run docgen",
-    "docker-build": "yarn bundle && docker build . -t spotify/backstage",
+    "docker-build": "yarn workspace example-app build && docker build . -t spotify/backstage",
     "docker-build:all": "yarn tsc && yarn build && yarn docker-build && yarn workspace example-backend build-image",
     "create-plugin": "backstage-cli create-plugin",
     "remove-plugin": "backstage-cli remove-plugin",
