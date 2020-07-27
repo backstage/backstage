@@ -7,29 +7,34 @@ Website: [https://github.com/actions](https://github.com/actions)
 TBD
 
 ## Setup
-### Generic Requirements
-1. Provide OAuth credentials:
-    1. [Create an OAuth App](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/) with callback URL set to ```https://localhost:3000/auth/github```.
-    2. Take Client ID and Client Secret from the newly created app's settings page and put them into ```AUTH_GITHUB_CLIENT_ID``` and ```AUTH_GITHUB_CLIENT_SECRET``` env variables.
-2. Annotate your component with a correct GitHub Actions repository and owner:
-    
-    The annotation key is ```backstage.io/github-actions-id```.
 
-    Example:
-    ```
-    apiVersion: backstage.io/v1alpha1
-    kind: Component
-    metadata:
-      name: backstage
-      description: backstage.io
-      annotations:
-        backstage.io/github-actions-id: 'spotify/backstage'
-    spec:
-      type: website
-      lifecycle: production
-      owner: guest
-      ```
+### Generic Requirements
+
+1. Provide OAuth credentials:
+   1. [Create an OAuth App](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/) with callback URL set to `https://localhost:3000/auth/github`.
+   2. Take Client ID and Client Secret from the newly created app's settings page and put them into `AUTH_GITHUB_CLIENT_ID` and `AUTH_GITHUB_CLIENT_SECRET` env variables.
+2. Annotate your component with a correct GitHub Actions repository and owner:
+
+   The annotation key is `github.com/project-slug`.
+
+   Example:
+
+   ```
+   apiVersion: backstage.io/v1alpha1
+   kind: Component
+   metadata:
+     name: backstage
+     description: backstage.io
+     annotations:
+       github.com/project-slug: 'spotify/backstage'
+   spec:
+     type: website
+     lifecycle: production
+     owner: guest
+   ```
+
 ### Standalone app requirements
+
 If you didn't clone this repo you have to do some extra work.
 
 1. Add plugin API to your Backstage instance:
