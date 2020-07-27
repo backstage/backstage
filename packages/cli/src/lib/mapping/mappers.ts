@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DFDS A/S
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,36 +16,33 @@
 import inquirer, { Answers, Question } from 'inquirer';
 import { Command } from 'commander';
 
-export async function mapInqueryAnswersFromCommanderOptions(questions: Question[], cmd: Command) : Promise<Answers>{
-  if(questions.length == 0)
-    return [];
+export async function mapInqueryAnswersFromCommanderOptions(
+  questions: Question[],
+  cmd: Command,
+): Promise<Answers> {
+  if (questions.length === 0) return [];
 
   let answers: Answers = {};
   const filteredQuestions: Question[] = [];
 
   questions.forEach((question: Question) => {
-    const questionName: string | undefined = question.name?.toString();  
+    const questionName: string | undefined = question.name?.toString();
 
-    if(questionName)
-    {
-      if(!cmd.hasOwnProperty(questionName))
-      {
+    if (questionName) {
+      if (!cmd.hasOwnProperty(questionName)) {
         filteredQuestions.push(question);
-      }
-      else
-      {
+      } else {
         answers[questionName] = cmd[questionName];
       }
     }
   });
 
-  if(filteredQuestions.length > 0)
-  {
+  if (filteredQuestions.length > 0) {
     answers = {
       ...answers,
-      ...await inquirer.prompt(filteredQuestions)
+      ...(await inquirer.prompt(filteredQuestions)),
     };
-  }  
-  
+  }
+
   return answers;
 }
