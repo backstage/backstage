@@ -1,0 +1,25 @@
+type EntityMetadataAnnotation {
+  key: String!
+  value: String!
+}
+
+type EntityMetadata {
+  name: String!
+  namespace: String
+  annotation(name: String): EntityMetadataAnnotation
+  annotations: [EntityMetadataAnnotation!]!
+}
+
+type CatalogEntity {
+  apiVersion: String
+  kind: String!
+  metadata: EntityMetadata
+}
+
+type CatalogQuery {
+  list: [CatalogEntity!]!
+}
+
+type Query {
+  catalog: CatalogQuery!
+}
