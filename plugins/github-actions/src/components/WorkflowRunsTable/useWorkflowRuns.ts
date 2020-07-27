@@ -15,42 +15,55 @@
  */
 import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
-import { Build } from './BuildListTable';
+import { WorkflowRun } from './WorkflowRunsTable';
 import { githubActionsApiRef } from '../../api/GithubActionsApi';
-import { useApi, githubAuthApiRef } from '@backstage/core';
+import { useApi, githubAuthApiRef, errorApiRef } from '@backstage/core';
 import { ActionsListWorkflowRunsForRepoResponseData } from '@octokit/types';
+import { useProjectName } from '../useProjectName';
 
-export function useBuilds({ repo, owner }: { repo: string; owner: string }) {
+export function useWorkflowRuns() {
   const api = useApi(githubActionsApiRef);
   const auth = useApi(githubAuthApiRef);
+
+  const errorApi = useApi(errorApiRef);
 
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
 
-  const restartBuild = async () => {};
-
-  const { loading, value: builds, retry } = useAsyncRetry<Build[]>(async () => {
-    const token = await auth.getAccessToken(['repo', 'user']);
-
+  const projectName = useProjectName({
+    kind: 'Component',
+    name: 'backstage',
+  });
+  const { loading, value: runs, retry } = useAsyncRetry<
+    WorkflowRun[]
+  >(async () => {
+    const token = await auth.getAccessToken(['repo']);
+    const [owner, repo] = (projectName ?? '/').split('/');
     return (
       api
         // GitHub API pagination count starts from 1
         .listWorkflowRuns({ token, owner, repo, pageSize, page: page + 1 })
         .then(
-          (allBuilds: ActionsListWorkflowRunsForRepoResponseData): Build[] => {
-            setTotal(allBuilds.total_count);
+          (
+            workflowRunsData: ActionsListWorkflowRunsForRepoResponseData,
+          ): WorkflowRun[] => {
+            setTotal(workflowRunsData.total_count);
             // Transformation here
-            return allBuilds.workflow_runs.map(run => ({
-              buildName: run.head_commit.message,
+            return workflowRunsData.workflow_runs.map(run => ({
+              message: run.head_commit.message,
               id: `${run.id}`,
-              onRestartClick: () => {
-                api.reRunWorkflow({
-                  token,
-                  owner,
-                  repo,
-                  runId: run.id,
-                });
+              onReRunClick: async () => {
+                try {
+                  await api.reRunWorkflow({
+                    token,
+                    owner,
+                    repo,
+                    runId: run.id,
+                  });
+                } catch (e) {
+                  errorApi.post(e);
+                }
               },
               source: {
                 branchName: run.head_branch,
@@ -63,28 +76,26 @@ export function useBuilds({ repo, owner }: { repo: string; owner: string }) {
                 },
               },
               status: run.status,
-              buildUrl: run.url,
+              url: run.url,
             }));
           },
         )
     );
-  }, [page, pageSize]);
+  }, [page, pageSize, projectName]);
 
-  const projectName = `${owner}/${repo}`;
   return [
     {
       page,
       pageSize,
       loading,
-      builds,
-      projectName,
+      runs,
+      projectName: projectName ?? '',
       total,
     },
     {
-      builds,
+      runs,
       setPage,
       setPageSize,
-      restartBuild,
       retry,
     },
   ] as const;

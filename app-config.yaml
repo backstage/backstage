@@ -11,11 +11,11 @@ backend:
     credentials: true
 
 proxy:
-  "/circleci/api":
-    target: "https://circleci.com/api/v1.1"
+  '/circleci/api':
+    target: 'https://circleci.com/api/v1.1'
     changeOrigin: true
     pathRewrite:
-      "^/proxy/circleci/api/": "/"
+      '^/proxy/circleci/api/': '/'
 
 organization:
   name: Spotify

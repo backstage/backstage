@@ -15,8 +15,8 @@
  */
 
 import { createPlugin, createRouteRef } from '@backstage/core';
-import { BuildDetailsPage } from './components/BuildDetailsPage';
-import { BuildListPage } from './components/BuildListPage';
+import { WorkflowRunDetailsPage } from './components/WorkflowRunDetailsPage';
+import { WorkflowRunsPage } from './components/WorkflowRunsPage';
 
 // TODO(freben): This is just a demo route for now
 export const rootRouteRef = createRouteRef({
@@ -24,14 +24,14 @@ export const rootRouteRef = createRouteRef({
   title: 'GitHub Actions',
 });
 export const buildRouteRef = createRouteRef({
-  path: '/github-actions/build/:id',
-  title: 'GitHub Actions Build',
+  path: '/github-actions/workflow-run/:id',
+  title: 'GitHub Actions Workflow Run',
 });
 
 export const plugin = createPlugin({
   id: 'github-actions',
   register({ router }) {
-    router.addRoute(rootRouteRef, BuildListPage);
-    router.addRoute(buildRouteRef, BuildDetailsPage);
+    router.addRoute(rootRouteRef, WorkflowRunsPage);
+    router.addRoute(buildRouteRef, WorkflowRunDetailsPage);
   },
 });

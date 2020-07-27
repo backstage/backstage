@@ -14,4 +14,23 @@
  * limitations under the License.
  */
 
-export { BuildInfoCard } from './BuildInfoCard';
+import { StatusPending, StatusRunning, StatusOK } from '@backstage/core';
+import React from 'react';
+
+export const WorkflowRunStatusIcon = ({
+  status,
+}: {
+  status: string | undefined;
+}) => {
+  if (status === undefined) return null;
+  switch (status.toLowerCase()) {
+    case 'queued':
+      return <StatusPending />;
+    case 'in_progress':
+      return <StatusRunning />;
+    case 'completed':
+      return <StatusOK />;
+    default:
+      return <StatusPending />;
+  }
+};

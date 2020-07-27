@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { BuildStatusIndicator } from './BuildStatusIndicator';
+export { WorkflowRunsTable } from './WorkflowRunsTable';
+export type { WorkflowRun } from './WorkflowRunsTable';
