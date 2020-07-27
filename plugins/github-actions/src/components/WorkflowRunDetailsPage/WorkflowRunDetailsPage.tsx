@@ -54,6 +54,7 @@ import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { WorkflowRunStatusIcon } from '../WorkflowRunStatusIcon/WorkflowRunStatusIcon';
 import { useProjectName } from '../useProjectName';
+import GitHubIcon from '@material-ui/icons/GitHub';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -241,9 +242,15 @@ export const WorkflowRunDetailsPage = () => {
                       </TableCell>
                       <TableCell>
                         {details.value?.html_url && (
-                          <Button>
-                            <a href={details.value.html_url}>GitHub</a>
-                          </Button>
+                          <a href={details.value.html_url}>
+                            <Button
+                              variant="contained"
+                              color="default"
+                              startIcon={<GitHubIcon />}
+                            >
+                              Workflow runs on GitHub
+                            </Button>
+                          </a>
                         )}
                       </TableCell>
                     </TableRow>
