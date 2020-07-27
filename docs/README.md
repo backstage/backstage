@@ -87,6 +87,7 @@ better yet, a pull request.
     - [ADR004 - Module Export Structure](architecture-decisions/adr004-module-export-structure.md)
     - [ADR005 - Catalog Core Entities](architecture-decisions/adr005-catalog-core-entities.md)
     - [ADR006 - Avoid React.FC and React.SFC](architecture-decisions/adr006-avoid-react-fc.md)
+    - [ADR007 - Use MSW for Mocking Network Requests](architecture-decisions/adr007-use-msw-to-mock-service-requests.md)
   - [Contribute](../CONTRIBUTING.md)
   - [Support](overview/support.md)
   - [FAQ](FAQ.md)
