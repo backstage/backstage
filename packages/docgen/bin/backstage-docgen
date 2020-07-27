@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * Copyright 2020 Spotify AB
  *
@@ -13,13 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApiRef } from '../ApiRef';
-import { Config } from '@backstage/config';
 
-// Using interface to make the ConfigApi name show up in docs
-export type ConfigApi = Config;
+const path = require('path');
 
-export const configApiRef = createApiRef<ConfigApi>({
-  id: 'core.config',
-  description: 'Used to access runtime configuration',
-});
+// Figure out whether we're running inside the backstage repo or as an installed dependency
+const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
+
+if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
+  require('..');
+} else {
+  require('ts-node').register({
+    transpileOnly: true,
+    compilerOptions: {
+      module: 'CommonJS',
+    },
+  });
+
+  require('../src');
+}

@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApiRef } from '../ApiRef';
-import { Config } from '@backstage/config';
 
-// Using interface to make the ConfigApi name show up in docs
-export type ConfigApi = Config;
-
-export const configApiRef = createApiRef<ConfigApi>({
-  id: 'core.config',
-  description: 'Used to access runtime configuration',
-});
+/**
+ * The sortSelector is a utility that makes a sort function by selecting the value to sort on with a lambda.
+ */
+export default function sortSelector<T>(
+  selector: (x: T) => any,
+): (a: T, b: T) => -1 | 1 | 0 {
+  return (a: T, b: T) => {
+    const aV = selector(a);
+    const bV = selector(b);
+    if (aV < bV) {
+      return -1;
+    } else if (aV > bV) {
+      return 1;
+    }
+    return 0;
+  };
+}
