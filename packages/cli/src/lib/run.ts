@@ -92,7 +92,7 @@ export async function runCheck(cmd: string, ...args: string[]) {
 }
 
 export async function waitForExit(
-  child: ChildProcess & { exitCode?: number },
+  child: ChildProcess & { exitCode: number | null },
   name?: string,
 ): Promise<void> {
   if (typeof child.exitCode === 'number') {

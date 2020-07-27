@@ -33,7 +33,7 @@ export class EnvironmentHandler implements AuthProviderRouteHandlers {
   ): AuthProviderRouteHandlers | undefined {
     const env = req.query.env?.toString();
 
-    if (this.providers.hasOwnProperty(env)) {
+    if (env && this.providers.hasOwnProperty(env)) {
       return this.providers[env];
     }
 
