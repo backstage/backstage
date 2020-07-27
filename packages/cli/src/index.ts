@@ -78,7 +78,12 @@ const main = (argv: string[]) => {
     .option('--id <id>', 'Please provide a plugin ID.')
     .option('--owner <owner>', 'Please specify the plugin owner.')
     .description('Creates a new plugin in the current repository')
-    .action(lazyAction(() => import('./commands/create-plugin/createPlugin'), 'default'));
+    .action(
+      lazyAction(
+        () => import('./commands/create-plugin/createPluginDefault'),
+        'default',
+      ),
+    );
 
   program
     .command('remove-plugin')
