@@ -16,7 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import cors from 'cors';
-import { Router } from 'express';
+import { Router, RequestHandler } from 'express';
 import { Server } from 'http';
 import { Logger } from 'winston';
 
@@ -64,7 +64,7 @@ export type ServiceBuilder = {
    * @param root The root URL to bind to (e.g. "/api/function1")
    * @param router An express router
    */
-  addRouter(root: string, router: Router): ServiceBuilder;
+  addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
 
   /**
    * Starts the server using the given settings.

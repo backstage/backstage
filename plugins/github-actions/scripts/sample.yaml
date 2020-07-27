@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  description: backstage.io
+  annotations:
+    backstage.io/github-actions-id: 'spotify/backstage'
+spec:
+  type: website
+  lifecycle: production
+  owner: guest

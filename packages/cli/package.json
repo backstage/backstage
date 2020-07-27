@@ -37,6 +37,7 @@
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^8.1.0",
+    "@rollup/plugin-yaml": "^2.1.1",
     "@spotify/eslint-config": "^7.0.1",
     "@sucrase/webpack-loader": "^2.0.0",
     "@svgr/plugin-jsx": "4.3.x",
