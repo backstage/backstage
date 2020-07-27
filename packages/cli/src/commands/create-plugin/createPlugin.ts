@@ -17,7 +17,8 @@
 import fs from 'fs-extra';
 import { promisify } from 'util';
 import chalk from 'chalk';
-import inquirer, { Answers, Question } from 'inquirer';
+import { Answers, Question } from 'inquirer';
+import { Command } from 'commander';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
@@ -26,6 +27,7 @@ import {
   addCodeownersEntry,
   getCodeownersFilePath,
 } from '../../lib/codeowners';
+import { mapInqueryAnswersFromCommanderOptions } from '../../lib/mapping';
 import { paths } from '../../lib/paths';
 import { version } from '../../lib/version';
 import { Task, templatingTask } from '../../lib/tasks';
@@ -170,10 +172,10 @@ export async function movePlugin(
   });
 }
 
-export default async () => {
+export default async (cmd: Command): Promise<void> => {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
-
-  const questions: Question[] = [
+  
+  let questions: Question[] = [
     {
       type: 'input',
       name: 'id',
@@ -214,8 +216,8 @@ export default async () => {
       },
     });
   }
-
-  const answers: Answers = await inquirer.prompt(questions);
+  
+  const answers: Answers = await mapInqueryAnswersFromCommanderOptions(questions, cmd);
 
   const appPackage = paths.resolveTargetRoot('packages/app');
   const templateDir = paths.resolveOwn('templates/default-plugin');
