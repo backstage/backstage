@@ -15,6 +15,9 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { Preparers, LocalPublish, Generators } from '../techdocs';
+import { ConfigReader } from '@backstage/config';
+import Docker from 'dockerode';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
@@ -24,7 +27,12 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter({
+      preparers: new Preparers(),
+      generators: new Generators(),
+      publisher: new LocalPublish(),
       logger: getVoidLogger(),
+      dockerClient: new Docker(),
+      config: ConfigReader.fromConfigs([]),
     });
     app = express().use(router);
   });

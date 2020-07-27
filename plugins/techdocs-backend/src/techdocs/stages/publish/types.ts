@@ -22,9 +22,8 @@ import { Entity } from '@backstage/catalog-model';
 export type PublisherBase = {
   /**
    *
-   * @param opts object containing the template entity from the service
-   *             catalog, plus the values from the form and the directory that has
-   *             been templated
+   * @param opts object containing the entity from the service
+   *             catalog, and the directory that has been generated
    */
   publish(opts: {
     entity: Entity;

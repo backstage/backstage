@@ -20,12 +20,9 @@ export type PreparerBase = {
   /**
    * Given an Entity definition from the Service Catalog, go and prepare a directory
    * with contents from the location in temporary storage and return the path
-   * @param template The template entity from the Service Catalog
+   * @param entity The entity from the Service Catalog
    */
-  prepare(
-    entity: Entity,
-    opts?: { logger: Logger },
-  ): Promise<string>;
+  prepare(entity: Entity, opts?: { logger: Logger }): Promise<string>;
 };
 
 export type PreparerBuilder = {

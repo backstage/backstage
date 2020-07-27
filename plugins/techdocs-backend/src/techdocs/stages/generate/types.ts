@@ -19,16 +19,16 @@ import { Entity } from '@backstage/catalog-model';
 
 /**
  * The returned directory from the templater which is ready
- * to pass to the next stage of the scaffolder which is publishing
+ * to pass to the next stage of the TechDocs which is publishing
  */
 export type GeneratorRunResult = {
   resultDir: string;
 };
 
 /**
- * The values that the templater will recieve. The directory of the
- * skeleton, with the values from the frontend. A dedicated log stream and a docker
- * client to run any templater on top of your directory.
+ * The values that the generator will recieve. The directory of the
+ * uncompiled documentation, with the values from the frontend. A dedicated log stream and a docker
+ * client to run any generator on top of your directory.
  */
 export type GeneratorRunOptions = {
   directory: string;
@@ -37,19 +37,19 @@ export type GeneratorRunOptions = {
 };
 
 export type GeneratorBase = {
-  // runs the templating with the values and returns the directory to push the VCS
+  // runs the generator with the values and returns the directory to be published
   run(opts: GeneratorRunOptions): Promise<GeneratorRunResult>;
 };
 
 /**
- * List of supported templating options
+ * List of supported generator options
  */
 export type SupportedGeneratorKey = 'techdocs' | string;
 
 /**
- * The templater builder holds the templaters ready for run time
+ * The generator builder holds the generator ready for run time
  */
 export type GeneratorBuilder = {
-  register(protocol: SupportedGeneratorKey, templater: GeneratorBase): void;
+  register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
   get(entity: Entity): GeneratorBase;
 };

@@ -21,7 +21,12 @@ import fetch from 'node-fetch';
 import { Config } from '@backstage/config';
 import path from 'path';
 import Docker from 'dockerode';
-import { GeneratorBuilder, PreparerBuilder, PublisherBase, LocalPublish } from '../techdocs';
+import {
+  GeneratorBuilder,
+  PreparerBuilder,
+  PublisherBase,
+  LocalPublish,
+} from '../techdocs';
 import { Entity } from '@backstage/catalog-model';
 
 type RouterOptions = {
@@ -34,28 +39,38 @@ type RouterOptions = {
   dockerClient: Docker;
 };
 
-
-export async function createRouter({preparers, generators, publisher, logger, config, dockerClient}: RouterOptions): Promise<express.Router> {
+export async function createRouter({
+  preparers,
+  generators,
+  publisher,
+  config,
+  dockerClient,
+}: RouterOptions): Promise<express.Router> {
   const router = Router();
-  
+
   router.get('/', async (_, res) => {
-    res.status(200).json("hej");
+    res.status(200).send('Hello TechDocs Backend');
   });
 
+  // TODO: This route should not exist in the future
   router.get('/buildall', async (_, res) => {
-    const baseUrl = config.getString('backend.baseUrl')
-    const entitiesResponse = await (await fetch(`${baseUrl}/catalog/entities`)).json() as Entity[];
+    const baseUrl = config.getString('backend.baseUrl');
+    const entitiesResponse = (await (
+      await fetch(`${baseUrl}/catalog/entities`)
+    ).json()) as Entity[];
 
-    const entitiesWithDocs = entitiesResponse.filter(entity => entity.metadata.annotations?.['backstage.io/techdocs-ref']);
+    const entitiesWithDocs = entitiesResponse.filter(
+      entity => entity.metadata.annotations?.['backstage.io/techdocs-ref'],
+    );
 
-    entitiesWithDocs.forEach(async (entity) => {
+    entitiesWithDocs.forEach(async entity => {
       const preparer = preparers.get(entity);
       const generator = generators.get(entity);
 
       const { resultDir } = await generator.run({
         directory: await preparer.prepare(entity),
         dockerClient,
-      })
+      });
 
       publisher.publish({
         entity,
@@ -63,11 +78,14 @@ export async function createRouter({preparers, generators, publisher, logger, co
       });
     });
 
-    res.send('Hejhej')
+    res.send('Successfully generated documentation');
   });
 
-  if ( publisher instanceof LocalPublish ) {
-    router.use('/static/docs/', express.static(path.resolve(__dirname, `../../static/docs`)));
+  if (publisher instanceof LocalPublish) {
+    router.use(
+      '/static/docs/',
+      express.static(path.resolve(__dirname, `../../static/docs`)),
+    );
   }
 
   return router;
