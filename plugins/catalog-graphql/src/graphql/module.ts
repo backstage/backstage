@@ -18,7 +18,7 @@ import { Logger } from 'winston';
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
-import { GraphQLModule } from '@graphql-modules/core';
+import { GraphQLModule } from '@backstage/gql-toolkit';
 
 export interface ModuleOptions {
   logger: Logger;
@@ -40,8 +40,7 @@ export interface ModuleOptions {
 //       logger.info(String(msg), ...extra),
 //   };
 // }
-
-class CatalogClient {
+export class CatalogClient {
   async list() {
     const res = await fetch('http://localhost:7000/catalog/entities');
     if (!res.ok) {
@@ -51,6 +50,8 @@ class CatalogClient {
     return res.json();
   }
 }
+
+export const CatalogClientRef = 'my-catalog-client-plz';
 
 export async function createModule(
   options: ModuleOptions,
@@ -75,6 +76,7 @@ export async function createModule(
   const module = new GraphQLModule({
     typeDefs,
     resolvers,
+
     logger: options.logger as any,
   });
 

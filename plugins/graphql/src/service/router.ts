@@ -20,7 +20,7 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import fs from 'fs';
 import path from 'path';
-import { GraphQLModule } from '@graphql-modules/core';
+import { GraphQLModule } from '@backstage/gql-toolkit';
 import { ApolloServer } from 'apollo-server-express';
 import { createModule as createCatalogModule } from '@backstage/plugin-catalog-graphql';
 import { createModule as createBogusModule } from '@backstage/plugin-bogus-graphql';
@@ -41,7 +41,7 @@ export async function createRouter(
   const bogusModule = await createBogusModule(options);
   const { schema } = new GraphQLModule({
     imports: [catalogModule, bogusModule],
-    typeDefs,
+    typeDefs: undefined,
   });
 
   const server = new ApolloServer({ schema, logger: options.logger });

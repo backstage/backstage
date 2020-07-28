@@ -17,7 +17,7 @@
 import { Logger } from 'winston';
 import fs from 'fs';
 import path from 'path';
-import { GraphQLModule } from '@graphql-modules/core';
+import { GraphQLModule } from '@backstage/gql-toolkit';
 
 export interface ModuleOptions {
   logger: Logger;
