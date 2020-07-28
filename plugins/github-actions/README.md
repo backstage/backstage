@@ -15,7 +15,7 @@ TBD
    2. Take Client ID and Client Secret from the newly created app's settings page and put them into `AUTH_GITHUB_CLIENT_ID` and `AUTH_GITHUB_CLIENT_SECRET` env variables.
 2. Annotate your component with a correct GitHub Actions repository and owner:
 
-   The annotation key is `backstage.io/github-actions-id`.
+   The annotation key is `github.com/project-slug`.
 
    Example:
 
@@ -26,7 +26,8 @@ TBD
      name: backstage
      description: backstage.io
      annotations:
-       backstage.io/github-actions-id: 'spotify/backstage'
+       github.com/project-slug: 'spotify/backstage'
+
    spec:
      type: website
      lifecycle: production
