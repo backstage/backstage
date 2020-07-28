@@ -24,12 +24,12 @@ export type BaseOptions = {
 };
 
 export type HttpsSettings = {
-  certificate?: CertificateSigningOptions | CertificateFileOptions;
+  certificate: CertificateSigningOptions | CertificateReferenceOptions;
 };
 
-export type CertificateFileOptions = {
-  key?: string;
-  cert?: string;
+export type CertificateReferenceOptions = {
+  key: string;
+  cert: string;
 };
 
 export type CertificateSigningOptions = {

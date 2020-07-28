@@ -20,7 +20,6 @@ import express, { Router } from 'express';
 import helmet from 'helmet';
 import * as http from 'http';
 import * as https from 'https';
-import * as path from 'path';
 import * as fs from 'fs';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
@@ -39,15 +38,12 @@ import {
   HttpsSettings,
 } from './config';
 
-const DEFAULT_PROTOCOL = 'https://';
 const DEFAULT_PORT = 7000;
 const DEFAULT_HOST = 'localhost';
-const DEFAULT_BASEURL = `${DEFAULT_PROTOCOL}${DEFAULT_HOST}:${DEFAULT_PORT}`;
 
 export class ServiceBuilderImpl implements ServiceBuilder {
   private port: number | undefined;
   private host: string | undefined;
-  private baseUrl: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
   private httpsSettings: HttpsSettings | undefined;
@@ -74,9 +70,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     if (baseOptions.listenHost) {
       this.host = baseOptions.listenHost;
     }
-    if (baseOptions.baseUrl) {
-      this.baseUrl = baseOptions.baseUrl;
-    }
 
     const corsOptions = readCorsOptions(backendConfig);
     if (corsOptions) {
@@ -87,11 +80,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     if (httpsSettings) {
       this.httpsSettings = httpsSettings;
     }
-    return this;
-  }
-
-  setBaseUrl(baseUrl: string): ServiceBuilder {
-    this.baseUrl = baseUrl;
     return this;
   }
 
@@ -159,24 +147,23 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       if (httpsSettings) {
         logger.info('Initializing https server');
 
-        let credentials: { key: string; cert: string };
+        const credentials: { key: string; cert: string } = {
+          key: '',
+          cert: '',
+        };
         const signingOptions: any = httpsSettings?.certificate;
 
         if (signingOptions?.algorithm !== undefined) {
+          logger.info('Generating self-signed certificate with attributes');
+
           const certificateAttributes: Array<any> = [];
 
-          Object.getOwnPropertyNames(signingOptions?.attributes).forEach(
-            propertyName => {
-              const propertyValue = (signingOptions?.attributes as any)[
-                propertyName
-              ];
-
-              certificateAttributes.push({
-                name: propertyName,
-                value: propertyValue,
-              });
-            },
-          );
+          Object.entries(signingOptions?.attributes).map(([name, value]) => {
+            certificateAttributes.push({
+              name: name,
+              value: value,
+            });
+          });
 
           // TODO: Create a type def for selfsigned.
           const signatures = require('selfsigned').generate(
@@ -188,19 +175,37 @@ export class ServiceBuilderImpl implements ServiceBuilder {
             },
           );
 
-          credentials = { key: signatures.private, cert: signatures.cert };
+          logger.info(
+            'Bootstrapping key and cert from self-signed certificate',
+          );
+
+          credentials.key = signatures.private;
+          credentials.cert = signatures.cert;
         } else {
-          credentials = { key: '', cert: '' };
+          if (fs.existsSync(signingOptions?.key)) {
+            if (fs.lstatSync(signingOptions?.key).isFile()) {
+              logger.info('Bootstrapping key from file');
 
-          const keyPath = path.resolve(__dirname, signingOptions?.key);
-          const certPath = path.resolve(__dirname, signingOptions?.cert);
+              credentials.key = fs.readFileSync(signingOptions?.key).toString();
+            }
+          } else {
+            logger.info('Bootstrapping key from config');
 
-          if (fs.lstatSync(keyPath).isFile()) {
-            credentials.key = fs.readFileSync(keyPath).toString();
+            credentials.key = signingOptions?.key;
           }
 
-          if (fs.lstatSync(certPath).isFile()) {
-            credentials.cert = fs.readFileSync(certPath).toString();
+          if (fs.existsSync(signingOptions?.cert)) {
+            if (fs.lstatSync(signingOptions?.cert).isFile()) {
+              logger.info('Bootstrapping cert from file');
+
+              credentials.cert = fs
+                .readFileSync(signingOptions?.cert)
+                .toString();
+            }
+          } else {
+            logger.info('Bootstrapping cert from config');
+
+            credentials.cert = signingOptions?.cert;
           }
         }
 
@@ -232,7 +237,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private getOptions(): {
     port: number;
     host: string;
-    baseUrl: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
     httpsSettings?: HttpsSettings;
@@ -240,7 +244,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return {
       port: this.port ?? DEFAULT_PORT,
       host: this.host ?? DEFAULT_HOST,
-      baseUrl: this.baseUrl ?? DEFAULT_BASEURL,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
       httpsSettings: this.httpsSettings,
