@@ -36,8 +36,6 @@ export async function createRouter(
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
 
-  const appUrl = new URL(options.config.getString('app.baseUrl'));
-  const appOrigin = appUrl.origin;
   const backendUrl = options.config.getString('backend.baseUrl');
   const authUrl = `${backendUrl}/auth`;
 
@@ -57,71 +55,13 @@ export async function createRouter(
   router.use(bodyParser.urlencoded({ extended: false }));
   router.use(bodyParser.json());
 
-  const config = {
-    backend: {
-      baseUrl: backendUrl,
-    },
-    auth: {
-      providers: {
-        google: {
-          development: {
-            appOrigin,
-            secure: false,
-            clientId: process.env.AUTH_GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET!,
-          },
-        },
-        github: {
-          development: {
-            appOrigin,
-            secure: false,
-            clientId: process.env.AUTH_GITHUB_CLIENT_ID!,
-            clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET!,
-          },
-        },
-        gitlab: {
-          development: {
-            appOrigin,
-            secure: false,
-            clientId: process.env.AUTH_GITLAB_CLIENT_ID!,
-            clientSecret: process.env.AUTH_GITLAB_CLIENT_SECRET!,
-            audience: process.env.GITLAB_BASE_URL! || 'https://gitlab.com',
-          },
-        },
-        saml: {
-          development: {
-            entryPoint: 'http://localhost:7001/',
-            issuer: 'passport-saml',
-          },
-        },
-        okta: {
-          development: {
-            appOrigin,
-            secure: false,
-            clientId: process.env.AUTH_OKTA_CLIENT_ID!,
-            clientSecret: process.env.AUTH_OKTA_CLIENT_SECRET!,
-            audience: process.env.AUTH_OKTA_AUDIENCE,
-          },
-        },
-        oauth2: {
-          development: {
-            appOrigin,
-            secure: false,
-            clientId: process.env.AUTH_OAUTH2_CLIENT_ID!,
-            clientSecret: process.env.AUTH_OAUTH2_CLIENT_SECRET!,
-            authorizationURL: process.env.AUTH_OAUTH2_AUTH_URL!,
-            tokenURL: process.env.AUTH_OAUTH2_TOKEN_URL!,
-          },
-        },
-      },
-    },
-  };
+  const providersConfig = options.config.getConfig('auth.providers');
+  const providers = providersConfig.keys();
 
-  const providerConfigs = config.auth.providers;
-
-  for (const [providerId, providerConfig] of Object.entries(providerConfigs)) {
+  for (const providerId of providers) {
     logger.info(`Configuring provider, ${providerId}`);
     try {
+      const providerConfig = providersConfig.getConfig(providerId);
       const providerRouter = createAuthProviderRouter(
         providerId,
         { baseUrl: authUrl },

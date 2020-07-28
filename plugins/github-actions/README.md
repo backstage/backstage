@@ -27,6 +27,7 @@ TBD
      description: backstage.io
      annotations:
        github.com/project-slug: 'spotify/backstage'
+
    spec:
      type: website
      lifecycle: production
