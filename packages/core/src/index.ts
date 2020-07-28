@@ -19,3 +19,27 @@ export * from '@backstage/core-api';
 export * from './api-wrappers';
 export * from './components';
 export * from './layout';
+export class ExtensionPoint<T> {
+  get T(): T {
+    throw new Error('Dont use T');
+  }
+  constructor(public type: string) {}
+}
+
+const extensions = new Map<ExtensionPoint<unknown>, Set<unknown>>();
+
+export function registerExtension<T extends ExtensionPoint<any>>(
+  extensionPoint: T,
+  extension: T extends ExtensionPoint<infer X> ? X : never,
+): void {
+  if (!extensions.has(extensionPoint)) {
+    extensions.set(extensionPoint, new Set<T>());
+  }
+  extensions.get(extensionPoint)?.add(extension);
+}
+
+export function useExtension<T extends ExtensionPoint<any>>(
+  extensionPoint: T,
+): Array<T extends ExtensionPoint<infer X> ? X : never> {
+  return Array.from(extensions.get(extensionPoint)?.values() ?? []) as any;
+}

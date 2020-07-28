@@ -24,6 +24,9 @@ type Props = {
 
 export const EntityMetadataCard: FC<Props> = ({ entity }) => (
   <InfoCard title="Information">
-    <StructuredMetadataTable metadata={entity.metadata} />
+    <StructuredMetadataTable
+      metadata={entity.metadata}
+      options={{ titleFormat: title => title }}
+    />
   </InfoCard>
 );

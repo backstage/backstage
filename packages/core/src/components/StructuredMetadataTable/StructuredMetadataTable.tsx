@@ -87,7 +87,7 @@ function toValue(
   }
 
   if (typeof value === 'object' && !Array.isArray(value)) {
-    return renderMap(value, options, nested);
+    return renderMap(value, nested, options);
   }
 
   if (Array.isArray(value)) {

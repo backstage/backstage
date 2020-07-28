@@ -17,8 +17,9 @@
 // TODO(blam): Remove this implementation when the Tabs are ready
 // This is just a temporary solution to implementing tabs for now
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, Tabs, Tab } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   tabsWrapper: {
@@ -45,9 +46,11 @@ export type Tab = {
 
 export const HeaderTabs: React.FC<{
   tabs: Tab[];
+  activeTab?: number;
   onChange?: (index: number) => void;
-}> = ({ tabs, onChange }) => {
-  const [selectedTab, setSelectedTab] = useState<number>(0);
+}> = ({ tabs, onChange, activeTab }) => {
+  const [selectedTab, setSelectedTab] = useState<number>(activeTab ?? 0);
+  useEffect(() => setSelectedTab(activeTab ?? selectedTab), [activeTab]);
   const styles = useStyles();
 
   const handleChange = (_: React.ChangeEvent<{}>, index: number) => {
@@ -66,15 +69,27 @@ export const HeaderTabs: React.FC<{
         onChange={handleChange}
         value={selectedTab}
       >
-        {tabs.map((tab, index) => (
-          <Tab
-            label={tab.label}
-            key={tab.id}
-            value={index}
-            className={styles.defaultTab}
-            classes={{ selected: styles.selected }}
-          />
-        ))}
+        {tabs.map((tab, index) =>
+          tab.route ? (
+            <Link to={tab.route.path}>
+              <Tab
+                label={tab.label}
+                key={tab.id}
+                value={index}
+                className={styles.defaultTab}
+                classes={{ selected: styles.selected }}
+              />
+            </Link>
+          ) : (
+            <Tab
+              label={tab.label}
+              key={tab.id}
+              value={index}
+              className={styles.defaultTab}
+              classes={{ selected: styles.selected }}
+            />
+          ),
+        )}
       </Tabs>
     </div>
   );

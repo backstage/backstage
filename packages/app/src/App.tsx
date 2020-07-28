@@ -27,6 +27,7 @@ import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
+import './extensions';
 
 const app = createApp({
   apis,

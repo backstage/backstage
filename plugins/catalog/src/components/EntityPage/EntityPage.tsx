@@ -26,18 +26,31 @@ import {
   PageTheme,
   Progress,
   useApi,
+  useExtension,
 } from '@backstage/core';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Grid, Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import {
+  useNavigate,
+  useParams,
+  useMatch,
+  Route,
+  Routes,
+  Navigate,
+} from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
+import {
+  tabsExtensionPoint,
+  subrouteExtensionPoint,
+  overviewCardExtensionPoint,
+} from '../../extensions';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -75,9 +88,14 @@ const EntityPageTitle: FC<{ title: string; entity: Entity | undefined }> = ({
 );
 
 export const EntityPage: FC<{}> = () => {
-  const { optionalNamespaceAndName, kind } = useParams() as {
+  const {
+    optionalNamespaceAndName,
+    kind,
+    '*': currentTabRoute,
+  } = useParams() as {
     optionalNamespaceAndName: string;
     kind: string;
+    '*': string;
   };
   const navigate = useNavigate();
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
@@ -112,33 +130,22 @@ export const EntityPage: FC<{}> = () => {
 
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
 
-  // TODO - Replace with proper tabs implementation
-  const tabs = [
-    {
-      id: 'overview',
-      label: 'Overview',
-    },
-    {
-      id: 'ci',
-      label: 'CI/CD',
-    },
-    {
-      id: 'tests',
-      label: 'Tests',
-    },
-    {
-      id: 'api',
-      label: 'API',
-    },
-    {
-      id: 'monitoring',
-      label: 'Monitoring',
-    },
-    {
-      id: 'quality',
-      label: 'Quality',
-    },
-  ];
+  const tabs = useExtension(tabsExtensionPoint)
+    .map(tabFactory => tabFactory(entity))
+    .filter(Boolean);
+
+  const activeTab = Math.max(
+    tabs.findIndex(tab => tab?.isActive?.(location.pathname)),
+    tabs.findIndex(tab => tab?.route.path === currentTabRoute),
+    0,
+  );
+  const routes = useExtension(subrouteExtensionPoint)
+    .map(routeFactory => routeFactory(entity))
+    .filter(Boolean);
+
+  const overviewCards = useExtension(overviewCardExtensionPoint)
+    .map(cardFactory => cardFactory(entity))
+    .filter(Boolean);
 
   const { headerTitle, headerType } = headerProps(
     kind,
@@ -179,20 +186,38 @@ export const EntityPage: FC<{}> = () => {
 
       {entity && (
         <>
-          <HeaderTabs tabs={tabs} />
+          <HeaderTabs
+            activeTab={activeTab}
+            tabs={tabs}
+            onChange={tabIndex => navigate(tabs[tabIndex]?.route.path!)}
+          />
 
           <Content>
-            <Grid container spacing={3}>
-              <Grid item sm={4}>
-                <EntityMetadataCard entity={entity} />
-              </Grid>
-              <Grid item sm={8}>
-                <SentryIssuesWidget
-                  sentryProjectId="sample-sentry-project-id"
-                  statsFor="24h"
-                />
-              </Grid>
-            </Grid>
+            <Routes>
+              <Route
+                path="/overview"
+                element={
+                  <Grid container spacing={3}>
+                    <Grid item sm={4}>
+                      <EntityMetadataCard entity={entity} />
+                    </Grid>
+                    <Grid item sm={8}>
+                      <SentryIssuesWidget
+                        sentryProjectId="sample-sentry-project-id"
+                        statsFor="24h"
+                      />
+                    </Grid>
+                    {overviewCards.map(({ component: Component }) => (
+                      <Component />
+                    ))}
+                  </Grid>
+                }
+              />
+              {routes.map(({ route, component: Component }) => (
+                <Route path={route.path} element={<Component />} />
+              ))}
+              <Route path="*" element={<Navigate to="overview" />} />
+            </Routes>
           </Content>
 
           <UnregisterEntityDialog

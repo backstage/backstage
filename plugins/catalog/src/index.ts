@@ -18,3 +18,5 @@ export { plugin } from './plugin';
 export * from './api/CatalogClient';
 export * from './api/types';
 export * from './routes';
+import * as extensions from './extensions';
+export { extensions };

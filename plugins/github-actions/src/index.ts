@@ -16,3 +16,5 @@
 
 export { plugin } from './plugin';
 export * from './api';
+export { TestComponent } from './components/Test';
+export { WorkflowRunsPage } from './components/WorkflowRunsPage';
