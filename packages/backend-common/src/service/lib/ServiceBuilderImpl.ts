@@ -204,8 +204,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
           }
         }
 
-        console.log(credentials, signingOptions);
-
         if (credentials.key === '' || credentials.cert === '') {
           throw new Error('Invalid credentials');
         }
