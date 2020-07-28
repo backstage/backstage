@@ -1,0 +1,11 @@
+type CatalogEntity {
+  id: String
+}
+
+type CatalogQuery {
+  list: [CatalogEntity!]!
+}
+
+type Query {
+  catalog: CatalogQuery!
+}

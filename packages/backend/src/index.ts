@@ -29,7 +29,8 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
-import knex from 'knex';
+import knex, { PgConnectionConfig } from 'knex';
+import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import identity from './plugins/identity';
@@ -38,6 +39,7 @@ import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
 import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
+import graphql from './plugins/graphql';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(loadedConfigs: AppConfig[]) {
@@ -45,11 +47,36 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 
   return (plugin: string): PluginEnvironment => {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
-    const database = knex({
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
+    // Supported DBs are sqlite and postgres
+    const isPg = [
+      'POSTGRES_USER',
+      'POSTGRES_HOST',
+      'POSTGRES_PASSWORD',
+    ].every(key => config.getOptional(`backend.${key}`));
+
+    let knexConfig;
+
+    if (isPg) {
+      knexConfig = {
+        client: 'pg',
+        useNullAsDefault: true,
+        connection: {
+          port: config.getOptionalNumber('backend.POSTGRES_PORT'),
+          host: config.getString('backend.POSTGRES_HOST'),
+          user: config.getString('backend.POSTGRES_USER'),
+          password: config.getString('backend.POSTGRES_PASSWORD'),
+          database: `backstage_plugin_${plugin}`,
+        } as PgConnectionConfig,
+      };
+    } else {
+      knexConfig = {
+        client: 'sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      };
+    }
+
+    const database = knex(knexConfig);
     database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });
@@ -58,10 +85,11 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 }
 
 async function main() {
-  const configs = await loadConfig();
+  const configs = await loadConfig({ shouldReadSecrets: true });
   const configReader = ConfigReader.fromConfigs(configs);
   const createEnv = makeCreateEnv(configs);
 
+  const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
@@ -70,9 +98,11 @@ async function main() {
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
   const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
+  const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
 
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
+    .addRouter('', await healthcheck(healthcheckEnv))
     .addRouter('/catalog', await catalog(catalogEnv))
     .addRouter('/rollbar', await rollbar(rollbarEnv))
     .addRouter('/scaffolder', await scaffolder(scaffolderEnv))
@@ -80,7 +110,8 @@ async function main() {
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
     .addRouter('/techdocs', await techdocs(techdocsEnv))
-    .addRouter('/proxy', await proxy(proxyEnv));
+    .addRouter('/proxy', await proxy(proxyEnv))
+    .addRouter('/graphql', await graphql(graphqlEnv));
 
   await service.start().catch(err => {
     console.log(err);

@@ -27,20 +27,15 @@ import {
   OAuthProviderHandlers,
   RedirectInfo,
   AuthProviderConfig,
-  EnvironmentProviderConfig,
   OAuthProviderOptions,
-  OAuthProviderConfig,
   OAuthResponse,
   PassportDoneCallback,
 } from '../types';
 import { OAuthProvider } from '../../lib/OAuthProvider';
 import passport from 'passport';
-import {
-  EnvironmentHandler,
-  EnvironmentHandlers,
-} from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
+import { Config } from '@backstage/config';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -150,43 +145,42 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
 
 export function createGoogleProvider(
   { baseUrl }: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
+  env: string,
+  envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
-  const envProviders: EnvironmentHandlers = {};
+  const providerId = 'google';
+  const secure = envConfig.getBoolean('secure');
+  const appOrigin = envConfig.getString('appOrigin');
+  const clientID = envConfig.getString('clientId');
+  const clientSecret = envConfig.getString('clientSecret');
+  const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
 
-  for (const [env, envConfig] of Object.entries(providerConfig)) {
-    const config = (envConfig as unknown) as OAuthProviderConfig;
-    const { secure, appOrigin } = config;
-    const callbackURLParam = `?env=${env}`;
-    const opts = {
-      clientID: config.clientId,
-      clientSecret: config.clientSecret,
-      callbackURL: `${baseUrl}/google/handler/frame${callbackURLParam}`,
-    };
+  const opts = {
+    clientID,
+    clientSecret,
+    callbackURL,
+  };
 
-    if (!opts.clientID || !opts.clientSecret) {
-      if (process.env.NODE_ENV !== 'development') {
-        throw new Error(
-          'Failed to initialize Google auth provider, set AUTH_GOOGLE_CLIENT_ID and AUTH_GOOGLE_CLIENT_SECRET env vars',
-        );
-      }
-
-      logger.warn(
-        'Google auth provider disabled, set AUTH_GOOGLE_CLIENT_ID and AUTH_GOOGLE_CLIENT_SECRET env vars to enable',
+  if (!opts.clientID || !opts.clientSecret) {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error(
+        'Failed to initialize Google auth provider, set AUTH_GOOGLE_CLIENT_ID and AUTH_GOOGLE_CLIENT_SECRET env vars',
       );
-      continue;
     }
 
-    envProviders[env] = new OAuthProvider(new GoogleAuthProvider(opts), {
-      disableRefresh: false,
-      providerId: 'google',
-      secure,
-      baseUrl,
-      appOrigin,
-      tokenIssuer,
-    });
+    logger.warn(
+      'Google auth provider disabled, set AUTH_GOOGLE_CLIENT_ID and AUTH_GOOGLE_CLIENT_SECRET env vars to enable',
+    );
+    return undefined;
   }
-  return new EnvironmentHandler(envProviders);
+  return new OAuthProvider(new GoogleAuthProvider(opts), {
+    disableRefresh: false,
+    providerId,
+    secure,
+    baseUrl,
+    appOrigin,
+    tokenIssuer,
+  });
 }

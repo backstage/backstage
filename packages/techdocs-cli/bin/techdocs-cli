@@ -21,7 +21,7 @@ const path = require('path');
 const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
 
 if (!isLocal) {
-  require('..');
+  require('../dist');
 } else {
   require('ts-node').register({
     transpileOnly: true,

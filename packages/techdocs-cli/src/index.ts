@@ -16,7 +16,6 @@
 import { spawn, ChildProcess } from 'child_process';
 import program from 'commander';
 import { version } from './lib/version';
-// import chalk from 'chalk';
 import path from 'path';
 import HTTPServer from './lib/httpServer';
 import openBrowser from 'react-dev-utils/openBrowser';
@@ -69,7 +68,7 @@ const runMkdocsServer = (options?: {
       '$(pwd):/content',
       '-p',
       '8000:8000',
-      'mkdocs:local-dev',
+      'spotify/techdocs',
       'serve',
       '-a',
       devAddr,

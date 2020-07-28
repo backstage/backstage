@@ -104,8 +104,17 @@ export default async (cmd: Command): Promise<void> => {
         return true;
       },
     },
+    {
+      type: 'list',
+      name: 'dbType',
+      message: chalk.blue('Select database for the backend [required]'),
+      // @ts-ignore
+      choices: ['PostgreSQL', 'SQLite'],
+    },
   ];
   const answers: Answers = await inquirer.prompt(questions);
+  answers.dbTypePG = answers.dbType === 'PostgreSQL';
+  answers.dbTypeSqlite = answers.dbType === 'SQLite';
 
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);

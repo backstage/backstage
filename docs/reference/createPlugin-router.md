@@ -35,4 +35,4 @@ const myPluginRouteRef = createRouteRef({
 });
 ```
 
-[Back to References](README.md)
+[Back to References](../README.md)

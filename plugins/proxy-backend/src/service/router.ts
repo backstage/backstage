@@ -31,7 +31,7 @@ export async function createRouter(
   const router = Router();
   const proxyConfig = options.config.get('proxy') ?? {};
   Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
-    router.use(createProxyMiddleware(route, proxyRouteConfig));
+    router.use(route, createProxyMiddleware(proxyRouteConfig));
   });
 
   return router;

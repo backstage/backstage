@@ -19,6 +19,8 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
+  useApi,
+  configApiRef,
 } from '@backstage/core';
 import React, { FC } from 'react';
 import Root from './components/Root';
@@ -30,12 +32,13 @@ const app = createApp({
   apis,
   plugins: Object.values(plugins),
   components: {
-    SignInPage: props => (
-      <SignInPage
-        {...props}
-        providers={['guest', 'google', 'custom', 'okta', 'gitlab']}
-      />
-    ),
+    SignInPage: props => {
+      const configApi = useApi(configApiRef);
+      const providersConfig = configApi.getOptionalConfig('auth.providers');
+      const providers = providersConfig?.keys() ?? [];
+
+      return <SignInPage {...props} providers={['guest', ...providers]} />;
+    },
   },
 });
 

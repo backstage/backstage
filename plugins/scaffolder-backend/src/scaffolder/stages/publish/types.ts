@@ -21,7 +21,7 @@ import { JsonValue } from '@backstage/config';
  * Publisher is in charge of taking a folder created by
  * the templater, and pushing it to a remote storage
  */
-export type Publisher = {
+export type PublisherBase = {
   /**
    *
    * @param opts object containing the template entity from the service

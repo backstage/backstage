@@ -8,11 +8,12 @@ metadata:
     - Recommended
     - React
 spec:
+  owner: web@example.com
   templater: cookiecutter
   type: website
   path: '.'
   schema:
-    required: 
+    required:
       - component_id
       - description
     properties:
@@ -21,7 +22,6 @@ spec:
         type: string
         description: Unique name of the component
       description:
-        title:  Description
+        title: Description
         type: string
         description: Description of the component
-

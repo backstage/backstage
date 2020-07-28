@@ -26,6 +26,7 @@ export type RunDockerContainerOptions = {
   resultDir: string;
   templateDir: string;
   dockerClient: Docker;
+  createOptions?: Docker.ContainerCreateOptions;
 };
 
 /**
@@ -59,8 +60,17 @@ export const runDockerContainer = async ({
   resultDir,
   templateDir,
   dockerClient,
+  createOptions = {},
 }: RunDockerContainerOptions) => {
-  await dockerClient.pull(imageName, {});
+  await new Promise((resolve, reject) => {
+    dockerClient.pull(imageName, {}, (err, stream) => {
+      if (err) return reject(err);
+      stream.pipe(logStream, { end: false });
+      stream.on('end', () => resolve());
+      stream.on('error', (error: Error) => reject(error));
+      return undefined;
+    });
+  });
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
     args,
@@ -75,6 +85,7 @@ export const runDockerContainer = async ({
           `${await fs.promises.realpath(templateDir)}:/template`,
         ],
       },
+      ...createOptions,
     },
   );
 

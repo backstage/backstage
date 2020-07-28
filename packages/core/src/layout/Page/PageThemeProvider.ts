@@ -16,6 +16,8 @@
 
 export type Gradient = {
   colors: string[];
+  waveColor: string;
+  opacity: string[];
 };
 
 export type PageTheme = {
@@ -23,59 +25,45 @@ export type PageTheme = {
 };
 
 export const gradients: Record<string, Gradient> = {
-  blue: {
-    colors: ['#2D46B9', '#509BF5'],
+  darkGrey: {
+    colors: ['#171717', '#383838'],
+    waveColor: '#757575',
+    opacity: ['1.0', '0.0'],
   },
-  darkBlue: {
-    colors: ['#1E3264', '#A0C3D2'],
+  marineBlue: {
+    colors: ['#00759A', '#004EAC'],
+    waveColor: '#BDDBFF',
+    opacity: ['0.72', '0.0'],
   },
-  brown: {
-    colors: ['#674638', '#C39887'],
+  veryBlue: {
+    colors: ['#0B2B9C', '#311288'],
+    waveColor: '#8960FD',
+    opacity: ['0.72', '0.0'],
   },
-  green: {
-    colors: ['#1DB954', '#006350'],
+  rubyRed: {
+    colors: ['#A4284B', '#8D1134'],
+    waveColor: '#FFBFF5',
+    opacity: ['0.28', '0.10'],
   },
-  orangeYellow: {
-    colors: ['#FF6437', '#FFC864'],
+  toastyOrange: {
+    colors: ['#CC3707', '#9A2500'],
+    waveColor: '#FF784E',
+    opacity: ['0.72', '0.0'],
   },
-  redOrange: {
-    colors: ['#A72525', '#E6542D'],
-  },
-  pinkOrange: {
-    colors: ['#F13DA2', '#FF8A48'],
-  },
-  purpleBlue: {
-    colors: ['#2D00AA', '#C769B5'],
-  },
-  tealGreen: {
-    colors: ['#19E68C', '#1D7F6E'],
-  },
-  violetPeach: {
-    colors: ['#B39AC8', '#FCCBD3'],
-  },
-  violetGreen: {
-    colors: ['#4302F4', '#C3EFC8'],
-  },
-  purple: {
-    colors: ['#a186bd', '#7c5c92'],
+  purpleSky: {
+    colors: ['#AF29F8', '#4100F4'],
+    waveColor: '#AF29F8',
+    opacity: ['0.72', '0.0'],
   },
   eveningSea: {
     colors: ['#00FFF2', '#035355'],
-  },
-  royalBlue: {
-    colors: ['#000044', '#4B80D4'],
-  },
-  grey: {
-    colors: ['#111111', '#777777'],
-  },
-  sunset: {
-    colors: ['#cf8022', '#4e6ec7'],
-  },
-  sky: {
-    colors: ['#69B9FF', '#ACCEEC'],
+    waveColor: '',
+    opacity: ['0.72', '0.0'],
   },
   teal: {
-    colors: ['#005E4D', '#9BF0E1'],
+    colors: ['#005E4D', '#004E40'],
+    waveColor: '#9BF0E1',
+    opacity: ['0.72', '0.0'],
   },
 };
 
@@ -87,21 +75,21 @@ export const pageTheme: Record<string, PageTheme> = {
     gradient: gradients.eveningSea,
   },
   tool: {
-    gradient: gradients.purpleBlue,
+    gradient: gradients.purpleSky,
   },
   service: {
-    gradient: gradients.green,
+    gradient: gradients.marineBlue,
   },
   website: {
-    gradient: gradients.purple,
+    gradient: gradients.veryBlue,
   },
   library: {
-    gradient: gradients.sunset,
+    gradient: gradients.rubyRed,
   },
   other: {
-    gradient: gradients.brown,
+    gradient: gradients.darkGrey,
   },
   app: {
-    gradient: gradients.redOrange,
+    gradient: gradients.toastyOrange,
   },
 };

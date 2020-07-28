@@ -86,7 +86,7 @@ export const App = () => (
 );
 
 export const Other = () => (
-  <Page theme={pageTheme.library}>
+  <Page theme={pageTheme.other}>
     <Header title="Other/generic component page" type="other">
       {labels}
     </Header>
