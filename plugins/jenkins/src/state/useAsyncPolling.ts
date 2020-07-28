@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useRef } from 'react';
 
-import { createPlugin, createRouteRef } from '@backstage/core';
-import {DetailedViewPage} from "./pages/BuildWithStepsPage";
+export const useAsyncPolling = (
+  pollingFn: () => Promise<any>,
+  interval: number,
+) => {
+  const isPolling = useRef<boolean>(false);
+  const startPolling = async () => {
+    if (isPolling.current === true) return;
+    isPolling.current = true;
 
-export const buildRouteRef = createRouteRef({
-  path: '/jenkins/job',
-  title: 'Jenkins run',
-});
+    while (isPolling.current === true) {
+      await pollingFn();
+      await new Promise(resolve => setTimeout(resolve, interval));
+    }
+  };
 
-
-export const plugin = createPlugin({
-  id: 'jenkins',
-  register({ router }) {
-    router.addRoute(buildRouteRef, DetailedViewPage);
-  },
-});
-
-export { JenkinsBuildsWidget } from './components/JenkinsPluginWidget/JenkinsBuildsWidget';
-export { JenkinsLastBuildWidget } from './components/JenkinsPluginWidget/JenkinsLastBuildWidget';
+  const stopPolling = () => {
+    isPolling.current = false;
+  };
+  return { startPolling, stopPolling };
+};

@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
-import {DetailedViewPage} from "./pages/BuildWithStepsPage";
+import React from 'react';
+import {Builds} from '../../pages/BuildsPage/lib/Builds';
+import {Entity} from "@backstage/catalog-model";
 
-export const buildRouteRef = createRouteRef({
-  path: '/jenkins/job',
-  title: 'Jenkins run',
-});
-
-
-export const plugin = createPlugin({
-  id: 'jenkins',
-  register({ router }) {
-    router.addRoute(buildRouteRef, DetailedViewPage);
-  },
-});
-
-export { JenkinsBuildsWidget } from './components/JenkinsPluginWidget/JenkinsBuildsWidget';
-export { JenkinsLastBuildWidget } from './components/JenkinsPluginWidget/JenkinsLastBuildWidget';
+export const JenkinsBuildsWidget = ({entity}: {
+  entity: Entity;
+}) => {
+  const [owner, repo] = (
+    entity?.metadata.annotations?.['backstage.io/jenkins-github-folder'] ?? '/'
+  ).split('/');
+  
+  return <Builds owner={owner} repo={repo} />;
+}
