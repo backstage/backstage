@@ -20,7 +20,6 @@ import { CorsOptions } from 'cors';
 export type BaseOptions = {
   listenPort?: number;
   listenHost?: string;
-  baseUrl?: string;
 };
 
 export type HttpsSettings = {
@@ -57,14 +56,13 @@ export type CertificateAttributes = {
  * }
  * ```
  */
-export function readBaseOptions(configReader: ConfigReader): BaseOptions {
+export function readBaseOptions(config: ConfigReader): BaseOptions {
   // TODO(freben): Expand this to support more addresses and perhaps optional
-  const { host, port } = parseListenAddress(configReader.getString('listen'));
-  const baseUrl = configReader.getString('baseUrl');
+  const { host, port } = parseListenAddress(config.getString('listen'));
+
   return removeUnknown({
     listenPort: port,
     listenHost: host,
-    baseUrl: baseUrl,
   });
 }
 
@@ -84,10 +82,8 @@ export function readBaseOptions(configReader: ConfigReader): BaseOptions {
  * }
  * ```
  */
-export function readCorsOptions(
-  configReader: ConfigReader,
-): CorsOptions | undefined {
-  const cc = configReader.getOptionalConfig('cors');
+export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
+  const cc = config.getOptionalConfig('cors');
   if (!cc) {
     return undefined;
   }
@@ -120,9 +116,9 @@ export function readCorsOptions(
  * ```
  */
 export function readHttpsSettings(
-  configReader: ConfigReader,
+  config: ConfigReader,
 ): HttpsSettings | undefined {
-  const cc = configReader.getOptionalConfig('https');
+  const cc = config.getOptionalConfig('https');
 
   if (!cc) {
     return undefined;
@@ -138,10 +134,10 @@ export function readHttpsSettings(
 }
 
 function getOptionalStringOrStrings(
-  configReader: ConfigReader,
+  config: ConfigReader,
   key: string,
 ): string | string[] | undefined {
-  const value = configReader.getOptional(key);
+  const value = config.getOptional(key);
   if (
     value === undefined ||
     typeof value === 'string' ||
