@@ -23,18 +23,23 @@ export type BaseOptions = {
   baseUrl?: string;
 };
 
-export type CertificateOptions = {
-  key?: CertificateKeyOptions;
-  attributes?: CertificateAttributeOptions;
+export type HttpsSettings = {
+  certificate?: CertificateSigningOptions | CertificateFileOptions;
 };
 
-export type CertificateKeyOptions = {
+export type CertificateFileOptions = {
+  key?: string;
+  cert?: string;
+};
+
+export type CertificateSigningOptions = {
   size?: number;
   algorithm?: string;
   days?: number;
+  attributes?: CertificateAttributes;
 };
 
-export type CertificateAttributeOptions = {
+export type CertificateAttributes = {
   commonName?: string;
 };
 
@@ -52,10 +57,10 @@ export type CertificateAttributeOptions = {
  * }
  * ```
  */
-export function readBaseOptions(config: ConfigReader): BaseOptions {
+export function readBaseOptions(configReader: ConfigReader): BaseOptions {
   // TODO(freben): Expand this to support more addresses and perhaps optional
-  const { host, port } = parseListenAddress(config.getString('listen'));
-  const baseUrl = config.getString('baseUrl');
+  const { host, port } = parseListenAddress(configReader.getString('listen'));
+  const baseUrl = configReader.getString('baseUrl');
   return removeUnknown({
     listenPort: port,
     listenHost: host,
@@ -79,8 +84,10 @@ export function readBaseOptions(config: ConfigReader): BaseOptions {
  * }
  * ```
  */
-export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
-  const cc = config.getOptionalConfig('cors');
+export function readCorsOptions(
+  configReader: ConfigReader,
+): CorsOptions | undefined {
+  const cc = configReader.getOptionalConfig('cors');
   if (!cc) {
     return undefined;
   }
@@ -98,42 +105,43 @@ export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
 }
 
 /**
- * Attempts to read a certificate options object from the root of a config object.
+ * Attempts to read a https settings object from the root of a config object.
  *
  * @param config The root of a backend config object
- * @returns A certificate options object, or undefined if not specified
+ * @returns A https settings object, or undefined if not specified
  *
  * @example
  * ```json
  * {
- *   certificate: {
- *    key: ...,
- *    attributes: ...
+ *   https: {
+ *    certificate: ...
  *   }
  * }
  * ```
  */
-export function readCertificateOptions(
-  config: ConfigReader,
-): CertificateOptions | undefined {
-  const cc = config.getOptionalConfig('certificate');
+export function readHttpsSettings(
+  configReader: ConfigReader,
+): HttpsSettings | undefined {
+  const cc = configReader.getOptionalConfig('https');
+
   if (!cc) {
     return undefined;
   }
 
-  return removeUnknown({
-    key: cc.getOptionalConfig('key') as CertificateKeyOptions,
-    attributes: cc.getOptionalConfig(
-      'attributes',
-    ) as CertificateAttributeOptions,
-  });
+  const certificateConfig = cc.get('certificate');
+
+  const cfg = {
+    certificate: certificateConfig,
+  };
+
+  return removeUnknown(cfg as HttpsSettings);
 }
 
 function getOptionalStringOrStrings(
-  config: ConfigReader,
+  configReader: ConfigReader,
   key: string,
 ): string | string[] | undefined {
-  const value = config.getOptional(key);
+  const value = configReader.getOptional(key);
   if (
     value === undefined ||
     typeof value === 'string' ||
