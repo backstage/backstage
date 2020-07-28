@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Publisher } from './types';
+import { PublisherBase } from './types';
 import { Octokit } from '@octokit/rest';
 
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
 
-export class GithubPublisher implements Publisher {
+export class GithubPublisher implements PublisherBase {
   private client: Octokit;
   constructor({ client }: { client: Octokit }) {
     this.client = client;

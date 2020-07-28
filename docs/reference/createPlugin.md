@@ -39,5 +39,3 @@ export default createPlugin({
   },
 });
 ```
-
-[Back to References](README.md)

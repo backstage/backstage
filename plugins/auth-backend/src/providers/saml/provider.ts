@@ -27,18 +27,13 @@ import {
 import {
   AuthProviderConfig,
   AuthProviderRouteHandlers,
-  EnvironmentProviderConfig,
-  SAMLProviderConfig,
   PassportDoneCallback,
   ProfileInfo,
 } from '../types';
 import { postMessageResponse } from '../../lib/OAuthProvider';
-import {
-  EnvironmentHandlers,
-  EnvironmentHandler,
-} from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
+import { Config } from '@backstage/config';
 
 type SamlInfo = {
   userId: string;
@@ -122,30 +117,25 @@ type SAMLProviderOptions = {
 
 export function createSamlProvider(
   _authProviderConfig: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
+  _env: string,
+  envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
-  const envProviders: EnvironmentHandlers = {};
+  const entryPoint = envConfig.getString('entryPoint');
+  const issuer = envConfig.getString('issuer');
+  const opts = {
+    entryPoint,
+    issuer,
+    path: '/auth/saml/handler/frame',
+    tokenIssuer,
+  };
 
-  for (const [env, envConfig] of Object.entries(providerConfig)) {
-    const config = (envConfig as unknown) as SAMLProviderConfig;
-    const opts = {
-      entryPoint: config.entryPoint,
-      issuer: config.issuer,
-      path: '/auth/saml/handler/frame',
-      tokenIssuer,
-    };
-
-    if (!opts.entryPoint || !opts.issuer) {
-      logger.warn(
-        'SAML auth provider disabled, set entryPoint and entryPoint in saml auth config to enable',
-      );
-      continue;
-    }
-
-    envProviders[env] = new SamlAuthProvider(opts);
+  if (!opts.entryPoint || !opts.issuer) {
+    logger.warn(
+      'SAML auth provider disabled, set entryPoint and entryPoint in saml auth config to enable',
+    );
+    return undefined;
   }
-
-  return new EnvironmentHandler(envProviders);
+  return new SamlAuthProvider(opts);
 }

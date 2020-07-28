@@ -16,49 +16,56 @@
 
 import express from 'express';
 import { AuthProviderRouteHandlers } from '../providers/types';
-import { NotFoundError } from '@backstage/backend-common';
 
 export type EnvironmentHandlers = {
   [key: string]: AuthProviderRouteHandlers;
 };
 
 export class EnvironmentHandler implements AuthProviderRouteHandlers {
-  constructor(private readonly providers: EnvironmentHandlers) {}
+  constructor(
+    private readonly providerId: string,
+    private readonly providers: EnvironmentHandlers,
+  ) {}
 
-  private getProviderForEnv(req: express.Request): AuthProviderRouteHandlers {
+  private getProviderForEnv(
+    req: express.Request,
+    res: express.Response,
+  ): AuthProviderRouteHandlers | undefined {
     const env = req.query.env?.toString();
-    if (!this.providers.hasOwnProperty(env)) {
-      throw new NotFoundError(
-        `No environment for ${env} found in this provider`,
-      );
+
+    if (env && this.providers.hasOwnProperty(env)) {
+      return this.providers[env];
     }
-    return this.providers[env];
+
+    res.status(404).send(
+      `Missing configuration.
+<br>
+<br>
+For this flow to work you need to supply a valid configuration for the "${env}" environment of the "${this.providerId}" provider.`,
+    );
+    return undefined;
   }
 
   async start(req: express.Request, res: express.Response): Promise<void> {
-    const provider = this.getProviderForEnv(req);
-    await provider.start(req, res);
+    const provider = this.getProviderForEnv(req, res);
+    await provider?.start(req, res);
   }
 
   async frameHandler(
     req: express.Request,
     res: express.Response,
   ): Promise<void> {
-    const provider = this.getProviderForEnv(req);
-    await provider.frameHandler(req, res);
+    const provider = this.getProviderForEnv(req, res);
+    await provider?.frameHandler(req, res);
   }
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
-    const provider = this.getProviderForEnv(req);
-    if (provider.refresh) {
-      await provider.refresh(req, res);
-    }
+    const provider = this.getProviderForEnv(req, res);
+    await provider?.refresh?.(req, res);
   }
 
   async logout(req: express.Request, res: express.Response): Promise<void> {
-    const provider = this.getProviderForEnv(req);
-    if (provider.logout) {
-      await provider.logout(req, res);
-    }
+    const provider = this.getProviderForEnv(req, res);
+    await provider?.logout?.(req, res);
   }
 }

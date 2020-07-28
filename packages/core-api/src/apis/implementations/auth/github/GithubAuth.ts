@@ -90,7 +90,7 @@ class GithubAuth implements OAuthApi, SessionStateApi {
 
     const sessionManager = new StaticAuthSessionManager({
       connector,
-      defaultScopes: new Set(['user']),
+      defaultScopes: new Set(['read:user']),
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 

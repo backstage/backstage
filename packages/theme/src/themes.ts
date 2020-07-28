@@ -41,6 +41,10 @@ export const lightTheme = createTheme({
     primary: {
       main: blue[500],
     },
+    banner: {
+      info: '#2E77D0',
+      error: '#E22134',
+    },
     border: '#E6E6E6',
     textContrast: '#000000',
     textVerySubtle: '#DDD',
@@ -89,6 +93,10 @@ export const darkTheme = createTheme({
     },
     primary: {
       main: blue[500],
+    },
+    banner: {
+      info: '#2E77D0',
+      error: '#E22134',
     },
     border: '#E6E6E6',
     textContrast: '#FFFFFF',

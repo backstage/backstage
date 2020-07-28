@@ -1,6 +1,8 @@
-## Date: 2020-04-26
+# ADR001: Architecture Decision Record (ADR) log
 
-## Title: Architecture Decision Record (ADR) log
+| Created    | Status |
+| ---------- | ------ |
+| 2020-04-26 | Open   |
 
 ## Decision: A decision was made to store ADRs in a log in the project repository
 

@@ -28,36 +28,30 @@ import {
   OAuthProviderHandlers,
   RedirectInfo,
   AuthProviderConfig,
-  EnvironmentProviderConfig,
   OAuthProviderOptions,
-  OAuthProviderConfig,
   OAuthResponse,
   PassportDoneCallback,
 } from '../types';
-import {
-  EnvironmentHandler,
-  EnvironmentHandlers,
-} from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
 import { StateStore } from 'passport-oauth2';
 import { TokenIssuer } from '../../identity';
+import { Config } from '@backstage/config';
 
 type PrivateInfo = {
   refreshToken: string;
 };
 
 export class OktaAuthProvider implements OAuthProviderHandlers {
-
   private readonly _strategy: any;
 
-  /** 
+  /**
    * Due to passport-okta-oauth forcing options.state = true,
    * passport-oauth2 requires express-session to be installed
    * so that the 'state' parameter of the oauth2 flow can be stored.
    * This implementation of StateStore matches the NullStore found within
    * passport-oauth2, which is the StateStore implementation used when options.state = false,
    * allowing us to avoid using express-session in order to integrate with Okta.
-  */
+   */
   private _store: StateStore = {
     store(_req: express.Request, cb: any) {
       cb(null, null);
@@ -65,25 +59,27 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
     verify(_req: express.Request, _state: string, cb: any) {
       cb(null, true);
     },
-  }
+  };
 
   constructor(options: OAuthProviderOptions) {
-    this._strategy =  new OktaStrategy({
-      passReqToCallback: false as true,
-      ...options,
-      store: this._store,
-      response_type: 'code',
-    }, (
-      accessToken: any,
-      refreshToken: any,
-      params: any,
-      rawProfile: passport.Profile,
-      done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
-    ) => {
-      const profile = makeProfileInfo(rawProfile, params.id_token);
+    this._strategy = new OktaStrategy(
+      {
+        passReqToCallback: false as true,
+        ...options,
+        store: this._store,
+        response_type: 'code',
+      },
+      (
+        accessToken: any,
+        refreshToken: any,
+        params: any,
+        rawProfile: passport.Profile,
+        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
+      ) => {
+        const profile = makeProfileInfo(rawProfile, params.id_token);
 
-      done(
-        undefined,
+        done(
+          undefined,
           {
             providerInfo: {
               idToken: params.id_token,
@@ -96,13 +92,14 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
           {
             refreshToken,
           },
-      )
-    });
+        );
+      },
+    );
   }
 
   async start(
     req: express.Request,
-    options: Record<string, string>
+    options: Record<string, string>,
   ): Promise<RedirectInfo> {
     const providerOptions = {
       ...options,
@@ -113,7 +110,7 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
   }
 
   async handler(
-    req: express.Request
+    req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken: string }> {
     const { response, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResponse,
@@ -148,7 +145,6 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
       },
       profile,
     });
-
   }
 
   private async populateIdentity(
@@ -169,45 +165,44 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
 
 export function createOktaProvider(
   { baseUrl }: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
+  env: string,
+  envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
-  const envProviders: EnvironmentHandlers = {};
+  const providerId = 'okta';
+  const secure = envConfig.getBoolean('secure');
+  const appOrigin = envConfig.getString('appOrigin');
+  const clientID = envConfig.getString('clientId');
+  const clientSecret = envConfig.getString('clientSecret');
+  const audience = envConfig.getString('audience');
+  const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
 
-  for (const [env, envConfig] of Object.entries(providerConfig)) {
-    const config = (envConfig as unknown) as OAuthProviderConfig;
-    const { secure, appOrigin } = config;
-    const callbackURLParam = `?env=${env}`;
-    const opts = {
-      audience: config.audience,
-      clientID: config.clientId,
-      clientSecret: config.clientSecret,
-      callbackURL: `${baseUrl}/okta/handler/frame${callbackURLParam}`,
-    };
+  const opts = {
+    audience,
+    clientID,
+    clientSecret,
+    callbackURL,
+  };
 
-    if (!opts.clientID || !opts.clientSecret || !opts.audience) {
-      if (process.env.NODE_ENV !== 'development') {
-        throw new Error(
-          'Failed to initialize Okta auth provider, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars',
-        );
-      }
-
-      logger.warn(
-        'Okta auth provider disabled, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars to enable',
+  if (!opts.clientID || !opts.clientSecret || !opts.audience) {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error(
+        'Failed to initialize Okta auth provider, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars',
       );
-      continue;
     }
 
-    envProviders[env] = new OAuthProvider(new OktaAuthProvider(opts), {
-      disableRefresh: false,
-      providerId: 'okta',
-      secure,
-      baseUrl,
-      appOrigin,
-      tokenIssuer,
-    });
+    logger.warn(
+      'Okta auth provider disabled, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars to enable',
+    );
+    return undefined;
   }
-
-  return new EnvironmentHandler(envProviders);
+  return new OAuthProvider(new OktaAuthProvider(opts), {
+    disableRefresh: false,
+    providerId,
+    secure,
+    baseUrl,
+    appOrigin,
+    tokenIssuer,
+  });
 }

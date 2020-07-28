@@ -26,6 +26,7 @@ import imageFiles from 'rollup-plugin-image-files';
 import svgr from '@svgr/rollup';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
+import yaml from '@rollup/plugin-yaml';
 import { RollupOptions, OutputOptions } from 'rollup';
 
 import { BuildOptions, Output } from './types';
@@ -93,6 +94,7 @@ export const makeConfigs = async (
         postcss(),
         imageFiles({ exclude: '**/*.icon.svg' }),
         json(),
+        yaml(),
         svgr({
           include: '**/*.icon.svg',
           template: svgrTemplate,

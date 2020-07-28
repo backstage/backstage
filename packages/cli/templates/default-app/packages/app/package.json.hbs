@@ -22,7 +22,7 @@
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",
-    "@types/jest": "^25.2.2",
+    "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "@types/react-dom": "^16.9.8",
     "cross-env": "^7.0.0",
@@ -32,7 +32,7 @@
   },
   "scripts": {
     "start": "backstage-cli app:serve",
-    "bundle": "backstage-cli app:build",
+    "build": "backstage-cli app:build",
     "test": "backstage-cli test",
     "lint": "backstage-cli lint",
     "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",

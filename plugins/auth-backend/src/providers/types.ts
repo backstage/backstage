@@ -17,6 +17,9 @@
 import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
+import { Config } from '@backstage/config';
+import { OAuthProvider } from '../lib/OAuthProvider';
+import { SamlAuthProvider } from './saml/provider';
 
 export type OAuthProviderOptions = {
   /**
@@ -204,10 +207,11 @@ export interface AuthProviderRouteHandlers {
 
 export type AuthProviderFactory = (
   globalConfig: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
+  env: string,
+  envConfig: Config,
   logger: Logger,
   issuer: TokenIssuer,
-) => AuthProviderRouteHandlers;
+) => OAuthProvider | SamlAuthProvider | undefined;
 
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;

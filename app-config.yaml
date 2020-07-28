@@ -15,10 +15,82 @@ proxy:
     target: 'https://circleci.com/api/v1.1'
     changeOrigin: true
     pathRewrite:
-      '^/circleci/api/': '/'
+      '^/proxy/circleci/api/': '/'
 
 organization:
   name: Spotify
 
 techdocs:
   storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+
+sentry:
+  organization: spotify
+
+auth:
+  providers:
+    google:
+      development:
+        appOrigin: "http://localhost:3000/"
+        secure: false
+        clientId:
+          $secret:
+            env: AUTH_GOOGLE_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_GOOGLE_CLIENT_SECRET
+    github:
+      development:
+        appOrigin: "http://localhost:3000/"
+        secure: false
+        clientId:
+          $secret:
+            env: AUTH_GITHUB_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_GITHUB_CLIENT_SECRET
+    gitlab:
+      development:
+        appOrigin: "http://localhost:3000/"
+        secure: false
+        clientId:
+          $secret:
+            env: AUTH_GITLAB_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_GITLAB_CLIENT_SECRET
+        audience:
+          $secret:
+            env: GITLAB_BASE_URL
+    # saml:
+    #   development:
+    #     entryPoint: "http://localhost:7001/"
+    #     issuer: "passport-saml"
+    okta:
+      development:
+        appOrigin: "http://localhost:3000/"
+        secure: false
+        clientId:
+          $secret:
+            env: AUTH_OKTA_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_OKTA_CLIENT_SECRET
+        audience:
+          $secret:
+            env: AUTH_OKTA_AUDIENCE
+    oauth2:
+      development:
+        appOrigin: "http://localhost:3000/"
+        secure: false
+        clientId:
+          $secret:
+            env: AUTH_OAUTH2_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_OAUTH2_CLIENT_SECRET
+        authorizationURL:
+          $secret:
+            env: AUTH_OAUTH2_AUTH_URL
+        tokenURL:
+          $secret:
+            env: AUTH_OAUTH2_TOKEN_URL

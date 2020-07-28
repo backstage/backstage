@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button } from '@backstage/core';
+import { Button, pageTheme } from '@backstage/core';
 import { Card, Chip, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import { generatePath } from 'react-router-dom';
@@ -23,8 +23,8 @@ const useStyles = makeStyles(theme => ({
   header: {
     color: theme.palette.common.white,
     padding: theme.spacing(2, 2, 6),
-    backgroundImage:
-      'linear-gradient(-137deg, rgb(25, 230, 140) 0%, rgb(29, 127, 110) 100%)',
+    backgroundImage: (props: { gradientStart: string; gradientStop: string }) =>
+      `linear-gradient(-137deg, ${props.gradientStart} 0%, ${props.gradientStop} 100%)`,
   },
   content: {
     padding: theme.spacing(2),
@@ -55,7 +55,9 @@ export const TemplateCard = ({
   type,
   name,
 }: TemplateCardProps) => {
-  const classes = useStyles();
+  const theme = pageTheme[type] ?? pageTheme.other;
+  const [gradientStart, gradientStop] = theme.gradient.colors;
+  const classes = useStyles({ gradientStart, gradientStop });
   const href = generatePath(templateRoute.path, { templateName: name });
 
   return (
@@ -72,7 +74,7 @@ export const TemplateCard = ({
           {description}
         </Typography>
         <div className={classes.footer}>
-          <Button color="primary" variant="contained" to={href}>
+          <Button color="primary" to={href}>
             Choose
           </Button>
         </div>
