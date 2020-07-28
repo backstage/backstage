@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState, Fragment } from 'react';
+import React, { FC, useState } from 'react';
 import { Grid, Button, TextField } from '@material-ui/core';
 
 import {
@@ -34,7 +34,7 @@ import {
 export const Project: FC<{}> = () => {
   const [projectName, setProjectName] = useState('');
   const [projectId, setProjectId] = useState('');
-  const [done, setDone] = useState(false);
+  const [disabled, setDisabled] = useState(true);
 
   const metadata = {
     ProjectName: projectName,
@@ -69,17 +69,15 @@ export const Project: FC<{}> = () => {
                   fullWidth
                 />
               </SimpleStepperStep>
-              <SimpleStepperStep title="" end>
+
+              <SimpleStepperStep
+                title="Review"
+                actions={{
+                  nextText: 'Confirm',
+                  onNext: () => setDisabled(false),
+                }}
+              >
                 <StructuredMetadataTable metadata={metadata} />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  href={`newProject?projectName=${encodeURIComponent(
-                    projectName,
-                  )},projectId=${encodeURIComponent(projectId)}`}
-                >
-                  Confirm
-                </Button>
               </SimpleStepperStep>
             </SimpleStepper>
             <Button
@@ -89,6 +87,16 @@ export const Project: FC<{}> = () => {
               href="/gcp-projects"
             >
               Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={disabled}
+              href={`newProject?projectName=${encodeURIComponent(
+                projectName,
+              )},projectId=${encodeURIComponent(projectId)}`}
+            >
+              Create
             </Button>
           </InfoCard>
         </Grid>

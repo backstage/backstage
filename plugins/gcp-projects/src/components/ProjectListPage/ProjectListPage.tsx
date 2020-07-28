@@ -20,7 +20,6 @@ import {
   Link,
   useApi,
   googleAuthApiRef,
-  InfoCard,
   HeaderLabel,
   Page,
   Header,
@@ -31,7 +30,6 @@ import {
 } from '@backstage/core';
 import {
   LinearProgress,
-  makeStyles,
   Paper,
   Table,
   TableBody,
@@ -39,7 +37,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Theme,
   Tooltip,
   Typography,
   Button,
