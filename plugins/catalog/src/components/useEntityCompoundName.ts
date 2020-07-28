@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useParams } from 'react-router';
 
-export { plugin } from './plugin';
-export * from './api/CatalogClient';
-export * from './api/types';
-export * from './routes';
-export { useEntityCompoundName } from './components/useEntityCompoundName';
+/**
+ * Grabs entity kind and name + optional namespace from location
+ */
+export const useEntityCompoundName = () => {
+  const params = useParams();
+  const { kind, optionalNamespaceAndName = '' } = params;
+  const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
+  return { kind, name, namespace };
+};

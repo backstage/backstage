@@ -13,9 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { plugin } from './plugin';
-export * from './api/CatalogClient';
-export * from './api/types';
-export * from './routes';
-export { useEntityCompoundName } from './components/useEntityCompoundName';
+export { Widget } from './Widget';
