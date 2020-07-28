@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useState, Fragment } from 'react';
 import { Grid, Button, TextField } from '@material-ui/core';
 
 import {
@@ -24,9 +24,14 @@ import {
   SimpleStepper,
   SimpleStepperStep,
   StructuredMetadataTable,
+  HeaderLabel,
+  Page,
+  Header,
+  pageTheme,
+  SupportButton,
 } from '@backstage/core';
 
-export const NewProjectPage: FC<{}> = () => {
+export const Project: FC<{}> = () => {
   const [projectName, setProjectName] = useState('');
   const [projectId, setProjectId] = useState('');
   const [done, setDone] = useState(false);
@@ -38,10 +43,9 @@ export const NewProjectPage: FC<{}> = () => {
 
   return (
     <Content>
-      <ContentHeader title="Create new GCP Project" />
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <InfoCard>
+        <Grid item xs={12} md={6}>
+          <InfoCard title="Create new GCP Project">
             <SimpleStepper>
               <SimpleStepperStep title="Project Name">
                 <TextField
@@ -66,39 +70,52 @@ export const NewProjectPage: FC<{}> = () => {
                 />
               </SimpleStepperStep>
               <SimpleStepperStep title="" end>
+                <StructuredMetadataTable metadata={metadata} />
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => setDone(true)}
+                  href={`newProject?projectName=${encodeURIComponent(
+                    projectName,
+                  )},projectId=${encodeURIComponent(projectId)}`}
                 >
-                  Finish
+                  Confirm
                 </Button>
               </SimpleStepperStep>
             </SimpleStepper>
+            <Button
+              variant="text"
+              data-testid="cancel-button"
+              color="primary"
+              href="/gcp-projects"
+            >
+              Cancel
+            </Button>
           </InfoCard>
         </Grid>
-        {done === true ? (
-          <Grid item xs={12} md={8}>
-            <InfoCard title="Project Info:">
-              <StructuredMetadataTable metadata={metadata} />
-              <br />
-              <br />
-              <br />
-              <Button
-                variant="contained"
-                color="primary"
-                href={`newProject?projectName=${encodeURIComponent(
-                  projectName,
-                )},projectId=${encodeURIComponent(projectId)}`}
-              >
-                Confirm
-              </Button>
-            </InfoCard>
-          </Grid>
-        ) : (
-          <br />
-        )}
       </Grid>
     </Content>
+  );
+};
+
+const labels = (
+  <>
+    <HeaderLabel label="Owner" value="Spotify" />
+    <HeaderLabel label="Lifecycle" value="Production" />
+  </>
+);
+
+export const NewProjectPage = () => {
+  return (
+    <Page theme={pageTheme.service}>
+      <Header title="New GCP Project" type="tool">
+        {labels}
+      </Header>
+      <Content>
+        <ContentHeader title="">
+          <SupportButton>Support Button</SupportButton>
+        </ContentHeader>
+        <Project />
+      </Content>
+    </Page>
   );
 };

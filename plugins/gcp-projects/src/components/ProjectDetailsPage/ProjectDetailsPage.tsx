@@ -28,10 +28,19 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
+import {
+  useApi,
+  googleAuthApiRef,
+  HeaderLabel,
+  Page,
+  Header,
+  pageTheme,
+  SupportButton,
+  Content,
+  ContentHeader,
+} from '@backstage/core';
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { Link, useApi, googleAuthApiRef } from '@backstage/core';
 import { GCPApiRef } from '../../api';
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -47,7 +56,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const ProjectDetailsPage = () => {
+const DetailsPage = () => {
   const api = useApi(GCPApiRef);
   const googleApi = useApi(googleAuthApiRef);
   const token = googleApi.getAccessToken(
@@ -55,7 +64,6 @@ export const ProjectDetailsPage = () => {
   );
 
   const classes = useStyles();
-  const location = useLocation();
   const status = useAsync(
     () =>
       api.getProject(
@@ -78,76 +86,87 @@ export const ProjectDetailsPage = () => {
   const details = status.value;
 
   return (
-    <div className={classes.root}>
-      <Typography className={classes.title} variant="h3">
-        <Link to="/gcp-projects">
-          <Typography component="span" variant="h3" color="primary">
-            &lt;
-          </Typography>
-        </Link>
-        Build Details
-      </Typography>
-      <TableContainer component={Paper} className={classes.table}>
-        <Table>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Name</Typography>
-              </TableCell>
-              <TableCell>{details?.name}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Project Number</Typography>
-              </TableCell>
-              <TableCell>{details?.projectNumber}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Project ID</Typography>
-              </TableCell>
-              <TableCell>{details?.projectId}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>State</Typography>
-              </TableCell>
-              <TableCell>
-                <TableCell>{details?.lifecycleState}</TableCell>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Creation Time</Typography>
-              </TableCell>
-              <TableCell>{details?.createTime}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Typography noWrap>Links</Typography>
-              </TableCell>
-              <TableCell>
-                <ButtonGroup
-                  variant="text"
-                  color="primary"
-                  aria-label="text primary button group"
-                >
-                  {details?.name && (
-                    <Button>
-                      <a href={details.name}>GCP</a>
-                    </Button>
-                  )}
-                  {details?.name && (
-                    <Button>
-                      <a href={details.name}>Logs</a>
-                    </Button>
-                  )}
-                </ButtonGroup>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+    <TableContainer component={Paper} className={classes.table}>
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Name</Typography>
+            </TableCell>
+            <TableCell>{details?.name}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Project Number</Typography>
+            </TableCell>
+            <TableCell>{details?.projectNumber}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Project ID</Typography>
+            </TableCell>
+            <TableCell>{details?.projectId}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>State</Typography>
+            </TableCell>
+            <TableCell>{details?.lifecycleState}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Creation Time</Typography>
+            </TableCell>
+            <TableCell>{details?.createTime}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography noWrap>Links</Typography>
+            </TableCell>
+            <TableCell>
+              <ButtonGroup
+                variant="text"
+                color="primary"
+                aria-label="text primary button group"
+              >
+                {details?.name && (
+                  <Button>
+                    <a href={details.name}>GCP</a>
+                  </Button>
+                )}
+                {details?.name && (
+                  <Button>
+                    <a href={details.name}>Logs</a>
+                  </Button>
+                )}
+              </ButtonGroup>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
+
+const labels = (
+  <>
+    <HeaderLabel label="Owner" value="Spotify" />
+    <HeaderLabel label="Lifecycle" value="Production" />
+  </>
+);
+
+export const ProjectDetailsPage = () => {
+  return (
+    <Page theme={pageTheme.service}>
+      <Header title="GCP Project Details" type="other">
+        {labels}
+      </Header>
+      <Content>
+        <ContentHeader title="">
+          <SupportButton>Support Button</SupportButton>
+        </ContentHeader>
+        <DetailsPage />
+      </Content>
+    </Page>
   );
 };
