@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createPlugin, createRouteRef } from '@backstage/core';
-import {DetailedViewPage} from "./pages/BuildWithStepsPage";
-
-export const buildRouteRef = createRouteRef({
-  path: '/jenkins/job',
-  title: 'Jenkins run',
-});
-
-
-export const plugin = createPlugin({
-  id: 'jenkins',
-  register({ router }) {
-    router.addRoute(buildRouteRef, DetailedViewPage);
-  },
-});
-
-export { JenkinsBuildsWidget } from './components/JenkinsPluginWidget/JenkinsBuildsWidget';
-export { JenkinsLastBuildWidget } from './components/JenkinsPluginWidget/JenkinsLastBuildWidget';
+export { JenkinsRunStatus } from './JenkinsRunStatus'

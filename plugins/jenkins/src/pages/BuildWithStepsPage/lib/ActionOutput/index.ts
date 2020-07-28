@@ -13,16 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Route, Routes } from 'react-router';
-import { BuildsPage } from '../pages/BuildsPage';
-
-export const App = () => {
-  return (
-    <>
-      <Routes>
-        <Route path="*" element={<BuildsPage />} />
-      </Routes>
-    </>
-  );
-};
+export { ActionOutput } from './ActionOutput';

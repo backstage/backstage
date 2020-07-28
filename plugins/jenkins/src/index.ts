@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export { plugin, JenkinsBuildsWidget, JenkinsLastBuildWidget } from './plugin';
+export * from './api';

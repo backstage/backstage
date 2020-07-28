@@ -14,41 +14,20 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { ContentHeader, SupportButton } from '@backstage/core';
-import { Button, IconButton, Box, Typography } from '@material-ui/core';
-import ArrowBack from '@material-ui/icons/ArrowBack';
-import SettingsIcon from '@material-ui/icons/Settings';
+import { Box, Typography } from '@material-ui/core';
 
 export type Props = { title?: string };
-export const PluginHeader: FC<Props> = ({ title = 'CircleCI' }) => {
-  const location = useLocation();
-  const notRoot = !location.pathname.match(/\/circleci\/?$/);
-
+export const PluginHeader: FC<Props> = ({ title = 'Jenkins' }) => {
   return (
     <ContentHeader
       title={title}
       titleComponent={() => (
         <Box alignItems="center" display="flex">
-          {notRoot && (
-            <IconButton component={RouterLink} to="/circleci">
-              <ArrowBack />
-            </IconButton>
-          )}
           <Typography variant="h4">{title}</Typography>
         </Box>
       )}
     >
-      <Button
-        onClick={() => {
-          // eslint-disable-next-line no-console
-          console.log('Not implemented yet');
-        }}
-        startIcon={<SettingsIcon />}
-      >
-        Settings
-      </Button>
-
       <SupportButton>
         This plugin allows you to view and interact with your builds in Jenkins.
       </SupportButton>

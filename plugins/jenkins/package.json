@@ -21,20 +21,22 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/catalog-model": "^0.1.1-alpha.18",
     "@backstage/core": "^0.1.1-alpha.18",
     "@backstage/theme": "^0.1.1-alpha.18",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
+    "jenkins": "^0.28.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^14.2.0",
     "react-router": "^6.0.0-alpha.5",
-    "react-router-dom": "^6.0.0-alpha.5"
+    "react-router-dom": "^6.0.0-alpha.5",
+    "react-use": "^14.2.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.9",
-    "@backstage/dev-utils": "^0.1.1-alpha.9",
+    "@backstage/cli": "^0.1.1-alpha.16",
+    "@backstage/dev-utils": "^0.1.1-alpha.16",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^10.2.4",

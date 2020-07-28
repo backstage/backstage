@@ -13,14 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-// import { useBuilds } from '../../../../state';
+import React from 'react';
+import {CITable} from '../CITable';
+import {useBuilds} from '../../../../state';
 
-export const Builds: FC<{}> = () => {
-  // const [
-  //   { total, loading, value, projectName, page, pageSize },
-  //   { setPage, retry, setPageSize },
-  // ] = useBuilds();
+export const Builds = ({
+                         owner,
+                         repo
+                       }: {
+  owner: string;
+  repo: string;
+}) => {
 
-  return <div>Builds go here</div>;
+  const [
+    {total, loading, value, projectName, page, pageSize},
+    {setPage, retry, setPageSize},
+  ] = useBuilds(owner, repo);
+  return (
+    <CITable
+      total={total}
+      loading={loading}
+      retry={retry}
+      builds={value ?? []}
+      projectName={projectName}
+      page={page}
+      onChangePage={setPage}
+      pageSize={pageSize}
+      onChangePageSize={setPageSize}
+    />
+  );
 };
