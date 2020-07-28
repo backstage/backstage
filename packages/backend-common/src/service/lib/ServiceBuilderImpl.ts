@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { ConfigReader } from '@backstage/config';
 import compression from 'compression';
 import cors from 'cors';
@@ -21,6 +20,8 @@ import express, { Router } from 'express';
 import helmet from 'helmet';
 import * as http from 'http';
 import * as https from 'https';
+import * as path from 'path';
+import * as fs from 'fs';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
 import { useHotCleanup } from '../../hot';
@@ -34,8 +35,8 @@ import { ServiceBuilder } from '../types';
 import {
   readBaseOptions,
   readCorsOptions,
-  readCertificateOptions,
-  CertificateOptions,
+  readHttpsSettings,
+  HttpsSettings,
 } from './config';
 
 const DEFAULT_PROTOCOL = 'https://';
@@ -49,7 +50,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private baseUrl: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
-  private certificateOptions: CertificateOptions | undefined;
+  private httpsSettings: HttpsSettings | undefined;
   private routers: [string, Router][];
   // Reference to the module where builder is created - needed for hot module
   // reloading
@@ -82,9 +83,9 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       this.corsOptions = corsOptions;
     }
 
-    const certificateOptions = readCertificateOptions(backendConfig);
-    if (certificateOptions) {
-      this.certificateOptions = certificateOptions;
+    const httpsSettings = readHttpsSettings(backendConfig);
+    if (httpsSettings) {
+      this.httpsSettings = httpsSettings;
     }
     return this;
   }
@@ -109,8 +110,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  setCertificateOptions(options: CertificateOptions): ServiceBuilder {
-    this.certificateOptions = options;
+  setHttpsSettings(settings: HttpsSettings): ServiceBuilder {
+    this.httpsSettings = settings;
     return this;
   }
 
@@ -131,8 +132,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       host,
       logger,
       corsOptions,
-      baseUrl,
-      certificateOptions,
+      httpsSettings,
     } = this.getOptions();
 
     app.use(helmet());
@@ -154,35 +154,61 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         reject(e);
       });
 
-      const useHttps = baseUrl.indexOf(DEFAULT_PROTOCOL) > -1;
       let server: http.Server;
 
-      if (useHttps) {
+      if (httpsSettings) {
         logger.info('Initializing https server');
 
-        const certificateAttributes: Array<any> = [];
+        let credentials: { key: string; cert: string };
+        const signingOptions: any = httpsSettings?.certificate;
 
-        Object.getOwnPropertyNames(
-          (certificateOptions?.attributes as any).data,
-        ).forEach(propertyName => {
-          certificateAttributes.push({
-            name: propertyName,
-            value: (certificateOptions?.attributes as any).data[propertyName],
-          });
-        });
+        if (signingOptions?.algorithm !== undefined) {
+          const certificateAttributes: Array<any> = [];
 
-        // TODO: Create a type def for selfsigned.
-        const signatures = require('selfsigned').generate(
-          certificateAttributes,
-          {
-            keySize: (certificateOptions?.key as any).data.size || 2048,
-            algorithm:
-              (certificateOptions?.key as any).data.algorithm || 'sha256',
-            days: (certificateOptions?.key as any).data.days || 30,
-          },
-        );
+          Object.getOwnPropertyNames(signingOptions?.attributes).forEach(
+            propertyName => {
+              const propertyValue = (signingOptions?.attributes as any)[
+                propertyName
+              ];
 
-        const credentials = { key: signatures.private, cert: signatures.cert };
+              certificateAttributes.push({
+                name: propertyName,
+                value: propertyValue,
+              });
+            },
+          );
+
+          // TODO: Create a type def for selfsigned.
+          const signatures = require('selfsigned').generate(
+            certificateAttributes,
+            {
+              keySize: signingOptions?.size || 2048,
+              algorithm: signingOptions?.algorithm || 'sha256',
+              days: signingOptions?.days || 30,
+            },
+          );
+
+          credentials = { key: signatures.private, cert: signatures.cert };
+        } else {
+          credentials = { key: '', cert: '' };
+
+          const keyPath = path.resolve(__dirname, signingOptions?.key);
+          const certPath = path.resolve(__dirname, signingOptions?.cert);
+
+          if (fs.lstatSync(keyPath).isFile()) {
+            credentials.key = fs.readFileSync(keyPath).toString();
+          }
+
+          if (fs.lstatSync(certPath).isFile()) {
+            credentials.cert = fs.readFileSync(certPath).toString();
+          }
+        }
+
+        console.log(credentials, signingOptions);
+
+        if (credentials.key === '' || credentials.cert === '') {
+          throw new Error('Invalid credentials');
+        }
 
         server = https.createServer(credentials, app) as http.Server;
       } else {
@@ -211,7 +237,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     baseUrl: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
-    certificateOptions?: CertificateOptions;
+    httpsSettings?: HttpsSettings;
   } {
     return {
       port: this.port ?? DEFAULT_PORT,
@@ -219,7 +245,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       baseUrl: this.baseUrl ?? DEFAULT_BASEURL,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
-      certificateOptions: this.certificateOptions,
+      httpsSettings: this.httpsSettings,
     };
   }
 }
