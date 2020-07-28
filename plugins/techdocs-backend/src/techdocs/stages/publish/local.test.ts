@@ -54,18 +54,4 @@ describe('local publisher', () => {
     fs.removeSync(publishDir);
     fs.removeSync(tempDir);
   });
-
-  /* it('should merge managed-by-location and techdocs-ref when techdocs-ref is absolute', async () => {
-    const directoryPreparer = new DirectoryPreparer();
-
-    const mockEntity = createMockEntity({
-      'backstage.io/managed-by-location':
-        'file:/directory/documented-component.yaml',
-      'backstage.io/techdocs-ref': 'dir:/our-documentation/techdocs',
-    });
-
-    expect(await directoryPreparer.prepare(mockEntity)).toEqual(
-      '/our-documentation/techdocs',
-    );
-  });*/
 });
