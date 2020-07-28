@@ -3,7 +3,7 @@ app:
   baseUrl: http://localhost:3000
 
 backend:
-  baseUrl: https://localhost:7000
+  baseUrl: http://localhost:7000
   listen: 0.0.0.0:7000
   cors:
     origin: http://localhost:3000
