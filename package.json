@@ -5,7 +5,9 @@
     "node": "12"
   },
   "scripts": {
+    "dev": "concurrently 'yarn start' 'yarn start-backend'",
     "start": "yarn workspace example-app start",
+    "start-backend": "yarn workspace example-backend start",
     "build": "lerna run build",
     "tsc": "tsc",
     "clean": "backstage-cli clean && lerna run clean",
@@ -35,6 +37,7 @@
   "devDependencies": {
     "@spotify/eslint-config-oss": "^1.0.1",
     "@spotify/prettier-config": "^8.0.0",
+    "concurrently": "^5.2.0",
     "husky": "^4.2.3",
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.0",
