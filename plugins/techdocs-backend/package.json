@@ -32,12 +32,12 @@
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.1",
     "knex": "^0.21.1",
-    "node-fetch": "^2.6.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.16",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "node-fetch": "^2.6.0"
   },
   "files": [
     "dist"
