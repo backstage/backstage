@@ -116,7 +116,7 @@ export default async (cmd: Command): Promise<void> => {
   answers.dbTypePG = answers.dbType === 'PostgreSQL';
   answers.dbTypeSqlite = answers.dbType === 'SQLite';
 
-  const templateDir = paths.resolveOwnRoot('packages/cli/templates/default-app');
+  const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
   const appDir = resolvePath(paths.targetDir, answers.name);
 

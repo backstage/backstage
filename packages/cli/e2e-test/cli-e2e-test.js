@@ -107,8 +107,7 @@ async function createApp(appName, isPostgres, workspaceDir, rootDir) {
   const child = spawnPiped(
     [
       'node',
-      resolvePath(workspaceDir, 'packages/cli/bin/backstage-cli'),
-      'create-app',
+      resolvePath(workspaceDir, 'packages/cli/bin/backstage-create-app'),
       '--skip-install',
     ],
     {

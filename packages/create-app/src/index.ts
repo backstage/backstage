@@ -18,6 +18,7 @@ import program from 'commander';
 import chalk from 'chalk';
 import { exitWithError } from './lib/errors';
 import { version } from './lib/version';
+import createApp from './createApp';
 
 const main = (argv: string[]) => {
   program.name('backstage-create-app').version(version);
@@ -28,9 +29,7 @@ const main = (argv: string[]) => {
       '--skip-install',
       'Skip the install and builds steps after creating the app',
     )
-    .action(
-      lazyAction(() => import('./createApp'), 'default'),
-    );
+    .action(createApp)
 
   if (!process.argv.slice(2).length) {
     program.outputHelp(chalk.yellow);
@@ -38,25 +37,6 @@ const main = (argv: string[]) => {
 
   program.parse(argv);
 };
-
-// Wraps an action function so that it always exits and handles errors
-function lazyAction<T extends readonly any[], Export extends string>(
-  actionRequireFunc: () => Promise<
-    { [name in Export]: (...args: T) => Promise<any> }
-  >,
-  exportName: Export,
-): (...args: T) => Promise<never> {
-  return async (...args: T) => {
-    try {
-      const module = await actionRequireFunc();
-      const actionFunc = module[exportName];
-      await actionFunc(...args);
-      process.exit(0);
-    } catch (error) {
-      exitWithError(error);
-    }
-  };
-}
 
 process.on('unhandledRejection', rejection => {
   if (rejection instanceof Error) {

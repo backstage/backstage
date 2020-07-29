@@ -5,16 +5,10 @@ You can use the flag `--skip-install` to skip the install.
 
 ## Installation
 
-Install the package via npm or yarn:
+With `npx`:
 
 ```sh
-$ npm install --save @backstage/create-app
-```
-
-or
-
-```sh
-$ yarn add @backstage/create-app
+$ npx @backstage/create-app
 ```
 
 ## Documentation
