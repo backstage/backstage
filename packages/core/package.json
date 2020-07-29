@@ -40,7 +40,7 @@
     "classnames": "^2.2.6",
     "clsx": "^1.1.0",
     "lodash": "^4.17.15",
-    "material-table": "1.62.x",
+    "material-table": "1.67.x",
     "prop-types": "^15.7.2",
     "rc-progress": "^3.0.0",
     "react": "^16.12.0",
