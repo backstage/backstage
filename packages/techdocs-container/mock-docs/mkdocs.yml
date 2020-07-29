@@ -1,4 +1,5 @@
 site_name: 'mock-docs'
+site_description: 'mock-docs site description'
 
 nav: 
   - Home: index.md
