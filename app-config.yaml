@@ -21,7 +21,7 @@ organization:
   name: Spotify
 
 techdocs:
-  storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+  storageUrl: http://localhost:7000/techdocs/static/docs
 
 sentry:
   organization: spotify
