@@ -22,7 +22,7 @@ export const TechDocsNotFound = () => {
     <ErrorPage
       status="404"
       statusMessage="Documentation not found"
-      docPath={window.location.pathname}
+      additionalInfo={window.location.pathname}
     />
   );
 };
