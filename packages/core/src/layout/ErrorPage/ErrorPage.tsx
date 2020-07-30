@@ -24,6 +24,7 @@ import { useNavigate } from 'react-router';
 interface IErrorPageProps {
   status: string;
   statusMessage: string;
+  additionalInfo?: string;
 }
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -38,7 +39,11 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const ErrorPage = ({ status, statusMessage }: IErrorPageProps) => {
+export const ErrorPage = ({
+  status,
+  statusMessage,
+  additionalInfo,
+}: IErrorPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -48,6 +53,9 @@ export const ErrorPage = ({ status, statusMessage }: IErrorPageProps) => {
       <Grid item xs={12} sm={4}>
         <Typography variant="body1" className={classes.subtitle}>
           ERROR {status}: {statusMessage}
+        </Typography>
+        <Typography variant="body1" className={classes.subtitle}>
+          {additionalInfo}
         </Typography>
         <Typography variant="h2" className={classes.title}>
           Looks like someone dropped the mic!

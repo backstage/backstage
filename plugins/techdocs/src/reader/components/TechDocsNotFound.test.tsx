@@ -18,9 +18,12 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 
-describe('TechDocs Not Found', () => {
-  it('should render a Documentation not found page', async () => {
-    const { queryByText } = render(wrapInTestApp(<TechDocsNotFound />));
-    expect(queryByText(/error: documentation not found/i)).toBeInTheDocument();
+describe('<TechDocsNotFound />', () => {
+  it('should render with status code, status message and go back link', () => {
+    const rendered = render(wrapInTestApp(<TechDocsNotFound />));
+    rendered.getByText(/Documentation not found/i);
+    rendered.getByText(/404/i);
+    rendered.getByText(/Looks like someone dropped the mic!/i);
+    expect(rendered.getByTestId('go-back-link')).toBeDefined();
   });
 });
