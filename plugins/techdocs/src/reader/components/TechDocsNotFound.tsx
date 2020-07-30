@@ -19,12 +19,10 @@ import { ErrorPage } from '@backstage/core';
 
 export const TechDocsNotFound = () => {
   return (
-    <div>
-      <ErrorPage
-        status="404"
-        statusMessage="Documentation not found"
-        docPath={window.location.pathname}
-      />
-    </div>
+    <ErrorPage
+      status="404"
+      statusMessage="Documentation not found"
+      docPath={window.location.pathname}
+    />
   );
 };
