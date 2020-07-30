@@ -53,7 +53,8 @@ export const ErrorPage = ({
       <Grid item xs={12} sm={4}>
         <Typography variant="body1" className={classes.subtitle}>
           ERROR {status}: {statusMessage}
-          <br />
+        </Typography>
+        <Typography variant="body1" className={classes.subtitle}>
           {docPath}
         </Typography>
         <Typography variant="h2" className={classes.title}>
