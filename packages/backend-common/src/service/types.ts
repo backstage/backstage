@@ -67,6 +67,13 @@ export type ServiceBuilder = {
   addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
 
   /**
+   * Adds a custom middleware function. Same as express.use(handler)
+   *
+   * @param handler A custom middleware function for the request
+   */
+  use(handler: RequestHandler): ServiceBuilder;
+
+  /**
    * Starts the server using the given settings.
    */
   start(): Promise<Server>;

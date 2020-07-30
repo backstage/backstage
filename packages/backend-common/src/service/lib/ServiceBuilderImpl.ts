@@ -17,7 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import compression from 'compression';
 import cors from 'cors';
-import express, { Router } from 'express';
+import express, { Router, RequestHandler } from 'express';
 import helmet from 'helmet';
 import { Server } from 'http';
 import stoppable from 'stoppable';
@@ -41,12 +41,14 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
   private routers: [string, Router][];
+  private handlers: RequestHandler[];
   // Reference to the module where builder is created - needed for hot module
   // reloading
   private module: NodeModule;
 
   constructor(moduleRef: NodeModule) {
     this.routers = [];
+    this.handlers = [];
     this.module = moduleRef;
   }
 
@@ -97,6 +99,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  use(handler: RequestHandler): ServiceBuilder {
+    this.handlers.push(handler);
+    return this;
+  }
+
   start(): Promise<Server> {
     const app = express();
     const { port, host, logger, corsOptions } = this.getOptions();
@@ -113,6 +120,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     }
     app.use(notFoundHandler());
     app.use(errorHandler());
+
+    app.use(this.handlers);
 
     return new Promise((resolve, reject) => {
       app.on('error', e => {
