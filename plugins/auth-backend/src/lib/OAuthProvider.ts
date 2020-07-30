@@ -104,10 +104,6 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     // retrieve scopes from request
     const scope = req.query.scope?.toString() ?? '';
 
-    if (!scope) {
-      throw new InputError('missing scope parameter');
-    }
-
     if (this.options.persistScopes) {
       this.setScopesCookie(res, scope);
     }
