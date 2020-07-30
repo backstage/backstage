@@ -15,20 +15,16 @@
  */
 
 import React from 'react';
-import { Typography, Button } from '@material-ui/core';
-import { TechDocsPageWrapper } from './TechDocsPageWrapper';
+import { ErrorPage } from '@backstage/core';
 
 export const TechDocsNotFound = () => {
   return (
-    <TechDocsPageWrapper
-      title="Documentation"
-      subtitle="Documentation available in Backstage"
-    >
-      <Typography>Error: Documentation not found</Typography>
-      <Typography>Path: {window.location.pathname}</Typography>
-      <Button color="primary" onClick={() => window.history.back()}>
-        Go back
-      </Button>
-    </TechDocsPageWrapper>
+    <div>
+      <ErrorPage
+        status="404"
+        statusMessage="Documentation not found"
+        docPath={window.location.pathname}
+      />
+    </div>
   );
 };
