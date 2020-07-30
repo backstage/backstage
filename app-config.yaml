@@ -48,6 +48,15 @@ auth:
         clientSecret:
           $secret:
             env: AUTH_GITHUB_CLIENT_SECRET
+        authorizationURL: 
+          $secret:
+            env: AUTH_GITHUB_AUTHORIZATION_URL
+        tokenURL:
+          $secret:
+            env: AUTH_GITHUB_TOKEN_URL
+        userProfileUrl:
+          $secret:
+            env: AUTH_GITHUB_USER_PROFILE_URL
     gitlab:
       development:
         appOrigin: "http://localhost:3000/"
