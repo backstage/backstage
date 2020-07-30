@@ -136,11 +136,17 @@ export function createGithubProvider(
   const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
+  const authorizationURL = envConfig.getOptionalString('authorizationURL');
+  const tokenURL = envConfig.getOptionalString('tokenURL');
+  const userProfileURL = envConfig.getOptionalString('userProfileURL');
   const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
 
   const opts = {
     clientID,
     clientSecret,
+    authorizationURL,
+    tokenURL,
+    userProfileURL,
     callbackURL,
   };
 
