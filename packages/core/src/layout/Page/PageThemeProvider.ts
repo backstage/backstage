@@ -65,6 +65,11 @@ export const gradients: Record<string, Gradient> = {
     waveColor: '#9BF0E1',
     opacity: ['0.72', '0.0'],
   },
+  pinkSea: {
+    colors: ['#C8077A', '#C2297D'],
+    waveColor: '#ea93c3',
+    opacity: ['0.8', '0.0'],
+  },
 };
 
 export const pageTheme: Record<string, PageTheme> = {
@@ -72,7 +77,7 @@ export const pageTheme: Record<string, PageTheme> = {
     gradient: gradients.teal,
   },
   documentation: {
-    gradient: gradients.eveningSea,
+    gradient: gradients.pinkSea,
   },
   tool: {
     gradient: gradients.purpleSky,

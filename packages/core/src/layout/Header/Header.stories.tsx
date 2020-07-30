@@ -85,6 +85,14 @@ export const App = () => (
   </Page>
 );
 
+export const Documentation = () => (
+  <Page theme={pageTheme.documentation}>
+    <Header title="Documentation component page" type="documentation">
+      {labels}
+    </Header>
+  </Page>
+);
+
 export const Other = () => (
   <Page theme={pageTheme.other}>
     <Header title="Other/generic component page" type="other">
