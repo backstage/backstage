@@ -137,7 +137,7 @@ export function createGithubProvider(
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
   const enterpriseInstanceUrl = envConfig.getOptionalString(
-    'enterpriseInstanceURL',
+    'enterpriseInstanceUrl',
   );
   const authorizationURL = enterpriseInstanceUrl
     ? `${enterpriseInstanceUrl}/login/oauth/authorize`

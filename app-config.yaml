@@ -48,7 +48,7 @@ auth:
         clientSecret:
           $secret:
             env: AUTH_GITHUB_CLIENT_SECRET
-        enterpriseInstanceURL: 
+        enterpriseInstanceUrl: 
           $secret:
             env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:
