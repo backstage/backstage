@@ -37,9 +37,7 @@ for github enterprise:
 ```bash
 export AUTH_GITHUB_CLIENT_ID=x
 export AUTH_GITHUB_CLIENT_SECRET=x
-export AUTH_GITHUB_AUTHORIZATION_URL=https://ENTERPRISE_INSTANCE_URL/login/oauth/authorize
-export AUTH_GITHUB_TOKEN_URL=https://ENTERPRISE_INSTANCE_URL/login/oauth/access_token
-export AUTH_GITHUB_USER_PROFILE_URL=https://ENTERPRISE_INSTANCE_URL/api/v3/user
+export AUTH_GITHUB_ENTERPRISE_INSTANCE_URL=https://x
 ```
 
 ### Gitlab

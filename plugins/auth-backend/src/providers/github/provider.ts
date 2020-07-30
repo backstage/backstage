@@ -136,9 +136,18 @@ export function createGithubProvider(
   const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
-  const authorizationURL = envConfig.getOptionalString('authorizationURL');
-  const tokenURL = envConfig.getOptionalString('tokenURL');
-  const userProfileURL = envConfig.getOptionalString('userProfileURL');
+  const enterpriseInstanceUrl = envConfig.getOptionalString(
+    'enterpriseInstanceURL',
+  );
+  const authorizationURL = enterpriseInstanceUrl
+    ? `${enterpriseInstanceUrl}/login/oauth/authorize`
+    : undefined;
+  const tokenURL = enterpriseInstanceUrl
+    ? `${enterpriseInstanceUrl}/login/oauth/access_token`
+    : undefined;
+  const userProfileURL = enterpriseInstanceUrl
+    ? `${enterpriseInstanceUrl}/api/v3/user`
+    : undefined;
   const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
 
   const opts = {
