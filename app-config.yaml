@@ -48,6 +48,9 @@ auth:
         clientSecret:
           $secret:
             env: AUTH_GITHUB_CLIENT_SECRET
+        enterpriseInstanceUrl: 
+          $secret:
+            env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:
       development:
         appOrigin: "http://localhost:3000/"
