@@ -69,6 +69,7 @@ async function buildDistWorkspace(workspaceName, rootDir) {
     'build-workspace',
     workspaceDir,
     '@backstage/cli',
+    '@backstage/create-app',
     '@backstage/core',
     '@backstage/dev-utils',
     '@backstage/test-utils',
