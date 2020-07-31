@@ -39,5 +39,12 @@ export const pre = async () => {
 
 export const post = async () => {
   // postpack isn't called by yarn right now, so it needs to be called manually
-  await fs.move(PKG_BACKUP_PATH, PKG_PATH, { overwrite: true });
+  try {
+    await fs.move(PKG_BACKUP_PATH, PKG_PATH, { overwrite: true });
+  } catch (error) {
+    console.warn(
+      `Failed to restore package.json during postpack, ${error}. ` +
+        'Your package will be fine but you may have ended up with some garbage in the repo.',
+    );
+  }
 };
