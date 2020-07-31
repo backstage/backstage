@@ -114,7 +114,13 @@ export default async (cmd: Command): Promise<void> => {
     },
   ];
 
-  const answers: Answers = await mapInqueryAnswersFromCommanderOptions(questions, cmd);
+  const answers: Answers = await mapInqueryAnswersFromCommanderOptions(
+    questions,
+    cmd,
+  );
+  answers.dbTypePG = answers.dbType === 'PostgreSQL';
+  answers.dbTypeSqlite = answers.dbType === 'SQLite';
+
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
   const appDir = resolvePath(paths.targetDir, answers.name);

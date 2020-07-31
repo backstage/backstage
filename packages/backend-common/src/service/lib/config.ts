@@ -20,7 +20,6 @@ import { CorsOptions } from 'cors';
 export type BaseOptions = {
   listenPort?: number;
   listenHost?: string;
-  baseUrl?: string;
 };
 
 export type CertificateOptions = {
@@ -35,6 +34,26 @@ export type CertificateKeyOptions = {
 };
 
 export type CertificateAttributeOptions = {
+  commonName?: string;
+};
+
+export type HttpsSettings = {
+  certificate: CertificateSigningOptions | CertificateReferenceOptions;
+};
+
+export type CertificateReferenceOptions = {
+  key: string;
+  cert: string;
+};
+
+export type CertificateSigningOptions = {
+  size?: number;
+  algorithm?: string;
+  days?: number;
+  attributes?: CertificateAttributes;
+};
+
+export type CertificateAttributes = {
   commonName?: string;
 };
 
@@ -55,11 +74,9 @@ export type CertificateAttributeOptions = {
 export function readBaseOptions(config: ConfigReader): BaseOptions {
   // TODO(freben): Expand this to support more addresses and perhaps optional
   const { host, port } = parseListenAddress(config.getString('listen'));
-  const baseUrl = config.getString('baseUrl');
   return removeUnknown({
     listenPort: port,
     listenHost: host,
-    baseUrl: baseUrl,
   });
 }
 
@@ -98,35 +115,36 @@ export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
 }
 
 /**
- * Attempts to read a certificate options object from the root of a config object.
+ * Attempts to read a https settings object from the root of a config object.
  *
  * @param config The root of a backend config object
- * @returns A certificate options object, or undefined if not specified
+ * @returns A https settings object, or undefined if not specified
  *
  * @example
  * ```json
  * {
- *   certificate: {
- *    key: ...,
- *    attributes: ...
+ *   https: {
+ *    certificate: ...
  *   }
  * }
  * ```
  */
-export function readCertificateOptions(
+export function readHttpsSettings(
   config: ConfigReader,
-): CertificateOptions | undefined {
-  const cc = config.getOptionalConfig('certificate');
+): HttpsSettings | undefined {
+  const cc = config.getOptionalConfig('https');
+
   if (!cc) {
     return undefined;
   }
 
-  return removeUnknown({
-    key: cc.getOptionalConfig('key') as CertificateKeyOptions,
-    attributes: cc.getOptionalConfig(
-      'attributes',
-    ) as CertificateAttributeOptions,
-  });
+  const certificateConfig = cc.get('certificate');
+
+  const cfg = {
+    certificate: certificateConfig,
+  };
+
+  return removeUnknown(cfg as HttpsSettings);
 }
 
 function getOptionalStringOrStrings(
