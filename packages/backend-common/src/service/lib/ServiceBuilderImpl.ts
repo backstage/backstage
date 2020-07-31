@@ -38,15 +38,12 @@ import {
   HttpsSettings,
 } from './config';
 
-const DEFAULT_PROTOCOL = 'https://';
 const DEFAULT_PORT = 7000;
 const DEFAULT_HOST = 'localhost';
-const DEFAULT_BASEURL = `${DEFAULT_PROTOCOL}${DEFAULT_HOST}:${DEFAULT_PORT}`;
 
 export class ServiceBuilderImpl implements ServiceBuilder {
   private port: number | undefined;
   private host: string | undefined;
-  private baseUrl: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
   private httpsSettings: HttpsSettings | undefined;
@@ -240,7 +237,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private getOptions(): {
     port: number;
     host: string;
-    baseUrl: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
     httpsSettings?: HttpsSettings;
@@ -248,7 +244,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return {
       port: this.port ?? DEFAULT_PORT,
       host: this.host ?? DEFAULT_HOST,
-      baseUrl: this.baseUrl ?? DEFAULT_BASEURL,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
       httpsSettings: this.httpsSettings,
