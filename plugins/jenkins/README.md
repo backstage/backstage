@@ -84,3 +84,4 @@ spec:
 
 - Only works with projects that use the Git SCM
 - It requires jobs to be organised into folders
+- No pagination support currently - don't run this on a Jenkins with lots of builds
