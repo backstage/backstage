@@ -32,6 +32,14 @@ export AUTH_GITHUB_CLIENT_ID=x
 export AUTH_GITHUB_CLIENT_SECRET=x
 ```
 
+for github enterprise:
+
+```bash
+export AUTH_GITHUB_CLIENT_ID=x
+export AUTH_GITHUB_CLIENT_SECRET=x
+export AUTH_GITHUB_ENTERPRISE_INSTANCE_URL=https://x
+```
+
 ### Gitlab
 
 ```bash

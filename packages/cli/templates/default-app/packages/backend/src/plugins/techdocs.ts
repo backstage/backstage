@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-export { WorkflowRunStatusIcon } from './WorkflowRunStatusIcon';
+import { createRouter } from '@backstage/plugin-techdocs-backend';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin({ logger }: PluginEnvironment) {
+  return await createRouter({ logger });
+}

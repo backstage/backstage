@@ -22,6 +22,21 @@ export type BaseOptions = {
   listenHost?: string;
 };
 
+export type CertificateOptions = {
+  key?: CertificateKeyOptions;
+  attributes?: CertificateAttributeOptions;
+};
+
+export type CertificateKeyOptions = {
+  size?: number;
+  algorithm?: string;
+  days?: number;
+};
+
+export type CertificateAttributeOptions = {
+  commonName?: string;
+};
+
 export type HttpsSettings = {
   certificate: CertificateSigningOptions | CertificateReferenceOptions;
 };
@@ -59,7 +74,6 @@ export type CertificateAttributes = {
 export function readBaseOptions(config: ConfigReader): BaseOptions {
   // TODO(freben): Expand this to support more addresses and perhaps optional
   const { host, port } = parseListenAddress(config.getString('listen'));
-
   return removeUnknown({
     listenPort: port,
     listenHost: host,

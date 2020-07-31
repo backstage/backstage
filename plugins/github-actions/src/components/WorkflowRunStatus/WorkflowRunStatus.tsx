@@ -17,7 +17,7 @@
 import { StatusPending, StatusRunning, StatusOK } from '@backstage/core';
 import React from 'react';
 
-export const WorkflowRunStatusIcon = ({
+export const WorkflowRunStatus = ({
   status,
 }: {
   status: string | undefined;
@@ -25,12 +25,28 @@ export const WorkflowRunStatusIcon = ({
   if (status === undefined) return null;
   switch (status.toLowerCase()) {
     case 'queued':
-      return <StatusPending />;
+      return (
+        <>
+          <StatusPending /> Queued
+        </>
+      );
     case 'in_progress':
-      return <StatusRunning />;
+      return (
+        <>
+          <StatusRunning /> In progress
+        </>
+      );
     case 'completed':
-      return <StatusOK />;
+      return (
+        <>
+          <StatusOK /> Completed
+        </>
+      );
     default:
-      return <StatusPending />;
+      return (
+        <>
+          <StatusPending /> Pending
+        </>
+      );
   }
 };

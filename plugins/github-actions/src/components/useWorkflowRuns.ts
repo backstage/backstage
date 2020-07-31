@@ -15,13 +15,20 @@
  */
 import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
-import { WorkflowRun } from './WorkflowRunsTable';
-import { githubActionsApiRef } from '../../api/GithubActionsApi';
+import { WorkflowRun } from './WorkflowRunsTable/WorkflowRunsTable';
+import { githubActionsApiRef } from '../api/GithubActionsApi';
 import { useApi, githubAuthApiRef, errorApiRef } from '@backstage/core';
 import { ActionsListWorkflowRunsForRepoResponseData } from '@octokit/types';
-import { useProjectName } from '../useProjectName';
 
-export function useWorkflowRuns() {
+export function useWorkflowRuns({
+  owner,
+  repo,
+  branch,
+}: {
+  owner: string;
+  repo: string;
+  branch?: string;
+}) {
   const api = useApi(githubActionsApiRef);
   const auth = useApi(githubAuthApiRef);
 
@@ -31,19 +38,21 @@ export function useWorkflowRuns() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
 
-  const projectName = useProjectName({
-    kind: 'Component',
-    name: 'backstage',
-  });
-  const { loading, value: runs, retry } = useAsyncRetry<
+  const { loading, value: runs, retry, error } = useAsyncRetry<
     WorkflowRun[]
   >(async () => {
     const token = await auth.getAccessToken(['repo']);
-    const [owner, repo] = (projectName ?? '/').split('/');
     return (
       api
         // GitHub API pagination count starts from 1
-        .listWorkflowRuns({ token, owner, repo, pageSize, page: page + 1 })
+        .listWorkflowRuns({
+          token,
+          owner,
+          repo,
+          pageSize,
+          page: page + 1,
+          branch,
+        })
         .then(
           (
             workflowRunsData: ActionsListWorkflowRunsForRepoResponseData,
@@ -77,11 +86,12 @@ export function useWorkflowRuns() {
               },
               status: run.status,
               url: run.url,
+              githubUrl: run.html_url,
             }));
           },
         )
     );
-  }, [page, pageSize, projectName]);
+  }, [page, pageSize, repo, owner]);
 
   return [
     {
@@ -89,8 +99,9 @@ export function useWorkflowRuns() {
       pageSize,
       loading,
       runs,
-      projectName: projectName ?? '',
+      projectName: `${owner}/${repo}`,
       total,
+      error,
     },
     {
       runs,

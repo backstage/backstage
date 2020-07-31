@@ -33,12 +33,14 @@ export type GithubActionsApi = {
     repo,
     pageSize,
     page,
+    branch,
   }: {
     token: string;
     owner: string;
     repo: string;
     pageSize?: number;
     page?: number;
+    branch?: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
   getWorkflow: ({
     token,

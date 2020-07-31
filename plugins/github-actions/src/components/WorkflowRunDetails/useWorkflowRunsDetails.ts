@@ -24,12 +24,14 @@ export const useWorkflowRunsDetails = (repo: string, owner: string) => {
   const { id } = useParams();
   const details = useAsync(async () => {
     const token = await auth.getAccessToken(['repo']);
-    return api.getWorkflowRun({
-      token,
-      owner,
-      repo,
-      id: parseInt(id, 10),
-    });
+    return repo && owner
+      ? api.getWorkflowRun({
+          token,
+          owner,
+          repo,
+          id: parseInt(id, 10),
+        })
+      : Promise.reject('No repo/owner provided');
   }, [repo, owner, id]);
   return details;
 };

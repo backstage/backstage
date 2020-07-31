@@ -29,7 +29,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
-import knex from 'knex';
+import knex, { PgConnectionConfig } from 'knex';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -47,11 +47,36 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 
   return (plugin: string): PluginEnvironment => {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
-    const database = knex({
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
+    // Supported DBs are sqlite and postgres
+    const isPg = [
+      'POSTGRES_USER',
+      'POSTGRES_HOST',
+      'POSTGRES_PASSWORD',
+    ].every(key => config.getOptional(`backend.${key}`));
+
+    let knexConfig;
+
+    if (isPg) {
+      knexConfig = {
+        client: 'pg',
+        useNullAsDefault: true,
+        connection: {
+          port: config.getOptionalNumber('backend.POSTGRES_PORT'),
+          host: config.getString('backend.POSTGRES_HOST'),
+          user: config.getString('backend.POSTGRES_USER'),
+          password: config.getString('backend.POSTGRES_PASSWORD'),
+          database: `backstage_plugin_${plugin}`,
+        } as PgConnectionConfig,
+      };
+    } else {
+      knexConfig = {
+        client: 'sqlite3',
+        connection: ':memory:',
+        useNullAsDefault: true,
+      };
+    }
+
+    const database = knex(knexConfig);
     database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });

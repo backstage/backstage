@@ -13,6 +13,18 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432/tcp
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -44,6 +56,11 @@ jobs:
       - run: yarn tsc
       - run: yarn build
       - name: verify app and plugin creation
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
           node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js

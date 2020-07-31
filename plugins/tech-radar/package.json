@@ -42,7 +42,7 @@
     "@testing-library/user-event": "^12.0.7",
     "@types/color": "^3.0.1",
     "@types/d3-force": "^1.2.1",
-    "@types/jest": "^25.2.2",
+    "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9",
     "jest-fetch-mock": "^3.0.3"
