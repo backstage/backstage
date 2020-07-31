@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { ContentHeader, SupportButton } from '@backstage/core';
 import { Box, Typography } from '@material-ui/core';
 
 export type Props = { title?: string };
-export const PluginHeader: FC<Props> = ({ title = 'Jenkins' }) => {
+export const PluginHeader = ({ title = 'Jenkins' }) => {
   return (
     <ContentHeader
       title={title}
