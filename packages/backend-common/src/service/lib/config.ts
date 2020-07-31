@@ -32,8 +32,8 @@ export type CertificateReferenceOptions = {
 };
 
 export type CertificateSigningOptions = {
+  algorithm: string;
   size?: number;
-  algorithm?: string;
   days?: number;
   attributes?: CertificateAttributes;
 };

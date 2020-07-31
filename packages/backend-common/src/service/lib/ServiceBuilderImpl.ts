@@ -169,8 +169,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
           const signatures = require('selfsigned').generate(
             certificateAttributes,
             {
+              algorithm: signingOptions?.algorithm,
               keySize: signingOptions?.size || 2048,
-              algorithm: signingOptions?.algorithm || 'sha256',
               days: signingOptions?.days || 30,
             },
           );
