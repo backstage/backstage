@@ -40,15 +40,47 @@ describe('readEnv', () => {
         APP_CONFIG_numbers_a: '1',
         APP_CONFIG_numbers_b: '2',
         APP_CONFIG_numbers_c: 'false',
-        APP_CONFIG_numbers_d: undefined,
+        APP_CONFIG_numbers_d: 'abc',
+        APP_CONFIG_numbers_e: undefined,
         APP_CONFIG_very_deep_nested_config_object: '{}',
       }),
     ).toEqual([
       {
         data: {
           foo: 'bar',
-          numbers: { a: 1, b: 2, c: false },
+          numbers: { a: 1, b: 2, c: false, d: 'abc' },
           very: { deep: { nested: { config: { object: {} } } } },
+        },
+        context: 'env',
+      },
+    ]);
+  });
+
+  it('should accept string values', () => {
+    expect(readEnv({ APP_CONFIG_foo: '"abc"', APP_CONFIG_bar: 'xyz' })).toEqual(
+      [
+        {
+          data: {
+            foo: 'abc',
+            bar: 'xyz',
+          },
+          context: 'env',
+        },
+      ],
+    );
+  });
+
+  it('should accept complex objects', () => {
+    expect(
+      readEnv({
+        APP_CONFIG_foo: '{ "a": 123, "b": "123", "c": [] }',
+        APP_CONFIG_bar: '[123, "abc", {}]',
+      }),
+    ).toEqual([
+      {
+        data: {
+          foo: { a: 123, b: '123', c: [] },
+          bar: [123, 'abc', {}],
         },
         context: 'env',
       },
@@ -68,12 +100,17 @@ describe('readEnv', () => {
     );
   });
 
-  it.each([['hello'], ['"hello'], ['{'], ['}'], ['123abc']])(
-    'should reject invalid value %p',
+  it.each([['hello'], ['"hello'], ['{'], ['}']])(
+    'should fallback to string when invalid json value %p',
     value => {
-      expect(() => readEnv({ APP_CONFIG_foo: value })).toThrow(
-        /^Failed to parse JSON-serialized config value for key 'foo', SyntaxError: /,
-      );
+      expect(readEnv({ APP_CONFIG_foo: value })).toEqual([
+        {
+          data: {
+            foo: value,
+          },
+          context: 'env',
+        },
+      ]);
     },
   );
 
