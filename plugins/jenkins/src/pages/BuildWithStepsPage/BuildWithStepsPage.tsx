@@ -99,7 +99,7 @@ const Page = () => (
   </Layout>
 );
 
-const BuildWithStepsView: FC<{}> = () => {
+const BuildWithStepsView = () => {
   const [searchParams] = useSearchParams();
   const buildPath = searchParams.get('url') || '';
   const classes = useStyles();
