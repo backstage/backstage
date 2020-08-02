@@ -69,6 +69,7 @@ async function buildDistWorkspace(workspaceName, rootDir) {
     'build-workspace',
     workspaceDir,
     '@backstage/cli',
+    '@backstage/create-app',
     '@backstage/core',
     '@backstage/dev-utils',
     '@backstage/test-utils',
@@ -107,8 +108,7 @@ async function createApp(appName, isPostgres, workspaceDir, rootDir) {
   const child = spawnPiped(
     [
       'node',
-      resolvePath(workspaceDir, 'packages/cli/bin/backstage-cli'),
-      'create-app',
+      resolvePath(workspaceDir, 'packages/create-app/bin/backstage-create-app'),
       '--skip-install',
     ],
     {
