@@ -28,10 +28,10 @@
     "commander": "^4.1.1",
     "chalk": "^4.0.0",
     "fs-extra": "^9.0.0",
-    "react-dev-utils": "^10.2.1",
+    "handlebars": "^4.7.3",
     "inquirer": "^7.0.4",
-    "recursive-readdir": "^2.2.2",
-    "ora": "^4.0.3"
+    "ora": "^4.0.3",
+    "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",
