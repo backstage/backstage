@@ -20,6 +20,9 @@
   "bin": {
     "backstage-create-app": "bin/backstage-create-app"
   },
+  "scripts": {
+    "build": "backstage-cli build --outputs cjs"
+  },
   "dependencies": {
     "commander": "^4.1.1",
     "chalk": "^4.0.0",
@@ -36,5 +39,10 @@
     "@types/recursive-readdir": "^2.2.0",
     "@types/ora": "^3.2.0",
     "ts-node": "^8.6.2"
-  }
+  },
+  "files": [
+    "bin",
+    "dist",
+    "templates"
+  ]
 }
