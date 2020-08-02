@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/cli.yml'
       - 'packages/cli/**'
+      - 'packages/create-app/**'
       - 'packages/core/**'
       - 'packages/core-api/**'
       - 'yarn.lock'
