@@ -22,6 +22,11 @@ import fs from 'fs';
 import path from 'path';
 import { ApolloServer } from 'apollo-server-express';
 
+const schemaPath = path.resolve(
+  require.resolve('@backstage/plugin-graphql-backend/package.json'),
+  '../schema.gql',
+);
+
 export interface RouterOptions {
   logger: Logger;
 }
@@ -29,10 +34,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const typeDefs = await fs.promises.readFile(
-    path.resolve(__dirname, '..', 'schema.gql'),
-    'utf-8',
-  );
+  const typeDefs = await fs.promises.readFile(schemaPath, 'utf-8');
 
   const server = new ApolloServer({ typeDefs, logger: options.logger });
   const router = Router();
