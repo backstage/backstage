@@ -50,7 +50,7 @@ proxy:
 
 ```shell
 HEADER=$(echo -n user:api-token | base64)
-export JENKINS_BASIC_AUTH_HEADER="Authorization: Basic $HEADER"
+export JENKINS_BASIC_AUTH_HEADER="Basic $HEADER"
 ```
 
 5. Run app with `yarn start`
