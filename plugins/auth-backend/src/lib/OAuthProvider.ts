@@ -42,8 +42,13 @@ export type Options = {
 /* Return the value of `env` key, if it is exists, encoded within
      the `state` parameter in the request
   */
-const getEnv = (stateParams: Array<string>): string => {
-  const envParams = stateParams.filter(param => param.split('=')[0] === 'env');
+const readStateParameter = (
+  stateParams: Array<string>,
+  parameter: string,
+): string => {
+  const envParams = stateParams.filter(
+    param => param.split('=')[0] === parameter,
+  );
 
   if (envParams.length > 0) {
     return envParams[0].split('=')[1];
@@ -54,9 +59,11 @@ const getEnv = (stateParams: Array<string>): string => {
 const readState = (stateString: string): Array<string> => {
   return decodeURIComponent(stateString).split('&');
 };
+
 export const verifyNonce = (req: express.Request, providerId: string) => {
   const cookieNonce = req.cookies[`${providerId}-nonce`];
-  const stateNonce = req.query.state;
+  const state = req.query.state;
+  const stateNonce = readStateParameter(state, 'nonce');
 
   if (!cookieNonce) {
     throw new Error('Auth response is missing cookie nonce');
@@ -257,11 +264,11 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     if (reqEnv) {
       return reqEnv;
     }
-    const stateParam = req.query.state?.toString();
-    if (!stateParam) {
+    const stateParams = req.query.state?.toString();
+    if (!stateParams) {
       return '';
     }
-    const env = getEnv(readState(stateParam));
+    const env = readStateParameter(readState(stateParams), 'env');
     return env;
   }
 
