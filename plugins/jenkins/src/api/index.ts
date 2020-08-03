@@ -34,8 +34,8 @@ export class JenkinsApi {
   }
 
   async retry(buildName: string) {
-    // looks like current SDK may not support this or at least not very well
-    // can't see any support for replay
+    // looks like the current SDK only supports triggering a new build
+    // can't see any support for replay (re-running the specific build with the same SCM info)
     return await this.jenkins.job.build(buildName);
   }
 
@@ -89,11 +89,17 @@ export class JenkinsApi {
       })
       .pop();
 
+    const path = new URL(jenkinsResult.url).pathname;
+
     return {
-      id: new URL(jenkinsResult.url).pathname,
+      id: path,
       buildName: jenkinsResult.fullDisplayName,
       status: jenkinsResult.building ? 'running' : jenkinsResult.result,
-      onRestartClick: () => {},
+      onRestartClick: () => {
+        // TODO: this won't handle non root context path, need a better way to get the job name
+        const { jobName } = this.extractJobDetailsFromBuildName(path);
+        return this.retry(jobName);
+      },
       source: source,
     };
   }
