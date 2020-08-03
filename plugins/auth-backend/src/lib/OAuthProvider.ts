@@ -60,9 +60,19 @@ const readState = (stateString: string): Array<string> => {
   return decodeURIComponent(stateString).split('&');
 };
 
+export const encodeState = (stateObject: object): string => {
+  const vals = Object.keys(stateObject).map(
+    key =>
+      `${encodeURIComponent(key)}=${encodeURIComponent(
+        Reflect.get(stateObject, key),
+      )}`,
+  );
+
+  return vals.join('&');
+};
 export const verifyNonce = (req: express.Request, providerId: string) => {
   const cookieNonce = req.cookies[`${providerId}-nonce`];
-  const state = req.query.state;
+  const state: Array<string> = readState(req.query.state?.toString() ?? '');
   const stateNonce = readStateParameter(state, 'nonce');
 
   if (!cookieNonce) {
@@ -135,21 +145,12 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce);
 
-    // const stateObject: {nonce: string,
-    //                    env: string}
-
     const stateObject = { nonce: nonce, env: env };
-
-    const state = Object.keys(stateObject)
-      .map(
-        key =>
-          `${encodeURIComponent(key)}=${encodeURIComponent(stateObject[key])}`,
-      )
-      .join('&');
+    const stateParameter = encodeState(stateObject);
 
     const queryParameters = {
       scope,
-      state: state,
+      state: stateParameter,
     };
 
     const { url, status } = await this.providerHandlers.start(
