@@ -22,14 +22,18 @@ import { PluginHeader } from '../../components/PluginHeader';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import { Layout } from '../../components/Layout';
 import LaunchIcon from '@material-ui/icons/Launch';
+import GitHubIcon from '@material-ui/icons/GitHub';
 import { useBuildWithSteps } from '../../state/useBuildWithSteps';
 
 const IconLink = IconButton as typeof Link;
 const BuildName: FC<{ build?: any }> = ({ build }) => (
   <Box display="flex" alignItems="center">
-    {build?.fullDisplayName}
-    <IconLink href={build?.url} target="_blank">
-      <LaunchIcon />
+    {build?.buildName}
+    <IconLink href={build?.url} target="_blank" title="View on Jenkins">
+      <LaunchIcon /> {/* TODO use Jenkins logo*/}
+    </IconLink>
+    <IconLink href={build?.source.url} target="_blank" title="View on GitHub">
+      <GitHubIcon />
     </IconLink>
   </Box>
 );
@@ -111,10 +115,9 @@ const BuildWithStepsView = () => {
     startPolling();
     return () => stopPolling();
   }, [buildPath, startPolling, stopPolling]);
-
   return (
     <>
-      <PluginHeader title="Build info" />
+      <PluginHeader title={value?.source.displayName || 'Build details'} />
 
       <Grid container spacing={3} direction="column">
         <Grid item>

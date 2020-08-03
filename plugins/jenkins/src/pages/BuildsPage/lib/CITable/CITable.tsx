@@ -18,11 +18,8 @@ import { Link, Typography, Box, IconButton } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink } from 'react-router-dom';
-import {
-  Table,
-  TableColumn,
-} from '@backstage/core';
-import {JenkinsRunStatus} from "../Status";
+import { Table, TableColumn } from '@backstage/core';
+import { JenkinsRunStatus } from '../Status';
 
 export type CITableBuildInfo = {
   id: string;
@@ -30,9 +27,10 @@ export type CITableBuildInfo = {
   buildUrl?: string;
   source: {
     branchName: string;
+    url: string;
+    displayName: string;
     commit: {
       hash: string;
-      url: string;
     };
   };
   status: string;
@@ -41,7 +39,7 @@ export type CITableBuildInfo = {
     passed: number;
     skipped: number;
     failed: number;
-    testUrl: string; // fixme better name
+    testUrl: string;
   };
   onRestartClick: () => void;
 };
@@ -61,19 +59,24 @@ const generatedColumns: TableColumn[] = [
     title: 'Source',
     render: (row: Partial<CITableBuildInfo>) => (
       <>
-        <p>{row.source?.branchName}</p>
-        <p>{row.source?.commit.hash}</p>
+        <p>
+          <Link href={row.source?.url || ''} target="_blank">
+            {row.source?.branchName}
+          </Link>
+        </p>
+        <p>{row.source?.commit?.hash}</p>
       </>
     ),
   },
   {
     title: 'Status',
-    render: (row: Partial<CITableBuildInfo>) => { 
+    render: (row: Partial<CITableBuildInfo>) => {
       return (
-      <Box display="flex" alignItems="center">
-        <JenkinsRunStatus status={row.status} />
-      </Box>
-    )},
+        <Box display="flex" alignItems="center">
+          <JenkinsRunStatus status={row.status} />
+        </Box>
+      );
+    },
   },
   {
     title: 'Actions',
