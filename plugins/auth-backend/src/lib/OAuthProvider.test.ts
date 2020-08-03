@@ -21,6 +21,7 @@ import {
   THOUSAND_DAYS_MS,
   TEN_MINUTES_MS,
   verifyNonce,
+  encodeState,
   OAuthProvider,
 } from './OAuthProvider';
 import { WebMessageResponse, OAuthProviderHandlers } from '../providers/types';
@@ -43,10 +44,11 @@ const mockResponseData = {
 describe('OAuthProvider Utils', () => {
   describe('verifyNonce', () => {
     it('should throw error if cookie nonce missing', () => {
+      const state = { nonce: 'NONCE', env: 'development' };
       const mockRequest = ({
         cookies: {},
         query: {
-          state: 'NONCE',
+          state: encodeState(state),
         },
       } as unknown) as express.Request;
       expect(() => {
@@ -67,12 +69,13 @@ describe('OAuthProvider Utils', () => {
     });
 
     it('should throw error if nonce mismatch', () => {
+      const state = { nonce: 'NONCEB', env: 'development' };
       const mockRequest = ({
         cookies: {
           'providera-nonce': 'NONCEA',
         },
         query: {
-          state: 'NONCEB',
+          state: encodeState(state),
         },
       } as unknown) as express.Request;
       expect(() => {
@@ -81,12 +84,13 @@ describe('OAuthProvider Utils', () => {
     });
 
     it('should not throw any error if nonce matches', () => {
+      const state = { nonce: 'NONCE', env: 'development' };
       const mockRequest = ({
         cookies: {
           'providera-nonce': 'NONCE',
         },
         query: {
-          state: 'NONCE',
+          state: encodeState(state),
         },
       } as unknown) as express.Request;
       expect(() => {
@@ -249,12 +253,13 @@ describe('OAuthProvider', () => {
       disableRefresh: false,
     });
 
+    const state = { nonce: 'nonce', env: 'development' };
     const mockRequest = ({
       cookies: {
         'test-provider-nonce': 'nonce',
       },
       query: {
-        state: 'nonce',
+        state: encodeState(state),
       },
     } as unknown) as express.Request;
 
