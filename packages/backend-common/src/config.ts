@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import { findRootPath } from './paths';
+import { findPaths } from '@backstage/cli-common';
+import { loadConfig } from '@backstage/config-loader';
 
-describe('findRootPath', () => {
-  it('should find root path', () => {
-    const rootPath = findRootPath(process.cwd());
-    expect(typeof rootPath).toBe('string');
+/**
+ * Load configuration for a Backend
+ */
+export async function loadBackendConfig() {
+  const paths = findPaths(__dirname);
+  const configs = await loadConfig({
+    rootPath: paths.targetRoot,
+    shouldReadSecrets: true,
   });
-});
+  return configs;
+}
