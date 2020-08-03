@@ -39,6 +39,21 @@ export type Options = {
   tokenIssuer: TokenIssuer;
 };
 
+/* Return the value of `env` key, if it is exists, encoded within
+     the `state` parameter in the request
+  */
+const getEnv = (stateParams: Array<string>): string => {
+  const envParams = stateParams.filter(param => param.split('=')[0] === 'env');
+
+  if (envParams.length > 0) {
+    return envParams[0].split('=')[1];
+  }
+  return '';
+};
+
+const readState = (stateString: string): Array<string> => {
+  return decodeURIComponent(stateString).split('&');
+};
 export const verifyNonce = (req: express.Request, providerId: string) => {
   const cookieNonce = req.cookies[`${providerId}-nonce`];
   const stateNonce = req.query.state;
@@ -103,6 +118,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
   async start(req: express.Request, res: express.Response): Promise<void> {
     // retrieve scopes from request
     const scope = req.query.scope?.toString() ?? '';
+    const env = req.query.env?.toString() ?? '';
 
     if (this.options.persistScopes) {
       this.setScopesCookie(res, scope);
@@ -112,9 +128,21 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce);
 
+    // const stateObject: {nonce: string,
+    //                    env: string}
+
+    const stateObject = { nonce: nonce, env: env };
+
+    const state = Object.keys(stateObject)
+      .map(
+        key =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(stateObject[key])}`,
+      )
+      .join('&');
+
     const queryParameters = {
       scope,
-      state: nonce,
+      state: state,
     };
 
     const { url, status } = await this.providerHandlers.start(
@@ -222,6 +250,19 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     } catch (error) {
       res.status(401).send(`${error.message}`);
     }
+  }
+
+  identifyEnv(req: express.Request): string {
+    const reqEnv = req.query.env?.toString();
+    if (reqEnv) {
+      return reqEnv;
+    }
+    const stateParam = req.query.state?.toString();
+    if (!stateParam) {
+      return '';
+    }
+    const env = getEnv(readState(stateParam));
+    return env;
   }
 
   /**

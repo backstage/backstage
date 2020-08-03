@@ -25,13 +25,28 @@ export class EnvironmentHandler implements AuthProviderRouteHandlers {
   constructor(
     private readonly providerId: string,
     private readonly providers: EnvironmentHandlers,
+    private readonly envIdentifier: (req: express.Request) => string,
   ) {}
+
+  /* Return the value of `env` key, if it is exists, encoded within
+     the `state` parameter in the request
+  */
+  private getEnv(stateParams: Array<string>): string {
+    const envParams = stateParams.filter(
+      param => param.split('=')[0] === 'env',
+    );
+
+    if (envParams.length > 0) {
+      return envParams[0].split('=')[1];
+    }
+    return '';
+  }
 
   private getProviderForEnv(
     req: express.Request,
     res: express.Response,
   ): AuthProviderRouteHandlers | undefined {
-    const env = req.query.env?.toString();
+    const env: string = this.envIdentifier(req);
 
     if (env && this.providers.hasOwnProperty(env)) {
       return this.providers[env];

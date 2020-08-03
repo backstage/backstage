@@ -203,6 +203,15 @@ export interface AuthProviderRouteHandlers {
    * @param {express.Response} res
    */
   logout?(req: express.Request, res: express.Response): Promise<void>;
+
+  /**
+   *(Optional) A method to identify the environment Context of the Request
+   *
+   *Request
+   *- contains the environment context information encoded in the request
+   *  @param {express.Request} req
+   */
+  identifyEnv?(req: express.Request): string;
 }
 
 export type AuthProviderFactory = (

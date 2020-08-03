@@ -106,6 +106,10 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   async logout(_req: express.Request, res: express.Response): Promise<void> {
     res.send('noop');
   }
+
+  identifyEnv(_req: express.Request): string {
+    return '';
+  }
 }
 
 type SAMLProviderOptions = {

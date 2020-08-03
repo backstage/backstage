@@ -15,6 +15,7 @@
  */
 
 import Router from 'express-promise-router';
+import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
 import { createGithubProvider } from './github';
@@ -54,16 +55,24 @@ export const createAuthProviderRouter = (
   const router = Router();
   const envs = providerConfig.keys();
   const envProviders: EnvironmentHandlers = {};
+  let envIdentifier: (req: express.Request) => string;
 
   for (const env of envs) {
     const envConfig = providerConfig.getConfig(env);
     const provider = factory(globalConfig, env, envConfig, logger, issuer);
     if (provider) {
       envProviders[env] = provider;
+      if (envIdentifier === undefined) {
+        envIdentifier = provider.identifyEnv;
+      }
     }
   }
 
-  const handler = new EnvironmentHandler(providerId, envProviders);
+  const handler = new EnvironmentHandler(
+    providerId,
+    envProviders,
+    envIdentifier,
+  );
 
   router.get('/start', handler.start.bind(handler));
   router.get('/handler/frame', handler.frameHandler.bind(handler));
