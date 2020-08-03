@@ -49,22 +49,53 @@ export class JenkinsApi {
     return lastBuild;
   }
 
+  extractScmDetailsFromJob(jobDetails: any): any {
+    const scmInfo = jobDetails.actions
+      .filter(
+        (action: any) =>
+          action._class === 'jenkins.scm.api.metadata.ObjectMetadataAction',
+      )
+      .map((action: any) => {
+        return {
+          url: action?.objectUrl,
+          // https://javadoc.jenkins.io/plugin/scm-api/jenkins/scm/api/metadata/ObjectMetadataAction.html
+          // branch name for regular builds, pull request title on pull requests
+          displayName: action?.objectDisplayName,
+        };
+      })
+      .pop();
+
+    return scmInfo;
+  }
+
+  async getJob(jobName: string) {
+    return this.jenkins.job.get({
+      name: jobName,
+      depth: 1,
+    });
+  }
+
   async getFolder(folderName: string) {
     const folder = await this.jenkins.job.get(folderName);
     const results = [];
     for (const jobSummary of folder.jobs) {
-      const jobDetails = await this.jenkins.job.get(
-        `${folderName}/${jobSummary.name}`,
-      );
+      const jobDetails = await this.jenkins.job.get({
+        name: `${folderName}/${jobSummary.name}`,
+        depth: 1,
+      });
+
+      const jobScmInfo = this.extractScmDetailsFromJob(jobDetails);
       if (jobDetails.jobs) {
         // skipping folders inside folders for now
       } else {
         for (const buildDetails of jobDetails.builds) {
-          const build = await this.jenkins.build.get(
-            `${folderName}/${jobSummary.name}`,
-            buildDetails.number,
-          );
-          const ciTable = this.mapJenkinsBuildToCITable(build);
+          const build = await this.jenkins.build.get({
+            name: `${folderName}/${jobSummary.name}`,
+            number: buildDetails.number,
+            depth: 1,
+          });
+
+          const ciTable = this.mapJenkinsBuildToCITable(build, jobScmInfo);
           results.push(ciTable);
         }
       }
@@ -72,22 +103,32 @@ export class JenkinsApi {
     return results;
   }
 
-  private mapJenkinsBuildToCITable(jenkinsResult: any): CITableBuildInfo {
-    const source = jenkinsResult.actions
-      .filter(
-        (action: any) => action._class === 'hudson.plugins.git.util.BuildData',
-      )
-      .map((action: any) => {
-        const [first]: any = Object.values(action.buildsByBranchName);
-        const branch = first.revision.branch[0];
-        return {
-          branchName: branch.name,
-          commit: {
-            hash: branch.SHA1.substring(0, 8),
-          },
-        };
-      })
-      .pop();
+  mapJenkinsBuildToCITable(
+    jenkinsResult: any,
+    jobScmInfo?: any,
+  ): CITableBuildInfo {
+    const source =
+      jenkinsResult.actions
+        .filter(
+          (action: any) =>
+            action._class === 'hudson.plugins.git.util.BuildData',
+        )
+        .map((action: any) => {
+          const [first]: any = Object.values(action.buildsByBranchName);
+          const branch = first.revision.branch[0];
+          return {
+            branchName: branch.name,
+            commit: {
+              hash: branch.SHA1.substring(0, 8),
+            },
+          };
+        })
+        .pop() || {};
+
+    if (jobScmInfo) {
+      source.url = jobScmInfo?.url;
+      source.displayName = jobScmInfo?.displayName;
+    }
 
     const path = new URL(jenkinsResult.url).pathname;
 
@@ -112,7 +153,7 @@ export class JenkinsApi {
     return buildResult;
   }
 
-  private extractJobDetailsFromBuildName(buildName: string) {
+  extractJobDetailsFromBuildName(buildName: string) {
     const trimmedBuild = buildName.replace(/\/job/g, '').replace(/\/$/, '');
 
     const split = trimmedBuild.split('/');
