@@ -30,7 +30,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-sparklines": "^1.7.0",
-    "react-use": "^14.2.0",
+    "react-use": "^15.3.3",
     "timeago.js": "^4.0.2"
   },
   "devDependencies": {

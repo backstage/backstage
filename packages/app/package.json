@@ -31,7 +31,7 @@
     "react-hot-loader": "^4.12.21",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
-    "react-use": "^14.2.0",
+    "react-use": "^15.3.3",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
