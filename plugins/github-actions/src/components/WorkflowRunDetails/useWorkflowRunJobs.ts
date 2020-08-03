@@ -17,8 +17,14 @@ import { useAsync } from 'react-use';
 import { Jobs } from '../../api/types';
 
 export const useWorkflowRunJobs = (jobsUrl?: string) => {
-  const jobs = useAsync<Jobs>(async () => {
-    if (jobsUrl === undefined) return [];
+  const jobs = useAsync(async (): Promise<Jobs> => {
+    if (jobsUrl === undefined) {
+      return {
+        total_count: 0,
+        jobs: [],
+      };
+    }
+
     const data = await fetch(jobsUrl).then(d => d.json());
     return data;
   }, [jobsUrl]);

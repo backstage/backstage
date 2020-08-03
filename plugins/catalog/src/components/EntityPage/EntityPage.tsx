@@ -87,7 +87,7 @@ export const EntityPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-  const { value: entity, error, loading } = useAsync<Entity | undefined>(
+  const { value: entity, error, loading } = useAsync(
     () => catalogApi.getEntityByName({ kind, namespace, name }),
     [catalogApi, kind, namespace, name],
   );
