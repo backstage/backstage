@@ -30,9 +30,14 @@ export class LocalPublish implements PublisherBase {
         remoteUrl: string;
       }>
     | { remoteUrl: string } {
+    const entityNamespace = entity.metadata.namespace ?? 'default';
+
     const publishDir = path.resolve(
       __dirname,
-      `../../../../static/docs/${entity.metadata.name}`,
+      '../../../../static/docs/',
+      entity.kind,
+      entityNamespace,
+      entity.metadata.name
     );
 
     if (!fs.existsSync(publishDir)) {

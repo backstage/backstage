@@ -74,12 +74,13 @@ export const Reader = () => {
     'https://techdocs-mock-sites.storage.googleapis.com';
 
   const location = useLocation();
-  const { componentId, '*': path } = useParams();
+  const { kind, namespace, componentId, '*': path } = useParams();
   const [shadowDomRef, shadowRoot] = useShadowDom();
   const navigate = useNavigate();
   const normalizedUrl = new URLFormatter(
     `${docStorageUrl}${location.pathname.replace('/docs', '')}`,
   ).formatBaseURL();
+  
   const state = useFetch(`${normalizedUrl}index.html`);
 
   React.useEffect(() => {
@@ -100,7 +101,7 @@ export const Reader = () => {
       sanitizeDOM(),
       addBaseUrl({
         docStorageUrl,
-        componentId,
+        componentId: `${kind}/${namespace}/${componentId}`,
         path,
       }),
       rewriteDocLinks(),
@@ -154,7 +155,7 @@ export const Reader = () => {
         },
       }),
     ]);
-  }, [componentId, path, shadowRoot, state]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [componentId, path, shadowRoot, state, namespace, kind]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (state.value instanceof Error) {
     return <TechDocsNotFound />;

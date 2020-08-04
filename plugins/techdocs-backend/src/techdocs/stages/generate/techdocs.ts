@@ -19,9 +19,10 @@ import {
   GeneratorRunResult,
 } from './types';
 import { runDockerContainer } from './helpers';
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
+import { Entity } from '@backstage/catalog-model';
 
 export class TechdocsGenerator implements GeneratorBase {
   public async run({
@@ -29,7 +30,7 @@ export class TechdocsGenerator implements GeneratorBase {
     logStream,
     dockerClient,
   }: GeneratorRunOptions): Promise<GeneratorRunResult> {
-    const resultDir = fs.mkdtempSync(path.join(os.tmpdir(), `techdocs-tmp-`));
+    const resultDir = fs.mkdtempSync(path.join(os.tmpdir(), 'techdocs-tmp-'));
 
     await runDockerContainer({
       imageName: 'spotify/techdocs',
@@ -43,6 +44,7 @@ export class TechdocsGenerator implements GeneratorBase {
     console.log(
       `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir}`,
     );
+
     return { resultDir };
   }
 }
