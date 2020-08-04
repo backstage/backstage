@@ -18,7 +18,7 @@ import Docker from 'dockerode';
 import { Entity } from '@backstage/catalog-model';
 
 /**
- * The returned directory from the templater which is ready
+ * The returned directory from the generator which is ready
  * to pass to the next stage of the TechDocs which is publishing
  */
 export type GeneratorRunResult = {
