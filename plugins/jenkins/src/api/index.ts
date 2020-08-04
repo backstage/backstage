@@ -103,6 +103,32 @@ export class JenkinsApi {
     return results;
   }
 
+  private getTestReport(
+    jenkinsResult: any,
+  ): {
+    total: number;
+    passed: number;
+    skipped: number;
+    failed: number;
+    testUrl: string;
+  } {
+    return jenkinsResult.actions
+      .filter(
+        (action: any) =>
+          action._class === 'hudson.tasks.junit.TestResultAction',
+      )
+      .map((action: any) => {
+        return {
+          total: action.totalCount,
+          passed: action.totalCount - action.failCount - action.skipCount,
+          skipped: action.skipCount,
+          failed: action.failCount,
+          testUrl: `${jenkinsResult.url}${action.urlName}/`,
+        };
+      })
+      .pop();
+  }
+
   mapJenkinsBuildToCITable(
     jenkinsResult: any,
     jobScmInfo?: any,
@@ -142,6 +168,7 @@ export class JenkinsApi {
         return this.retry(jobName);
       },
       source: source,
+      tests: this.getTestReport(jenkinsResult),
     };
   }
 
