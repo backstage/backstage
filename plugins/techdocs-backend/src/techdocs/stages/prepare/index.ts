@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './service/router';
-export * from './techdocs';
+export { DirectoryPreparer } from './dir';
+export { Preparers } from './preparers';
+export type { PreparerBuilder } from './types';
