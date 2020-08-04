@@ -95,6 +95,7 @@ better yet, a pull request.
     - [ADR005 - Catalog Core Entities](architecture-decisions/adr005-catalog-core-entities.md)
     - [ADR006 - Avoid React.FC and React.SFC](architecture-decisions/adr006-avoid-react-fc.md)
     - [ADR007 - Use MSW for Mocking Network Requests](architecture-decisions/adr007-use-msw-to-mock-service-requests.md)
+    - [ADR008 - Default Catalog File Name](architecture-decisions/adr008-default-catalog-file-name.md)
   - [Contribute](../CONTRIBUTING.md)
   - [Support](overview/support.md)
   - [FAQ](FAQ.md)
