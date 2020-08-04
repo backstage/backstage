@@ -19,6 +19,7 @@ import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import { GraphQLModule } from '@graphql-modules/core';
+import { QueryResolvers } from './types';
 
 export interface ModuleOptions {
   logger: Logger;
