@@ -44,6 +44,61 @@ export type CITableBuildInfo = {
   onRestartClick: () => void;
 };
 
+const FailCount = ({ count }: { count: number }): JSX.Element | null => {
+  if (count !== 0) {
+    return <>{count} failed</>;
+  }
+  return null;
+};
+
+const SkippedCount = ({ count }: { count: number }): JSX.Element | null => {
+  if (count !== 0) {
+    return <></>;
+  }
+  return null;
+};
+
+const FailSkippedWidget = ({
+  skipped,
+  failed,
+}: {
+  skipped: number;
+  failed: number;
+}): JSX.Element | null => {
+  if (skipped === 0 && failed === 0) {
+    return null;
+  }
+
+  if (skipped !== 0 && failed !== 0) {
+    return (
+      <>
+        {' '}
+        (<FailCount count={failed} />, <SkippedCount count={skipped} />)
+      </>
+    );
+  }
+
+  if (failed !== 0) {
+    return (
+      <>
+        {' '}
+        (<FailCount count={failed} />)
+      </>
+    );
+  }
+
+  if (skipped !== 0) {
+    return (
+      <>
+        {' '}
+        (<SkippedCount count={skipped} />)
+      </>
+    );
+  }
+
+  return null;
+};
+
 const generatedColumns: TableColumn[] = [
   {
     title: 'Build',
@@ -75,6 +130,28 @@ const generatedColumns: TableColumn[] = [
         <Box display="flex" alignItems="center">
           <JenkinsRunStatus status={row.status} />
         </Box>
+      );
+    },
+  },
+  {
+    title: 'Tests',
+    render: (row: Partial<CITableBuildInfo>) => {
+      return (
+        <>
+          <p>
+            {row.tests && (
+              <Link href={row.tests.testUrl || ''} target="_blank">
+                {row.tests.passed} / {row.tests.total} passed
+                <FailSkippedWidget
+                  skipped={row.tests.skipped}
+                  failed={row.tests.failed}
+                />
+              </Link>
+            )}
+
+            {!row.tests && 'n/a'}
+          </p>
+        </>
       );
     },
   },
