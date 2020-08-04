@@ -39,7 +39,7 @@ export const rootRouteRef = createRouteRef({
 });
 
 export const rootDocsRouteRef = createRouteRef({
-  path: '/docs/:componentId/*',
+  path: '/docs/:kind/:namespace/:componentId/*',
   title: 'Docs',
 });
 

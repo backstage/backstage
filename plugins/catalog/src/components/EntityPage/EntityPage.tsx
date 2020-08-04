@@ -139,6 +139,10 @@ export const EntityPage: FC<{}> = () => {
       id: 'quality',
       label: 'Quality',
     },
+    {
+      id: 'techdocs',
+      label: 'TechDocs'
+    }
   ];
 
   const { headerTitle, headerType } = headerProps(
