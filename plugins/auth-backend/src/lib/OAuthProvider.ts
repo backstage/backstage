@@ -42,10 +42,12 @@ export type Options = {
 
 const readState = (stateString: string): OAuthState => {
   try {
-    const state = JSON.parse(decodeURIComponent(stateString));
+    const state = Object.fromEntries(
+      new URLSearchParams(decodeURIComponent(stateString)),
+    );
     return {
-      nonce: state.nonce,
-      env: state.env,
+      nonce: state.nonce ?? undefined,
+      env: state.env ?? undefined,
     };
   } catch (e) {
     return {
@@ -56,7 +58,11 @@ const readState = (stateString: string): OAuthState => {
 };
 
 export const encodeState = (state: OAuthState): string => {
-  return encodeURIComponent(JSON.stringify(state));
+  const searchParams = new URLSearchParams();
+  searchParams.append('nonce', state.nonce ?? '');
+  searchParams.append('env', state.env ?? '');
+
+  return encodeURIComponent(searchParams.toString());
 };
 
 /*
