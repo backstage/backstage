@@ -53,7 +53,7 @@ const FailCount = ({ count }: { count: number }): JSX.Element | null => {
 
 const SkippedCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
-    return <></>;
+    return <>{count} skipped</>;
   }
   return null;
 };
