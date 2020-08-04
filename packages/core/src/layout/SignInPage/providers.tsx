@@ -15,12 +15,6 @@
  */
 
 import React, { useLayoutEffect, useState, useMemo, useCallback } from 'react';
-import { guestProvider } from './guestProvider';
-import { googleProvider } from './googleProvider';
-import { customProvider } from './customProvider';
-import { gitlabProvider } from './gitlabProvider';
-import { oktaProvider } from './oktaProvider';
-import { githubProvider } from './githubProvider';
 import {
   SignInPageProps,
   SignInResult,
@@ -28,24 +22,12 @@ import {
   useApiHolder,
   errorApiRef,
 } from '@backstage/core-api';
-import { SignInProvider } from './types';
+import { SignInProviderConfig, CommonSignInConfig } from './types';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
-// Separate list here to avoid exporting internal types
-export type SignInProviderId = 'guest' | string;
-
-const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
-  guest: guestProvider,
-  google: googleProvider,
-  gitlab: gitlabProvider,
-  oauth2: customProvider,
-  okta: oktaProvider,
-  github: githubProvider,
-};
-
 export const useSignInProviders = (
-  providers: SignInProviderId[],
+  providers: SignInProviderConfig[],
   onResult: SignInPageProps['onResult'],
 ) => {
   const errorApi = useApi(errorApiRef);
@@ -74,25 +56,29 @@ export const useSignInProviders = (
     }
 
     // We can't use storageApi here, as it might have a dependency on the IdentityApi
-    const selectedProvider = localStorage.getItem(
+    const selectedProviderId = localStorage.getItem(
       PROVIDER_STORAGE_KEY,
-    ) as SignInProviderId;
+    ) as string;
 
     // No provider selected, let the user pick one
-    if (selectedProvider === null) {
+    if (selectedProviderId === null) {
       setLoading(false);
       return undefined;
     }
 
-    const provider = signInProviders[selectedProvider];
-    if (!provider) {
+    const config = providers.find(
+      provider => provider.id === selectedProviderId,
+    );
+    if (!config) {
       setLoading(false);
       return undefined;
     }
 
     let didCancel = false;
-    provider
-      .loader(apiHolder)
+    const { apiRef } = config as CommonSignInConfig;
+
+    config.provider
+      .loader(apiHolder, apiRef)
       .then(result => {
         if (didCancel) {
           return;
@@ -119,20 +105,22 @@ export const useSignInProviders = (
   // This renders all available sign-in providers
   const elements = useMemo(
     () =>
-      providers.map(providerId => {
-        const provider = signInProviders[providerId];
-        if (!provider) {
-          throw new Error(`Unknown sign-in provider: ${providerId}`);
-        }
-        const { Component } = provider;
+      providers.map(config => {
+        const { Component } = config.provider;
 
         const handleResult = (result: SignInResult) => {
-          localStorage.setItem(PROVIDER_STORAGE_KEY, providerId);
+          localStorage.setItem(PROVIDER_STORAGE_KEY, config.id);
 
           handleWrappedResult(result);
         };
 
-        return <Component key={providerId} onResult={handleResult} />;
+        return (
+          <Component
+            key={config.id}
+            provider={config}
+            onResult={handleResult}
+          />
+        );
       }),
     [providers, handleWrappedResult],
   );

@@ -15,3 +15,6 @@
  */
 
 export { SignInPage } from './SignInPage';
+export { commonProvider } from './commonProvider';
+export { guestProvider } from './guestProvider';
+export { customProvider } from './customProvider';

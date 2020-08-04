@@ -15,12 +15,46 @@
  */
 
 import { ComponentType } from 'react';
-import { SignInPageProps, SignInResult, ApiHolder } from '@backstage/core-api';
+import {
+  SignInPageProps,
+  SignInResult,
+  ApiHolder,
+  ApiRef,
+  OAuthApi,
+  ProfileInfoApi,
+  BackstageIdentityApi,
+  SessionStateApi,
+  OpenIdConnectApi,
+} from '@backstage/core-api';
 
-export type ProviderComponent = ComponentType<SignInPageProps>;
+export type SignInConfig = {
+  id: string;
+  provider: SignInProvider;
+};
+
+export type CommonSignInConfig = SignInConfig & {
+  title: string;
+  message: string;
+  apiRef: ApiRef<
+    OAuthApi &
+      ProfileInfoApi &
+      BackstageIdentityApi &
+      SessionStateApi &
+      OpenIdConnectApi
+  >;
+};
+
+export type SignInProviderConfig = SignInConfig | CommonSignInConfig;
+
+export type ProviderComponent = ComponentType<
+  SignInPageProps & { provider: SignInProviderConfig }
+>;
 
 export type ProviderLoader = (
   apis: ApiHolder,
+  apiRef: ApiRef<
+    OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
+  >,
 ) => Promise<SignInResult | undefined>;
 
 export type SignInProvider = {
