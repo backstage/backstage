@@ -341,3 +341,10 @@ export type SAMLProviderConfig = {
 export type SAMLEnvironmentProviderConfig = {
   [key: string]: SAMLProviderConfig;
 };
+
+export type OAuthState = {
+  /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
+   */
+  nonce?: string;
+  env?: string;
+};

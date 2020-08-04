@@ -22,6 +22,7 @@ import {
   OAuthProviderHandlers,
   WebMessageResponse,
   BackstageIdentity,
+  OAuthState,
 } from '../providers/types';
 import { InputError } from '@backstage/backend-common';
 import { TokenIssuer } from '../identity';
@@ -39,27 +40,26 @@ export type Options = {
   tokenIssuer: TokenIssuer;
 };
 
-/* Return the value of `env` key, if it is exists, encoded within
-     the `state` parameter in the request
-  */
-const readStateParameter = (
-  stateParams: Array<string>,
-  parameter: string,
-): string => {
-  const envParams = stateParams.filter(
-    param => param.split('=')[0] === parameter,
-  );
-
-  if (envParams.length > 0) {
-    return envParams[0].split('=')[1];
+const readState = (stateString: string): OAuthState => {
+  try {
+    const state = JSON.parse(decodeURIComponent(stateString));
+    return {
+      nonce: state.nonce,
+      env: state.env,
+    };
+  } catch (e) {
+    return {
+      nonce: undefined,
+      env: undefined,
+    };
   }
-  return '';
 };
 
-const readState = (stateString: string): Array<string> => {
-  return decodeURIComponent(stateString).split('&');
+export const encodeState = (state: OAuthState): string => {
+  return encodeURIComponent(JSON.stringify(state));
 };
 
+/*
 export const encodeState = (stateObject: object): string => {
   const vals = Object.keys(stateObject).map(
     key =>
@@ -70,10 +70,11 @@ export const encodeState = (stateObject: object): string => {
 
   return vals.join('&');
 };
+*/
 export const verifyNonce = (req: express.Request, providerId: string) => {
   const cookieNonce = req.cookies[`${providerId}-nonce`];
-  const state: Array<string> = readState(req.query.state?.toString() ?? '');
-  const stateNonce = readStateParameter(state, 'nonce');
+  const state: OAuthState = readState(req.query.state?.toString() ?? '');
+  const stateNonce = state.nonce;
 
   if (!cookieNonce) {
     throw new Error('Auth response is missing cookie nonce');
@@ -269,8 +270,8 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     if (!stateParams) {
       return '';
     }
-    const env = readStateParameter(readState(stateParams), 'env');
-    return env;
+    const env = readState(stateParams).env;
+    return env ?? '';
   }
 
   /**

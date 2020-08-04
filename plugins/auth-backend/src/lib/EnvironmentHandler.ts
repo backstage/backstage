@@ -28,20 +28,6 @@ export class EnvironmentHandler implements AuthProviderRouteHandlers {
     private readonly envIdentifier: (req: express.Request) => string,
   ) {}
 
-  /* Return the value of `env` key, if it is exists, encoded within
-     the `state` parameter in the request
-  */
-  private getEnv(stateParams: Array<string>): string {
-    const envParams = stateParams.filter(
-      param => param.split('=')[0] === 'env',
-    );
-
-    if (envParams.length > 0) {
-      return envParams[0].split('=')[1];
-    }
-    return '';
-  }
-
   private getProviderForEnv(
     req: express.Request,
     res: express.Response,
