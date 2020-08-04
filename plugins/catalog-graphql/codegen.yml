@@ -1,0 +1,15 @@
+overwrite: true
+schema: ./src/schema.gql # You can use .js files as well
+require:
+  - ts-node/register/transpile-only # required if you're using TS-Node
+generates:
+  ./src/generated-models.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+
+    hooks:
+      afterOneFileWrite:
+        - prettier --write
+    config:
+      contextType: '@graphql-modules/core#ModuleContext'

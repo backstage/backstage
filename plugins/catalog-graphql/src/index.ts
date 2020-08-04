@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-require('whatwg-fetch');
-
 export * from './graphql/module';
