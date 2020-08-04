@@ -65,18 +65,6 @@ export const encodeState = (state: OAuthState): string => {
   return encodeURIComponent(searchParams.toString());
 };
 
-/*
-export const encodeState = (stateObject: object): string => {
-  const vals = Object.keys(stateObject).map(
-    key =>
-      `${encodeURIComponent(key)}=${encodeURIComponent(
-        Reflect.get(stateObject, key),
-      )}`,
-  );
-
-  return vals.join('&');
-};
-*/
 export const verifyNonce = (req: express.Request, providerId: string) => {
   const cookieNonce = req.cookies[`${providerId}-nonce`];
   const state: OAuthState = readState(req.query.state?.toString() ?? '');
