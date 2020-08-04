@@ -46,13 +46,13 @@ const readState = (stateString: string): OAuthState => {
       new URLSearchParams(decodeURIComponent(stateString)),
     );
     return {
-      nonce: state.nonce ?? undefined,
-      env: state.env ?? undefined,
+      nonce: state.nonce ?? '',
+      env: state.env ?? '',
     };
   } catch (e) {
     return {
-      nonce: undefined,
-      env: undefined,
+      nonce: '',
+      env: '',
     };
   }
 };
@@ -85,7 +85,7 @@ export const verifyNonce = (req: express.Request, providerId: string) => {
   if (!cookieNonce) {
     throw new Error('Auth response is missing cookie nonce');
   }
-  if (!stateNonce) {
+  if (stateNonce.length === 0) {
     throw new Error('Auth response is missing state nonce');
   }
   if (cookieNonce !== stateNonce) {
