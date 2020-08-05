@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.7",
-    "@types/node": "^12.0.0",
+    "@types/node": "^14.0.27",
     "@types/yup": "^0.28.2"
   },
   "files": [
