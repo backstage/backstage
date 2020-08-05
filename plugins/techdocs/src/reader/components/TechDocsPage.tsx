@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core';
+import React from 'react';
+import { useParams } from 'react-router-dom';
 
-const NoIcon = () => null;
+import { TechDocsPageWrapper } from './TechDocsPageWrapper';
+import { Reader } from './Reader';
 
-export const rootRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/',
-  title: 'Catalog',
-});
-export const entityRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/catalog/:kind/:optionalNamespaceAndName/:selectedTabId/*',
-  title: 'Entity',
-});
+export const TechDocsPage = () => {
+  const { kind, namespace, name } = useParams();
+
+  return (
+    <TechDocsPageWrapper title={name} subtitle={name}>
+      <Reader componentId={{ kind, namespace, name }} />
+    </TechDocsPageWrapper>
+  );
+};
