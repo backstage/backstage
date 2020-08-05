@@ -20,7 +20,6 @@ import {
   errorApiRef,
   Header,
   HeaderLabel,
-  HeaderTabs,
   Page,
   pageTheme,
   PageTheme,
@@ -39,6 +38,8 @@ import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
+import { TabNavigator } from './TabNavigator';
+import { Reader } from '@backstage/plugin-techdocs';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -118,6 +119,28 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'overview',
       label: 'Overview',
+      content: ({ entity: e }: { entity: Entity }) => {
+        return (
+          <Content>
+            <Grid container spacing={3}>
+              <Grid item sm={4}>
+                <EntityMetadataCard entity={e} />
+              </Grid>
+              <Grid item sm={8}>
+                <SentryIssuesWidget
+                  sentryProjectId="sample-sentry-project-id"
+                  statsFor="24h"
+                />
+              </Grid>
+              {e.metadata?.annotations?.['backstage.io/github-actions-id'] && (
+                <Grid item sm={3}>
+                  <GithubActionsWidget entity={e} branch="master" />
+                </Grid>
+              )}
+            </Grid>
+          </Content>
+        );
+      },
     },
     {
       id: 'ci',
@@ -141,8 +164,19 @@ export const EntityPage: FC<{}> = () => {
     },
     {
       id: 'techdocs',
-      label: 'TechDocs'
-    }
+      label: 'TechDocs',
+      content: ({ entity: e }: { entity: Entity }) => {
+        return (
+          <Reader
+            componentId={{
+              kind: e.kind,
+              namespace: e.metadata.namespace ?? 'default',
+              name: e.metadata.name,
+            }}
+          />
+        );
+      },
+    },
   ];
 
   const { headerTitle, headerType } = headerProps(
@@ -184,28 +218,7 @@ export const EntityPage: FC<{}> = () => {
 
       {entity && (
         <>
-          <HeaderTabs tabs={tabs} />
-
-          <Content>
-            <Grid container spacing={3}>
-              <Grid item sm={4}>
-                <EntityMetadataCard entity={entity} />
-              </Grid>
-              <Grid item sm={8}>
-                <SentryIssuesWidget
-                  sentryProjectId="sample-sentry-project-id"
-                  statsFor="24h"
-                />
-              </Grid>
-              {entity.metadata?.annotations?.[
-                'backstage.io/github-actions-id'
-              ] && (
-                <Grid item sm={3}>
-                  <GithubActionsWidget entity={entity} branch="master" />
-                </Grid>
-              )}
-            </Grid>
-          </Content>
+          <TabNavigator<{ entity: Entity }> tabs={tabs} tabData={{ entity }} />
 
           <UnregisterEntityDialog
             open={confirmationDialogOpen}

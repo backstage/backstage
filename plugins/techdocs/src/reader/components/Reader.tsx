@@ -20,7 +20,7 @@ import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import transformer, {
   addBaseUrl,
@@ -33,7 +33,6 @@ import transformer, {
 } from '../transformers';
 import URLFormatter from '../urlFormatter';
 import { TechDocsNotFound } from './TechDocsNotFound';
-import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
 const useFetch = (url: string): AsyncState<string | Error> => {
   const state = useAsync(async () => {
@@ -66,21 +65,30 @@ const useEnforcedTrailingSlash = (): void => {
   }, []);
 };
 
-export const Reader = () => {
+type Props = {
+  componentId: {
+    kind: string;
+    namespace: string;
+    name: string;
+  };
+};
+
+export const Reader = ({ componentId }: Props) => {
   useEnforcedTrailingSlash();
+
+  const { kind, namespace, name } = componentId;
+  const { '*': path } = useParams();
 
   const docStorageUrl =
     useApi(configApiRef).getOptionalString('techdocs.storageUrl') ??
     'https://techdocs-mock-sites.storage.googleapis.com';
 
-  const location = useLocation();
-  const { kind, namespace, componentId, '*': path } = useParams();
   const [shadowDomRef, shadowRoot] = useShadowDom();
   const navigate = useNavigate();
   const normalizedUrl = new URLFormatter(
-    `${docStorageUrl}${location.pathname.replace('/docs', '')}`,
+    `${docStorageUrl}/${kind}/${namespace}/${name}`,
   ).formatBaseURL();
-  
+
   const state = useFetch(`${normalizedUrl}index.html`);
 
   React.useEffect(() => {
@@ -101,7 +109,7 @@ export const Reader = () => {
       sanitizeDOM(),
       addBaseUrl({
         docStorageUrl,
-        componentId: `${kind}/${namespace}/${componentId}`,
+        componentId: `${kind}/${namespace}/${name}`,
         path,
       }),
       rewriteDocLinks(),
@@ -155,15 +163,11 @@ export const Reader = () => {
         },
       }),
     ]);
-  }, [componentId, path, shadowRoot, state, namespace, kind]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [name, path, shadowRoot, state, namespace, kind]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (state.value instanceof Error) {
     return <TechDocsNotFound />;
   }
 
-  return (
-    <TechDocsPageWrapper title={componentId} subtitle={componentId}>
-      <div ref={shadowDomRef} />
-    </TechDocsPageWrapper>
-  );
+  return <div ref={shadowDomRef} />;
 };
