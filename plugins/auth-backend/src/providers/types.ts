@@ -211,7 +211,7 @@ export interface AuthProviderRouteHandlers {
    *- contains the environment context information encoded in the request
    *  @param {express.Request} req
    */
-  identifyEnv?(req: express.Request): string;
+  identifyEnv?(req: express.Request): string | undefined;
 }
 
 export type AuthProviderFactory = (
@@ -348,3 +348,7 @@ export type OAuthState = {
   nonce: string;
   env: string;
 };
+
+export type EnvironmentIdentifierFn = (
+  req: express.Request,
+) => string | undefined;

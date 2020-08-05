@@ -65,7 +65,7 @@ describe('OAuthProvider Utils', () => {
       } as unknown) as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Auth response is missing state nonce');
+      }).toThrowError('Invalid state passed via request');
     });
 
     it('should throw error if nonce mismatch', () => {
@@ -221,6 +221,7 @@ describe('OAuthProvider', () => {
     const mockRequest = ({
       query: {
         scope: 'user',
+        env: 'development',
       },
     } as unknown) as express.Request;
 

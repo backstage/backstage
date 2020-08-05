@@ -107,8 +107,8 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     res.send('noop');
   }
 
-  identifyEnv(): string {
-    return '';
+  identifyEnv(): string | undefined {
+    return undefined;
   }
 }
 

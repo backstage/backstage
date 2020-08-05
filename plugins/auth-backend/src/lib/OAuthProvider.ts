@@ -41,26 +41,27 @@ export type Options = {
 };
 
 const readState = (stateString: string): OAuthState => {
-  try {
-    const state = Object.fromEntries(
-      new URLSearchParams(decodeURIComponent(stateString)),
-    );
-    return {
-      nonce: state.nonce ?? '',
-      env: state.env ?? '',
-    };
-  } catch (e) {
-    return {
-      nonce: '',
-      env: '',
-    };
+  const state = Object.fromEntries(
+    new URLSearchParams(decodeURIComponent(stateString)),
+  );
+  if (
+    !state.nonce ||
+    !state.env ||
+    state.nonce?.length === 0 ||
+    state.env?.length === 0
+  ) {
+    throw Error(`Invalid state passed via request`);
   }
+  return {
+    nonce: state.nonce,
+    env: state.env,
+  };
 };
 
 export const encodeState = (state: OAuthState): string => {
   const searchParams = new URLSearchParams();
-  searchParams.append('nonce', state.nonce ?? '');
-  searchParams.append('env', state.env ?? '');
+  searchParams.append('nonce', state.nonce);
+  searchParams.append('env', state.env);
 
   return encodeURIComponent(searchParams.toString());
 };
@@ -130,7 +131,11 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
   async start(req: express.Request, res: express.Response): Promise<void> {
     // retrieve scopes from request
     const scope = req.query.scope?.toString() ?? '';
-    const env = req.query.env?.toString() ?? '';
+    const env = req.query.env?.toString();
+
+    if (!env) {
+      throw new InputError('No env provided in request query parameters');
+    }
 
     if (this.options.persistScopes) {
       this.setScopesCookie(res, scope);
@@ -255,17 +260,17 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     }
   }
 
-  identifyEnv(req: express.Request): string {
+  identifyEnv(req: express.Request): string | undefined {
     const reqEnv = req.query.env?.toString();
     if (reqEnv) {
       return reqEnv;
     }
     const stateParams = req.query.state?.toString();
     if (!stateParams) {
-      return '';
+      return undefined;
     }
     const env = readState(stateParams).env;
-    return env ?? '';
+    return env;
   }
 
   /**

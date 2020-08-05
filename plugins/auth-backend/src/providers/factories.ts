@@ -15,7 +15,6 @@
  */
 
 import Router from 'express-promise-router';
-import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
 import { createGithubProvider } from './github';
@@ -24,7 +23,11 @@ import { createGoogleProvider } from './google';
 import { createOAuth2Provider } from './oauth2';
 import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
-import { AuthProviderConfig, AuthProviderFactory } from './types';
+import {
+  AuthProviderConfig,
+  AuthProviderFactory,
+  EnvironmentIdentifierFn,
+} from './types';
 import { Config } from '@backstage/config';
 import {
   EnvironmentHandlers,
@@ -55,7 +58,7 @@ export const createAuthProviderRouter = (
   const router = Router();
   const envs = providerConfig.keys();
   const envProviders: EnvironmentHandlers = {};
-  let envIdentifier: ((req: express.Request) => string) | undefined;
+  let envIdentifier: EnvironmentIdentifierFn | undefined;
 
   for (const env of envs) {
     const envConfig = providerConfig.getConfig(env);
