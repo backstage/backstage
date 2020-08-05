@@ -23,7 +23,7 @@ import path from 'path';
 import { GraphQLModule } from '@graphql-modules/core';
 import { ApolloServer } from 'apollo-server-express';
 import { createModule as createCatalogModule } from '@backstage/plugin-catalog-graphql';
-import { createModule as createBogusModule } from '@backstage/plugin-bogus-graphql';
+import { Config } from '@backstage/config';
 
 const schemaPath = path.resolve(
   require.resolve('@backstage/plugin-graphql-backend/package.json'),
@@ -32,6 +32,7 @@ const schemaPath = path.resolve(
 
 export interface RouterOptions {
   logger: Logger;
+  config: Config;
 }
 
 export async function createRouter(
@@ -40,9 +41,8 @@ export async function createRouter(
   const typeDefs = await fs.promises.readFile(schemaPath, 'utf-8');
 
   const catalogModule = await createCatalogModule(options);
-  const bogusModule = await createBogusModule(options);
   const { schema } = new GraphQLModule({
-    imports: [catalogModule, bogusModule],
+    imports: [catalogModule],
     typeDefs,
   });
 
