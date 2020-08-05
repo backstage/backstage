@@ -25,8 +25,8 @@ import {
 } from './lib';
 
 export type LoadConfigOptions = {
-  // Config path, defaults to app-config.yaml in project root
-  configPath?: string;
+  // Root path for search for app-config.yaml
+  rootPath: string;
 
   // Whether to read secrets or omit them, defaults to false.
   shouldReadSecrets?: boolean;
@@ -59,7 +59,7 @@ class Context {
 }
 
 export async function loadConfig(
-  options: LoadConfigOptions = {},
+  options: LoadConfigOptions,
 ): Promise<AppConfig[]> {
   const configs = [];
 

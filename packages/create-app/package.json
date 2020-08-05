@@ -25,6 +25,7 @@
     "lint": "backstage-cli lint"
   },
   "dependencies": {
+    "@backstage/cli-common": "^0.1.1-alpha.16",
     "commander": "^4.1.1",
     "chalk": "^4.0.0",
     "fs-extra": "^9.0.0",
