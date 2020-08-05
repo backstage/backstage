@@ -15,43 +15,28 @@
  */
 
 import { Logger } from 'winston';
-import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import { GraphQLModule } from '@graphql-modules/core';
-import { QueryResolvers } from './types';
+import { Resolvers, CatalogEntity, CatalogQuery } from './types';
+import { Entity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { CatalogClient } from '../service/client';
 
 export interface ModuleOptions {
   logger: Logger;
+  config: Config;
 }
 
-// function wrapLogger(logger: Logger) {
-//   return {
-//     log: (msg: string | Error, ...extra: any[]) =>
-//       logger.info(String(msg), ...extra),
-//     debug: (msg: string | Error, ...extra: any[]) =>
-//       logger.info(String(msg), ...extra),
-//     info: (msg: string | Error, ...extra: any[]) =>
-//       logger.info(String(msg), ...extra),
-//     error: (msg: string | Error, ...extra: any[]) =>
-//       logger.info(String(msg), ...extra),
-//     clientError: (msg: string | Error, ...extra: any[]) =>
-//       logger.info(String(msg), ...extra),
-//     warn: (msg: string | Error, ...extra: any[]) =>
-//       logger.info(String(msg), ...extra),
-//   };
-// }
-
-class CatalogClient {
-  async list() {
-    const res = await fetch('http://localhost:7000/catalog/entities');
-    if (!res.ok) {
-      throw new Error(`NOPE, ${await res.text()}`);
-    }
-
-    return res.json();
-  }
-}
+const parseToCatalogEntities = (e: Entity): CatalogEntity => ({
+  ...e,
+  metadata: {
+    ...e.metadata,
+    annotations: Object.entries(
+      e.metadata.annotations ?? {},
+    ).map(([key, value]) => ({ key, value })),
+  },
+});
 
 export async function createModule(
   options: ModuleOptions,
@@ -61,16 +46,24 @@ export async function createModule(
     'utf-8',
   );
 
-  const catalogClient = new CatalogClient();
+  const catalogClient = new CatalogClient(
+    options.config.getString('backend.baseUrl'),
+  );
 
-  const resolvers = {
+  const resolvers: Resolvers = {
     Query: {
-      catalog: () => true,
+      catalog: () => ({} as CatalogQuery),
     },
     CatalogQuery: {
-      list: () => catalogClient.list(),
+      list: async () => {
+        const list = await catalogClient.list();
+        return list.map(parseToCatalogEntities);
+      },
     },
-    CatalogEntity: () => ({}),
+    EntityMetadata: {
+      annotation: (e, { name }) =>
+        e.annotations?.find(a => a.key === name) ?? null,
+    },
   };
 
   const module = new GraphQLModule({

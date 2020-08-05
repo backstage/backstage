@@ -7,7 +7,7 @@ type EntityMetadata {
   name: String!
   namespace: String
   annotation(name: String): EntityMetadataAnnotation
-  annotations: [EntityMetadataAnnotation!]!
+  annotations: [EntityMetadataAnnotation!]
 }
 
 type CatalogEntity {
