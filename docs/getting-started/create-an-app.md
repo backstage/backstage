@@ -15,7 +15,7 @@ To create a Backstage app, you will need to have
 With `npx`:
 
 ```bash
-npx @backstage/cli create-app
+npx @backstage/create-app
 ```
 
 This will create a new Backstage App inside the current folder. The name of the

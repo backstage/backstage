@@ -104,10 +104,6 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     // retrieve scopes from request
     const scope = req.query.scope?.toString() ?? '';
 
-    if (!scope) {
-      throw new InputError('missing scope parameter');
-    }
-
     if (this.options.persistScopes) {
       this.setScopesCookie(res, scope);
     }
@@ -248,7 +244,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     res.cookie(`${this.options.providerId}-nonce`, nonce, {
       maxAge: TEN_MINUTES_MS,
       secure: this.options.secure,
-      sameSite: 'none',
+      sameSite: 'lax',
       domain: this.domain,
       path: `${this.basePath}/${this.options.providerId}/handler`,
       httpOnly: true,
@@ -259,7 +255,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     res.cookie(`${this.options.providerId}-scope`, scope, {
       maxAge: TEN_MINUTES_MS,
       secure: this.options.secure,
-      sameSite: 'none',
+      sameSite: 'lax',
       domain: this.domain,
       path: `${this.basePath}/${this.options.providerId}/handler`,
       httpOnly: true,
@@ -277,7 +273,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     res.cookie(`${this.options.providerId}-refresh-token`, refreshToken, {
       maxAge: THOUSAND_DAYS_MS,
       secure: this.options.secure,
-      sameSite: 'none',
+      sameSite: 'lax',
       domain: this.domain,
       path: `${this.basePath}/${this.options.providerId}`,
       httpOnly: true,
@@ -288,7 +284,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     res.cookie(`${this.options.providerId}-refresh-token`, '', {
       maxAge: 0,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
       domain: `${this.domain}`,
       path: `${this.basePath}/${this.options.providerId}`,
       httpOnly: true,

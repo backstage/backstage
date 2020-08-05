@@ -21,11 +21,9 @@ import { useApi } from '@backstage/core';
 export const useProjectName = (name: EntityCompoundName) => {
   const catalogApi = useApi(catalogApiRef);
 
-  const { value } = useAsync<string>(async () => {
+  const { value, loading, error } = useAsync(async () => {
     const entity = await catalogApi.getEntityByName(name);
-    return (
-      entity?.metadata.annotations?.['backstage.io/github-actions-id'] ?? ''
-    );
+    return entity?.metadata.annotations?.['github.com/project-slug'] ?? '';
   });
-  return value;
+  return { value, loading, error };
 };

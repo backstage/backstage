@@ -21,7 +21,7 @@ organization:
   name: Spotify
 
 techdocs:
-  storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+  storageUrl: http://localhost:7000/techdocs/static/docs
 
 sentry:
   organization: spotify
@@ -48,6 +48,9 @@ auth:
         clientSecret:
           $secret:
             env: AUTH_GITHUB_CLIENT_SECRET
+        enterpriseInstanceUrl: 
+          $secret:
+            env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:
       development:
         appOrigin: "http://localhost:3000/"

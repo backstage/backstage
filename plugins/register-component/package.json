@@ -33,7 +33,7 @@
     "react-hook-form": "^5.7.2",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
-    "react-use": "^14.2.0"
+    "react-use": "^15.3.3"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.16",
@@ -41,7 +41,7 @@
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",
-    "@types/jest": "^25.2.2",
+    "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "jest-fetch-mock": "^3.0.3"
   },

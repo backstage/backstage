@@ -31,7 +31,7 @@
     "react-hot-loader": "^4.12.21",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
-    "react-use": "^14.2.0",
+    "react-use": "^15.3.3",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
@@ -39,7 +39,7 @@
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",
-    "@types/jest": "^25.2.2",
+    "@types/jest": "^26.0.7",
     "@types/jquery": "^3.3.34",
     "@types/node": "^12.0.0",
     "@types/react-dom": "^16.9.8",

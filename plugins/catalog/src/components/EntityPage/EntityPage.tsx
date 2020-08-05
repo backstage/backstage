@@ -28,6 +28,7 @@ import {
   useApi,
 } from '@backstage/core';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
+import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
 import { Grid, Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
@@ -86,7 +87,7 @@ export const EntityPage: FC<{}> = () => {
   const catalogApi = useApi(catalogApiRef);
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-  const { value: entity, error, loading } = useAsync<Entity | undefined>(
+  const { value: entity, error, loading } = useAsync(
     () => catalogApi.getEntityByName({ kind, namespace, name }),
     [catalogApi, kind, namespace, name],
   );
@@ -192,6 +193,13 @@ export const EntityPage: FC<{}> = () => {
                   statsFor="24h"
                 />
               </Grid>
+              {entity.metadata?.annotations?.[
+                'backstage.io/github-actions-id'
+              ] && (
+                <Grid item sm={3}>
+                  <GithubActionsWidget entity={entity} branch="master" />
+                </Grid>
+              )}
             </Grid>
           </Content>
 

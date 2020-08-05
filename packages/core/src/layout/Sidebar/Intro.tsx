@@ -129,19 +129,27 @@ const recentlyViewedIntroText =
 
 export const SidebarIntro: FC = () => {
   const { isOpen } = useContext(SidebarContext);
-  const [
-    { starredItemsDismissed, recentlyViewedItemsDismissed },
-    setDismissedIntro,
-  ] = useLocalStorage<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE, {
+  const defaultValue = {
     starredItemsDismissed: false,
     recentlyViewedItemsDismissed: false,
-  });
+  };
+  const [dismissedIntro, setDismissedIntro] = useLocalStorage<
+    SidebarIntroLocalStorage
+  >(SIDEBAR_INTRO_LOCAL_STORAGE);
+
+  const { starredItemsDismissed, recentlyViewedItemsDismissed } =
+    dismissedIntro ?? {};
 
   const dismissStarred = () => {
-    setDismissedIntro(state => ({ ...state, starredItemsDismissed: true }));
+    setDismissedIntro(state => ({
+      ...defaultValue,
+      ...state,
+      starredItemsDismissed: true,
+    }));
   };
   const dismissRecentlyViewed = () => {
     setDismissedIntro(state => ({
+      ...defaultValue,
       ...state,
       recentlyViewedItemsDismissed: true,
     }));

@@ -46,12 +46,14 @@ export class GithubActionsClient implements GithubActionsApi {
     repo,
     pageSize = 100,
     page = 0,
+    branch,
   }: {
     token: string;
     owner: string;
     repo: string;
     pageSize?: number;
     page?: number;
+    branch?: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
     const workflowRuns = await new Octokit({
       auth: token,
@@ -60,6 +62,7 @@ export class GithubActionsClient implements GithubActionsApi {
       repo,
       per_page: pageSize,
       page,
+      ...(branch ? { branch } : {}),
     });
     return workflowRuns.data;
   }

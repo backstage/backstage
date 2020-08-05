@@ -17,16 +17,20 @@ import React, { FC } from 'react';
 import { Link, Typography, Box, IconButton, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
 import { Table, TableColumn } from '@backstage/core';
-import { useWorkflowRuns } from './useWorkflowRuns';
-import { WorkflowRunStatusIcon } from '../WorkflowRunStatusIcon';
+import { useWorkflowRuns } from '../useWorkflowRuns';
+import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
+import { buildRouteRef } from '../../plugin';
+import { useEntityCompoundName } from '@backstage/plugin-catalog';
+import { useProjectName } from '../useProjectName';
 
 export type WorkflowRun = {
   id: string;
   message: string;
   url?: string;
+  githubUrl?: string;
   source: {
     branchName: string;
     commit: {
@@ -52,7 +56,7 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<WorkflowRun>) => (
       <Link
         component={RouterLink}
-        to={`/github-actions/workflow-run/${row.id}`}
+        to={generatePath(buildRouteRef.path, { id: row.id! })}
       >
         {row.message}
       </Link>
@@ -69,13 +73,11 @@ const generatedColumns: TableColumn[] = [
   },
   {
     title: 'Status',
+    width: '150px',
+
     render: (row: Partial<WorkflowRun>) => (
       <Box display="flex" alignItems="center">
-        <WorkflowRunStatusIcon status={row.status} />
-        <Box mr={1} />
-        <Typography variant="button" noWrap>
-          {row.status}
-        </Typography>
+        <WorkflowRunStatus status={row.status} />
       </Box>
     ),
   },
@@ -104,7 +106,7 @@ type Props = {
   onChangePageSize: (pageSize: number) => void;
 };
 
-const WorkflowRunsTableView: FC<Props> = ({
+export const WorkflowRunsTableView: FC<Props> = ({
   projectName,
   loading,
   pageSize,
@@ -145,10 +147,28 @@ const WorkflowRunsTableView: FC<Props> = ({
 };
 
 export const WorkflowRunsTable = () => {
-  const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns();
+  let entityCompoundName = useEntityCompoundName();
+
+  if (!entityCompoundName.name) {
+    // TODO(shmidt-i): remove when is fully integrated
+    // into the entity view
+    entityCompoundName = {
+      kind: 'Component',
+      name: 'backstage',
+      namespace: 'default',
+    };
+  }
+
+  const { value: projectName, loading } = useProjectName(entityCompoundName);
+  const [owner, repo] = (projectName ?? '/').split('/');
+  const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
+    owner,
+    repo,
+  });
   return (
     <WorkflowRunsTableView
       {...tableProps}
+      loading={loading || tableProps.loading}
       retry={retry}
       onChangePageSize={setPageSize}
       onChangePage={setPage}

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Header, Content } from '@backstage/core';
+import { Header, Content, Page, pageTheme } from '@backstage/core';
 
 type TechDocsPageWrapperProps = {
   title: string;
@@ -29,9 +29,9 @@ export const TechDocsPageWrapper = ({
   subtitle,
 }: TechDocsPageWrapperProps) => {
   return (
-    <>
+    <Page theme={pageTheme.documentation}>
       <Header title={title} subtitle={subtitle} />
       <Content>{children}</Content>
-    </>
+    </Page>
   );
 };
