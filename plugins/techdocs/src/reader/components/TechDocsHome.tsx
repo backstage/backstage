@@ -27,41 +27,58 @@ export const TechDocsHome = () => {
   const navigate = useNavigate();
 
   const { value, loading, error } = useAsync(async () => {
-    const entities = await catalogApi.getEntities()
+    const entities = await catalogApi.getEntities();
     return entities.filter(entity => {
-      return !!entity.metadata.annotations?.['backstage.io/techdocs-ref']
+      return !!entity.metadata.annotations?.['backstage.io/techdocs-ref'];
     });
   });
 
-  if(loading){
-    <TechDocsPageWrapper title="Documentation" subtitle="Documentation available in Backstage">
-      <Progress />
-    </TechDocsPageWrapper>
-  }
-
-  if(error){
-    <TechDocsPageWrapper title="Documentation" subtitle="Documentation available in Backstage">
-      {error}
-    </TechDocsPageWrapper>
-  }
-
-  return (
+  if (loading) {
+    return (
       <TechDocsPageWrapper
         title="Documentation"
         subtitle="Documentation available in Backstage"
       >
-        <Grid container data-testid="docs-explore">
-          {value?.length ? value.map((entity, index: number) => (
-            <Grid key={index} item xs={12} sm={6} md={3}>
-              <ItemCard
-                onClick={() => navigate(`/docs/${entity.kind}/${entity.metadata.namespace ?? 'default'}/${entity.metadata.name}`)}
-                title={entity.metadata.name}
-                label={'Read Docs'}
-                description={entity.metadata.description}
-              />
-            </Grid>
-          )): null}
-        </Grid>
+        <Progress />
       </TechDocsPageWrapper>
+    );
+  }
+
+  if (error) {
+    return (
+      <TechDocsPageWrapper
+        title="Documentation"
+        subtitle="Documentation available in Backstage"
+      >
+        {error}
+      </TechDocsPageWrapper>
+    );
+  }
+
+  return (
+    <TechDocsPageWrapper
+      title="Documentation"
+      subtitle="Documentation available in Backstage"
+    >
+      <Grid container data-testid="docs-explore">
+        {value?.length
+          ? value.map((entity, index: number) => (
+              <Grid key={index} item xs={12} sm={6} md={3}>
+                <ItemCard
+                  onClick={() =>
+                    navigate(
+                      `/docs/${entity.kind}/${entity.metadata.namespace ??
+                        'default'}/${entity.metadata.name}`,
+                    )
+                  }
+                  title={entity.metadata.name}
+                  label="Read Docs"
+                  description={entity.metadata.description}
+                />
+              </Grid>
+            ))
+          : null}
+      </Grid>
+    </TechDocsPageWrapper>
   );
 };

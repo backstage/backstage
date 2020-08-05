@@ -22,7 +22,6 @@ import { runDockerContainer } from './helpers';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import { Entity } from '@backstage/catalog-model';
 
 export class TechdocsGenerator implements GeneratorBase {
   public async run({
