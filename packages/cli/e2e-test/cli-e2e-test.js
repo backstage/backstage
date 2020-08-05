@@ -184,12 +184,15 @@ async function overrideModuleResolutions(appDir, workspaceDir) {
 
   for (const dir of ['packages', 'plugins']) {
     const packageNames = await fs.readdir(resolvePath(workspaceDir, dir));
-    for (const name of packageNames) {
-      const pkgPath = joinPath('..', 'workspace', dir, name);
+    for (const pkgDir of packageNames) {
+      const pkgPath = joinPath('..', 'workspace', dir, pkgDir);
+      const { name } = await fs.readJson(
+        resolvePath(workspaceDir, dir, pkgDir, 'package.json'),
+      );
 
-      pkgJson.dependencies[`@backstage/${name}`] = `file:${pkgPath}`;
-      pkgJson.resolutions[`@backstage/${name}`] = `file:${pkgPath}`;
-      delete pkgJson.devDependencies[`@backstage/${name}`];
+      pkgJson.dependencies[name] = `file:${pkgPath}`;
+      pkgJson.resolutions[name] = `file:${pkgPath}`;
+      delete pkgJson.devDependencies[name];
     }
   }
   fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });

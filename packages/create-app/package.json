@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "Create app package for Backstage",
-  "version": "0.1.1-alpha.16",
+  "version": "0.1.1-alpha.17",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -25,9 +25,9 @@
     "lint": "backstage-cli lint"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1-alpha.16",
-    "commander": "^4.1.1",
+    "@backstage/cli-common": "^0.1.1-alpha.17",
     "chalk": "^4.0.0",
+    "commander": "^4.1.1",
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.3",
     "inquirer": "^7.0.4",
@@ -36,10 +36,10 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",
-    "@types/react-dev-utils": "^9.0.4",
     "@types/inquirer": "^6.5.0",
-    "@types/recursive-readdir": "^2.2.0",
     "@types/ora": "^3.2.0",
+    "@types/react-dev-utils": "^9.0.4",
+    "@types/recursive-readdir": "^2.2.0",
     "ts-node": "^8.6.2"
   },
   "files": [
