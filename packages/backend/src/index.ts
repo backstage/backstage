@@ -60,7 +60,6 @@ async function main() {
   const configs = await loadBackendConfig();
   const configReader = ConfigReader.fromConfigs(configs);
   const createEnv = makeCreateEnv(configs);
-
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
