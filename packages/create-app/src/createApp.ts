@@ -21,10 +21,10 @@ import { Command } from 'commander';
 import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
+import { findPaths } from '@backstage/cli-common';
+import { version } from '../package.json';
 import os from 'os';
 import { Task, templatingTask } from './lib/tasks';
-import { paths } from './lib/paths';
-import { version } from './lib/version';
 
 const exec = promisify(execCb);
 
@@ -88,6 +88,8 @@ async function moveApp(tempDir: string, destination: string, id: string) {
 }
 
 export default async (cmd: Command): Promise<void> => {
+  const paths = findPaths(__dirname);
+
   const questions: Question[] = [
     {
       type: 'input',

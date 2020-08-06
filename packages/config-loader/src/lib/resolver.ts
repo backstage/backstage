@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { findRootPath } from './paths';
 
 type ResolveOptions = {
-  // Same as configPath in LoadConfigOptions
-  configPath?: string;
+  // Root path for search for app-config.yaml
+  rootPath: string;
 };
 
 /**
@@ -31,13 +29,7 @@ export async function resolveStaticConfig(
 ): Promise<string[]> {
   // TODO: We'll want this to be a bit more elaborate, probably adding configs for
   //       specific env, and maybe local config for plugins.
-  let { configPath } = options;
-  if (!configPath) {
-    configPath = resolvePath(
-      findRootPath(fs.realpathSync(process.cwd())),
-      'app-config.yaml',
-    );
-  }
+  const configPath = resolvePath(options.rootPath, 'app-config.yaml');
 
   return [configPath];
 }

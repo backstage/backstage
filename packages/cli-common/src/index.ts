@@ -14,13 +14,5 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { paths } from './paths';
-
-export function findVersion() {
-  const pkgContent = fs.readFileSync(paths.resolveOwn('package.json'), 'utf8');
-  return JSON.parse(pkgContent).version;
-}
-
-export const version = findVersion();
-export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
+export { findPaths } from './paths';
+export type { Paths } from './paths';
