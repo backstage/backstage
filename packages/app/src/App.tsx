@@ -19,25 +19,22 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
-  useApi,
-  configApiRef,
 } from '@backstage/core';
 import React, { FC } from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
+import { providers } from './identityProviders';
 
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
   components: {
     SignInPage: props => {
-      const configApi = useApi(configApiRef);
-      const providersConfig = configApi.getOptionalConfig('auth.providers');
-      const providers = providersConfig?.keys() ?? [];
-
-      return <SignInPage {...props} providers={['guest', ...providers]} />;
+      return (
+        <SignInPage {...props} providers={['guest', 'custom', ...providers]} />
+      );
     },
   },
 });
