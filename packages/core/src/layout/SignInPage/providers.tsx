@@ -29,21 +29,26 @@ import { customProvider } from './customProvider';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
-export type SignInProviderId = 'guest' | 'custom' | string;
-
 export type SignInProviderType = {
-  [id in SignInProviderId]: {
+  [key: string]: {
     components: SignInProvider;
-    id: SignInProviderId;
+    id: string;
     config?: SignInConfig;
   };
 };
 
-const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
+const signInProviders: { [key: string]: SignInProvider } = {
   guest: guestProvider,
   custom: customProvider,
   common: commonProvider,
 };
+
+function validateIDs(id: string, providers: SignInProviderType): void {
+  if (id in providers)
+    throw new Error(
+      `"${id}" ID is duplicated. IDs of identity providers have to be unique.`,
+    );
+}
 
 export function getSignInProviders(
   identityProviders: IdentityProviders,
@@ -51,12 +56,15 @@ export function getSignInProviders(
   const providers = identityProviders.reduce(
     (acc: SignInProviderType, config) => {
       if (typeof config === 'string') {
+        validateIDs(config, acc);
         acc[config] = { components: signInProviders[config], id: config };
 
         return acc;
       }
 
       const { id } = config as SignInConfig;
+      validateIDs(id, acc);
+
       acc[id] = { components: signInProviders.common, id, config };
 
       return acc;
@@ -99,7 +107,7 @@ export const useSignInProviders = (
     // We can't use storageApi here, as it might have a dependency on the IdentityApi
     const selectedProviderId = localStorage.getItem(
       PROVIDER_STORAGE_KEY,
-    ) as SignInProviderId;
+    ) as string;
 
     // No provider selected, let the user pick one
     if (selectedProviderId === null) {
