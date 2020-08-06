@@ -16,7 +16,7 @@ This section will guide you through:
 
 ## Create a basic documentation setup
 
-In your home directory (also known as `~`), create a directory that contains your documentation (for example, `hello-docs`). Inside this directory, create a file called `mkdocs.yml`. Below is a basic example of how it could look.
+In your project's root directory (which from here on out we will refer to as `~`), create a directory that contains your documentation (for example, `hello-docs`). Inside this directory, create a file called `mkdocs.yml`. Below is a basic example of how it could look.
 
 The `~/hello-docs/mkdocs.yml` file should have the following content:
 
