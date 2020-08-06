@@ -2,7 +2,7 @@
 
 This is a best-effort changelog where we manually collect breaking changes. It is not an exhaustive list of all changes or even features added.
 
-If you encounter issues while upgrading to a newer version, don't hesitate to reach out on Discord or open an issue!
+If you encounter issues while upgrading to a newer version, don't hesitate to reach out on [Discord](https://discord.gg/EBHEGzX) or [open an issue](https://github.com/spotify/backstage/issues/new/choose)!
 
 ## Next Release
 
