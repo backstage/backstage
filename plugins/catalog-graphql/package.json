@@ -16,7 +16,7 @@
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "postinstall": "graphql-codegen",
+    "generate:types": "graphql-codegen",
     "clean": "backstage-cli clean",
     "mock-data": "./scripts/mock-data.sh"
   },
