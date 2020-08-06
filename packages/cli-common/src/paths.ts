@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
+import fs from 'fs';
 import { dirname, resolve as resolvePath } from 'path';
 
 export type ResolveFunc = (...paths: string[]) => string;
@@ -47,58 +47,47 @@ export type Paths = {
   resolveTargetRoot: ResolveFunc;
 };
 
-// Looks for a package.json that has name: "root" to identify the root of the monorepo
-export function findRootPath(topPath: string): string {
-  let path = topPath;
+// Looks for a package.json with a workspace config to identify the root of the monorepo
+export function findRootPath(
+  searchDir: string,
+  filterFunc: (pkgJsonPath: string) => boolean,
+): string | undefined {
+  let path = searchDir;
 
   // Some sanity check to avoid infinite loop
   for (let i = 0; i < 1000; i++) {
     const packagePath = resolvePath(path, 'package.json');
-    const exists = fs.pathExistsSync(packagePath);
-    if (exists) {
-      try {
-        const data = fs.readJsonSync(packagePath);
-        if (data.name === 'root' || data.name.includes('backstage-e2e')) {
-          return path;
-        }
-      } catch (error) {
-        throw new Error(
-          `Failed to parse package.json file while searching for root, ${error}`,
-        );
-      }
+    const exists = fs.existsSync(packagePath);
+    if (exists && filterFunc(packagePath)) {
+      return path;
     }
 
     const newPath = dirname(path);
     if (newPath === path) {
-      throw new Error(
-        `No package.json with name "root" found as a parent of ${topPath}`,
-      );
+      return undefined;
     }
     path = newPath;
   }
 
   throw new Error(
-    `Iteration limit reached when searching for root package.json at ${topPath}`,
+    `Iteration limit reached when searching for root package.json at ${searchDir}`,
   );
 }
 
-// Finds the root of the cli package itself
-export function findOwnDir() {
-  // Known relative locations of package in dist/dev
-  const pathDist = '..';
-  const pathDev = '../..';
-
-  // Check the closest dir first
-  const pkgInDist = resolvePath(__dirname, pathDist, 'package.json');
-  const isDist = fs.pathExistsSync(pkgInDist);
-
-  const path = isDist ? pathDist : pathDev;
-  return resolvePath(__dirname, path);
+// Finds the root of a given package
+export function findOwnDir(searchDir: string) {
+  const path = findRootPath(searchDir, () => true);
+  if (!path) {
+    throw new Error(
+      `No package.json found while searching for package root of ${searchDir}`,
+    );
+  }
+  return path;
 }
 
-// Finds the root of the monorepo that the cli exists in. Only accessible when running inside Backstage repo.
-export function findOwnRootPath(ownDir: string) {
-  const isLocal = fs.pathExistsSync(resolvePath(ownDir, 'src'));
+// Finds the root of the monorepo that the package exists in. Only accessible when running inside Backstage repo.
+export function findOwnRootDir(ownDir: string) {
+  const isLocal = fs.existsSync(resolvePath(ownDir, 'src'));
   if (!isLocal) {
     throw new Error(
       'Tried to access monorepo package root dir outside of Backstage repository',
@@ -108,15 +97,22 @@ export function findOwnRootPath(ownDir: string) {
   return resolvePath(ownDir, '../..');
 }
 
-export function findPaths(): Paths {
-  const ownDir = findOwnDir();
+/**
+ * Find paths related to a package and its execution context.
+ *
+ * @example
+ *
+ * const paths = findPaths(__dirname)
+ */
+export function findPaths(searchDir: string): Paths {
+  const ownDir = findOwnDir(searchDir);
   const targetDir = fs.realpathSync(process.cwd());
 
   // Lazy load this as it will throw an error if we're not inside the Backstage repo.
   let ownRoot = '';
   const getOwnRoot = () => {
     if (!ownRoot) {
-      ownRoot = findOwnRootPath(ownDir);
+      ownRoot = findOwnRootDir(ownDir);
     }
     return ownRoot;
   };
@@ -126,7 +122,18 @@ export function findPaths(): Paths {
   let targetRoot = '';
   const getTargetRoot = () => {
     if (!targetRoot) {
-      targetRoot = findRootPath(targetDir);
+      targetRoot =
+        findRootPath(targetDir, path => {
+          try {
+            const content = fs.readFileSync(path, 'utf8');
+            const data = JSON.parse(content);
+            return Boolean(data.workspaces?.packages);
+          } catch (error) {
+            throw new Error(
+              `Failed to parse package.json file while searching for root, ${error}`,
+            );
+          }
+        }) ?? targetDir; // We didn't find any root package.json, assume we're not in a monorepo
     }
     return targetRoot;
   };
@@ -146,5 +153,3 @@ export function findPaths(): Paths {
     resolveTargetRoot: (...paths) => resolvePath(getTargetRoot(), ...paths),
   };
 }
-
-export const paths = findPaths();

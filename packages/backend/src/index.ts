@@ -24,11 +24,11 @@
 
 import {
   createServiceBuilder,
+  loadBackendConfig,
   getRootLogger,
   useHotMemoize,
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
-import { loadConfig } from '@backstage/config-loader';
 import knex, { PgConnectionConfig } from 'knex';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
@@ -85,7 +85,7 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 }
 
 async function main() {
-  const configs = await loadConfig({ shouldReadSecrets: true });
+  const configs = await loadBackendConfig();
   const configReader = ConfigReader.fromConfigs(configs);
   const createEnv = makeCreateEnv(configs);
 

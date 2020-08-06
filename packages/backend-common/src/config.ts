@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { paths } from './paths';
+import { findPaths } from '@backstage/cli-common';
+import { loadConfig } from '@backstage/config-loader';
 
-export function findVersion() {
-  const pkgContent = fs.readFileSync(paths.resolveOwn('package.json'), 'utf8');
-  return JSON.parse(pkgContent).version;
+/**
+ * Load configuration for a Backend
+ */
+export async function loadBackendConfig() {
+  const paths = findPaths(__dirname);
+  const configs = await loadConfig({
+    rootPath: paths.targetRoot,
+    shouldReadSecrets: true,
+  });
+  return configs;
 }
-
-export const version = findVersion();
-export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
