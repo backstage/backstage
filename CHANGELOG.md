@@ -10,7 +10,7 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 ### @backstage/catalog-backend
 
-- Fixed and issue with duplicated location logs. Applying the database migrations from this fix will clear the existing migration logs. https://github.com/spotify/backstage/pull/1836
+- Fixed an issue with duplicated location logs. Applying the database migrations from this fix will clear the existing migration logs. https://github.com/spotify/backstage/pull/1836
 
 ## v0.1.1-alpha.17
 
