@@ -23,7 +23,7 @@ export type NavigationTab = {
   id: string;
   label: string;
   content?: (props: any) => React.ReactNode;
-  show: (props: any) => boolean;
+  show?: (props: any) => boolean;
 };
 
 export type OnChangeCallback = (tab: NavigationTab) => void;
