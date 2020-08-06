@@ -21,6 +21,7 @@
  */
 exports.up = function up(knex) {
   return knex.schema
+    .raw('DROP VIEW location_update_log_latest;')
     .dropTable('location_update_log')
     .createTable('location_update_log', table => {
       table.bigIncrements('id').primary(); // instead of uuid, so we can MAX it
@@ -35,8 +36,6 @@ exports.up = function up(knex) {
         .onDelete('CASCADE');
       table.string('entity_name').nullable();
     }).raw(`
-      DROP VIEW location_update_log_latest;
-    `).raw(`
       CREATE VIEW location_update_log_latest AS
       SELECT t1.* FROM location_update_log t1
       JOIN
@@ -56,20 +55,33 @@ exports.up = function up(knex) {
  * @param {import('knex')} knex
  */
 exports.down = function down(knex) {
-  return knex.schema.raw(`
-    DROP VIEW location_update_log_latest;
-  `).raw(`
-    CREATE VIEW location_update_log_latest AS
-    SELECT t1.* FROM location_update_log t1
-    JOIN
-    (
-      SELECT location_id, MAX(created_at) AS MAXDATE
-      FROM location_update_log
-      GROUP BY location_id
-    ) t2
-    ON t1.location_id = t2.location_id
-    AND t1.created_at = t2.MAXDATE
-    GROUP BY t1.location_id, t1.id
-    ORDER BY created_at DESC;
-  `);
+  return knex.schema
+    .raw('DROP VIEW location_update_log_latest;')
+    .dropTable('location_update_log')
+    .createTable('location_update_log', table => {
+      table.uuid('id').primary();
+      table.enum('status', ['success', 'fail']).notNullable();
+      table.dateTime('created_at').defaultTo(knex.fn.now()).notNullable();
+      table.string('message');
+      table
+        .uuid('location_id')
+        .references('id')
+        .inTable('locations')
+        .onUpdate('CASCADE')
+        .onDelete('CASCADE');
+      table.string('entity_name').nullable();
+    }).raw(`
+      CREATE VIEW location_update_log_latest AS
+      SELECT t1.* FROM location_update_log t1
+      JOIN
+      (
+        SELECT location_id, MAX(created_at) AS MAXDATE
+        FROM location_update_log
+        GROUP BY location_id
+      ) t2
+      ON t1.location_id = t2.location_id
+      AND t1.created_at = t2.MAXDATE
+      GROUP BY t1.location_id, t1.id
+      ORDER BY created_at DESC;
+    `);
 };

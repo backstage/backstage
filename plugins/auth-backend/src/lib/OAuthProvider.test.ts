@@ -125,7 +125,7 @@ describe('OAuthProvider Utils', () => {
       const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
 
       postMessageResponse(mockResponse, appOrigin, data);
-      expect(mockResponse.setHeader).toBeCalledTimes(2);
+      expect(mockResponse.setHeader).toBeCalledTimes(3);
       expect(mockResponse.end).toBeCalledTimes(1);
       expect(mockResponse.end).toBeCalledWith(
         expect.stringContaining(base64Data),
@@ -146,7 +146,7 @@ describe('OAuthProvider Utils', () => {
       const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
 
       postMessageResponse(mockResponse, appOrigin, data);
-      expect(mockResponse.setHeader).toBeCalledTimes(2);
+      expect(mockResponse.setHeader).toBeCalledTimes(3);
       expect(mockResponse.end).toBeCalledTimes(1);
       expect(mockResponse.end).toBeCalledWith(
         expect.stringContaining(base64Data),

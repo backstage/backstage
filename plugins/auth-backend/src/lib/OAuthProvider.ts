@@ -64,6 +64,7 @@ export const postMessageResponse = (
 
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Frame-Options', 'sameorigin');
+  res.setHeader('Content-Security-Policy', "script-src 'unsafe-inline'");
 
   // TODO: Make target app origin configurable globally
   res.end(`
