@@ -24,30 +24,21 @@ import {
   ProfileInfoApi,
   BackstageIdentityApi,
   SessionStateApi,
-  OpenIdConnectApi,
 } from '@backstage/core-api';
 
 export type SignInConfig = {
   id: string;
-  provider: SignInProvider;
-};
-
-export type CommonSignInConfig = SignInConfig & {
   title: string;
   message: string;
   apiRef: ApiRef<
-    OAuthApi &
-      ProfileInfoApi &
-      BackstageIdentityApi &
-      SessionStateApi &
-      OpenIdConnectApi
+    OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
   >;
 };
 
-export type SignInProviderConfig = SignInConfig | CommonSignInConfig;
+export type IdentityProviders = ('guest' | 'custom' | SignInConfig)[];
 
 export type ProviderComponent = ComponentType<
-  SignInPageProps & { provider: SignInProviderConfig }
+  SignInPageProps & { config: SignInConfig }
 >;
 
 export type ProviderLoader = (

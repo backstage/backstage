@@ -19,9 +19,6 @@ import {
   gitlabAuthApiRef,
   oktaAuthApiRef,
   githubAuthApiRef,
-  commonProvider,
-  customProvider,
-  guestProvider,
 } from '@backstage/core';
 
 export const providers = [
@@ -30,35 +27,23 @@ export const providers = [
     title: 'Google',
     message: 'Sign In using Google',
     apiRef: googleAuthApiRef,
-    provider: commonProvider,
   },
   {
     id: 'gitlab-auth-provider',
     title: 'Gitlab',
     message: 'Sign In using Gitlab',
     apiRef: gitlabAuthApiRef,
-    provider: commonProvider,
   },
   {
     id: 'github-auth-provider',
     title: 'Github',
     message: 'Sign In using Github',
     apiRef: githubAuthApiRef,
-    provider: commonProvider,
   },
   {
     id: 'okta-auth-provider',
     title: 'Okta',
     message: 'Sign In using Okta',
     apiRef: oktaAuthApiRef,
-    provider: commonProvider,
-  },
-  {
-    id: 'guest-provider',
-    provider: guestProvider,
-  },
-  {
-    id: 'custom-provider',
-    provider: customProvider,
   },
 ];

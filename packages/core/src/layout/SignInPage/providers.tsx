@@ -22,12 +22,53 @@ import {
   useApiHolder,
   errorApiRef,
 } from '@backstage/core-api';
-import { SignInProviderConfig, CommonSignInConfig } from './types';
+import { SignInConfig, IdentityProviders, SignInProvider } from './types';
+import { commonProvider } from './commonProvider';
+import { guestProvider } from './guestProvider';
+import { customProvider } from './customProvider';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
+export type SignInProviderId = 'guest' | 'custom' | string;
+
+export type SignInProviderType = {
+  [id in SignInProviderId]: {
+    components: SignInProvider;
+    id: SignInProviderId;
+    config?: SignInConfig;
+  };
+};
+
+const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
+  guest: guestProvider,
+  custom: customProvider,
+  common: commonProvider,
+};
+
+export function getSignInProviders(
+  identityProviders: IdentityProviders,
+): SignInProviderType {
+  const providers = identityProviders.reduce(
+    (acc: SignInProviderType, config) => {
+      if (typeof config === 'string') {
+        acc[config] = { components: signInProviders[config], id: config };
+
+        return acc;
+      }
+
+      const { id } = config as SignInConfig;
+      acc[id] = { components: signInProviders.common, id, config };
+
+      return acc;
+    },
+    {},
+  );
+
+  return providers;
+}
+
 export const useSignInProviders = (
-  providers: SignInProviderConfig[],
+  providers: SignInProviderType,
   onResult: SignInPageProps['onResult'],
 ) => {
   const errorApi = useApi(errorApiRef);
@@ -58,7 +99,7 @@ export const useSignInProviders = (
     // We can't use storageApi here, as it might have a dependency on the IdentityApi
     const selectedProviderId = localStorage.getItem(
       PROVIDER_STORAGE_KEY,
-    ) as string;
+    ) as SignInProviderId;
 
     // No provider selected, let the user pick one
     if (selectedProviderId === null) {
@@ -66,19 +107,16 @@ export const useSignInProviders = (
       return undefined;
     }
 
-    const config = providers.find(
-      provider => provider.id === selectedProviderId,
-    );
-    if (!config) {
+    const provider = providers[selectedProviderId];
+    if (!provider) {
       setLoading(false);
       return undefined;
     }
 
     let didCancel = false;
-    const { apiRef } = config as CommonSignInConfig;
 
-    config.provider
-      .loader(apiHolder, apiRef)
+    provider.components
+      .loader(apiHolder, provider.config?.apiRef!)
       .then(result => {
         if (didCancel) {
           return;
@@ -105,19 +143,21 @@ export const useSignInProviders = (
   // This renders all available sign-in providers
   const elements = useMemo(
     () =>
-      providers.map(config => {
-        const { Component } = config.provider;
+      Object.keys(providers).map(key => {
+        const provider = providers[key];
+
+        const { Component } = provider.components;
 
         const handleResult = (result: SignInResult) => {
-          localStorage.setItem(PROVIDER_STORAGE_KEY, config.id);
+          localStorage.setItem(PROVIDER_STORAGE_KEY, provider.id);
 
           handleWrappedResult(result);
         };
 
         return (
           <Component
-            key={config.id}
-            provider={config}
+            key={provider.id}
+            config={provider.config!}
             onResult={handleResult}
           />
         );

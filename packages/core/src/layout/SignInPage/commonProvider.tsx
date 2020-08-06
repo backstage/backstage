@@ -21,12 +21,12 @@ import {
   ProviderComponent,
   ProviderLoader,
   SignInProvider,
-  CommonSignInConfig,
+  SignInConfig,
 } from './types';
 import { useApi, errorApiRef } from '@backstage/core-api';
 
-const Component: ProviderComponent = ({ provider, onResult }) => {
-  const { apiRef, title, message } = provider as CommonSignInConfig;
+const Component: ProviderComponent = ({ config, onResult }) => {
+  const { apiRef, title, message } = config as SignInConfig;
   const authApi = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
 
