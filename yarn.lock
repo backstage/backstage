@@ -5174,20 +5174,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/whatwg-fetch@^0.0.33":
-  version "0.0.33"
-  resolved "https://registry.npmjs.org/@types/whatwg-fetch/-/whatwg-fetch-0.0.33.tgz#19c0d2863c8cb2380f21a1c736b79cbf7895bb13"
-  integrity sha1-GcDShjyMsjgPIaHHNrecv3iVuxM=
-  dependencies:
-    "@types/whatwg-streams" "*"
-
-"@types/whatwg-streams@*":
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/@types/whatwg-streams/-/whatwg-streams-3.2.1.tgz#225009a823e8b44be12569a24e60374ccdabe29e"
-  integrity sha512-Syv05sRL25b8cC8tqgXSQgLZZmqGq2GO+NafrtHbjPJccP6gWBXmHvo2Trw3AWXQ4QLIkVuOB7uStCuhzswyiw==
-  dependencies:
-    whatwg-streams "*"
-
 "@types/whatwg-streams@^0.0.7":
   version "0.0.7"
   resolved "https://registry.npmjs.org/@types/whatwg-streams/-/whatwg-streams-0.0.7.tgz#28bfe73dc850562296367249c4b32a50db81e9d3"
@@ -6748,11 +6734,6 @@ bluebird@3.7.2, bluebird@^3.3.5, bluebird@^3.5.1, bluebird@^3.5.3, bluebird@^3.5
   version "3.7.2"
   resolved "https://registry.npmjs.org/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
-
-bluebird@~1.0.0:
-  version "1.0.8"
-  resolved "https://registry.npmjs.org/bluebird/-/bluebird-1.0.8.tgz#851c7825e6cce59e4b43dde95d574b88675463fc"
-  integrity sha1-hRx4JebM5Z5LQ93pXVdLiGdUY/w=
 
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   version "4.11.8"
@@ -8767,11 +8748,6 @@ deep-equal@^1.0.1, deep-equal@^1.1.1:
     object-keys "^1.1.1"
     regexp.prototype.flags "^1.2.0"
 
-deep-equal@~0.1.0:
-  version "0.1.2"
-  resolved "https://registry.npmjs.org/deep-equal/-/deep-equal-0.1.2.tgz#b246c2b80a570a47c11be1d9bd1070ec878b87ce"
-  integrity sha1-skbCuApXCkfBG+HZvRBw7IeLh84=
-
 deep-extend@^0.6.0:
   version "0.6.0"
   resolved "https://registry.npmjs.org/deep-extend/-/deep-extend-0.6.0.tgz#c4fa7c95404a17a9c3e8ca7e1537312b736330ac"
@@ -8845,11 +8821,6 @@ define-property@^2.0.2:
   dependencies:
     is-descriptor "^1.0.2"
     isobject "^3.0.1"
-
-defined@~0.0.0:
-  version "0.0.0"
-  resolved "https://registry.npmjs.org/defined/-/defined-0.0.0.tgz#f35eea7d705e933baf13b2f03b3f83d921403b3e"
-  integrity sha1-817qfXBekzuvE7LwOz+D2SFAOz4=
 
 del@^4.1.1:
   version "4.1.1"
@@ -18113,6 +18084,11 @@ redux@^4.0.4:
     loose-envify "^1.4.0"
     symbol-observable "^1.2.0"
 
+reflect-metadata@^0.1.13:
+  version "0.1.13"
+  resolved "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
+  integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
+
 refractor@^2.4.1:
   version "2.10.1"
   resolved "https://registry.npmjs.org/refractor/-/refractor-2.10.1.tgz#166c32f114ed16fd96190ad21d5193d3afc7d34e"
@@ -18489,13 +18465,6 @@ restore-cursor@^3.1.0:
   dependencies:
     onetime "^5.1.0"
     signal-exit "^3.0.2"
-
-resumer@~0.0.0:
-  version "0.0.0"
-  resolved "https://registry.npmjs.org/resumer/-/resumer-0.0.0.tgz#f1e8f461e4064ba39e82af3cdc2a8c893d076759"
-  integrity sha1-8ej0YeQGS6Oegq883CqMiT0HZ1k=
-  dependencies:
-    through "~2.3.4"
 
 ret@~0.1.10:
   version "0.1.15"
@@ -20065,18 +20034,6 @@ tapable@^1.0.0, tapable@^1.1.3:
   resolved "https://registry.npmjs.org/tapable/-/tapable-1.1.3.tgz#a1fccc06b58db61fd7a45da2da44f5f3a3e67ba2"
   integrity sha512-4WK/bYZmj8xLr+HUCODHGF1ZFzsYffasLUgEiMBY4fgtltdO6B4WJtlSbPaDTLpYTcGVwM2qLnFTICEcNxs3kA==
 
-tape@~2.3.2:
-  version "2.3.3"
-  resolved "https://registry.npmjs.org/tape/-/tape-2.3.3.tgz#2e7ce0a31df09f8d6851664a71842e0ca5057af7"
-  integrity sha1-Lnzgox3wn41oUWZKcYQuDKUFevc=
-  dependencies:
-    deep-equal "~0.1.0"
-    defined "~0.0.0"
-    inherits "~2.0.1"
-    jsonify "~0.0.0"
-    resumer "~0.0.0"
-    through "~2.3.4"
-
 tar-fs@^1.16.3:
   version "1.16.3"
   resolved "https://registry.npmjs.org/tar-fs/-/tar-fs-1.16.3.tgz#966a628841da2c4010406a82167cbd5e0c72d509"
@@ -20319,7 +20276,7 @@ through2@^3.0.0:
   dependencies:
     readable-stream "2 || 3"
 
-through@2, "through@>=2.2.7 <3", through@^2.3.4, through@^2.3.6, through@^2.3.8, through@~2.3, through@~2.3.1, through@~2.3.4:
+through@2, "through@>=2.2.7 <3", through@^2.3.4, through@^2.3.6, through@^2.3.8, through@~2.3, through@~2.3.1:
   version "2.3.8"
   resolved "https://registry.npmjs.org/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
@@ -21531,14 +21488,6 @@ whatwg-mimetype@^2.1.0, whatwg-mimetype@^2.2.0, whatwg-mimetype@^2.3.0:
   version "2.3.0"
   resolved "https://registry.npmjs.org/whatwg-mimetype/-/whatwg-mimetype-2.3.0.tgz#3d4b1e0312d2079879f826aff18dbeeca5960fbf"
   integrity sha512-M4yMwr6mAnQz76TbJm914+gPpB/nCwvZbJU28cUD6dR004SAxDLOOSUaB1JDRqLtaOV/vi0IC5lEAGFgrjGv/g==
-
-whatwg-streams@*:
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/whatwg-streams/-/whatwg-streams-0.1.1.tgz#dd5575c965bce13da76dc0dd495629a87572e74e"
-  integrity sha1-3VV1yWW84T2nbcDdSVYpqHVy504=
-  dependencies:
-    bluebird "~1.0.0"
-    tape "~2.3.2"
 
 whatwg-url@^6.4.1:
   version "6.5.0"

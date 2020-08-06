@@ -29,7 +29,6 @@
     "@graphql-codegen/typescript-resolvers": "^1.17.7",
     "@graphql-modules/core": "^0.7.17",
     "@types/express": "^4.17.6",
-    "@types/whatwg-fetch": "^0.0.33",
     "graphql": "^15.3.0",
     "node-fetch": "^2.6.0",
     "ts-node": "^8.10.2",
