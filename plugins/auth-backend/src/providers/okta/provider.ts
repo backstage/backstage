@@ -165,7 +165,7 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
 
 export function createOktaProvider(
   { baseUrl }: AuthProviderConfig,
-  env: string,
+  _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
@@ -176,7 +176,7 @@ export function createOktaProvider(
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
   const audience = envConfig.getString('audience');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
+  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
 
   const opts = {
     audience,
