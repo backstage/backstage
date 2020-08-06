@@ -22,6 +22,8 @@ export class CatalogClient {
   async list(): Promise<Entity[]> {
     const res = await fetch(`${this.baseUrl}/catalog/entities`);
     if (!res.ok) {
+      // todo(blam): need some better way to handle errors here
+      // experiment with throwing the input errors etc and having graphql versions of that
       throw new Error(`NOPE, ${await res.text()}`);
     }
 
