@@ -8,11 +8,15 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 > Collect changes for the next release below
 
+## v0.1.1-alpha.18
+
 ### @backstage/catalog-backend
 
 - Fixed an issue with duplicated location logs. Applying the database migrations from this fix will clear the existing migration logs. [#1836](https://github.com/spotify/backstage/pull/1836)
 
 ### @backstage/auth-backend
+
+This version fixes a breakage in CSP policies set by the auth backend. If you're facing trouble with auth in alpha.17, upgrade to alpha.18.
 
 - OAuth redirect URLs no longer receive the `env` parameter, as it is now passed through state instead. This will likely require a reconfiguration of the OAuth app, where a redirect URL like `http://localhost:7000/auth/google/handler/frame?env=development` should now be configured as `http://localhost:7000/auth/google/handler/frame`. [#1812](https://github.com/spotify/backstage/pull/1812)
 
