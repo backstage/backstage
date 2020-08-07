@@ -48,8 +48,13 @@ describe('local publisher', () => {
       `../../../../static/docs/${mockEntity.metadata.name}`,
     );
 
-    expect(fs.existsSync(publishDir)).toBeTruthy();
-    expect(fs.existsSync(path.join(publishDir, '/mock-file'))).toBeTruthy();
+    const resultDir = path.resolve(
+      __dirname,
+      `../../../../static/docs/${mockEntity.kind}/default/${mockEntity.metadata.name}`,
+    );
+
+    expect(fs.existsSync(resultDir)).toBeTruthy();
+    expect(fs.existsSync(path.join(resultDir, '/mock-file'))).toBeTruthy();
 
     fs.removeSync(publishDir);
     fs.removeSync(tempDir);
