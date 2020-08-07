@@ -22,6 +22,7 @@ import { buildBundle } from '../../lib/bundler';
 
 export default async (cmd: Command) => {
   const appConfigs = await loadConfig({
+    env: 'production',
     rootPaths: [paths.targetDir, paths.targetRoot],
   });
   await buildBundle({

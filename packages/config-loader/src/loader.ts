@@ -28,6 +28,9 @@ export type LoadConfigOptions = {
   // Root paths to search for config files. Config from earlier paths has higher priority.
   rootPaths: string[];
 
+  // The environment that we're loading config for, e.g. 'development', 'production'.
+  env: string;
+
   // Whether to read secrets or omit them, defaults to false.
   shouldReadSecrets?: boolean;
 };

@@ -20,6 +20,8 @@ import { pathExists } from 'fs-extra';
 type ResolveOptions = {
   // Root paths to search for config files. Config from earlier paths has higher priority.
   rootPaths: string[];
+  // The environment that we're loading config for, e.g. 'development', 'production'.
+  env: string;
 };
 
 /**
@@ -35,11 +37,9 @@ type ResolveOptions = {
 export async function resolveStaticConfig(
   options: ResolveOptions,
 ): Promise<string[]> {
-  const env = process.env.NODE_ENV ?? 'development';
-
   const filePaths = [
-    `app-config.${env}.local.yaml`,
-    `app-config.${env}.yaml`,
+    `app-config.${options.env}.local.yaml`,
+    `app-config.${options.env}.yaml`,
     `app-config.local.yaml`,
     `app-config.yaml`,
   ];
