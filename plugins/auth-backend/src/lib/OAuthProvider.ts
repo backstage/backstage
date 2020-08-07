@@ -92,16 +92,19 @@ export const postMessageResponse = (
 
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Frame-Options', 'sameorigin');
-  res.setHeader('Content-Security-Policy', "script-src 'unsafe-inline'");
 
   // TODO: Make target app origin configurable globally
+  const script = `
+    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), '${appOrigin}')
+    window.close()
+  `;
+  const hash = crypto.createHash('sha256').update(script).digest('base64');
+  res.setHeader('Content-Security-Policy', `script-src 'sha256-${hash}'`);
+
   res.end(`
 <html>
 <body>
-  <script>
-    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), '${appOrigin}')
-    window.close()
-  </script>
+  <script>${script}</script>
 </body>
 </html>
   `);
