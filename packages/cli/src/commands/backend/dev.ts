@@ -23,7 +23,7 @@ import { serveBackend } from '../../lib/bundler/backend';
 export default async (cmd: Command) => {
   const appConfigs = await loadConfig({
     env: 'development',
-    rootPaths: [paths.targetDir, paths.targetRoot],
+    rootPaths: [paths.targetRoot, paths.targetDir],
   });
   const waitForExit = await serveBackend({
     entry: 'src/index',

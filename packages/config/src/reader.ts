@@ -57,14 +57,11 @@ export class ConfigReader implements Config {
       return new ConfigReader(undefined);
     }
 
-    // Merge together all configs info a single config with recursive fallback
-    // readers, giving the first config object in the array the highest priority.
-    return configs.reduceRight<ConfigReader>(
-      (previousReader, { data, context }) => {
-        return new ConfigReader(data, context, previousReader);
-      },
-      undefined!,
-    );
+    // Merge together all configs into a single config with recursive fallback
+    // readers, giving the first config object in the array the lowest priority.
+    return configs.reduce<ConfigReader>((previousReader, { data, context }) => {
+      return new ConfigReader(data, context, previousReader);
+    }, undefined!);
   }
 
   constructor(

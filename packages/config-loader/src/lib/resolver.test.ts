@@ -57,16 +57,16 @@ describe('resolveStaticConfig', () => {
     const resolved = await resolveStaticConfig({
       env: 'development',
       rootPaths: [
+        '/repo',
+        '/other-repo',
         '/repo/packages/a',
         '/repo/packages/b',
-        '/other-repo',
-        '/repo',
       ],
     });
 
     expect(resolved).toEqual([
-      '/repo/packages/a/app-config.yaml',
       '/repo/app-config.yaml',
+      '/repo/packages/a/app-config.yaml',
     ]);
     expect(pathExists).toHaveBeenCalledTimes(16);
   });
@@ -85,15 +85,15 @@ describe('resolveStaticConfig', () => {
     );
     const resolved = await resolveStaticConfig({
       env: 'development',
-      rootPaths: ['/repo/packages/a', '/repo'],
+      rootPaths: ['/repo', '/repo/packages/a'],
     });
 
     expect(resolved).toEqual([
-      '/repo/packages/a/app-config.development.yaml',
-      '/repo/packages/a/app-config.local.yaml',
-      '/repo/app-config.development.local.yaml',
-      '/repo/app-config.local.yaml',
       '/repo/app-config.yaml',
+      '/repo/app-config.local.yaml',
+      '/repo/app-config.development.local.yaml',
+      '/repo/packages/a/app-config.local.yaml',
+      '/repo/packages/a/app-config.development.yaml',
     ]);
     expect(pathExists).toHaveBeenCalledTimes(8);
   });
@@ -106,10 +106,10 @@ describe('resolveStaticConfig', () => {
     });
 
     expect(resolved).toEqual([
-      '/repo/app-config.production.local.yaml',
-      '/repo/app-config.production.yaml',
-      '/repo/app-config.local.yaml',
       '/repo/app-config.yaml',
+      '/repo/app-config.local.yaml',
+      '/repo/app-config.production.yaml',
+      '/repo/app-config.production.local.yaml',
     ]);
     expect(pathExists).toHaveBeenCalledTimes(4);
   });

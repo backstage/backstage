@@ -24,7 +24,7 @@ export async function loadBackendConfig() {
   const paths = findPaths(__dirname);
   const configs = await loadConfig({
     env: process.env.NODE_ENV,
-    rootPaths: [paths.targetDir, paths.targetRoot],
+    rootPaths: [paths.targetRoot, paths.targetDir],
     shouldReadSecrets: true,
   });
   return configs;
