@@ -49,9 +49,9 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
     // Supported DBs are sqlite and postgres
     const isPg = [
-      'POSTGRES_USER',
-      'POSTGRES_HOST',
-      'POSTGRES_PASSWORD',
+      'POSTGRES.USER',
+      'POSTGRES.HOST',
+      'POSTGRES.PASSWORD',
     ].every(key => config.getOptional(`backend.${key}`));
 
     let knexConfig;
@@ -61,10 +61,10 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
         client: 'pg',
         useNullAsDefault: true,
         connection: {
-          port: config.getOptionalNumber('backend.POSTGRES_PORT'),
-          host: config.getString('backend.POSTGRES_HOST'),
-          user: config.getString('backend.POSTGRES_USER'),
-          password: config.getString('backend.POSTGRES_PASSWORD'),
+          port: config.getOptionalNumber('backend.POSTGRES.PORT'),
+          host: config.getString('backend.POSTGRES.HOST'),
+          user: config.getString('backend.POSTGRES.USER'),
+          password: config.getString('backend.POSTGRES.PASSWORD'),
           database: `backstage_plugin_${plugin}`,
         } as PgConnectionConfig,
       };
