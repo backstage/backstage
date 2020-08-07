@@ -21,7 +21,9 @@ import { paths } from '../../lib/paths';
 import { buildBundle } from '../../lib/bundler';
 
 export default async (cmd: Command) => {
-  const appConfigs = await loadConfig({ rootPath: paths.targetRoot });
+  const appConfigs = await loadConfig({
+    rootPaths: [paths.targetDir, paths.targetRoot],
+  });
   await buildBundle({
     entry: 'src/index',
     statsJsonEnabled: cmd.stats,

@@ -25,8 +25,8 @@ import {
 } from './lib';
 
 export type LoadConfigOptions = {
-  // Root path for search for app-config.yaml
-  rootPath: string;
+  // Root paths to search for config files. Config from earlier paths has higher priority.
+  rootPaths: string[];
 
   // Whether to read secrets or omit them, defaults to false.
   shouldReadSecrets?: boolean;

@@ -23,7 +23,7 @@ import { loadConfig } from '@backstage/config-loader';
 export async function loadBackendConfig() {
   const paths = findPaths(__dirname);
   const configs = await loadConfig({
-    rootPath: paths.targetRoot,
+    rootPaths: [paths.targetDir, paths.targetRoot],
     shouldReadSecrets: true,
   });
   return configs;
