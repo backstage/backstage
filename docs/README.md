@@ -64,6 +64,8 @@ better yet, a pull request.
     - Publishing
       - [Open source and NPM](plugins/publishing.md)
       - [Private/internal (non-open source)](plugins/publish-private.md)
+  - Configuration
+    - [Overview](conf/index.md)
   - Authentication and identity
     - [Overview](auth/index.md)
     - [Add auth provider](auth/add-auth-provider.md)
