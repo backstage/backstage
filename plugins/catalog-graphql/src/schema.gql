@@ -10,7 +10,52 @@ type EntityMetadata {
   annotations: [EntityMetadataAnnotation!]
 }
 
-type CatalogEntity {
+type ComponentEntitySpec {
+  type: String!
+  lifecycle: String!
+  owner: String! # should be a reference to an owner type when this is implemented not a string
+}
+
+# need to work out a way that we can remove the base entity properties from each
+# implementation. Should need to repeat for entity type as they are already provided. it's only
+# the spec that is different.
+
+type ComponentEntity implements CatalogEntity {
+  apiVersion: String
+  kind: String!
+  metadata: EntityMetadata
+  spec: ComponentEntitySpec!
+}
+
+type LocationEntitySpec {
+  type: String!
+  target: String
+  targets: [String!]
+}
+
+type LocationEntity implements CatalogEntity {
+  apiVersion: String
+  kind: String!
+  metadata: EntityMetadata
+  spec: LocationEntitySpec!
+}
+
+type TemplateEntitySpec {
+  type: String!
+  templater: String!
+  path: String
+}
+
+type TemplateEntity implements CatalogEntity {
+  apiVersion: String
+  kind: String!
+  metadata: EntityMetadata
+  spec: TemplateEntitySpec!
+
+  # schema: JSONSchema # this needs impleting as maybe just a json blob
+}
+
+interface CatalogEntity {
   apiVersion: String
   kind: String!
   metadata: EntityMetadata

@@ -47,8 +47,52 @@ export type EntityMetadataAnnotationArgs = {
   name?: Maybe<Scalars['String']>;
 };
 
+export type ComponentEntitySpec = {
+  __typename?: 'ComponentEntitySpec';
+  type: Scalars['String'];
+  lifecycle: Scalars['String'];
+  owner: Scalars['String'];
+};
+
+export type ComponentEntity = CatalogEntity & {
+  __typename?: 'ComponentEntity';
+  apiVersion?: Maybe<Scalars['String']>;
+  kind: Scalars['String'];
+  metadata?: Maybe<EntityMetadata>;
+  spec: ComponentEntitySpec;
+};
+
+export type LocationEntitySpec = {
+  __typename?: 'LocationEntitySpec';
+  type: Scalars['String'];
+  target?: Maybe<Scalars['String']>;
+  targets?: Maybe<Array<Scalars['String']>>;
+};
+
+export type LocationEntity = CatalogEntity & {
+  __typename?: 'LocationEntity';
+  apiVersion?: Maybe<Scalars['String']>;
+  kind: Scalars['String'];
+  metadata?: Maybe<EntityMetadata>;
+  spec: LocationEntitySpec;
+};
+
+export type TemplateEntitySpec = {
+  __typename?: 'TemplateEntitySpec';
+  type: Scalars['String'];
+  templater: Scalars['String'];
+  path?: Maybe<Scalars['String']>;
+};
+
+export type TemplateEntity = CatalogEntity & {
+  __typename?: 'TemplateEntity';
+  apiVersion?: Maybe<Scalars['String']>;
+  kind: Scalars['String'];
+  metadata?: Maybe<EntityMetadata>;
+  spec: TemplateEntitySpec;
+};
+
 export type CatalogEntity = {
-  __typename?: 'CatalogEntity';
   apiVersion?: Maybe<Scalars['String']>;
   kind: Scalars['String'];
   metadata?: Maybe<EntityMetadata>;
@@ -146,7 +190,13 @@ export type ResolversTypes = ResolversObject<{
   EntityMetadataAnnotation: ResolverTypeWrapper<Partial<EntityMetadataAnnotation>>;
   String: ResolverTypeWrapper<Partial<Scalars['String']>>;
   EntityMetadata: ResolverTypeWrapper<Partial<EntityMetadata>>;
-  CatalogEntity: ResolverTypeWrapper<Partial<CatalogEntity>>;
+  ComponentEntitySpec: ResolverTypeWrapper<Partial<ComponentEntitySpec>>;
+  ComponentEntity: ResolverTypeWrapper<Partial<ComponentEntity>>;
+  LocationEntitySpec: ResolverTypeWrapper<Partial<LocationEntitySpec>>;
+  LocationEntity: ResolverTypeWrapper<Partial<LocationEntity>>;
+  TemplateEntitySpec: ResolverTypeWrapper<Partial<TemplateEntitySpec>>;
+  TemplateEntity: ResolverTypeWrapper<Partial<TemplateEntity>>;
+  CatalogEntity: ResolversTypes['ComponentEntity'] | ResolversTypes['LocationEntity'] | ResolversTypes['TemplateEntity'];
   CatalogQuery: ResolverTypeWrapper<Partial<CatalogQuery>>;
   Query: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>;
@@ -157,7 +207,13 @@ export type ResolversParentTypes = ResolversObject<{
   EntityMetadataAnnotation: Partial<EntityMetadataAnnotation>;
   String: Partial<Scalars['String']>;
   EntityMetadata: Partial<EntityMetadata>;
-  CatalogEntity: Partial<CatalogEntity>;
+  ComponentEntitySpec: Partial<ComponentEntitySpec>;
+  ComponentEntity: Partial<ComponentEntity>;
+  LocationEntitySpec: Partial<LocationEntitySpec>;
+  LocationEntity: Partial<LocationEntity>;
+  TemplateEntitySpec: Partial<TemplateEntitySpec>;
+  TemplateEntity: Partial<TemplateEntity>;
+  CatalogEntity: ResolversParentTypes['ComponentEntity'] | ResolversParentTypes['LocationEntity'] | ResolversParentTypes['TemplateEntity'];
   CatalogQuery: Partial<CatalogQuery>;
   Query: {};
   Boolean: Partial<Scalars['Boolean']>;
@@ -177,11 +233,56 @@ export type EntityMetadataResolvers<ContextType = ModuleContext, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
-export type CatalogEntityResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['CatalogEntity'] = ResolversParentTypes['CatalogEntity']> = ResolversObject<{
+export type ComponentEntitySpecResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['ComponentEntitySpec'] = ResolversParentTypes['ComponentEntitySpec']> = ResolversObject<{
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type ComponentEntityResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['ComponentEntity'] = ResolversParentTypes['ComponentEntity']> = ResolversObject<{
   apiVersion?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   metadata?: Resolver<Maybe<ResolversTypes['EntityMetadata']>, ParentType, ContextType>;
+  spec?: Resolver<ResolversTypes['ComponentEntitySpec'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type LocationEntitySpecResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['LocationEntitySpec'] = ResolversParentTypes['LocationEntitySpec']> = ResolversObject<{
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  targets?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type LocationEntityResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['LocationEntity'] = ResolversParentTypes['LocationEntity']> = ResolversObject<{
+  apiVersion?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  metadata?: Resolver<Maybe<ResolversTypes['EntityMetadata']>, ParentType, ContextType>;
+  spec?: Resolver<ResolversTypes['LocationEntitySpec'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type TemplateEntitySpecResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['TemplateEntitySpec'] = ResolversParentTypes['TemplateEntitySpec']> = ResolversObject<{
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  templater?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  path?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type TemplateEntityResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['TemplateEntity'] = ResolversParentTypes['TemplateEntity']> = ResolversObject<{
+  apiVersion?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  metadata?: Resolver<Maybe<ResolversTypes['EntityMetadata']>, ParentType, ContextType>;
+  spec?: Resolver<ResolversTypes['TemplateEntitySpec'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type CatalogEntityResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['CatalogEntity'] = ResolversParentTypes['CatalogEntity']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'ComponentEntity' | 'LocationEntity' | 'TemplateEntity', ParentType, ContextType>;
+  apiVersion?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  metadata?: Resolver<Maybe<ResolversTypes['EntityMetadata']>, ParentType, ContextType>;
 }>;
 
 export type CatalogQueryResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['CatalogQuery'] = ResolversParentTypes['CatalogQuery']> = ResolversObject<{
@@ -196,6 +297,12 @@ export type QueryResolvers<ContextType = ModuleContext, ParentType extends Resol
 export type Resolvers<ContextType = ModuleContext> = ResolversObject<{
   EntityMetadataAnnotation?: EntityMetadataAnnotationResolvers<ContextType>;
   EntityMetadata?: EntityMetadataResolvers<ContextType>;
+  ComponentEntitySpec?: ComponentEntitySpecResolvers<ContextType>;
+  ComponentEntity?: ComponentEntityResolvers<ContextType>;
+  LocationEntitySpec?: LocationEntitySpecResolvers<ContextType>;
+  LocationEntity?: LocationEntityResolvers<ContextType>;
+  TemplateEntitySpec?: TemplateEntitySpecResolvers<ContextType>;
+  TemplateEntity?: TemplateEntityResolvers<ContextType>;
   CatalogEntity?: CatalogEntityResolvers<ContextType>;
   CatalogQuery?: CatalogQueryResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

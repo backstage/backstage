@@ -28,6 +28,19 @@ export interface ModuleOptions {
   config: Config;
 }
 
+const getSpecTypenameForEntity = (e: { kind?: string }) => {
+  switch (e.kind) {
+    case 'Component':
+      return 'ComponentEntity';
+    case 'Location':
+      return 'LocationEntity';
+    case 'Template':
+      return 'TemplateEntity';
+    default:
+      return null;
+  }
+};
+
 const parseToCatalogEntities = (e: Entity): CatalogEntity => ({
   ...e,
   metadata: {
@@ -58,6 +71,11 @@ export async function createModule(
       list: async () => {
         const list = await catalogClient.list();
         return list.map(parseToCatalogEntities);
+      },
+    },
+    CatalogEntity: {
+      __resolveType(obj: { kind?: string }) {
+        return getSpecTypenameForEntity(obj);
       },
     },
     EntityMetadata: {
