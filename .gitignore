@@ -125,3 +125,6 @@ dist
 
 # MkDocs build output
 site
+
+# Local configuration files
+*.local.yaml
