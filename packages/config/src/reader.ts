@@ -71,6 +71,14 @@ export class ConfigReader implements Config {
     private readonly prefix: string = '',
   ) {}
 
+  has(key: string): boolean {
+    const value = this.readValue(key);
+    if (value !== undefined) {
+      return true;
+    }
+    return this.fallback?.has(key) ?? false;
+  }
+
   keys(): string[] {
     const localKeys = this.data ? Object.keys(this.data) : [];
     const fallbackKeys = this.fallback?.keys() ?? [];
