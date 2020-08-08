@@ -137,6 +137,8 @@ describe('ConfigReader', () => {
   it('should read empty config with valid keys', () => {
     const config = new ConfigReader({}, CTX);
     expect(config.keys()).toEqual([]);
+    expect(config.getOptional()).toEqual({});
+    expect(config.getOptional('x')).toBeUndefined();
     expect(config.getOptionalString('x')).toBeUndefined();
     expect(config.getOptionalString('x_x')).toBeUndefined();
     expect(config.getOptionalString('x-X')).toBeUndefined();
@@ -442,6 +444,21 @@ describe('ConfigReader.get()', () => {
   });
 
   it('should merge in fallback configs', () => {
+    expect(
+      ConfigReader.fromConfigs([configs[0], configs[1], configs[2]]).get(),
+    ).toEqual({
+      a: {
+        x: 'x1',
+        y: ['y11', 'y12', 'y13'],
+        z: false,
+      },
+      b: {
+        x: 'x2',
+        y: ['y21', 'y22'],
+        z: 'z2',
+      },
+      c: { c1: 'c1' },
+    });
     expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('a')).toEqual(
       {
         x: 'x1',
@@ -545,5 +562,22 @@ describe('ConfigReader.get()', () => {
     expect(config.get('f')).toEqual('foo');
     expect(config.get('g')).toEqual({ z: 'z' });
     expect(config.get('h')).toEqual({ a: 'a1', b: 'b2', c: 'c1' });
+    expect(config.getConfig('h').get()).toEqual({ a: 'a1', b: 'b2', c: 'c1' });
+    expect(config.getOptional()).toEqual({
+      a: ['1', '2'],
+      b: ['1'],
+      c: [],
+      d: {
+        x: 'x',
+      },
+      e: ['3'],
+      f: 'foo',
+      g: { z: 'z' },
+      h: {
+        a: 'a1',
+        b: 'b2',
+        c: 'c1',
+      },
+    });
   });
 });
