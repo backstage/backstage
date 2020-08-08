@@ -35,6 +35,10 @@ export async function readConfigFile(
     obj: JsonValue,
     path: string,
   ): Promise<JsonValue | undefined> {
+    if (ctx.skip(path)) {
+      return undefined;
+    }
+
     if (typeof obj !== 'object') {
       return obj;
     } else if (obj === null) {
@@ -58,7 +62,7 @@ export async function readConfigFile(
       }
 
       try {
-        return await ctx.readSecret(obj.$secret);
+        return await ctx.readSecret(path, obj.$secret);
       } catch (error) {
         throw new Error(`Invalid secret at ${path}: ${error.message}`);
       }

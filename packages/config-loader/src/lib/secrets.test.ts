@@ -21,6 +21,7 @@ const ctx: ReaderContext = {
   env: {
     SECRET: 'my-secret',
   },
+  skip: () => false,
   readSecret: jest.fn(),
   async readFile(path) {
     const content = ({
