@@ -37,7 +37,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     top: 0,
     bottom: 0,
     padding: 0,
-    background: theme.palette.sidebar.backgroundColor,
+    background: theme.palette.sidebar.background,
     overflowX: 'hidden',
     width: sidebarConfig.drawerWidthClosed,
     transition: theme.transitions.create('width', {

@@ -44,8 +44,8 @@ type PaletteAdditions = {
   link: string;
   gold: string;
   sidebar: {
-    backgroundColor: string;
-    selectedIndicatorColor: string;
+    background: string;
+    indicator: string;
   };
   tabbar: {
     indicator: string;
