@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import {
+  configApiRef,
   Content,
   ContentHeader,
   identityApiRef,
   SupportButton,
-  configApiRef,
   useApi,
 } from '@backstage/core';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { catalogApiRef } from '../../api/types';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
-import { CatalogFilter, ButtonGroup } from '../CatalogFilter/CatalogFilter';
+import { ButtonGroup, CatalogFilter } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
+import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
 import { WelcomeBanner } from './WelcomeBanner';
-import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -43,6 +45,9 @@ const useStyles = makeStyles(theme => ({
     gridTemplateAreas: "'filters' 'table'",
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
+  },
+  mockDataButton: {
+    marginRight: '20px',
   },
 }));
 
@@ -58,9 +63,42 @@ const CatalogPageContents = () => {
   const userId = useApi(identityApiRef).getUserId();
   const [selectedTab, setSelectedTab] = useState<string>();
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
+  const [entitiesState, setEntitiesState] = useState<Entity[]>([]);
+  const [errorState, setError] = useState<Error | undefined>();
+
+  useEffect(() => {
+    setError(error);
+    setEntitiesState(matchingEntities);
+  }, [error, matchingEntities]);
+  const catalogApi = useApi(catalogApiRef);
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Company';
 
+  const addMockData = async () => {
+    try {
+      const dummyEntities = [
+        'artist-lookup-component.yaml',
+        'playback-order-component.yaml',
+        'podcast-api-component.yaml',
+        'queue-proxy-component.yaml',
+        'searcher-component.yaml',
+        'playback-lib-component.yaml',
+        'www-artist-component.yaml',
+        'shuffle-api-component.yaml',
+      ];
+      const _promises = dummyEntities.map(file =>
+        catalogApi.addLocation(
+          'github',
+          `https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/${file}`,
+        ),
+      );
+      await Promise.all(_promises);
+      const data: Entity[] = await catalogApi.getEntities();
+      setEntitiesState(data);
+    } catch (err) {
+      setError(err);
+    }
+  };
   const tabs = useMemo<LabeledComponentType[]>(
     () => [
       {
@@ -129,6 +167,16 @@ const CatalogPageContents = () => {
       <Content>
         <WelcomeBanner />
         <ContentHeader title={selectedTab ?? ''}>
+          {entitiesState && entitiesState.length === 0 ? (
+            <Button
+              onClick={addMockData}
+              variant="contained"
+              color="primary"
+              className={styles.mockDataButton}
+            >
+              Add Example components
+            </Button>
+          ) : null}
           <Button
             component={RouterLink}
             variant="contained"
@@ -150,9 +198,9 @@ const CatalogPageContents = () => {
           </div>
           <CatalogTable
             titlePreamble={selectedSidebarItem ?? ''}
-            entities={matchingEntities}
+            entities={entitiesState}
             loading={loading}
-            error={error}
+            error={errorState}
           />
         </div>
       </Content>
