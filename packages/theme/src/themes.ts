@@ -59,7 +59,7 @@ export const lightTheme = createTheme({
     linkHover: '#2196F3',
     link: '#0A6EBE',
     gold: yellow.A700,
-    sidebar: {
+    navigation: {
       background: '#171717',
       indicator: '#9BF0E1',
     },
@@ -115,7 +115,7 @@ export const darkTheme = createTheme({
     linkHover: '#2196F3',
     link: '#0A6EBE',
     gold: yellow.A700,
-    sidebar: {
+    navigation: {
       background: '#424242',
       indicator: '#9BF0E1',
     },

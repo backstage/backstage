@@ -95,7 +95,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
     },
     selected: {
       '&$root': {
-        borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.sidebar.indicator}`,
+        borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
         color: '#ffffff',
       },
       '&$closed': {
