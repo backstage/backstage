@@ -59,7 +59,10 @@ export const lightTheme = createTheme({
     linkHover: '#2196F3',
     link: '#0A6EBE',
     gold: yellow.A700,
-    sidebar: '#171717',
+    sidebar: {
+      backgroundColor: '#171717',
+      selectedIndicatorColor: '#9BF0E1',
+    },
     pinSidebarButton: {
       icon: '#181818',
       background: '#BDBDBD',
@@ -112,7 +115,10 @@ export const darkTheme = createTheme({
     linkHover: '#2196F3',
     link: '#0A6EBE',
     gold: yellow.A700,
-    sidebar: '#424242',
+    sidebar: {
+      backgroundColor: '#424242',
+      selectedIndicatorColor: '#9BF0E1',
+    },
     pinSidebarButton: {
       icon: '#404040',
       background: '#BDBDBD',
