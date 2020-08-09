@@ -15,7 +15,7 @@
  */
 
 import { createRouter } from './router';
-import winston from 'winston';
+import * as winston from 'winston';
 import { ConfigReader } from '@backstage/config';
 import { loadBackendConfig } from '@backstage/backend-common';
 
