@@ -1,8 +1,10 @@
 import { createApp } from '@backstage/core';
 import React, { FC } from 'react';
+import { apis } from './apis';
 import * as plugins from './plugins';
 
 const app = createApp({
+  apis,
   plugins: Object.values(plugins),
 });
 
