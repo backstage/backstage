@@ -15,12 +15,6 @@
  */
 
 import React, { useLayoutEffect, useState, useMemo, useCallback } from 'react';
-import { guestProvider } from './guestProvider';
-import { googleProvider } from './googleProvider';
-import { customProvider } from './customProvider';
-import { gitlabProvider } from './gitlabProvider';
-import { oktaProvider } from './oktaProvider';
-import { githubProvider } from './githubProvider';
 import {
   SignInPageProps,
   SignInResult,
@@ -28,24 +22,61 @@ import {
   useApiHolder,
   errorApiRef,
 } from '@backstage/core-api';
-import { SignInProvider } from './types';
+import { SignInConfig, IdentityProviders, SignInProvider } from './types';
+import { commonProvider } from './commonProvider';
+import { guestProvider } from './guestProvider';
+import { customProvider } from './customProvider';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
-// Separate list here to avoid exporting internal types
-export type SignInProviderId = 'guest' | string;
-
-const signInProviders: { [id in SignInProviderId]: SignInProvider } = {
-  guest: guestProvider,
-  google: googleProvider,
-  gitlab: gitlabProvider,
-  oauth2: customProvider,
-  okta: oktaProvider,
-  github: githubProvider,
+export type SignInProviderType = {
+  [key: string]: {
+    components: SignInProvider;
+    id: string;
+    config?: SignInConfig;
+  };
 };
 
+const signInProviders: { [key: string]: SignInProvider } = {
+  guest: guestProvider,
+  custom: customProvider,
+  common: commonProvider,
+};
+
+function validateIDs(id: string, providers: SignInProviderType): void {
+  if (id in providers)
+    throw new Error(
+      `"${id}" ID is duplicated. IDs of identity providers have to be unique.`,
+    );
+}
+
+export function getSignInProviders(
+  identityProviders: IdentityProviders,
+): SignInProviderType {
+  const providers = identityProviders.reduce(
+    (acc: SignInProviderType, config) => {
+      if (typeof config === 'string') {
+        validateIDs(config, acc);
+        acc[config] = { components: signInProviders[config], id: config };
+
+        return acc;
+      }
+
+      const { id } = config as SignInConfig;
+      validateIDs(id, acc);
+
+      acc[id] = { components: signInProviders.common, id, config };
+
+      return acc;
+    },
+    {},
+  );
+
+  return providers;
+}
+
 export const useSignInProviders = (
-  providers: SignInProviderId[],
+  providers: SignInProviderType,
   onResult: SignInPageProps['onResult'],
 ) => {
   const errorApi = useApi(errorApiRef);
@@ -74,25 +105,26 @@ export const useSignInProviders = (
     }
 
     // We can't use storageApi here, as it might have a dependency on the IdentityApi
-    const selectedProvider = localStorage.getItem(
+    const selectedProviderId = localStorage.getItem(
       PROVIDER_STORAGE_KEY,
-    ) as SignInProviderId;
+    ) as string;
 
     // No provider selected, let the user pick one
-    if (selectedProvider === null) {
+    if (selectedProviderId === null) {
       setLoading(false);
       return undefined;
     }
 
-    const provider = signInProviders[selectedProvider];
+    const provider = providers[selectedProviderId];
     if (!provider) {
       setLoading(false);
       return undefined;
     }
 
     let didCancel = false;
-    provider
-      .loader(apiHolder)
+
+    provider.components
+      .loader(apiHolder, provider.config?.apiRef!)
       .then(result => {
         if (didCancel) {
           return;
@@ -119,20 +151,24 @@ export const useSignInProviders = (
   // This renders all available sign-in providers
   const elements = useMemo(
     () =>
-      providers.map(providerId => {
-        const provider = signInProviders[providerId];
-        if (!provider) {
-          throw new Error(`Unknown sign-in provider: ${providerId}`);
-        }
-        const { Component } = provider;
+      Object.keys(providers).map(key => {
+        const provider = providers[key];
+
+        const { Component } = provider.components;
 
         const handleResult = (result: SignInResult) => {
-          localStorage.setItem(PROVIDER_STORAGE_KEY, providerId);
+          localStorage.setItem(PROVIDER_STORAGE_KEY, provider.id);
 
           handleWrappedResult(result);
         };
 
-        return <Component key={providerId} onResult={handleResult} />;
+        return (
+          <Component
+            key={provider.id}
+            config={provider.config!}
+            onResult={handleResult}
+          />
+        );
       }),
     [providers, handleWrappedResult],
   );

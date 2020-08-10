@@ -17,27 +17,34 @@
 import React from 'react';
 import { Grid, Typography, Button } from '@material-ui/core';
 import { InfoCard } from '../InfoCard/InfoCard';
-import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
-import { useApi, gitlabAuthApiRef, errorApiRef } from '@backstage/core-api';
+import {
+  ProviderComponent,
+  ProviderLoader,
+  SignInProvider,
+  SignInConfig,
+} from './types';
+import { useApi, errorApiRef } from '@backstage/core-api';
 
-const Component: ProviderComponent = ({ onResult }) => {
-  const gitlabAuthApi = useApi(gitlabAuthApiRef);
+const Component: ProviderComponent = ({ config, onResult }) => {
+  const { apiRef, title, message } = config as SignInConfig;
+  const authApi = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
 
   const handleLogin = async () => {
     try {
-      const identity = await gitlabAuthApi.getBackstageIdentity({
+      const identity = await authApi.getBackstageIdentity({
         instantPopup: true,
       });
 
-      const profile = await gitlabAuthApi.getProfile();
+      const profile = await authApi.getProfile();
       onResult({
         userId: identity!.id,
         profile: profile!,
-        getIdToken: () =>
-          gitlabAuthApi.getBackstageIdentity().then(i => i!.idToken),
+        getIdToken: () => {
+          return authApi.getBackstageIdentity().then(i => i!.idToken);
+        },
         logout: async () => {
-          await gitlabAuthApi.logout();
+          await authApi.logout();
         },
       });
     } catch (error) {
@@ -48,23 +55,23 @@ const Component: ProviderComponent = ({ onResult }) => {
   return (
     <Grid item>
       <InfoCard
-        title="Gitlab"
+        title={title}
         actions={
           <Button color="primary" variant="outlined" onClick={handleLogin}>
             Sign In
           </Button>
         }
       >
-        <Typography variant="body1">Sign In using Gitlab</Typography>
+        <Typography variant="body1">{message}</Typography>
       </InfoCard>
     </Grid>
   );
 };
 
-const loader: ProviderLoader = async apis => {
-  const gitlabAuthApi = apis.get(gitlabAuthApiRef)!;
+const loader: ProviderLoader = async (apis, apiRef) => {
+  const authApi = apis.get(apiRef)!;
 
-  const identity = await gitlabAuthApi.getBackstageIdentity({
+  const identity = await authApi.getBackstageIdentity({
     optional: true,
   });
 
@@ -72,17 +79,16 @@ const loader: ProviderLoader = async apis => {
     return undefined;
   }
 
-  const profile = await gitlabAuthApi.getProfile();
+  const profile = await authApi.getProfile();
 
   return {
     userId: identity.id,
     profile: profile!,
-    getIdToken: () =>
-      gitlabAuthApi.getBackstageIdentity().then(i => i!.idToken),
+    getIdToken: () => authApi.getBackstageIdentity().then(i => i!.idToken),
     logout: async () => {
-      await gitlabAuthApi.logout();
+      await authApi.logout();
     },
   };
 };
 
-export const gitlabProvider: SignInProvider = { Component, loader };
+export const commonProvider: SignInProvider = { Component, loader };

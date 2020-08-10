@@ -55,6 +55,16 @@ module.exports = {
     ],
     // Avoid cross-package imports
     'no-restricted-imports': [2, { patterns: ['**/../../**/*/src/**'] }],
+    // Avoid default import from winston as it breaks at runtime
+    'no-restricted-syntax': [
+      'error',
+      {
+        message:
+          'Default import from winston is not allowed, import `* as winston` instead.',
+        selector:
+          'ImportDeclaration[source.value="winston"] ImportDefaultSpecifier',
+      },
+    ],
   },
   overrides: [
     {

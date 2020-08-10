@@ -15,7 +15,6 @@
  */
 
 import program from 'commander';
-import chalk from 'chalk';
 import { exitWithError } from './lib/errors';
 import { version } from '../package.json';
 import createApp from './createApp';
@@ -30,10 +29,6 @@ const main = (argv: string[]) => {
       'Skip the install and builds steps after creating the app',
     )
     .action(createApp);
-
-  if (!process.argv.slice(2).length) {
-    program.outputHelp(chalk.yellow);
-  }
 
   program.parse(argv);
 };
