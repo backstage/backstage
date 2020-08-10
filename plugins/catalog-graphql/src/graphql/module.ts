@@ -50,15 +50,7 @@ export async function createModule(
     },
     CatalogQuery: {
       list: async () => {
-        const catalogEntries = await catalogClient.list();
-        return catalogEntries.map(entity => ({
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            annotations: entity.metadata.annotations ?? {},
-            labels: entity.metadata.labels ?? {},
-          },
-        }));
+        return await catalogClient.list();
       },
     },
     EntityMetadata: {

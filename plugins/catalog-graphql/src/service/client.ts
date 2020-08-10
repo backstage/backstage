@@ -23,6 +23,8 @@ export interface ReaderEntityMeta extends EntityMeta {
   etag: string;
   generation: number;
   namespace: string;
+  annotations: Record<string, string>;
+  labels: Record<string, string>;
 }
 export interface ReaderEntity extends Entity {
   metadata: JsonObject & ReaderEntityMeta;
