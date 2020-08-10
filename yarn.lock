@@ -17754,11 +17754,11 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     inherits "^2.0.1"
 
 rollup-plugin-dts@^1.4.6:
-  version "1.4.7"
-  resolved "https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-1.4.7.tgz#6255147ac777314c0725a1efcb42df10fe282243"
-  integrity sha512-QkunbJ96yUNkW95k/Vd6SdTjCbWSG0rMVUtpHSCwfg078Z7vbDaBnfz/gkSqR5h8WFMxoccBT4aodHm6387Jvg==
+  version "1.4.10"
+  resolved "https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-1.4.10.tgz#0373c4284a2ba4d2d72df69c289271a816bc2736"
+  integrity sha512-bL6MBXc8lK7D5b/tYbHaglxs4ZxMQTQilGA6Xm9KQBEj4h9ZwIDlAsvDooGjJ/cOw23r3POTRtSCEyTHxtzHJg==
   optionalDependencies:
-    "@babel/code-frame" "^7.8.3"
+    "@babel/code-frame" "^7.10.4"
 
 rollup-plugin-esbuild@^2.0.0:
   version "2.3.0"
