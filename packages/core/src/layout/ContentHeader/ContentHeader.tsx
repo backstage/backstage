@@ -20,6 +20,7 @@
 
 import React, { ComponentType, Fragment, FC } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
+import classNames from 'classnames';
 import { Helmet } from 'react-helmet';
 
 const useStyles = makeStyles(theme => ({
@@ -31,6 +32,9 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: theme.spacing(1),
+  },
+  centered: {
+    textAlign: 'center',
   },
   leftItemsBox: {
     flex: '1 1 auto',
@@ -73,6 +77,7 @@ type ContentHeaderProps = {
   title?: DefaultTitleProps['title'];
   titleComponent?: ComponentType;
   description?: string;
+  centered?: boolean;
 };
 
 export const ContentHeader: FC<ContentHeaderProps> = ({
@@ -80,8 +85,9 @@ export const ContentHeader: FC<ContentHeaderProps> = ({
   title,
   titleComponent: TitleComponent = undefined,
   children,
+  centered,
 }) => {
-  const classes = useStyles();
+  const classes = useStyles(centered);
 
   const renderedTitle = TitleComponent ? (
     <TitleComponent />
@@ -91,7 +97,11 @@ export const ContentHeader: FC<ContentHeaderProps> = ({
   return (
     <Fragment>
       <Helmet title={title} />
-      <div className={classes.container}>
+      <div
+        className={classNames(classes.container, {
+          [classes.centered]: centered,
+        })}
+      >
         <div className={classes.leftItemsBox}>
           {renderedTitle}
           {description && (
