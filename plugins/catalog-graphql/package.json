@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-graphql",
-  "version": "0.1.1-alpha.17",
+  "version": "0.1.1-alpha.18",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -21,9 +21,9 @@
     "mock-data": "./scripts/mock-data.sh"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.17",
-    "@backstage/catalog-model": "^0.1.1-alpha.17",
-    "@backstage/config": "^0.1.1-alpha.17",
+    "@backstage/backend-common": "^0.1.1-alpha.18",
+    "@backstage/catalog-model": "^0.1.1-alpha.18",
+    "@backstage/config": "^0.1.1-alpha.18",
     "@graphql-codegen/cli": "^1.17.7",
     "@graphql-codegen/typescript": "^1.17.7",
     "@graphql-codegen/typescript-resolvers": "^1.17.7",
@@ -35,7 +35,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.17",
+    "@backstage/cli": "^0.1.1-alpha.18",
     "@types/supertest": "^2.0.8",
     "eslint-plugin-graphql": "^4.0.0",
     "@types/express": "^4.17.7",
