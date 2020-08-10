@@ -29,7 +29,7 @@ export interface ModuleOptions {
 }
 
 const schemaPath = path.resolve(
-  require.resolve('@backstage/plugin-graphql-backend/package.json'),
+  require.resolve('@backstage/plugin-catalog-graphql/package.json'),
   '../schema.gql',
 );
 
