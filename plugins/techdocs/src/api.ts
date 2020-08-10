@@ -23,7 +23,7 @@ export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
 });
 
 export class TechDocsStorageApi {
-  private apiOrigin: string;
+  public apiOrigin: string;
 
   constructor({ apiOrigin }: { apiOrigin: string }) {
     this.apiOrigin = apiOrigin;

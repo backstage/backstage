@@ -86,15 +86,9 @@ export const Reader = ({ componentId }: Props) => {
   const { kind, namespace, name } = componentId;
   const { '*': path } = useParams();
 
-  const docStorageUrl =
-    useApi(configApiRef).getOptionalString('techdocs.storageUrl') ??
-    'https://techdocs-mock-sites.storage.googleapis.com';
-
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
-
   const [shadowDomRef, shadowRoot] = useShadowDom();
   const navigate = useNavigate();
-
   const state = useFetch(techdocsStorageApi, kind, namespace, name, path);
 
   React.useEffect(() => {
@@ -114,7 +108,7 @@ export const Reader = ({ componentId }: Props) => {
     const transformedElement = transformer(state.value as string, [
       sanitizeDOM(),
       addBaseUrl({
-        docStorageUrl,
+        docStorageUrl: techdocsStorageApi.apiOrigin,
         componentId: `${kind}/${namespace}/${name}`,
         path,
       }),
@@ -160,7 +154,7 @@ export const Reader = ({ componentId }: Props) => {
         },
       }),
       onCssReady({
-        docStorageUrl,
+        docStorageUrl: techdocsStorageApi.apiOrigin,
         onLoading: (dom: Element) => {
           (dom as HTMLElement).style.setProperty('opacity', '0');
         },
