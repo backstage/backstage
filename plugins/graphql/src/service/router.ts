@@ -24,6 +24,7 @@ import { GraphQLModule } from '@graphql-modules/core';
 import { ApolloServer } from 'apollo-server-express';
 import { createModule as createCatalogModule } from '@backstage/plugin-catalog-graphql';
 import { Config } from '@backstage/config';
+import helmet from 'helmet';
 
 const schemaPath = path.resolve(
   require.resolve('@backstage/plugin-graphql-backend/package.json'),
@@ -41,15 +42,29 @@ export async function createRouter(
   const typeDefs = await fs.promises.readFile(schemaPath, 'utf-8');
 
   const catalogModule = await createCatalogModule(options);
+
   const { schema } = new GraphQLModule({
     imports: [catalogModule],
     typeDefs,
   });
 
-  const server = new ApolloServer({ schema, logger: options.logger });
+  const server = new ApolloServer({
+    schema,
+    logger: options.logger,
+  });
+
   const router = Router();
 
   const apolloMiddlware = server.getMiddleware({ path: '/' });
+
+  router.use(
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'", "'unsafe-inline'", 'http://*'],
+      },
+    }),
+  );
+
   router.use(apolloMiddlware);
 
   router.get('/health', (_, response) => {
