@@ -25,8 +25,11 @@ import {
 } from './lib';
 
 export type LoadConfigOptions = {
-  // Root path for search for app-config.yaml
-  rootPath: string;
+  // Root paths to search for config files. Config from earlier paths has lower priority.
+  rootPaths: string[];
+
+  // The environment that we're loading config for, e.g. 'development', 'production'.
+  env: string;
 
   // Whether to read secrets or omit them, defaults to false.
   shouldReadSecrets?: boolean;
@@ -63,8 +66,6 @@ export async function loadConfig(
 ): Promise<AppConfig[]> {
   const configs = [];
 
-  configs.push(...readEnv(process.env));
-
   const configPaths = await resolveStaticConfig(options);
 
   try {
@@ -85,6 +86,8 @@ export async function loadConfig(
       `Failed to read static configuration file: ${error.message}`,
     );
   }
+
+  configs.push(...readEnv(process.env));
 
   return configs;
 }

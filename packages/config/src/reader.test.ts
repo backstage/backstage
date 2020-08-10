@@ -214,9 +214,19 @@ describe('ConfigReader with fallback', () => {
     const config = ConfigReader.fromConfigs([
       {
         data: {
+          a: true,
+          b: true,
           c: true,
+          nested1: {
+            a: true,
+            b: true,
+          },
+          badBefore: {
+            a: true,
+          },
+          badAfter: true,
         },
-        context: 'x',
+        context: 'z',
       },
       {
         data: {
@@ -234,19 +244,9 @@ describe('ConfigReader with fallback', () => {
       },
       {
         data: {
-          a: true,
-          b: true,
           c: true,
-          nested1: {
-            a: true,
-            b: true,
-          },
-          badBefore: {
-            a: true,
-          },
-          badAfter: true,
         },
-        context: 'z',
+        context: 'x',
       },
     ]);
 
@@ -427,42 +427,42 @@ describe('ConfigReader.get()', () => {
   });
 
   it('should merge in fallback configs', () => {
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('a')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('a')).toEqual(
       {
         x: 'x1',
         y: ['y11', 'y12', 'y13'],
         z: false,
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('b')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('b')).toEqual(
       {
         x: 'x1',
         y: ['y11'],
         z: 'z2',
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('c')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('c')).toEqual(
       {
         c1: {
           c2: 'c2',
         },
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('a')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('a')).toEqual(
       {
         x: 'x1',
         y: ['y11', 'y12', 'y13'],
         z: false,
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('b')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('b')).toEqual(
       {
         x: 'x1',
         y: ['y11'],
         z: 'z2',
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('c')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('c')).toEqual(
       {
         c1: {
           c2: 'c2',
@@ -471,14 +471,14 @@ describe('ConfigReader.get()', () => {
     );
 
     expect(
-      ConfigReader.fromConfigs([configs[2], configs[1]]).getOptional('b'),
+      ConfigReader.fromConfigs([configs[1], configs[2]]).getOptional('b'),
     ).toEqual({
       x: 'x2',
       y: ['y21', 'y22'],
       z: 'z2',
     });
     expect(
-      ConfigReader.fromConfigs([configs[2], configs[1]]).getOptional('c'),
+      ConfigReader.fromConfigs([configs[1], configs[2]]).getOptional('c'),
     ).toEqual({
       c1: 'c1',
     });
@@ -486,23 +486,6 @@ describe('ConfigReader.get()', () => {
 
   it('should not merge non-objects', () => {
     const config = ConfigReader.fromConfigs([
-      {
-        data: {
-          a: ['1', '2'],
-          c: [],
-          d: {
-            x: 'x',
-          },
-          e: ['3'],
-          f: 'foo',
-          g: { z: 'z' },
-          h: {
-            a: 'a1',
-            c: 'c1',
-          },
-        },
-        context: '1',
-      },
       {
         data: {
           a: ['x', 'y', 'z'],
@@ -520,6 +503,23 @@ describe('ConfigReader.get()', () => {
           },
         },
         context: '2',
+      },
+      {
+        data: {
+          a: ['1', '2'],
+          c: [],
+          d: {
+            x: 'x',
+          },
+          e: ['3'],
+          f: 'foo',
+          g: { z: 'z' },
+          h: {
+            a: 'a1',
+            c: 'c1',
+          },
+        },
+        context: '1',
       },
     ]);
     expect(config.get('a')).toEqual(['1', '2']);
