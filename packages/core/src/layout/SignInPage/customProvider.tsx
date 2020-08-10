@@ -17,7 +17,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import {
-  Grid,
   Typography,
   Button,
   FormControl,
@@ -28,6 +27,7 @@ import {
 import isEmpty from 'lodash/isEmpty';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
+import { GridItem } from './styles';
 
 const ID_TOKEN_REGEX = /^[a-z0-9+/]+\.[a-z0-9+/]+\.[a-z0-9+/]+$/i;
 
@@ -64,8 +64,8 @@ const Component: ProviderComponent = ({ onResult }) => {
   };
 
   return (
-    <Grid item>
-      <InfoCard title="Custom User">
+    <GridItem>
+      <InfoCard title="Custom User" variant="fullHeight">
         <Typography variant="body1">
           Enter your own User ID and credentials.
           <br />
@@ -115,7 +115,7 @@ const Component: ProviderComponent = ({ onResult }) => {
           </Button>
         </form>
       </InfoCard>
-    </Grid>
+    </GridItem>
   );
 };
 

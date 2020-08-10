@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Grid, Typography, Button } from '@material-ui/core';
+import { Typography, Button } from '@material-ui/core';
 import { InfoCard } from '../InfoCard/InfoCard';
 import {
   ProviderComponent,
@@ -24,6 +24,7 @@ import {
   SignInConfig,
 } from './types';
 import { useApi, errorApiRef } from '@backstage/core-api';
+import { GridItem } from './styles';
 
 const Component: ProviderComponent = ({ config, onResult }) => {
   const { apiRef, title, message } = config as SignInConfig;
@@ -53,8 +54,9 @@ const Component: ProviderComponent = ({ config, onResult }) => {
   };
 
   return (
-    <Grid item>
+    <GridItem>
       <InfoCard
+        variant="fullHeight"
         title={title}
         actions={
           <Button color="primary" variant="outlined" onClick={handleLogin}>
@@ -64,7 +66,7 @@ const Component: ProviderComponent = ({ config, onResult }) => {
       >
         <Typography variant="body1">{message}</Typography>
       </InfoCard>
-    </Grid>
+    </GridItem>
   );
 };
 
