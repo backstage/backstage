@@ -19,6 +19,7 @@ import { useApi, configApiRef } from '@backstage/core';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
+import { techdocsStorageApiRef, TechDocsStorageApi } from '../../api';
 
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -34,22 +35,28 @@ import transformer, {
 import URLFormatter from '../urlFormatter';
 import { TechDocsNotFound } from './TechDocsNotFound';
 
-const useFetch = (url: string): AsyncState<string | Error> => {
+const useFetch = (
+  api: TechDocsStorageApi,
+  kind: string,
+  namespace: string,
+  name: string,
+  path: string,
+): AsyncState<string | Error> => {
   const state = useAsync(async () => {
-    const request = await fetch(url);
+    const request = await api.getEntityDocs({ kind, namespace, name, path });
     if (request.status === 404) {
       return [request.url, new Error('Page not found')];
     }
     const response = await request.text();
     return [request.url, response];
-  }, [url]);
+  }, [api, kind, namespace, name, path]);
 
-  const [fetchedUrl, fetchedValue] = state.value ?? [];
+  const [, fetchedValue] = state.value ?? [];
 
-  if (url !== fetchedUrl) {
-    // Fixes a race condition between two pages
-    return { loading: true };
-  }
+  // if (url !== fetchedUrl) {
+  //  Fixes a race condition between two pages
+  //  return { loading: true };
+  // }
 
   return Object.assign(state, fetchedValue ? { value: fetchedValue } : {});
 };
@@ -83,13 +90,12 @@ export const Reader = ({ componentId }: Props) => {
     useApi(configApiRef).getOptionalString('techdocs.storageUrl') ??
     'https://techdocs-mock-sites.storage.googleapis.com';
 
+  const techdocsStorageApi = useApi(techdocsStorageApiRef);
+
   const [shadowDomRef, shadowRoot] = useShadowDom();
   const navigate = useNavigate();
-  const normalizedUrl = new URLFormatter(
-    `${docStorageUrl}/${kind}/${namespace}/${name}`,
-  ).formatBaseURL();
 
-  const state = useFetch(`${normalizedUrl}index.html`);
+  const state = useFetch(techdocsStorageApi, kind, namespace, name, path);
 
   React.useEffect(() => {
     if (!shadowRoot) {

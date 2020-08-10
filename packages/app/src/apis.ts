@@ -56,6 +56,10 @@ import {
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
 import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
+import {
+  techdocsStorageApiRef,
+  TechDocsStorageApi,
+} from '@backstage/plugin-techdocs';
 
 import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
 import {
@@ -68,6 +72,7 @@ export const apis = (config: ConfigApi) => {
   console.log(`Creating APIs for ${config.getString('app.title')}`);
 
   const backendUrl = config.getString('backend.baseUrl');
+  const techdocsUrl = config.getString('techdocs.storageUrl');
 
   const builder = ApiRegistry.builder();
 
@@ -187,6 +192,13 @@ export const apis = (config: ConfigApi) => {
     new RollbarClient({
       apiOrigin: backendUrl,
       basePath: '/rollbar',
+    }),
+  );
+
+  builder.add(
+    techdocsStorageApiRef,
+    new TechDocsStorageApi({
+      apiOrigin: techdocsUrl,
     }),
   );
 
