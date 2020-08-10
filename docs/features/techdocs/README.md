@@ -22,15 +22,48 @@ Spotify’s developer experience offering with 2,400+ documentation sites and
 
 ## Project roadmap
 
-| Version                 | Description                                                                                                              |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| [TechDocs V.0 ✅][v0]   | Read docs in Backstage - Enable anyone to get a reader experience working in Backstage.                                  |
-| [TechDocs V.1 🚧][v1]   | TechDocs end to end - First and minimum release of TechDocs that you can use end to end - and contribute to.             |
-| [TechDocs V.2 🔮⌛][v2] | Widget Architecture - TechDocs widget architecture available, so the community can create their own customized features. |
+| Version                 | Description                                                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [TechDocs V.0 ✅][v0]   | Read docs in Backstage - Enable anyone to get a reader experience working in Backstage. [See V.0 Use Cases.](./#techdocs-v0)          |
+| [TechDocs V.1 🚧][v1]   | TechDocs end to end (alpha) - Alpha of TechDocs that you can use end to end - and contribute to. [See V.1 Use Cases.](./#techdocs-v1) |
+| [TechDocs V.2 🔮⌛][v2] | Widget Architecture - TechDocs widget architecture available, so the community can create their own customized features.              |
 
 [v0]: https://github.com/spotify/backstage/milestone/15
 [v1]: https://github.com/spotify/backstage/milestone/16
 [v2]: https://github.com/spotify/backstage/milestone/17
+
+## Use Cases
+
+#### TechDocs V.0
+
+**Running locally**
+
+- As a user I can navigate to a manually curated docs explore page.
+- As a user I can navigte to and read mock documentation that is manually
+  uploaded by the TechDocs core team.
+
+#### TechDocs V.1
+
+**Running locally**
+
+- As a user I can run TechDocs locally and read documentation.
+- As a user I can create a docs folder in my entity project and add a reference
+  in the entity configuration file (of the owning entity) to my documentation.
+  - Backstage will automatically build my documentation and serve it in
+    TechDocs.
+  - Documentation will be displayed under the docs tab in the service catalog.
+- As a user I can create a docs only repository that will be standalone from any
+  other service.
+
+**Running at company in production**
+
+- As a user I can choose my own storage solution for the documentation (as
+  example GCS/AWS/Azure etc)
+- As a user I can define my own API to interface my own documentation solution.
+
+#### TechDocs V.2
+
+more to come...
 
 ## Structure
 
