@@ -33,9 +33,7 @@ export type Scalars = {
 
 
 export type EntityMetadata = {
-  __typename?: 'EntityMetadata';
   name: Scalars['String'];
-  namespace: Scalars['String'];
   annotations: Scalars['JSONObject'];
   annotation?: Maybe<Scalars['JSON']>;
   labels: Scalars['JSONObject'];
@@ -52,6 +50,39 @@ export type EntityMetadataAnnotationArgs = {
 
 
 export type EntityMetadataLabelArgs = {
+  name: Scalars['String'];
+};
+
+export type ComponentMetadata = EntityMetadata & {
+  __typename?: 'ComponentMetadata';
+  relationships: Scalars['String'];
+};
+
+export type TemplateMetadata = EntityMetadata & {
+  __typename?: 'TemplateMetadata';
+  updatedBy: Scalars['String'];
+};
+
+export type DefaultEntityMetadata = EntityMetadata & {
+  __typename?: 'DefaultEntityMetadata';
+  name: Scalars['String'];
+  annotations: Scalars['JSONObject'];
+  annotation?: Maybe<Scalars['JSON']>;
+  labels: Scalars['JSONObject'];
+  label?: Maybe<Scalars['JSON']>;
+  uid: Scalars['String'];
+  etag: Scalars['String'];
+  generation: Scalars['Int'];
+  updatedBy: Scalars['String'];
+};
+
+
+export type DefaultEntityMetadataAnnotationArgs = {
+  name: Scalars['String'];
+};
+
+
+export type DefaultEntityMetadataLabelArgs = {
   name: Scalars['String'];
 };
 
@@ -153,9 +184,12 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = ResolversObject<{
   JSON: ResolverTypeWrapper<Partial<Scalars['JSON']>>;
   JSONObject: ResolverTypeWrapper<Partial<Scalars['JSONObject']>>;
-  EntityMetadata: ResolverTypeWrapper<Partial<EntityMetadata>>;
+  EntityMetadata: ResolversTypes['ComponentMetadata'] | ResolversTypes['TemplateMetadata'] | ResolversTypes['DefaultEntityMetadata'];
   String: ResolverTypeWrapper<Partial<Scalars['String']>>;
   Int: ResolverTypeWrapper<Partial<Scalars['Int']>>;
+  ComponentMetadata: ResolverTypeWrapper<Partial<ComponentMetadata>>;
+  TemplateMetadata: ResolverTypeWrapper<Partial<TemplateMetadata>>;
+  DefaultEntityMetadata: ResolverTypeWrapper<Partial<DefaultEntityMetadata>>;
   CatalogEntity: ResolverTypeWrapper<Partial<CatalogEntity>>;
   CatalogQuery: ResolverTypeWrapper<Partial<CatalogQuery>>;
   Query: ResolverTypeWrapper<{}>;
@@ -166,9 +200,12 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   JSON: Partial<Scalars['JSON']>;
   JSONObject: Partial<Scalars['JSONObject']>;
-  EntityMetadata: Partial<EntityMetadata>;
+  EntityMetadata: ResolversParentTypes['ComponentMetadata'] | ResolversParentTypes['TemplateMetadata'] | ResolversParentTypes['DefaultEntityMetadata'];
   String: Partial<Scalars['String']>;
   Int: Partial<Scalars['Int']>;
+  ComponentMetadata: Partial<ComponentMetadata>;
+  TemplateMetadata: Partial<TemplateMetadata>;
+  DefaultEntityMetadata: Partial<DefaultEntityMetadata>;
   CatalogEntity: Partial<CatalogEntity>;
   CatalogQuery: Partial<CatalogQuery>;
   Query: {};
@@ -184,8 +221,8 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 }
 
 export type EntityMetadataResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['EntityMetadata'] = ResolversParentTypes['EntityMetadata']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'ComponentMetadata' | 'TemplateMetadata' | 'DefaultEntityMetadata', ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
   annotation?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<EntityMetadataAnnotationArgs, 'name'>>;
   labels?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
@@ -193,6 +230,28 @@ export type EntityMetadataResolvers<ContextType = ModuleContext, ParentType exte
   uid?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   etag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   generation?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+}>;
+
+export type ComponentMetadataResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['ComponentMetadata'] = ResolversParentTypes['ComponentMetadata']> = ResolversObject<{
+  relationships?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type TemplateMetadataResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['TemplateMetadata'] = ResolversParentTypes['TemplateMetadata']> = ResolversObject<{
+  updatedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+}>;
+
+export type DefaultEntityMetadataResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['DefaultEntityMetadata'] = ResolversParentTypes['DefaultEntityMetadata']> = ResolversObject<{
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
+  annotation?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<DefaultEntityMetadataAnnotationArgs, 'name'>>;
+  labels?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
+  label?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<DefaultEntityMetadataLabelArgs, 'name'>>;
+  uid?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  etag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  generation?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updatedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
@@ -216,6 +275,9 @@ export type Resolvers<ContextType = ModuleContext> = ResolversObject<{
   JSON?: GraphQLScalarType;
   JSONObject?: GraphQLScalarType;
   EntityMetadata?: EntityMetadataResolvers<ContextType>;
+  ComponentMetadata?: ComponentMetadataResolvers<ContextType>;
+  TemplateMetadata?: TemplateMetadataResolvers<ContextType>;
+  DefaultEntityMetadata?: DefaultEntityMetadataResolvers<ContextType>;
   CatalogEntity?: CatalogEntityResolvers<ContextType>;
   CatalogQuery?: CatalogQueryResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

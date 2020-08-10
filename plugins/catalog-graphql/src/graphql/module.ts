@@ -17,8 +17,14 @@
 import { Logger } from 'winston';
 import fs from 'fs';
 import path from 'path';
+import { makeExecutableSchema } from 'apollo-server';
 import { GraphQLModule } from '@graphql-modules/core';
-import { Resolvers, CatalogQuery } from './types';
+import {
+  Resolvers,
+  CatalogQuery,
+  CatalogEntityTypes,
+  EntityMetadataResolvers,
+} from './types';
 import { Config } from '@backstage/config';
 import { CatalogClient } from '../service/client';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
@@ -32,6 +38,19 @@ const schemaPath = path.resolve(
   require.resolve('@backstage/plugin-catalog-graphql/package.json'),
   '../schema.gql',
 );
+
+const getSpecTypenameForEntity = (e: { kind?: string }) => {
+  switch (e.kind) {
+    case 'Component':
+      return 'ComponentEntity';
+    case 'Location':
+      return 'LocationEntity';
+    case 'Template':
+      return 'TemplateEntity';
+    default:
+      return null;
+  }
+};
 
 export async function createModule(
   options: ModuleOptions,
@@ -53,15 +72,46 @@ export async function createModule(
         return await catalogClient.list();
       },
     },
+    ComponentMetadata: {
+      relationships: () => 'boop',
+    },
+    TemplateMetadata: {
+      updatedBy: () => 'blam',
+    },
+    CatalogEntity: {
+      metadata: e => ({ ...e.metadata!, catalogEntity: e }),
+    },
     EntityMetadata: {
+      __resolveType: (obj: any) => {
+        const kind = obj.catalogEntity!.kind;
+        switch (kind) {
+          case 'Component':
+            return 'ComponentMetadata';
+          case 'Template':
+            return 'TemplateMetadata';
+          default:
+            return 'DefaultEntityMetadata';
+        }
+      },
       annotation: (e, { name }) => e.annotations?.[name] ?? null,
+      labels: e => e ?? {},
+      annotations: e => e ?? {},
       label: (e, { name }) => e.labels?.[name] ?? null,
     },
   };
 
-  const module = new GraphQLModule({
+  const schema = makeExecutableSchema({
     typeDefs,
     resolvers,
+    inheritResolversFromInterfaces: true,
+    resolverValidationOptions: {
+      allowResolversNotInSchema: true,
+    },
+  });
+
+  const module = new GraphQLModule({
+    resolverValidationOptions: {},
+    extraSchemas: [schema],
     logger: options.logger as any,
   });
 
