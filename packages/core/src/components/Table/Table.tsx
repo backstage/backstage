@@ -166,7 +166,7 @@ export function Table<T extends object = {}>({
 
   const MTColumns = convertColumns(columns, theme);
 
-  const defaultOptions: Options = {
+  const defaultOptions: Options<T> = {
     headerStyle: {
       textTransform: 'uppercase',
     },
