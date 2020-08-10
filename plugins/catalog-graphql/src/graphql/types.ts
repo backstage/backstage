@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { ModuleContext } from '@graphql-modules/core';
 
 export type Maybe<T> = T | null;
@@ -26,32 +26,40 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  JSON: any;
+  JSONObject: any;
 };
 
-export type EntityMetadataAnnotation = {
-  __typename?: 'EntityMetadataAnnotation';
-  key: Scalars['String'];
-  value: Scalars['String'];
-};
+
 
 export type EntityMetadata = {
   __typename?: 'EntityMetadata';
   name: Scalars['String'];
-  namespace?: Maybe<Scalars['String']>;
-  annotation?: Maybe<EntityMetadataAnnotation>;
-  annotations?: Maybe<Array<EntityMetadataAnnotation>>;
+  namespace: Scalars['String'];
+  annotations: Scalars['JSONObject'];
+  annotation?: Maybe<Scalars['JSON']>;
+  labels: Scalars['JSONObject'];
+  label?: Maybe<Scalars['JSON']>;
+  uid: Scalars['String'];
+  etag: Scalars['String'];
+  generation: Scalars['Int'];
 };
 
 
 export type EntityMetadataAnnotationArgs = {
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+};
+
+
+export type EntityMetadataLabelArgs = {
+  name: Scalars['String'];
 };
 
 export type CatalogEntity = {
   __typename?: 'CatalogEntity';
-  apiVersion?: Maybe<Scalars['String']>;
+  apiVersion: Scalars['String'];
   kind: Scalars['String'];
-  metadata?: Maybe<EntityMetadata>;
+  metadata: EntityMetadata;
 };
 
 export type CatalogQuery = {
@@ -143,9 +151,11 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  EntityMetadataAnnotation: ResolverTypeWrapper<Partial<EntityMetadataAnnotation>>;
-  String: ResolverTypeWrapper<Partial<Scalars['String']>>;
+  JSON: ResolverTypeWrapper<Partial<Scalars['JSON']>>;
+  JSONObject: ResolverTypeWrapper<Partial<Scalars['JSONObject']>>;
   EntityMetadata: ResolverTypeWrapper<Partial<EntityMetadata>>;
+  String: ResolverTypeWrapper<Partial<Scalars['String']>>;
+  Int: ResolverTypeWrapper<Partial<Scalars['Int']>>;
   CatalogEntity: ResolverTypeWrapper<Partial<CatalogEntity>>;
   CatalogQuery: ResolverTypeWrapper<Partial<CatalogQuery>>;
   Query: ResolverTypeWrapper<{}>;
@@ -154,33 +164,42 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  EntityMetadataAnnotation: Partial<EntityMetadataAnnotation>;
-  String: Partial<Scalars['String']>;
+  JSON: Partial<Scalars['JSON']>;
+  JSONObject: Partial<Scalars['JSONObject']>;
   EntityMetadata: Partial<EntityMetadata>;
+  String: Partial<Scalars['String']>;
+  Int: Partial<Scalars['Int']>;
   CatalogEntity: Partial<CatalogEntity>;
   CatalogQuery: Partial<CatalogQuery>;
   Query: {};
   Boolean: Partial<Scalars['Boolean']>;
 }>;
 
-export type EntityMetadataAnnotationResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['EntityMetadataAnnotation'] = ResolversParentTypes['EntityMetadataAnnotation']> = ResolversObject<{
-  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
-}>;
+export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
+  name: 'JSON';
+}
+
+export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSONObject'], any> {
+  name: 'JSONObject';
+}
 
 export type EntityMetadataResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['EntityMetadata'] = ResolversParentTypes['EntityMetadata']> = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  namespace?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  annotation?: Resolver<Maybe<ResolversTypes['EntityMetadataAnnotation']>, ParentType, ContextType, RequireFields<EntityMetadataAnnotationArgs, never>>;
-  annotations?: Resolver<Maybe<Array<ResolversTypes['EntityMetadataAnnotation']>>, ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
+  annotation?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<EntityMetadataAnnotationArgs, 'name'>>;
+  labels?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
+  label?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType, RequireFields<EntityMetadataLabelArgs, 'name'>>;
+  uid?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  etag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  generation?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
 export type CatalogEntityResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['CatalogEntity'] = ResolversParentTypes['CatalogEntity']> = ResolversObject<{
-  apiVersion?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  metadata?: Resolver<Maybe<ResolversTypes['EntityMetadata']>, ParentType, ContextType>;
+  metadata?: Resolver<ResolversTypes['EntityMetadata'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
@@ -194,7 +213,8 @@ export type QueryResolvers<ContextType = ModuleContext, ParentType extends Resol
 }>;
 
 export type Resolvers<ContextType = ModuleContext> = ResolversObject<{
-  EntityMetadataAnnotation?: EntityMetadataAnnotationResolvers<ContextType>;
+  JSON?: GraphQLScalarType;
+  JSONObject?: GraphQLScalarType;
   EntityMetadata?: EntityMetadataResolvers<ContextType>;
   CatalogEntity?: CatalogEntityResolvers<ContextType>;
   CatalogQuery?: CatalogQueryResolvers<ContextType>;

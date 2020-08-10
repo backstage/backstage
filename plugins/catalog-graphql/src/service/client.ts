@@ -14,20 +14,30 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityMeta } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
+import { JsonObject } from '@backstage/config';
 
+export interface ReaderEntityMeta extends EntityMeta {
+  uid: string;
+  etag: string;
+  generation: number;
+  namespace: string;
+}
+export interface ReaderEntity extends Entity {
+  metadata: JsonObject & ReaderEntityMeta;
+}
 export class CatalogClient {
   constructor(private baseUrl: string) {}
-  async list(): Promise<Entity[]> {
+  async list(): Promise<ReaderEntity[]> {
     const res = await fetch(`${this.baseUrl}/catalog/entities`);
     if (!res.ok) {
       // todo(blam): need some better way to handle errors here
       // experiment with throwing the input errors etc and having graphql versions of that
-      throw new Error(`NOPE, ${await res.text()}`);
+      throw new Error(await res.text());
     }
 
-    const entities: Entity[] = await res.json();
+    const entities: ReaderEntity[] = await res.json();
     return entities;
   }
 }
