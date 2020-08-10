@@ -14,11 +14,5 @@
  * limitations under the License.
  */
 
-import { findRootPath } from './paths';
-
-describe('findRootPath', () => {
-  it('should find root path', () => {
-    const rootPath = findRootPath(process.cwd());
-    expect(typeof rootPath).toBe('string');
-  });
-});
+export { findPaths } from './paths';
+export type { Paths } from './paths';

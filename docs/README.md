@@ -64,6 +64,11 @@ better yet, a pull request.
     - Publishing
       - [Open source and NPM](plugins/publishing.md)
       - [Private/internal (non-open source)](plugins/publish-private.md)
+  - Configuration
+    - [Overview](conf/index.md)
+    - [Reading Configuration](conf/reading.md)
+    - [Writing Configuration](conf/writing.md)
+    - [Defining Configuration](conf/defining.md)
   - Authentication and identity
     - [Overview](auth/index.md)
     - [Add auth provider](auth/add-auth-provider.md)
@@ -95,6 +100,7 @@ better yet, a pull request.
     - [ADR005 - Catalog Core Entities](architecture-decisions/adr005-catalog-core-entities.md)
     - [ADR006 - Avoid React.FC and React.SFC](architecture-decisions/adr006-avoid-react-fc.md)
     - [ADR007 - Use MSW for Mocking Network Requests](architecture-decisions/adr007-use-msw-to-mock-service-requests.md)
+    - [ADR008 - Default Catalog File Name](architecture-decisions/adr008-default-catalog-file-name.md)
   - [Contribute](../CONTRIBUTING.md)
   - [Support](overview/support.md)
   - [FAQ](FAQ.md)

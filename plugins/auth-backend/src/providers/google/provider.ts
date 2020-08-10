@@ -145,7 +145,7 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
 
 export function createGoogleProvider(
   { baseUrl }: AuthProviderConfig,
-  env: string,
+  _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
@@ -155,7 +155,7 @@ export function createGoogleProvider(
   const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
+  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
 
   const opts = {
     clientID,

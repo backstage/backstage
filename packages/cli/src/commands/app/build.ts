@@ -17,10 +17,14 @@
 import { Command } from 'commander';
 import { loadConfig } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
+import { paths } from '../../lib/paths';
 import { buildBundle } from '../../lib/bundler';
 
 export default async (cmd: Command) => {
-  const appConfigs = await loadConfig();
+  const appConfigs = await loadConfig({
+    env: 'production',
+    rootPaths: [paths.targetRoot, paths.targetDir],
+  });
   await buildBundle({
     entry: 'src/index',
     statsJsonEnabled: cmd.stats,

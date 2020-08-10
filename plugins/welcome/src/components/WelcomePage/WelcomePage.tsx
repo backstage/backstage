@@ -113,7 +113,7 @@ const WelcomePage = () => {
               </Typography>
               <Typography variant="body1" paragraph>
                 We suggest you either check out the documentation for{' '}
-                <Link href="https://github.com/spotify/backstage/blob/master/docs/getting-started/create-a-plugin.md">
+                <Link href="https://github.com/spotify/backstage/blob/master/docs/plugins/create-a-plugin.md">
                   creating a plugin
                 </Link>{' '}
                 or have a look in the code for the{' '}
@@ -135,7 +135,7 @@ const WelcomePage = () => {
                   <Link href="https://backstage.io">backstage.io</Link>
                 </ListItem>
                 <ListItem>
-                  <Link href="https://github.com/spotify/backstage/blob/master/docs/getting-started/create-a-plugin.md">
+                  <Link href="https://github.com/spotify/backstage/blob/master/docs/plugins/create-a-plugin.md">
                     Create a plugin
                   </Link>
                 </ListItem>

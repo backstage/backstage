@@ -14,13 +14,30 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { paths } from './paths';
+// @ts-check
 
-export function findVersion() {
-  const pkgContent = fs.readFileSync(paths.resolveOwn('package.json'), 'utf8');
-  return JSON.parse(pkgContent).version;
-}
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
+  try {
+    await knex.schema.alterTable('entities_search', table => {
+      table.text('value').nullable().alter();
+    });
+  } catch (e) {
+    // Sqlite does not support alter column.
+  }
+};
 
-export const version = findVersion();
-export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
+/**
+ * @param {import('knex')} knex
+ */
+exports.down = async function down(knex) {
+  try {
+    await knex.schema.alterTable('entities_search', table => {
+      table.string('value').nullable().alter();
+    });
+  } catch (e) {
+    // Sqlite does not support alter column.
+  }
+};

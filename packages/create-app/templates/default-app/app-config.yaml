@@ -20,3 +20,6 @@ proxy:
 
 techdocs:
   storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+
+auth:
+  providers: {}

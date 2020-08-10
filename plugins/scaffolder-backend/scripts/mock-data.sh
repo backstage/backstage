@@ -17,5 +17,5 @@ curl \
     --location \
     --request POST 'localhost:7000/catalog/locations' \
     --header 'Content-Type: application/json' \
-    --data-raw "{\"type\": \"github\", \"target\": \"https://github.com/benjdlambert/cookiecutter-golang/blob/master/template.yaml\"}"
+    --data-raw "{\"type\": \"github\", \"target\": \"https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml\"}"
 echo

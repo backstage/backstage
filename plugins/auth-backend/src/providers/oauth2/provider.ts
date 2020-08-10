@@ -143,7 +143,7 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
 
 export function createOAuth2Provider(
   { baseUrl }: AuthProviderConfig,
-  env: string,
+  _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
@@ -153,7 +153,7 @@ export function createOAuth2Provider(
   const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
+  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
   const authorizationURL = envConfig.getString('authorizationURL');
   const tokenURL = envConfig.getString('tokenURL');
 
