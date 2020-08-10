@@ -27,6 +27,7 @@ export class CatalogClient {
       throw new Error(`NOPE, ${await res.text()}`);
     }
 
-    return await (res.json() as Promise<Entity[]>);
+    const entities: Entity[] = await res.json();
+    return entities;
   }
 }
