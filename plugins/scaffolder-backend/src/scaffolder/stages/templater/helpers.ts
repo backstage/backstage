@@ -72,6 +72,10 @@ export const runDockerContainer = async ({
     });
   });
 
+  // Files that are created inside the Docker container will be owned by
+  // root on the host system on non Mac systems, because of reasons. Mainly the fact that
+  // volume sharing is done using NFS on Mac and actual mounts in Linux world.
+  // So we set the user in the container as the same user and group id as the host.
   const User = `${process.getuid()}:${process.getgid()}`;
 
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
