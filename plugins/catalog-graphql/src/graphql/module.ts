@@ -60,8 +60,8 @@ export async function createModule(
       },
     },
     EntityMetadata: {
-      annotations: e => e.annotations,
-      annotation: (e, { name }) => e.annotations[name] ?? null,
+      annotation: (e, { name }) => e.annotations?.[name] ?? null,
+      label: (e, { name }) => e.labels?.[name] ?? null,
     },
   };
 
