@@ -71,6 +71,9 @@ export const runDockerContainer = async ({
       return undefined;
     });
   });
+
+  const User = `${process.getuid()}:${process.getgid()}`;
+
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
     args,
@@ -85,6 +88,7 @@ export const runDockerContainer = async ({
           `${await fs.promises.realpath(templateDir)}:/template`,
         ],
       },
+      User,
       ...createOptions,
     },
   );
