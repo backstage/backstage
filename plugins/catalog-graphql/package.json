@@ -29,6 +29,7 @@
     "@graphql-codegen/typescript-resolvers": "^1.17.7",
     "@graphql-modules/core": "^0.7.17",
     "graphql": "^15.3.0",
+    "graphql-type-json": "^0.3.2",
     "node-fetch": "^2.6.0",
     "ts-node": "^8.10.2",
     "winston": "^3.2.1",
@@ -36,9 +37,9 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.18",
+    "@types/express": "^4.17.7",
     "@types/supertest": "^2.0.8",
     "eslint-plugin-graphql": "^4.0.0",
-    "@types/express": "^4.17.7",
     "msw": "^0.19.5",
     "supertest": "^4.0.2"
   },

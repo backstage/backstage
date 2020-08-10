@@ -18,25 +18,15 @@ import { Logger } from 'winston';
 import fs from 'fs';
 import path from 'path';
 import { GraphQLModule } from '@graphql-modules/core';
-import { Resolvers, CatalogEntity, CatalogQuery } from './types';
-import { Entity } from '@backstage/catalog-model';
+import { Resolvers, CatalogQuery } from './types';
 import { Config } from '@backstage/config';
 import { CatalogClient } from '../service/client';
+import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 
 export interface ModuleOptions {
   logger: Logger;
   config: Config;
 }
-
-const parseToCatalogEntities = (e: Entity): CatalogEntity => ({
-  ...e,
-  metadata: {
-    ...e.metadata,
-    annotations: Object.entries(
-      e.metadata.annotations ?? {},
-    ).map(([key, value]) => ({ key, value })),
-  },
-});
 
 export async function createModule(
   options: ModuleOptions,
@@ -51,18 +41,19 @@ export async function createModule(
   );
 
   const resolvers: Resolvers = {
+    JSON: GraphQLJSON,
+    JSONObject: GraphQLJSONObject,
     Query: {
       catalog: () => ({} as CatalogQuery),
     },
     CatalogQuery: {
       list: async () => {
-        const list = await catalogClient.list();
-        return list.map(parseToCatalogEntities);
+        return await catalogClient.list();
       },
     },
     EntityMetadata: {
-      annotation: (e, { name }) =>
-        e.annotations?.find(a => a.key === name) ?? null,
+      annotations: e => e.annotations,
+      annotation: (e, { name }) => e.annotations[name] ?? null,
     },
   };
 
