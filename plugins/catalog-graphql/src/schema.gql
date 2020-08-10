@@ -1,17 +1,13 @@
 scalar JSON
 scalar JSONObject
 
-type EntityMetadataAnnotation {
-  key: String!
-  value: String!
-}
-
 type EntityMetadata {
   name: String!
   namespace: String!
-  annotations: JSONObject
-  annotation(name: String): JSON
-  labels: JSONObject
+  annotations: JSONObject!
+  annotation(name: String!): JSON
+  labels: JSONObject!
+  label(name: String!): JSON
   uid: String!
   etag: String!
   generation: Int!
