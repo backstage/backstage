@@ -163,8 +163,10 @@ export const EntityPage: FC<{}> = () => {
       label: 'Quality',
     },
     {
-      id: 'techdocs',
-      label: 'TechDocs',
+      id: 'docs',
+      label: 'Docs',
+      show: ({ entity: e }: { entity: Entity }) =>
+        !!e.metadata.annotations?.['backstage.io/techdocs-ref'],
       content: ({ entity: e }: { entity: Entity }) => {
         return (
           <Reader

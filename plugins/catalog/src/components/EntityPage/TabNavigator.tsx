@@ -23,6 +23,7 @@ export type NavigationTab = {
   id: string;
   label: string;
   content?: (props: any) => React.ReactNode;
+  show?: (props: any) => boolean;
 };
 
 export type OnChangeCallback = (tab: NavigationTab) => void;
@@ -46,15 +47,20 @@ export const TabNavigator = <T extends {}>({ tabs, tabData }: Props<T>) => {
 
   const selectedTab = tabs.find(tab => tab.id === selectedTabId);
 
+  const filteredTabs = tabs.filter(tab =>
+    tab.show ? tab.show(tabData) : true,
+  );
+
   return (
     <>
       <HeaderTabs
-        tabs={tabs}
+        tabs={filteredTabs}
         onChange={idx => {
           navigate(
             `/catalog/${kind}/${optionalNamespaceAndName}/${tabs[idx].id}`,
           );
         }}
+        selectedIndex={tabs.findIndex(tab => tab.id === selectedTabId)}
       />
       {selectedTab && selectedTab.content ? selectedTab.content(tabData) : null}
     </>
