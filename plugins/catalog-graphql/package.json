@@ -17,8 +17,7 @@
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
     "generate:types": "graphql-codegen",
-    "clean": "backstage-cli clean",
-    "mock-data": "./scripts/mock-data.sh"
+    "clean": "backstage-cli clean"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.1.1-alpha.18",
