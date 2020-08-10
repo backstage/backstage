@@ -1,7 +1,7 @@
 # AppThemeApi
 
 The AppThemeApi type is defined at
-[packages/core-api/src/apis/definitions/AppThemeApi.ts:50](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/AppThemeApi.ts#L50).
+[packages/core-api/src/apis/definitions/AppThemeApi.ts:50](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/AppThemeApi.ts#L50).
 
 The following Utility API implements this type:
 [appThemeApiRef](./README.md#apptheme)
@@ -76,7 +76,7 @@ export type AppTheme = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/AppThemeApi.ts:24](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/AppThemeApi.ts#L24).
+[packages/core-api/src/apis/definitions/AppThemeApi.ts:24](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/AppThemeApi.ts#L24).
 
 Referenced by: [getInstalledThemes](#getinstalledthemes).
 
@@ -87,7 +87,7 @@ export type BackstagePalette = Palette &amp; <a href="#paletteadditions">Palette
 </pre>
 
 Defined at
-[packages/theme/src/types.ts:63](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/theme/src/types.ts#L63).
+[packages/theme/src/types.ts:67](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/theme/src/types.ts#L67).
 
 Referenced by: [BackstageTheme](#backstagetheme).
 
@@ -100,7 +100,7 @@ export interface BackstageTheme extends Theme {
 </pre>
 
 Defined at
-[packages/theme/src/types.ts:66](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/theme/src/types.ts#L66).
+[packages/theme/src/types.ts:70](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/theme/src/types.ts#L70).
 
 Referenced by: [AppTheme](#apptheme).
 
@@ -129,7 +129,7 @@ export type Observable&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L53).
+[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/types.ts#L53).
 
 Referenced by: [activeThemeId\$](#activethemeid).
 
@@ -148,7 +148,7 @@ export type Observer&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L24).
+[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/types.ts#L24).
 
 Referenced by: [Observable](#observable).
 
@@ -193,11 +193,15 @@ type PaletteAdditions = {
     icon: string;
     background: string;
   };
+  banner: {
+    info: string;
+    error: string;
+  };
 }
 </pre>
 
 Defined at
-[packages/theme/src/types.ts:23](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/theme/src/types.ts#L23).
+[packages/theme/src/types.ts:23](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/theme/src/types.ts#L23).
 
 Referenced by: [BackstagePalette](#backstagepalette).
 
@@ -220,6 +224,6 @@ export type Subscription = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L33).
+[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/types.ts#L33).
 
 Referenced by: [Observable](#observable).
