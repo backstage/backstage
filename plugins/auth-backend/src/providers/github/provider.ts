@@ -126,7 +126,7 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
 
 export function createGithubProvider(
   { baseUrl }: AuthProviderConfig,
-  env: string,
+  _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
@@ -148,7 +148,7 @@ export function createGithubProvider(
   const userProfileURL = enterpriseInstanceUrl
     ? `${enterpriseInstanceUrl}/api/v3/user`
     : undefined;
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
+  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
 
   const opts = {
     clientID,

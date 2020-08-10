@@ -1,13 +1,16 @@
-type EntityMetadataAnnotation {
-  key: String!
-  value: String!
-}
+scalar JSON
+scalar JSONObject
 
 type EntityMetadata {
   name: String!
-  namespace: String
-  annotation(name: String): EntityMetadataAnnotation
-  annotations: [EntityMetadataAnnotation!]
+  namespace: String!
+  annotations: JSONObject!
+  annotation(name: String!): JSON
+  labels: JSONObject!
+  label(name: String!): JSON
+  uid: String!
+  etag: String!
+  generation: Int!
 }
 
 type ComponentEntitySpec {
@@ -51,14 +54,13 @@ type TemplateEntity implements CatalogEntity {
   kind: String!
   metadata: EntityMetadata
   spec: TemplateEntitySpec!
-
-  # schema: JSONSchema # this needs impleting as maybe just a json blob
+  schema: JSONObject!
 }
 
 interface CatalogEntity {
-  apiVersion: String
+  apiVersion: String!
   kind: String!
-  metadata: EntityMetadata
+  metadata: EntityMetadata!
 }
 
 type CatalogQuery {

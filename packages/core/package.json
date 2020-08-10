@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core",
   "description": "Core API used by Backstage plugins and apps",
-  "version": "0.1.1-alpha.17",
+  "version": "0.1.1-alpha.18",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -29,9 +29,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.17",
-    "@backstage/core-api": "^0.1.1-alpha.17",
-    "@backstage/theme": "^0.1.1-alpha.17",
+    "@backstage/config": "^0.1.1-alpha.18",
+    "@backstage/core-api": "^0.1.1-alpha.18",
+    "@backstage/theme": "^0.1.1-alpha.18",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -40,7 +40,7 @@
     "classnames": "^2.2.6",
     "clsx": "^1.1.0",
     "lodash": "^4.17.15",
-    "material-table": "1.62.x",
+    "material-table": "1.68.x",
     "prop-types": "^15.7.2",
     "rc-progress": "^3.0.0",
     "react": "^16.12.0",
@@ -50,12 +50,12 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-sparklines": "^1.7.0",
-    "react-syntax-highlighter": "^12.2.1",
+    "react-syntax-highlighter": "^13.2.1",
     "react-use": "^15.3.3"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.17",
-    "@backstage/test-utils": "^0.1.1-alpha.17",
+    "@backstage/cli": "^0.1.1-alpha.18",
+    "@backstage/test-utils": "^0.1.1-alpha.18",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",

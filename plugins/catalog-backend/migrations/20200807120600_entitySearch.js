@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-import { createRouter } from './router';
-import * as winston from 'winston';
-import { ConfigReader } from '@backstage/config';
-import { loadBackendConfig } from '@backstage/backend-common';
+// @ts-check
 
-describe('createRouter', () => {
-  it('works', async () => {
-    const logger = winston.createLogger();
-    const config = ConfigReader.fromConfigs(await loadBackendConfig());
-    const router = await createRouter({
-      config,
-      logger,
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
+  try {
+    await knex.schema.alterTable('entities_search', table => {
+      table.text('value').nullable().alter();
     });
-    expect(router).toBeDefined();
-  });
-});
+  } catch (e) {
+    // Sqlite does not support alter column.
+  }
+};
+
+/**
+ * @param {import('knex')} knex
+ */
+exports.down = async function down(knex) {
+  try {
+    await knex.schema.alterTable('entities_search', table => {
+      table.string('value').nullable().alter();
+    });
+  } catch (e) {
+    // Sqlite does not support alter column.
+  }
+};

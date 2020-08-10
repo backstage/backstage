@@ -21,17 +21,22 @@ import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
 import { Grid } from '@material-ui/core';
 import { SignInPageProps, useApi, configApiRef } from '@backstage/core-api';
-import { useSignInProviders, SignInProviderId } from './providers';
+import { useSignInProviders, getSignInProviders } from './providers';
+import { IdentityProviders } from './types';
 import { Progress } from '../../components/Progress';
 
 export type Props = SignInPageProps & {
-  providers: SignInProviderId[];
+  providers: IdentityProviders;
 };
 
-export const SignInPage: FC<Props> = ({ onResult, providers }) => {
+export const SignInPage: FC<Props> = ({ onResult, providers = [] }) => {
   const configApi = useApi(configApiRef);
 
-  const [loading, providerElements] = useSignInProviders(providers, onResult);
+  const signInProviders = getSignInProviders(providers);
+  const [loading, providerElements] = useSignInProviders(
+    signInProviders,
+    onResult,
+  );
 
   if (loading) {
     return <Progress />;

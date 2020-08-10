@@ -18,10 +18,10 @@ import { Logger } from 'winston';
 import fs from 'fs';
 import path from 'path';
 import { GraphQLModule } from '@graphql-modules/core';
-import { Resolvers, CatalogEntity, CatalogQuery } from './types';
-import { Entity } from '@backstage/catalog-model';
+import { Resolvers, CatalogQuery } from './types';
 import { Config } from '@backstage/config';
 import { CatalogClient } from '../service/client';
+import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 
 export interface ModuleOptions {
   logger: Logger;
@@ -41,36 +41,37 @@ const getSpecTypenameForEntity = (e: { kind?: string }) => {
   }
 };
 
-const parseToCatalogEntities = (e: Entity): CatalogEntity => ({
-  ...e,
-  metadata: {
-    ...e.metadata,
-    annotations: Object.entries(
-      e.metadata.annotations ?? {},
-    ).map(([key, value]) => ({ key, value })),
-  },
-});
+const schemaPath = path.resolve(
+  require.resolve('@backstage/plugin-catalog-graphql/package.json'),
+  '../schema.gql',
+);
 
 export async function createModule(
   options: ModuleOptions,
 ): Promise<GraphQLModule> {
-  const typeDefs = await fs.promises.readFile(
-    path.resolve(__dirname, '..', 'schema.gql'),
-    'utf-8',
-  );
+  const typeDefs = await fs.promises.readFile(schemaPath, 'utf-8');
 
   const catalogClient = new CatalogClient(
     options.config.getString('backend.baseUrl'),
   );
 
   const resolvers: Resolvers = {
+    JSON: GraphQLJSON,
+    JSONObject: GraphQLJSONObject,
     Query: {
       catalog: () => ({} as CatalogQuery),
     },
     CatalogQuery: {
       list: async () => {
-        const list = await catalogClient.list();
-        return list.map(parseToCatalogEntities);
+        const catalogEntries = await catalogClient.list();
+        return catalogEntries.map(entity => ({
+          ...entity,
+          metadata: {
+            ...entity.metadata,
+            annotations: entity.metadata.annotations ?? {},
+            labels: entity.metadata.labels ?? {},
+          },
+        }));
       },
     },
     CatalogEntity: {
@@ -79,8 +80,8 @@ export async function createModule(
       },
     },
     EntityMetadata: {
-      annotation: (e, { name }) =>
-        e.annotations?.find(a => a.key === name) ?? null,
+      annotation: (e, { name }) => e.annotations?.[name] ?? null,
+      label: (e, { name }) => e.labels?.[name] ?? null,
     },
   };
 
