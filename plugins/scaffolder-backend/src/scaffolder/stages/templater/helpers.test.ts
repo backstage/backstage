@@ -126,7 +126,7 @@ describe('helpers', () => {
       );
     });
 
-    it('should pass through the user and group id from the host machine', async () => {
+    it('should pass through the user and group id from the host machine and set the home dir', async () => {
       await runDockerContainer({
         imageName,
         args,
@@ -141,6 +141,7 @@ describe('helpers', () => {
         expect.any(Stream),
         expect.objectContaining({
           User: `${process.getuid()}:${process.getgid()}`,
+          Env: ['HOME=/tmp'],
         }),
       );
     });
