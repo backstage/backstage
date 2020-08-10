@@ -17,7 +17,7 @@ metadata:
   # a description of the template
   description: Next.js application skeleton for creating isomorphic web applications.
   # some tags to display in the frontend
-	tags:
+  tags:
     - Recommended
     - React
 spec:
