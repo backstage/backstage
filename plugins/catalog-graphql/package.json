@@ -44,6 +44,7 @@
     "supertest": "^4.0.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "schema.gql"
   ]
 }

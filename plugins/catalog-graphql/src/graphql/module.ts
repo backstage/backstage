@@ -28,13 +28,15 @@ export interface ModuleOptions {
   config: Config;
 }
 
+const schemaPath = path.resolve(
+  require.resolve('@backstage/plugin-graphql-backend/package.json'),
+  '../schema.gql',
+);
+
 export async function createModule(
   options: ModuleOptions,
 ): Promise<GraphQLModule> {
-  const typeDefs = await fs.promises.readFile(
-    path.resolve(__dirname, '..', 'schema.gql'),
-    'utf-8',
-  );
+  const typeDefs = await fs.promises.readFile(schemaPath, 'utf-8');
 
   const catalogClient = new CatalogClient(
     options.config.getString('backend.baseUrl'),
