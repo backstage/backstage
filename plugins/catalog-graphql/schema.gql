@@ -1,9 +1,43 @@
 scalar JSON
 scalar JSONObject
 
-type EntityMetadata {
+interface EntityMetadata {
   name: String!
-  namespace: String!
+  annotations: JSONObject!
+  annotation(name: String!): JSON
+  labels: JSONObject!
+  label(name: String!): JSON
+  uid: String!
+  etag: String!
+  generation: Int!
+}
+
+type ComponentMetadata implements EntityMetadata {
+  name: String!
+  annotations: JSONObject!
+  annotation(name: String!): JSON
+  labels: JSONObject!
+  label(name: String!): JSON
+  uid: String!
+  etag: String!
+  generation: Int!
+  relationships: String!
+}
+
+type TemplateMetadata implements EntityMetadata {
+  name: String!
+  annotations: JSONObject!
+  annotation(name: String!): JSON
+  labels: JSONObject!
+  label(name: String!): JSON
+  uid: String!
+  etag: String!
+  generation: Int!
+  updatedBy: String!
+}
+
+type DefaultEntityMetadata implements EntityMetadata {
+  name: String!
   annotations: JSONObject!
   annotation(name: String!): JSON
   labels: JSONObject!
