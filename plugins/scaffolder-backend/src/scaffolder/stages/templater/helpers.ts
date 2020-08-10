@@ -77,20 +77,21 @@ export const runDockerContainer = async ({
   // volume sharing is done using NFS on Mac and actual mounts in Linux world.
   // So we set the user in the container as the same user and group id as the host.
   const User = `${process.getuid()}:${process.getgid()}`;
-
+  console.warn('running this new');
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
     args,
     logStream,
     {
       Volumes: { '/result': {}, '/template': {} },
-      WorkingDir: '/tmp',
+      WorkingDir: '/home',
       HostConfig: {
         Binds: [
           // Need to use realpath here as Docker mounting does not like
           // symlinks for binding volumes
           `${await fs.promises.realpath(resultDir)}:/result`,
           `${await fs.promises.realpath(templateDir)}:/template`,
+          `${__dirname}:/home`,
         ],
       },
       User,
