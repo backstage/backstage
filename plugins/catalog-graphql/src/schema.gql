@@ -1,3 +1,6 @@
+scalar JSON
+scalar JSONObject
+
 type EntityMetadataAnnotation {
   key: String!
   value: String!
@@ -6,8 +9,7 @@ type EntityMetadataAnnotation {
 type EntityMetadata {
   name: String!
   namespace: String
-  annotation(name: String): EntityMetadataAnnotation
-  annotations: [EntityMetadataAnnotation!]
+  annotations: JSONObject
 }
 
 type CatalogEntity {

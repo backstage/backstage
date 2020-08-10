@@ -11997,6 +11997,11 @@ graphql-tools@^4.0.0:
     iterall "^1.1.3"
     uuid "^3.1.0"
 
+graphql-type-json@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/graphql-type-json/-/graphql-type-json-0.3.2.tgz#f53a851dbfe07bd1c8157d24150064baab41e115"
+  integrity sha512-J+vjof74oMlCWXSvt0DOf2APEdZOCdubEvGDUAlqH//VBYcOYsGgRW7Xzorr44LvkjiuvecWc8fChxuZZbChtg==
+
 graphql-upload@^8.0.2:
   version "8.1.0"
   resolved "https://registry.npmjs.org/graphql-upload/-/graphql-upload-8.1.0.tgz#6d0ab662db5677a68bfb1f2c870ab2544c14939a"
@@ -14399,6 +14404,25 @@ jsonpointer@^4.0.1:
   resolved "https://registry.npmjs.org/jsonpointer/-/jsonpointer-4.0.1.tgz#4fd92cb34e0e9db3c89c8622ecf51f9b978c6cb9"
   integrity sha1-T9kss04OnbPInIYi7PUfm5eMbLk=
 
+<<<<<<< HEAD
+=======
+jsonwebtoken@^8.1.0:
+  version "8.5.1"
+  resolved "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-8.5.1.tgz#00e71e0b8df54c2121a1f26137df2280673bcc0d"
+  integrity sha512-XjwVfRS6jTMsqYs0EsuJ4LGxXV14zQybNd4L2r0UvbVnSF9Af8x7p5MzbJ90Ioz/9TI41/hTCvznF/loiSzn8w==
+  dependencies:
+    jws "^3.2.2"
+    lodash.includes "^4.3.0"
+    lodash.isboolean "^3.0.3"
+    lodash.isinteger "^4.0.4"
+    lodash.isnumber "^3.0.3"
+    lodash.isplainobject "^4.0.6"
+    lodash.isstring "^4.0.1"
+    lodash.once "^4.0.0"
+    ms "^2.1.1"
+    semver "^5.6.0"
+
+>>>>>>> feat(gql/catlaog): Tidying up the resolver for the annotations
 jspdf-autotable@3.5.3:
   version "3.5.3"
   resolved "https://registry.npmjs.org/jspdf-autotable/-/jspdf-autotable-3.5.3.tgz#2f73adb07f340e7dbf22950e3e6c8bf853991479"
@@ -17102,7 +17126,11 @@ parse-entities@^2.0.0:
     is-decimal "^1.0.0"
     is-hexadecimal "^1.0.0"
 
+<<<<<<< HEAD
 parse-filepath@^1.0.1:
+=======
+parse-filepath@1.0.2, parse-filepath@^1.0.1:
+>>>>>>> feat(gql/catlaog): Tidying up the resolver for the annotations
   version "1.0.2"
   resolved "https://registry.npmjs.org/parse-filepath/-/parse-filepath-1.0.2.tgz#a632127f53aaf3d15876f5872f3ffac763d6c891"
   integrity sha1-pjISf1Oq89FYdvWHLz/6x2PWyJE=
@@ -18184,12 +18212,43 @@ pretty-hrtime@^1.0.3:
   resolved "https://registry.npmjs.org/pretty-hrtime/-/pretty-hrtime-1.0.3.tgz#b7e3ea42435a4c9b2759d99e0f201eb195802ee1"
   integrity sha1-t+PqQkNaTJsnWdmeDyAesZWALuE=
 
+<<<<<<< HEAD
 prismjs@^1.17.1:
   version "1.21.0"
   resolved "https://registry.npmjs.org/prismjs/-/prismjs-1.21.0.tgz#36c086ec36b45319ec4218ee164c110f9fc015a3"
   integrity sha512-uGdSIu1nk3kej2iZsLyDoJ7e9bnPzIgY0naW/HdknGj61zScaprVEVGHrPoXqI+M9sP0NDnTK2jpkvmldpuqDw==
   optionalDependencies:
     clipboard "^2.0.0"
+=======
+prisma-json-schema@0.1.3:
+  version "0.1.3"
+  resolved "https://registry.npmjs.org/prisma-json-schema/-/prisma-json-schema-0.1.3.tgz#6c302db8f464f8b92e8694d3f7dd3f41ac9afcbe"
+  integrity sha512-XZrf2080oR81mY8/OC8al68HiwBm0nXlFE727JIia0ZbNqwuV4MyRYk6E0+OIa6/9KEYxZrcAmoBs3EW1cCvnA==
+
+prisma-yml@1.34.10:
+  version "1.34.10"
+  resolved "https://registry.npmjs.org/prisma-yml/-/prisma-yml-1.34.10.tgz#0ef1ad3a125f54f200289cba56bdd9597f17f410"
+  integrity sha512-N9on+Cf/XQKFGUULk/681tnpfqiZ19UBTurFMm+/9rnml37mteDaFr2k8yz+K8Gt2xpEJ7kBu7ikG5PrXI1uoA==
+  dependencies:
+    ajv "5"
+    bluebird "^3.5.1"
+    chalk "^2.3.0"
+    debug "^3.1.0"
+    dotenv "^4.0.0"
+    fs-extra "^7.0.0"
+    graphql-request "^1.5.0"
+    http-proxy-agent "^2.1.0"
+    https-proxy-agent "^2.2.1"
+    isomorphic-fetch "^2.2.1"
+    js-yaml "^3.10.0"
+    json-stable-stringify "^1.0.1"
+    jsonwebtoken "^8.1.0"
+    lodash "^4.17.4"
+    prisma-json-schema "0.1.3"
+    replaceall "^0.1.6"
+    scuid "^1.0.2"
+    yaml-ast-parser "^0.0.40"
+>>>>>>> feat(gql/catlaog): Tidying up the resolver for the annotations
 
 prismjs@^1.20.0, prismjs@^1.8.4, prismjs@~1.20.0:
   version "1.20.0"
@@ -19606,7 +19665,11 @@ request-promise-native@^1.0.5, request-promise-native@^1.0.8:
     stealthy-require "^1.1.1"
     tough-cookie "^2.3.3"
 
+<<<<<<< HEAD
 request@^2.53.0, request@^2.55.0, request@^2.85.0, request@^2.87.0, request@^2.88.0, request@^2.88.2:
+=======
+request@2.88.2, request@^2.55.0, request@^2.85.0, request@^2.87.0, request@^2.88.0, request@^2.88.2:
+>>>>>>> feat(gql/catlaog): Tidying up the resolver for the annotations
   version "2.88.2"
   resolved "https://registry.npmjs.org/request/-/request-2.88.2.tgz#d73c918731cb5a87da047e207234146f664d12b3"
   integrity sha512-MsvtOrfG9ZcrOwAW+Qi+F6HbD0CWXEh9ou77uOb7FM2WPhwT7smM833PzanhJLsgXjN89Ir6V2PczXNnMpwKhw==
