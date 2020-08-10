@@ -84,6 +84,7 @@ export const runDockerContainer = async ({
     logStream,
     {
       Volumes: { '/result': {}, '/template': {} },
+      WorkingDir: '/tmp',
       HostConfig: {
         Binds: [
           // Need to use realpath here as Docker mounting does not like
