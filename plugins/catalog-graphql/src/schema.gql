@@ -8,14 +8,19 @@ type EntityMetadataAnnotation {
 
 type EntityMetadata {
   name: String!
-  namespace: String
+  namespace: String!
   annotations: JSONObject
+  annotation(name: String): JSON
+  labels: JSONObject
+  uid: String!
+  etag: String!
+  generation: Int!
 }
 
 type CatalogEntity {
-  apiVersion: String
+  apiVersion: String!
   kind: String!
-  metadata: EntityMetadata
+  metadata: EntityMetadata!
 }
 
 type CatalogQuery {
