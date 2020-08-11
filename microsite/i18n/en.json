@@ -149,9 +149,8 @@
       "getting-started/development-environment": {
         "title": "getting-started/development-environment"
       },
-      "getting-started/getting-started-index": {
-        "title": "Getting started",
-        "sidebar_label": "Getting started"
+      "getting-started/index": {
+        "title": "getting-started/index"
       },
       "getting-started/installation": {
         "title": "getting-started/installation"
@@ -160,19 +159,19 @@
         "title": "journey"
       },
       "overview/architecture-overview": {
-        "title": "overview/architecture-overview"
+        "title": "Architecture overview"
       },
       "overview/architecture-terminology": {
-        "title": "overview/architecture-terminology"
+        "title": "Architecture terminology"
       },
       "overview/roadmap": {
-        "title": "overview/roadmap"
+        "title": "Project roadmap"
       },
       "overview/support": {
         "title": "overview/support"
       },
       "overview/what-is-backstage": {
-        "title": "overview/what-is-backstage"
+        "title": "What is Backstage?"
       },
       "plugins/backend-plugin": {
         "title": "plugins/backend-plugin"
@@ -274,12 +273,7 @@
       "Newsletter": "Newsletter"
     },
     "categories": {
-      "Getting Started": "Getting Started",
-      "Plugins": "Plugins",
-      "Test": "Test",
-      "API Overview": "API Overview",
-      "Layout components": "Layout components",
-      "Testing": "Testing"
+      "Overview": "Overview"
     }
   },
   "pages-strings": {

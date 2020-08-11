@@ -1,17 +1,10 @@
 {
   "docs": {
-    "Getting Started": ["getting-started/getting-started-index"],
-    "Plugins": [
-      "developing-a-plugin",
-      "plugin-api",
-      "create-plugin-api-v2",
-      "plugin-structure",
-      "components",
-      "errors-notifications"
-    ],
-    "Test": ["test"],
-    "API Overview": ["apis"],
-    "Layout components": ["layout-components"],
-    "Testing": ["testing-with-jest"]
+    "Overview": [
+      "overview/what-is-backstage",
+      "overview/architecture-overview",
+      "overview/architecture-terminology",
+      "overview/roadmap"
+    ]
   }
 }

@@ -1,3 +1,8 @@
+---
+id: architecture-overview
+title: Architecture overview
+---
+
 # Typical Backstage architecture
 
 The following diagram shows how Backstage might look when deployed inside a
