@@ -64,6 +64,12 @@ const VARIANT_STYLES = {
       flexDirection: 'column',
       height: '100%',
     },
+    height100: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: 'calc(100% - 10px)', // for pages without content header
+      marginBottom: '10px',
+    },
     contentheader: {
       height: 'calc(100% - 40px)', // for pages with content header
     },
@@ -80,6 +86,9 @@ const VARIANT_STYLES = {
   },
   cardContent: {
     fullHeight: {
+      flex: 1,
+    },
+    height100: {
       flex: 1,
     },
     contentRow: {
@@ -117,10 +126,10 @@ type Props = {
   deepLink?: BottomLinkProps;
   slackChannel?: string;
   variant?: string;
-  style?: React.CSSProperties;
-  cardStyle?: React.CSSProperties;
+  style?: object;
+  cardStyle?: object;
   children?: ReactNode;
-  headerStyle?: React.CSSProperties;
+  headerStyle?: object;
   headerProps?: object;
   actionsClassName?: string;
   actions?: ReactNode;
@@ -146,8 +155,6 @@ export const InfoCard: FC<Props> = ({
   actionsTopRight,
   className,
   noPadding,
-  style = {},
-  cardStyle = {},
 }) => {
   const classes = useStyles();
 
@@ -175,7 +182,7 @@ export const InfoCard: FC<Props> = ({
   }
 
   return (
-    <Card style={{ ...calculatedStyle, ...style }} className={className}>
+    <Card style={calculatedStyle} className={className}>
       <ErrorBoundary slackChannel={slackChannel}>
         {title && (
           <>
@@ -197,7 +204,7 @@ export const InfoCard: FC<Props> = ({
           className={classNames(cardClassName, {
             [classes.noPadding]: noPadding,
           })}
-          style={{ ...calculatedCardStyle, ...cardStyle }}
+          style={calculatedCardStyle}
         >
           {children}
         </CardContent>
