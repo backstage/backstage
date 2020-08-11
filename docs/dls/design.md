@@ -110,13 +110,11 @@ picked up by our team as something to be added to our design system.
 components. If you’d like to help build up our design system, you can also add
 components we’ve designed to the Storybook as well.
 
+**[Figma](https://www.figma.com/@backstage)** - we're stoked to be using Figma Community to share our design assets. You can duplicate our component library and design your own plugin for Backstage.
+
 **[Discord](https://discord.gg/EBHEGzX)** - all design questions should be
 directed to the _#design_ channel.
 
-**Documentation**
-
-- Patterns (stay tuned)
-- Figma files/libraries (stay tuned)
 
 ## 🔮 Future
 
