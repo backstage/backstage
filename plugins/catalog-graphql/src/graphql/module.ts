@@ -15,47 +15,23 @@
  */
 
 import { Logger } from 'winston';
-import fs from 'fs';
-import path from 'path';
 import { makeExecutableSchema } from 'apollo-server';
 import { GraphQLModule } from '@graphql-modules/core';
-import {
-  Resolvers,
-  CatalogQuery,
-  CatalogEntityTypes,
-  EntityMetadataResolvers,
-} from './types';
+import { Resolvers, CatalogQuery } from './types';
 import { Config } from '@backstage/config';
 import { CatalogClient } from '../service/client';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
+import { Entity } from '@backstage/catalog-model';
 
 export interface ModuleOptions {
   logger: Logger;
   config: Config;
 }
 
-const schemaPath = path.resolve(
-  require.resolve('@backstage/plugin-catalog-graphql/package.json'),
-  '../schema.gql',
-);
-
-const getSpecTypenameForEntity = (e: { kind?: string }) => {
-  switch (e.kind) {
-    case 'Component':
-      return 'ComponentEntity';
-    case 'Location':
-      return 'LocationEntity';
-    case 'Template':
-      return 'TemplateEntity';
-    default:
-      return null;
-  }
-};
-
 export async function createModule(
   options: ModuleOptions,
 ): Promise<GraphQLModule> {
-  const typeDefs = await fs.promises.readFile(schemaPath, 'utf-8');
+  const typeDefs = require('../schema');
 
   const catalogClient = new CatalogClient(
     options.config.getString('backend.baseUrl'),
@@ -64,6 +40,12 @@ export async function createModule(
   const resolvers: Resolvers = {
     JSON: GraphQLJSON,
     JSONObject: GraphQLJSONObject,
+    DefaultEntitySpec: {
+      raw: rootValue => {
+        const { entity } = rootValue as { entity: Entity };
+        return entity.spec ?? null;
+      },
+    },
     Query: {
       catalog: () => ({} as CatalogQuery),
     },
@@ -72,18 +54,15 @@ export async function createModule(
         return await catalogClient.list();
       },
     },
-    ComponentMetadata: {
-      relationships: () => 'boop',
-    },
-    TemplateMetadata: {
-      updatedBy: () => 'blam',
-    },
     CatalogEntity: {
-      metadata: e => ({ ...e.metadata!, catalogEntity: e }),
+      metadata: entity => ({ ...entity.metadata!, entity }),
+      spec: entity => ({ ...entity.spec!, entity }),
     },
     EntityMetadata: {
-      __resolveType: (obj: any) => {
-        const kind = obj.catalogEntity!.kind;
+      __resolveType: rootValue => {
+        const {
+          entity: { kind },
+        } = rootValue as { entity: Entity };
         switch (kind) {
           case 'Component':
             return 'ComponentMetadata';
@@ -94,9 +73,25 @@ export async function createModule(
         }
       },
       annotation: (e, { name }) => e.annotations?.[name] ?? null,
-      labels: e => e ?? {},
-      annotations: e => e ?? {},
+      labels: e => e.labels ?? {},
+      annotations: e => e.annotations ?? {},
       label: (e, { name }) => e.labels?.[name] ?? null,
+    },
+    EntitySpec: {
+      __resolveType: rootValue => {
+        const {
+          entity: { kind },
+        } = rootValue as { entity: Entity };
+
+        switch (kind) {
+          case 'Component':
+            return 'ComponentEntitySpec';
+          case 'Template':
+            return 'TemplateEntitySpec';
+          default:
+            return 'DefaultEntitySpec';
+        }
+      },
     },
   };
 
@@ -104,13 +99,9 @@ export async function createModule(
     typeDefs,
     resolvers,
     inheritResolversFromInterfaces: true,
-    resolverValidationOptions: {
-      allowResolversNotInSchema: true,
-    },
   });
 
   const module = new GraphQLModule({
-    resolverValidationOptions: {},
     extraSchemas: [schema],
     logger: options.logger as any,
   });
