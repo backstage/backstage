@@ -53,11 +53,6 @@ const useFetch = (
 
   const [, fetchedValue] = state.value ?? [];
 
-  // if (url !== fetchedUrl) {
-  //  Fixes a race condition between two pages
-  //  return { loading: true };
-  // }
-
   return Object.assign(state, fetchedValue ? { value: fetchedValue } : {});
 };
 
@@ -73,17 +68,17 @@ const useEnforcedTrailingSlash = (): void => {
 };
 
 type Props = {
-  componentId: {
+  entityId: {
     kind: string;
     namespace: string;
     name: string;
   };
 };
 
-export const Reader = ({ componentId }: Props) => {
+export const Reader = ({ entityId }: Props) => {
   useEnforcedTrailingSlash();
 
-  const { kind, namespace, name } = componentId;
+  const { kind, namespace, name } = entityId;
   const { '*': path } = useParams();
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
@@ -108,8 +103,8 @@ export const Reader = ({ componentId }: Props) => {
     const transformedElement = transformer(state.value as string, [
       sanitizeDOM(),
       addBaseUrl({
-        docStorageUrl: techdocsStorageApi.apiOrigin,
-        componentId: `${kind}/${namespace}/${name}`,
+        techdocsStorageApi,
+        entityId: entityId,
         path,
       }),
       rewriteDocLinks(),

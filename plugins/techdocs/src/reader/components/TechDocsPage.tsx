@@ -21,11 +21,19 @@ import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { Reader } from './Reader';
 
 export const TechDocsPage = () => {
-  const { kind, namespace, name } = useParams();
+  const { entityId } = useParams();
+
+  const [kind, namespace, name] = entityId.split(':');
 
   return (
     <TechDocsPageWrapper title={name} subtitle={name}>
-      <Reader componentId={{ kind, namespace, name }} />
+      <Reader
+        entityId={{
+          kind,
+          namespace: namespace ? namespace : 'default',
+          name,
+        }}
+      />
     </TechDocsPageWrapper>
   );
 };

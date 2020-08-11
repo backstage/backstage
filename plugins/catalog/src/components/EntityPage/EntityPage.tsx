@@ -170,7 +170,7 @@ export const EntityPage: FC<{}> = () => {
       content: ({ entity: e }: { entity: Entity }) => {
         return (
           <Reader
-            componentId={{
+            entityId={{
               kind: e.kind,
               namespace: e.metadata.namespace ?? 'default',
               name: e.metadata.name,

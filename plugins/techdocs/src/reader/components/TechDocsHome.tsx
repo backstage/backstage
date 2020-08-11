@@ -50,7 +50,7 @@ export const TechDocsHome = () => {
         title="Documentation"
         subtitle="Documentation available in Backstage"
       >
-        {error}
+        <p>{error.message}</p>
       </TechDocsPageWrapper>
     );
   }
@@ -67,8 +67,9 @@ export const TechDocsHome = () => {
                 <ItemCard
                   onClick={() =>
                     navigate(
-                      `/docs/${entity.kind}/${entity.metadata.namespace ??
-                        'default'}/${entity.metadata.name}`,
+                      `/docs/${entity.kind ?? ''}:${
+                        entity.metadata.namespace ?? ''
+                      }:${entity.metadata.name}`,
                     )
                   }
                   title={entity.metadata.name}

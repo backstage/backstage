@@ -44,6 +44,28 @@ export class TechDocsStorageApi {
       `${this.apiOrigin}/${kind}/${namespace}/${name}/${path}`,
     ).formatBaseURL();
 
-    return fetch(`${url}/index.html`);
+    return fetch(`${url}index.html`);
+  }
+
+  getBaseUrl({
+    url,
+    entityId,
+    path = '',
+  }: {
+    url: string;
+    entityId: {
+      kind: string;
+      namespace: string;
+      name: string;
+    };
+    path: string;
+  }): string {
+    const urlFormatter = new URLFormatter(
+      path.length < 1 || path.endsWith('/')
+        ? `${this.apiOrigin}/${entityId.kind}/${entityId.namespace}/${entityId.name}/${path}`
+        : `${this.apiOrigin}/${entityId.kind}/${entityId.namespace}/${entityId.name}/${path}/`,
+    );
+
+    return urlFormatter.formatURL(url);
   }
 }
