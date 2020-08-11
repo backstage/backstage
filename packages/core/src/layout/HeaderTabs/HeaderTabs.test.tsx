@@ -20,8 +20,8 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { HeaderTabs } from './';
 
 const mockTabs = [
-  { id: '1', label: 'Overview' },
-  { id: '2', label: 'Docs' },
+  { id: 'overview', label: 'Overview' },
+  { id: 'docs', label: 'Docs' },
 ];
 
 describe('<HeaderTabs />', () => {
