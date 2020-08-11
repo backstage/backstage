@@ -44,6 +44,9 @@ jobs:
         run: git diff --quiet origin/master HEAD -- yarn.lock
         continue-on-error: true
 
+      - name: verify doc links
+        run: node docs/verify-links.js
+
       - name: yarn install
         run: yarn install --frozen-lockfile
 
