@@ -56,7 +56,11 @@ Spotify’s developer experience offering with 2,400+ documentation sites and
 
 #### TechDocs V.2
 
-more to come...
+Platform stability and compatibility improvements
+
+- As a user I can define the metadata generated for my documentation.
+- As a user I will be able to browse metadata from within my documentation in
+  Backstage.
 
 ## Structure
 
