@@ -1,9 +1,7 @@
 overwrite: true
-schema: ./schema.gql
-require:
-  - ts-node/register/transpile-only
 generates:
   ./src/graphql/types.ts:
+    schema: ./src/schema.js
     plugins:
       - typescript
       - typescript-resolvers
@@ -11,6 +9,7 @@ generates:
       afterOneFileWrite:
         - eslint --fix
     config:
-      contextType: '@graphql-modules/core#ModuleContext'
+      contextType: "@graphql-modules/core#ModuleContext"
+      allowParentTypeOverride: true
       useIndexSignature: true
       defaultMapper: Partial<{T}>
