@@ -20,44 +20,42 @@
 
 import React, { ComponentType, Fragment, FC } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
-import classNames from 'classnames';
 import { Helmet } from 'react-helmet';
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginBottom: theme.spacing(1),
-  },
-  centered: {
-    textAlign: 'center',
-  },
-  leftItemsBox: {
-    flex: '1 1 auto',
-    marginBottom: theme.spacing(1),
-    minWidth: 0,
-    overflow: 'visible',
-  },
-  rightItemsBox: {
-    flex: '0 1 auto',
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    marginLeft: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    minWidth: 0,
-    overflow: 'visible',
-  },
-  description: {},
-  title: {
-    display: 'inline-flex',
-  },
-}));
+const useStyles = (props: ContentHeaderProps) =>
+  makeStyles(theme => ({
+    container: {
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      marginBottom: theme.spacing(1),
+      textAlign: props.textAlign,
+    },
+    leftItemsBox: {
+      flex: '1 1 auto',
+      marginBottom: theme.spacing(1),
+      minWidth: 0,
+      overflow: 'visible',
+    },
+    rightItemsBox: {
+      flex: '0 1 auto',
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      marginLeft: theme.spacing(1),
+      marginBottom: theme.spacing(1),
+      minWidth: 0,
+      overflow: 'visible',
+    },
+    description: {},
+    title: {
+      display: 'inline-flex',
+    },
+  }));
 
 type DefaultTitleProps = {
   title?: string;
@@ -77,7 +75,7 @@ type ContentHeaderProps = {
   title?: DefaultTitleProps['title'];
   titleComponent?: ComponentType;
   description?: string;
-  centered?: boolean;
+  textAlign?: 'left' | 'right' | 'center';
 };
 
 export const ContentHeader: FC<ContentHeaderProps> = ({
@@ -85,9 +83,9 @@ export const ContentHeader: FC<ContentHeaderProps> = ({
   title,
   titleComponent: TitleComponent = undefined,
   children,
-  centered,
+  textAlign = 'left',
 }) => {
-  const classes = useStyles(centered);
+  const classes = useStyles({ textAlign })();
 
   const renderedTitle = TitleComponent ? (
     <TitleComponent />
@@ -97,11 +95,7 @@ export const ContentHeader: FC<ContentHeaderProps> = ({
   return (
     <Fragment>
       <Helmet title={title} />
-      <div
-        className={classNames(classes.container, {
-          [classes.centered]: centered,
-        })}
-      >
+      <div className={classes.container}>
         <div className={classes.leftItemsBox}>
           {renderedTitle}
           {description && (

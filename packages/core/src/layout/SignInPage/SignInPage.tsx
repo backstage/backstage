@@ -29,14 +29,14 @@ import { useStyles } from './styles';
 export type Props = SignInPageProps & {
   providers: IdentityProviders;
   title?: string;
-  align?: 'center' | undefined;
+  align?: 'center' | 'left';
 };
 
 export const SignInPage: FC<Props> = ({
   onResult,
   providers = [],
   title,
-  align,
+  align = 'left',
 }) => {
   const configApi = useApi(configApiRef);
   const classes = useStyles();
@@ -55,10 +55,10 @@ export const SignInPage: FC<Props> = ({
     <Page>
       <Header title={configApi.getString('app.title')} />
       <Content>
-        {title && <ContentHeader title={title} centered={!!align} />}
+        {title && <ContentHeader title={title} textAlign={align} />}
         <Grid
           container
-          justify={align}
+          justify={align === 'center' ? align : 'flex-start'}
           spacing={2}
           component="ul"
           classes={classes}
