@@ -24,3 +24,7 @@ can be organised around the entities in the catalog.
 TODO
 
 ![](service-catalog-home.png)
+
+## Links
+
+- [[Blog post] Backstage Service Catalog released in alpha](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)
