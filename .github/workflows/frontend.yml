@@ -2,7 +2,8 @@ name: Frontend CI
 
 on:
   pull_request:
-
+    paths:
+      - '!microsite/**'
 jobs:
   build:
     runs-on: ubuntu-latest
