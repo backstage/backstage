@@ -13,11 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './config';
-export * from './errors';
-export * from './logging';
-export * from './middleware';
-export * from './service';
-export * from './hot';
-export * from './gql';
+export const gql = (s: TemplateStringsArray, ...args: any[]) =>
+  s.map((ss, i) => `${ss}${args[i] || ''}`).join('');
