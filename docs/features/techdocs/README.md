@@ -26,11 +26,15 @@ Spotify’s developer experience offering with 2,400+ documentation sites and
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | [TechDocs V.0 ✅][v0]   | Read docs in Backstage - Enable anyone to get a reader experience working in Backstage. [See V.0 Use Cases.](./#techdocs-v0)          |
 | [TechDocs V.1 🚧][v1]   | TechDocs end to end (alpha) - Alpha of TechDocs that you can use end to end - and contribute to. [See V.1 Use Cases.](./#techdocs-v1) |
-| [TechDocs V.2 🔮⌛][v2] | Widget Architecture - TechDocs widget architecture available, so the community can create their own customized features.              |
+| TechDocs V.2 🔮⌛       | Platform stability and compatibility improvements. [See V.2 Use Cases.](./#techdocs-v2)                                               |
+| [TechDocs V.3 🔮⌛][v3] | Widget Architecture - TechDocs widget architecture available, so the community can create their own customized features.              |
 
 [v0]: https://github.com/spotify/backstage/milestone/15
 [v1]: https://github.com/spotify/backstage/milestone/16
-[v2]: https://github.com/spotify/backstage/milestone/17
+
+<!-- TODO: Add link to milestone for v2 -->
+
+[v3]: https://github.com/spotify/backstage/milestone/17
 
 ## Use Cases
 
@@ -61,6 +65,10 @@ Platform stability and compatibility improvements
 - As a user I can define the metadata generated for my documentation.
 - As a user I will be able to browse metadata from within my documentation in
   Backstage.
+
+#### TechDocs V.3
+
+more to come...
 
 ## Structure
 
