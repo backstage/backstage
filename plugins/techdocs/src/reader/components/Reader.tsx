@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useApi, configApiRef } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
