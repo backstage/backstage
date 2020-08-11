@@ -15,9 +15,9 @@
  */
 
 import { createTestShadowDom, FIXTURES, getSample } from '../../test-utils';
-import { addBaseUrl } from '../transformers';
+// import { addBaseUrl } from '../transformers';
 
-const DOC_STORAGE_URL = 'https://example-host.storage.googleapis.com';
+// const DOC_STORAGE_URL = 'https://example-host.storage.googleapis.com';
 
 describe('addBaseUrl', () => {
   it('contains relative paths', () => {
@@ -37,101 +37,101 @@ describe('addBaseUrl', () => {
     ]);
   });
 
-  it('contains transformed absolute paths', () => {
-    const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      preTransformers: [
-        addBaseUrl({
-          docStorageUrl: DOC_STORAGE_URL,
-          componentId: 'example-docs',
-          path: '',
-        }),
-      ],
-      postTransformers: [],
-    });
+  // it('contains transformed absolute paths', () => {
+  //   const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
+  //     preTransformers: [
+  //       addBaseUrl({
+  //         docStorageUrl: DOC_STORAGE_URL,
+  //         componentId: 'example-docs',
+  //         path: '',
+  //       }),
+  //     ],
+  //     postTransformers: [],
+  //   });
 
-    expect(getSample(shadowDom, 'img', 'src')).toEqual([
-      'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
-      'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
-    ]);
-    expect(getSample(shadowDom, 'link', 'href')).toEqual([
-      'https://www.mkdocs.org/',
-      'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
-    ]);
-    expect(getSample(shadowDom, 'script', 'src')).toEqual([
-      'https://www.google-analytics.com/analytics.js',
-      'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
-    ]);
-  });
+  //   expect(getSample(shadowDom, 'img', 'src')).toEqual([
+  //     'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
+  //     'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
+  //   ]);
+  //   expect(getSample(shadowDom, 'link', 'href')).toEqual([
+  //     'https://www.mkdocs.org/',
+  //     'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
+  //   ]);
+  //   expect(getSample(shadowDom, 'script', 'src')).toEqual([
+  //     'https://www.google-analytics.com/analytics.js',
+  //     'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
+  //   ]);
+  // });
 
-  it('includes path option without slash', () => {
-    const shadowDom = createTestShadowDom(
-      `
-      <img src="../img/win-py-install.png" />
-      <img src="../img/initial-layout.png" />
-      <link href="https://www.mkdocs.org/" />
-      <link href="../assets/images/favicon.png" />
-      <script src="https://www.google-analytics.com/analytics.js"></script>
-      <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-    `,
-      {
-        preTransformers: [
-          addBaseUrl({
-            docStorageUrl: DOC_STORAGE_URL,
-            componentId: 'example-docs',
-            path: 'examplepath',
-          }),
-        ],
-        postTransformers: [],
-      },
-    );
+  // it('includes path option without slash', () => {
+  //   const shadowDom = createTestShadowDom(
+  //     `
+  //     <img src="../img/win-py-install.png" />
+  //     <img src="../img/initial-layout.png" />
+  //     <link href="https://www.mkdocs.org/" />
+  //     <link href="../assets/images/favicon.png" />
+  //     <script src="https://www.google-analytics.com/analytics.js"></script>
+  //     <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
+  //   `,
+  //     {
+  //       preTransformers: [
+  //         addBaseUrl({
+  //           docStorageUrl: DOC_STORAGE_URL,
+  //           componentId: 'example-docs',
+  //           path: 'examplepath',
+  //         }),
+  //       ],
+  //       postTransformers: [],
+  //     },
+  //   );
 
-    expect(getSample(shadowDom, 'img', 'src')).toEqual([
-      'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
-      'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
-    ]);
-    expect(getSample(shadowDom, 'link', 'href')).toEqual([
-      'https://www.mkdocs.org/',
-      'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
-    ]);
-    expect(getSample(shadowDom, 'script', 'src')).toEqual([
-      'https://www.google-analytics.com/analytics.js',
-      'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
-    ]);
-  });
+  //   expect(getSample(shadowDom, 'img', 'src')).toEqual([
+  //     'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
+  //     'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
+  //   ]);
+  //   expect(getSample(shadowDom, 'link', 'href')).toEqual([
+  //     'https://www.mkdocs.org/',
+  //     'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
+  //   ]);
+  //   expect(getSample(shadowDom, 'script', 'src')).toEqual([
+  //     'https://www.google-analytics.com/analytics.js',
+  //     'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
+  //   ]);
+  // });
 
-  it('includes path option with slash', () => {
-    const shadowDom = createTestShadowDom(
-      `
-      <img src="../img/win-py-install.png" />
-      <img src="../img/initial-layout.png" />
-      <link href="https://www.mkdocs.org/" />
-      <link href="../assets/images/favicon.png" />
-      <script src="https://www.google-analytics.com/analytics.js"></script>
-      <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-    `,
-      {
-        preTransformers: [
-          addBaseUrl({
-            docStorageUrl: DOC_STORAGE_URL,
-            componentId: 'example-docs',
-            path: 'examplepath/',
-          }),
-        ],
-        postTransformers: [],
-      },
-    );
+  // it('includes path option with slash', () => {
+  //   const shadowDom = createTestShadowDom(
+  //     `
+  //     <img src="../img/win-py-install.png" />
+  //     <img src="../img/initial-layout.png" />
+  //     <link href="https://www.mkdocs.org/" />
+  //     <link href="../assets/images/favicon.png" />
+  //     <script src="https://www.google-analytics.com/analytics.js"></script>
+  //     <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
+  //   `,
+  //     {
+  //       preTransformers: [
+  //         addBaseUrl({
+  //           docStorageUrl: DOC_STORAGE_URL,
+  //           componentId: 'example-docs',
+  //           path: 'examplepath/',
+  //         }),
+  //       ],
+  //       postTransformers: [],
+  //     },
+  //   );
 
-    expect(getSample(shadowDom, 'img', 'src')).toEqual([
-      'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
-      'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
-    ]);
-    expect(getSample(shadowDom, 'link', 'href')).toEqual([
-      'https://www.mkdocs.org/',
-      'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
-    ]);
-    expect(getSample(shadowDom, 'script', 'src')).toEqual([
-      'https://www.google-analytics.com/analytics.js',
-      'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
-    ]);
-  });
+  //   expect(getSample(shadowDom, 'img', 'src')).toEqual([
+  //     'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
+  //     'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
+  //   ]);
+  //   expect(getSample(shadowDom, 'link', 'href')).toEqual([
+  //     'https://www.mkdocs.org/',
+  //     'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
+  //   ]);
+  //   expect(getSample(shadowDom, 'script', 'src')).toEqual([
+  //     'https://www.google-analytics.com/analytics.js',
+  //     'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
+  //   ]);
+  // });
 });

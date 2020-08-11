@@ -15,14 +15,12 @@
  */
 
 import type { Transformer } from './index';
+import { TechDocsStorage } from '../../api';
+import { ParsedEntityId } from '../../types';
 
 type AddBaseUrlOptions = {
-  techdocsStorageApi: any;
-  entityId: {
-    kind: string;
-    namespace: string;
-    name: string;
-  };
+  techdocsStorageApi: TechDocsStorage;
+  entityId: ParsedEntityId;
   path: string;
 };
 
@@ -43,11 +41,7 @@ export const addBaseUrl = ({
           if (!elemAttribute) return;
           elem.setAttribute(
             attributeName,
-            techdocsStorageApi.getBaseUrl({
-              url: elemAttribute,
-              entityId,
-              path,
-            }),
+            techdocsStorageApi.getBaseUrl(elemAttribute, entityId, path),
           );
         });
     };

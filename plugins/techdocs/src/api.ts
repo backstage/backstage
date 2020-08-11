@@ -15,57 +15,54 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import URLFormatter from './reader/urlFormatter';
+
+import { ParsedEntityId } from './types';
 
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
   id: 'plugin.techdocs.storageservice',
   description: 'Used to make requests towards the techdocs storage',
 });
 
-export class TechDocsStorageApi {
+export interface TechDocsStorage {
+  getEntityDocs(entityId: ParsedEntityId, path: string): Promise<string>;
+  getBaseUrl(
+    oldBaseUrl: string,
+    entityId: ParsedEntityId,
+    path: string,
+  ): string;
+}
+
+export class TechDocsStorageApi implements TechDocsStorage {
   public apiOrigin: string;
 
   constructor({ apiOrigin }: { apiOrigin: string }) {
     this.apiOrigin = apiOrigin;
   }
 
-  async getEntityDocs({
-    kind,
-    namespace,
-    name,
-    path,
-  }: {
-    kind: string;
-    namespace: string;
-    name: string;
-    path: string;
-  }) {
-    const url = new URLFormatter(
-      `${this.apiOrigin}/${kind}/${namespace}/${name}/${path}`,
-    ).formatBaseURL();
+  async getEntityDocs(entityId: ParsedEntityId, path: string) {
+    const { kind, namespace, name } = entityId;
 
-    return fetch(`${url}index.html`);
+    const url = `${this.apiOrigin}/${kind}/${namespace}/${name}/${path}`;
+
+    const request = await fetch(`${url}index.html`);
+
+    if (request.status === 404) {
+      throw new Error('Page not found');
+    }
+
+    return request.text();
   }
 
-  getBaseUrl({
-    url,
-    entityId,
-    path = '',
-  }: {
-    url: string;
-    entityId: {
-      kind: string;
-      namespace: string;
-      name: string;
-    };
-    path: string;
-  }): string {
-    const urlFormatter = new URLFormatter(
-      path.length < 1 || path.endsWith('/')
-        ? `${this.apiOrigin}/${entityId.kind}/${entityId.namespace}/${entityId.name}/${path}`
-        : `${this.apiOrigin}/${entityId.kind}/${entityId.namespace}/${entityId.name}/${path}/`,
-    );
+  getBaseUrl(
+    oldBaseUrl: string,
+    entityId: ParsedEntityId,
+    path: string,
+  ): string {
+    const { kind, namespace, name } = entityId;
 
-    return urlFormatter.formatURL(url);
+    return new URL(
+      oldBaseUrl,
+      `${this.apiOrigin}/${kind}/${namespace}/${name}/${path}`,
+    ).toString();
   }
 }
