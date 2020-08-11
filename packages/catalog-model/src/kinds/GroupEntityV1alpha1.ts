@@ -26,11 +26,10 @@ export interface GroupEntityV1alpha1 extends Entity {
   kind: typeof KIND;
   spec: {
     type: string;
-    owner: string;
-    parent?: string[];
-    ancestors?: string[];
-    children?: string[];
-    grandchildren?: string[];
+    parent?: string;
+    ancestors: string[];
+    children: string[];
+    descendents: string[];
   };
 }
 
@@ -44,11 +43,10 @@ export class GroupEntityV1alpha1Policy implements EntityPolicy {
       spec: yup
         .object({
           type: yup.string().required().min(1),
-          owner: yup.string().required().min(1),
-          parent: yup.array(yup.string()).notRequired(),
-          ancestors: yup.array(yup.string()).notRequired(),
-          children: yup.array(yup.string()).notRequired(),
-          grandchildren: yup.array(yup.string()).notRequired(),
+          parent: yup.string().notRequired().min(1),
+          ancestors: yup.array(yup.string()).required(),
+          children: yup.array(yup.string()).required(),
+          descendents: yup.array(yup.string()).required(),
         })
         .required(),
     });

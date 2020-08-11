@@ -35,11 +35,10 @@ describe('GroupV1alpha1Policy', () => {
       },
       spec: {
         type: 'squad',
-        owner: 'me',
-        parent: ['group a'],
+        parent: 'group-a',
         ancestors: ['group-a', 'global-synergies', 'acme-corp'],
-        children: [],
-        grandchildren: [],
+        children: ['child-a', 'child-b'],
+        descendents: ['desc-a', 'desc-b'],
       },
     };
     policy = new GroupEntityV1alpha1Policy();
@@ -79,38 +78,43 @@ describe('GroupV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).rejects.toThrow(/type/);
   });
 
-  it('rejects missing owner', async () => {
-    delete (entity as any).spec.owner;
-    await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
-  });
-
-  it('rejects wrong owner', async () => {
-    (entity as any).spec.owner = 7;
-    await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
-  });
-
-  it('rejects empty owner', async () => {
-    (entity as any).spec.owner = '';
-    await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
-  });
-
   it('accepts missing parent', async () => {
     delete (entity as any).spec.parent;
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
-  it('accepts missing ancestors', async () => {
+  it('rejects empty parent', async () => {
+    (entity as any).spec.parent = '';
+    await expect(policy.enforce(entity)).rejects.toThrow(/parent/);
+  });
+
+  it('rejects missing ancestors', async () => {
     delete (entity as any).spec.ancestors;
+    await expect(policy.enforce(entity)).rejects.toThrow(/ancestor/);
+  });
+
+  it('accepts empty ancestors', async () => {
+    (entity as any).spec.ancestors = [''];
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
-  it('accepts missing children', async () => {
+  it('rejects missing children', async () => {
     delete (entity as any).spec.children;
+    await expect(policy.enforce(entity)).rejects.toThrow(/children/);
+  });
+
+  it('accepts empty children', async () => {
+    (entity as any).spec.children = [''];
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
-  it('accepts missing grandchildren', async () => {
-    delete (entity as any).spec.grandchildren;
+  it('rejects missing descendents', async () => {
+    delete (entity as any).spec.descendents;
+    await expect(policy.enforce(entity)).rejects.toThrow(/descendents/);
+  });
+
+  it('accepts empty descendents', async () => {
+    (entity as any).spec.descendents = [''];
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 });
