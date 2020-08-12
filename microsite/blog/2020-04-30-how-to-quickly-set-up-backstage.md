@@ -50,7 +50,7 @@ yarn start
 
 And you are good to go! 👍
 
-Read the full documentation on how to [create an app](https://github.com/spotify/backstage/blob/master/docs/create-an-app.md) on GitHub.
+Read the full documentation on how to [create an app](https://github.com/spotify/backstage/blob/master/docs/getting-started/create-an-app.md) on GitHub.
 
 ## What do I get? (Let's get technical...)
 
