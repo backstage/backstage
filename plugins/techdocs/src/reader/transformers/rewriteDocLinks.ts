@@ -27,9 +27,13 @@ export const rewriteDocLinks = (): Transformer => {
         .forEach((elem: T) => {
           const elemAttribute = elem.getAttribute(attributeName);
           if (elemAttribute) {
+            const normalizedWindowLocation = window.location.href.endsWith('/')
+              ? window.location.href
+              : `${window.location.href}/`;
+
             elem.setAttribute(
               attributeName,
-              new URL(elemAttribute, window.location.href).toString(),
+              new URL(elemAttribute, normalizedWindowLocation).toString(),
             );
           }
         });

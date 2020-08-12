@@ -33,25 +33,11 @@ import transformer, {
 } from '../transformers';
 import { TechDocsNotFound } from './TechDocsNotFound';
 
-const useEnforcedTrailingSlash = (): void => {
-  React.useEffect(() => {
-    if (!window.location.href.endsWith('/')) {
-      window.history.replaceState(
-        {},
-        document.title,
-        `${window.location.href}/`,
-      );
-    }
-  }, []);
-};
-
 type Props = {
   entityId: ParsedEntityId;
 };
 
 export const Reader = ({ entityId }: Props) => {
-  useEnforcedTrailingSlash();
-
   const { kind, namespace, name } = entityId;
   const { '*': path } = useParams();
 
@@ -64,16 +50,8 @@ export const Reader = ({ entityId }: Props) => {
   }, [techdocsStorageApi, kind, namespace, name, path]);
 
   React.useEffect(() => {
-    if (!shadowRoot) {
-      return; // Shadow DOM isn't ready
-    }
-
-    if (loading) {
-      return; // Page isn't ready
-    }
-
-    if (error) {
-      return; // Docs not found
+    if (!shadowRoot || loading || error) {
+      return; // Shadow DOM isn't ready / It's not ready / Docs was not found
     }
 
     // Pre-render

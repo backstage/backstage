@@ -44,7 +44,9 @@ export class TechDocsStorageApi implements TechDocsStorage {
 
     const url = `${this.apiOrigin}/${kind}/${namespace}/${name}/${path}`;
 
-    const request = await fetch(`${url}index.html`);
+    const request = await fetch(
+      `${url.endsWith('/') ? url : `${url}/`}index.html`,
+    );
 
     if (request.status === 404) {
       throw new Error('Page not found');
