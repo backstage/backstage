@@ -66,14 +66,3 @@ jobs:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #     BRANCH: gh-pages
       #     FOLDER: ./microsite/build/backstage
-      - name: move storybook dist into microsite
-        run: mv packages/storybook/dist/ microsite/build/backstage/storybook
-
-      - name: Check the build output
-        run: ls microsite/build/backstage && ls microsite/build/backstage/storybook
-      # - name: deploy storybook to gh-pages
-      #   uses: JamesIves/github-pages-deploy-action@3.4.2
-      #   with:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     BRANCH: gh-pages
-      #     FOLDER: ./microsite/build/backstage
