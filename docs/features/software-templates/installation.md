@@ -5,7 +5,7 @@ The scaffolder plugin comes in two packages, `@backstage/plugin-scaffolder` and
 outlined below.
 
 The Scaffolder plugin also depends on the Software Catalog. Instructions for how
-to set that up can be found [here](./TODO.md).
+to set that up can be found [here](../software-catalog/installation.md).
 
 ## Installing @backstage/plugin-scaffolder
 
