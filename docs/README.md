@@ -43,11 +43,7 @@ better yet, a pull request.
       - [Overview](features/techdocs/README.md)
       - [Getting Started](features/techdocs/getting-started.md)
       - [Concepts](features/techdocs/concepts.md)
-      - [Reading Documentation](features/techdocs/reading-documentation.md)
-      - [Writing Documentation](features/techdocs/writing-documentation.md)
-      - [Publishing Documentation](features/techdocs/publishing-documentation.md)
-      - [Contributing](features/techdocs/contributing.md)
-      - [Debugging](features/techdocs/debugging.md)
+      - [Creating and Publishing Documentation](features/techdocs/creating-and-publishing.md)
       - [FAQ](features/techdocs/FAQ.md)
   - Plugins
     - [Overview](plugins/index.md)
