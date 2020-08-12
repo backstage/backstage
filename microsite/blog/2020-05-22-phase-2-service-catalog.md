@@ -27,7 +27,7 @@ Quote from [Platform Nuts & Bolts: Extendable Data Models](https://www.kislayver
 
 Entities, or what we refer to as “components” in Backstage, represent all software, including services, websites, libraries, data pipelines, and so forth. The focus of Phase 2 will be on adding an entity model in Backstage that makes it easy for engineers to create and manage the software components they own.
 
-With the ability to create a plethora of components in Backstage, how does one keep track of all the software in the ecosystem? Therein lies the highlight feature of Phase 2: the [Service Catalog](https://github.com/spotify/backstage/milestone/4). The service catalog — or software catalog — is a centralized system that keeps track of ownership and metadata about all software in your ecosystem. The catalog is built around the concept of [metadata yaml files](https://github.com/spotify/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md) stored together with the code, which are then harvested and visualized in Backstage.
+With the ability to create a plethora of components in Backstage, how does one keep track of all the software in the ecosystem? Therein lies the highlight feature of Phase 2: the [Service Catalog](https://github.com/spotify/backstage/milestone/4). The service catalog — or software catalog — is a centralized system that keeps track of ownership and metadata about all software in your ecosystem. The catalog is built around the concept of [metadata yaml files](/docs/architecture-decisions/adr002-default-catalog-file-format.md) stored together with the code, which are then harvested and visualized in Backstage.
 
 ![img](assets/20-05-20/Service_Catalog_MVP.png)
 
