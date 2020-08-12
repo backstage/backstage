@@ -29,7 +29,7 @@ export interface GroupEntityV1alpha1 extends Entity {
     parent?: string;
     ancestors: string[];
     children: string[];
-    descendents: string[];
+    descendants: string[];
   };
 }
 
@@ -46,7 +46,7 @@ export class GroupEntityV1alpha1Policy implements EntityPolicy {
           parent: yup.string().notRequired().min(1),
           ancestors: yup.array(yup.string()).required(),
           children: yup.array(yup.string()).required(),
-          descendents: yup.array(yup.string()).required(),
+          descendants: yup.array(yup.string()).required(),
         })
         .required(),
     });

@@ -38,7 +38,7 @@ describe('GroupV1alpha1Policy', () => {
         parent: 'group-a',
         ancestors: ['group-a', 'global-synergies', 'acme-corp'],
         children: ['child-a', 'child-b'],
-        descendents: ['desc-a', 'desc-b'],
+        descendants: ['desc-a', 'desc-b'],
       },
     };
     policy = new GroupEntityV1alpha1Policy();
@@ -108,13 +108,13 @@ describe('GroupV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
-  it('rejects missing descendents', async () => {
-    delete (entity as any).spec.descendents;
-    await expect(policy.enforce(entity)).rejects.toThrow(/descendents/);
+  it('rejects missing descendants', async () => {
+    delete (entity as any).spec.descendants;
+    await expect(policy.enforce(entity)).rejects.toThrow(/descendants/);
   });
 
-  it('accepts empty descendents', async () => {
-    (entity as any).spec.descendents = [''];
+  it('accepts empty descendants', async () => {
+    (entity as any).spec.descendants = [''];
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 });
