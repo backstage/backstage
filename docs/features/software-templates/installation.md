@@ -12,8 +12,8 @@ to set that up can be found [here](./TODO.md).
 > **Note that if you used `npx @backstage/create-app`, the plugin may already be
 > present**
 
-`The scaffolder frontend plugin should be installed in your`app`package, which is created as a part of`@backstage/create-app`.
-To install the package, run:
+The scaffolder frontend plugin should be installed in your `app` package, which
+is created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
 cd packages/app
