@@ -15,19 +15,11 @@
  */
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import {
-  Link,
-  Theme,
-  makeStyles,
-  LinearProgress,
-} from '@material-ui/core';
-import {
-  InfoCard,
-  StructuredMetadataTable,
-} from '@backstage/core';
+import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
+import { InfoCard, StructuredMetadataTable } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
-import {useBuilds} from "../../state";
-import {JenkinsRunStatus} from "../../pages/BuildsPage/lib/Status";
+import { useBuilds } from '../../state';
+import { JenkinsRunStatus } from '../../pages/BuildsPage/lib/Status';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {
@@ -37,9 +29,9 @@ const useStyles = makeStyles<Theme>({
 });
 
 const WidgetContent = ({
-                         loading,
-                         lastRun,
-                       }: {
+  loading,
+  lastRun,
+}: {
   loading?: boolean;
   lastRun: any;
   branch: string;
@@ -51,7 +43,9 @@ const WidgetContent = ({
       metadata={{
         status: (
           <>
-            <JenkinsRunStatus status={lastRun.building ? 'running': lastRun.result} />
+            <JenkinsRunStatus
+              status={lastRun.building ? 'running' : lastRun.result}
+            />
           </>
         ),
         build: lastRun.fullDisplayName,
@@ -67,28 +61,22 @@ const WidgetContent = ({
 };
 
 export const JenkinsLastBuildWidget = ({
-                         entity,
-                         branch = 'master',
-                       }: {
+  entity,
+  branch = 'master',
+}: {
   entity: Entity;
   branch: string;
 }) => {
   const [owner, repo] = (
     entity?.metadata.annotations?.['backstage.io/jenkins-github-folder'] ?? '/'
   ).split('/');
-  const [
-    {loading, value}
-  ] = useBuilds(owner, repo, branch);
-  
-  const lastRun = value ?? {} ;
-  
+  const [{ loading, value }] = useBuilds(owner, repo, branch);
+
+  const lastRun = value ?? {};
+
   return (
     <InfoCard title={`Last ${branch} build`}>
-      <WidgetContent
-        loading={loading}
-        branch={branch}
-        lastRun={lastRun}
-      />
+      <WidgetContent loading={loading} branch={branch} lastRun={lastRun} />
     </InfoCard>
   );
 };

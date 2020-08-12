@@ -62,8 +62,7 @@ import {
   GithubActionsClient,
   githubActionsApiRef,
 } from '@backstage/plugin-github-actions';
-import {jenkinsApiRef, JenkinsApi} from "@backstage/plugin-jenkins";
-
+import { jenkinsApiRef, JenkinsApi } from '@backstage/plugin-jenkins';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -85,10 +84,7 @@ export const apis = (config: ConfigApi) => {
     new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
   );
 
-  builder.add(
-    jenkinsApiRef,
-    new JenkinsApi(`${backendUrl}/proxy/jenkins/api`),
-  );
+  builder.add(jenkinsApiRef, new JenkinsApi(`${backendUrl}/proxy/jenkins/api`));
 
   builder.add(githubActionsApiRef, new GithubActionsClient());
 

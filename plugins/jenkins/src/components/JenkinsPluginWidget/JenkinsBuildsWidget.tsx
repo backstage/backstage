@@ -15,15 +15,13 @@
  */
 
 import React from 'react';
-import {Builds} from '../../pages/BuildsPage/lib/Builds';
-import {Entity} from "@backstage/catalog-model";
+import { Builds } from '../../pages/BuildsPage/lib/Builds';
+import { Entity } from '@backstage/catalog-model';
 
-export const JenkinsBuildsWidget = ({entity}: {
-  entity: Entity;
-}) => {
+export const JenkinsBuildsWidget = ({ entity }: { entity: Entity }) => {
   const [owner, repo] = (
     entity?.metadata.annotations?.['backstage.io/jenkins-github-folder'] ?? '/'
   ).split('/');
-  
+
   return <Builds owner={owner} repo={repo} />;
-}
+};

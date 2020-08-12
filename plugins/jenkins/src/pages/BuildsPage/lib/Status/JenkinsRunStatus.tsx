@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import {StatusPending, StatusRunning, StatusOK, StatusWarning, StatusAborted, StatusError} from '@backstage/core';
+import {
+  StatusPending,
+  StatusRunning,
+  StatusOK,
+  StatusWarning,
+  StatusAborted,
+  StatusError,
+} from '@backstage/core';
 import React from 'react';
 
 export const JenkinsRunStatus = ({
-                                    status,
-                                  }: {
+  status,
+}: {
   status: string | undefined;
 }) => {
   if (status === undefined) return null;

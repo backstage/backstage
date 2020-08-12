@@ -15,13 +15,12 @@
  */
 
 import { createPlugin, createRouteRef } from '@backstage/core';
-import {DetailedViewPage} from "./pages/BuildWithStepsPage";
+import { DetailedViewPage } from './pages/BuildWithStepsPage';
 
 export const buildRouteRef = createRouteRef({
   path: '/jenkins/job',
   title: 'Jenkins run',
 });
-
 
 export const plugin = createPlugin({
   id: 'jenkins',
