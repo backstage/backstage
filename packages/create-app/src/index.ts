@@ -28,6 +28,10 @@ const main = (argv: string[]) => {
       '--skip-install',
       'Skip the install and builds steps after creating the app',
     )
+    .option(
+      '--template-dir',
+      'Provide a path to a custom app template',
+    )
     .action(createApp);
 
   program.parse(argv);

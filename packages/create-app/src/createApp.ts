@@ -118,7 +118,6 @@ export default async (cmd: Command): Promise<void> => {
   answers.dbTypePG = answers.dbType === 'PostgreSQL';
   answers.dbTypeSqlite = answers.dbType === 'SQLite';
 
-  const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
   const appDir = resolvePath(paths.targetDir, answers.name);
 
@@ -133,6 +132,11 @@ export default async (cmd: Command): Promise<void> => {
     await createTemporaryAppFolder(tempDir);
 
     Task.section('Preparing files');
+    let templateDir = paths.resolveOwn('templates/default-app');
+    if (cmd.templateDir) {
+      Task.log(`Using custom app template from ${cmd.templateDir}`);
+      templateDir = cmd.templateDir;
+    }
     await templatingTask(templateDir, tempDir, { ...answers, version });
 
     Task.section('Moving to final location');
