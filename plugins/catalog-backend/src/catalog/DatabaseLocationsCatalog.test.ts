@@ -17,6 +17,12 @@
 import { DatabaseManager } from '../database';
 import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
 
+const bootstrapLocation = {
+  id: 'bootstrap',
+  type: 'bootstrap',
+  target: 'bootstrap',
+};
+
 describe('DatabaseLocationsCatalog', () => {
   let catalog: DatabaseLocationsCatalog;
 
@@ -35,9 +41,12 @@ describe('DatabaseLocationsCatalog', () => {
     await expect(
       catalog.location('dd12620d-0436-422f-93bd-929aa0788123'),
     ).resolves.toEqual(expect.objectContaining({ data: location }));
-    await expect(catalog.locations()).resolves.toEqual([
-      expect.objectContaining({ data: location }),
-    ]);
+    await expect(catalog.locations()).resolves.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ data: location }),
+        expect.objectContaining({ data: bootstrapLocation }),
+      ]),
+    );
   });
 
   it('does not return duplicates of rows because of logs', async () => {
@@ -60,11 +69,12 @@ describe('DatabaseLocationsCatalog', () => {
       catalog.logUpdateSuccess(location1.id),
     ).resolves.toBeUndefined();
     const locations = await catalog.locations();
-    expect(locations.length).toBe(2);
+    expect(locations.length).toBe(3);
     expect(locations).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ data: location1 }),
         expect.objectContaining({ data: location2 }),
+        expect.objectContaining({ data: bootstrapLocation }),
       ]),
     );
   });

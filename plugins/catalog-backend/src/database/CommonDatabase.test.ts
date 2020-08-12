@@ -24,6 +24,15 @@ import type {
   DbLocationsRowWithStatus,
 } from './types';
 
+const bootstrapLocation = {
+  id: 'bootstrap',
+  type: 'bootstrap',
+  target: 'bootstrap',
+  message: null,
+  status: null,
+  timestamp: null,
+};
+
 describe('CommonDatabase', () => {
   let db: Database;
   let entityRequest: DbEntityRequest;
@@ -85,8 +94,12 @@ describe('CommonDatabase', () => {
     await db.addLocation(input);
 
     const locations = await db.locations();
-    expect(locations).toEqual([output]);
-    const location = await db.location(locations[0].id);
+    expect(locations).toEqual(
+      expect.arrayContaining([output, bootstrapLocation]),
+    );
+    const location = await db.location(
+      locations.find(l => l.id !== 'bootstrap')!.id,
+    );
     expect(location).toEqual(output);
 
     // If we add 2 new update log events,
@@ -105,20 +118,21 @@ describe('CommonDatabase', () => {
       DatabaseLocationUpdateLogStatus.FAIL,
     );
 
-    expect(await db.locations()).toEqual([
-      {
-        ...output,
-        status: DatabaseLocationUpdateLogStatus.FAIL,
-        timestamp: expect.any(String),
-      },
-    ]);
-
-    await db.transaction(tx => db.removeLocation(tx, locations[0].id));
-
-    await expect(db.locations()).resolves.toEqual([]);
-    await expect(db.location(locations[0].id)).rejects.toThrow(
-      /Found no location/,
+    await expect(db.locations()).resolves.toEqual(
+      expect.arrayContaining([
+        bootstrapLocation,
+        {
+          ...output,
+          status: DatabaseLocationUpdateLogStatus.FAIL,
+          timestamp: expect.any(String),
+        },
+      ]),
     );
+
+    await db.transaction(tx => db.removeLocation(tx, location.id));
+
+    await expect(db.locations()).resolves.toEqual([bootstrapLocation]);
+    await expect(db.location(location.id)).rejects.toThrow(/Found no location/);
   });
 
   describe('addEntity', () => {
