@@ -1,7 +1,9 @@
 name: Deploy Microsite and Storybook
 
 on:
-  pull_request:
+  push:
+    branches:
+      - master
     paths:
       - '.github/workflows/microsite-with-storybook-deploy.yml'
       - 'packages/storybook/**'
@@ -60,9 +62,10 @@ jobs:
 
       - name: Check the build output
         run: ls microsite/build/backstage && ls microsite/build/backstage/storybook
-      # - name: deploy storybook to gh-pages
-      #   uses: JamesIves/github-pages-deploy-action@3.4.2
-      #   with:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     BRANCH: gh-pages
-      #     FOLDER: ./microsite/build/backstage
+
+      - name: Deploy both microsite and storybook to gh-pages
+        uses: JamesIves/github-pages-deploy-action@3.4.2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ./microsite/build/backstage
