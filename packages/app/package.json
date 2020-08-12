@@ -12,6 +12,7 @@
     "@backstage/plugin-gitops-profiles": "^0.1.1-alpha.18",
     "@backstage/plugin-graphiql": "^0.1.1-alpha.18",
     "@backstage/plugin-lighthouse": "^0.1.1-alpha.18",
+    "@backstage/plugin-newrelic": "^0.1.1-alpha.18",
     "@backstage/plugin-register-component": "^0.1.1-alpha.18",
     "@backstage/plugin-rollbar": "^0.1.1-alpha.18",
     "@backstage/plugin-scaffolder": "^0.1.1-alpha.18",

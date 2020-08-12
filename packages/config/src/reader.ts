@@ -71,21 +71,29 @@ export class ConfigReader implements Config {
     private readonly prefix: string = '',
   ) {}
 
+  has(key: string): boolean {
+    const value = this.readValue(key);
+    if (value !== undefined) {
+      return true;
+    }
+    return this.fallback?.has(key) ?? false;
+  }
+
   keys(): string[] {
     const localKeys = this.data ? Object.keys(this.data) : [];
     const fallbackKeys = this.fallback?.keys() ?? [];
     return [...new Set([...localKeys, ...fallbackKeys])];
   }
 
-  get(key: string): JsonValue {
+  get(key?: string): JsonValue {
     const value = this.getOptional(key);
     if (value === undefined) {
-      throw new Error(errors.missing(this.fullKey(key)));
+      throw new Error(errors.missing(this.fullKey(key ?? '')));
     }
     return value;
   }
 
-  getOptional(key: string): JsonValue | undefined {
+  getOptional(key?: string): JsonValue | undefined {
     const value = this.readValue(key);
     const fallbackValue = this.fallback?.getOptional(key);
 
@@ -271,8 +279,8 @@ export class ConfigReader implements Config {
     return value as T;
   }
 
-  private readValue(key: string): JsonValue | undefined {
-    const parts = key.split('.');
+  private readValue(key?: string): JsonValue | undefined {
+    const parts = key ? key.split('.') : [];
     for (const part of parts) {
       if (!CONFIG_KEY_PART_PATTERN.test(part)) {
         throw new TypeError(`Invalid config key '${key}'`);
