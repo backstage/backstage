@@ -9,6 +9,9 @@ to set that up can be found [here](./TODO.md).
 
 ## Installing @backstage/plugin-scaffolder
 
+> **Note that if you used `npx @backstage/create-app`, the plugin may already be
+> present**
+
 `The scaffolder frontend plugin should be installed in your`app`package, which is created as a part of`@backstage/create-app`.
 To install the package, run:
 
@@ -52,6 +55,9 @@ This is all that is needed for the frontend part of the Scaffolder plugin to
 work!
 
 ## Installing @backstage/plugin-scaffolder-backend
+
+> **Note that if you used `npx @backstage/create-app`, the plugin may already be
+> present**
 
 The scaffolder backend should be installed in your `backend` package, which is
 created as a part of `@backstage/create-app`. To install the package, run:
@@ -167,6 +173,9 @@ docs on creating private GitHub access tokens is available
 [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
 Note that the need for private GitHub access tokens will be replaced with GitHub
 Apps integration further down the line.
+
+> **Right now it is only possible to scaffold repositories inside GitHub
+> organizations, and not under personal accounts.**
 
 The GitHub access token is passed along using the `GITHUB_ACCESS_TOKEN`
 environment variable.
