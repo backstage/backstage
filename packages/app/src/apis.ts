@@ -63,6 +63,8 @@ import {
   githubActionsApiRef,
 } from '@backstage/plugin-github-actions';
 
+import { TravisCIApi, travisCIApiRef } from '@roadiehq/backstage-plugin-travis-ci';
+
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
   console.log(`Creating APIs for ${config.getString('app.title')}`);
@@ -88,6 +90,8 @@ export const apis = (config: ConfigApi) => {
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
+
+  builder.add(travisCIApiRef, new TravisCIApi());
 
   const oauthRequestApi = builder.add(
     oauthRequestApiRef,

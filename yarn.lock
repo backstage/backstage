@@ -2929,6 +2929,26 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.1.0.tgz#a361b125af3a383b7f671634b8d254345f9f9311"
   integrity sha512-9mMttnPNP6GiP7BtZGimYcYsbWwjyviqg/PD8oxrkEtZykULXOIdC3WDMJ3nPSym8RvZsgSnB8bajCpa5iSYQQ==
 
+"@roadiehq/backstage-plugin-travis-ci@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.1.3.tgz#597882bb6db119b9c8970f15cc506c5d70ba2c41"
+  integrity sha512-xTnc71VtQSp7qfiE/p92U2/FEAvsG32BHIELebYZGCIt+ZqY/fSiXZSGsOXFDlg9adTu0e8ro6HWnknXCdo2pw==
+  dependencies:
+    "@backstage/core" "0.1.1-alpha.18"
+    "@backstage/theme" "0.1.1-alpha.18"
+    "@material-ui/core" "^4.9.1"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    date-fns "^2.15.0"
+    history "^5.0.0"
+    moment "^2.27.0"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    react-lazylog "^4.5.2"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+
 "@rollup/plugin-commonjs@^13.0.0":
   version "13.0.0"
   resolved "https://registry.npmjs.org/@rollup/plugin-commonjs/-/plugin-commonjs-13.0.0.tgz#8a1d684ba6848afe8b9e3d85649d4b2f6f7217ec"
@@ -8208,7 +8228,7 @@ date-fns@^1.27.2:
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
-date-fns@^2.0.0-alpha.27, date-fns@^2.0.1:
+date-fns@^2.0.0-alpha.27, date-fns@^2.0.1, date-fns@^2.15.0:
   version "2.15.0"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.15.0.tgz#424de6b3778e4e69d3ff27046ec136af58ae5d5f"
   integrity sha512-ZCPzAMJZn3rNUvvQIMlXhDr4A+Ar07eLeGsGREoWU19a3Pqf5oYa+ccd+B3F6XVtQY6HANMFdOQ8A+ipFnvJdQ==
@@ -9848,9 +9868,8 @@ file-loader@^4.2.0:
     loader-utils "^1.2.3"
     schema-utils "^2.5.0"
 
-"file-saver@github:eligrey/FileSaver.js#1.3.8":
+file-saver@eligrey/FileSaver.js#1.3.8:
   version "1.3.8"
-  uid e865e37af9f9947ddcced76b549e27dc45c1cb2e
   resolved "https://codeload.github.com/eligrey/FileSaver.js/tar.gz/e865e37af9f9947ddcced76b549e27dc45c1cb2e"
 
 file-system-cache@^1.0.5:
@@ -12962,7 +12981,7 @@ jspdf@1.5.3:
   integrity sha512-J9X76xnncMw+wIqb15HeWfPMqPwYxSpPY8yWPJ7rAZN/ZDzFkjCSZObryCyUe8zbrVRNiuCnIeQteCzMn7GnWw==
   dependencies:
     canvg "1.5.3"
-    file-saver "github:eligrey/FileSaver.js#1.3.8"
+    file-saver eligrey/FileSaver.js#1.3.8
     html2canvas "1.0.0-alpha.12"
     omggif "1.0.7"
     promise-polyfill "8.1.0"
