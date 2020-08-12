@@ -1,4 +1,7 @@
-# Create your own Publisher
+---
+id: extending-publisher
+title: Create your own Publisher
+---
 
 Publishers are responsible for pushing and storing the templated skeleton after
 the values have been templated by the `Templater`. See

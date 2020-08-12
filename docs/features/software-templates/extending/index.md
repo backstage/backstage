@@ -1,4 +1,8 @@
-## Extending the Scaffolder
+---
+id: extending-index
+title: Extending the Scaffolder
+sidebar_label: Overview
+---
 
 Welcome. Take a seat. You're at the Scaffolder Documentation.
 

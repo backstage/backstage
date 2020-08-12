@@ -1,6 +1,10 @@
-# Concepts
+---
+id: concepts
+title: Concepts
+---
 
-This page describes concepts that are introduced with Spotify's docs-like-code solution in Backstage.
+This page describes concepts that are introduced with Spotify's docs-like-code
+solution in Backstage.
 
 ### TechDocs Core Plugin
 

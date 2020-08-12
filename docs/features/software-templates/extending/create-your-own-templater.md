@@ -1,4 +1,7 @@
-# Creating your own Templater
+---
+id: extending-templater
+title: Creating your own Templater
+---
 
 Templaters are responsible for taking the directory path for the skeleton
 returned by the preparers, and then executing the templating command on top of

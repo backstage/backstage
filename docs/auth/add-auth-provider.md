@@ -1,4 +1,7 @@
-# Adding authentication providers
+---
+id: add-auth-provider
+title: Adding authentication providers
+---
 
 ## Passport
 

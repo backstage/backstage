@@ -1,4 +1,7 @@
-# Software Templates
+---
+id: software-templates-index
+title: Software Templates
+---
 
 The Software Templates part of Backstage is a tool that can help you create
 Components inside Backstage. It by default has the ability to load skeletons of

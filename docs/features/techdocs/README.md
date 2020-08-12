@@ -1,4 +1,8 @@
-# TechDocs Documentation
+---
+id: techdocs-overview
+title: TechDocs Documentation
+sidebar_label: Overview
+---
 
 ## What is it?
 

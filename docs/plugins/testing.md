@@ -1,4 +1,7 @@
-# Testing with Jest
+---
+id: testing
+title: Testing with Jest
+---
 
 Backstage uses [Jest](https://facebook.github.io/jest/) for all our unit testing
 needs.

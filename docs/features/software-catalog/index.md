@@ -1,4 +1,7 @@
-# Backstage Service Catalog (alpha)
+---
+id: software-catalog-overview
+title: Backstage Service Catalog (alpha)
+---
 
 ## What is a Service Catalog?
 

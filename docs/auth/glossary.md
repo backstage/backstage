@@ -1,4 +1,7 @@
-# Glossary
+---
+id: glossary
+title: Glossary
+---
 
 - **Popup** - A separate browser window opened on top of the previous one.
 - **OAuth** - More specifically OAuth 2.0, a standard protocol for

@@ -1,4 +1,8 @@
-# Descriptor Format of Catalog Entities
+---
+id: descriptor-format
+title: Descriptor Format of Catalog Entities
+sidebar_label: YAML File Format
+---
 
 This section describes the default data shape and semantics of catalog entities.
 

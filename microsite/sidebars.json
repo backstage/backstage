@@ -5,6 +5,111 @@
       "overview/architecture-overview",
       "overview/architecture-terminology",
       "overview/roadmap"
+    ],
+    "Getting Started": [
+      "getting-started/index",
+      "getting-started/installation",
+      "getting-started/development-environment",
+      "getting-started/create-an-app",
+      {
+        "type": "subcategory",
+        "label": "App configuration",
+        "ids": [
+          "getting-started/configure-app-with-plugins",
+          "getting-started/app-custom-theme"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Deployment",
+        "ids": [
+          "getting-started/deployment-k8s",
+          "getting-started/deployment-other"
+        ]
+      }
+    ],
+    "Features": [
+      {
+        "type": "subcategory",
+        "label": "Software Catalog",
+        "ids": [
+          "features/software-catalog/software-catalog-overview",
+          "features/software-catalog/system-model",
+          "features/software-catalog/descriptor-format",
+          "features/software-catalog/populating-catalog",
+          "features/software-catalog/extending-the-model",
+          "features/software-catalog/external-integrations",
+          "features/software-catalog/software-catalog-api"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Software creation templates",
+        "ids": [
+          "features/software-templates/software-templates-index",
+          "features/software-templates/adding-templates",
+          {
+            "type": "subcategory",
+            "label": "Extending the Scaffolder",
+            "ids": [
+              "features/software-templates/extending/extending-index",
+              "features/software-templates/extending/extending-templater",
+              "features/software-templates/extending/extending-publisher",
+              "features/software-templates/extending/extending-preparer"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Docs-like-code",
+        "ids": [
+          "features/techdocs/techdocs-overview",
+          "features/techdocs/techdocs-getting-started",
+          "features/techdocs/techdocs-concepts",
+          "features/techdocs/techdocs-creating-and-publishing",
+          "features/techdocs/techdocs-faqs"
+        ]
+      }
+    ],
+    "Plugins": [
+      "plugins/index",
+      "plugins/existing-plugins",
+      "plugins/create-a-plugin",
+      "plugins/plugin-development",
+      "plugins/structure-of-a-plugin",
+      {
+        "type": "subcategory",
+        "label": "Backends and APIs",
+        "ids": [
+          "plugins/proxying",
+          "plugins/backend-plugin",
+          "plugins/call-existing-api"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Testing",
+        "ids": ["plugins/testing"]
+      },
+      {
+        "type": "subcategory",
+        "label": "Publishing",
+        "ids": ["plugins/publishing", "plugins/publish-private"]
+      }
+    ],
+    "Configuration": [
+      "conf/index",
+      "conf/reading",
+      "conf/writing",
+      "conf/defining"
+    ],
+    "Authentication and identity": [
+      "auth/index",
+      "auth/add-auth-provider",
+      "auth/auth-backend",
+      "auth/oauth",
+      "auth/glossary"
     ]
   }
 }

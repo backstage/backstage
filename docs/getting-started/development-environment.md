@@ -1,4 +1,9 @@
-# Development Environment
+---
+id: development-environment
+title: Development Environment
+---
+
+#
 
 This section describes how to get set up for doing development on the Backstage
 repository.

@@ -1,4 +1,7 @@
-# Plugin Development in Backstage
+---
+id: plugin-development
+title: Plugin Development in Backstage
+---
 
 Backstage plugins provide features to a Backstage App.
 

@@ -81,7 +81,8 @@
         "title": "features/software-catalog/api"
       },
       "features/software-catalog/descriptor-format": {
-        "title": "features/software-catalog/descriptor-format"
+        "title": "Descriptor Format of Catalog Entities",
+        "sidebar_label": "YAML File Format"
       },
       "features/software-catalog/extending-the-model": {
         "title": "features/software-catalog/extending-the-model"
@@ -89,8 +90,8 @@
       "features/software-catalog/external-integrations": {
         "title": "features/software-catalog/external-integrations"
       },
-      "features/software-catalog/index": {
-        "title": "features/software-catalog/index"
+      "features/software-catalog/software-catalog-overview": {
+        "title": "Backstage Service Catalog (alpha)"
       },
       "features/software-catalog/populating": {
         "title": "features/software-catalog/populating"
@@ -99,22 +100,22 @@
         "title": "features/software-catalog/system-model"
       },
       "features/software-templates/adding-templates": {
-        "title": "features/software-templates/adding-templates"
+        "title": "Adding your own Templates"
       },
-      "features/software-templates/extending/create-your-own-preparer": {
-        "title": "features/software-templates/extending/create-your-own-preparer"
+      "features/software-templates/extending/extending-preparer": {
+        "title": "Create your own Preparer"
       },
-      "features/software-templates/extending/create-your-own-publisher": {
-        "title": "features/software-templates/extending/create-your-own-publisher"
+      "features/software-templates/extending/extending-publisher": {
+        "title": "Create your own Publisher"
       },
-      "features/software-templates/extending/create-your-own-templater": {
-        "title": "features/software-templates/extending/create-your-own-templater"
+      "features/software-templates/extending/extending-templater": {
+        "title": "Creating your own Templater"
       },
-      "features/software-templates/extending/index": {
-        "title": "features/software-templates/extending/index"
+      "features/software-templates/extending/extending-index": {
+        "title": "Extending the Scaffolder"
       },
-      "features/software-templates/index": {
-        "title": "features/software-templates/index"
+      "features/software-templates/software-templates-index": {
+        "title": "Software Templates"
       },
       "features/techdocs/concepts": {
         "title": "features/techdocs/concepts"
@@ -128,32 +129,32 @@
       "features/techdocs/getting-started": {
         "title": "features/techdocs/getting-started"
       },
-      "features/techdocs/README": {
-        "title": "features/techdocs/README"
+      "features/techdocs/techdocs-overview": {
+        "title": "TechDocs Documentation"
       },
       "getting-started/app-custom-theme": {
-        "title": "getting-started/app-custom-theme"
+        "title": "Customize the look-and-feel of your App"
       },
       "getting-started/configure-app-with-plugins": {
         "title": "getting-started/configure-app-with-plugins"
       },
       "getting-started/create-an-app": {
-        "title": "getting-started/create-an-app"
+        "title": "Create an App"
       },
       "getting-started/deployment-k8s": {
         "title": "getting-started/deployment-k8s"
       },
       "getting-started/deployment-other": {
-        "title": "getting-started/deployment-other"
+        "title": "Other"
       },
       "getting-started/development-environment": {
-        "title": "getting-started/development-environment"
+        "title": "Development Environment"
       },
       "getting-started/index": {
-        "title": "getting-started/index"
+        "title": "Running Backstage Locally"
       },
       "getting-started/installation": {
-        "title": "getting-started/installation"
+        "title": "Installation"
       },
       "journey": {
         "title": "journey"
@@ -174,37 +175,37 @@
         "title": "What is Backstage?"
       },
       "plugins/backend-plugin": {
-        "title": "plugins/backend-plugin"
+        "title": "Backend plugin"
       },
       "plugins/call-existing-api": {
-        "title": "plugins/call-existing-api"
+        "title": "Call existing API"
       },
       "plugins/create-a-plugin": {
-        "title": "plugins/create-a-plugin"
+        "title": "Create a Backstage Plugin"
       },
       "plugins/existing-plugins": {
-        "title": "plugins/existing-plugins"
+        "title": "Existing plugins"
       },
       "plugins/index": {
-        "title": "plugins/index"
+        "title": "Intro"
       },
       "plugins/plugin-development": {
-        "title": "plugins/plugin-development"
+        "title": "Plugin Development in Backstage"
       },
       "plugins/proxying": {
-        "title": "plugins/proxying"
+        "title": "Proxying"
       },
       "plugins/publish-private": {
-        "title": "plugins/publish-private"
+        "title": "Publish private"
       },
       "plugins/publishing": {
-        "title": "plugins/publishing"
+        "title": "Publishing"
       },
       "plugins/structure-of-a-plugin": {
-        "title": "plugins/structure-of-a-plugin"
+        "title": "Structure of a Plugin"
       },
       "plugins/testing": {
-        "title": "plugins/testing"
+        "title": "Testing with Jest"
       },
       "README": {
         "title": "README"
@@ -273,7 +274,10 @@
       "Newsletter": "Newsletter"
     },
     "categories": {
-      "Overview": "Overview"
+      "Overview": "Overview",
+      "Getting Started": "Getting Started",
+      "Features": "Features",
+      "Plugins": "Plugins"
     }
   },
   "pages-strings": {
