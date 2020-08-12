@@ -28,6 +28,10 @@ import {
 } from '@backstage/core';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
+import {
+  JenkinsBuildsWidget,
+  JenkinsLastBuildWidget,
+} from '@backstage/plugin-jenkins';
 import { Grid, Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
@@ -126,17 +130,31 @@ export const EntityPage: FC<{}> = () => {
               <Grid item sm={4}>
                 <EntityMetadataCard entity={e} />
               </Grid>
-              <Grid item sm={8}>
-                <SentryIssuesWidget
-                  sentryProjectId="sample-sentry-project-id"
-                  statsFor="24h"
-                />
-              </Grid>
+              {e.metadata?.annotations?.[
+                'backstage.io/jenkins-github-folder'
+              ] && (
+                <Grid item sm={4}>
+                  <JenkinsLastBuildWidget entity={e} branch="master" />
+                </Grid>
+              )}
+              {e.metadata?.annotations?.[
+                'backstage.io/jenkins-github-folder'
+              ] && (
+                <Grid item sm={8}>
+                  <JenkinsBuildsWidget entity={e} />
+                </Grid>
+              )}
               {e.metadata?.annotations?.['backstage.io/github-actions-id'] && (
                 <Grid item sm={3}>
                   <GithubActionsWidget entity={e} branch="master" />
                 </Grid>
               )}
+            </Grid>
+            <Grid item sm={8}>
+              <SentryIssuesWidget
+                sentryProjectId="sample-sentry-project-id"
+                statsFor="24h"
+              />
             </Grid>
           </Content>
         );
