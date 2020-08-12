@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 import React from 'react';
-import {CITable} from '../CITable';
-import {useBuilds} from '../../../../state';
+import { CITable } from '../CITable';
+import { useBuilds } from '../../../../state';
 
-export const Builds = ({
-                         owner,
-                         repo
-                       }: {
-  owner: string;
-  repo: string;
-}) => {
-
+export const Builds = ({ owner, repo }: { owner: string; repo: string }) => {
   const [
-    {total, loading, value, projectName, page, pageSize},
-    {setPage, retry, setPageSize},
+    { total, loading, value, projectName, page, pageSize },
+    { setPage, retry, setPageSize },
   ] = useBuilds(owner, repo);
   return (
     <CITable

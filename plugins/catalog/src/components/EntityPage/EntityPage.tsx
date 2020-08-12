@@ -29,7 +29,10 @@ import {
 } from '@backstage/core';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
-import { JenkinsBuildsWidget, JenkinsLastBuildWidget } from '@backstage/plugin-jenkins';
+import {
+  JenkinsBuildsWidget,
+  JenkinsLastBuildWidget,
+} from '@backstage/plugin-jenkins';
 import { Grid, Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
@@ -190,17 +193,17 @@ export const EntityPage: FC<{}> = () => {
               </Grid>
               {entity.metadata?.annotations?.[
                 'backstage.io/jenkins-github-folder'
-                ] && (
-              <Grid item sm={4}>
-                <JenkinsLastBuildWidget entity={entity} branch='master' />
-              </Grid>
+              ] && (
+                <Grid item sm={4}>
+                  <JenkinsLastBuildWidget entity={entity} branch="master" />
+                </Grid>
               )}
               {entity.metadata?.annotations?.[
                 'backstage.io/jenkins-github-folder'
-                ] && (
-              <Grid item sm={8}>
-                <JenkinsBuildsWidget entity={entity} />
-              </Grid>
+              ] && (
+                <Grid item sm={8}>
+                  <JenkinsBuildsWidget entity={entity} />
+                </Grid>
               )}
               {entity.metadata?.annotations?.[
                 'backstage.io/github-actions-id'
