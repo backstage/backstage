@@ -26,6 +26,11 @@ techdocs:
 sentry:
   organization: spotify
 
+newrelic:
+  api:
+    baseUrl: 'https://api.newrelic.com/v2'
+    key: NEW_RELIC_REST_API_KEY
+
 auth:
   providers:
     google:
