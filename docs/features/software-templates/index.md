@@ -8,6 +8,10 @@ Components inside Backstage. It by default has the ability to load skeletons of
 code, template in some variables and then publish the template to some location
 like GitHub.
 
+<video width="100%" height="100%" controls>
+  <source src="https://backstage.io/blog/assets/2020-08-05/feature.mp4" type="video/mp4">
+</video>
+
 ### Getting Started
 
 The Software Templates are available under `/create`, and if you've followed

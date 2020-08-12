@@ -86,8 +86,8 @@
       "FAQ": {
         "title": "FAQ"
       },
-      "features/software-catalog/api": {
-        "title": "features/software-catalog/api"
+      "features/software-catalog/software-catalog-api": {
+        "title": "API"
       },
       "features/software-catalog/descriptor-format": {
         "title": "Descriptor Format of Catalog Entities",
@@ -102,8 +102,8 @@
       "features/software-catalog/software-catalog-overview": {
         "title": "Backstage Service Catalog (alpha)"
       },
-      "features/software-catalog/populating": {
-        "title": "features/software-catalog/populating"
+      "features/software-catalog/populating-catalog": {
+        "title": "Populating the catalog"
       },
       "features/software-catalog/system-model": {
         "title": "System Model"
