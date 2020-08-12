@@ -3183,6 +3183,26 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.1.0.tgz#a361b125af3a383b7f671634b8d254345f9f9311"
   integrity sha512-9mMttnPNP6GiP7BtZGimYcYsbWwjyviqg/PD8oxrkEtZykULXOIdC3WDMJ3nPSym8RvZsgSnB8bajCpa5iSYQQ==
 
+"@roadiehq/backstage-plugin-travis-ci@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.1.3.tgz#597882bb6db119b9c8970f15cc506c5d70ba2c41"
+  integrity sha512-xTnc71VtQSp7qfiE/p92U2/FEAvsG32BHIELebYZGCIt+ZqY/fSiXZSGsOXFDlg9adTu0e8ro6HWnknXCdo2pw==
+  dependencies:
+    "@backstage/core" "0.1.1-alpha.18"
+    "@backstage/theme" "0.1.1-alpha.18"
+    "@material-ui/core" "^4.9.1"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    date-fns "^2.15.0"
+    history "^5.0.0"
+    moment "^2.27.0"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    react-lazylog "^4.5.2"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+
 "@rollup/plugin-commonjs@^13.0.0":
   version "13.0.0"
   resolved "https://registry.npmjs.org/@rollup/plugin-commonjs/-/plugin-commonjs-13.0.0.tgz#8a1d684ba6848afe8b9e3d85649d4b2f6f7217ec"
@@ -8676,7 +8696,7 @@ date-fns@^1.27.2:
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
-date-fns@^2.0.0-alpha.27, date-fns@^2.0.1:
+date-fns@^2.0.0-alpha.27, date-fns@^2.0.1, date-fns@^2.15.0:
   version "2.15.0"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.15.0.tgz#424de6b3778e4e69d3ff27046ec136af58ae5d5f"
   integrity sha512-ZCPzAMJZn3rNUvvQIMlXhDr4A+Ar07eLeGsGREoWU19a3Pqf5oYa+ccd+B3F6XVtQY6HANMFdOQ8A+ipFnvJdQ==
@@ -13286,6 +13306,13 @@ iterate-value@^1.0.0:
     es-get-iterator "^1.0.2"
     iterate-iterator "^1.0.1"
 
+jenkins@^0.28.0:
+  version "0.28.0"
+  resolved "https://registry.npmjs.org/jenkins/-/jenkins-0.28.0.tgz#72d6fcc452145403b34f6d4ecbd877ee1ab77fca"
+  integrity sha512-EGzzZcyFwXBCPZZoDNvZTPmZOqaHALfAStNfCF37oh+Mc6G/e0MwIuQjx5kMEynTXR9bF5EwLiuMTiTf5kHk5g==
+  dependencies:
+    papi "^0.29.0"
+
 jest-changed-files@^26.0.1:
   version "26.0.1"
   resolved "https://registry.npmjs.org/jest-changed-files/-/jest-changed-files-26.0.1.tgz#1334630c6a1ad75784120f39c3aa9278e59f349f"
@@ -15412,12 +15439,12 @@ modify-values@^1.0.0:
   resolved "https://registry.npmjs.org/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
-moment@2.26.0, moment@^2.25.3, moment@^2.26.0:
+moment@2.26.0:
   version "2.26.0"
   resolved "https://registry.npmjs.org/moment/-/moment-2.26.0.tgz#5e1f82c6bafca6e83e808b30c8705eed0dcbd39a"
   integrity sha512-oIixUO+OamkUkwjhAVE18rAMfRJNsNe/Stid/gwHSOfHrOtw9EhAY2AHvdKZ/k/MggcYELFCJz/Sn2pL8b8JMw==
 
-moment@^2.27.0:
+moment@^2.25.3, moment@^2.26.0, moment@^2.27.0:
   version "2.27.0"
   resolved "https://registry.npmjs.org/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
   integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
@@ -16552,6 +16579,11 @@ pako@~1.0.5:
   version "1.0.11"
   resolved "https://registry.npmjs.org/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
+
+papi@^0.29.0:
+  version "0.29.1"
+  resolved "https://registry.npmjs.org/papi/-/papi-0.29.1.tgz#7373e2c527f5117d61fd2a0e6c6b1dd72bf7f180"
+  integrity sha512-Y9ipSMfWuuVFO3zY9PlxOmEg+bQ7CeJ28sa9/a0veYNynLf9fwjR3+3fld5otEy7okUaEOUuCHVH62MyTmACXQ==
 
 parallel-transform@^1.1.0:
   version "1.2.0"

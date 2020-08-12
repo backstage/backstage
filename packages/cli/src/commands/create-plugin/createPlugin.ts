@@ -142,7 +142,12 @@ async function cleanUp(tempDir: string) {
 }
 
 async function buildPlugin(pluginFolder: string) {
-  const commands = ['yarn install', 'yarn tsc', 'yarn build'];
+  const commands = [
+    'yarn install',
+    'yarn lint --fix',
+    'yarn tsc',
+    'yarn build',
+  ];
   for (const command of commands) {
     await Task.forItem('executing', command, async () => {
       process.chdir(pluginFolder);

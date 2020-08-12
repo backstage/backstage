@@ -39,10 +39,12 @@
     "@spotify/eslint-config-oss": "^1.0.1",
     "@spotify/prettier-config": "^8.0.0",
     "concurrently": "^5.2.0",
+    "fs-extra": "^9.0.0",
     "husky": "^4.2.3",
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "recursive-readdir": "^2.2.2"
   },
   "husky": {
     "hooks": {
