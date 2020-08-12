@@ -11,7 +11,7 @@ development tool as a plugin in Backstage. By following strong
 [design guidelines](../dls/design.md) we ensure the the overall user experience
 stays consistent between plugins.
 
-![plugin](assets/my-plugin_screenshot.png)
+![plugin](../assets/my-plugin_screenshot.png)
 
 ## Creating a plugin
 

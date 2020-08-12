@@ -1,4 +1,8 @@
-# ADR001: Architecture Decision Record (ADR) log
+---
+id: adrs-adr001
+title: ADR001: Architecture Decision Record (ADR) log
+sidebar_label: ADR001
+---
 
 | Created    | Status |
 | ---------- | ------ |

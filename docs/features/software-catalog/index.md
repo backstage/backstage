@@ -26,7 +26,7 @@ can be organised around the entities in the catalog.
 
 TODO
 
-![](service-catalog-home.png)
+![](../../assets/software-catalog/service-catalog-home.png)
 
 ## Links
 

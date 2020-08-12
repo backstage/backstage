@@ -3,7 +3,7 @@ id: architecture-overview
 title: Architecture overview
 ---
 
-# Typical Backstage architecture
+## Overview
 
 The following diagram shows how Backstage might look when deployed inside a
 company which uses the Tech Radar plugin, the Lighthouse plugin, the Circle CI
@@ -19,27 +19,27 @@ Running this architecture in a real environment typically involves
 containerising the components. Various commands are provided for accomplishing
 this.
 
-![The architecture of a basic Backstage application](./architecture-overview/backstage-typical-architecture.png)
+![The architecture of a basic Backstage application](../assets/architecture-overview/backstage-typical-architecture.png)
 
-# The UI
+## The UI
 
 The UI is a thin, client-side wrapper around a set of plugins. It provides some
 core UI components and libraries for shared activities such as config
 management. [[live demo](https://backstage-demo.roadie.io/)]
 
-![UI with different components highlighted](./architecture-overview/core-vs-plugin-components-highlighted.png)
+![UI with different components highlighted](../assets/architecture-overview/core-vs-plugin-components-highlighted.png)
 
 Each plugin typically makes itself available in the UI on a dedicated URL. For
 example, the lighthouse plugin is registered with the UI on `/lighthouse`.
 [[live demo](https://backstage-demo.roadie.io/lighthouse)]
 
-![The lighthouse plugin UI](./architecture-overview/lighthouse-plugin.png)
+![The lighthouse plugin UI](../assets/architecture-overview/lighthouse-plugin.png)
 
 The Circle CI plugin is available on `/circleci`.
 
-![Circle CI Plugin UI](./architecture-overview/circle-ci.png)
+![Circle CI Plugin UI](../assets/architecture-overview/circle-ci.png)
 
-# Plugins and plugin backends
+## Plugins and plugin backends
 
 Each plugin is a client side application which mounts itself on the UI. Plugins
 are written in TypeScript or JavaScript. They each live in their own directory
@@ -47,7 +47,7 @@ in `backstage/plugins`. For example, the source code for the lighthouse plugin
 is available at
 [backstage/plugins/lighthouse](https://github.com/spotify/backstage/tree/master/plugins/lighthouse).
 
-## Installing plugins
+### Installing plugins
 
 Plugins are typically loaded by the UI in your Backstage applications
 `plugins.ts` file. For example,
@@ -79,7 +79,7 @@ export default builder.build() as ApiHolder;
 As of this moment, there is no config based install procedure for plugins. Some
 code changes are required.
 
-## Plugin architecture
+### Plugin architecture
 
 Architecturally, plugins can take three forms:
 
@@ -87,21 +87,21 @@ Architecturally, plugins can take three forms:
 2. Service backed
 3. Third-party backed
 
-### Standalone plugins
+#### Standalone plugins
 
 Standalone plugins run entirely in the browser.
 [The tech radar plugin](https://backstage-demo.roadie.io/tech-radar), for
 example, simply renders hard-coded information. It doesn't make any API requests
 to other services.
 
-![tech radar plugin ui](./architecture-overview/tech-radar-plugin.png)
+![tech radar plugin ui](../assets/architecture-overview/tech-radar-plugin.png)
 
 The architecture of the Tech Radar installed into a Backstage app is very
 simple.
 
-![ui and tech radar plugin connected together](./architecture-overview/tech-radar-plugin-architecture.png)
+![ui and tech radar plugin connected together](../assets/architecture-overview/tech-radar-plugin-architecture.png)
 
-### Service backed plugins
+#### Service backed plugins
 
 Service backed plugins make API requests to a service which is within the
 purview of the organisation running Backstage.
@@ -114,7 +114,7 @@ results in a PostgreSQL database.
 
 Its architecture looks like this:
 
-![lighthouse plugin backed to microservice and database](./architecture-overview/lighthouse-plugin-architecture.png)
+![lighthouse plugin backed to microservice and database](../assets/architecture-overview/lighthouse-plugin-architecture.png)
 
 The service catalog in Backstage is another example of a service backed plugin.
 It retrieves a list of services, or "entities", from the Backstage Backend
@@ -136,9 +136,9 @@ Cross Origin Resource Sharing policies which prevent a browser page served at
 [https://example.com](https://example.com) from serving resources hosted at
 https://circleci.com.
 
-![CircleCi plugin talking to proxy talking to SaaS Circle CI](./architecture-overview/circle-ci-plugin-architecture.png)
+![CircleCi plugin talking to proxy talking to SaaS Circle CI](../assets/architecture-overview/circle-ci-plugin-architecture.png)
 
-# Databases
+## Databases
 
 As we have seen, both the lighthouse-audit-service and catalog-backend require a
 database to work with.
@@ -155,7 +155,7 @@ GitHub issues.
 
 [Update migrations to support postgres by dariddler · Pull Request #1527 · spotify/backstage](https://github.com/spotify/backstage/pull/1527#discussion_r450374145)
 
-# Containerization
+## Containerization
 
 The example Backstage architecture shown above would Dockerize into three
 separate docker images.
@@ -164,7 +164,7 @@ separate docker images.
 2. The backend container
 3. The lighthouse audit service container
 
-![Boxes around the architecture to indicate how it is containerised](./architecture-overview/containerised.png)
+![Boxes around the architecture to indicate how it is containerised](../assets/architecture-overview/containerised.png)
 
 The frontend container can be built with a provided command.
 

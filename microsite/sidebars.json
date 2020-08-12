@@ -48,16 +48,10 @@
         "ids": [
           "features/software-templates/software-templates-index",
           "features/software-templates/adding-templates",
-          {
-            "type": "subcategory",
-            "label": "Extending the Scaffolder",
-            "ids": [
-              "features/software-templates/extending/extending-index",
-              "features/software-templates/extending/extending-templater",
-              "features/software-templates/extending/extending-publisher",
-              "features/software-templates/extending/extending-preparer"
-            ]
-          }
+          "features/software-templates/extending/extending-index",
+          "features/software-templates/extending/extending-templater",
+          "features/software-templates/extending/extending-publisher",
+          "features/software-templates/extending/extending-preparer"
         ]
       },
       {
@@ -65,10 +59,10 @@
         "label": "Docs-like-code",
         "ids": [
           "features/techdocs/techdocs-overview",
-          "features/techdocs/techdocs-getting-started",
-          "features/techdocs/techdocs-concepts",
-          "features/techdocs/techdocs-creating-and-publishing",
-          "features/techdocs/techdocs-faqs"
+          "features/techdocs/getting-started",
+          "features/techdocs/concepts",
+          "features/techdocs/creating-and-publishing",
+          "features/techdocs/faqs"
         ]
       }
     ],
@@ -104,12 +98,51 @@
       "conf/writing",
       "conf/defining"
     ],
-    "Authentication and identity": [
+    "Auth and identity": [
       "auth/index",
       "auth/add-auth-provider",
       "auth/auth-backend",
       "auth/oauth",
       "auth/glossary"
-    ]
+    ],
+
+    "Designing for Backstage": [
+      "dls/design",
+      "dls/contributing-to-storybook",
+      "dls/figma"
+    ],
+    "API references": [
+      {
+        "type": "subcategory",
+        "label": "TypeScript API",
+        "ids": [
+          "api/utility-apis",
+          "reference/utility-apis/README",
+          "reference/createPlugin",
+          "reference/createPlugin-feature-flags",
+          "reference/createPlugin-router"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Backend APIs",
+        "ids": ["api/backend"]
+      }
+    ],
+    "Tutorials": ["tutorials/index"],
+    "Architecture Decision Records (ADRs)": [
+      "architecture-decisions/adrs-overview",
+      "architecture-decisions/adrs-adr001",
+      "architecture-decisions/adrs-adr002",
+      "architecture-decisions/adrs-adr003",
+      "architecture-decisions/adrs-adr004",
+      "architecture-decisions/adrs-adr005",
+      "architecture-decisions/adrs-adr006",
+      "architecture-decisions/adrs-adr007",
+      "architecture-decisions/adrs-adr008"
+    ],
+    "Contribute": ["../CONTRIBUTING"],
+    "Support": ["overview/support"],
+    "FAQ": ["FAQ"]
   }
 }

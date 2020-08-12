@@ -12,7 +12,7 @@ The TechDocs Core Plugin is a MkDocs plugin created as a wrapper around multiple
 MkDocs plugins and Python Markdown extensions to standardize the configuration
 of MkDocs used for TechDocs.
 
-[TechDocs Core](../../../packages/techdocs-container/techdocs-core/README.md)
+[TechDocs Core](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/techdocs-core/README.md)
 
 ### TechDocs container
 
@@ -21,7 +21,7 @@ The TechDocs container is a Docker container available at
 pages, including stylesheets and scripts from Python flavored Markdown, through
 MkDocs.
 
-[TechDocs Container](../../../packages/techdocs-container/README.md)
+[TechDocs Container](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/README.md)
 
 ### TechDocs publisher (coming soon)
 
@@ -32,7 +32,7 @@ documentation for publishing. Currently it mostly acts as a wrapper around the
 TechDocs container and provides an easy-to-use interface for our docker
 container.
 
-[TechDocs CLI](../../../packages/techdocs-cli/README.md)
+[TechDocs CLI](https://github.com/spotify/backstage/blob/master/packages/techdocs-cli/README.md)
 
 ### TechDocs Reader
 
@@ -44,7 +44,7 @@ The TechDocs Reader purpose is also to open up the opportunity to integrate
 TechDocs widgets for a customized full-featured TechDocs experience.
 ([coming soon V.2](https://github.com/spotify/backstage/milestone/17))
 
-[TechDocs Reader](../../../plugins/techdocs/src/reader/README.md)
+[TechDocs Reader](https://github.com/spotify/backstage/blob/master/plugins/techdocs/src/reader/README.md)
 
 ### Transformers
 
@@ -53,4 +53,4 @@ Reader. The reason why transformers were introduced was to provide a way to
 transform the HTML content on pre and post render (e.g. rewrite docs links or
 modify css).
 
-[Transformers API docs](../../../plugins/techdocs/src/reader/transformers/README.md)
+[Transformers API docs](https://github.com/spotify/backstage/blob/master/plugins/techdocs/src/reader/transformers/README.md)

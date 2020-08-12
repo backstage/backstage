@@ -1,4 +1,10 @@
-# Contributing to Storybook
+---
+id: contributing-to-storybook
+title: Contributing to Storybook
+---
+
+You find our storybook at
+[http://storybook.backstage.io](http://storybook.backstage.io)
 
 ## Creating a new Story
 
@@ -26,7 +32,7 @@ core
 Go to `packages/storybook`, run `yarn install` and install the dependencies,
 then run the following on your command line: `yarn start`
 
-![](running-storybook.png)
+![](assets/dls/running-storybook.png)
 
 _You should see a log like the image above._
 
@@ -34,4 +40,4 @@ If everything worked out, your server will be running on **port 6006**, go to
 your browser and navigate to `http://localhost:6006/`. You should be able to
 navigate and see the Storybook page.
 
-![](storybook-page.png)
+![](assets/dls/storybook-page.png)
