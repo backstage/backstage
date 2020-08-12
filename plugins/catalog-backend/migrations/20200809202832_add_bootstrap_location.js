@@ -23,7 +23,7 @@ exports.up = async function up(knex) {
   // Adds a single 'bootstrap' location that can be used to trigger work in processors.
   // This is primarily here to fulfill foreign key constraints.
   await knex('locations').insert({
-    id: 'bootstrap',
+    id: require('uuid').v4(),
     type: 'bootstrap',
     target: 'bootstrap',
   });
@@ -35,7 +35,8 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   await knex('locations')
     .where({
-      id: 'bootstrap',
+      type: 'bootstrap',
+      target: 'bootstrap',
     })
     .del();
 };
