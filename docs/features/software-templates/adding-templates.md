@@ -10,24 +10,24 @@ A simple `template.yaml` definition might look something like this:
 apiVersion: backstage.io/v1alpha1
 kind: Template
 metadata:
-	# unique name per namespace for the template
+  # unique name per namespace for the template
   name: react-ssr-template
-	# title of the template
+  # title of the template
   title: React SSR Template
-	# a description of the template
+  # a description of the template
   description: Next.js application skeleton for creating isomorphic web applications.
   # some tags to display in the frontend
-	tags:
+  tags:
     - Recommended
     - React
 spec:
   # which templater key to use in the templaters builder
   templater: cookiecutter
-	# what does this template create
+  # what does this template create
   type: website
-	# if the template is not in the current directory where this definition is kept then specfiy
+  # if the template is not in the current directory where this definition is kept then specfiy
   path: './template'
-	# the schema for the form which is displayed in the frontend.
+  # the schema for the form which is displayed in the frontend.
   # should follow JSON schema for forms: https://jsonforms.io/
   schema:
     required:

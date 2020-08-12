@@ -28,19 +28,14 @@ import {
   OAuthProviderHandlers,
   RedirectInfo,
   AuthProviderConfig,
-  EnvironmentProviderConfig,
   OAuthProviderOptions,
-  OAuthProviderConfig,
   OAuthResponse,
   PassportDoneCallback,
 } from '../types';
-import {
-  EnvironmentHandler,
-  EnvironmentHandlers,
-} from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
 import { StateStore } from 'passport-oauth2';
 import { TokenIssuer } from '../../identity';
+import { Config } from '@backstage/config';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -170,45 +165,44 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
 
 export function createOktaProvider(
   { baseUrl }: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
+  _: string,
+  envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'okta';
-  const envProviders: EnvironmentHandlers = {};
+  const secure = envConfig.getBoolean('secure');
+  const appOrigin = envConfig.getString('appOrigin');
+  const clientID = envConfig.getString('clientId');
+  const clientSecret = envConfig.getString('clientSecret');
+  const audience = envConfig.getString('audience');
+  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
 
-  for (const [env, envConfig] of Object.entries(providerConfig)) {
-    const config = (envConfig as unknown) as OAuthProviderConfig;
-    const { secure, appOrigin } = config;
-    const opts = {
-      audience: config.audience,
-      clientID: config.clientId,
-      clientSecret: config.clientSecret,
-      callbackURL: `${baseUrl}/${providerId}/handler/frame?env=${env}`,
-    };
+  const opts = {
+    audience,
+    clientID,
+    clientSecret,
+    callbackURL,
+  };
 
-    if (!opts.clientID || !opts.clientSecret || !opts.audience) {
-      if (process.env.NODE_ENV !== 'development') {
-        throw new Error(
-          'Failed to initialize Okta auth provider, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars',
-        );
-      }
-
-      logger.warn(
-        'Okta auth provider disabled, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars to enable',
+  if (!opts.clientID || !opts.clientSecret || !opts.audience) {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error(
+        'Failed to initialize Okta auth provider, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars',
       );
-      continue;
     }
 
-    envProviders[env] = new OAuthProvider(new OktaAuthProvider(opts), {
-      disableRefresh: false,
-      providerId,
-      secure,
-      baseUrl,
-      appOrigin,
-      tokenIssuer,
-    });
+    logger.warn(
+      'Okta auth provider disabled, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars to enable',
+    );
+    return undefined;
   }
-
-  return new EnvironmentHandler(providerId, envProviders);
+  return new OAuthProvider(new OktaAuthProvider(opts), {
+    disableRefresh: false,
+    providerId,
+    secure,
+    baseUrl,
+    appOrigin,
+    tokenIssuer,
+  });
 }

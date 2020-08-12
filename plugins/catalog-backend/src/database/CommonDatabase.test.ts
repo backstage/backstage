@@ -88,6 +88,31 @@ describe('CommonDatabase', () => {
     expect(locations).toEqual([output]);
     const location = await db.location(locations[0].id);
     expect(location).toEqual(output);
+
+    // If we add 2 new update log events,
+    // this should not result in location duplication
+    // due to incorrect join in DB
+    await db.addLocationUpdateLogEvent(
+      'dd12620d-0436-422f-93bd-929aa0788123',
+      DatabaseLocationUpdateLogStatus.SUCCESS,
+    );
+
+    // Have a second in-between
+    // To avoid having same timestamp on event
+    await new Promise(res => setTimeout(res, 1000));
+    await db.addLocationUpdateLogEvent(
+      'dd12620d-0436-422f-93bd-929aa0788123',
+      DatabaseLocationUpdateLogStatus.FAIL,
+    );
+
+    expect(await db.locations()).toEqual([
+      {
+        ...output,
+        status: DatabaseLocationUpdateLogStatus.FAIL,
+        timestamp: expect.any(String),
+      },
+    ]);
+
     await db.transaction(tx => db.removeLocation(tx, locations[0].id));
 
     await expect(db.locations()).resolves.toEqual([]);

@@ -117,7 +117,7 @@ const ConnectedAuditView: FC<{}> = () => {
   const params = useParams() as { id: string };
   const classes = useStyles();
 
-  const { loading, error, value: nextValue } = useAsync<Website>(
+  const { loading, error, value: nextValue } = useAsync(
     async () => await lighthouseApi.getWebsiteForAuditId(params.id),
     [params.id],
   );

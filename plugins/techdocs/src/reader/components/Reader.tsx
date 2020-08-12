@@ -91,6 +91,10 @@ export const Reader = () => {
       return; // Page isn't ready
     }
 
+    if (state.value instanceof Error) {
+      return; // Docs not found
+    }
+
     // Pre-render
     const transformedElement = transformer(state.value as string, [
       sanitizeDOM(),

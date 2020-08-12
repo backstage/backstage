@@ -20,15 +20,26 @@ import mockFetch from 'jest-fetch-mock';
 import SentryPluginPage from './SentryPluginPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import {
+  ApiProvider,
+  ApiRegistry,
+  errorApiRef,
+  configApiRef,
+} from '@backstage/core';
 
 const errorApi = { post: () => {} };
+const ConfigApi = { getString: () => 'test' };
 
 describe('SentryPluginPage', () => {
   it('should render header and time switched', () => {
     mockFetch.mockResponse('{}');
     const rendered = render(
-      <ApiProvider apis={ApiRegistry.from([[errorApiRef, errorApi]])}>
+      <ApiProvider
+        apis={ApiRegistry.from([
+          [errorApiRef, errorApi],
+          [configApiRef, ConfigApi],
+        ])}
+      >
         <ThemeProvider theme={lightTheme}>
           <SentryPluginPage />
         </ThemeProvider>

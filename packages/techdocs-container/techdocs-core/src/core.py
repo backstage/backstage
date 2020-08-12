@@ -16,16 +16,24 @@
 
 from mkdocs.plugins import BasePlugin, PluginCollection
 from mkdocs.theme import Theme
-
 from mkdocs.contrib.search import SearchPlugin
-
 from mkdocs_monorepo_plugin.plugin import MonorepoPlugin
+import tempfile
+import os
 
 
 class TechDocsCore(BasePlugin):
     def on_config(self, config):
+        fp = open(os.path.join(tempfile.gettempdir(), "techdocs_metadata.json"), "w+")
+        fp.write(
+            '{\n  "site_name": "{{ config.site_name }}",\n  "site_description": "{{ config.site_description }}"\n}'
+        )
+
         # Theme
-        config["theme"] = Theme(name="material")
+        config["theme"] = Theme(
+            name="material", static_templates=["techdocs_metadata.json",],
+        )
+        config["theme"].dirs.append(tempfile.gettempdir())
 
         # Plugins
         del config["plugins"]["techdocs-core"]

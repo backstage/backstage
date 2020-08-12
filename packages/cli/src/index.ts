@@ -23,17 +23,6 @@ const main = (argv: string[]) => {
   program.name('backstage-cli').version(version);
 
   program
-    .command('create-app')
-    .description('Creates a new app in a new directory')
-    .option(
-      '--skip-install',
-      'Skip the install and builds steps after creating the app',
-    )
-    .action(
-      lazyAction(() => import('./commands/create-app/createApp'), 'default'),
-    );
-
-  program
     .command('app:build')
     .description('Build an app for a production release')
     .option('--stats', 'Write bundle stats to output directory')

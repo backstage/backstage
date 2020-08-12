@@ -74,8 +74,6 @@ yarn test:all # test all packages
 
 yarn clean # Remove all output folders and @backstage/cli cache
 
-yarn bundle # Build a production bundle of the example app
-
 yarn diff # Make sure all plugins are up to date with the latest plugin template
 
 yarn create-plugin # Create a new plugin

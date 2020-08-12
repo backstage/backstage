@@ -19,7 +19,8 @@ during their entire life cycle.
 Each Utility API is tied to an `ApiRef` instance, which is a global singleton
 object without any additional state or functionality, its only purpose is to
 reference Utility APIs. `ApiRef`s are create using `createApiRef`, which is
-exported by `@backstage/core`. There are many predefined Utility APIs defined in
+exported by `@backstage/core`. There are many
+[predefined Utility APIs](../reference/utility-apis/README.md) defined in
 `@backstage/core`, and they're all exported with a name of the pattern
 `*ApiRef`, for example `errorApiRef`.
 

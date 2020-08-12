@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { PassThrough } from 'stream';
-import winston from 'winston';
+import * as winston from 'winston';
 import { JsonValue } from '@backstage/config';
 
 export const makeLogStream = (meta: Record<string, JsonValue>) => {
@@ -23,7 +23,10 @@ export const makeLogStream = (meta: Record<string, JsonValue>) => {
   // Create an empty stream to collect all the log lines into
   // one variable for the API.
   const stream = new PassThrough();
-  stream.on('data', chunk => log.push(chunk.toString()));
+  stream.on('data', chunk => {
+    const textValue = chunk.toString().trim();
+    if (textValue?.length > 1) log.push(textValue);
+  });
 
   const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',

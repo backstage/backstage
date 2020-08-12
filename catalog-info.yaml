@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  description: |
+    Backstage is an open-source developer portal that puts the developer experience first. 
+  annotations:
+    github.com/project-slug: spotify/backstage
+    backstage.io/github-actions-id: spotify/backstage
+spec:
+  type: library
+  owner: Spotify
+  lifecycle: experimental

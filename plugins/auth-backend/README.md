@@ -27,9 +27,27 @@ export AUTH_GOOGLE_CLIENT_SECRET=x
 
 ### Github
 
+#### Creating a GitHub OAuth application
+
+Follow this link, [Create new OAuth App](https://github.com/settings/applications/new).
+
+1. Set Application Name to `backstage-dev` or something along those lines.
+1. You can set the Homepage URL to whatever you want to.
+1. The Authorization Callback URL should match the redirect URI set in Backstage.
+   1. Set this to `http://localhost:7000/auth/github` for local development.
+   1. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/auth/github` for non-local deployments.
+
 ```bash
 export AUTH_GITHUB_CLIENT_ID=x
 export AUTH_GITHUB_CLIENT_SECRET=x
+```
+
+for github enterprise:
+
+```bash
+export AUTH_GITHUB_CLIENT_ID=x
+export AUTH_GITHUB_CLIENT_SECRET=x
+export AUTH_GITHUB_ENTERPRISE_INSTANCE_URL=https://x
 ```
 
 ### Gitlab

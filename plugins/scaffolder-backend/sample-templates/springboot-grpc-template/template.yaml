@@ -1,0 +1,32 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: springboot-template
+  title: Spring Boot GRPC Service
+  description: Create a simple microservice using gRPC and Spring Boot Java
+  tags:
+    - Recommended
+    - Java
+spec:
+  owner: service@example.com
+  templater: cookiecutter
+  type: service
+  path: '.'
+  schema:
+    required:
+      - component_id
+      - description
+    properties:
+      component_id:
+        title: Name
+        type: string
+        description: Unique name of the component
+      description:
+        title: Description
+        type: string
+        description: Description of the component
+      http_port:
+        title: Port
+        type: integer
+        default: 8080
+        description: The port to run the GRPC service on

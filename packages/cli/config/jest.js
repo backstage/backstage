@@ -38,7 +38,7 @@ async function getConfig() {
     transform: {
       '\\.esm\\.js$': require.resolve('jest-esm-transformer'),
       '\\.(js|jsx|ts|tsx)': require.resolve('ts-jest'),
-      '\\.(bmp|gif|jpe|png|frag|xml|svg)': require.resolve(
+      '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg)': require.resolve(
         './jestFileTransform.js',
       ),
     },
@@ -49,7 +49,7 @@ async function getConfig() {
     // Default behaviour is to not apply transforms for node_modules, but we still want
     // to apply the esm-transformer to .esm.js files, since that's what we use in backstage packages.
     transformIgnorePatterns: [
-      '/node_modules/(?!.*\\.(?:esm\\.js|bmp|gif|jpe|png|frag|xml|svg)$)',
+      '/node_modules/(?!.*\\.(?:esm\\.js|bmp|gif|jpg|jpeg|png|frag|xml|svg)$)',
     ],
   };
 

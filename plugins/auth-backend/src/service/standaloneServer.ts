@@ -18,9 +18,12 @@ import Knex from 'knex';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { ConfigReader } from '@backstage/config';
-import { loadConfig } from '@backstage/config-loader';
 import { createRouter } from './router';
-import { createServiceBuilder, useHotMemoize } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  useHotMemoize,
+  loadBackendConfig,
+} from '@backstage/backend-common';
 
 export interface ServerOptions {
   logger: Logger;
@@ -30,7 +33,7 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'auth-backend' });
-  const config = ConfigReader.fromConfigs(await loadConfig());
+  const config = ConfigReader.fromConfigs(await loadBackendConfig());
 
   const database = useHotMemoize(module, () => {
     const knex = Knex({

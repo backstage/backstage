@@ -17,6 +17,9 @@
 import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
+import { Config } from '@backstage/config';
+import { OAuthProvider } from '../lib/OAuthProvider';
+import { SamlAuthProvider } from './saml/provider';
 
 export type OAuthProviderOptions = {
   /**
@@ -200,14 +203,24 @@ export interface AuthProviderRouteHandlers {
    * @param {express.Response} res
    */
   logout?(req: express.Request, res: express.Response): Promise<void>;
+
+  /**
+   *(Optional) A method to identify the environment Context of the Request
+   *
+   *Request
+   *- contains the environment context information encoded in the request
+   *  @param {express.Request} req
+   */
+  identifyEnv?(req: express.Request): string | undefined;
 }
 
 export type AuthProviderFactory = (
   globalConfig: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
+  env: string,
+  envConfig: Config,
   logger: Logger,
   issuer: TokenIssuer,
-) => AuthProviderRouteHandlers;
+) => OAuthProvider | SamlAuthProvider | undefined;
 
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
@@ -328,3 +341,14 @@ export type SAMLProviderConfig = {
 export type SAMLEnvironmentProviderConfig = {
   [key: string]: SAMLProviderConfig;
 };
+
+export type OAuthState = {
+  /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
+   */
+  nonce: string;
+  env: string;
+};
+
+export type EnvironmentIdentifierFn = (
+  req: express.Request,
+) => string | undefined;

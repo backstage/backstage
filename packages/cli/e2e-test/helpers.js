@@ -76,6 +76,12 @@ function handleError(err) {
   }
 }
 
+/**
+ * Waits for fn() to be true
+ * Checks every 100ms
+ * .cancel() is available
+ * @returns {Promise} Promise of resolution
+ */
 function waitFor(fn) {
   return new Promise(resolve => {
     const handle = setInterval(() => {

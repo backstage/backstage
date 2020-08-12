@@ -1,0 +1,25 @@
+app:
+  title: Scaffolded Backstage App
+  baseUrl: http://localhost:3000
+
+organization:
+  name: Acme Corporation
+
+backend:
+  baseUrl: http://localhost:7000
+  listen: 0.0.0.0:7000
+  cors:
+    origin: http://localhost:3000
+    methods: [GET, POST, PUT, DELETE]
+    credentials: true
+
+proxy:
+  '/test':
+    target: 'https://example.com'
+    changeOrigin: true
+
+techdocs:
+  storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+
+auth:
+  providers: {}

@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: {{cookiecutter.component_id}}
+  description: {{cookiecutter.description}}
+  annotations:
+    github.com/project-slug: {{cookiecutter.storePath}}
+    backstage.io/github-actions-id: {{cookiecutter.storePath}}
+spec:
+  type: service
+  lifecycle: experimental
+  owner: {{cookiecutter.owner}}

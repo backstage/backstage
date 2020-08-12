@@ -1,0 +1,34 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: create-react-app-template
+  title: Create React App Template
+  description: Create a new CRA website project
+  tags:
+    - Experimental
+    - React
+    - CRA
+spec:
+  owner: web@example.com
+  templater: cra
+  type: website
+  path: '.'
+  
+  schema:
+    required: 
+      - component_id
+      - use_typescript
+    properties:
+      component_id:
+        title: Name
+        type: string
+        description: Unique name of the component
+      description:
+        title: Description
+        type: string
+        description: Description of the component
+      use_typescript:
+        title:  Use Typescript
+        type: boolean
+        description: Include typescript
+        default: true

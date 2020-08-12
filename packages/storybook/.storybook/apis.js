@@ -20,9 +20,13 @@ import {
   oktaAuthApiRef,
   Auth0Auth,
   auth0AuthApiRef,
+  configApiRef,
+  ConfigReader,
 } from '@backstage/core';
 
 const builder = ApiRegistry.builder();
+
+builder.add(configApiRef, ConfigReader.fromConfigs([]));
 
 const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 

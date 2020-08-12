@@ -16,20 +16,21 @@
 import { SentryIssue } from './sentry-issue';
 import { SentryApi } from './sentry-api';
 
-const API_HOST = process.env.API_HOST || 'http://localhost:7000';
-const API_BASE_URL = `${API_HOST}/sentry/api/0/projects/`;
-
 export class ProductionSentryApi implements SentryApi {
   private organization: string;
+  private backendBaseUrl: string;
 
-  constructor(organization: string) {
+  constructor(organization: string, backendBaseUrl: string) {
     this.organization = organization;
+    this.backendBaseUrl = backendBaseUrl;
   }
 
   async fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]> {
     try {
+      const apiBaseUrl = `${this.backendBaseUrl}/sentry/api/0/projects/`;
+
       const response = await fetch(
-        `${API_BASE_URL}/${this.organization}/${project}/issues/?statsFor=${statsFor}`,
+        `${apiBaseUrl}/${this.organization}/${project}/issues/?statsFor=${statsFor}`,
       );
 
       if (response.status >= 400 && response.status < 600) {

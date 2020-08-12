@@ -4,6 +4,7 @@ site_description: 'Main documentation for Backstage features and platform APIs'
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
+      - Backstage architecture: 'overview/architecture-overview.md'
       - Architecture and terminology: 'overview/architecture-terminology.md'
       - Roadmap: 'overview/roadmap.md'
   - Getting started:
@@ -61,6 +62,11 @@ nav:
       - Publishing:
           - Open source and NPM: 'plugins/publishing.md'
           - Private/internal (non-open source): 'plugins/publish-private.md'
+  - Configuration:
+      - Overview: 'conf/index.md'
+      - Reading Configuration: 'conf/reading.md'
+      - Writing Configuration: 'conf/writing.md'
+      - Defining Configuration: 'conf/defining.md'
   - Authentication and identity:
       - Overview: 'auth/index.md'
       - Add auth provider: 'auth/add-auth-provider.md'
@@ -90,6 +96,8 @@ nav:
       - ADR004 - Module Export Structure: 'architecture-decisions/adr004-module-export-structure.md'
       - ADR005 - Catalog Core Entities: 'architecture-decisions/adr005-catalog-core-entities.md'
       - ADR006 - Avoid React.FC and React.SFC: 'architecture-decisions/adr006-avoid-react-fc.md'
+      - ADR007 - Use MSW for Network Request Mocking: 'architecture-decisions/adr007-use-msw-to-mock-service-requests.md'
+      - ADR008 - Default Catalog File Name: 'architecture-decisions/adr008-default-catalog-file-name.md'
   - Contribute: '../CONTRIBUTING.md'
   - Support: 'overview/support.md'
   - FAQ: FAQ.md

@@ -6,6 +6,7 @@ better yet, a pull request.
 
 - Overview
   - [What is Backstage?](overview/what-is-backstage.md)
+  - [Backstage architecture](overview/architecture-overview.md)
   - [Architecture and terminology](overview/architecture-terminology.md)
   - [Roadmap](overview/roadmap.md)
   - Getting started
@@ -42,11 +43,7 @@ better yet, a pull request.
       - [Overview](features/techdocs/README.md)
       - [Getting Started](features/techdocs/getting-started.md)
       - [Concepts](features/techdocs/concepts.md)
-      - [Reading Documentation](features/techdocs/reading-documentation.md)
-      - [Writing Documentation](features/techdocs/writing-documentation.md)
-      - [Publishing Documentation](features/techdocs/publishing-documentation.md)
-      - [Contributing](features/techdocs/contributing.md)
-      - [Debugging](features/techdocs/debugging.md)
+      - [Creating and Publishing Documentation](features/techdocs/creating-and-publishing.md)
       - [FAQ](features/techdocs/FAQ.md)
   - Plugins
     - [Overview](plugins/index.md)
@@ -63,6 +60,11 @@ better yet, a pull request.
     - Publishing
       - [Open source and NPM](plugins/publishing.md)
       - [Private/internal (non-open source)](plugins/publish-private.md)
+  - Configuration
+    - [Overview](conf/index.md)
+    - [Reading Configuration](conf/reading.md)
+    - [Writing Configuration](conf/writing.md)
+    - [Defining Configuration](conf/defining.md)
   - Authentication and identity
     - [Overview](auth/index.md)
     - [Add auth provider](auth/add-auth-provider.md)
@@ -76,7 +78,8 @@ better yet, a pull request.
     - [Figma resources](dls/figma.md)
   - API references
     - TypeScript API
-      - [Utilities](api/utility-apis.md)
+      - [Utility APIs](api/utility-apis.md)
+      - [Utility API References](reference/utility-apis/README.md)
       - [createPlugin](reference/createPlugin.md)
       - [createPlugin-feature-flags](reference/createPlugin-feature-flags.md)
       - [createPlugin-router](reference/createPlugin-router.md)
@@ -92,6 +95,8 @@ better yet, a pull request.
     - [ADR004 - Module Export Structure](architecture-decisions/adr004-module-export-structure.md)
     - [ADR005 - Catalog Core Entities](architecture-decisions/adr005-catalog-core-entities.md)
     - [ADR006 - Avoid React.FC and React.SFC](architecture-decisions/adr006-avoid-react-fc.md)
+    - [ADR007 - Use MSW for Mocking Network Requests](architecture-decisions/adr007-use-msw-to-mock-service-requests.md)
+    - [ADR008 - Default Catalog File Name](architecture-decisions/adr008-default-catalog-file-name.md)
   - [Contribute](../CONTRIBUTING.md)
   - [Support](overview/support.md)
   - [FAQ](FAQ.md)
