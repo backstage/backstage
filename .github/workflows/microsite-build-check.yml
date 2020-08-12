@@ -1,17 +1,14 @@
-name: Deploy Microsite and Storybook
+name: Build microsite
 
 on:
-  push:
-    branches:
-      - master
+  pull_request:
     paths:
-      - '.github/workflows/microsite-with-storybook-deploy.yml'
-      - 'packages/storybook/**'
-      - 'packages/core/src/**'
+      - '.github/workflows/microsite-build-check.yml'
       - 'microsite/**'
+      - 'docs/**'
 
 jobs:
-  deploy-microsite-and-storybook:
+  build-microsite:
     runs-on: ubuntu-latest
 
     strategy:
@@ -53,19 +50,3 @@ jobs:
 
       - name: build microsite
         run: yarn workspace backstage-microsite build
-
-      - name: build storybook
-        run: yarn workspace storybook build-storybook
-
-      - name: move storybook dist into microsite
-        run: mv packages/storybook/dist/ microsite/build/backstage/storybook
-
-      - name: Check the build output
-        run: ls microsite/build/backstage && ls microsite/build/backstage/storybook
-
-      - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@3.4.2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: ./microsite/build/backstage
