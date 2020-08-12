@@ -21,7 +21,10 @@ import { paths } from '../../lib/paths';
 import { serveBundle } from '../../lib/bundler';
 
 export default async (cmd: Command) => {
-  const appConfigs = await loadConfig({ rootPath: paths.targetRoot });
+  const appConfigs = await loadConfig({
+    env: 'development',
+    rootPaths: [paths.targetRoot, paths.targetDir],
+  });
   const waitForExit = await serveBundle({
     entry: 'src/index',
     checksEnabled: cmd.check,

@@ -25,8 +25,11 @@ import {
 } from './lib';
 
 export type LoadConfigOptions = {
-  // Root path for search for app-config.yaml
-  rootPath: string;
+  // Root paths to search for config files. Config from earlier paths has lower priority.
+  rootPaths: string[];
+
+  // The environment that we're loading config for, e.g. 'development', 'production'.
+  env: string;
 
   // Whether to read secrets or omit them, defaults to false.
   shouldReadSecrets?: boolean;
@@ -35,6 +38,7 @@ export type LoadConfigOptions = {
 class Context {
   constructor(
     private readonly options: {
+      secretPaths: Set<string>;
       env: { [name in string]?: string };
       rootPath: string;
       shouldReadSecrets: boolean;
@@ -45,11 +49,22 @@ class Context {
     return this.options.env;
   }
 
+  skip(path: string): boolean {
+    if (this.options.shouldReadSecrets) {
+      return false;
+    }
+    return this.options.secretPaths.has(path);
+  }
+
   async readFile(path: string): Promise<string> {
     return fs.readFile(resolvePath(this.options.rootPath, path), 'utf8');
   }
 
-  async readSecret(desc: JsonObject): Promise<string | undefined> {
+  async readSecret(
+    path: string,
+    desc: JsonObject,
+  ): Promise<string | undefined> {
+    this.options.secretPaths.add(path);
     if (!this.options.shouldReadSecrets) {
       return undefined;
     }
@@ -63,15 +78,16 @@ export async function loadConfig(
 ): Promise<AppConfig[]> {
   const configs = [];
 
-  configs.push(...readEnv(process.env));
-
   const configPaths = await resolveStaticConfig(options);
 
   try {
+    const secretPaths = new Set<string>();
+
     for (const configPath of configPaths) {
       const config = await readConfigFile(
         configPath,
         new Context({
+          secretPaths,
           env: process.env,
           rootPath: dirname(configPath),
           shouldReadSecrets: Boolean(options.shouldReadSecrets),
@@ -85,6 +101,8 @@ export async function loadConfig(
       `Failed to read static configuration file: ${error.message}`,
     );
   }
+
+  configs.push(...readEnv(process.env));
 
   return configs;
 }
