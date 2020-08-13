@@ -17,12 +17,21 @@
 
 const { resolve: resolvePath, dirname } = require('path');
 const fs = require('fs-extra');
-const fetch = require('node-fetch');
 const recursive = require('recursive-readdir');
 
 const projectRoot = resolvePath(__dirname, '..');
 
 async function verifyUrl(basePath, url) {
+  // Avoid having absolute URL links within docs/, so that links work on the site
+  if (
+    url.match(
+      /https:\/\/github.com\/spotify\/backstage\/(tree|blob)\/master\/docs\//,
+    ) &&
+    basePath.match(/^(?:docs|microsite)\//)
+  ) {
+    return { url, basePath, problem: 'absolute' };
+  }
+
   url = url.replace(/#.*$/, '');
   url = url.replace(
     /https:\/\/github.com\/spotify\/backstage\/(tree|blob)\/master/,
@@ -39,7 +48,7 @@ async function verifyUrl(basePath, url) {
       : resolvePath(dirname(resolvePath(projectRoot, basePath)), url);
     const exists = await fs.pathExists(path);
     if (!exists) {
-      return { url, basePath };
+      return { url, basePath, problem: 'missing' };
     }
   }
 
@@ -81,8 +90,14 @@ async function main() {
 
   if (badUrls.length) {
     console.log(`Found ${badUrls.length} bad links within repo`);
-    for (const { url, basePath } of badUrls) {
-      console.error(`Unable to reach ${url}, linked from ${basePath}`);
+    for (const { url, basePath, problem } of badUrls) {
+      if (problem === 'missing') {
+        console.error(`Unable to reach ${url}, linked from ${basePath}`);
+      } else if (problem === 'absolute') {
+        console.error(`Link to docs/ should be replaced by a relative URL`);
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
+      }
     }
     process.exit(1);
   }

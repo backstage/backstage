@@ -28,6 +28,13 @@ More specifically, the Service Catalog enables two main use-cases:
 2. Makes all the software in your company, and who owns it, discoverable. No
    more orphan software hiding in the dark corners of your software ecosystem.
 
+## Getting Started
+
+The Software Catalog is available to browse on the start page at `/`. If you've
+followed [Installing in your Backstage App](./installation.md) in your separate
+App or [Getting Started with Backstage](../../getting-started) for this repo,
+you should be able to browse the catalog at `http://localhost:3000`.
+
 ![](../../assets/software-catalog/service-catalog-home.png)
 
 ## Adding components to the catalog
@@ -45,7 +52,7 @@ There are 3 ways to add components to the catalog:
 ### Manually register components
 
 Users can register new components by going to `/create` and clicking the
-**REGSITER EXISTING COMPONENT** button:
+**REGISTER EXISTING COMPONENT** button:
 
 ![](bsc-register-1.png)
 
@@ -81,7 +88,7 @@ them, and do so using their normal Git workflow.
 Once the change has been merged, Backstage will automatically show the updated
 metadata in the service catalog after a short while.
 
-## Finding software in the catlog
+## Finding software in the catalog
 
 By default the service catalog shows components owned by the team of the logged
 in user. But you can also switch to _All_ to see all the components across your

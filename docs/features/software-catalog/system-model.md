@@ -8,7 +8,7 @@ software and resources leads to a better Backstage experience.
 
 _This description originates from
 [this RFC](https://github.com/spotify/backstage/issues/390). Note that some of
-the concpets are not yet supported in Backstage._
+the concepts are not yet supported in Backstage._
 
 ## Concepts
 

@@ -25,6 +25,7 @@ if (!isLocal) {
 } else {
   require('ts-node').register({
     transpileOnly: true,
+    project: path.resolve(__dirname, '../../../tsconfig.json'),
     compilerOptions: {
       module: 'CommonJS',
     },
