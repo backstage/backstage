@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-import { ApiRegistry, ConfigApi } from '@backstage/core';
+import {
+  ApiRegistry,
+  alertApiRef,
+  errorApiRef,
+  AlertApiForwarder,
+  ConfigApi,
+  ErrorApiForwarder,
+  ErrorAlerter,
+  oauthRequestApiRef,
+  OAuthRequestManager,
+  storageApiRef,
+  WebStorage,
+} from '@backstage/core';
 
 import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
@@ -27,6 +39,15 @@ export const apis = (config: ConfigApi) => {
   const backendUrl = config.getString('backend.baseUrl');
 
   const builder = ApiRegistry.builder();
+
+  const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
+  const errorApi = builder.add(
+    errorApiRef,
+    new ErrorAlerter(alertApi, new ErrorApiForwarder()),
+  );
+
+  builder.add(storageApiRef, WebStorage.create({ errorApi }));
+  builder.add(oauthRequestApiRef, new OAuthRequestManager());
 
   builder.add(
     catalogApiRef,
