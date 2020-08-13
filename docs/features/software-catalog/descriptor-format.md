@@ -17,9 +17,14 @@ humans. However, the structure and semantics is the same in both cases.
 - [Overall Shape Of An Entity](#overall-shape-of-an-entity)
 - [Common to All Kinds: The Envelope](#common-to-all-kinds-the-envelope)
 - [Common to All Kinds: The Metadata](#common-to-all-kinds-the-metadata)
+- [Kind: Domain](#kind-domain)
+- [Kind: System](#kind-system)
 - [Kind: Component](#kind-component)
 - [Kind: Template](#kind-template)
 - [Kind: API](#kind-api)
+- [Kind: APIImplementation](#kind-apiimplementation)
+- [Kind: APIConsumption](#kind-apiconsumption)
+- [Kind: APIExposition](#kind-apiexposition)
 
 ## Overall Shape Of An Entity
 
@@ -232,6 +237,118 @@ The `backstage.io/` prefix is reserved for use by Backstage core components.
 
 Values can be of any length, but are limited to being strings.
 
+## Kind: Domain
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Domain`                |
+
+A Domain groups a collection of systems that share terminology, domain models,
+business purpose, or documentation, i.e. form a bounded context. 
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: artists
+  description: Everything about artists
+spec:
+  owner: artist-relations@example.com
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `Domain`, respectively.
+
+### `spec.owner` [required]
+
+// TODO: decide whether a Domain requires an owner. We think that it is valuable to know who is the 
+//       owner of a domain. This might be the expert with the domain knowledge that can assess
+//       requirements or design solutions. From our understanding that might relate to a "tribe".
+
+The owner of the domain, e.g. `artist-relations@example.com`. This field is
+required.
+
+In Backstage, the owner of a domain is the singular entity (commonly a team)
+that bears ultimate responsibility for the domain, and has the authority and
+capability to develop and maintain it. This will be the point of contact if
+something goes wrong, or if features are to be requested. The main purpose of
+this field is for display purposes in Backstage, so that people looking at
+catalog items can get an understanding of to whom this component belongs. It is
+not to be used by automated processes to for example assign authorization in
+runtime systems. There may be others that also develop or otherwise touch the
+component, but there will always be one ultimate owner.
+
+Apart from being a string, the software catalog leaves the format of this field
+open to implementers to choose. Most commonly, it is set to the ID or email of a
+group of people in an organizational structure.
+
+## Kind: System
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `System`                |
+
+A system is a collection of resources and components that exposes one or several APIs.
+It is viewed as abstraction level that provides potential consumers insights into exposed
+features without needing a too detailed view into the details of all Components. This also
+gives the owning team the possibility to decide about published artifacts and APIs.  
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: artist-engagement-portal
+  description: Handy tools to keep artists in the loop
+spec:
+  owner: artist-relations@example.com
+  domain: artists
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `System`, respectively.
+
+### `spec.owner` [required]
+
+The owner of the System, e.g. `artist-relations@example.com`. This field is
+required.
+
+In Backstage, the owner of a system is the singular entity (commonly a team)
+that bears ultimate responsibility for the system, and has the authority and
+capability to develop and maintain it. They will be the point of contact if
+something goes wrong, or if features are to be requested. Components and
+resources in a system are typically owned by the same team and are expected
+to co-evolve. The main purpose of this field is for display purposes in
+Backstage, so that people looking at catalog items can get an understanding
+of to whom this system belongs. It is not to be used by automated processes
+to for example assign authorization in runtime systems.
+
+Apart from being a string, the software catalog leaves the format of this field
+open to implementers to choose. Most commonly, it is set to the ID or email of a
+group of people in an organizational structure.
+
+### `spec.domain` [optional]
+
+The link to the Domain that this System is part of, e.g. `artists`. This field
+is optional and references another entity of `kind` `Domain`.
+
 ## Kind: Component
 
 Describes the following entity kind:
@@ -258,6 +375,7 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations@example.com
+  belongsToSystem: artists
   implementsApis:
     - artist-api
 ```
@@ -320,6 +438,11 @@ Apart from being a string, the software catalog leaves the format of this field
 open to implementers to choose. Most commonly, it is set to the ID or email of a
 group of people in an organizational structure.
 
+### `spec.belongsToSystem` [optional]
+
+A link to the System entity that this component is part of.
+
+// TODO: Remove this in favor of kind: APIImplementation 
 ### `spec.implementsApis` [optional]
 
 Links APIs that are implemented by the component, e.g. `artist-api`. This field
@@ -511,3 +634,131 @@ The current set of well-known and common values for this field is:
 
 The definition of the API, based on the format defined by `spec.type`. This
 field is required.
+
+## Kind: APIImplementation
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `APIImplementation`     |
+
+An `implements` relation between a Component and an API. It is used to tell
+that a Component implements an API and provides it to others.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: APIImplementation
+metadata:
+  name: artist-web-api
+spec:
+  implementingComponent: artists-web
+  implementedApi: artists-api
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `APIImplementation`, respectively.
+
+### `spec.implementingComponent` [required]
+
+Links a Component that is implementing the linked API, e.g. `artists-web`. This field
+is required. The value references the name of another entity of `kind` `Component`.
+
+### `spec.implementedApi` [required]
+
+Links an API that is implemented by the linked Component, e.g. `artist-api`. This field
+is required. The value references the name of another entity of `kind` `API`.
+
+## Kind: APIConsumption
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `APIConsumption`        |
+
+A `consumes` relation between a Component and an API. It is used to tell
+that a Component consumes an API.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: APIConsumption
+metadata:
+  name: artist-ui-api
+spec:
+  consumingComponent: artists-ui
+  consumingApi: artists-api
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `APIConsumption`, respectively.
+
+### `spec.consumingComponent` [required]
+
+Links a Component that is implementing the linked API, e.g. `artists-web`. This field
+is required. The value references the name of another entity of `kind` `Component`.
+
+### `spec.consumingApi` [required]
+
+Links an API that is implemented by the linked Component, e.g. `artist-api`. This field
+is required. The value references the name of another entity of `kind` `API`.
+
+## Kind: APIExposition
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `APIExposition`         |
+
+An `exposes` relation between a System and an API. It is used to tell that
+a System exposes an API. This entity might also tell meta information about
+the exposition. This might include url endpoints.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: APIExposition
+metadata:
+  name: artist-ui-api
+  labels:
+    example.com/url: https://ui.example.com
+    example.com/stage: production
+    example.com/sla-class: high
+spec:
+  exposingSystem: artist-engagement-portal
+  exposedApi: artists-api
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `APIExposition`, respectively.
+
+### `spec.exposingSystem` [required]
+
+Links a System that is exposes the linked API, e.g. `artist-engagement-portal`. This
+field is required. The value references the name of another entity of `kind` `System`.
+
+### `spec.exposedApi` [required]
+
+Links an API that is exposed by the linked System, e.g. `artist-api`. This field
+is required. The value references the name of another entity of `kind` `API`.
