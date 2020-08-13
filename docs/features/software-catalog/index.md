@@ -25,6 +25,13 @@ More specifically, the Service Catalog enables two main use-cases:
 2. Makes all the software in your company, and who owns it, discoverable. No
    more orphan software hiding in the dark corners of your software ecosystem.
 
+## Getting Started
+
+The Software Catalog is available to browse on the start page at `/`. If you've
+followed [Installing in your Backstage App](./installation.md) in your separate
+App or [Getting Started with Backstage](../../getting-started) for this repo,
+you should be able to browse the catalog at `http://localhost:3000`.
+
 ![](service-catalog-home.png)
 
 ## Adding components to the catalog

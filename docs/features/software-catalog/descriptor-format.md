@@ -328,10 +328,10 @@ names of other entities of the `kind` `API`.
 
 Describes the following entity kind:
 
-| Field                | Value                   |
-| -------------------- | ----------------------- |
-| `apiVersion`         | `backstage.io/v1alpha1` |
-| `Kind: Templatekind` | `Template`              |
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Template`              |
 
 A Template describes a skeleton for use with the Scaffolder. It is used for
 describing what templating library is supported, and also for documenting the
