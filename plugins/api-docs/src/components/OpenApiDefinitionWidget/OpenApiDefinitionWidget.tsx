@@ -32,10 +32,9 @@ export const OpenApiDefinitionWidget: FC<{
 
   // TODO: This looks fine in the light theme, but wrong in dark mode. We need a custom stylesheet for swagger-ui.
   // Till then, we add a white background to the swagger-ui to make it usable in dark mode.
-  // TODO: the typings do not allow a string while the component does (https://github.com/DefinitelyTyped/DefinitelyTyped/pull/46654)
   return (
     <div style={{ backgroundColor: 'white' }}>
-      <SwaggerUI spec={(def as any) as object} />
+      <SwaggerUI spec={def} />
     </div>
   );
 };

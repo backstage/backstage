@@ -4785,10 +4785,10 @@
   dependencies:
     "@types/superagent" "*"
 
-"@types/swagger-ui-react@^3.23.2":
-  version "3.23.2"
-  resolved "https://registry.npmjs.org/@types/swagger-ui-react/-/swagger-ui-react-3.23.2.tgz#153eb466785763b514459a300772a43257a3c16b"
-  integrity sha512-EMD/EHdGQ6rBjfKE05x2syyw4kMZiA0qRIlv0q9EpQWYWWBhHwffSR0ljSHCy+pbX8zdOct08w8hVA0V0SAo0Q==
+"@types/swagger-ui-react@^3.23.3":
+  version "3.23.3"
+  resolved "https://registry.npmjs.org/@types/swagger-ui-react/-/swagger-ui-react-3.23.3.tgz#56bcf3872d8655500e6d51d29ba3916397806fa3"
+  integrity sha512-JKWYWAliabBxMxURagpRR6RHLEZxxp2W2tf1IN7ftqye6dIxC2e4mh4eZzARPG8+2OpzKlodHIOIwueFTYWaag==
   dependencies:
     "@types/react" "*"
 
