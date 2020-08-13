@@ -101,7 +101,7 @@ A good pattern for reading optional configuration values is to use the `??`
 operator. For example:
 
 ```ts
-const title = config.getString('my-plugin.title') ?? 'My Plugin';
+const title = config.getOptionalString('my-plugin.title') ?? 'My Plugin';
 ```
 
 To read required configuration, simply use the methods without `Optional`, for
