@@ -27,7 +27,6 @@ import {
   getCodeownersFilePath,
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
-import { version } from '../../lib/version';
 import { Task, templatingTask } from '../../lib/tasks';
 
 const exec = promisify(execCb);
@@ -227,6 +226,7 @@ export default async () => {
   const tempDir = resolvePath(os.tmpdir(), answers.id);
   const pluginDir = paths.resolveTargetRoot('plugins', answers.id);
   const ownerIds = parseOwnerIds(answers.owner);
+  const { version } = await fs.readJson(paths.resolveTargetRoot('lerna.json'));
 
   Task.log();
   Task.log('Creating the plugin...');
