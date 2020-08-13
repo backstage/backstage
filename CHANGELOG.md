@@ -8,6 +8,18 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 > Collect changes for the next release below
 
+### @backstage/create-app
+
+- Many plugins have been added to the catalog and will for now be required to be added to separate apps as well. This will be solved as [#1536](https://github.com/spotify/backstage/issues/1536) gets sorted out, but for now you may need to install some plugins just to get pages to work.
+
+### @backstage/catalog-backend
+
+- Added the possibility to add static locations via `app-config.yaml`. This changed the signature of `new LocationReaders(logger)` inside `packages/backend/src/plugins/catalog.ts` to `new LocationReaders({config, logger})`. [#1890](https://github.com/spotify/backstage/pull/1890)
+
+### @backstage/theme
+
+- Changed the type signature of the palette, removing `sidebar: string` and adding `navigation: { background: string; indicator: string}`. [#1880](https://github.com/spotify/backstage/pull/1880)
+
 ## v0.1.1-alpha.18
 
 ### @backstage/catalog-backend

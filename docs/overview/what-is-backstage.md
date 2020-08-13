@@ -15,15 +15,15 @@ to create a streamlined development environment from end to end.
 
 Out of the box, Backstage includes:
 
-- [Backstage Service Catalog](/docs/features/software-catalog/index.md) for
+- [Backstage Service Catalog](../features/software-catalog/index.md) for
   managing all your software (microservices, libraries, data pipelines,
   websites, ML models, etc.)
-- [Backstage Software Templates](/docs/features/software-templates/index.md) for
+- [Backstage Software Templates](../features/software-templates/index.md) for
   quickly spinning up new projects and standardizing your tooling with your
   organization’s best practices
-- [Backstage TechDocs](/docs/features/techdocs) for making it easy to create,
-  maintain, find, and use technical documentation, using a "docs like code"
-  approach
+- [Backstage TechDocs](../features/techdocs/README.md) for making it easy to
+  create, maintain, find, and use technical documentation, using a "docs like
+  code" approach
 - Plus, a growing ecosystem of
   [open source plugins](https://github.com/spotify/backstage/tree/master/plugins)
   that further expand Backstage’s customizability and functionality
