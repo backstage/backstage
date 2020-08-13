@@ -49,7 +49,7 @@ Where `backendUrl` is the `backend.baseUrl` from config, i.e.
 `const backendUrl = config.getString('backend.baseUrl')`.
 
 The catalog components depend on a number of other
-[Utility APIs](/docs/api/utility-apis.md) to function, including at least the
+[Utility APIs](../../api/utility-apis.md) to function, including at least the
 `ErrorApi` and `StorageApi`. You can find an example of how to install these in
 your app
 [here](https://github.com/spotify/backstage/blob/61c3a7e5b750dc7c059ef16b188594d31b2c04c2/packages/app/src/apis.ts#L80).
