@@ -25,7 +25,7 @@ import type {
 } from './types';
 
 const bootstrapLocation = {
-  id: 'bootstrap',
+  id: expect.any(String),
   type: 'bootstrap',
   target: 'bootstrap',
   message: null,
@@ -98,7 +98,7 @@ describe('CommonDatabase', () => {
       expect.arrayContaining([output, bootstrapLocation]),
     );
     const location = await db.location(
-      locations.find(l => l.id !== 'bootstrap')!.id,
+      locations.find(l => l.type !== 'bootstrap')!.id,
     );
     expect(location).toEqual(output);
 

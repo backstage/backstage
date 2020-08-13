@@ -60,6 +60,9 @@ async function runPlain(cmd, options) {
     });
     return stdout.trim();
   } catch (error) {
+    if (error.stdout) {
+      process.stdout.write(error.stdout);
+    }
     if (error.stderr) {
       process.stderr.write(error.stderr);
     }

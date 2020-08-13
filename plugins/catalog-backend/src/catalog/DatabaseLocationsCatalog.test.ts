@@ -18,7 +18,7 @@ import { DatabaseManager } from '../database';
 import { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
 
 const bootstrapLocation = {
-  id: 'bootstrap',
+  id: expect.any(String),
   type: 'bootstrap',
   target: 'bootstrap',
 };
