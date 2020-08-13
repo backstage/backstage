@@ -48,7 +48,7 @@
     "@types/uuid": "^8.0.0",
     "@types/yup": "^0.28.2",
     "jest-fetch-mock": "^3.0.3",
-    "msw": "^0.19.5",
+    "msw": "^0.20.5",
     "supertest": "^4.0.2"
   },
   "files": [
