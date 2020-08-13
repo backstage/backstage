@@ -94,7 +94,7 @@ describe('BitbucketApiReaderProcessor', () => {
 
     for (const test of tests) {
       process.env.BITBUCKET_USERNAME = test.username;
-      process.env.BITBUCKET_PASSWORD = test.password;
+      process.env.BITBUCKET_APP_PASSWORD = test.password;
       const processor = new BitbucketApiReaderProcessor();
       expect(processor.getRequestOptions()).toEqual(test.expect);
     }

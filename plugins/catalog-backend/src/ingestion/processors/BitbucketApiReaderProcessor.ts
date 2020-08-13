@@ -21,7 +21,7 @@ import { LocationProcessor, LocationProcessorEmit } from './types';
 
 export class BitbucketApiReaderProcessor implements LocationProcessor {
   private username: string = process.env.BITBUCKET_USERNAME || '';
-  private password: string = process.env.BITBUCKET_PASSWORD || '';
+  private password: string = process.env.BITBUCKET_APP_PASSWORD || '';
 
   getRequestOptions(): RequestInit {
     const headers: HeadersInit = {};
