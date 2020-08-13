@@ -17,7 +17,7 @@ brand.
 No, but it can be! Backstage is designed to be a developer portal for all your
 infrastructure tooling, services, and documentation. So, it's not a monitoring
 platform — but that doesn't mean you can't integrate a monitoring tool into
-Backstage by writing [a plugin](/docs/FAQ.md#what-is-a-plugin-in-backstage).
+Backstage by writing [a plugin](#what-is-a-plugin-in-backstage).
 
 ### How is Backstage licensed?
 
@@ -38,7 +38,7 @@ more, read our blog post,
 
 Yes, we've already started releasing open source versions of some of the plugins
 we use here, and we'll continue to do so.
-[Plugins](/docs/FAQ.md#what-is-a-plugin-in-backstage) are the building blocks of
+[Plugins](#what-is-a-plugin-in-backstage) are the building blocks of
 functionality in Backstage. We have over 120 plugins inside Spotify — many of
 those are specialized for our use, so will remain internal and proprietary to
 us. But we estimate that about a third of our existing plugins make good open
@@ -145,7 +145,7 @@ This makes it easier to create, find, and update documentation. We hope to
 release
 [the open source version](https://github.com/spotify/backstage/issues/687) in
 the future. (See also:
-"[Will Spotify's internal plugins be open sourced, too?](/docs/FAQ.md#will-spotifys-internal-plugins-be-open-sourced-too)"
+"[Will Spotify's internal plugins be open sourced, too?](#will-spotifys-internal-plugins-be-open-sourced-too)"
 above)
 
 ### Are you planning to have plugins baked into the repo? Or should they be developed in separate repos?
