@@ -16,29 +16,63 @@
 
 import { EntityPolicy } from '../types';
 import {
-  ComponentEntityV1alpha1,
-  ComponentEntityV1alpha1Policy,
-} from './ComponentEntityV1alpha1';
+  ApiEntityV1alpha1,
+  ApiEntityV1alpha1Policy,
+} from './ApiEntityV1alpha1';
 
-describe('ComponentV1alpha1Policy', () => {
-  let entity: ComponentEntityV1alpha1;
+describe('ApiV1alpha1Policy', () => {
+  let entity: ApiEntityV1alpha1;
   let policy: EntityPolicy;
 
   beforeEach(() => {
     entity = {
       apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
+      kind: 'API',
       metadata: {
         name: 'test',
       },
       spec: {
-        type: 'service',
-        lifecycle: 'production',
-        owner: 'me',
-        implementsApis: ['api-0'],
+        type: 'openapi',
+        definition: `
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+paths:
+  /pets:
+    get:
+      summary: List all pets
+      operationId: listPets
+      responses:
+        '200':
+          description: A paged array of pets
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Pets"
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        tag:
+          type: string
+    Pets:
+      type: array
+      items:
+        $ref: "#/components/schemas/Pet"
+`,
       },
     };
-    policy = new ComponentEntityV1alpha1Policy();
+    policy = new ApiEntityV1alpha1Policy();
   });
 
   it('happy path: accepts valid data', async () => {
@@ -75,33 +109,18 @@ describe('ComponentV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).rejects.toThrow(/type/);
   });
 
-  it('rejects missing lifecycle', async () => {
-    delete (entity as any).spec.lifecycle;
-    await expect(policy.enforce(entity)).rejects.toThrow(/lifecycle/);
+  it('rejects missing definition', async () => {
+    delete (entity as any).spec.definition;
+    await expect(policy.enforce(entity)).rejects.toThrow(/definition/);
   });
 
-  it('rejects wrong lifecycle', async () => {
-    (entity as any).spec.lifecycle = 7;
-    await expect(policy.enforce(entity)).rejects.toThrow(/lifecycle/);
+  it('rejects wrong definition', async () => {
+    (entity as any).spec.definition = 7;
+    await expect(policy.enforce(entity)).rejects.toThrow(/definition/);
   });
 
-  it('rejects empty lifecycle', async () => {
-    (entity as any).spec.lifecycle = '';
-    await expect(policy.enforce(entity)).rejects.toThrow(/lifecycle/);
-  });
-
-  it('rejects missing owner', async () => {
-    delete (entity as any).spec.owner;
-    await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
-  });
-
-  it('rejects wrong owner', async () => {
-    (entity as any).spec.owner = 7;
-    await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
-  });
-
-  it('rejects empty owner', async () => {
-    (entity as any).spec.owner = '';
-    await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
+  it('rejects empty definition', async () => {
+    (entity as any).spec.definition = '';
+    await expect(policy.enforce(entity)).rejects.toThrow(/definition/);
   });
 });

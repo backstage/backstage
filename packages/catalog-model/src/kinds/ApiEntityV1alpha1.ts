@@ -19,32 +19,28 @@ import type { Entity } from '../entity/Entity';
 import type { EntityPolicy } from '../types';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
-const KIND = 'Component' as const;
+const KIND = 'API' as const;
 
-export interface ComponentEntityV1alpha1 extends Entity {
+export interface ApiEntityV1alpha1 extends Entity {
   apiVersion: typeof API_VERSION[number];
   kind: typeof KIND;
   spec: {
     type: string;
-    lifecycle: string;
-    owner: string;
-    implementsApis?: string[];
+    definition: string;
   };
 }
 
-export class ComponentEntityV1alpha1Policy implements EntityPolicy {
+export class ApiEntityV1alpha1Policy implements EntityPolicy {
   private schema: yup.Schema<any>;
 
   constructor() {
-    this.schema = yup.object<Partial<ComponentEntityV1alpha1>>({
+    this.schema = yup.object<Partial<ApiEntityV1alpha1>>({
       apiVersion: yup.string().required().oneOf(API_VERSION),
       kind: yup.string().required().equals([KIND]),
       spec: yup
         .object({
           type: yup.string().required().min(1),
-          lifecycle: yup.string().required().min(1),
-          owner: yup.string().required().min(1),
-          implementsApis: yup.array(yup.string()).notRequired(),
+          definition: yup.string().required().min(1),
         })
         .required(),
     });

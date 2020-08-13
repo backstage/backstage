@@ -30,3 +30,4 @@ export { plugin as Rollbar } from '@backstage/plugin-rollbar';
 export { plugin as Newrelic } from '@backstage/plugin-newrelic';
 export { plugin as TravisCI } from '@roadiehq/backstage-plugin-travis-ci';
 export { plugin as Jenkins } from '@backstage/plugin-jenkins';
+export { plugin as ApiDocs } from '@backstage/plugin-api-docs';
