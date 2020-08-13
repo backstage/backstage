@@ -1,7 +1,13 @@
-import { createApp } from '@backstage/core';
 import React, { FC } from 'react';
+import {
+  createApp,
+  AlertDisplay,
+  OAuthRequestDialog,
+  SidebarPage,
+} from '@backstage/core';
 import { apis } from './apis';
 import * as plugins from './plugins';
+import { AppSidebar } from './sidebar';
 
 const app = createApp({
   apis,
@@ -14,8 +20,13 @@ const AppRoutes = app.getRoutes();
 
 const App: FC<{}> = () => (
   <AppProvider>
+    <AlertDisplay />
+    <OAuthRequestDialog />
     <AppRouter>
-      <AppRoutes />
+      <SidebarPage>
+        <AppSidebar />
+        <AppRoutes />
+      </SidebarPage>
     </AppRouter>
   </AppProvider>
 );
