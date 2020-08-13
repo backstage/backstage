@@ -48,8 +48,9 @@ async function getConfig() {
 
     // Default behaviour is to not apply transforms for node_modules, but we still want
     // to apply the esm-transformer to .esm.js files, since that's what we use in backstage packages.
+    // The @kyma-project/asyncapi-react library needs to be transformed.
     transformIgnorePatterns: [
-      '/node_modules/(?!.*\\.(?:esm\\.js|bmp|gif|jpg|jpeg|png|frag|xml|svg)$)',
+      '/node_modules/(?!@kyma-project/asyncapi-react/)(?!.*\\.(?:esm\\.js|bmp|gif|jpg|jpeg|png|frag|xml|svg)$)',
     ],
   };
 

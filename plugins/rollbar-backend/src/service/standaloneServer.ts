@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+} from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
 
 export interface ServerOptions {
@@ -24,14 +28,16 @@ export interface ServerOptions {
   enableCors: boolean;
   logger: Logger;
 }
+
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'rollbar-backend' });
+  const config = ConfigReader.fromConfigs(await loadBackendConfig());
 
   logger.debug('Creating application...');
 
-  const router = await createRouter({ logger });
+  const router = await createRouter({ logger, config });
 
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })

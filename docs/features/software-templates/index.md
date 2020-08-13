@@ -5,11 +5,16 @@ Components inside Backstage. It by default has the ability to load skeletons of
 code, template in some variables and then publish the template to some location
 like GitHub.
 
+<video width="100%" height="100%" controls>
+  <source src="https://backstage.io/blog/assets/2020-08-05/feature.mp4" type="video/mp4">
+</video>
+
 ### Getting Started
 
-The Software Templates are available under `/create`, and if you've followed
-[Getting Started with Backstage](../../getting-started), you should be able to
-reach `http://localhost:3000/create`.
+The Software Templates are available under `/create`. If you've followed
+[Installing in your Backstage App](./installation.md) in your separate App or
+[Getting Started with Backstage](../../getting-started) for this repo, you
+should be able to reach `http://localhost:3000/create`.
 
 You should get something that looks similar to this:
 
@@ -27,7 +32,7 @@ internally.
 After filling in these variables, you'll get some more fields to fill out which
 are required for backstage usage. The owner, which is a `user` in the backstage
 system, and the `storePath` which right now must be a Github Organisation and a
-non-existing github repository name in the format `organistaion/reponame`.
+non-existing github repository name in the format `organisation/reponame`.
 
 ![Enter backstage vars](./assets/template-picked-2.png)
 

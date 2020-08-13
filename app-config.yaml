@@ -35,6 +35,12 @@ techdocs:
 sentry:
   organization: spotify
 
+rollbar:
+  organization: spotify
+  accountToken:
+    $secret:
+      env: ROLLBAR_ACCOUNT_TOKEN
+
 newrelic:
   api:
     baseUrl: 'https://api.newrelic.com/v2'
@@ -62,7 +68,7 @@ auth:
         clientSecret:
           $secret:
             env: AUTH_GITHUB_CLIENT_SECRET
-        enterpriseInstanceUrl: 
+        enterpriseInstanceUrl:
           $secret:
             env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:

@@ -28,6 +28,7 @@ export interface ComponentEntityV1alpha1 extends Entity {
     type: string;
     lifecycle: string;
     owner: string;
+    implementsApis?: string[];
   };
 }
 
@@ -43,6 +44,7 @@ export class ComponentEntityV1alpha1Policy implements EntityPolicy {
           type: yup.string().required().min(1),
           lifecycle: yup.string().required().min(1),
           owner: yup.string().required().min(1),
+          implementsApis: yup.array(yup.string()).notRequired(),
         })
         .required(),
     });
