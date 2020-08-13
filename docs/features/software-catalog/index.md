@@ -42,7 +42,7 @@ There are 3 ways to add components to the catalog:
 ### Manually register components
 
 Users can register new components by going to `/create` and clicking the
-**REGSITER EXISTING COMPONENT** button:
+**REGISTER EXISTING COMPONENT** button:
 
 ![](bsc-register-1.png)
 
