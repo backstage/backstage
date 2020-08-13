@@ -154,14 +154,14 @@ our example templates through static configuration. Add the following to the
 catalog:
   locations:
     # Backstage Example Templates
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-    type: github
-    target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+    - type: github
+      target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
 ```
 
 ### Runtime Dependencies

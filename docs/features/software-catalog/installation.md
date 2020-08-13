@@ -162,22 +162,22 @@ our example templates through static configuration. Add the following to the
 catalog:
   locations:
     # Backstage Example Component
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
-    type: github
-    target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
 ```
 
 ### Running the Backend
