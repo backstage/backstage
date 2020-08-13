@@ -47,7 +47,7 @@
     "@svgr/webpack": "4.3.x",
     "@types/start-server-webpack-plugin": "^2.2.0",
     "@types/webpack-env": "^1.15.2",
-    "@types/webpack-node-externals": "^1.7.1",
+    "@types/webpack-node-externals": "^2.5.0",
     "bfj": "^7.0.2",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
