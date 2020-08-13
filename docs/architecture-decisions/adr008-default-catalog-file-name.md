@@ -1,4 +1,8 @@
-# ADR008: Default Catalog File Name
+---
+id: adrs-adr008
+title: ADR008: Default Catalog File Name
+sidebar_label: ADR008
+---
 
 ## Background
 

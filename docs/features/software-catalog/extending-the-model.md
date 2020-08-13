@@ -1,4 +1,7 @@
-# Extending the model
+---
+id: extending-the-model
+title: Extending the model
+---
 
 Backstage natively supports tracking of the following component
 [`type`](descriptor-format.md)'s:

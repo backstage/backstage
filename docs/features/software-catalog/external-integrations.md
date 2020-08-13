@@ -1,4 +1,7 @@
-# External integrations
+---
+id: external-integrations
+title: External integrations
+---
 
 Backstage natively supports storing software components in
 [metadata YAML files](descriptor-format.md). However, companies that already

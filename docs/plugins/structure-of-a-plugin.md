@@ -1,4 +1,7 @@
-# Structure of a Plugin
+---
+id: structure-of-a-plugin
+title: Structure of a Plugin
+---
 
 Nice, you have a new plugin! We'll soon see how we can develop it into doing
 great things. But first off, let's look at what we get out of the box.

@@ -1,16 +1,17 @@
-name: Deploy Storybook
+name: Deploy Microsite and Storybook
 
 on:
   push:
     branches:
       - master
     paths:
-      - '.github/workflows/storybook-deploy.yml'
+      - '.github/workflows/microsite-with-storybook-deploy.yml'
       - 'packages/storybook/**'
       - 'packages/core/src/**'
+      - 'microsite/**'
 
 jobs:
-  deploy-storybook:
+  deploy-microsite-and-storybook:
     runs-on: ubuntu-latest
 
     strategy:
@@ -26,6 +27,7 @@ jobs:
       - name: find location of global yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
+
       - name: cache global yarn cache
         uses: actions/cache@v2
         with:
@@ -33,6 +35,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+
       - name: cache node_modules
         uses: actions/cache@v2
         with:
@@ -44,13 +47,25 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
+
       - name: yarn install
         run: yarn install --frozen-lockfile
+
+      - name: build microsite
+        run: yarn workspace backstage-microsite build
+
       - name: build storybook
         run: yarn workspace storybook build-storybook
-      - name: deploy storybook to gh-pages
+
+      - name: move storybook dist into microsite
+        run: mv packages/storybook/dist/ microsite/build/backstage/storybook
+
+      - name: Check the build output
+        run: ls microsite/build/backstage && ls microsite/build/backstage/storybook
+
+      - name: Deploy both microsite and storybook to gh-pages
         uses: JamesIves/github-pages-deploy-action@3.4.2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: packages/storybook/dist
+          FOLDER: ./microsite/build/backstage

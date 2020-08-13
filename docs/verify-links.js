@@ -74,7 +74,12 @@ async function verifyFile(filePath) {
 async function main() {
   process.chdir(projectRoot);
 
-  const files = await recursive('.', ['node_modules', 'dist', 'bin']);
+  const files = await recursive('.', [
+    'node_modules',
+    'dist',
+    'bin',
+    'microsite',
+  ]);
   const mdFiles = files.filter(f => f.endsWith('.md'));
   const badUrls = [];
 

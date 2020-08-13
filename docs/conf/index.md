@@ -1,4 +1,7 @@
-# Static Configuration in Backstage
+---
+id: index
+title: Static Configuration in Backstage
+---
 
 ## Summary
 

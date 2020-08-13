@@ -1,4 +1,7 @@
-# Reading Backstage Configuration
+---
+id: reading
+title: Reading Backstage Configuration
+---
 
 ## Config API
 

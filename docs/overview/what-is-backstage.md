@@ -1,8 +1,9 @@
-# [Backstage](https://backstage.io)
+---
+id: what-is-backstage
+title: What is Backstage?
+---
 
 ![service-catalog](https://backstage.io/blog/assets/6/header.png)
-
-## What is Backstage?
 
 [Backstage](https://backstage.io/) is an open platform for building developer
 portals. Powered by a centralized service catalog, Backstage restores order to
