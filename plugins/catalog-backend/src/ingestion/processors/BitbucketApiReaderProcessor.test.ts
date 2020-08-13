@@ -23,9 +23,9 @@ describe('BitbucketApiReaderProcessor', () => {
     const tests = [
       {
         target:
-          'https://bitbucket.org/mustansaranwar/backstage/src/master/templates/java-dropwizard-microservice.yaml',
+          'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
         url: new URL(
-          'https://api.bitbucket.org/2.0/repositories/mustansaranwar/backstage/src/master/templates//java-dropwizard-microservice.yaml',
+          'https://api.bitbucket.org/2.0/repositories/org-name/repo-name/src/master/templates/my-template.yaml',
         ),
         err: undefined,
       },
@@ -46,8 +46,14 @@ describe('BitbucketApiReaderProcessor', () => {
     for (const test of tests) {
       if (test.err) {
         expect(() => processor.buildRawUrl(test.target)).toThrowError(test.err);
+      } else if (test.url) {
+        expect(processor.buildRawUrl(test.target).toString()).toEqual(
+          test.url.toString(),
+        );
       } else {
-        expect(processor.buildRawUrl(test.target)).toEqual(test.url);
+        throw new Error(
+          'This should not have happened. Either err or url should have matched.',
+        );
       }
     }
   });
