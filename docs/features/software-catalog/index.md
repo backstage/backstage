@@ -42,7 +42,7 @@ There are 3 ways to add components to the catalog:
 ### Manually register components
 
 Users can register new components by going to `/create` and clicking the
-**REGSITER EXISTING COMPONENT** button:
+**REGISTER EXISTING COMPONENT** button:
 
 ![](bsc-register-1.png)
 
@@ -78,7 +78,7 @@ them, and do so using their normal Git workflow.
 Once the change has been merged, Backstage will automatically show the updated
 metadata in the service catalog after a short while.
 
-## Finding software in the catlog
+## Finding software in the catalog
 
 By default the service catalog shows components owned by the team of the logged
 in user. But you can also switch to _All_ to see all the components across your
