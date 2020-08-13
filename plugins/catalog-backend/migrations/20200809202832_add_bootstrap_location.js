@@ -14,12 +14,29 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-rollbar-backend';
-import type { PluginEnvironment } from '../types';
+// @ts-check
 
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment) {
-  return await createRouter({ logger, config });
-}
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
+  // Adds a single 'bootstrap' location that can be used to trigger work in processors.
+  // This is primarily here to fulfill foreign key constraints.
+  await knex('locations').insert({
+    id: require('uuid').v4(),
+    type: 'bootstrap',
+    target: 'bootstrap',
+  });
+};
+
+/**
+ * @param {import('knex')} knex
+ */
+exports.down = async function down(knex) {
+  await knex('locations')
+    .where({
+      type: 'bootstrap',
+      target: 'bootstrap',
+    })
+    .del();
+};
