@@ -102,8 +102,8 @@
       "features/software-catalog/software-catalog-overview": {
         "title": "Backstage Service Catalog (alpha)"
       },
-      "features/software-catalog/populating-catalog": {
-        "title": "Populating the catalog"
+      "features/software-catalog/installation": {
+        "title": "features/software-catalog/installation"
       },
       "features/software-catalog/system-model": {
         "title": "System Model"
@@ -125,6 +125,9 @@
       },
       "features/software-templates/software-templates-index": {
         "title": "Software Templates"
+      },
+      "features/software-templates/installation": {
+        "title": "features/software-templates/installation"
       },
       "features/techdocs/concepts": {
         "title": "Concepts"
