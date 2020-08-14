@@ -1,13 +1,11 @@
-# graphql
+# Catalog GraphQL Plugin
 
-Welcome to the graphql backend plugin!
+## Getting Started
 
-_This plugin was created through the Backstage CLI_
+This is the Catalog GraphQL plugin.
 
-## Getting started
+It provides the `catalog` part of the GraphQL schema.
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/graphql](http://localhost:3000/graphql).
+To register it with the GraphQL backend, be sure to follow the [Gettting Started](../graphql/README.md#getting-started) guide of the GraphQL plugin.
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+<!-- TODO: Need to make the GraphQL plugin compatible with non forked repos >
