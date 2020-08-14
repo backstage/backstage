@@ -9,7 +9,7 @@ metadata:
     - TechDocs
     - MkDocs
 spec:
-  owner: techdocs-core@example.com
+  owner: spotify/techdocs-core
   templater: cookiecutter
   type: documentation
   path: '.'
