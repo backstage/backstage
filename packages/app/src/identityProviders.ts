@@ -19,7 +19,16 @@ import {
   gitlabAuthApiRef,
   oktaAuthApiRef,
   githubAuthApiRef,
+  ConfigApi,
+  ApiRef,
 } from '@backstage/core';
+
+type ProviderConfig = {
+  id: string;
+  title: string;
+  message: string;
+  apiRef: ApiRef<any>;
+};
 
 export const providers = [
   {
@@ -47,3 +56,20 @@ export const providers = [
     apiRef: oktaAuthApiRef,
   },
 ];
+
+/**
+ * Only include the ones that are listed on the config file based on 
+ * the title specified above.
+ */
+export const getProviders = (config: ConfigApi): ProviderConfig[] => {
+  const authProviderConfig = config.getConfig('auth.providers').keys();
+  const activeProvider: ProviderConfig[] = [];
+
+  providers.map(item => {
+    if (authProviderConfig.includes(item.title.toLocaleLowerCase())) {
+      activeProvider.push(item);
+    }
+  });
+
+  return activeProvider;
+};
