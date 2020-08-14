@@ -163,6 +163,9 @@ export const EntityPage: FC<{}> = () => {
 
   const selectedTab = tabs.find(tab => tab.id === selectedTabId);
 
+  const filteredHeaderTabs =
+    entity && tabs.filter(tab => (tab.show ? tab.show(entity) : true));
+
   return (
     <Page theme={getPageTheme(entity)}>
       <Header
@@ -196,7 +199,7 @@ export const EntityPage: FC<{}> = () => {
       {entity && (
         <>
           <HeaderTabs
-            tabs={tabs}
+            tabs={filteredHeaderTabs}
             onChange={idx => {
               navigate(
                 `/catalog/${kind}/${optionalNamespaceAndName}/${tabs[idx].id}`,
