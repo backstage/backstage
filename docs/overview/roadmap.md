@@ -11,7 +11,7 @@ project and we have already begun work on various aspects of these phases:
 - 🐣 **Phase 1:** Extensible frontend platform (Done ✅) - You will be able to
   easily create a single consistent UI layer for your internal infrastructure
   and tools. A set of reusable
-  [UX patterns and components](http://storybook.backstage.io) help ensure a
+  [UX patterns and components](http://backstage.io/storybook) help ensure a
   consistent experience between tools.
 
 - 🐢 **Phase 2:** Service Catalog
