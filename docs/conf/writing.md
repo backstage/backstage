@@ -1,4 +1,7 @@
-# Writing Backstage Configuration Files
+---
+id: writing
+title: Writing Backstage Configuration Files
+---
 
 ## File Format
 

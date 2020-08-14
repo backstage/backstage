@@ -1,4 +1,7 @@
-# Defining Configuration for your Plugin
+---
+id: defining
+title: Defining Configuration for your Plugin
+---
 
 There is currently no tooling support or helpers for defining plugin
 configuration. But it's on the roadmap.

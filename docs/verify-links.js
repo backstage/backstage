@@ -17,12 +17,21 @@
 
 const { resolve: resolvePath, dirname } = require('path');
 const fs = require('fs-extra');
-const fetch = require('node-fetch');
 const recursive = require('recursive-readdir');
 
 const projectRoot = resolvePath(__dirname, '..');
 
 async function verifyUrl(basePath, url) {
+  // Avoid having absolute URL links within docs/, so that links work on the site
+  if (
+    url.match(
+      /https:\/\/github.com\/spotify\/backstage\/(tree|blob)\/master\/docs\//,
+    ) &&
+    basePath.match(/^(?:docs|microsite)\//)
+  ) {
+    return { url, basePath, problem: 'absolute' };
+  }
+
   url = url.replace(/#.*$/, '');
   url = url.replace(
     /https:\/\/github.com\/spotify\/backstage\/(tree|blob)\/master/,
@@ -33,14 +42,25 @@ async function verifyUrl(basePath, url) {
   }
 
   // Only verify existence of local files for now, so skip anything with a schema
-  if (!url.match(/[a-z]+:/)) {
-    const path = url.startsWith('/')
-      ? resolvePath(projectRoot, `.${url}`)
-      : resolvePath(dirname(resolvePath(projectRoot, basePath)), url);
-    const exists = await fs.pathExists(path);
-    if (!exists) {
-      return { url, basePath };
+  if (url.match(/[a-z]+:/)) {
+    return;
+  }
+
+  let path = '';
+
+  if (url.startsWith('/')) {
+    if (url.startsWith('/docs/') && basePath.match(/^(?:docs|microsite)\//)) {
+      return { url, basePath, problem: 'not-relative' };
     }
+
+    path = resolvePath(projectRoot, `.${url}`);
+  } else {
+    path = resolvePath(dirname(resolvePath(projectRoot, basePath)), url);
+  }
+
+  const exists = await fs.pathExists(path);
+  if (!exists) {
+    return { url, basePath, problem: 'missing' };
   }
 
   return;
@@ -65,7 +85,12 @@ async function verifyFile(filePath) {
 async function main() {
   process.chdir(projectRoot);
 
-  const files = await recursive('.', ['node_modules', 'dist', 'bin']);
+  const files = await recursive('.', [
+    'node_modules',
+    'dist',
+    'bin',
+    'microsite',
+  ]);
   const mdFiles = files.filter(f => f.endsWith('.md'));
   const badUrls = [];
 
@@ -76,8 +101,18 @@ async function main() {
 
   if (badUrls.length) {
     console.log(`Found ${badUrls.length} bad links within repo`);
-    for (const { url, basePath } of badUrls) {
-      console.error(`Unable to reach ${url}, linked from ${basePath}`);
+    for (const { url, basePath, problem } of badUrls) {
+      if (problem === 'missing') {
+        console.error(`Unable to reach ${url}, linked from ${basePath}`);
+      } else if (problem === 'not-relative') {
+        console.error('Links to /docs/ must be relative');
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
+      } else if (problem === 'absolute') {
+        console.error(`Link to docs/ should be replaced by a relative URL`);
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
+      }
     }
     process.exit(1);
   }

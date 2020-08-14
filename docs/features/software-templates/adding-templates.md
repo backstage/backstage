@@ -1,4 +1,7 @@
-# Adding your own Templates
+---
+id: adding-templates
+title: Adding your own Templates
+---
 
 Templates are stored in the **Service Catalog** under a kind `Template`. The
 minimum that the a template skeleton needs is a `template.yaml` but it would be
@@ -15,7 +18,8 @@ metadata:
   # title of the template
   title: React SSR Template
   # a description of the template
-  description: Next.js application skeleton for creating isomorphic web applications.
+  description:
+    Next.js application skeleton for creating isomorphic web applications.
   # some tags to display in the frontend
   tags:
     - Recommended
@@ -39,7 +43,7 @@ spec:
         type: string
         description: Unique name of the component
       description:
-        title:  Description
+        title: Description
         type: string
         description: Description of the component
 ```

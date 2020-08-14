@@ -1,4 +1,7 @@
-# Utility APIs
+---
+id: utility-apis
+title: Utility APIs
+---
 
 ## Introduction
 
@@ -153,7 +156,7 @@ The figure below shows the relationship between
 <span style="color: #b85450">fooApiRef</span>.
 
 <div style="text-align:center">
-<img src="utility-apis-fig1.svg" alt="Figure showing the relationship between utility APIs, the apps that provide them, and the plugins that consume them">
+<img src="../assets/utility-apis-fig1.svg" alt="Figure showing the relationship between utility APIs, the apps that provide them, and the plugins that consume them">
 </div>
 
 The current method for connecting Utility API providers and consumers is via the

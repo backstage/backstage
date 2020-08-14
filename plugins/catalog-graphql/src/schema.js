@@ -48,7 +48,8 @@ const EntityMetadata = /* GraphQL */ `
     # mock field to prove extensions working
     updatedBy: String
   }
-
+ 
+  # TODO: move this definition into plugin-scaffolder-graphql
   type TemplateEntitySpec {
     type: String!
     path: String

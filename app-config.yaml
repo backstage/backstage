@@ -4,7 +4,9 @@ app:
 
 backend:
   baseUrl: http://localhost:7000
-  listen: 0.0.0.0:7000
+  listen:
+    host: 0.0.0.0
+    port: 7000
   cors:
     origin: http://localhost:3000
     methods: [GET, POST, PUT, DELETE]
@@ -16,6 +18,15 @@ proxy:
     changeOrigin: true
     pathRewrite:
       '^/proxy/circleci/api/': '/'
+  '/jenkins/api':
+    target: 'http://localhost:8080'
+    changeOrigin: true
+    headers:
+      Authorization:
+        $secret:
+          env: JENKINS_BASIC_AUTH_HEADER
+    pathRewrite:
+      '^/proxy/jenkins/api/': '/'
 
 organization:
   name: Spotify
@@ -25,6 +36,17 @@ techdocs:
 
 sentry:
   organization: spotify
+
+rollbar:
+  organization: spotify
+  accountToken:
+    $secret:
+      env: ROLLBAR_ACCOUNT_TOKEN
+
+newrelic:
+  api:
+    baseUrl: 'https://api.newrelic.com/v2'
+    key: NEW_RELIC_REST_API_KEY
 
 auth:
   providers:
@@ -48,7 +70,7 @@ auth:
         clientSecret:
           $secret:
             env: AUTH_GITHUB_CLIENT_SECRET
-        enterpriseInstanceUrl: 
+        enterpriseInstanceUrl:
           $secret:
             env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:

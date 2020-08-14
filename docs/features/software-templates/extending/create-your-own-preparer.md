@@ -1,4 +1,7 @@
-# Create your own Preparer
+---
+id: extending-preparer
+title: Create your own Preparer
+---
 
 Preparers are responsible for reading the location of the definition of a
 [Template Entity](../../software-catalog/descriptor-format.md#kind-template) and

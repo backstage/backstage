@@ -1,4 +1,8 @@
-# ADR005: Catalog Core Entities
+---
+id: adrs-adr005
+title: ADR005: Catalog Core Entities
+sidebar_label: ADR005
+---
 
 | Created    | Status |
 | ---------- | ------ |
@@ -18,7 +22,7 @@ Backstage should eventually support the following core entities:
 - **Resources** are physical or virtual infrastructure needed to operate a
   component
 
-![Catalog Core Entities](catalog-core-entities.png)
+![Catalog Core Entities](../assets/architecture-decisions/catalog-core-entities.png)
 
 For now, we'll start by only implementing support for the Component entity in
 the Backstage catalog. This can later be extended to APIs, Resources and other

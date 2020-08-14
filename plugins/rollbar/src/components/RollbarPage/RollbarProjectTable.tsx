@@ -17,8 +17,13 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Link } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { Table, TableColumn } from '@backstage/core';
 import { RollbarProject } from '../../api/types';
+
+const projectUrl = (org: string, id: number) =>
+  `https://rollbar.com/${org}/all/items/?projects=${id}`;
 
 const columns: TableColumn[] = [
   {
@@ -32,7 +37,6 @@ const columns: TableColumn[] = [
     title: 'Name',
     field: 'name',
     type: 'string',
-    align: 'left',
     highlight: true,
     render: (row: Partial<RollbarProject>) => (
       <Link component={RouterLink} to={`/rollbar/${row.name}`}>
@@ -44,29 +48,58 @@ const columns: TableColumn[] = [
     title: 'Status',
     field: 'status',
     type: 'string',
-    align: 'left',
+  },
+  {
+    title: 'Open',
+    width: '10%',
+    render: (row: any) => (
+      <Link
+        href={projectUrl(row.organization, row.id)}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <OpenInNewIcon />
+      </Link>
+    ),
   },
 ];
 
 type Props = {
   projects: RollbarProject[];
   loading: boolean;
+  organization: string;
+  error?: any;
 };
 
-export const RollbarProjectTable = ({ projects, loading }: Props) => {
+export const RollbarProjectTable = ({
+  projects,
+  organization,
+  loading,
+  error,
+}: Props) => {
+  if (error) {
+    return (
+      <div>
+        <Alert severity="error">
+          Error encountered while fetching rollbar projects. {error.toString()}
+        </Alert>
+      </div>
+    );
+  }
+
   return (
     <Table
       isLoading={loading}
       columns={columns}
       options={{
         padding: 'dense',
-        paging: true,
         search: true,
+        paging: true,
         pageSize: 10,
         showEmptyDataSourceMessage: !loading,
       }}
       title="Projects"
-      data={projects}
+      data={projects.map(p => ({ organization, ...p }))}
     />
   );
 };

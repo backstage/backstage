@@ -39,7 +39,7 @@ Getting started is really straightforward, and can be broadly broken down into f
 4. Add the provider to the backend.
 5. Add a frontend Auth Utility API.
 
-For full details, take a look at our [“Adding authentication providers” documentation](https://github.com/spotify/backstage/blob/master/docs/auth/add-auth-provider.md) and at the [excellent documentation](http://www.passportjs.org/docs/) provided by Passport.
+For full details, take a look at our [“Adding authentication providers” documentation](/docs/auth/add-auth-provider.md) and at the [excellent documentation](http://www.passportjs.org/docs/) provided by Passport.
 
 ## Interested in contributing to the next steps for authentication?
 

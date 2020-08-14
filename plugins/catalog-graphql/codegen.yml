@@ -1,6 +1,6 @@
 overwrite: true
 generates:
-  ./src/graphql/types.ts:
+  ./src/graphql/types.d.ts:
     schema: ./src/schema.js
     plugins:
       - typescript
@@ -9,7 +9,7 @@ generates:
       afterOneFileWrite:
         - eslint --fix
     config:
-      contextType: "@graphql-modules/core#ModuleContext"
+      contextType: '@graphql-modules/core#ModuleContext'
       allowParentTypeOverride: true
       useIndexSignature: true
       defaultMapper: Partial<{T}>

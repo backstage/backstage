@@ -24,7 +24,7 @@ With these insights we decided to re-focus our efforts towards the most requeste
 
 ## What is the service catalog?
 
-The Backstage Service Catalog — actually, a software catalog, since it includes more than just services — is a centralized system that keeps track of ownership and metadata for all the software in your ecosystem (services, websites, libraries, data pipelines, etc). The catalog is built around the concept of [metadata yaml files](https://github.com/spotify/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md#format) stored together with the code, which are then harvested and visualized in Backstage.
+The Backstage Service Catalog — actually, a software catalog, since it includes more than just services — is a centralized system that keeps track of ownership and metadata for all the software in your ecosystem (services, websites, libraries, data pipelines, etc). The catalog is built around the concept of [metadata yaml files](/docs/architecture-decisions/adr002-default-catalog-file-format.md#format) stored together with the code, which are then harvested and visualized in Backstage.
 
 This was our pitch for the virtues of a service catalog when we first [announced](https://backstage.io/blog/2020/05/22/phase-2-service-catalog) it as part of Phase 2:
 

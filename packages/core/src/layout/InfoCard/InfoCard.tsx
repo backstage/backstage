@@ -60,6 +60,8 @@ const VARIANT_STYLES = {
       flexDirection: 'column',
     },
     fullHeight: {
+      display: 'flex',
+      flexDirection: 'column',
       height: '100%',
     },
     height100: {
@@ -84,10 +86,10 @@ const VARIANT_STYLES = {
   },
   cardContent: {
     fullHeight: {
-      height: 'calc(100% - 50px)',
+      flex: 1,
     },
     height100: {
-      height: 'calc(100% - 50px)',
+      flex: 1,
     },
     contentRow: {
       display: 'flex',

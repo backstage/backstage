@@ -2,8 +2,8 @@ name: Frontend CI
 
 on:
   pull_request:
-    paths:
-      - '!microsite/**'
+    paths-ignore:
+      - 'microsite/**'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,11 +45,11 @@ jobs:
         run: git diff --quiet origin/master HEAD -- yarn.lock
         continue-on-error: true
 
-      - name: verify doc links
-        run: node docs/verify-links.js
-
       - name: yarn install
         run: yarn install --frozen-lockfile
+
+      - name: verify doc links
+        run: node docs/verify-links.js
 
       - name: lint
         run: yarn lerna -- run lint --since origin/master
