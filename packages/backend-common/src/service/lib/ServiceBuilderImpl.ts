@@ -33,7 +33,7 @@ import { ServiceBuilder } from '../types';
 import { readBaseOptions, readCorsOptions } from './config';
 
 const DEFAULT_PORT = 7000;
-const DEFAULT_HOST = 'localhost';
+const DEFAULT_HOST = '';
 
 export class ServiceBuilderImpl implements ServiceBuilder {
   private port: number | undefined;

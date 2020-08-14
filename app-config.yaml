@@ -5,7 +5,6 @@ app:
 backend:
   baseUrl: http://localhost:7000
   listen:
-    host: 0.0.0.0
     port: 7000
   cors:
     origin: http://localhost:3000
