@@ -51,19 +51,22 @@ export async function createRouter(
   const server = new ApolloServer({
     schema,
     logger: options.logger,
+    introspection: true,
+    playground: process.env.NODE_ENV === 'development',
   });
 
   const router = Router();
 
   const apolloMiddlware = server.getMiddleware({ path: '/' });
 
-  router.use(
-    helmet.contentSecurityPolicy({
-      directives: {
-        defaultSrc: ["'self'", "'unsafe-inline'", 'http://*'],
-      },
-    }),
-  );
+  if (process.env.NODE_ENV === 'development')
+    router.use(
+      helmet.contentSecurityPolicy({
+        directives: {
+          defaultSrc: ["'self'", "'unsafe-inline'", 'http://*'],
+        },
+      }),
+    );
 
   router.use(apolloMiddlware);
 
