@@ -4,7 +4,7 @@ title: Contributing to Storybook
 ---
 
 You find our storybook at
-[http://storybook.backstage.io](http://storybook.backstage.io)
+[http://backstage.io/storybook](http://backstage.io/storybook)
 
 ## Creating a new Story
 

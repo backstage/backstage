@@ -111,7 +111,7 @@ picked up by our team as something to be added to our design system.
 
 ## ✏️ Resources
 
-**[Storybook](http://storybook.backstage.io/)** - where you can view our
+**[Storybook](http://backstage.io/storybook)** - where you can view our
 components. If you’d like to help build up our design system, you can also add
 components we’ve designed to the Storybook as well.
 

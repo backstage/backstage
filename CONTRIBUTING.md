@@ -41,7 +41,7 @@ The current documentation is very limited. Help us make the `/docs` folder come 
 
 ## Contribute to Storybook
 
-We think the best way to ensure different plugins provide a consistent experience is through a solid set of reusable UI/UX components. Backstage uses [Storybook](http://storybook.backstage.io).
+We think the best way to ensure different plugins provide a consistent experience is through a solid set of reusable UI/UX components. Backstage uses [Storybook](http://backstage.io/storybook).
 
 Either help us [create new components](https://github.com/spotify/backstage/labels/help%20wanted) or improve stories for the existing ones (look for files with `*.stories.tsx`).
 

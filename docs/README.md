@@ -74,7 +74,7 @@ better yet, a pull request.
   - [Glossary](auth/glossary.md)
 - Designing for Backstage
   - [Backstage Design Language System (DLS)](dls/design.md)
-  - [Storybook -- reusable UI components](http://storybook.backstage.io)
+  - [Storybook -- reusable UI components](http://backstage.io/storybook)
   - [Contributing to Storybook](dls/contributing-to-storybook.md)
   - [Figma resources](dls/figma.md)
 - API references
