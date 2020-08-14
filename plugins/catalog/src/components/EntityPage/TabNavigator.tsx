@@ -22,22 +22,21 @@ import { useNavigate, useParams } from 'react-router-dom';
 export type NavigationTab = {
   id: string;
   label: string;
-  content?: (props: any) => React.ReactNode;
+  content?: () => React.ReactNode;
   show?: (props: any) => boolean;
 };
 
 export type OnChangeCallback = (tab: NavigationTab) => void;
 
-type Props<T> = {
+type Props = {
   tabs: NavigationTab[];
   onChange?: OnChangeCallback;
-  tabData: T;
 };
 
 /**
  * The tabs at the top of the catalog list page, for component type filtering.
  */
-export const TabNavigator = <T extends {}>({ tabs, tabData }: Props<T>) => {
+export const TabNavigator = ({ tabs }: Props) => {
   const navigate = useNavigate();
   const {
     kind,
@@ -47,14 +46,10 @@ export const TabNavigator = <T extends {}>({ tabs, tabData }: Props<T>) => {
 
   const selectedTab = tabs.find(tab => tab.id === selectedTabId);
 
-  const filteredTabs = tabs.filter(tab =>
-    tab.show ? tab.show(tabData) : true,
-  );
-
   return (
     <>
       <HeaderTabs
-        tabs={filteredTabs}
+        tabs={tabs}
         onChange={idx => {
           navigate(
             `/catalog/${kind}/${optionalNamespaceAndName}/${tabs[idx].id}`,
@@ -62,7 +57,7 @@ export const TabNavigator = <T extends {}>({ tabs, tabData }: Props<T>) => {
         }}
         selectedIndex={tabs.findIndex(tab => tab.id === selectedTabId)}
       />
-      {selectedTab && selectedTab.content ? selectedTab.content(tabData) : null}
+      {selectedTab && selectedTab.content ? selectedTab.content() : null}
     </>
   );
 };

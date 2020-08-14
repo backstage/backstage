@@ -30,7 +30,7 @@ export const TechDocsPage = () => {
       <Reader
         entityId={{
           kind,
-          namespace: namespace ? namespace : 'default',
+          namespace,
           name,
         }}
       />

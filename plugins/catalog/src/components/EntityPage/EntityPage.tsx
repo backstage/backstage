@@ -26,24 +26,18 @@ import {
   Progress,
   useApi,
 } from '@backstage/core';
-import { SentryIssuesWidget } from '@backstage/plugin-sentry';
-import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
-import {
-  JenkinsBuildsWidget,
-  JenkinsLastBuildWidget,
-} from '@backstage/plugin-jenkins';
-import { Grid, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { TabNavigator } from './TabNavigator';
-import { Reader } from '@backstage/plugin-techdocs';
+import { EntityOverviewPage } from '../EntityOverviewPage/EntityOverviewPage';
+import { EntityDocsPage } from '../EntityDocsPage/EntityDocsPage';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -123,42 +117,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'overview',
       label: 'Overview',
-      content: ({ entity: e }: { entity: Entity }) => {
-        return (
-          <Content>
-            <Grid container spacing={3}>
-              <Grid item sm={4}>
-                <EntityMetadataCard entity={e} />
-              </Grid>
-              {e.metadata?.annotations?.[
-                'backstage.io/jenkins-github-folder'
-              ] && (
-                <Grid item sm={4}>
-                  <JenkinsLastBuildWidget entity={e} branch="master" />
-                </Grid>
-              )}
-              {e.metadata?.annotations?.[
-                'backstage.io/jenkins-github-folder'
-              ] && (
-                <Grid item sm={8}>
-                  <JenkinsBuildsWidget entity={e} />
-                </Grid>
-              )}
-              {e.metadata?.annotations?.['backstage.io/github-actions-id'] && (
-                <Grid item sm={3}>
-                  <GithubActionsWidget entity={e} branch="master" />
-                </Grid>
-              )}
-            </Grid>
-            <Grid item sm={8}>
-              <SentryIssuesWidget
-                sentryProjectId="sample-sentry-project-id"
-                statsFor="24h"
-              />
-            </Grid>
-          </Content>
-        );
-      },
+      content: () => <EntityOverviewPage entity={entity} />,
     },
     {
       id: 'ci',
@@ -183,19 +142,8 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'docs',
       label: 'Docs',
-      show: ({ entity: e }: { entity: Entity }) =>
-        !!e.metadata.annotations?.['backstage.io/techdocs-ref'],
-      content: ({ entity: e }: { entity: Entity }) => {
-        return (
-          <Reader
-            entityId={{
-              kind: e.kind,
-              namespace: e.metadata.namespace ?? 'default',
-              name: e.metadata.name,
-            }}
-          />
-        );
-      },
+      show: (entity: Entity) => !!entity.metadata.annotations?.['backstage.io/techdocs-ref'],
+      content: () => <EntityDocsPage entity={entity} />,
     },
   ];
 
@@ -238,7 +186,7 @@ export const EntityPage: FC<{}> = () => {
 
       {entity && (
         <>
-          <TabNavigator<{ entity: Entity }> tabs={tabs} tabData={{ entity }} />
+          <TabNavigator tabs={tabs} />
 
           <UnregisterEntityDialog
             open={confirmationDialogOpen}
