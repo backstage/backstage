@@ -38,10 +38,10 @@ const siteConfig = {
       href: 'https://github.com/spotify/backstage#backstage',
       label: 'GitHub',
     },
-    // {
-    //   doc: 'getting-started/getting-started-index',
-    //   label: 'Docs',
-    // },
+    {
+      doc: 'overview/what-is-backstage',
+      label: 'Docs',
+    },
     {
       page: 'blog',
       blog: true,

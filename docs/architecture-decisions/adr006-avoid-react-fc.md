@@ -1,4 +1,8 @@
-# ADR006: Avoid React.FC and React.SFC
+---
+id: adrs-adr006
+title: ADR006: Avoid React.FC and React.SFC
+sidebar_label: ADR006
+---
 
 ## Context
 

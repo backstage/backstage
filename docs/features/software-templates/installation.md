@@ -143,8 +143,8 @@ const service = createServiceBuilder(module)
 At this point the scaffolder backend is installed in your backend package, but
 you will not have any templates available to use. These need to be added to the
 software catalog, as they are represented as entities of kind
-[Template](/docs/features/software-catalog/descriptor-format.md#kind-template).
-You can find out more about adding templates [here](./adding-templates.md).
+[Template](../software-catalog/descriptor-format.md#kind-template). You can find
+out more about adding templates [here](./adding-templates.md).
 
 To get up and running and try out some templates quickly, you can add some of
 our example templates through static configuration. Add the following to the

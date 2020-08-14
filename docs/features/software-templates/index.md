@@ -1,4 +1,7 @@
-# Software Templates
+---
+id: software-templates-index
+title: Software Templates
+---
 
 The Software Templates part of Backstage is a tool that can help you create
 Components inside Backstage. It by default has the ability to load skeletons of
@@ -18,7 +21,7 @@ should be able to reach `http://localhost:3000/create`.
 
 You should get something that looks similar to this:
 
-![Create Image](./assets/create.png)
+![Create Image](../../assets/software-templates/create.png)
 
 ### Choose a template
 
@@ -27,38 +30,38 @@ page which may or may not look different for each template. Each template can
 ask for different input variables, and they are then passed to the templater
 internally.
 
-![Enter some variables](./assets/template-picked.png)
+![Enter some variables](../../assets/software-templates/template-picked.png)
 
 After filling in these variables, you'll get some more fields to fill out which
 are required for backstage usage. The owner, which is a `user` in the backstage
 system, and the `storePath` which right now must be a Github Organisation and a
 non-existing github repository name in the format `organisation/reponame`.
 
-![Enter backstage vars](./assets/template-picked-2.png)
+![Enter backstage vars](../../assets/software-templates/template-picked-2.png)
 
 ### Run!
 
 Once you've entered values and confirmed, you'll then get a modal with live
 progress of what is currently happening with the creation of your template.
 
-![Templating Running](./assets/running.png)
+![Templating Running](../../assets/software-templates/running.png)
 
 It shouldn't take too long, and you'll have a success screen!
 
-![Templating Complete](./assets/complete.png)
+![Templating Complete](../../assets/software-templates/complete.png)
 
 If it fails, you'll be able to click on each section to get the log from the
 step that failed which can be helpful to debug.
 
-![Templating failed](./assets/failed.png)
+![Templating failed](../../assets/software-templates/failed.png)
 
 ### View Component in Catalog
 
 When it's been created you'll see the `View in Catalog` button, which will take
 you to the registered component in the catalog:
 
-![Catalog](./assets/go-to-catalog.png)
+![Catalog](../../assets/software-templates/go-to-catalog.png)
 
 And then you'll also be able to see it in the Catalog View table
 
-![Catalog](./assets/added-to-the-catalog-list.png)
+![Catalog](../../assets/software-templates/added-to-the-catalog-list.png)

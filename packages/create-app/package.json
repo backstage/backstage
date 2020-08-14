@@ -22,7 +22,9 @@
   },
   "scripts": {
     "build": "backstage-cli build --outputs cjs",
-    "lint": "backstage-cli lint"
+    "lint": "backstage-cli lint",
+    "clean": "backstage-cli clean",
+    "start": "nodemon --"
   },
   "dependencies": {
     "@backstage/cli-common": "^0.1.1-alpha.18",

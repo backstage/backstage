@@ -1,4 +1,7 @@
-# Backstage System Model
+---
+id: system-model
+title: System Model
+---
 
 We believe that a strong shared understanding and terminology around systems,
 software and resources leads to a better Backstage experience.

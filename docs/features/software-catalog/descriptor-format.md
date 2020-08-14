@@ -1,4 +1,8 @@
-# Descriptor Format of Catalog Entities
+---
+id: descriptor-format
+title: Descriptor Format of Catalog Entities
+sidebar_label: YAML File Format
+---
 
 This section describes the default data shape and semantics of catalog entities.
 
@@ -82,7 +86,7 @@ The root envelope object has the following structure.
 ### `apiVersion` and `kind` [required]
 
 The `kind` is the high level entity type being described.
-[ADR005](/docs/architecture-decisions/adr005-catalog-core-entities.md) describes
+[ADR005](../../architecture-decisions/adr005-catalog-core-entities.md) describes
 a number of core kinds that plugins can know of and understand, but an
 organization using Backstage is free to also add entities of other kinds to the
 catalog.

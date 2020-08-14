@@ -1,4 +1,7 @@
-# Backstage Service Catalog (alpha)
+---
+id: software-catalog-overview
+title: Backstage Service Catalog (alpha)
+---
 
 ## What is a Service Catalog?
 
@@ -32,7 +35,7 @@ followed [Installing in your Backstage App](./installation.md) in your separate
 App or [Getting Started with Backstage](../../getting-started) for this repo,
 you should be able to browse the catalog at `http://localhost:3000`.
 
-![](service-catalog-home.png)
+![](../../assets/software-catalog/service-catalog-home.png)
 
 ## Adding components to the catalog
 
