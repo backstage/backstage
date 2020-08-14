@@ -27,6 +27,7 @@ describe('App', () => {
           data: {
             app: { title: 'Test' },
             backend: { baseUrl: 'http://localhost:7000' },
+            auth: { providers: {} },
           },
           context: 'test',
         },
