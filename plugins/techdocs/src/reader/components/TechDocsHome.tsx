@@ -67,7 +67,7 @@ export const TechDocsHome = () => {
                 <ItemCard
                   onClick={() =>
                     navigate(
-                      `/docs/${entity.kind ?? ''}:${
+                      `/docs/${entity.kind}:${
                         entity.metadata.namespace ?? ''
                       }:${entity.metadata.name}`,
                     )

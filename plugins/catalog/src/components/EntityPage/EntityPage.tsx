@@ -25,6 +25,7 @@ import {
   PageTheme,
   Progress,
   useApi,
+  HeaderTabs,
 } from '@backstage/core';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -35,7 +36,6 @@ import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
-import { TabNavigator } from './TabNavigator';
 import { EntityOverviewPage } from '../EntityOverviewPage/EntityOverviewPage';
 import { EntityDocsPage } from '../EntityDocsPage/EntityDocsPage';
 
@@ -75,11 +75,17 @@ const EntityPageTitle: FC<{ title: string; entity: Entity | undefined }> = ({
 );
 
 export const EntityPage: FC<{}> = () => {
-  const { optionalNamespaceAndName, kind } = useParams() as {
+  const {
+    optionalNamespaceAndName,
+    kind,
+    selectedTabId = 'overview',
+  } = useParams() as {
     optionalNamespaceAndName: string;
     kind: string;
+    selectedTabId: string;
   };
   const navigate = useNavigate();
+
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
 
   const errorApi = useApi(errorApiRef);
@@ -117,7 +123,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'overview',
       label: 'Overview',
-      content: () => <EntityOverviewPage entity={entity} />,
+      content: () => <EntityOverviewPage entity={entity!} />,
     },
     {
       id: 'ci',
@@ -142,8 +148,9 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'docs',
       label: 'Docs',
-      show: (entity: Entity) => !!entity.metadata.annotations?.['backstage.io/techdocs-ref'],
-      content: () => <EntityDocsPage entity={entity} />,
+      show: (e: Entity) =>
+        !!e.metadata.annotations?.['backstage.io/techdocs-ref'],
+      content: () => <EntityDocsPage entity={entity!} />,
     },
   ];
 
@@ -153,6 +160,8 @@ export const EntityPage: FC<{}> = () => {
     name,
     entity,
   );
+
+  const selectedTab = tabs.find(tab => tab.id === selectedTabId);
 
   return (
     <Page theme={getPageTheme(entity)}>
@@ -186,7 +195,16 @@ export const EntityPage: FC<{}> = () => {
 
       {entity && (
         <>
-          <TabNavigator tabs={tabs} />
+          <HeaderTabs
+            tabs={tabs}
+            onChange={idx => {
+              navigate(
+                `/catalog/${kind}/${optionalNamespaceAndName}/${tabs[idx].id}`,
+              );
+            }}
+            selectedIndex={tabs.findIndex(tab => tab.id === selectedTabId)}
+          />
+          {selectedTab && selectedTab.content ? selectedTab.content() : null}
 
           <UnregisterEntityDialog
             open={confirmationDialogOpen}
