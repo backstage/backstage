@@ -9286,10 +9286,10 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-docusaurus@^1.14.4:
-  version "1.14.6"
-  resolved "https://registry.npmjs.org/docusaurus/-/docusaurus-1.14.6.tgz#ffab9f6dafe8c48c477e0ebc7f491e554143b2b5"
-  integrity sha512-Hpo6xqYIHwazwuhXW25AKYv/os+dWoJ87qql/m1j1xp83h/BnfYV2l8PA8zLggF1wGUbJQbTx7GWo6QvD8z+4Q==
+docusaurus@2.0.0-alpha.61:
+  version "2.0.0-alpha.61"
+  resolved "https://registry.npmjs.org/docusaurus/-/docusaurus-2.0.0-alpha.61.tgz#f347b81c98c66f1de3ecfccf63fa421ddff52fbb"
+  integrity sha512-qDU3nOA4Xs95tIjjSETnEuRmTukTzgxyTZ5MgMyuG7y6h4oDHtpLcYf8F+xlXuuWHKv3VSxRJNzV8fZHPgnK3g==
   dependencies:
     "@babel/core" "^7.9.0"
     "@babel/plugin-proposal-class-properties" "^7.8.3"
