@@ -163,8 +163,9 @@ export const EntityPage: FC<{}> = () => {
 
   const selectedTab = tabs.find(tab => tab.id === selectedTabId);
 
-  const filteredHeaderTabs =
-    entity && tabs.filter(tab => (tab.show ? tab.show(entity) : true));
+  const filteredHeaderTabs = entity
+    ? tabs.filter(tab => (tab.show ? tab.show(entity) : true))
+    : [];
 
   return (
     <Page theme={getPageTheme(entity)}>
