@@ -18,7 +18,21 @@ import { mergeDatabaseConfig } from './config';
 
 describe('config', () => {
   describe(mergeDatabaseConfig, () => {
-    it('does not modify the config', () => {
+    it('does not require overrides', () => {
+      expect(
+        mergeDatabaseConfig({
+          client: 'pg',
+          connection: '',
+          useNullAsDefault: true,
+        }),
+      ).toEqual({
+        client: 'pg',
+        connection: '',
+        useNullAsDefault: true,
+      });
+    });
+
+    it('accepts an empty object', () => {
       expect(
         mergeDatabaseConfig(
           {
@@ -71,7 +85,7 @@ describe('config', () => {
       });
     });
 
-    it('merges string config objects', () => {
+    it('replaces a string connection', () => {
       expect(
         mergeDatabaseConfig(
           {

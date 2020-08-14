@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export * from './config';
 export * from './connection';
-export * from './postgres';
-export * from './sqlite3';

@@ -28,7 +28,10 @@ type DatabaseClient = 'pg' | 'sqlite3' | string;
  * @param config The database config
  * @param overrides Additional options to merge with the config
  */
-export function createDatabase(config: ConfigReader, overrides?: knex.Config) {
+export function createDatabase(
+  config: ConfigReader,
+  overrides?: Partial<knex.Config>,
+) {
   const client: DatabaseClient = config.getString('client');
 
   if (client === 'pg') {
