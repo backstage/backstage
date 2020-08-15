@@ -12,6 +12,8 @@ Before we have API stability, plugins will need ongoing maintenance. It is also
 recommended that teams who adopt Backstage today upgrades their installation as
 new [releases](https://github.com/spotify/backstage/releases) are available.
 
+[![](https://img.shields.io/npm/v/@backstage/core?label=Version)](https://github.com/spotify/backstage/releases)
+
 ## Phases
 
 We created Backstage about 4 years ago. While our internal version of Backstage
