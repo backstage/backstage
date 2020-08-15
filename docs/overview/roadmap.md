@@ -3,6 +3,17 @@ id: roadmap
 title: Project roadmap
 ---
 
+## Current status
+
+Backstage is currently in Alpha. This means that you can expect APIs and
+features to change until we reach our
+[Backstage Beta milestone](https://github.com/spotify/backstage/milestone/19).
+Before we have API stability, plugins will need ongoing maintenance. It is also
+recommended that teams who adopt Backstage today upgrades their installation as
+new [releases](https://github.com/spotify/backstage/releases) are available.
+
+## Phases
+
 We created Backstage about 4 years ago. While our internal version of Backstage
 has had the benefit of time to mature and evolve, the first iteration of our
 open source version is still nascent. We are envisioning three phases of the
@@ -27,13 +38,42 @@ project and we have already begun work on various aspects of these phases:
   an ecosystem of Open Source plugins/integrations that allows you to pick the
   tools that match your stack.
 
-Check out our [Milestones](https://github.com/spotify/backstage/milestones) and
-open [RFCs](https://github.com/spotify/backstage/labels/rfc) how they relate to
-the three Phases outlined above.
+## Detailed roadmap
 
-Our vision for Backstage is for it to become the trusted standard toolbox (read:
-UX layer) for the open source infrastructure landscape. Think of it like
-Kubernetes for developer experience. We realize this is an ambitious goal. We
-can’t do it alone. If this sounds interesting or you'd like to help us shape our
-product vision, we'd love to talk. You can email me directly:
-[alund@spotify.com](mailto:alund@spotify.com).
+### Q2-Q3 2020
+
+**Features**
+
+- [Backstage Service Catalog (alpha)](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)
+  ✅
+- [Backstage Software Templates (alpha)](https://backstage.io/blog/2020/08/05/announcing-backstage-software-templates)
+  ✅
+- [TechDocs v0](https://github.com/spotify/backstage/milestone/15) ✅
+- [TechDocs v1](https://github.com/spotify/backstage/milestone/16)
+- [Initial GraphQL API](https://github.com/spotify/backstage/milestone/13)
+
+**Platform**
+
+- [Make it possible to add custom auth providers](https://github.com/spotify/backstage/milestone/8)
+  ✅
+- GitLab support in Backstage Service Catalog ✅
+- Auth providers
+  - Google, GitHub and GitLab ✅
+  - [AWS](https://github.com/spotify/backstage/issues/290)
+
+**Plugins**
+
+- Plugins for managing micro services end-2-end
+  - GitHub Actions ✅
+  - CircleCI ✅
+  - [Service API documentation](https://github.com/spotify/backstage/pull/1737)
+  - Kubernetes deployment visualisation
+  - PagerDuty
+
+### Q4 2020
+
+**Features**
+
+**Platform**
+
+**Plugins**

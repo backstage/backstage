@@ -4,7 +4,8 @@
       "overview/what-is-backstage",
       "overview/architecture-overview",
       "overview/architecture-terminology",
-      "overview/roadmap"
+      "overview/roadmap",
+      "overview/vision"
     ],
     "Getting Started": [
       "getting-started/index",
