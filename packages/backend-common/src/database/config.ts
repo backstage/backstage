@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-export * from './config';
-export * from './database';
-export * from './errors';
-export * from './logging';
-export * from './middleware';
-export * from './service';
-export * from './hot';
+import { merge } from 'lodash';
+
+/**
+ * Merges database objects together
+ *
+ * @param config The base config
+ * @param overrides Any additional overrides
+ */
+export function mergeDatabaseConfig(config: any, ...overrides: any[]) {
+  return merge(config, ...overrides);
+}
