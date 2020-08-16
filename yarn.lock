@@ -2,6 +2,15 @@
 # yarn lockfile v1
 
 
+"@apidevtools/json-schema-ref-parser@9.0.6", "@apidevtools/json-schema-ref-parser@^9.0.6":
+  version "9.0.6"
+  resolved "https://registry.npmjs.org/@apidevtools/json-schema-ref-parser/-/json-schema-ref-parser-9.0.6.tgz#5d9000a3ac1fd25404da886da6b266adcd99cf1c"
+  integrity sha512-M3YgsLjI0lZxvrpeGVk9Ap032W6TPQkH6pRAZz81Ac3WUNF79VQooAFnp8umjvVzUmD93NkogxEwbSce7qMsUg==
+  dependencies:
+    "@jsdevtools/ono" "^7.1.3"
+    call-me-maybe "^1.0.1"
+    js-yaml "^3.13.1"
+
 "@apollo/protobufjs@^1.0.3":
   version "1.0.4"
   resolved "https://registry.npmjs.org/@apollo/protobufjs/-/protobufjs-1.0.4.tgz#cf01747a55359066341f31b5ce8db17df44244e0"
@@ -40,17 +49,44 @@
   resolved "https://registry.npmjs.org/@ardatan/aggregate-error/-/aggregate-error-0.0.1.tgz#1403ac5de10d8ca689fc1f65844c27179ae1d44f"
   integrity sha512-UQ9BequOTIavs0pTHLMwQwKQF8tTV1oezY/H2O9chA+JNPFZSua55xpU5dPSjAU9/jLJ1VwU+HJuTVN8u7S6Fg==
 
-"@asyncapi/parser@0.16.2":
-  version "0.16.2"
-  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-0.16.2.tgz#6e0806d0a751e999499212e52926a6dc6ec251fe"
-  integrity sha512-dagGD6VFAgl/zLQuoWAfi48i74wv32naV6WcvazcpvEXshW3Q//OrUyRFa6EbY0lmIMXeasc7HKm40AUJ920ug==
+"@asyncapi/avro-schema-parser@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.npmjs.org/@asyncapi/avro-schema-parser/-/avro-schema-parser-0.1.2.tgz#f6c340ccaa24bc36399d3a0f1a6e02790a948453"
+  integrity sha512-K4GlakiE42J9AWwAu3BWn3Qbf+N8C6vE4eEm5LEx7HqAhHG+FA0U7/3vvXoj31rnS/8sgPQpc2msLWQlmCtZyw==
+
+"@asyncapi/openapi-schema-parser@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@asyncapi/openapi-schema-parser/-/openapi-schema-parser-2.0.0.tgz#80e2f38e92b6635dde19aae07b92e3caa0effc58"
+  integrity sha512-XfDp3EIs6ptar3jARQZzi3ObmS44l6Qozc5GJmZJUQ6mHLTTqUGJ0nxcrXAW88vosjilgJVaQ63oGolA6smSHQ==
   dependencies:
+    "@openapi-contrib/openapi-schema-to-json-schema" "^3.0.0"
+
+"@asyncapi/parser@^1.0.0-rc.1":
+  version "1.0.0-rc.2"
+  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.0.0-rc.2.tgz#87d2e83c1d390e21d53f868e6209cbc584d35449"
+  integrity sha512-nZYJLnMiq48q7YHa+AI9ZaDc5UqoqKR7MDhTiIKsIJj6X5fF6hpwBrTP0bQn76Pc1oGBXRB69PcD/Y+Et1qFyw==
+  dependencies:
+    "@apidevtools/json-schema-ref-parser" "^9.0.6"
+    "@asyncapi/specs" "^2.7.4"
+    "@fmvilas/pseudo-yaml-ast" "^0.3.1"
     ajv "^6.10.1"
-    asyncapi "^2.6.1"
     js-yaml "^3.13.1"
-    json-schema-ref-parser "^7.1.0"
+    json-to-ast "^2.1.0"
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
+
+"@asyncapi/raml-dt-schema-parser@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@asyncapi/raml-dt-schema-parser/-/raml-dt-schema-parser-2.0.0.tgz#6e9eff89032aa7b82a963d8e72e320e493fc3835"
+  integrity sha512-ve41LIvbqDU8s0ZeDrWy+dyQZ/XSb7vKiJUHNgy8xcgxsz4YuttbEJbyGJvarw3qf2y+0y6cA1KUFiXoE+AIUg==
+  dependencies:
+    js-yaml "^3.13.1"
+    ramldt2jsonschema "^1.1.0"
+
+"@asyncapi/specs@^2.7.4":
+  version "2.7.4"
+  resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.7.4.tgz#5db4390b68aeb40d70c1723d8f46b0a091110afc"
+  integrity sha512-3Np9ip1Qn5AgnxTrbI0CMW2F/WUorpiAKz+GUfEy4a6GPk0eTSI6CIcbx2/jej5P91nhEyny9+D3oIzn2MreTA==
 
 "@babel/code-frame@7.0.0":
   version "7.0.0"
@@ -1758,6 +1794,13 @@
     unique-filename "^1.1.1"
     which "^1.3.1"
 
+"@fmvilas/pseudo-yaml-ast@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@fmvilas/pseudo-yaml-ast/-/pseudo-yaml-ast-0.3.1.tgz#66c5df2c2d76ba8571dc5bd98fda4d7dce6121de"
+  integrity sha512-8OAB74W2a9M3k9bjYD8AjVXkX+qO8c0SqNT5HlgOqx7AxSw8xdksEcZp7gFtfi+4njSxT6+76ZR+1ubjAwQHOg==
+  dependencies:
+    yaml-ast-parser "0.0.43"
+
 "@graphql-tools/delegate@6.0.15":
   version "6.0.15"
   resolved "https://registry.npmjs.org/@graphql-tools/delegate/-/delegate-6.0.15.tgz#9e060bfc31fe7735bd5b2b401e98dea3fa5d3b25"
@@ -2111,6 +2154,11 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@jsdevtools/ono@^7.1.3":
+  version "7.1.3"
+  resolved "https://registry.npmjs.org/@jsdevtools/ono/-/ono-7.1.3.tgz#9df03bbd7c696a5c58885c34aa06da41c8543796"
+  integrity sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==
+
 "@kyleshockey/object-assign-deep@^0.4.2":
   version "0.4.2"
   resolved "https://registry.npmjs.org/@kyleshockey/object-assign-deep/-/object-assign-deep-0.4.2.tgz#84900f0eefc372798f4751b5262830b8208922ec"
@@ -2123,14 +2171,18 @@
   dependencies:
     stream "^0.0.2"
 
-"@kyma-project/asyncapi-react@^0.6.1":
-  version "0.6.2"
-  resolved "https://registry.npmjs.org/@kyma-project/asyncapi-react/-/asyncapi-react-0.6.2.tgz#99539f630b511d4f7298805dfaf545956192141c"
-  integrity sha512-yGgYv0XyxI5PxNv0GzTqABsXKwFETlZwBWDqwfUtwirTOTIFyLU69lHbMtM9gn0hPFciP09uHmKt8+8gOpMKvA==
+"@kyma-project/asyncapi-react@^0.11.0":
+  version "0.11.0"
+  resolved "https://registry.npmjs.org/@kyma-project/asyncapi-react/-/asyncapi-react-0.11.0.tgz#888fbe9204f120fc04fd8184664e8025d8736c92"
+  integrity sha512-CJu9vJ4tTjk3oRjYvZxE4CRLE/QvFsyvCnecZSXWKNiytLK/JuQxkosyFvKpCKsB+uGsPFn0sfcLPZ5jVSEFYw==
   dependencies:
-    "@asyncapi/parser" "0.16.2"
+    "@asyncapi/avro-schema-parser" "^0.1.2"
+    "@asyncapi/openapi-schema-parser" "^2.0.0"
+    "@asyncapi/parser" "^1.0.0-rc.1"
+    "@asyncapi/raml-dt-schema-parser" "^2.0.0"
     constate "^1.2.0"
     dompurify "^1.0.11"
+    json-schema-ref-parser "^9.0.6"
     markdown-it "^9.1.0"
     merge "^1.2.1"
     openapi-sampler "^1.0.0-beta.15"
@@ -3147,6 +3199,14 @@
   version "1.0.3"
   resolved "https://registry.npmjs.org/@open-draft/until/-/until-1.0.3.tgz#db9cc719191a62e7d9200f6e7bab21c5b848adca"
   integrity sha512-Aq58f5HiWdyDlFffbbSjAlv596h/cOnt2DO1w3DOC7OJ5EHs0hd/nycJfiu9RJbT6Yk6F1knnRRXNSpxoIVZ9Q==
+
+"@openapi-contrib/openapi-schema-to-json-schema@^3.0.0":
+  version "3.0.3"
+  resolved "https://registry.npmjs.org/@openapi-contrib/openapi-schema-to-json-schema/-/openapi-schema-to-json-schema-3.0.3.tgz#c626eab186938f2751ee54ec68b345133bc0065c"
+  integrity sha512-/WX/Jos8n7CxvtWPmhlKl9qCAAW0I+VR+V4yXfQxCmB8wmjiz6lPLTGjNk5zD15qi2MGv58++hQLLdow89KdkA==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+    lodash.clonedeep "^4.5.0"
 
 "@panva/asn1.js@^1.0.0":
   version "1.0.0"
@@ -5605,6 +5665,26 @@ ajv-keywords@^3.1.0, ajv-keywords@^3.4.1:
   resolved "https://registry.npmjs.org/ajv-keywords/-/ajv-keywords-3.4.1.tgz#ef916e271c64ac12171fd8384eaae6b2345854da"
   integrity sha512-RO1ibKvd27e6FEShVFfPALuHI3WjSVNeK5FIsmme/LYRNxjKuNj+Dt7bucLa6NdSv3JcVTyMlm9kGR84z1XpaQ==
 
+ajv@6.5.2:
+  version "6.5.2"
+  resolved "https://registry.npmjs.org/ajv/-/ajv-6.5.2.tgz#678495f9b82f7cca6be248dd92f59bff5e1f4360"
+  integrity sha512-hOs7GfvI6tUI1LfZddH82ky6mOMyTuY0mk7kE2pWpmhhUSkumzaTO5vbVwij39MdwPQWCV4Zv57Eo06NtL/GVA==
+  dependencies:
+    fast-deep-equal "^2.0.1"
+    fast-json-stable-stringify "^2.0.0"
+    json-schema-traverse "^0.4.1"
+    uri-js "^4.2.1"
+
+ajv@^5.0.0:
+  version "5.5.2"
+  resolved "https://registry.npmjs.org/ajv/-/ajv-5.5.2.tgz#73b5eeca3fab653e3d3f9422b341ad42205dc965"
+  integrity sha1-c7Xuyj+rZT49P5Qis0GtQiBdyWU=
+  dependencies:
+    co "^4.6.0"
+    fast-deep-equal "^1.0.0"
+    fast-json-stable-stringify "^2.0.0"
+    json-schema-traverse "^0.3.0"
+
 ajv@^6.1.0, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.12.2, ajv@^6.5.5, ajv@^6.7.0:
   version "6.12.2"
   resolved "https://registry.npmjs.org/ajv/-/ajv-6.12.2.tgz#c629c5eced17baf314437918d2da88c99d5958cd"
@@ -6198,11 +6278,6 @@ async@^3.2.0:
   version "3.2.0"
   resolved "https://registry.npmjs.org/async/-/async-3.2.0.tgz#b3a2685c5ebb641d3de02d161002c60fc9f85720"
   integrity sha512-TR2mEZFVOj2pLStYxLht7TyfuRzaydfpxr3k9RpHIzMgw7A64dzsdqCxH1WJyQdoe8T10nDXd9wnEigmiuHIZw==
-
-asyncapi@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.npmjs.org/asyncapi/-/asyncapi-2.6.1.tgz#5e35124abfd416f050a239bf72cb8eef7ebeda66"
-  integrity sha512-ROszLQMYzyp/CzPyLhuT/9NpJXxI7wrjv6yW8JpA/XVMEWCqyVXr9jajJhs9d/863+ispS+ptGhg1PC17AnIzQ==
 
 asynckit@^0.4.0:
   version "0.4.0"
@@ -7712,6 +7787,11 @@ coa@^2.0.2:
     "@types/q" "^1.5.1"
     chalk "^2.4.1"
     q "^1.1.2"
+
+code-error-fragment@0.0.230:
+  version "0.0.230"
+  resolved "https://registry.npmjs.org/code-error-fragment/-/code-error-fragment-0.0.230.tgz#d736d75c832445342eca1d1fedbf17d9618b14d7"
+  integrity sha512-cadkfKp6932H8UkhzE/gcUqhRMNf8jHzkAN7+5Myabswaghu4xABTgPHDCjW+dBAJxj/SpkTYokpzDqY4pCzQw==
 
 code-point-at@^1.0.0:
   version "1.1.0"
@@ -10523,6 +10603,11 @@ fast-deep-equal@2.0.1, fast-deep-equal@^2.0.1:
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"
   integrity sha1-ewUhjd+WZ79/Nwv3/bLLFf3Qqkk=
 
+fast-deep-equal@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-1.1.0.tgz#c053477817c86b51daa853c81e059b733d023614"
+  integrity sha1-wFNHeBfIa1HaqFPIHgWbcz0CNhQ=
+
 fast-deep-equal@^3.0.0, fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
@@ -11703,6 +11788,11 @@ graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.
   version "4.2.4"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"
   integrity sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
+
+grapheme-splitter@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
+  integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.0.0-alpha.10:
   version "1.0.3"
@@ -14089,14 +14179,24 @@ json-schema-merge-allof@^0.6.0:
     json-schema-compare "^0.2.2"
     lodash "^4.17.4"
 
-json-schema-ref-parser@^7.1.0:
-  version "7.1.4"
-  resolved "https://registry.npmjs.org/json-schema-ref-parser/-/json-schema-ref-parser-7.1.4.tgz#abb3f2613911e9060dc2268477b40591753facf0"
-  integrity sha512-AD7bvav0vak1/63w3jH8F7eHId/4E4EPdMAEZhGxtjktteUv9dnNB/cJy6nVnMyoTPBJnLwFK6tiQPSTeleCtQ==
+json-schema-migrate@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/json-schema-migrate/-/json-schema-migrate-0.2.0.tgz#ba47a5b0072fc72396460e1bd60b44d52178bbc6"
+  integrity sha1-ukelsAcvxyOWRg4b1gtE1SF4u8Y=
   dependencies:
-    call-me-maybe "^1.0.1"
-    js-yaml "^3.13.1"
-    ono "^6.0.0"
+    ajv "^5.0.0"
+
+json-schema-ref-parser@^9.0.6:
+  version "9.0.6"
+  resolved "https://registry.npmjs.org/json-schema-ref-parser/-/json-schema-ref-parser-9.0.6.tgz#fc89a5e6b853f2abe8c0af30d3874196526adb60"
+  integrity sha512-z0JGv7rRD3CnJbZY/qCpscyArdtLJhr/wRBmFUdoZ8xMjsFyNdILSprG2degqRLjBjyhZHAEBpGOxniO9rKTxA==
+  dependencies:
+    "@apidevtools/json-schema-ref-parser" "9.0.6"
+
+json-schema-traverse@^0.3.0:
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-0.3.1.tgz#349a6d44c53a51de89b40805c5d5e59b417d3340"
+  integrity sha1-NJptRMU6Ud6JtAgFxdXlm0F9M0A=
 
 json-schema-traverse@^0.4.1:
   version "0.4.1"
@@ -14122,6 +14222,14 @@ json-stringify-safe@^5.0.1, json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
   integrity sha1-Epai1Y/UXxmg9s4B1lcB4sc1tus=
+
+json-to-ast@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/json-to-ast/-/json-to-ast-2.1.0.tgz#041a9fcd03c0845036acb670d29f425cea4faaf9"
+  integrity sha512-W9Lq347r8tA1DfMvAGn9QNcgYm4Wm7Yc+k8e6vezpMnRT+NHbtlxgNBXRVjXe9YM6eTn6+p/MKOlV/aABJcSnQ==
+  dependencies:
+    code-error-fragment "0.0.230"
+    grapheme-splitter "^1.0.4"
 
 json3@^3.3.2:
   version "3.3.3"
@@ -16473,11 +16581,6 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-ono@^6.0.0:
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/ono/-/ono-6.0.1.tgz#1bc14ffb8af1e5db3f7397f75b88e4a2d64bbd71"
-  integrity sha512-5rdYW/106kHqLeG22GE2MHKq+FlsxMERZev9DCzQX1zwkxnFwBivSn5i17a5O/rDmOJOdf4Wyt80UZljzx9+DA==
-
 open@^6.3.0:
   version "6.4.0"
   resolved "https://registry.npmjs.org/open/-/open-6.4.0.tgz#5c13e96d0dc894686164f18965ecfe889ecfc8a9"
@@ -18324,6 +18427,16 @@ ramda@^0.25.0:
   version "0.25.0"
   resolved "https://registry.npmjs.org/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
   integrity sha512-GXpfrYVPwx3K7RQ6aYT8KPS8XViSXUVJT1ONhoKPE9VAleW42YE+U+8VEyGWt41EnEQW7gwecYJriTI0pKoecQ==
+
+ramldt2jsonschema@^1.1.0:
+  version "1.2.3"
+  resolved "https://registry.npmjs.org/ramldt2jsonschema/-/ramldt2jsonschema-1.2.3.tgz#8d45a7f306a1169a3bde91cab725d1d6d0ff7d55"
+  integrity sha512-+wLDAV2NNv9NkfEUOYStaDu/6RYgYXeC1zLtXE+dMU/jDfjpN4iJnBGycDwFTFaIQGosOQhxph7fEX6Mpwxdug==
+  dependencies:
+    commander "^5.0.0"
+    js-yaml "^3.14.0"
+    json-schema-migrate "^0.2.0"
+    webapi-parser "^0.5.0"
 
 randomatic@^3.0.0:
   version "3.1.1"
@@ -22236,7 +22349,7 @@ update-notifier@^4.0.0:
     semver-diff "^3.1.1"
     xdg-basedir "^4.0.0"
 
-uri-js@^4.2.2:
+uri-js@^4.2.1, uri-js@^4.2.2:
   version "4.2.2"
   resolved "https://registry.npmjs.org/uri-js/-/uri-js-4.2.2.tgz#94c540e1ff772956e2299507c010aea6c8838eb0"
   integrity sha512-KY9Frmirql91X2Qgjry0Wd4Y+YTdrdZheS8TFwvkbLWf/G5KNJDCh6pKL5OZctEW4+0Baa5idK2ZQuELRwPznQ==
@@ -22576,6 +22689,13 @@ wcwidth@^1.0.0, wcwidth@^1.0.1:
   integrity sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=
   dependencies:
     defaults "^1.0.3"
+
+webapi-parser@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/webapi-parser/-/webapi-parser-0.5.0.tgz#2632185c5d8f3e6addb2520857af89ea9844dc14"
+  integrity sha512-fPt6XuMqLSvBz8exwX4QE1UT+pROLHa00EMDCdO0ybICduwQ1V4f7AWX4pNOpCp+x+0FjczEsOxtQU0d8L3QKw==
+  dependencies:
+    ajv "6.5.2"
 
 webidl-conversions@^3.0.0, webidl-conversions@^3.0.1:
   version "3.0.1"
@@ -23165,6 +23285,11 @@ yallist@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
+
+yaml-ast-parser@0.0.43:
+  version "0.0.43"
+  resolved "https://registry.npmjs.org/yaml-ast-parser/-/yaml-ast-parser-0.0.43.tgz#e8a23e6fb4c38076ab92995c5dca33f3d3d7c9bb"
+  integrity sha512-2PTINUwsRqSd+s8XxKaJWQlUuEMHJQyEuh2edBbW8KNJz0SJPwUSD2zRWqezFEdN7IzAgeuYHFUCF7o8zRdZ0A==
 
 yaml@*, yaml@^1.10.0, yaml@^1.7.2, yaml@^1.9.2:
   version "1.10.0"
