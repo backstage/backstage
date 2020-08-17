@@ -41,8 +41,12 @@ export type Options = {
 };
 
 const readState = (stateString: string): OAuthState => {
+
+  // This is hardcoded for Azure (breaks other providers) until workaround is found
+  const fixedState = stateString.substring(38)
+  
   const state = Object.fromEntries(
-    new URLSearchParams(decodeURIComponent(stateString)),
+    new URLSearchParams(decodeURIComponent(fixedState)),
   );
   if (
     !state.nonce ||

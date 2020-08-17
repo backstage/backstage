@@ -74,6 +74,42 @@ export AUTH_AUTH0_CLIENT_ID=x
 export AUTH_AUTH0_CLIENT_SECRET=x
 ```
 
+### Azure
+
+#### Creating an Azure AD App Registration
+
+To create a new Azure AD App Registration, click [here](https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RegisteredApps)
+
+- Click on the `New Registration` button.
+- Give the app a name. For example, `backstage-dev`
+- Select `Accounts in this organizational directory only` under supported account types.
+- Enter the callback URL for your backstage backend instance:
+   - For local development, this is likely `http://localhost:7000/auth/azure/handler/frame`
+   - For non-local deployments, this will be `https://{APP_FQDN}:{APP_BACKEND_PORT}/auth/azure/handler/frame`
+- Click `Register`.
+
+We also need to add a couple of extra claims to the ID Token configuration that aren't there by default.  
+These are used to populate the Backstage identity profile.
+
+- Click on the `Token Configuration` menu item.
+- Click on the `Add Optional Claim` button.
+- Select the `ID` token type, check the box next to `family_name` and `given_name`, then click `Add`.
+- On the popup message, check the box to `Turn on the Microsoft Graph permissions` and click the `Add` button.
+
+Your Azure AD App Registration for Backstage should now be properly configured.
+
+#### Starting the Auth Backend
+
+```bash
+cd packages/backend
+
+export AUTH_AZURE_CLIENT_ID=x
+export AUTH_AZURE_CLIENT_SECRET=x
+export AUTH_AZURE_TENANT_ID=x
+
+yarn start
+```
+
 ### SAML
 
 To try out SAML, you can use the mock identity provider:

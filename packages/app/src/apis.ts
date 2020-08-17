@@ -30,6 +30,7 @@ import {
   OktaAuth,
   GitlabAuth,
   Auth0Auth,
+  AzureAuth,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
@@ -38,6 +39,7 @@ import {
   oktaAuthApiRef,
   gitlabAuthApiRef,
   auth0AuthApiRef,
+  azureAuthApiRef,
   storageApiRef,
   WebStorage,
 } from '@backstage/core';
@@ -106,6 +108,15 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     googleAuthApiRef,
     GoogleAuth.create({
+      apiOrigin: backendUrl,
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+  );
+
+  builder.add(
+    azureAuthApiRef,
+    AzureAuth.create({
       apiOrigin: backendUrl,
       basePath: '/auth/',
       oauthRequestApi,

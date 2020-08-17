@@ -41,6 +41,68 @@ export type GenericOAuth2ProviderOptions = OAuthProviderOptions & {
   tokenURL: string;
 };
 
+export type AzureProviderOptions = {
+  /**
+   * Client ID of the auth provider.
+   */
+  clientID: string;
+  /**
+   * Client Secret of the auth provider.
+   */
+  clientSecret: string;
+  /**
+   * Metadata endpoint provided by the Microsoft Identity Portal that provides key URLs and other 
+   * important info at runtime. e.g.
+   * 
+   * https://login.microsoftonline.com/${tenantID}/v2.0/.well-known/openid-configuration
+   */
+  identityMetadata: string;
+  /**
+   * Redirect URL to be passed to the auth provider to redirect to after the user signs in.
+   * This must be registered in your Azure AD app registration.
+   */
+  redirectUrl: string;
+  /**
+   * For login only flows use 'id_token'.
+   * For accessing resources use `code id_token`, 'id_token code' or `code`.
+   */
+  responseType: any;
+  /**
+   * How you get the authorization code and tokens back, query or form_post.
+   */
+  responseMode: any;
+  /**
+   * Whether you want to pass the request to the verify function.
+   */
+  passReqToCallback: any;
+  /**
+   * Be sessionless and use cookie storage for state and nonce.
+   */
+  useCookieInsteadOfSession: boolean;
+  /**
+   * Array of key items. Each key item has the form { key: '...', iv: '...' }.
+   * 'key' is any string of length 32, and 'iv' is any string of length 12.
+   */
+  cookieEncryptionKeys: {key: string, iv: string}[];
+  /**
+   * Allow use of non-secure HTTP endpoints for redirect URL.
+   */
+  allowHttpForRedirectUrl: boolean;
+  /**
+   * list of scope values indicating the required scope of the access token for accessing 
+   * the requested resource.
+   */
+  scope: string;
+  /**
+   * If this is set to true, no personal information such as tokens and claims will be logged.
+   */
+  loggingNoPII: boolean;
+    /**
+   * Logging level of passport-azure-ad provider. Options are 'info', 'warn', 'error'.
+   */
+  loggingLevel: any;
+};
+
 export type OAuthProviderConfig = {
   /**
    * Cookies can be marked with a secure flag to send cookies only when the request
@@ -274,13 +336,13 @@ export type OAuthPrivateInfo = {
  */
 export type WebMessageResponse =
   | {
-      type: 'authorization_response';
-      response: AuthResponse<unknown>;
-    }
+    type: 'authorization_response';
+    response: AuthResponse<unknown>;
+  }
   | {
-      type: 'authorization_response';
-      error: Error;
-    };
+    type: 'authorization_response';
+    error: Error;
+  };
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,

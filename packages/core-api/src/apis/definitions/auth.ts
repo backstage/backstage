@@ -284,3 +284,21 @@ export const oauth2ApiRef = createApiRef<
   id: 'core.auth.oauth2',
   description: 'Example of how to use oauth2 custom provider',
 });
+
+/**
+ * Provides authentication towards Azure APIs and identities.
+ *
+ * For a full list of supported scopes, see:
+ * - https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent 
+ * - https://docs.microsoft.com/en-us/graph/permissions-reference 
+ */
+export const azureAuthApiRef = createApiRef<
+  OAuthApi &
+  OpenIdConnectApi &
+  ProfileInfoApi &
+  BackstageIdentityApi &
+  SessionStateApi
+>({
+  id: 'core.auth.azure',
+  description: 'Provides authentication towards Azure AD APIs and identities',
+});

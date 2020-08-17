@@ -19,6 +19,7 @@ import {
   gitlabAuthApiRef,
   oktaAuthApiRef,
   githubAuthApiRef,
+  azureAuthApiRef,
 } from '@backstage/core';
 
 export const providers = [
@@ -27,6 +28,12 @@ export const providers = [
     title: 'Google',
     message: 'Sign In using Google',
     apiRef: googleAuthApiRef,
+  },
+  {
+    id: 'azure-auth-provider',
+    title: 'Azure',
+    message: 'Sign In using Azure AD',
+    apiRef: azureAuthApiRef,
   },
   {
     id: 'gitlab-auth-provider',

@@ -21,6 +21,7 @@ import {
   identityApiRef,
   oauth2ApiRef,
   oktaAuthApiRef,
+  azureAuthApiRef,
   useApi,
   configApiRef,
 } from '@backstage/core-api';
@@ -57,6 +58,13 @@ export function SidebarUserSettings() {
           <OIDCProviderSettings
             title="Google"
             apiRef={googleAuthApiRef}
+            icon={Star}
+          />
+        )}
+        {providers.includes('azure') && (
+          <OIDCProviderSettings
+            title="Azure"
+            apiRef={azureAuthApiRef}
             icon={Star}
           />
         )}

@@ -24,6 +24,7 @@ import { createOAuth2Provider } from './oauth2';
 import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
 import { createAuth0Provider } from './auth0'
+import { createAzureProvider } from './azure';
 import {
   AuthProviderConfig,
   AuthProviderFactory,
@@ -43,6 +44,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   okta: createOktaProvider,
   auth0: createAuth0Provider,
   oauth2: createOAuth2Provider,
+  azure: createAzureProvider,
 };
 
 export const createAuthProviderRouter = (
