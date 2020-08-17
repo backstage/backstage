@@ -152,11 +152,11 @@ export function createBackendConfig(
     externals: [
       nodeExternals({
         modulesDir: paths.rootNodeModules,
-        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
+        allowlist: ['webpack/hot/poll?100', /\@backstage\/.*/],
       }),
       nodeExternals({
         modulesDir: paths.targetNodeModules,
-        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
+        allowlist: ['webpack/hot/poll?100', /\@backstage\/.*/],
       }),
     ],
     target: 'node' as const,
