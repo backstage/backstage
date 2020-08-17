@@ -70,6 +70,7 @@ nav:
       - Overview: 'auth/index.md'
       - Add auth provider: 'auth/add-auth-provider.md'
       - Auth backend: 'auth/auth-backend.md'
+      - Auth backend class structure: 'auth/auth-backend-classes.md'
       - OAuth: 'auth/oauth.md'
       - Glossary: 'auth/glossary.md'
   - Designing for Backstage:

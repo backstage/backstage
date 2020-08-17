@@ -103,7 +103,8 @@
       "auth/add-auth-provider",
       "auth/auth-backend",
       "auth/oauth",
-      "auth/glossary"
+      "auth/glossary",
+      "auth/auth-backend-classes"
     ],
 
     "Designing for Backstage": [
