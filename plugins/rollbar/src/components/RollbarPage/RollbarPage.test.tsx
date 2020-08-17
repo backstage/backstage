@@ -15,7 +15,12 @@
  */
 
 import * as React from 'react';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigApi,
+  configApiRef,
+} from '@backstage/core';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import { RollbarApi, rollbarApiRef } from '../../api/RollbarApi';
@@ -30,11 +35,20 @@ describe('RollbarPage component', () => {
   const rollbarApi: Partial<RollbarApi> = {
     getAllProjects: () => Promise.resolve(projects),
   };
+  const config: Partial<ConfigApi> = {
+    getString: () => 'foo',
+    getOptionalString: () => 'foo',
+  };
 
   const renderWrapped = (children: React.ReactNode) =>
     render(
       wrapInTestApp(
-        <ApiProvider apis={ApiRegistry.from([[rollbarApiRef, rollbarApi]])}>
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [rollbarApiRef, rollbarApi],
+            [configApiRef, config],
+          ])}
+        >
           {children}
         </ApiProvider>,
       ),

@@ -21,7 +21,7 @@ A Backstage app is a modern monorepo web project that is built using Backstage p
 
 More specifically, a Backstage app includes the core packages and APIs that provide base functionality to the app. The actual UX is provided by plugins. As an example, when you first load the `/` page of the app, the content is provided by the `welcome` plugin.
 
-Plugins are the essential building blocks of Backstage and extend the platform by providing additional features and functionality. Read more about [Backstage plugins](https://github.com/spotify/backstage/tree/master/docs/getting-started) on GitHub.
+Plugins are the essential building blocks of Backstage and extend the platform by providing additional features and functionality. Read more about [Backstage plugins](/docs/getting-started) on GitHub.
 
 ## A personalized platform
 
@@ -50,7 +50,7 @@ yarn start
 
 And you are good to go! 👍
 
-Read the full documentation on how to [create an app](https://github.com/spotify/backstage/blob/master/docs/create-an-app.md) on GitHub.
+Read the full documentation on how to [create an app](/docs/getting-started/create-an-app.md) on GitHub.
 
 ## What do I get? (Let's get technical...)
 

@@ -27,3 +27,7 @@ export { plugin as TechDocs } from '@backstage/plugin-techdocs';
 export { plugin as GraphiQL } from '@backstage/plugin-graphiql';
 export { plugin as GithubActions } from '@backstage/plugin-github-actions';
 export { plugin as Rollbar } from '@backstage/plugin-rollbar';
+export { plugin as Newrelic } from '@backstage/plugin-newrelic';
+export { plugin as TravisCI } from '@roadiehq/backstage-plugin-travis-ci';
+export { plugin as Jenkins } from '@backstage/plugin-jenkins';
+export { plugin as ApiDocs } from '@backstage/plugin-api-docs';

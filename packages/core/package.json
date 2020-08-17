@@ -40,7 +40,7 @@
     "classnames": "^2.2.6",
     "clsx": "^1.1.0",
     "lodash": "^4.17.15",
-    "material-table": "1.68.x",
+    "material-table": "1.68.0",
     "prop-types": "^15.7.2",
     "rc-progress": "^3.0.0",
     "react": "^16.12.0",
@@ -63,7 +63,7 @@
     "@types/google-protobuf": "^3.7.2",
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
-    "@types/react-helmet": "^5.0.15",
+    "@types/react-helmet": "^6.1.0",
     "@types/zen-observable": "^0.8.0",
     "jest-fetch-mock": "^3.0.3"
   },

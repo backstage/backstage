@@ -1,4 +1,10 @@
-# Architecture Decision Records (ADR)
+---
+id: adrs-overview
+title: Architecture Decision Records (ADR)
+sidebar_label: Overview
+---
+
+#
 
 The substantial architecture decisions made in the Backstage project lives here.
 For more information about ADRs, when to write them, and why, please see

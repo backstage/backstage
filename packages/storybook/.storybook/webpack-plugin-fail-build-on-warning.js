@@ -19,7 +19,7 @@
  * https://github.com/spotify/backstage/issues/718. To make sure new warnings are not introduced with new PRs, we
  * want to fail CI builds if there are warnings when building storybook.
  *
- * This webpack plugin makes sure the CI builds fail on Webpack warnings. We also have a whitelist of warnings here
+ * This webpack plugin makes sure the CI builds fail on Webpack warnings. We also have an allowlist of warnings here
  * which we think are non-critical.
  *
  * Note that this implementation will not detect other warnings emitted by storybook build that are separate from
@@ -32,7 +32,7 @@
  */
 class WebpackPluginFailBuildOnWarning {
   // Ignore the following warnings in the Webpack build.
-  warningsWhitelist = new Set([
+  warningsAllowlist = new Set([
     'AssetsOverSizeLimitWarning',
     'EntrypointsOverSizeLimitWarning',
     'NoAsyncChunksWarning',
@@ -50,7 +50,7 @@ class WebpackPluginFailBuildOnWarning {
     if (warnings.length > 0) {
       // Throw error if there are unexpected warnings.
       for (let warning of warnings) {
-        if (!this.warningsWhitelist.has(warning.name)) {
+        if (!this.warningsAllowlist.has(warning.name)) {
           process.on('beforeExit', () => {
             console.log(
               `You have some unexpected warning(s) in your webpack build. Exiting process as error.`,

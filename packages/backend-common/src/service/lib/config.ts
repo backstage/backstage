@@ -37,11 +37,18 @@ export type BaseOptions = {
  * ```
  */
 export function readBaseOptions(config: ConfigReader): BaseOptions {
-  // TODO(freben): Expand this to support more addresses and perhaps optional
-  const { host, port } = parseListenAddress(config.getString('listen'));
+  if (typeof config.get('listen') === 'string') {
+    // TODO(freben): Expand this to support more addresses and perhaps optional
+    const { host, port } = parseListenAddress(config.getString('listen'));
+    return removeUnknown({
+      listenPort: port,
+      listenHost: host,
+    });
+  }
+
   return removeUnknown({
-    listenPort: port,
-    listenHost: host,
+    listenPort: config.getOptionalNumber('listen.port'),
+    listenHost: config.getOptionalString('listen.host'),
   });
 }
 

@@ -35,6 +35,7 @@ describe('ComponentV1alpha1Policy', () => {
         type: 'service',
         lifecycle: 'production',
         owner: 'me',
+        implementsApis: ['api-0'],
       },
     };
     policy = new ComponentEntityV1alpha1Policy();

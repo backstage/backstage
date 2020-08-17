@@ -1,4 +1,7 @@
-# Backstage App
+---
+id: create-an-app
+title: Create an App
+---
 
 To get set up quickly with your own Backstage project you can create a Backstage
 App.

@@ -1,4 +1,7 @@
-# User Authentication and Authorization in Backstage
+---
+id: index
+title: User Authentication and Authorization in Backstage
+---
 
 ## Summary
 

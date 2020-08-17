@@ -4,11 +4,15 @@ app:
 
 backend:
   baseUrl: http://localhost:7000
-  listen: 0.0.0.0:7000
+  listen:
+    port: 7000
   cors:
     origin: http://localhost:3000
     methods: [GET, POST, PUT, DELETE]
     credentials: true
+  database:
+    client: sqlite3
+    connection: ':memory:'
 
 proxy:
   '/circleci/api':
@@ -16,6 +20,15 @@ proxy:
     changeOrigin: true
     pathRewrite:
       '^/proxy/circleci/api/': '/'
+  '/jenkins/api':
+    target: 'http://localhost:8080'
+    changeOrigin: true
+    headers:
+      Authorization:
+        $secret:
+          env: JENKINS_BASIC_AUTH_HEADER
+    pathRewrite:
+      '^/proxy/jenkins/api/': '/'
 
 organization:
   name: Spotify
@@ -25,6 +38,17 @@ techdocs:
 
 sentry:
   organization: spotify
+
+rollbar:
+  organization: spotify
+  accountToken:
+    $secret:
+      env: ROLLBAR_ACCOUNT_TOKEN
+
+newrelic:
+  api:
+    baseUrl: 'https://api.newrelic.com/v2'
+    key: NEW_RELIC_REST_API_KEY
 
 auth:
   providers:

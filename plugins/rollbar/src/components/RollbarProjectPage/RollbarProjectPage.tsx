@@ -17,17 +17,21 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core';
+import { configApiRef, useApi } from '@backstage/core';
 import { rollbarApiRef } from '../../api/RollbarApi';
 import { RollbarLayout } from '../RollbarLayout/RollbarLayout';
 import { RollbarTopItemsTable } from '../RollbarTopItemsTable/RollbarTopItemsTable';
 
 export const RollbarProjectPage = () => {
+  const configApi = useApi(configApiRef);
   const rollbarApi = useApi(rollbarApiRef);
+  const org =
+    configApi.getOptionalString('rollbar.organization') ??
+    configApi.getString('organization.name');
   const { componentId } = useParams() as {
     componentId: string;
   };
-  const { value, loading } = useAsync(() =>
+  const { value, loading, error } = useAsync(() =>
     rollbarApi
       .getTopActiveItems(componentId, 168)
       .then(data =>
@@ -37,7 +41,13 @@ export const RollbarProjectPage = () => {
 
   return (
     <RollbarLayout>
-      <RollbarTopItemsTable loading={loading} items={value || []} />
+      <RollbarTopItemsTable
+        items={value || []}
+        organization={org}
+        project={componentId}
+        loading={loading}
+        error={error}
+      />
     </RollbarLayout>
   );
 };

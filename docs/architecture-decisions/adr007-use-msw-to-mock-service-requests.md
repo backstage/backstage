@@ -1,4 +1,8 @@
-# ADR007: Use MSW to mock http requests
+---
+id: adrs-adr007
+title: ADR007: Use MSW to mock http requests
+sidebar_label: ADR007
+---
 
 ## Context
 

@@ -1,4 +1,4 @@
-![headline](docs/headline.png)
+![headline](docs/assets/headline.png)
 
 # [Backstage](https://backstage.io)
 
@@ -29,7 +29,7 @@ For more information go to [backstage.io](https://backstage.io) or join our [Dis
 
 We created Backstage about 4 years ago. While our internal version of Backstage has had the benefit of time to mature and evolve, the first iteration of our open source version is still nascent. We are envisioning three phases of the project and we have already begun work on various aspects of these phases:
 
-- 🐣 **Phase 1:** Extensible frontend platform (Done ✅) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable [UX patterns and components](http://storybook.backstage.io) help ensure a consistent experience between tools.
+- 🐣 **Phase 1:** Extensible frontend platform (Done ✅) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable [UX patterns and components](http://backstage.io/storybook) help ensure a consistent experience between tools.
 
 - 🐢 **Phase 2:** Service Catalog ([alpha released](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)) - With a single catalog, Backstage makes it easy for a team to manage ten services — and makes it possible for your company to manage thousands of them. Developers can get a uniform overview of all their software and related resources, regardless of how and where they are running, as well as an easy way to onboard and manage those resources.
 
@@ -49,27 +49,33 @@ The Backstage platform consists of a number of different components:
 - [**proxy**](https://github.com/spotify/backstage/tree/master/plugins/proxy-backend) - Terminates HTTPS and exposes any RESTful API to Plugins.
 - **identity** - A backend service that holds your organisation's metadata.
 
-## Getting started
+## Getting Started
 
-To run a Backstage app, you will need to have the following installed:
+There are two different ways to get started with Backstage, either by creating a standalone app, or by cloning this repo. Which method you use depends on what you're planning to do.
 
-- [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-- [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
-- [yarn](https://classic.yarnpkg.com/en/docs/install)
+Creating a standalone instance makes it simpler to customize the application for your needs whilst staying up to date with the project. You will also depend on `@backstage` packages from NPM, making the project much smaller. This is the recommended approach if you want to kick the tyres of Backstage or setup your own instance.
 
-After cloning this repo, open a terminal window and start the example app using the following commands from the project root:
+On the other hand, if you want to contribute plugins or to the project in general, it's easier to fork and clone this project. That will let you stay up to date with the latest changes, and gives you an easier path to make Pull Requests towards this repo.
+
+### Creating a Standalone App
+
+Backstage provides the `@backstage/create-app` package to scaffold standalone instances of Backstage. You will need to have
+[NodeJS](https://nodejs.org/en/download/) Active LTS Release installed
+(currently v12), and [yarn](https://classic.yarnpkg.com/en/docs/install). You will also need to have [Docker](https://docs.docker.com/engine/install/) installed to use some features like Software Templates and TechDocs.
+
+Using `npx` you can then run the following to create an app in a chosen subdirectory of your current working directory:
 
 ```bash
-yarn install # Install dependencies
-
-yarn start # Start dev server, use --check to enable linting and type-checks
+npx @backstage/create-app
 ```
 
-The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
+You will be taken through a wizard to create your app, and the output should look something like this. You can read more about this process [here](docs/getting-started/create-an-app.md)
 
-And that's it! You are good to go 👍
+### Contributing to Backstage
 
-### Next step
+You can read more in our [CONTRIBUTING.md](./CONTRIBUTING.md#get-started) guide, which can help you get setup with a Backstage development environment.
+
+### Next steps
 
 Take a look at the [Getting Started](docs/getting-started/index.md) guide to learn how to set up Backstage, and how to develop on the platform.
 
@@ -77,14 +83,9 @@ Take a look at the [Getting Started](docs/getting-started/index.md) guide to lea
 
 - [Main documentation](docs/README.md)
 - [Service Catalog](docs/features/software-catalog/index.md)
-- [Create a Backstage App](docs/getting-started/create-an-app.md)
 - [Architecture](docs/overview/architecture-terminology.md) ([Decisions](docs/architecture-decisions/index.md))
 - [Designing for Backstage](docs/dls/design.md)
-- [Storybook - UI components](http://storybook.backstage.io)
-
-## Contributing
-
-We would love your help in building Backstage! See [CONTRIBUTING](CONTRIBUTING.md) for more information.
+- [Storybook - UI components](http://backstage.io/storybook)
 
 ## Community
 
