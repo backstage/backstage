@@ -37,7 +37,7 @@ export function createDatabase(
   if (client === 'pg') {
     return createPgDatabase(config, overrides);
   } else if (client === 'sqlite3') {
-    return createSqlite3Database(config, overrides);
+    return createSqlite3Database(config);
   }
 
   return knex(mergeDatabaseConfig(config.get(), overrides));
