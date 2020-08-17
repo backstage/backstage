@@ -98,12 +98,7 @@ class AzureAuth
 
     const sessionManager = new RefreshingAuthSessionManager({
       connector,
-      defaultScopes: new Set([
-        'openid',
-        'offline_access',
-        'profile',
-        'email'
-      ]),
+      defaultScopes: new Set(['openid', 'offline_access', 'profile', 'email']),
       sessionScopes: (session: AzureSession) => session.providerInfo.scopes,
       sessionShouldRefresh: (session: AzureSession) => {
         const expiresInSec =
@@ -119,7 +114,7 @@ class AzureAuth
     return this.sessionManager.sessionState$();
   }
 
-  constructor(private readonly sessionManager: SessionManager<AzureSession>) { }
+  constructor(private readonly sessionManager: SessionManager<AzureSession>) {}
 
   async getAccessToken(
     scope?: string | string[],
@@ -161,7 +156,7 @@ class AzureAuth
     const scopeList = Array.isArray(scopes)
       ? scopes
       : scopes.split(/[\s]/).filter(Boolean);
-    
+
     return new Set(scopeList);
   }
 }

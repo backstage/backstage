@@ -48,7 +48,7 @@ type PrivateInfo = {
 };
 
 export class AzureAuthProvider implements OAuthProviderHandlers {
-  private readonly _strategy: AzureStrategy;    
+  private readonly _strategy: AzureStrategy;
 
   static transformAuthResponse(
     rawProfile: any,
@@ -56,7 +56,6 @@ export class AzureAuthProvider implements OAuthProviderHandlers {
     params: any,
     photoURL?: any,
   ): OAuthResponse {
-
     const passportProfile: passport.Profile = {
       id: rawProfile.oid,
       username: rawProfile._json.preferred_username,
@@ -68,15 +67,15 @@ export class AzureAuthProvider implements OAuthProviderHandlers {
       },
       // If no email for user, fallback to preferred_username
       emails: [
-        { value: rawProfile._json.email || rawProfile._json.preferred_username }
+        {
+          value: rawProfile._json.email || rawProfile._json.preferred_username,
+        },
       ],
-      photos: [
-        { value: photoURL }
-      ],
+      photos: [{ value: photoURL }],
     };
 
-    const profile = makeProfileInfo(passportProfile, params.id_token)
-    
+    const profile = makeProfileInfo(passportProfile, params.id_token);
+
     const providerInfo = {
       idToken: params.id_token,
       accessToken,
@@ -88,7 +87,6 @@ export class AzureAuthProvider implements OAuthProviderHandlers {
       providerInfo,
       profile,
     };
-
   }
 
   constructor(options: AzureProviderOptions) {
@@ -105,33 +103,39 @@ export class AzureAuthProvider implements OAuthProviderHandlers {
         params,
         done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
       ) => {
+        got
+          .get('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
+            encoding: 'binary',
+            responseType: 'buffer',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then(photoData => {
+            const photoURL = `data:image/jpeg;base64,${Buffer.from(
+              photoData.body,
+            ).toString('base64')}`;
+            const authResponse = AzureAuthProvider.transformAuthResponse(
+              rawProfile,
+              accessToken,
+              params,
+              photoURL,
+            );
 
-        got.get('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
-          encoding: 'binary',
-          responseType: 'buffer',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          },
-        }).then(photoData => {
-          const photoURL = `data:image/jpeg;base64,${Buffer.from(photoData.body).toString('base64')}`          
-          const authResponse = AzureAuthProvider.transformAuthResponse(
-            rawProfile,
-            accessToken,
-            params,
-            photoURL,
-          );
+            done(undefined, authResponse, { refreshToken });
+          })
+          .catch(error => {
+            console.log(
+              `Error retrieving user photo from Microsoft Graph API: ${error}`,
+            );
+            const authResponse = AzureAuthProvider.transformAuthResponse(
+              rawProfile,
+              accessToken,
+              params,
+            );
 
-          done(undefined, authResponse, { refreshToken });
-        }).catch(error => {
-          console.log(`Error retrieving user photo from Microsoft Graph API: ${error}`)
-          const authResponse = AzureAuthProvider.transformAuthResponse(
-            rawProfile,
-            accessToken,
-            params,
-          );
-  
-          done(undefined, authResponse, { refreshToken });
-        });
+            done(undefined, authResponse, { refreshToken });
+          });
       },
     );
   }
@@ -143,25 +147,25 @@ export class AzureAuthProvider implements OAuthProviderHandlers {
     const providerOptions = {
       ...options,
       prompt: 'consent',
-      customState: options.state
+      customState: options.state,
     };
     return await executeRedirectStrategy(req, this._strategy, providerOptions);
   }
 
   async handler(
-    req: express.Request
+    req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken: string }> {
-    const { response, privateInfo } = await executeFrameHandlerStrategy<OAuthResponse, PrivateInfo>(req, this._strategy);
+    const { response, privateInfo } = await executeFrameHandlerStrategy<
+      OAuthResponse,
+      PrivateInfo
+    >(req, this._strategy);
     return {
       response: await this.populateIdentity(response),
       refreshToken: privateInfo.refreshToken,
     };
   }
 
-  async refresh(
-    refreshToken: string,
-    scope: string,
-  ): Promise<OAuthResponse> {
+  async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
     const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
@@ -198,7 +202,6 @@ export class AzureAuthProvider implements OAuthProviderHandlers {
 
     return { ...response, backstageIdentity: { id } };
   }
-
 }
 
 export function createAzureProvider(
@@ -208,7 +211,6 @@ export function createAzureProvider(
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
-
   const providerId = 'azure';
   const secure = envConfig.getBoolean('secure');
   const appOrigin = envConfig.getString('appOrigin');
@@ -218,8 +220,8 @@ export function createAzureProvider(
   const tenantID = envConfig.getString('tenantId');
 
   // URL metadata (e.g. authorize and token endpoints) are retrieved from the OIDC config endpoint
-  const identityMetadata = `https://login.microsoftonline.com/${tenantID}/v2.0/.well-known/openid-configuration`
-  
+  const identityMetadata = `https://login.microsoftonline.com/${tenantID}/v2.0/.well-known/openid-configuration`;
+
   const responseType = 'code';
   const responseMode = 'query';
   const redirectUrl = `${baseUrl}/${providerId}/handler/frame`;
@@ -272,7 +274,7 @@ export function createAzureProvider(
     }
 
     logger.warn(
-      'Azure auth provider disabled, set AUTH_AZURE_CLIENT_ID and AUTH_AZURE_CLIENT_SECRET env vars to enable.'
+      'Azure auth provider disabled, set AUTH_AZURE_CLIENT_ID and AUTH_AZURE_CLIENT_SECRET env vars to enable.',
     );
     return undefined;
   }
@@ -285,5 +287,4 @@ export function createAzureProvider(
     appOrigin,
     tokenIssuer,
   });
-
 }
