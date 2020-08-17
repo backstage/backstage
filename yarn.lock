@@ -15310,7 +15310,7 @@ markdown-toc@^1.2.0:
     repeat-string "^1.6.1"
     strip-color "^0.1.0"
 
-material-table@1.68.x:
+material-table@1.68.0:
   version "1.68.0"
   resolved "https://registry.npmjs.org/material-table/-/material-table-1.68.0.tgz#275c3d9a885c40ae4bc5a7461c00e877f92397b9"
   integrity sha512-dyJJaVsS3m+i6sn71AvYcVdA1P9X1XiUOM2PekfvEeeMtkdQb66oChGkk77ndYi3Ja6j4DovGVNrgeVLwXLZiw==
