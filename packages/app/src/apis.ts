@@ -74,6 +74,7 @@ import {
   TravisCIApi,
   travisCIApiRef,
 } from '@roadiehq/backstage-plugin-travis-ci';
+import { GithubPullRequestsClient, githubPullRequestsApiRef } from '@roadiehq/backstage-plugin-github-pull-requests';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -105,6 +106,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
 
   builder.add(travisCIApiRef, new TravisCIApi());
+  builder.add(githubPullRequestsApiRef, new GithubPullRequestsClient());
 
   const oauthRequestApi = builder.add(
     oauthRequestApiRef,
