@@ -4498,20 +4498,10 @@
     "@types/qs" "*"
     "@types/range-parser" "*"
 
-"@types/express@*", "@types/express@^4.17.6":
+"@types/express@*", "@types/express@4.17.7", "@types/express@^4.17.6":
   version "4.17.7"
   resolved "https://registry.npmjs.org/@types/express/-/express-4.17.7.tgz#42045be6475636d9801369cd4418ef65cdb0dd59"
   integrity sha512-dCOT5lcmV/uC2J9k0rPafATeeyz+99xTt54ReX11/LObZgfzJqZNcW27zGhYyX+9iSEGXGt5qLPwRSvBZcLvtQ==
-  dependencies:
-    "@types/body-parser" "*"
-    "@types/express-serve-static-core" "*"
-    "@types/qs" "*"
-    "@types/serve-static" "*"
-
-"@types/express@4.17.4":
-  version "4.17.4"
-  resolved "https://registry.npmjs.org/@types/express/-/express-4.17.4.tgz#e78bf09f3f530889575f4da8a94cd45384520aac"
-  integrity sha512-DO1L53rGqIDUEvOjJKmbMEQ5Z+BM2cIEPy/eV3En+s166Gz+FeuzRerxcab757u/U4v4XF4RYrZPmqKa+aY/2w==
   dependencies:
     "@types/body-parser" "*"
     "@types/express-serve-static-core" "*"
@@ -5890,10 +5880,10 @@ apollo-server-caching@^0.5.2:
   dependencies:
     lru-cache "^5.0.0"
 
-apollo-server-core@^2.16.0:
-  version "2.16.0"
-  resolved "https://registry.npmjs.org/apollo-server-core/-/apollo-server-core-2.16.0.tgz#56b367db49f97b7da03b29cef89b63d9ed14ee0c"
-  integrity sha512-mnvg2cPvsQtjFXIqIhEAbPqGyiSXDSbiBgNQ8rY8g7r2eRMhHKZePqGF03gP1/w87yVaSDRAZBDk6o+jiBXjVQ==
+apollo-server-core@^2.16.0, apollo-server-core@^2.16.1:
+  version "2.16.1"
+  resolved "https://registry.npmjs.org/apollo-server-core/-/apollo-server-core-2.16.1.tgz#5b5b8245ab9c0cb6c2367ec19ab855dea6ccea3a"
+  integrity sha512-nuwn5ZBbmzPwDetb3FgiFFJlNK7ZBFg8kis/raymrjd3eBGdNcOyMTJDl6J9673X9Xqp+dXQmFYDW/G3G8S1YA==
   dependencies:
     "@apollographql/apollo-tools" "^0.4.3"
     "@apollographql/graphql-playground-html" "1.6.26"
@@ -5932,17 +5922,17 @@ apollo-server-errors@^2.4.2:
   integrity sha512-FeGxW3Batn6sUtX3OVVUm7o56EgjxDlmgpTLNyWcLb0j6P8mw9oLNyAm3B+deHA4KNdNHO5BmHS2g1SJYjqPCQ==
 
 apollo-server-express@^2.16.0:
-  version "2.16.0"
-  resolved "https://registry.npmjs.org/apollo-server-express/-/apollo-server-express-2.16.0.tgz#3474a7f7eb868a2a847a364839147f8d7f26454a"
-  integrity sha512-mBIvKcF8gApj7wbmqe0A4Tsy+Pw66mI6cmtD912bG59KhUBveSCZ21dDlRSvnXUyK+GOo2ItwcUEtmks+Z2Pqw==
+  version "2.16.1"
+  resolved "https://registry.npmjs.org/apollo-server-express/-/apollo-server-express-2.16.1.tgz#7438bca590ef8577d24d20ba0b6d582c120c0146"
+  integrity sha512-Oq5YNcaMYnRk6jDmA9LWf8oSd2KHDVe7jQ4wtooAvG9FVUD+FaFBgSkytXHMvtifQh2wdF07Ri8uDLMz6IQjTw==
   dependencies:
     "@apollographql/graphql-playground-html" "1.6.26"
     "@types/accepts" "^1.3.5"
     "@types/body-parser" "1.19.0"
     "@types/cors" "^2.8.4"
-    "@types/express" "4.17.4"
+    "@types/express" "4.17.7"
     accepts "^1.3.5"
-    apollo-server-core "^2.16.0"
+    apollo-server-core "^2.16.1"
     apollo-server-types "^0.5.1"
     body-parser "^1.18.3"
     cors "^2.8.4"
