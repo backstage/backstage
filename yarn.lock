@@ -9470,7 +9470,7 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-docusaurus@2.0.0-alpha.61:
+docusaurus@^2.0.0-alpha.61:
   version "2.0.0-alpha.61"
   resolved "https://registry.npmjs.org/docusaurus/-/docusaurus-2.0.0-alpha.61.tgz#f347b81c98c66f1de3ecfccf63fa421ddff52fbb"
   integrity sha512-qDU3nOA4Xs95tIjjSETnEuRmTukTzgxyTZ5MgMyuG7y6h4oDHtpLcYf8F+xlXuuWHKv3VSxRJNzV8fZHPgnK3g==
