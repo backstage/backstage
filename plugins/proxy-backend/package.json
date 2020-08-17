@@ -24,7 +24,7 @@
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
-    "http-proxy-middleware": "^0.19.1",
+    "http-proxy-middleware": "^1.0.5",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.0",
     "uuid": "^8.0.0",
