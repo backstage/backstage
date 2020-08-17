@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { GithubApiReaderProcessor } from './GithubApiReaderProcessor';
+import { BitbucketApiReaderProcessor } from './BitbucketApiReaderProcessor';
 
-describe('GithubApiReaderProcessor', () => {
+describe('BitbucketApiReaderProcessor', () => {
   it('should build raw api', () => {
-    const processor = new GithubApiReaderProcessor();
+    const processor = new BitbucketApiReaderProcessor();
 
     const tests = [
       {
-        target: 'https://github.com/a/b/blob/master/path/to/c.yaml',
+        target:
+          'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
         url: new URL(
-          'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=master',
+          'https://api.bitbucket.org/2.0/repositories/org-name/repo-name/src/master/templates/my-template.yaml',
         ),
         err: undefined,
       },
@@ -32,21 +33,13 @@ describe('GithubApiReaderProcessor', () => {
         target: 'https://api.com/a/b/blob/master/path/to/c.yaml',
         url: null,
         err:
-          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong GitHub URL or Invalid file path',
+          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Bitbucket URL or Invalid file path',
       },
       {
         target: 'com/a/b/blob/master/path/to/c.yaml',
         url: null,
         err:
           'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
-      },
-      {
-        target:
-          'https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml',
-        url: new URL(
-          'https://api.github.com/repos/spotify/backstage/contents/packages/catalog-model/examples/playback-order-component.yaml?ref=master',
-        ),
-        err: undefined,
       },
     ];
 
@@ -68,27 +61,41 @@ describe('GithubApiReaderProcessor', () => {
   it('should return request options', () => {
     const tests = [
       {
-        token: '0123456789',
+        username: '',
+        password: '',
         expect: {
-          headers: {
-            Accept: 'application/vnd.github.v3.raw',
-            Authorization: 'token 0123456789',
-          },
+          headers: {},
         },
       },
       {
-        token: '',
+        username: 'only-user-provided',
+        password: '',
+        expect: {
+          headers: {},
+        },
+      },
+      {
+        username: '',
+        password: 'only-password-provided',
+        expect: {
+          headers: {},
+        },
+      },
+      {
+        username: 'some-user',
+        password: 'my-secret',
         expect: {
           headers: {
-            Accept: 'application/vnd.github.v3.raw',
+            Authorization: 'Basic c29tZS11c2VyOm15LXNlY3JldA==',
           },
         },
       },
     ];
 
     for (const test of tests) {
-      process.env.GITHUB_PRIVATE_TOKEN = test.token;
-      const processor = new GithubApiReaderProcessor();
+      process.env.BITBUCKET_USERNAME = test.username;
+      process.env.BITBUCKET_APP_PASSWORD = test.password;
+      const processor = new BitbucketApiReaderProcessor();
       expect(processor.getRequestOptions()).toEqual(test.expect);
     }
   });
