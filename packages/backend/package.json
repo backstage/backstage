@@ -18,9 +18,11 @@
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
+    "example-app": "^0.1.1-alpha.20",
     "@backstage/backend-common": "^0.1.1-alpha.20",
     "@backstage/catalog-model": "^0.1.1-alpha.20",
     "@backstage/config": "^0.1.1-alpha.20",
+    "@backstage/plugin-app-backend": "^0.1.1-alpha.20",
     "@backstage/plugin-auth-backend": "^0.1.1-alpha.20",
     "@backstage/plugin-catalog-backend": "^0.1.1-alpha.20",
     "@backstage/plugin-graphql-backend": "^0.1.1-alpha.20",
