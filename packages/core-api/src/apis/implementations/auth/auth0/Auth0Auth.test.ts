@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './auth0';
+import Auth0Auth from './Auth0Auth';
+
+describe('Auth0Auth', () => {
+  it('should normalize scope', () => {
+    const tests = [
+      {
+        arguments: ['read_user api write_repository'],
+        expect: new Set(['read_user', 'api', 'write_repository']),
+      },
+      {
+        arguments: ['read_repository sudo'],
+        expect: new Set(['read_repository', 'sudo']),
+      },
+    ];
+
+    for (const test of tests) {
+      expect(Auth0Auth.normalizeScopes(...test.arguments)).toEqual(test.expect);
+    }
+  });
+});

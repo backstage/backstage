@@ -23,6 +23,7 @@ import { createGoogleProvider } from './google';
 import { createOAuth2Provider } from './oauth2';
 import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
+import { createAuth0Provider } from './auth0'
 import {
   AuthProviderConfig,
   AuthProviderFactory,
@@ -40,6 +41,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   gitlab: createGitlabProvider,
   saml: createSamlProvider,
   okta: createOktaProvider,
+  auth0: createAuth0Provider,
   oauth2: createOAuth2Provider,
 };
 

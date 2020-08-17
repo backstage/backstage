@@ -66,6 +66,14 @@ export AUTH_OKTA_CLIENT_ID=x
 export AUTH_OKTA_CLIENT_SECRET=x
 ```
 
+### Auth0
+
+```bash
+export AUTH_AUTH0_DOMAIN=x
+export AUTH_AUTH0_CLIENT_ID=x
+export AUTH_AUTH0_CLIENT_SECRET=x
+```
+
 ### SAML
 
 To try out SAML, you can use the mock identity provider:
