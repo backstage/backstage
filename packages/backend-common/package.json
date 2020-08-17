@@ -43,7 +43,8 @@
     "lodash": "^4.17.15",
     "morgan": "^1.10.0",
     "stoppable": "^1.1.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "selfsigned": "^1.10.7"
   },
   "peerDependencies": {
     "pg-connection-string": "^2.3.0"

@@ -19,7 +19,9 @@ import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
 import helmet from 'helmet';
-import { Server } from 'http';
+import * as http from 'http';
+import * as https from 'https';
+import * as fs from 'fs';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
 import { useHotCleanup } from '../../hot';
@@ -30,7 +32,12 @@ import {
   requestLoggingHandler,
 } from '../../middleware';
 import { ServiceBuilder } from '../types';
-import { readBaseOptions, readCorsOptions } from './config';
+import {
+  readBaseOptions,
+  readCorsOptions,
+  readHttpsSettings,
+  HttpsSettings,
+} from './config';
 
 const DEFAULT_PORT = 7000;
 // '' is express default, which listens to all interfaces
@@ -41,6 +48,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private host: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
+  private httpsSettings: HttpsSettings | undefined;
   private routers: [string, Router][];
   // Reference to the module where builder is created - needed for hot module
   // reloading
@@ -70,6 +78,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       this.corsOptions = corsOptions;
     }
 
+    const httpsSettings = readHttpsSettings(backendConfig);
+    if (httpsSettings) {
+      this.httpsSettings = httpsSettings;
+    }
+
     return this;
   }
 
@@ -88,6 +101,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  setHttpsSettings(settings: HttpsSettings): ServiceBuilder {
+    this.httpsSettings = settings;
+    return this;
+  }
+
   enableCors(options: cors.CorsOptions): ServiceBuilder {
     this.corsOptions = options;
     return this;
@@ -98,9 +116,15 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  start(): Promise<Server> {
+  start(): Promise<http.Server> {
     const app = express();
-    const { port, host, logger, corsOptions } = this.getOptions();
+    const {
+      port,
+      host,
+      logger,
+      corsOptions,
+      httpsSettings,
+    } = this.getOptions();
 
     app.use(helmet());
     if (corsOptions) {
@@ -121,20 +145,90 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         reject(e);
       });
 
-      const server = stoppable(
-        app.listen(port, host, () => {
-          logger.info(`Listening on ${host}:${port}`);
-        }),
-        0,
-      );
+      let server: http.Server;
+
+      if (httpsSettings) {
+        logger.info('Initializing https server');
+
+        const credentials: { key: string; cert: string } = {
+          key: '',
+          cert: '',
+        };
+        const signingOptions: any = httpsSettings?.certificate;
+
+        if (signingOptions?.algorithm !== undefined) {
+          logger.info('Generating self-signed certificate with attributes');
+
+          const certificateAttributes: Array<any> = Object.entries(
+            signingOptions.attributes,
+          ).map(([name, value]) => ({ name, value }));
+
+          // TODO: Create a type def for selfsigned.
+          const signatures = require('selfsigned').generate(
+            certificateAttributes,
+            {
+              algorithm: signingOptions?.algorithm,
+              keySize: signingOptions?.size || 2048,
+              days: signingOptions?.days || 30,
+            },
+          );
+
+          logger.info(
+            'Bootstrapping key and cert from self-signed certificate',
+          );
+
+          credentials.key = signatures.private;
+          credentials.cert = signatures.cert;
+        } else {
+          if (fs.existsSync(signingOptions?.key)) {
+            if (fs.lstatSync(signingOptions?.key).isFile()) {
+              logger.info('Bootstrapping key from file');
+
+              credentials.key = fs.readFileSync(signingOptions?.key).toString();
+            }
+          } else {
+            logger.info('Bootstrapping key from config');
+
+            credentials.key = signingOptions?.key;
+          }
+
+          if (fs.existsSync(signingOptions?.cert)) {
+            if (fs.lstatSync(signingOptions?.cert).isFile()) {
+              logger.info('Bootstrapping cert from file');
+
+              credentials.cert = fs
+                .readFileSync(signingOptions?.cert)
+                .toString();
+            }
+          } else {
+            logger.info('Bootstrapping cert from config');
+
+            credentials.cert = signingOptions?.cert;
+          }
+        }
+
+        if (credentials.key === '' || credentials.cert === '') {
+          throw new Error('Invalid credentials');
+        }
+
+        server = https.createServer(credentials, app) as http.Server;
+      } else {
+        logger.info('Initializing http server');
+
+        server = http.createServer(app);
+      }
+
+      const stoppableServer = stoppable(server, 0);
+
+      stoppableServer.listen(port, host);
 
       useHotCleanup(this.module, () =>
-        server.stop((e: any) => {
+        stoppableServer.stop((e: any) => {
           if (e) console.error(e);
         }),
       );
 
-      resolve(server);
+      resolve(stoppableServer);
     });
   }
 
@@ -143,12 +237,14 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     host: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
+    httpsSettings?: HttpsSettings;
   } {
     return {
       port: this.port ?? DEFAULT_PORT,
       host: this.host ?? DEFAULT_HOST,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
+      httpsSettings: this.httpsSettings,
     };
   }
 }

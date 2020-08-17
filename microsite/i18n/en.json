@@ -50,6 +50,9 @@
       "auth/add-auth-provider": {
         "title": "Adding authentication providers"
       },
+      "auth/auth-backend-classes": {
+        "title": "auth/auth-backend-classes"
+      },
       "auth/auth-backend": {
         "title": "Auth backend"
       },
