@@ -19,10 +19,6 @@ import passport from 'passport';
 import Auth0Strategy, { Auth0StrategyOptionsWithRequest } from './strategy';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
-import {
-  EnvironmentHandler,
-  EnvironmentHandlers,
-} from '../../lib/EnvironmentHandler';
 import { OAuthProvider } from '../../lib/OAuthProvider';
 import {
   executeFetchUserProfileStrategy,
@@ -33,21 +29,12 @@ import {
 } from '../../lib/PassportStrategyHelper';
 import {
   AuthProviderConfig,
-  EnvironmentProviderConfig,
   OAuthProviderHandlers,
   OAuthResponse,
   PassportDoneCallback,
   RedirectInfo,
 } from '../types';
-
-interface Auth0ProviderConfig {
-  clientId: string;
-  clientSecret: string;
-  domain: string;
-  callbackURL: string;
-  secure: boolean;
-  appOrigin: string;
-}
+import { Config } from '@backstage/config';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -155,46 +142,45 @@ export class Auth0AuthProvider implements OAuthProviderHandlers {
 
 export function createAuth0Provider(
   { baseUrl }: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
+  _: string,
+  envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
-  const envProviders: EnvironmentHandlers = {};
   const providerId = 'auth0';
+  const secure = envConfig.getBoolean('secure');
+  const appOrigin = envConfig.getString('appOrigin');
+  const clientID = envConfig.getString('clientId');
+  const clientSecret = envConfig.getString('clientSecret');
+  const domain = envConfig.getString('domain');
+  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
 
-  for (const [env, envConfig] of Object.entries(providerConfig)) {
-    const config = (envConfig as unknown) as Auth0ProviderConfig;
-    const opts = {
-      clientID: config.clientId,
-      clientSecret: config.clientSecret,
-      callbackURL: `${baseUrl}/${providerId}/handler/frame?env=${env}`,
-      domain: config.domain,
-    } as Auth0StrategyOptionsWithRequest;
+  const opts = {
+    clientID,
+    clientSecret,
+    callbackURL,
+    domain,
+  } as Auth0StrategyOptionsWithRequest;
 
-    if (!opts.clientID || !opts.clientSecret || !opts.domain) {
-      if (process.env.NODE_ENV !== 'development') {
-        throw new Error(
-          'Failed to initialize OAuth2 auth provider, set AUTH_AUTH0_CLIENT_ID, AUTH_AUTH0_CLIENT_SECRET, and AUTH_AUTH0_DOMAIN env vars',
-        );
-      }
-
-      logger.warn(
-        'OAuth2 auth provider disabled, set AUTH_AUTH0_CLIENT_ID, AUTH_AUTH0_CLIENT_SECRET, and AUTH_AUTH0_DOMAIN env vars to enable',
+  if (!opts.clientID || !opts.clientSecret || !opts.domain) {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error(
+        'Failed to initialize Auth0 auth provider, set AUTH_AUTH0_CLIENT_ID, AUTH_AUTH0_CLIENT_SECRET, and AUTH_AUTH0_DOMAIN env vars',
       );
-      continue;
     }
 
-    const { secure, appOrigin } = config;
-    envProviders[env] = new OAuthProvider(new Auth0AuthProvider(opts), {
-      disableRefresh: true,
-      persistScopes: true,
-      providerId: providerId,
-      secure,
-      baseUrl,
-      appOrigin,
-      tokenIssuer,
-    });
+    logger.warn(
+      'Auth0 auth provider disabled, set AUTH_AUTH0_CLIENT_ID, AUTH_AUTH0_CLIENT_SECRET, and AUTH_AUTH0_DOMAIN env vars to enable',
+    );
+    return undefined;
   }
 
-  return new EnvironmentHandler(providerId, envProviders);
+  return new OAuthProvider(new Auth0AuthProvider(opts), {
+    disableRefresh: true,
+    providerId,
+    secure,
+    baseUrl,
+    appOrigin,
+    tokenIssuer,
+  });
 }

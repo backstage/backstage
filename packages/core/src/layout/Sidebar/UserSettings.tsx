@@ -21,7 +21,6 @@ import {
   identityApiRef,
   oauth2ApiRef,
   oktaAuthApiRef,
-  auth0AuthApiRef,
   useApi,
   configApiRef,
 } from '@backstage/core-api';
