@@ -22,6 +22,8 @@ import request from 'supertest';
 
 import { createRouter } from './router';
 
+jest.mock('../lib/config', () => ({ injectEnvConfig: jest.fn() }));
+
 global.__non_webpack_require__ = {
   resolve: () => resolvePath(__dirname, '__fixtures__/app-dir/package.json'),
 };

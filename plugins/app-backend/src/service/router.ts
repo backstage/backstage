@@ -19,6 +19,7 @@ import { notFoundHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { injectEnvConfig } from '../lib/config';
 
 export interface RouterOptions {
   logger: Logger;
@@ -36,6 +37,12 @@ export async function createRouter(
     'dist',
   );
   options.logger.info(`Serving static app content from ${appDistDir}`);
+
+  await injectEnvConfig({
+    env: process.env,
+    logger: options.logger,
+    staticDir: resolvePath(appDistDir, 'static'),
+  });
 
   const router = Router();
 
