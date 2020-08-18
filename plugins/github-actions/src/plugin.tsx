@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createPlugin, createRouteRef } from '@backstage/core';
 import { WorkflowRunDetailsPage } from './components/WorkflowRunDetailsPage';
 import { WorkflowRunsPage } from './components/WorkflowRunsPage';
+import { Route, Outlet } from 'react-router-dom';
 
 // TODO(freben): This is just a demo route for now
 export const rootRouteRef = createRouteRef({
-  path: '/github-actions',
+  path: '/github-actions/*',
   title: 'GitHub Actions',
 });
 export const projectRouteRef = createRouteRef({
-  path: '/github-actions/:kind/:optionalNamespaceAndName/',
+  path: '/:kind/:optionalNamespaceAndName/',
   title: 'GitHub Actions for project',
 });
 export const buildRouteRef = createRouteRef({
-  path: '/github-actions/workflow-run/:id',
+  path: '/workflow-run/:id',
   title: 'GitHub Actions Workflow Run',
 });
 
@@ -40,3 +42,17 @@ export const plugin = createPlugin({
     router.addRoute(buildRouteRef, WorkflowRunDetailsPage);
   },
 });
+
+export const route = (
+  <Route
+    path={rootRouteRef.path}
+    element={
+      <>
+        <Outlet />
+      </>
+    }
+  >
+    <Route path={projectRouteRef.path} element={<WorkflowRunsPage />} />
+    <Route path={buildRouteRef.path} element={<WorkflowRunDetailsPage />} />
+  </Route>
+);

@@ -21,11 +21,13 @@ import {
   SignInPage,
 } from '@backstage/core';
 import React, { FC } from 'react';
+import { Route, Routes, Outlet } from 'react-router-dom';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
+import { route as githubActionsRoute } from '@backstage/plugin-github-actions';
 
 const app = createApp({
   apis,
@@ -46,17 +48,28 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const AppRoutes = app.getRoutes();
+const Router = ({ children }) => (
+  <AppRouter>
+    <Routes>{children}</Routes>
+  </AppRouter>
+);
+// const AppRoutes = app.getRoutes();
 
+const MainPage = () => <Route path="/" element={<div>dummy</div>} />;
 const App: FC<{}> = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
-    <AppRouter>
+    <Router>
       <Root>
-        <AppRoutes />
+        <Routes>
+          <Route path="/" element={MainPage} />
+          <Route path="/catalog" element={<CatalogPage>...</CatalogPage>} />
+
+          <Route path="/github-actions" element={githubActionsRoute} />
+        </Routes>
       </Root>
-    </AppRouter>
+    </Router>
   </AppProvider>
 );
 
