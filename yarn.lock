@@ -3304,9 +3304,9 @@
     shortid "^2.2.14"
 
 "@rjsf/material-ui@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.1.0.tgz#a361b125af3a383b7f671634b8d254345f9f9311"
-  integrity sha512-9mMttnPNP6GiP7BtZGimYcYsbWwjyviqg/PD8oxrkEtZykULXOIdC3WDMJ3nPSym8RvZsgSnB8bajCpa5iSYQQ==
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.3.0.tgz#a051eb4db2ad778e39933a31ba806f415dd3ba90"
+  integrity sha512-v/xZ4Xk18ZgBARcCe99IDqdO97GU0UC784gG8PhGGFDdy5Rbdy7ixTjHkGYttkr43PB7SX6ttohNhkKSW4nATQ==
 
 "@roadiehq/backstage-plugin-travis-ci@^0.1.3":
   version "0.1.3"
