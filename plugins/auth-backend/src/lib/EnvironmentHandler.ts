@@ -19,6 +19,7 @@ import {
   AuthProviderRouteHandlers,
   EnvironmentIdentifierFn,
 } from '../providers/types';
+import { InputError } from '@backstage/backend-common';
 
 export type EnvironmentHandlers = {
   [key: string]: AuthProviderRouteHandlers;
@@ -37,7 +38,11 @@ export class EnvironmentHandler implements AuthProviderRouteHandlers {
   ): AuthProviderRouteHandlers | undefined {
     const env: string | undefined = this.envIdentifier(req);
 
-    if (env && this.providers.hasOwnProperty(env)) {
+    if (!env) {
+      throw new InputError(`Must specify 'env' query to select environment`);
+    }
+
+    if (this.providers.hasOwnProperty(env)) {
       return this.providers[env];
     }
 
