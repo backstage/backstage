@@ -3,6 +3,9 @@ kind: Component
 metadata:
   name: queue-proxy
   description: Queue Proxy
+  tags:
+    - go
+    - website
 spec:
   type: website
   lifecycle: production
