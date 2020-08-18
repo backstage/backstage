@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-// TYPES
-export type BackgroundShapeStyles = {
-  backgroundImage: string;
-  backgroundPosition: string;
-  backgroundSize: string;
-};
-
 export type PageTheme = {
   colors: string[];
   shape: string;
