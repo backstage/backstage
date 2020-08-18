@@ -15,4 +15,7 @@
  */
 
 export { plugin } from './plugin';
+export { default as AuditList } from './components/AuditList';
+export { default as AuditView } from './components/AuditView';
+export { default as CreateAudit } from './components/CreateAudit';
 export * from './api';

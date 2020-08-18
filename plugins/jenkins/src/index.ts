@@ -15,4 +15,5 @@
  */
 
 export { plugin, JenkinsBuildsWidget, JenkinsLastBuildWidget } from './plugin';
+export { DetailedViewPage } from './pages/BuildWithStepsPage';
 export * from './api';

@@ -18,3 +18,6 @@ export { plugin } from './plugin';
 export * from './api/RollbarApi';
 export { RollbarClient } from './api/RollbarClient';
 export { RollbarMockClient } from './api/RollbarMockClient';
+export { RollbarPage } from './components/RollbarPage/RollbarPage';
+export { RollbarProjectPage } from './components/RollbarProjectPage/RollbarProjectPage';
+export { rootRoute, rootProjectRoute } from './routes';

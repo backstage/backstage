@@ -17,3 +17,4 @@
 export { plugin } from './plugin';
 export * from './lib/api';
 export * from './route-refs';
+export { GraphiQLPage } from './components';

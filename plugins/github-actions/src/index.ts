@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export { plugin, rootRouteRef, projectRouteRef, buildRouteRef } from './plugin';
 export * from './api';
 export { Widget } from './components/Widget';
+export { WorkflowRunDetailsPage } from './components/WorkflowRunDetailsPage';
+export { WorkflowRunsPage } from './components/WorkflowRunsPage';

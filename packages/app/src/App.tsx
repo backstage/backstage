@@ -24,6 +24,7 @@ import React, { FC } from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
+import { pages } from './pages';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
 
@@ -46,16 +47,13 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const AppRoutes = app.getRoutes();
 
 const App: FC<{}> = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
-      <Root>
-        <AppRoutes />
-      </Root>
+      <Root>{pages}</Root>
     </AppRouter>
   </AppProvider>
 );

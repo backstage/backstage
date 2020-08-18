@@ -19,3 +19,6 @@ export * from './api/CatalogClient';
 export * from './api/types';
 export * from './routes';
 export { useEntityCompoundName } from './components/useEntityCompoundName';
+export { CatalogPage } from './components/CatalogPage/CatalogPage';
+export { EntityPage } from './components/EntityPage/EntityPage';
+export { EntityMetadataCard } from './components/EntityMetadataCard/EntityMetadataCard';

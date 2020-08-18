@@ -15,4 +15,7 @@
  */
 
 export { ApiDefinitionCard } from './components/ApiDefinitionCard/ApiDefinitionCard';
+export { ApiCatalogPage } from './components/ApiCatalogPage/ApiCatalogPage';
+export { ApiEntityPage } from './components/ApiEntityPage/ApiEntityPage';
+export { entityRoute, rootRoute } from './routes';
 export { plugin } from './plugin';

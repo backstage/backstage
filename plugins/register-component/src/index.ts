@@ -15,3 +15,4 @@
  */
 
 export { plugin, rootRoute } from './plugin';
+export { default as RegisterComponentPage } from './components/RegisterComponentPage';

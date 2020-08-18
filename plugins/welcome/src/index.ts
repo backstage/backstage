@@ -15,3 +15,4 @@
  */
 
 export { plugin } from './plugin';
+export { default as WelcomePage } from './components/WelcomePage';

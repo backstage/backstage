@@ -25,3 +25,5 @@ export * from './api';
  * The React component for more advanced use cases.
  */
 export { default as TechRadarComponent } from './components/RadarComponent';
+
+export { default as RadarPage } from './components/RadarPage';

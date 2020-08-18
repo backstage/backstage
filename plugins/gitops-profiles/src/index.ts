@@ -16,3 +16,11 @@
 
 export { plugin } from './plugin';
 export * from './api';
+export { default as ProfileCatalog } from './components/ProfileCatalog';
+export { default as ClusterPage } from './components/ClusterPage';
+export { default as ClusterList } from './components/ClusterList';
+export {
+  gitOpsClusterListRoute,
+  gitOpsClusterDetailsRoute,
+  gitOpsClusterCreateRoute,
+} from './routes';

@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export { plugin, rootRouteRef } from './plugin';
+export { default as NewRelicComponent } from './components/NewRelicComponent';

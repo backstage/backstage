@@ -61,7 +61,7 @@ describe('EntityPage', () => {
             ],
           ])}
         >
-          <EntityPage />
+          <EntityPage>{() => null}</EntityPage>
         </ApiProvider>,
       ),
     );

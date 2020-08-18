@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export { plugin, rootRouteRef, rootDocsRouteRef } from './plugin';
+export { TechDocsHome } from './reader/components/TechDocsHome';
+export { Reader } from './reader/components/Reader';
