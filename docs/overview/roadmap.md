@@ -50,7 +50,7 @@ begun work on various aspects of these phases:
 - [Global search](https://github.com/spotify/backstage/issues/1499)
 - [[TechDocs V.2] Stabilization release](https://github.com/spotify/backstage/milestone/17)
 - Deploy a product demo at `demo.backstage.io`
-- Plugin marketplace
+- [Plugin marketplace](https://github.com/spotify/backstage/issues/2009)
 
 ### Completed milestones ✅
 
