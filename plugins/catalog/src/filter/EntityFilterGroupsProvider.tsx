@@ -54,16 +54,19 @@ function useProvideEntityFilters(): FilterGroupsContext {
   const selectedFilterKeys = useRef<{
     [filterGroupId: string]: Set<string>;
   }>({});
+  const selectedTags = useRef<string[]>([]);
   const [filterGroupStates, setFilterGroupStates] = useState<{
     [filterGroupId: string]: FilterGroupStates;
   }>({});
   const [matchingEntities, setMatchingEntities] = useState<Entity[]>([]);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
 
   const rebuild = useCallback(() => {
     setFilterGroupStates(
       buildStates(
         filterGroups.current,
         selectedFilterKeys.current,
+        selectedTags.current,
         entities,
         error,
       ),
@@ -72,9 +75,11 @@ function useProvideEntityFilters(): FilterGroupsContext {
       buildMatchingEntities(
         filterGroups.current,
         selectedFilterKeys.current,
+        selectedTags.current,
         entities,
       ),
     );
+    setAvailableTags(collectTags(entities));
   }, [entities, error]);
 
   const register = useCallback(
@@ -109,14 +114,24 @@ function useProvideEntityFilters(): FilterGroupsContext {
     [rebuild],
   );
 
+  const setSelectedTags = useCallback(
+    (tags: string[]) => {
+      selectedTags.current = tags;
+      rebuild();
+    },
+    [rebuild],
+  );
+
   return {
     register,
     unregister,
     setGroupSelectedFilters,
+    setSelectedTags,
     loading: !error && !entities,
     error,
     filterGroupStates,
     matchingEntities,
+    availableTags,
   };
 }
 
@@ -125,6 +140,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
 function buildStates(
   filterGroups: { [filterGroupId: string]: FilterGroup },
   selectedFilterKeys: { [filterGroupId: string]: Set<string> },
+  selectedTags: string[],
   entities?: Entity[],
   error?: Error,
 ): { [filterGroupId: string]: FilterGroupStates } {
@@ -153,6 +169,7 @@ function buildStates(
     const otherMatchingEntities = buildMatchingEntities(
       filterGroups,
       selectedFilterKeys,
+      selectedTags,
       entities,
       filterGroupId,
     );
@@ -170,11 +187,23 @@ function buildStates(
   return result;
 }
 
+// Given all entites, find all possible tags and provide them in a sorted list.
+function collectTags(entities?: Entity[]): string[] {
+  const tags = new Set<string>();
+  (entities || []).forEach(e => {
+    if (e.metadata.tags) {
+      e.metadata.tags.forEach(t => tags.add(t));
+    }
+  });
+  return Array.from(tags).sort();
+}
+
 // Given all filter groups and what filters are actually selected, extract all
 // entities that match all those filter groups.
 function buildMatchingEntities(
   filterGroups: { [filterGroupId: string]: FilterGroup },
   selectedFilterKeys: { [filterGroupId: string]: Set<string> },
+  selectedTags: string[],
   entities?: Entity[],
   excludeFilterGroupId?: string,
 ): Entity[] {
@@ -199,6 +228,16 @@ function buildMatchingEntities(
     if (groupFilters.length) {
       allFilters.push(entity => groupFilters.some(fn => fn(entity)));
     }
+  }
+
+  // Filter by tags, if at least one tag is selected. Include all entities
+  // that have at least one of the selected tags
+  if (selectedTags.length > 0) {
+    allFilters.push(
+      entity =>
+        !!entity.metadata.tags &&
+        entity.metadata.tags.some(t => selectedTags.includes(t)),
+    );
   }
 
   // All filter groups that had any checked filters need to match. Note that

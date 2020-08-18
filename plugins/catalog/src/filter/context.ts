@@ -26,10 +26,12 @@ export type FilterGroupsContext = {
   ) => void;
   unregister: (filterGroupId: string) => void;
   setGroupSelectedFilters: (filterGroupId: string, filterIds: string[]) => void;
+  setSelectedTags: (tags: string[]) => void;
   loading: boolean;
   error?: Error;
   filterGroupStates: { [filterGroupId: string]: FilterGroupStates };
   matchingEntities: Entity[];
+  availableTags: string[];
 };
 
 /**
