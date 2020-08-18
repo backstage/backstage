@@ -19,7 +19,7 @@ backend:
   #     algorithm: sha256
   #     days: 30
   #     attributes: 
-  #       commonName: 'contoso.com'
+  #       commonName: 'dfds.com'
 
 proxy:
   '/circleci/api':
