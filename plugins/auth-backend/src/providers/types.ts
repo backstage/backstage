@@ -336,13 +336,13 @@ export type OAuthPrivateInfo = {
  */
 export type WebMessageResponse =
   | {
-    type: 'authorization_response';
-    response: AuthResponse<unknown>;
-  }
+      type: 'authorization_response';
+      response: AuthResponse<unknown>;
+    }
   | {
-    type: 'authorization_response';
-    error: Error;
-  };
+      type: 'authorization_response';
+      error: Error;
+    };
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,
