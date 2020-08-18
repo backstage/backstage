@@ -18,26 +18,16 @@ Backstage unifies all your infrastructure tooling, services, and documentation t
 
 Out of the box, Backstage includes:
 
-- [Backstage Service Catalog](https://github.com/spotify/backstage/blob/master/docs/features/software-catalog/index.md) for managing all your software (microservices, libraries, data pipelines, websites, ML models, etc.)
-- [Backstage Software Templates](https://github.com/spotify/backstage/blob/master/docs/features/software-templates/index.md) for quickly spinning up new projects and standardizing your tooling with your organization’s best practices
-- [Backstage TechDocs](https://github.com/spotify/backstage/tree/master/docs/features/techdocs) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
+- [Backstage Service Catalog]((https://backstage.io/docs/features/software-catalog/software-catalog-overview) for managing all your software (microservices, libraries, data pipelines, websites, ML models, etc.)
+- [Backstage Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index) for quickly spinning up new projects and standardizing your tooling with your organization’s best practices
+- [Backstage TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
 - Plus, a growing ecosystem of [open source plugins](https://github.com/spotify/backstage/tree/master/plugins) that further expand Backstage’s customizability and functionality
 
 For more information go to [backstage.io](https://backstage.io) or join our [Discord chatroom](https://discord.gg/EBHEGzX).
 
 ## Project roadmap
 
-We created Backstage about 4 years ago. While our internal version of Backstage has had the benefit of time to mature and evolve, the first iteration of our open source version is still nascent. We are envisioning three phases of the project and we have already begun work on various aspects of these phases:
-
-- 🐣 **Phase 1:** Extensible frontend platform (Done ✅) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable [UX patterns and components](http://backstage.io/storybook) help ensure a consistent experience between tools.
-
-- 🐢 **Phase 2:** Service Catalog ([alpha released](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)) - With a single catalog, Backstage makes it easy for a team to manage ten services — and makes it possible for your company to manage thousands of them. Developers can get a uniform overview of all their software and related resources, regardless of how and where they are running, as well as an easy way to onboard and manage those resources.
-
-- 🐇 **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
-
-Check out our [Milestones](https://github.com/spotify/backstage/milestones) and open [RFCs](https://github.com/spotify/backstage/labels/rfc) how they relate to the three Phases outlined above.
-
-Our vision for Backstage is for it to become the trusted standard toolbox (read: UX layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone. If this sounds interesting or you'd like to help us shape our product vision, we'd love to talk. You can email me directly: [alund@spotify.com](mailto:alund@spotify.com).
+A detailed project roadmap, including already delivered milestones, is available [here](https://backstage.io/docs/overview/roadmap).
 
 ## Overview
 
@@ -69,7 +59,7 @@ Using `npx` you can then run the following to create an app in a chosen subdirec
 npx @backstage/create-app
 ```
 
-You will be taken through a wizard to create your app, and the output should look something like this. You can read more about this process [here](docs/getting-started/create-an-app.md)
+You will be taken through a wizard to create your app, and the output should look something like this. You can read more about this process [here](https://backstage.io/docs/getting-started/create-an-app)
 
 ### Contributing to Backstage
 
@@ -77,22 +67,22 @@ You can read more in our [CONTRIBUTING.md](./CONTRIBUTING.md#get-started) guide,
 
 ### Next steps
 
-Take a look at the [Getting Started](docs/getting-started/index.md) guide to learn how to set up Backstage, and how to develop on the platform.
+Take a look at the [Getting Started](https://backstage.io/docs/getting-started/index) guide to learn how to set up Backstage, and how to develop on the platform.
 
 ## Documentation
 
-- [Main documentation](docs/README.md)
-- [Service Catalog](docs/features/software-catalog/index.md)
-- [Architecture](docs/overview/architecture-terminology.md) ([Decisions](docs/architecture-decisions/index.md))
-- [Designing for Backstage](docs/dls/design.md)
-- [Storybook - UI components](http://backstage.io/storybook)
+- [Main documentation](https://backstage.io/docs/overview/what-is-backstage)
+- [Service Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview)
+- [Architecture](https://backstage.io/docs/overview/architecture-terminology) ([Decisions](https://backstage.io/docs/architecture-decisions/adrs-overview))
+- [Designing for Backstage](https://backstage.io/docs/dls/design)
+- [Storybook - UI components](https://backstage.io/storybook)
 
 ## Community
 
 - [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the project
 - [Good First Issues](https://github.com/spotify/backstage/contribute) - Start here if you want to contribute
 - [RFCs](https://github.com/spotify/backstage/labels/rfc) - Help shape the technical direction
-- [FAQ](docs/FAQ.md) - Frequently Asked Questions
+- [FAQ](https://backstage.io/docs/FAQ) - Frequently Asked Questions
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
 - [Adopters](ADOPTERS.md) - Companies already using Backstage
 - [Blog](https://backstage.io/blog/) - Announcements and updates
