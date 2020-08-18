@@ -27,22 +27,17 @@ import {
   Progress,
   useApi,
 } from '@backstage/core';
-import { SentryIssuesWidget } from '@backstage/plugin-sentry';
-import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
-import {
-  JenkinsBuildsWidget,
-  JenkinsLastBuildWidget,
-} from '@backstage/plugin-jenkins';
-import { Grid, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
-import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+import { EntityPageApi } from '../EntityPageApi/EntityPageApi';
+import { EntityPageOverview } from '../EntityPageOverview/EntityPageOverview';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
+import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -105,6 +100,8 @@ export const EntityPage: FC<{}> = () => {
     }
   }, [errorApi, navigate, error, loading, entity]);
 
+  const [selectedTabId, setSelectedTabId] = useState('');
+
   if (!name) {
     navigate('/catalog');
     return null;
@@ -122,6 +119,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'overview',
       label: 'Overview',
+      content: (e: Entity) => <EntityPageOverview entity={e} />,
     },
     {
       id: 'ci',
@@ -134,6 +132,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'api',
       label: 'API',
+      content: (e: Entity) => <EntityPageApi entity={e} />,
     },
     {
       id: 'monitoring',
@@ -151,6 +150,8 @@ export const EntityPage: FC<{}> = () => {
     name,
     entity,
   );
+
+  const selectedTab = tabs.find(tab => tab.id === selectedTabId) || tabs[0];
 
   return (
     <Page theme={getPageTheme(entity)}>
@@ -184,41 +185,17 @@ export const EntityPage: FC<{}> = () => {
 
       {entity && (
         <>
-          <HeaderTabs tabs={tabs} />
+          <HeaderTabs
+            tabs={tabs}
+            onChange={idx => {
+              setSelectedTabId(tabs[idx].id);
+            }}
+          />
 
           <Content>
-            <Grid container spacing={3}>
-              <Grid item sm={4}>
-                <EntityMetadataCard entity={entity} />
-              </Grid>
-              {entity.metadata?.annotations?.[
-                'backstage.io/jenkins-github-folder'
-              ] && (
-                <Grid item sm={4}>
-                  <JenkinsLastBuildWidget entity={entity} branch="master" />
-                </Grid>
-              )}
-              {entity.metadata?.annotations?.[
-                'backstage.io/jenkins-github-folder'
-              ] && (
-                <Grid item sm={8}>
-                  <JenkinsBuildsWidget entity={entity} />
-                </Grid>
-              )}
-              {entity.metadata?.annotations?.[
-                'backstage.io/github-actions-id'
-              ] && (
-                <Grid item sm={3}>
-                  <GithubActionsWidget entity={entity} branch="master" />
-                </Grid>
-              )}
-            </Grid>
-            <Grid item sm={8}>
-              <SentryIssuesWidget
-                sentryProjectId="sample-sentry-project-id"
-                statsFor="24h"
-              />
-            </Grid>
+            {selectedTab && selectedTab.content
+              ? selectedTab.content(entity)
+              : null}
           </Content>
 
           <UnregisterEntityDialog

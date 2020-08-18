@@ -28,7 +28,7 @@ export const EntityPageApi: FC<{ entity: Entity }> = ({ entity }) => {
 
   const { value: apiEntities, loading } = useAsync(async () => {
     const a = await Promise.all(
-      ((entity?.spec?.implementedApis as string[]) || []).map(api =>
+      ((entity?.spec?.implementsApis as string[]) || []).map(api =>
         catalogApi.getEntityByName({
           kind: 'API',
           name: api,
@@ -48,7 +48,7 @@ export const EntityPageApi: FC<{ entity: Entity }> = ({ entity }) => {
       {loading && <Progress />}
       {!loading && (
         <Grid container spacing={3}>
-          {((entity?.spec?.implementedApis as string[]) || []).map(api => {
+          {((entity?.spec?.implementsApis as string[]) || []).map(api => {
             const apiEntity = apiEntities && apiEntities.get(api);
 
             return (
