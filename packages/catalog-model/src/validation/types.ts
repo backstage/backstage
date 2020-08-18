@@ -24,4 +24,5 @@ export type Validators = {
   isValidLabelValue(value: any): boolean;
   isValidAnnotationKey(value: any): boolean;
   isValidAnnotationValue(value: any): boolean;
+  isValidTag(value: any): boolean;
 };
