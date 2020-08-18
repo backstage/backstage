@@ -36,7 +36,7 @@ import {
 import { Grid, Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Outlet } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
@@ -187,38 +187,7 @@ export const EntityPage: FC<{}> = () => {
           <HeaderTabs tabs={tabs} />
 
           <Content>
-            <Grid container spacing={3}>
-              <Grid item sm={4}>
-                <EntityMetadataCard entity={entity} />
-              </Grid>
-              {entity.metadata?.annotations?.[
-                'backstage.io/jenkins-github-folder'
-              ] && (
-                <Grid item sm={4}>
-                  <JenkinsLastBuildWidget entity={entity} branch="master" />
-                </Grid>
-              )}
-              {entity.metadata?.annotations?.[
-                'backstage.io/jenkins-github-folder'
-              ] && (
-                <Grid item sm={8}>
-                  <JenkinsBuildsWidget entity={entity} />
-                </Grid>
-              )}
-              {entity.metadata?.annotations?.[
-                'backstage.io/github-actions-id'
-              ] && (
-                <Grid item sm={3}>
-                  <GithubActionsWidget entity={entity} branch="master" />
-                </Grid>
-              )}
-            </Grid>
-            <Grid item sm={8}>
-              <SentryIssuesWidget
-                sentryProjectId="sample-sentry-project-id"
-                statsFor="24h"
-              />
-            </Grid>
+            <Outlet />
           </Content>
 
           <UnregisterEntityDialog

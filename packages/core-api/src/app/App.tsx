@@ -20,7 +20,8 @@ import React, {
   useState,
   ReactElement,
 } from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { PartialRouteObject } from 'react-router';
+import { Route, Routes, Navigate, useRoutes } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import {
   BackstageApp,
@@ -55,7 +56,7 @@ import {
 import { ApiAggregator } from '../apis/ApiAggregator';
 import { useAsync } from 'react-use';
 import { AppIdentity } from './AppIdentity';
-
+import { RouteRef } from '../routing/Ro';
 type FullAppOptions = {
   apis: Apis;
   icons: SystemIcons;
@@ -137,7 +138,9 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getRoutes(): ComponentType<{}> {
-    const routes = new Array<JSX.Element>();
+    const routes = new Array<
+      PartialRouteObject & { parent?: RouteRef; routeRef?: RouteRef }
+    >();
     const registeredFeatureFlags = new Array<FeatureFlagsRegistryItem>();
 
     const { NotFoundErrorPage } = this.components;
@@ -145,34 +148,34 @@ export class PrivateAppImpl implements BackstageApp {
     for (const plugin of this.plugins.values()) {
       for (const output of plugin.output()) {
         switch (output.type) {
+          // Skipping for now, revisit
           case 'legacy-route': {
             const { path, component: Component } = output;
-            routes.push(
-              <Route key={path} path={path} element={<Component />} />,
-            );
+            routes.push({ path, element: <Component /> });
             break;
           }
           case 'route': {
-            const { target, component: Component } = output;
-            routes.push(
-              <Route
-                key={`${plugin.getId()}-${target.path}`}
-                path={target.path}
-                element={<Component />}
-              />,
-            );
+            const { target, component: Component, options } = output;
+            const parent = options?.parent; //{path, icon, title}
+
+            routes.push({
+              path: target.path,
+              element: <Component />,
+              parent,
+              routeRef: target,
+            });
             break;
           }
-          case 'legacy-redirect-route': {
-            const { path, target } = output;
-            routes.push(<Navigate key={path} to={target} />);
-            break;
-          }
-          case 'redirect-route': {
-            const { from, to } = output;
-            routes.push(<Navigate key={from.path} to={to.path} />);
-            break;
-          }
+          // case 'legacy-redirect-route': {
+          //   const { path, target } = output;
+          //   routes.push(<Navigate key={path} to={target} />);
+          //   break;
+          // }
+          // case 'redirect-route': {
+          //   const { from, to } = output;
+          //   routes.push(<Navigate key={from.path} to={to.path} />);
+          //   break;
+          // }
           case 'feature-flag': {
             registeredFeatureFlags.push({
               pluginId: plugin.getId(),
@@ -186,19 +189,37 @@ export class PrivateAppImpl implements BackstageApp {
       }
     }
 
+    // [{path, element, parent, routeRef},{}]
+    // // /catalog/entity/
+    // // /catalog/entity/docs
+    // // /catalog/entity/docs/overview
+
+    for (const route of routes) {
+      if ((route as any).parent) {
+        const parentRoute = routes.find(r => r.routeRef === route.parent);
+        if (!parentRoute) {
+          throw new Error(`No parent route found for : ${route.path}`);
+        }
+        if (!parentRoute.children) {
+          parentRoute.children = [];
+        }
+        parentRoute.children.push(route);
+      }
+    }
+    const finalRoutes = routes.filter(
+      route => typeof route.parent === 'undefined',
+    );
+
     const FeatureFlags = this.apis && this.apis.get(featureFlagsApiRef);
     if (FeatureFlags) {
       FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
     }
 
-    const rendered = (
-      <Routes>
-        {routes}
-        <Route element={<NotFoundErrorPage />} />
-      </Routes>
-    );
+    finalRoutes.push({ element: <NotFoundErrorPage /> });
 
-    return () => rendered;
+    return () => {
+      return useRoutes(finalRoutes);
+    };
   }
 
   getProvider(): ComponentType<{}> {

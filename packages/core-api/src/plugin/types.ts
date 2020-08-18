@@ -20,6 +20,7 @@ import { RouteRef } from '../routing';
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
   exact?: boolean;
+  parent?: RouteRef;
 };
 
 export type RoutePath = string;

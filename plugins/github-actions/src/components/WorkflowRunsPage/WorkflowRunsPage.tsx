@@ -25,6 +25,7 @@ import {
 } from '@backstage/core';
 import { Grid } from '@material-ui/core';
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 
 import { WorkflowRunsTable } from '../WorkflowRunsTable';
 
@@ -47,6 +48,7 @@ export const WorkflowRunsPage = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
+            <Outlet />
             <WorkflowRunsTable />
           </Grid>
         </Grid>
