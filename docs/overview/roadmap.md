@@ -19,13 +19,14 @@ begun work on various aspects of these phases:
 
 - 🐣 **Phase 1:** Extensible frontend platform (Done ✅) - You will be able to
   easily create a single consistent UI layer for your internal infrastructure
-  and tools. A set of reusable [UX patterns and components](/storybook) help
-  ensure a consistent experience between tools.
+  and tools. A set of reusable
+  [UX patterns and components](https://backstage.io/storybook) help ensure a
+  consistent experience between tools.
 
 - 🐢 **Phase 2:** Service Catalog
-  ([alpha released](/blog/2020/06/22/backstage-service-catalog-alpha)) - With a
-  single catalog, Backstage makes it easy for a team to manage ten services —
-  and makes it possible for your company to manage thousands of them.
+  ([alpha released](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)) -
+  With a single catalog, Backstage makes it easy for a team to manage ten
+  services — and makes it possible for your company to manage thousands of them.
 
 - 🐇 **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is
   different. By fostering a vibrant community of contributors we hope to provide
@@ -53,10 +54,10 @@ begun work on various aspects of these phases:
 
 ### Completed milestones ✅
 
-- [Improved and move documentation to backstage.io](/docs/overview/what-is-backstage)
-- [Backstage Service Catalog (alpha)](/blog/2020/06/22/backstage-service-catalog-alpha)
-- [Backstage Software Templates (alpha)](/blog/2020/08/05/announcing-backstage-software-templates)
-- [Make it possible to add custom auth providers](/blog/2020/07/01/how-to-enable-authentication-in-backstage-using-passport)
+- [Improved and move documentation to backstage.io](https://backstage.io/docs/overview/what-is-backstage)
+- [Backstage Service Catalog (alpha)](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)
+- [Backstage Software Templates (alpha)](https://backstage.io/blog/2020/08/05/announcing-backstage-software-templates)
+- [Make it possible to add custom auth providers](https://backstage.io/blog/2020/07/01/how-to-enable-authentication-in-backstage-using-passport)
 - [TechDocs v0](https://github.com/spotify/backstage/milestone/15)
 - CI plugins: CircleCI, Jenkins, GitHub Actions and TravisCI
 - [Service API documentation](https://github.com/spotify/backstage/pull/1737)
