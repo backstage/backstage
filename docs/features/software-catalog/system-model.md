@@ -63,11 +63,44 @@ footprint, and create tooling around them.
 ## Ecosystem Modeling
 
 A large catalogue of components, APIs and resources can be highly granular
-and hard to understand as a whole. It might thus be convenient to use the label
-and annotation features in the Backstage catalogue to further categorize these
-entities in a way that makes sense for your company. For example, we set a
-system label on components at Spotify which allows us to further group related
-entities.
+and hard to understand as a whole. It might thus be convenient to further
+categorize these entities using the following (optional) concepts:
+* **Systems** are a collection of entities that cooperate to perform some
+ function
+* **Domains** relate entities and systems to part of the business
+
+### System
+
+With increasing complexity in software, systems form an important abstraction
+level to help us reason about software ecosystems. Systems are a useful concept
+in that they allow us to ignore the implementation details of a certain
+functionality for consumers, while allowing the owning team to make changes as
+they see fit (leading to low coupling).
+
+A system, in this sense, is a collection of resources and components that
+exposes one or several public APIs. The main benefit of modelling a system is
+that it hides its resources and private APIs between the components for any
+consumers. This means that as the owner, you can evolve the implementation, in
+terms of components and resources, without your consumers being able to notice.
+Typically, a system will  consist of at most a handful of components (see
+Domain for a grouping of systems).
+
+For example, a playlist management system might encapsulate a backend service
+to update playlists, a backend service to query them, and a database to store
+them. It could expose an RPC API, a daily snapshots dataset, and an event
+stream of playlist updates.
+
+### Domain
+While systems are the basic level of encapsulation for related entities, it is
+often useful to group a collection of systems that share terminology, domain
+models, metrics, KPIs, business purpose, or documentation, i.e. they form a
+bounded context.
+
+For example, it would make sense if the different systems in the “Payments”
+domain would come with some documentation on how to accept payments for a new
+product or use-case, share the same entity types in their APIs, and integrate
+well with each other. Other domains could be “Content Ingestion”, “Ads” or
+“Search”.
 
 ## Current status
 
