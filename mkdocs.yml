@@ -7,6 +7,7 @@ nav:
       - Backstage architecture: 'overview/architecture-overview.md'
       - Architecture and terminology: 'overview/architecture-terminology.md'
       - Roadmap: 'overview/roadmap.md'
+      - Vision: 'overview/vision.md'
   - Getting started:
       - Running Backstage locally: 'getting-started/index.md'
       - Installation: 'getting-started/installation.md'
@@ -70,6 +71,7 @@ nav:
       - Overview: 'auth/index.md'
       - Add auth provider: 'auth/add-auth-provider.md'
       - Auth backend: 'auth/auth-backend.md'
+      - Auth backend class structure: 'auth/auth-backend-classes.md'
       - OAuth: 'auth/oauth.md'
       - Glossary: 'auth/glossary.md'
   - Designing for Backstage:

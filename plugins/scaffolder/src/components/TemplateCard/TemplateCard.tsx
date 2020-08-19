@@ -56,7 +56,7 @@ export const TemplateCard = ({
   name,
 }: TemplateCardProps) => {
   const theme = pageTheme[type] ?? pageTheme.other;
-  const [gradientStart, gradientStop] = theme.gradient.colors;
+  const [gradientStart, gradientStop] = theme.colors;
   const classes = useStyles({ gradientStart, gradientStop });
   const href = generatePath(templateRoute.path, { templateName: name });
 

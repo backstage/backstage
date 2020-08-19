@@ -34,10 +34,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+import { EntityPageDocs } from '../EntityPageDocs/EntityDocsPage';
+import { EntityPageApi } from '../EntityPageApi/EntityPageApi';
+import { EntityPageOverview } from '../EntityPageOverview/EntityPageOverview';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
-import { EntityOverviewPage } from '../EntityOverviewPage/EntityOverviewPage';
-import { EntityDocsPage } from '../EntityDocsPage/EntityDocsPage';
+import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -123,7 +124,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'overview',
       label: 'Overview',
-      content: () => <EntityOverviewPage entity={entity!} />,
+      content: (e: Entity) => <EntityPageOverview entity={e} />,
     },
     {
       id: 'ci',
@@ -136,6 +137,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'api',
       label: 'API',
+      content: (e: Entity) => <EntityPageApi entity={e} />,
     },
     {
       id: 'monitoring',
@@ -150,7 +152,7 @@ export const EntityPage: FC<{}> = () => {
       label: 'Docs',
       show: (e: Entity) =>
         !!e.metadata.annotations?.['backstage.io/techdocs-ref'],
-      content: () => <EntityDocsPage entity={entity!} />,
+      content: (e: Entity) => <EntityPageDocs entity={e} />,
     },
   ];
 
@@ -208,7 +210,10 @@ export const EntityPage: FC<{}> = () => {
             }}
             selectedIndex={tabs.findIndex(tab => tab.id === selectedTabId)}
           />
-          {selectedTab && selectedTab.content ? selectedTab.content() : null}
+
+          {selectedTab && selectedTab.content
+            ? selectedTab.content(entity)
+            : null}
 
           <UnregisterEntityDialog
             open={confirmationDialogOpen}

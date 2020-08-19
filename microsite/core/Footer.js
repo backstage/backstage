@@ -32,22 +32,15 @@ class Footer extends React.Component {
           </div>
           <div>
             <h5>Docs</h5>
+            <a href={`/docs/overview/what-is-backstage`}>What is Backstage?</a>
+            <a href={`/docs/getting-started/`}>Getting started</a>
             <a
-              href={`${this.props.config.repoUrl}/blob/master/docs/plugins/create-a-plugin.md`}
+              href={`/docs/features/software-catalog/software-catalog-overview`}
             >
-              Create a Plugin
+              Service Catalog
             </a>
-            <a
-              href={`${this.props.config.repoUrl}/blob/master/docs/plugins/structure-of-a-plugin.md`}
-            >
-              Structure of a Plugin
-            </a>
-            <a href={`${this.props.config.repoUrl}/tree/master/docs`}>
-              API references
-            </a>
-            <a href={`${this.props.config.repoUrl}/blob/master/docs/FAQ.md`}>
-              FAQ
-            </a>
+            <a href={`/docs/plugins/create-a-plugin`}>Create a Plugin</a>
+            <a href={`/docs/dls/design`}>Designing for Backstage</a>
           </div>
           <div>
             <h5>Community</h5>
@@ -55,18 +48,6 @@ class Footer extends React.Component {
             <a href="https://mailchi.mp/spotify/backstage-community">
               Subscribe to our newsletter
             </a>
-            {/*
-            <h5>Docs</h5>
-            <a href={this.docUrl("developing-a-plugin.html", this.props.language)}>
-              Developing a Plugin
-            </a>
-            <a href={this.docUrl("apis.html", this.props.language)}>
-              API Overview
-            </a>
-            <a href={this.docUrl("layout-components.html", this.props.language)}>
-              Layout Components
-            </a>
-            */}
           </div>
           <div>
             <h5>More</h5>

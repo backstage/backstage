@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import { pageTheme } from '../Page/PageThemeProvider';
-import { Waves } from './Waves';
+import { ProfileInfo, BackstageIdentity } from '../../../definitions';
 
-describe('<Waves/>', () => {
-  it('should render svg', () => {
-    const rendered = render(<Waves theme={pageTheme.home} />);
-    rendered.getByTestId('wave-svg');
-  });
-});
+export type Auth0Session = {
+  providerInfo: {
+    idToken: string;
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
+};
