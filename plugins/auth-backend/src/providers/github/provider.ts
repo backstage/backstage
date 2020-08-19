@@ -74,7 +74,7 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
       idToken: params.id_token,
     };
 
-    // Github provides an id numeric value (123)
+    // GitHub provides an id numeric value (123)
     // as a fallback
     const id = passportProfile!.id;
 

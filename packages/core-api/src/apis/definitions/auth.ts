@@ -222,7 +222,7 @@ export const googleAuthApiRef = createApiRef<
 });
 
 /**
- * Provides authentication towards Github APIs.
+ * Provides authentication towards GitHub APIs.
  *
  * See https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
  * for a full list of supported scopes.
@@ -231,7 +231,7 @@ export const githubAuthApiRef = createApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
 >({
   id: 'core.auth.github',
-  description: 'Provides authentication towards Github APIs',
+  description: 'Provides authentication towards GitHub APIs',
 });
 
 /**
