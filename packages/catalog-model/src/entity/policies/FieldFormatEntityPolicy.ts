@@ -83,6 +83,12 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
       require(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
     }
 
+    const tags = entity.metadata.tags ?? [];
+
+    for (let i = 0; i < tags.length; ++i) {
+      require(`tags.${i}`, tags[i], this.validators.isValidTag);
+    }
+
     return entity;
   }
 }
