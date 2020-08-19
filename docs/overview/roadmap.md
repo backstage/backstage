@@ -6,7 +6,7 @@ title: Project roadmap
 ## Current status
 
 > Backstage is currently under rapid development. This means that you can expect
-> APIs and features to change. It is also recommended that teams who adopt
+> APIs and features to evolve. It is also recommended that teams who adopt
 > Backstage today upgrades their installation as new
 > [releases](https://github.com/spotify/backstage/releases) are available, as
 > Backwards compatibility is not yet guaranteed.
