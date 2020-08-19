@@ -54,8 +54,6 @@ auth:
   providers:
     google:
       development:
-        appOrigin: 'http://localhost:3000/'
-        secure: false
         clientId:
           $secret:
             env: AUTH_GOOGLE_CLIENT_ID
@@ -64,8 +62,6 @@ auth:
             env: AUTH_GOOGLE_CLIENT_SECRET
     github:
       development:
-        appOrigin: 'http://localhost:3000/'
-        secure: false
         clientId:
           $secret:
             env: AUTH_GITHUB_CLIENT_ID
@@ -77,8 +73,6 @@ auth:
             env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:
       development:
-        appOrigin: 'http://localhost:3000/'
-        secure: false
         clientId:
           $secret:
             env: AUTH_GITLAB_CLIENT_ID
@@ -94,8 +88,6 @@ auth:
     #     issuer: "passport-saml"
     okta:
       development:
-        appOrigin: 'http://localhost:3000/'
-        secure: false
         clientId:
           $secret:
             env: AUTH_OKTA_CLIENT_ID
@@ -107,8 +99,6 @@ auth:
             env: AUTH_OKTA_AUDIENCE
     oauth2:
       development:
-        appOrigin: 'http://localhost:3000/'
-        secure: false
         clientId:
           $secret:
             env: AUTH_OAUTH2_CLIENT_ID
@@ -123,8 +113,6 @@ auth:
             env: AUTH_OAUTH2_TOKEN_URL
     auth0:
       development:
-        appOrigin: 'http://localhost:3000/'
-        secure: false
         clientId:
           $secret:
             env: AUTH_AUTH0_CLIENT_ID
