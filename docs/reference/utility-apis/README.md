@@ -67,7 +67,7 @@ ApiRef:
 
 ## gitlabAuth
 
-Provides authentication towards Gitlab APIs
+Provides authentication towards GitLab APIs
 
 Implemented types: [OAuthApi](./OAuthApi.md),
 [ProfileInfoApi](./ProfileInfoApi.md),
