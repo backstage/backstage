@@ -34,7 +34,7 @@ internally.
 
 After filling in these variables, you'll get some more fields to fill out which
 are required for backstage usage. The owner, which is a `user` in the backstage
-system, and the `storePath` which right now must be a Github Organisation and a
+system, and the `storePath` which right now must be a GitHub Organisation and a
 non-existing github repository name in the format `organisation/reponame`.
 
 ![Enter backstage vars](../../assets/software-templates/template-picked-2.png)
