@@ -4463,10 +4463,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/codemirror@^0.0.96":
-  version "0.0.96"
-  resolved "https://registry.npmjs.org/@types/codemirror/-/codemirror-0.0.96.tgz#73b52e784a246cebef31d544fef45ea764de5bad"
-  integrity sha512-GTswEV26Bl1byRxpD3sKd1rT2AISr0rK9ImlJgEzfvqhcVWeu4xQKFQI6UgSC95NT5swNG4st/oRMeGVZgPj9w==
+"@types/codemirror@^0.0.97":
+  version "0.0.97"
+  resolved "https://registry.npmjs.org/@types/codemirror/-/codemirror-0.0.97.tgz#6f2d8266b7f1b34aacfe8c77221fafe324c3d081"
+  integrity sha512-n5d7o9nWhC49DjfhsxANP7naWSeTzrjXASkUDQh7626sM4zK9XP2EVcHp1IcCf/IPV6c7ORzDUDF3Bkt231VKg==
   dependencies:
     "@types/tern" "*"
 
