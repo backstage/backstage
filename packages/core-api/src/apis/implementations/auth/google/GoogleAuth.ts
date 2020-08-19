@@ -35,7 +35,7 @@ import { Observable } from '../../../../types';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GoogleAuth
-  apiOrigin: string;
+  backendUrl: string;
   basePath: string;
 
   oauthRequestApi: OAuthRequestApi;
@@ -71,14 +71,14 @@ class GoogleAuth
     BackstageIdentityApi,
     SessionStateApi {
   static create({
-    apiOrigin,
+    backendUrl,
     basePath,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      apiOrigin,
+      backendUrl,
       basePath,
       environment,
       provider,

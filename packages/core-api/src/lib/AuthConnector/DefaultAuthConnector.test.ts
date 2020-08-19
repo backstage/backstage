@@ -22,7 +22,7 @@ import * as loginPopup from '../loginPopup';
 const anyFetch = fetch as any;
 
 const defaultOptions = {
-  apiOrigin: 'my-origin',
+  backendUrl: 'http://my-origin',
   environment: 'production',
   provider: {
     id: 'my-provider',
@@ -114,7 +114,8 @@ describe('DefaultAuthConnector', () => {
 
     expect(popupSpy).toBeCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url: 'my-origin/api/auth/my-provider/start?scope=a%20b&env=production',
+      url:
+        'http://my-origin/api/auth/my-provider/start?scope=a%20b&env=production',
     });
 
     await expect(sessionPromise).resolves.toEqual({
@@ -162,7 +163,8 @@ describe('DefaultAuthConnector', () => {
 
     expect(popupSpy).toBeCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url: 'my-origin/api/auth/my-provider/start?scope=-ab-&env=production',
+      url:
+        'http://my-origin/api/auth/my-provider/start?scope=-ab-&env=production',
     });
   });
 });
