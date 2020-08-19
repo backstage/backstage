@@ -252,7 +252,7 @@ export const oktaAuthApiRef = createApiRef<
 });
 
 /**
- * Provides authentication towards Gitlab APIs.
+ * Provides authentication towards GitLab APIs.
  *
  * See https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#limiting-scopes-of-a-personal-access-token
  * for a full list of supported scopes.
@@ -261,7 +261,7 @@ export const gitlabAuthApiRef = createApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
 >({
   id: 'core.auth.gitlab',
-  description: 'Provides authentication towards Gitlab APIs',
+  description: 'Provides authentication towards GitLab APIs',
 });
 
 /**
