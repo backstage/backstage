@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: searcher
   description: Searcher
+  tags:
+    - go
 spec:
   type: service
   lifecycle: production
