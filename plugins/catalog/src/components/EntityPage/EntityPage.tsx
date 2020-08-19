@@ -137,6 +137,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'api',
       label: 'API',
+      show: (e: Entity) => !!e?.spec?.implementsApis,
       content: (e: Entity) => <EntityPageApi entity={e} />,
     },
     {
