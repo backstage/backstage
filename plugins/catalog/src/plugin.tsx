@@ -18,6 +18,8 @@ import { createPlugin } from '@backstage/core';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
 import { EntityPage } from './components/EntityPage/EntityPage';
 import { entityRoute, rootRoute } from './routes';
+import { Route } from 'react-router-dom';
+import React from 'react';
 
 export const plugin = createPlugin({
   id: 'catalog',
@@ -26,3 +28,9 @@ export const plugin = createPlugin({
     router.addRoute(entityRoute, EntityPage);
   },
 });
+export const router = (
+  <>
+    <Route path={rootRoute.path} element={<CatalogPage />} />
+    <Route path={entityRoute.path} element={<EntityPage />} />
+  </>
+);

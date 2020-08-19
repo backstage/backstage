@@ -18,11 +18,11 @@ import React from 'react';
 import { createPlugin, createRouteRef } from '@backstage/core';
 import { WorkflowRunDetailsPage } from './components/WorkflowRunDetailsPage';
 import { WorkflowRunsPage } from './components/WorkflowRunsPage';
-import { Route, Outlet } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 // TODO(freben): This is just a demo route for now
 export const rootRouteRef = createRouteRef({
-  path: '/github-actions/*',
+  path: '/',
   title: 'GitHub Actions',
 });
 export const projectRouteRef = createRouteRef({
@@ -30,7 +30,7 @@ export const projectRouteRef = createRouteRef({
   title: 'GitHub Actions for project',
 });
 export const buildRouteRef = createRouteRef({
-  path: '/workflow-run/:id',
+  path: '/:id',
   title: 'GitHub Actions Workflow Run',
 });
 
@@ -44,15 +44,12 @@ export const plugin = createPlugin({
 });
 
 export const route = (
-  <Route
-    path={rootRouteRef.path}
-    element={
-      <>
-        <Outlet />
-      </>
-    }
-  >
-    <Route path={projectRouteRef.path} element={<WorkflowRunsPage />} />
-    <Route path={buildRouteRef.path} element={<WorkflowRunDetailsPage />} />
-  </Route>
+  <>
+    <Route path="/" element={<WorkflowRunsPage />} />
+    <Route path="/:id" element={<WorkflowRunDetailsPage />} />
+    <Route path="/:kind/:optionalNamespaceAndName">
+      <Route path="/" element={<WorkflowRunsPage />} />
+      <Route path="/:id" element={<WorkflowRunDetailsPage />} />
+    </Route>
+  </>
 );

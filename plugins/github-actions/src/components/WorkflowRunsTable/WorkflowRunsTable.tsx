@@ -56,7 +56,9 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<WorkflowRun>) => (
       <Link
         component={RouterLink}
-        to={generatePath(buildRouteRef.path, { id: row.id! })}
+        // Remove leading slash
+        // To enable relative navigation
+        to={generatePath(buildRouteRef.path.slice(1), { id: row.id! })}
       >
         {row.message}
       </Link>

@@ -37,7 +37,9 @@ const columns: TableColumn<Entity>[] = [
     render: (entity: any) => (
       <Link
         component={RouterLink}
-        to={generatePath(entityRoute.path, {
+        // Remove leading slash
+        // To enable relative navigation
+        to={generatePath(entityRoute.path.slice(1), {
           optionalNamespaceAndName: [
             entity.metadata.namespace,
             entity.metadata.name,
