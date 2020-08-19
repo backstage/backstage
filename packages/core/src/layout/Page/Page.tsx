@@ -18,7 +18,7 @@ import React, { FC } from 'react';
 import { PageTheme, pageTheme } from './PageThemeProvider';
 import { makeStyles } from '@material-ui/core';
 
-export const Theme = React.createContext<PageTheme>(pageTheme.home);
+export const PageThemeContext = React.createContext<PageTheme>(pageTheme.home);
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -38,8 +38,8 @@ type Props = {
 export const Page: FC<Props> = ({ theme = pageTheme.home, children }) => {
   const classes = useStyles();
   return (
-    <Theme.Provider value={theme}>
+    <PageThemeContext.Provider value={theme}>
       <div className={classes.root}>{children}</div>
-    </Theme.Provider>
+    </PageThemeContext.Provider>
   );
 };

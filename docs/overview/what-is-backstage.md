@@ -28,9 +28,6 @@ Out of the box, Backstage includes:
   [open source plugins](https://github.com/spotify/backstage/tree/master/plugins)
   that further expand Backstage’s customizability and functionality
 
-For more information go to [backstage.io](https://backstage.io) or join our
-[Discord chatroom](https://discord.gg/EBHEGzX).
-
 ### Benefits
 
 - For _engineering managers_, it allows you to maintain standards and best
@@ -45,3 +42,6 @@ For more information go to [backstage.io](https://backstage.io) or join our
 - For _everyone_, it’s a single, consistent experience that ties all your
   infrastructure tooling, resources, standards, owners, contributors, and
   administrators together in one place.
+
+If you have questions or want support, please join our
+[Discord chatroom](https://discord.gg/EBHEGzX).

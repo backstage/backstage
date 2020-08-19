@@ -11,6 +11,7 @@ better yet, a pull request.
   - [Backstage architecture](overview/architecture-overview.md)
   - [Architecture and terminology](overview/architecture-terminology.md)
   - [Roadmap](overview/roadmap.md)
+  - [Vision](overview/vision.md)
 - Getting started
   - [Running Backstage locally](getting-started/index.md)
   - [Installation](getting-started/installation.md)

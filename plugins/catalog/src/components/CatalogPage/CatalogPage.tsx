@@ -35,6 +35,7 @@ import { CatalogTable } from '../CatalogTable/CatalogTable';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
 import { WelcomeBanner } from './WelcomeBanner';
+import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -47,7 +48,12 @@ const useStyles = makeStyles(theme => ({
 
 const CatalogPageContents = () => {
   const styles = useStyles();
-  const { loading, error, matchingEntities } = useFilteredEntities();
+  const {
+    loading,
+    error,
+    matchingEntities,
+    availableTags,
+  } = useFilteredEntities();
   const { isStarredEntity } = useStarredEntities();
   const userId = useApi(identityApiRef).getUserId();
   const [selectedTab, setSelectedTab] = useState<string>();
@@ -140,6 +146,7 @@ const CatalogPageContents = () => {
               onChange={({ label }) => setSelectedSidebarItem(label)}
               initiallySelected="owned"
             />
+            <ResultsFilter availableTags={availableTags} />
           </div>
           <CatalogTable
             titlePreamble={selectedSidebarItem ?? ''}
