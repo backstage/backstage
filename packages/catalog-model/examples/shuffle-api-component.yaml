@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: shuffle-api
   description: Shuffle API
+  tags:
+    - go
 spec:
   type: service
   lifecycle: production
