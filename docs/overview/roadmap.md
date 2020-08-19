@@ -41,6 +41,10 @@ love to hear from you! Please create an
 [Discord](https://discord.gg/EBHEGzX) or reach out directly at
 [alund@spotify.com](mailto:alund@spotify.com).
 
+Want to help out? Awesome ❤️ Head over to
+[CONTRIBUTING](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md)
+guidelines to get started.
+
 ### Ongoing work 🚧
 
 - **[Plugins for managing micro services end-2-end](https://github.com/spotify/backstage/milestone/14)** -
@@ -50,7 +54,7 @@ love to hear from you! Please create an
   it much easier to see how a plugin can be built that integrates with the
   Backstage Service Catalog.
 
-- **Backstage Design System** By providing design guidelines for common plugin
+- **Backstage Design System** - By providing design guidelines for common plugin
   layouts together, rich set of reusable UI components
   ([Storybook](https://backstage.io/storybook)) and Figma design resources. The
   Design System will make it easy to design and build plugins that are
@@ -89,7 +93,7 @@ love to hear from you! Please create an
   we imagine a "Plugin marketplace" that helps with discovery and installation
   of plugins.
 
-- Deploy a product demo at `demo.backstage.io` - Deploy a typical Backstage
+- **Deploy a product demo at `demo.backstage.io`** - Deploy a typical Backstage
   deployment available publicly so that people can click around and get a feel
   for the product without having to install anything.
 
