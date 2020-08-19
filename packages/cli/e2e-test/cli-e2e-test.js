@@ -246,7 +246,7 @@ async function testAppServe(pluginName, appDir) {
   try {
     const browser = new Browser();
 
-    await waitForPageWithText(browser, '/', 'Welcome to Backstage');
+    await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
     await waitForPageWithText(
       browser,
       `/${pluginName}`,
