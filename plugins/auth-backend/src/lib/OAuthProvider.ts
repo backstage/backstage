@@ -23,6 +23,7 @@ import {
   WebMessageResponse,
   BackstageIdentity,
   OAuthState,
+  AuthProviderConfig,
 } from '../providers/types';
 import { InputError } from '@backstage/backend-common';
 import { TokenIssuer } from '../identity';
@@ -35,7 +36,8 @@ export type Options = {
   secure: boolean;
   disableRefresh?: boolean;
   persistScopes?: boolean;
-  baseUrl: string;
+  cookieDomain: string;
+  cookiePath: string;
   appOrigin: string;
   tokenIssuer: TokenIssuer;
 };
@@ -120,17 +122,31 @@ export const ensuresXRequestedWith = (req: express.Request) => {
 };
 
 export class OAuthProvider implements AuthProviderRouteHandlers {
-  private readonly domain: string;
-  private readonly basePath: string;
+  static fromConfig(
+    config: AuthProviderConfig,
+    providerHandlers: OAuthProviderHandlers,
+    options: Pick<
+      Options,
+      'providerId' | 'persistScopes' | 'disableRefresh' | 'tokenIssuer'
+    >,
+  ): OAuthProvider {
+    const { origin: appOrigin } = new URL(config.appUrl);
+    const secure = config.baseUrl.startsWith('https://');
+    const url = new URL(config.baseUrl);
+    const cookiePath = `${url.pathname}/${options.providerId}`;
+    return new OAuthProvider(providerHandlers, {
+      ...options,
+      appOrigin,
+      cookieDomain: url.hostname,
+      cookiePath,
+      secure,
+    });
+  }
 
   constructor(
     private readonly providerHandlers: OAuthProviderHandlers,
     private readonly options: Options,
-  ) {
-    const url = new URL(options.baseUrl);
-    this.domain = url.hostname;
-    this.basePath = url.pathname;
-  }
+  ) {}
 
   async start(req: express.Request, res: express.Response): Promise<void> {
     // retrieve scopes from request
@@ -298,8 +314,8 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       maxAge: TEN_MINUTES_MS,
       secure: this.options.secure,
       sameSite: 'lax',
-      domain: this.domain,
-      path: `${this.basePath}/${this.options.providerId}/handler`,
+      domain: this.options.cookieDomain,
+      path: `${this.options.cookiePath}/handler`,
       httpOnly: true,
     });
   };
@@ -309,8 +325,8 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       maxAge: TEN_MINUTES_MS,
       secure: this.options.secure,
       sameSite: 'lax',
-      domain: this.domain,
-      path: `${this.basePath}/${this.options.providerId}/handler`,
+      domain: this.options.cookieDomain,
+      path: `${this.options.cookiePath}/handler`,
       httpOnly: true,
     });
   };
@@ -327,8 +343,8 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       maxAge: THOUSAND_DAYS_MS,
       secure: this.options.secure,
       sameSite: 'lax',
-      domain: this.domain,
-      path: `${this.basePath}/${this.options.providerId}`,
+      domain: this.options.cookieDomain,
+      path: this.options.cookiePath,
       httpOnly: true,
     });
   };
@@ -336,10 +352,10 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
   private removeRefreshTokenCookie = (res: express.Response) => {
     res.cookie(`${this.options.providerId}-refresh-token`, '', {
       maxAge: 0,
-      secure: false,
+      secure: this.options.secure,
       sameSite: 'lax',
-      domain: `${this.domain}`,
-      path: `${this.basePath}/${this.options.providerId}`,
+      domain: this.options.cookieDomain,
+      path: this.options.cookiePath,
       httpOnly: true,
     });
   };

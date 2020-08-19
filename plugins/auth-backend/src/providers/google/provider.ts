@@ -144,18 +144,16 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
 }
 
 export function createGoogleProvider(
-  { baseUrl }: AuthProviderConfig,
+  config: AuthProviderConfig,
   _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'google';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
+  const callbackURL = `${config.baseUrl}/${providerId}/handler/frame`;
 
   const opts = {
     clientID,
@@ -175,12 +173,9 @@ export function createGoogleProvider(
     );
     return undefined;
   }
-  return new OAuthProvider(new GoogleAuthProvider(opts), {
+  return OAuthProvider.fromConfig(config, new GoogleAuthProvider(opts), {
     disableRefresh: false,
     providerId,
-    secure,
-    baseUrl,
-    appOrigin,
     tokenIssuer,
   });
 }

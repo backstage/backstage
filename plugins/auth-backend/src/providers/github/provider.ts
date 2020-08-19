@@ -125,15 +125,13 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
 }
 
 export function createGithubProvider(
-  { baseUrl }: AuthProviderConfig,
+  config: AuthProviderConfig,
   _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'github';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
   const enterpriseInstanceUrl = envConfig.getOptionalString(
@@ -148,7 +146,7 @@ export function createGithubProvider(
   const userProfileURL = enterpriseInstanceUrl
     ? `${enterpriseInstanceUrl}/api/v3/user`
     : undefined;
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
+  const callbackURL = `${config.baseUrl}/${providerId}/handler/frame`;
 
   const opts = {
     clientID,
@@ -171,13 +169,10 @@ export function createGithubProvider(
     );
     return undefined;
   }
-  return new OAuthProvider(new GithubAuthProvider(opts), {
+  return OAuthProvider.fromConfig(config, new GithubAuthProvider(opts), {
     disableRefresh: true,
     persistScopes: true,
     providerId,
-    secure,
-    baseUrl,
-    appOrigin,
     tokenIssuer,
   });
 }
