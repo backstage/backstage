@@ -38,6 +38,10 @@ import {
   readHttpsSettings,
   HttpsSettings,
 } from './config';
+import {
+  createHttpServer,
+  createHttpsServer,
+} from './hostFactory';
 
 const DEFAULT_PORT = 7000;
 // '' is express default, which listens to all interfaces
@@ -215,7 +219,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       } else {
         logger.info('Initializing http server');
 
-        server = http.createServer(app);
+        server = createHttpServer(app);
       }
 
       const stoppableServer = stoppable(
