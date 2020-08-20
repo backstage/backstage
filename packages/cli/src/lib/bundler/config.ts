@@ -200,7 +200,10 @@ export function createBackendConfig(
         : '[name].[chunkhash:8].chunk.js',
     },
     plugins: [
-      new StartServerPlugin('main.js'),
+      new StartServerPlugin({
+        name: 'main.js',
+        nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
+      }),
       new webpack.HotModuleReplacementPlugin(),
       ...(checksEnabled
         ? [

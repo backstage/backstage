@@ -52,6 +52,7 @@ const main = (argv: string[]) => {
     .command('backend:dev')
     .description('Start local development server with HMR for the backend')
     .option('--check', 'Enable type checking and linting')
+    .option('--inspect', 'Enable debugger')
     .action(lazyAction(() => import('./commands/backend/dev'), 'default'));
 
   program
