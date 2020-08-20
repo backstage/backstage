@@ -5,13 +5,11 @@ title: Project roadmap
 
 ## Current status
 
-> Backstage is currently in Alpha. This means that you can expect APIs and
-> features to change until we reach our
-> [Backstage Beta milestone](https://github.com/spotify/backstage/milestone/19).
-> Before we have API stability, plugins will need ongoing maintenance. It is
-> also recommended that teams who adopt Backstage today upgrades their
-> installation as new [releases](https://github.com/spotify/backstage/releases)
-> are available.
+> Backstage is currently under rapid development. This means that you can expect
+> APIs and features to evolve. It is also recommended that teams who adopt
+> Backstage today upgrade their installation as new
+> [releases](https://github.com/spotify/backstage/releases) become available, as
+> Backwards compatibility is not yet guaranteed.
 
 ## Phases
 
@@ -83,9 +81,9 @@ guidelines to get started.
 
 ### Future work 🔮
 
-- **[Backstage Beta](https://github.com/spotify/backstage/milestone/19)** - The
-  platform APIs and features are stable and can be dependent on for production
-  use. After this plugins will require little to no maintenance.
+- **[Backstage platform is stable](https://github.com/spotify/backstage/milestone/19)** -
+  The platform APIs and features are stable and can be depended on for
+  production use. After this plugins will require little to no maintenance.
 
 - **[Plugin marketplace](https://github.com/spotify/backstage/issues/2009)** -
   As the ecosystem of Backstage plugins continues to grow it is becoming
