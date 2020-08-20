@@ -93,6 +93,11 @@ export type AuthProviderConfig = {
    * callbackURL to redirect to once the user signs in to the auth provider.
    */
   baseUrl: string;
+
+  /**
+   * The base URL of the app as provided by app.baseUrl
+   */
+  appUrl: string;
 };
 
 /**

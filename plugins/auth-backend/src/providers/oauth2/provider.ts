@@ -29,7 +29,7 @@ import {
 } from '../../lib/PassportStrategyHelper';
 import {
   AuthProviderConfig,
-  GenericOAuth2ProviderOptions,
+  OAuthProviderOptions,
   OAuthProviderHandlers,
   OAuthResponse,
   PassportDoneCallback,
@@ -41,10 +41,15 @@ type PrivateInfo = {
   refreshToken: string;
 };
 
+export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
+  authorizationURL: string;
+  tokenURL: string;
+};
+
 export class OAuth2AuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: OAuth2Strategy;
 
-  constructor(options: GenericOAuth2ProviderOptions) {
+  constructor(options: OAuth2AuthProviderOptions) {
     this._strategy = new OAuth2Strategy(
       { ...options, passReqToCallback: false as true },
       (
@@ -142,18 +147,16 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
 }
 
 export function createOAuth2Provider(
-  { baseUrl }: AuthProviderConfig,
+  config: AuthProviderConfig,
   _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'oauth2';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
+  const callbackURL = `${config.baseUrl}/${providerId}/handler/frame`;
   const authorizationURL = envConfig.getString('authorizationURL');
   const tokenURL = envConfig.getString('tokenURL');
 
@@ -182,12 +185,9 @@ export function createOAuth2Provider(
     );
     return undefined;
   }
-  return new OAuthProvider(new OAuth2AuthProvider(opts), {
+  return OAuthProvider.fromConfig(config, new OAuth2AuthProvider(opts), {
     disableRefresh: false,
     providerId,
-    secure,
-    baseUrl,
-    appOrigin,
     tokenIssuer,
   });
 }

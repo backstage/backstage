@@ -141,19 +141,17 @@ export class Auth0AuthProvider implements OAuthProviderHandlers {
 }
 
 export function createAuth0Provider(
-  { baseUrl }: AuthProviderConfig,
+  config: AuthProviderConfig,
   _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'auth0';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
   const domain = envConfig.getString('domain');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
+  const callbackURL = `${config.baseUrl}/${providerId}/handler/frame`;
 
   const opts = {
     clientID,
@@ -175,12 +173,9 @@ export function createAuth0Provider(
     return undefined;
   }
 
-  return new OAuthProvider(new Auth0AuthProvider(opts), {
+  return OAuthProvider.fromConfig(config, new Auth0AuthProvider(opts), {
     disableRefresh: true,
     providerId,
-    secure,
-    baseUrl,
-    appOrigin,
     tokenIssuer,
   });
 }
