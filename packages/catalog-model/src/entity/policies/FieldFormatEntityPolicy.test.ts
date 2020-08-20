@@ -107,7 +107,7 @@ describe('FieldFormatEntityPolicy', () => {
   });
 
   it('rejects bad tag value', async () => {
-    data.metadata.tags.push('Hello World');
-    await expect(policy.enforce(data)).rejects.toThrow(/tags.*"Hello World"/i);
+    data.metadata.tags.push(0);
+    await expect(policy.enforce(data)).rejects.toThrow(/tags.*0/i);
   });
 });
