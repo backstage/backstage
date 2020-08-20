@@ -24,6 +24,8 @@ import {
   ErrorAlerter,
   featureFlagsApiRef,
   FeatureFlags,
+  discoveryApiRef,
+  UrlPatternDiscovery,
   GoogleAuth,
   GithubAuth,
   OAuth2,
@@ -74,7 +76,10 @@ import {
   TravisCIApi,
   travisCIApiRef,
 } from '@roadiehq/backstage-plugin-travis-ci';
-import { GithubPullRequestsClient, githubPullRequestsApiRef } from '@roadiehq/backstage-plugin-github-pull-requests';
+import {
+  GithubPullRequestsClient,
+  githubPullRequestsApiRef,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -85,6 +90,10 @@ export const apis = (config: ConfigApi) => {
 
   const builder = ApiRegistry.builder();
 
+  const discoveryApi = builder.add(
+    discoveryApiRef,
+    UrlPatternDiscovery.compile(`${backendUrl}/{{ pluginId }}`),
+  );
   const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
   const errorApi = builder.add(
     errorApiRef,
@@ -116,8 +125,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     googleAuthApiRef,
     GoogleAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -125,8 +133,7 @@ export const apis = (config: ConfigApi) => {
   const githubAuthApi = builder.add(
     githubAuthApiRef,
     GithubAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -134,8 +141,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     oktaAuthApiRef,
     OktaAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -143,8 +149,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     gitlabAuthApiRef,
     GitlabAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -152,8 +157,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     auth0AuthApiRef,
     Auth0Auth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -161,8 +165,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     oauth2ApiRef,
     OAuth2.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );

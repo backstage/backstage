@@ -25,15 +25,17 @@ import {
   BackstageIdentity,
   AuthRequestOptions,
 } from '../../../definitions/auth';
-import { OAuthRequestApi, AuthProvider } from '../../../definitions';
+import {
+  OAuthRequestApi,
+  AuthProvider,
+  DiscoveryApi,
+} from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
 
 type CreateOptions = {
-  backendUrl: string;
-  basePath: string;
-
+  discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
   environment?: string;
@@ -58,15 +60,13 @@ const DEFAULT_PROVIDER = {
 
 class GitlabAuth implements OAuthApi, SessionStateApi {
   static create({
-    backendUrl,
-    basePath,
+    discoveryApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      backendUrl,
-      basePath,
+      discoveryApi,
       environment,
       provider,
       oauthRequestApi,
