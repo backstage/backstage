@@ -218,9 +218,12 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         server = http.createServer(app);
       }
 
-      const stoppableServer = stoppable(server, 0);
+      const stoppableServer = stoppable(
+        server.listen(port, host, () => {
+        logger.info(`Listening on ${host}:${port}`);
+      }), 0);
 
-      stoppableServer.listen(port, host);
+      //stoppableServer.listen(port, host);
 
       useHotCleanup(this.module, () =>
         stoppableServer.stop((e: any) => {
