@@ -48,6 +48,21 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
 
+  const buildDocsForEntity = async (entity: Entity) => {
+    const preparer = preparers.get(entity);
+    const generator = generators.get(entity);
+
+    const { resultDir } = await generator.run({
+      directory: await preparer.prepare(entity),
+      dockerClient,
+    });
+
+    await publisher.publish({
+      entity,
+      directory: resultDir,
+    });
+  };
+
   router.get('/', async (_, res) => {
     res.status(200).send('Hello TechDocs Backend');
   });
@@ -64,18 +79,7 @@ export async function createRouter({
     );
 
     entitiesWithDocs.forEach(async entity => {
-      const preparer = preparers.get(entity);
-      const generator = generators.get(entity);
-
-      const { resultDir } = await generator.run({
-        directory: await preparer.prepare(entity),
-        dockerClient,
-      });
-
-      publisher.publish({
-        entity,
-        directory: resultDir,
-      });
+      await buildDocsForEntity(entity);
     });
 
     res.send('Successfully generated documentation');
@@ -85,6 +89,23 @@ export async function createRouter({
     router.use(
       '/static/docs/',
       express.static(path.resolve(__dirname, `../../static/docs`)),
+    );
+    router.use(
+      '/static/docs/:kind/:namespace/:name',
+      async (req, res, next) => {
+        const baseUrl = config.getString('backend.baseUrl');
+        const { kind, namespace, name } = req.params;
+
+        const entityResponse = await fetch(
+          `${baseUrl}/catalog/entities/by-name/${kind}/${namespace}/${name}`,
+        );
+        if (!entityResponse.ok) next();
+        const entity = (await entityResponse.json()) as Entity;
+
+        await buildDocsForEntity(entity);
+
+        res.redirect(req.originalUrl);
+      },
     );
   }
 

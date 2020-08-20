@@ -19,7 +19,7 @@ import {
   GeneratorRunResult,
 } from './types';
 import { runDockerContainer } from './helpers';
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 
@@ -29,7 +29,12 @@ export class TechdocsGenerator implements GeneratorBase {
     logStream,
     dockerClient,
   }: GeneratorRunOptions): Promise<GeneratorRunResult> {
-    const resultDir = fs.mkdtempSync(path.join(os.tmpdir(), `techdocs-tmp-`));
+    const tmpdirPath = os.tmpdir();
+    // Fixes a problem with macOS returning a path that is a symlink
+    const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
+    const resultDir = fs.mkdtempSync(
+      path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
+    );
 
     await runDockerContainer({
       imageName: 'spotify/techdocs',
@@ -43,6 +48,7 @@ export class TechdocsGenerator implements GeneratorBase {
     console.log(
       `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir}`,
     );
+
     return { resultDir };
   }
 }

@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type ItemCardProps = {
-  description: string;
+  description?: string;
   tags?: string[];
   title: string;
   type?: string;

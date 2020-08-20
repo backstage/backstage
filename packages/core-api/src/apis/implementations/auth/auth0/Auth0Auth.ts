@@ -96,11 +96,7 @@ class Auth0Auth
 
     const sessionManager = new RefreshingAuthSessionManager({
       connector,
-      defaultScopes: new Set([
-        'openid',
-        `email`,
-        `profile`,
-      ]),
+      defaultScopes: new Set(['openid', `email`, `profile`]),
       sessionScopes: (session: Auth0Session) => session.providerInfo.scopes,
       sessionShouldRefresh: (session: Auth0Session) => {
         const expiresInSec =

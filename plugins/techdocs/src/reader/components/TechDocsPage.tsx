@@ -14,6 +14,26 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './reader';
-export * from './api';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+
+import { TechDocsPageWrapper } from './TechDocsPageWrapper';
+import { Reader } from './Reader';
+
+export const TechDocsPage = () => {
+  const { entityId } = useParams();
+
+  const [kind, namespace, name] = entityId.split(':');
+
+  return (
+    <TechDocsPageWrapper title={name} subtitle={name}>
+      <Reader
+        entityId={{
+          kind,
+          namespace,
+          name,
+        }}
+      />
+    </TechDocsPageWrapper>
+  );
+};

@@ -58,6 +58,10 @@ import {
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
 import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
+import {
+  techdocsStorageApiRef,
+  TechDocsStorageApi,
+} from '@backstage/plugin-techdocs';
 
 import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
 import {
@@ -66,13 +70,17 @@ import {
 } from '@backstage/plugin-github-actions';
 import { jenkinsApiRef, JenkinsApi } from '@backstage/plugin-jenkins';
 
-import { TravisCIApi, travisCIApiRef } from '@roadiehq/backstage-plugin-travis-ci';
+import {
+  TravisCIApi,
+  travisCIApiRef,
+} from '@roadiehq/backstage-plugin-travis-ci';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
   console.log(`Creating APIs for ${config.getString('app.title')}`);
 
   const backendUrl = config.getString('backend.baseUrl');
+  const techdocsUrl = config.getString('techdocs.storageUrl');
 
   const builder = ApiRegistry.builder();
 
@@ -138,7 +146,7 @@ export const apis = (config: ConfigApi) => {
       oauthRequestApi,
     }),
   );
-  
+
   builder.add(
     auth0AuthApiRef,
     Auth0Auth.create({
@@ -205,6 +213,13 @@ export const apis = (config: ConfigApi) => {
     new RollbarClient({
       apiOrigin: backendUrl,
       basePath: '/rollbar',
+    }),
+  );
+
+  builder.add(
+    techdocsStorageApiRef,
+    new TechDocsStorageApi({
+      apiOrigin: techdocsUrl,
     }),
   );
 

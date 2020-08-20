@@ -270,7 +270,9 @@ export const gitlabAuthApiRef = createApiRef<
  * See https://auth0.com/docs/scopes/current/oidc-scopes
  * for a full list of supported scopes.
  */
-export const auth0AuthApiRef = createApiRef<OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi>({
+export const auth0AuthApiRef = createApiRef<
+  OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
+>({
   id: 'core.auth.auth0',
   description: 'Provides authentication towards Auth0 APIs',
 });

@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './reader';
-export * from './api';
+export * from './Reader';

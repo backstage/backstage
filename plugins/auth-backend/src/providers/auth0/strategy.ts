@@ -16,22 +16,25 @@
 import OAuth2Strategy from 'passport-oauth2';
 
 export interface Auth0StrategyOptionsWithRequest {
-    clientID: string;
-    clientSecret: string;
-    callbackURL: string;
-    domain: string;
-    passReqToCallback: true;
+  clientID: string;
+  clientSecret: string;
+  callbackURL: string;
+  domain: string;
+  passReqToCallback: true;
 }
 
 export default class Auth0Strategy extends OAuth2Strategy {
-    constructor(options: Auth0StrategyOptionsWithRequest, verify: OAuth2Strategy.VerifyFunctionWithRequest) {
-        const optionsWithURLs = {
-            ...options,
-            authorizationURL: `https://${options.domain}/authorize`,
-            tokenURL: `https://${options.domain}/oauth/token`,
-            userInfoURL: `https://${options.domain}/userinfo`,
-            apiUrl: `https://${options.domain}/api`,
-        }
-        super(optionsWithURLs, verify)
-    }
+  constructor(
+    options: Auth0StrategyOptionsWithRequest,
+    verify: OAuth2Strategy.VerifyFunctionWithRequest,
+  ) {
+    const optionsWithURLs = {
+      ...options,
+      authorizationURL: `https://${options.domain}/authorize`,
+      tokenURL: `https://${options.domain}/oauth/token`,
+      userInfoURL: `https://${options.domain}/userinfo`,
+      apiUrl: `https://${options.domain}/api`,
+    };
+    super(optionsWithURLs, verify);
+  }
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './reader';
-export * from './api';
+export type ParsedEntityId = {
+  kind: string;
+  namespace?: string;
+  name: string;
+};
