@@ -63,7 +63,7 @@ export const googleAuthApiFactory = createApiFactory({
   deps: { oauthRequestApi: oauthRequestApiRef },
   factory: ({ oauthRequestApi }) =>
     GoogleAuth.create({
-      apiOrigin: 'http://localhost:7000',
+      backendUrl: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -74,7 +74,7 @@ export const githubAuthApiFactory = createApiFactory({
   deps: { oauthRequestApi: oauthRequestApiRef },
   factory: ({ oauthRequestApi }) =>
     GithubAuth.create({
-      apiOrigin: 'http://localhost:7000',
+      backendUrl: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -85,7 +85,7 @@ export const gitlabAuthApiFactory = createApiFactory({
   deps: { oauthRequestApi: oauthRequestApiRef },
   factory: ({ oauthRequestApi }) =>
     GitlabAuth.create({
-      apiOrigin: 'http://localhost:7000',
+      backendUrl: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -96,7 +96,7 @@ export const auth0AuthApiFactory = createApiFactory({
   deps: { oauthRequestApi: oauthRequestApiRef },
   factory: ({ oauthRequestApi }) =>
     Auth0Auth.create({
-      apiOrigin: 'http://localhost:7000',
+      backendUrl: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
     }),

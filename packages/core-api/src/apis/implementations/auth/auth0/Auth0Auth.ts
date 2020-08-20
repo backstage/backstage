@@ -34,7 +34,7 @@ import { Observable } from '../../../../types';
 
 type CreateOptions = {
   // TODO(Following the words of Rugvip): These two should be grabbed from global config when available, they're not unique to Auth0Auth
-  apiOrigin: string;
+  backendUrl: string;
   basePath: string;
 
   oauthRequestApi: OAuthRequestApi;
@@ -67,14 +67,14 @@ class Auth0Auth
     BackstageIdentityApi,
     SessionStateApi {
   static create({
-    apiOrigin,
+    backendUrl,
     basePath,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      apiOrigin,
+      backendUrl,
       basePath,
       environment,
       provider,

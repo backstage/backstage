@@ -23,9 +23,9 @@ const DEFAULT_BASE_PATH = '/api/auth/';
 
 type Options<AuthSession> = {
   /**
-   * Origin of auth requests, defaults to location.origin
+   * The base URL of the auth backend.
    */
-  apiOrigin?: string;
+  backendUrl?: string;
   /**
    * Base path of the auth requests, defaults to /api/auth/
    */
@@ -64,7 +64,7 @@ function defaultJoinScopes(scopes: Set<string>) {
  */
 export class DefaultAuthConnector<AuthSession>
   implements AuthConnector<AuthSession> {
-  private readonly apiOrigin: string;
+  private readonly backendUrl: string;
   private readonly basePath: string;
   private readonly environment: string;
   private readonly provider: AuthProvider & { id: string };
@@ -74,7 +74,7 @@ export class DefaultAuthConnector<AuthSession>
 
   constructor(options: Options<AuthSession>) {
     const {
-      apiOrigin = window.location.origin,
+      backendUrl = window.location.origin,
       basePath = DEFAULT_BASE_PATH,
       environment,
       provider,
@@ -88,7 +88,7 @@ export class DefaultAuthConnector<AuthSession>
       onAuthRequest: scopes => this.showPopup(scopes),
     });
 
-    this.apiOrigin = apiOrigin;
+    this.backendUrl = backendUrl;
     this.basePath = basePath;
     this.environment = environment;
     this.provider = provider;
@@ -154,11 +154,12 @@ export class DefaultAuthConnector<AuthSession>
   private async showPopup(scopes: Set<string>): Promise<AuthSession> {
     const scope = this.joinScopesFunc(scopes);
     const popupUrl = this.buildUrl('/start', { scope });
+    const { origin } = new URL(this.backendUrl);
 
     const payload = await showLoginPopup({
       url: popupUrl,
       name: `${this.provider.title} Login`,
-      origin: this.apiOrigin,
+      origin,
       width: 450,
       height: 730,
     });
@@ -175,7 +176,7 @@ export class DefaultAuthConnector<AuthSession>
       env: this.environment,
     });
 
-    return `${this.apiOrigin}${this.basePath}${this.provider.id}${path}${queryString}`;
+    return `${this.backendUrl}${this.basePath}${this.provider.id}${path}${queryString}`;
   }
 
   private buildQueryString(query?: {

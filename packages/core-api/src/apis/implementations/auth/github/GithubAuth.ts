@@ -35,7 +35,7 @@ import { Observable } from '../../../../types';
 
 type CreateOptions = {
   // TODO(Rugvip): These two should be grabbed from global config when available, they're not unique to GithubAuth
-  apiOrigin: string;
+  backendUrl: string;
   basePath: string;
 
   oauthRequestApi: OAuthRequestApi;
@@ -62,14 +62,14 @@ const DEFAULT_PROVIDER = {
 
 class GithubAuth implements OAuthApi, SessionStateApi {
   static create({
-    apiOrigin,
+    backendUrl,
     basePath,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      apiOrigin,
+      backendUrl,
       basePath,
       environment,
       provider,

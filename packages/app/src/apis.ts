@@ -114,7 +114,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     googleAuthApiRef,
     GoogleAuth.create({
-      apiOrigin: backendUrl,
+      backendUrl,
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -123,7 +123,7 @@ export const apis = (config: ConfigApi) => {
   const githubAuthApi = builder.add(
     githubAuthApiRef,
     GithubAuth.create({
-      apiOrigin: backendUrl,
+      backendUrl,
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -132,7 +132,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     oktaAuthApiRef,
     OktaAuth.create({
-      apiOrigin: backendUrl,
+      backendUrl,
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -141,7 +141,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     gitlabAuthApiRef,
     GitlabAuth.create({
-      apiOrigin: backendUrl,
+      backendUrl,
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -150,7 +150,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     auth0AuthApiRef,
     Auth0Auth.create({
-      apiOrigin: backendUrl,
+      backendUrl,
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -159,7 +159,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     oauth2ApiRef,
     OAuth2.create({
-      apiOrigin: backendUrl,
+      backendUrl,
       basePath: '/auth/',
       oauthRequestApi,
     }),
