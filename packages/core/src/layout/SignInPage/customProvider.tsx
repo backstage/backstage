@@ -29,7 +29,8 @@ import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import { GridItem } from './styles';
 
-const ID_TOKEN_REGEX = /^[a-z0-9+/]+\.[a-z0-9+/]+\.[a-z0-9+/]+$/i;
+// accept base64url format according to RFC7515 (https://tools.ietf.org/html/rfc7515#section-3)
+const ID_TOKEN_REGEX = /^[a-z0-9_\-]+\.[a-z0-9_\-]+\.[a-z0-9_\-]+$/i;
 
 const useFormStyles = makeStyles(theme => ({
   form: {
