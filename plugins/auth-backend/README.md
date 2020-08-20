@@ -88,4 +88,4 @@ To try out SAML, you can use the mock identity provider:
 
 ## Links
 
-- (The Backstage homepage)[https://backstage.io]
+- [The Backstage homepage](https://backstage.io)
