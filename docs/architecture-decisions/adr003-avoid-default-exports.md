@@ -1,4 +1,8 @@
-# ADR003: Avoid Default Exports and Prefer Named Exports
+---
+id: adrs-adr003
+title: ADR003: Avoid Default Exports and Prefer Named Exports
+sidebar_label: ADR003
+---
 
 | Created    | Status |
 | ---------- | ------ |

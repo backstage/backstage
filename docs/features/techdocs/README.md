@@ -1,4 +1,8 @@
-# TechDocs Documentation
+---
+id: techdocs-overview
+title: TechDocs Documentation
+sidebar_label: Overview
+---
 
 ## What is it?
 
@@ -16,9 +20,9 @@ Spotify’s developer experience offering with 2,400+ documentation sites and
 - A clear end-to-end docs-like-code solution. (_Coming soon in V.1_)
 
 - A tightly coupled feedback loop with the developer workflow. (_Coming soon in
-  V.2_)
+  V.3_)
 
-- A developer ecosystem for creating extensions. (_Coming soon in V.2_)
+- A developer ecosystem for creating extensions. (_Coming soon in V.3_)
 
 ## Project roadmap
 

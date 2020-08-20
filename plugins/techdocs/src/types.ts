@@ -16,6 +16,6 @@
 
 export type ParsedEntityId = {
   kind: string;
-  namespace: string;
+  namespace?: string;
   name: string;
 };

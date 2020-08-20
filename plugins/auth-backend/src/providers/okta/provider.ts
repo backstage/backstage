@@ -164,19 +164,17 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
 }
 
 export function createOktaProvider(
-  { baseUrl }: AuthProviderConfig,
+  config: AuthProviderConfig,
   _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'okta';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
   const audience = envConfig.getString('audience');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
+  const callbackURL = `${config.baseUrl}/${providerId}/handler/frame`;
 
   const opts = {
     audience,
@@ -197,12 +195,9 @@ export function createOktaProvider(
     );
     return undefined;
   }
-  return new OAuthProvider(new OktaAuthProvider(opts), {
+  return OAuthProvider.fromConfig(config, new OktaAuthProvider(opts), {
     disableRefresh: false,
     providerId,
-    secure,
-    baseUrl,
-    appOrigin,
     tokenIssuer,
   });
 }

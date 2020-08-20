@@ -1,4 +1,7 @@
-# Create a Backstage Plugin
+---
+id: create-a-plugin
+title: Create a Backstage Plugin
+---
 
 A Backstage Plugin adds functionality to Backstage.
 

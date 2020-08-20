@@ -2,13 +2,9 @@ name: CLI Test
 
 on:
   pull_request:
-    paths:
-      - '.github/workflows/cli.yml'
-      - 'packages/cli/**'
-      - 'packages/create-app/**'
-      - 'packages/core/**'
-      - 'packages/core-api/**'
-      - 'yarn.lock'
+    paths-ignore:
+      - 'microsite/**'
+
 
 jobs:
   build:

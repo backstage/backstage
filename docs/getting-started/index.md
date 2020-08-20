@@ -1,6 +1,7 @@
-# Getting started with Backstage
-
-## Running Backstage Locally
+---
+id: index
+title: Running Backstage Locally
+---
 
 To get up and running with a local Backstage to evaluate it, let's clone it off
 of GitHub and run an initial build. First make sure that you have at least node

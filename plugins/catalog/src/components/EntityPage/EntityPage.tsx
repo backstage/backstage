@@ -25,25 +25,20 @@ import {
   PageTheme,
   Progress,
   useApi,
+  HeaderTabs,
 } from '@backstage/core';
-import { SentryIssuesWidget } from '@backstage/plugin-sentry';
-import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
-import {
-  JenkinsBuildsWidget,
-  JenkinsLastBuildWidget,
-} from '@backstage/plugin-jenkins';
-import { Grid, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
-import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+import { EntityPageDocs } from '../EntityPageDocs/EntityDocsPage';
+import { EntityPageApi } from '../EntityPageApi/EntityPageApi';
+import { EntityPageOverview } from '../EntityPageOverview/EntityPageOverview';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
-import { TabNavigator } from './TabNavigator';
-import { Reader } from '@backstage/plugin-techdocs';
+import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -81,11 +76,17 @@ const EntityPageTitle: FC<{ title: string; entity: Entity | undefined }> = ({
 );
 
 export const EntityPage: FC<{}> = () => {
-  const { optionalNamespaceAndName, kind } = useParams() as {
+  const {
+    optionalNamespaceAndName,
+    kind,
+    selectedTabId = 'overview',
+  } = useParams() as {
     optionalNamespaceAndName: string;
     kind: string;
+    selectedTabId: string;
   };
   const navigate = useNavigate();
+
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
 
   const errorApi = useApi(errorApiRef);
@@ -123,42 +124,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'overview',
       label: 'Overview',
-      content: ({ entity: e }: { entity: Entity }) => {
-        return (
-          <Content>
-            <Grid container spacing={3}>
-              <Grid item sm={4}>
-                <EntityMetadataCard entity={e} />
-              </Grid>
-              {e.metadata?.annotations?.[
-                'backstage.io/jenkins-github-folder'
-              ] && (
-                <Grid item sm={4}>
-                  <JenkinsLastBuildWidget entity={e} branch="master" />
-                </Grid>
-              )}
-              {e.metadata?.annotations?.[
-                'backstage.io/jenkins-github-folder'
-              ] && (
-                <Grid item sm={8}>
-                  <JenkinsBuildsWidget entity={e} />
-                </Grid>
-              )}
-              {e.metadata?.annotations?.['backstage.io/github-actions-id'] && (
-                <Grid item sm={3}>
-                  <GithubActionsWidget entity={e} branch="master" />
-                </Grid>
-              )}
-            </Grid>
-            <Grid item sm={8}>
-              <SentryIssuesWidget
-                sentryProjectId="sample-sentry-project-id"
-                statsFor="24h"
-              />
-            </Grid>
-          </Content>
-        );
-      },
+      content: (e: Entity) => <EntityPageOverview entity={e} />,
     },
     {
       id: 'ci',
@@ -171,6 +137,8 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'api',
       label: 'API',
+      show: (e: Entity) => !!e?.spec?.implementsApis,
+      content: (e: Entity) => <EntityPageApi entity={e} />,
     },
     {
       id: 'monitoring',
@@ -183,19 +151,9 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'docs',
       label: 'Docs',
-      show: ({ entity: e }: { entity: Entity }) =>
+      show: (e: Entity) =>
         !!e.metadata.annotations?.['backstage.io/techdocs-ref'],
-      content: ({ entity: e }: { entity: Entity }) => {
-        return (
-          <Reader
-            entityId={{
-              kind: e.kind,
-              namespace: e.metadata.namespace ?? 'default',
-              name: e.metadata.name,
-            }}
-          />
-        );
-      },
+      content: (e: Entity) => <EntityPageDocs entity={e} />,
     },
   ];
 
@@ -205,6 +163,12 @@ export const EntityPage: FC<{}> = () => {
     name,
     entity,
   );
+
+  const selectedTab = tabs.find(tab => tab.id === selectedTabId);
+
+  const filteredHeaderTabs = entity
+    ? tabs.filter(tab => (tab.show ? tab.show(entity) : true))
+    : [];
 
   return (
     <Page theme={getPageTheme(entity)}>
@@ -238,7 +202,19 @@ export const EntityPage: FC<{}> = () => {
 
       {entity && (
         <>
-          <TabNavigator<{ entity: Entity }> tabs={tabs} tabData={{ entity }} />
+          <HeaderTabs
+            tabs={filteredHeaderTabs}
+            onChange={idx => {
+              navigate(
+                `/catalog/${kind}/${optionalNamespaceAndName}/${tabs[idx].id}`,
+              );
+            }}
+            selectedIndex={tabs.findIndex(tab => tab.id === selectedTabId)}
+          />
+
+          {selectedTab && selectedTab.content
+            ? selectedTab.content(entity)
+            : null}
 
           <UnregisterEntityDialog
             open={confirmationDialogOpen}

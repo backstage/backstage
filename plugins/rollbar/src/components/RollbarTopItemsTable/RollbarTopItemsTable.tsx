@@ -16,12 +16,17 @@
 
 import React from 'react';
 import { Table, TableColumn } from '@backstage/core';
+import { Link } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import {
   RollbarFrameworkId,
   RollbarLevel,
   RollbarTopActiveItem,
 } from '../../api/types';
 import { RollbarTrendGraph } from '../RollbarTrendGraph/RollbarTrendGraph';
+
+const itemUrl = (org: string, project: string, id: number) =>
+  `https://rollbar.com/${org}/${project}/items/${id}`;
 
 const columns: TableColumn[] = [
   {
@@ -30,6 +35,15 @@ const columns: TableColumn[] = [
     type: 'string',
     align: 'left',
     width: '70px',
+    render: (data: any) => (
+      <Link
+        href={itemUrl(data.org, data.project, data.item.counter)}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {data.item.counter}
+      </Link>
+    ),
   },
   {
     title: 'Title',
@@ -40,9 +54,7 @@ const columns: TableColumn[] = [
   {
     title: 'Trend',
     sorting: false,
-    render: data => (
-      <RollbarTrendGraph counts={(data as RollbarTopActiveItem).counts} />
-    ),
+    render: (data: any) => <RollbarTrendGraph counts={data.counts} />,
   },
   {
     title: 'Occurrences',
@@ -81,22 +93,42 @@ const columns: TableColumn[] = [
 
 type Props = {
   items: RollbarTopActiveItem[];
+  organization: string;
+  project: string;
   loading: boolean;
+  error?: any;
 };
 
-export const RollbarTopItemsTable = ({ items, loading }: Props) => {
+export const RollbarTopItemsTable = ({
+  items,
+  organization,
+  project,
+  loading,
+  error,
+}: Props) => {
+  if (error) {
+    return (
+      <div>
+        <Alert severity="error">
+          Error encountered while fetching rollbar top items. {error.toString()}
+        </Alert>
+      </div>
+    );
+  }
+
   return (
     <Table
       isLoading={loading}
       columns={columns}
       options={{
         padding: 'dense',
-        paging: false,
         search: true,
+        paging: true,
+        pageSize: 5,
         showEmptyDataSourceMessage: !loading,
       }}
       title="Top Active Items"
-      data={items}
+      data={items.map(i => ({ org: organization, project, ...i }))}
     />
   );
 };

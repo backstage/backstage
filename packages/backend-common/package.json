@@ -39,9 +39,19 @@
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "helmet": "^4.0.0",
+    "knex": "^0.21.1",
+    "lodash": "^4.17.15",
     "morgan": "^1.10.0",
     "stoppable": "^1.1.0",
     "winston": "^3.2.1"
+  },
+  "peerDependencies": {
+    "pg-connection-string": "^2.3.0"
+  },
+  "peerDependenciesMeta": {
+    "pg-connection-string": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.18",

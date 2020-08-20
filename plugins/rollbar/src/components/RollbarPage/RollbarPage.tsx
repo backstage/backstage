@@ -16,18 +16,27 @@
 
 import React from 'react';
 import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core';
+import { configApiRef, useApi } from '@backstage/core';
 import { rollbarApiRef } from '../../api/RollbarApi';
 import { RollbarLayout } from '../RollbarLayout/RollbarLayout';
 import { RollbarProjectTable } from './RollbarProjectTable';
 
 export const RollbarPage = () => {
+  const configApi = useApi(configApiRef);
   const rollbarApi = useApi(rollbarApiRef);
-  const { value, loading } = useAsync(() => rollbarApi.getAllProjects());
+  const org =
+    configApi.getOptionalString('rollbar.organization') ??
+    configApi.getString('organization.name');
+  const { value, loading, error } = useAsync(() => rollbarApi.getAllProjects());
 
   return (
     <RollbarLayout>
-      <RollbarProjectTable loading={loading} projects={value || []} />
+      <RollbarProjectTable
+        projects={value || []}
+        organization={org}
+        loading={loading}
+        error={error}
+      />
     </RollbarLayout>
   );
 };

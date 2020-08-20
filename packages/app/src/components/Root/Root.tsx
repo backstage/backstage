@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import BuildIcon from '@material-ui/icons/BuildRounded';
 import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
 import MapIcon from '@material-ui/icons/MyLocation';
@@ -90,6 +91,7 @@ const Root: FC<{}> = ({ children }) => (
       {/* Global nav, not org-specific */}
       <SidebarItem icon={HomeIcon} to="./" text="Home" />
       <SidebarItem icon={ExploreIcon} to="explore" text="Explore" />
+      <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
       <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
       <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
       {/* End global nav */}

@@ -1,4 +1,9 @@
-![header](designheader.png)
+---
+id: design
+title: Design
+---
+
+![header](../assets/dls/designheader.png)
 
 Much like Backstage Open Source, this is a _living_ document! We'll keep this
 updated as we evolve our practices!
@@ -60,7 +65,7 @@ that is shaped by user experience and user interface decisions made by our
 Backstage Design Team. Also note, we encourage you to take the core experience
 we’ve crafted and add custom theming to better represent your organization!
 
-![dls](DLS.png)
+![dls](../assets/dls/DLS.png)
 
 ## ✅ Our Priorities
 
@@ -106,15 +111,16 @@ picked up by our team as something to be added to our design system.
 
 ## ✏️ Resources
 
-**[Storybook](http://storybook.backstage.io/)** - where you can view our
+**[Storybook](http://backstage.io/storybook)** - where you can view our
 components. If you’d like to help build up our design system, you can also add
 components we’ve designed to the Storybook as well.
 
-**[Figma](https://www.figma.com/@backstage)** - we're stoked to be using Figma Community to share our design assets. You can duplicate our component library and design your own plugin for Backstage.
+**[Figma](https://www.figma.com/@backstage)** - we're stoked to be using Figma
+Community to share our design assets. You can duplicate our component library
+and design your own plugin for Backstage.
 
 **[Discord](https://discord.gg/EBHEGzX)** - all design questions should be
 directed to the _#design_ channel.
-
 
 ## 🔮 Future
 

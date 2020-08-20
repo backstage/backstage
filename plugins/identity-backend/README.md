@@ -8,4 +8,4 @@ It responds to identity requests from the frontend.
 
 ## Links
 
-- (The Backstage homepage)[https://backstage.io]
+- [The Backstage homepage](https://backstage.io)

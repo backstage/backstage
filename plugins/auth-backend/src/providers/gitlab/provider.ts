@@ -132,20 +132,18 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
 }
 
 export function createGitlabProvider(
-  { baseUrl }: AuthProviderConfig,
+  config: AuthProviderConfig,
   _: string,
   envConfig: Config,
   logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'gitlab';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
   const clientID = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
   const audience = envConfig.getString('audience');
   const baseURL = audience || 'https://gitlab.com';
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
+  const callbackURL = `${config.baseUrl}/${providerId}/handler/frame`;
 
   const opts = {
     clientID,
@@ -166,12 +164,9 @@ export function createGitlabProvider(
     );
     return undefined;
   }
-  return new OAuthProvider(new GitlabAuthProvider(opts), {
+  return OAuthProvider.fromConfig(config, new GitlabAuthProvider(opts), {
     disableRefresh: true,
     providerId,
-    secure,
-    baseUrl,
-    appOrigin,
     tokenIssuer,
   });
 }
