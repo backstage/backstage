@@ -72,7 +72,13 @@ export async function createRouter(
       );
       router.use(`/${providerId}`, providerRouter);
     } catch (e) {
-      logger.error(e.message);
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          `Failed to initialize ${providerId} auth provider, ${e.message}`,
+        );
+      }
+
+      logger.warn(`Skipping ${providerId} auth provider, ${e.message}`);
     }
   }
 
