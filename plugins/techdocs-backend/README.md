@@ -18,5 +18,5 @@ yarn start
 
 ## Links
 
-- (Frontend part of the plugin)[https://github.com/spotify/backstage/tree/master/plugins/techdocs]
-- (The Backstage homepage)[https://backstage.io]
+- [Frontend part of the plugin](https://github.com/spotify/backstage/tree/master/plugins/techdocs)
+- [The Backstage homepage](https://backstage.io)
