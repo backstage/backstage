@@ -223,8 +223,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         logger.info(`Listening on ${host}:${port}`);
       }), 0);
 
-      //stoppableServer.listen(port, host);
-
       useHotCleanup(this.module, () =>
         stoppableServer.stop((e: any) => {
           if (e) console.error(e);
