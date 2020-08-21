@@ -20,7 +20,6 @@ import cors from 'cors';
 import express, { Router } from 'express';
 import helmet from 'helmet';
 import * as http from 'http';
-import * as https from 'https';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
 import { useHotCleanup } from '../../hot';
