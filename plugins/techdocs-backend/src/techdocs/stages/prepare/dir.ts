@@ -43,7 +43,8 @@ export class DirectoryPreparer implements PreparerBase {
 
     const parsedGitLocation = parseGitUrl(target);
     const repositoryTmpPath = path.join(
-      os.tmpdir(),
+      // fs.realpathSync fixes a problem with macOS returning a path that is a symlink
+      fs.realpathSync(os.tmpdir()),
       'backstage-repo',
       parsedGitLocation.source,
       parsedGitLocation.owner,
