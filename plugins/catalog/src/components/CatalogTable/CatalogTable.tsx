@@ -15,7 +15,7 @@
  */
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
-import { Link } from '@material-ui/core';
+import { Link, Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import { Alert } from '@material-ui/lab';
@@ -45,6 +45,7 @@ const columns: TableColumn<Entity>[] = [
             .filter(Boolean)
             .join(':'),
           kind: entity.kind,
+          selectedTabId: 'overview',
         })}
       >
         {entity.metadata.name}
@@ -62,6 +63,21 @@ const columns: TableColumn<Entity>[] = [
   {
     title: 'Description',
     field: 'metadata.description',
+  },
+  {
+    title: 'Tags',
+    field: 'metadata.tags',
+    cellStyle: {
+      padding: '0px 16px 0px 20px',
+    },
+    render: (entity: Entity) => (
+      <>
+        {entity.metadata.tags &&
+          entity.metadata.tags.map(t => (
+            <Chip label={t} color="secondary" style={{ marginBottom: '0px' }} />
+          ))}
+      </>
+    ),
   },
 ];
 

@@ -63,6 +63,7 @@ export const RegisterComponentResultDialog: FC<Props> = ({
               .filter(Boolean)
               .join(':'),
             kind: entity.kind,
+            selectedTabId: 'overview',
           });
 
           return (

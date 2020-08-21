@@ -7,7 +7,7 @@ spec:
   type: service
   lifecycle: experimental
   owner: pets@example.com
-  implementedApis:
+  implementsApis:
     - petstore
     - streetlights
     - hello-world

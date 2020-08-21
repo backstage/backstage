@@ -33,7 +33,7 @@ import {
 import { OAuth2Session } from './types';
 
 type CreateOptions = {
-  apiOrigin: string;
+  backendUrl: string;
   basePath: string;
 
   oauthRequestApi: OAuthRequestApi;
@@ -64,14 +64,14 @@ const SCOPE_PREFIX = '';
 class OAuth2
   implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, SessionStateApi {
   static create({
-    apiOrigin,
+    backendUrl,
     basePath,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      apiOrigin,
+      backendUrl,
       basePath,
       environment,
       provider,

@@ -42,6 +42,7 @@ software catalog API.
     "labels": {
       "system": "public-websites"
     },
+    "tags": ["java"],
     "name": "artist-web",
     "uid": "2152f463-549d-4d8d-a94d-ce2b7676c6e2"
   },
@@ -66,6 +67,8 @@ metadata:
   annotations:
     example.com/service-discovery: artistweb
     circleci.com/project-slug: gh/example-org/artist-website
+  tags:
+    - java
 spec:
   type: website
   lifecycle: production
@@ -231,6 +234,20 @@ separated by any of `[-_.]`, at most 63 characters in total.
 The `backstage.io/` prefix is reserved for use by Backstage core components.
 
 Values can be of any length, but are limited to being strings.
+
+### `tags` [optional]
+
+A list of single-valued strings, for example to classify catalog entities in
+various ways. This is different to the labels in metadata, as labels are
+key-value pairs.
+
+The values are user defined, for example the programming language used for the
+component, like `java` or `go`.
+
+This field is optional, and currently has no special semantics.
+
+Each tag must be sequences of `[a-zA-Z0-9]` separated by `-`, at most 63
+characters in total.
 
 ## Kind: Component
 

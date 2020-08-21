@@ -14,15 +14,15 @@ export default async function createPlugin({
   config,
 }: PluginEnvironment) {
   const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator();
+  const techdocsGenerator = new TechdocsGenerator(logger);
   generators.register('techdocs', techdocsGenerator);
 
-  const directoryPreparer = new DirectoryPreparer();
+  const directoryPreparer = new DirectoryPreparer(logger);
   const preparers = new Preparers();
 
   preparers.register('dir', directoryPreparer);
 
-  const publisher = new LocalPublish();
+  const publisher = new LocalPublish(logger);
 
   const dockerClient = new Docker();
 

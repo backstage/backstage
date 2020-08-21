@@ -29,7 +29,7 @@ import {
 } from '../../lib/PassportStrategyHelper';
 import {
   AuthProviderConfig,
-  GenericOAuth2ProviderOptions,
+  OAuthProviderOptions,
   OAuthProviderHandlers,
   OAuthResponse,
   PassportDoneCallback,
@@ -41,12 +41,24 @@ type PrivateInfo = {
   refreshToken: string;
 };
 
+export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
+  authorizationUrl: string;
+  tokenUrl: string;
+};
+
 export class OAuth2AuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: OAuth2Strategy;
 
-  constructor(options: GenericOAuth2ProviderOptions) {
+  constructor(options: OAuth2AuthProviderOptions) {
     this._strategy = new OAuth2Strategy(
-      { ...options, passReqToCallback: false as true },
+      {
+        clientID: options.clientId,
+        clientSecret: options.clientSecret,
+        callbackURL: options.callbackUrl,
+        authorizationURL: options.authorizationUrl,
+        tokenURL: options.tokenUrl,
+        passReqToCallback: false as true,
+      },
       (
         accessToken: any,
         refreshToken: any,
@@ -142,52 +154,30 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
 }
 
 export function createOAuth2Provider(
-  { baseUrl }: AuthProviderConfig,
+  config: AuthProviderConfig,
   _: string,
   envConfig: Config,
-  logger: Logger,
+  _logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'oauth2';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
-  const clientID = envConfig.getString('clientId');
+  const clientId = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
-  const authorizationURL = envConfig.getString('authorizationURL');
-  const tokenURL = envConfig.getString('tokenURL');
+  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
+  const authorizationUrl = envConfig.getString('authorizationUrl');
+  const tokenUrl = envConfig.getString('tokenUrl');
 
-  const opts = {
-    clientID,
+  const provider = new OAuth2AuthProvider({
+    clientId,
     clientSecret,
-    callbackURL,
-    authorizationURL,
-    tokenURL,
-  };
+    callbackUrl,
+    authorizationUrl,
+    tokenUrl,
+  });
 
-  if (
-    !opts.clientID ||
-    !opts.clientSecret ||
-    !opts.authorizationURL ||
-    !opts.tokenURL
-  ) {
-    if (process.env.NODE_ENV !== 'development') {
-      throw new Error(
-        'Failed to initialize OAuth2 auth provider, set AUTH_OAUTH2_CLIENT_ID, AUTH_OAUTH2_CLIENT_SECRET, AUTH_OAUTH2_AUTH_URL, and AUTH_OAUTH2_TOKEN_URL env vars',
-      );
-    }
-
-    logger.warn(
-      'OAuth2 auth provider disabled, set AUTH_OAUTH2_CLIENT_ID, AUTH_OAUTH2_CLIENT_SECRET, AUTH_OAUTH2_AUTH_URL, and AUTH_OAUTH2_TOKEN_URL env vars to enable',
-    );
-    return undefined;
-  }
-  return new OAuthProvider(new OAuth2AuthProvider(opts), {
+  return OAuthProvider.fromConfig(config, provider, {
     disableRefresh: false,
     providerId,
-    secure,
-    baseUrl,
-    appOrigin,
     tokenIssuer,
   });
 }

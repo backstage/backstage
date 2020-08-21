@@ -18,8 +18,8 @@ import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './types';
 
 export type ParsedLocationAnnotation = {
-  protocol: RemoteProtocol;
-  location: string;
+  type: RemoteProtocol;
+  target: string;
 };
 
 export const parseReferenceAnnotation = (
@@ -36,19 +36,19 @@ export const parseReferenceAnnotation = (
 
   // split on the first colon for the protocol and the rest after the first split
   // is the location.
-  const [protocol, location] = annotation.split(/:(.+)/) as [
+  const [type, target] = annotation.split(/:(.+)/) as [
     RemoteProtocol?,
     string?,
   ];
 
-  if (!protocol || !location) {
+  if (!type || !target) {
     throw new InputError(
       `Failure to parse either protocol or location for entity: ${entity.metadata.name}`,
     );
   }
 
   return {
-    protocol,
-    location,
+    type,
+    target,
   };
 };

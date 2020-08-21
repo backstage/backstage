@@ -17,6 +17,7 @@
 const os = require('os');
 const fs = require('fs-extra');
 const fetch = require('node-fetch');
+const handlebars = require('handlebars');
 const killTree = require('tree-kill');
 const { resolve: resolvePath, join: joinPath } = require('path');
 const Browser = require('zombie');
@@ -62,6 +63,35 @@ async function buildDistWorkspace(workspaceName, rootDir) {
   const workspaceDir = resolvePath(rootDir, workspaceName);
   await fs.ensureDir(workspaceDir);
 
+  // We grab the needed dependencies from the template packages
+  const appPkgTemplate = await fs.readFile(
+    resolvePath(
+      __dirname,
+      '../../create-app/templates/default-app/packages/app/package.json.hbs',
+    ),
+    'utf8',
+  );
+  const appPkg = JSON.parse(
+    handlebars.compile(appPkgTemplate)({ version: '0.0.0' }),
+  );
+  const appDeps = Object.keys(appPkg.dependencies).filter(name =>
+    name.startsWith('@backstage/'),
+  );
+
+  const backendPkgTemplate = await fs.readFile(
+    resolvePath(
+      __dirname,
+      '../../create-app/templates/default-app/packages/backend/package.json.hbs',
+    ),
+    'utf8',
+  );
+  const backendPkg = JSON.parse(
+    handlebars.compile(backendPkgTemplate)({ version: '0.0.0' }),
+  );
+  const backendDeps = Object.keys(backendPkg.dependencies).filter(name =>
+    name.startsWith('@backstage/'),
+  );
+
   print(`Preparing workspace`);
   await runPlain([
     'yarn',
@@ -73,8 +103,8 @@ async function buildDistWorkspace(workspaceName, rootDir) {
     '@backstage/core',
     '@backstage/dev-utils',
     '@backstage/test-utils',
-    // We don't use the backend itself, but want all of its dependencies
-    'example-backend',
+    ...appDeps,
+    ...backendDeps,
   ]);
 
   print('Pinning yarn version in workspace');
@@ -246,7 +276,7 @@ async function testAppServe(pluginName, appDir) {
   try {
     const browser = new Browser();
 
-    await waitForPageWithText(browser, '/', 'Welcome to Backstage');
+    await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
     await waitForPageWithText(
       browser,
       `/${pluginName}`,

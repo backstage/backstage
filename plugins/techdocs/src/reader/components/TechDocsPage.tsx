@@ -15,13 +15,25 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { pageTheme } from '../Page/PageThemeProvider';
-import { Waves } from './Waves';
+import { useParams } from 'react-router-dom';
 
-describe('<Waves/>', () => {
-  it('should render svg', () => {
-    const rendered = render(<Waves theme={pageTheme.home} />);
-    rendered.getByTestId('wave-svg');
-  });
-});
+import { TechDocsPageWrapper } from './TechDocsPageWrapper';
+import { Reader } from './Reader';
+
+export const TechDocsPage = () => {
+  const { entityId } = useParams();
+
+  const [kind, namespace, name] = entityId.split(':');
+
+  return (
+    <TechDocsPageWrapper title={name} subtitle={name}>
+      <Reader
+        entityId={{
+          kind,
+          namespace,
+          name,
+        }}
+      />
+    </TechDocsPageWrapper>
+  );
+};

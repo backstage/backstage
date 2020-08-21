@@ -205,8 +205,9 @@ describe('OAuthProvider', () => {
     providerId: 'test-provider',
     secure: false,
     disableRefresh: true,
-    baseUrl: 'http://localhost:7000/auth',
     appOrigin: 'http://localhost:3000',
+    cookieDomain: 'localhost',
+    cookiePath: '/auth/test-provider',
     tokenIssuer: {
       issueToken: async () => 'my-id-token',
       listPublicKeys: async () => ({ keys: [] }),

@@ -37,7 +37,7 @@ describe('ProfileCatalog', () => {
       [
         githubAuthApiRef,
         GithubAuth.create({
-          apiOrigin: 'http://localhost:7000',
+          backendUrl: 'http://localhost:7000',
           basePath: '/auth/',
           oauthRequestApi,
         }),

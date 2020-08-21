@@ -54,7 +54,7 @@ contains more information about the required fields.
 Once we have a `template.yaml` ready, we can then add it to the service catalog
 for use by the scaffolder.
 
-Currently the catalog supports loading definitions from Github + Local Files. To
+Currently the catalog supports loading definitions from GitHub + Local Files. To
 load from other places, not only will there need to be another preparer, but the
 support to load the location will also need to be added to the Catalog.
 

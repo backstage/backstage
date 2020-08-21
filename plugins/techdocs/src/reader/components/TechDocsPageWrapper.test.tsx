@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
-import { TechDocsHome } from './TechDocsHome';
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
@@ -24,7 +23,7 @@ describe('TechDocs Page Wrapper', () => {
     const { queryByText } = render(
       wrapInTestApp(
         <TechDocsPageWrapper title="test-title" subtitle="test-subtitle">
-          <TechDocsHome />
+          Test
         </TechDocsPageWrapper>,
       ),
     );

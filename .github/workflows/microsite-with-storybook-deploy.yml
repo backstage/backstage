@@ -9,6 +9,7 @@ on:
       - 'packages/storybook/**'
       - 'packages/core/src/**'
       - 'microsite/**'
+      - 'docs/**'
 
 jobs:
   deploy-microsite-and-storybook:

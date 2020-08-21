@@ -31,7 +31,7 @@ import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
 
 type CreateOptions = {
-  apiOrigin: string;
+  backendUrl: string;
   basePath: string;
 
   oauthRequestApi: OAuthRequestApi;
@@ -58,14 +58,14 @@ const DEFAULT_PROVIDER = {
 
 class GitlabAuth implements OAuthApi, SessionStateApi {
   static create({
-    apiOrigin,
+    backendUrl,
     basePath,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      apiOrigin,
+      backendUrl,
       basePath,
       environment,
       provider,

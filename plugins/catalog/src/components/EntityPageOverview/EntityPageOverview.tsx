@@ -18,7 +18,10 @@ import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
 import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
-import { JenkinsBuildsWidget, JenkinsLastBuildWidget, } from '@backstage/plugin-jenkins';
+import {
+  JenkinsBuildsWidget,
+  JenkinsLastBuildWidget,
+} from '@backstage/plugin-jenkins';
 import { Grid } from '@material-ui/core';
 import React, { FC } from 'react';
 import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
@@ -32,14 +35,14 @@ export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
         </Grid>
         {entity.metadata?.annotations?.[
           'backstage.io/jenkins-github-folder'
-          ] && (
+        ] && (
           <Grid item sm={4}>
             <JenkinsLastBuildWidget entity={entity} branch="master" />
           </Grid>
         )}
         {entity.metadata?.annotations?.[
           'backstage.io/jenkins-github-folder'
-          ] && (
+        ] && (
           <Grid item sm={8}>
             <JenkinsBuildsWidget entity={entity} />
           </Grid>
@@ -49,12 +52,12 @@ export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
             <GithubActionsWidget entity={entity} branch="master" />
           </Grid>
         )}
-      </Grid>
-      <Grid item sm={8}>
-        <SentryIssuesWidget
-          sentryProjectId="sample-sentry-project-id"
-          statsFor="24h"
-        />
+        <Grid item sm={8}>
+          <SentryIssuesWidget
+            sentryProjectId="sample-sentry-project-id"
+            statsFor="24h"
+          />
+        </Grid>
       </Grid>
     </Content>
   );

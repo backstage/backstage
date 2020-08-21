@@ -16,9 +16,8 @@
 
 set -e
 
-ROOT_DIR=$(git rev-parse --show-toplevel)
-TECHDOCS_PREVIEW_SOURCE=$ROOT_DIR/plugins/techdocs/dist
-TECHDOCS_PREVIEW_DEST=$ROOT_DIR/packages/techdocs-cli/dist/techdocs-preview-bundle
+TECHDOCS_PREVIEW_SOURCE=../../plugins/techdocs/dist
+TECHDOCS_PREVIEW_DEST=../../packages/techdocs-cli/dist/techdocs-preview-bundle
 
 # Build the CLI
 yarn run backstage-cli -- build --outputs cjs

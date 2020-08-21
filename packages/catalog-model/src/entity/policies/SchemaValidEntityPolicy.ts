@@ -31,6 +31,7 @@ const DEFAULT_ENTITY_SCHEMA = yup.object({
       description: yup.string().notRequired(),
       labels: yup.object<Record<string, string>>().notRequired(),
       annotations: yup.object<Record<string, string>>().notRequired(),
+      tags: yup.array<string>().notRequired(),
     })
     .required(),
   spec: yup.object({}).notRequired(),

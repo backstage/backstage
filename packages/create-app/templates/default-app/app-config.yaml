@@ -24,3 +24,35 @@ techdocs:
 
 auth:
   providers: {}
+
+catalog:
+  locations:
+    # Backstage Example Component
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
+
+    # Backstage Example Templates
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+    - type: github
+      target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
