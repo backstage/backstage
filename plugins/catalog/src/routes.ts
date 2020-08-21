@@ -20,16 +20,16 @@ const NoIcon = () => null;
 
 export const rootRoute = createRouteRef({
   icon: NoIcon,
-  path: '/',
+  path: '',
   title: 'Catalog',
 });
 export const entityRoute = createRouteRef({
   icon: NoIcon,
-  path: '/catalog/:kind/:optionalNamespaceAndName/:selectedTabId/*',
+  path: ':kind/:optionalNamespaceAndName/*',
   title: 'Entity',
 });
 export const entityRouteDefault = createRouteRef({
   icon: NoIcon,
-  path: '/catalog/:kind/:optionalNamespaceAndName',
+  path: ':kind/:optionalNamespaceAndName',
   title: 'Entity',
 });

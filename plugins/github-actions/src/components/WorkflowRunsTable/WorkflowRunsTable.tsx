@@ -25,6 +25,7 @@ import SyncIcon from '@material-ui/icons/Sync';
 import { buildRouteRef } from '../../plugin';
 import { useEntityCompoundName } from '@backstage/plugin-catalog';
 import { useProjectName } from '../useProjectName';
+import { Entity } from '@backstage/catalog-model';
 
 export type WorkflowRun = {
   id: string;
@@ -134,6 +135,7 @@ export const WorkflowRunsTableView: FC<Props> = ({
       data={runs ?? []}
       onChangePage={onChangePage}
       onChangeRowsPerPage={onChangePageSize}
+      style={{ width: '100%' }}
       title={
         <Box display="flex" alignItems="center">
           <GitHubIcon />
@@ -146,25 +148,14 @@ export const WorkflowRunsTableView: FC<Props> = ({
   );
 };
 
-export const WorkflowRunsTable = () => {
-  let entityCompoundName = useEntityCompoundName();
-
-  if (!entityCompoundName.name) {
-    // TODO(shmidt-i): remove when is fully integrated
-    // into the entity view
-    entityCompoundName = {
-      kind: 'Component',
-      name: 'backstage',
-      namespace: 'default',
-    };
-  }
-
-  const { value: projectName, loading } = useProjectName(entityCompoundName);
+export const WorkflowRunsTable = ({ entity }: { entity: Entity }) => {
+  const { value: projectName, loading } = useProjectName(entity);
   const [owner, repo] = (projectName ?? '/').split('/');
   const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
     owner,
     repo,
   });
+
   return (
     <WorkflowRunsTableView
       {...tableProps}

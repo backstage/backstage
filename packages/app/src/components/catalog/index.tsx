@@ -13,5 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { useEntity } from '@backstage/plugin-catalog';
+import { ComponentEntity } from './Component';
 
-export { WorkflowRunsPage } from './WorkflowRunsPage';
+const UnkownEntityKind = () => <div>Unknown entity kind!</div>;
+
+export const EntityPage = () => {
+  const entity = useEntity();
+  switch (entity.kind) {
+    case 'Component':
+      return <ComponentEntity />;
+    default:
+      return <UnkownEntityKind />;
+  }
+};

@@ -26,6 +26,11 @@ import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
+import { CatalogPlugin } from '@backstage/plugin-catalog';
+// import { ExplorePlugin } from '@backstage/plugin-explore';
+import { Route, Routes } from 'react-router';
+
+import { EntityPage } from './components/catalog';
 
 const app = createApp({
   apis,
@@ -46,8 +51,16 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const AppRoutes = app.getRoutes();
 
+const AppRoutes = () => (
+  <Routes>
+    <Route
+      path="/catalog/*"
+      element={<CatalogPlugin EntityPage={EntityPage} />}
+    />
+    {/* <Route path="/explore" element={<ExplorePlugin />} /> */}
+  </Routes>
+);
 const App: FC<{}> = () => (
   <AppProvider>
     <AlertDisplay />

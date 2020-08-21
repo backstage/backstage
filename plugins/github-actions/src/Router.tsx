@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useAsync } from 'react-use';
+import React from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { Routes, Route } from 'react-router';
+import { rootRouteRef, buildRouteRef } from './plugin';
+import { WorkflowRunDetails } from './components/WorkflowRunDetails';
+import { WorkflowRunsTable } from './components/WorkflowRunsTable';
 
-export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
-
-export const useProjectName = (entity: Entity) => {
-  const { value, loading, error } = useAsync(async () => {
-    return entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '';
-  });
-  return { value, loading, error };
-};
+export const GitHubActionsPlugin = ({ entity }: { entity: Entity }) => (
+  <Routes>
+    <Route
+      path={`/${rootRouteRef.path}`}
+      element={<WorkflowRunsTable entity={entity} />}
+    />
+    <Route
+      path={`/${buildRouteRef.path}`}
+      element={<WorkflowRunDetails entity={entity} />}
+    />
+  </Routes>
+);

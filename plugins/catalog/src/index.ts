@@ -19,3 +19,6 @@ export * from './api/CatalogClient';
 export * from './api/types';
 export * from './routes';
 export { useEntityCompoundName } from './components/useEntityCompoundName';
+export * from './Router';
+export { useEntity } from './hooks/useEntity';
+export { EntityPageTabs } from './components/EntityPageTabs';
