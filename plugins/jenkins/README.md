@@ -4,7 +4,7 @@ Website: [https://jenkins.io/](https://jenkins.io/)
 
 <img src="./src/assets/last-master-build.png"  alt="Last master build"/>
 <img src="./src/assets/folder-results.png"  alt="Folder results"/>
-<img src="./src/assets/build-details.png"  alt="Build detials"/>
+<img src="./src/assets/build-details.png"  alt="Build details"/>
 
 ## Setup
 
