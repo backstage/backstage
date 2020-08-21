@@ -16,6 +16,8 @@
 import express from 'express';
 import * as http from 'http';
 import * as https from 'https';
+import { Logger } from 'winston';
+import { HttpsSettings } from './config';
 
 /**
  * Reads some base options out of a config object.
@@ -31,11 +33,57 @@ import * as https from 'https';
  * }
  * ```
  */
-export function createHttpServer(app: express.Express): http.Server {
+export function createHttpServer(
+  app: express.Express,
+  logger: Logger,
+): http.Server {
+  logger.info('Initializing http server');
+
   return http.createServer(app);
 }
 
+export function createHttpsServer(
+  app: express.Express,
+  httpsSettings: HttpsSettings,
+  logger: Logger,
+): http.Server {
+  logger.info('Initializing https server');
 
-export function createHttpsServer(app: express.Express): http.Server {
-  return https.createServer(app);
+  const credentials: { key: string; cert: string } = {
+    key: '',
+    cert: '',
+  };
+
+  const signingOptions: any = httpsSettings?.certificate;
+
+  if (signingOptions?.algorithm !== undefined) {
+    logger.info('Generating self-signed certificate with attributes');
+
+    const certificateAttributes: Array<any> = Object.entries(
+      signingOptions.attributes,
+    ).map(([name, value]) => ({ name, value }));
+
+    // TODO: Create a type def for selfsigned.
+    const signatures = require('selfsigned').generate(certificateAttributes, {
+      algorithm: signingOptions?.algorithm,
+      keySize: signingOptions?.size || 2048,
+      days: signingOptions?.days || 30,
+    });
+
+    logger.info('Bootstrapping self-signed certificate');
+
+    credentials.key = signatures.private;
+    credentials.cert = signatures.cert;
+  } else {
+    logger.info('Bootstrapping cert from config');
+
+    credentials.key = signingOptions?.key;
+    credentials.cert = signingOptions?.cert;
+  }
+
+  if (credentials.key === '' || credentials.cert === '') {
+    throw new Error('Invalid credentials');
+  }
+
+  return https.createServer(credentials, app) as http.Server;
 }

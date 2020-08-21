@@ -13,13 +13,6 @@ backend:
   database:
     client: sqlite3
     connection: ':memory:'
-  # https:
-  #   certificate:
-  #     size: 2048
-  #     algorithm: sha256
-  #     days: 30
-  #     attributes: 
-  #       commonName: 'dfds.com'
 
 proxy:
   '/circleci/api':
