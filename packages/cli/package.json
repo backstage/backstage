@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.18",
+  "version": "0.1.1-alpha.19",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -29,9 +29,9 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1-alpha.18",
-    "@backstage/config": "^0.1.1-alpha.18",
-    "@backstage/config-loader": "^0.1.1-alpha.18",
+    "@backstage/cli-common": "^0.1.1-alpha.19",
+    "@backstage/config": "^0.1.1-alpha.19",
+    "@backstage/config-loader": "^0.1.1-alpha.19",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
