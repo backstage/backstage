@@ -55,7 +55,7 @@ ApiRef:
 
 ## githubAuth
 
-Provides authentication towards Github APIs
+Provides authentication towards GitHub APIs
 
 Implemented types: [OAuthApi](./OAuthApi.md),
 [ProfileInfoApi](./ProfileInfoApi.md),
@@ -67,7 +67,7 @@ ApiRef:
 
 ## gitlabAuth
 
-Provides authentication towards Gitlab APIs
+Provides authentication towards GitLab APIs
 
 Implemented types: [OAuthApi](./OAuthApi.md),
 [ProfileInfoApi](./ProfileInfoApi.md),
