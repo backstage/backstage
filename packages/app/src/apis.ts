@@ -201,13 +201,7 @@ export const apis = (config: ConfigApi) => {
     ]),
   );
 
-  builder.add(
-    rollbarApiRef,
-    new RollbarClient({
-      apiOrigin: backendUrl,
-      basePath: '/rollbar',
-    }),
-  );
+  builder.add(rollbarApiRef, new RollbarClient({ discoveryApi }));
 
   builder.add(
     techdocsStorageApiRef,
