@@ -180,13 +180,7 @@ export const apis = (config: ConfigApi) => {
 
   builder.add(catalogApiRef, new CatalogClient({ discoveryApi }));
 
-  builder.add(
-    scaffolderApiRef,
-    new ScaffolderApi({
-      apiOrigin: backendUrl,
-      basePath: '/scaffolder/v1',
-    }),
-  );
+  builder.add(scaffolderApiRef, new ScaffolderApi({ discoveryApi }));
 
   builder.add(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008'));
 
