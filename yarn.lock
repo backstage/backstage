@@ -2874,9 +2874,9 @@
     write-file-atomic "^2.3.0"
 
 "@material-icons/font@^1.0.2":
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/@material-icons/font/-/font-1.0.3.tgz#f722e5a69a03f20ef47d015cb69420bebeeaabe5"
-  integrity sha512-aIRd0Z9b/HJ/O24KOaP7dNsXypMnXhpWrpLVYvQB/JesVqXYSbioYND200sR+C14a0LSCp+qWnWCnSXmN1hWGw==
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/@material-icons/font/-/font-1.0.4.tgz#4bfc59dcaba90f6d71e4aeffd1ebb2ea6119c844"
+  integrity sha512-tt80HS8dDtx/jj6fXWi6CycCZWC1AY3YOXjHwxShwe/jrW/fRVdw0C9JOGo0ij5/7y+uG0Rp0c4plu7J4Cq7EA==
 
 "@material-ui/core@^4.9.1":
   version "4.9.7"
