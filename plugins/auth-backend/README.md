@@ -103,9 +103,9 @@ The secret value will then be displayed on the screen. **You will not be able to
 
 ```bash
 cd packages/backend
-export AUTH_AZURE_CLIENT_ID=x
-export AUTH_AZURE_CLIENT_SECRET=x
-export AUTH_AZURE_TENANT_ID=x
+export AUTH_MICROSOFT_CLIENT_ID=x
+export AUTH_MICROSOFT_CLIENT_SECRET=x
+export AUTH_MICROSOFT_TENANT_ID=x
 yarn start
 ```
 

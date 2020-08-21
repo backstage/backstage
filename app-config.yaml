@@ -128,10 +128,10 @@ auth:
         secure: false
         clientId:
           $secret:
-            env: AUTH_AZURE_CLIENT_ID
+            env: AUTH_MICROSOFT_CLIENT_ID
         clientSecret:
           $secret:
-            env: AUTH_AZURE_CLIENT_SECRET
+            env: AUTH_MICROSOFT_CLIENT_SECRET
         tenantId:
           $secret:
-            env: AUTH_AZURE_TENANT_ID
+            env: AUTH_MICROSOFT_TENANT_ID
