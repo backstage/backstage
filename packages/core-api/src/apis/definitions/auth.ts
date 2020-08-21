@@ -278,6 +278,24 @@ export const auth0AuthApiRef = createApiRef<
 });
 
 /**
+ * Provides authentication towards Microsoft APIs and identities.
+ *
+ * For more info and a full list of supported scopes, see:
+ * - https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent
+ * - https://docs.microsoft.com/en-us/graph/permissions-reference
+ */
+export const microsoftAuthApiRef = createApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionStateApi
+>({
+  id: 'core.auth.microsoft',
+  description: 'Provides authentication towards Microsoft APIs and identities',
+});
+
+/**
  * Provides authentication for custom identity providers.
  */
 export const oauth2ApiRef = createApiRef<

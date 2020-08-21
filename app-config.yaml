@@ -122,3 +122,16 @@ auth:
         domain:
           $secret:
             env: AUTH_AUTH0_DOMAIN
+    microsoft:
+      development:
+        appOrigin: "http://localhost:3000/"
+        secure: false
+        clientId:
+          $secret:
+            env: AUTH_AZURE_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_AZURE_CLIENT_SECRET
+        tenantId:
+          $secret:
+            env: AUTH_AZURE_TENANT_ID

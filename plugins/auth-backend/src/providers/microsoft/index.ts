@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './auth0';
-export * from './microsoft';
+export { createMicrosoftProvider } from './provider';
