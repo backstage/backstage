@@ -1544,6 +1544,42 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@backstage/core@0.1.1-alpha.18":
+  version "0.1.1-alpha.18"
+  resolved "https://registry.npmjs.org/@backstage/core/-/core-0.1.1-alpha.18.tgz#a8384b6fa65af17ee76166f2e0e4922356856ec1"
+  integrity sha512-7I0eaTfF30xyX4CD/bFUnXXy22zQzQbqSFFYIGLm5j/XFi3IRb6WANoFMs1hvB/BPI/rojX9oN51PfuHBS6xHg==
+  dependencies:
+    "@backstage/config" "^0.1.1-alpha.18"
+    "@backstage/core-api" "^0.1.1-alpha.18"
+    "@backstage/theme" "^0.1.1-alpha.18"
+    "@material-ui/core" "^4.9.1"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@types/react" "^16.9"
+    "@types/react-sparklines" "^1.7.0"
+    classnames "^2.2.6"
+    clsx "^1.1.0"
+    lodash "^4.17.15"
+    material-table "1.62.x"
+    prop-types "^15.7.2"
+    rc-progress "^3.0.0"
+    react "^16.12.0"
+    react-dom "^16.12.0"
+    react-helmet "6.1.0"
+    react-hook-form "^5.7.2"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-sparklines "^1.7.0"
+    react-syntax-highlighter "^13.2.1"
+    react-use "^15.3.3"
+
+"@backstage/theme@0.1.1-alpha.18":
+  version "0.1.1-alpha.18"
+  resolved "https://registry.npmjs.org/@backstage/theme/-/theme-0.1.1-alpha.18.tgz#40adb3e798054d75ccf57c81e5fe3cb6e32cfac5"
+  integrity sha512-dDTUGH/fxRGtwnR6NCK44ojlfNyFQJKVlax2CNIB/JA43+2c5G2ipDvJ8MhxDeTwwNeO+HJj1AF0AqoJcc1QdQ==
+  dependencies:
+    "@material-ui/core" "^4.9.1"
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
@@ -15446,6 +15482,22 @@ markdown-toc@^1.2.0:
     repeat-string "^1.6.1"
     strip-color "^0.1.0"
 
+material-table@1.62.x:
+  version "1.62.0"
+  resolved "https://registry.npmjs.org/material-table/-/material-table-1.62.0.tgz#117793ebf16ab0fccbb6f8a670d849a7be0b5995"
+  integrity sha512-+3tnk32lXtkXeKM7k/hZ82jpSzlXU5CsWXqJHq4Tl0Un7ycjK2Kef6EMPqeE3i58vKNqbIvbrFf/ESH0D/Qwig==
+  dependencies:
+    "@date-io/date-fns" "^1.1.0"
+    "@material-ui/pickers" "^3.2.2"
+    classnames "^2.2.6"
+    date-fns "^2.0.0-alpha.27"
+    debounce "^1.2.0"
+    fast-deep-equal "2.0.1"
+    filefy "0.1.10"
+    prop-types "^15.6.2"
+    react-beautiful-dnd "^13.0.0"
+    react-double-scrollbar "0.0.15"
+
 material-table@1.68.0:
   version "1.68.0"
   resolved "https://registry.npmjs.org/material-table/-/material-table-1.68.0.tgz#275c3d9a885c40ae4bc5a7461c00e877f92397b9"
@@ -19070,7 +19122,7 @@ react-syntax-highlighter@^11.0.2:
     prismjs "^1.8.4"
     refractor "^2.4.1"
 
-react-syntax-highlighter@^13.5.1:
+react-syntax-highlighter@^13.2.1, react-syntax-highlighter@^13.5.1:
   version "13.5.1"
   resolved "https://registry.npmjs.org/react-syntax-highlighter/-/react-syntax-highlighter-13.5.1.tgz#f21737cf6d582474a0f18b06b52613f4349c0e64"
   integrity sha512-VVYTnFXF55WMRGdr3QNEzAzcypFZqH45kS7rqh90+AFeNGtui8/gV5AIOIJjwTsuP2UxcO9qvEq94Jq9BYFUhw==
