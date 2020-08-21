@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import os from 'os';
-import { PreparerBase } from './types';
-import { Entity } from '@backstage/catalog-model';
 import path from 'path';
-import { parseReferenceAnnotation } from './helpers';
+import os from 'os';
+import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
-import { Clone } from 'nodegit';
+import { PreparerBase } from './types';
 import parseGitUrl from 'git-url-parse';
+import { Clone } from 'nodegit';
+import { parseReferenceAnnotation } from './helpers';
 import { Logger } from 'winston';
 
-export class DirectoryPreparer implements PreparerBase {
+export class GithubPreparer implements PreparerBase {
   private readonly logger: Logger;
 
   constructor(logger: Logger) {
     this.logger = logger;
   }
 
-  private async cloneGithubRepo(entity: Entity) {
+  async prepare(entity: Entity): Promise<string> {
     const { type, target } = parseReferenceAnnotation(
-      'backstage.io/managed-by-location',
+      'backstage.io/techdocs-ref',
       entity,
     );
 
@@ -50,8 +50,12 @@ export class DirectoryPreparer implements PreparerBase {
       parsedGitLocation.name,
       parsedGitLocation.ref,
     );
+
     if (fs.existsSync(repositoryTmpPath)) {
-      return repositoryTmpPath;
+      this.logger.debug(
+        `[TechDocs] Found repository already checked out at ${repositoryTmpPath}`,
+      );
+      return path.join(repositoryTmpPath, parsedGitLocation.filepath);
     }
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
 
@@ -62,46 +66,6 @@ export class DirectoryPreparer implements PreparerBase {
     fs.mkdirSync(repositoryTmpPath, { recursive: true });
     await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath, {});
 
-    return repositoryTmpPath;
-  }
-
-  private async resolveManagedByLocationToDir(entity: Entity) {
-    const { type, target } = parseReferenceAnnotation(
-      'backstage.io/managed-by-location',
-      entity,
-    );
-
-    this.logger.debug(
-      `[TechDocs] Building docs for entity with type 'dir' and managed-by-location '${type}'`,
-    );
-    switch (type) {
-      case 'github': {
-        const parsedGitLocation = parseGitUrl(target);
-        const repoLocation = await this.cloneGithubRepo(entity);
-
-        return path.dirname(
-          path.join(repoLocation, parsedGitLocation.filepath),
-        );
-      }
-      case 'file':
-        return path.dirname(target);
-      default:
-        throw new InputError(`Unable to resolve location type ${type}`);
-    }
-  }
-
-  async prepare(entity: Entity): Promise<string> {
-    const { target } = parseReferenceAnnotation(
-      'backstage.io/techdocs-ref',
-      entity,
-    );
-
-    const managedByLocationDirectory = await this.resolveManagedByLocationToDir(
-      entity,
-    );
-
-    return new Promise(resolve => {
-      resolve(path.resolve(managedByLocationDirectory, target));
-    });
+    return path.join(repositoryTmpPath, parsedGitLocation.filepath);
   }
 }

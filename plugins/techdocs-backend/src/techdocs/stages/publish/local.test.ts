@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LocalPublish } from './local';
 import fs from 'fs-extra';
 import path from 'path';
+import { getVoidLogger } from '@backstage/backend-common';
+import { LocalPublish } from './local';
 
 const createMockEntity = (annotations = {}) => {
   return {
@@ -30,9 +31,11 @@ const createMockEntity = (annotations = {}) => {
   };
 };
 
+const logger = getVoidLogger();
+
 describe('local publisher', () => {
   it('should publish generated documentation dir', async () => {
-    const publisher = new LocalPublish();
+    const publisher = new LocalPublish(logger);
 
     const mockEntity = createMockEntity();
 
