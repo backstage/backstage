@@ -20,34 +20,37 @@ import { Logger } from 'winston';
 import { HttpsSettings } from './config';
 
 /**
- * Reads some base options out of a config object.
+ * Creates a Http server instance based on an Express application.
  *
- * @param config The root of a backend config object
- * @returns A base options object
+ * @param app The Express application object
+ * @param logger Optional Winston logger object
+ * @returns A Http server instance
  *
- * @example
- * ```json
- * {
- *   baseUrl: "http://localhost:7000",
- *   listen: "0.0.0.0:7000"
- * }
- * ```
  */
 export function createHttpServer(
   app: express.Express,
-  logger: Logger,
+  logger?: Logger,
 ): http.Server {
-  logger.info('Initializing http server');
+  logger?.info('Initializing http server');
 
   return http.createServer(app);
 }
 
+/**
+ * Creates a Https server instance based on an Express application.
+ *
+ * @param app The Express application object
+ * @param httpsSettings HttpsSettings for self-signed certificate generation
+ * @param logger Optional Winston logger object
+ * @returns A Https server instance
+ *
+ */
 export function createHttpsServer(
   app: express.Express,
   httpsSettings: HttpsSettings,
-  logger: Logger,
+  logger?: Logger,
 ): http.Server {
-  logger.info('Initializing https server');
+  logger?.info('Initializing https server');
 
   const credentials: { key: string; cert: string } = {
     key: '',
@@ -57,7 +60,7 @@ export function createHttpsServer(
   const signingOptions: any = httpsSettings?.certificate;
 
   if (signingOptions?.algorithm !== undefined) {
-    logger.info('Generating self-signed certificate with attributes');
+    logger?.info('Generating self-signed certificate with attributes');
 
     const certificateAttributes: Array<any> = Object.entries(
       signingOptions.attributes,
@@ -70,12 +73,12 @@ export function createHttpsServer(
       days: signingOptions?.days || 30,
     });
 
-    logger.info('Bootstrapping self-signed certificate');
+    logger?.info('Bootstrapping self-signed certificate');
 
     credentials.key = signatures.private;
     credentials.cert = signatures.cert;
   } else {
-    logger.info('Bootstrapping cert from config');
+    logger?.info('Bootstrapping cert from config');
 
     credentials.key = signingOptions?.key;
     credentials.cert = signingOptions?.cert;
