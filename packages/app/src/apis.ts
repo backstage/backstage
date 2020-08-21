@@ -178,13 +178,7 @@ export const apis = (config: ConfigApi) => {
     }),
   );
 
-  builder.add(
-    catalogApiRef,
-    new CatalogClient({
-      apiOrigin: backendUrl,
-      basePath: '/catalog',
-    }),
-  );
+  builder.add(catalogApiRef, new CatalogClient({ discoveryApi }));
 
   builder.add(
     scaffolderApiRef,
