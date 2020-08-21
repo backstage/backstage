@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 import { DirectoryPreparer } from './dir';
+import { getVoidLogger } from '@backstage/backend-common';
+
+const logger = getVoidLogger();
 
 const createMockEntity = (annotations: {}) => {
   return {
@@ -30,7 +33,7 @@ const createMockEntity = (annotations: {}) => {
 
 describe('directory preparer', () => {
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is relative', async () => {
-    const directoryPreparer = new DirectoryPreparer();
+    const directoryPreparer = new DirectoryPreparer(logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
@@ -44,7 +47,7 @@ describe('directory preparer', () => {
   });
 
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is absolute', async () => {
-    const directoryPreparer = new DirectoryPreparer();
+    const directoryPreparer = new DirectoryPreparer(logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':

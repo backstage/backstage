@@ -45,18 +45,34 @@ export async function createRouter({
   publisher,
   config,
   dockerClient,
+  logger,
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
+
+  const getEntityId = (entity: Entity) => {
+    return `${entity.kind}:${entity.metadata.namespace ?? ''}:${
+      entity.metadata.name
+    }`;
+  };
 
   const buildDocsForEntity = async (entity: Entity) => {
     const preparer = preparers.get(entity);
     const generator = generators.get(entity);
 
+    logger.info(`[TechDocs] Running preparer on entity ${getEntityId(entity)}`);
+    const preparedDir = await preparer.prepare(entity);
+
+    logger.info(
+      `[TechDocs] Running generator on entity ${getEntityId(entity)}`,
+    );
     const { resultDir } = await generator.run({
-      directory: await preparer.prepare(entity),
+      directory: preparedDir,
       dockerClient,
     });
 
+    logger.info(
+      `[TechDocs] Running publisher on entity ${getEntityId(entity)}`,
+    );
     await publisher.publish({
       entity,
       directory: resultDir,

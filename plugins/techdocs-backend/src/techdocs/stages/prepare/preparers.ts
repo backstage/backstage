@@ -26,11 +26,14 @@ export class Preparers implements PreparerBuilder {
   }
 
   get(entity: Entity): PreparerBase {
-    const { protocol } = parseReferenceAnnotation('backstage.io/techdocs-ref', entity);
-    const preparer = this.preparerMap.get(protocol);
+    const { type } = parseReferenceAnnotation(
+      'backstage.io/techdocs-ref',
+      entity,
+    );
+    const preparer = this.preparerMap.get(type);
 
     if (!preparer) {
-      throw new Error(`No preparer registered for type: "${protocol}"`);
+      throw new Error(`No preparer registered for type: "${type}"`);
     }
 
     return preparer;

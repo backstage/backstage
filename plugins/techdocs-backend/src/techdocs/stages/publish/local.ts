@@ -13,12 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PublisherBase } from './types';
-import { Entity } from '@backstage/catalog-model';
-import path from 'path';
 import fs from 'fs-extra';
+import path from 'path';
+import { Logger } from 'winston';
+import { Entity } from '@backstage/catalog-model';
+import { PublisherBase } from './types';
 
 export class LocalPublish implements PublisherBase {
+  private readonly logger: Logger;
+
+  constructor(logger: Logger) {
+    this.logger = logger;
+  }
+
   publish({
     entity,
     directory,
@@ -37,16 +44,22 @@ export class LocalPublish implements PublisherBase {
       '../../../../static/docs/',
       entity.kind,
       entityNamespace,
-      entity.metadata.name
+      entity.metadata.name,
     );
 
     if (!fs.existsSync(publishDir)) {
+      this.logger.info(
+        `[TechDocs]: Could not find ${publishDir}, creates the directory.`,
+      );
       fs.mkdirSync(publishDir, { recursive: true });
     }
 
     return new Promise((resolve, reject) => {
       fs.copy(directory, publishDir, err => {
         if (err) {
+          this.logger.debug(
+            `[TechDocs]: Failed to copy docs from ${directory} to ${publishDir}`,
+          );
           reject(err);
         }
 

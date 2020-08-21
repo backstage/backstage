@@ -19,24 +19,29 @@ import os from 'os';
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
-import GitUriParser from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Clone } from 'nodegit';
 import { parseReferenceAnnotation } from './helpers';
+import { Logger } from 'winston';
 
 export class GithubPreparer implements PreparerBase {
+  private readonly logger: Logger;
+
+  constructor(logger: Logger) {
+    this.logger = logger;
+  }
+
   async prepare(entity: Entity): Promise<string> {
-    const { protocol, location } = parseReferenceAnnotation(
+    const { type, target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
     );
 
-    if (protocol !== 'github') {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'github'`,
-      );
+    if (type !== 'github') {
+      throw new InputError(`Wrong target type: ${type}, should be 'github'`);
     }
 
-    const parsedGitLocation = GitUriParser(location);
+    const parsedGitLocation = parseGitUrl(target);
     const repositoryTmpPath = path.join(
       os.tmpdir(),
       'backstage-repo',
@@ -47,11 +52,18 @@ export class GithubPreparer implements PreparerBase {
     );
 
     if (fs.existsSync(repositoryTmpPath)) {
+      this.logger.debug(
+        `[TechDocs] Found repository already checked out at ${repositoryTmpPath}`,
+      );
       return path.join(repositoryTmpPath, parsedGitLocation.filepath);
     }
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-    fs.mkdirSync(repositoryTmpPath, { recursive: true });
 
+    this.logger.debug(
+      `[TechDocs] Checking out repository ${repositoryCheckoutUrl} to ${repositoryTmpPath}`,
+    );
+
+    fs.mkdirSync(repositoryTmpPath, { recursive: true });
     await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath, {});
 
     return path.join(repositoryTmpPath, parsedGitLocation.filepath);
