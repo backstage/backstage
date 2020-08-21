@@ -206,10 +206,12 @@ export const EntityPage: FC<{}> = () => {
             tabs={filteredHeaderTabs}
             onChange={idx => {
               navigate(
-                `/catalog/${kind}/${optionalNamespaceAndName}/${tabs[idx].id}`,
+                `/catalog/${kind}/${optionalNamespaceAndName}/${filteredHeaderTabs[idx].id}`,
               );
             }}
-            selectedIndex={tabs.findIndex(tab => tab.id === selectedTabId)}
+            selectedIndex={filteredHeaderTabs.findIndex(
+              tab => tab.id === selectedTabId,
+            )}
           />
 
           {selectedTab && selectedTab.content

@@ -105,10 +105,10 @@ auth:
         clientSecret:
           $secret:
             env: AUTH_OAUTH2_CLIENT_SECRET
-        authorizationURL:
+        authorizationUrl:
           $secret:
             env: AUTH_OAUTH2_AUTH_URL
-        tokenURL:
+        tokenUrl:
           $secret:
             env: AUTH_OAUTH2_TOKEN_URL
     auth0:

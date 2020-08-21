@@ -3,7 +3,7 @@ id: design
 title: Design
 ---
 
-![header](../assets/dls/designheader.png)
+![header](../assets/dls/designheader-updated.png)
 
 Much like Backstage Open Source, this is a _living_ document! We'll keep this
 updated as we evolve our practices!
@@ -116,7 +116,7 @@ components. If you’d like to help build up our design system, you can also add
 components we’ve designed to the Storybook as well.
 
 **[Figma](https://www.figma.com/@backstage)** - we're stoked to be using Figma
-Community to share our design assets. You can duplicate our component library
+Community to share our design assets. You can duplicate our UI Kit
 and design your own plugin for Backstage.
 
 **[Discord](https://discord.gg/EBHEGzX)** - all design questions should be

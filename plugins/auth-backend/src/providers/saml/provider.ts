@@ -123,7 +123,7 @@ export function createSamlProvider(
   _authProviderConfig: AuthProviderConfig,
   _env: string,
   envConfig: Config,
-  logger: Logger,
+  _logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const entryPoint = envConfig.getString('entryPoint');
@@ -135,11 +135,5 @@ export function createSamlProvider(
     tokenIssuer,
   };
 
-  if (!opts.entryPoint || !opts.issuer) {
-    logger.warn(
-      'SAML auth provider disabled, set entryPoint and entryPoint in saml auth config to enable',
-    );
-    return undefined;
-  }
   return new SamlAuthProvider(opts);
 }
