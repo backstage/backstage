@@ -79,7 +79,18 @@ const RegisterComponentPage: FC<{}> = () => {
     setFormState(FormStates.Submitting);
     const { componentLocation: target } = formData;
     try {
-      const data = await catalogApi.addLocation('github', target);
+      var typeMapping = [
+        { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
+        { url: /https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
+        { url: /https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
+        { url: /.*/, type: 'github' },
+      ];
+
+      var type = typeMapping.filter(function (item) {
+        return new RegExp(item.url).test(target);
+      })[0].type;
+
+      const data = await catalogApi.addLocation(type, target);
 
       if (!isMounted()) return;
 
