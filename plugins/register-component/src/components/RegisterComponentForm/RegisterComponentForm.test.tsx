@@ -30,14 +30,14 @@ const setup = (props?: Partial<Props>) => {
     ),
   };
 };
-describe('RegisterComponentForm', () => {
+fdescribe('RegisterComponentForm', () => {
   afterEach(() => cleanup());
 
   it('should initially render a disabled button', async () => {
     const { rendered } = setup();
     expect(
       await rendered.findByText(
-        'Enter the full path to the component.yaml file in GitHub to start tracking your component. It must be in a public repo.',
+        'Enter the full path to the component.yaml file in Github, Gitlab, Bitbucket or Azure to start tracking your component. For private repo provide authentication information via config.',
       ),
     ).toBeInTheDocument();
 
