@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 import { Entity, LocationSpec } from '@backstage/catalog-model';
-import { Table, TableColumn, TableProps } from '@backstage/core';
-import { Link, Chip } from '@material-ui/core';
+import {
+  configApiRef,
+  Table,
+  TableColumn,
+  TableProps,
+  useApi,
+} from '@backstage/core';
+import { Chip, Link } from '@material-ui/core';
+import Add from '@material-ui/icons/Add';
 import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import { Alert } from '@material-ui/lab';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
+import { catalogApiRef } from '../../api/types';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import { entityRoute } from '../../routes';
@@ -95,17 +103,44 @@ export const CatalogTable = ({
   titlePreamble,
 }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
+  const configApi = useApi(configApiRef);
+  const catalogApi = useApi(catalogApiRef);
 
-  if (error) {
+  const [entitiesState, setEntitiesState] = useState<Entity[]>([]);
+  const [errorState, setError] = useState<Error | undefined>();
+
+  useEffect(() => {
+    setError(error);
+    setEntitiesState(entities);
+  }, [error, entities]);
+  if (errorState) {
     return (
       <div>
         <Alert severity="error">
-          Error encountered while fetching catalog entities. {error.toString()}
+          Error encountered while fetching catalog entities.{' '}
+          {errorState.toString()}
         </Alert>
       </div>
     );
   }
 
+  const addMockData = async () => {
+    try {
+      const _promises = configApi
+        .getStringArray('catalog.entities')
+        .map(file =>
+          catalogApi.addLocation(
+            'github',
+            `${configApi.getString('catalog.baseUrl')}/${file}`,
+          ),
+        );
+      await Promise.all(_promises);
+      const data: Entity[] = await catalogApi.getEntities();
+      setEntitiesState(data);
+    } catch (err) {
+      setError(err);
+    }
+  };
   const actions: TableProps<Entity>['actions'] = [
     (rowData: Entity) => {
       const location = findLocationForEntityMeta(rowData.metadata);
@@ -148,6 +183,13 @@ export const CatalogTable = ({
         onClick: () => toggleStarredEntity(rowData),
       };
     },
+    {
+      icon: () => <Add />,
+      tooltip: 'Add example components',
+      isFreeAction: true,
+      onClick: () => addMockData(),
+      hidden: entitiesState && entitiesState.length > 0,
+    },
   ];
 
   return (
@@ -161,7 +203,7 @@ export const CatalogTable = ({
         showEmptyDataSourceMessage: !loading,
       }}
       title={`${titlePreamble} (${(entities && entities.length) || 0})`}
-      data={entities}
+      data={entitiesState}
       actions={actions}
     />
   );
