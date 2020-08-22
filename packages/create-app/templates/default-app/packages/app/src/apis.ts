@@ -14,14 +14,32 @@ import {
   WebStorage,
 } from '@backstage/core';
 
-import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
+import {
+  lighthouseApiRef,
+  LighthouseRestApi,
+} from '@backstage/plugin-lighthouse';
 
-import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
+import {
+  GithubActionsClient,
+  githubActionsApiRef,
+} from '@backstage/plugin-github-actions';
 
 import {
   techdocsStorageApiRef,
   TechDocsStorageApi,
+
+  techdocsStorageApiRef,
+  TechDocsStorageApi,
 } from '@backstage/plugin-techdocs';
+
+import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
+
+import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
+import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
+
+import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
+
+
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -46,8 +64,24 @@ export const apis = (config: ConfigApi) => {
   builder.add(oauthRequestApiRef, new OAuthRequestManager());
 
   builder.add(catalogApiRef, new CatalogClient({ discoveryApi }));
+  builder.add(githubActionsApiRef, new GithubActionsClient());
+
+  builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
+
+  builder.add(
+    circleCIApiRef,
+    new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
+  );
 
   builder.add(scaffolderApiRef, new ScaffolderApi({ discoveryApi }));
+
+  builder.add(
+    techRadarApiRef,
+    new TechRadar({
+      width: 1500,
+      height: 800,
+    }),
+  );
 
   builder.add(
     techdocsStorageApiRef,
