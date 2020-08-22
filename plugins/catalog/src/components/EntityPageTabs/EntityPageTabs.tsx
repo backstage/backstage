@@ -38,6 +38,7 @@ export const EntityPageTabs = ({ children }: { children: React.ReactNode }) => {
   const tabs: Tab[] = [];
   const params = useParams();
   const navigate = useNavigate();
+
   React.Children.forEach(children, child => {
     if (!React.isValidElement(child)) {
       // Skip conditionals resolved to falses/nulls/undefineds etc
@@ -54,11 +55,14 @@ export const EntityPageTabs = ({ children }: { children: React.ReactNode }) => {
       id: pathAndId,
       label: (child as JSX.Element).props.title,
     });
-    routes.push({
-      path: '/*',
-      element: <Navigate to="." />,
-    });
   });
+
+  // Add catch-all for incorrect sub-routes
+  routes.push({
+    path: '/*',
+    element: <Navigate to="." />,
+  });
+
   const [matchedRoute] =
     matchRoutes(routes as RouteObject[], `/${params['*']}`) ?? [];
   const selectedIndex = getSelectedIndex(matchedRoute, tabs);
