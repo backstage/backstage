@@ -79,14 +79,14 @@ const RegisterComponentPage: FC<{}> = () => {
     setFormState(FormStates.Submitting);
     const { componentLocation: target } = formData;
     try {
-      var typeMapping = [
+      const typeMapping = [
         { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
         { url: /https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
         { url: /https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
         { url: /.*/, type: 'github' },
       ];
 
-      var type = typeMapping.filter(function (item) {
+      const type = typeMapping.filter(item => {
         return new RegExp(item.url).test(target);
       })[0].type;
 
