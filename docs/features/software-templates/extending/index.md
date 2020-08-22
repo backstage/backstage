@@ -1,4 +1,7 @@
-## Extending the Scaffolder
+---
+id: extending-index
+title: Extending the Scaffolder
+---
 
 Welcome. Take a seat. You're at the Scaffolder Documentation.
 

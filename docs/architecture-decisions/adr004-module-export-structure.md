@@ -1,4 +1,8 @@
-# ADR004: Module Export Structure
+---
+id: adrs-adr004
+title: ADR004: Module Export Structure
+sidebar_label: ADR004
+---
 
 | Created    | Status |
 | ---------- | ------ |

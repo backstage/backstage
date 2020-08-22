@@ -52,5 +52,5 @@ builder.add(
 
 ## Links
 
-- (Backend part of the plugin)[https://github.com/spotify/backstage/tree/master/plugins/rollbar-backend]
-- (The Backstage homepage)[https://backstage.io]
+- [Backend part of the plugin](https://github.com/spotify/backstage/tree/master/plugins/rollbar-backend)
+- [The Backstage homepage](https://backstage.io)

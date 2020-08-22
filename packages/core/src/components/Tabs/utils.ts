@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TabProps } from './Tabs';
 
-export const chunkArray = (
-  myArray: TabProps[],
-  chunkSize: number,
-): TabProps[][] => {
-  const results = [];
-  while (myArray.length) {
-    results.push(myArray.splice(0, chunkSize));
+export function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+  if (chunkSize <= 0) {
+    return [array];
   }
-  return results;
-};
+
+  const result: T[][] = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    result.push(array.slice(i, i + chunkSize));
+  }
+
+  return result;
+}

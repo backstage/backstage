@@ -15,8 +15,9 @@
  */
 
 import React from 'react';
-import { Grid, Typography, Button } from '@material-ui/core';
+import { Typography, Button } from '@material-ui/core';
 import { InfoCard } from '../InfoCard/InfoCard';
+import { GridItem } from './styles';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 
 const result = {
@@ -28,9 +29,10 @@ const result = {
 };
 
 const Component: ProviderComponent = ({ onResult }) => (
-  <Grid item>
+  <GridItem>
     <InfoCard
       title="Guest"
+      variant="fullHeight"
       actions={
         <Button
           color="primary"
@@ -49,7 +51,7 @@ const Component: ProviderComponent = ({ onResult }) => (
         meaning some features might be unavailable.
       </Typography>
     </InfoCard>
-  </Grid>
+  </GridItem>
 );
 
 const loader: ProviderLoader = async () => {

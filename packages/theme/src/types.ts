@@ -43,7 +43,10 @@ type PaletteAdditions = {
   linkHover: string;
   link: string;
   gold: string;
-  sidebar: string;
+  navigation: {
+    background: string;
+    indicator: string;
+  };
   tabbar: {
     indicator: string;
   };

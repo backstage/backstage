@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.16",
+  "version": "0.1.1-alpha.19",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -29,8 +29,9 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.16",
-    "@backstage/config-loader": "^0.1.1-alpha.16",
+    "@backstage/cli-common": "^0.1.1-alpha.19",
+    "@backstage/config": "^0.1.1-alpha.19",
+    "@backstage/config-loader": "^0.1.1-alpha.19",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -46,7 +47,7 @@
     "@svgr/webpack": "4.3.x",
     "@types/start-server-webpack-plugin": "^2.2.0",
     "@types/webpack-env": "^1.15.2",
-    "@types/webpack-node-externals": "^1.7.1",
+    "@types/webpack-node-externals": "^2.5.0",
     "bfj": "^7.0.2",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
@@ -94,7 +95,7 @@
     "url-loader": "^4.1.0",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3",
-    "webpack-node-externals": "^1.7.2",
+    "webpack-node-externals": "^2.5.0",
     "yaml": "^1.10.0",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0"

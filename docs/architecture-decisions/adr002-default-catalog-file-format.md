@@ -1,4 +1,8 @@
-# ADR002: Default Software Catalog File Format
+---
+id: adrs-adr002
+title: ADR002: Default Software Catalog File Format
+sidebar_label: ADR002
+---
 
 | Created    | Status |
 | ---------- | ------ |

@@ -1,7 +1,7 @@
 # IdentityApi
 
 The IdentityApi type is defined at
-[packages/core-api/src/apis/definitions/IdentityApi.ts:22](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/IdentityApi.ts#L22).
+[packages/core-api/src/apis/definitions/IdentityApi.ts:22](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/IdentityApi.ts#L22).
 
 The following Utility API implements this type:
 [identityApiRef](./README.md#identity)
@@ -76,6 +76,6 @@ export type ProfileInfo = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:172](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/auth.ts#L172).
+[packages/core-api/src/apis/definitions/auth.ts:172](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/auth.ts#L172).
 
 Referenced by: [getProfile](#getprofile).

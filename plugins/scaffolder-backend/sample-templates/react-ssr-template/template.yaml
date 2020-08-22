@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: react-ssr-template
   title: React SSR Template
-  description: Next.js application skeleton for creating isomorphic web applications.
+  description: Create a website powered with Next.js
   tags:
     - Recommended
     - React

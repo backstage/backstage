@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { useApi, configApiRef } from '@backstage/core';
+import { useApi, Progress } from '@backstage/core';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
-import { AsyncState } from 'react-use/lib/useAsync';
-
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { techdocsStorageApiRef } from '../../api';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ParsedEntityId } from '../../types';
 
 import transformer, {
   addBaseUrl,
@@ -31,76 +31,35 @@ import transformer, {
   onCssReady,
   sanitizeDOM,
 } from '../transformers';
-import URLFormatter from '../urlFormatter';
 import { TechDocsNotFound } from './TechDocsNotFound';
-import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
-const useFetch = (url: string): AsyncState<string | Error> => {
-  const state = useAsync(async () => {
-    const request = await fetch(url);
-    if (request.status === 404) {
-      return [request.url, new Error('Page not found')];
-    }
-    const response = await request.text();
-    return [request.url, response];
-  }, [url]);
-
-  const [fetchedUrl, fetchedValue] = state.value ?? [];
-
-  if (url !== fetchedUrl) {
-    // Fixes a race condition between two pages
-    return { loading: true };
-  }
-
-  return Object.assign(state, fetchedValue ? { value: fetchedValue } : {});
+type Props = {
+  entityId: ParsedEntityId;
 };
 
-const useEnforcedTrailingSlash = (): void => {
-  React.useEffect(() => {
-    const actualUrl = window.location.href;
-    const expectedUrl = new URLFormatter(window.location.href).formatBaseURL();
+export const Reader = ({ entityId }: Props) => {
+  const { kind, namespace, name } = entityId;
+  const { '*': path } = useParams();
 
-    if (actualUrl !== expectedUrl) {
-      window.history.replaceState({}, document.title, expectedUrl);
-    }
-  }, []);
-};
-
-export const Reader = () => {
-  useEnforcedTrailingSlash();
-
-  const docStorageUrl =
-    useApi(configApiRef).getOptionalString('techdocs.storageUrl') ??
-    'https://techdocs-mock-sites.storage.googleapis.com';
-
-  const location = useLocation();
-  const { componentId, '*': path } = useParams();
+  const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const [shadowDomRef, shadowRoot] = useShadowDom();
   const navigate = useNavigate();
-  const normalizedUrl = new URLFormatter(
-    `${docStorageUrl}${location.pathname.replace('/docs', '')}`,
-  ).formatBaseURL();
-  const state = useFetch(`${normalizedUrl}index.html`);
+
+  const { value, loading, error } = useAsync(async () => {
+    return techdocsStorageApi.getEntityDocs({ kind, namespace, name }, path);
+  }, [techdocsStorageApi, kind, namespace, name, path]);
 
   React.useEffect(() => {
-    if (!shadowRoot) {
-      return; // Shadow DOM isn't ready
-    }
-
-    if (state.loading) {
-      return; // Page isn't ready
-    }
-
-    if (state.value instanceof Error) {
-      return; // Docs not found
+    if (!shadowRoot || loading || error) {
+      return; // Shadow DOM isn't ready / It's not ready / Docs was not found
     }
 
     // Pre-render
-    const transformedElement = transformer(state.value as string, [
+    const transformedElement = transformer(value as string, [
       sanitizeDOM(),
       addBaseUrl({
-        docStorageUrl,
-        componentId,
+        techdocsStorageApi,
+        entityId: entityId,
         path,
       }),
       rewriteDocLinks(),
@@ -145,7 +104,7 @@ export const Reader = () => {
         },
       }),
       onCssReady({
-        docStorageUrl,
+        docStorageUrl: techdocsStorageApi.apiOrigin,
         onLoading: (dom: Element) => {
           (dom as HTMLElement).style.setProperty('opacity', '0');
         },
@@ -154,15 +113,28 @@ export const Reader = () => {
         },
       }),
     ]);
-  }, [componentId, path, shadowRoot, state]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    name,
+    path,
+    shadowRoot,
+    value,
+    error,
+    loading,
+    namespace,
+    kind,
+    entityId,
+    navigate,
+    techdocsStorageApi,
+  ]);
 
-  if (state.value instanceof Error) {
+  if (error) {
     return <TechDocsNotFound />;
   }
 
   return (
-    <TechDocsPageWrapper title={componentId} subtitle={componentId}>
+    <>
+      {loading ? <Progress /> : null}
       <div ref={shadowDomRef} />
-    </TechDocsPageWrapper>
+    </>
   );
 };

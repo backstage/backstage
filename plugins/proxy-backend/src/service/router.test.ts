@@ -15,14 +15,14 @@
  */
 
 import { createRouter } from './router';
-import winston from 'winston';
+import * as winston from 'winston';
 import { ConfigReader } from '@backstage/config';
-import { loadConfig } from '@backstage/config-loader';
+import { loadBackendConfig } from '@backstage/backend-common';
 
 describe('createRouter', () => {
   it('works', async () => {
     const logger = winston.createLogger();
-    const config = ConfigReader.fromConfigs(await loadConfig());
+    const config = ConfigReader.fromConfigs(await loadBackendConfig());
     const router = await createRouter({
       config,
       logger,

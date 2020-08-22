@@ -23,7 +23,7 @@ import {
 
 export const githubActionsApiRef = createApiRef<GithubActionsApi>({
   id: 'plugin.githubactions.service',
-  description: 'Used by the Github Actions plugin to make requests',
+  description: 'Used by the GitHub Actions plugin to make requests',
 });
 
 export type GithubActionsApi = {
@@ -33,12 +33,14 @@ export type GithubActionsApi = {
     repo,
     pageSize,
     page,
+    branch,
   }: {
     token: string;
     owner: string;
     repo: string;
     pageSize?: number;
     page?: number;
+    branch?: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
   getWorkflow: ({
     token,

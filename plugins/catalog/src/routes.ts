@@ -25,6 +25,11 @@ export const rootRoute = createRouteRef({
 });
 export const entityRoute = createRouteRef({
   icon: NoIcon,
-  path: '/catalog/:kind/:optionalNamespaceAndName/',
+  path: '/catalog/:kind/:optionalNamespaceAndName/:selectedTabId/*',
+  title: 'Entity',
+});
+export const entityRouteDefault = createRouteRef({
+  icon: NoIcon,
+  path: '/catalog/:kind/:optionalNamespaceAndName',
   title: 'Entity',
 });

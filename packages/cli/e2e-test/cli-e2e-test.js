@@ -17,6 +17,7 @@
 const os = require('os');
 const fs = require('fs-extra');
 const fetch = require('node-fetch');
+const handlebars = require('handlebars');
 const killTree = require('tree-kill');
 const { resolve: resolvePath, join: joinPath } = require('path');
 const Browser = require('zombie');
@@ -62,6 +63,35 @@ async function buildDistWorkspace(workspaceName, rootDir) {
   const workspaceDir = resolvePath(rootDir, workspaceName);
   await fs.ensureDir(workspaceDir);
 
+  // We grab the needed dependencies from the template packages
+  const appPkgTemplate = await fs.readFile(
+    resolvePath(
+      __dirname,
+      '../../create-app/templates/default-app/packages/app/package.json.hbs',
+    ),
+    'utf8',
+  );
+  const appPkg = JSON.parse(
+    handlebars.compile(appPkgTemplate)({ version: '0.0.0' }),
+  );
+  const appDeps = Object.keys(appPkg.dependencies).filter(name =>
+    name.startsWith('@backstage/'),
+  );
+
+  const backendPkgTemplate = await fs.readFile(
+    resolvePath(
+      __dirname,
+      '../../create-app/templates/default-app/packages/backend/package.json.hbs',
+    ),
+    'utf8',
+  );
+  const backendPkg = JSON.parse(
+    handlebars.compile(backendPkgTemplate)({ version: '0.0.0' }),
+  );
+  const backendDeps = Object.keys(backendPkg.dependencies).filter(name =>
+    name.startsWith('@backstage/'),
+  );
+
   print(`Preparing workspace`);
   await runPlain([
     'yarn',
@@ -69,9 +99,12 @@ async function buildDistWorkspace(workspaceName, rootDir) {
     'build-workspace',
     workspaceDir,
     '@backstage/cli',
+    '@backstage/create-app',
     '@backstage/core',
     '@backstage/dev-utils',
     '@backstage/test-utils',
+    ...appDeps,
+    ...backendDeps,
   ]);
 
   print('Pinning yarn version in workspace');
@@ -107,8 +140,7 @@ async function createApp(appName, isPostgres, workspaceDir, rootDir) {
   const child = spawnPiped(
     [
       'node',
-      resolvePath(workspaceDir, 'packages/cli/bin/backstage-cli'),
-      'create-app',
+      resolvePath(workspaceDir, 'packages/create-app/bin/backstage-create-app'),
       '--skip-install',
     ],
     {
@@ -180,13 +212,18 @@ async function overrideModuleResolutions(appDir, workspaceDir) {
   pkgJson.resolutions = pkgJson.resolutions || {};
   pkgJson.dependencies = pkgJson.dependencies || {};
 
-  const packageNames = await fs.readdir(resolvePath(workspaceDir, 'packages'));
-  for (const name of packageNames) {
-    const pkgPath = joinPath('..', 'workspace', 'packages', name);
+  for (const dir of ['packages', 'plugins']) {
+    const packageNames = await fs.readdir(resolvePath(workspaceDir, dir));
+    for (const pkgDir of packageNames) {
+      const pkgPath = joinPath('..', 'workspace', dir, pkgDir);
+      const { name } = await fs.readJson(
+        resolvePath(workspaceDir, dir, pkgDir, 'package.json'),
+      );
 
-    pkgJson.dependencies[`@backstage/${name}`] = `file:${pkgPath}`;
-    pkgJson.resolutions[`@backstage/${name}`] = `file:${pkgPath}`;
-    delete pkgJson.devDependencies[`@backstage/${name}`];
+      pkgJson.dependencies[name] = `file:${pkgPath}`;
+      pkgJson.resolutions[name] = `file:${pkgPath}`;
+      delete pkgJson.devDependencies[name];
+    }
   }
   fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
 }
@@ -239,7 +276,7 @@ async function testAppServe(pluginName, appDir) {
   try {
     const browser = new Browser();
 
-    await waitForPageWithText(browser, '/', 'Welcome to Backstage');
+    await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
     await waitForPageWithText(
       browser,
       `/${pluginName}`,

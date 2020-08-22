@@ -53,8 +53,14 @@ describe('GithubApiReaderProcessor', () => {
     for (const test of tests) {
       if (test.err) {
         expect(() => processor.buildRawUrl(test.target)).toThrowError(test.err);
+      } else if (test.url) {
+        expect(processor.buildRawUrl(test.target).toString()).toEqual(
+          test.url.toString(),
+        );
       } else {
-        expect(processor.buildRawUrl(test.target)).toEqual(test.url);
+        throw new Error(
+          'This should not have happened. Either err or url should have matched.',
+        );
       }
     }
   });

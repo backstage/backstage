@@ -23,17 +23,6 @@ const main = (argv: string[]) => {
   program.name('backstage-cli').version(version);
 
   program
-    .command('create-app')
-    .description('Creates a new app in a new directory')
-    .option(
-      '--skip-install',
-      'Skip the install and builds steps after creating the app',
-    )
-    .action(
-      lazyAction(() => import('./commands/create-app/createApp'), 'default'),
-    );
-
-  program
     .command('app:build')
     .description('Build an app for a production release')
     .option('--stats', 'Write bundle stats to output directory')
@@ -134,6 +123,20 @@ const main = (argv: string[]) => {
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
     .action(lazyAction(() => import('./commands/testCommand'), 'default'));
+
+  program
+    .command('config:print')
+    .option('--with-secrets', 'Include secrets in the printed configuration')
+    .option(
+      '--env <env>',
+      'The environment to print configuration for [NODE_ENV or development]',
+    )
+    .option(
+      '--format <format>',
+      'Format to print the configuration in, either json or yaml [yaml]',
+    )
+    .description('Print the app configuration for the current package')
+    .action(lazyAction(() => import('./commands/config/print'), 'default'));
 
   program
     .command('prepack')

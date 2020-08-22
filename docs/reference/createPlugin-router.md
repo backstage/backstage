@@ -1,4 +1,7 @@
-# createPlugin - router
+---
+id: createPlugin-router
+title: createPlugin - router
+---
 
 The router that is passed to the `register` function makes it possible for
 plugins to hook into routing of the Backstage app and provide the end users with

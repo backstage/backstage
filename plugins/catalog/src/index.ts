@@ -18,3 +18,4 @@ export { plugin } from './plugin';
 export * from './api/CatalogClient';
 export * from './api/types';
 export * from './routes';
+export { useEntityCompoundName } from './components/useEntityCompoundName';

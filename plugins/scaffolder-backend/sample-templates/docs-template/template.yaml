@@ -1,0 +1,29 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: docs-template
+  title: Documentation Template
+  description: Create a new standalone documentation project
+  tags:
+    - Experimental
+    - TechDocs
+    - MkDocs
+spec:
+  owner: spotify/techdocs-core
+  templater: cookiecutter
+  type: documentation
+  path: '.'
+  
+  schema:
+    required: 
+      - component_id
+    properties:
+      component_id:
+        title: Name
+        type: string
+        description: Unique name of the component
+      description:
+        title: Description
+        type: string
+        description: Description of the component
+   

@@ -1,4 +1,7 @@
-# Contributing
+---
+id: CONTRIBUTING
+title: Contributing
+---
 
 Our vision for Backstage is for it to become the trusted standard toolbox (read: UX layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone.
 
@@ -38,7 +41,7 @@ The current documentation is very limited. Help us make the `/docs` folder come 
 
 ## Contribute to Storybook
 
-We think the best way to ensure different plugins provide a consistent experience is through a solid set of reusable UI/UX components. Backstage uses [Storybook](http://storybook.backstage.io).
+We think the best way to ensure different plugins provide a consistent experience is through a solid set of reusable UI/UX components. Backstage uses [Storybook](http://backstage.io/storybook).
 
 Either help us [create new components](https://github.com/spotify/backstage/labels/help%20wanted) or improve stories for the existing ones (look for files with `*.stories.tsx`).
 
@@ -60,9 +63,45 @@ Have you started using Backstage? Adding your company to [ADOPTERS](ADOPTERS.md)
 
 # Get Started!
 
-So...feel ready to jump in? Let's do this. Head over to the [Getting Started guide](https://github.com/spotify/backstage#getting-started) 👏🏻💯
+So...feel ready to jump in? Let's do this. 👏🏻💯
+
+To run a Backstage app, you will need to have the following installed:
+
+- [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
+- [yarn](https://classic.yarnpkg.com/en/docs/install)
+
+After cloning this repo, open a terminal window and start the example app using the following commands from the project root:
+
+```bash
+yarn install # Install dependencies
+
+yarn start # Start dev server, use --check to enable linting and type-checks
+```
+
+The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
+
+Depending on the work you're doing, you often also want to run the example backend. Start the backend in a separate terminal session using the following:
+
+```bash
+cd packages/backend
+
+yarn start
+
+yarn lerna run mock-data # Populate the backend with mock data
+```
+
+And that's it! You are good to go 👍
 
 If you need help, just jump into our [Discord chatroom](https://discord.gg/MUpMjP2).
+
+# Coding Guidelines
+
+All code is formatted with `prettier` using the configuration in the repo. If possible we recommend configuring your editor to format automatically, but you can also use the `yarn prettier --write <file>` command to format files.
+
+If you're contributing to the backend or CLI tooling, be mindful of cross-platform support. [This](https://shapeshed.com/writing-cross-platform-node/) blog post is a good guide of what to keep in mind when writing cross-platform NodeJS.
+
+Also be sure to skim through our [ADRs](https://github.com/spotify/backstage/tree/master/docs/architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](https://github.com/spotify/backstage/blob/master/docs/architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
 
 # Code of Conduct
 

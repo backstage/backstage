@@ -30,5 +30,5 @@ This will launch the full example backend and populate its catalog with some moc
 
 ## Links
 
-- (Frontend part of the plugin)[https://github.com/spotify/backstage/tree/master/plugins/catalog]
-- (The Backstage homepage)[https://backstage.io]
+- [Frontend part of the plugin](https://github.com/spotify/backstage/tree/master/plugins/catalog)
+- [The Backstage homepage](https://backstage.io)

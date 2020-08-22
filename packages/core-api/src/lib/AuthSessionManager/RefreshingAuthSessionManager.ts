@@ -90,7 +90,12 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
 
     // The user may still have a valid refresh token in their cookies. Attempt to
     // initiate a fresh session through the backend using that refresh token.
-    if (!this.currentSession) {
+    //
+    // We skip this check if an instant login popup is requested, as we need to
+    // stay in a synchronous call stack from the user interaction. The downside
+    // is that that the user will sometimes be requested to log in even if they
+    // already had an existing session.
+    if (!this.currentSession && !options.instantPopup) {
       try {
         const newSession = await this.collapsedSessionRefresh();
         this.currentSession = newSession;

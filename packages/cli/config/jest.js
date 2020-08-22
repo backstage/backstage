@@ -37,8 +37,11 @@ async function getConfig() {
     // TODO: jest is working on module support, it's possible that we can remove this in the future
     transform: {
       '\\.esm\\.js$': require.resolve('jest-esm-transformer'),
-      '\\.(js|jsx|ts|tsx)': require.resolve('ts-jest'),
-      '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg)': require.resolve(
+      '\\.(js|jsx|ts|tsx)$': [
+        require.resolve('ts-jest'),
+        { isolatedModules: true },
+      ],
+      '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg)$': require.resolve(
         './jestFileTransform.js',
       ),
     },
@@ -48,8 +51,9 @@ async function getConfig() {
 
     // Default behaviour is to not apply transforms for node_modules, but we still want
     // to apply the esm-transformer to .esm.js files, since that's what we use in backstage packages.
+    // The @kyma-project/asyncapi-react library needs to be transformed.
     transformIgnorePatterns: [
-      '/node_modules/(?!.*\\.(?:esm\\.js|bmp|gif|jpg|jpeg|png|frag|xml|svg)$)',
+      '/node_modules/(?!@kyma-project/asyncapi-react/)(?!.*\\.(?:esm\\.js|bmp|gif|jpg|jpeg|png|frag|xml|svg)$)',
     ],
   };
 

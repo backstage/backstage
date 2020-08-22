@@ -12,23 +12,23 @@ backend:
     credentials: true
   database:
     client: sqlite3
-    connection: ":memory:"
+    connection: ':memory:'
 
 proxy:
   "/circleci/api":
     target: "https://circleci.com/api/v1.1"
     changeOrigin: true
     pathRewrite:
-      "^/proxy/circleci/api/": "/"
-  "/jenkins/api":
-    target: "http://localhost:8080"
+      '^/proxy/circleci/api/': '/'
+  '/jenkins/api':
+    target: 'http://localhost:8080'
     changeOrigin: true
     headers:
       Authorization:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
     pathRewrite:
-      "^/proxy/jenkins/api/": "/"
+      '^/proxy/jenkins/api/': '/'
 
 organization:
   name: Spotify
@@ -61,7 +61,7 @@ rollbar:
 
 newrelic:
   api:
-    baseUrl: "https://api.newrelic.com/v2"
+    baseUrl: 'https://api.newrelic.com/v2'
     key: NEW_RELIC_REST_API_KEY
 
 auth:

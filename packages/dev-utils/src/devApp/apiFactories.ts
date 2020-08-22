@@ -30,6 +30,8 @@ import {
   githubAuthApiRef,
   GitlabAuth,
   gitlabAuthApiRef,
+  Auth0Auth,
+  auth0AuthApiRef,
 } from '@backstage/core';
 
 // TODO(rugvip): We should likely figure out how to reuse all of these between apps
@@ -61,7 +63,7 @@ export const googleAuthApiFactory = createApiFactory({
   deps: { oauthRequestApi: oauthRequestApiRef },
   factory: ({ oauthRequestApi }) =>
     GoogleAuth.create({
-      apiOrigin: 'http://localhost:7000',
+      backendUrl: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -72,7 +74,7 @@ export const githubAuthApiFactory = createApiFactory({
   deps: { oauthRequestApi: oauthRequestApiRef },
   factory: ({ oauthRequestApi }) =>
     GithubAuth.create({
-      apiOrigin: 'http://localhost:7000',
+      backendUrl: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
     }),
@@ -83,7 +85,18 @@ export const gitlabAuthApiFactory = createApiFactory({
   deps: { oauthRequestApi: oauthRequestApiRef },
   factory: ({ oauthRequestApi }) =>
     GitlabAuth.create({
-      apiOrigin: 'http://localhost:7000',
+      backendUrl: 'http://localhost:7000',
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+});
+
+export const auth0AuthApiFactory = createApiFactory({
+  implements: auth0AuthApiRef,
+  deps: { oauthRequestApi: oauthRequestApiRef },
+  factory: ({ oauthRequestApi }) =>
+    Auth0Auth.create({
+      backendUrl: 'http://localhost:7000',
       basePath: '/auth/',
       oauthRequestApi,
     }),
