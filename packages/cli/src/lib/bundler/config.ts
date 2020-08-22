@@ -198,6 +198,11 @@ export function createBackendConfig(
       chunkFilename: isDev
         ? '[name].chunk.js'
         : '[name].[chunkhash:8].chunk.js',
+      ...(isDev
+        ? {
+            devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
+          }
+        : {}),
     },
     plugins: [
       new StartServerPlugin('main.js'),
