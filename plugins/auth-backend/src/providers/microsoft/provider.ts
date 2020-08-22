@@ -58,15 +58,13 @@ export class MicrosoftAuthProvider implements OAuthProviderHandlers {
     accessToken: string,
     params: any,
     rawProfile: any,
-    photoURL?: any,
+    photoURL: any,
   ): OAuthResponse {
     let passportProfile: passport.Profile = rawProfile;
-    if (photoURL) {
-      passportProfile = {
-        ...passportProfile,
-        photos: [{ value: photoURL }],
-      };
-    }
+    passportProfile = {
+      ...passportProfile,
+      photos: [{ value: photoURL }],
+    };
 
     const profile = makeProfileInfo(passportProfile, params.id_token);
     const providerInfo = {
@@ -99,18 +97,8 @@ export class MicrosoftAuthProvider implements OAuthProviderHandlers {
         rawProfile: passport.Profile,
         done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
       ) => {
-        got
-          .get('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
-            encoding: 'binary',
-            responseType: 'buffer',
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          })
-          .then(photoData => {
-            const photoURL = `data:image/jpeg;base64,${Buffer.from(
-              photoData.body,
-            ).toString('base64')}`;
+        this.getUserPhoto(accessToken)
+          .then(photoURL => {
             const authResponse = MicrosoftAuthProvider.transformAuthResponse(
               accessToken,
               params,
@@ -120,15 +108,7 @@ export class MicrosoftAuthProvider implements OAuthProviderHandlers {
             done(undefined, authResponse, { refreshToken });
           })
           .catch(error => {
-            console.log(
-              `Error retrieving user photo from Microsoft Graph API: ${error}`,
-            );
-            const authResponse = MicrosoftAuthProvider.transformAuthResponse(
-              accessToken,
-              params,
-              rawProfile,
-            );
-            done(undefined, authResponse, { refreshToken });
+            throw new Error(`Error processing auth response: ${error}`);
           });
       },
     );
@@ -201,8 +181,9 @@ export class MicrosoftAuthProvider implements OAuthProviderHandlers {
         })
         .catch(error => {
           console.log(
-            `Error retrieving user photo from Microsoft Graph API: ${error}`,
+            `Could not retrieve user profile photo from Microsoft Graph API: ${error}`,
           );
+          // User profile photo is optional, ignore errors and resolve undefined
           resolve();
         });
     });
