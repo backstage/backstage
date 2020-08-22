@@ -30,7 +30,7 @@ const setup = (props?: Partial<Props>) => {
     ),
   };
 };
-fdescribe('RegisterComponentForm', () => {
+describe('RegisterComponentForm', () => {
   afterEach(() => cleanup());
 
   it('should initially render a disabled button', async () => {
