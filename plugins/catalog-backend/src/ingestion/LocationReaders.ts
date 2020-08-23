@@ -61,7 +61,11 @@ export class LocationReaders implements LocationReader {
   async read(location: LocationSpec): Promise<ReadLocationResult> {
     const { rulesEnforcer, logger } = this.options;
 
-    const output: ReadLocationResult = { entities: [], errors: [] };
+    const output: ReadLocationResult = {
+      entities: [],
+      errors: [],
+      relations: [],
+    };
     let items: CatalogProcessorResult[] = [result.location(location, false)];
 
     for (let depth = 0; depth < MAX_DEPTH; ++depth) {
@@ -95,6 +99,10 @@ export class LocationReaders implements LocationReader {
           output.errors.push({
             location: item.location,
             error: item.error,
+          });
+        } else if (item.type === 'relation') {
+          output.relations.push({
+            relation: item.relation,
           });
         }
       }

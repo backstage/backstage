@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { Entity, Location, LocationSpec } from '@backstage/catalog-model';
+import type {
+  Entity,
+  EntityRelationSpec,
+  Location,
+  LocationSpec,
+} from '@backstage/catalog-model';
 
 //
 // HigherOrderOperation
@@ -47,6 +52,7 @@ export type LocationReader = {
 
 export type ReadLocationResult = {
   entities: ReadLocationEntity[];
+  relations: { relation: EntityRelationSpec }[];
   errors: ReadLocationError[];
 };
 

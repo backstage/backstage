@@ -69,7 +69,11 @@ describe('HigherOrderOperations', () => {
       };
       locationsCatalog.addLocation.mockImplementation(x => Promise.resolve(x));
       locationsCatalog.locations.mockResolvedValue([]);
-      locationReader.read.mockResolvedValue({ entities: [], errors: [] });
+      locationReader.read.mockResolvedValue({
+        entities: [],
+        errors: [],
+        relations: [],
+      });
 
       const result = await higherOrderOperation.addLocation(spec);
 
@@ -109,7 +113,11 @@ describe('HigherOrderOperations', () => {
           data: location,
         },
       ]);
-      locationReader.read.mockResolvedValue({ entities: [], errors: [] });
+      locationReader.read.mockResolvedValue({
+        entities: [],
+        errors: [],
+        relations: [],
+      });
 
       const result = await higherOrderOperation.addLocation(spec);
 
@@ -138,6 +146,7 @@ describe('HigherOrderOperations', () => {
       locationReader.read.mockResolvedValue({
         entities: [{ entity, location }],
         errors: [{ error: new Error('abcd'), location }],
+        relations: [],
       });
 
       await expect(higherOrderOperation.addLocation(spec)).rejects.toThrow(
@@ -186,6 +195,7 @@ describe('HigherOrderOperations', () => {
       locationReader.read.mockResolvedValue({
         entities: [{ entity: desc, location }],
         errors: [],
+        relations: [],
       });
       entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue(undefined);
 
@@ -231,6 +241,7 @@ describe('HigherOrderOperations', () => {
       locationReader.read.mockResolvedValue({
         entities: [{ entity: desc, location }],
         errors: [],
+        relations: [],
       });
       entitiesCatalog.entities.mockResolvedValue([]);
       entitiesCatalog.addEntities.mockResolvedValue(undefined);

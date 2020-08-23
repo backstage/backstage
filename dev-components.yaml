@@ -1,0 +1,38 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: root
+spec:
+  type: org
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: platform
+spec:
+  type: mission
+  parent: root
+# ---
+# apiVersion: backstage.io/v1alpha1
+# kind: Group
+# metadata:
+#   name: pdx
+# spec:
+#   type: tribe
+#   parent: platform
+# ---
+# apiVersion: backstage.io/v1alpha1
+# kind: Group
+# metadata:
+#   name: tools
+# spec:
+#   type: squad
+#   parent: pdx
+# ---
+# apiVersion: backstage.io/v1alpha1
+# kind: Group
+# metadata:
+#   name: pulp-fiction
+# spec:
+#   type: squad
+#   parent: pdx

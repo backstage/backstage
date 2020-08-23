@@ -28,6 +28,7 @@ export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export { GithubReaderProcessor } from './GithubReaderProcessor';
 export { GitlabApiReaderProcessor } from './GitlabApiReaderProcessor';
 export { GitlabReaderProcessor } from './GitlabReaderProcessor';
+export { GroupPopulatorProcessor } from './GroupPopulatorProcessor';
 export { LocationRefProcessor } from './LocationEntityProcessor';
 export { PlaceholderProcessor } from './PlaceholderProcessor';
 export type { PlaceholderResolver } from './PlaceholderProcessor';
