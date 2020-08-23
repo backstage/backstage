@@ -35,6 +35,12 @@ import { findPaths } from '@backstage/cli-common';
 
 const paths = findPaths(__dirname);
 
+const templatePackagePaths = [
+  'packages/cli/templates/default-plugin/package.json.hbs',
+  'packages/create-app/templates/default-app/packages/app/package.json.hbs',
+  'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
+];
+
 async function main() {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
   print(`CLI E2E test root: ${rootDir}\n`);
@@ -67,20 +73,18 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   await fs.ensureDir(workspaceDir);
 
   // We grab the needed dependencies from the create app template
-  const createAppDeps: string[] = [];
-  for (const pkgPath of ['packages/app', 'packages/backend']) {
-    const path = paths.resolveOwnRoot(
-      'packages/create-app/templates/default-app',
-      pkgPath,
-      'package.json.hbs',
+  const createAppDeps = new Set<string>();
+  for (const pkgJsonPath of templatePackagePaths) {
+    const path = paths.resolveOwnRoot(pkgJsonPath);
+    const pkgTemplate = await fs.readFile(path, 'utf8');
+    const { dependencies = {}, devDependencies = {} } = JSON.parse(
+      handlebars.compile(pkgTemplate)({ version: '0.0.0' }),
     );
-    const appPkgTemplate = await fs.readFile(path, 'utf8');
-    const { dependencies: allDeps } = JSON.parse(
-      handlebars.compile(appPkgTemplate)({ version: '0.0.0' }),
-    );
-    createAppDeps.push(
-      ...Object.keys(allDeps).filter(name => name.startsWith('@backstage/')),
-    );
+
+    Array<string>()
+      .concat(Object.keys(dependencies), Object.keys(devDependencies))
+      .filter(name => name.startsWith('@backstage/'))
+      .forEach(dep => createAppDeps.add(dep));
   }
 
   print(`Preparing workspace`);
