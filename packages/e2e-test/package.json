@@ -13,9 +13,9 @@
     "backstage"
   ],
   "license": "Apache-2.0",
-  "main": "src/index.ts",
+  "main": "src/index.js",
   "scripts": {
-    "start": "yarn ts-node --transpile-only --compiler-options '{\"module\":\"CommonJS\"}' .",
+    "start": "node .",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "test:e2e": "yarn start"
