@@ -12,6 +12,7 @@ better yet, a pull request.
   - [Architecture and terminology](overview/architecture-terminology.md)
   - [Roadmap](overview/roadmap.md)
   - [Vision](overview/vision.md)
+  - [Strategies for adopting](overview/adopting.md)
 - Getting started
   - [Running Backstage locally](getting-started/index.md)
   - [Installation](getting-started/installation.md)

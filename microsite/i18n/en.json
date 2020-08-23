@@ -211,7 +211,7 @@
         "title": "Existing plugins"
       },
       "plugins/index": {
-        "title": "Intro"
+        "title": "Intro to plugins"
       },
       "plugins/plugin-development": {
         "title": "Plugin Development in Backstage"
