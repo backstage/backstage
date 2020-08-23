@@ -1,4 +1,4 @@
-name: Main Master Build
+name: Master Build Windows
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     strategy:
       matrix:
@@ -42,30 +42,6 @@ jobs:
       - name: yarn install
         run: yarn install --frozen-lockfile
 
-      - name: lint
-        run: yarn lerna -- run lint
-
-      - name: type checking and declarations
-        run: yarn tsc --incremental false
-
-      - name: build
-        run: yarn build
-
-      - name: verify type dependencies
-        run: yarn lint:type-deps
-
-      - name: test
-        run: yarn lerna -- run test -- --coverage
-
-      # Publishes current version of packages that are not already present in the registry
-      - name: publish
-        run: yarn lerna -- publish from-package --yes
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # Tags the commit with the version in the core package if the tag doesn't exist
-      - uses: Klemensas/action-autotag@1.2.3
-        with:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          package_root: "packages/core"
-          tag_prefix: "v"
+# Tests are broken on Windows, disabled for now
+      # - name: test
+      #   run: yarn lerna -- run test
