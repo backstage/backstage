@@ -1,10 +1,9 @@
-name: CLI Test
+name: E2E Test Linux
 
 on:
   pull_request:
     paths-ignore:
       - 'microsite/**'
-
 
 jobs:
   build:
@@ -51,13 +50,14 @@ jobs:
       - name: yarn install
         run: yarn install --frozen-lockfile
       - run: yarn tsc
-      - run: yarn build
-      - name: verify app and plugin creation
+      - name: yarn build
+        run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli --ignore backstage-microsite
+      - name: run E2E test
+        run: |
+          sudo sysctl fs.inotify.max_user_watches=524288
+          yarn workspace e2e-test start
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-        run: |
-          sudo sysctl fs.inotify.max_user_watches=524288
-          node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
