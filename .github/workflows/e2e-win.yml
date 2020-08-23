@@ -1,12 +1,13 @@
-name: CLI Test Windows
+name: E2E Test Windows
 
-# Building on windows is really slow, so this workflow is separate from cli.yml and only builds on changes
+# Building on windows is really slow, so this workflow is separate from e2e.yml and only builds on changes
 # to the cli itself. They're more likely to introduce issues on windows, compared to changes to core and yarn.lock.
 on:
   pull_request:
     paths:
-      - '.github/workflows/cli-win.yml'
+      - '.github/workflows/e2e-win.yml'
       - 'packages/cli/**'
+      - 'packages/e2e/**'
       - 'packages/create-app/**'
 
 jobs:
@@ -42,6 +43,7 @@ jobs:
       - name: yarn install
         run: yarn install --frozen-lockfile
       - run: yarn tsc
-      - run: yarn build
-      - name: verify app and plugin creation
-        run: node ${{ github.workspace }}/packages/cli/e2e-test/cli-e2e-test.js
+      - name: yarn build
+        run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli --ignore backstage-microsite
+      - name: run E2E test
+        run: yarn workspace e2e-test start
