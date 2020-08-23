@@ -26,7 +26,7 @@ export class YamlProcessor implements LocationProcessor {
     location: LocationSpec,
     emit: LocationProcessorEmit,
   ): Promise<boolean> {
-    if (!location.target.match(/\.ya?ml$/)) {
+    if (!location.target.match(/\.ya?ml/)) {
       return false;
     }
 

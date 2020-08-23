@@ -86,9 +86,7 @@ const RegisterComponentPage: FC<{}> = () => {
         { url: /.*/, type: 'github' },
       ];
 
-      const type = typeMapping.filter(item => {
-        return new RegExp(item.url).test(target);
-      })[0].type;
+      const type = typeMapping.filter(item => item.url.test(target))[0].type;
 
       const data = await catalogApi.addLocation(type, target);
 

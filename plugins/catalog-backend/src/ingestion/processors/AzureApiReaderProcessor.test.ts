@@ -16,7 +16,7 @@
 
 import { AzureApiReaderProcessor } from './AzureApiReaderProcessor';
 
-describe('BitbucketApiReaderProcessor', () => {
+describe('AzureApiReaderProcessor', () => {
   it('should build raw api', () => {
     const processor = new AzureApiReaderProcessor();
     const tests = [
