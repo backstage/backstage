@@ -31,6 +31,9 @@ import {
   print,
 } from './helpers';
 import pgtools from 'pgtools';
+import { findPaths } from '@backstage/cli-common';
+
+const paths = findPaths(__dirname);
 
 async function main() {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
@@ -63,34 +66,22 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   const workspaceDir = resolvePath(rootDir, workspaceName);
   await fs.ensureDir(workspaceDir);
 
-  // We grab the needed dependencies from the template packages
-  const appPkgTemplate = await fs.readFile(
-    resolvePath(
-      __dirname,
-      '../../create-app/templates/default-app/packages/app/package.json.hbs',
-    ),
-    'utf8',
-  );
-  const appPkg = JSON.parse(
-    handlebars.compile(appPkgTemplate)({ version: '0.0.0' }),
-  );
-  const appDeps = Object.keys(appPkg.dependencies).filter(name =>
-    name.startsWith('@backstage/'),
-  );
-
-  const backendPkgTemplate = await fs.readFile(
-    resolvePath(
-      __dirname,
-      '../../create-app/templates/default-app/packages/backend/package.json.hbs',
-    ),
-    'utf8',
-  );
-  const backendPkg = JSON.parse(
-    handlebars.compile(backendPkgTemplate)({ version: '0.0.0' }),
-  );
-  const backendDeps = Object.keys(backendPkg.dependencies).filter(name =>
-    name.startsWith('@backstage/'),
-  );
+  // We grab the needed dependencies from the create app template
+  const createAppDeps: string[] = [];
+  for (const pkgPath of ['packages/app', 'packages/backend']) {
+    const path = paths.resolveOwnRoot(
+      'packages/create-app/templates/default-app',
+      pkgPath,
+      'package.json.hbs',
+    );
+    const appPkgTemplate = await fs.readFile(path, 'utf8');
+    const { dependencies: allDeps } = JSON.parse(
+      handlebars.compile(appPkgTemplate)({ version: '0.0.0' }),
+    );
+    createAppDeps.push(
+      ...Object.keys(allDeps).filter(name => name.startsWith('@backstage/')),
+    );
+  }
 
   print(`Preparing workspace`);
   await runPlain([
@@ -98,13 +89,8 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     'backstage-cli',
     'build-workspace',
     workspaceDir,
-    '@backstage/cli',
     '@backstage/create-app',
-    '@backstage/core',
-    '@backstage/dev-utils',
-    '@backstage/test-utils',
-    ...appDeps,
-    ...backendDeps,
+    ...createAppDeps,
   ]);
 
   print('Pinning yarn version in workspace');
@@ -122,9 +108,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
  * Pin the yarn version in a directory to the one we're using in the Backstage repo
  */
 async function pinYarnVersion(dir: string) {
-  const repoRoot = resolvePath(__dirname, '../../..');
-
-  const yarnRc = await fs.readFile(resolvePath(repoRoot, '.yarnrc'), 'utf8');
+  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc'), 'utf8');
   const yarnRcLines = yarnRc.split('\n');
   const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarn-path'));
   if (!yarnPathLine) {
@@ -135,7 +119,7 @@ async function pinYarnVersion(dir: string) {
     throw new Error(`Invalid 'yarn-path' in ${yarnRc}`);
   }
   const [, localYarnPath] = match;
-  const yarnPath = resolvePath(repoRoot, localYarnPath);
+  const yarnPath = paths.resolveOwnRoot(localYarnPath);
 
   await fs.writeFile(resolvePath(dir, '.yarnrc'), `yarn-path "${yarnPath}"\n`);
 }
