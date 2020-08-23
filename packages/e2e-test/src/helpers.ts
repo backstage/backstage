@@ -91,9 +91,14 @@ export function handleError(err: Error & { code?: unknown }) {
  * .cancel() is available
  * @returns {Promise} Promise of resolution
  */
-export function waitFor(fn: () => boolean) {
-  return new Promise(resolve => {
+export function waitFor(fn: () => boolean, maxSeconds: number = 120) {
+  let count = 0;
+  return new Promise((resolve, reject) => {
     const handle = setInterval(() => {
+      if (count++ > maxSeconds * 10) {
+        reject(new Error('Timed out while waiting for condition'));
+        return;
+      }
       if (fn()) {
         clearInterval(handle);
         resolve();
