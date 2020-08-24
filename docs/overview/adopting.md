@@ -104,6 +104,10 @@ successful impact on your software development process:
 - **Deploys to production** Cousin to the metric above: How many times does an
   engineer push changes into production.
 
+- **MTTR** With clear ownership of all the pieces in your micro services
+  ecosystem and all tools integrated into one place, Backstage makes it quicker
+  for teams to find the root cause of failures, and fix them.
+
 - **Context switching** Reducing context switching can help engineers stay in
   the "zone". We measure the number of different tools an engineer have to
   interact with in order to get a certain job done (e.g. push a change, follow
