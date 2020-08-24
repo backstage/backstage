@@ -5,9 +5,9 @@ metadata:
   title: Create React App Template
   description: Create a new CRA website project
   tags:
-    - Experimental
-    - React
-    - CRA
+    - experimental
+    - react
+    - cra
 spec:
   owner: web@example.com
   templater: cra
