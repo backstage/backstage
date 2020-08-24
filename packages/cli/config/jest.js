@@ -37,7 +37,10 @@ async function getConfig() {
     // TODO: jest is working on module support, it's possible that we can remove this in the future
     transform: {
       '\\.esm\\.js$': require.resolve('jest-esm-transformer'),
-      '\\.(js|jsx|ts|tsx)$': require.resolve('ts-jest'),
+      '\\.(js|jsx|ts|tsx)$': [
+        require.resolve('ts-jest'),
+        { isolatedModules: true },
+      ],
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg)$': require.resolve(
         './jestFileTransform.js',
       ),

@@ -1,6 +1,6 @@
 ---
 id: index
-title: Intro
+title: Intro to plugins
 ---
 
 Backstage is a single-page application composed of a set of plugins.

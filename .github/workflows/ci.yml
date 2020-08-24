@@ -1,11 +1,11 @@
-name: Frontend CI
+name: CI
 
 on:
   pull_request:
     paths-ignore:
       - 'microsite/**'
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
 
     strategy:

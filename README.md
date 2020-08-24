@@ -29,16 +29,6 @@ For more information go to [backstage.io](https://backstage.io) or join our [Dis
 
 A detailed project roadmap, including already delivered milestones, is available [here](https://backstage.io/docs/overview/roadmap).
 
-## Overview
-
-The Backstage platform consists of a number of different components:
-
-- **app** - Main web application that users interact with. It's built up by a number of different _Plugins_. This repo contains an example implementation of an app (located in `packages/app`) and you can easily get started with your own app by [creating one](docs/getting-started/create-an-app.md).
-- [**plugins**](https://github.com/spotify/backstage/tree/master/plugins) - Each plugin is treated as a self-contained web app and can include almost any type of content. Plugins all use a common set of platform API's and reusable UI components. Plugins can fetch data either from the _backend_ or through any RESTful API exposed through the _proxy_.
-- [**service catalog**](https://github.com/spotify/backstage/tree/master/packages/backend) - Service that holds the model of your software ecosystem, including organisational information and what team owns what software. The backend also has a Plugin model for extending its graph.
-- [**proxy**](https://github.com/spotify/backstage/tree/master/plugins/proxy-backend) - Terminates HTTPS and exposes any RESTful API to Plugins.
-- **identity** - A backend service that holds your organisation's metadata.
-
 ## Getting Started
 
 There are two different ways to get started with Backstage, either by creating a standalone app, or by cloning this repo. Which method you use depends on what you're planning to do.

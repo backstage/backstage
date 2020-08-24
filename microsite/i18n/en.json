@@ -177,6 +177,9 @@
       "journey": {
         "title": "journey"
       },
+      "overview/adopting": {
+        "title": "Strategies for adopting"
+      },
       "overview/architecture-overview": {
         "title": "Architecture overview"
       },
@@ -199,7 +202,7 @@
         "title": "Backend plugin"
       },
       "plugins/call-existing-api": {
-        "title": "Call existing API"
+        "title": "Call Existing API"
       },
       "plugins/create-a-plugin": {
         "title": "Create a Backstage Plugin"
@@ -208,7 +211,7 @@
         "title": "Existing plugins"
       },
       "plugins/index": {
-        "title": "Intro"
+        "title": "Intro to plugins"
       },
       "plugins/plugin-development": {
         "title": "Plugin Development in Backstage"

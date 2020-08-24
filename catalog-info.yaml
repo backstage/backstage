@@ -7,6 +7,7 @@ metadata:
   annotations:
     github.com/project-slug: spotify/backstage
     backstage.io/github-actions-id: spotify/backstage
+    backstage.io/techdocs-ref: github:https://github.com/spotify/backstage.git
 spec:
   type: library
   owner: Spotify

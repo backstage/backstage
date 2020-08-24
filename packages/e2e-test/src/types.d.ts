@@ -14,16 +14,5 @@
  * limitations under the License.
  */
 
-module.exports = {
-  rules: {
-    'import/no-extraneous-dependencies': [
-      'error',
-      {
-        devDependencies: true,
-        optionalDependencies: true,
-        peerDependencies: true,
-        bundledDependencies: true,
-      },
-    ],
-  },
-};
+declare module 'zombie';
+declare module 'pgtools';

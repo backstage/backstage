@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-const os = require('os');
-const fs = require('fs-extra');
-const fetch = require('node-fetch');
-const handlebars = require('handlebars');
-const killTree = require('tree-kill');
-const { resolve: resolvePath, join: joinPath } = require('path');
-const Browser = require('zombie');
-const {
+import os from 'os';
+import fs from 'fs-extra';
+import fetch from 'node-fetch';
+import handlebars from 'handlebars';
+import killTree from 'tree-kill';
+import { resolve as resolvePath, join as joinPath } from 'path';
+import Browser from 'zombie';
+import {
   spawnPiped,
   runPlain,
   handleError,
@@ -29,8 +29,17 @@ const {
   waitFor,
   waitForExit,
   print,
-} = require('./helpers');
-const pgtools = require('pgtools');
+} from './helpers';
+import pgtools from 'pgtools';
+import { findPaths } from '@backstage/cli-common';
+
+const paths = findPaths(__dirname);
+
+const templatePackagePaths = [
+  'packages/cli/templates/default-plugin/package.json.hbs',
+  'packages/create-app/templates/default-app/packages/app/package.json.hbs',
+  'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
+];
 
 async function main() {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
@@ -59,38 +68,24 @@ async function main() {
 /**
  * Builds a dist workspace that contains the cli and core packages
  */
-async function buildDistWorkspace(workspaceName, rootDir) {
+async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   const workspaceDir = resolvePath(rootDir, workspaceName);
   await fs.ensureDir(workspaceDir);
 
-  // We grab the needed dependencies from the template packages
-  const appPkgTemplate = await fs.readFile(
-    resolvePath(
-      __dirname,
-      '../../create-app/templates/default-app/packages/app/package.json.hbs',
-    ),
-    'utf8',
-  );
-  const appPkg = JSON.parse(
-    handlebars.compile(appPkgTemplate)({ version: '0.0.0' }),
-  );
-  const appDeps = Object.keys(appPkg.dependencies).filter(name =>
-    name.startsWith('@backstage/'),
-  );
+  // We grab the needed dependencies from the create app template
+  const createAppDeps = new Set<string>();
+  for (const pkgJsonPath of templatePackagePaths) {
+    const path = paths.resolveOwnRoot(pkgJsonPath);
+    const pkgTemplate = await fs.readFile(path, 'utf8');
+    const { dependencies = {}, devDependencies = {} } = JSON.parse(
+      handlebars.compile(pkgTemplate)({ version: '0.0.0' }),
+    );
 
-  const backendPkgTemplate = await fs.readFile(
-    resolvePath(
-      __dirname,
-      '../../create-app/templates/default-app/packages/backend/package.json.hbs',
-    ),
-    'utf8',
-  );
-  const backendPkg = JSON.parse(
-    handlebars.compile(backendPkgTemplate)({ version: '0.0.0' }),
-  );
-  const backendDeps = Object.keys(backendPkg.dependencies).filter(name =>
-    name.startsWith('@backstage/'),
-  );
+    Array<string>()
+      .concat(Object.keys(dependencies), Object.keys(devDependencies))
+      .filter(name => name.startsWith('@backstage/'))
+      .forEach(dep => createAppDeps.add(dep));
+  }
 
   print(`Preparing workspace`);
   await runPlain([
@@ -98,13 +93,8 @@ async function buildDistWorkspace(workspaceName, rootDir) {
     'backstage-cli',
     'build-workspace',
     workspaceDir,
-    '@backstage/cli',
     '@backstage/create-app',
-    '@backstage/core',
-    '@backstage/dev-utils',
-    '@backstage/test-utils',
-    ...appDeps,
-    ...backendDeps,
+    ...createAppDeps,
   ]);
 
   print('Pinning yarn version in workspace');
@@ -121,14 +111,19 @@ async function buildDistWorkspace(workspaceName, rootDir) {
 /**
  * Pin the yarn version in a directory to the one we're using in the Backstage repo
  */
-async function pinYarnVersion(dir) {
-  const repoRoot = resolvePath(__dirname, '../../..');
-
-  const yarnRc = await fs.readFile(resolvePath(repoRoot, '.yarnrc'), 'utf8');
+async function pinYarnVersion(dir: string) {
+  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc'), 'utf8');
   const yarnRcLines = yarnRc.split('\n');
   const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarn-path'));
-  const [, localYarnPath] = yarnPathLine.match(/"(.*)"/);
-  const yarnPath = resolvePath(repoRoot, localYarnPath);
+  if (!yarnPathLine) {
+    throw new Error(`Unable to find 'yarn-path' in ${yarnRc}`);
+  }
+  const match = yarnPathLine.match(/"(.*)"/);
+  if (!match) {
+    throw new Error(`Invalid 'yarn-path' in ${yarnRc}`);
+  }
+  const [, localYarnPath] = match;
+  const yarnPath = paths.resolveOwnRoot(localYarnPath);
 
   await fs.writeFile(resolvePath(dir, '.yarnrc'), `yarn-path "${yarnPath}"\n`);
 }
@@ -136,7 +131,12 @@ async function pinYarnVersion(dir) {
 /**
  * Creates a new app inside rootDir called test-app, using packages from the workspaceDir
  */
-async function createApp(appName, isPostgres, workspaceDir, rootDir) {
+async function createApp(
+  appName: string,
+  isPostgres: boolean,
+  workspaceDir: string,
+  rootDir: string,
+) {
   const child = spawnPiped(
     [
       'node',
@@ -150,20 +150,20 @@ async function createApp(appName, isPostgres, workspaceDir, rootDir) {
 
   try {
     let stdout = '';
-    child.stdout.on('data', data => {
+    child.stdout?.on('data', data => {
       stdout = stdout + data.toString('utf8');
     });
 
     await waitFor(() => stdout.includes('Enter a name for the app'));
-    child.stdin.write(`${appName}\n`);
+    child.stdin?.write(`${appName}\n`);
 
     await waitFor(() => stdout.includes('Select database for the backend'));
 
     if (!isPostgres) {
       // Simulate down arrow press
-      child.stdin.write(`\u001B\u005B\u0042`);
+      child.stdin?.write(`\u001B\u005B\u0042`);
     }
-    child.stdin.write(`\n`);
+    child.stdin?.write(`\n`);
 
     print('Waiting for app create script to be done');
     await waitForExit(child);
@@ -205,7 +205,7 @@ async function createApp(appName, isPostgres, workspaceDir, rootDir) {
 /**
  * This points dependency resolutions into the workspace for each package that is present there
  */
-async function overrideModuleResolutions(appDir, workspaceDir) {
+async function overrideModuleResolutions(appDir: string, workspaceDir: string) {
   const pkgJsonPath = resolvePath(appDir, 'package.json');
   const pkgJson = await fs.readJson(pkgJsonPath);
 
@@ -231,19 +231,19 @@ async function overrideModuleResolutions(appDir, workspaceDir) {
 /**
  * Uses create-plugin command to create a new plugin in the app
  */
-async function createPlugin(pluginName, appDir) {
+async function createPlugin(pluginName: string, appDir: string) {
   const child = spawnPiped(['yarn', 'create-plugin'], {
     cwd: appDir,
   });
 
   try {
     let stdout = '';
-    child.stdout.on('data', data => {
+    child.stdout?.on('data', (data: Buffer) => {
       stdout = stdout + data.toString('utf8');
     });
 
     await waitFor(() => stdout.includes('Enter an ID for the plugin'));
-    child.stdin.write(`${pluginName}\n`);
+    child.stdin?.write(`${pluginName}\n`);
 
     // await waitFor(() => stdout.includes('Enter the owner(s) of the plugin'));
     // child.stdin.write('@someuser\n');
@@ -266,7 +266,7 @@ async function createPlugin(pluginName, appDir) {
 /**
  * Start serving the newly created app and make sure that the create plugin is rendering correctly
  */
-async function testAppServe(pluginName, appDir) {
+async function testAppServe(pluginName: string, appDir: string) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
   });
@@ -302,7 +302,7 @@ async function testAppServe(pluginName, appDir) {
 }
 
 /** Creates PG databases (drops if exists before) */
-async function createDB(database) {
+async function createDB(database: string) {
   const config = {
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
@@ -321,7 +321,7 @@ async function createDB(database) {
 /**
  * Start serving the newly created backend and make sure that all db migrations works correctly
  */
-async function testBackendStart(appDir, isPostgres) {
+async function testBackendStart(appDir: string, isPostgres: boolean) {
   if (isPostgres) {
     print('Creating DBs');
     await Promise.all(
@@ -343,10 +343,10 @@ async function testBackendStart(appDir, isPostgres) {
 
   let stdout = '';
   let stderr = '';
-  child.stdout.on('data', data => {
+  child.stdout?.on('data', (data: Buffer) => {
     stdout = stdout + data.toString('utf8');
   });
-  child.stderr.on('data', data => {
+  child.stderr?.on('data', (data: Buffer) => {
     stderr = stderr + data.toString('utf8');
   });
   let successful = false;
@@ -384,4 +384,4 @@ async function testBackendStart(appDir, isPostgres) {
 }
 
 process.on('unhandledRejection', handleError);
-main(process.argv.slice(2)).catch(handleError);
+main().catch(handleError);
