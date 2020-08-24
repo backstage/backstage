@@ -55,69 +55,86 @@ products they maintain.
 > [maintain their own API](../plugins/call-existing-api.md), they can improve
 > their product by iterating on API and UI in lockstep. Because the plugin
 > follows our [platform design guidelines](../dls/design.md) their customers get
-> a CI experience that is consistent with other tools on the platform (and the
+> a CI experience that is consistent with other tools on the platform (and users
 > don't have to become experts in Jenkins).
 
 ### Tactics
 
 Example of tactics we have used to evangelize Backstage internally:
 
-- Arrange "Lunch & Learns" and seminars. Frequently offer teams interested
-  Backstage development to come to a seminar where we show how to build a plugin
-  from scratch.
+- Arrange "Lunch & Learns" and seminars. Frequently offer teams interested in
+  Backstage development to come to a seminar where you show, for example, how to
+  build a plugin from scratch.
+
 - Embedding. As contributing teams start development of their first plugin it is
   often very appreciated to have one person from the central team come over and
   "embed" for a Sprint or two.
+
 - Hack days. Backstage-focused Hackathons or hack days is a fun way to get
   people into plugin development.
+
 - Show & tell meetings. In order to build an internal community around Backstage
   we have quarterly meetings where anyone working on Backstage is invited to
   present their work. This is a not only a great way to get early feedback, but
   also helps coordination between teams that are building overlapping
   experiences.
+
 - Provide metrics. Add instrumentation to your Backstage deployment and make
   metrics available to contributing teams. At Spotify we have even gone so far
   as sending out weekly digest email showing how usage metrics have changed for
   individual plugins.
+
 - Pro-actively identify new plugins. Reach out to teams that own internal UIs or
   platforms that you think would make sense to consolidate into Backstage.
 
 ## Metrics
 
-Inside Spotify the number of contributing teams have increased significantly
-over the years -- now exceeding 60.
+These are some of the metrics that you can use to verify if Backstage has a
+successful impact on your software development process:
 
-- Number of deploys per developer/day
-- Number of experiments run per developer/month
-- Nr of PRs merged per developer/day
-- etc
+- **Onboarding time** Time until new engineers are productive. At Spotify we
+  measure this as the time until the employee has merged their 10th PR (this
+  metric was down 55% two years after deploying Backstage).
 
-* **Onboarding time** New engineers.
+- **Number of merges per developer/day** Less time spent jumping between
+  different tools and looking for information means more time to focus on
+  shipping code. A second level of bottlenecks can be identified if you
+  categorize contributions by domain (services, web, data, etc).
 
-* **Context switching** Service Catalog
+- **Deploys to production** Cousin to the metric above: How many times does an
+  engineer push changes into production.
 
-* **Deploys to production** .
+- **Context switching** Reducing context switching can help engineers stay in
+  the "zone". We measure the number of different tools an engineer have to
+  interact with in order to get a certain job done (e.g. push a change, follow
+  it into production and validate it did not break anything).
 
-* **Deploys to production** .
+- **T-shapedness** A
+  [T-shaped](https://medium.com/@jchyip/why-t-shaped-people-e8706198e437)
+  engineer is someone that is able to contribute to different domains of
+  engineering. Teams with T-shaped people have fewer bottlenecks and can
+  therefore deliver more consistently. Backstage makes it easier to be T-shaped
+  since tools and infrastructure is consistent between domains, and information
+  is available centrally.
 
-* **T-shapedness**
-  [T-shaped](https://medium.com/@jchyip/why-t-shaped-people-e8706198e437).
+- **eNPS** Surveys asking about how productive people feel, how easy it is to
+  find information and overall satisfaction with internal tools.
 
-* **eNPS** .
+- **Fragmentation** _(Experimental)_ Backstage
+  [Software Templates](../features/software-templates/index.md) helps drive
+  standardization in your software ecosystem. By measuring the variance in
+  technology between different software components it is possible to get a sense
+  of the overall fragmentation in your ecosystem. Examples could include:
+  framework versions, languages, deployment methods and various code quality
+  measurements.
 
-- Onboarding time for a new engineer -- measured in "time until 10th PR" (before
-  Backstage: ~45 days, now: 22 days)
-- Context switching -- number of different tools an engineer have to interact
-  with in order to get a certain job done (used to be 7-8 systems just to follow
-  your code into production, now it's down to 2 (GitHub, Backstage)
-- Surveys asking about how productive people feel, how easy it is to find
-  information, etc.
+Additionally, these proxy metrics can be used to validate the success of
+Backstage as _the_ platform:
 
-To track the "platform health" of Backstage I look at things like:
+- Nr of teams that have contributed at least one plugin (currently 63 inside
+  Spotify)
 
-- Nr of teams that have contributed at least one plugin (currently 63, see
-  below)
-- Nr of total plugins (currently 135, see below)
-- % of contributions coming from outside the Backstage core team (currently 85%)
+- Nr of total plugins (currently 135 inside Spotify)
 
-Success as a platform:
+- % of contributions coming from outside the central Backstage team (currently
+  85% inside Spotify)
