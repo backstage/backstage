@@ -94,20 +94,6 @@ export class CommonValidatorFunctions {
   }
 
   /**
-   * Checks that the value is a valid metadata tag.
-   *
-   * @param value The value to check
-   */
-  static isValidMetadataTag(value: any): boolean {
-    return (
-      typeof value === 'string' &&
-      value.length >= 1 &&
-      value.length <= 63 &&
-      /^[a-zA-Z0-9]+(\-[a-zA-Z0-9]+)*$/.test(value)
-    );
-  }
-
-  /**
    * Normalizes by keeping only a-z, A-Z, and 0-9; and converts to lowercase.
    *
    * @param value The value to normalize
