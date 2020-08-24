@@ -22,8 +22,8 @@ metadata:
     Next.js application skeleton for creating isomorphic web applications.
   # some tags to display in the frontend
   tags:
-    - Recommended
-    - React
+    - recommended
+    - react
 spec:
   # which templater key to use in the templaters builder
   templater: cookiecutter
