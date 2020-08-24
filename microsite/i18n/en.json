@@ -177,6 +177,9 @@
       "journey": {
         "title": "journey"
       },
+      "overview/adopting": {
+        "title": "Strategies for adopting"
+      },
       "overview/architecture-overview": {
         "title": "Architecture overview"
       },
@@ -208,7 +211,7 @@
         "title": "Existing plugins"
       },
       "plugins/index": {
-        "title": "Intro"
+        "title": "Intro to plugins"
       },
       "plugins/plugin-development": {
         "title": "Plugin Development in Backstage"
