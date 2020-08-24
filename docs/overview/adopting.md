@@ -18,8 +18,8 @@ central team that owns your Backstage deployment and treats it like a product.
 This team will have **four** primary objectives:
 
 1. Maintain and operate your deployment of Backstage. This includes customer
-   support, infrastructure, CI/CD and, as your Backstage product evolves,
-   on-call support.
+   support, infrastructure, CI/CD and, as your Backstage product grows, on-call
+   support.
 
 2. Drive adoption of customers (developers at your company).
 
@@ -34,8 +34,8 @@ This team will have **four** primary objectives:
 
 The last objective deserves more attention, since it is the least obvious, but
 also the most critical to successfully creating a consolidated platform. When
-done right, Backstage acts as a marketplace between infra/platform teams, and
-end-users.
+done right, Backstage acts as a "platform of platforms" or marketplace between
+infra/platform teams and end-users:
 
 ![pop](../assets/pop.png)
 
@@ -45,7 +45,7 @@ customers. The central team should treat these _contributing teams_ as customers
 of the platform as well.
 
 These teams should be able to autonomously deliver value directly to their
-customers. This done primarily by building [plugins](../plugins/index.md).
+customers. This is done primarily by building [plugins](../plugins/index.md).
 Contributing teams should themselves treat their plugins as, or part of, the
 products they maintain.
 
@@ -53,28 +53,71 @@ products they maintain.
 > don't only maintain the pipelines and build servers, but also expose their
 > product in Backstage through a plugin. Since they also
 > [maintain their own API](../plugins/call-existing-api.md), they can improve
-> their product by iterating on API and UI in lockstep. Since the plugin is
-> following our [platform design guidelines](../dls/design.md) their customers
-> get a CI experience that is consistent with other tools on the platform (and
-> the don't have to become experts in Jenkins).
+> their product by iterating on API and UI in lockstep. Because the plugin
+> follows our [platform design guidelines](../dls/design.md) their customers get
+> a CI experience that is consistent with other tools on the platform (and the
+> don't have to become experts in Jenkins).
+
+### Tactics
+
+Example of tactics we have used to evangelize Backstage internally:
+
+- Arrange "Lunch & Learns" and seminars. Frequently offer teams interested
+  Backstage development to come to a seminar where we show how to build a plugin
+  from scratch.
+- Embedding. As contributing teams start development of their first plugin it is
+  often very appreciated to have one person from the central team come over and
+  "embed" for a Sprint or two.
+- Hack days. Backstage-focused Hackathons or hack days is a fun way to get
+  people into plugin development.
+- Show & tell meetings. In order to build an internal community around Backstage
+  we have quarterly meetings where anyone working on Backstage is invited to
+  present their work. This is a not only a great way to get early feedback, but
+  also helps coordination between teams that are building overlapping
+  experiences.
+- Provide metrics. Add instrumentation to your Backstage deployment and make
+  metrics available to contributing teams. At Spotify we have even gone so far
+  as sending out weekly digest email showing how usage metrics have changed for
+  individual plugins.
+- Pro-actively identify new plugins. Reach out to teams that own internal UIs or
+  platforms that you think would make sense to consolidate into Backstage.
 
 ## Metrics
 
 Inside Spotify the number of contributing teams have increased significantly
 over the years -- now exceeding 60.
 
-- 🐣 **Phase 1:** Extensible frontend platform (Done ✅) - You will be able to
-  easily create a single consistent UI layer for your internal infrastructure
-  and tools. A set of reusable
-  [UX patterns and components](https://backstage.io/storybook) help ensure a
-  consistent experience between tools.
+- Number of deploys per developer/day
+- Number of experiments run per developer/month
+- Nr of PRs merged per developer/day
+- etc
 
-- 🐢 **Phase 2:** Service Catalog
-  ([alpha released](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)) -
-  With a single catalog, Backstage makes it easy for a team to manage ten
-  services — and makes it possible for your company to manage thousands of them.
+* **Onboarding time** New engineers.
 
-- 🐇 **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is
-  different. By fostering a vibrant community of contributors we hope to provide
-  an ecosystem of Open Source plugins/integrations that allows you to pick the
-  tools that match your stack.
+* **Context switching** Service Catalog
+
+* **Deploys to production** .
+
+* **Deploys to production** .
+
+* **T-shapedness**
+  [T-shaped](https://medium.com/@jchyip/why-t-shaped-people-e8706198e437).
+
+* **eNPS** .
+
+- Onboarding time for a new engineer -- measured in "time until 10th PR" (before
+  Backstage: ~45 days, now: 22 days)
+- Context switching -- number of different tools an engineer have to interact
+  with in order to get a certain job done (used to be 7-8 systems just to follow
+  your code into production, now it's down to 2 (GitHub, Backstage)
+- Surveys asking about how productive people feel, how easy it is to find
+  information, etc.
+
+To track the "platform health" of Backstage I look at things like:
+
+- Nr of teams that have contributed at least one plugin (currently 63, see
+  below)
+- Nr of total plugins (currently 135, see below)
+- % of contributions coming from outside the Backstage core team (currently 85%)
+
+Success as a platform:
