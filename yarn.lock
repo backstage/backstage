@@ -2172,9 +2172,9 @@
     stream "^0.0.2"
 
 "@kyma-project/asyncapi-react@^0.11.0":
-  version "0.11.0"
-  resolved "https://registry.npmjs.org/@kyma-project/asyncapi-react/-/asyncapi-react-0.11.0.tgz#888fbe9204f120fc04fd8184664e8025d8736c92"
-  integrity sha512-CJu9vJ4tTjk3oRjYvZxE4CRLE/QvFsyvCnecZSXWKNiytLK/JuQxkosyFvKpCKsB+uGsPFn0sfcLPZ5jVSEFYw==
+  version "0.11.2"
+  resolved "https://registry.npmjs.org/@kyma-project/asyncapi-react/-/asyncapi-react-0.11.2.tgz#b523b0843da7c29a0d7569b3f31d7d8cbdf84b47"
+  integrity sha512-Wo6CgM3pzZaRMCVwXaEIrlXMuFtRNGli1GtFgMHQUB686daSCqSvRZUyitDHTZLofL3OI9JeYh5m6SjPji6bxg==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.1.2"
     "@asyncapi/openapi-schema-parser" "^2.0.0"
