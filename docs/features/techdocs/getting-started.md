@@ -76,7 +76,7 @@ export { plugin as TechDocs } from '@backstage/plugin-techdocs';
 TechDocs allows for configuration of the docs storage URL through your
 `app-config` file.
 
-The defualt storage URL:
+The default storage URL:
 
 ```yaml
 techdocs:
