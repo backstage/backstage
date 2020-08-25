@@ -15,6 +15,12 @@
  */
 import { DirectoryPreparer } from './dir';
 import { getVoidLogger } from '@backstage/backend-common';
+import { checkoutGitRepository } from './helpers';
+
+jest.mock('./helpers', () => ({
+  ...jest.requireActual<{}>('./helpers'),
+  checkoutGitRepository: jest.fn(() => '/tmp/backstage-repo/org/name/branch/'),
+}));
 
 const logger = getVoidLogger();
 
@@ -58,5 +64,20 @@ describe('directory preparer', () => {
     expect(await directoryPreparer.prepare(mockEntity)).toEqual(
       '/our-documentation/techdocs',
     );
+  });
+
+  it('should merge managed-by-location and techdocs-ref when managed-by-location is a git repository', async () => {
+    const directoryPreparer = new DirectoryPreparer(logger);
+
+    const mockEntity = createMockEntity({
+      'backstage.io/managed-by-location':
+        'github:https://github.com/spotify/backstage/blob/master/catalog-info.yaml',
+      'backstage.io/techdocs-ref': 'dir:./docs',
+    });
+
+    expect(await directoryPreparer.prepare(mockEntity)).toEqual(
+      '/tmp/backstage-repo/org/name/branch/docs',
+    );
+    expect(checkoutGitRepository).toHaveBeenCalledTimes(1);
   });
 });
