@@ -25,43 +25,6 @@ async function getConfig() {
     return require(path.resolve('jest.config.ts'));
   }
 
-  const options = {
-    rootDir: path.resolve('src'),
-    coverageDirectory: path.resolve('coverage'),
-    collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}', '!**/*.d.ts'],
-    moduleNameMapper: {
-      '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
-    },
-
-    // We build .esm.js files with plugin:build, so to be able to load these in tests they need to be transformed
-    // TODO: jest is working on module support, it's possible that we can remove this in the future
-    transform: {
-      '\\.esm\\.js$': require.resolve('jest-esm-transformer'),
-      '\\.(js|jsx|ts|tsx)$': [
-        require.resolve('ts-jest'),
-        { isolatedModules: true },
-      ],
-      '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg)$': require.resolve(
-        './jestFileTransform.js',
-      ),
-    },
-
-    // A bit more opinionated
-    testMatch: ['**/?(*.)test.{js,jsx,mjs,ts,tsx}'],
-
-    // Default behaviour is to not apply transforms for node_modules, but we still want
-    // to apply the esm-transformer to .esm.js files, since that's what we use in backstage packages.
-    // The @kyma-project/asyncapi-react library needs to be transformed.
-    transformIgnorePatterns: [
-      '/node_modules/(?!@kyma-project/asyncapi-react/)(?!.*\\.(?:esm\\.js|bmp|gif|jpg|jpeg|png|frag|xml|svg)$)',
-    ],
-  };
-
-  // Use src/setupTests.ts as the default location for configuring test env
-  if (fs.existsSync('src/setupTests.ts')) {
-    options.setupFilesAfterEnv = ['<rootDir>/setupTests.ts'];
-  }
-
   // We read all "jest" config fields in package.json files all the way to the filesystem root.
   // All configs are merged together to create the final config, with longer paths taking precedence.
   // The merging of the configs is shallow, meaning e.g. all transforms are replaced if new ones are defined.
@@ -90,6 +53,56 @@ async function getConfig() {
       break;
     }
     currentPath = newPath;
+  }
+
+  // We add an additional Jest config parameter only known by the Backstage CLI
+  // called `transformModules`. It's a list of modules that we want to apply
+  // our configured jest transformations for.
+  // This is useful when packages are published in untranspiled ESM or TS form.
+  const transformModules = pkgJsonConfigs
+    .flatMap(conf => {
+      const modules = conf.transformModules || [];
+      delete conf.transformModules;
+      return modules;
+    })
+    .map(name => `${name}/`)
+    .join('|');
+  const transformModulePattern = transformModules && `(?!${transformModules})`;
+
+  const options = {
+    rootDir: path.resolve('src'),
+    coverageDirectory: path.resolve('coverage'),
+    collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}', '!**/*.d.ts'],
+    moduleNameMapper: {
+      '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
+    },
+
+    // We build .esm.js files with plugin:build, so to be able to load these in tests they need to be transformed
+    // TODO: jest is working on module support, it's possible that we can remove this in the future
+    transform: {
+      '\\.esm\\.js$': require.resolve('jest-esm-transformer'),
+      '\\.(js|jsx|ts|tsx)$': [
+        require.resolve('ts-jest'),
+        { isolatedModules: true },
+      ],
+      '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg)$': require.resolve(
+        './jestFileTransform.js',
+      ),
+    },
+
+    // A bit more opinionated
+    testMatch: ['**/?(*.)test.{js,jsx,mjs,ts,tsx}'],
+
+    // Default behaviour is to not apply transforms for node_modules, but we still want
+    // to apply the esm-transformer to .esm.js files, since that's what we use in backstage packages.
+    transformIgnorePatterns: [
+      `/node_modules/${transformModulePattern}(?:(?!\\.esm).)*\\.(?:js|json)$`,
+    ],
+  };
+
+  // Use src/setupTests.ts as the default location for configuring test env
+  if (fs.existsSync('src/setupTests.ts')) {
+    options.setupFilesAfterEnv = ['<rootDir>/setupTests.ts'];
   }
 
   return Object.assign(options, ...pkgJsonConfigs);
