@@ -17,7 +17,7 @@ import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './types';
 import parseGitUrl from 'git-url-parse';
-import { Clone } from 'nodegit';
+import { Clone, Repository } from 'nodegit';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -78,8 +78,14 @@ export const checkoutGitRepository = async (
   );
 
   if (fs.existsSync(repositoryTmpPath)) {
+    const repository = await Repository.open(repositoryTmpPath);
+    await repository.mergeBranches(
+      parsedGitLocation.ref,
+      `origin/${parsedGitLocation.ref}`,
+    );
     return repositoryTmpPath;
   }
+
   const repositoryCheckoutUrl = parsedGitLocation.toString('https');
 
   fs.mkdirSync(repositoryTmpPath, { recursive: true });
