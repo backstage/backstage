@@ -42,7 +42,7 @@ sites with the Backstage UI.
 
 The TechDocs Reader purpose is also to open up the opportunity to integrate
 TechDocs widgets for a customized full-featured TechDocs experience.
-([coming soon V.3](https://github.com/spotify/backstage/blob/master/docs/features/techdocs/README.md#project-roadmap))
+([coming soon V.3](/docs/features/techdocs/README.md#project-roadmap))
 
 [TechDocs Reader](https://github.com/spotify/backstage/blob/master/plugins/techdocs/src/reader/README.md)
 
