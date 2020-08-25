@@ -5,7 +5,7 @@ metadata:
   title: Documentation Template
   description: Create a new standalone documentation project
   tags:
-    - eperimental
+    - experimental
     - techdocs
     - mkdocs
 spec:
