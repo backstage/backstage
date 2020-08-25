@@ -118,6 +118,12 @@ const siteConfig = {
   stylesheets: [
     'https://fonts.googleapis.com/css?family=IBM+Plex+Mono:500,700&display=swap',
   ],
+
+  algolia: {
+    apiKey: 'YOUR_API_KEY',
+    indexName: 'YOUR_INDEX_NAME',
+    searchParameters: {}, // Optional (if provided by Algolia)
+  },
 };
 
 module.exports = siteConfig;
