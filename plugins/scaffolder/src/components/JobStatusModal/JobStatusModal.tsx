@@ -80,6 +80,7 @@ export const JobStatusModal = ({
               ]
                 .filter(Boolean)
                 .join(':'),
+              selectedTabId: 'overview',
             })}
           >
             View in catalog
