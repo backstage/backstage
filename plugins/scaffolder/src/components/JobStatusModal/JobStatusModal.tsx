@@ -26,7 +26,7 @@ import { useJobPolling } from './useJobPolling';
 import { Job } from '../../types';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Button } from '@backstage/core';
-import { entityRoute } from '@backstage/plugin-catalog';
+import { entityRouteDefault } from '@backstage/plugin-catalog';
 import { generatePath } from 'react-router-dom';
 
 type Props = {
@@ -72,7 +72,7 @@ export const JobStatusModal = ({
       {entity && (
         <DialogActions>
           <Button
-            to={generatePath(entityRoute.path, {
+            to={generatePath(entityRouteDefault.path, {
               kind: entity.kind,
               optionalNamespaceAndName: [
                 entity.metadata.namespace,

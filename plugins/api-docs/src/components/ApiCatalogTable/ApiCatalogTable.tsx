@@ -37,6 +37,7 @@ const columns: TableColumn<Entity>[] = [
             .filter(Boolean)
             .join(':'),
           kind: entity.kind,
+          selectedTabId: 'overview',
         })}
       >
         {entity.metadata.name}
