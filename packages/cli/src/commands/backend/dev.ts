@@ -25,9 +25,11 @@ export default async (cmd: Command) => {
     env: 'development',
     rootPaths: [paths.targetRoot, paths.targetDir],
   });
+
   const waitForExit = await serveBackend({
     entry: 'src/index',
     checksEnabled: cmd.check,
+    inspectEnabled: cmd.inspect,
     config: ConfigReader.fromConfigs(appConfigs),
     appConfigs,
   });

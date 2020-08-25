@@ -205,7 +205,10 @@ export function createBackendConfig(
         : {}),
     },
     plugins: [
-      new StartServerPlugin('main.js'),
+      new StartServerPlugin({
+        name: 'main.js',
+        nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
+      }),
       new webpack.HotModuleReplacementPlugin(),
       ...(checksEnabled
         ? [
