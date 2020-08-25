@@ -5,9 +5,9 @@ metadata:
   title: Documentation Template
   description: Create a new standalone documentation project
   tags:
-    - Experimental
-    - TechDocs
-    - MkDocs
+    - experimental
+    - techdocs
+    - mkdocs
 spec:
   owner: spotify/techdocs-core
   templater: cookiecutter
