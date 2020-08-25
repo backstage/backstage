@@ -5,8 +5,8 @@ metadata:
   title: React SSR Template
   description: Create a website powered with Next.js
   tags:
-    - Recommended
-    - React
+    - recommended
+    - react
 spec:
   owner: web@example.com
   templater: cookiecutter

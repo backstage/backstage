@@ -77,7 +77,7 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
       const branchAndfilePath = url.pathname.split('/-/blob/')[1];
 
       if (!branchAndfilePath.match(/\.ya?ml$/)) {
-        throw new Error('Gitlab url does not end in .ya?ml');
+        throw new Error('GitLab url does not end in .ya?ml');
       }
 
       const [branch, ...filePath] = branchAndfilePath.split('/');
@@ -127,7 +127,7 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
 
       return projectID;
     } catch (e) {
-      throw new Error(`Could not get Gitlab ProjectID for: ${target}, ${e}`);
+      throw new Error(`Could not get GitLab ProjectID for: ${target}, ${e}`);
     }
   }
 }

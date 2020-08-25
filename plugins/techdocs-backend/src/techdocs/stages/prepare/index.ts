@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 export { DirectoryPreparer } from './dir';
+export { GithubPreparer } from './github';
 export { Preparers } from './preparers';
 export type { PreparerBuilder } from './types';

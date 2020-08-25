@@ -1,11 +1,11 @@
-name: Frontend CI
+name: CI
 
 on:
   pull_request:
     paths-ignore:
       - 'microsite/**'
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,33 +20,51 @@ jobs:
       - uses: actions/checkout@v2
       - name: fetch branch master
         run: git fetch origin master
-      - name: find location of global yarn cache
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: cache global yarn cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: cache node_modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+
+      # Beginning of yarn setup, keep in sync between all workflows.
+      # TODO(Rugvip): move this to composite action once all features we use are supported
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      # Cache every node_modules folder inside the monorepo
+      - name: cache all node_modules
+        id: cache-modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          # We use both yarn.lock and package.json as cache keys to ensure that
+          # changes to local monorepo packages bust the cache.
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+
+      # If we get a cache hit for node_modules, there's no need to bring in the global
+      # yarn cache or run yarn install, as all dependencies will be installed already.
+
+      - name: find location of global yarn cache
+        id: yarn-cache
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: cache global yarn cache
+        uses: actions/cache@v2
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: yarn install
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+      # End of yarn setup
 
       - name: check for yarn.lock changes
         id: yarn-lock
         run: git diff --quiet origin/master HEAD -- yarn.lock
         continue-on-error: true
-
-      - name: yarn install
-        run: yarn install --frozen-lockfile
 
       - name: verify doc links
         run: node docs/verify-links.js
@@ -59,8 +77,7 @@ jobs:
 
       - name: build changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
-        # Need to build all dependencies as well to be able to run tests later
-        run: yarn lerna -- run build --since origin/master --include-dependencies
+        run: yarn lerna -- run build --since origin/master
 
       - name: build all packages
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
@@ -79,6 +96,3 @@ jobs:
 
       - name: verify plugin template
         run: yarn lerna -- run diff -- --check
-
-      - name: verify storybook
-        run: yarn workspace storybook build-storybook

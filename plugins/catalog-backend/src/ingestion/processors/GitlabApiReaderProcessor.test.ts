@@ -50,7 +50,7 @@ describe('GitlabApiReaderProcessor', () => {
           'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/',
         url: null,
         err:
-          'Incorrect url: https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/, Error: Gitlab url does not end in .ya?ml',
+          'Incorrect url: https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/, Error: GitLab url does not end in .ya?ml',
       },
     ];
 

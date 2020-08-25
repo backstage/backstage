@@ -52,6 +52,7 @@ const main = (argv: string[]) => {
     .command('backend:dev')
     .description('Start local development server with HMR for the backend')
     .option('--check', 'Enable type checking and linting')
+    .option('--inspect', 'Enable debugger')
     .action(lazyAction(() => import('./commands/backend/dev'), 'default'));
 
   program
@@ -113,6 +114,11 @@ const main = (argv: string[]) => {
 
   program
     .command('lint')
+    .option(
+      '--format <format>',
+      'Lint report output format',
+      'eslint-formatter-friendly',
+    )
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint a package')
     .action(lazyAction(() => import('./commands/lint'), 'default'));

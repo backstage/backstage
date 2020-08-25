@@ -70,14 +70,14 @@ export function SidebarUserSettings() {
         )}
         {providers.includes('github') && (
           <OAuthProviderSettings
-            title="Github"
+            title="GitHub"
             apiRef={githubAuthApiRef}
             icon={Star}
           />
         )}
         {providers.includes('gitlab') && (
           <OAuthProviderSettings
-            title="Gitlab"
+            title="GitLab"
             apiRef={gitlabAuthApiRef}
             icon={Star}
           />

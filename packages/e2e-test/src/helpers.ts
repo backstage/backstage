@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-const { spawn, execFile: execFileCb } = require('child_process');
-const { promisify } = require('util');
+import {
+  spawn,
+  execFile as execFileCb,
+  SpawnOptions,
+  ChildProcess,
+} from 'child_process';
+import { promisify } from 'util';
 
 const execFile = promisify(execFileCb);
 
 const EXPECTED_LOAD_ERRORS = /ECONNREFUSED|ECONNRESET|did not get to load all resources/;
 
-function spawnPiped(cmd, options) {
-  function pipeWithPrefix(stream, prefix = '') {
-    return data => {
+export function spawnPiped(cmd: string[], options?: SpawnOptions) {
+  function pipeWithPrefix(stream: NodeJS.WriteStream, prefix = '') {
+    return (data: Buffer) => {
       const prefixedMsg = data
         .toString('utf8')
         .trimRight()
@@ -40,11 +45,11 @@ function spawnPiped(cmd, options) {
   child.on('error', handleError);
 
   const logPrefix = cmd.map(s => s.replace(/.+\//, '')).join(' ');
-  child.stdout.on(
+  child.stdout?.on(
     'data',
     pipeWithPrefix(process.stdout, `[${logPrefix}].out: `),
   );
-  child.stderr.on(
+  child.stderr?.on(
     'data',
     pipeWithPrefix(process.stderr, `[${logPrefix}].err: `),
   );
@@ -52,7 +57,7 @@ function spawnPiped(cmd, options) {
   return child;
 }
 
-async function runPlain(cmd, options) {
+export async function runPlain(cmd: string[], options?: SpawnOptions) {
   try {
     const { stdout } = await execFile(cmd[0], cmd.slice(1), {
       ...options,
@@ -70,8 +75,9 @@ async function runPlain(cmd, options) {
   }
 }
 
-function handleError(err) {
+export function handleError(err: Error & { code?: unknown }) {
   process.stdout.write(`${err.name}: ${err.stack || err.message}\n`);
+
   if (typeof err.code === 'number') {
     process.exit(err.code);
   } else {
@@ -85,9 +91,14 @@ function handleError(err) {
  * .cancel() is available
  * @returns {Promise} Promise of resolution
  */
-function waitFor(fn) {
-  return new Promise(resolve => {
+export function waitFor(fn: () => boolean, maxSeconds: number = 120) {
+  let count = 0;
+  return new Promise((resolve, reject) => {
     const handle = setInterval(() => {
+      if (count++ > maxSeconds * 10) {
+        reject(new Error('Timed out while waiting for condition'));
+        return;
+      }
       if (fn()) {
         clearInterval(handle);
         resolve();
@@ -97,7 +108,7 @@ function waitFor(fn) {
   });
 }
 
-async function waitForExit(child) {
+export async function waitForExit(child: ChildProcess) {
   if (child.exitCode !== null) {
     throw new Error(`Child already exited with code ${child.exitCode}`);
   }
@@ -113,10 +124,10 @@ async function waitForExit(child) {
   );
 }
 
-async function waitForPageWithText(
-  browser,
-  path,
-  text,
+export async function waitForPageWithText(
+  browser: any,
+  path: string,
+  text: string,
   { intervalMs = 1000, maxLoadAttempts = 240, maxFindTextAttempts = 3 } = {},
 ) {
   let loadAttempts = 0;
@@ -163,16 +174,6 @@ async function waitForPageWithText(
   }
 }
 
-function print(msg) {
+export function print(msg: string) {
   return process.stdout.write(`${msg}\n`);
 }
-
-module.exports = {
-  spawnPiped,
-  runPlain,
-  handleError,
-  waitFor,
-  waitForExit,
-  waitForPageWithText,
-  print,
-};

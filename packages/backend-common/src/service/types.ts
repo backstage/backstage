@@ -19,6 +19,7 @@ import cors from 'cors';
 import { Router, RequestHandler } from 'express';
 import { Server } from 'http';
 import { Logger } from 'winston';
+import { HttpsSettings } from './lib/config';
 
 export type ServiceBuilder = {
   /**
@@ -40,6 +41,15 @@ export type ServiceBuilder = {
   setPort(port: number): ServiceBuilder;
 
   /**
+   * Sets the host to listen on.
+   *
+   * '' is express default, which listens to all interfaces.
+   *
+   * @param host The host to listen on
+   */
+  setHost(host: string): ServiceBuilder;
+
+  /**
    * Sets the logger to use for service-specific logging.
    *
    * If no logger is given, the default root logger is used.
@@ -57,6 +67,15 @@ export type ServiceBuilder = {
    * @param options Standard CORS options
    */
   enableCors(options: cors.CorsOptions): ServiceBuilder;
+
+  /**
+   * Configure self-signed certificate generation options.
+   *
+   * If this method is not called, the resulting service will use sensible defaults
+   *
+   * @param options Standard certificate options
+   */
+  setHttpsSettings(settings: HttpsSettings): ServiceBuilder;
 
   /**
    * Adds a router (similar to the express .use call) to the service.

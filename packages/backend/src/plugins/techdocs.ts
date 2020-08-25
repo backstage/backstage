@@ -20,22 +20,27 @@ import {
   Preparers,
   Generators,
   LocalPublish,
-  TechdocsGenerator
+  TechdocsGenerator,
+  GithubPreparer,
 } from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
 
-export default async function createPlugin({ logger, config }: PluginEnvironment) {
+export default async function createPlugin({
+  logger,
+  config,
+}: PluginEnvironment) {
   const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator();
+  const techdocsGenerator = new TechdocsGenerator(logger);
   generators.register('techdocs', techdocsGenerator);
 
-  const directoryPreparer = new DirectoryPreparer();
   const preparers = new Preparers();
-
+  const githubPreparer = new GithubPreparer(logger);
+  const directoryPreparer = new DirectoryPreparer(logger);
   preparers.register('dir', directoryPreparer);
+  preparers.register('github', githubPreparer);
 
-  const publisher = new LocalPublish();
+  const publisher = new LocalPublish(logger);
 
   const dockerClient = new Docker();
 
