@@ -79,6 +79,3 @@ jobs:
 
       - name: verify plugin template
         run: yarn lerna -- run diff -- --check
-
-      - name: verify storybook
-        run: yarn workspace storybook build-storybook
