@@ -40,6 +40,7 @@ const siteConfig = {
     },
     {
       doc: 'overview/what-is-backstage',
+      href: '/docs',
       label: 'Docs',
     },
     {

@@ -14,21 +14,5 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { loadConfig } from '@backstage/config-loader';
-import { ConfigReader } from '@backstage/config';
-import { paths } from '../../lib/paths';
-import { buildBundle } from '../../lib/bundler';
-
-export default async (cmd: Command) => {
-  const appConfigs = await loadConfig({
-    env: process.env.NODE_ENV ?? 'production',
-    rootPaths: [paths.targetRoot, paths.targetDir],
-  });
-  await buildBundle({
-    entry: 'src/index',
-    statsJsonEnabled: cmd.stats,
-    config: ConfigReader.fromConfigs(appConfigs),
-    appConfigs,
-  });
-};
+export * from './types';
+export { default as MicrosoftAuth } from './MicrosoftAuth';

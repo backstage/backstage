@@ -30,6 +30,7 @@ import {
   OktaAuth,
   GitlabAuth,
   Auth0Auth,
+  MicrosoftAuth,
   oauthRequestApiRef,
   OAuthRequestManager,
   googleAuthApiRef,
@@ -38,6 +39,7 @@ import {
   oktaAuthApiRef,
   gitlabAuthApiRef,
   auth0AuthApiRef,
+  microsoftAuthApiRef,
   storageApiRef,
   WebStorage,
 } from '@backstage/core';
@@ -74,7 +76,10 @@ import {
   TravisCIApi,
   travisCIApiRef,
 } from '@roadiehq/backstage-plugin-travis-ci';
-import { GithubPullRequestsClient, githubPullRequestsApiRef } from '@roadiehq/backstage-plugin-github-pull-requests';
+import {
+  GithubPullRequestsClient,
+  githubPullRequestsApiRef,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -116,6 +121,15 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     googleAuthApiRef,
     GoogleAuth.create({
+      backendUrl,
+      basePath: '/auth/',
+      oauthRequestApi,
+    }),
+  );
+
+  builder.add(
+    microsoftAuthApiRef,
+    MicrosoftAuth.create({
       backendUrl,
       basePath: '/auth/',
       oauthRequestApi,

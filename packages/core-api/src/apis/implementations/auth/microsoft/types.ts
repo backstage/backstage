@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { loadConfig } from '@backstage/config-loader';
-import { ConfigReader } from '@backstage/config';
-import { paths } from '../../lib/paths';
-import { buildBundle } from '../../lib/bundler';
+import { ProfileInfo, BackstageIdentity } from '../../../definitions';
 
-export default async (cmd: Command) => {
-  const appConfigs = await loadConfig({
-    env: process.env.NODE_ENV ?? 'production',
-    rootPaths: [paths.targetRoot, paths.targetDir],
-  });
-  await buildBundle({
-    entry: 'src/index',
-    statsJsonEnabled: cmd.stats,
-    config: ConfigReader.fromConfigs(appConfigs),
-    appConfigs,
-  });
+export type MicrosoftSession = {
+  providerInfo: {
+    idToken: string;
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
 };
