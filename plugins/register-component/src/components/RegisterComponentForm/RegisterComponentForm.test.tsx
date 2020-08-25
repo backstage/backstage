@@ -37,7 +37,7 @@ describe('RegisterComponentForm', () => {
     const { rendered } = setup();
     expect(
       await rendered.findByText(
-        'Enter the full path to the component.yaml file in Github, Gitlab, Bitbucket or Azure to start tracking your component. For private repo provide authentication information via config.',
+        'Enter the full path to the component.yaml file in GitHub, GitLab, Bitbucket or Azure to start tracking your component. For private repo provide authentication information via config.',
       ),
     ).toBeInTheDocument();
 

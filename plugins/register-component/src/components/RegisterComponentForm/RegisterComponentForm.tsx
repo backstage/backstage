@@ -71,7 +71,7 @@ const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
           name="componentLocation"
           required
           margin="normal"
-          helperText="Enter the full path to the component.yaml file in Github, Gitlab, Bitbucket or Azure to start tracking your component. For private repo provide authentication information via config."
+          helperText="Enter the full path to the component.yaml file in GitHub, GitLab, Bitbucket or Azure to start tracking your component. For private repo provide authentication information via config."
           inputRef={register({
             required: true,
             validate: ComponentIdValidators,
