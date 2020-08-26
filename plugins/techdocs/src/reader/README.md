@@ -1,6 +1,6 @@
 # TechDocs Reader
 
-The TechDocs reader is a component that fetches a remote page, runs transforms on it and renders it into a shadow dom.
+The TechDocs reader is a component that fetches a remote page, runs transformers on it and renders it into a shadow dom.
 
 Currently there's no easy way to customize which transformers to run or add new ones. If that is needed you would have to fork the techdocs plugin and make your changes in that fork.
 
