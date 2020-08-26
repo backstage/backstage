@@ -17,17 +17,12 @@ const siteConfig = {
   url: 'https://backstage.io', // Your website URL
   cname: 'backstage.io',
   baseUrl: '/', // Base URL for your project */
-  // For github.io type URLs, you would set the url and baseUrl like:
-  //   url: 'https://facebook.github.io',
-  //   baseUrl: '/test-site/',
+  editUrl: 'https://github.com/spotify/backstage/tree/master/docs/',
 
   // Used for publishing and more
   projectName: 'backstage',
   organizationName: 'Spotify',
   fossWebsite: 'https://spotify.github.io/',
-  // For top-level user or org sites, the organization is still the same.
-  // e.g., for the https://JoelMarcey.github.io site, it would be set like...
-  //   organizationName: 'JoelMarcey'
 
   // Google Analytics
   gaTrackingId: 'UA-48912878-10',
