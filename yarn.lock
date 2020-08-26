@@ -3036,15 +3036,6 @@
     before-after-hook "^2.1.0"
     universal-user-agent "^5.0.0"
 
-"@octokit/endpoint@^5.5.0":
-  version "5.5.3"
-  resolved "https://registry.npmjs.org/@octokit/endpoint/-/endpoint-5.5.3.tgz#0397d1baaca687a4c8454ba424a627699d97c978"
-  integrity sha512-EzKwkwcxeegYYah5ukEeAI/gYRLv2Y9U5PpIsseGSFDk+G3RbipQGBs8GuYS1TLCtQaqoO66+aQGtITPalxsNQ==
-  dependencies:
-    "@octokit/types" "^2.0.0"
-    is-plain-object "^3.0.0"
-    universal-user-agent "^5.0.0"
-
 "@octokit/endpoint@^6.0.1":
   version "6.0.3"
   resolved "https://registry.npmjs.org/@octokit/endpoint/-/endpoint-6.0.3.tgz#dd09b599662d7e1b66374a177ab620d8cdf73487"
@@ -3095,15 +3086,15 @@
     "@octokit/types" "^2.0.1"
     deprecation "^2.3.1"
 
-"@octokit/plugin-rest-endpoint-methods@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-4.0.0.tgz#b02a2006dda8e908c3f8ab381dd5475ef5a810a8"
-  integrity sha512-emS6gysz4E9BNi9IrCl7Pm4kR+Az3MmVB0/DoDCmF4U48NbYG3weKyDlgkrz6Jbl4Mu4nDx8YWZwC4HjoTdcCA==
+"@octokit/plugin-rest-endpoint-methods@4.1.2":
+  version "4.1.2"
+  resolved "https://registry.npmjs.org/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-4.1.2.tgz#546a8f3e0b514f434a4ad4ef926005f1c81a5a5a"
+  integrity sha512-PTI7wpbGEZ2IR87TVh+TNWaLcgX/RsZQalFbQCq8XxYUrQ36RHyERrHSNXFy5gkWpspUAOYRSV707JJv6BhqJA==
   dependencies:
-    "@octokit/types" "^5.0.0"
+    "@octokit/types" "^5.1.1"
     deprecation "^2.3.1"
 
-"@octokit/request-error@^1.0.1", "@octokit/request-error@^1.0.2":
+"@octokit/request-error@^1.0.2":
   version "1.2.1"
   resolved "https://registry.npmjs.org/@octokit/request-error/-/request-error-1.2.1.tgz#ede0714c773f32347576c25649dc013ae6b31801"
   integrity sha512-+6yDyk1EES6WK+l3viRDElw96MvwfJxCt45GvmjDUKWjYIb3PJZQkq3i46TwGwoPD4h8NmTrENmtyA1FwbmhRA==
@@ -3121,21 +3112,7 @@
     deprecation "^2.0.0"
     once "^1.4.0"
 
-"@octokit/request@^5.2.0":
-  version "5.3.2"
-  resolved "https://registry.npmjs.org/@octokit/request/-/request-5.3.2.tgz#1ca8b90a407772a1ee1ab758e7e0aced213b9883"
-  integrity sha512-7NPJpg19wVQy1cs2xqXjjRq/RmtSomja/VSWnptfYwuBxLdbYh2UjhGi0Wx7B1v5Iw5GKhfFDQL7jM7SSp7K2g==
-  dependencies:
-    "@octokit/endpoint" "^5.5.0"
-    "@octokit/request-error" "^1.0.1"
-    "@octokit/types" "^2.0.0"
-    deprecation "^2.0.0"
-    is-plain-object "^3.0.0"
-    node-fetch "^2.3.0"
-    once "^1.4.0"
-    universal-user-agent "^5.0.0"
-
-"@octokit/request@^5.3.0", "@octokit/request@^5.4.0":
+"@octokit/request@^5.2.0", "@octokit/request@^5.3.0", "@octokit/request@^5.4.0":
   version "5.4.5"
   resolved "https://registry.npmjs.org/@octokit/request/-/request-5.4.5.tgz#8df65bd812047521f7e9db6ff118c06ba84ac10b"
   integrity sha512-atAs5GAGbZedvJXXdjtKljin+e2SltEs48B3naJjqWupYl2IUBbB/CJisyjbNHcKpHzb3E+OYEZ46G8eakXgQg==
@@ -3172,14 +3149,14 @@
     universal-user-agent "^4.0.0"
 
 "@octokit/rest@^18.0.0":
-  version "18.0.0"
-  resolved "https://registry.npmjs.org/@octokit/rest/-/rest-18.0.0.tgz#7f401d9ce13530ad743dfd519ae62ce49bcc0358"
-  integrity sha512-4G/a42lry9NFGuuECnua1R1eoKkdBYJap97jYbWDNYBOUboWcM75GJ1VIcfvwDV/pW0lMPs7CEmhHoVrSV5shg==
+  version "18.0.3"
+  resolved "https://registry.npmjs.org/@octokit/rest/-/rest-18.0.3.tgz#96a15ddb3a38dca5de9d75121378d6aa4a234fa5"
+  integrity sha512-GubgemnLvUJlkhouTM2BtX+g/voYT/Mqh0SASGwTnLvSkW1irjt14N911/ABb6m1Hru0TwScOgFgMFggp3igfQ==
   dependencies:
     "@octokit/core" "^3.0.0"
     "@octokit/plugin-paginate-rest" "^2.2.0"
     "@octokit/plugin-request-log" "^1.0.0"
-    "@octokit/plugin-rest-endpoint-methods" "4.0.0"
+    "@octokit/plugin-rest-endpoint-methods" "4.1.2"
 
 "@octokit/types@^2.0.0", "@octokit/types@^2.0.1":
   version "2.5.0"
@@ -3192,6 +3169,13 @@
   version "5.0.1"
   resolved "https://registry.npmjs.org/@octokit/types/-/types-5.0.1.tgz#5459e9a5e9df8565dcc62c17a34491904d71971e"
   integrity sha512-GorvORVwp244fGKEt3cgt/P+M0MGy4xEDbckw+K5ojEezxyMDgCaYPKVct+/eWQfZXOT7uq0xRpmrl/+hliabA==
+  dependencies:
+    "@types/node" ">= 8"
+
+"@octokit/types@^5.1.1":
+  version "5.4.1"
+  resolved "https://registry.npmjs.org/@octokit/types/-/types-5.4.1.tgz#d5d5f2b70ffc0e3f89467c3db749fa87fc3b7031"
+  integrity sha512-OlMlSySBJoJ6uozkr/i03nO5dlYQyE05vmQNZhAh9MyO4DPBP88QlwsDVLmVjIMFssvIZB6WO0ctIGMRG+xsJQ==
   dependencies:
     "@types/node" ">= 8"
 
