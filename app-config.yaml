@@ -50,6 +50,18 @@ newrelic:
     baseUrl: 'https://api.newrelic.com/v2'
     key: NEW_RELIC_REST_API_KEY
 
+catalog:
+  exampleEntityLocations:
+    github:
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
+
 auth:
   providers:
     google:
@@ -124,7 +136,7 @@ auth:
             env: AUTH_AUTH0_DOMAIN
     microsoft:
       development:
-        appOrigin: "http://localhost:3000/"
+        appOrigin: 'http://localhost:3000/'
         secure: false
         clientId:
           $secret:
