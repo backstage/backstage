@@ -55,6 +55,7 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
         done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
       ) => {
         const profile = makeProfileInfo(rawProfile, params.id_token);
+
         done(
           undefined,
           {
@@ -101,21 +102,24 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
   }
 
   async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
-    const { accessToken, params } = await executeRefreshTokenStrategy(
+    const refreshTokenResponse = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
       scope,
     );
+    const { accessToken, params } = refreshTokenResponse;
+    const updatedRefreshToken = refreshTokenResponse.refreshToken;
 
     const profile = await executeFetchUserProfileStrategy(
       this._strategy,
-      accessToken,
-      params.id_token,
+      refreshTokenResponse.accessToken,
+      refreshTokenResponse.params.id_token,
     );
 
     return this.populateIdentity({
       providerInfo: {
         accessToken,
+        refreshToken: updatedRefreshToken,
         idToken: params.id_token,
         expiresInSeconds: params.expires_in,
         scope: params.scope,
@@ -134,7 +138,6 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
     if (!profile.email) {
       throw new Error('Profile does not contain a profile');
     }
-
     const id = profile.email.split('@')[0];
 
     return { ...response, backstageIdentity: { id } };

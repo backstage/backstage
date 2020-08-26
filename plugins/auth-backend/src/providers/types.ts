@@ -259,6 +259,10 @@ export type OAuthProviderInfo = {
    * Scopes granted for the access token.
    */
   scope: string;
+  /**
+   * A refresh token issued for the signed in user
+   */
+  refreshToken?: string;
 };
 
 export type OAuthPrivateInfo = {
@@ -326,6 +330,10 @@ export type RefreshTokenResponse = {
    * An access token issued for the signed in user.
    */
   accessToken: string;
+  /**
+   * Optionally, the server can issue a new Refresh Token for the user
+   */
+  refreshToken?: string;
   params: any;
 };
 

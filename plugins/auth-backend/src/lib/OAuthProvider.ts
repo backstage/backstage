@@ -258,6 +258,13 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
 
       await this.populateIdentity(response.backstageIdentity);
 
+      if (
+        response.providerInfo.refreshToken &&
+        response.providerInfo.refreshToken !== refreshToken
+      ) {
+        this.setRefreshTokenCookie(res, response.providerInfo.refreshToken);
+      }
+
       res.send(response);
     } catch (error) {
       res.status(401).send(`${error.message}`);
