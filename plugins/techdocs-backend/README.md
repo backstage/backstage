@@ -25,7 +25,7 @@ This plugin is the backend part of the techdocs plugin. It provides building and
 
 ## Extending techdocs-backend
 
-Currently the build process of techdocs-backend is split up in these three parts.
+Currently the build process of techdocs-backend is split up in these three stages.
 
 - Preparers
 - Generators
