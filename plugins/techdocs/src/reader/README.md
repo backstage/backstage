@@ -7,7 +7,7 @@ Currently there's no easy way to customize which transformers to run or add new 
 Transformers are functions that optionally takes in parameters from the Reader.tsx component and returns a function which gets passed the DOM of the fetched page. A very simple transformer can look like this.
 
 ```typescript
-export const removeMkdocsHeader = (): Transformer => {
+export const updateH1Text = (): Transformer => {
   return dom => {
     // Change the first occurance of H1 to say "TechDocs!"
     dom.querySelector('h1')?.innerHTML = 'TechDocs!';
