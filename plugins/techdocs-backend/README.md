@@ -8,7 +8,7 @@ This backend plugin can be started in a standalone mode from directly in this pa
 with `yarn start`. However, it will have limited functionality and that process is
 most convenient when developing the techdocs backend plugin itself.
 
-To evaluate techdocs and have a greater amount of functionality available, instead do
+To evaluate TechDocs and have a greater amount of functionality available, instead do
 
 ```bash
 # in one terminal window, run this from from the very root of the Backstage project
@@ -30,7 +30,7 @@ techdocs:
 
 ## Extending techdocs-backend
 
-Currently the build process of techdocs-backend is split up in these three parts.
+Currently the build process of techdocs-backend is split up in these three stages.
 
 - Preparers
 - Generators
