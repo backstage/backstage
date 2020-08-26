@@ -1,0 +1,8 @@
+---
+title: Rollbar
+author: roadie.io
+category: monitoring
+description: View Rollbar errors for your services in Backstage.
+documentation: https://roadie.io/backstage/plugins/rollbar
+iconPath: /img/plugins/rollbar-icon.png
+

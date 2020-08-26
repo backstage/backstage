@@ -1,0 +1,8 @@
+---
+title: Sentry
+author: roadie.io
+category: monitoring
+description: View Sentry issues in Backstage.
+documentation: https://roadie.io/backstage/plugins/sentry
+iconPath: /img/plugins/sentry.png
+

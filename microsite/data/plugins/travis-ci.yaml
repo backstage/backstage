@@ -1,0 +1,8 @@
+---
+title: Travis CI
+author: roadie.io
+category: monitoring
+description: View Travis CI builds for your service in Backstage.
+documentation: https://roadie.io/backstage/plugins/travis-ci
+iconPath: /img/plugins/travis-ci.png
+

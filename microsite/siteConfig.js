@@ -48,6 +48,10 @@ const siteConfig = {
       label: 'Demos',
     },
     {
+      page: 'plugins',
+      label: 'Plugins',
+    },
+    {
       href: 'https://mailchi.mp/spotify/backstage-community',
       label: 'Newsletter',
     },
