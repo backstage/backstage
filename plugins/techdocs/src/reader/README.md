@@ -9,7 +9,7 @@ Transformers are functions that optionally takes in parameters from the Reader.t
 ```typescript
 export const removeMkdocsHeader = (): Transformer => {
   return dom => {
-    // Change all H1s to say "TechDocs!"
+    // Change the first occurance of H1 to say "TechDocs!"
     dom.querySelector('h1')?.innerHTML = 'TechDocs!';
 
     return dom;
