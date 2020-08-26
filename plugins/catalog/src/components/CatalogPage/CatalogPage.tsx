@@ -18,6 +18,7 @@ import {
   configApiRef,
   Content,
   ContentHeader,
+  errorApiRef,
   identityApiRef,
   SupportButton,
   useApi,
@@ -26,8 +27,9 @@ import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { catalogApiRef } from '../../api/types';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import { ButtonGroup, CatalogFilter } from '../CatalogFilter/CatalogFilter';
@@ -51,15 +53,34 @@ const CatalogPageContents = () => {
   const {
     loading,
     error,
+    reload,
     matchingEntities,
     availableTags,
   } = useFilteredEntities();
+  const configApi = useApi(configApiRef);
+  const catalogApi = useApi(catalogApiRef);
+  const errorApi = useApi(errorApiRef);
   const { isStarredEntity } = useStarredEntities();
   const userId = useApi(identityApiRef).getUserId();
   const [selectedTab, setSelectedTab] = useState<string>();
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
-  const orgName =
-    useApi(configApiRef).getOptionalString('organization.name') ?? 'Company';
+  const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
+
+  const addMockData = useCallback(async () => {
+    try {
+      const promises: Promise<unknown>[] = [];
+      const root = configApi.getConfig('catalog.exampleEntityLocations');
+      for (const type of root.keys()) {
+        for (const target of root.getStringArray(type)) {
+          promises.push(catalogApi.addLocation(type, target));
+        }
+      }
+      await Promise.all(promises);
+      await reload();
+    } catch (err) {
+      errorApi.post(err);
+    }
+  }, [catalogApi, configApi, errorApi, reload]);
 
   const tabs = useMemo<LabeledComponentType[]>(
     () => [
@@ -153,6 +174,7 @@ const CatalogPageContents = () => {
             entities={matchingEntities}
             loading={loading}
             error={error}
+            onAddMockData={addMockData}
           />
         </div>
       </Content>

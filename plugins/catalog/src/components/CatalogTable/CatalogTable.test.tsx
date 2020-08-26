@@ -15,15 +15,8 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigApi,
-  configApiRef,
-} from '@backstage/core';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import * as React from 'react';
-import { CatalogApi, catalogApiRef } from '../../api/types';
 import { CatalogTable } from './CatalogTable';
 
 const entities: Entity[] = [
@@ -45,22 +38,16 @@ const entities: Entity[] = [
 ];
 
 describe('CatalogTable component', () => {
-  const apis = ApiRegistry.from([
-    [configApiRef, ({} as Partial<ConfigApi>) as ConfigApi],
-    [catalogApiRef, ({} as Partial<CatalogApi>) as CatalogApi],
-  ]);
-
   it('should render error message when error is passed in props', async () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <CatalogTable
-            titlePreamble="Owned"
-            entities={[]}
-            loading={false}
-            error={{ code: 'error' }}
-          />
-        </ApiProvider>,
+        <CatalogTable
+          titlePreamble="Owned"
+          entities={[]}
+          loading={false}
+          error={{ code: 'error' }}
+          onAddMockData={() => {}}
+        />,
       ),
     );
     const errorMessage = await rendered.findByText(
@@ -72,13 +59,12 @@ describe('CatalogTable component', () => {
   it('should display entity names when loading has finished and no error occurred', async () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <CatalogTable
-            titlePreamble="Owned"
-            entities={entities}
-            loading={false}
-          />
-        </ApiProvider>,
+        <CatalogTable
+          titlePreamble="Owned"
+          entities={entities}
+          loading={false}
+          onAddMockData={() => {}}
+        />,
       ),
     );
     expect(rendered.getByText(/Owned \(3\)/)).toBeInTheDocument();
