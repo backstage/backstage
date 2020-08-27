@@ -10,7 +10,7 @@ Add both this package and your local frontend app package as dependencies to you
 yarn add @backstage/plugin-app-backend example-app
 ```
 
-By adding the app package as a dependency we ensure that it is build as part of the backend, and that it can be resolved at runtime.
+By adding the app package as a dependency we ensure that it is built as part of the backend, and that it can be resolved at runtime.
 
 Now add the plugin router to your app, creating it for example like this:
 
