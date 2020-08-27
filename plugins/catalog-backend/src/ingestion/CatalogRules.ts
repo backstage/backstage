@@ -38,8 +38,7 @@ type LocationMatcher = {
  * An undefined list of matchers means match all, an empty list of matchers means match none
  */
 type CatalogRule = {
-  deny?: EntityMatcher[];
-  allow?: EntityMatcher[];
+  allow: EntityMatcher[];
   locations?: LocationMatcher[];
 };
 
@@ -51,8 +50,7 @@ export class CatalogRulesEnforcer {
    */
   static readonly defaultRules: CatalogRule[] = [
     {
-      deny: [{ kind: 'User' }, { kind: 'Group' }],
-      allow: [],
+      allow: [{ kind: 'Component' }, { kind: 'API' }],
     },
   ];
 
@@ -60,8 +58,10 @@ export class CatalogRulesEnforcer {
    * Loads catalog rules from config.
    *
    * This reads `catalog.rules` and defaults to the default rules if no value is present.
-   * The value of the config should be a list of config objects, each with a single `deny`
-   * field which in turn is a list of entity kind to deny.
+   * The value of the config should be a list of config objects, each with a single `allow`
+   * field which in turn is a list of entity kinds to allow.
+   *
+   * If there is no matching rule to allow an ingested entity, it will be rejected by the catalog.
    *
    * It also reads in rules from `catalog.locations`, where each location can have a list
    * of allowed entity for the location, specified in an `allow` field.
@@ -71,7 +71,7 @@ export class CatalogRulesEnforcer {
    * ```yaml
    * catalog:
    *   rules:
-   *   - deny: [User, Group, System]
+   *   - allow: [Component, API]
    *
    *   locations:
    *   - type: github
@@ -87,8 +87,7 @@ export class CatalogRulesEnforcer {
 
     if (config.has('catalog.rules')) {
       const globalRules = config.getConfigArray('catalog.rules').map(sub => ({
-        deny: sub.getStringArray('deny').map(kind => ({ kind })),
-        allow: [],
+        allow: sub.getStringArray('allow').map(kind => ({ kind })),
       }));
       rules.push(...globalRules);
     } else {
@@ -105,7 +104,6 @@ export class CatalogRulesEnforcer {
 
           return [
             {
-              deny: [],
               allow: sub.getStringArray('allow').map(kind => ({ kind })),
               locations: [
                 {
@@ -130,22 +128,17 @@ export class CatalogRulesEnforcer {
    * according to the configured rules.
    */
   isAllowed(entity: Entity, location: LocationSpec) {
-    let result = true;
-
     for (const rule of this.rules) {
       if (!this.matchLocation(location, rule.locations)) {
         continue;
       }
 
       if (this.matchEntity(entity, rule.allow)) {
-        result = true;
-      }
-      if (this.matchEntity(entity, rule.deny)) {
-        result = false;
+        return true;
       }
     }
 
-    return result;
+    return false;
   }
 
   private matchLocation(

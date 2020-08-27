@@ -45,11 +45,11 @@ const location: Record<string, LocationSpec> = {
 };
 
 describe('CatalogRulesEnforcer', () => {
-  it('should allow by default', () => {
+  it('should deny by default', () => {
     const enforcer = new CatalogRulesEnforcer([]);
-    expect(enforcer.isAllowed(entity.user, location.x)).toBe(true);
-    expect(enforcer.isAllowed(entity.group, location.y)).toBe(true);
-    expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
+    expect(enforcer.isAllowed(entity.user, location.x)).toBe(false);
+    expect(enforcer.isAllowed(entity.group, location.y)).toBe(false);
+    expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
   });
 
   it('should deny all', () => {
@@ -59,8 +59,10 @@ describe('CatalogRulesEnforcer', () => {
     expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
   });
 
-  it('should allow all with override', () => {
-    const enforcer = new CatalogRulesEnforcer([{ allow: [] }, { deny: [] }]);
+  it('should allow all', () => {
+    const enforcer = new CatalogRulesEnforcer([
+      { allow: [{ kind: 'User' }, { kind: 'Group' }, { kind: 'Component' }] },
+    ]);
     expect(enforcer.isAllowed(entity.user, location.x)).toBe(true);
     expect(enforcer.isAllowed(entity.group, location.y)).toBe(true);
     expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
@@ -68,7 +70,7 @@ describe('CatalogRulesEnforcer', () => {
 
   it('should deny groups', () => {
     const enforcer = new CatalogRulesEnforcer([
-      { allow: [], deny: [{ kind: 'Group' }] },
+      { allow: [{ kind: 'User' }, { kind: 'Component' }] },
     ]);
     expect(enforcer.isAllowed(entity.user, location.x)).toBe(true);
     expect(enforcer.isAllowed(entity.group, location.x)).toBe(false);
@@ -79,7 +81,8 @@ describe('CatalogRulesEnforcer', () => {
 
   it('should deny groups from github', () => {
     const enforcer = new CatalogRulesEnforcer([
-      { allow: [], deny: [{ kind: 'Group' }], locations: [{ type: 'github' }] },
+      { allow: [{ kind: 'User' }, { kind: 'Component' }] },
+      { allow: [{ kind: 'Group' }], locations: [{ type: 'file' }] },
     ]);
     expect(enforcer.isAllowed(entity.user, location.x)).toBe(true);
     expect(enforcer.isAllowed(entity.group, location.x)).toBe(false);
@@ -88,27 +91,26 @@ describe('CatalogRulesEnforcer', () => {
     expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
   });
 
-  it('should override to allow groups from files', () => {
+  it('should allow groups from files', () => {
     const enforcer = new CatalogRulesEnforcer([
-      { allow: [], deny: [{ kind: 'Group' }] },
-      { allow: [{ kind: 'Group' }], deny: [], locations: [{ type: 'file' }] },
+      { allow: [{ kind: 'Group' }], locations: [{ type: 'file' }] },
     ]);
-    expect(enforcer.isAllowed(entity.user, location.x)).toBe(true);
+    expect(enforcer.isAllowed(entity.user, location.x)).toBe(false);
     expect(enforcer.isAllowed(entity.group, location.x)).toBe(false);
     expect(enforcer.isAllowed(entity.group, location.y)).toBe(false);
     expect(enforcer.isAllowed(entity.group, location.z)).toBe(true);
-    expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
+    expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
   });
 
   it('should not be sensitive to kind case', () => {
     const enforcer = new CatalogRulesEnforcer([
-      { allow: [], deny: [{ kind: 'group' }] },
-      { allow: [], deny: [{ kind: 'Component' }] },
+      { allow: [{ kind: 'group' }] },
+      { allow: [{ kind: 'Component' }] },
     ]);
-    expect(enforcer.isAllowed(entity.user, location.x)).toBe(true);
-    expect(enforcer.isAllowed(entity.group, location.x)).toBe(false);
-    expect(enforcer.isAllowed(entity.group, location.y)).toBe(false);
-    expect(enforcer.isAllowed(entity.group, location.z)).toBe(false);
-    expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
+    expect(enforcer.isAllowed(entity.user, location.x)).toBe(false);
+    expect(enforcer.isAllowed(entity.group, location.x)).toBe(true);
+    expect(enforcer.isAllowed(entity.group, location.y)).toBe(true);
+    expect(enforcer.isAllowed(entity.group, location.z)).toBe(true);
+    expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
   });
 });
