@@ -67,6 +67,6 @@ export function getTimeBasedGreeting() {
   const greetingsKey = random(Object.keys(greetings));
   return {
     language: greetingsKey,
-    greeting: greetings[greetingsKey],
+    greeting: greetings.English,
   };
 }
