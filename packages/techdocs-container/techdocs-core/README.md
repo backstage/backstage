@@ -2,9 +2,13 @@
 
 This is the base [Mkdocs](https://mkdocs.org) plugin used when using Mkdocs with Spotify's TechDocs. It is written in Python and packages all of our Mkdocs defaults, such as theming, plugins, etc in a single plugin.
 
+[Python Package](https://pypi.org/project/mkdocs-techdocs-core/)
+
 ## Usage
 
-**Installation instructions TBD.** We haven't published it to a Python registry yet.
+```bash
+$ pip install mkdocs-techdocs-core
+```
 
 Once you have installed the `mkdocs-techdocs-core` plugin, you'll need to add it to your `mkdocs.yml`.
 

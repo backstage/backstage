@@ -1,6 +1,6 @@
 # storybook
 
-This package provides a storybook build for Backstage. See [storybook.backstage.io](http://storybook.backstage.io)
+This package provides a storybook build for Backstage. See [http://backstage.io/storybook](http://http://backstage.io/storybook)
 
 ## Why is this not part of `@backstage/core`?
 

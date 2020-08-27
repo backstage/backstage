@@ -15,8 +15,11 @@
  */
 
 import { createRouter } from '@backstage/plugin-rollbar-backend';
-import { Logger } from 'winston';
+import type { PluginEnvironment } from '../types';
 
-export default async function createPlugin(logger: Logger) {
-  return await createRouter({ logger });
+export default async function createPlugin({
+  logger,
+  config,
+}: PluginEnvironment) {
+  return await createRouter({ logger, config });
 }

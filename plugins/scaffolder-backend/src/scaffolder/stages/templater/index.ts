@@ -16,3 +16,5 @@
 export * from './cookiecutter';
 export * from './types';
 export * from './helpers';
+export * from './templaters';
+export * from './cra';

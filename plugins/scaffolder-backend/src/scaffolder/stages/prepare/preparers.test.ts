@@ -24,7 +24,7 @@ describe('Preparers', () => {
     metadata: {
       annotations: {
         'backstage.io/managed-by-location':
-          'file:/Users/blam/dev/spotify/backstage/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml',
+          'file:/Users/bingo/spotify/backstage/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml',
       },
       name: 'react-ssr-template',
       title: 'React SSR Template',
@@ -35,8 +35,9 @@ describe('Preparers', () => {
       generation: 1,
     },
     spec: {
-      type: 'cookiecutter',
+      templater: 'cookiecutter',
       path: '.',
+      type: 'website',
       schema: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         required: ['storePath', 'owner'],
@@ -88,7 +89,8 @@ describe('Preparers', () => {
         generation: 1,
       },
       spec: {
-        type: 'cookiecutter',
+        type: 'website',
+        templater: 'cookiecutter',
         path: '.',
         schema: {
           $schema: 'http://json-schema.org/draft-07/schema#',

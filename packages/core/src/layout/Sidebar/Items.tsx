@@ -18,10 +18,10 @@ import {
   makeStyles,
   styled,
   TextField,
-  Theme,
   Typography,
   Badge,
 } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 import { IconComponent } from '@backstage/core-api';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
@@ -29,7 +29,7 @@ import React, { FC, useContext, useState, KeyboardEventHandler } from 'react';
 import { NavLink } from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
 
-const useStyles = makeStyles<Theme>(theme => {
+const useStyles = makeStyles<BackstageTheme>(theme => {
   const {
     selectedIndicatorWidth,
     drawerWidthClosed,
@@ -95,7 +95,7 @@ const useStyles = makeStyles<Theme>(theme => {
     },
     selected: {
       '&$root': {
-        borderLeft: `solid ${selectedIndicatorWidth}px #9BF0E1`,
+        borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
         color: '#ffffff',
       },
       '&$closed': {

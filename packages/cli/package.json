@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.13",
+  "version": "0.1.1-alpha.20",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -21,7 +21,6 @@
     "build": "backstage-cli build --outputs cjs",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
-    "test:e2e": "node e2e-test/cli-e2e-test.js",
     "clean": "backstage-cli clean",
     "start": "nodemon --"
   },
@@ -29,23 +28,25 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.13",
-    "@backstage/config-loader": "^0.1.1-alpha.13",
+    "@backstage/cli-common": "^0.1.1-alpha.20",
+    "@backstage/config": "^0.1.1-alpha.20",
+    "@backstage/config-loader": "^0.1.1-alpha.20",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^8.1.0",
+    "@rollup/plugin-yaml": "^2.1.1",
     "@spotify/eslint-config": "^7.0.1",
     "@sucrase/webpack-loader": "^2.0.0",
     "@svgr/plugin-jsx": "4.3.x",
     "@svgr/plugin-svgo": "4.3.x",
-    "@svgr/rollup": "4.3.x",
+    "@svgr/rollup": "5.4.x",
     "@svgr/webpack": "4.3.x",
     "@types/start-server-webpack-plugin": "^2.2.0",
     "@types/webpack-env": "^1.15.2",
-    "@types/webpack-node-externals": "^1.7.1",
+    "@types/webpack-node-externals": "^2.5.0",
     "bfj": "^7.0.2",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
@@ -53,7 +54,9 @@
     "css-loader": "^3.5.3",
     "dashify": "^2.0.0",
     "diff": "^4.0.2",
+    "esbuild": "0.6.3",
     "eslint": "^7.1.0",
+    "eslint-formatter-friendly": "^7.0.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-monorepo": "^0.2.1",
     "fork-ts-checker-webpack-plugin": "^4.0.5",
@@ -72,8 +75,8 @@
     "react-hot-loader": "^4.12.21",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^6.0.0",
-    "rollup": "2.10.x",
-    "rollup-plugin-dts": "^1.4.6",
+    "rollup": "2.23.x",
+    "rollup-plugin-dts": "1.4.11",
     "rollup-plugin-esbuild": "^2.0.0",
     "rollup-plugin-image-files": "^1.4.2",
     "rollup-plugin-peer-deps-external": "^2.2.2",
@@ -89,7 +92,7 @@
     "url-loader": "^4.1.0",
     "webpack": "^4.41.6",
     "webpack-dev-server": "^3.10.3",
-    "webpack-node-externals": "^1.7.2",
+    "webpack-node-externals": "^2.5.0",
     "yaml": "^1.10.0",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0"
@@ -112,9 +115,7 @@
     "@types/webpack-dev-server": "^3.10.0",
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
-    "tree-kill": "^1.2.2",
-    "ts-node": "^8.6.2",
-    "zombie": "^6.1.4"
+    "ts-node": "^8.6.2"
   },
   "files": [
     "asset-types",

@@ -3,12 +3,6 @@
 .vscode/
 .vsls.json
 
-# @spotify/web-script build output
-cjs/
-esm/
-types/
-build/
-
 # Logs
 logs
 *.log
@@ -61,6 +55,9 @@ typings/
 # Optional npm cache directory
 .npm
 
+# Node version directives
+.nvmrc
+
 # Optional eslint cache
 .eslintcache
 
@@ -93,6 +90,9 @@ typings/
 .nuxt
 dist
 
+# Microsite build output
+microsite/build
+
 # Gatsby files
 .cache/
 # Comment in the public line in if your project uses Gatsby and not Next.js
@@ -119,3 +119,9 @@ dist
 
 # Temporary change files created by Vim
 *.swp
+
+# MkDocs build output
+site
+
+# Local configuration files
+*.local.yaml

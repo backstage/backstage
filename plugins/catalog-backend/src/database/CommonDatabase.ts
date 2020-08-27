@@ -29,7 +29,6 @@ import {
 } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
 import type { Logger } from 'winston';
 import { buildEntitySearch } from './search';
 import type {
@@ -347,7 +346,6 @@ export class CommonDatabase implements Database {
     return this.database<DatabaseLocationUpdateLogEvent>(
       'location_update_log',
     ).insert({
-      id: uuidv4(),
       status,
       location_id: locationId,
       entity_name: entityName,

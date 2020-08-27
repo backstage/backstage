@@ -24,6 +24,15 @@ import type {
   DbLocationsRowWithStatus,
 } from './types';
 
+const bootstrapLocation = {
+  id: expect.any(String),
+  type: 'bootstrap',
+  target: 'bootstrap',
+  message: null,
+  status: null,
+  timestamp: null,
+};
+
 describe('CommonDatabase', () => {
   let db: Database;
   let entityRequest: DbEntityRequest;
@@ -85,15 +94,45 @@ describe('CommonDatabase', () => {
     await db.addLocation(input);
 
     const locations = await db.locations();
-    expect(locations).toEqual([output]);
-    const location = await db.location(locations[0].id);
-    expect(location).toEqual(output);
-    await db.transaction(tx => db.removeLocation(tx, locations[0].id));
-
-    await expect(db.locations()).resolves.toEqual([]);
-    await expect(db.location(locations[0].id)).rejects.toThrow(
-      /Found no location/,
+    expect(locations).toEqual(
+      expect.arrayContaining([output, bootstrapLocation]),
     );
+    const location = await db.location(
+      locations.find(l => l.type !== 'bootstrap')!.id,
+    );
+    expect(location).toEqual(output);
+
+    // If we add 2 new update log events,
+    // this should not result in location duplication
+    // due to incorrect join in DB
+    await db.addLocationUpdateLogEvent(
+      'dd12620d-0436-422f-93bd-929aa0788123',
+      DatabaseLocationUpdateLogStatus.SUCCESS,
+    );
+
+    // Have a second in-between
+    // To avoid having same timestamp on event
+    await new Promise(res => setTimeout(res, 1000));
+    await db.addLocationUpdateLogEvent(
+      'dd12620d-0436-422f-93bd-929aa0788123',
+      DatabaseLocationUpdateLogStatus.FAIL,
+    );
+
+    await expect(db.locations()).resolves.toEqual(
+      expect.arrayContaining([
+        bootstrapLocation,
+        {
+          ...output,
+          status: DatabaseLocationUpdateLogStatus.FAIL,
+          timestamp: expect.any(String),
+        },
+      ]),
+    );
+
+    await db.transaction(tx => db.removeLocation(tx, location.id));
+
+    await expect(db.locations()).resolves.toEqual([bootstrapLocation]);
+    await expect(db.location(location.id)).rejects.toThrow(/Found no location/);
   });
 
   describe('addEntity', () => {

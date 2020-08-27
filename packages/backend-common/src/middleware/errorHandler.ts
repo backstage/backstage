@@ -15,7 +15,9 @@
  */
 
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
+import { Logger } from 'winston';
 import * as errors from '../errors';
+import { getRootLogger } from '../logging';
 
 export type ErrorHandlerOptions = {
   /**
@@ -24,6 +26,13 @@ export type ErrorHandlerOptions = {
    * If not specified, by default shows stack traces only in development mode.
    */
   showStackTraces?: boolean;
+
+  /**
+   * Logger instance to log any 5xx errors.
+   *
+   * If not specified, the root logger will be used.
+   */
+  logger?: Logger;
 };
 
 /**
@@ -39,11 +48,16 @@ export type ErrorHandlerOptions = {
  *
  * @returns An Express error request handler
  */
+
 export function errorHandler(
   options: ErrorHandlerOptions = {},
 ): ErrorRequestHandler {
   const showStackTraces =
     options.showStackTraces ?? process.env.NODE_ENV === 'development';
+
+  const logger = (options.logger || getRootLogger()).child({
+    type: 'errorHandler',
+  });
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
   return (
@@ -61,6 +75,11 @@ export function errorHandler(
 
     const status = getStatusCode(error);
     const message = showStackTraces ? error.stack : error.message;
+
+    if (logger && status >= 500) {
+      logger.error(error);
+    }
+
     response.status(status).send(message);
   };
 }

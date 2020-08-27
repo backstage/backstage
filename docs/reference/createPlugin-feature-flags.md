@@ -1,4 +1,7 @@
-# createPlugin - feature flags
+---
+id: createPlugin-feature-flags
+title: createPlugin - feature flags
+---
 
 The `featureFlags` object passed to the `register` function makes it possible
 for plugins to register Feature Flags in Backstage for users to opt into. You
@@ -64,5 +67,3 @@ const ExampleButton: FC<{}> = () => {
   );
 };
 ```
-
-[Back to References](README.md)

@@ -15,60 +15,71 @@
  */
 
 import React from 'react';
+import { useAsync } from 'react-use';
 import { useNavigate } from 'react-router-dom';
 import { Grid } from '@material-ui/core';
-import { ItemCard } from '@backstage/core';
+import { ItemCard, Progress, useApi } from '@backstage/core';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
+import { catalogApiRef } from '@backstage/plugin-catalog';
 
-type DocumentationSite = {
-  title: string;
-  description: string;
-  tags: Array<string>;
-  path: string;
-  btnLabel: string;
-};
-
-const documentationSites: Array<DocumentationSite> = [
-  {
-    title: 'MkDocs',
-    description:
-      "MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. ",
-    tags: ['Developer Tool'],
-    path: '/docs/mkdocs',
-    btnLabel: 'Read Docs',
-  },
-  {
-    title: 'Backstage Docs',
-    description:
-      'Getting started guides, API Overview, documentation around how to Create a Plugin and more. ',
-    tags: ['Service'],
-    path: '/docs/backstage-microsite',
-    btnLabel: 'Read Docs',
-  },
-];
 export const TechDocsHome = () => {
+  const catalogApi = useApi(catalogApiRef);
   const navigate = useNavigate();
 
-  return (
-    <>
+  const { value, loading, error } = useAsync(async () => {
+    const entities = await catalogApi.getEntities();
+    return entities.filter(entity => {
+      return !!entity.metadata.annotations?.['backstage.io/techdocs-ref'];
+    });
+  });
+
+  if (loading) {
+    return (
       <TechDocsPageWrapper
         title="Documentation"
         subtitle="Documentation available in Backstage"
       >
-        <Grid container data-testid="docs-explore">
-          {documentationSites.map((site: DocumentationSite, index: number) => (
-            <Grid key={index} item xs={12} sm={6} md={3}>
-              <ItemCard
-                onClick={() => navigate(site.path)}
-                tags={site.tags}
-                title={site.title}
-                label={site.btnLabel}
-                description={site.description}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        <Progress />
       </TechDocsPageWrapper>
-    </>
+    );
+  }
+
+  if (error) {
+    return (
+      <TechDocsPageWrapper
+        title="Documentation"
+        subtitle="Documentation available in Backstage"
+      >
+        <p>{error.message}</p>
+      </TechDocsPageWrapper>
+    );
+  }
+
+  return (
+    <TechDocsPageWrapper
+      title="Documentation"
+      subtitle="Documentation available in Backstage"
+    >
+      <Grid container data-testid="docs-explore">
+        {value?.length
+          ? value.map((entity, index: number) => (
+              <Grid key={index} item xs={12} sm={6} md={3}>
+                <ItemCard
+                  onClick={() =>
+                    navigate(
+                      `/docs/${entity.kind}:${
+                        entity.metadata.namespace ?? ''
+                      }:${entity.metadata.name}`,
+                    )
+                  }
+                  title={entity.metadata.name}
+                  label="Read Docs"
+                  description={entity.metadata.description}
+                />
+              </Grid>
+            ))
+          : null}
+      </Grid>
+    </TechDocsPageWrapper>
   );
 };

@@ -19,7 +19,7 @@ import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
 import helmet from 'helmet';
-import { Server } from 'http';
+import * as http from 'http';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
 import { useHotCleanup } from '../../hot';
@@ -30,24 +30,32 @@ import {
   requestLoggingHandler,
 } from '../../middleware';
 import { ServiceBuilder } from '../types';
-import { readBaseOptions, readCorsOptions } from './config';
+import {
+  readBaseOptions,
+  readCorsOptions,
+  readHttpsSettings,
+  HttpsSettings,
+} from './config';
+import { createHttpServer, createHttpsServer } from './hostFactory';
 
 const DEFAULT_PORT = 7000;
-const DEFAULT_HOST = 'localhost';
+// '' is express default, which listens to all interfaces
+const DEFAULT_HOST = '';
 
 export class ServiceBuilderImpl implements ServiceBuilder {
   private port: number | undefined;
   private host: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
+  private httpsSettings: HttpsSettings | undefined;
   private routers: [string, Router][];
   // Reference to the module where builder is created - needed for hot module
   // reloading
   private module: NodeModule;
 
-  constructor(module: NodeModule) {
+  constructor(moduleRef: NodeModule) {
     this.routers = [];
-    this.module = module;
+    this.module = moduleRef;
   }
 
   loadConfig(config: ConfigReader): ServiceBuilder {
@@ -69,6 +77,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       this.corsOptions = corsOptions;
     }
 
+    const httpsSettings = readHttpsSettings(backendConfig);
+    if (httpsSettings) {
+      this.httpsSettings = httpsSettings;
+    }
+
     return this;
   }
 
@@ -87,6 +100,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  setHttpsSettings(settings: HttpsSettings): ServiceBuilder {
+    this.httpsSettings = settings;
+    return this;
+  }
+
   enableCors(options: cors.CorsOptions): ServiceBuilder {
     this.corsOptions = options;
     return this;
@@ -97,9 +115,15 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  start(): Promise<Server> {
+  start(): Promise<http.Server> {
     const app = express();
-    const { port, host, logger, corsOptions } = this.getOptions();
+    const {
+      port,
+      host,
+      logger,
+      corsOptions,
+      httpsSettings,
+    } = this.getOptions();
 
     app.use(helmet());
     if (corsOptions) {
@@ -120,20 +144,24 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         reject(e);
       });
 
-      const server = stoppable(
-        app.listen(port, host, () => {
+      const server: http.Server = httpsSettings
+        ? createHttpsServer(app, httpsSettings, logger)
+        : createHttpServer(app, logger);
+
+      const stoppableServer = stoppable(
+        server.listen(port, host, () => {
           logger.info(`Listening on ${host}:${port}`);
         }),
         0,
       );
 
       useHotCleanup(this.module, () =>
-        server.stop((e: any) => {
+        stoppableServer.stop((e: any) => {
           if (e) console.error(e);
         }),
       );
 
-      resolve(server);
+      resolve(stoppableServer);
     });
   }
 
@@ -142,12 +170,14 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     host: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
+    httpsSettings?: HttpsSettings;
   } {
     return {
       port: this.port ?? DEFAULT_PORT,
       host: this.host ?? DEFAULT_HOST,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
+      httpsSettings: this.httpsSettings,
     };
   }
 }

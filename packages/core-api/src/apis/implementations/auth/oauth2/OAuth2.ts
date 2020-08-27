@@ -19,7 +19,11 @@ import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { Observable } from '../../../../types';
-import { AuthProvider, OAuthRequestApi } from '../../../definitions';
+import {
+  AuthProvider,
+  OAuthRequestApi,
+  DiscoveryApi,
+} from '../../../definitions';
 import {
   AuthRequestOptions,
   BackstageIdentity,
@@ -33,9 +37,7 @@ import {
 import { OAuth2Session } from './types';
 
 type CreateOptions = {
-  apiOrigin: string;
-  basePath: string;
-
+  discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
   environment?: string;
@@ -64,15 +66,13 @@ const SCOPE_PREFIX = '';
 class OAuth2
   implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, SessionStateApi {
   static create({
-    apiOrigin,
-    basePath,
+    discoveryApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      apiOrigin,
-      basePath,
+      discoveryApi,
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,

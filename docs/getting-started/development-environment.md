@@ -1,4 +1,7 @@
-# Development Environment
+---
+id: development-environment
+title: Development Environment
+---
 
 This section describes how to get set up for doing development on the Backstage
 repository.
@@ -50,7 +53,8 @@ system resources and slow things down.
 
 ## Package Scripts
 
-There are many commands to be found in the root [package.json](package.json),
+There are many commands to be found in the root
+[package.json](https://github.com/spotify/backstage/blob/master/package.json),
 here are some useful ones:
 
 ```python
@@ -73,26 +77,11 @@ yarn test:all # test all packages
 
 yarn clean # Remove all output folders and @backstage/cli cache
 
-yarn bundle # Build a production bundle of the example app
-
 yarn diff # Make sure all plugins are up to date with the latest plugin template
 
 yarn create-plugin # Create a new plugin
 ```
 
-### (Optional)Try on Docker
-
-Run the following commands if you have Docker environment
-
-```bash
-$ yarn docker-build
-$ docker run --rm -it -p 80:80 spotify/backstage
-```
-
-Then open http://localhost/ on your browser.
-
-> See [package.json](/package.json) for other yarn commands/options.
-
-[Next Step - Create a Backstage plugin](create-a-plugin.md)
-
-[Back to Docs](README.md)
+> See
+> [package.json](https://github.com/spotify/backstage/blob/master/package.json)
+> for other yarn commands/options.

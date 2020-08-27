@@ -16,9 +16,10 @@
 
 import { ConfigReader } from '@backstage/config';
 import cors from 'cors';
-import { Router } from 'express';
+import { Router, RequestHandler } from 'express';
 import { Server } from 'http';
 import { Logger } from 'winston';
+import { HttpsSettings } from './lib/config';
 
 export type ServiceBuilder = {
   /**
@@ -40,6 +41,15 @@ export type ServiceBuilder = {
   setPort(port: number): ServiceBuilder;
 
   /**
+   * Sets the host to listen on.
+   *
+   * '' is express default, which listens to all interfaces.
+   *
+   * @param host The host to listen on
+   */
+  setHost(host: string): ServiceBuilder;
+
+  /**
    * Sets the logger to use for service-specific logging.
    *
    * If no logger is given, the default root logger is used.
@@ -59,12 +69,21 @@ export type ServiceBuilder = {
   enableCors(options: cors.CorsOptions): ServiceBuilder;
 
   /**
+   * Configure self-signed certificate generation options.
+   *
+   * If this method is not called, the resulting service will use sensible defaults
+   *
+   * @param options Standard certificate options
+   */
+  setHttpsSettings(settings: HttpsSettings): ServiceBuilder;
+
+  /**
    * Adds a router (similar to the express .use call) to the service.
    *
    * @param root The root URL to bind to (e.g. "/api/function1")
    * @param router An express router
    */
-  addRouter(root: string, router: Router): ServiceBuilder;
+  addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
 
   /**
    * Starts the server using the given settings.

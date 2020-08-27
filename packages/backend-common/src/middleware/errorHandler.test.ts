@@ -96,4 +96,38 @@ describe('errorHandler', () => {
     expect((await r.get('/NotFoundError')).status).toBe(404);
     expect((await r.get('/ConflictError')).status).toBe(409);
   });
+
+  it('logs all 500 errors', async () => {
+    const app = express();
+
+    const mockLogger = { child: jest.fn(), error: jest.fn() };
+    mockLogger.child.mockImplementation(() => mockLogger as any);
+
+    const thrownError = new Error('some error');
+
+    app.use('/breaks', () => {
+      throw thrownError;
+    });
+    app.use(errorHandler({ logger: mockLogger as any }));
+
+    await request(app).get('/breaks');
+
+    expect(mockLogger.error).toHaveBeenCalledWith(thrownError);
+  });
+
+  it('does not log 400 errors', async () => {
+    const app = express();
+
+    const mockLogger = { child: jest.fn(), error: jest.fn() };
+    mockLogger.child.mockImplementation(() => mockLogger as any);
+
+    app.use('/NotFound', () => {
+      throw new errors.NotFoundError();
+    });
+    app.use(errorHandler({ logger: mockLogger as any }));
+
+    await request(app).get('/NotFound');
+
+    expect(mockLogger.error).not.toHaveBeenCalled();
+  });
 });

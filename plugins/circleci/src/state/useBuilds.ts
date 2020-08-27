@@ -70,7 +70,6 @@ export const transform = (
 
 export function useBuilds() {
   const [{ repo, owner, token }] = useSettings();
-
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 

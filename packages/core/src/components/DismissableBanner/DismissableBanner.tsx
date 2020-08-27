@@ -18,13 +18,14 @@ import React, { FC, ReactNode, useState, useEffect } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-api';
 import { useObservable } from 'react-use';
 import classNames from 'classnames';
-import { makeStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: BackstageTheme) => ({
   root: {
     position: 'relative',
     padding: theme.spacing(0),
@@ -46,10 +47,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
   },
   info: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.banner.info,
   },
   error: {
-    backgroundColor: theme.palette.error.dark,
+    backgroundColor: theme.palette.banner.error,
   },
 }));
 

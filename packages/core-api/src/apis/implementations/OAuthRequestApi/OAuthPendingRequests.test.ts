@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { wait } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { OAuthPendingRequests } from './OAuthPendingRequests';
 
 describe('OAuthPendingRequests', () => {
@@ -27,7 +27,7 @@ describe('OAuthPendingRequests', () => {
     target.pending().subscribe({ next, error });
     target.request(input);
 
-    await wait(() => expect(next).toBeCalledTimes(2));
+    await waitFor(() => expect(next).toBeCalledTimes(2));
     expect(next.mock.calls[0][0].scopes).toBeUndefined();
     expect(next.mock.calls[1][0].scopes.toString()).toBe(input.toString());
     expect(error.mock.calls.length).toBe(0);

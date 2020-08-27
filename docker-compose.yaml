@@ -1,0 +1,16 @@
+# Make sure that before you
+# run the docker-compose that you have run
+# $ yarn docker-build:all
+version: '3'
+
+services:
+  frontend:
+    image: 'spotify/backstage:latest'
+    ports:
+      - '3000:80'
+  backend:
+    image: 'example-backend:latest'
+    ports:
+      - '7000:7000'
+    environment:
+      NODE_ENV: development

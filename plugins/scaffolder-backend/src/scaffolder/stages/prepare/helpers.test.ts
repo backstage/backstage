@@ -39,7 +39,8 @@ describe('Helpers', () => {
           generation: 1,
         },
         spec: {
-          type: 'cookiecutter',
+          type: 'website',
+          templater: 'cookiecutter',
           path: './template',
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
@@ -86,7 +87,8 @@ describe('Helpers', () => {
           generation: 1,
         },
         spec: {
-          type: 'cookiecutter',
+          type: 'website',
+          templater: 'cookiecutter',
           path: './template',
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
@@ -131,7 +133,8 @@ describe('Helpers', () => {
           generation: 1,
         },
         spec: {
-          type: 'cookiecutter',
+          type: 'website',
+          templater: 'cookiecutter',
           path: './template',
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
@@ -177,7 +180,8 @@ describe('Helpers', () => {
           generation: 1,
         },
         spec: {
-          type: 'cookiecutter',
+          type: 'website',
+          templater: 'cookiecutter',
           path: './template',
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',
@@ -221,7 +225,8 @@ describe('Helpers', () => {
           generation: 1,
         },
         spec: {
-          type: 'cookiecutter',
+          type: 'website',
+          templater: 'cookiecutter',
           path: './template',
           schema: {
             $schema: 'http://json-schema.org/draft-07/schema#',

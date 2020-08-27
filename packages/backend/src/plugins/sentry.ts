@@ -15,8 +15,8 @@
  */
 
 import { createRouter } from '@backstage/plugin-sentry-backend';
-import { Logger } from 'winston';
+import type { PluginEnvironment } from '../types';
 
-export default async function createPlugin(logger: Logger) {
+export default async function createPlugin({ logger }: PluginEnvironment) {
   return await createRouter(logger);
 }

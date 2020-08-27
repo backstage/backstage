@@ -1,4 +1,7 @@
-# createPlugin
+---
+id: createPlugin
+title: createPlugin
+---
 
 Taking a plugin config as argument and returns a new plugin.
 
@@ -39,5 +42,3 @@ export default createPlugin({
   },
 });
 ```
-
-[Back to References](README.md)

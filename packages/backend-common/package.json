@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.1.1-alpha.13",
+  "version": "0.1.1-alpha.20",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
@@ -29,19 +29,33 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.13",
+    "@backstage/cli-common": "^0.1.1-alpha.20",
+    "@backstage/config": "^0.1.1-alpha.20",
+    "@backstage/config-loader": "^0.1.1-alpha.20",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.6",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "helmet": "^3.22.0",
+    "express-promise-router": "^3.0.3",
+    "helmet": "^4.0.0",
+    "knex": "^0.21.1",
+    "lodash": "^4.17.15",
     "morgan": "^1.10.0",
+    "selfsigned": "^1.10.7",
     "stoppable": "^1.1.0",
     "winston": "^3.2.1"
   },
+  "peerDependencies": {
+    "pg-connection-string": "^2.3.0"
+  },
+  "peerDependenciesMeta": {
+    "pg-connection-string": {
+      "optional": true
+    }
+  },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.13",
+    "@backstage/cli": "^0.1.1-alpha.20",
     "@types/compression": "^1.7.0",
     "@types/http-errors": "^1.6.3",
     "@types/morgan": "^1.9.0",

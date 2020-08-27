@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { Config, ConfigReader } from '@backstage/config';
 import {
   Entity,
   EntityPolicies,
@@ -26,8 +27,13 @@ import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEn
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
+import { GithubApiReaderProcessor } from './processors/GithubApiReaderProcessor';
+import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
+import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
+import { UrlReaderProcessor } from './processors/UrlReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
+import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
 import * as result from './processors/results';
 import {
   LocationProcessor,
@@ -44,6 +50,12 @@ import { LocationReader, ReadLocationResult } from './types';
 // The max amount of nesting depth of generated work items
 const MAX_DEPTH = 10;
 
+type Options = {
+  logger?: Logger;
+  config?: Config;
+  processors?: LocationProcessor[];
+};
+
 /**
  * Implements the reading of a location through a series of processor tasks.
  */
@@ -51,13 +63,23 @@ export class LocationReaders implements LocationReader {
   private readonly logger: Logger;
   private readonly processors: LocationProcessor[];
 
-  static defaultProcessors(
-    entityPolicy: EntityPolicy = new EntityPolicies(),
-  ): LocationProcessor[] {
+  static defaultProcessors(options: {
+    config?: Config;
+    entityPolicy?: EntityPolicy;
+  }): LocationProcessor[] {
+    const {
+      config = new ConfigReader({}, 'missing-config'),
+      entityPolicy = new EntityPolicies(),
+    } = options;
     return [
+      StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
       new GithubReaderProcessor(),
+      new GithubApiReaderProcessor(),
+      new GitlabApiReaderProcessor(),
       new GitlabReaderProcessor(),
+      new BitbucketApiReaderProcessor(),
+      new UrlReaderProcessor(),
       new YamlProcessor(),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
@@ -65,10 +87,11 @@ export class LocationReaders implements LocationReader {
     ];
   }
 
-  constructor(
-    logger: Logger = getVoidLogger(),
-    processors: LocationProcessor[] = LocationReaders.defaultProcessors(),
-  ) {
+  constructor({
+    logger = getVoidLogger(),
+    config,
+    processors = LocationReaders.defaultProcessors({ config }),
+  }: Options) {
     this.logger = logger;
     this.processors = processors;
   }

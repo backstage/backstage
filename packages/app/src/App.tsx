@@ -25,17 +25,22 @@ import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
+import { providers } from './identityProviders';
 
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
   components: {
-    SignInPage: props => (
-      <SignInPage
-        {...props}
-        providers={['guest', 'google', 'custom', 'okta', 'gitlab']}
-      />
-    ),
+    SignInPage: props => {
+      return (
+        <SignInPage
+          {...props}
+          providers={['guest', 'custom', ...providers]}
+          title="Select a sign-in method"
+          align="center"
+        />
+      );
+    },
   },
 });
 

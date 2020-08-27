@@ -18,12 +18,12 @@ import { Command } from 'commander';
 import { run } from '../lib/run';
 import { paths } from '../lib/paths';
 
-export default async (cmd: Command) => {
+export default async (cmd: Command, cmdArgs: string[]) => {
   const args = [
     '--ext=js,jsx,ts,tsx',
     '--max-warnings=0',
-    '--format=codeframe',
-    paths.targetDir,
+    `--format=${cmd.format}`,
+    ...(cmdArgs ?? [paths.targetDir]),
   ];
   if (cmd.fix) {
     args.push('--fix');

@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
-import { Logger } from 'winston';
-import Router from 'express-promise-router';
 import express from 'express';
+import Router from 'express-promise-router';
+import { Logger } from 'winston';
+import { errorHandler } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 import { RollbarApi } from '../api';
 
 export interface RouterOptions {
   rollbarApi?: RollbarApi;
   logger: Logger;
+  config: Config;
 }
 
 export async function createRouter(
@@ -30,7 +32,10 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
   const logger = options.logger.child({ plugin: 'rollbar' });
-  const accessToken = !options.rollbarApi ? getRollbarToken(logger) : '';
+  const config = options.config.getConfig('rollbar');
+  const accessToken = !options.rollbarApi
+    ? getRollbarAccountToken(config, logger)
+    : '';
 
   if (options.rollbarApi || accessToken) {
     const rollbarApi =
@@ -38,63 +43,43 @@ export async function createRouter(
 
     router.use(express.json());
 
-    const runAsync = createRunAsyncWrapper(logger);
+    router.get('/projects', async (_req, res) => {
+      const projects = await rollbarApi.getAllProjects();
+      res.status(200).header('').send(projects);
+    });
 
-    router.get(
-      '/projects',
-      runAsync(async (_req, res) => {
-        const projects = await rollbarApi.getAllProjects();
-        res.status(200).header('').send(projects);
-      }),
-    );
+    router.get('/projects/:id', async (req, res) => {
+      const { id } = req.params;
+      const projects = await rollbarApi.getProject(id);
+      res.status(200).send(projects);
+    });
 
-    router.get(
-      '/projects/:id',
-      runAsync(async (req, res) => {
-        const { id } = req.params;
-        const projects = await rollbarApi.getProject(id);
-        res.status(200).send(projects);
-      }),
-    );
+    router.get('/projects/:id/items', async (req, res) => {
+      const { id } = req.params;
+      const projects = await rollbarApi.getProjectItems(id);
+      res.status(200).send(projects);
+    });
 
-    router.get(
-      '/projects/:id/items',
-      runAsync(async (req, res) => {
-        const { id } = req.params;
-        const projects = await rollbarApi.getProjectItems(id);
-        res.status(200).send(projects);
-      }),
-    );
+    router.get('/projects/:id/top_active_items', async (req, res) => {
+      const { id } = req.params;
+      const query = req.query;
+      const items = await rollbarApi.getTopActiveItems(id, query as any);
+      res.status(200).send(items);
+    });
 
-    router.get(
-      '/projects/:id/top_active_items',
-      runAsync(async (req, res) => {
-        const { id } = req.params;
-        const query = req.query;
-        const items = await rollbarApi.getTopActiveItems(id, query as any);
-        res.status(200).send(items);
-      }),
-    );
+    router.get('/projects/:id/occurance_counts', async (req, res) => {
+      const { id } = req.params;
+      const query = req.query;
+      const items = await rollbarApi.getOccuranceCounts(id, query as any);
+      res.status(200).send(items);
+    });
 
-    router.get(
-      '/projects/:id/occurance_counts',
-      runAsync(async (req, res) => {
-        const { id } = req.params;
-        const query = req.query;
-        const items = await rollbarApi.getOccuranceCounts(id, query as any);
-        res.status(200).send(items);
-      }),
-    );
-
-    router.get(
-      '/projects/:id/activated_item_counts',
-      runAsync(async (req, res) => {
-        const { id } = req.params;
-        const query = req.query;
-        const items = await rollbarApi.getActivatedCounts(id, query as any);
-        res.status(200).send(items);
-      }),
-    );
+    router.get('/projects/:id/activated_item_counts', async (req, res) => {
+      const { id } = req.params;
+      const query = req.query;
+      const items = await rollbarApi.getActivatedCounts(id, query as any);
+      res.status(200).send(items);
+    });
   }
 
   router.use(errorHandler());
@@ -102,32 +87,20 @@ export async function createRouter(
   return router;
 }
 
-function createRunAsyncWrapper(logger: Logger) {
-  return function runAsyncWrapper(callback: express.RequestHandler) {
-    return function runAsync(
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction,
-    ) {
-      return Promise.resolve(callback(req, res, next)).catch(error => {
-        logger.error(error);
-        next(error);
-      });
-    };
-  };
-}
-
-function getRollbarToken(logger: Logger) {
-  const token = process.env.ROLLBAR_TOKEN || '';
+function getRollbarAccountToken(config: Config, logger: Logger) {
+  const token =
+    config.getOptionalString('accountToken') ||
+    process.env.ROLLBAR_ACCOUNT_TOKEN ||
+    '';
 
   if (!token) {
     if (process.env.NODE_ENV !== 'development') {
       throw new Error(
-        'Rollbar token must be provided in ROLLBAR_TOKEN environment variable to start the API.',
+        'The rollbar.accountToken must be provided in config to start the API.',
       );
     }
     logger.warn(
-      'Failed to initialize rollbar backend, set ROLLBAR_TOKEN environment variable to start the API.',
+      'Failed to initialize rollbar backend, set rollbar.accountToken in config to start the API.',
     );
   }
 

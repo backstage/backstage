@@ -33,7 +33,7 @@ export type GithubEndpointConfig = {
   id: string;
   title: string;
   /**
-   * Github GraphQL API url, defaults to https://api.github.com/graphql
+   * GitHub GraphQL API url, defaults to https://api.github.com/graphql
    */
   url?: string;
   /**
