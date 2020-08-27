@@ -93,7 +93,7 @@ metadata in the service catalog after a short while.
 
 By default the service catalog shows components owned by the team of the logged
 in user. But you can also switch to _All_ to see all the components across your
-companies software ecosystem. Basic inline _search_ and _column filtering_ makes
+company's software ecosystem. Basic inline _search_ and _column filtering_ makes
 it easy to browse a big set of components.
 
 ![](../../assets/software-catalog/bsc-search.png)
