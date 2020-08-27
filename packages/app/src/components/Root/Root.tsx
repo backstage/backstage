@@ -27,6 +27,7 @@ import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
+import GoogleIcon from '@material-ui/icons/Cloud';
 import {
   Sidebar,
   SidebarPage,
@@ -104,6 +105,7 @@ const Root: FC<{}> = ({ children }) => (
         to={graphiQLRouteRef.path}
         text={graphiQLRouteRef.title}
       />
+      <SidebarItem icon={GoogleIcon} to="gcp-projects" text="GCP Projects" />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarThemeToggle />
