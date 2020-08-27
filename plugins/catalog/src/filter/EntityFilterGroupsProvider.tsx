@@ -16,8 +16,8 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
-import React, { useCallback, useRef, useState } from 'react';
-import { useAsync } from 'react-use';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useAsyncFn } from 'react-use';
 import { catalogApiRef } from '../api/types';
 import { filterGroupsContext, FilterGroupsContext } from './context';
 import {
@@ -46,7 +46,9 @@ export const EntityFilterGroupsProvider = ({
 // The hook that implements the actual context building
 function useProvideEntityFilters(): FilterGroupsContext {
   const catalogApi = useApi(catalogApiRef);
-  const { value: entities, error } = useAsync(() => catalogApi.getEntities());
+  const [{ value: entities, error }, doReload] = useAsyncFn(() =>
+    catalogApi.getEntities(),
+  );
 
   const filterGroups = useRef<{
     [filterGroupId: string]: FilterGroup;
@@ -60,6 +62,10 @@ function useProvideEntityFilters(): FilterGroupsContext {
   }>({});
   const [matchingEntities, setMatchingEntities] = useState<Entity[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    doReload();
+  }, [doReload]);
 
   const rebuild = useCallback(() => {
     setFilterGroupStates(
@@ -122,11 +128,16 @@ function useProvideEntityFilters(): FilterGroupsContext {
     [rebuild],
   );
 
+  const reload = useCallback(async () => {
+    await doReload();
+  }, [doReload]);
+
   return {
     register,
     unregister,
     setGroupSelectedFilters,
     setSelectedTags,
+    reload,
     loading: !error && !entities,
     error,
     filterGroupStates,

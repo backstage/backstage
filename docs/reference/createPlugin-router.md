@@ -37,5 +37,3 @@ const myPluginRouteRef = createRouteRef({
   title: 'My Plugin',
 });
 ```
-
-[Back to References](../README.md)

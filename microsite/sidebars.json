@@ -6,6 +6,7 @@
       "overview/architecture-terminology",
       "overview/roadmap",
       "overview/vision",
+      "overview/background",
       "overview/adopting"
     ],
     "Getting Started": [
@@ -38,7 +39,6 @@
           "features/software-catalog/software-catalog-overview",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
-          "features/software-catalog/populating-catalog",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/software-catalog-api"
@@ -132,7 +132,7 @@
         "ids": ["api/backend"]
       }
     ],
-    "Tutorials": ["tutorials/index"],
+    "Tutorials": ["tutorials/journey"],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
       "architecture-decisions/adrs-adr001",
