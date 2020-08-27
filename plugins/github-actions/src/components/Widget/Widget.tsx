@@ -15,7 +15,7 @@
  */
 import React, { useEffect } from 'react';
 import { useWorkflowRuns } from '../useWorkflowRuns';
-import { WorkflowRun } from '../WorkflowRunsTable';
+import { WorkflowRun, WorkflowRunsTable } from '../WorkflowRunsTable';
 import { Entity } from '@backstage/catalog-model';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import {
@@ -100,6 +100,57 @@ export const Widget = ({
   return (
     <InfoCard title={`Last ${branch} build`}>
       <WidgetContent
+        error={error}
+        loading={loading}
+        branch={branch}
+        lastRun={lastRun}
+      />
+    </InfoCard>
+  );
+};
+
+const WidgetListContent = ({
+  error,
+  loading,
+  branch,
+}: {
+  error?: Error;
+  loading?: boolean;
+  lastRun: WorkflowRun;
+  branch: string;
+}) => {
+  if (error) return <Typography>Couldn't fetch {branch} runs</Typography>;
+  if (loading) return <LinearProgress />;
+  return <WorkflowRunsTable />;
+};
+
+export const WidgetList = ({
+  entity,
+  branch = 'master',
+}: {
+  entity: Entity;
+  branch: string;
+}) => {
+  const errorApi = useApi(errorApiRef);
+  const [owner, repo] = (
+    entity?.metadata.annotations?.['backstage.io/github-actions-id'] ?? '/'
+  ).split('/');
+  const [{ runs, loading, error }] = useWorkflowRuns({
+    owner,
+    repo,
+    branch,
+  });
+
+  const lastRun = runs?.[0] ?? ({} as WorkflowRun);
+  useEffect(() => {
+    if (error) {
+      errorApi.post(error);
+    }
+  }, [error, errorApi]);
+
+  return (
+    <InfoCard title={`${branch} builds`}>
+      <WidgetListContent
         error={error}
         loading={loading}
         branch={branch}
