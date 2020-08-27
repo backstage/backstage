@@ -132,7 +132,7 @@
         "ids": ["api/backend"]
       }
     ],
-    "Tutorials": ["tutorials/index"],
+    "Tutorials": ["tutorials/journey"],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
       "architecture-decisions/adrs-adr001",

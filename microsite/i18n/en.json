@@ -103,7 +103,8 @@
         "title": "External integrations"
       },
       "features/software-catalog/software-catalog-overview": {
-        "title": "Backstage Service Catalog (alpha)"
+        "title": "Backstage Service Catalog (alpha)",
+        "sidebar_label": "Backstage Service Catalog"
       },
       "features/software-catalog/installation": {
         "title": "features/software-catalog/installation"
@@ -173,9 +174,6 @@
       },
       "getting-started/installation": {
         "title": "Installation"
-      },
-      "journey": {
-        "title": "journey"
       },
       "overview/adopting": {
         "title": "Strategies for adopting"
@@ -285,8 +283,8 @@
       "reference/utility-apis/StorageApi": {
         "title": "reference/utility-apis/StorageApi"
       },
-      "tutorials/index": {
-        "title": "Overview"
+      "tutorials/journey": {
+        "title": "Future developer journey"
       }
     },
     "links": {
