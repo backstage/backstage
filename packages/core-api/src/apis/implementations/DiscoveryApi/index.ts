@@ -18,12 +18,4 @@
 //
 // Plugins should rely on these APIs for functionality as much as possible.
 
-export * from './auth';
-
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ConfigApi';
-export * from './ErrorApi';
-export * from './DiscoveryApi';
-export * from './OAuthRequestApi';
-export * from './StorageApi';
+export { UrlPatternDiscovery } from './UrlPatternDiscovery';

@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     '& section.models, section.models.is-open h4': {
       'border-color': theme.palette.divider,
     },
-    '& .opblock .opblock-summary-description, .parameter__type, table.headers td, .model-title, .model .property.primitive': {
+    '& .opblock .opblock-summary-description, .parameter__type, table.headers td, .model-title, .model .property.primitive, section h3': {
       color: theme.palette.text.secondary,
     },
     '& .opblock .opblock-summary-operation-id, .opblock .opblock-summary-path, .opblock .opblock-summary-path__deprecated, .opblock .opblock-section-header h4, .parameter__name, .response-col_status, .response-col_links, .responses-inner h4, .swagger-ui .responses-inner h5, .opblock-section-header .btn, .tab li, .info li, .info p, .info table, section.models h4, .info .title, table.model tr.description, .property-row': {

@@ -26,6 +26,7 @@ import {
   githubAuthApiRef,
   GithubAuth,
   OAuthRequestManager,
+  UrlPatternDiscovery,
 } from '@backstage/core';
 import { gitOpsApiRef, GitOpsRestApi } from '../../api';
 
@@ -37,8 +38,9 @@ describe('ProfileCatalog', () => {
       [
         githubAuthApiRef,
         GithubAuth.create({
-          backendUrl: 'http://localhost:7000',
-          basePath: '/auth/',
+          discoveryApi: UrlPatternDiscovery.compile(
+            'http://example.com/{{pluginId}}',
+          ),
           oauthRequestApi,
         }),
       ],
