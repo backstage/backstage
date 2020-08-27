@@ -2,7 +2,7 @@
 
 ## Getting started
 
-Set up Backstage and TechDocs by follow our guide on [Getting Started](/docs/features/techdocs/getting-started.md).
+Set up Backstage and TechDocs by follow our guide on [Getting Started](../../docs/features/techdocs/getting-started.md).
 
 ## Configuration
 
