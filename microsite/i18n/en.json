@@ -51,7 +51,7 @@
         "title": "Adding authentication providers"
       },
       "auth/auth-backend-classes": {
-        "title": "auth/auth-backend-classes"
+        "title": "Auth backend classes"
       },
       "auth/auth-backend": {
         "title": "Auth backend"
@@ -184,6 +184,9 @@
       "overview/architecture-terminology": {
         "title": "Architecture terminology"
       },
+      "overview/background": {
+        "title": "The Spotify Story"
+      },
       "overview/roadmap": {
         "title": "Project roadmap"
       },
@@ -212,7 +215,7 @@
         "title": "Intro to plugins"
       },
       "plugins/plugin-development": {
-        "title": "Plugin Development in Backstage"
+        "title": "Plugin Development"
       },
       "plugins/proxying": {
         "title": "Proxying"
@@ -292,7 +295,6 @@
       "Docs": "Docs",
       "Blog": "Blog",
       "Demos": "Demos",
-      "The Spotify story": "The Spotify story",
       "Newsletter": "Newsletter"
     },
     "categories": {

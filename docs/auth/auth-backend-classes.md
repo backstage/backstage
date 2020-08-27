@@ -1,4 +1,7 @@
-# Authentication Backend Classes Layout and Description
+---
+id: auth-backend-classes
+title: Auth backend classes
+---
 
 ## How Does Authentication Work?
 

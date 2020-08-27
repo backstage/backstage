@@ -25,7 +25,8 @@ Records should be stored under the `architecture-decisions` directory.
 - Submit a pull request
 - Address and integrate feedback from the community
 - Eventually, assign a number
-- Add the full path of the ADR to the [`mkdocs.yml`](/mkdocs.yml)
+- Add the full path of the ADR to the
+  [`mkdocs.yml`](https://github.com/spotify/backstage/blob/master/mkdocs.yml)
 - Merge the pull request
 
 ## Superseding an ADR
