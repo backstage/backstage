@@ -1,0 +1,101 @@
+app:
+  title: Frontdesk 
+  baseUrl: http://frontdesk.trivago.cloud
+
+backend:
+  baseUrl: http://frontdesk.trivago.cloud
+  listen:
+    port: 7000
+  cors:
+    origin: http://frontdesk.trivago.cloud
+    methods: [GET, POST, PUT, DELETE]
+    credentials: true
+  database:
+    client: pg
+    connection:
+      database:
+        $secret:
+          env: PGDATABASE
+      user: 
+        $secret:
+          env: PGUSER
+      password: 
+        $secret:
+          env: PGPASSWORD
+      host: 
+        $secret:
+          env: PGHOST
+
+proxy:
+  '/circleci/api':
+    target: 'https://circleci.com/api/v1.1'
+    changeOrigin: true
+    pathRewrite:
+      '^/proxy/circleci/api/': '/'
+  '/jenkins/api':
+    target: 'http://localhost:8080'
+    changeOrigin: true
+    headers:
+      Authorization:
+        $secret:
+          env: JENKINS_BASIC_AUTH_HEADER
+    pathRewrite:
+      '^/proxy/jenkins/api/': '/'
+
+organization:
+  name: trivago
+
+techdocs:
+  storageUrl: http://frontdesk.trivago.cloud/techdocs/static/docs
+
+sentry:
+  organization: trivago
+
+rollbar:
+  organization: trivago
+  accountToken:
+    $secret:
+      env: ROLLBAR_ACCOUNT_TOKEN
+
+newrelic:
+  api:
+    baseUrl: 'https://api.newrelic.com/v2'
+    key: NEW_RELIC_REST_API_KEY
+
+auth:
+  providers:
+    google:
+      development:
+        appOrigin: http://frontdesk.trivago.cloud
+        secure: false
+        clientId: 
+          $secret:
+            env: AUTH_GOOGLE_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_GOOGLE_CLIENT_SECRET
+    github:
+      development:
+        appOrigin: http://frontdesk.trivago.cloud
+        secure: false
+        clientId: 
+          $secret:
+            env: AUTH_GITHUB_CLIENT_ID
+        clientSecret: 
+          $secret:
+            env: AUTH_GITHUB_CLIENT_SECRET
+        enterpriseInstanceUrl:
+          $secret:
+            env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+
+catalog:
+  locations:
+    # Backstage Example Templates
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+    - type: github
+      target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
