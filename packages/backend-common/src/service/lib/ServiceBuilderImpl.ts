@@ -49,6 +49,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
   private httpsSettings: HttpsSettings | undefined;
+  private enableMetrics: boolean = true;
   private routers: [string, Router][];
   // Reference to the module where builder is created - needed for hot module
   // reloading
@@ -82,6 +83,9 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     if (httpsSettings) {
       this.httpsSettings = httpsSettings;
     }
+
+    // For now, configuration of metrics is a simple boolean and active by default
+    this.enableMetrics = backendConfig.getOptionalBoolean('metrics') !== false;
 
     return this;
   }
@@ -132,7 +136,9 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     }
     app.use(compression());
     app.use(express.json());
-    app.use(metricsHandler());
+    if (this.enableMetrics) {
+      app.use(metricsHandler());
+    }
     app.use(requestLoggingHandler());
     for (const [root, route] of this.routers) {
       app.use(root, route);
