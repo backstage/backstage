@@ -37,6 +37,7 @@ import {
   HttpsSettings,
 } from './config';
 import { createHttpServer, createHttpsServer } from './hostFactory';
+import { metricsHandler } from './metrics';
 
 const DEFAULT_PORT = 7000;
 // '' is express default, which listens to all interfaces
@@ -131,6 +132,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     }
     app.use(compression());
     app.use(express.json());
+    app.use(metricsHandler());
     app.use(requestLoggingHandler());
     for (const [root, route] of this.routers) {
       app.use(root, route);
