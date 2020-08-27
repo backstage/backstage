@@ -16,12 +16,8 @@
 
 import {
   githubAuthApiRef,
-  gitlabAuthApiRef,
   googleAuthApiRef,
   identityApiRef,
-  oauth2ApiRef,
-  oktaAuthApiRef,
-  microsoftAuthApiRef,
   useApi,
   configApiRef,
 } from '@backstage/core-api';
@@ -61,38 +57,10 @@ export function SidebarUserSettings() {
             icon={Star}
           />
         )}
-        {providers.includes('microsoft') && (
-          <OIDCProviderSettings
-            title="Microsoft"
-            apiRef={microsoftAuthApiRef}
-            icon={Star}
-          />
-        )}
         {providers.includes('github') && (
           <OAuthProviderSettings
             title="GitHub"
             apiRef={githubAuthApiRef}
-            icon={Star}
-          />
-        )}
-        {providers.includes('gitlab') && (
-          <OAuthProviderSettings
-            title="GitLab"
-            apiRef={gitlabAuthApiRef}
-            icon={Star}
-          />
-        )}
-        {providers.includes('okta') && (
-          <OIDCProviderSettings
-            title="Okta"
-            apiRef={oktaAuthApiRef}
-            icon={Star}
-          />
-        )}
-        {providers.includes('oauth2') && (
-          <OIDCProviderSettings
-            title="YourOrg"
-            apiRef={oauth2ApiRef}
             icon={Star}
           />
         )}
