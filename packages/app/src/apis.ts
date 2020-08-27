@@ -80,6 +80,7 @@ import {
   GithubPullRequestsClient,
   githubPullRequestsApiRef,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
+import { GCPClient, GCPApiRef } from '@backstage/plugin-gcp-projects';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -101,6 +102,8 @@ export const apis = (config: ConfigApi) => {
     circleCIApiRef,
     new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
   );
+
+  builder.add(GCPApiRef, new GCPClient());
 
   builder.add(jenkinsApiRef, new JenkinsApi(`${backendUrl}/proxy/jenkins/api`));
 
