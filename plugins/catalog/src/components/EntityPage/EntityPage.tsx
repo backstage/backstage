@@ -36,6 +36,7 @@ import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { EntityPageDocs } from '../EntityPageDocs/EntityDocsPage';
 import { EntityPageApi } from '../EntityPageApi/EntityPageApi';
+import { EntityPageCi } from '../EntityPageCi/EntityPageCi';
 import { EntityPageOverview } from '../EntityPageOverview/EntityPageOverview';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
@@ -129,6 +130,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'ci',
       label: 'CI/CD',
+      content: (e: Entity) => <EntityPageCi entity={e} />,
     },
     {
       id: 'tests',
