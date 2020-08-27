@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  googleAuthApiRef,
-  gitlabAuthApiRef,
-  oktaAuthApiRef,
-  githubAuthApiRef,
-  microsoftAuthApiRef,
-} from '@backstage/core';
+import { googleAuthApiRef, githubAuthApiRef } from '@backstage/core';
 
 export const providers = [
   {
