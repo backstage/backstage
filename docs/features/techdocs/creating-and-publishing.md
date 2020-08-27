@@ -30,7 +30,7 @@ the documentation template.
 Create an entity from the documentation template and you will get the needed
 setup for free.
 
-!!! warning Currently the scaffolder plugin is limited to create repositories
+!!! warning Currently the Backstage Software Templates are limited to create repositories
 inside GitHub organizations. You also need to generate an personal access token
 and use as an environment variable. Read more about this
 [here](../software-templates/installation.md#runtime-dependencies).
