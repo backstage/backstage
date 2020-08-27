@@ -6,6 +6,8 @@ import {
   ConfigApi,
   ErrorApiForwarder,
   ErrorAlerter,
+  discoveryApiRef,
+  UrlPatternDiscovery,
   oauthRequestApiRef,
   OAuthRequestManager,
   storageApiRef,
@@ -24,6 +26,10 @@ export const apis = (config: ConfigApi) => {
 
   const builder = ApiRegistry.builder();
 
+  const discoveryApi = builder.add(
+    discoveryApiRef,
+    UrlPatternDiscovery.compile(`${backendUrl}/{{ pluginId }}`),
+  );
   const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
   const errorApi = builder.add(
     errorApiRef,
@@ -33,21 +39,9 @@ export const apis = (config: ConfigApi) => {
   builder.add(storageApiRef, WebStorage.create({ errorApi }));
   builder.add(oauthRequestApiRef, new OAuthRequestManager());
 
-  builder.add(
-    catalogApiRef,
-    new CatalogClient({
-      apiOrigin: backendUrl,
-      basePath: '/catalog',
-    }),
-  );
+  builder.add(catalogApiRef, new CatalogClient({ discoveryApi }));
 
-  builder.add(
-    scaffolderApiRef,
-    new ScaffolderApi({
-      apiOrigin: backendUrl,
-      basePath: '/scaffolder/v1',
-    }),
-  );
+  builder.add(scaffolderApiRef, new ScaffolderApi({ discoveryApi }));
 
   return builder.build();
 };
