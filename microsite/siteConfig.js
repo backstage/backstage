@@ -110,6 +110,12 @@ const siteConfig = {
   stylesheets: [
     'https://fonts.googleapis.com/css?family=IBM+Plex+Mono:500,700&display=swap',
   ],
+
+  algolia: {
+    apiKey: '8d115c9875ba0f4feaee95bab55a1645',
+    indexName: 'backstage',
+    searchParameters: {}, // Optional (if provided by Algolia)
+  },
 };
 
 module.exports = siteConfig;
