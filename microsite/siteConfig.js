@@ -112,8 +112,8 @@ const siteConfig = {
   ],
 
   algolia: {
-    apiKey: 'YOUR_API_KEY',
-    indexName: 'YOUR_INDEX_NAME',
+    apiKey: '8d115c9875ba0f4feaee95bab55a1645',
+    indexName: 'backstage',
     searchParameters: {}, // Optional (if provided by Algolia)
   },
 };
