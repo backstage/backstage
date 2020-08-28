@@ -36,6 +36,7 @@ import { Job } from '../../types';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { Navigate } from 'react-router';
 import { rootRoute } from '../../routes';
+import { githubAuthApiRef } from '@backstage/core-api';
 
 const useTemplate = (
   templateName: string,
@@ -89,9 +90,15 @@ export const TemplatePage = () => {
 
   const [jobId, setJobId] = useState<string | null>(null);
   const handleClose = () => setJobId(null);
+  const githubAuthApi = useApi(githubAuthApiRef);
+  const tokenPromise = githubAuthApi.getAccessToken('repo');
 
   const handleCreate = async () => {
-    const job = await scaffolderApi.scaffold(template!, formState);
+    const job = await scaffolderApi.scaffold(
+      template!,
+      formState,
+      tokenPromise,
+    );
     setJobId(job);
   };
 

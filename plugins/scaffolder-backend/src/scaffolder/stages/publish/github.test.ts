@@ -67,6 +67,7 @@ describe('GitHub Publisher', () => {
           owner: 'bob',
         },
         directory: '/tmp/test',
+        token: '',
       });
 
       expect(mockGithubClient.repos.createInOrg).toHaveBeenCalledWith({
@@ -88,6 +89,7 @@ describe('GitHub Publisher', () => {
           owner: 'bob',
         },
         directory: '/tmp/test',
+        token: '',
       });
 
       expect(
@@ -116,6 +118,7 @@ describe('GitHub Publisher', () => {
       await publisher.publish({
         values,
         directory: mockDir,
+        token: '',
       });
 
       expect(Repository.init).toHaveBeenCalledWith(mockDir, 0);
@@ -125,6 +128,7 @@ describe('GitHub Publisher', () => {
       await publisher.publish({
         values,
         directory: mockDir,
+        token: '',
       });
 
       expect(mockRepo.refreshIndex).toHaveBeenCalled();
@@ -134,6 +138,7 @@ describe('GitHub Publisher', () => {
       await publisher.publish({
         values,
         directory: mockDir,
+        token: '',
       });
 
       expect(mockIndex.addAll).toHaveBeenCalled();
@@ -148,6 +153,7 @@ describe('GitHub Publisher', () => {
       await publisher.publish({
         values,
         directory: mockDir,
+        token: '',
       });
 
       expect(Signature.now).toHaveBeenCalledTimes(2);
@@ -170,6 +176,7 @@ describe('GitHub Publisher', () => {
       await publisher.publish({
         values,
         directory: mockDir,
+        token: '',
       });
 
       expect(Remote.create).toHaveBeenCalledWith(
@@ -183,6 +190,7 @@ describe('GitHub Publisher', () => {
       await publisher.publish({
         values,
         directory: mockDir,
+        token: '',
       });
 
       const [remotes, { callbacks }] = mockRemote.push.mock

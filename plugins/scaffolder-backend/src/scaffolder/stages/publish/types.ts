@@ -32,5 +32,6 @@ export type PublisherBase = {
     entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;
     directory: string;
+    token: string;
   }): Promise<{ remoteUrl: string }>;
 };

@@ -37,7 +37,9 @@ export class ScaffolderApi {
   async scaffold(
     template: TemplateEntityV1alpha1,
     values: Record<string, any>,
+    tokenPromise: Promise<string>,
   ) {
+    const token = await tokenPromise;
     const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v1/jobs`;
     const response = await fetch(url, {
       method: 'POST',
@@ -45,7 +47,11 @@ export class ScaffolderApi {
         'Content-Type': 'application/json',
       },
       // TODO(shmidt-i): when repo picker is implemented, take isOrg from it
-      body: JSON.stringify({ template, values: { ...values, isOrg: true } }),
+      body: JSON.stringify({
+        template,
+        values: { ...values, isOrg: true },
+        token: token,
+      }),
     });
 
     if (response.status !== 201) {

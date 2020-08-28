@@ -83,6 +83,7 @@ export async function createRouter(
       const values: RequiredTemplateValues & Record<string, JsonValue> =
         req.body.values;
 
+      const token: string = req.body.token;
       const job = jobProcessor.create({
         entity: template,
         values,
@@ -119,6 +120,7 @@ export async function createRouter(
                 entity: ctx.entity,
                 values: ctx.values,
                 directory: ctx.resultDir,
+                token: token,
               });
               return { remoteUrl };
             },

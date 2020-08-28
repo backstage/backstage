@@ -30,12 +30,14 @@ export class GithubPublisher implements PublisherBase {
   async publish({
     values,
     directory,
+    token,
   }: {
     values: RequiredTemplateValues & Record<string, JsonValue>;
     directory: string;
+    token: string;
   }): Promise<{ remoteUrl: string }> {
     const remoteUrl = await this.createRemote(values);
-    await this.pushToRemote(directory, remoteUrl);
+    await this.pushToRemote(directory, remoteUrl, token);
 
     return { remoteUrl };
   }
@@ -49,12 +51,20 @@ export class GithubPublisher implements PublisherBase {
       ? this.client.repos.createInOrg({ name, org: owner })
       : this.client.repos.createForAuthenticatedUser({ name });
 
+    console.log('##################### Creating repo in github...');
     const { data } = await repoCreationPromise;
+
+    console.log('##################### Repo created with data: ', data);
 
     return data?.clone_url;
   }
 
-  private async pushToRemote(directory: string, remote: string): Promise<void> {
+  private async pushToRemote(
+    directory: string,
+    remote: string,
+    token: string,
+  ): Promise<void> {
+    console.log('##################### Inside pushToRemote func...');
     const repo = await Repository.init(directory, 0);
     const index = await repo.refreshIndex();
     await index.addAll();
@@ -73,10 +83,7 @@ export class GithubPublisher implements PublisherBase {
     await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
       callbacks: {
         credentials: () => {
-          return Cred.userpassPlaintextNew(
-            process.env.GITHUB_ACCESS_TOKEN as string,
-            'x-oauth-basic',
-          );
+          return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
         },
       },
     });
