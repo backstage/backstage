@@ -19,6 +19,6 @@ export const ComponentIdValidators = {
     (typeof value === 'string' && value.match(/^https:\/\//) !== null) ||
     'Must start with https://.',
   yamlValidator: (value: any) =>
-    (typeof value === 'string' && value.match(/.yaml/) !== null) ||
+    (typeof value === 'string' && value.match(/\.yaml/) !== null) ||
     "Must contain '.yaml'.",
 };

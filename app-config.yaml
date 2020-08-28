@@ -14,21 +14,15 @@ backend:
     client: sqlite3
     connection: ':memory:'
 
+# See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  '/circleci/api':
-    target: 'https://circleci.com/api/v1.1'
-    changeOrigin: true
-    pathRewrite:
-      '^/proxy/circleci/api/': '/'
+  '/circleci/api': https://circleci.com/api/v1.1
   '/jenkins/api':
-    target: 'http://localhost:8080'
-    changeOrigin: true
+    target: http://localhost:8080
     headers:
       Authorization:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
-    pathRewrite:
-      '^/proxy/jenkins/api/': '/'
 
 organization:
   name: Spotify
