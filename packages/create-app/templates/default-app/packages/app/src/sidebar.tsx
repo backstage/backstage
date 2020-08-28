@@ -9,6 +9,7 @@ import {
   SidebarUserSettings,
   SidebarThemeToggle,
   SidebarPinButton,
+  DefaultProviderSettings,
 } from '@backstage/core';
 
 export const AppSidebar = () => (
@@ -22,7 +23,7 @@ export const AppSidebar = () => (
     <SidebarSpace />
     <SidebarDivider />
     <SidebarThemeToggle />
-    <SidebarUserSettings />
+    <SidebarUserSettings providerSettings={<DefaultProviderSettings />} />
     <SidebarPinButton />
   </Sidebar>
 );
