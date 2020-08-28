@@ -150,3 +150,11 @@ Backstage as _the_ platform:
   ~50% of all Spotifiers use Backstage on a monthly basis, even though the
   percentage of engineers is below 50%. Most engineers actually use Backstage on
   a daily basis.
+
+Again, any feedback is appreciated. Please use the Edit button at the top of the
+page to make a suggestion.
+
+_**Note!** It might be tempting to try to optimize Backstage usage and
+"engagement". Even though you want to consolidate all your tooling and technical
+documentation in Backstage, it is important to remember that time spent in
+Backstage is time not spent writing code_ 🙃
