@@ -7,18 +7,13 @@
  */
 
 import {
+  createDatabase,
   createServiceBuilder,
   loadBackendConfig,
   getRootLogger,
   useHotMemoize,
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
-{{#if dbTypePG}}
-import knex, { PgConnectionConfig } from 'knex';
-{{/if}}
-{{#if dbTypeSqlite}}
-import knex from 'knex';
-{{/if}}
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import identity from './plugins/identity';
@@ -32,30 +27,10 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 
   return (plugin: string): PluginEnvironment => {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
-
-    {{#if dbTypePG}}
-    const knexConfig = {
-      client: 'pg',
-      useNullAsDefault: true,
+    const database = createDatabase(config.getConfig('backend.database'), {
       connection: {
-        port: process.env.POSTGRES_PORT,
-        host: process.env.POSTGRES_HOST,
-        user: process.env.POSTGRES_USER,
-        password: process.env.POSTGRES_PASSWORD,
         database: `backstage_plugin_${plugin}`,
-      } as PgConnectionConfig,
-    };
-    {{/if}}
-    {{#if dbTypeSqlite}}
-    const knexConfig = {
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    };
-    {{/if}}
-    const database = knex(knexConfig);
-    database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-      resource.run('PRAGMA foreign_keys = ON', () => {});
+      },
     });
     return { logger, database, config };
   };
