@@ -138,8 +138,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     microsoftAuthApiRef,
     MicrosoftAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
