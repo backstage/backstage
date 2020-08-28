@@ -15,10 +15,14 @@
  */
 
 export type LocationSpec = {
-  type: string;
+  type: LocationType;
   target: string;
 };
 
 export type Location = {
   id: string;
 } & LocationSpec;
+
+export const LOCATION_TYPES = [ 'github', 'file', 'dir' ] as const;
+
+export type LocationType = typeof LOCATION_TYPES[number];

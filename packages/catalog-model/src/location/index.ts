@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-export type { Location, LocationSpec } from './types';
+export type { Location, LocationSpec, LocationType } from './types';
+export { LOCATION_TYPES } from './types';
 export { locationSchema, locationSpecSchema } from './validation';
 export { LOCATION_ANNOTATION } from './annotation';

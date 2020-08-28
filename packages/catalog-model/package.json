@@ -23,8 +23,10 @@
     "@backstage/config": "^0.1.1-alpha.20",
     "@types/json-schema": "^7.0.5",
     "@types/yup": "^0.28.2",
+    "git-url-parse": "^11.1.3",
     "json-schema": "^0.2.5",
     "lodash": "^4.17.15",
+    "nodegit": "^0.27.0",
     "uuid": "^8.0.0",
     "yup": "^0.29.1"
   },
