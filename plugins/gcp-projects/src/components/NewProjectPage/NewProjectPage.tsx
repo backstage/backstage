@@ -120,7 +120,9 @@ export const NewProjectPage = () => {
       </Header>
       <Content>
         <ContentHeader title="">
-          <SupportButton>Support Button</SupportButton>
+          <SupportButton>
+            This plugin allows you to view and interact with your gcp projects.
+          </SupportButton>
         </ContentHeader>
         <Project />
       </Content>
