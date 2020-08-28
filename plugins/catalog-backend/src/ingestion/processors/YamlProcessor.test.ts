@@ -51,6 +51,22 @@ describe('YamlProcessor', () => {
     expect(never).not.toBeCalled();
   });
 
+  it('should process url that contains yaml', async () => {
+    const containsYamlLocationSpec = {
+      type: 'url',
+      target: 'http://example.com/component?path=test.yaml&c=1&d=2',
+    };
+
+    const buffer = Buffer.from([]);
+    const emit = jest.fn();
+
+    expect(
+      await processor.parseData(buffer, containsYamlLocationSpec, emit),
+    ).toBe(true);
+
+    expect(emit).toBeCalled();
+  });
+
   it('should process entity with yaml', async () => {
     const entity = {
       apiVersion: 'backstage.io/v1alpha1',
