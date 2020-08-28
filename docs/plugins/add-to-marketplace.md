@@ -12,7 +12,7 @@ create a file in `data/plugins` with your plugin's information. Example:
 ---
 title: Your Plugin
 author: Your Name
-category: Monitoring # e.g. CI, Machine Learning, Services, Monitoring
+category: Monitoring # A single category e.g. CI, Machine Learning, Services, Monitoring
 description: A brief description of the plugin. # Max 170 characters
 documentation: # A link to your documentation E.g. Your github README
 iconUrl: # Used as the src attribute for your logo.
