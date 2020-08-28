@@ -175,20 +175,7 @@ For more information about the navigation bar, click [here](https://docusaurus.i
 }
 ```
 
-For more information about custom pages, click [here](https://docusaurus.io/docs/en/custom-pages).
-
-## Adding a plugin to the plugins page
-
-The plugins page is a custom page which builds the list of plugins based on static config files in `data/plugins`. To add a new
-plugin create a file in `data/plugins` with your plugin's information. Example:
-```yaml
----
-title: My Plugin
-author: My Name
-description: A brief description of the plugin. # Max 170 characters
-documentation: https://roadie.io/backstage/plugins/rollbar # E.g. Your github README
-iconPath: /img/plugins/your-icon.png # Path is relative to static/
-``` 
+For more information about custom pages, click [here](https://docusaurus.io/docs/en/custom-pages). 
 
 # Full Documentation
 

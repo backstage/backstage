@@ -29,8 +29,8 @@
 .PluginCard img {
     float: left;
     margin: 0px 16px 8px 0px;
-    height: 75px;
-    width: 75px;
+    height: 100px;
+    width: 100px;
 }
 
 .PluginCardHeader {
@@ -45,26 +45,34 @@
 }
 
 .PluginAddNewButton {
-    padding: 4px 8px;
-    border-radius: 4px;
-    background-color: #36BAA2;
-    color: white;
-    margin-top: 36px;
-
     position: absolute;
     bottom: 16px;
     right: 0px;
 }
 
-.PluginAddNewButton:hover {
+.ButtonFilled {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #36BAA2;
+    color: white;
+    margin-top: 36px;
+}
+
+.ButtonFilled:hover {
     border: 1px solid #36BAA2;
     background-color: transparent;
 }
 
+.ChipOutlined {
+    font-size: small;
+    border-radius: 16px;
+    padding: 2px 8px;
+    border: 1px solid #36BAA2;
+    color: #36BAA2;
+}
+
 .PluginCardLink {
     padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid #36BAA2;
     position: absolute;
     bottom: 0;
     right: 0;

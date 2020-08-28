@@ -1,8 +1,8 @@
 ---
 title: Sentry
-author: roadie.io
-category: monitoring
+author: Spotify
+category: Monitoring
 description: View Sentry issues in Backstage.
-documentation: https://roadie.io/backstage/plugins/sentry
-iconPath: /img/plugins/sentry.png
+documentation: https://github.com/spotify/backstage/tree/master/plugins/sentry
+iconUrl: https://sentry-brand.storage.googleapis.com/sentry-glyph-white.png
 

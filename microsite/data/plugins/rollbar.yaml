@@ -1,8 +1,8 @@
 ---
 title: Rollbar
-author: roadie.io
-category: monitoring
+author: Andrew Thauer
+category: Monitoring
 description: View Rollbar errors for your services in Backstage.
-documentation: https://roadie.io/backstage/plugins/rollbar
-iconPath: /img/plugins/rollbar-icon.png
+documentation: https://github.com/spotify/backstage/tree/master/plugins/rollbar
+iconUrl: https://rollbar.com/assets/media/rollbar-mark-color.png
 
