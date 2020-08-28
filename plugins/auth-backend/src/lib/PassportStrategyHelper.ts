@@ -45,7 +45,6 @@ export const makeProfileInfo = (
   if ((!email || !picture) && idToken) {
     try {
       const decoded: Record<string, string> = jwtDecoder(idToken);
-
       if (!email && decoded.email) {
         email = decoded.email;
       }
@@ -133,7 +132,7 @@ export const executeRefreshTokenStrategy = async (
       (
         err: Error | null,
         accessToken: string,
-        _refreshToken: string,
+        newRefreshToken: string,
         params: any,
       ) => {
         if (err) {
@@ -149,6 +148,7 @@ export const executeRefreshTokenStrategy = async (
 
         resolve({
           accessToken,
+          refreshToken: newRefreshToken,
           params,
         });
       },
