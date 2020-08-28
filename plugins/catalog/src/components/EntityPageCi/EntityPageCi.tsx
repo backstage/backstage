@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
-import { WidgetList as GithubActionsListWidget } from '@backstage/plugin-github-actions';
+import { RecentWorkflowRunsCard as GithubActionsListWidget } from '@backstage/plugin-github-actions';
 import { Grid } from '@material-ui/core';
 import React, { FC } from 'react';
 
