@@ -175,7 +175,7 @@ For more information about the navigation bar, click [here](https://docusaurus.i
 }
 ```
 
-For more information about custom pages, click [here](https://docusaurus.io/docs/en/custom-pages). 
+For more information about custom pages, click [here](https://docusaurus.io/docs/en/custom-pages).
 
 # Full Documentation
 
