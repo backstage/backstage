@@ -30,15 +30,17 @@ import {
   BackstageIdentity,
 } from '../../../definitions/auth';
 
-import { OAuthRequestApi, AuthProvider } from '../../../definitions';
+import {
+  OAuthRequestApi,
+  AuthProvider,
+  DiscoveryApi,
+} from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
 
 type CreateOptions = {
-  backendUrl: string;
-  basePath: string;
-
+  discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
   environment?: string;
@@ -70,15 +72,13 @@ class MicrosoftAuth
     BackstageIdentityApi,
     SessionStateApi {
   static create({
-    backendUrl,
-    basePath,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
+    discoveryApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      backendUrl,
-      basePath,
+      discoveryApi,
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,
