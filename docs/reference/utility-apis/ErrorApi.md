@@ -1,7 +1,7 @@
 # ErrorApi
 
 The ErrorApi type is defined at
-[packages/core-api/src/apis/definitions/ErrorApi.ts:53](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/ErrorApi.ts#L53).
+[packages/core-api/src/apis/definitions/ErrorApi.ts:53](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/ErrorApi.ts#L53).
 
 The following Utility API implements this type: [errorApiRef](./README.md#error)
 
@@ -41,7 +41,7 @@ type Error = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/ErrorApi.ts:24](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/ErrorApi.ts#L24).
+[packages/core-api/src/apis/definitions/ErrorApi.ts:24](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/ErrorApi.ts#L24).
 
 Referenced by: [post](#post), [error\$](#error).
 
@@ -58,7 +58,7 @@ export type ErrorContext = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/ErrorApi.ts:33](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/ErrorApi.ts#L33).
+[packages/core-api/src/apis/definitions/ErrorApi.ts:33](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/ErrorApi.ts#L33).
 
 Referenced by: [post](#post), [error\$](#error).
 
@@ -87,7 +87,7 @@ export type Observable&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L53).
+[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/types.ts#L53).
 
 Referenced by: [error\$](#error).
 
@@ -106,7 +106,7 @@ export type Observer&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L24).
+[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/types.ts#L24).
 
 Referenced by: [Observable](#observable).
 
@@ -129,6 +129,6 @@ export type Subscription = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L33).
+[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/types.ts#L33).
 
 Referenced by: [Observable](#observable).

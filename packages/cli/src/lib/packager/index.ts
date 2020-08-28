@@ -136,7 +136,7 @@ async function findTargetPackages(pkgNames: string[]): Promise<LernaPackage[]> {
 
     // Don't include dependencies of packages that are marked as bundled
     if (!node.pkg.get('bundled')) {
-      const pkgDeps = Object.keys(node.pkg.dependencies);
+      const pkgDeps = Object.keys(node.pkg.dependencies ?? {});
       const localDeps: string[] = Array.from(node.localDependencies.keys());
       const filteredDeps = localDeps.filter(dep => pkgDeps.includes(dep));
 

@@ -5,7 +5,9 @@
     "node": "12"
   },
   "scripts": {
+    "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
     "start": "yarn workspace example-app start",
+    "start-backend": "yarn workspace example-backend start",
     "build": "lerna run build",
     "tsc": "tsc",
     "clean": "backstage-cli clean && lerna run clean",
@@ -20,7 +22,7 @@
     "docker-build:all": "yarn tsc && yarn build && yarn docker-build && yarn workspace example-backend build-image",
     "create-plugin": "backstage-cli create-plugin",
     "remove-plugin": "backstage-cli remove-plugin",
-    "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push; fi",
+    "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push --force-publish; fi",
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
     "build-storybook": "yarn workspace storybook build-storybook"
@@ -28,17 +30,21 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "plugins/*"
+      "plugins/*",
+      "microsite"
     ]
   },
   "version": "1.0.0",
   "devDependencies": {
     "@spotify/eslint-config-oss": "^1.0.1",
     "@spotify/prettier-config": "^8.0.0",
+    "concurrently": "^5.2.0",
+    "fs-extra": "^9.0.0",
     "husky": "^4.2.3",
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "recursive-readdir": "^2.2.2"
   },
   "husky": {
     "hooks": {

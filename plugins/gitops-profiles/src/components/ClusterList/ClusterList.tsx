@@ -31,7 +31,7 @@ import {
 import ClusterTable from '../ClusterTable/ClusterTable';
 import { Button } from '@material-ui/core';
 import { useAsync } from 'react-use';
-import { gitOpsApiRef, ListClusterStatusesResponse } from '../../api';
+import { gitOpsApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 
 const ClusterList: FC<{}> = () => {
@@ -39,19 +39,17 @@ const ClusterList: FC<{}> = () => {
   const githubAuth = useApi(githubAuthApiRef);
   const [githubUsername, setGithubUsername] = useState(String);
 
-  const { loading, error, value } = useAsync<ListClusterStatusesResponse>(
-    async () => {
-      const accessToken = await githubAuth.getAccessToken(['repo', 'user']);
-      if (!githubUsername) {
-        const userInfo = await api.fetchUserInfo({ accessToken });
-        setGithubUsername(userInfo.login);
-      }
-      return api.listClusters({
-        gitHubToken: accessToken,
-        gitHubUser: githubUsername,
-      });
-    },
-  );
+  const { loading, error, value } = useAsync(async () => {
+    const accessToken = await githubAuth.getAccessToken(['repo', 'user']);
+    if (!githubUsername) {
+      const userInfo = await api.fetchUserInfo({ accessToken });
+      setGithubUsername(userInfo.login);
+    }
+    return api.listClusters({
+      gitHubToken: accessToken,
+      gitHubUser: githubUsername,
+    });
+  });
   let content: JSX.Element;
   if (loading) {
     content = (

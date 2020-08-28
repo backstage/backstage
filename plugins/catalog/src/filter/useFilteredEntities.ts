@@ -30,5 +30,7 @@ export function useFilteredEntities() {
     loading: context.loading,
     error: context.error,
     matchingEntities: context.matchingEntities,
+    availableTags: context.availableTags,
+    reload: context.reload,
   };
 }

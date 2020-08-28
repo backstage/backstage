@@ -34,4 +34,5 @@ export {
 export type { SidebarContextType } from './config';
 export { SidebarThemeToggle } from './SidebarThemeToggle';
 export { SidebarUserSettings } from './UserSettings';
+export { DefaultProviderSettings } from './DefaultProviderSettings';
 export * from './Settings';

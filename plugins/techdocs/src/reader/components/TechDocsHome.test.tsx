@@ -17,20 +17,34 @@ import { TechDocsHome } from './TechDocsHome';
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { ApiRegistry, ApiProvider } from '@backstage/core-api';
+
+import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog';
+import { Entity } from '@backstage/catalog-model';
 
 describe('TechDocs Home', () => {
-  it('should render a TechDocs home page', () => {
-    const { getByTestId, queryByText } = render(
-      wrapInTestApp(<TechDocsHome />),
+  const catalogApi: Partial<CatalogApi> = {
+    getEntities: () => Promise.resolve([] as Entity[]),
+  };
+
+  const apiRegistry = ApiRegistry.from([[catalogApiRef, catalogApi]]);
+
+  it('should render a TechDocs home page', async () => {
+    const { findByTestId, findByText } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <TechDocsHome />
+        </ApiProvider>,
+      ),
     );
 
     // Header
-    expect(queryByText('Documentation')).toBeInTheDocument();
+    expect(await findByText('Documentation')).toBeInTheDocument();
     expect(
-      queryByText(/Documentation available in Backstage/i),
+      await findByText(/Documentation available in Backstage/i),
     ).toBeInTheDocument();
 
     // Explore Content
-    expect(getByTestId('docs-explore')).toBeDefined();
+    expect(await findByTestId('docs-explore')).toBeDefined();
   });
 });

@@ -32,7 +32,7 @@ import {
   useApi,
 } from '@backstage/core';
 
-import { lighthouseApiRef, WebsiteListResponse } from '../../api';
+import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 import LighthouseIntro, { LIGHTHOUSE_INTRO_LOCAL_STORAGE } from '../Intro';
@@ -50,7 +50,7 @@ const AuditList: FC<{}> = () => {
     : 1;
 
   const lighthouseApi = useApi(lighthouseApiRef);
-  const { value, loading, error } = useAsync<WebsiteListResponse>(
+  const { value, loading, error } = useAsync(
     async () =>
       await lighthouseApi.getWebsiteList({
         limit: LIMIT,

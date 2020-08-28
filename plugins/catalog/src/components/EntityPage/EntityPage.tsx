@@ -20,24 +20,25 @@ import {
   errorApiRef,
   Header,
   HeaderLabel,
-  HeaderTabs,
   Page,
   pageTheme,
   PageTheme,
   Progress,
   useApi,
+  HeaderTabs,
 } from '@backstage/core';
-import { SentryIssuesWidget } from '@backstage/plugin-sentry';
-import { Grid, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
-import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+import { EntityPageDocs } from '../EntityPageDocs/EntityDocsPage';
+import { EntityPageApi } from '../EntityPageApi/EntityPageApi';
+import { EntityPageOverview } from '../EntityPageOverview/EntityPageOverview';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
+import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(
@@ -75,18 +76,24 @@ const EntityPageTitle: FC<{ title: string; entity: Entity | undefined }> = ({
 );
 
 export const EntityPage: FC<{}> = () => {
-  const { optionalNamespaceAndName, kind } = useParams() as {
+  const {
+    optionalNamespaceAndName,
+    kind,
+    selectedTabId = 'overview',
+  } = useParams() as {
     optionalNamespaceAndName: string;
     kind: string;
+    selectedTabId: string;
   };
   const navigate = useNavigate();
+
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
 
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-  const { value: entity, error, loading } = useAsync<Entity | undefined>(
+  const { value: entity, error, loading } = useAsync(
     () => catalogApi.getEntityByName({ kind, namespace, name }),
     [catalogApi, kind, namespace, name],
   );
@@ -117,6 +124,7 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'overview',
       label: 'Overview',
+      content: (e: Entity) => <EntityPageOverview entity={e} />,
     },
     {
       id: 'ci',
@@ -129,6 +137,8 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'api',
       label: 'API',
+      show: (e: Entity) => !!e?.spec?.implementsApis,
+      content: (e: Entity) => <EntityPageApi entity={e} />,
     },
     {
       id: 'monitoring',
@@ -138,6 +148,13 @@ export const EntityPage: FC<{}> = () => {
       id: 'quality',
       label: 'Quality',
     },
+    {
+      id: 'docs',
+      label: 'Docs',
+      show: (e: Entity) =>
+        !!e.metadata.annotations?.['backstage.io/techdocs-ref'],
+      content: (e: Entity) => <EntityPageDocs entity={e} />,
+    },
   ];
 
   const { headerTitle, headerType } = headerProps(
@@ -146,6 +163,12 @@ export const EntityPage: FC<{}> = () => {
     name,
     entity,
   );
+
+  const selectedTab = tabs.find(tab => tab.id === selectedTabId);
+
+  const filteredHeaderTabs = entity
+    ? tabs.filter(tab => (tab.show ? tab.show(entity) : true))
+    : [];
 
   return (
     <Page theme={getPageTheme(entity)}>
@@ -179,21 +202,21 @@ export const EntityPage: FC<{}> = () => {
 
       {entity && (
         <>
-          <HeaderTabs tabs={tabs} />
+          <HeaderTabs
+            tabs={filteredHeaderTabs}
+            onChange={idx => {
+              navigate(
+                `/catalog/${kind}/${optionalNamespaceAndName}/${filteredHeaderTabs[idx].id}`,
+              );
+            }}
+            selectedIndex={filteredHeaderTabs.findIndex(
+              tab => tab.id === selectedTabId,
+            )}
+          />
 
-          <Content>
-            <Grid container spacing={3}>
-              <Grid item sm={4}>
-                <EntityMetadataCard entity={entity} />
-              </Grid>
-              <Grid item sm={8}>
-                <SentryIssuesWidget
-                  sentryProjectId="sample-sentry-project-id"
-                  statsFor="24h"
-                />
-              </Grid>
-            </Grid>
-          </Content>
+          {selectedTab && selectedTab.content
+            ? selectedTab.content(entity)
+            : null}
 
           <UnregisterEntityDialog
             open={confirmationDialogOpen}

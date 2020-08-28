@@ -36,6 +36,7 @@ export async function createRouter(
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
 
+  const appUrl = options.config.getString('app.baseUrl');
   const backendUrl = options.config.getString('backend.baseUrl');
   const authUrl = `${backendUrl}/auth`;
 
@@ -64,14 +65,20 @@ export async function createRouter(
       const providerConfig = providersConfig.getConfig(providerId);
       const providerRouter = createAuthProviderRouter(
         providerId,
-        { baseUrl: authUrl },
+        { baseUrl: authUrl, appUrl },
         providerConfig,
         logger,
         tokenIssuer,
       );
       router.use(`/${providerId}`, providerRouter);
     } catch (e) {
-      logger.error(e.message);
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          `Failed to initialize ${providerId} auth provider, ${e.message}`,
+        );
+      }
+
+      logger.warn(`Skipping ${providerId} auth provider, ${e.message}`);
     }
   }
 

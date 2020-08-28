@@ -15,11 +15,12 @@
  */
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
-import { Link } from '@material-ui/core';
+import { Chip, Link } from '@material-ui/core';
+import Add from '@material-ui/icons/Add';
 import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import { Alert } from '@material-ui/lab';
-import React from 'react';
+import React, { Dispatch } from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
@@ -45,6 +46,7 @@ const columns: TableColumn<Entity>[] = [
             .filter(Boolean)
             .join(':'),
           kind: entity.kind,
+          selectedTabId: 'overview',
         })}
       >
         {entity.metadata.name}
@@ -63,6 +65,26 @@ const columns: TableColumn<Entity>[] = [
     title: 'Description',
     field: 'metadata.description',
   },
+  {
+    title: 'Tags',
+    field: 'metadata.tags',
+    cellStyle: {
+      padding: '0px 16px 0px 20px',
+    },
+    render: (entity: Entity) => (
+      <>
+        {entity.metadata.tags &&
+          entity.metadata.tags.map(t => (
+            <Chip
+              key={t}
+              label={t}
+              color="secondary"
+              style={{ marginBottom: '0px' }}
+            />
+          ))}
+      </>
+    ),
+  },
 ];
 
 type CatalogTableProps = {
@@ -70,6 +92,7 @@ type CatalogTableProps = {
   titlePreamble: string;
   loading: boolean;
   error?: any;
+  onAddMockData: Dispatch<void>;
 };
 
 export const CatalogTable = ({
@@ -77,6 +100,7 @@ export const CatalogTable = ({
   loading,
   error,
   titlePreamble,
+  onAddMockData,
 }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
 
@@ -131,6 +155,13 @@ export const CatalogTable = ({
         tooltip: favouriteEntityTooltip(isStarred),
         onClick: () => toggleStarredEntity(rowData),
       };
+    },
+    {
+      icon: () => <Add />,
+      tooltip: 'Add example components',
+      isFreeAction: true,
+      onClick: onAddMockData,
+      hidden: !(entities && entities.length === 0),
     },
   ];
 

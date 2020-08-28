@@ -22,6 +22,8 @@ import {
   OAuthProviderHandlers,
   WebMessageResponse,
   BackstageIdentity,
+  OAuthState,
+  AuthProviderConfig,
 } from '../providers/types';
 import { InputError } from '@backstage/backend-common';
 import { TokenIssuer } from '../identity';
@@ -34,19 +36,47 @@ export type Options = {
   secure: boolean;
   disableRefresh?: boolean;
   persistScopes?: boolean;
-  baseUrl: string;
+  cookieDomain: string;
+  cookiePath: string;
   appOrigin: string;
   tokenIssuer: TokenIssuer;
 };
 
+const readState = (stateString: string): OAuthState => {
+  const state = Object.fromEntries(
+    new URLSearchParams(decodeURIComponent(stateString)),
+  );
+  if (
+    !state.nonce ||
+    !state.env ||
+    state.nonce?.length === 0 ||
+    state.env?.length === 0
+  ) {
+    throw Error(`Invalid state passed via request`);
+  }
+  return {
+    nonce: state.nonce,
+    env: state.env,
+  };
+};
+
+export const encodeState = (state: OAuthState): string => {
+  const searchParams = new URLSearchParams();
+  searchParams.append('nonce', state.nonce);
+  searchParams.append('env', state.env);
+
+  return encodeURIComponent(searchParams.toString());
+};
+
 export const verifyNonce = (req: express.Request, providerId: string) => {
   const cookieNonce = req.cookies[`${providerId}-nonce`];
-  const stateNonce = req.query.state;
+  const state: OAuthState = readState(req.query.state?.toString() ?? '');
+  const stateNonce = state.nonce;
 
   if (!cookieNonce) {
     throw new Error('Auth response is missing cookie nonce');
   }
-  if (!stateNonce) {
+  if (stateNonce.length === 0) {
     throw new Error('Auth response is missing state nonce');
   }
   if (cookieNonce !== stateNonce) {
@@ -66,13 +96,17 @@ export const postMessageResponse = (
   res.setHeader('X-Frame-Options', 'sameorigin');
 
   // TODO: Make target app origin configurable globally
+  const script = `
+    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), '${appOrigin}')
+    window.close()
+  `;
+  const hash = crypto.createHash('sha256').update(script).digest('base64');
+  res.setHeader('Content-Security-Policy', `script-src 'sha256-${hash}'`);
+
   res.end(`
 <html>
 <body>
-  <script>
-    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), '${appOrigin}')
-    window.close()
-  </script>
+  <script>${script}</script>
 </body>
 </html>
   `);
@@ -88,24 +122,39 @@ export const ensuresXRequestedWith = (req: express.Request) => {
 };
 
 export class OAuthProvider implements AuthProviderRouteHandlers {
-  private readonly domain: string;
-  private readonly basePath: string;
+  static fromConfig(
+    config: AuthProviderConfig,
+    providerHandlers: OAuthProviderHandlers,
+    options: Pick<
+      Options,
+      'providerId' | 'persistScopes' | 'disableRefresh' | 'tokenIssuer'
+    >,
+  ): OAuthProvider {
+    const { origin: appOrigin } = new URL(config.appUrl);
+    const secure = config.baseUrl.startsWith('https://');
+    const url = new URL(config.baseUrl);
+    const cookiePath = `${url.pathname}/${options.providerId}`;
+    return new OAuthProvider(providerHandlers, {
+      ...options,
+      appOrigin,
+      cookieDomain: url.hostname,
+      cookiePath,
+      secure,
+    });
+  }
 
   constructor(
     private readonly providerHandlers: OAuthProviderHandlers,
     private readonly options: Options,
-  ) {
-    const url = new URL(options.baseUrl);
-    this.domain = url.hostname;
-    this.basePath = url.pathname;
-  }
+  ) {}
 
   async start(req: express.Request, res: express.Response): Promise<void> {
     // retrieve scopes from request
     const scope = req.query.scope?.toString() ?? '';
+    const env = req.query.env?.toString();
 
-    if (!scope) {
-      throw new InputError('missing scope parameter');
+    if (!env) {
+      throw new InputError('No env provided in request query parameters');
     }
 
     if (this.options.persistScopes) {
@@ -116,9 +165,12 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce);
 
+    const stateObject = { nonce: nonce, env: env };
+    const stateParameter = encodeState(stateObject);
+
     const queryParameters = {
       scope,
-      state: nonce,
+      state: stateParameter,
     };
 
     const { url, status } = await this.providerHandlers.start(
@@ -222,10 +274,30 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
 
       await this.populateIdentity(response.backstageIdentity);
 
+      if (
+        response.providerInfo.refreshToken &&
+        response.providerInfo.refreshToken !== refreshToken
+      ) {
+        this.setRefreshTokenCookie(res, response.providerInfo.refreshToken);
+      }
+
       res.send(response);
     } catch (error) {
       res.status(401).send(`${error.message}`);
     }
+  }
+
+  identifyEnv(req: express.Request): string | undefined {
+    const reqEnv = req.query.env?.toString();
+    if (reqEnv) {
+      return reqEnv;
+    }
+    const stateParams = req.query.state?.toString();
+    if (!stateParams) {
+      return undefined;
+    }
+    const env = readState(stateParams).env;
+    return env;
   }
 
   /**
@@ -248,9 +320,9 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     res.cookie(`${this.options.providerId}-nonce`, nonce, {
       maxAge: TEN_MINUTES_MS,
       secure: this.options.secure,
-      sameSite: 'none',
-      domain: this.domain,
-      path: `${this.basePath}/${this.options.providerId}/handler`,
+      sameSite: 'lax',
+      domain: this.options.cookieDomain,
+      path: `${this.options.cookiePath}/handler`,
       httpOnly: true,
     });
   };
@@ -259,9 +331,9 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     res.cookie(`${this.options.providerId}-scope`, scope, {
       maxAge: TEN_MINUTES_MS,
       secure: this.options.secure,
-      sameSite: 'none',
-      domain: this.domain,
-      path: `${this.basePath}/${this.options.providerId}/handler`,
+      sameSite: 'lax',
+      domain: this.options.cookieDomain,
+      path: `${this.options.cookiePath}/handler`,
       httpOnly: true,
     });
   };
@@ -277,9 +349,9 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     res.cookie(`${this.options.providerId}-refresh-token`, refreshToken, {
       maxAge: THOUSAND_DAYS_MS,
       secure: this.options.secure,
-      sameSite: 'none',
-      domain: this.domain,
-      path: `${this.basePath}/${this.options.providerId}`,
+      sameSite: 'lax',
+      domain: this.options.cookieDomain,
+      path: this.options.cookiePath,
       httpOnly: true,
     });
   };
@@ -287,10 +359,10 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
   private removeRefreshTokenCookie = (res: express.Response) => {
     res.cookie(`${this.options.providerId}-refresh-token`, '', {
       maxAge: 0,
-      secure: false,
-      sameSite: 'none',
-      domain: `${this.domain}`,
-      path: `${this.basePath}/${this.options.providerId}`,
+      secure: this.options.secure,
+      sameSite: 'lax',
+      domain: this.options.cookieDomain,
+      path: this.options.cookiePath,
       httpOnly: true,
     });
   };

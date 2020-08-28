@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+} from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { HigherOrderOperations } from '..';
@@ -34,12 +38,13 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'catalog-backend' });
+  const config = ConfigReader.fromConfigs(await loadBackendConfig());
 
   logger.debug('Creating application...');
   const db = await DatabaseManager.createInMemoryDatabase({ logger });
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
-  const locationReader = new LocationReaders();
+  const locationReader = new LocationReaders({ logger, config });
   const higherOrderOperation = new HigherOrderOperations(
     entitiesCatalog,
     locationsCatalog,

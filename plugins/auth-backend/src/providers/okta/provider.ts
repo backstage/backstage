@@ -41,6 +41,10 @@ type PrivateInfo = {
   refreshToken: string;
 };
 
+export type OktaAuthProviderOptions = OAuthProviderOptions & {
+  audience: string;
+};
+
 export class OktaAuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: any;
 
@@ -61,11 +65,14 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
     },
   };
 
-  constructor(options: OAuthProviderOptions) {
+  constructor(options: OktaAuthProviderOptions) {
     this._strategy = new OktaStrategy(
       {
+        clientID: options.clientId,
+        clientSecret: options.clientSecret,
+        callbackURL: options.callbackUrl,
+        audience: options.audience,
         passReqToCallback: false as true,
-        ...options,
         store: this._store,
         response_type: 'code',
       },
@@ -164,45 +171,28 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
 }
 
 export function createOktaProvider(
-  { baseUrl }: AuthProviderConfig,
-  env: string,
+  config: AuthProviderConfig,
+  _: string,
   envConfig: Config,
-  logger: Logger,
+  _logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'okta';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
-  const clientID = envConfig.getString('clientId');
+  const clientId = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
   const audience = envConfig.getString('audience');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
+  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
 
-  const opts = {
+  const provider = new OktaAuthProvider({
     audience,
-    clientID,
+    clientId,
     clientSecret,
-    callbackURL,
-  };
+    callbackUrl,
+  });
 
-  if (!opts.clientID || !opts.clientSecret || !opts.audience) {
-    if (process.env.NODE_ENV !== 'development') {
-      throw new Error(
-        'Failed to initialize Okta auth provider, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars',
-      );
-    }
-
-    logger.warn(
-      'Okta auth provider disabled, set AUTH_OKTA_CLIENT_ID, AUTH_OKTA_CLIENT_SECRET, and AUTH_OKTA_AUDIENCE env vars to enable',
-    );
-    return undefined;
-  }
-  return new OAuthProvider(new OktaAuthProvider(opts), {
+  return OAuthProvider.fromConfig(config, provider, {
     disableRefresh: false,
     providerId,
-    secure,
-    baseUrl,
-    appOrigin,
     tokenIssuer,
   });
 }

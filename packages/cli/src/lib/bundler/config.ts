@@ -152,11 +152,11 @@ export function createBackendConfig(
     externals: [
       nodeExternals({
         modulesDir: paths.rootNodeModules,
-        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
+        allowlist: ['webpack/hot/poll?100', /\@backstage\/.*/],
       }),
       nodeExternals({
         modulesDir: paths.targetNodeModules,
-        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
+        allowlist: ['webpack/hot/poll?100', /\@backstage\/.*/],
       }),
     ],
     target: 'node' as const,
@@ -198,9 +198,17 @@ export function createBackendConfig(
       chunkFilename: isDev
         ? '[name].chunk.js'
         : '[name].[chunkhash:8].chunk.js',
+      ...(isDev
+        ? {
+            devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
+          }
+        : {}),
     },
     plugins: [
-      new StartServerPlugin('main.js'),
+      new StartServerPlugin({
+        name: 'main.js',
+        nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
+      }),
       new webpack.HotModuleReplacementPlugin(),
       ...(checksEnabled
         ? [

@@ -16,7 +16,7 @@ function inject_config() {
     with_entries(select(.key | startswith("APP_CONFIG_")) | .key |= sub("APP_CONFIG_"; "")) |
     to_entries |
     reduce .[] as $item (
-      {}; setpath($item.key | split("_"); $item.value | fromjson)
+      {}; setpath($item.key | split("_"); $item.value | try fromjson catch $item.value)
     )')"
 
   >&2 echo "Runtime app config: $config"

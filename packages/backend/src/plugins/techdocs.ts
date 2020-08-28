@@ -14,9 +14,42 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-techdocs-backend';
+import {
+  createRouter,
+  DirectoryPreparer,
+  Preparers,
+  Generators,
+  LocalPublish,
+  TechdocsGenerator,
+  GithubPreparer,
+} from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
+import Docker from 'dockerode';
 
-export default async function createPlugin({ logger }: PluginEnvironment) {
-  return await createRouter({ logger });
+export default async function createPlugin({
+  logger,
+  config,
+}: PluginEnvironment) {
+  const generators = new Generators();
+  const techdocsGenerator = new TechdocsGenerator(logger);
+  generators.register('techdocs', techdocsGenerator);
+
+  const preparers = new Preparers();
+  const githubPreparer = new GithubPreparer(logger);
+  const directoryPreparer = new DirectoryPreparer(logger);
+  preparers.register('dir', directoryPreparer);
+  preparers.register('github', githubPreparer);
+
+  const publisher = new LocalPublish(logger);
+
+  const dockerClient = new Docker();
+
+  return await createRouter({
+    preparers,
+    generators,
+    publisher,
+    dockerClient,
+    logger,
+    config,
+  });
 }

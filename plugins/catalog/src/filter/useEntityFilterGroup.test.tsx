@@ -51,12 +51,12 @@ describe('useEntityFilterGroup', () => {
   it('works for an empty set of filters', async () => {
     catalogApi.getEntities.mockResolvedValue([]);
     const group: FilterGroup = { filters: {} };
-    const { result, wait } = renderHook(
+    const { result, waitFor } = renderHook(
       () => useEntityFilterGroup('g1', group),
       { wrapper },
     );
 
-    await wait(() => expect(result.current.state.type).toBe('ready'));
+    await waitFor(() => expect(result.current.state.type).toBe('ready'));
   });
 
   it('works for a single group', async () => {
@@ -73,12 +73,12 @@ describe('useEntityFilterGroup', () => {
         f2: e => e.metadata.name !== 'n',
       },
     };
-    const { result, wait } = renderHook(
+    const { result, waitFor } = renderHook(
       () => useEntityFilterGroup('g1', group),
       { wrapper },
     );
 
-    await wait(() => expect(result.current.state.type).toEqual('ready'));
+    await waitFor(() => expect(result.current.state.type).toEqual('ready'));
     let state = result.current.state as FilterGroupStatesReady;
     expect(state.state.filters.f1).toEqual({
       isSelected: false,
@@ -91,7 +91,7 @@ describe('useEntityFilterGroup', () => {
 
     act(() => result.current.setSelectedFilters(['f1']));
 
-    await wait(() => expect(result.current.state.type).toEqual('ready'));
+    await waitFor(() => expect(result.current.state.type).toEqual('ready'));
     state = result.current.state as FilterGroupStatesReady;
     expect(state.state.filters.f1).toEqual({
       isSelected: true,
@@ -104,7 +104,7 @@ describe('useEntityFilterGroup', () => {
 
     act(() => result.current.setSelectedFilters(['f2']));
 
-    await wait(() => expect(result.current.state.type).toEqual('ready'));
+    await waitFor(() => expect(result.current.state.type).toEqual('ready'));
     state = result.current.state as FilterGroupStatesReady;
     expect(state.state.filters.f1).toEqual({
       isSelected: false,

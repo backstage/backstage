@@ -29,7 +29,7 @@ import {
 } from '../../lib/PassportStrategyHelper';
 import {
   AuthProviderConfig,
-  GenericOAuth2ProviderOptions,
+  OAuthProviderOptions,
   OAuthProviderHandlers,
   OAuthResponse,
   PassportDoneCallback,
@@ -41,12 +41,24 @@ type PrivateInfo = {
   refreshToken: string;
 };
 
+export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
+  authorizationUrl: string;
+  tokenUrl: string;
+};
+
 export class OAuth2AuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: OAuth2Strategy;
 
-  constructor(options: GenericOAuth2ProviderOptions) {
+  constructor(options: OAuth2AuthProviderOptions) {
     this._strategy = new OAuth2Strategy(
-      { ...options, passReqToCallback: false as true },
+      {
+        clientID: options.clientId,
+        clientSecret: options.clientSecret,
+        callbackURL: options.callbackUrl,
+        authorizationURL: options.authorizationUrl,
+        tokenURL: options.tokenUrl,
+        passReqToCallback: false as true,
+      },
       (
         accessToken: any,
         refreshToken: any,
@@ -55,6 +67,7 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
         done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
       ) => {
         const profile = makeProfileInfo(rawProfile, params.id_token);
+
         done(
           undefined,
           {
@@ -101,11 +114,16 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
   }
 
   async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
-    const { accessToken, params } = await executeRefreshTokenStrategy(
+    const refreshTokenResponse = await executeRefreshTokenStrategy(
       this._strategy,
       refreshToken,
       scope,
     );
+    const {
+      accessToken,
+      params,
+      refreshToken: updatedRefreshToken,
+    } = refreshTokenResponse;
 
     const profile = await executeFetchUserProfileStrategy(
       this._strategy,
@@ -116,6 +134,7 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
     return this.populateIdentity({
       providerInfo: {
         accessToken,
+        refreshToken: updatedRefreshToken,
         idToken: params.id_token,
         expiresInSeconds: params.expires_in,
         scope: params.scope,
@@ -134,7 +153,6 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
     if (!profile.email) {
       throw new Error('Profile does not contain a profile');
     }
-
     const id = profile.email.split('@')[0];
 
     return { ...response, backstageIdentity: { id } };
@@ -142,52 +160,30 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
 }
 
 export function createOAuth2Provider(
-  { baseUrl }: AuthProviderConfig,
-  env: string,
+  config: AuthProviderConfig,
+  _: string,
   envConfig: Config,
-  logger: Logger,
+  _logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'oauth2';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
-  const clientID = envConfig.getString('clientId');
+  const clientId = envConfig.getString('clientId');
   const clientSecret = envConfig.getString('clientSecret');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame?env=${env}`;
-  const authorizationURL = envConfig.getString('authorizationURL');
-  const tokenURL = envConfig.getString('tokenURL');
+  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
+  const authorizationUrl = envConfig.getString('authorizationUrl');
+  const tokenUrl = envConfig.getString('tokenUrl');
 
-  const opts = {
-    clientID,
+  const provider = new OAuth2AuthProvider({
+    clientId,
     clientSecret,
-    callbackURL,
-    authorizationURL,
-    tokenURL,
-  };
+    callbackUrl,
+    authorizationUrl,
+    tokenUrl,
+  });
 
-  if (
-    !opts.clientID ||
-    !opts.clientSecret ||
-    !opts.authorizationURL ||
-    !opts.tokenURL
-  ) {
-    if (process.env.NODE_ENV !== 'development') {
-      throw new Error(
-        'Failed to initialize OAuth2 auth provider, set AUTH_OAUTH2_CLIENT_ID, AUTH_OAUTH2_CLIENT_SECRET, AUTH_OAUTH2_AUTH_URL, and AUTH_OAUTH2_TOKEN_URL env vars',
-      );
-    }
-
-    logger.warn(
-      'OAuth2 auth provider disabled, set AUTH_OAUTH2_CLIENT_ID, AUTH_OAUTH2_CLIENT_SECRET, AUTH_OAUTH2_AUTH_URL, and AUTH_OAUTH2_TOKEN_URL env vars to enable',
-    );
-    return undefined;
-  }
-  return new OAuthProvider(new OAuth2AuthProvider(opts), {
+  return OAuthProvider.fromConfig(config, provider, {
     disableRefresh: false,
     providerId,
-    secure,
-    baseUrl,
-    appOrigin,
     tokenIssuer,
   });
 }

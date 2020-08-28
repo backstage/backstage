@@ -30,6 +30,7 @@ const DATA = {
   worstStrings: ['string1', 'string2', {}] as string[],
   nested: {
     one: 1,
+    null: null,
     string: 'string',
     strings: ['string1', 'string2'],
   },
@@ -39,6 +40,13 @@ const DATA = {
 function expectValidValues(config: ConfigReader) {
   expect(config.keys()).toEqual(Object.keys(DATA));
   expect(config.get('zero')).toBe(0);
+  expect(config.has('zero')).toBe(true);
+  expect(config.has('false')).toBe(true);
+  expect(config.has('null')).toBe(true);
+  expect(config.has('missing')).toBe(false);
+  expect(config.has('nested.one')).toBe(true);
+  expect(config.has('nested.missing')).toBe(false);
+  expect(config.has('nested.null')).toBe(true);
   expect(config.getNumber('zero')).toBe(0);
   expect(config.getNumber('one')).toBe(1);
   expect(config.getOptional('true')).toBe(true);
@@ -50,6 +58,7 @@ function expectValidValues(config: ConfigReader) {
   expect(config.getConfig('nested').getNumber('one')).toBe(1);
   expect(config.get('nested')).toEqual({
     one: 1,
+    null: null,
     string: 'string',
     strings: ['string1', 'string2'],
   });
@@ -128,6 +137,8 @@ describe('ConfigReader', () => {
   it('should read empty config with valid keys', () => {
     const config = new ConfigReader({}, CTX);
     expect(config.keys()).toEqual([]);
+    expect(config.getOptional()).toEqual({});
+    expect(config.getOptional('x')).toBeUndefined();
     expect(config.getOptionalString('x')).toBeUndefined();
     expect(config.getOptionalString('x_x')).toBeUndefined();
     expect(config.getOptionalString('x-X')).toBeUndefined();
@@ -144,14 +155,14 @@ describe('ConfigReader', () => {
   it('should throw on invalid keys', () => {
     const config = new ConfigReader({}, CTX);
 
-    expect(() => config.getString('.')).toThrow(/^Invalid config key/);
-    expect(() => config.getString('0')).toThrow(/^Invalid config key/);
-    expect(() => config.getString('(')).toThrow(/^Invalid config key/);
+    expect(() => config.has('.')).toThrow(/^Invalid config key/);
+    expect(() => config.get('0')).toThrow(/^Invalid config key/);
+    expect(() => config.getOptional('(')).toThrow(/^Invalid config key/);
     expect(() => config.getString('z-_')).toThrow(/^Invalid config key/);
-    expect(() => config.getString('-')).toThrow(/^Invalid config key/);
-    expect(() => config.getString('.a')).toThrow(/^Invalid config key/);
-    expect(() => config.getString('0.a')).toThrow(/^Invalid config key/);
-    expect(() => config.getString('0a')).toThrow(/^Invalid config key/);
+    expect(() => config.getOptionalString('-')).toThrow(/^Invalid config key/);
+    expect(() => config.getNumber('.a')).toThrow(/^Invalid config key/);
+    expect(() => config.getConfig('0.a')).toThrow(/^Invalid config key/);
+    expect(() => config.getOptionalConfig('0a')).toThrow(/^Invalid config key/);
     expect(() => config.getString('a.0a')).toThrow(/^Invalid config key/);
     expect(() => config.getString('a..a')).toThrow(/^Invalid config key/);
     expect(() => config.getString('a.')).toThrow(/^Invalid config key/);
@@ -214,9 +225,19 @@ describe('ConfigReader with fallback', () => {
     const config = ConfigReader.fromConfigs([
       {
         data: {
+          a: true,
+          b: true,
           c: true,
+          nested1: {
+            a: true,
+            b: true,
+          },
+          badBefore: {
+            a: true,
+          },
+          badAfter: true,
         },
-        context: 'x',
+        context: 'z',
       },
       {
         data: {
@@ -234,19 +255,9 @@ describe('ConfigReader with fallback', () => {
       },
       {
         data: {
-          a: true,
-          b: true,
           c: true,
-          nested1: {
-            a: true,
-            b: true,
-          },
-          badBefore: {
-            a: true,
-          },
-          badAfter: true,
         },
-        context: 'z',
+        context: 'x',
       },
     ]);
 
@@ -308,6 +319,12 @@ describe('ConfigReader with fallback', () => {
     const config = new ConfigReader(a, CTX, new ConfigReader(b, CTX));
 
     expect(config.keys()).toEqual(['merged']);
+    expect(config.has('merged.x')).toBe(true);
+    expect(config.has('merged.y')).toBe(true);
+    expect(config.has('merged.w')).toBe(false);
+    expect(config.getConfig('merged').has('x')).toBe(true);
+    expect(config.getConfig('merged').has('y')).toBe(true);
+    expect(config.getConfig('merged').has('w')).toBe(false);
     expect(config.getConfig('merged').keys()).toEqual([
       'x',
       'z',
@@ -427,42 +444,57 @@ describe('ConfigReader.get()', () => {
   });
 
   it('should merge in fallback configs', () => {
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('a')).toEqual(
+    expect(
+      ConfigReader.fromConfigs([configs[0], configs[1], configs[2]]).get(),
+    ).toEqual({
+      a: {
+        x: 'x1',
+        y: ['y11', 'y12', 'y13'],
+        z: false,
+      },
+      b: {
+        x: 'x2',
+        y: ['y21', 'y22'],
+        z: 'z2',
+      },
+      c: { c1: 'c1' },
+    });
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('a')).toEqual(
       {
         x: 'x1',
         y: ['y11', 'y12', 'y13'],
         z: false,
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('b')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('b')).toEqual(
       {
         x: 'x1',
         y: ['y11'],
         z: 'z2',
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('c')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('c')).toEqual(
       {
         c1: {
           c2: 'c2',
         },
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('a')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('a')).toEqual(
       {
         x: 'x1',
         y: ['y11', 'y12', 'y13'],
         z: false,
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('b')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('b')).toEqual(
       {
         x: 'x1',
         y: ['y11'],
         z: 'z2',
       },
     );
-    expect(ConfigReader.fromConfigs([configs[0], configs[1]]).get('c')).toEqual(
+    expect(ConfigReader.fromConfigs([configs[1], configs[0]]).get('c')).toEqual(
       {
         c1: {
           c2: 'c2',
@@ -471,14 +503,14 @@ describe('ConfigReader.get()', () => {
     );
 
     expect(
-      ConfigReader.fromConfigs([configs[2], configs[1]]).getOptional('b'),
+      ConfigReader.fromConfigs([configs[1], configs[2]]).getOptional('b'),
     ).toEqual({
       x: 'x2',
       y: ['y21', 'y22'],
       z: 'z2',
     });
     expect(
-      ConfigReader.fromConfigs([configs[2], configs[1]]).getOptional('c'),
+      ConfigReader.fromConfigs([configs[1], configs[2]]).getOptional('c'),
     ).toEqual({
       c1: 'c1',
     });
@@ -486,23 +518,6 @@ describe('ConfigReader.get()', () => {
 
   it('should not merge non-objects', () => {
     const config = ConfigReader.fromConfigs([
-      {
-        data: {
-          a: ['1', '2'],
-          c: [],
-          d: {
-            x: 'x',
-          },
-          e: ['3'],
-          f: 'foo',
-          g: { z: 'z' },
-          h: {
-            a: 'a1',
-            c: 'c1',
-          },
-        },
-        context: '1',
-      },
       {
         data: {
           a: ['x', 'y', 'z'],
@@ -521,6 +536,23 @@ describe('ConfigReader.get()', () => {
         },
         context: '2',
       },
+      {
+        data: {
+          a: ['1', '2'],
+          c: [],
+          d: {
+            x: 'x',
+          },
+          e: ['3'],
+          f: 'foo',
+          g: { z: 'z' },
+          h: {
+            a: 'a1',
+            c: 'c1',
+          },
+        },
+        context: '1',
+      },
     ]);
     expect(config.get('a')).toEqual(['1', '2']);
     expect(config.get('b')).toEqual(['1']);
@@ -530,5 +562,22 @@ describe('ConfigReader.get()', () => {
     expect(config.get('f')).toEqual('foo');
     expect(config.get('g')).toEqual({ z: 'z' });
     expect(config.get('h')).toEqual({ a: 'a1', b: 'b2', c: 'c1' });
+    expect(config.getConfig('h').get()).toEqual({ a: 'a1', b: 'b2', c: 'c1' });
+    expect(config.getOptional()).toEqual({
+      a: ['1', '2'],
+      b: ['1'],
+      c: [],
+      d: {
+        x: 'x',
+      },
+      e: ['3'],
+      f: 'foo',
+      g: { z: 'z' },
+      h: {
+        a: 'a1',
+        b: 'b2',
+        c: 'c1',
+      },
+    });
   });
 });

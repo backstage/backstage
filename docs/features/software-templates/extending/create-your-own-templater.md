@@ -1,4 +1,7 @@
-# Creating your own Templater
+---
+id: extending-templater
+title: Creating your own Templater
+---
 
 Templaters are responsible for taking the directory path for the skeleton
 returned by the preparers, and then executing the templating command on top of
@@ -113,8 +116,8 @@ metadata:
   description:
     Next.js application skeleton for creating isomorphic web applications.
   tags:
-    - Recommended
-    - React
+    - recommended
+    - react
 spec:
   owner: web@example.com
   templater: handlebars

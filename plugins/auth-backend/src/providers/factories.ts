@@ -23,7 +23,13 @@ import { createGoogleProvider } from './google';
 import { createOAuth2Provider } from './oauth2';
 import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
-import { AuthProviderConfig, AuthProviderFactory } from './types';
+import { createAuth0Provider } from './auth0';
+import { createMicrosoftProvider } from './microsoft';
+import {
+  AuthProviderConfig,
+  AuthProviderFactory,
+  EnvironmentIdentifierFn,
+} from './types';
 import { Config } from '@backstage/config';
 import {
   EnvironmentHandlers,
@@ -36,6 +42,8 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   gitlab: createGitlabProvider,
   saml: createSamlProvider,
   okta: createOktaProvider,
+  auth0: createAuth0Provider,
+  microsoft: createMicrosoftProvider,
   oauth2: createOAuth2Provider,
 };
 
@@ -54,16 +62,26 @@ export const createAuthProviderRouter = (
   const router = Router();
   const envs = providerConfig.keys();
   const envProviders: EnvironmentHandlers = {};
+  let envIdentifier: EnvironmentIdentifierFn | undefined;
 
   for (const env of envs) {
     const envConfig = providerConfig.getConfig(env);
     const provider = factory(globalConfig, env, envConfig, logger, issuer);
     if (provider) {
       envProviders[env] = provider;
+      envIdentifier = provider.identifyEnv;
     }
   }
 
-  const handler = new EnvironmentHandler(providerId, envProviders);
+  if (typeof envIdentifier === 'undefined') {
+    throw Error(`No envIdentifier provided for '${providerId}'`);
+  }
+
+  const handler = new EnvironmentHandler(
+    providerId,
+    envProviders,
+    envIdentifier,
+  );
 
   router.get('/start', handler.start.bind(handler));
   router.get('/handler/frame', handler.frameHandler.bind(handler));

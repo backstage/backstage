@@ -1,0 +1,52 @@
+{
+  "name": "@backstage/create-app",
+  "description": "Create app package for Backstage",
+  "version": "0.1.1-alpha.20",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spotify/backstage",
+    "directory": "packages/create-app"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "bin": {
+    "backstage-create-app": "bin/backstage-create-app"
+  },
+  "scripts": {
+    "build": "backstage-cli build --outputs cjs",
+    "lint": "backstage-cli lint",
+    "clean": "backstage-cli clean",
+    "start": "nodemon --"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "^0.1.1-alpha.20",
+    "chalk": "^4.0.0",
+    "commander": "^4.1.1",
+    "fs-extra": "^9.0.0",
+    "handlebars": "^4.7.3",
+    "inquirer": "^7.0.4",
+    "ora": "^4.0.3",
+    "recursive-readdir": "^2.2.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "@types/inquirer": "^6.5.0",
+    "@types/ora": "^3.2.0",
+    "@types/react-dev-utils": "^9.0.4",
+    "@types/recursive-readdir": "^2.2.0",
+    "ts-node": "^8.6.2"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "templates"
+  ]
+}

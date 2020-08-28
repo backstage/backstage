@@ -49,9 +49,9 @@ describe('defaultConfigLoader', () => {
       '{"my":"runtime-config"}',
     );
     expect(configs).toEqual([
-      { data: { my: 'runtime-config' }, context: 'env' },
       { data: { my: 'override-config' }, context: 'a' },
       { data: { my: 'config' }, context: 'b' },
+      { data: { my: 'runtime-config' }, context: 'env' },
     ]);
   });
 

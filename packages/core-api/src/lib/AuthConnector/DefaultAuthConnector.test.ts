@@ -18,11 +18,12 @@ import ProviderIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from './DefaultAuthConnector';
 import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
+import { UrlPatternDiscovery } from '../../apis';
 
 const anyFetch = fetch as any;
 
 const defaultOptions = {
-  apiOrigin: 'my-origin',
+  discoveryApi: UrlPatternDiscovery.compile('http://my-host/api/{{pluginId}}'),
   environment: 'production',
   provider: {
     id: 'my-provider',
@@ -114,7 +115,8 @@ describe('DefaultAuthConnector', () => {
 
     expect(popupSpy).toBeCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url: 'my-origin/api/auth/my-provider/start?scope=a%20b&env=production',
+      url:
+        'http://my-host/api/auth/my-provider/start?scope=a%20b&env=production',
     });
 
     await expect(sessionPromise).resolves.toEqual({
@@ -140,9 +142,9 @@ describe('DefaultAuthConnector', () => {
       instantPopup: true,
     });
 
-    expect(popupSpy).toBeCalledTimes(1);
-
     await expect(sessionPromise).resolves.toBe('my-session');
+
+    expect(popupSpy).toBeCalledTimes(1);
   });
 
   it('should use join func to join scopes', async () => {
@@ -162,7 +164,8 @@ describe('DefaultAuthConnector', () => {
 
     expect(popupSpy).toBeCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url: 'my-origin/api/auth/my-provider/start?scope=-ab-&env=production',
+      url:
+        'http://my-host/api/auth/my-provider/start?scope=-ab-&env=production',
     });
   });
 });

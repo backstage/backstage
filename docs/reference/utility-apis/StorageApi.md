@@ -1,7 +1,7 @@
 # StorageApi
 
 The StorageApi type is defined at
-[packages/core-api/src/apis/definitions/StorageApi.ts:31](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/StorageApi.ts#L31).
+[packages/core-api/src/apis/definitions/StorageApi.ts:31](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/StorageApi.ts#L31).
 
 The following Utility API implements this type:
 [storageApiRef](./README.md#storage)
@@ -79,7 +79,7 @@ export type Observable&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L53).
+[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/types.ts#L53).
 
 Referenced by: [observe\$](#observe), [StorageApi](#storageapi).
 
@@ -98,7 +98,7 @@ export type Observer&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L24).
+[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/types.ts#L24).
 
 Referenced by: [Observable](#observable).
 
@@ -144,7 +144,7 @@ export interface StorageApi {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/StorageApi.ts:31](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/StorageApi.ts#L31).
+[packages/core-api/src/apis/definitions/StorageApi.ts:31](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/StorageApi.ts#L31).
 
 Referenced by: [forBucket](#forbucket).
 
@@ -158,7 +158,7 @@ export type StorageValueChange&lt;T = any&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/StorageApi.ts:21](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/apis/definitions/StorageApi.ts#L21).
+[packages/core-api/src/apis/definitions/StorageApi.ts:21](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/StorageApi.ts#L21).
 
 Referenced by: [observe\$](#observe), [StorageApi](#storageapi).
 
@@ -181,6 +181,6 @@ export type Subscription = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/53a229ea7576b1432835e54e41e0b9526038afa4/packages/core-api/src/types.ts#L33).
+[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/types.ts#L33).
 
 Referenced by: [Observable](#observable).

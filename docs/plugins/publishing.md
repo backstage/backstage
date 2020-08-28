@@ -1,4 +1,7 @@
-# Publishing
+---
+id: publishing
+title: Publishing
+---
 
 ## NPM
 

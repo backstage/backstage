@@ -1,4 +1,7 @@
-# Deployment (Other)
+---
+id: deployment-other
+title: Other
+---
 
 ## Deploying Locally
 

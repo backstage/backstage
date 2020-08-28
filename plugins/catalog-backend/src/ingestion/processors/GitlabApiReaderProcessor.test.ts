@@ -25,7 +25,7 @@ describe('GitlabApiReaderProcessor', () => {
         target:
           'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
         url: new URL(
-          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml?ref=branch',
+          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         ),
         err: undefined,
       },
@@ -33,7 +33,7 @@ describe('GitlabApiReaderProcessor', () => {
         target:
           'https://gitlab.example.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
         url: new URL(
-          'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml?ref=branch',
+          'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         ),
         err: undefined,
       },
@@ -41,7 +41,7 @@ describe('GitlabApiReaderProcessor', () => {
         target:
           'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/to/file.yaml', // Repo not in subgroup
         url: new URL(
-          'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml?ref=branch',
+          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         ),
         err: undefined,
       },
@@ -50,7 +50,7 @@ describe('GitlabApiReaderProcessor', () => {
           'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/',
         url: null,
         err:
-          'Incorrect url: https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/, Error: Gitlab url does not end in .ya?ml',
+          'Incorrect url: https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/, Error: GitLab url does not end in .ya?ml',
       },
     ];
 
@@ -59,8 +59,14 @@ describe('GitlabApiReaderProcessor', () => {
         expect(() => processor.buildRawUrl(test.target, 12345)).toThrowError(
           test.err,
         );
+      } else if (test.url) {
+        expect(processor.buildRawUrl(test.target, 12345).toString()).toEqual(
+          test.url.toString(),
+        );
       } else {
-        expect(processor.buildRawUrl(test.target, 12345)).toEqual(test.url);
+        throw new Error(
+          'This should not have happened. Either err or url should have matched.',
+        );
       }
     }
   });
