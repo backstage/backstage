@@ -61,7 +61,9 @@
       "prettier --write"
     ]
   },
-  "dependencies": {
-    "ts-node": "^8.10.2"
+  "jest": {
+    "transformModules": [
+      "@kyma-project/asyncapi-react"
+    ]
   }
 }
