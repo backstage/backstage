@@ -55,7 +55,7 @@ async function main() {
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
     .addRouter('/techdocs', await techdocs(techdocsEnv))
-    .addRouter('/proxy', await proxy(proxyEnv));
+    .addRouter('/proxy', await proxy(proxyEnv, '/proxy'));
 
   await service.start().catch(err => {
     console.log(err);

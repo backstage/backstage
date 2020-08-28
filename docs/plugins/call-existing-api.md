@@ -71,11 +71,7 @@ Example:
 ```yaml
 # In app-config.yaml
 proxy:
-  '/frobs':
-    target: 'http://api.frobsco.com/v1'
-    changeOrigin: true
-    pathRewrite:
-      '^/proxy/frobs/': '/'
+  '/frobs': http://api.frobsco.com/v1
 ```
 
 ```ts
@@ -86,9 +82,8 @@ fetch(`${backendUrl}/proxy/frobs/list`)
   .then(payload => setFrobs(payload as Frob[]));
 ```
 
-The proxy is powered by the `http-proxy-middleware` package, and supports all of
-its
-[configuration options](https://github.com/chimurai/http-proxy-middleware#options).
+The proxy is powered by the `http-proxy-middleware` package. See
+[Proxying](proxying.md) for a full description of its configuration options.
 
 Internally at Spotify, the proxy option has been the overwhelmingly most popular
 choice for plugin makers. Since we have DNS based service discovery in place and
