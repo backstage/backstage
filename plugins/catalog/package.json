@@ -23,6 +23,7 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.1.1-alpha.20",
     "@backstage/core": "^0.1.1-alpha.20",
+    "@backstage/components": "^0.1.1-alpha.20",
     "@backstage/plugin-api-docs": "^0.1.1-alpha.20",
     "@backstage/plugin-github-actions": "^0.1.1-alpha.20",
     "@backstage/plugin-jenkins": "^0.1.1-alpha.20",

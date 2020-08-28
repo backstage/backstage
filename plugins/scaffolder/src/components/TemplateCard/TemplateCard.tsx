@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, pageTheme } from '@backstage/core';
+import { pageTheme } from '@backstage/core';
 import { Card, Chip, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import { generatePath } from 'react-router-dom';
 import { templateRoute } from '../../routes';
+import { Button } from '@backstage/components';
 
 const useStyles = makeStyles(theme => ({
   header: {

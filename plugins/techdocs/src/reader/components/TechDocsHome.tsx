@@ -18,7 +18,9 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import { useNavigate } from 'react-router-dom';
 import { Grid } from '@material-ui/core';
-import { ItemCard, Progress, useApi } from '@backstage/core';
+import { ItemCard, useApi } from '@backstage/core';
+import { Progress } from '@backstage/components';
+
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 

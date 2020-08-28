@@ -19,10 +19,8 @@ import {
   Content,
   ContentHeader,
   Header,
-  SupportButton,
   Page,
   pageTheme,
-  Progress,
   HeaderLabel,
   useApi,
   githubAuthApiRef,
@@ -33,6 +31,7 @@ import { Button } from '@material-ui/core';
 import { useAsync } from 'react-use';
 import { gitOpsApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
+import { Progress, SupportButton } from '@backstage/components';
 
 const ClusterList: FC<{}> = () => {
   const api = useApi(gitOpsApiRef);

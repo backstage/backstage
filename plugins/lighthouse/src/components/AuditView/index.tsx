@@ -35,13 +35,13 @@ import {
   Content,
   ContentHeader,
   HeaderLabel,
-  Progress,
 } from '@backstage/core';
 
 import { lighthouseApiRef, Website, Audit } from '../../api';
 import AuditStatusIcon from '../AuditStatusIcon';
 import LighthouseSupportButton from '../SupportButton';
 import { formatTime } from '../../utils';
+import { Progress } from '@backstage/components';
 
 const useStyles = makeStyles({
   contentGrid: {

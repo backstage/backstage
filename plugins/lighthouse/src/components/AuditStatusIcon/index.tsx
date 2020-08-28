@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { StatusPending, StatusError, StatusOK } from '@backstage/core';
+import { StatusPending, StatusError, StatusOK } from '@backstage/components';
 
 import { Audit } from '../../api';
 

@@ -16,10 +16,11 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
-import { InfoCard, StructuredMetadataTable } from '@backstage/core';
+import { InfoCard } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { useBuilds } from '../../state';
 import { JenkinsRunStatus } from '../../pages/BuildsPage/lib/Status';
+import { StructuredMetadataTable } from '@backstage/components';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {

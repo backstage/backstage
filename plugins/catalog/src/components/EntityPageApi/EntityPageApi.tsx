@@ -15,13 +15,14 @@
  */
 
 import { ApiEntityV1alpha1, Entity } from '@backstage/catalog-model';
-import { Content, Progress, useApi } from '@backstage/core';
+import { Content, useApi } from '@backstage/core';
 import { ApiDefinitionCard } from '@backstage/plugin-api-docs';
 import { Grid } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../..';
+import { Progress } from '@backstage/components';
 
 export const EntityPageApi: FC<{ entity: Entity }> = ({ entity }) => {
   const catalogApi = useApi(catalogApiRef);

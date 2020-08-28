@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DismissableBanner } from '@backstage/core';
+import { DismissableBanner } from '@backstage/components';
 import { Link, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 

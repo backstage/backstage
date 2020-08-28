@@ -18,7 +18,7 @@ import { Link, Typography, Box, IconButton, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
-import { Table, TableColumn } from '@backstage/core';
+import { Table, TableColumn } from '@backstage/components';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';

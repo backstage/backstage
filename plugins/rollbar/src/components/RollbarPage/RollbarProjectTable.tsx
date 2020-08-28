@@ -19,7 +19,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { Table, TableColumn } from '@backstage/core';
+import { Table, TableColumn } from '@backstage/components';
 import { RollbarProject } from '../../api/types';
 
 const projectUrl = (org: string, id: number) =>

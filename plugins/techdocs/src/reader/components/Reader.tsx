@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { useApi, Progress } from '@backstage/core';
+import { useApi } from '@backstage/core';
+import { Progress } from '@backstage/components';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';

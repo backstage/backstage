@@ -28,11 +28,10 @@ import {
   createPlugin,
   ApiTestRegistry,
   ApiHolder,
-  AlertDisplay,
-  OAuthRequestDialog,
 } from '@backstage/core';
 import * as defaultApiFactories from './apiFactories';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
+import { OAuthRequestDialog, AlertDisplay } from '@backstage/components';
 
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
 type BackstagePlugin = ReturnType<typeof createPlugin>;

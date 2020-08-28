@@ -22,6 +22,7 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.1.1-alpha.20",
     "@backstage/core": "^0.1.1-alpha.20",
+    "@backstage/components": "^0.1.1-alpha.20",
     "@backstage/plugin-catalog": "^0.1.1-alpha.20",
     "@backstage/theme": "^0.1.1-alpha.20",
     "@kyma-project/asyncapi-react": "^0.11.0",

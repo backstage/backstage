@@ -15,15 +15,10 @@
  */
 
 import React, { FC } from 'react';
-import {
-  configApiRef,
-  Progress,
-  Table,
-  TableColumn,
-  useApi,
-} from '@backstage/core';
+import { configApiRef, useApi } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
+import { TableColumn, Table, Progress } from '@backstage/components';
 
 type NewRelicApplication = {
   id: number;

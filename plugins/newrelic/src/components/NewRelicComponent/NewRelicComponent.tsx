@@ -23,9 +23,9 @@ import {
   Content,
   ContentHeader,
   HeaderLabel,
-  SupportButton,
 } from '@backstage/core';
 import NewRelicFetchComponent from '../NewRelicFetchComponent';
+import { SupportButton } from '@backstage/components';
 
 const NewRelicComponent: FC<{}> = () => (
   <Page theme={pageTheme.tool}>

@@ -19,10 +19,10 @@ import {
   ErrorApi,
   errorApiRef,
   InfoCard,
-  Progress,
   useApi,
   configApiRef,
 } from '@backstage/core';
+import { Progress } from '@backstage/components';
 import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
 import { useAsync } from 'react-use';
 import { sentryApiFactory } from '../../data/api-factory';

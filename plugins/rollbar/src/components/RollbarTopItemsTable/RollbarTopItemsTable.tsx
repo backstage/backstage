@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Table, TableColumn } from '@backstage/core';
+import { Table, TableColumn } from '@backstage/components';
 import { Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import {

@@ -19,12 +19,12 @@ import { Tabs, Tab, makeStyles, Typography, Divider } from '@material-ui/core';
 import 'graphiql/graphiql.css';
 import { StorageBucket } from '../../lib/storage';
 import { GraphQLEndpoint } from '../../lib/api';
-import { Progress } from '@backstage/core';
+import { Progress } from '@backstage/components';
 import { BackstageTheme } from '@backstage/theme';
 
 const GraphiQL = React.lazy(() => import('graphiql'));
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     height: '100%',
     display: 'flex',

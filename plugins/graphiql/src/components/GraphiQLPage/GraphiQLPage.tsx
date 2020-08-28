@@ -20,7 +20,6 @@ import {
   Header,
   HeaderLabel,
   Page,
-  Progress,
   pageTheme,
   useApi,
 } from '@backstage/core';
@@ -29,6 +28,7 @@ import 'graphiql/graphiql.css';
 import { graphQlBrowseApiRef } from '../../lib/api';
 import { GraphiQLBrowser } from '../GraphiQLBrowser';
 import { Typography } from '@material-ui/core';
+import { Progress } from '@backstage/components';
 
 export const GraphiQLPage: FC<{}> = () => {
   const graphQlBrowseApi = useApi(graphQlBrowseApiRef);

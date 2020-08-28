@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import {
-  Content,
-  errorApiRef,
-  Header,
-  InfoCard,
-  Lifecycle,
-  Page,
-  useApi,
-  pageTheme,
-} from '@backstage/core';
+
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
@@ -36,6 +27,16 @@ import { Job } from '../../types';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { Navigate } from 'react-router';
 import { rootRoute } from '../../routes';
+import {
+  useApi,
+  errorApiRef,
+  Page,
+  pageTheme,
+  Header,
+  Content,
+  InfoCard,
+} from '@backstage/core';
+import { Lifecycle } from '@backstage/components';
 
 const useTemplate = (
   templateName: string,

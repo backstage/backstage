@@ -28,7 +28,7 @@ import {
   Button,
 } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
-import { StructuredMetadataTable } from '@backstage/core';
+import { StructuredMetadataTable } from '@backstage/components';
 import { generatePath } from 'react-router';
 import {
   entityRoute,

@@ -27,7 +27,6 @@ import {
   Content,
   ContentHeader,
   HeaderLabel,
-  Progress,
   pageTheme,
   useApi,
 } from '@backstage/core';
@@ -37,6 +36,7 @@ import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 import LighthouseIntro, { LIGHTHOUSE_INTRO_LOCAL_STORAGE } from '../Intro';
 import AuditListTable from './AuditListTable';
+import { Progress } from '@backstage/components';
 
 export const LIMIT = 10;
 

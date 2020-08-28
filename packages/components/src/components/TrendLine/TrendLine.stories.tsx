@@ -17,7 +17,7 @@
 import React from 'react';
 import { Table } from '../Table';
 import { TrendLine } from './TrendLine';
-import { InfoCard } from '../../layout/InfoCard';
+import { InfoCard } from '@backstage/core';
 
 export default {
   title: 'TrendLine',

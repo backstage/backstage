@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { FC, useState } from 'react';
-import { Table, TableColumn, TrendLine, useApi } from '@backstage/core';
+import { Table, TableColumn, TrendLine } from '@backstage/components';
 import { Website, lighthouseApiRef } from '../../api';
 import { useInterval } from 'react-use';
 import {
@@ -25,13 +25,14 @@ import {
 } from '../../utils';
 import { Link } from '@material-ui/core';
 import AuditStatusIcon from '../AuditStatusIcon';
+import { useApi } from '@backstage/core';
 
 const columns: TableColumn[] = [
   {
     title: 'Website URL',
     field: 'websiteUrl',
   },
-  ...CATEGORIES.map((category) => ({
+  ...CATEGORIES.map(category => ({
     title: CATEGORY_LABELS[category],
     field: category,
   })),
@@ -56,7 +57,7 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
   const lighthouseApi = useApi(lighthouseApiRef);
 
   const runRefresh = (websites: Website[]) => {
-    websites.forEach(async (website) => {
+    websites.forEach(async website => {
       const response = await lighthouseApi.getWebsiteForAuditId(
         website.lastAudit.id,
       );
@@ -64,7 +65,7 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
       if (auditStatus === 'COMPLETED' || auditStatus === 'FAILED') {
         const newWebsiteData = websiteState.slice(0);
         newWebsiteData[
-          newWebsiteData.findIndex((w) => w.url === response.url)
+          newWebsiteData.findIndex(w => w.url === response.url)
         ] = response;
         setWebsiteState(newWebsiteData);
       }
@@ -72,7 +73,7 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
   };
 
   const runningWebsiteAudits = websiteState
-    ? websiteState.filter((website) => website.lastAudit.status === 'RUNNING')
+    ? websiteState.filter(website => website.lastAudit.status === 'RUNNING')
     : [];
 
   useInterval(
@@ -80,10 +81,10 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
     runningWebsiteAudits.length > 0 ? 5000 : null,
   );
 
-  const data = websiteState.map((website) => {
+  const data = websiteState.map(website => {
     const trendlineData = buildSparklinesDataForItem(website);
     const trendlines: any = {};
-    CATEGORIES.forEach((category) => {
+    CATEGORIES.forEach(category => {
       trendlines[category] = (
         <TrendLine
           title={`trendline for ${CATEGORY_LABELS[category]} category of ${website.url}`}

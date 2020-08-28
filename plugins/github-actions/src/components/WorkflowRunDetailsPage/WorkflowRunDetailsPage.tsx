@@ -18,17 +18,16 @@ import { Typography, Grid, Breadcrumbs } from '@material-ui/core';
 
 import React from 'react';
 import {
-  Link,
   Page,
   Header,
   HeaderLabel,
   Content,
   ContentHeader,
-  SupportButton,
   pageTheme,
 } from '@backstage/core';
 
 import { WorkflowRunDetails } from '../WorkflowRunDetails';
+import { Link, SupportButton } from '@backstage/components';
 
 /**
  * A component for Jobs visualization. Jobs are a property of a Workflow Run.

@@ -22,10 +22,10 @@ import {
   Header,
   Page,
   pageTheme,
-  SupportButton,
 } from '@backstage/core';
 import ExploreCard, { CardData } from './ExploreCard';
 import { BackstageTheme } from '@backstage/theme';
+import { SupportButton } from '@backstage/components';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {

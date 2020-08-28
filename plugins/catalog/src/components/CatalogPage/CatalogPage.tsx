@@ -20,7 +20,6 @@ import {
   ContentHeader,
   errorApiRef,
   identityApiRef,
-  SupportButton,
   useApi,
 } from '@backstage/core';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
@@ -38,6 +37,7 @@ import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
 import { WelcomeBanner } from './WelcomeBanner';
+import { SupportButton } from '@backstage/components';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {

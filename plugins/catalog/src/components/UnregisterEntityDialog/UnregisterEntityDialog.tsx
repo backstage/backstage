@@ -15,7 +15,7 @@
  */
 
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Progress, useApi, alertApiRef } from '@backstage/core';
+import { useApi, alertApiRef } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -32,6 +32,7 @@ import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api/types';
+import { Progress } from '@backstage/components';
 
 type Props = {
   open: boolean;

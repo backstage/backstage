@@ -22,9 +22,9 @@ import {
   pageTheme,
   Content,
   ContentHeader,
-  SupportButton,
 } from '@backstage/core';
 import { Grid } from '@material-ui/core';
+import { SupportButton } from '@backstage/components';
 
 type Props = {
   title?: string;

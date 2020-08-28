@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { Table, TableColumn } from '@backstage/core';
 import { SentryIssue } from '../../data/sentry-issue';
 import { format } from 'timeago.js';
 import { ErrorCell } from '../ErrorCell/ErrorCell';
 import { ErrorGraph } from '../ErrorGraph/ErrorGraph';
+import { Table, TableColumn } from '@backstage/components';
 
 const columns: TableColumn[] = [
   {

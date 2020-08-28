@@ -22,10 +22,11 @@ import {
   Page,
   Header,
   HeaderLabel,
-  SupportButton,
   pageTheme,
   useApi,
 } from '@backstage/core';
+import { SupportButton } from '@backstage/components';
+
 import RadarComponent from '../components/RadarComponent';
 import { techRadarApiRef, TechRadarApi } from '../api';
 

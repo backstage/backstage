@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity, LocationSpec } from '@backstage/catalog-model';
-import { Table, TableColumn, TableProps } from '@backstage/core';
+import { Table, TableColumn, TableProps } from '@backstage/components';
 import { Chip, Link } from '@material-ui/core';
 import Add from '@material-ui/icons/Add';
 import Edit from '@material-ui/icons/Edit';

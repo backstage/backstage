@@ -20,11 +20,8 @@ import {
   ContentHeader,
   errorApiRef,
   Header,
-  Lifecycle,
   Page,
   pageTheme,
-  Progress,
-  SupportButton,
   useApi,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
@@ -33,6 +30,7 @@ import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import useStaleWhileRevalidate from 'swr';
 import { TemplateCard, TemplateCardProps } from '../TemplateCard';
+import { Lifecycle, SupportButton, Progress } from '@backstage/components';
 
 const getTemplateCardProps = (
   template: TemplateEntityV1alpha1,

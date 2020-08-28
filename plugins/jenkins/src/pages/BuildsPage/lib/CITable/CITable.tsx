@@ -18,7 +18,7 @@ import { Link, Typography, Box, IconButton } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink } from 'react-router-dom';
-import { Table, TableColumn } from '@backstage/core';
+import { Table, TableColumn } from '@backstage/components';
 import { JenkinsRunStatus } from '../Status';
 
 export type CITableBuildInfo = {

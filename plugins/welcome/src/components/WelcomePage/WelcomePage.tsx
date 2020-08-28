@@ -32,11 +32,11 @@ import {
   Page,
   pageTheme,
   ContentHeader,
-  SupportButton,
-  WarningPanel,
   useApi,
   configApiRef,
 } from '@backstage/core';
+
+import { SupportButton, WarningPanel } from '@backstage/components';
 
 const WelcomePage = () => {
   const appTitle =

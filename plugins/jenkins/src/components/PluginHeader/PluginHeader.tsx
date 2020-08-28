@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ContentHeader, SupportButton } from '@backstage/core';
+import { ContentHeader } from '@backstage/core';
 import { Box, Typography } from '@material-ui/core';
+import { SupportButton } from '@backstage/components';
 
 export type Props = { title?: string };
 export const PluginHeader = ({ title = 'Jenkins' }) => {

@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@backstage/core": "^0.1.1-alpha.20",
+    "@backstage/components": "^0.1.1-alpha.20",
     "@backstage/theme": "^0.1.1-alpha.20",
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",

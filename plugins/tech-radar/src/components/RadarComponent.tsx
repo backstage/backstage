@@ -15,7 +15,8 @@
  */
 
 import React, { useEffect } from 'react';
-import { Progress, useApi, errorApiRef, ErrorApi } from '@backstage/core';
+import { useApi, errorApiRef, ErrorApi } from '@backstage/core';
+import { Progress } from '@backstage/components';
 import { useAsync } from 'react-use';
 import Radar from '../components/Radar';
 import { TechRadarComponentProps, TechRadarLoaderResponse } from '../api';

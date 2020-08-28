@@ -24,7 +24,6 @@ import {
   useApi,
   errorApiRef,
   Header,
-  SupportButton,
   ContentHeader,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
@@ -32,6 +31,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog';
 import { useMountedState } from 'react-use';
 import { Entity, Location } from '@backstage/catalog-model';
 import { RegisterComponentResultDialog } from '../RegisterComponentResultDialog';
+import { SupportButton } from '@backstage/components';
 
 const useStyles = makeStyles(theme => ({
   dialogPaper: {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { Table, TableColumn } from '@backstage/core';
+import { Table, TableColumn } from '@backstage/components';
 import { Link } from '@material-ui/core';
 import { ClusterStatus } from '../../api';
 import { transformStatus } from '../ProfileCatalog/ProfileCatalog';

@@ -22,10 +22,10 @@ import {
   pageTheme,
   Content,
   ContentHeader,
-  SupportButton,
 } from '@backstage/core';
 import { SentryPluginWidget } from '../SentryPluginWidget/SentryPluginWidget';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { SupportButton } from '@backstage/components';
 
 const SentryPluginPage: FC<{}> = () => {
   const [statsFor, setStatsFor] = useState<'12h' | '24h'>('12h');

@@ -26,7 +26,7 @@ import {
   StatusRunning,
   Table,
   TableColumn,
-} from '@backstage/core';
+} from '@backstage/components';
 
 export type CITableBuildInfo = {
   id: string;

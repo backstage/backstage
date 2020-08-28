@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { StatusPending, StatusRunning, StatusOK } from '@backstage/core';
+import { StatusPending, StatusRunning, StatusOK } from '@backstage/components';
 import React from 'react';
 
 export const WorkflowRunStatus = ({

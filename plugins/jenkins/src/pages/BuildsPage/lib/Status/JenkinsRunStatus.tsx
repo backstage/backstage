@@ -21,7 +21,7 @@ import {
   StatusWarning,
   StatusAborted,
   StatusError,
-} from '@backstage/core';
+} from '@backstage/components';
 import React from 'react';
 
 export const JenkinsRunStatus = ({

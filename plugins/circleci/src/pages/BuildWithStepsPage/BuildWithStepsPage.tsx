@@ -15,7 +15,7 @@
  */
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Content, InfoCard, Progress } from '@backstage/core';
+import { Content, InfoCard } from '@backstage/core';
 import { BuildWithSteps, BuildStepAction } from '../../api';
 import { Grid, Box, Link, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -27,6 +27,7 @@ import { useSettings } from '../../state/useSettings';
 import { useBuildWithSteps } from '../../state/useBuildWithSteps';
 import { AppStateProvider } from '../../state';
 import { Settings } from '../../components/Settings';
+import { Progress } from '@backstage/components';
 
 const IconLink = IconButton as typeof Link;
 const BuildName: FC<{ build?: BuildWithSteps }> = ({ build }) => (

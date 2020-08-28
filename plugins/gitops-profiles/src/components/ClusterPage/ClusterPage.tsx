@@ -20,8 +20,6 @@ import {
   Header,
   Page,
   pageTheme,
-  Table,
-  Progress,
   HeaderLabel,
   useApi,
   githubAuthApiRef,
@@ -31,6 +29,7 @@ import { Link } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import { gitOpsApiRef, Status } from '../../api';
 import { transformRunStatus } from '../ProfileCatalog';
+import { Progress, Table } from '@backstage/components';
 
 const ClusterPage: FC<{}> = () => {
   const params = useParams() as { owner: string; repo: string };

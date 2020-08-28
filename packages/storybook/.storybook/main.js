@@ -4,7 +4,7 @@ const WebpackPluginFailBuildOnWarning = require('./webpack-plugin-fail-build-on-
 module.exports = {
   stories: [
     '../../core/src/layout/**/*.stories.tsx',
-    '../../core/src/components/**/*.stories.tsx',
+    '../../components/src/components/**/*.stories.tsx',
   ],
   addons: [
     '@storybook/addon-actions',

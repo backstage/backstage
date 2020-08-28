@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { Table, TableColumn } from '@backstage/core';
+import { Table, TableColumn } from '@backstage/components';
 import { Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';

@@ -25,7 +25,7 @@ import { JobStage } from '../JobStage/JobStage';
 import { useJobPolling } from './useJobPolling';
 import { Job } from '../../types';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { Button } from '@backstage/core';
+import { Button } from '@backstage/components';
 import { entityRouteDefault } from '@backstage/plugin-catalog';
 import { generatePath } from 'react-router-dom';
 

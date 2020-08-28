@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { SupportButton } from '@backstage/core';
+import { SupportButton } from '@backstage/components';
 
 export default function LighthouseSupportButton() {
   return (

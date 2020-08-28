@@ -22,7 +22,6 @@ import {
   Page,
   pageTheme,
   PageTheme,
-  Progress,
   useApi,
 } from '@backstage/core';
 // TODO: Circular ref
@@ -33,6 +32,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { ApiDefinitionCard } from '../ApiDefinitionCard/ApiDefinitionCard';
+import { Progress } from '@backstage/components';
 
 const REDIRECT_DELAY = 1000;
 function headerProps(

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { BehaviorSubject } from '..';
-import { SessionState } from '../../apis';
+import { BehaviorSubject } from '../subjects';
 import { Observable } from '../../types';
+import { SessionState } from '../../apis/definitions/auth';
 
 export class SessionStateTracker {
   private readonly subject = new BehaviorSubject<SessionState>(

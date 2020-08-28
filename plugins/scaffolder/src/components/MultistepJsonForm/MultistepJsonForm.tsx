@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JSONSchema } from '@backstage/catalog-model';
-import { Content, StructuredMetadataTable } from '@backstage/core';
+import { Content } from '@backstage/core';
 import {
   Box,
   Button,
@@ -28,6 +28,7 @@ import {
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
+import { StructuredMetadataTable } from '@backstage/components';
 
 const Form = withTheme(MuiTheme);
 type Step = {

@@ -22,18 +22,7 @@ import {
   Content,
   ContentHeader,
   HeaderLabel,
-  SupportButton,
-  SimpleStepper,
-  SimpleStepperStep,
   InfoCard,
-  Progress,
-  Table,
-  StatusWarning,
-  StatusOK,
-  StatusRunning,
-  StatusError,
-  StatusPending,
-  StatusAborted,
   useApi,
   githubAuthApiRef,
 } from '@backstage/core';
@@ -43,6 +32,19 @@ import ClusterTemplateCardList from '../ClusterTemplateCardList';
 import ProfileCardList from '../ProfileCardList';
 import { useLocalStorage } from 'react-use';
 import { gitOpsApiRef, Status } from '../../api';
+import {
+  StatusRunning,
+  StatusOK,
+  StatusError,
+  StatusAborted,
+  StatusWarning,
+  StatusPending,
+  SupportButton,
+  SimpleStepper,
+  SimpleStepperStep,
+  Progress,
+  Table,
+} from '@backstage/components';
 
 // OK = (completed, success)
 // Error = (?,failure)

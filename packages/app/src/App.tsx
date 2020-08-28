@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  createApp,
-  AlertDisplay,
-  OAuthRequestDialog,
-  SignInPage,
-} from '@backstage/core';
+import { createApp, SignInPage } from '@backstage/core';
 import React, { FC } from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
+import { AlertDisplay, OAuthRequestDialog } from '@backstage/components';
 
 const app = createApp({
   apis,
