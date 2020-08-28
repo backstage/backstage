@@ -136,8 +136,6 @@ auth:
             env: AUTH_AUTH0_DOMAIN
     microsoft:
       development:
-        appOrigin: 'http://localhost:3000/'
-        secure: false
         clientId:
           $secret:
             env: AUTH_MICROSOFT_CLIENT_ID
