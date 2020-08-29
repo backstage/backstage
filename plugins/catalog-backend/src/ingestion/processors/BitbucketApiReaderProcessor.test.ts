@@ -26,7 +26,7 @@ describe('BitbucketApiReaderProcessor', () => {
       {
         context: '',
         data: {
-          backend: {
+          catalog: {
             processors: {
               bitbucketApi: {
                 userName: userName,

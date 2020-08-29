@@ -23,7 +23,7 @@ describe('GitlabApiReaderProcessor', () => {
       {
         context: '',
         data: {
-          backend: {
+          catalog: {
             processors: {
               gitlabApi: {
                 privateToken: token,

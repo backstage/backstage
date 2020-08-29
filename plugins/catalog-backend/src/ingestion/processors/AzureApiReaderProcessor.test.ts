@@ -23,7 +23,7 @@ describe('AzureApiReaderProcessor', () => {
       {
         context: '',
         data: {
-          backend: {
+          catalog: {
             processors: {
               azureApi: {
                 privateToken: token,

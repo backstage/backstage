@@ -23,7 +23,7 @@ describe('GithubApiReaderProcessor', () => {
       {
         context: '',
         data: {
-          backend: {
+          catalog: {
             processors: {
               githubApi: {
                 privateToken: token,
