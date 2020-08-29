@@ -19,6 +19,7 @@ import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
   ActionsGetWorkflowRunResponseData,
+  ActionsListJobsForWorkflowRunResponseData
 } from '@octokit/types';
 
 export const githubActionsApiRef = createApiRef<GithubActionsApi>({
@@ -73,4 +74,15 @@ export type GithubActionsApi = {
     repo: string;
     runId: number;
   }) => void;
+  listJobsForWorkflowRun: ({
+    token,
+    owner,
+    repo,
+    id,
+  }: {
+    token: string;
+    owner: string;
+    repo: string;
+    id: number;
+  }) => Promise<ActionsListJobsForWorkflowRunResponseData>;
 };

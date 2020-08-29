@@ -16,6 +16,7 @@
 
 import {
   Button,
+  Box,
   LinearProgress,
   makeStyles,
   Paper,
@@ -27,12 +28,13 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { Link, useApi, githubAuthApiRef } from '@backstage/core';
 import { githubActionsApiRef } from '../../api';
-
+import { BuildSteps } from'../BuildSteps/BuildSteps';
+import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
     maxWidth: 720,
@@ -46,14 +48,46 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
+
 export const BuildDetailsPage = () => {
   const repo = 'try-ssr';
   const owner = 'CircleCITest3';
   const api = useApi(githubActionsApiRef);
   const auth = useApi(githubAuthApiRef);
-
   const classes = useStyles();
   const { id } = useParams();
+  let jobs: {
+    jobName: string,
+    jobStart: string,
+    jobEnd: string,
+    jobStatus: string,
+    steps: any[]
+  }[] = [];
+  const [jobsArray] = useState(jobs);
+  
+  const jobsStatus = useAsync(async () => {
+    const token = await auth.getAccessToken(['repo', 'user']);
+    return api
+      .listJobsForWorkflowRun({
+        token,
+        owner,
+        repo,
+        id: parseInt(id, 10),
+      })
+      .then(data => {
+        data.jobs.map(job => {
+          jobs.push({
+            jobName: job.name,
+            jobStart: job.started_at,
+            jobEnd: job.completed_at,
+            jobStatus: job.conclusion,
+            steps: job.steps
+          })
+        })
+        return data;
+      });
+  });
+
   const status = useAsync(async () => {
     const token = await auth.getAccessToken(['repo', 'user']);
     return api
@@ -84,8 +118,8 @@ export const BuildDetailsPage = () => {
     <div className={classes.root}>
       <Typography className={classes.title} variant="h3">
         <Link to="/github-actions">
-          <Typography component="span" variant="h3" color="primary">
-            &lt;
+          <Typography component="span" variant="h1" color="primary">
+            <ArrowBackRoundedIcon />
           </Typography>
         </Link>
         Build Details
@@ -138,6 +172,23 @@ export const BuildDetailsPage = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Typography className={classes.title} variant="h3">
+        Build Log
+      </Typography>
+      <Box>
+        {jobsStatus.loading 
+        ? <LinearProgress /> 
+        : jobsStatus.error  
+        ? <Typography variant="h6" color="error">
+            Failed to load build, {jobsStatus.error.message}
+          </Typography> 
+        : jobsArray.map(
+          (job) => (
+            <BuildSteps runData={job} key={`${job.jobName}-${job.jobStart}`}/>
+            ),
+          )
+        }
+      </Box>
     </div>
   );
 };
