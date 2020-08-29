@@ -124,7 +124,6 @@ export const BuildSteps: FC<{
 
     useEffect(() => {
         if(runData.steps !== undefined){
-            console.log(runData.steps)
             setMessages(runData.steps.map(
                 ({ name, completed_at, started_at }: {
                      name: string; completed_at: string; started_at: string; 
