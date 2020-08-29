@@ -19,7 +19,7 @@ import { ConfigReader } from '@backstage/config';
 
 describe('BitbucketApiReaderProcessor', () => {
   const createConfig = (
-    userName: string | undefined,
+    username: string | undefined,
     appPassword: string | undefined,
   ) =>
     ConfigReader.fromConfigs([
@@ -29,7 +29,7 @@ describe('BitbucketApiReaderProcessor', () => {
           catalog: {
             processors: {
               bitbucketApi: {
-                userName: userName,
+                username: username,
                 appPassword: appPassword,
               },
             },
