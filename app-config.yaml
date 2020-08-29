@@ -13,7 +13,7 @@ backend:
   database:
     client: sqlite3
     connection: ':memory:'
-  ingestionProcessors:
+  processors:
     githubApi:
       privateToken:
         $secret:

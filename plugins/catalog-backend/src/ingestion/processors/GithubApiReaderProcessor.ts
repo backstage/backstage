@@ -26,7 +26,7 @@ export class GithubApiReaderProcessor implements LocationProcessor {
   constructor(config: Config) {
     this.privateToken =
       (config.getOptional(
-        'backend.ingestionProcessors.githubApi.privateToken',
+        'backend.processors.githubApi.privateToken',
       ) as string) ?? '';
   }
 

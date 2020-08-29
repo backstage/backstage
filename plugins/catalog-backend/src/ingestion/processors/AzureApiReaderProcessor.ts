@@ -26,7 +26,7 @@ export class AzureApiReaderProcessor implements LocationProcessor {
   constructor(config: Config) {
     this.privateToken =
       (config.getOptional(
-        'backend.ingestionProcessors.azureApi.privateToken',
+        'backend.processors.azureApi.privateToken',
       ) as string) ?? '';
   }
 

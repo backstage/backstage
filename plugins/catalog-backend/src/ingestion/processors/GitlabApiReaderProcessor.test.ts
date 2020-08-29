@@ -24,7 +24,7 @@ describe('GitlabApiReaderProcessor', () => {
         context: '',
         data: {
           backend: {
-            ingestionProcessors: {
+            processors: {
               gitlabApi: {
                 privateToken: token,
               },

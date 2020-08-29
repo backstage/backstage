@@ -27,7 +27,7 @@ describe('BitbucketApiReaderProcessor', () => {
         context: '',
         data: {
           backend: {
-            ingestionProcessors: {
+            processors: {
               bitbucketApi: {
                 userName: userName,
                 appPassword: appPassword,

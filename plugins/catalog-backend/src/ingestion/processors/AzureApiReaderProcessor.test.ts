@@ -24,7 +24,7 @@ describe('AzureApiReaderProcessor', () => {
         context: '',
         data: {
           backend: {
-            ingestionProcessors: {
+            processors: {
               azureApi: {
                 privateToken: token,
               },

@@ -26,7 +26,7 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
   constructor(config: Config) {
     this.privateToken =
       (config.getOptional(
-        'backend.ingestionProcessors.gitlabApi.privateToken',
+        'backend.processors.gitlabApi.privateToken',
       ) as string) ?? '';
   }
 

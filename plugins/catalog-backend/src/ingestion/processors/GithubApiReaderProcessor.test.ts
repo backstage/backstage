@@ -24,7 +24,7 @@ describe('GithubApiReaderProcessor', () => {
         context: '',
         data: {
           backend: {
-            ingestionProcessors: {
+            processors: {
               githubApi: {
                 privateToken: token,
               },
