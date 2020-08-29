@@ -15,10 +15,33 @@
  */
 
 import { BitbucketApiReaderProcessor } from './BitbucketApiReaderProcessor';
+import { ConfigReader } from '@backstage/config';
 
 describe('BitbucketApiReaderProcessor', () => {
+  const createConfig = (
+    userName: string | undefined,
+    appPassword: string | undefined,
+  ) =>
+    ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          backend: {
+            ingestionProcessors: {
+              bitbucketApi: {
+                userName: userName,
+                appPassword: appPassword,
+              },
+            },
+          },
+        },
+      },
+    ]);
+
   it('should build raw api', () => {
-    const processor = new BitbucketApiReaderProcessor();
+    const processor = new BitbucketApiReaderProcessor(
+      createConfig(undefined, undefined),
+    );
 
     const tests = [
       {
@@ -90,12 +113,33 @@ describe('BitbucketApiReaderProcessor', () => {
           },
         },
       },
+      {
+        username: undefined,
+        password: undefined,
+        expect: {
+          headers: {},
+        },
+      },
+      {
+        username: 'only-user-provided',
+        password: undefined,
+        expect: {
+          headers: {},
+        },
+      },
+      {
+        username: undefined,
+        password: 'only-password-provided',
+        expect: {
+          headers: {},
+        },
+      },
     ];
 
     for (const test of tests) {
-      process.env.BITBUCKET_USERNAME = test.username;
-      process.env.BITBUCKET_APP_PASSWORD = test.password;
-      const processor = new BitbucketApiReaderProcessor();
+      const processor = new BitbucketApiReaderProcessor(
+        createConfig(test.username, test.password),
+      );
       expect(processor.getRequestOptions()).toEqual(test.expect);
     }
   });

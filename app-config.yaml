@@ -13,6 +13,26 @@ backend:
   database:
     client: sqlite3
     connection: ':memory:'
+  ingestionProcessors:
+    githubApi:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
+    bitbucketApi:
+      userName:
+        $secret:
+          env: BITBUCKET_USERNAME
+      appPassword:
+        $secret:
+          env: BITBUCKET_APP_PASSWORD
+    gitlabApi:
+      privateToken:
+        $secret:
+          env: GITLAB_PRIVATE_TOKEN
+    azureApi:
+      privateToken:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:

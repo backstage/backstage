@@ -18,9 +18,17 @@ import { LocationSpec } from '@backstage/catalog-model';
 import fetch, { RequestInit, HeadersInit } from 'node-fetch';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
+import { Config } from '@backstage/config';
 
 export class GithubApiReaderProcessor implements LocationProcessor {
-  private privateToken: string = process.env.GITHUB_PRIVATE_TOKEN || '';
+  private privateToken: string;
+
+  constructor(config: Config) {
+    this.privateToken =
+      (config.getOptional(
+        'backend.ingestionProcessors.githubApi.privateToken',
+      ) as string) ?? '';
+  }
 
   getRequestOptions(): RequestInit {
     const headers: HeadersInit = {

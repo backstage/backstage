@@ -15,10 +15,27 @@
  */
 
 import { AzureApiReaderProcessor } from './AzureApiReaderProcessor';
+import { ConfigReader } from '@backstage/config';
 
 describe('AzureApiReaderProcessor', () => {
+  const createConfig = (token: string | undefined) =>
+    ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          backend: {
+            ingestionProcessors: {
+              azureApi: {
+                privateToken: token,
+              },
+            },
+          },
+        },
+      },
+    ]);
+
   it('should build raw api', () => {
-    const processor = new AzureApiReaderProcessor();
+    const processor = new AzureApiReaderProcessor(createConfig(undefined));
     const tests = [
       {
         target:
@@ -73,11 +90,16 @@ describe('AzureApiReaderProcessor', () => {
           headers: {},
         },
       },
+      {
+        token: undefined,
+        expect: {
+          headers: {},
+        },
+      },
     ];
 
     for (const test of tests) {
-      process.env.AZURE_PRIVATE_TOKEN = test.token;
-      const processor = new AzureApiReaderProcessor();
+      const processor = new AzureApiReaderProcessor(createConfig(test.token));
       expect(processor.getRequestOptions()).toEqual(test.expect);
     }
   });

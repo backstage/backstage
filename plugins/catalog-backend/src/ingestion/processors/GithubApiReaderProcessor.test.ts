@@ -15,10 +15,27 @@
  */
 
 import { GithubApiReaderProcessor } from './GithubApiReaderProcessor';
+import { ConfigReader } from '@backstage/config';
 
 describe('GithubApiReaderProcessor', () => {
+  const createConfig = (token: string | undefined) =>
+    ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          backend: {
+            ingestionProcessors: {
+              githubApi: {
+                privateToken: token,
+              },
+            },
+          },
+        },
+      },
+    ]);
+
   it('should build raw api', () => {
-    const processor = new GithubApiReaderProcessor();
+    const processor = new GithubApiReaderProcessor(createConfig(undefined));
 
     const tests = [
       {
@@ -87,8 +104,7 @@ describe('GithubApiReaderProcessor', () => {
     ];
 
     for (const test of tests) {
-      process.env.GITHUB_PRIVATE_TOKEN = test.token;
-      const processor = new GithubApiReaderProcessor();
+      const processor = new GithubApiReaderProcessor(createConfig(test.token));
       expect(processor.getRequestOptions()).toEqual(test.expect);
     }
   });

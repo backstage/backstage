@@ -18,9 +18,17 @@ import { LocationSpec } from '@backstage/catalog-model';
 import fetch, { RequestInit, HeadersInit } from 'node-fetch';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
+import { Config } from '@backstage/config';
 
 export class AzureApiReaderProcessor implements LocationProcessor {
-  private privateToken: string = process.env.AZURE_PRIVATE_TOKEN || '';
+  private privateToken: string;
+
+  constructor(config: Config) {
+    this.privateToken =
+      (config.getOptional(
+        'backend.ingestionProcessors.azureApi.privateToken',
+      ) as string) ?? '';
+  }
 
   getRequestOptions(): RequestInit {
     const headers: HeadersInit = {};
@@ -53,7 +61,8 @@ export class AzureApiReaderProcessor implements LocationProcessor {
 
       const response = await fetch(url.toString(), this.getRequestOptions());
 
-      if (response.ok) {
+      // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
+      if (response.ok && response.status !== 203) {
         const data = await response.buffer();
         emit(result.data(location, data));
       } else {
@@ -76,7 +85,6 @@ export class AzureApiReaderProcessor implements LocationProcessor {
   // Converts
   // from: https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{commitOrBranch}&_a=contents
   // to:   https://dev.azure.com/{organization}/{project}/_apis/sourceProviders/{providerName}/filecontents?repository={repository}&commitOrBranch={commitOrBranch}&path={path}&api-version=6.0-preview.1
-
   buildRawUrl(target: string): URL {
     try {
       const url = new URL(target);

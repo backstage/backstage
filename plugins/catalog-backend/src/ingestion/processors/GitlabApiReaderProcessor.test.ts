@@ -15,10 +15,27 @@
  */
 
 import { GitlabApiReaderProcessor } from './GitlabApiReaderProcessor';
+import { ConfigReader } from '@backstage/config';
 
 describe('GitlabApiReaderProcessor', () => {
+  const createConfig = (token: string | undefined) =>
+    ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          backend: {
+            ingestionProcessors: {
+              gitlabApi: {
+                privateToken: token,
+              },
+            },
+          },
+        },
+      },
+    ]);
+
   it('should build raw api', () => {
-    const processor = new GitlabApiReaderProcessor();
+    const processor = new GitlabApiReaderProcessor(createConfig(undefined));
 
     const tests = [
       {
@@ -89,11 +106,18 @@ describe('GitlabApiReaderProcessor', () => {
           },
         },
       },
+      {
+        token: undefined,
+        expect: {
+          headers: {
+            'PRIVATE-TOKEN': '',
+          },
+        },
+      },
     ];
 
     for (const test of tests) {
-      process.env.GITLAB_PRIVATE_TOKEN = test.token;
-      const processor = new GitlabApiReaderProcessor();
+      const processor = new GitlabApiReaderProcessor(createConfig(test.token));
       expect(processor.getRequestOptions()).toEqual(test.expect);
     }
   });
