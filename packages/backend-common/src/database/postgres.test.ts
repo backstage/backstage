@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import {
-  parsePgConnectionString,
+  createPgDatabaseClient,
   buildPgDatabaseConfig,
-  createPgDatabase,
+  getPgConnectionConfig,
+  parsePgConnectionString,
 } from './postgres';
 
 describe('postgres', () => {
-  const createConfig = (connection: any) =>
+  const createMockConnection = () => ({
+    host: 'acme',
+    user: 'foo',
+    password: 'bar',
+    database: 'foodb',
+  });
+
+  const createMockConnectionString = () =>
+    'postgresql://foo:bar@acme:5432/foodb';
+
+  const createConfig = (connection: any): Config =>
     ConfigReader.fromConfigs([
       {
         context: '',
@@ -35,86 +46,58 @@ describe('postgres', () => {
 
   describe(buildPgDatabaseConfig, () => {
     it('builds a postgres config', () => {
-      expect(
-        buildPgDatabaseConfig(
-          createConfig({
-            host: 'acme',
-            user: 'foo',
-            password: 'bar',
-            port: '5432',
-            database: 'foodb',
-          }),
-        ),
-      ).toEqual({
+      const mockConnection = createMockConnection();
+
+      expect(buildPgDatabaseConfig(createConfig(mockConnection))).toEqual({
         client: 'pg',
-        connection: {
-          host: 'acme',
-          user: 'foo',
-          password: 'bar',
-          port: '5432',
-          database: 'foodb',
-        },
+        connection: mockConnection,
         useNullAsDefault: true,
       });
     });
 
     it('builds a connection string config', () => {
-      expect(
-        buildPgDatabaseConfig(
-          createConfig('postgresql://foo:bar@acme:5432/foodb'),
-        ),
-      ).toEqual({
-        client: 'pg',
-        connection: 'postgresql://foo:bar@acme:5432/foodb',
-        useNullAsDefault: true,
-      });
+      const mockConnectionString = createMockConnectionString();
+
+      expect(buildPgDatabaseConfig(createConfig(mockConnectionString))).toEqual(
+        {
+          client: 'pg',
+          connection: mockConnectionString,
+          useNullAsDefault: true,
+        },
+      );
     });
 
     it('overrides the database name', () => {
+      const mockConnection = createMockConnection();
+
       expect(
-        buildPgDatabaseConfig(
-          createConfig({
-            host: 'somehost',
-            user: 'postgres',
-            password: 'pass',
-            database: 'foo',
-          }),
-          { connection: { database: 'foodb' } },
-        ),
+        buildPgDatabaseConfig(createConfig(mockConnection), {
+          connection: { database: 'other_db' },
+        }),
       ).toEqual({
         client: 'pg',
         connection: {
-          host: 'somehost',
-          user: 'postgres',
-          password: 'pass',
-          database: 'foodb',
+          ...mockConnection,
+          database: 'other_db',
         },
         useNullAsDefault: true,
       });
     });
 
     it('adds additional config settings', () => {
+      const mockConnection = createMockConnection();
+
       expect(
-        buildPgDatabaseConfig(
-          createConfig({
-            host: 'somehost',
-            user: 'postgres',
-            password: 'pass',
-            database: 'foo',
-          }),
-          {
-            connection: { database: 'foodb' },
-            pool: { min: 0, max: 7 },
-            debug: true,
-          },
-        ),
+        buildPgDatabaseConfig(createConfig(mockConnection), {
+          connection: { database: 'other_db' },
+          pool: { min: 0, max: 7 },
+          debug: true,
+        }),
       ).toEqual({
         client: 'pg',
         connection: {
-          host: 'somehost',
-          user: 'postgres',
-          password: 'pass',
-          database: 'foodb',
+          ...mockConnection,
+          database: 'other_db',
         },
         useNullAsDefault: true,
         pool: { min: 0, max: 7 },
@@ -123,37 +106,72 @@ describe('postgres', () => {
     });
 
     it('overrides the database from connection string', () => {
+      const mockConnectionString = createMockConnectionString();
+      const mockConnection = createMockConnection();
+
       expect(
-        buildPgDatabaseConfig(
-          createConfig('postgresql://postgres:pass@localhost:5432/dbname'),
-          { connection: { database: 'foodb' } },
-        ),
+        buildPgDatabaseConfig(createConfig(mockConnectionString), {
+          connection: { database: 'other_db' },
+        }),
       ).toEqual({
         client: 'pg',
         connection: {
-          host: 'localhost',
-          user: 'postgres',
-          password: 'pass',
+          ...mockConnection,
           port: '5432',
-          database: 'foodb',
+          database: 'other_db',
         },
         useNullAsDefault: true,
       });
     });
   });
 
-  describe(createPgDatabase, () => {
+  describe(getPgConnectionConfig, () => {
+    it('returns the connection object back', () => {
+      const mockConnection = createMockConnection();
+      const config = createConfig(mockConnection);
+
+      expect(getPgConnectionConfig(config)).toEqual(mockConnection);
+    });
+
+    it('does not parse the connection string', () => {
+      const mockConnection = createMockConnection();
+      const config = createConfig(mockConnection);
+
+      expect(getPgConnectionConfig(config, true)).toEqual(mockConnection);
+    });
+
+    it('automatically parses the connection string', () => {
+      const mockConnection = createMockConnection();
+      const mockConnectionString = createMockConnectionString();
+      const config = createConfig(mockConnectionString);
+
+      expect(getPgConnectionConfig(config)).toEqual({
+        ...mockConnection,
+        port: '5432',
+      });
+    });
+
+    it('parses the connection string', () => {
+      const mockConnection = createMockConnection();
+      const mockConnectionString = createMockConnectionString();
+      const config = createConfig(mockConnectionString);
+
+      expect(getPgConnectionConfig(config, true)).toEqual({
+        ...mockConnection,
+        port: '5432',
+      });
+    });
+  });
+
+  describe(createPgDatabaseClient, () => {
     it('creates a postgres knex instance', () => {
       expect(
-        createPgDatabase(
+        createPgDatabaseClient(
           createConfig({
-            client: 'pg',
-            connection: {
-              host: 'acme',
-              user: 'foo',
-              password: 'bar',
-              database: 'foodb',
-            },
+            host: 'acme',
+            user: 'foo',
+            password: 'bar',
+            database: 'foodb',
           }),
         ),
       ).toBeTruthy();
@@ -161,7 +179,7 @@ describe('postgres', () => {
 
     it('attempts to read an ssl cert', () => {
       expect(() =>
-        createPgDatabase(
+        createPgDatabaseClient(
           createConfig(
             'postgresql://postgres:pass@localhost:5432/dbname?sslrootcert=/path/to/file',
           ),
