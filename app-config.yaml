@@ -44,6 +44,9 @@ newrelic:
     baseUrl: 'https://api.newrelic.com/v2'
     key: NEW_RELIC_REST_API_KEY
 
+lighthouse:
+  baseUrl: http://localhost:3003
+
 catalog:
   exampleEntityLocations:
     github:
