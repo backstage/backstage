@@ -89,6 +89,8 @@ describe('AzureApiReaderProcessor', () => {
         expect: {
           headers: {},
         },
+        err:
+          "Invalid type in config for key 'catalog.processors.azureApi.privateToken' in '', got empty-string, wanted string",
       },
       {
         token: undefined,
@@ -99,8 +101,14 @@ describe('AzureApiReaderProcessor', () => {
     ];
 
     for (const test of tests) {
-      const processor = new AzureApiReaderProcessor(createConfig(test.token));
-      expect(processor.getRequestOptions()).toEqual(test.expect);
+      if (test.err) {
+        expect(
+          () => new AzureApiReaderProcessor(createConfig(test.token)),
+        ).toThrowError(test.err);
+      } else {
+        const processor = new AzureApiReaderProcessor(createConfig(test.token));
+        expect(processor.getRequestOptions()).toEqual(test.expect);
+      }
     }
   });
 });

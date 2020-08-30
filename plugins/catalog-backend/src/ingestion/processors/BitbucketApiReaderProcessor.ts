@@ -26,13 +26,11 @@ export class BitbucketApiReaderProcessor implements LocationProcessor {
 
   constructor(config: Config) {
     this.username =
-      (config.getOptional(
-        'catalog.processors.bitbucketApi.username',
-      ) as string) ?? '';
+      config.getOptionalString('catalog.processors.bitbucketApi.username') ??
+      '';
     this.password =
-      (config.getOptional(
-        'catalog.processors.bitbucketApi.appPassword',
-      ) as string) ?? '';
+      config.getOptionalString('catalog.processors.bitbucketApi.appPassword') ??
+      '';
   }
 
   getRequestOptions(): RequestInit {

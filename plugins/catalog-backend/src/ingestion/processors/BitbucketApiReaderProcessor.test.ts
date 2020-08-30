@@ -89,6 +89,8 @@ describe('BitbucketApiReaderProcessor', () => {
         expect: {
           headers: {},
         },
+        err:
+          "Invalid type in config for key 'catalog.processors.bitbucketApi.username' in '', got empty-string, wanted string",
       },
       {
         username: 'only-user-provided',
@@ -96,6 +98,8 @@ describe('BitbucketApiReaderProcessor', () => {
         expect: {
           headers: {},
         },
+        err:
+          "Invalid type in config for key 'catalog.processors.bitbucketApi.appPassword' in '', got empty-string, wanted string",
       },
       {
         username: '',
@@ -103,6 +107,8 @@ describe('BitbucketApiReaderProcessor', () => {
         expect: {
           headers: {},
         },
+        err:
+          "Invalid type in config for key 'catalog.processors.bitbucketApi.username' in '', got empty-string, wanted string",
       },
       {
         username: 'some-user',
@@ -137,10 +143,19 @@ describe('BitbucketApiReaderProcessor', () => {
     ];
 
     for (const test of tests) {
-      const processor = new BitbucketApiReaderProcessor(
-        createConfig(test.username, test.password),
-      );
-      expect(processor.getRequestOptions()).toEqual(test.expect);
+      if (test.err) {
+        expect(
+          () =>
+            new BitbucketApiReaderProcessor(
+              createConfig(test.username, test.password),
+            ),
+        ).toThrowError(test.err);
+      } else {
+        const processor = new BitbucketApiReaderProcessor(
+          createConfig(test.username, test.password),
+        );
+        expect(processor.getRequestOptions()).toEqual(test.expect);
+      }
     }
   });
 });

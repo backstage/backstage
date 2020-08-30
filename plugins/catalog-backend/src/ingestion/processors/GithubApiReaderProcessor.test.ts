@@ -95,6 +95,16 @@ describe('GithubApiReaderProcessor', () => {
       },
       {
         token: '',
+        err:
+          "Invalid type in config for key 'catalog.processors.githubApi.privateToken' in '', got empty-string, wanted string",
+        expect: {
+          headers: {
+            Accept: 'application/vnd.github.v3.raw',
+          },
+        },
+      },
+      {
+        token: undefined,
         expect: {
           headers: {
             Accept: 'application/vnd.github.v3.raw',
@@ -104,8 +114,16 @@ describe('GithubApiReaderProcessor', () => {
     ];
 
     for (const test of tests) {
-      const processor = new GithubApiReaderProcessor(createConfig(test.token));
-      expect(processor.getRequestOptions()).toEqual(test.expect);
+      if (test.err) {
+        expect(
+          () => new GithubApiReaderProcessor(createConfig(test.token)),
+        ).toThrowError(test.err);
+      } else {
+        const processor = new GithubApiReaderProcessor(
+          createConfig(test.token),
+        );
+        expect(processor.getRequestOptions()).toEqual(test.expect);
+      }
     }
   });
 });
