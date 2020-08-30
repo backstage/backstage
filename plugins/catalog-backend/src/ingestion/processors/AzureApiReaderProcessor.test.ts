@@ -15,10 +15,27 @@
  */
 
 import { AzureApiReaderProcessor } from './AzureApiReaderProcessor';
+import { ConfigReader } from '@backstage/config';
 
 describe('AzureApiReaderProcessor', () => {
+  const createConfig = (token: string | undefined) =>
+    ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          catalog: {
+            processors: {
+              azureApi: {
+                privateToken: token,
+              },
+            },
+          },
+        },
+      },
+    ]);
+
   it('should build raw api', () => {
-    const processor = new AzureApiReaderProcessor();
+    const processor = new AzureApiReaderProcessor(createConfig(undefined));
     const tests = [
       {
         target:
@@ -72,13 +89,26 @@ describe('AzureApiReaderProcessor', () => {
         expect: {
           headers: {},
         },
+        err:
+          "Invalid type in config for key 'catalog.processors.azureApi.privateToken' in '', got empty-string, wanted string",
+      },
+      {
+        token: undefined,
+        expect: {
+          headers: {},
+        },
       },
     ];
 
     for (const test of tests) {
-      process.env.AZURE_PRIVATE_TOKEN = test.token;
-      const processor = new AzureApiReaderProcessor();
-      expect(processor.getRequestOptions()).toEqual(test.expect);
+      if (test.err) {
+        expect(
+          () => new AzureApiReaderProcessor(createConfig(test.token)),
+        ).toThrowError(test.err);
+      } else {
+        const processor = new AzureApiReaderProcessor(createConfig(test.token));
+        expect(processor.getRequestOptions()).toEqual(test.expect);
+      }
     }
   });
 });

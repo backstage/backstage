@@ -45,6 +45,26 @@ newrelic:
     key: NEW_RELIC_REST_API_KEY
 
 catalog:
+  processors:
+    githubApi:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
+    bitbucketApi:
+      username:
+        $secret:
+          env: BITBUCKET_USERNAME
+      appPassword:
+        $secret:
+          env: BITBUCKET_APP_PASSWORD
+    gitlabApi:
+      privateToken:
+        $secret:
+          env: GITLAB_PRIVATE_TOKEN
+    azureApi:
+      privateToken:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
   exampleEntityLocations:
     github:
       - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml

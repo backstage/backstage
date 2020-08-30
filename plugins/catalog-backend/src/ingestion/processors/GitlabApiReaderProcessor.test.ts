@@ -15,10 +15,27 @@
  */
 
 import { GitlabApiReaderProcessor } from './GitlabApiReaderProcessor';
+import { ConfigReader } from '@backstage/config';
 
 describe('GitlabApiReaderProcessor', () => {
+  const createConfig = (token: string | undefined) =>
+    ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          catalog: {
+            processors: {
+              gitlabApi: {
+                privateToken: token,
+              },
+            },
+          },
+        },
+      },
+    ]);
+
   it('should build raw api', () => {
-    const processor = new GitlabApiReaderProcessor();
+    const processor = new GitlabApiReaderProcessor(createConfig(undefined));
 
     const tests = [
       {
@@ -83,6 +100,16 @@ describe('GitlabApiReaderProcessor', () => {
       },
       {
         token: '',
+        err:
+          "Invalid type in config for key 'catalog.processors.gitlabApi.privateToken' in '', got empty-string, wanted string",
+        expect: {
+          headers: {
+            'PRIVATE-TOKEN': '',
+          },
+        },
+      },
+      {
+        token: undefined,
         expect: {
           headers: {
             'PRIVATE-TOKEN': '',
@@ -92,9 +119,16 @@ describe('GitlabApiReaderProcessor', () => {
     ];
 
     for (const test of tests) {
-      process.env.GITLAB_PRIVATE_TOKEN = test.token;
-      const processor = new GitlabApiReaderProcessor();
-      expect(processor.getRequestOptions()).toEqual(test.expect);
+      if (test.err) {
+        expect(
+          () => new GitlabApiReaderProcessor(createConfig(test.token)),
+        ).toThrowError(test.err);
+      } else {
+        const processor = new GitlabApiReaderProcessor(
+          createConfig(test.token),
+        );
+        expect(processor.getRequestOptions()).toEqual(test.expect);
+      }
     }
   });
 });
