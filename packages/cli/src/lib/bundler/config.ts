@@ -25,11 +25,6 @@ import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { BundlingOptions, BackendBundlingOptions } from './types';
-// import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles';
-// import ModuleNotFoundPlugin from 'react-dev-utils/ModuleNotFoundPlugin';
-// import errorOverlayMiddleware from 'react-dev-utils/errorOverlayMiddleware';
-// import evalSourceMapMiddleware from 'react-dev-utils/evalSourceMapMiddleware';
-// import WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin';
 
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
@@ -126,10 +121,10 @@ export function createConfig(
     output: {
       path: paths.targetDist,
       publicPath: validBaseUrl.pathname,
-      filename: isDev ? '[name].js' : '[name].[hash:8].js',
+      filename: isDev ? '[name].js' : 'static/[name].[hash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'
-        : '[name].[chunkhash:8].chunk.js',
+        : 'static/[name].[chunkhash:8].chunk.js',
     },
     plugins,
   };
@@ -157,11 +152,11 @@ export function createBackendConfig(
     externals: [
       nodeExternals({
         modulesDir: paths.rootNodeModules,
-        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
+        allowlist: ['webpack/hot/poll?100', /\@backstage\/.*/],
       }),
       nodeExternals({
         modulesDir: paths.targetNodeModules,
-        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
+        allowlist: ['webpack/hot/poll?100', /\@backstage\/.*/],
       }),
     ],
     target: 'node' as const,
@@ -203,9 +198,17 @@ export function createBackendConfig(
       chunkFilename: isDev
         ? '[name].chunk.js'
         : '[name].[chunkhash:8].chunk.js',
+      ...(isDev
+        ? {
+            devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
+          }
+        : {}),
     },
     plugins: [
-      new StartServerPlugin('main.js'),
+      new StartServerPlugin({
+        name: 'main.js',
+        nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
+      }),
       new webpack.HotModuleReplacementPlugin(),
       ...(checksEnabled
         ? [

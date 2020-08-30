@@ -15,21 +15,19 @@
  */
 
 import { AuthRequester } from '../../apis';
-import { OAuthRequestApi, AuthProvider } from '../../apis/definitions';
+import {
+  OAuthRequestApi,
+  AuthProvider,
+  DiscoveryApi,
+} from '../../apis/definitions';
 import { showLoginPopup } from '../loginPopup';
 import { AuthConnector, CreateSessionOptions } from './types';
 
-const DEFAULT_BASE_PATH = '/api/auth/';
-
 type Options<AuthSession> = {
   /**
-   * Origin of auth requests, defaults to location.origin
+   * DiscoveryApi instance used to locate the auth backend endpoint.
    */
-  apiOrigin?: string;
-  /**
-   * Base path of the auth requests, defaults to /api/auth/
-   */
-  basePath?: string;
+  discoveryApi: DiscoveryApi;
   /**
    * Environment hint passed on to auth backend, for example 'production' or 'development'
    */
@@ -64,8 +62,7 @@ function defaultJoinScopes(scopes: Set<string>) {
  */
 export class DefaultAuthConnector<AuthSession>
   implements AuthConnector<AuthSession> {
-  private readonly apiOrigin: string;
-  private readonly basePath: string;
+  private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string;
   private readonly provider: AuthProvider & { id: string };
   private readonly joinScopesFunc: (scopes: Set<string>) => string;
@@ -74,8 +71,7 @@ export class DefaultAuthConnector<AuthSession>
 
   constructor(options: Options<AuthSession>) {
     const {
-      apiOrigin = window.location.origin,
-      basePath = DEFAULT_BASE_PATH,
+      discoveryApi,
       environment,
       provider,
       joinScopes = defaultJoinScopes,
@@ -88,8 +84,7 @@ export class DefaultAuthConnector<AuthSession>
       onAuthRequest: scopes => this.showPopup(scopes),
     });
 
-    this.apiOrigin = apiOrigin;
-    this.basePath = basePath;
+    this.discoveryApi = discoveryApi;
     this.environment = environment;
     this.provider = provider;
     this.joinScopesFunc = joinScopes;
@@ -104,12 +99,15 @@ export class DefaultAuthConnector<AuthSession>
   }
 
   async refreshSession(): Promise<any> {
-    const res = await fetch(this.buildUrl('/refresh', { optional: true }), {
-      headers: {
-        'x-requested-with': 'XMLHttpRequest',
+    const res = await fetch(
+      await this.buildUrl('/refresh', { optional: true }),
+      {
+        headers: {
+          'x-requested-with': 'XMLHttpRequest',
+        },
+        credentials: 'include',
       },
-      credentials: 'include',
-    }).catch(error => {
+    ).catch(error => {
       throw new Error(`Auth refresh request failed, ${error}`);
     });
 
@@ -134,7 +132,7 @@ export class DefaultAuthConnector<AuthSession>
   }
 
   async removeSession(): Promise<void> {
-    const res = await fetch(this.buildUrl('/logout'), {
+    const res = await fetch(await this.buildUrl('/logout'), {
       method: 'POST',
       headers: {
         'x-requested-with': 'XMLHttpRequest',
@@ -153,12 +151,12 @@ export class DefaultAuthConnector<AuthSession>
 
   private async showPopup(scopes: Set<string>): Promise<AuthSession> {
     const scope = this.joinScopesFunc(scopes);
-    const popupUrl = this.buildUrl('/start', { scope });
+    const popupUrl = await this.buildUrl('/start', { scope });
 
     const payload = await showLoginPopup({
       url: popupUrl,
       name: `${this.provider.title} Login`,
-      origin: this.apiOrigin,
+      origin: new URL(popupUrl).origin,
       width: 450,
       height: 730,
     });
@@ -166,16 +164,17 @@ export class DefaultAuthConnector<AuthSession>
     return await this.sessionTransform(payload);
   }
 
-  private buildUrl(
+  private async buildUrl(
     path: string,
     query?: { [key: string]: string | boolean | undefined },
-  ): string {
+  ): Promise<string> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('auth');
     const queryString = this.buildQueryString({
       ...query,
       env: this.environment,
     });
 
-    return `${this.apiOrigin}${this.basePath}${this.provider.id}${path}${queryString}`;
+    return `${baseUrl}/${this.provider.id}${path}${queryString}`;
   }
 
   private buildQueryString(query?: {

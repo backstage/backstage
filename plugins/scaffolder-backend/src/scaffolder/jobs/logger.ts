@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { PassThrough } from 'stream';
-import winston from 'winston';
+import * as winston from 'winston';
 import { JsonValue } from '@backstage/config';
 
 export const makeLogStream = (meta: Record<string, JsonValue>) => {

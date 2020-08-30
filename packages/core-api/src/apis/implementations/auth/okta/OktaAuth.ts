@@ -28,15 +28,17 @@ import {
   AuthRequestOptions,
   BackstageIdentity,
 } from '../../../definitions/auth';
-import { OAuthRequestApi, AuthProvider } from '../../../definitions';
+import {
+  OAuthRequestApi,
+  AuthProvider,
+  DiscoveryApi,
+} from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
 
 type CreateOptions = {
-  apiOrigin: string;
-  basePath: string;
-
+  discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
   environment?: string;
@@ -60,29 +62,33 @@ const DEFAULT_PROVIDER = {
   icon: OktaIcon,
 };
 
-const OKTA_OIDC_SCOPES: Set<String> = new Set(
-  ['openid', 'profile', 'email', 'phone', 'address', 'groups', 'offline_access']
-)
+const OKTA_OIDC_SCOPES: Set<String> = new Set([
+  'openid',
+  'profile',
+  'email',
+  'phone',
+  'address',
+  'groups',
+  'offline_access',
+]);
 
-const OKTA_SCOPE_PREFIX: string = 'okta.'
+const OKTA_SCOPE_PREFIX: string = 'okta.';
 
-class OktaAuth implements
-  OAuthApi,
-  OpenIdConnectApi,
-  ProfileInfoApi,
-  BackstageIdentityApi,
-  SessionStateApi
-{
+class OktaAuth
+  implements
+    OAuthApi,
+    OpenIdConnectApi,
+    ProfileInfoApi,
+    BackstageIdentityApi,
+    SessionStateApi {
   static create({
-    apiOrigin,
-    basePath,
+    discoveryApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      apiOrigin,
-      basePath,
+      discoveryApi,
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,
@@ -103,12 +109,7 @@ class OktaAuth implements
 
     const sessionManager = new RefreshingAuthSessionManager({
       connector,
-      defaultScopes: new Set([
-        'openid',
-        'email',
-        'profile',
-        'offline_access',
-      ]),
+      defaultScopes: new Set(['openid', 'email', 'profile', 'offline_access']),
       sessionScopes: session => session.scopes,
       sessionShouldRefresh: session => {
         const expiresInSec =
@@ -126,10 +127,7 @@ class OktaAuth implements
 
   constructor(private readonly sessionManager: SessionManager<OktaSession>) {}
 
-  async getAccessToken(
-    scope?: string,
-    options?: AuthRequestOptions
-  ) {
+  async getAccessToken(scope?: string, options?: AuthRequestOptions) {
     const session = await this.sessionManager.getSession({
       ...options,
       scopes: OktaAuth.normalizeScopes(scope),
@@ -175,8 +173,8 @@ class OktaAuth implements
       if (scope.startsWith(OKTA_SCOPE_PREFIX)) {
         return scope;
       }
-      
-      return `${OKTA_SCOPE_PREFIX}${scope}`
+
+      return `${OKTA_SCOPE_PREFIX}${scope}`;
     });
 
     return new Set(normalizedScopes);

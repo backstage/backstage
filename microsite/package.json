@@ -1,0 +1,18 @@
+{
+  "version": "0.1.1-alpha.20",
+  "name": "backstage-microsite",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "examples": "docusaurus-examples",
+    "start": "docusaurus-start",
+    "build": "docusaurus-build",
+    "publish-gh-pages": "docusaurus-publish",
+    "write-translations": "docusaurus-write-translations",
+    "version": "docusaurus-version",
+    "rename-version": "docusaurus-rename-version"
+  },
+  "devDependencies": {
+    "docusaurus": "^2.0.0-alpha.61"
+  }
+}

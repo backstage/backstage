@@ -1,4 +1,7 @@
-# Adding your own Templates
+---
+id: adding-templates
+title: Adding your own Templates
+---
 
 Templates are stored in the **Service Catalog** under a kind `Template`. The
 minimum that the a template skeleton needs is a `template.yaml` but it would be
@@ -10,24 +13,25 @@ A simple `template.yaml` definition might look something like this:
 apiVersion: backstage.io/v1alpha1
 kind: Template
 metadata:
-	# unique name per namespace for the template
+  # unique name per namespace for the template
   name: react-ssr-template
-	# title of the template
+  # title of the template
   title: React SSR Template
-	# a description of the template
-  description: Next.js application skeleton for creating isomorphic web applications.
+  # a description of the template
+  description:
+    Next.js application skeleton for creating isomorphic web applications.
   # some tags to display in the frontend
-	tags:
-    - Recommended
-    - React
+  tags:
+    - recommended
+    - react
 spec:
   # which templater key to use in the templaters builder
   templater: cookiecutter
-	# what does this template create
+  # what does this template create
   type: website
-	# if the template is not in the current directory where this definition is kept then specfiy
+  # if the template is not in the current directory where this definition is kept then specfiy
   path: './template'
-	# the schema for the form which is displayed in the frontend.
+  # the schema for the form which is displayed in the frontend.
   # should follow JSON schema for forms: https://jsonforms.io/
   schema:
     required:
@@ -39,7 +43,7 @@ spec:
         type: string
         description: Unique name of the component
       description:
-        title:  Description
+        title: Description
         type: string
         description: Description of the component
 ```
@@ -50,7 +54,7 @@ contains more information about the required fields.
 Once we have a `template.yaml` ready, we can then add it to the service catalog
 for use by the scaffolder.
 
-Currently the catalog supports loading definitions from Github + Local Files. To
+Currently the catalog supports loading definitions from GitHub + Local Files. To
 load from other places, not only will there need to be another preparer, but the
 support to load the location will also need to be added to the Catalog.
 

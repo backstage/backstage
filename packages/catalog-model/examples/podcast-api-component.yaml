@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: podcast-api
   description: Podcast API
+  tags:
+    - java
 spec:
   type: service
   lifecycle: experimental

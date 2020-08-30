@@ -15,7 +15,7 @@
  */
 import { spawn, ChildProcess } from 'child_process';
 import program from 'commander';
-import { version } from './lib/version';
+import { version } from '../package.json';
 import path from 'path';
 import HTTPServer from './lib/httpServer';
 import openBrowser from 'react-dev-utils/openBrowser';

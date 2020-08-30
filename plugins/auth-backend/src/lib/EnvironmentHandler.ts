@@ -15,7 +15,11 @@
  */
 
 import express from 'express';
-import { AuthProviderRouteHandlers } from '../providers/types';
+import {
+  AuthProviderRouteHandlers,
+  EnvironmentIdentifierFn,
+} from '../providers/types';
+import { InputError } from '@backstage/backend-common';
 
 export type EnvironmentHandlers = {
   [key: string]: AuthProviderRouteHandlers;
@@ -25,13 +29,18 @@ export class EnvironmentHandler implements AuthProviderRouteHandlers {
   constructor(
     private readonly providerId: string,
     private readonly providers: EnvironmentHandlers,
+    private readonly envIdentifier: EnvironmentIdentifierFn,
   ) {}
 
   private getProviderForEnv(
     req: express.Request,
     res: express.Response,
   ): AuthProviderRouteHandlers | undefined {
-    const env = req.query.env?.toString();
+    const env: string | undefined = this.envIdentifier(req);
+
+    if (!env) {
+      throw new InputError(`Must specify 'env' query to select environment`);
+    }
 
     if (this.providers.hasOwnProperty(env)) {
       return this.providers[env];

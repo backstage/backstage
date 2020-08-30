@@ -25,20 +25,19 @@ import {
   OAuthProviderHandlers,
   AuthProviderConfig,
   RedirectInfo,
-  EnvironmentProviderConfig,
   OAuthProviderOptions,
-  OAuthProviderConfig,
   OAuthResponse,
   PassportDoneCallback,
 } from '../types';
 import { OAuthProvider } from '../../lib/OAuthProvider';
-import {
-  EnvironmentHandlers,
-  EnvironmentHandler,
-} from '../../lib/EnvironmentHandler';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
 import passport from 'passport';
+import { Config } from '@backstage/config';
+
+export type GitlabAuthProviderOptions = OAuthProviderOptions & {
+  baseUrl: string;
+};
 
 export class GitlabAuthProvider implements OAuthProviderHandlers {
   private readonly _strategy: GitlabStrategy;
@@ -101,9 +100,14 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
     };
   }
 
-  constructor(options: OAuthProviderOptions) {
+  constructor(options: GitlabAuthProviderOptions) {
     this._strategy = new GitlabStrategy(
-      { ...options },
+      {
+        clientID: options.clientId,
+        clientSecret: options.clientSecret,
+        callbackURL: options.callbackUrl,
+        baseURL: options.baseUrl,
+      },
       (
         accessToken: any,
         _: any,
@@ -137,50 +141,29 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
 }
 
 export function createGitlabProvider(
-  { baseUrl }: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
-  logger: Logger,
+  config: AuthProviderConfig,
+  _: string,
+  envConfig: Config,
+  _logger: Logger,
   tokenIssuer: TokenIssuer,
 ) {
   const providerId = 'gitlab';
-  const envProviders: EnvironmentHandlers = {};
+  const clientId = envConfig.getString('clientId');
+  const clientSecret = envConfig.getString('clientSecret');
+  const audience = envConfig.getString('audience');
+  const baseUrl = audience || 'https://gitlab.com';
+  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
 
-  for (const [env, envConfig] of Object.entries(providerConfig)) {
-    const {
-      secure,
-      appOrigin,
-      clientId,
-      clientSecret,
-      audience,
-    } = (envConfig as unknown) as OAuthProviderConfig;
-    const opts = {
-      clientID: clientId,
-      clientSecret: clientSecret,
-      callbackURL: `${baseUrl}/${providerId}/handler/frame?env=${env}`,
-      baseURL: audience,
-    };
+  const provider = new GitlabAuthProvider({
+    clientId,
+    clientSecret,
+    callbackUrl,
+    baseUrl,
+  });
 
-    if (!opts.clientID || !opts.clientSecret) {
-      if (process.env.NODE_ENV !== 'development') {
-        throw new Error(
-          'Failed to initialize Gitlab auth provider, set AUTH_GITLAB_CLIENT_ID and AUTH_GITLAB_CLIENT_SECRET env vars',
-        );
-      }
-
-      logger.warn(
-        'Gitlab auth provider disabled, set AUTH_GITLAB_CLIENT_ID and AUTH_GITLAB_CLIENT_SECRET env vars to enable',
-      );
-      continue;
-    }
-
-    envProviders[env] = new OAuthProvider(new GitlabAuthProvider(opts), {
-      disableRefresh: true,
-      providerId,
-      secure,
-      baseUrl,
-      appOrigin,
-      tokenIssuer,
-    });
-  }
-  return new EnvironmentHandler(providerId, envProviders);
+  return OAuthProvider.fromConfig(config, provider, {
+    disableRefresh: true,
+    providerId,
+    tokenIssuer,
+  });
 }

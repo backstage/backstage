@@ -36,6 +36,9 @@ describe('SchemaValidEntityPolicy', () => {
           backstage.io/custom: ValueStuff
         annotations:
           example.com/bindings: are-secret
+        tags:
+          - java
+          - data
       spec:
         custom: stuff
     `);
@@ -188,6 +191,11 @@ describe('SchemaValidEntityPolicy', () => {
   it('rejects bad annotations type', async () => {
     data.metadata.annotations = 7;
     await expect(policy.enforce(data)).rejects.toThrow(/annotations/);
+  });
+
+  it('rejects bad tags type', async () => {
+    data.metadata.tags = 7;
+    await expect(policy.enforce(data)).rejects.toThrow(/tags/);
   });
 
   //

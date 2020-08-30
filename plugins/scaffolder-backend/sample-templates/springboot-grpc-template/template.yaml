@@ -3,10 +3,10 @@ kind: Template
 metadata:
   name: springboot-template
   title: Spring Boot GRPC Service
-  description: Standard Spring Boot (Java) microservice with recommended configuration for GRPC
+  description: Create a simple microservice using gRPC and Spring Boot Java
   tags:
-    - Recommended
-    - Java
+    - recommended
+    - java
 spec:
   owner: service@example.com
   templater: cookiecutter

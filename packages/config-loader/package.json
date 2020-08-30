@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "0.1.1-alpha.16",
+  "version": "0.1.1-alpha.20",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -30,13 +30,13 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.16",
+    "@backstage/config": "^0.1.1-alpha.20",
     "fs-extra": "^9.0.0",
     "yaml": "^1.9.2",
     "yup": "^0.29.1"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.2",
+    "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "@types/yup": "^0.28.2"
   },

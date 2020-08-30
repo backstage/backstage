@@ -17,41 +17,11 @@
 import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
+import { Config } from '@backstage/config';
+import { OAuthProvider } from '../lib/OAuthProvider';
+import { SamlAuthProvider } from './saml/provider';
 
 export type OAuthProviderOptions = {
-  /**
-   * Client ID of the auth provider.
-   */
-  clientID: string;
-  /**
-   * Client Secret of the auth provider.
-   */
-  clientSecret: string;
-  /**
-   * Callback URL to be passed to the auth provider to redirect to after the user signs in.
-   */
-  callbackURL: string;
-};
-
-export type GenericOAuth2ProviderOptions = OAuthProviderOptions & {
-  authorizationURL: string;
-  tokenURL: string;
-};
-
-export type OAuthProviderConfig = {
-  /**
-   * Cookies can be marked with a secure flag to send cookies only when the request
-   * is over an encrypted channel (HTTPS).
-   *
-   * For development environment we don't mark the cookie as secure since we serve
-   * localhost over HTTP.
-   */
-  secure: boolean;
-  /**
-   * The protocol://domain[:port] where the app (frontend) is hosted. This is used to post messages back
-   * to the window that initiates an auth request.
-   */
-  appOrigin: string;
   /**
    * Client ID of the auth provider.
    */
@@ -61,27 +31,9 @@ export type OAuthProviderConfig = {
    */
   clientSecret: string;
   /**
-   * The location of the OAuth Authorization Server
+   * Callback URL to be passed to the auth provider to redirect to after the user signs in.
    */
-  audience?: string;
-};
-
-export type GenericOAuth2ProviderConfig = OAuthProviderConfig & {
-  authorizationURL: string;
-  tokenURL: string;
-};
-
-export type EnvironmentProviderConfig = {
-  /**
-   * key, values are environment names and OAuthProviderConfigs
-   *
-   * For e.g
-   * {
-   *   development: DevelopmentOAuthProviderConfig
-   *   production: ProductionOAuthProviderConfig
-   * }
-   */
-  [key: string]: OAuthProviderConfig;
+  callbackUrl: string;
 };
 
 export type AuthProviderConfig = {
@@ -90,6 +42,11 @@ export type AuthProviderConfig = {
    * callbackURL to redirect to once the user signs in to the auth provider.
    */
   baseUrl: string;
+
+  /**
+   * The base URL of the app as provided by app.baseUrl
+   */
+  appUrl: string;
 };
 
 /**
@@ -200,14 +157,24 @@ export interface AuthProviderRouteHandlers {
    * @param {express.Response} res
    */
   logout?(req: express.Request, res: express.Response): Promise<void>;
+
+  /**
+   *(Optional) A method to identify the environment Context of the Request
+   *
+   *Request
+   *- contains the environment context information encoded in the request
+   *  @param {express.Request} req
+   */
+  identifyEnv?(req: express.Request): string | undefined;
 }
 
 export type AuthProviderFactory = (
   globalConfig: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
+  env: string,
+  envConfig: Config,
   logger: Logger,
   issuer: TokenIssuer,
-) => AuthProviderRouteHandlers;
+) => OAuthProvider | SamlAuthProvider | undefined;
 
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
@@ -246,6 +213,10 @@ export type OAuthProviderInfo = {
    * Scopes granted for the access token.
    */
   scope: string;
+  /**
+   * A refresh token issued for the signed in user
+   */
+  refreshToken?: string;
 };
 
 export type OAuthPrivateInfo = {
@@ -313,6 +284,10 @@ export type RefreshTokenResponse = {
    * An access token issued for the signed in user.
    */
   accessToken: string;
+  /**
+   * Optionally, the server can issue a new Refresh Token for the user
+   */
+  refreshToken?: string;
   params: any;
 };
 
@@ -328,3 +303,14 @@ export type SAMLProviderConfig = {
 export type SAMLEnvironmentProviderConfig = {
   [key: string]: SAMLProviderConfig;
 };
+
+export type OAuthState = {
+  /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
+   */
+  nonce: string;
+  env: string;
+};
+
+export type EnvironmentIdentifierFn = (
+  req: express.Request,
+) => string | undefined;

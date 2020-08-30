@@ -72,7 +72,7 @@ export function readEnv(env: {
             );
           }
           try {
-            const parsedValue = JSON.parse(value);
+            const [, parsedValue] = safeJsonParse(value);
             if (parsedValue === null) {
               throw new Error('value may not be null');
             }
@@ -88,4 +88,12 @@ export function readEnv(env: {
   }
 
   return data ? [{ data, context: 'env' }] : [];
+}
+
+function safeJsonParse(str: string): [Error | null, any] {
+  try {
+    return [null, JSON.parse(str)];
+  } catch (err) {
+    return [err, str];
+  }
 }

@@ -3,11 +3,11 @@ kind: Template
 metadata:
   name: create-react-app-template
   title: Create React App Template
-  description: A template that scaffolds an applications using the Create React App (CRA) templater.
+  description: Create a new CRA website project
   tags:
-    - Experimental
-    - React
-    - CRA
+    - experimental
+    - react
+    - cra
 spec:
   owner: web@example.com
   templater: cra

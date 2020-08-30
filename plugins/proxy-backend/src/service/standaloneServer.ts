@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
-import { loadConfig } from '@backstage/config-loader';
 
 export interface ServerOptions {
   port: number;
@@ -34,10 +36,11 @@ export async function startStandaloneServer(
 
   logger.debug('Creating application...');
 
-  const config = ConfigReader.fromConfigs(await loadConfig());
+  const config = ConfigReader.fromConfigs(await loadBackendConfig());
   const router = await createRouter({
     config,
     logger,
+    pathPrefix: '/proxy',
   });
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })

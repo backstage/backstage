@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config",
   "description": "Config API used by Backstage core, backend, and CLI",
-  "version": "0.1.1-alpha.16",
+  "version": "0.1.1-alpha.20",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -33,7 +33,7 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.2",
+    "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0"
   },
   "files": [

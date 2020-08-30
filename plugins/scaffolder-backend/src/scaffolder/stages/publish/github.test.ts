@@ -45,7 +45,7 @@ const {
   mockRemote: jest.Mocked<NodeGit.Remote>;
 };
 
-describe('Github Publisher', () => {
+describe('GitHub Publisher', () => {
   const publisher = new GithubPublisher({ client: new Octokit() });
 
   beforeEach(() => {

@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  githubAuthApiRef,
-  gitlabAuthApiRef,
-  googleAuthApiRef,
-  identityApiRef,
-  oauth2ApiRef,
-  oktaAuthApiRef,
-  useApi,
-} from '@backstage/core-api';
+import { identityApiRef, useApi } from '@backstage/core-api';
 import Collapse from '@material-ui/core/Collapse';
 import SignOutIcon from '@material-ui/icons/MeetingRoom';
-import Star from '@material-ui/icons/Star';
 import React, { useContext, useEffect } from 'react';
 import { SidebarContext } from './config';
 import { SidebarItem } from './Items';
-import {
-  OAuthProviderSettings,
-  OIDCProviderSettings,
-  UserProfile as SidebarUserProfile,
-} from './Settings';
+import { UserProfile as SidebarUserProfile } from './Settings';
 
-export function SidebarUserSettings() {
+type SidebarUserSettingsProps = { providerSettings?: React.ReactNode };
+
+export function SidebarUserSettings({
+  providerSettings,
+}: SidebarUserSettingsProps) {
   const { isOpen: sidebarOpen } = useContext(SidebarContext);
   const [open, setOpen] = React.useState(false);
   const identityApi = useApi(identityApiRef);
@@ -49,31 +40,8 @@ export function SidebarUserSettings() {
     <>
       <SidebarUserProfile open={open} setOpen={setOpen} />
       <Collapse in={open} timeout="auto">
-        <OIDCProviderSettings
-          title="Google"
-          apiRef={googleAuthApiRef}
-          icon={Star}
-        />
-        <OAuthProviderSettings
-          title="Github"
-          apiRef={githubAuthApiRef}
-          icon={Star}
-        />
-        <OAuthProviderSettings
-          title="Gitlab"
-          apiRef={gitlabAuthApiRef}
-          icon={Star}
-        />
-        <OIDCProviderSettings
-          title="Okta"
-          apiRef={oktaAuthApiRef}
-          icon={Star}
-        />
-        <OIDCProviderSettings
-          title="YourOrg"
-          apiRef={oauth2ApiRef}
-          icon={Star}
-        />
+        {providerSettings}
+
         <SidebarItem
           icon={SignOutIcon}
           text="Sign Out"

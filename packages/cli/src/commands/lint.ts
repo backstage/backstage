@@ -22,7 +22,7 @@ export default async (cmd: Command, cmdArgs: string[]) => {
   const args = [
     '--ext=js,jsx,ts,tsx',
     '--max-warnings=0',
-    '--format=eslint-formatter-friendly',
+    `--format=${cmd.format}`,
     ...(cmdArgs ?? [paths.targetDir]),
   ];
   if (cmd.fix) {

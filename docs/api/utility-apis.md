@@ -1,4 +1,7 @@
-# Utility APIs
+---
+id: utility-apis
+title: Utility APIs
+---
 
 ## Introduction
 
@@ -19,7 +22,8 @@ during their entire life cycle.
 Each Utility API is tied to an `ApiRef` instance, which is a global singleton
 object without any additional state or functionality, its only purpose is to
 reference Utility APIs. `ApiRef`s are create using `createApiRef`, which is
-exported by `@backstage/core`. There are many predefined Utility APIs defined in
+exported by `@backstage/core`. There are many
+[predefined Utility APIs](../reference/utility-apis/README.md) defined in
 `@backstage/core`, and they're all exported with a name of the pattern
 `*ApiRef`, for example `errorApiRef`.
 
@@ -67,18 +71,23 @@ import {
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
+  ConfigApi
 } from '@backstage/core';
 
-const builder = ApiRegistry.builder();
 
-// The alert API is a self-contained implementation that shows alerts to the user.
-const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
+const apis = (config: ConfigApi) => {
+  const builder = ApiRegistry.builder();
 
-// The error API uses the alert API to send error notifications to the user.
-builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
+  // The alert API is a self-contained implementation that shows alerts to the user.
+  const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
+
+  // The error API uses the alert API to send error notifications to the user.
+  builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
+  return builder.build();
+}
 
 const app = createApp({
-  apis: apiBuilder.build(),
+  apis,
   // ... other config
 });
 ```
@@ -152,7 +161,7 @@ The figure below shows the relationship between
 <span style="color: #b85450">fooApiRef</span>.
 
 <div style="text-align:center">
-<img src="utility-apis-fig1.svg" alt="Figure showing the relationship between utility APIs, the apps that provide them, and the plugins that consume them">
+<img src="../assets/utility-apis-fig1.svg" alt="Figure showing the relationship between utility APIs, the apps that provide them, and the plugins that consume them">
 </div>
 
 The current method for connecting Utility API providers and consumers is via the

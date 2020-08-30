@@ -21,6 +21,7 @@ import {
   THOUSAND_DAYS_MS,
   TEN_MINUTES_MS,
   verifyNonce,
+  encodeState,
   OAuthProvider,
 } from './OAuthProvider';
 import { WebMessageResponse, OAuthProviderHandlers } from '../providers/types';
@@ -43,10 +44,11 @@ const mockResponseData = {
 describe('OAuthProvider Utils', () => {
   describe('verifyNonce', () => {
     it('should throw error if cookie nonce missing', () => {
+      const state = { nonce: 'NONCE', env: 'development' };
       const mockRequest = ({
         cookies: {},
         query: {
-          state: 'NONCE',
+          state: encodeState(state),
         },
       } as unknown) as express.Request;
       expect(() => {
@@ -63,16 +65,17 @@ describe('OAuthProvider Utils', () => {
       } as unknown) as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Auth response is missing state nonce');
+      }).toThrowError('Invalid state passed via request');
     });
 
     it('should throw error if nonce mismatch', () => {
+      const state = { nonce: 'NONCEB', env: 'development' };
       const mockRequest = ({
         cookies: {
           'providera-nonce': 'NONCEA',
         },
         query: {
-          state: 'NONCEB',
+          state: encodeState(state),
         },
       } as unknown) as express.Request;
       expect(() => {
@@ -81,12 +84,13 @@ describe('OAuthProvider Utils', () => {
     });
 
     it('should not throw any error if nonce matches', () => {
+      const state = { nonce: 'NONCE', env: 'development' };
       const mockRequest = ({
         cookies: {
           'providera-nonce': 'NONCE',
         },
         query: {
-          state: 'NONCE',
+          state: encodeState(state),
         },
       } as unknown) as express.Request;
       expect(() => {
@@ -125,7 +129,7 @@ describe('OAuthProvider Utils', () => {
       const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
 
       postMessageResponse(mockResponse, appOrigin, data);
-      expect(mockResponse.setHeader).toBeCalledTimes(2);
+      expect(mockResponse.setHeader).toBeCalledTimes(3);
       expect(mockResponse.end).toBeCalledTimes(1);
       expect(mockResponse.end).toBeCalledWith(
         expect.stringContaining(base64Data),
@@ -146,7 +150,7 @@ describe('OAuthProvider Utils', () => {
       const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
 
       postMessageResponse(mockResponse, appOrigin, data);
-      expect(mockResponse.setHeader).toBeCalledTimes(2);
+      expect(mockResponse.setHeader).toBeCalledTimes(3);
       expect(mockResponse.end).toBeCalledTimes(1);
       expect(mockResponse.end).toBeCalledWith(
         expect.stringContaining(base64Data),
@@ -201,8 +205,9 @@ describe('OAuthProvider', () => {
     providerId: 'test-provider',
     secure: false,
     disableRefresh: true,
-    baseUrl: 'http://localhost:7000/auth',
     appOrigin: 'http://localhost:3000',
+    cookieDomain: 'localhost',
+    cookiePath: '/auth/test-provider',
     tokenIssuer: {
       issueToken: async () => 'my-id-token',
       listPublicKeys: async () => ({ keys: [] }),
@@ -217,6 +222,7 @@ describe('OAuthProvider', () => {
     const mockRequest = ({
       query: {
         scope: 'user',
+        env: 'development',
       },
     } as unknown) as express.Request;
 
@@ -249,12 +255,13 @@ describe('OAuthProvider', () => {
       disableRefresh: false,
     });
 
+    const state = { nonce: 'nonce', env: 'development' };
     const mockRequest = ({
       cookies: {
         'test-provider-nonce': 'nonce',
       },
       query: {
-        state: 'nonce',
+        state: encodeState(state),
       },
     } as unknown) as express.Request;
 

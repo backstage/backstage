@@ -79,7 +79,7 @@ export const transforms = (
       loader: require.resolve('url-loader'),
       options: {
         limit: 10000,
-        name: 'static/media/[name].[hash:8].[ext]',
+        name: 'static/[name].[hash:8].[ext]',
       },
     },
     {
@@ -111,8 +111,8 @@ export const transforms = (
   } else {
     plugins.push(
       new MiniCssExtractPlugin({
-        filename: '[name].[contenthash:8].css',
-        chunkFilename: '[name].[id].[contenthash:8].css',
+        filename: 'static/[name].[contenthash:8].css',
+        chunkFilename: 'static/[name].[id].[contenthash:8].css',
       }),
     );
   }

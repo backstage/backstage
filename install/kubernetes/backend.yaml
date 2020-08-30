@@ -11,17 +11,17 @@ spec:
     matchLabels:
       app: backstage
       component: backend
-    template:
-      metadata:
-        labels:
-          app: backstage
-          component: backend
-      spec:
-        containers:
-        - name: backend
-          image: spotify/backstage-backend:latest
-          imagePullPolicy: Always
-          ports:
-          - containerPort: 7000
-            name: backend
-            protocol: TCP
+  template:
+    metadata:
+      labels:
+        app: backstage
+        component: backend
+    spec:
+      containers:
+      - name: backend
+        image: spotify/backstage-backend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 7000
+          name: backend
+          protocol: TCP

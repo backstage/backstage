@@ -4,24 +4,163 @@ app:
 
 backend:
   baseUrl: http://localhost:7000
-  listen: 0.0.0.0:7000
+  listen:
+    port: 7000
   cors:
     origin: http://localhost:3000
     methods: [GET, POST, PUT, DELETE]
     credentials: true
+  database:
+    client: sqlite3
+    connection: ':memory:'
 
+# See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  "/circleci/api":
-    target: "https://circleci.com/api/v1.1"
-    changeOrigin: true
-    pathRewrite:
-      "^/proxy/circleci/api/": "/"
+  '/circleci/api': https://circleci.com/api/v1.1
+  '/jenkins/api':
+    target: http://localhost:8080
+    headers:
+      Authorization:
+        $secret:
+          env: JENKINS_BASIC_AUTH_HEADER
 
 organization:
   name: Spotify
 
 techdocs:
-  storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+  storageUrl: http://localhost:7000/techdocs/static/docs
 
 sentry:
   organization: spotify
+
+rollbar:
+  organization: spotify
+  accountToken:
+    $secret:
+      env: ROLLBAR_ACCOUNT_TOKEN
+
+newrelic:
+  api:
+    baseUrl: 'https://api.newrelic.com/v2'
+    key: NEW_RELIC_REST_API_KEY
+
+catalog:
+  processors:
+    githubApi:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
+    bitbucketApi:
+      username:
+        $secret:
+          env: BITBUCKET_USERNAME
+      appPassword:
+        $secret:
+          env: BITBUCKET_APP_PASSWORD
+    gitlabApi:
+      privateToken:
+        $secret:
+          env: GITLAB_PRIVATE_TOKEN
+    azureApi:
+      privateToken:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
+  exampleEntityLocations:
+    github:
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
+      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
+      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+      - https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+
+auth:
+  providers:
+    google:
+      development:
+        clientId:
+          $secret:
+            env: AUTH_GOOGLE_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_GOOGLE_CLIENT_SECRET
+    github:
+      development:
+        clientId:
+          $secret:
+            env: AUTH_GITHUB_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_GITHUB_CLIENT_SECRET
+        enterpriseInstanceUrl:
+          $secret:
+            env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+    gitlab:
+      development:
+        clientId:
+          $secret:
+            env: AUTH_GITLAB_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_GITLAB_CLIENT_SECRET
+        audience:
+          $secret:
+            env: GITLAB_BASE_URL
+    # saml:
+    #   development:
+    #     entryPoint: "http://localhost:7001/"
+    #     issuer: "passport-saml"
+    okta:
+      development:
+        clientId:
+          $secret:
+            env: AUTH_OKTA_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_OKTA_CLIENT_SECRET
+        audience:
+          $secret:
+            env: AUTH_OKTA_AUDIENCE
+    oauth2:
+      development:
+        clientId:
+          $secret:
+            env: AUTH_OAUTH2_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_OAUTH2_CLIENT_SECRET
+        authorizationUrl:
+          $secret:
+            env: AUTH_OAUTH2_AUTH_URL
+        tokenUrl:
+          $secret:
+            env: AUTH_OAUTH2_TOKEN_URL
+    auth0:
+      development:
+        clientId:
+          $secret:
+            env: AUTH_AUTH0_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_AUTH0_CLIENT_SECRET
+        domain:
+          $secret:
+            env: AUTH_AUTH0_DOMAIN
+    microsoft:
+      development:
+        clientId:
+          $secret:
+            env: AUTH_MICROSOFT_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_MICROSOFT_CLIENT_SECRET
+        tenantId:
+          $secret:
+            env: AUTH_MICROSOFT_TENANT_ID

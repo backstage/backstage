@@ -1,4 +1,7 @@
-# OAuth and OpenID Connect
+---
+id: oauth
+title: OAuth and OpenID Connect
+---
 
 This section describes how Backstage allows plugins to request OAuth Access
 Tokens and OpenID Connect ID Tokens on behalf of the user, to be used for auth
@@ -101,6 +104,8 @@ request an access token.
 
 The following diagram visualizes the flow described in the previous section.
 
+![](oauth-popup-flow.svg)
+
 <!--
 @startuml oauth-popup-flow
 
@@ -149,5 +154,3 @@ Browser <- Backend: Tokens and info
 
 @enduml
 -->
-
-![](oauth-popup-flow.svg)

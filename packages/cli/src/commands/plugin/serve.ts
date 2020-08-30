@@ -17,10 +17,14 @@
 import { Command } from 'commander';
 import { loadConfig } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
+import { paths } from '../../lib/paths';
 import { serveBundle } from '../../lib/bundler';
 
 export default async (cmd: Command) => {
-  const appConfigs = await loadConfig();
+  const appConfigs = await loadConfig({
+    env: process.env.NODE_ENV ?? 'development',
+    rootPaths: [paths.targetRoot, paths.targetDir],
+  });
   const waitForExit = await serveBundle({
     entry: 'dev/index',
     checksEnabled: cmd.check,

@@ -126,6 +126,26 @@ describe('helpers', () => {
       );
     });
 
+    it('should pass through the user and group id from the host machine and set the home dir', async () => {
+      await runDockerContainer({
+        imageName,
+        args,
+        templateDir,
+        resultDir,
+        dockerClient: mockDocker,
+      });
+
+      expect(mockDocker.run).toHaveBeenCalledWith(
+        imageName,
+        args,
+        expect.any(Stream),
+        expect.objectContaining({
+          User: `${process.getuid()}:${process.getgid()}`,
+          Env: ['HOME=/tmp'],
+        }),
+      );
+    });
+
     it('should pass through the log stream to the docker client', async () => {
       const logStream = new PassThrough();
       await runDockerContainer({

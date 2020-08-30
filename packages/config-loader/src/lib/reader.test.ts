@@ -26,6 +26,13 @@ function memoryFiles(files: { [path: string]: string }) {
   };
 }
 
+const mockContext: ReaderContext = {
+  env: {},
+  skip: () => false,
+  readFile: jest.fn(),
+  readSecret: jest.fn(),
+};
+
 describe('readConfigFile', () => {
   it('should read a plain config file', async () => {
     const readFile = memoryFiles({
@@ -34,8 +41,9 @@ describe('readConfigFile', () => {
     });
 
     const config = readConfigFile('./app-config.yaml', {
+      ...mockContext,
       readFile,
-    } as ReaderContext);
+    });
 
     await expect(config).resolves.toEqual({
       data: {
@@ -55,8 +63,9 @@ describe('readConfigFile', () => {
     });
 
     const config = readConfigFile('./app-config.yaml', {
+      ...mockContext,
       readFile,
-    } as ReaderContext);
+    });
 
     await expect(config).rejects.toThrow('Flow map contains an unexpected ]');
   });
@@ -67,8 +76,9 @@ describe('readConfigFile', () => {
     });
 
     const config = readConfigFile('./app-config.yaml', {
+      ...mockContext,
       readFile,
-    } as ReaderContext);
+    });
 
     await expect(config).rejects.toThrow('Expected object at config root');
   });
@@ -80,7 +90,7 @@ describe('readConfigFile', () => {
     const readSecret = jest.fn().mockResolvedValue('secret');
 
     const config = readConfigFile('./app-config.yaml', {
-      env: {},
+      ...mockContext,
       readFile,
       readSecret: readSecret as ReadSecretFunc,
     });
@@ -91,7 +101,9 @@ describe('readConfigFile', () => {
       },
       context: 'app-config.yaml',
     });
-    expect(readSecret).toHaveBeenCalledWith({ file: './my-secret' });
+    expect(readSecret).toHaveBeenCalledWith('.app', {
+      file: './my-secret',
+    });
   });
 
   it('should require secrets to be objects', async () => {
@@ -101,7 +113,7 @@ describe('readConfigFile', () => {
     const readSecret = jest.fn().mockResolvedValue('secret');
 
     const config = readConfigFile('./app-config.yaml', {
-      env: {},
+      ...mockContext,
       readFile,
       readSecret: readSecret as ReadSecretFunc,
     });
@@ -119,11 +131,29 @@ describe('readConfigFile', () => {
     const readSecret = jest.fn().mockRejectedValue(new Error('NOPE'));
 
     const config = readConfigFile('./app-config.yaml', {
-      env: {},
+      ...mockContext,
       readFile,
       readSecret: readSecret as ReadSecretFunc,
     });
 
     await expect(config).rejects.toThrow('Invalid secret at .app: NOPE');
+  });
+
+  it('should omit skipped values', async () => {
+    const readFile = memoryFiles({
+      './app-config.yaml': 'app: { title: skip, name: include }',
+    });
+
+    const config = readConfigFile('./app-config.yaml', {
+      ...mockContext,
+      readFile,
+      skip: (path: string) => path === '.app.title',
+      readSecret: jest.fn() as ReadSecretFunc,
+    });
+
+    await expect(config).resolves.toEqual({
+      context: 'app-config.yaml',
+      data: { app: { name: 'include' } },
+    });
   });
 });
