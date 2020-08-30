@@ -51,7 +51,7 @@ catalog:
         $secret:
           env: GITHUB_PRIVATE_TOKEN
     bitbucketApi:
-      userName:
+      username:
         $secret:
           env: BITBUCKET_USERNAME
       appPassword:
