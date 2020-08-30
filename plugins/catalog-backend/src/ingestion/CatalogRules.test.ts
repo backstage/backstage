@@ -16,6 +16,7 @@
 
 import { LocationSpec, Entity } from '@backstage/catalog-model';
 import { CatalogRulesEnforcer } from './CatalogRules';
+import { ConfigReader } from '@backstage/config';
 
 const entity = {
   user: {
@@ -112,5 +113,71 @@ describe('CatalogRulesEnforcer', () => {
     expect(enforcer.isAllowed(entity.group, location.y)).toBe(true);
     expect(enforcer.isAllowed(entity.group, location.z)).toBe(true);
     expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
+  });
+
+  describe('fromConfig', () => {
+    it('should allow components by default', () => {
+      const enforcer = CatalogRulesEnforcer.fromConfig(new ConfigReader({}));
+      expect(enforcer.isAllowed(entity.user, location.x)).toBe(false);
+      expect(enforcer.isAllowed(entity.group, location.y)).toBe(false);
+      expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
+    });
+
+    it('should deny all', () => {
+      const enforcer = CatalogRulesEnforcer.fromConfig(
+        new ConfigReader({ catalog: { rules: [] } }),
+      );
+      expect(enforcer.isAllowed(entity.user, location.x)).toBe(false);
+      expect(enforcer.isAllowed(entity.group, location.y)).toBe(false);
+      expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
+    });
+
+    it('should allow all', () => {
+      const enforcer = CatalogRulesEnforcer.fromConfig(
+        new ConfigReader({
+          catalog: {
+            rules: [{ allow: ['User', 'Group'] }, { allow: ['Component'] }],
+          },
+        }),
+      );
+      expect(enforcer.isAllowed(entity.user, location.x)).toBe(true);
+      expect(enforcer.isAllowed(entity.group, location.y)).toBe(true);
+      expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
+    });
+
+    it('should deny groups', () => {
+      const enforcer = CatalogRulesEnforcer.fromConfig(
+        new ConfigReader({
+          catalog: { rules: [{ allow: ['User'] }, { allow: ['Component'] }] },
+        }),
+      );
+      expect(enforcer.isAllowed(entity.user, location.x)).toBe(true);
+      expect(enforcer.isAllowed(entity.group, location.x)).toBe(false);
+      expect(enforcer.isAllowed(entity.group, location.y)).toBe(false);
+      expect(enforcer.isAllowed(entity.group, location.z)).toBe(false);
+      expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
+    });
+
+    it('should allow groups from a specific github location', () => {
+      const enforcer = CatalogRulesEnforcer.fromConfig(
+        new ConfigReader({
+          catalog: {
+            rules: [{ allow: ['user'] }],
+            locations: [
+              {
+                type: 'github',
+                target: 'https://github.com/a/b/blob/master/x.yaml',
+                allow: ['Group'],
+              },
+            ],
+          },
+        }),
+      );
+      expect(enforcer.isAllowed(entity.user, location.x)).toBe(true);
+      expect(enforcer.isAllowed(entity.group, location.x)).toBe(true);
+      expect(enforcer.isAllowed(entity.group, location.y)).toBe(false);
+      expect(enforcer.isAllowed(entity.group, location.z)).toBe(false);
+      expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
+    });
   });
 });
