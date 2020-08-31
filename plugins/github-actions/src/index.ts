@@ -16,4 +16,4 @@
 
 export { plugin } from './plugin';
 export * from './api';
-export { Widget, WidgetList } from './components/Widget';
+export { Widget, RecentWorkflowRunsCard } from './components/Widget';
