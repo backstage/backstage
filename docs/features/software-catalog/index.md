@@ -79,6 +79,22 @@ All software created through the
 [Backstage Software Templates](../software-templates/index.md) are automatically
 registered in the catalog.
 
+### Static catalog configuration
+
+In addition to manually registering components, it is also possible to register
+components though [static configuration](../../conf/index.md). For example, the
+above example can be added using the following configuration:
+
+```yaml
+catalog:
+  locations:
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+```
+
+More information about catalog configuration can be found
+[here](configuration.md).
+
 ### Updating component metadata
 
 Teams owning the components are responsible for maintaining the metadata about
