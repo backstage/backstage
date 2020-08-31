@@ -3758,17 +3758,7 @@
   dependencies:
     "@babel/types" "^7.9.5"
 
-"@svgr/plugin-jsx@4.3.x", "@svgr/plugin-jsx@^4.3.3":
-  version "4.3.3"
-  resolved "https://registry.npmjs.org/@svgr/plugin-jsx/-/plugin-jsx-4.3.3.tgz#e2ba913dbdfbe85252a34db101abc7ebd50992fa"
-  integrity sha512-cLOCSpNWQnDB1/v+SUENHH7a0XY09bfuMKdq9+gYvtuwzC2rU4I0wKGFEp1i24holdQdwodCtDQdFtJiTCWc+w==
-  dependencies:
-    "@babel/core" "^7.4.5"
-    "@svgr/babel-preset" "^4.3.3"
-    "@svgr/hast-util-to-babel-ast" "^4.3.2"
-    svg-parser "^2.0.0"
-
-"@svgr/plugin-jsx@^5.4.0":
+"@svgr/plugin-jsx@5.4.x", "@svgr/plugin-jsx@^5.4.0":
   version "5.4.0"
   resolved "https://registry.npmjs.org/@svgr/plugin-jsx/-/plugin-jsx-5.4.0.tgz#ab47504c55615833c6db70fca2d7e489f509787c"
   integrity sha512-SGzO4JZQ2HvGRKDzRga9YFSqOqaNrgLlQVaGvpZ2Iht2gwRp/tq+18Pvv9kS9ZqOMYgyix2LLxZMY1LOe9NPqw==
@@ -3777,6 +3767,16 @@
     "@svgr/babel-preset" "^5.4.0"
     "@svgr/hast-util-to-babel-ast" "^5.4.0"
     svg-parser "^2.0.2"
+
+"@svgr/plugin-jsx@^4.3.3":
+  version "4.3.3"
+  resolved "https://registry.npmjs.org/@svgr/plugin-jsx/-/plugin-jsx-4.3.3.tgz#e2ba913dbdfbe85252a34db101abc7ebd50992fa"
+  integrity sha512-cLOCSpNWQnDB1/v+SUENHH7a0XY09bfuMKdq9+gYvtuwzC2rU4I0wKGFEp1i24holdQdwodCtDQdFtJiTCWc+w==
+  dependencies:
+    "@babel/core" "^7.4.5"
+    "@svgr/babel-preset" "^4.3.3"
+    "@svgr/hast-util-to-babel-ast" "^4.3.2"
+    svg-parser "^2.0.0"
 
 "@svgr/plugin-svgo@4.3.x", "@svgr/plugin-svgo@^4.3.1":
   version "4.3.1"
