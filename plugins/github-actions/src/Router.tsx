@@ -19,16 +19,29 @@ import { Routes, Route } from 'react-router';
 import { rootRouteRef, buildRouteRef } from './plugin';
 import { WorkflowRunDetails } from './components/WorkflowRunDetails';
 import { WorkflowRunsTable } from './components/WorkflowRunsTable';
+import { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';
+import { WarningPanel } from '@backstage/core';
 
-export const GitHubActionsPlugin = ({ entity }: { entity: Entity }) => (
-  <Routes>
-    <Route
-      path={`/${rootRouteRef.path}`}
-      element={<WorkflowRunsTable entity={entity} />}
-    />
-    <Route
-      path={`/${buildRouteRef.path}`}
-      element={<WorkflowRunDetails entity={entity} />}
-    />
-  </Routes>
-);
+const isPluginApplicableToEntity = (entity: Entity) =>
+  Boolean(entity?.metadata?.annotations?.[GITHUB_ACTIONS_ANNOTATION]) &&
+  entity?.metadata?.annotations?.[GITHUB_ACTIONS_ANNOTATION] !== '';
+
+export const GitHubActionsPage = ({ entity }: { entity: Entity }) =>
+  !isPluginApplicableToEntity(entity) ? (
+    <WarningPanel title=" GitHubActions plugin:">
+      `entity.metadata.annotations['
+      {GITHUB_ACTIONS_ANNOTATION}']` key is missing on the entity.{' '}
+    </WarningPanel>
+  ) : (
+    <Routes>
+      <Route
+        path={`/${rootRouteRef.path}`}
+        element={<WorkflowRunsTable entity={entity} />}
+      />
+      <Route
+        path={`/${buildRouteRef.path}`}
+        element={<WorkflowRunDetails entity={entity} />}
+      />
+      )
+    </Routes>
+  );

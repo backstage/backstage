@@ -22,8 +22,19 @@ import { Entity } from '@backstage/catalog-model';
 
 const REDIRECT_DELAY = 2000;
 
-export const EntityContext = createContext<Entity>((null as any) as Entity);
-export const useEntityFromUrl = () => {
+type EntityLoadingStatus = {
+  entity?: Entity;
+  loading: boolean | null;
+  error?: Error;
+};
+
+export const EntityContext = createContext<EntityLoadingStatus>({
+  entity: undefined as any,
+  loading: null,
+  error: undefined,
+});
+
+export const useEntityFromUrl = (): EntityLoadingStatus => {
   const { optionalNamespaceAndName, kind } = useParams();
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
   const navigate = useNavigate();
@@ -36,7 +47,7 @@ export const useEntityFromUrl = () => {
   );
 
   useEffect(() => {
-    if (!error && !loading && !entity) {
+    if (error || (!loading && !entity)) {
       errorApi.post(new Error('Entity not found!'));
       setTimeout(() => {
         navigate('/');
@@ -46,10 +57,21 @@ export const useEntityFromUrl = () => {
 
   if (!name) {
     navigate('/catalog');
-    return { entity: null, loading: null, error: new Error('No name in url') };
+    return {
+      entity: undefined,
+      loading: null,
+      error: new Error('No name in url'),
+    } as never;
   }
 
   return { entity, loading, error };
 };
 
-export const useEntity = () => useContext(EntityContext);
+/**
+ * Always going to return an entity, or throw an error if not a descendant of a EntityProvider.
+ * Otherwise the useEntityFromUrl will take care of the `undefined` entity
+ */
+export const useEntity = () =>
+  useContext<Omit<EntityLoadingStatus, 'entity'> & { entity: Entity }>(
+    EntityContext as any,
+  );

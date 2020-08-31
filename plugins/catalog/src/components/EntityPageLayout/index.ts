@@ -13,9 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { plugin } from './plugin';
-export * from './api';
-export { Widget } from './components/Widget';
-export { GitHubActionsPage } from './Router';
-export { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';
+export { EntityPageLayout } from './EntityPageLayout';

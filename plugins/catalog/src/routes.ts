@@ -30,6 +30,6 @@ export const entityRoute = createRouteRef({
 });
 export const entityRouteDefault = createRouteRef({
   icon: NoIcon,
-  path: ':kind/:optionalNamespaceAndName',
+  path: ':kind/:optionalNamespaceAndName/*',
   title: 'Entity',
 });

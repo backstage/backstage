@@ -29,5 +29,4 @@ export const buildRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'github-actions',
-  register() {},
 });

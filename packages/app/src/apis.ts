@@ -74,7 +74,10 @@ import {
   TravisCIApi,
   travisCIApiRef,
 } from '@roadiehq/backstage-plugin-travis-ci';
-import { GithubPullRequestsClient, githubPullRequestsApiRef } from '@roadiehq/backstage-plugin-github-pull-requests';
+import {
+  GithubPullRequestsClient,
+  githubPullRequestsApiRef,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console

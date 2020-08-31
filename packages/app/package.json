@@ -5,6 +5,7 @@
   "dependencies": {
     "@backstage/cli": "^0.1.1-alpha.19",
     "@backstage/core": "^0.1.1-alpha.19",
+    "@backstage/catalog-model": "^0.1.1-alpha.19",
     "@backstage/plugin-api-docs": "^0.1.1-alpha.19",
     "@backstage/plugin-catalog": "^0.1.1-alpha.19",
     "@backstage/plugin-circleci": "^0.1.1-alpha.19",

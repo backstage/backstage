@@ -21,4 +21,5 @@ export * from './routes';
 export { useEntityCompoundName } from './components/useEntityCompoundName';
 export * from './Router';
 export { useEntity } from './hooks/useEntity';
-export { EntityPageTabs } from './components/EntityPageTabs';
+export { EntityMetadataCard } from './components/EntityMetadataCard/EntityMetadataCard';
+export { EntityPageLayout } from './components/EntityPageLayout';
