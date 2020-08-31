@@ -34,6 +34,23 @@ const getSelectedIndex = (matchedRoute: RouteMatch, tabs: Tab[]) => {
   return ~tabIndex ? tabIndex : 0;
 };
 
+/**
+ * Compound component, which allows you to define layout
+ * for EntityPage using Tabs as a subnavigation mechanism
+ * Constists of 2 parts: Tabbed.Layout and Tabbed.Content.
+ * Takes care of: tabs, routes, document titles, spacing around content
+ *
+ * @example
+ * ```jsx
+ * <Tabbed.Layout>
+ *   <Tabbed.Content
+ *      title="Example tab"
+ *      route="/example/*"
+ *      element={<div>This is rendered under /example/anything-here route</div>}
+ *   />
+ * </TabbedLayout>
+ * ```
+ */
 export const Tabbed = {
   Layout: ({ children }: { children: React.ReactNode }) => {
     const routes: PartialRouteObject[] = [];
@@ -73,7 +90,7 @@ export const Tabbed = {
     const title = currentTab.label;
 
     const onTabChange = (index: number) =>
-      navigate(tabs[index].id.slice(1, -2));
+      navigate(tabs[index].id.replace(/\/\*$/g, ''));
 
     const currentRouteElement = useRoutes(routes);
 
