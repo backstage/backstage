@@ -16,7 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
-import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
 import {
   JenkinsBuildsWidget,
