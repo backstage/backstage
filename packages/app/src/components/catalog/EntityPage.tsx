@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GitHubActionsPage } from '@backstage/plugin-github-actions';
+import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
 import React from 'react';
 import {
   EntityPageLayout,
@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 
-export const OverviewPage = ({ entity }: { entity: Entity }) => (
+const OverviewPage = ({ entity }: { entity: Entity }) => (
   <EntityMetadataCard entity={entity} />
 );
 
@@ -36,12 +36,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/ci-cd/*"
       title="CI/CD"
-      element={<GitHubActionsPage entity={entity} />}
-    />
-    <EntityPageLayout.Content
-      path="/docs/*"
-      title="Documentation"
-      element={<div>Much docs, such wow ({entity.metadata.name})🐶</div>}
+      element={<GitHubActionsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
@@ -56,12 +51,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/ci-cd/*"
       title="CI/CD"
-      element={<GitHubActionsPage entity={entity} />}
-    />
-    <EntityPageLayout.Content
-      path="/docs/*"
-      title="Documentation"
-      element={<div>Much docs, such wow ({entity.metadata.name})🐶</div>}
+      element={<GitHubActionsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
@@ -69,7 +59,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
 const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     <EntityPageLayout.Content
-      path="*"
+      path="/*"
       title="Overview"
       element={<OverviewPage entity={entity} />}
     />

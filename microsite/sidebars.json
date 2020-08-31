@@ -73,6 +73,7 @@
       "plugins/create-a-plugin",
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
+      "plugins/integrating-plugin-into-service-catalog",
       {
         "type": "subcategory",
         "label": "Backends and APIs",

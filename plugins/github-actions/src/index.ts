@@ -16,6 +16,5 @@
 
 export { plugin } from './plugin';
 export * from './api';
-export { Widget } from './components/Widget';
-export { GitHubActionsPage } from './Router';
+export { Router } from './components/Router';
 export { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';

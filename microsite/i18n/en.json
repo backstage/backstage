@@ -199,7 +199,7 @@
         "title": "Backend plugin"
       },
       "plugins/call-existing-api": {
-        "title": "Call existing API"
+        "title": "Call Existing API"
       },
       "plugins/create-a-plugin": {
         "title": "Create a Backstage Plugin"
@@ -209,6 +209,9 @@
       },
       "plugins/index": {
         "title": "Intro"
+      },
+      "plugins/integrating-plugin-into-service-catalog": {
+        "title": "Integrate into the catalog service"
       },
       "plugins/plugin-development": {
         "title": "Plugin Development in Backstage"

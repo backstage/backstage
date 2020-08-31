@@ -78,10 +78,11 @@ export const Tabbed = {
     });
 
     // Add catch-all for incorrect sub-routes
-    routes.push({
-      path: '/*',
-      element: <Navigate to="." />,
-    });
+    if ((routes?.[0]?.path ?? '') !== '')
+      routes.push({
+        path: '/*',
+        element: <Navigate to={routes[0].path!} />,
+      });
 
     const [matchedRoute] =
       matchRoutes(routes as RouteObject[], `/${params['*']}`) ?? [];

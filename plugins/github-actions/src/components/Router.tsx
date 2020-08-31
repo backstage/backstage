@@ -16,17 +16,18 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Routes, Route } from 'react-router';
-import { rootRouteRef, buildRouteRef } from './plugin';
-import { WorkflowRunDetails } from './components/WorkflowRunDetails';
-import { WorkflowRunsTable } from './components/WorkflowRunsTable';
-import { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';
+import { rootRouteRef, buildRouteRef } from '../plugin';
+import { WorkflowRunDetails } from './WorkflowRunDetails';
+import { WorkflowRunsTable } from './WorkflowRunsTable';
+import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
 import { WarningPanel } from '@backstage/core';
 
 const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity?.metadata?.annotations?.[GITHUB_ACTIONS_ANNOTATION]) &&
   entity?.metadata?.annotations?.[GITHUB_ACTIONS_ANNOTATION] !== '';
 
-export const GitHubActionsPage = ({ entity }: { entity: Entity }) =>
+export const Router = ({ entity }: { entity: Entity }) =>
+  // TODO(shmidt-i): move warning to a separate standardized component
   !isPluginApplicableToEntity(entity) ? (
     <WarningPanel title=" GitHubActions plugin:">
       `entity.metadata.annotations['
