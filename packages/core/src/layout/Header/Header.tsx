@@ -38,7 +38,7 @@ const useStyles = makeStyles<BackstageTheme, { backgroundImage: string }>(
       alignItems: 'center',
       backgroundImage: props => props.backgroundImage,
       backgroundPosition: 'center',
-      backgroundSize: '100% 400px',
+      backgroundSize: 'cover',
     },
     leftItemsBox: {
       flex: '1 1 auto',
