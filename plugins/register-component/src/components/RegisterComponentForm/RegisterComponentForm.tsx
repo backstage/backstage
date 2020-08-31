@@ -49,7 +49,7 @@ const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
   });
   const classes = useStyles();
   const hasErrors = !!errors.componentLocation;
-  const dirty = formState?.dirty;
+  const dirty = formState?.isDirty;
 
   return submitting ? (
     <LinearProgress data-testid="loading-progress" />

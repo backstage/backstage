@@ -40,6 +40,7 @@ import sentry from './plugins/sentry';
 import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import graphql from './plugins/graphql';
+import app from './plugins/app';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(loadedConfigs: AppConfig[]) {
@@ -71,6 +72,7 @@ async function main() {
   const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
+  const appEnv = useHotMemoize(module, () => createEnv('app'));
 
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
@@ -83,7 +85,8 @@ async function main() {
     .addRouter('/identity', await identity(identityEnv))
     .addRouter('/techdocs', await techdocs(techdocsEnv))
     .addRouter('/proxy', await proxy(proxyEnv, '/proxy'))
-    .addRouter('/graphql', await graphql(graphqlEnv));
+    .addRouter('/graphql', await graphql(graphqlEnv))
+    .addRouter('', await app(appEnv));
 
   await service.start().catch(err => {
     console.log(err);
