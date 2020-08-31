@@ -16,13 +16,15 @@
 
 import { ApiEntityV1alpha1 } from '@backstage/catalog-model';
 import { InfoCard } from '@backstage/core';
-import React, { FC } from 'react';
+import React from 'react';
 import { ApiDefinitionWidget } from '../ApiDefinitionWidget/ApiDefinitionWidget';
 
-export const ApiDefinitionCard: FC<{
+type Props = {
   title?: string;
   apiEntity: ApiEntityV1alpha1;
-}> = ({ title, apiEntity }) => {
+};
+
+export const ApiDefinitionCard = ({ title, apiEntity }: Props) => {
   const type = apiEntity?.spec?.type || '';
   const definition = apiEntity?.spec?.definition || '';
 

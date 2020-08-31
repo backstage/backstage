@@ -20,24 +20,17 @@ import {
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { CatalogApi, EntityCompoundName } from './types';
+import { DiscoveryApi } from '@backstage/core';
 
 export class CatalogClient implements CatalogApi {
-  private apiOrigin: string;
-  private basePath: string;
+  private readonly discoveryApi: DiscoveryApi;
 
-  constructor({
-    apiOrigin,
-    basePath,
-  }: {
-    apiOrigin: string;
-    basePath: string;
-  }) {
-    this.apiOrigin = apiOrigin;
-    this.basePath = basePath;
+  constructor(options: { discoveryApi: DiscoveryApi }) {
+    this.discoveryApi = options.discoveryApi;
   }
 
   private async getRequired(path: string): Promise<any> {
-    const url = `${this.apiOrigin}${this.basePath}${path}`;
+    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -50,7 +43,7 @@ export class CatalogClient implements CatalogApi {
   }
 
   private async getOptional(path: string): Promise<any | undefined> {
-    const url = `${this.apiOrigin}${this.basePath}${path}`;
+    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -100,7 +93,7 @@ export class CatalogClient implements CatalogApi {
 
   async addLocation(type: string, target: string) {
     const response = await fetch(
-      `${this.apiOrigin}${this.basePath}/locations`,
+      `${await this.discoveryApi.getBaseUrl('catalog')}/locations`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +128,7 @@ export class CatalogClient implements CatalogApi {
 
   async removeEntityByUid(uid: string): Promise<void> {
     const response = await fetch(
-      `${this.apiOrigin}${this.basePath}/entities/by-uid/${uid}`,
+      `${await this.discoveryApi.getBaseUrl('catalog')}/entities/by-uid/${uid}`,
       {
         method: 'DELETE',
       },

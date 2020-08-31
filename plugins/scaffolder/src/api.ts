@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
@@ -23,18 +23,10 @@ export const scaffolderApiRef = createApiRef<ScaffolderApi>({
 });
 
 export class ScaffolderApi {
-  private apiOrigin: string;
-  private basePath: string;
+  private readonly discoveryApi: DiscoveryApi;
 
-  constructor({
-    apiOrigin,
-    basePath,
-  }: {
-    apiOrigin: string;
-    basePath: string;
-  }) {
-    this.apiOrigin = apiOrigin;
-    this.basePath = basePath;
+  constructor(options: { discoveryApi: DiscoveryApi }) {
+    this.discoveryApi = options.discoveryApi;
   }
 
   /**
@@ -46,7 +38,7 @@ export class ScaffolderApi {
     template: TemplateEntityV1alpha1,
     values: Record<string, any>,
   ) {
-    const url = `${this.apiOrigin}${this.basePath}/jobs`;
+    const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v1/jobs`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -65,9 +57,9 @@ export class ScaffolderApi {
   }
 
   async getJob(jobId: string) {
-    const url = `${this.apiOrigin}${this.basePath}/job/${encodeURIComponent(
-      jobId,
-    )}`;
+    const url = `${await this.discoveryApi.getBaseUrl(
+      'scaffolder',
+    )}/v1/job/${encodeURIComponent(jobId)}`;
     return fetch(url).then(x => x.json());
   }
 }

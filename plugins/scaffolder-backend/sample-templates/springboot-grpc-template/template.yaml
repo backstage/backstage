@@ -5,8 +5,8 @@ metadata:
   title: Spring Boot GRPC Service
   description: Create a simple microservice using gRPC and Spring Boot Java
   tags:
-    - Recommended
-    - Java
+    - recommended
+    - java
 spec:
   owner: service@example.com
   templater: cookiecutter

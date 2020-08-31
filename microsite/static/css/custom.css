@@ -58,7 +58,7 @@ ol,
 li,
 td {
   font-family: Helvetica Neue, sans-serif;
-  color: $textColor;
+  color: #e4e4e4;
 }
 
 .mainWrapper {

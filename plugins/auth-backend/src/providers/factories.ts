@@ -24,6 +24,7 @@ import { createOAuth2Provider } from './oauth2';
 import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
 import { createAuth0Provider } from './auth0';
+import { createMicrosoftProvider } from './microsoft';
 import {
   AuthProviderConfig,
   AuthProviderFactory,
@@ -42,6 +43,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   saml: createSamlProvider,
   okta: createOktaProvider,
   auth0: createAuth0Provider,
+  microsoft: createMicrosoftProvider,
   oauth2: createOAuth2Provider,
 };
 

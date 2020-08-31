@@ -15,10 +15,33 @@
  */
 
 import { BitbucketApiReaderProcessor } from './BitbucketApiReaderProcessor';
+import { ConfigReader } from '@backstage/config';
 
 describe('BitbucketApiReaderProcessor', () => {
+  const createConfig = (
+    username: string | undefined,
+    appPassword: string | undefined,
+  ) =>
+    ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          catalog: {
+            processors: {
+              bitbucketApi: {
+                username: username,
+                appPassword: appPassword,
+              },
+            },
+          },
+        },
+      },
+    ]);
+
   it('should build raw api', () => {
-    const processor = new BitbucketApiReaderProcessor();
+    const processor = new BitbucketApiReaderProcessor(
+      createConfig(undefined, undefined),
+    );
 
     const tests = [
       {
@@ -66,6 +89,8 @@ describe('BitbucketApiReaderProcessor', () => {
         expect: {
           headers: {},
         },
+        err:
+          "Invalid type in config for key 'catalog.processors.bitbucketApi.username' in '', got empty-string, wanted string",
       },
       {
         username: 'only-user-provided',
@@ -73,6 +98,8 @@ describe('BitbucketApiReaderProcessor', () => {
         expect: {
           headers: {},
         },
+        err:
+          "Invalid type in config for key 'catalog.processors.bitbucketApi.appPassword' in '', got empty-string, wanted string",
       },
       {
         username: '',
@@ -80,6 +107,8 @@ describe('BitbucketApiReaderProcessor', () => {
         expect: {
           headers: {},
         },
+        err:
+          "Invalid type in config for key 'catalog.processors.bitbucketApi.username' in '', got empty-string, wanted string",
       },
       {
         username: 'some-user',
@@ -90,13 +119,43 @@ describe('BitbucketApiReaderProcessor', () => {
           },
         },
       },
+      {
+        username: undefined,
+        password: undefined,
+        expect: {
+          headers: {},
+        },
+      },
+      {
+        username: 'only-user-provided',
+        password: undefined,
+        expect: {
+          headers: {},
+        },
+      },
+      {
+        username: undefined,
+        password: 'only-password-provided',
+        expect: {
+          headers: {},
+        },
+      },
     ];
 
     for (const test of tests) {
-      process.env.BITBUCKET_USERNAME = test.username;
-      process.env.BITBUCKET_APP_PASSWORD = test.password;
-      const processor = new BitbucketApiReaderProcessor();
-      expect(processor.getRequestOptions()).toEqual(test.expect);
+      if (test.err) {
+        expect(
+          () =>
+            new BitbucketApiReaderProcessor(
+              createConfig(test.username, test.password),
+            ),
+        ).toThrowError(test.err);
+      } else {
+        const processor = new BitbucketApiReaderProcessor(
+          createConfig(test.username, test.password),
+        );
+        expect(processor.getRequestOptions()).toEqual(test.expect);
+      }
     }
   });
 });
