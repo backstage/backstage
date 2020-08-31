@@ -36,7 +36,7 @@ export class GithubPublisher implements PublisherBase {
     directory: string;
     token: string;
   }): Promise<{ remoteUrl: string }> {
-    const remoteUrl = await this.createRemote(values);
+    const remoteUrl = await this.createRemote(values, token);
     await this.pushToRemote(directory, remoteUrl, token);
 
     return { remoteUrl };
@@ -44,17 +44,21 @@ export class GithubPublisher implements PublisherBase {
 
   private async createRemote(
     values: RequiredTemplateValues & Record<string, JsonValue>,
+    token: string,
   ) {
     const [owner, name] = values.storePath.split('/');
 
     const repoCreationPromise = values.isOrg
-      ? this.client.repos.createInOrg({ name, org: owner })
+      ? this.client.repos.createInOrg({
+          name,
+          org: owner,
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        })
       : this.client.repos.createForAuthenticatedUser({ name });
 
-    console.log('##################### Creating repo in github...');
     const { data } = await repoCreationPromise;
-
-    console.log('##################### Repo created with data: ', data);
 
     return data?.clone_url;
   }
@@ -64,7 +68,6 @@ export class GithubPublisher implements PublisherBase {
     remote: string,
     token: string,
   ): Promise<void> {
-    console.log('##################### Inside pushToRemote func...');
     const repo = await Repository.init(directory, 0);
     const index = await repo.refreshIndex();
     await index.addAll();

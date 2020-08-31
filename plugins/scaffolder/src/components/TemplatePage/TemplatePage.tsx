@@ -94,11 +94,8 @@ export const TemplatePage = () => {
   const tokenPromise = githubAuthApi.getAccessToken('repo');
 
   const handleCreate = async () => {
-    const job = await scaffolderApi.scaffold(
-      template!,
-      formState,
-      tokenPromise,
-    );
+    const token = await tokenPromise;
+    const job = await scaffolderApi.scaffold(template!, formState, token);
     setJobId(job);
   };
 

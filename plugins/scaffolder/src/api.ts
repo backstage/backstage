@@ -37,9 +37,8 @@ export class ScaffolderApi {
   async scaffold(
     template: TemplateEntityV1alpha1,
     values: Record<string, any>,
-    tokenPromise: Promise<string>,
+    token: string,
   ) {
-    const token = await tokenPromise;
     const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v1/jobs`;
     const response = await fetch(url, {
       method: 'POST',
