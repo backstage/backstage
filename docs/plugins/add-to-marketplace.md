@@ -19,4 +19,5 @@ documentation: # A link to your documentation E.g. Your github README
 iconUrl: # Used as the src attribute for your logo.
 # You can provide an external url or add your logo under static/img and provide a path
 # relative to static/ e.g. img/my-logo.png
+npmPackageName: # Your npm package name E.g. @backstage/plugin-<etc>
 ```
