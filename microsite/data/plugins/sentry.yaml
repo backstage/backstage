@@ -1,6 +1,7 @@
 ---
 title: Sentry
 author: Spotify
+authorUrl: https://www.spotify.com/
 category: Monitoring
 description: View Sentry issues in Backstage.
 documentation: https://github.com/spotify/backstage/tree/master/plugins/sentry

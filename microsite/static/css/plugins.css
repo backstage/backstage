@@ -100,3 +100,12 @@
     position: relative;
     min-height: 2em;
 }
+
+.Author, .Author a {
+    margin-bottom: 0.25em;
+    color: rgba(255,255,255, 0.6);
+}
+
+ .Author a:hover {
+    color: white;
+}

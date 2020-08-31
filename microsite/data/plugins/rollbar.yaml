@@ -1,6 +1,7 @@
 ---
 title: Rollbar
 author: Andrew Thauer
+authorUrl: https://github.com/andrewthauer
 category: Monitoring
 description: View Rollbar errors for your services in Backstage.
 documentation: https://github.com/spotify/backstage/tree/master/plugins/rollbar

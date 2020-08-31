@@ -48,6 +48,7 @@ const Plugins = () => (
             title,
             description,
             author,
+            authorUrl,
             documentation,
             category,
           }) => (
@@ -55,7 +56,9 @@ const Plugins = () => (
               <div className="PluginCardHeader">
                 <img src={iconUrl || defaultIconUrl} alt={title} />
                 <h2 className="PluginCardTitle">{title}</h2>
-                <p style={{ marginBottom: '0.25em' }}>by {author}</p>
+                <p className="Author">
+                  by <a href={authorUrl}>{author}</a>
+                </p>
                 <span className="ChipOutlined">{category}</span>
               </div>
               <div className="PluginCardBody">
