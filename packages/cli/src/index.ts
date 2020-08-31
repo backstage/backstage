@@ -64,6 +64,7 @@ const main = (argv: string[]) => {
   program
     .command('create-plugin')
     .description('Creates a new plugin in the current repository')
+    .option('--scope <scope>', 'NPM scope')
     .action(
       lazyAction(
         () => import('./commands/create-plugin/createPlugin'),

@@ -21,6 +21,7 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
+import { Command } from 'commander';
 import {
   parseOwnerIds,
   addCodeownersEntry,
@@ -87,8 +88,9 @@ export async function addPluginDependencyToApp(
   rootDir: string,
   pluginName: string,
   versionStr: string,
+  npmScope: string,
 ) {
-  const pluginPackage = `@backstage/plugin-${pluginName}`;
+  const pluginPackage = `${npmScope}plugin-${pluginName}`;
   const packageFilePath = 'packages/app/package.json';
   const packageFile = resolvePath(rootDir, packageFilePath);
 
@@ -115,8 +117,12 @@ export async function addPluginDependencyToApp(
   });
 }
 
-export async function addPluginToApp(rootDir: string, pluginName: string) {
-  const pluginPackage = `@backstage/plugin-${pluginName}`;
+export async function addPluginToApp(
+  rootDir: string,
+  pluginName: string,
+  npmScope: string,
+) {
+  const pluginPackage = `${npmScope}plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
     .split('-')
     .map(name => capitalize(name))
@@ -174,8 +180,16 @@ export async function movePlugin(
   });
 }
 
-export default async () => {
+export default async (cmd: Command) => {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
+  let npmScope = '';
+  if (cmd.scope) {
+    if (!/^@[a-z0-9]+(-[a-z0-9]+)*$/.test(cmd.scope)) {
+      npmScope = `@${cmd.scope}/`;
+    } else {
+      npmScope = `${cmd.scope}/`;
+    }
+  }
 
   const questions: Question[] = [
     {
@@ -249,10 +263,15 @@ export default async () => {
 
     if (await fs.pathExists(appPackage)) {
       Task.section('Adding plugin as dependency in app');
-      await addPluginDependencyToApp(paths.targetRoot, answers.id, version);
+      await addPluginDependencyToApp(
+        paths.targetRoot,
+        answers.id,
+        version,
+        npmScope,
+      );
 
       Task.section('Import plugin in app');
-      await addPluginToApp(paths.targetRoot, answers.id);
+      await addPluginToApp(paths.targetRoot, answers.id, npmScope);
     }
 
     if (ownerIds && ownerIds.length) {
@@ -266,7 +285,7 @@ export default async () => {
     Task.log();
     Task.log(
       `🥇  Successfully created ${chalk.cyan(
-        `@backstage/plugin-${answers.id}`,
+        `${npmScope}plugin-${answers.id}`,
       )}`,
     );
     Task.log();
