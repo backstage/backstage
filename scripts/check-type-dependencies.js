@@ -86,11 +86,8 @@ function checkTypes(pkg) {
     'utf8',
   );
   const deps = (typeDecl.match(/from '.*'/g) || [])
-    .map(match => match.replace(/^.*from '(.*)'.*$/, '$1'))
-    .filter(
-      n =>
-        !(n.startsWith('.') || n === pkg.name || n.startsWith(`${pkg.name}/`)),
-    );
+    .map(match => match.replace(/from '(.*)'/, '$1'))
+    .filter(n => !n.startsWith('.'));
 
   const errors = [];
   const typeDeps = [];
