@@ -1,7 +1,7 @@
 ---
 name: 'Feature Request'
 about: 'Suggest new features and changes'
-labels: help wanted
+labels: enhancement
 ---
 
 <!--- Provide a general summary of the feature request in the Title above -->
