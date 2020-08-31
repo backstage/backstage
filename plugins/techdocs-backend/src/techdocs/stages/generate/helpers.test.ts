@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Stream from 'stream';
+import Stream, { PassThrough } from 'stream';
 import os from 'os';
 import Docker from 'dockerode';
 import { runDockerContainer, getGeneratorKey } from './helpers';
@@ -38,7 +38,15 @@ describe('helpers', () => {
 
   describe('runDockerContainer', () => {
     beforeEach(() => {
-      jest.spyOn(mockDocker, 'pull');
+      jest.spyOn(mockDocker, 'pull').mockImplementation((async (
+        _image: string,
+        _something: any,
+        handler: (err: Error | undefined, stream: PassThrough) => void,
+      ) => {
+        const mockStream = new PassThrough();
+        handler(undefined, mockStream);
+        mockStream.end();
+      }) as any);
 
       jest
         .spyOn(mockDocker, 'run')
