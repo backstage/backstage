@@ -18,7 +18,7 @@ import { createApiRef } from '@backstage/core';
 import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
-  ActionsGetWorkflowRunResponseData
+  ActionsGetWorkflowRunResponseData,
 } from '@octokit/types';
 
 export const githubActionsApiRef = createApiRef<GithubActionsApi>({
@@ -65,6 +65,17 @@ export type GithubActionsApi = {
     id: number;
   }) => Promise<ActionsGetWorkflowRunResponseData>;
   reRunWorkflow: ({
+    token,
+    owner,
+    repo,
+    runId,
+  }: {
+    token: string;
+    owner: string;
+    repo: string;
+    runId: number;
+  }) => Promise<any>;
+  downloadJobLogsForWorkflowRun: ({
     token,
     owner,
     repo,

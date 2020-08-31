@@ -20,7 +20,6 @@ import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
   ActionsGetWorkflowRunResponseData,
-  ActionsListJobsForWorkflowRunResponseData
 } from '@octokit/types';
 
 export class GithubActionsClient implements GithubActionsApi {
@@ -103,22 +102,22 @@ export class GithubActionsClient implements GithubActionsApi {
     });
     return run.data;
   }
-  async listJobsForWorkflowRun({
+  async downloadJobLogsForWorkflowRun({
     token,
     owner,
     repo,
-    id,
+    runId,
   }: {
     token: string;
     owner: string;
     repo: string;
-    id: number;
-  }): Promise<ActionsListJobsForWorkflowRunResponseData> {
-    const workflow = await new Octokit({ auth: token }).actions.listJobsForWorkflowRun({
+    runId: number;
+  }): Promise<any> {
+    const workflow = await new Octokit({ auth: token }).actions.downloadJobLogsForWorkflowRun({
       owner,
       repo,
-      run_id: id,
+      job_id: runId,
     });
     return workflow.data;
   }
-}
+};

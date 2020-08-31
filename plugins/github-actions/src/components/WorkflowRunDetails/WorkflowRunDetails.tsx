@@ -18,6 +18,8 @@ import { useEntityCompoundName } from '@backstage/plugin-catalog';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useProjectName } from '../useProjectName';
+import { WorkflowRunLogs } from '../WorkflowRunLogs';
+
 import {
   makeStyles,
   Box,
@@ -136,6 +138,9 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
           </Table>
         </TableContainer>
       </ExpansionPanelDetails>
+      <WorkflowRunLogs
+        runId={job.id}
+      />
     </ExpansionPanel>
   );
 };
