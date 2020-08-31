@@ -74,3 +74,11 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           package_root: "packages/core"
           tag_prefix: "v"
+
+      - name: Discord notification
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0.2.0
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: 'Master build failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'
