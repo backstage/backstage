@@ -36,7 +36,7 @@ export type TemplaterRunResult = {
 };
 
 /**
- * The values that the templater will recieve. The directory of the
+ * The values that the templater will receive. The directory of the
  * skeleton, with the values from the frontend. A dedicated log stream and a docker
  * client to run any templater on top of your directory.
  */
