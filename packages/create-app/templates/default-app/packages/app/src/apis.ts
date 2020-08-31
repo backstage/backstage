@@ -18,11 +18,17 @@ import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
 import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
 
+import {
+  techdocsStorageApiRef,
+  TechDocsStorageApi,
+} from '@backstage/plugin-techdocs';
+
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
   console.log(`Creating APIs for ${config.getString('app.title')}`);
 
   const backendUrl = config.getString('backend.baseUrl');
+  const techdocsStorageUrl = config.getString('techdocs.storageUrl');
 
   const builder = ApiRegistry.builder();
 
@@ -42,6 +48,11 @@ export const apis = (config: ConfigApi) => {
   builder.add(catalogApiRef, new CatalogClient({ discoveryApi }));
 
   builder.add(scaffolderApiRef, new ScaffolderApi({ discoveryApi }));
+
+  builder.add(
+    techdocsStorageApiRef,
+    new TechDocsStorageApi({ apiOrigin: techdocsStorageUrl }),
+  );
 
   return builder.build();
 };
