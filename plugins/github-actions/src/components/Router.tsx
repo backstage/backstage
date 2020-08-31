@@ -23,8 +23,8 @@ import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
 import { WarningPanel } from '@backstage/core';
 
 const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity?.metadata?.annotations?.[GITHUB_ACTIONS_ANNOTATION]) &&
-  entity?.metadata?.annotations?.[GITHUB_ACTIONS_ANNOTATION] !== '';
+  Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]) &&
+  entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] !== '';
 
 export const Router = ({ entity }: { entity: Entity }) =>
   // TODO(shmidt-i): move warning to a separate standardized component
