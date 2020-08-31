@@ -6,5 +6,5 @@ category: Monitoring
 description: View Sentry issues in Backstage.
 documentation: https://github.com/spotify/backstage/tree/master/plugins/sentry
 iconUrl: https://sentry-brand.storage.googleapis.com/sentry-glyph-white.png
-npmPackageName: @backstage/plugin-sentry
+npmPackageName: '@backstage/plugin-sentry'
 
