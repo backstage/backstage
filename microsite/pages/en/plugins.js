@@ -22,8 +22,7 @@ const pluginMetadata = fs
 const truncate = text =>
   text.length > 170 ? text.substr(0, 170) + '...' : text;
 
-const addPluginDocsLink =
-  'http://localhost:3000/docs/plugins/add-to-marketplace';
+const addPluginDocsLink = '/docs/plugins/add-to-marketplace';
 const defaultIconUrl = 'img/logo-gradient-on-dark.svg';
 
 const Plugins = () => (
