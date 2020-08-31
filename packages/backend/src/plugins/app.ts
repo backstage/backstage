@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-export { readEnvConfig } from './lib';
-export { loadConfig } from './loader';
-export type { LoadConfigOptions } from './loader';
+import { createRouter } from '@backstage/plugin-app-backend';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin({ logger }: PluginEnvironment) {
+  return await createRouter({
+    logger,
+    appPackageName: 'example-app',
+  });
+}
