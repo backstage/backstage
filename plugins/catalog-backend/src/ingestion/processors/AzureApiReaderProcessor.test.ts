@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { GithubApiReaderProcessor } from './GithubApiReaderProcessor';
+import { AzureApiReaderProcessor } from './AzureApiReaderProcessor';
 import { ConfigReader } from '@backstage/config';
 
-describe('GithubApiReaderProcessor', () => {
+describe('AzureApiReaderProcessor', () => {
   const createConfig = (token: string | undefined) =>
     ConfigReader.fromConfigs([
       {
@@ -25,7 +25,7 @@ describe('GithubApiReaderProcessor', () => {
         data: {
           catalog: {
             processors: {
-              githubApi: {
+              azureApi: {
                 privateToken: token,
               },
             },
@@ -35,13 +35,13 @@ describe('GithubApiReaderProcessor', () => {
     ]);
 
   it('should build raw api', () => {
-    const processor = new GithubApiReaderProcessor(createConfig(undefined));
-
+    const processor = new AzureApiReaderProcessor(createConfig(undefined));
     const tests = [
       {
-        target: 'https://github.com/a/b/blob/master/path/to/c.yaml',
+        target:
+          'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         url: new URL(
-          'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=master',
+          'https://dev.azure.com/org-name/project-name/_apis/sourceProviders/TfsGit/filecontents?repository=repo-name&commitOrBranch=master&path=my-template.yaml&api-version=6.0-preview.1',
         ),
         err: undefined,
       },
@@ -49,21 +49,13 @@ describe('GithubApiReaderProcessor', () => {
         target: 'https://api.com/a/b/blob/master/path/to/c.yaml',
         url: null,
         err:
-          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong GitHub URL or Invalid file path',
+          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Azure Devops URL or Invalid file path',
       },
       {
         target: 'com/a/b/blob/master/path/to/c.yaml',
         url: null,
         err:
           'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
-      },
-      {
-        target:
-          'https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml',
-        url: new URL(
-          'https://api.github.com/repos/spotify/backstage/contents/packages/catalog-model/examples/playback-order-component.yaml?ref=master',
-        ),
-        err: undefined,
       },
     ];
 
@@ -88,27 +80,22 @@ describe('GithubApiReaderProcessor', () => {
         token: '0123456789',
         expect: {
           headers: {
-            Accept: 'application/vnd.github.v3.raw',
-            Authorization: 'token 0123456789',
+            Authorization: 'Basic OjAxMjM0NTY3ODk=',
           },
         },
       },
       {
         token: '',
-        err:
-          "Invalid type in config for key 'catalog.processors.githubApi.privateToken' in '', got empty-string, wanted string",
         expect: {
-          headers: {
-            Accept: 'application/vnd.github.v3.raw',
-          },
+          headers: {},
         },
+        err:
+          "Invalid type in config for key 'catalog.processors.azureApi.privateToken' in '', got empty-string, wanted string",
       },
       {
         token: undefined,
         expect: {
-          headers: {
-            Accept: 'application/vnd.github.v3.raw',
-          },
+          headers: {},
         },
       },
     ];
@@ -116,12 +103,10 @@ describe('GithubApiReaderProcessor', () => {
     for (const test of tests) {
       if (test.err) {
         expect(
-          () => new GithubApiReaderProcessor(createConfig(test.token)),
+          () => new AzureApiReaderProcessor(createConfig(test.token)),
         ).toThrowError(test.err);
       } else {
-        const processor = new GithubApiReaderProcessor(
-          createConfig(test.token),
-        );
+        const processor = new AzureApiReaderProcessor(createConfig(test.token));
         expect(processor.getRequestOptions()).toEqual(test.expect);
       }
     }

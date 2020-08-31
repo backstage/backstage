@@ -27,13 +27,25 @@
     "start": "nodemon --"
   },
   "dependencies": {
+    "@backstage/backend-common": "^0.1.1-alpha.20",
     "@backstage/cli-common": "^0.1.1-alpha.20",
+    "@backstage/config": "^0.1.1-alpha.20",
+    "@backstage/core": "^0.1.1-alpha.20",
+    "@backstage/plugin-catalog": "^0.1.1-alpha.20",
+    "@backstage/plugin-proxy-backend": "^0.1.1-alpha.20",
+    "@backstage/plugin-register-component": "^0.1.1-alpha.20",
+    "@backstage/plugin-scaffolder": "^0.1.1-alpha.20",
+    "@backstage/plugin-techdocs": "^0.1.1-alpha.20",
+    "@backstage/plugin-techdocs-backend": "^0.1.1-alpha.20",
+    "@backstage/test-utils": "^0.1.1-alpha.20",
+    "@material-ui/icons": "^4.9.1",
     "chalk": "^4.0.0",
-    "commander": "^4.1.1",
+    "commander": "^6.1.0",
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.3",
     "inquirer": "^7.0.4",
     "ora": "^4.0.3",
+    "react": "^16.13.1",
     "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {

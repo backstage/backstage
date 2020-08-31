@@ -37,11 +37,13 @@
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-prom-bundle": "^6.1.0",
     "express-promise-router": "^3.0.3",
     "helmet": "^4.0.0",
     "knex": "^0.21.1",
     "lodash": "^4.17.15",
     "morgan": "^1.10.0",
+    "prom-client": "^12.0.0",
     "selfsigned": "^1.10.7",
     "stoppable": "^1.1.0",
     "winston": "^3.2.1"

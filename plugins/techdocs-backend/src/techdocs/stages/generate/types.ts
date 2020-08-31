@@ -26,7 +26,7 @@ export type GeneratorRunResult = {
 };
 
 /**
- * The values that the generator will recieve. The directory of the
+ * The values that the generator will receive. The directory of the
  * uncompiled documentation, with the values from the frontend. A dedicated log stream and a docker
  * client to run any generator on top of your directory.
  */

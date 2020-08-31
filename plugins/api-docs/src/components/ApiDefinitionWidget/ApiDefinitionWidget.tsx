@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget/AsyncApiDefinitionWidget';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget/OpenApiDefinitionWidget';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget/PlainApiDefinitionWidget';
 
-export const ApiDefinitionWidget: FC<{
+type Props = {
   type: string;
   definition: string;
-}> = ({ type, definition }) => {
+};
+
+export const ApiDefinitionWidget = ({ type, definition }: Props) => {
   switch (type) {
     case 'openapi':
       return <OpenApiDefinitionWidget definition={definition} />;
@@ -31,6 +33,8 @@ export const ApiDefinitionWidget: FC<{
       return <AsyncApiDefinitionWidget definition={definition} />;
 
     default:
-      return <PlainApiDefinitionWidget definition={definition} />;
+      return (
+        <PlainApiDefinitionWidget definition={definition} language={type} />
+      );
   }
 };

@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Widget, WidgetList } from './Widget';
+export { Widget, RecentWorkflowRunsCard } from './Widget';

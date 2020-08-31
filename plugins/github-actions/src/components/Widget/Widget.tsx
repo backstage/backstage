@@ -109,14 +109,13 @@ export const Widget = ({
   );
 };
 
-const WidgetListContent = ({
+const RecentWorkflowRunsCardContent = ({
   error,
   loading,
   branch,
 }: {
   error?: Error;
   loading?: boolean;
-  lastRun: WorkflowRun;
   branch: string;
 }) => {
   if (error) return <Typography>Couldn't fetch {branch} runs</Typography>;
@@ -124,7 +123,7 @@ const WidgetListContent = ({
   return <WorkflowRunsTable />;
 };
 
-export const WidgetList = ({
+export const RecentWorkflowRunsCard = ({
   entity,
   branch = 'master',
 }: {
@@ -135,13 +134,12 @@ export const WidgetList = ({
   const [owner, repo] = (
     entity?.metadata.annotations?.['backstage.io/github-actions-id'] ?? '/'
   ).split('/');
-  const [{ runs, loading, error }] = useWorkflowRuns({
+  const [{ loading, error }] = useWorkflowRuns({
     owner,
     repo,
     branch,
   });
 
-  const lastRun = runs?.[0] ?? ({} as WorkflowRun);
   useEffect(() => {
     if (error) {
       errorApi.post(error);
@@ -150,11 +148,10 @@ export const WidgetList = ({
 
   return (
     <InfoCard title={`${branch} builds`}>
-      <WidgetListContent
+      <RecentWorkflowRunsCardContent
         error={error}
         loading={loading}
         branch={branch}
-        lastRun={lastRun}
       />
     </InfoCard>
   );

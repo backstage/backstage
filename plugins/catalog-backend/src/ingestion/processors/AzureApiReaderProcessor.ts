@@ -20,25 +20,21 @@ import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 import { Config } from '@backstage/config';
 
-export class BitbucketApiReaderProcessor implements LocationProcessor {
-  private username: string;
-  private password: string;
+export class AzureApiReaderProcessor implements LocationProcessor {
+  private privateToken: string;
 
   constructor(config: Config) {
-    this.username =
-      config.getOptionalString('catalog.processors.bitbucketApi.username') ??
-      '';
-    this.password =
-      config.getOptionalString('catalog.processors.bitbucketApi.appPassword') ??
+    this.privateToken =
+      config.getOptionalString('catalog.processors.azureApi.privateToken') ??
       '';
   }
 
   getRequestOptions(): RequestInit {
     const headers: HeadersInit = {};
 
-    if (this.username !== '' && this.password !== '') {
+    if (this.privateToken !== '') {
       headers.Authorization = `Basic ${Buffer.from(
-        `${this.username}:${this.password}`,
+        `:${this.privateToken}`,
         'utf8',
       ).toString('base64')}`;
     }
@@ -55,7 +51,7 @@ export class BitbucketApiReaderProcessor implements LocationProcessor {
     optional: boolean,
     emit: LocationProcessorEmit,
   ): Promise<boolean> {
-    if (location.type !== 'bitbucket/api') {
+    if (location.type !== 'azure/api') {
       return false;
     }
 
@@ -64,7 +60,8 @@ export class BitbucketApiReaderProcessor implements LocationProcessor {
 
       const response = await fetch(url.toString(), this.getRequestOptions());
 
-      if (response.ok) {
+      // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
+      if (response.ok && response.status !== 203) {
         const data = await response.buffer();
         emit(result.data(location, data));
       } else {
@@ -85,9 +82,8 @@ export class BitbucketApiReaderProcessor implements LocationProcessor {
   }
 
   // Converts
-  // from: https://bitbucket.org/orgname/reponame/src/master/file.yaml
-  // to:   https://api.bitbucket.org/2.0/repositories/orgname/reponame/src/master/file.yaml
-
+  // from: https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{commitOrBranch}&_a=contents
+  // to:   https://dev.azure.com/{organization}/{project}/_apis/sourceProviders/{providerName}/filecontents?repository={repository}&commitOrBranch={commitOrBranch}&path={path}&api-version=6.0-preview.1
   buildRawUrl(target: string): URL {
     try {
       const url = new URL(target);
@@ -95,35 +91,46 @@ export class BitbucketApiReaderProcessor implements LocationProcessor {
       const [
         empty,
         userOrOrg,
-        repoName,
+        project,
         srcKeyword,
-        ref,
-        ...restOfPath
+        repoName,
       ] = url.pathname.split('/');
 
+      const path = url.searchParams.get('path') || '';
+      const ref = url.searchParams.get('version')?.substr(2);
+
       if (
-        url.hostname !== 'bitbucket.org' ||
+        url.hostname !== 'dev.azure.com' ||
         empty !== '' ||
         userOrOrg === '' ||
+        project === '' ||
+        srcKeyword !== '_git' ||
         repoName === '' ||
-        srcKeyword !== 'src' ||
-        !restOfPath.join('/').match(/\.yaml$/)
+        path === '' ||
+        ref === '' ||
+        !path.match(/\.yaml$/)
       ) {
-        throw new Error('Wrong Bitbucket URL or Invalid file path');
+        throw new Error('Wrong Azure Devops URL or Invalid file path');
       }
 
       // transform to api
       url.pathname = [
         empty,
-        '2.0',
-        'repositories',
         userOrOrg,
-        repoName,
-        'src',
-        ref,
-        ...restOfPath,
+        project,
+        '_apis',
+        'sourceProviders',
+        'TfsGit',
+        'filecontents',
       ].join('/');
-      url.hostname = 'api.bitbucket.org';
+
+      url.search = [
+        `repository=${repoName}`,
+        `commitOrBranch=${ref}`,
+        `path=${path}`,
+        'api-version=6.0-preview.1',
+      ].join('&');
+
       url.protocol = 'https';
 
       return url;
