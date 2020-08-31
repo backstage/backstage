@@ -17,4 +17,5 @@
 export { plugin } from './plugin';
 export * from './api';
 export { Router } from './components/Router';
+export * from './components/Cards';
 export { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';

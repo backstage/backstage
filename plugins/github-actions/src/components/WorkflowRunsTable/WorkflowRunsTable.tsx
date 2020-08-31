@@ -23,7 +23,6 @@ import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
 import { buildRouteRef } from '../../plugin';
-import { useEntityCompoundName } from '@backstage/plugin-catalog';
 import { useProjectName } from '../useProjectName';
 import { Entity } from '@backstage/catalog-model';
 
@@ -148,12 +147,19 @@ export const WorkflowRunsTableView: FC<Props> = ({
   );
 };
 
-export const WorkflowRunsTable = ({ entity }: { entity: Entity }) => {
+export const WorkflowRunsTable = ({
+  entity,
+  branch,
+}: {
+  entity: Entity;
+  branch?: string;
+}) => {
   const { value: projectName, loading } = useProjectName(entity);
   const [owner, repo] = (projectName ?? '/').split('/');
   const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
     owner,
     repo,
+    branch,
   });
 
   return (

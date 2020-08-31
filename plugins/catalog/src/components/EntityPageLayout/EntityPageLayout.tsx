@@ -16,11 +16,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 
-import {
-  useEntityFromUrl,
-  EntityContext,
-  useEntity,
-} from '../../hooks/useEntity';
+import { useEntity } from '../../hooks/useEntity';
 import {
   pageTheme,
   PageTheme,
