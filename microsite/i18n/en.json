@@ -92,6 +92,9 @@
       "features/software-catalog/software-catalog-api": {
         "title": "API"
       },
+      "features/software-catalog/software-catalog-configuration": {
+        "title": "Catalog Configuration"
+      },
       "features/software-catalog/descriptor-format": {
         "title": "Descriptor Format of Catalog Entities",
         "sidebar_label": "YAML File Format"
