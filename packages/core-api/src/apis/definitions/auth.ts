@@ -222,7 +222,7 @@ export const googleAuthApiRef = createApiRef<
 });
 
 /**
- * Provides authentication towards Github APIs.
+ * Provides authentication towards GitHub APIs.
  *
  * See https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
  * for a full list of supported scopes.
@@ -231,7 +231,7 @@ export const githubAuthApiRef = createApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
 >({
   id: 'core.auth.github',
-  description: 'Provides authentication towards Github APIs',
+  description: 'Provides authentication towards GitHub APIs',
 });
 
 /**
@@ -252,7 +252,7 @@ export const oktaAuthApiRef = createApiRef<
 });
 
 /**
- * Provides authentication towards Gitlab APIs.
+ * Provides authentication towards GitLab APIs.
  *
  * See https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#limiting-scopes-of-a-personal-access-token
  * for a full list of supported scopes.
@@ -261,7 +261,7 @@ export const gitlabAuthApiRef = createApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
 >({
   id: 'core.auth.gitlab',
-  description: 'Provides authentication towards Gitlab APIs',
+  description: 'Provides authentication towards GitLab APIs',
 });
 
 /**
@@ -275,6 +275,24 @@ export const auth0AuthApiRef = createApiRef<
 >({
   id: 'core.auth.auth0',
   description: 'Provides authentication towards Auth0 APIs',
+});
+
+/**
+ * Provides authentication towards Microsoft APIs and identities.
+ *
+ * For more info and a full list of supported scopes, see:
+ * - https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent
+ * - https://docs.microsoft.com/en-us/graph/permissions-reference
+ */
+export const microsoftAuthApiRef = createApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionStateApi
+>({
+  id: 'core.auth.microsoft',
+  description: 'Provides authentication towards Microsoft APIs and identities',
 });
 
 /**

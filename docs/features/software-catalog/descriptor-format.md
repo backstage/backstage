@@ -370,8 +370,8 @@ metadata:
   description:
     Next.js application skeleton for creating isomorphic web applications.
   tags:
-    - Recommended
-    - React
+    - recommended
+    - react
 spec:
   owner: web@example.com
   templater: cookiecutter

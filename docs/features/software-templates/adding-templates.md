@@ -22,8 +22,8 @@ metadata:
     Next.js application skeleton for creating isomorphic web applications.
   # some tags to display in the frontend
   tags:
-    - Recommended
-    - React
+    - recommended
+    - react
 spec:
   # which templater key to use in the templaters builder
   templater: cookiecutter
@@ -54,11 +54,11 @@ contains more information about the required fields.
 Once we have a `template.yaml` ready, we can then add it to the service catalog
 for use by the scaffolder.
 
-Currently the catalog supports loading definitions from Github + Local Files. To
+Currently the catalog supports loading definitions from GitHub + Local Files. To
 load from other places, not only will there need to be another preparer, but the
 support to load the location will also need to be added to the Catalog.
 
-For loading from a file the following command should work when the backend is
+For loading from a file, the following command should work when the backend is
 running:
 
 ```sh
@@ -69,7 +69,7 @@ curl \
   --data-raw "{\"type\": \"file\", \"target\": \"${YOUR PATH HERE}/template.yaml\"}"
 ```
 
-If loading from a git location, you can run the following
+If loading from a Git location, you can run the following
 
 ```sh
 curl \
@@ -83,7 +83,7 @@ This should then have added the catalog, and also should now be listed under the
 create page at http://localhost:3000/create.
 
 Alternatively, if you want to get setup with some mock templates that are
-already provided for you, you can run the following to load those templates:
+already provided, run the following to load those templates:
 
 ```
 yarn lerna run mock-data

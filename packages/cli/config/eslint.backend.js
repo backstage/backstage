@@ -28,6 +28,9 @@ module.exports = {
   env: {
     jest: true,
   },
+  globals: {
+    __non_webpack_require__: 'readonly',
+  },
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',

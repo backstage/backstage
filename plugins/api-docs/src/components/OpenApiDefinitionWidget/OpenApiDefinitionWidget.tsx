@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     '& section.models, section.models.is-open h4': {
       'border-color': theme.palette.divider,
     },
-    '& .opblock .opblock-summary-description, .parameter__type, table.headers td, .model-title, .model .property.primitive': {
+    '& .opblock .opblock-summary-description, .parameter__type, table.headers td, .model-title, .model .property.primitive, section h3': {
       color: theme.palette.text.secondary,
     },
     '& .opblock .opblock-summary-operation-id, .opblock .opblock-summary-path, .opblock .opblock-summary-path__deprecated, .opblock .opblock-section-header h4, .parameter__name, .response-col_status, .response-col_links, .responses-inner h4, .swagger-ui .responses-inner h5, .opblock-section-header .btn, .tab li, .info li, .info p, .info table, section.models h4, .info .title, table.model tr.description, .property-row': {
@@ -65,9 +65,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const OpenApiDefinitionWidget: FC<{
+type Props = {
   definition: any;
-}> = ({ definition }) => {
+};
+
+export const OpenApiDefinitionWidget = ({ definition }: Props) => {
   const classes = useStyles();
 
   // Due to a bug in the swagger-ui-react component, the component needs

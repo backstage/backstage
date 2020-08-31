@@ -353,10 +353,20 @@ class Index extends React.Component {
             </Block.TextBox>
             <Breakpoint
               wide={
-                <img
-                  style={{ margin: 'auto' }}
-                  src={`${baseUrl}img/techdocs-web.png`}
-                />
+                <Block.Graphics padding={0}>
+                  <Block.Graphic
+                    x={-55}
+                    y={-5}
+                    width={210}
+                    src={`${baseUrl}img/techdocs-web.png`}
+                  />
+                  <Block.Graphic
+                    x={-55}
+                    y={-5}
+                    width={210}
+                    src={`${baseUrl}img/techdocs2.gif`}
+                  />
+                </Block.Graphics>
               }
             />
           </Block.Container>

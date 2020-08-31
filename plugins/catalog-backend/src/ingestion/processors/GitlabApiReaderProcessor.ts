@@ -18,9 +18,16 @@ import { LocationSpec } from '@backstage/catalog-model';
 import fetch, { RequestInit, HeadersInit } from 'node-fetch';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
+import { Config } from '@backstage/config';
 
 export class GitlabApiReaderProcessor implements LocationProcessor {
-  private privateToken: string = process.env.GITLAB_PRIVATE_TOKEN || '';
+  private privateToken: string;
+
+  constructor(config: Config) {
+    this.privateToken =
+      config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
+      '';
+  }
 
   getRequestOptions(): RequestInit {
     const headers: HeadersInit = { 'PRIVATE-TOKEN': '' };
@@ -77,7 +84,7 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
       const branchAndfilePath = url.pathname.split('/-/blob/')[1];
 
       if (!branchAndfilePath.match(/\.ya?ml$/)) {
-        throw new Error('Gitlab url does not end in .ya?ml');
+        throw new Error('GitLab url does not end in .ya?ml');
       }
 
       const [branch, ...filePath] = branchAndfilePath.split('/');
@@ -127,7 +134,7 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
 
       return projectID;
     } catch (e) {
-      throw new Error(`Could not get Gitlab ProjectID for: ${target}, ${e}`);
+      throw new Error(`Could not get GitLab ProjectID for: ${target}, ${e}`);
     }
   }
 }

@@ -19,7 +19,11 @@ import { createBackendConfig } from './config';
 import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 
-export async function serveBackend(options: ServeOptions) {
+export async function serveBackend(
+  options: ServeOptions & {
+    inspectEnabled: boolean;
+  },
+) {
   const paths = resolveBundlingPaths(options);
   const config = createBackendConfig(paths, {
     ...options,

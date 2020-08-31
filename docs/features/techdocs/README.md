@@ -101,3 +101,7 @@ more to come...
   https://github.com/spotify/backstage/blob/master/packages/techdocs-container
 [techdocs/cli]:
   https://github.com/spotify/backstage/blob/master/packages/techdocs-cli
+
+## TechDocs Big Picture
+
+![TechDocs Big Picture](../..//assets/techdocs/techdocs_big_picture.png)

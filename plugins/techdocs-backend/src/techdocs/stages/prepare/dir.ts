@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs-extra';
-import os from 'os';
 import { PreparerBase } from './types';
 import { Entity } from '@backstage/catalog-model';
 import path from 'path';
-import { parseReferenceAnnotation } from './helpers';
+import { parseReferenceAnnotation, checkoutGitRepository } from './helpers';
 import { InputError } from '@backstage/backend-common';
-import { Clone } from 'nodegit';
 import parseGitUrl from 'git-url-parse';
 import { Logger } from 'winston';
 
@@ -29,40 +26,6 @@ export class DirectoryPreparer implements PreparerBase {
 
   constructor(logger: Logger) {
     this.logger = logger;
-  }
-
-  private async cloneGithubRepo(entity: Entity) {
-    const { type, target } = parseReferenceAnnotation(
-      'backstage.io/managed-by-location',
-      entity,
-    );
-
-    if (type !== 'github') {
-      throw new InputError(`Wrong target type: ${type}, should be 'github'`);
-    }
-
-    const parsedGitLocation = parseGitUrl(target);
-    const repositoryTmpPath = path.join(
-      os.tmpdir(),
-      'backstage-repo',
-      parsedGitLocation.source,
-      parsedGitLocation.owner,
-      parsedGitLocation.name,
-      parsedGitLocation.ref,
-    );
-    if (fs.existsSync(repositoryTmpPath)) {
-      return repositoryTmpPath;
-    }
-    const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-
-    this.logger.debug(
-      `[TechDocs] Checking out repository ${repositoryCheckoutUrl} to ${repositoryTmpPath}`,
-    );
-
-    fs.mkdirSync(repositoryTmpPath, { recursive: true });
-    await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath, {});
-
-    return repositoryTmpPath;
   }
 
   private async resolveManagedByLocationToDir(entity: Entity) {
@@ -77,7 +40,7 @@ export class DirectoryPreparer implements PreparerBase {
     switch (type) {
       case 'github': {
         const parsedGitLocation = parseGitUrl(target);
-        const repoLocation = await this.cloneGithubRepo(entity);
+        const repoLocation = await checkoutGitRepository(target);
 
         return path.dirname(
           path.join(repoLocation, parsedGitLocation.filepath),

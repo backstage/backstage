@@ -40,6 +40,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     config,
     logger,
+    pathPrefix: '/proxy',
   });
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })

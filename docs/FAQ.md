@@ -3,7 +3,7 @@ id: FAQ
 title: FAQ
 ---
 
-## Product FAQ:
+## Product FAQ
 
 ### Can we call Backstage something different? So that it fits our company better?
 
@@ -67,7 +67,7 @@ valuable as you grow.
 Yes! The Backstage UI is built using Material-UI. With the theming capabilities
 of Material-UI, you are able to adapt the interface to your brand guidelines.
 
-## Technical FAQ:
+## Technical FAQ
 
 ### Why Material-UI?
 

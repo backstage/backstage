@@ -20,20 +20,13 @@ import {
   RollbarProject,
   RollbarTopActiveItem,
 } from './types';
+import { DiscoveryApi } from '@backstage/core';
 
 export class RollbarClient implements RollbarApi {
-  private apiOrigin: string;
-  private basePath: string;
+  private readonly discoveryApi: DiscoveryApi;
 
-  constructor({
-    apiOrigin,
-    basePath,
-  }: {
-    apiOrigin: string;
-    basePath: string;
-  }) {
-    this.apiOrigin = apiOrigin;
-    this.basePath = basePath;
+  constructor(options: { discoveryApi: DiscoveryApi }) {
+    this.discoveryApi = options.discoveryApi;
   }
 
   async getAllProjects(): Promise<RollbarProject[]> {
@@ -59,7 +52,7 @@ export class RollbarClient implements RollbarApi {
   }
 
   private async get(path: string): Promise<any> {
-    const url = `${this.apiOrigin}${this.basePath}${path}`;
+    const url = `${await this.discoveryApi.getBaseUrl('rollbar')}${path}`;
     const response = await fetch(url);
 
     if (!response.ok) {

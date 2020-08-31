@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 import parseGitUrl from 'git-url-parse';
-import { Clone } from 'nodegit';
-import { parseReferenceAnnotation } from './helpers';
+import { parseReferenceAnnotation, checkoutGitRepository } from './helpers';
 import { Logger } from 'winston';
 
 export class GithubPreparer implements PreparerBase {
@@ -41,31 +38,14 @@ export class GithubPreparer implements PreparerBase {
       throw new InputError(`Wrong target type: ${type}, should be 'github'`);
     }
 
-    const parsedGitLocation = parseGitUrl(target);
-    const repositoryTmpPath = path.join(
-      os.tmpdir(),
-      'backstage-repo',
-      parsedGitLocation.source,
-      parsedGitLocation.owner,
-      parsedGitLocation.name,
-      parsedGitLocation.ref,
-    );
+    try {
+      const repoPath = await checkoutGitRepository(target);
 
-    if (fs.existsSync(repositoryTmpPath)) {
-      this.logger.debug(
-        `[TechDocs] Found repository already checked out at ${repositoryTmpPath}`,
-      );
-      return path.join(repositoryTmpPath, parsedGitLocation.filepath);
+      const parsedGitLocation = parseGitUrl(target);
+      return path.join(repoPath, parsedGitLocation.filepath);
+    } catch (error) {
+      this.logger.debug(`Repo checkout failed with error ${error.message}`);
+      throw error;
     }
-    const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-
-    this.logger.debug(
-      `[TechDocs] Checking out repository ${repositoryCheckoutUrl} to ${repositoryTmpPath}`,
-    );
-
-    fs.mkdirSync(repositoryTmpPath, { recursive: true });
-    await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath, {});
-
-    return path.join(repositoryTmpPath, parsedGitLocation.filepath);
   }
 }

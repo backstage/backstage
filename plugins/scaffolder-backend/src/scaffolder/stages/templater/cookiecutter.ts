@@ -15,10 +15,12 @@
  */
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/config';
-import { runDockerContainer } from './helpers';
+import { runDockerContainer, runCommand } from './helpers';
 import { TemplaterBase, TemplaterRunOptions } from '.';
 import path from 'path';
 import { TemplaterRunResult } from './types';
+
+const commandExists = require('command-exists-promise');
 
 export class CookieCutter implements TemplaterBase {
   private async fetchTemplateCookieCutter(
@@ -51,21 +53,30 @@ export class CookieCutter implements TemplaterBase {
     const templateDir = options.directory;
     const resultDir = await fs.promises.mkdtemp(`${options.directory}-result`);
 
-    await runDockerContainer({
-      imageName: 'spotify/backstage-cookiecutter',
-      args: [
-        'cookiecutter',
-        '--no-input',
-        '-o',
-        '/result',
-        '/template',
-        '--verbose',
-      ],
-      templateDir,
-      resultDir,
-      logStream: options.logStream,
-      dockerClient: options.dockerClient,
-    });
+    const cookieCutterInstalled = await commandExists('cookiecutter');
+    if (cookieCutterInstalled) {
+      await runCommand({
+        command: 'cookiecutter',
+        args: ['--no-input', '-o', resultDir, templateDir, '--verbose'],
+        logStream: options.logStream,
+      });
+    } else {
+      await runDockerContainer({
+        imageName: 'spotify/backstage-cookiecutter',
+        args: [
+          'cookiecutter',
+          '--no-input',
+          '-o',
+          '/result',
+          '/template',
+          '--verbose',
+        ],
+        templateDir,
+        resultDir,
+        logStream: options.logStream,
+        dockerClient: options.dockerClient,
+      });
+    }
 
     return {
       resultDir: path.resolve(resultDir, options.values.component_id as string),

@@ -18,10 +18,20 @@ import { LocationSpec } from '@backstage/catalog-model';
 import fetch, { RequestInit, HeadersInit } from 'node-fetch';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
+import { Config } from '@backstage/config';
 
 export class BitbucketApiReaderProcessor implements LocationProcessor {
-  private username: string = process.env.BITBUCKET_USERNAME || '';
-  private password: string = process.env.BITBUCKET_APP_PASSWORD || '';
+  private username: string;
+  private password: string;
+
+  constructor(config: Config) {
+    this.username =
+      config.getOptionalString('catalog.processors.bitbucketApi.username') ??
+      '';
+    this.password =
+      config.getOptionalString('catalog.processors.bitbucketApi.appPassword') ??
+      '';
+  }
 
   getRequestOptions(): RequestInit {
     const headers: HeadersInit = {};

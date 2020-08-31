@@ -18,6 +18,7 @@ import Docker from 'dockerode';
 import fs from 'fs';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
+import { spawn } from 'child_process';
 
 export type RunDockerContainerOptions = {
   imageName: string;
@@ -27,6 +28,12 @@ export type RunDockerContainerOptions = {
   templateDir: string;
   dockerClient: Docker;
   createOptions?: Docker.ContainerCreateOptions;
+};
+
+export type RunCommandOptions = {
+  command: string;
+  args: string[];
+  logStream?: Writable;
 };
 
 /**
@@ -41,6 +48,42 @@ export const getTemplaterKey = (entity: TemplateEntityV1alpha1): string => {
   }
 
   return templater;
+};
+
+/**
+ *
+ * @param options the options object
+ * @param options.command the command to run
+ * @param options.args the arguments to pass the command
+ * @param options.logStream the log streamer to capture log messages
+ */
+export const runCommand = async ({
+  command,
+  args,
+  logStream = new PassThrough(),
+}: RunCommandOptions) => {
+  await new Promise((resolve, reject) => {
+    const process = spawn(command, args);
+
+    process.stdout.on('data', stream => {
+      logStream.write(stream);
+    });
+
+    process.stderr.on('data', stream => {
+      logStream.write(stream);
+    });
+
+    process.on('error', error => {
+      return reject(error);
+    });
+
+    process.on('close', code => {
+      if (code !== 0) {
+        return reject(`Command ${command} failed, exit code: ${code}`);
+      }
+      return resolve();
+    });
+  });
 };
 
 /**
