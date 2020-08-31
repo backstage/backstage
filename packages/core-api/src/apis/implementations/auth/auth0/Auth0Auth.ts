@@ -27,16 +27,17 @@ import {
   AuthRequestOptions,
   BackstageIdentity,
 } from '../../../definitions/auth';
-import { OAuthRequestApi, AuthProvider } from '../../../definitions';
+import {
+  OAuthRequestApi,
+  AuthProvider,
+  DiscoveryApi,
+} from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
 
 type CreateOptions = {
-  // TODO(Following the words of Rugvip): These two should be grabbed from global config when available, they're not unique to Auth0Auth
-  backendUrl: string;
-  basePath: string;
-
+  discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
   environment?: string;
@@ -67,15 +68,13 @@ class Auth0Auth
     BackstageIdentityApi,
     SessionStateApi {
   static create({
-    backendUrl,
-    basePath,
+    discoveryApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      backendUrl,
-      basePath,
+      discoveryApi,
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,

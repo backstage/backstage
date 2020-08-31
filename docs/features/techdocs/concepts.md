@@ -53,4 +53,4 @@ Reader. The reason why transformers were introduced was to provide a way to
 transform the HTML content on pre and post render (e.g. rewrite docs links or
 modify css).
 
-[Transformers API docs](https://github.com/spotify/backstage/blob/master/plugins/techdocs/src/reader/transformers/README.md)
+[Transformers API docs](https://github.com/spotify/backstage/blob/master/plugins/techdocs/src/reader/README.md)

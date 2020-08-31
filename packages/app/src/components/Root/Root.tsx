@@ -39,6 +39,7 @@ import {
   SidebarUserSettings,
   SidebarThemeToggle,
   SidebarPinButton,
+  DefaultProviderSettings,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
 import { graphiQLRouteRef } from '@backstage/plugin-graphiql';
@@ -107,7 +108,7 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarSpace />
       <SidebarDivider />
       <SidebarThemeToggle />
-      <SidebarUserSettings />
+      <SidebarUserSettings providerSettings={<DefaultProviderSettings />} />
       <SidebarPinButton />
     </Sidebar>
     {children}

@@ -51,7 +51,7 @@
         "title": "Adding authentication providers"
       },
       "auth/auth-backend-classes": {
-        "title": "auth/auth-backend-classes"
+        "title": "Auth backend classes"
       },
       "auth/auth-backend": {
         "title": "Auth backend"
@@ -103,7 +103,8 @@
         "title": "External integrations"
       },
       "features/software-catalog/software-catalog-overview": {
-        "title": "Backstage Service Catalog (alpha)"
+        "title": "Backstage Service Catalog (alpha)",
+        "sidebar_label": "Backstage Service Catalog"
       },
       "features/software-catalog/installation": {
         "title": "features/software-catalog/installation"
@@ -174,9 +175,6 @@
       "getting-started/installation": {
         "title": "Installation"
       },
-      "journey": {
-        "title": "journey"
-      },
       "overview/adopting": {
         "title": "Strategies for adopting"
       },
@@ -185,6 +183,9 @@
       },
       "overview/architecture-terminology": {
         "title": "Architecture terminology"
+      },
+      "overview/background": {
+        "title": "The Spotify Story"
       },
       "overview/roadmap": {
         "title": "Project roadmap"
@@ -214,7 +215,7 @@
         "title": "Intro to plugins"
       },
       "plugins/plugin-development": {
-        "title": "Plugin Development in Backstage"
+        "title": "Plugin Development"
       },
       "plugins/proxying": {
         "title": "Proxying"
@@ -285,8 +286,8 @@
       "reference/utility-apis/StorageApi": {
         "title": "reference/utility-apis/StorageApi"
       },
-      "tutorials/index": {
-        "title": "Overview"
+      "tutorials/journey": {
+        "title": "Future developer journey"
       }
     },
     "links": {
@@ -294,7 +295,6 @@
       "Docs": "Docs",
       "Blog": "Blog",
       "Demos": "Demos",
-      "The Spotify story": "The Spotify story",
       "Newsletter": "Newsletter"
     },
     "categories": {

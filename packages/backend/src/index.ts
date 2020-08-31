@@ -84,7 +84,7 @@ async function main() {
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
     .addRouter('/techdocs', await techdocs(techdocsEnv))
-    .addRouter('/proxy', await proxy(proxyEnv))
+    .addRouter('/proxy', await proxy(proxyEnv, '/proxy'))
     .addRouter('/graphql', await graphql(graphqlEnv))
     .addRouter('', await app(appEnv));
 

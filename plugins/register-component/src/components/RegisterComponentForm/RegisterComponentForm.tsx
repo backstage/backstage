@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
   FormControl,
   FormHelperText,
-  TextField,
   LinearProgress,
+  TextField,
 } from '@material-ui/core';
-import { useForm } from 'react-hook-form';
 import { makeStyles } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
+import React, { FC } from 'react';
+import { useForm } from 'react-hook-form';
 import { ComponentIdValidators } from '../../util/validate';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -71,7 +71,7 @@ const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
           name="componentLocation"
           required
           margin="normal"
-          helperText="Enter the full path to the component.yaml file in GitHub to start tracking your component. It must be in a public repo."
+          helperText="Enter the full path to the component.yaml file in GitHub, GitLab, Bitbucket or Azure to start tracking your component."
           inputRef={register({
             required: true,
             validate: ComponentIdValidators,

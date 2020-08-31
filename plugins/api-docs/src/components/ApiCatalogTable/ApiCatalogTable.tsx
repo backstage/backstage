@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core';
 import { Link } from '@material-ui/core';

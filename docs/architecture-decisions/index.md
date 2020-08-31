@@ -4,8 +4,6 @@ title: Architecture Decision Records (ADR)
 sidebar_label: Overview
 ---
 
-#
-
 The substantial architecture decisions made in the Backstage project lives here.
 For more information about ADRs, when to write them, and why, please see
 [this blog post](https://engineering.atspotify.com/2020/04/14/when-should-i-write-an-architecture-decision-record/).
@@ -25,7 +23,10 @@ Records should be stored under the `architecture-decisions` directory.
 - Submit a pull request
 - Address and integrate feedback from the community
 - Eventually, assign a number
-- Add the full path of the ADR to the [`mkdocs.yml`](/mkdocs.yml)
+- Add the path of the ADR to the microsite sidebar in
+  [`sidebars.json`](https://github.com/spotify/backstage/blob/master/microsite/sidebars.json)
+- Add the path of the ADR to the
+  [`mkdocs.yml`](https://github.com/spotify/backstage/blob/master/mkdocs.yml)
 - Merge the pull request
 
 ## Superseding an ADR

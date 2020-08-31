@@ -15,24 +15,10 @@
  */
 import React from 'react';
 import { Route, MemoryRouter, Routes } from 'react-router';
-import { BuildsPage, Builds } from '../pages/BuildsPage';
-import { DetailedViewPage, BuildWithSteps } from '../pages/BuildWithStepsPage';
+import { Builds } from '../pages/BuildsPage';
+import { BuildWithSteps } from '../pages/BuildWithStepsPage';
 import { AppStateProvider } from '../state';
 import { Settings } from './Settings';
-
-export const App = () => {
-  return (
-    <AppStateProvider>
-      <>
-        <Routes>
-          <Route path="*" element={<BuildsPage />} />
-          <Route path="/build/:buildId" element={<DetailedViewPage />} />
-        </Routes>
-        <Settings />
-      </>
-    </AppStateProvider>
-  );
-};
 
 // TODO: allow pass in settings as props
 // When some shared settings workflow

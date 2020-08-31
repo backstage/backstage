@@ -14,21 +14,15 @@ backend:
     client: sqlite3
     connection: ':memory:'
 
+# See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  '/circleci/api':
-    target: 'https://circleci.com/api/v1.1'
-    changeOrigin: true
-    pathRewrite:
-      '^/proxy/circleci/api/': '/'
+  '/circleci/api': https://circleci.com/api/v1.1
   '/jenkins/api':
-    target: 'http://localhost:8080'
-    changeOrigin: true
+    target: http://localhost:8080
     headers:
       Authorization:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
-    pathRewrite:
-      '^/proxy/jenkins/api/': '/'
 
 organization:
   name: Spotify
@@ -51,6 +45,26 @@ newrelic:
     key: NEW_RELIC_REST_API_KEY
 
 catalog:
+  processors:
+    githubApi:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
+    bitbucketApi:
+      username:
+        $secret:
+          env: BITBUCKET_USERNAME
+      appPassword:
+        $secret:
+          env: BITBUCKET_APP_PASSWORD
+    gitlabApi:
+      privateToken:
+        $secret:
+          env: GITLAB_PRIVATE_TOKEN
+    azureApi:
+      privateToken:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
   exampleEntityLocations:
     github:
       - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
@@ -61,6 +75,11 @@ catalog:
       - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
       - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
       - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
+      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+      - https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
 
 auth:
   providers:
@@ -136,8 +155,6 @@ auth:
             env: AUTH_AUTH0_DOMAIN
     microsoft:
       development:
-        appOrigin: 'http://localhost:3000/'
-        secure: false
         clientId:
           $secret:
             env: AUTH_MICROSOFT_CLIENT_ID
