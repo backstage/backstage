@@ -40,7 +40,7 @@ jobs:
           path: '**/node_modules'
           # This is intentionally set to Linux, since Windows produces broken node_modules
           # cache tarballs because it follows symlinks.
-          key: Linux-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+          key: Linux-node_modules-${{ hashFiles('yarn.lock', '{packages,plugins}/*/package.json') }}
       - name: find location of global yarn cache
         id: yarn-cache
         if: steps.cache-modules.outputs.cache-hit != 'true'
