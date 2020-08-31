@@ -199,6 +199,9 @@
       "overview/what-is-backstage": {
         "title": "What is Backstage?"
       },
+      "plugins/add-to-marketplace": {
+        "title": "Add to Marketplace"
+      },
       "plugins/backend-plugin": {
         "title": "Backend plugin"
       },
@@ -295,6 +298,7 @@
       "Docs": "Docs",
       "Blog": "Blog",
       "Demos": "Demos",
+      "Plugins": "Plugins",
       "Newsletter": "Newsletter"
     },
     "categories": {
