@@ -39,6 +39,10 @@ const siteConfig = {
       label: 'Docs',
     },
     {
+      page: 'plugins',
+      label: 'Plugins',
+    },
+    {
       page: 'blog',
       blog: true,
       label: 'Blog',
