@@ -52,12 +52,6 @@ export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
             <GithubActionsWidget entity={entity} branch="master" />
           </Grid>
         )}
-        <Grid item sm={8}>
-          <SentryIssuesWidget
-            sentryProjectId="sample-sentry-project-id"
-            statsFor="24h"
-          />
-        </Grid>
       </Grid>
     </Content>
   );
