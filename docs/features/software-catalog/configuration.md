@@ -32,10 +32,7 @@ For example, given the following configuration:
 ```yaml
 catalog:
   rules:
-    - allow: [Component, API]
-    - allow: [System]
-      locations:
-        type: github
+    - allow: [Component, API, System]
 
   locations:
     - type: github
@@ -43,9 +40,9 @@ catalog:
       allow: [Group]
 ```
 
-We are able to add entities of kind `Component` or `API` from any location,
-entities of kind `System` from any `github` location, and `Group` entities from
-the `org-data.yaml`, which will also be read as statically configured location.
+We are able to add entities of kind `Component`, `API`, or `System` from any
+location, and `Group` entities from the `org-data.yaml`, which will also be read
+as statically configured location.
 
 Note that if the `catalog.rules` key is present it will replace the default
 value, meaning that you need to add rules for `Component` and `API` kinds if you

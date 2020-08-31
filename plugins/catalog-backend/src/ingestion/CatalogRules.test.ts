@@ -179,5 +179,20 @@ describe('CatalogRulesEnforcer', () => {
       expect(enforcer.isAllowed(entity.group, location.z)).toBe(false);
       expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
     });
+
+    it('should not care about location configuration in catalog.rules', () => {
+      const enforcer = CatalogRulesEnforcer.fromConfig(
+        new ConfigReader({
+          catalog: {
+            rules: [{ allow: ['Group'], locations: [{ type: 'github' }] }],
+          },
+        }),
+      );
+      expect(enforcer.isAllowed(entity.user, location.x)).toBe(false);
+      expect(enforcer.isAllowed(entity.group, location.x)).toBe(true);
+      expect(enforcer.isAllowed(entity.group, location.y)).toBe(true);
+      expect(enforcer.isAllowed(entity.group, location.z)).toBe(true);
+      expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
+    });
   });
 });
