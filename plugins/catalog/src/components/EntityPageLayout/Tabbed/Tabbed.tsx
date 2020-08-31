@@ -28,10 +28,14 @@ import { Tab, HeaderTabs, Content } from '@backstage/core';
 import { Grid } from '@material-ui/core';
 import { Helmet } from 'react-helmet';
 
-const getSelectedIndex = (matchedRoute: RouteMatch, tabs: Tab[]) => {
-  if (!matchedRoute) return 0;
+const getSelectedIndexOrDefault = (
+  matchedRoute: RouteMatch,
+  tabs: Tab[],
+  defaultIndex = 0,
+) => {
+  if (!matchedRoute) return defaultIndex;
   const tabIndex = tabs.findIndex(t => t.id === matchedRoute.route.path);
-  return ~tabIndex ? tabIndex : 0;
+  return ~tabIndex ? tabIndex : defaultIndex;
 };
 
 /**
@@ -86,12 +90,16 @@ export const Tabbed = {
 
     const [matchedRoute] =
       matchRoutes(routes as RouteObject[], `/${params['*']}`) ?? [];
-    const selectedIndex = getSelectedIndex(matchedRoute, tabs);
+    const selectedIndex = getSelectedIndexOrDefault(matchedRoute, tabs);
     const currentTab = tabs[selectedIndex];
     const title = currentTab.label;
 
     const onTabChange = (index: number) =>
-      navigate(tabs[index].id.replace(/\/\*$/g, ''));
+      // Remove trailing /*
+      // And remove leading / for relative navigation
+      // Note! route resolves relative to the position in the React tree,
+      // not relative to current location
+      navigate(tabs[index].id.replace(/\/\*$/, '').replace(/^\//, ''));
 
     const currentRouteElement = useRoutes(routes);
 

@@ -28,7 +28,7 @@ import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
 import { CatalogRouter } from '@backstage/plugin-catalog';
 // import { ExplorePlugin } from '@backstage/plugin-explore';
-import { Route, Routes } from 'react-router';
+import { Route, Routes, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
 
@@ -58,6 +58,7 @@ const AppRoutes = () => (
       path="/catalog/*"
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
+    <Route path="/" element={<Navigate to="/catalog" />} />
     {/* <Route path="/explore" element={<ExplorePlugin />} /> */}
   </Routes>
 );
