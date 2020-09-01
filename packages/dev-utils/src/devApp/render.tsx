@@ -199,8 +199,17 @@ class DevAppBuilder {
 
     for (const plugin of plugins) {
       for (const output of plugin.output()) {
-        if (output.type === 'legacy-route') {
-          paths.push(output.path);
+        switch (output.type) {
+          case 'legacy-route': {
+            paths.push(output.path);
+            break;
+          }
+          case 'route': {
+            paths.push(output.target.path);
+            break;
+          }
+          default:
+            break;
         }
       }
     }

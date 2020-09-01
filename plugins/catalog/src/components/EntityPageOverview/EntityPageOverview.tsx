@@ -24,14 +24,14 @@ import {
 } from '@backstage/plugin-jenkins';
 import { Grid } from '@material-ui/core';
 import React, { FC } from 'react';
-import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
+import { AboutCard } from '../AboutCard';
 
 export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
   return (
     <Content>
       <Grid container spacing={3}>
         <Grid item sm={4}>
-          <EntityMetadataCard entity={entity} />
+          <AboutCard entity={entity} />
         </Grid>
         {entity.metadata?.annotations?.[
           'backstage.io/jenkins-github-folder'
