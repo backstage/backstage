@@ -15,7 +15,7 @@
  */
 
 import knex from 'knex';
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
 
 /**
@@ -24,11 +24,11 @@ import { mergeDatabaseConfig } from './config';
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
  */
-export function createSqlite3Database(
-  dbConfig: ConfigReader,
+export function createSqliteDatabaseClient(
+  dbConfig: Config,
   overrides?: knex.Config,
 ) {
-  const knexConfig = buildSqlite3DatabaseConfig(dbConfig, overrides);
+  const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
   const database = knex(knexConfig);
 
   database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
@@ -44,8 +44,8 @@ export function createSqlite3Database(
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
  */
-export function buildSqlite3DatabaseConfig(
-  dbConfig: ConfigReader,
+export function buildSqliteDatabaseConfig(
+  dbConfig: Config,
   overrides?: knex.Config,
 ) {
   return mergeDatabaseConfig(
