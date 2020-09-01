@@ -1,0 +1,9 @@
+---
+title: API Docs
+author: SDA SE
+authorUrl: https://sda.se/
+category: Discovery
+description: Components to discover and display API entities as an extension to the catalog plugin.
+documentation: https://github.com/spotify/backstage/blob/master/plugins/api-docs/README.md
+iconUrl: https://github.com/spotify/backstage/raw/master/plugins/api-docs/docs/entity_tab_api.png
+npmPackageName: '@backstage/plugin-api-docs'
