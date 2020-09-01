@@ -16,11 +16,12 @@
 import React, { useState } from 'react';
 import { useLocalStorage } from 'react-use';
 import Markdown from 'react-markdown';
-import { ContentHeader, InfoCard } from '@backstage/core';
+import { ContentHeader } from '@backstage/core';
 import { makeStyles, Button, Grid, Tabs, Tab } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
 import LighthouseSupportButton from '../SupportButton';
+import { InfoCard } from '@backstage/components';
 
 export const LIGHTHOUSE_INTRO_LOCAL_STORAGE =
   '@backstage/lighthouse-plugin/intro-dismissed';
@@ -71,7 +72,7 @@ export default builder.build() as ApiHolder;
 \`\`\`
 `;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   tabs: { marginBottom: -18 },
   tab: { minWidth: 72, paddingLeft: 1, paddingRight: 1 },
   content: { marginBottom: theme.spacing(2) },

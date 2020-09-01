@@ -27,7 +27,6 @@ import {
 import {
   errorApiRef,
   useApi,
-  InfoCard,
   Header,
   Page,
   pageTheme,
@@ -39,6 +38,7 @@ import {
 import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
+import { InfoCard } from '@backstage/components';
 
 const useStyles = makeStyles(theme => ({
   input: {

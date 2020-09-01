@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { Grid, Typography, Button } from '@material-ui/core';
-import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import { useApi, auth0AuthApiRef, errorApiRef } from '@backstage/core-api';
+import { InfoCard } from '@backstage/components';
 
 const Component: ProviderComponent = ({ onResult }) => {
   const auth0AuthApi = useApi(auth0AuthApiRef);

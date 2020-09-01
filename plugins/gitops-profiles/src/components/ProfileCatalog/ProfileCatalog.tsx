@@ -22,7 +22,6 @@ import {
   Content,
   ContentHeader,
   HeaderLabel,
-  InfoCard,
   useApi,
   githubAuthApiRef,
 } from '@backstage/core';
@@ -44,6 +43,7 @@ import {
   SimpleStepperStep,
   Progress,
   Table,
+  InfoCard,
 } from '@backstage/components';
 
 // OK = (completed, success)

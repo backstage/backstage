@@ -3,7 +3,8 @@ import { addDecorator, addParameters } from '@storybook/react';
 import { lightTheme, darkTheme } from '@backstage/theme';
 import { CssBaseline, ThemeProvider } from '@material-ui/core';
 import { useDarkMode } from 'storybook-dark-mode';
-import { Content, ApiProvider, AlertDisplay } from '@backstage/core';
+import { Content, ApiProvider } from '@backstage/core';
+import { AlertDisplay } from '@backstage/components';
 import { apis } from './apis';
 
 addDecorator(story => (

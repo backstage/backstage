@@ -21,7 +21,6 @@ import { Grid, Button } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
 import {
-  InfoCard,
   Header,
   Page,
   Content,
@@ -36,7 +35,7 @@ import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 import LighthouseIntro, { LIGHTHOUSE_INTRO_LOCAL_STORAGE } from '../Intro';
 import AuditListTable from './AuditListTable';
-import { Progress } from '@backstage/components';
+import { Progress, InfoCard } from '@backstage/components';
 
 export const LIMIT = 10;
 

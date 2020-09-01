@@ -34,3 +34,7 @@ export * from './Table';
 export * from './Tabs';
 export * from './TrendLine';
 export * from './WarningPanel';
+export * from './InfoCard';
+export * from './ErrorBoundary';
+export * from './BottomLink';
+export * from './TabbedCard';

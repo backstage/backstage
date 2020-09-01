@@ -24,7 +24,7 @@ import {
   StatusWarning,
 } from './Status';
 import { Table } from '../Table';
-import { InfoCard } from '@backstage/core';
+import { InfoCard } from '../InfoCard';
 
 export default {
   title: 'Status',

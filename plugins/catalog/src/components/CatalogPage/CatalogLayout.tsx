@@ -16,11 +16,11 @@
 
 import {
   Header,
-  HomepageTimer,
   identityApiRef,
   Page,
   pageTheme,
   useApi,
+  HomepageTimer,
 } from '@backstage/core';
 import React from 'react';
 import { getTimeBasedGreeting } from './utils/timeUtil';

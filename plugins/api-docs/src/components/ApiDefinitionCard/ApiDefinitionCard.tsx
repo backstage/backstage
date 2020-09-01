@@ -15,9 +15,9 @@
  */
 
 import { ApiEntityV1alpha1 } from '@backstage/catalog-model';
-import { InfoCard } from '@backstage/core';
 import React from 'react';
 import { ApiDefinitionWidget } from '../ApiDefinitionWidget/ApiDefinitionWidget';
+import { InfoCard } from '@backstage/components';
 
 type Props = {
   title?: string;

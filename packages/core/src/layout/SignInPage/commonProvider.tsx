@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { Typography, Button } from '@material-ui/core';
-import { InfoCard } from '../InfoCard/InfoCard';
 import {
   ProviderComponent,
   ProviderLoader,
@@ -25,6 +24,7 @@ import {
 } from './types';
 import { useApi, errorApiRef } from '@backstage/core-api';
 import { GridItem } from './styles';
+import { InfoCard } from '@backstage/components';
 
 const Component: ProviderComponent = ({ config, onResult }) => {
   const { apiRef, title, message } = config as SignInConfig;

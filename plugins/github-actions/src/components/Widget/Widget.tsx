@@ -25,9 +25,9 @@ import {
   LinearProgress,
   Typography,
 } from '@material-ui/core';
-import { InfoCard, errorApiRef, useApi } from '@backstage/core';
+import { errorApiRef, useApi } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
-import { StructuredMetadataTable } from '@backstage/components';
+import { StructuredMetadataTable, InfoCard } from '@backstage/components';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {

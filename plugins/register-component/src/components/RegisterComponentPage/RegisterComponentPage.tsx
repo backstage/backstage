@@ -17,7 +17,6 @@
 import React, { FC, useState } from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
 import {
-  InfoCard,
   Page,
   pageTheme,
   Content,
@@ -31,7 +30,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog';
 import { useMountedState } from 'react-use';
 import { Entity, Location } from '@backstage/catalog-model';
 import { RegisterComponentResultDialog } from '../RegisterComponentResultDialog';
-import { SupportButton } from '@backstage/components';
+import { SupportButton, InfoCard } from '@backstage/components';
 
 const useStyles = makeStyles(theme => ({
   dialogPaper: {

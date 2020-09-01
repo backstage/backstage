@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { CodeSnippet } from './CodeSnippet';
-import { InfoCard } from '@backstage/core';
+import { InfoCard } from '../InfoCard';
 
 export default {
   title: 'CodeSnippet',

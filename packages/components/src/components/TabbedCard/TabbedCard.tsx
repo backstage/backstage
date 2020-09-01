@@ -26,8 +26,9 @@ import {
   Tab,
   TabProps,
 } from '@material-ui/core';
-import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { BottomLinkProps } from '../BottomLink';
+import { BottomLink } from '../BottomLink/BottomLink';
 
 const useTabsStyles = makeStyles(theme => ({
   root: {

@@ -15,7 +15,8 @@
  */
 import React, { FC, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Content, InfoCard } from '@backstage/core';
+import { Content } from '@backstage/core';
+import { InfoCard } from '@backstage/components';
 import { Grid, Box, Link, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { PluginHeader } from '../../components/PluginHeader';

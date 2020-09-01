@@ -26,7 +26,6 @@ import {
 } from '@material-ui/core';
 import {
   Content,
-  InfoCard,
   Header,
   HomepageTimer,
   Page,
@@ -36,7 +35,7 @@ import {
   configApiRef,
 } from '@backstage/core';
 
-import { SupportButton, WarningPanel } from '@backstage/components';
+import { SupportButton, WarningPanel, InfoCard } from '@backstage/components';
 
 const WelcomePage = () => {
   const appTitle =

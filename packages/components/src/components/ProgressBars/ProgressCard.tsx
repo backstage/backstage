@@ -16,8 +16,9 @@
 
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core';
-import { InfoCard, BottomLinkProps } from '@backstage/core';
+import { InfoCard } from '../InfoCard';
 import { CircleProgress } from './CircleProgress';
+import { BottomLinkProps } from '../BottomLink';
 
 type Props = {
   title: string;

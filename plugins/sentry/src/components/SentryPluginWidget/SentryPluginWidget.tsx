@@ -15,14 +15,8 @@
  */
 
 import React, { FC, useEffect } from 'react';
-import {
-  ErrorApi,
-  errorApiRef,
-  InfoCard,
-  useApi,
-  configApiRef,
-} from '@backstage/core';
-import { Progress } from '@backstage/components';
+import { ErrorApi, errorApiRef, useApi, configApiRef } from '@backstage/core';
+import { Progress, InfoCard } from '@backstage/components';
 import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
 import { useAsync } from 'react-use';
 import { sentryApiFactory } from '../../data/api-factory';

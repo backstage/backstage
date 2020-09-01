@@ -34,9 +34,8 @@ import {
   pageTheme,
   Header,
   Content,
-  InfoCard,
 } from '@backstage/core';
-import { Lifecycle } from '@backstage/components';
+import { Lifecycle, InfoCard } from '@backstage/components';
 
 const useTemplate = (
   templateName: string,

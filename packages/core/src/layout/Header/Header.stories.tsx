@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Header } from '.';
+import { Header } from '../Header';
 import { HeaderLabel } from '../HeaderLabel';
 import { Page, pageTheme } from '../Page';
 
