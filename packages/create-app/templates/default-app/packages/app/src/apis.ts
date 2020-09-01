@@ -27,9 +27,6 @@ import {
 import {
   techdocsStorageApiRef,
   TechDocsStorageApi,
-
-  techdocsStorageApiRef,
-  TechDocsStorageApi,
 } from '@backstage/plugin-techdocs';
 
 import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
