@@ -67,7 +67,8 @@ catalog:
   locations:
     - type: github
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
-      allow: [Template]
+      rules:
+        - allow: [Template]
 ```
 
 Templates can also be added by posting the to the catalog directly. Note that if
