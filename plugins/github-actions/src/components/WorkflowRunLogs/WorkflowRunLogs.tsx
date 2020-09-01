@@ -41,7 +41,7 @@ const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 const useStyles = makeStyles<Theme>(() => ({
     button: {
       order: -1,
-      // marginRight: 0,
+      marginRight: 0,
       marginLeft: '-20px',
     },
     modal: {
