@@ -20,6 +20,7 @@ import identity from './plugins/identity';
 import scaffolder from './plugins/scaffolder';
 import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
+import sentry from './plugins/sentry';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(loadedConfigs: AppConfig[]) {
@@ -50,11 +51,13 @@ async function main() {
   const identityEnv = useHotMemoize(module, () => createEnv('identity'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
+  const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
 
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
     .addRouter('/catalog', await catalog(catalogEnv))
     .addRouter('/scaffolder', await scaffolder(scaffolderEnv))
+    .addRouter('/sentry', await sentry(sentryEnv))
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
     .addRouter('/techdocs', await techdocs(techdocsEnv))
