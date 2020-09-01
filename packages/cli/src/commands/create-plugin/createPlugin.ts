@@ -191,11 +191,6 @@ export default async (cmd: Command) => {
     }
   }
 
-  let pluginLocation = 'plugins';
-  if (cmd.location) {
-    pluginLocation = cmd.location;
-  }
-
   const questions: Question[] = [
     {
       type: 'input',
@@ -243,7 +238,7 @@ export default async (cmd: Command) => {
   const appPackage = paths.resolveTargetRoot('packages/app');
   const templateDir = paths.resolveOwn('templates/default-plugin');
   const tempDir = resolvePath(os.tmpdir(), answers.id);
-  const pluginDir = paths.resolveTargetRoot(pluginLocation, answers.id);
+  const pluginDir = paths.resolveTargetRoot('plugins', answers.id);
   const ownerIds = parseOwnerIds(answers.owner);
   const { version } = await fs.readJson(paths.resolveTargetRoot('lerna.json'));
 
