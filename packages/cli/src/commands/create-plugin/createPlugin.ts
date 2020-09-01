@@ -184,11 +184,16 @@ export default async (cmd: Command) => {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
   let npmScope = '';
   if (cmd.scope) {
-    if (!/^@[a-z0-9]+(-[a-z0-9]+)*$/.test(cmd.scope)) {
-      npmScope = `@${cmd.scope}/`;
-    } else {
+    if (cmd.scope.startsWith('@')) {
       npmScope = `${cmd.scope}/`;
+    } else {
+      npmScope = `@${cmd.scope}/`;
     }
+  }
+
+  let pluginLocation = 'plugins';
+  if (cmd.location) {
+    pluginLocation = cmd.location;
   }
 
   const questions: Question[] = [
@@ -238,7 +243,7 @@ export default async (cmd: Command) => {
   const appPackage = paths.resolveTargetRoot('packages/app');
   const templateDir = paths.resolveOwn('templates/default-plugin');
   const tempDir = resolvePath(os.tmpdir(), answers.id);
-  const pluginDir = paths.resolveTargetRoot('plugins', answers.id);
+  const pluginDir = paths.resolveTargetRoot(pluginLocation, answers.id);
   const ownerIds = parseOwnerIds(answers.owner);
   const { version } = await fs.readJson(paths.resolveTargetRoot('lerna.json'));
 
