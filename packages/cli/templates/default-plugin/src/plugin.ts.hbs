@@ -2,13 +2,13 @@ import { createPlugin, createRouteRef } from '@backstage/core';
 import ExampleComponent from './components/ExampleComponent';
 
 export const rootRouteRef = createRouteRef({
-path: '/{{ id }}',
-title: '{{ id }}',
+  path: '/{{ id }}',
+  title: '{{ id }}',
 });
 
 export const plugin = createPlugin({
-id: '{{ id }}',
-register({ router }) {
-router.addRoute(rootRouteRef, ExampleComponent);
-},
+  id: '{{ id }}',
+  register({ router }) {
+    router.addRoute(rootRouteRef, ExampleComponent);
+  },
 });
