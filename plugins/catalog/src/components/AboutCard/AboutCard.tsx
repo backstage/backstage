@@ -35,17 +35,18 @@ import DocsIcon from '@material-ui/icons/Description';
 
 const useStyles = makeStyles(theme => ({
   links: {
-    margin: theme.spacing(2, 0, 2),
+    margin: theme.spacing(2, 0),
     display: 'grid',
     gridAutoFlow: 'column',
     gridAutoColumns: 'min-content',
-    gridGap: theme.spacing(2),
+    gridGap: theme.spacing(3),
   },
   label: {
-    color: '#9e9e9e',
+    color: theme.palette.text.secondary,
     textTransform: 'uppercase',
-    fontSize: '12px',
+    fontSize: '10px',
     fontWeight: 'bold',
+    letterSpacing: 0.5,
     overflow: 'hidden',
     whiteSpace: 'nowrap',
   },
