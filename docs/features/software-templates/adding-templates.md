@@ -77,7 +77,7 @@ to be ingested from any source, for example:
 ```yaml
 catalog:
   rules:
-    allow: [Component, API, Template]
+    - allow: [Component, API, Template]
 ```
 
 For loading from a file, the following command should work when the backend is
