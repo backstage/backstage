@@ -18,12 +18,12 @@ import React from 'react';
 import {
   EntityPageLayout,
   useEntity,
-  EntityMetadataCard,
+  AboutCard,
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 
 const OverviewPage = ({ entity }: { entity: Entity }) => (
-  <EntityMetadataCard entity={entity} />
+  <AboutCard entity={entity} />
 );
 
 const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
