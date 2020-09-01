@@ -266,7 +266,7 @@ async function createPlugin(pluginName: string, appDir: string) {
 /**
  * Start serving the newly created app and make sure that the create plugin is rendering correctly
  */
-async function testAppServe(pluginName: string, appDir: string) {
+async function testAppServe(_pluginName: string, appDir: string) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
   });
