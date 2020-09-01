@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { createDatabase } from './connection';
+import { createDatabaseClient } from './connection';
 
 describe('database connection', () => {
   const createConfig = (data: any) =>
@@ -26,10 +26,10 @@ describe('database connection', () => {
       },
     ]);
 
-  describe(createDatabase, () => {
+  describe(createDatabaseClient, () => {
     it('returns a postgres connection', () => {
       expect(
-        createDatabase(
+        createDatabaseClient(
           createConfig({
             client: 'pg',
             connection: {
@@ -45,7 +45,7 @@ describe('database connection', () => {
 
     it('returns an sqlite connection', () => {
       expect(
-        createDatabase(
+        createDatabaseClient(
           createConfig({
             client: 'sqlite3',
             connection: ':memory:',
@@ -56,7 +56,7 @@ describe('database connection', () => {
 
     it('tries to create a mysql connection as a passthrough', () => {
       expect(() =>
-        createDatabase(
+        createDatabaseClient(
           createConfig({
             client: 'mysql',
             connection: {
@@ -72,7 +72,7 @@ describe('database connection', () => {
 
     it('accepts overrides', () => {
       expect(
-        createDatabase(
+        createDatabaseClient(
           createConfig({
             client: 'pg',
             connection: {
@@ -93,7 +93,7 @@ describe('database connection', () => {
 
     it('throws an error without a client', () => {
       expect(() =>
-        createDatabase(
+        createDatabaseClient(
           createConfig({
             connection: '',
           }),
@@ -103,7 +103,7 @@ describe('database connection', () => {
 
     it('throws an error without a connection', () => {
       expect(() =>
-        createDatabase(
+        createDatabaseClient(
           createConfig({
             client: 'pg',
           }),
