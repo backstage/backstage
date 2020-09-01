@@ -136,7 +136,7 @@ export const TemplatePage = () => {
   }
 
   return (
-    <Page theme={pageTheme.other}>
+    <Page theme={pageTheme.home}>
       <Header
         pageTitleOverride="Create a new component"
         title={

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
@@ -25,6 +26,9 @@ import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { BundlingOptions, BackendBundlingOptions } from './types';
+import { version } from '../../lib/version';
+import { paths as cliPaths } from '../../lib/paths';
+import { runPlain } from '../run';
 
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
@@ -35,10 +39,40 @@ export function resolveBaseUrl(config: Config): URL {
   }
 }
 
-export function createConfig(
+async function readBuildInfo() {
+  const timestamp = Date.now();
+
+  let commit = 'unknown';
+  try {
+    commit = await runPlain('git', 'rev-parse', 'HEAD');
+  } catch (error) {
+    console.warn(`WARNING: Failed to read git commit, ${error}`);
+  }
+
+  let gitVersion = 'unknown';
+  try {
+    gitVersion = await runPlain('git', 'describe', '--always');
+  } catch (error) {
+    console.warn(`WARNING: Failed to describe git version, ${error}`);
+  }
+
+  const { version: packageVersion } = await fs.readJson(
+    cliPaths.resolveTarget('package.json'),
+  );
+
+  return {
+    cliVersion: version,
+    gitVersion,
+    packageVersion,
+    timestamp,
+    commit,
+  };
+}
+
+export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
-): webpack.Configuration {
+): Promise<webpack.Configuration> {
   const { checksEnabled, isDev } = options;
 
   const { plugins, loaders } = transforms(options);
@@ -78,6 +112,13 @@ export function createConfig(
           baseUrl: validBaseUrl.href,
         },
       },
+    }),
+  );
+
+  const buildInfo = await readBuildInfo();
+  plugins.push(
+    new webpack.DefinePlugin({
+      'process.env.BUILD_INFO': JSON.stringify(buildInfo),
     }),
   );
 
