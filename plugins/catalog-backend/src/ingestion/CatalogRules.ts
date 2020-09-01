@@ -50,7 +50,7 @@ export class CatalogRulesEnforcer {
    */
   static readonly defaultRules: CatalogRule[] = [
     {
-      allow: [{ kind: 'Component' }, { kind: 'API' }],
+      allow: ['Component', 'API', 'Location'].map(kind => ({ kind })),
     },
   ];
 
