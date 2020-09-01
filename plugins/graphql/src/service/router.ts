@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, resolvePackagePath } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import fs from 'fs';
-import path from 'path';
 import { ApolloServer } from 'apollo-server-express';
 
-const schemaPath = path.resolve(
-  require.resolve('@backstage/plugin-graphql-backend/package.json'),
-  '../schema.gql',
+const schemaPath = resolvePackagePath(
+  '@backstage/plugin-graphql-backend',
+  'schema.gql',
 );
 
 export interface RouterOptions {
