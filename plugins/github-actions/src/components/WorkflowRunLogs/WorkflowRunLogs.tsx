@@ -15,37 +15,59 @@
  */
 
 import { 
+    Accordion,
+    AccordionSummary,
+    CircularProgress,
+    Fade,
     LinearProgress,
-    ExpansionPanel,
-    Typography,
     makeStyles,
+    Modal,
     Theme,
-    ExpansionPanelSummary,
+    Tooltip,
+    Typography,
+    Zoom
 } from '@material-ui/core';
 
-import React, {Suspense} from 'react';
+import React, { Suspense } from 'react';
 import { useEntityCompoundName } from '@backstage/plugin-catalog';
 import { useDownloadWorkflowRunLogs } from './useDownloadWorkflowRunLogs';
 import LinePart from 'react-lazylog/build/LinePart';
 import { useProjectName } from '../useProjectName';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 
 const useStyles = makeStyles<Theme>(() => ({
     button: {
       order: -1,
-      marginRight: 0,
+      // marginRight: 0,
       marginLeft: '-20px',
     },
+    modal: {
+      display: 'flex',
+      alignItems: 'center',
+      width: '85%',
+      height: '85%',
+      justifyContent: 'center',
+      margin: 'auto'
+    },
+    normalLog:{
+      height: '75vh', 
+      width: '100%'
+    },
+    modalLog:{
+      height: '100%',
+      width: '100%'
+    }
   }));
 
-const DisplayLog = (jobLogs: any) =>{
-    return(
+const DisplayLog = ({ jobLogs, className }: { jobLogs: any; className: string }) =>{
+  return(
         <Suspense fallback={<LinearProgress />}>
-            <div style={{ height: '50vh', width: '100%' }}>
+            <div className={className}>
                 <LazyLog 
-                text={jobLogs.jobLogs ?? "No Values Found"} 
+                text={jobLogs ?? "No Values Found"} 
                 extraLines={1} 
                 caseInsensitive
                 enableSearch
@@ -65,9 +87,9 @@ const DisplayLog = (jobLogs: any) =>{
 }
 
 /**
- * A component for Run Logs visualization.
+ * A component for Run Logs visualization. 
  */
-export const WorkflowRunLogs = ({runId}:{runId: string}) => {
+export const WorkflowRunLogs = ({ runId, inProgress }:{ runId: string, inProgress: boolean }) => {
   const classes = useStyles();
   let entityCompoundName = useEntityCompoundName();
   if (!entityCompoundName.name) {
@@ -83,12 +105,21 @@ export const WorkflowRunLogs = ({runId}:{runId: string}) => {
 
   const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
   const jobLogs = useDownloadWorkflowRunLogs(repo, owner, runId);
-  
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
-    <ExpansionPanel
+    <Accordion
     TransitionProps={{ unmountOnExit: true }}
+    disabled={inProgress}
     >
-        <ExpansionPanelSummary
+        <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
@@ -97,10 +128,29 @@ export const WorkflowRunLogs = ({runId}:{runId: string}) => {
         }}
         >
             <Typography variant="button">
-            {jobLogs.value === null ? "No Logs to Display" : "Job Log"}
+              {jobLogs.loading ? <CircularProgress /> : "Job Log"}
             </Typography>
-        </ExpansionPanelSummary>
-        {jobLogs.value && <DisplayLog jobLogs={jobLogs.value || undefined}/>}
-    </ExpansionPanel>
+            <Tooltip title="Open Log" TransitionComponent={Zoom} arrow>
+              <DescriptionIcon  
+              onClick={(event) => {
+                event.stopPropagation()
+                handleOpen()
+              }}
+              style={{marginLeft: 'auto'}}
+              />
+            </Tooltip>
+            <Modal
+              className={classes.modal}
+              onClick={(event) => event.stopPropagation()}
+              open={open}
+              onClose={handleClose}
+            >
+              <Fade in={open}>
+                <DisplayLog jobLogs={jobLogs.value || undefined} className={classes.modalLog}/>
+              </Fade>
+            </Modal>
+        </AccordionSummary>
+        {jobLogs.value && <DisplayLog jobLogs={jobLogs.value || undefined} className={classes.normalLog}/>}
+    </Accordion>
   );
 };

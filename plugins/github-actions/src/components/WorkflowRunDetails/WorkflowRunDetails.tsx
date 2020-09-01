@@ -138,9 +138,18 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
           </Table>
         </TableContainer>
       </ExpansionPanelDetails>
+      {job.status === "queued" || job.status === "in_progress" ? 
+      <WorkflowRunLogs 
+      runId={job.id} 
+      inProgress
+      /> 
+      :
       <WorkflowRunLogs
         runId={job.id}
+        inProgress={false}
       />
+      }
+      
     </ExpansionPanel>
   );
 };
