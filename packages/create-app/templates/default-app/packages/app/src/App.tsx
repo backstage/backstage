@@ -8,6 +8,7 @@ import {
 import { apis } from './apis';
 import * as plugins from './plugins';
 import { AppSidebar } from './sidebar';
+import { AppRoutes } from './components/AppRoutes';
 
 const app = createApp({
   apis,
@@ -16,7 +17,6 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const AppRoutes = app.getRoutes();
 
 const App: FC<{}> = () => (
   <AppProvider>
