@@ -30,3 +30,42 @@ This is a b c.
 ## xyz
 
 This is x y z.
+
+# The attack plan
+
+{% dot attack_plan.svg
+    digraph G {
+        rankdir=LR
+        Earth [peripheries=2]
+        Mars
+        Earth -> Mars
+    }
+%}
+
+```graphviz dot attack_plan.svg
+digraph G {
+    rankdir=LR
+    Earth [peripheries=2]
+    Mars
+    Earth -> Mars
+}
+```
+
+# PlantUML Samples
+
+```plantuml classes="uml myDiagram" alt="Diagram placeholder" title="My diagram"
+@startuml
+  Goofy ->  MickeyMouse: calls
+  Goofy <-- MickeyMouse: responds
+@enduml
+```
+
+## Testing inline LaTeX math equations
+
+$`p(x|y) = \frac{p(y|x)p(x)}{p(y)}, (p(x|y) = \frac{p(y|x)p(x)}{p(y)}).`$
+
+$`(p(x|y))`$
+
+$`y=x+y`$
+
+$`\frac{p(y|x)}{p(y)}`$

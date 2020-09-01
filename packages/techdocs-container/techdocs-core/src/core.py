@@ -90,4 +90,13 @@ class TechDocsCore(BasePlugin):
         }
         config["markdown_extensions"].append("pymdownx.tilde")
 
+        config["markdown_extensions"].append("markdown_inline_graphviz")
+        config["markdown_extensions"].append("plantuml_markdown")
+
+        config["markdown_extensions"].append("markdown_katex")
+        config["mdx_configs"]["markdown_katex"] = {
+            "no_inline_svg": True,
+            "insert_fonts_css": True,
+        }
+
         return config
