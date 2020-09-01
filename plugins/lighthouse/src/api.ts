@@ -15,6 +15,7 @@
  */
 
 import { createApiRef } from '@backstage/core';
+import { Config } from '@backstage/config';
 
 export type LighthouseCategoryId =
   | 'pwa'
@@ -111,6 +112,10 @@ export const lighthouseApiRef = createApiRef<LighthouseApi>({
 });
 
 export class LighthouseRestApi implements LighthouseApi {
+  static fromConfig(config: Config) {
+    return new LighthouseRestApi(config.getString('lighthouse.baseUrl'));
+  }
+
   constructor(public url: string) {}
 
   private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {

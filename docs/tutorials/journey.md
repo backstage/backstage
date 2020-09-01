@@ -1,12 +1,15 @@
-# Purpose
+---
+id: journey
+title: Future developer journey
+---
 
-This RFC describes a possible journey of a future Backstage plugin developer as
-they build a plugin that touches many different aspects of a Backstage. The
-story invents many new things that are not part of Backstage today, but are
-things that I'm suggesting we should add as long term or north star goals. The
-idea is to discuss what parts of the story makes sense to aim for, and what we'd
-want to do differently or not at all. The "chapters" are numbered to make it a
-bit easier to comment on parts of the story.
+> This document describes a possible journey of a **_future_** Backstage plugin
+> developer as they build a plugin that touches many different aspects of a
+> Backstage. The story invents many new things that are not part of Backstage
+> today, but are things that I'm suggesting we should add as long term or north
+> star goals. The idea is to discuss what parts of the story makes sense to aim
+> for, and what we'd want to do differently or not at all. The "chapters" are
+> numbered to make it a bit easier to comment on parts of the story.
 
 # The Protagonist
 

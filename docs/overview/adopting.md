@@ -87,14 +87,17 @@ Example of tactics we have used to evangelize Backstage internally:
 - Pro-actively identify new plugins. Reach out to teams that own internal UIs or
   platforms that you think would make sense to consolidate into Backstage.
 
-## Metrics
+## KPIs and metrics
 
 These are some of the metrics that you can use to verify if Backstage has a
 successful impact on your software development process:
 
 - **Onboarding time** Time until new engineers are productive. At Spotify we
   measure this as the time until the employee has merged their 10th PR (this
-  metric was down 55% two years after deploying Backstage).
+  metric was down 55% two years after deploying Backstage). Even though you may
+  not be onboarding engineers at a rapid pace, this metric is a great proxy for
+  the overall complexity of your ecosystem. Reducing it will therefore benefit
+  your whole engineering organization, not just new joiners.
 
 - **Number of merges per developer/day** Less time spent jumping between
   different tools and looking for information means more time to focus on
@@ -142,3 +145,16 @@ Backstage as _the_ platform:
 
 - % of contributions coming from outside the central Backstage team (currently
   85% inside Spotify)
+
+- Traditional metrics such as visits (MAU, DAU, etc) and page views. Currently
+  ~50% of all Spotifiers use Backstage on a monthly basis, even though the
+  percentage of engineers is below 50%. Most engineers actually use Backstage on
+  a daily basis.
+
+Again, any feedback is appreciated. Please use the Edit button at the top of the
+page to make a suggestion.
+
+_**Note!** It might be tempting to try to optimize Backstage usage and
+"engagement". Even though you want to consolidate all your tooling and technical
+documentation in Backstage, it is important to remember that time spent in
+Backstage is time not spent writing code_ 🙃

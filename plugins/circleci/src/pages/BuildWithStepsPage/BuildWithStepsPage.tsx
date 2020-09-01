@@ -25,6 +25,8 @@ import { Layout } from '../../components/Layout';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { useSettings } from '../../state/useSettings';
 import { useBuildWithSteps } from '../../state/useBuildWithSteps';
+import { AppStateProvider } from '../../state';
+import { Settings } from '../../components/Settings';
 
 const IconLink = IconButton as typeof Link;
 const BuildName: FC<{ build?: BuildWithSteps }> = ({ build }) => (
@@ -93,11 +95,14 @@ const pickClassName = (
 };
 
 const Page = () => (
-  <Layout>
-    <Content>
-      <BuildWithStepsView />
-    </Content>
-  </Layout>
+  <AppStateProvider>
+    <Layout>
+      <Content>
+        <BuildWithStepsView />
+        <Settings />
+      </Content>
+    </Layout>
+  </AppStateProvider>
 );
 
 const BuildWithStepsView: FC<{}> = () => {

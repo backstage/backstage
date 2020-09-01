@@ -24,6 +24,8 @@ import {
   ErrorAlerter,
   featureFlagsApiRef,
   FeatureFlags,
+  discoveryApiRef,
+  UrlPatternDiscovery,
   GoogleAuth,
   GithubAuth,
   OAuth2,
@@ -90,6 +92,10 @@ export const apis = (config: ConfigApi) => {
 
   const builder = ApiRegistry.builder();
 
+  const discoveryApi = builder.add(
+    discoveryApiRef,
+    UrlPatternDiscovery.compile(`${backendUrl}/{{ pluginId }}`),
+  );
   const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
   const errorApi = builder.add(
     errorApiRef,
@@ -108,7 +114,7 @@ export const apis = (config: ConfigApi) => {
 
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
-  builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
+  builder.add(lighthouseApiRef, LighthouseRestApi.fromConfig(config));
 
   builder.add(travisCIApiRef, new TravisCIApi());
   builder.add(githubPullRequestsApiRef, new GithubPullRequestsClient());
@@ -121,8 +127,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     googleAuthApiRef,
     GoogleAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -130,8 +135,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     microsoftAuthApiRef,
     MicrosoftAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -139,8 +143,7 @@ export const apis = (config: ConfigApi) => {
   const githubAuthApi = builder.add(
     githubAuthApiRef,
     GithubAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -148,8 +151,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     oktaAuthApiRef,
     OktaAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -157,8 +159,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     gitlabAuthApiRef,
     GitlabAuth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -166,8 +167,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     auth0AuthApiRef,
     Auth0Auth.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -175,8 +175,7 @@ export const apis = (config: ConfigApi) => {
   builder.add(
     oauth2ApiRef,
     OAuth2.create({
-      backendUrl,
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
   );
@@ -189,21 +188,9 @@ export const apis = (config: ConfigApi) => {
     }),
   );
 
-  builder.add(
-    catalogApiRef,
-    new CatalogClient({
-      apiOrigin: backendUrl,
-      basePath: '/catalog',
-    }),
-  );
+  builder.add(catalogApiRef, new CatalogClient({ discoveryApi }));
 
-  builder.add(
-    scaffolderApiRef,
-    new ScaffolderApi({
-      apiOrigin: backendUrl,
-      basePath: '/scaffolder/v1',
-    }),
-  );
+  builder.add(scaffolderApiRef, new ScaffolderApi({ discoveryApi }));
 
   builder.add(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008'));
 
@@ -224,13 +211,7 @@ export const apis = (config: ConfigApi) => {
     ]),
   );
 
-  builder.add(
-    rollbarApiRef,
-    new RollbarClient({
-      apiOrigin: backendUrl,
-      basePath: '/rollbar',
-    }),
-  );
+  builder.add(rollbarApiRef, new RollbarClient({ discoveryApi }));
 
   builder.add(
     techdocsStorageApiRef,

@@ -1,6 +1,7 @@
 ---
 id: software-catalog-overview
 title: Backstage Service Catalog (alpha)
+sidebar_label: Backstage Service Catalog
 ---
 
 ## What is a Service Catalog?
@@ -54,18 +55,18 @@ There are 3 ways to add components to the catalog:
 Users can register new components by going to `/create` and clicking the
 **REGISTER EXISTING COMPONENT** button:
 
-![](bsc-register-1.png)
+![](../../assets/software-catalog/bsc-register-1.png)
 
 Backstage expects the full URL to the YAML in your source control. Example:
 
-```
+```bash
 https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 
 _More examples can be found
 [here](https://github.com/spotify/backstage/tree/master/packages/catalog-model/examples)._
 
-![](bsc-register-2.png)
+![](../../assets/software-catalog/bsc-register-2.png)
 
 It is important to note that any kind of software can be registered in
 Backstage. Even if the software is not maintained by your company (SaaS
@@ -78,12 +79,28 @@ All software created through the
 [Backstage Software Templates](../software-templates/index.md) are automatically
 registered in the catalog.
 
+### Static catalog configuration
+
+In addition to manually registering components, it is also possible to register
+components though [static configuration](../../conf/index.md). For example, the
+above example can be added using the following configuration:
+
+```yaml
+catalog:
+  locations:
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+```
+
+More information about catalog configuration can be found
+[here](configuration.md).
+
 ### Updating component metadata
 
 Teams owning the components are responsible for maintaining the metadata about
 them, and do so using their normal Git workflow.
 
-![](bsc-edit.png)
+![](../../assets/software-catalog/bsc-edit.png)
 
 Once the change has been merged, Backstage will automatically show the updated
 metadata in the service catalog after a short while.
@@ -92,25 +109,25 @@ metadata in the service catalog after a short while.
 
 By default the service catalog shows components owned by the team of the logged
 in user. But you can also switch to _All_ to see all the components across your
-companie's software ecosystem. Basic inline _search_ and _column filtering_
-makes it easy to browse a big set of components.
+company's software ecosystem. Basic inline _search_ and _column filtering_ makes
+it easy to browse a big set of components.
 
-![](bsc-search.png)
+![](../../assets/software-catalog/bsc-search.png)
 
 ## Starring components
 
 For easy and quick access to components you visit frequently, Backstage supports
 _starring_ of components:
 
-![](bsc-starred.png)
+![](../../assets/software-catalog/bsc-starred.png)
 
 ## Integrated tooling through plugins
 
-The service catalog is a great way to organise the infrastructure tools you use
+The service catalog is a great way to organize the infrastructure tools you use
 to manage the software. This is how Backstage creates one developer portal for
 all your tools. Rather than asking teams to jump between different
-infrastructure UI’s (and incurring additional cognitive overhead each time they
-make a context switch), most of these tools can be organised around the entities
+infrastructure UIs (and incurring additional cognitive overhead each time they
+make a context switch), most of these tools can be organized around the entities
 in the catalog.
 
 ![tools](https://backstage.io/blog/assets/20-05-20/tabs.png)

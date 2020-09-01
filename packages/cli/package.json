@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.19",
+  "version": "0.1.1-alpha.20",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -28,9 +28,9 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1-alpha.19",
-    "@backstage/config": "^0.1.1-alpha.19",
-    "@backstage/config-loader": "^0.1.1-alpha.19",
+    "@backstage/cli-common": "^0.1.1-alpha.20",
+    "@backstage/config": "^0.1.1-alpha.20",
+    "@backstage/config-loader": "^0.1.1-alpha.20",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -40,17 +40,17 @@
     "@rollup/plugin-yaml": "^2.1.1",
     "@spotify/eslint-config": "^7.0.1",
     "@sucrase/webpack-loader": "^2.0.0",
-    "@svgr/plugin-jsx": "4.3.x",
+    "@svgr/plugin-jsx": "5.4.x",
     "@svgr/plugin-svgo": "4.3.x",
     "@svgr/rollup": "5.4.x",
-    "@svgr/webpack": "4.3.x",
+    "@svgr/webpack": "5.4.x",
     "@types/start-server-webpack-plugin": "^2.2.0",
     "@types/webpack-env": "^1.15.2",
     "@types/webpack-node-externals": "^2.5.0",
     "bfj": "^7.0.2",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
-    "commander": "^4.1.1",
+    "commander": "^6.1.0",
     "css-loader": "^3.5.3",
     "dashify": "^2.0.0",
     "diff": "^4.0.2",

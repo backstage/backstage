@@ -29,7 +29,7 @@ import {
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React, { FC, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { ApiDefinitionCard } from '../ApiDefinitionCard/ApiDefinitionCard';
@@ -59,15 +59,18 @@ export const getPageTheme = (entity?: Entity): PageTheme => {
   return pageTheme[themeKey] ?? pageTheme.home;
 };
 
-const EntityPageTitle: FC<{ title: string; entity: Entity | undefined }> = ({
-  title,
-}) => (
+type EntityPageTitleProps = {
+  title: string;
+  entity: Entity | undefined;
+};
+
+const EntityPageTitle = ({ title }: EntityPageTitleProps) => (
   <Box display="inline-flex" alignItems="center" height="1em">
     {title}
   </Box>
 );
 
-export const ApiEntityPage: FC<{}> = () => {
+export const ApiEntityPage = () => {
   const { optionalNamespaceAndName } = useParams() as {
     optionalNamespaceAndName: string;
   };
