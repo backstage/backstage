@@ -93,19 +93,8 @@ export const PluginWithTable = () => {
         <HeaderLabel label="Lifecycle" value="Lifecycle" />
       </Header>
       <Content>
-        <ContentHeader
-          title="Plugin Header"
-          titleComponent={() => (
-            <Box alignItems="center" display="flex">
-              <Typography variant="h4">Header</Typography>
-            </Box>
-          )}
-        >
-          <Button
-            color="primary"
-            variant="contained"
-            style={{ marginRight: '16px' }}
-          >
+        <ContentHeader title="Header">
+          <Button color="primary" variant="contained">
             Settings
           </Button>
           <SupportButton>
