@@ -64,7 +64,7 @@ export const ScaffolderPage: React.FC<{}> = () => {
   }, [error, errorApi]);
 
   return (
-    <Page theme={pageTheme.other}>
+    <Page theme={pageTheme.home}>
       <Header
         pageTitleOverride="Create a new component"
         title={
@@ -95,7 +95,7 @@ export const ScaffolderPage: React.FC<{}> = () => {
           <Typography variant="body2">
             Shoot! Looks like you don't have any templates. Check out the
             documentation{' '}
-            <Link href="docs/backstage/features/software-templates/adding-templates">
+            <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
               here!
             </Link>
           </Typography>
