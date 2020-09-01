@@ -37,7 +37,8 @@ catalog:
   locations:
     - type: github
       target: https://github.com/org/example/blob/master/org-data.yaml
-      allow: [Group]
+      rules:
+        - allow: [Group]
 ```
 
 We are able to add entities of kind `Component`, `API`, or `Template` from any

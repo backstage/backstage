@@ -69,16 +69,21 @@ catalog:
     # Backstage example templates
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-      allow: [Template]
+      rules:
+        - allow: [Template]
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-      allow: [Template]
+      rules:
+        - allow: [Template]
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-      allow: [Template]
+      rules:
+        - allow: [Template]
     - type: github
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
-      allow: [Template]
+      rules:
+        - allow: [Template]
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
-      allow: [Template]
+      rules:
+        - allow: [Template]
