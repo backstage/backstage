@@ -24,27 +24,30 @@ import {
   pageTheme,
 } from '../';
 import { SupportButton, Table, StatusOK, TableColumn } from '../../components';
-import SettingsIcon from '@material-ui/icons/Settings';
-import Button from '@material-ui/core/Button';
-import { Box, Typography, Link, Chip } from '@material-ui/core';
+import { Box, Typography, Link, Chip, Button } from '@material-ui/core';
 
 export default {
   title: 'Example Plugin',
   component: Page,
 };
 
-const generateTestData: (number: number) => Array<{}> = (rows = 10) => {
-  const data: Array<{}> = [];
+interface TableData {
+  id: number;
+  branch: string;
+  hash: string;
+  status: string;
+}
+
+const generateTestData = (rows = 10) => {
+  const data: Array<TableData> = [];
   while (data.length <= rows) {
     data.push({
-      message: `A very important message`,
       id: data.length + 18534,
-      branchName: 'techdocs: modify documentation header',
+      branch: 'techdocs: modify documentation header',
       hash: 'techdocs/docs-header 5749c98e3f61f8bb116e5cb87b0e4e1 ',
       status: 'Success',
     });
   }
-
   return data;
 };
 
@@ -59,16 +62,16 @@ const columns: TableColumn[] = [
   {
     title: 'Message/Source',
     highlight: true,
-    render: row => (
+    render: (row: Partial<TableData>) => (
       <>
-        <Link>{row.branchName}</Link>
+        <Link>{row.branch}</Link>
         <Typography variant="body2">{row.hash}</Typography>
       </>
     ),
   },
   {
     title: 'Status',
-    render: row => (
+    render: (row: Partial<TableData>) => (
       <Box display="flex" alignItems="center">
         <StatusOK />
         <Typography variant="body2">{row.status}</Typography>
@@ -98,12 +101,16 @@ export const PluginWithTable = () => {
             </Box>
           )}
         >
-          <Button onClick={() => {}} startIcon={<SettingsIcon />}>
+          <Button
+            color="primary"
+            variant="contained"
+            style={{ marginRight: '16px' }}
+          >
             Settings
           </Button>
           <SupportButton>
-            This Plugin is an example. If this would not be an example, this
-            text could provide usefull information for the user.
+            This Plugin is an example. This text could provide usefull
+            information for the user.
           </SupportButton>
         </ContentHeader>
         <Table
