@@ -167,7 +167,11 @@ describe('CatalogRulesEnforcer', () => {
               {
                 type: 'github',
                 target: 'https://github.com/a/b/blob/master/x.yaml',
-                allow: ['Group'],
+                rules: [
+                  {
+                    allow: ['Group'],
+                  },
+                ],
               },
             ],
           },

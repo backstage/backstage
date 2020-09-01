@@ -29,13 +29,14 @@ const Plugins = () => (
   <main className="MainContent">
     <div className="PluginPageLayout">
       <div className="PluginPageHeader">
-        <h2>Plugins</h2>
+        <h2>Plugin marketplace</h2>
+        <p>Open source plugins that you can add to your Backstage deployment</p>
         <span>
           <a
             className="PluginAddNewButton ButtonFilled"
             href={addPluginDocsLink}
           >
-            <b>Add Plugin</b>
+            <b>Add to marketplace</b>
           </a>
         </span>
       </div>
@@ -69,13 +70,44 @@ const Plugins = () => (
                     className="PluginCardLink ButtonFilled"
                     href={documentation}
                   >
-                    docs
+                    Explore
                   </a>
                 </span>
               </Container>
             </div>
           ),
         )}
+        <div className="PluginCard" id="add-plugin-card">
+          <div className="PluginCardBody">
+            <p>
+              Do you have an existing plugin that you want to add to the
+              Marketplace?
+            </p>
+            <p
+              style={{
+                marginTop: '20px',
+                textAlign: 'center',
+              }}
+            >
+              <a className="ButtonFilled" href={addPluginDocsLink}>
+                <b>Add to marketplace</b>
+              </a>
+            </p>
+          </div>
+          <Container className="PluginCardFooter">
+            <p>
+              See what plugins are already{' '}
+              <a href="https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin+sort%3Areactions-%2B1-desc">
+                in progress
+              </a>{' '}
+              and 👍. Missing a plugin for your favorite tool? Please{' '}
+              <a href="https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME">
+                suggest
+              </a>{' '}
+              a new one.
+            </p>
+          </Container>
+        </div>
       </Container>
     </div>
   </main>

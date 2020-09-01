@@ -67,7 +67,8 @@ catalog:
   locations:
     - type: github
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
-      allow: [Template]
+      rules:
+        - allow: [Template]
 ```
 
 Templates can also be added by posting the to the catalog directly. Note that if
@@ -77,7 +78,7 @@ to be ingested from any source, for example:
 ```yaml
 catalog:
   rules:
-    allow: [Component, API, Template]
+    - allow: [Component, API, Template]
 ```
 
 For loading from a file, the following command should work when the backend is

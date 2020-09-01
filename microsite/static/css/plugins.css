@@ -1,111 +1,112 @@
 .PluginCard {
-    background-color: #272822;
-    height: 100%;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
+  background-color: #272822;
+  height: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .grid {
-    display: grid;
-    grid-gap: 1rem;
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-rows: 1fr;
-    padding-top: 32px;
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
+  padding-top: 32px;
 }
 
 @media (max-width: 1200px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media only screen and (max-width: 815px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .PluginCard img {
-    float: left;
-    margin: 0px 16px 8px 0px;
-    height: 100px;
-    width: 100px;
+  float: left;
+  margin: 0px 16px 8px 0px;
+  height: 80px;
+  width: 80px;
 }
 
 .PluginCardHeader {
-    max-height: fit-content;
-    min-height: fit-content;
+  max-height: fit-content;
+  min-height: fit-content;
 }
 
 .PluginCardTitle {
-    color:  white;
-    vertical-align: top;
-    margin: 8px 0px 0px 16px;
+  color: white;
+  vertical-align: top;
+  margin: 8px 0px 0px 16px;
 }
 
 .PluginAddNewButton {
-    position: absolute;
-    bottom: 16px;
-    right: 0px;
+  position: absolute;
+  bottom: 16px;
+  right: 0px;
 }
 
 .ButtonFilled {
-    padding: 4px 8px;
-    border-radius: 4px;
-    background-color: #36BAA2;
-    color: white;
-    margin-top: 36px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #36baa2;
+  color: white;
+  margin-top: 36px;
 }
 
 .ButtonFilled:hover {
-    border: 1px solid #36BAA2;
-    background-color: transparent;
+  border: 1px solid #36baa2;
+  background-color: transparent;
 }
 
 .ChipOutlined {
-    font-size: small;
-    border-radius: 16px;
-    padding: 2px 8px;
-    border: 1px solid #36BAA2;
-    color: #36BAA2;
+  font-size: small;
+  border-radius: 16px;
+  padding: 2px 8px;
+  border: 1px solid #36baa2;
+  color: #36baa2;
 }
 
 .PluginCardLink {
-    padding: 2px 8px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
+  padding: 2px 8px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 
 .PluginPageLayout {
-    margin: auto;
-    max-width: 1430px;
-    padding: 20px;
+  margin: auto;
+  max-width: 1430px;
+  padding: 20px;
 }
 
 .PluginPageHeader {
-    position: relative;
+  position: relative;
 }
 
 .PluginPageHeader h2 {
-    display: inline-block;
+  display: inline-block;
 }
 
 .PluginCardBody {
-    padding-top: 8px;
+  padding-top: 8px;
 }
 
 .PluginCardFooter {
-    position: relative;
-    min-height: 2em;
+  position: relative;
+  min-height: 2em;
 }
 
-.Author, .Author a {
-    margin-bottom: 0.25em;
-    color: rgba(255,255,255, 0.6);
+.Author,
+.Author a {
+  margin-bottom: 0.25em;
+  color: rgba(255, 255, 255, 0.6);
 }
 
- .Author a:hover {
-    color: white;
+.Author a:hover {
+  color: white;
 }
