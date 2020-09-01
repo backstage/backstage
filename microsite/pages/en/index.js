@@ -95,7 +95,7 @@ class Index extends React.Component {
                 src={`${baseUrl}animations/backstage-service-catalog-icon-1.gif`}
               />
               <Block.Subtitle>
-                Backstage Service Catalog{' '}
+                [Backstage Service Catalog](#backstage-service-catalog)
                 <a
                   title="Submit feedback for this feature. Click to learn more about this release."
                   href="https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha"
@@ -199,7 +199,7 @@ class Index extends React.Component {
                 src={`${baseUrl}animations/backstage-software-templates-icon-5.gif`}
               />
               <Block.Subtitle>
-                Backstage Software Templates{' '}
+                [Backstage Software Templates](#backstage-software-templates)
                 <a
                   title="Submit feedback for this feature. Click to learn more about this release."
                   href="https://backstage.io/blog/2020/08/05/announcing-backstage-software-templates"
@@ -297,7 +297,7 @@ class Index extends React.Component {
               />
 
               <Block.Subtitle>
-                Backstage TechDocs <span>(Coming Soon)</span>
+                [Backstage TechDocs](#backstage-techdocs) <span>(Coming Soon)</span>
               </Block.Subtitle>
               <Block.Title small>Docs like code</Block.Title>
             </Block.TextBox>
