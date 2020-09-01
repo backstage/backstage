@@ -39,8 +39,8 @@ export async function createRouter(
   const server = new ApolloServer({ typeDefs, logger: options.logger });
   const router = Router();
 
-  const apolloMiddlware = server.getMiddleware({ path: '/' });
-  router.use(apolloMiddlware);
+  const apolloMiddleware = server.getMiddleware({ path: '/' });
+  router.use(apolloMiddleware);
 
   router.get('/health', (_, response) => {
     response.send({ status: 'ok' });

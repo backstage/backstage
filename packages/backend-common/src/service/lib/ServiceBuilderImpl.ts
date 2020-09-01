@@ -135,7 +135,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       app.use(cors(corsOptions));
     }
     app.use(compression());
-    app.use(express.json());
     if (this.enableMetrics) {
       app.use(metricsHandler());
     }
