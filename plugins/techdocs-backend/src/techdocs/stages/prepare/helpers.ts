@@ -93,3 +93,46 @@ export const checkoutGitRepository = async (
 
   return repositoryTmpPath;
 };
+
+// Could be merged with checkoutGitRepository
+export const checkoutGithubRepository = async (
+  repoUrl: string,
+): Promise<string> => {
+  const parsedGitLocation = parseGitUrl(repoUrl);
+
+  // Should propably not be hardcoded names of env variables, but seems too hard to access config down here
+  const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
+  const token = process.env.GITHUB_PRIVATE_TOKEN || '';
+
+  const repositoryTmpPath = path.join(
+    // fs.realpathSync fixes a problem with macOS returning a path that is a symlink
+    fs.realpathSync(os.tmpdir()),
+    'backstage-repo',
+    parsedGitLocation.source,
+    parsedGitLocation.owner,
+    parsedGitLocation.name,
+    parsedGitLocation.ref,
+  );
+  
+  console.log(repoUrl)
+
+  if (fs.existsSync(repositoryTmpPath)) {
+    const repository = await Repository.open(repositoryTmpPath);
+    await repository.mergeBranches(
+      parsedGitLocation.ref,
+      `origin/${parsedGitLocation.ref}`,
+    );
+    return repositoryTmpPath;
+  }
+
+  if (user != '' && token != ''){
+    parsedGitLocation.token = user+":"+token;
+  }
+
+  const repositoryCheckoutUrl = parsedGitLocation.toString('https');
+
+  fs.mkdirSync(repositoryTmpPath, { recursive: true });
+  await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath);
+
+  return repositoryTmpPath;
+};
