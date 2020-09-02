@@ -79,9 +79,10 @@ export const checkoutGitRepository = async (
 
   if (fs.existsSync(repositoryTmpPath)) {
     const repository = await Repository.open(repositoryTmpPath);
+    const currentBranchName = (await repository.getCurrentBranch()).shorthand();
     await repository.mergeBranches(
-      parsedGitLocation.ref,
-      `origin/${parsedGitLocation.ref}`,
+      currentBranchName,
+      `origin/${currentBranchName}`,
     );
     return repositoryTmpPath;
   }
