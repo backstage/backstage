@@ -20,13 +20,13 @@ import { URL } from 'url';
 import {
   AuthProviderRouteHandlers,
   OAuthProviderHandlers,
-  WebMessageResponse,
   BackstageIdentity,
-  OAuthState,
   AuthProviderConfig,
-} from '../providers/types';
+} from '../../providers/types';
 import { InputError } from '@backstage/backend-common';
-import { TokenIssuer } from '../identity';
+import { TokenIssuer } from '../../identity';
+import { verifyNonce, encodeState } from './helpers';
+import { postMessageResponse, ensuresXRequestedWith } from '../flow';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -40,85 +40,6 @@ export type Options = {
   cookiePath: string;
   appOrigin: string;
   tokenIssuer: TokenIssuer;
-};
-
-const readState = (stateString: string): OAuthState => {
-  const state = Object.fromEntries(
-    new URLSearchParams(decodeURIComponent(stateString)),
-  );
-  if (
-    !state.nonce ||
-    !state.env ||
-    state.nonce?.length === 0 ||
-    state.env?.length === 0
-  ) {
-    throw Error(`Invalid state passed via request`);
-  }
-  return {
-    nonce: state.nonce,
-    env: state.env,
-  };
-};
-
-export const encodeState = (state: OAuthState): string => {
-  const searchParams = new URLSearchParams();
-  searchParams.append('nonce', state.nonce);
-  searchParams.append('env', state.env);
-
-  return encodeURIComponent(searchParams.toString());
-};
-
-export const verifyNonce = (req: express.Request, providerId: string) => {
-  const cookieNonce = req.cookies[`${providerId}-nonce`];
-  const state: OAuthState = readState(req.query.state?.toString() ?? '');
-  const stateNonce = state.nonce;
-
-  if (!cookieNonce) {
-    throw new Error('Auth response is missing cookie nonce');
-  }
-  if (stateNonce.length === 0) {
-    throw new Error('Auth response is missing state nonce');
-  }
-  if (cookieNonce !== stateNonce) {
-    throw new Error('Invalid nonce');
-  }
-};
-
-export const postMessageResponse = (
-  res: express.Response,
-  appOrigin: string,
-  response: WebMessageResponse,
-) => {
-  const jsonData = JSON.stringify(response);
-  const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
-
-  res.setHeader('Content-Type', 'text/html');
-  res.setHeader('X-Frame-Options', 'sameorigin');
-
-  // TODO: Make target app origin configurable globally
-  const script = `
-    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), '${appOrigin}')
-    window.close()
-  `;
-  const hash = crypto.createHash('sha256').update(script).digest('base64');
-  res.setHeader('Content-Security-Policy', `script-src 'sha256-${hash}'`);
-
-  res.end(`
-<html>
-<body>
-  <script>${script}</script>
-</body>
-</html>
-  `);
-};
-
-export const ensuresXRequestedWith = (req: express.Request) => {
-  const requiredHeader = req.header('X-Requested-With');
-
-  if (!requiredHeader || requiredHeader !== 'XMLHttpRequest') {
-    return false;
-  }
-  return true;
 };
 
 export class OAuthProvider implements AuthProviderRouteHandlers {
@@ -285,19 +206,6 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
     } catch (error) {
       res.status(401).send(`${error.message}`);
     }
-  }
-
-  identifyEnv(req: express.Request): string | undefined {
-    const reqEnv = req.query.env?.toString();
-    if (reqEnv) {
-      return reqEnv;
-    }
-    const stateParams = req.query.state?.toString();
-    if (!stateParams) {
-      return undefined;
-    }
-    const env = readState(stateParams).env;
-    return env;
   }
 
   /**

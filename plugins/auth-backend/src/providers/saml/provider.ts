@@ -30,7 +30,7 @@ import {
   PassportDoneCallback,
   ProfileInfo,
 } from '../types';
-import { postMessageResponse } from '../../lib/OAuthProvider';
+import { postMessageResponse } from '../../lib/flow';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
 import { Config } from '@backstage/config';

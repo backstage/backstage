@@ -29,7 +29,7 @@ import {
   OAuthResponse,
   PassportDoneCallback,
 } from '../types';
-import { OAuthProvider } from '../../lib/OAuthProvider';
+import { OAuthProvider } from '../../lib/oauth';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
 import passport from 'passport';

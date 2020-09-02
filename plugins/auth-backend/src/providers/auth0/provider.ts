@@ -19,7 +19,7 @@ import passport from 'passport';
 import Auth0Strategy from './strategy';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
-import { OAuthProvider } from '../../lib/OAuthProvider';
+import { OAuthProvider } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
   executeFrameHandlerStrategy,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import express from 'express';
-import { OAuthProvider } from '../../lib/OAuthProvider';
+import { OAuthProvider } from '../../lib/oauth';
 import { Strategy as OktaStrategy } from 'passport-okta-oauth';
 import passport from 'passport';
 import {
