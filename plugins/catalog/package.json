@@ -27,7 +27,6 @@
     "@backstage/plugin-github-actions": "^0.1.1-alpha.20",
     "@backstage/plugin-jenkins": "^0.1.1-alpha.20",
     "@backstage/plugin-scaffolder": "^0.1.1-alpha.20",
-    "@backstage/plugin-sentry": "^0.1.1-alpha.20",
     "@backstage/plugin-techdocs": "^0.1.1-alpha.20",
     "@backstage/theme": "^0.1.1-alpha.20",
     "@material-ui/core": "^4.9.1",
