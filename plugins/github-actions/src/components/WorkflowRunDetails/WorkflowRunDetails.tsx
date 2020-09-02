@@ -26,10 +26,10 @@ import {
   TableRow,
   TableCell,
   ListItemText,
-  ExpansionPanel,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionSummary,
   Typography,
-  ExpansionPanelDetails,
+  AccordionDetails,
   TableContainer,
   Table,
   Paper,
@@ -56,7 +56,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   table: {
     padding: theme.spacing(1),
   },
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -113,11 +113,11 @@ const StepView = ({ step }: { step: Step }) => {
 const JobListItem = ({ job, className }: { job: Job; className: string }) => {
   const classes = useStyles();
   return (
-    <ExpansionPanel
+    <Accordion
       TransitionProps={{ unmountOnExit: true }}
       className={className}
     >
-      <ExpansionPanelSummary
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
@@ -128,8 +128,8 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
         <Typography variant="button">
           {job.name} ({getElapsedTime(job.started_at, job.completed_at)})
         </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.accordionDetails}>
         <TableContainer>
           <Table>
             {job.steps.map((step: Step) => (
@@ -137,7 +137,7 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
             ))}
           </Table>
         </TableContainer>
-      </ExpansionPanelDetails>
+      </AccordionDetails>
       {job.status === "queued" || job.status === "in_progress" ? 
       <WorkflowRunLogs 
       runId={job.id} 
@@ -150,7 +150,7 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
       />
       }
       
-    </ExpansionPanel>
+    </Accordion>
   );
 };
 

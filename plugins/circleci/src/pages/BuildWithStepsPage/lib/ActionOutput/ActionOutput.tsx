@@ -15,10 +15,10 @@
  */
 import React, { useEffect, useState, FC, Suspense } from 'react';
 import {
-  ExpansionPanel,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionSummary,
   Typography,
-  ExpansionPanelDetails,
+  AccordionDetails,
   LinearProgress,
 } from '@material-ui/core';
 import moment from 'moment';
@@ -29,7 +29,7 @@ import { BuildStepAction } from 'circleci-api';
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 moment.relativeTimeThreshold('ss', 0);
 const useStyles = makeStyles({
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -66,11 +66,11 @@ export const ActionOutput: FC<{
     )
     .humanize();
   return (
-    <ExpansionPanel
+    <Accordion
       TransitionProps={{ unmountOnExit: true }}
       className={className}
     >
-      <ExpansionPanelSummary
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
@@ -81,8 +81,8 @@ export const ActionOutput: FC<{
         <Typography variant="button">
           {name} ({timeElapsed})
         </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.accordionDetails}>
         {messages.length === 0 ? (
           'Nothing here...'
         ) : (
@@ -92,7 +92,7 @@ export const ActionOutput: FC<{
             </div>
           </Suspense>
         )}
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };

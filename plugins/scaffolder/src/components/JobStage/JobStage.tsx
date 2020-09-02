@@ -15,9 +15,9 @@
  */
 import {
   Box,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   LinearProgress,
   Typography,
 } from '@material-ui/core';
@@ -32,7 +32,7 @@ const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 moment.relativeTimeThreshold('ss', 0);
 
 const useStyles = makeStyles(theme => ({
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   cardContent: {
     backgroundColor: theme.palette.background.default,
   },
-  expansionPanel: {
+  accordion: {
     position: 'relative',
     '&:after': {
       pointerEvents: 'none',
@@ -98,17 +98,17 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
       : null;
 
   return (
-    <ExpansionPanel
+    <Accordion
       TransitionProps={{ unmountOnExit: true }}
       className={cn(
-        classes.expansionPanel,
+        classes.accordion,
         classes[status.toLowerCase() as keyof ReturnType<typeof useStyles>] ??
           classes.neutral,
       )}
       expanded={expanded}
       onChange={(_, newState) => setExpanded(newState)}
     >
-      <ExpansionPanelSummary
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
@@ -119,8 +119,8 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
         <Typography variant="button">
           {name} {timeElapsed && `(${timeElapsed})`}
         </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.accordionDetails}>
         {log.length === 0 ? (
           <Box px={4}>No logs available for this step</Box>
         ) : (
@@ -130,7 +130,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
             </div>
           </Suspense>
         )}
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };

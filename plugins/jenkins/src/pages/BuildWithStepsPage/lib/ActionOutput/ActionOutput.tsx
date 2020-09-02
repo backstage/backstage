@@ -15,16 +15,16 @@
  */
 import React, { useEffect, FC } from 'react';
 import {
-  ExpansionPanel,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionSummary,
   Typography,
-  ExpansionPanelDetails,
+  AccordionDetails,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -45,11 +45,11 @@ export const ActionOutput: FC<{
   useEffect(() => {}, [url]);
 
   return (
-    <ExpansionPanel
+    <Accordion
       TransitionProps={{ unmountOnExit: true }}
       className={className}
     >
-      <ExpansionPanelSummary
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
@@ -58,10 +58,10 @@ export const ActionOutput: FC<{
         }}
       >
         <Typography variant="button">{name}</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.accordionDetails}>
         Nothing here...
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };
