@@ -19513,9 +19513,9 @@ rollup-plugin-peer-deps-external@^2.2.2:
   integrity sha512-W6IePXTExGXVDAlfZbNUUrx3GxUOZP248u5n4a4ID1XZMrbQ+uGeNiEfapvdzwx0qZi5DNH/hDLiPUP+pzFIxg==
 
 rollup-plugin-postcss@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.npmjs.org/rollup-plugin-postcss/-/rollup-plugin-postcss-3.1.1.tgz#eb895bd919285aaf6200324071103b4d3ea68607"
-  integrity sha512-4/FO5/2O5kv2uWRd7PPTN4mBCWoHwwFTnpEGokfPKfj6kygvTORqkBWNgVPXi7bBefNKtMA3FqQ10se6/J8kKw==
+  version "3.1.8"
+  resolved "https://registry.npmjs.org/rollup-plugin-postcss/-/rollup-plugin-postcss-3.1.8.tgz#d1bcaf8eb0fcb0936e3684c22dd8628d13a82fd1"
+  integrity sha512-JHnGfW8quNc6ePxEkZ05HEZ1YiRxDgY9RKEetMfsrwxR2kh/d90OVScTc6b1c2Q17Cs/5TRYL+1uddG21lQe3w==
   dependencies:
     chalk "^4.0.0"
     concat-with-sourcemaps "^1.1.0"
