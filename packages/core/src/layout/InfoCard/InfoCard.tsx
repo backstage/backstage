@@ -20,8 +20,10 @@ import {
   CardActions,
   CardContent,
   CardHeader,
+  CardHeaderProps,
   Divider,
   withStyles,
+  createStyles,
   makeStyles,
 } from '@material-ui/core';
 import classNames from 'classnames';
@@ -40,10 +42,25 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const BoldHeader = withStyles(theme => ({
-  title: { fontWeight: 700 },
-  subheader: { paddingTop: theme.spacing(1) },
-}))(CardHeader);
+const useBoldHeaderStyles = makeStyles(theme =>
+  createStyles({
+    title: {
+      fontWeight: 700,
+    },
+    subheader: {
+      paddingTop: theme.spacing(1),
+    },
+    root: {},
+    avatar: {},
+    action: {},
+    content: {},
+  }),
+);
+
+const BoldHeader = ({ classes, ...props }: CardHeaderProps) => {
+  const styles = useBoldHeaderStyles({ classes });
+  return <CardHeader classes={styles} {...props} />;
+};
 
 const CardActionsTopRight = withStyles(theme => ({
   root: {
@@ -120,8 +137,6 @@ const VARIANT_STYLES = {
  *   <InfoCard variant="noShrink">...</InfoCard>
  */
 type Props = {
-  title?: ReactNode;
-  subheader?: ReactNode;
   divider?: boolean;
   deepLink?: BottomLinkProps;
   slackChannel?: string;
@@ -130,14 +145,14 @@ type Props = {
   cardStyle?: object;
   children?: ReactNode;
   headerStyle?: object;
-  headerProps?: object;
+  headerProps?: CardHeaderProps;
   actionsClassName?: string;
   actions?: ReactNode;
   cardClassName?: string;
   actionsTopRight?: ReactNode;
   className?: string;
   noPadding?: boolean;
-};
+} & Pick<CardHeaderProps, 'title' | 'subheader'>;
 
 export const InfoCard: FC<Props> = ({
   title,
