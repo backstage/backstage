@@ -48,6 +48,8 @@ lighthouse:
   baseUrl: http://localhost:3003
 
 catalog:
+  rules:
+    - allow: [Component, API, Group, Template, Location]
   processors:
     githubApi:
       privateToken:

@@ -455,12 +455,8 @@ class Index extends React.Component {
                 Share with the community
               </Block.SmallTitle>
               <Block.Paragraph>
-                Building{' '}
-                <a href="https://github.com/spotify/backstage/blob/master/docs/FAQ.md#how-do-i-find-out-if-a-plugin-already-exists">
-                  open source plugins
-                </a>{' '}
-                contributes to the entire Backstage ecosystem, which benefits
-                everyone
+                Building <a href="/plugins">open source plugins</a> contributes
+                to the entire Backstage ecosystem, which benefits everyone
               </Block.Paragraph>
             </Block.TextBox>
 
@@ -472,7 +468,7 @@ class Index extends React.Component {
 
         <ActionBlock className="stripe-top bg-teal">
           <ActionBlock.Title>Build a plugin</ActionBlock.Title>
-          <ActionBlock.Link href="https://github.com/spotify/backstage/blob/master/docs/plugins/create-a-plugin.md">
+          <ActionBlock.Link href="/docs/plugins/create-a-plugin">
             Contribute
           </ActionBlock.Link>
         </ActionBlock>

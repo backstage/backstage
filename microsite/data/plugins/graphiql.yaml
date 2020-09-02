@@ -1,0 +1,13 @@
+---
+title: GraphiQL
+author: Spotify
+authorUrl: https://www.spotify.com/
+category: Debugging
+description: Integrates GraphiQL as a tool to browse GraphiQL endpoints inside Backstage.
+documentation: https://github.com/spotify/backstage/tree/master/plugins/lighthouse
+iconUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/GraphQL_Logo.svg/1024px-GraphQL_Logo.svg.png
+npmPackageName: '@backstage/plugin-graphiql'
+tags:
+  - graphql
+  - github
+  - gitlab

@@ -36,7 +36,7 @@ export async function buildBundle(options: BuildOptions) {
   const { statsJsonEnabled } = options;
 
   const paths = resolveBundlingPaths(options);
-  const config = createConfig(paths, {
+  const config = await createConfig(paths, {
     ...options,
     checksEnabled: false,
     isDev: false,

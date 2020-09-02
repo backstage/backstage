@@ -42,6 +42,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
+  router.use(express.json());
 
   const {
     preparers,
