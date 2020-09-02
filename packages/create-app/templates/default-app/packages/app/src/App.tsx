@@ -8,7 +8,9 @@ import {
 import { apis } from './apis';
 import * as plugins from './plugins';
 import { AppSidebar } from './sidebar';
-import { AppRoutes } from './components/AppRoutes';
+import { Route, Routes, Navigate } from 'react-router';
+import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+import { EntityPage } from './components/catalog/EntityPage';
 
 const app = createApp({
   apis,
@@ -17,6 +19,7 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
+const deprecatedAppRoutes = app.getRoutes();
 
 const App: FC<{}> = () => (
   <AppProvider>
@@ -25,7 +28,14 @@ const App: FC<{}> = () => (
     <AppRouter>
       <SidebarPage>
         <AppSidebar />
-        <AppRoutes />
+        <Routes>
+          <Route
+            path="/catalog/*"
+            element={<CatalogRouter EntityPage={EntityPage} />}
+          />
+          <Navigate key="/" to="/catalog" />
+          {deprecatedAppRoutes}
+        </Routes>
       </SidebarPage>
     </AppRouter>
   </AppProvider>
