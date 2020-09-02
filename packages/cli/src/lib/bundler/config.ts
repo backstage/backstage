@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
@@ -171,13 +172,22 @@ export async function createConfig(
   };
 }
 
-export function createBackendConfig(
+export async function createBackendConfig(
   paths: BundlingPaths,
   options: BackendBundlingOptions,
-): webpack.Configuration {
+): Promise<webpack.Configuration> {
   const { checksEnabled, isDev } = options;
 
   const { loaders } = transforms(options);
+
+  // Find all local monorepo packages and their node_modules, and mark them as external.
+  const LernaProject = require('@lerna/project');
+  const project = new LernaProject(cliPaths.targetDir);
+  const packages = await project.getPackages();
+  const localPackageNames = packages.map((p: any) => p.name);
+  const moduleDirs = packages.map((p: any) =>
+    resolvePath(p.location, 'node_modules'),
+  );
 
   return {
     mode: isDev ? 'development' : 'production',
@@ -193,11 +203,8 @@ export function createBackendConfig(
     externals: [
       nodeExternals({
         modulesDir: paths.rootNodeModules,
-        allowlist: ['webpack/hot/poll?100', /\@backstage\/.*/],
-      }),
-      nodeExternals({
-        modulesDir: paths.targetNodeModules,
-        allowlist: ['webpack/hot/poll?100', /\@backstage\/.*/],
+        additionalModuleDirs: moduleDirs,
+        allowlist: ['webpack/hot/poll?100', ...localPackageNames],
       }),
     ],
     target: 'node' as const,
@@ -219,7 +226,7 @@ export function createBackendConfig(
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['browser', 'module', 'main'],
-      modules: [paths.targetNodeModules, paths.rootNodeModules],
+      modules: [paths.rootNodeModules, ...moduleDirs],
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
