@@ -46,6 +46,6 @@
     "@types/dockerode": "^2.5.32",
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
-    "@types/helmet": "^0.0.47"
+    "@types/helmet": "^0.0.48"
   }
 }

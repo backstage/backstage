@@ -49,7 +49,7 @@ lighthouse:
 
 catalog:
   rules:
-    allow: [Component, API, Group, Template]
+    - allow: [Component, API, Group, Template, Location]
   processors:
     githubApi:
       privateToken:

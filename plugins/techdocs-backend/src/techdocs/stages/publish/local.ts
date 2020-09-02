@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import path from 'path';
 import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
 import { PublisherBase } from './types';
+import { resolvePackagePath } from '@backstage/backend-common';
 
 export class LocalPublish implements PublisherBase {
   private readonly logger: Logger;
@@ -39,9 +39,9 @@ export class LocalPublish implements PublisherBase {
     | { remoteUrl: string } {
     const entityNamespace = entity.metadata.namespace ?? 'default';
 
-    const publishDir = path.resolve(
-      __dirname,
-      '../../../../static/docs/',
+    const publishDir = resolvePackagePath(
+      '@backstage/plugin-techdocs-backend',
+      'static/docs',
       entity.kind,
       entityNamespace,
       entity.metadata.name,

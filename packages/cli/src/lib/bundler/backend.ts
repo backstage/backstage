@@ -25,7 +25,7 @@ export async function serveBackend(
   },
 ) {
   const paths = resolveBundlingPaths(options);
-  const config = createBackendConfig(paths, {
+  const config = await createBackendConfig(paths, {
     ...options,
     isDev: true,
   });
