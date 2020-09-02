@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 
-const OverviewPage = ({ entity }: { entity: Entity }) => (
+const OverviewContent = ({ entity }: { entity: Entity }) => (
   <AboutCard entity={entity} />
 );
 
@@ -31,7 +31,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/"
       title="Overview"
-      element={<OverviewPage entity={entity} />}
+      element={<OverviewContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/ci-cd/*"
@@ -46,7 +46,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/"
       title="Overview"
-      element={<OverviewPage entity={entity} />}
+      element={<OverviewContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/ci-cd/*"
@@ -61,7 +61,7 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
-      element={<OverviewPage entity={entity} />}
+      element={<OverviewContent entity={entity} />}
     />
   </EntityPageLayout>
 );

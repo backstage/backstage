@@ -23,7 +23,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { Grid } from '@material-ui/core';
 
-const OverviewPage = ({ entity }: { entity: Entity }) => (
+const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3}>
     <Grid item>
       <AboutCard entity={entity} />
@@ -36,7 +36,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/"
       title="Overview"
-      element={<OverviewPage entity={entity} />}
+      element={<OverviewContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/ci-cd/*"
@@ -51,7 +51,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/"
       title="Overview"
-      element={<OverviewPage entity={entity} />}
+      element={<OverviewContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/ci-cd/*"
@@ -66,7 +66,7 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
-      element={<OverviewPage entity={entity} />}
+      element={<OverviewContent entity={entity} />}
     />
   </EntityPageLayout>
 );
