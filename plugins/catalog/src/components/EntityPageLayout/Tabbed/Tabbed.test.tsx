@@ -36,6 +36,21 @@ describe('Tabbed layout', () => {
     expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
   });
 
+  it('throws if any other component is a child of Tabbed.Layout', async () => {
+    await expect(
+      renderInTestApp(
+        <Tabbed.Layout>
+          <Tabbed.Content
+            title="tabbed-test-title"
+            path="*"
+            element={<div>tabbed-test-content</div>}
+          />
+          <div>This will cause app to throw</div>
+        </Tabbed.Layout>,
+      ),
+    ).rejects.toThrow(/EntityPageLayout component only accepts/);
+  });
+
   it('navigates when user clicks different tab', async () => {
     const rendered = await renderInTestApp(
       <Routes>

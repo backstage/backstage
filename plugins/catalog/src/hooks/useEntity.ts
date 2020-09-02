@@ -24,13 +24,13 @@ const REDIRECT_DELAY = 2000;
 
 type EntityLoadingStatus = {
   entity?: Entity;
-  loading: boolean | null;
+  loading: boolean;
   error?: Error;
 };
 
 export const EntityContext = createContext<EntityLoadingStatus>({
-  entity: undefined as any,
-  loading: null,
+  entity: undefined,
+  loading: true,
   error: undefined,
 });
 
@@ -53,25 +53,20 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
         navigate('/');
       }, REDIRECT_DELAY);
     }
-  }, [errorApi, navigate, error, loading, entity]);
 
-  if (!name) {
-    navigate('/catalog');
-    return {
-      entity: undefined,
-      loading: null,
-      error: new Error('No name in url'),
-    } as never;
-  }
+    if (!name) {
+      errorApi.post(new Error('No name provided!'));
+      navigate('/');
+    }
+  }, [errorApi, navigate, error, loading, entity, name]);
 
   return { entity, loading, error };
 };
 
 /**
  * Always going to return an entity, or throw an error if not a descendant of a EntityProvider.
- * Otherwise the useEntityFromUrl will take care of the `undefined` entity
  */
-export const useEntity = () =>
-  useContext<Omit<EntityLoadingStatus, 'entity'> & { entity: Entity }>(
-    EntityContext as any,
-  );
+export const useEntity = () => {
+  const { entity } = useContext<{ entity: Entity }>(EntityContext as any);
+  return { entity };
+};

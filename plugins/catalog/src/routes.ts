@@ -28,8 +28,3 @@ export const entityRoute = createRouteRef({
   path: ':kind/:optionalNamespaceAndName/*',
   title: 'Entity',
 });
-export const entityRouteDefault = createRouteRef({
-  icon: NoIcon,
-  path: ':kind/:optionalNamespaceAndName/*',
-  title: 'Entity',
-});

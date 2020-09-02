@@ -269,7 +269,7 @@ async function createPlugin(pluginName: string, appDir: string) {
 /**
  * Start serving the newly created app and make sure that the create plugin is rendering correctly
  */
-async function testAppServe(_pluginName: string, appDir: string) {
+async function testAppServe(pluginName: string, appDir: string) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
   });
@@ -280,12 +280,11 @@ async function testAppServe(_pluginName: string, appDir: string) {
     const browser = new Browser();
 
     await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
-    // TODO(shmidt-i): adjust the plugin creation flow with new routing patterns
-    // await waitForPageWithText(
-    //   browser,
-    //   `/${pluginName}`,
-    //   `Welcome to ${pluginName}!`,
-    // );
+    await waitForPageWithText(
+      browser,
+      `/${pluginName}`,
+      `Welcome to ${pluginName}!`,
+    );
 
     print('Both App and Plugin loaded correctly');
     successful = true;

@@ -26,8 +26,7 @@ import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
-import { CatalogRouter } from '@backstage/plugin-catalog';
-// import { ExplorePlugin } from '@backstage/plugin-explore';
+import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Route, Routes, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
@@ -51,6 +50,7 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
+const deprecatedAppRoutes = app.getRoutes();
 
 const AppRoutes = () => (
   <Routes>
@@ -58,8 +58,8 @@ const AppRoutes = () => (
       path="/catalog/*"
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
-    <Route path="/" element={<Navigate to="/catalog" />} />
-    {/* <Route path="/explore" element={<ExplorePlugin />} /> */}
+    <Navigate key="/" to="/catalog" />
+    {...deprecatedAppRoutes}
   </Routes>
 );
 

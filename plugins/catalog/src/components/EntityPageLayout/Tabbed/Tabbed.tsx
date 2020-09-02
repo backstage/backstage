@@ -25,7 +25,6 @@ import {
   RouteMatch,
 } from 'react-router';
 import { Tab, HeaderTabs, Content } from '@backstage/core';
-import { Grid } from '@material-ui/core';
 import { Helmet } from 'react-helmet';
 
 const getSelectedIndexOrDefault = (
@@ -67,6 +66,11 @@ export const Tabbed = {
         // Skip conditionals resolved to falses/nulls/undefineds etc
         return;
       }
+      if (child.type !== Tabbed.Content) {
+        throw new Error(
+          'This component only accepts Content elements as direct children. Check the code of the EntityPage.',
+        );
+      }
       const pathAndId = (child as JSX.Element).props.path;
 
       // Child here must be then always a functional component without any wrappers
@@ -92,7 +96,7 @@ export const Tabbed = {
       matchRoutes(routes as RouteObject[], `/${params['*']}`) ?? [];
     const selectedIndex = getSelectedIndexOrDefault(matchedRoute, tabs);
     const currentTab = tabs[selectedIndex];
-    const title = currentTab.label;
+    const title = currentTab?.label;
 
     const onTabChange = (index: number) =>
       // Remove trailing /*
@@ -103,6 +107,7 @@ export const Tabbed = {
 
     const currentRouteElement = useRoutes(routes);
 
+    if (!currentTab) return null;
     return (
       <>
         <HeaderTabs
@@ -111,10 +116,8 @@ export const Tabbed = {
           onChange={onTabChange}
         />
         <Content>
-          <Grid container spacing={3}>
-            <Helmet title={title} />
-            {currentRouteElement}
-          </Grid>
+          <Helmet title={title} />
+          {currentRouteElement}
         </Content>
       </>
     );

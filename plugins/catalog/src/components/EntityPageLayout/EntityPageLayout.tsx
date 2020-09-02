@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router';
 
-import { useEntity } from '../../hooks/useEntity';
+import { EntityContext } from '../../hooks/useEntity';
 import {
   pageTheme,
   PageTheme,
@@ -74,7 +74,7 @@ function headerProps(
 export const EntityPageLayout = ({
   children,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) => {
   const { optionalNamespaceAndName, kind } = useParams() as {
     optionalNamespaceAndName: string;
@@ -82,7 +82,7 @@ export const EntityPageLayout = ({
   };
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
 
-  const { entity, loading, error } = useEntity();
+  const { entity, loading, error } = useContext(EntityContext);
   const { headerTitle, headerType } = headerProps(
     kind,
     namespace,
@@ -139,5 +139,4 @@ export const EntityPageLayout = ({
     </Page>
   );
 };
-
 EntityPageLayout.Content = Tabbed.Content;

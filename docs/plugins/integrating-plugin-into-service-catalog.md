@@ -1,6 +1,6 @@
 ---
 id: integrating-plugin-into-service-catalog
-title: Integrate into the catalog service
+title: Integrate into the Service Catalog
 ---
 
 > This is an advanced use case and currently is an experimental feature. Expect
@@ -119,7 +119,6 @@ type EntityPageLayoutContentProps = {
 };
 ```
 
-> The recommended pattern is to get the `entity` in the App and then pass it to
-> the plugin's Router component as a prop. However if it inconvenient for you,
+> You can either pass the entity from App to the plugin's router as a prop or
 > use `useEntity` hook from `@backstage/plugin-catalog` directly inside your
 > plugin.

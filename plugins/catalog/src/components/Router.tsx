@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 import React, { ComponentType } from 'react';
-import { CatalogPage } from './components/CatalogPage';
-import { EntityPageLayout } from './components/EntityPageLayout';
+import { CatalogPage } from './CatalogPage';
+import { EntityPageLayout } from './EntityPageLayout';
 import { Route, Routes } from 'react-router';
-import { entityRoute, rootRoute, entityRouteDefault } from './routes';
+import { entityRoute, rootRoute } from '../routes';
 import { Content } from '@backstage/core';
 import { Typography, Link } from '@material-ui/core';
-import { EntityProvider } from './components/EntityProvider';
+import { EntityProvider } from './EntityProvider';
+import { useEntity } from '../hooks/useEntity';
 
 const DefaultEntityPage = () => (
   <EntityPageLayout>
@@ -43,7 +44,17 @@ const DefaultEntityPage = () => (
   </EntityPageLayout>
 );
 
-export const CatalogRouter = ({
+const EntityPageSwitch = ({ EntityPage }: { EntityPage: ComponentType }) => {
+  const { entity } = useEntity();
+  // Loading and error states
+  if (!entity) return <EntityPageLayout />;
+
+  // Otherwise EntityPage provided from the App
+  // Note that EntityPage will include EntityPageLayout already
+  return <EntityPage />;
+};
+
+export const Router = ({
   EntityPage = DefaultEntityPage,
 }: {
   EntityPage?: ComponentType;
@@ -54,15 +65,7 @@ export const CatalogRouter = ({
       path={`/${entityRoute.path}`}
       element={
         <EntityProvider>
-          <EntityPage />
-        </EntityProvider>
-      }
-    />
-    <Route
-      path={`/${entityRouteDefault.path}`}
-      element={
-        <EntityProvider>
-          <EntityPage />
+          <EntityPageSwitch EntityPage={EntityPage} />
         </EntityProvider>
       }
     />

@@ -21,9 +21,14 @@ import {
   AboutCard,
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
+import { Grid } from '@material-ui/core';
 
 const OverviewPage = ({ entity }: { entity: Entity }) => (
-  <AboutCard entity={entity} />
+  <Grid container spacing={3}>
+    <Grid item>
+      <AboutCard entity={entity} />
+    </Grid>
+  </Grid>
 );
 
 const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
