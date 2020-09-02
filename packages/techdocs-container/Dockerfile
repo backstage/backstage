@@ -21,7 +21,8 @@ RUN curl -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2020.16.ja
 RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.0.3
 
 # Copy plantuml jar file
-COPY bin/scripts/plantuml /usr/local/bin/plantuml
+
+RUN echo "java -jar '/opt/plantuml.jar' ${@}" >> /usr/local/bin/plantuml
 RUN chmod 755 /usr/local/bin/plantuml
 
 
