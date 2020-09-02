@@ -4264,10 +4264,10 @@
     "@types/koa" "*"
     graphql "^14.5.3"
 
-"@types/helmet@^0.0.47":
-  version "0.0.47"
-  resolved "https://registry.npmjs.org/@types/helmet/-/helmet-0.0.47.tgz#ec5161541b649142205b7c558bca14801c5ce129"
-  integrity sha512-TcHA/djjdUtrMtq/QAayVLrsgjNNZ1Uhtz0KhfH01mrmjH44E54DA1A0HNbwW0H/NBFqV+tGMo85ACuEhMXcdg==
+"@types/helmet@^0.0.48":
+  version "0.0.48"
+  resolved "https://registry.npmjs.org/@types/helmet/-/helmet-0.0.48.tgz#e754399d2f4672ba63962e8490efd3edd31d9799"
+  integrity sha512-C7MpnvSDrunS1q2Oy1VWCY7CDWHozqSnM8P4tFeRTuzwqni+PYOjEredwcqWG+kLpYcgLsgcY3orHB54gbx2Jw==
   dependencies:
     "@types/express" "*"
 
