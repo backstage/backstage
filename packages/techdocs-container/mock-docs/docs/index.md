@@ -59,13 +59,3 @@ digraph G {
   Goofy <-- MickeyMouse: responds
 @enduml
 ```
-
-## Testing inline LaTeX math equations
-
-$`p(x|y) = \frac{p(y|x)p(x)}{p(y)}, (p(x|y) = \frac{p(y|x)p(x)}{p(y)}).`$
-
-$`(p(x|y))`$
-
-$`y=x+y`$
-
-$`\frac{p(y|x)}{p(y)}`$
