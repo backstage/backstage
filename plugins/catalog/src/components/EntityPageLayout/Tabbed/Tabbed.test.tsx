@@ -48,7 +48,7 @@ describe('Tabbed layout', () => {
           <div>This will cause app to throw</div>
         </Tabbed.Layout>,
       ),
-    ).rejects.toThrow(/EntityPageLayout component only accepts/);
+    ).rejects.toThrow(/This component only accepts/);
   });
 
   it('navigates when user clicks different tab', async () => {
