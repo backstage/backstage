@@ -19,7 +19,6 @@ import express from 'express';
 import Knex from 'knex';
 import fetch from 'node-fetch';
 import { Config } from '@backstage/config';
-import path from 'path';
 import Docker from 'dockerode';
 import {
   GeneratorBuilder,
@@ -27,6 +26,7 @@ import {
   PublisherBase,
   LocalPublish,
 } from '../techdocs';
+import { resolvePackagePath } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 
 type RouterOptions = {
@@ -38,6 +38,11 @@ type RouterOptions = {
   config: Config;
   dockerClient: Docker;
 };
+
+const staticDocsDir = resolvePackagePath(
+  '@backstage/plugin-techdocs-backend',
+  'static/docs',
+);
 
 export async function createRouter({
   preparers,
@@ -102,10 +107,7 @@ export async function createRouter({
   });
 
   if (publisher instanceof LocalPublish) {
-    router.use(
-      '/static/docs/',
-      express.static(path.resolve(__dirname, `../../static/docs`)),
-    );
+    router.use('/static/docs/', express.static(staticDocsDir));
     router.use(
       '/static/docs/:kind/:namespace/:name',
       async (req, res, next) => {
