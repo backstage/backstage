@@ -36,6 +36,7 @@ import { catalogApiRef } from '../..';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { EntityPageDocs } from '../EntityPageDocs/EntityDocsPage';
 import { EntityPageApi } from '../EntityPageApi/EntityPageApi';
+import { EntityPageArgo } from '../EntityPageArgo/EntityPageArgo';
 import { EntityPageCi } from '../EntityPageCi/EntityPageCi';
 import { EntityPagePull } from '../EntityPagePull/EntityPagePull';
 import { EntityPageOverview } from '../EntityPageOverview/EntityPageOverview';
@@ -142,6 +143,12 @@ export const EntityPage: FC<{}> = () => {
       label: 'API',
       show: (e: Entity) => !!e?.spec?.implementsApis,
       content: (e: Entity) => <EntityPageApi entity={e} />,
+    },
+    {
+      id: 'argocd',
+      label: 'ArgoCD',
+      show: (e: Entity) => !!e.metadata.annotations?.['argocd/endpoint'],
+      content: (e: Entity) => <EntityPageArgo entity={e} />,
     },
     {
       id: 'monitoring',
