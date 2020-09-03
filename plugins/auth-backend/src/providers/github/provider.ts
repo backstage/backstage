@@ -24,9 +24,9 @@ import {
 } from '../../lib/passport';
 import { RedirectInfo, AuthProviderFactory } from '../types';
 import {
-  OAuthProvider,
+  OAuthAdapter,
   OAuthProviderOptions,
-  OAuthProviderHandlers,
+  OAuthHandlers,
   OAuthResponse,
   OAuthEnvironmentHandler,
 } from '../../lib/oauth';
@@ -38,7 +38,7 @@ export type GithubAuthProviderOptions = OAuthProviderOptions & {
   authorizationUrl?: string;
 };
 
-export class GithubAuthProvider implements OAuthProviderHandlers {
+export class GithubAuthProvider implements OAuthHandlers {
   private readonly _strategy: GithubStrategy;
 
   static transformPassportProfile(rawProfile: any): passport.Profile {
@@ -166,7 +166,7 @@ export const createGithubProvider: AuthProviderFactory = ({
       authorizationUrl,
     });
 
-    return OAuthProvider.fromConfig(globalConfig, provider, {
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
       disableRefresh: true,
       persistScopes: true,
       providerId,

@@ -18,7 +18,7 @@ import express from 'express';
 import { ensuresXRequestedWith, postMessageResponse } from './authFlowHelpers';
 import { WebMessageResponse } from './types';
 
-describe('OAuthProvider Utils', () => {
+describe('oauth helpers', () => {
   describe('postMessageResponse', () => {
     const appOrigin = 'http://localhost:3000';
     it('should post a message back with payload success', () => {

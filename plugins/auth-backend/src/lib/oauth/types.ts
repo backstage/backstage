@@ -72,7 +72,7 @@ export type OAuthState = {
  * handlers for different methods to perform authentication, get access tokens,
  * refresh tokens and perform sign out.
  */
-export interface OAuthProviderHandlers {
+export interface OAuthHandlers {
   /**
    * This method initiates a sign in request with an auth provider.
    * @param {express.Request} req

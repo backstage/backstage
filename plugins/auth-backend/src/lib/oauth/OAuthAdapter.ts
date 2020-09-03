@@ -26,7 +26,7 @@ import { InputError } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity';
 import { verifyNonce, encodeState } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
-import { OAuthProviderHandlers } from './types';
+import { OAuthHandlers } from './types';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -42,20 +42,20 @@ export type Options = {
   tokenIssuer: TokenIssuer;
 };
 
-export class OAuthProvider implements AuthProviderRouteHandlers {
+export class OAuthAdapter implements AuthProviderRouteHandlers {
   static fromConfig(
     config: AuthProviderConfig,
-    providerHandlers: OAuthProviderHandlers,
+    handlers: OAuthHandlers,
     options: Pick<
       Options,
       'providerId' | 'persistScopes' | 'disableRefresh' | 'tokenIssuer'
     >,
-  ): OAuthProvider {
+  ): OAuthAdapter {
     const { origin: appOrigin } = new URL(config.appUrl);
     const secure = config.baseUrl.startsWith('https://');
     const url = new URL(config.baseUrl);
     const cookiePath = `${url.pathname}/${options.providerId}`;
-    return new OAuthProvider(providerHandlers, {
+    return new OAuthAdapter(handlers, {
       ...options,
       appOrigin,
       cookieDomain: url.hostname,
@@ -65,7 +65,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
   }
 
   constructor(
-    private readonly providerHandlers: OAuthProviderHandlers,
+    private readonly handlers: OAuthHandlers,
     private readonly options: Options,
   ) {}
 
@@ -94,10 +94,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       state: stateParameter,
     };
 
-    const { url, status } = await this.providerHandlers.start(
-      req,
-      queryParameters,
-    );
+    const { url, status } = await this.handlers.start(req, queryParameters);
 
     res.statusCode = status || 302;
     res.setHeader('Location', url);
@@ -113,9 +110,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       // verify nonce cookie and state cookie on callback
       verifyNonce(req, this.options.providerId);
 
-      const { response, refreshToken } = await this.providerHandlers.handler(
-        req,
-      );
+      const { response, refreshToken } = await this.handlers.handler(req);
 
       if (this.options.persistScopes) {
         const grantedScopes = this.getScopesFromCookie(
@@ -172,7 +167,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       return;
     }
 
-    if (!this.providerHandlers.refresh || this.options.disableRefresh) {
+    if (!this.handlers.refresh || this.options.disableRefresh) {
       res.send(
         `Refresh token not supported for provider: ${this.options.providerId}`,
       );
@@ -191,7 +186,7 @@ export class OAuthProvider implements AuthProviderRouteHandlers {
       const scope = req.query.scope?.toString() ?? '';
 
       // get new access_token
-      const response = await this.providerHandlers.refresh(refreshToken, scope);
+      const response = await this.handlers.refresh(refreshToken, scope);
 
       await this.populateIdentity(response.backstageIdentity);
 

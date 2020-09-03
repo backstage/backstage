@@ -18,9 +18,9 @@ import express from 'express';
 import passport from 'passport';
 import Auth0Strategy from './strategy';
 import {
-  OAuthProvider,
+  OAuthAdapter,
   OAuthProviderOptions,
-  OAuthProviderHandlers,
+  OAuthHandlers,
   OAuthResponse,
   OAuthEnvironmentHandler,
 } from '../../lib/oauth';
@@ -42,7 +42,7 @@ export type Auth0AuthProviderOptions = OAuthProviderOptions & {
   domain: string;
 };
 
-export class Auth0AuthProvider implements OAuthProviderHandlers {
+export class Auth0AuthProvider implements OAuthHandlers {
   private readonly _strategy: Auth0Strategy;
 
   constructor(options: Auth0AuthProviderOptions) {
@@ -167,7 +167,7 @@ export const createAuth0Provider: AuthProviderFactory = ({
       domain,
     });
 
-    return OAuthProvider.fromConfig(globalConfig, provider, {
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
       disableRefresh: true,
       providerId,
       tokenIssuer,

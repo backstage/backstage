@@ -15,9 +15,9 @@
  */
 import express from 'express';
 import {
-  OAuthProvider,
+  OAuthAdapter,
   OAuthProviderOptions,
-  OAuthProviderHandlers,
+  OAuthHandlers,
   OAuthResponse,
   OAuthEnvironmentHandler,
 } from '../../lib/oauth';
@@ -42,7 +42,7 @@ export type OktaAuthProviderOptions = OAuthProviderOptions & {
   audience: string;
 };
 
-export class OktaAuthProvider implements OAuthProviderHandlers {
+export class OktaAuthProvider implements OAuthHandlers {
   private readonly _strategy: any;
 
   /**
@@ -186,7 +186,7 @@ export const createOktaProvider: AuthProviderFactory = ({
       callbackUrl,
     });
 
-    return OAuthProvider.fromConfig(globalConfig, provider, {
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
       disableRefresh: false,
       providerId,
       tokenIssuer,

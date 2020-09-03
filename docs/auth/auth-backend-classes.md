@@ -26,7 +26,7 @@ refer to the type documentation under
 `plugins/auth-backend/src/providers/types.ts`.
 
 There are currently two different classes for two authentication mechanisms that
-implement this interface: an `OAuthProvider` for [OAuth](https://oauth.net/2/)
+implement this interface: an `OAuthAdapter` for [OAuth](https://oauth.net/2/)
 based mechanisms and a `SAMLAuthProvider` for
 [SAML](http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html)
 based mechanisms.

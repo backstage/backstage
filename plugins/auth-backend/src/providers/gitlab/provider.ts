@@ -24,9 +24,9 @@ import {
 } from '../../lib/passport';
 import { RedirectInfo, AuthProviderFactory } from '../types';
 import {
-  OAuthProvider,
+  OAuthAdapter,
   OAuthProviderOptions,
-  OAuthProviderHandlers,
+  OAuthHandlers,
   OAuthResponse,
   OAuthEnvironmentHandler,
 } from '../../lib/oauth';
@@ -36,7 +36,7 @@ export type GitlabAuthProviderOptions = OAuthProviderOptions & {
   baseUrl: string;
 };
 
-export class GitlabAuthProvider implements OAuthProviderHandlers {
+export class GitlabAuthProvider implements OAuthHandlers {
   private readonly _strategy: GitlabStrategy;
 
   static transformPassportProfile(rawProfile: any): passport.Profile {
@@ -157,7 +157,7 @@ export const createGitlabProvider: AuthProviderFactory = ({
       baseUrl,
     });
 
-    return OAuthProvider.fromConfig(globalConfig, provider, {
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
       disableRefresh: true,
       providerId,
       tokenIssuer,

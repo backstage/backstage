@@ -26,8 +26,8 @@ import {
 } from '../../lib/passport';
 import { RedirectInfo, AuthProviderFactory } from '../types';
 import {
-  OAuthProvider,
-  OAuthProviderHandlers,
+  OAuthAdapter,
+  OAuthHandlers,
   OAuthProviderOptions,
   OAuthResponse,
   OAuthEnvironmentHandler,
@@ -38,7 +38,7 @@ type PrivateInfo = {
   refreshToken: string;
 };
 
-export class GoogleAuthProvider implements OAuthProviderHandlers {
+export class GoogleAuthProvider implements OAuthHandlers {
   private readonly _strategy: GoogleStrategy;
 
   constructor(options: OAuthProviderOptions) {
@@ -162,7 +162,7 @@ export const createGoogleProvider: AuthProviderFactory = ({
       callbackUrl,
     });
 
-    return OAuthProvider.fromConfig(globalConfig, provider, {
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
       disableRefresh: false,
       providerId,
       tokenIssuer,

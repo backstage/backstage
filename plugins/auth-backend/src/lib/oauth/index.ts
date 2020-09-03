@@ -15,9 +15,9 @@
  */
 
 export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
-export { OAuthProvider } from './OAuthProvider';
+export { OAuthAdapter } from './OAuthAdapter';
 export type {
-  OAuthProviderHandlers,
+  OAuthHandlers,
   OAuthProviderInfo,
   OAuthProviderOptions,
   OAuthResponse,

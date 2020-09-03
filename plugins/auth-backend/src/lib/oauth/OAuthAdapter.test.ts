@@ -15,13 +15,9 @@
  */
 
 import express from 'express';
-import {
-  THOUSAND_DAYS_MS,
-  TEN_MINUTES_MS,
-  OAuthProvider,
-} from './OAuthProvider';
+import { THOUSAND_DAYS_MS, TEN_MINUTES_MS, OAuthAdapter } from './OAuthAdapter';
 import { encodeState } from './helpers';
-import { OAuthProviderHandlers } from './types';
+import { OAuthHandlers } from './types';
 
 const mockResponseData = {
   providerInfo: {
@@ -38,8 +34,8 @@ const mockResponseData = {
   },
 };
 
-describe('OAuthProvider', () => {
-  class MyAuthProvider implements OAuthProviderHandlers {
+describe('OAuthAdapter', () => {
+  class MyAuthProvider implements OAuthHandlers {
     async start() {
       return {
         url: '/url',
@@ -71,7 +67,7 @@ describe('OAuthProvider', () => {
   };
 
   it('sets the correct headers in start', async () => {
-    const oauthProvider = new OAuthProvider(
+    const oauthProvider = new OAuthAdapter(
       providerInstance,
       oAuthProviderOptions,
     );
@@ -106,7 +102,7 @@ describe('OAuthProvider', () => {
   });
 
   it('sets the refresh cookie if refresh is enabled', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
     });
@@ -140,7 +136,7 @@ describe('OAuthProvider', () => {
   });
 
   it('does not set the refresh cookie if refresh is disabled', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: true,
     });
@@ -165,7 +161,7 @@ describe('OAuthProvider', () => {
   });
 
   it('removes refresh cookie when logging out', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
     });
@@ -190,7 +186,7 @@ describe('OAuthProvider', () => {
 
   it('gets new access-token when refreshing', async () => {
     oAuthProviderOptions.disableRefresh = false;
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
     });
@@ -219,7 +215,7 @@ describe('OAuthProvider', () => {
   });
 
   it('handles refresh without capabilities', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: true,
     });

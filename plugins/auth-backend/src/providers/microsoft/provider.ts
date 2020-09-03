@@ -30,9 +30,9 @@ import {
 import { RedirectInfo, AuthProviderFactory } from '../types';
 
 import {
-  OAuthProvider,
+  OAuthAdapter,
   OAuthProviderOptions,
-  OAuthProviderHandlers,
+  OAuthHandlers,
   OAuthResponse,
   OAuthEnvironmentHandler,
 } from '../../lib/oauth';
@@ -48,7 +48,7 @@ export type MicrosoftAuthProviderOptions = OAuthProviderOptions & {
   tokenUrl?: string;
 };
 
-export class MicrosoftAuthProvider implements OAuthProviderHandlers {
+export class MicrosoftAuthProvider implements OAuthHandlers {
   private readonly _strategy: MicrosoftStrategy;
 
   static transformAuthResponse(
@@ -226,7 +226,7 @@ export const createMicrosoftProvider: AuthProviderFactory = ({
       tokenUrl,
     });
 
-    return OAuthProvider.fromConfig(globalConfig, provider, {
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
       disableRefresh: false,
       providerId,
       tokenIssuer,
