@@ -5,6 +5,7 @@
   "bundled": true,
   "dependencies": {
     "@backstage/cli": "^0.1.1-alpha.21",
+    "@backstage/catalog-model": "^0.1.1-alpha.21",
     "@backstage/core": "^0.1.1-alpha.21",
     "@backstage/plugin-api-docs": "^0.1.1-alpha.21",
     "@backstage/plugin-catalog": "^0.1.1-alpha.21",

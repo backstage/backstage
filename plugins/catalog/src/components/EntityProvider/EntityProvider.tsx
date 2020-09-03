@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React, { ReactNode } from 'react';
+import { useEntityFromUrl, EntityContext } from '../../hooks/useEntity';
 
-import { createRouteRef } from '@backstage/core';
+export const EntityProvider = ({ children }: { children: ReactNode }) => {
+  const { entity, loading, error } = useEntityFromUrl();
 
-const NoIcon = () => null;
-
-export const rootRoute = createRouteRef({
-  icon: NoIcon,
-  path: '',
-  title: 'Catalog',
-});
-export const entityRoute = createRouteRef({
-  icon: NoIcon,
-  path: ':kind/:optionalNamespaceAndName/*',
-  title: 'Entity',
-});
+  return (
+    <EntityContext.Provider value={{ entity, loading, error }}>
+      {children}
+    </EntityContext.Provider>
+  );
+};

@@ -13,18 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createRouteRef } from '@backstage/core';
-
-const NoIcon = () => null;
-
-export const rootRoute = createRouteRef({
-  icon: NoIcon,
-  path: '',
-  title: 'Catalog',
-});
-export const entityRoute = createRouteRef({
-  icon: NoIcon,
-  path: ':kind/:optionalNamespaceAndName/*',
-  title: 'Entity',
-});
+export { EntityPageLayout } from './EntityPageLayout';
