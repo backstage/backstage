@@ -25,6 +25,4 @@ RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.0.4
 RUN echo $'#!/bin/sh\n\njava -jar '/opt/plantuml.jar' ${@}' >> /usr/local/bin/plantuml
 RUN chmod 755 /usr/local/bin/plantuml
 
-RUN cat /usr/local/bin/plantuml
-
 ENTRYPOINT [ "mkdocs" ]
