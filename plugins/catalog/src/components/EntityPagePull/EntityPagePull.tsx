@@ -21,9 +21,6 @@ import { Widget as GithubPullListWidget } from '@backstage/plugin-github-prs';
 import React, { FC } from 'react';
 
 export const EntityPagePull: FC<{ entity: Entity }> = ({ entity }) => {
-  // const url =
-  //   'http://localhost:3000/github-pull-requests/Component/' +
-  //   entity.metadata.name;
   return (
     <Content>
       <Grid container spacing={3}>
@@ -31,14 +28,6 @@ export const EntityPagePull: FC<{ entity: Entity }> = ({ entity }) => {
           <GithubPullListWidget entity={entity} branch="master" />
         </Grid>
       </Grid>
-      {/* <Grid container>
-        <iframe
-          src={url}
-          sandbox="allow-scripts allow-same-origin allow-top-navigation allow-forms allow-popups allow-pointer-lock allow-popups-to-escape-sandbox"
-          height="1000"
-          width="1000"
-        />
-      </Grid> */}
     </Content>
   );
 };
