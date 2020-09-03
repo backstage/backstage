@@ -33,7 +33,7 @@ import {
   ProgressCard,
   TrendLine,
 } from '../../components';
-import { Box, Typography, Link, Chip, Button, Grid } from '@material-ui/core';
+import { Box, Typography, Link, Chip, Grid } from '@material-ui/core';
 
 export default {
   title: 'Example Plugin',
