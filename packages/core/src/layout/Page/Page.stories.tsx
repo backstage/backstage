@@ -32,7 +32,6 @@ import {
   TableColumn,
   ProgressCard,
   TrendLine,
-  Tabs,
 } from '../../components';
 import { Box, Typography, Link, Chip, Button, Grid } from '@material-ui/core';
 
@@ -95,7 +94,7 @@ const columns: TableColumn[] = [
   },
 ];
 
-const tabs: Tab[] = [
+const tabs = [
   { label: 'Overview' },
   { label: 'CI/CD' },
   { label: 'Cost Efficency' },
