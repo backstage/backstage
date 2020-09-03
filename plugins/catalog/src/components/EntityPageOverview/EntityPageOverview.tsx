@@ -17,6 +17,7 @@
 // TODO(shmidt-i): move to the app
 import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
+import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { LatestWorkflowRunCard } from '@backstage/plugin-github-actions';
 import {
   JenkinsBuildsWidget,
@@ -50,6 +51,16 @@ export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
         {entity.metadata?.annotations?.['backstage.io/github-actions-id'] && (
           <Grid item sm={3}>
             <LatestWorkflowRunCard entity={entity} branch="master" />
+          </Grid>
+        )}
+        {entity.metadata?.annotations?.['backstage.io/sentry-project-id'] && (
+          <Grid item sm={8}>
+            <SentryIssuesWidget
+              sentryProjectId={
+                entity.metadata?.annotations?.['backstage.io/sentry-project-id']
+              }
+              statsFor="24h"
+            />
           </Grid>
         )}
       </Grid>
