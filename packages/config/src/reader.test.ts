@@ -35,7 +35,6 @@ const DATA = {
     strings: ['string1', 'string2'],
   },
   nestlings: [{ boolean: true }, { string: 'string' }, { number: 42 }] as {}[],
-  port: 'number',
 };
 
 function expectValidValues(config: ConfigReader) {
