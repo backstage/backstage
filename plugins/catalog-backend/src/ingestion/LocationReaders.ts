@@ -47,6 +47,7 @@ import {
 } from './processors/types';
 import { YamlProcessor } from './processors/YamlProcessor';
 import { LocationReader, ReadLocationResult } from './types';
+import { CatalogRulesEnforcer } from './CatalogRules';
 
 // The max amount of nesting depth of generated work items
 const MAX_DEPTH = 10;
@@ -63,6 +64,7 @@ type Options = {
 export class LocationReaders implements LocationReader {
   private readonly logger: Logger;
   private readonly processors: LocationProcessor[];
+  private readonly rulesEnforcer: CatalogRulesEnforcer;
 
   static defaultProcessors(options: {
     config?: Config;
@@ -76,11 +78,11 @@ export class LocationReaders implements LocationReader {
       StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
       new GithubReaderProcessor(),
-      new GithubApiReaderProcessor(),
-      new GitlabApiReaderProcessor(),
+      new GithubApiReaderProcessor(config),
+      new GitlabApiReaderProcessor(config),
       new GitlabReaderProcessor(),
-      new BitbucketApiReaderProcessor(),
-      new AzureApiReaderProcessor(),
+      new BitbucketApiReaderProcessor(config),
+      new AzureApiReaderProcessor(config),
       new UrlReaderProcessor(),
       new YamlProcessor(),
       new EntityPolicyProcessor(entityPolicy),
@@ -96,6 +98,9 @@ export class LocationReaders implements LocationReader {
   }: Options) {
     this.logger = logger;
     this.processors = processors;
+    this.rulesEnforcer = config
+      ? CatalogRulesEnforcer.fromConfig(config)
+      : new CatalogRulesEnforcer(CatalogRulesEnforcer.defaultRules);
   }
 
   async read(location: LocationSpec): Promise<ReadLocationResult> {
@@ -112,11 +117,20 @@ export class LocationReaders implements LocationReader {
         } else if (item.type === 'data') {
           await this.handleData(item, emit);
         } else if (item.type === 'entity') {
-          const entity = await this.handleEntity(item, emit);
-          output.entities.push({
-            entity,
-            location: item.location,
-          });
+          if (this.rulesEnforcer.isAllowed(item.entity, item.location)) {
+            const entity = await this.handleEntity(item, emit);
+            output.entities.push({
+              entity,
+              location: item.location,
+            });
+          } else {
+            output.errors.push({
+              location: item.location,
+              error: new Error(
+                `Entity of kind ${item.entity.kind} is not allowed from location ${item.location.target}:${item.location.type}`,
+              ),
+            });
+          }
         } else if (item.type === 'error') {
           await this.handleError(item, emit);
           output.errors.push({

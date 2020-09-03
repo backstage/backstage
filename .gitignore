@@ -92,6 +92,7 @@ dist
 
 # Microsite build output
 microsite/build
+microsite/i18n
 
 # Gatsby files
 .cache/

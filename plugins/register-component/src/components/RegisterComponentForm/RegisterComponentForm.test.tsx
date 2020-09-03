@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { cleanup, fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import { render, fireEvent, cleanup } from '@testing-library/react';
-import RegisterComponentForm, { Props } from './RegisterComponentForm';
 import { act } from 'react-dom/test-utils';
+import RegisterComponentForm, { Props } from './RegisterComponentForm';
 
 const setup = (props?: Partial<Props>) => {
   return {
@@ -37,7 +37,7 @@ describe('RegisterComponentForm', () => {
     const { rendered } = setup();
     expect(
       await rendered.findByText(
-        'Enter the full path to the component.yaml file in GitHub, GitLab, Bitbucket or Azure to start tracking your component. For private repo provide authentication information via config.',
+        'Enter the full path to the component.yaml file in GitHub, GitLab, Bitbucket or Azure to start tracking your component.',
       ),
     ).toBeInTheDocument();
 

@@ -26,6 +26,7 @@ type LernaPackage = {
   private: boolean;
   location: string;
   scripts: Record<string, string>;
+  get(key: string): any;
 };
 
 type FileEntry =
@@ -107,6 +108,26 @@ async function moveToDistWorkspace(
         strip: 1,
       });
       await fs.remove(archivePath);
+
+      // We remove the dependencies from package.json of packages that are marked
+      // as bundled, so that yarn doesn't try to install them.
+      if (target.get('bundled')) {
+        const pkgJson = await fs.readJson(
+          resolvePath(absoluteOutputPath, 'package.json'),
+        );
+        delete pkgJson.dependencies;
+        delete pkgJson.devDependencies;
+        delete pkgJson.peerDependencies;
+        delete pkgJson.optionalDependencies;
+
+        await fs.writeJson(
+          resolvePath(absoluteOutputPath, 'package.json'),
+          pkgJson,
+          {
+            spaces: 2,
+          },
+        );
+      }
     }),
   );
 }

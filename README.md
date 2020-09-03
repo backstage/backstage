@@ -61,7 +61,7 @@ Take a look at the [Getting Started](https://backstage.io/docs/getting-started/i
 
 ## Documentation
 
-- [Main documentation](https://backstage.io/docs/overview/what-is-backstage)
+- [Main documentation](https://backstage.io/docs)
 - [Service Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview)
 - [Architecture](https://backstage.io/docs/overview/architecture-terminology) ([Decisions](https://backstage.io/docs/architecture-decisions/adrs-overview))
 - [Designing for Backstage](https://backstage.io/docs/dls/design)

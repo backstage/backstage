@@ -85,7 +85,7 @@ class DevAppBuilder {
 
     const AppProvider = app.getProvider();
     const AppRouter = app.getRouter();
-    const AppRoutes = app.getRoutes();
+    const deprecatedAppRoutes = app.getRoutes();
 
     const sidebar = this.setupSidebar(this.plugins);
 
@@ -99,7 +99,7 @@ class DevAppBuilder {
           <AppRouter>
             <SidebarPage>
               {sidebar}
-              <AppRoutes />
+              {deprecatedAppRoutes}
             </SidebarPage>
           </AppRouter>
         </AppProvider>
@@ -199,8 +199,17 @@ class DevAppBuilder {
 
     for (const plugin of plugins) {
       for (const output of plugin.output()) {
-        if (output.type === 'legacy-route') {
-          paths.push(output.path);
+        switch (output.type) {
+          case 'legacy-route': {
+            paths.push(output.path);
+            break;
+          }
+          case 'route': {
+            paths.push(output.target.path);
+            break;
+          }
+          default:
+            break;
         }
       }
     }

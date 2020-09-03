@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.1.1-alpha.20",
+  "version": "0.1.1-alpha.21",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -20,10 +20,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.20",
-    "@backstage/config": "^0.1.1-alpha.20",
+    "@backstage/backend-common": "^0.1.1-alpha.21",
+    "@backstage/config": "^0.1.1-alpha.21",
     "@types/express": "^4.17.6",
-    "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -50,7 +49,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.20",
+    "@backstage/cli": "^0.1.1-alpha.21",
     "@types/body-parser": "^1.19.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/jwt-decode": "2.2.1",

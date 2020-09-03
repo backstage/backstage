@@ -23,7 +23,7 @@
  */
 
 import {
-  createDatabase,
+  createDatabaseClient,
   createServiceBuilder,
   loadBackendConfig,
   getRootLogger,
@@ -40,6 +40,7 @@ import sentry from './plugins/sentry';
 import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import graphql from './plugins/graphql';
+import app from './plugins/app';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(loadedConfigs: AppConfig[]) {
@@ -47,11 +48,14 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 
   return (plugin: string): PluginEnvironment => {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
-    const database = createDatabase(config.getConfig('backend.database'), {
-      connection: {
-        database: `backstage_plugin_${plugin}`,
+    const database = createDatabaseClient(
+      config.getConfig('backend.database'),
+      {
+        connection: {
+          database: `backstage_plugin_${plugin}`,
+        },
       },
-    });
+    );
     return { logger, database, config };
   };
 }
@@ -71,6 +75,7 @@ async function main() {
   const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
+  const appEnv = useHotMemoize(module, () => createEnv('app'));
 
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
@@ -82,8 +87,9 @@ async function main() {
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
     .addRouter('/techdocs', await techdocs(techdocsEnv))
-    .addRouter('/proxy', await proxy(proxyEnv))
-    .addRouter('/graphql', await graphql(graphqlEnv));
+    .addRouter('/proxy', await proxy(proxyEnv, '/proxy'))
+    .addRouter('/graphql', await graphql(graphqlEnv))
+    .addRouter('', await app(appEnv));
 
   await service.start().catch(err => {
     console.log(err);
