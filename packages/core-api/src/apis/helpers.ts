@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiFactory } from './types';
+import { AnyApiFactory, ApiFactory } from './types';
 
 /**
  * Used to infer types for a standalone ApiFactory that isn't immediately passed
@@ -23,6 +23,6 @@ import { ApiFactory } from './types';
  */
 export function createApiFactory<Api, Impl, Deps>(
   factory: ApiFactory<Api, Impl, Deps>,
-): ApiFactory<Api, Impl, Deps> {
+): AnyApiFactory {
   return factory;
 }

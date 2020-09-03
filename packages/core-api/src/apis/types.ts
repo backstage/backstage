@@ -16,13 +16,13 @@
 
 import { ApiRef } from './ApiRef';
 
-export type AnyApiRef = ApiRef<any>;
+export type AnyApiRef = ApiRef<unknown>;
 
 export type ApiRefType<T> = T extends ApiRef<infer U> ? U : never;
 
 export type TypesToApiRefs<T> = { [key in keyof T]: ApiRef<T[key]> };
 
-export type ApiRefsToTypes<T extends { [key in any]: ApiRef<any> }> = {
+export type ApiRefsToTypes<T extends { [key in any]: ApiRef<unknown> }> = {
   [key in keyof T]: ApiRefType<T[key]>;
 };
 
@@ -35,3 +35,5 @@ export type ApiFactory<Api, Impl, Deps> = {
   deps: TypesToApiRefs<Deps>;
   factory(deps: Deps): Impl extends Api ? Impl : never;
 };
+
+export type AnyApiFactory = ApiFactory<unknown, unknown, unknown>;

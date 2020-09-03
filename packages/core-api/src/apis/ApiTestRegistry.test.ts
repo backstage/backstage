@@ -37,26 +37,6 @@ describe('ApiTestRegistry', () => {
     expect(registry.get(cRef)).toBe(undefined);
   });
 
-  it('should remove factories when resetting', () => {
-    const registry = new ApiTestRegistry();
-    registry.register({ implements: aRef, deps: {}, factory: () => 3 });
-    expect(registry.get(aRef)).toBe(3);
-    registry.reset();
-    expect(registry.get(aRef)).toBe(undefined);
-  });
-
-  it('should keep saved factories when resetting', () => {
-    const registry = new ApiTestRegistry();
-    registry.register({ implements: aRef, deps: {}, factory: () => 3 });
-    registry.save();
-    registry.register({ implements: bRef, deps: {}, factory: () => 'x' });
-    expect(registry.get(aRef)).toBe(3);
-    expect(registry.get(bRef)).toBe('x');
-    registry.reset();
-    expect(registry.get(aRef)).toBe(3);
-    expect(registry.get(bRef)).toBe(undefined);
-  });
-
   it('should register factories with dependencies', () => {
     // 100% coverage + happy typescript = hasOwnProperty + this atrocity
     const cDeps = Object.create(
@@ -134,21 +114,5 @@ describe('ApiTestRegistry', () => {
     expect(factory).toHaveBeenCalledTimes(1);
     expect(registry.get(aRef)).toBe(2);
     expect(factory).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call factory again after reset', () => {
-    const registry = new ApiTestRegistry();
-    const factory = jest.fn().mockReturnValue(2);
-    registry.register({ implements: aRef, deps: {}, factory });
-    registry.save();
-
-    expect(factory).toHaveBeenCalledTimes(0);
-    expect(registry.get(aRef)).toBe(2);
-    expect(factory).toHaveBeenCalledTimes(1);
-    expect(registry.get(aRef)).toBe(2);
-    expect(factory).toHaveBeenCalledTimes(1);
-    registry.reset();
-    expect(registry.get(aRef)).toBe(2);
-    expect(factory).toHaveBeenCalledTimes(2);
   });
 });

@@ -15,18 +15,17 @@
  */
 
 import { ApiRef } from './ApiRef';
-import { TypesToApiRefs, AnyApiRef, ApiHolder, ApiFactory } from './types';
+import {
+  TypesToApiRefs,
+  AnyApiRef,
+  ApiHolder,
+  ApiFactory,
+  AnyApiFactory,
+} from './types';
 
 export class ApiTestRegistry implements ApiHolder {
   private readonly apis = new Map<AnyApiRef, unknown>();
-  private factories = new Map<
-    AnyApiRef,
-    ApiFactory<unknown, unknown, unknown>
-  >();
-  private savedFactories = new Map<
-    AnyApiRef,
-    ApiFactory<unknown, unknown, unknown>
-  >();
+  private factories = new Map<AnyApiRef, AnyApiFactory>();
 
   get<T>(ref: ApiRef<T>): T | undefined {
     return this.load(ref);
@@ -34,16 +33,6 @@ export class ApiTestRegistry implements ApiHolder {
 
   register<A, I, D>(factory: ApiFactory<A, I, D>): ApiTestRegistry {
     this.factories.set(factory.implements, factory);
-    return this;
-  }
-
-  reset() {
-    this.factories = this.savedFactories;
-    this.apis.clear();
-  }
-
-  save(): ApiTestRegistry {
-    this.savedFactories = new Map(this.factories);
     return this;
   }
 
