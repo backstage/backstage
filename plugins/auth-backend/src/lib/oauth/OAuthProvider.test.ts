@@ -20,8 +20,8 @@ import {
   TEN_MINUTES_MS,
   OAuthProvider,
 } from './OAuthProvider';
-import { OAuthProviderHandlers } from '../../providers/types';
 import { encodeState } from './helpers';
+import { OAuthProviderHandlers } from './types';
 
 const mockResponseData = {
   providerInfo: {

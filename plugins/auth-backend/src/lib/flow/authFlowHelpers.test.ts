@@ -16,7 +16,7 @@
 
 import express from 'express';
 import { ensuresXRequestedWith, postMessageResponse } from './authFlowHelpers';
-import { WebMessageResponse } from '../../providers/types';
+import { WebMessageResponse } from './types';
 
 describe('OAuthProvider Utils', () => {
   describe('postMessageResponse', () => {

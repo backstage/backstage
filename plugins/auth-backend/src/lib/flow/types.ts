@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
-export { OAuthProvider } from './OAuthProvider';
-export type {
-  OAuthProviderHandlers,
-  OAuthProviderInfo,
-  OAuthProviderOptions,
-  OAuthResponse,
-  OAuthState,
-} from './types';
+import { AuthResponse } from '../../providers/types';
+
+/**
+ * Payload sent as a post message after the auth request is complete.
+ * If successful then has a valid payload with Auth information else contains an error.
+ */
+export type WebMessageResponse =
+  | {
+      type: 'authorization_response';
+      response: AuthResponse<unknown>;
+    }
+  | {
+      type: 'authorization_response';
+      error: Error;
+    };

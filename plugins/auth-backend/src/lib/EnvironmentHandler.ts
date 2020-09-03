@@ -15,15 +15,16 @@
  */
 
 import express from 'express';
-import {
-  AuthProviderRouteHandlers,
-  EnvironmentIdentifierFn,
-} from '../providers/types';
+import { AuthProviderRouteHandlers } from '../providers/types';
 import { InputError } from '@backstage/backend-common';
 
 export type EnvironmentHandlers = {
   [key: string]: AuthProviderRouteHandlers;
 };
+
+export type EnvironmentIdentifierFn = (
+  req: express.Request,
+) => string | undefined;
 
 export class EnvironmentHandler implements AuthProviderRouteHandlers {
   constructor(

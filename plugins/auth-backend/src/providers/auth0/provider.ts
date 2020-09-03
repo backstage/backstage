@@ -19,22 +19,22 @@ import passport from 'passport';
 import Auth0Strategy from './strategy';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
-import { OAuthProvider } from '../../lib/oauth';
+import {
+  OAuthProvider,
+  OAuthProviderOptions,
+  OAuthProviderHandlers,
+  OAuthResponse,
+} from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   executeRefreshTokenStrategy,
   makeProfileInfo,
-} from '../../lib/PassportStrategyHelper';
-import {
-  AuthProviderConfig,
-  OAuthProviderHandlers,
-  OAuthResponse,
   PassportDoneCallback,
   RedirectInfo,
-  OAuthProviderOptions,
-} from '../types';
+} from '../../lib/PassportStrategyHelper';
+import { AuthProviderConfig } from '../types';
 import { Config } from '@backstage/config';
 
 type PrivateInfo = {

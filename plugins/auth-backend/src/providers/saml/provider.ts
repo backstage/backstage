@@ -23,11 +23,11 @@ import {
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
+  PassportDoneCallback,
 } from '../../lib/PassportStrategyHelper';
 import {
   AuthProviderConfig,
   AuthProviderRouteHandlers,
-  PassportDoneCallback,
   ProfileInfo,
 } from '../types';
 import { postMessageResponse } from '../../lib/flow';

@@ -19,7 +19,6 @@ import crypto from 'crypto';
 import { URL } from 'url';
 import {
   AuthProviderRouteHandlers,
-  OAuthProviderHandlers,
   BackstageIdentity,
   AuthProviderConfig,
 } from '../../providers/types';
@@ -27,6 +26,7 @@ import { InputError } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity';
 import { verifyNonce, encodeState } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
+import { OAuthProviderHandlers } from './types';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;

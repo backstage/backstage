@@ -20,16 +20,16 @@ import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   makeProfileInfo,
-} from '../../lib/PassportStrategyHelper';
-import {
-  OAuthProviderHandlers,
-  AuthProviderConfig,
-  RedirectInfo,
-  OAuthProviderOptions,
-  OAuthResponse,
   PassportDoneCallback,
-} from '../types';
-import { OAuthProvider } from '../../lib/oauth';
+  RedirectInfo,
+} from '../../lib/PassportStrategyHelper';
+import { AuthProviderConfig } from '../types';
+import {
+  OAuthProvider,
+  OAuthProviderOptions,
+  OAuthProviderHandlers,
+  OAuthResponse,
+} from '../../lib/oauth';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../../identity';
 import passport from 'passport';

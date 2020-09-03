@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import express from 'express';
-import { OAuthProvider } from '../../lib/oauth';
+import {
+  OAuthProvider,
+  OAuthProviderOptions,
+  OAuthProviderHandlers,
+  OAuthResponse,
+} from '../../lib/oauth';
 import { Strategy as OktaStrategy } from 'passport-okta-oauth';
 import passport from 'passport';
 import {
@@ -23,15 +28,10 @@ import {
   executeRefreshTokenStrategy,
   makeProfileInfo,
   executeFetchUserProfileStrategy,
-} from '../../lib/PassportStrategyHelper';
-import {
-  OAuthProviderHandlers,
-  RedirectInfo,
-  AuthProviderConfig,
-  OAuthProviderOptions,
-  OAuthResponse,
   PassportDoneCallback,
-} from '../types';
+  RedirectInfo,
+} from '../../lib/PassportStrategyHelper';
+import { AuthProviderConfig } from '../types';
 import { Logger } from 'winston';
 import { StateStore } from 'passport-oauth2';
 import { TokenIssuer } from '../../identity';

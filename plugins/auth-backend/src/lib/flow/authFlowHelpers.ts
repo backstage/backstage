@@ -16,7 +16,7 @@
 
 import express from 'express';
 import crypto from 'crypto';
-import { WebMessageResponse } from '../../providers/types';
+import { WebMessageResponse } from './types';
 
 export const postMessageResponse = (
   res: express.Response,

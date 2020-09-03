@@ -25,15 +25,12 @@ import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
 import { createAuth0Provider } from './auth0';
 import { createMicrosoftProvider } from './microsoft';
-import {
-  AuthProviderConfig,
-  AuthProviderFactory,
-  EnvironmentIdentifierFn,
-} from './types';
+import { AuthProviderConfig, AuthProviderFactory } from './types';
 import { Config } from '@backstage/config';
 import {
   EnvironmentHandlers,
   EnvironmentHandler,
+  EnvironmentIdentifierFn,
 } from '../lib/EnvironmentHandler';
 
 const factories: { [providerId: string]: AuthProviderFactory } = {

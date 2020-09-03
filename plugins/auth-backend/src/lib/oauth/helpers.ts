@@ -15,9 +15,9 @@
  */
 
 import express from 'express';
-import { OAuthState } from '../../providers/types';
+import { OAuthState } from './types';
 
-const readState = (stateString: string): OAuthState => {
+export const readState = (stateString: string): OAuthState => {
   const state = Object.fromEntries(
     new URLSearchParams(decodeURIComponent(stateString)),
   );
