@@ -16,7 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
-import { SentryIssuesWidget } from '@backstage/plugin-sentry';
 import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
 import {
   JenkinsBuildsWidget,
@@ -52,12 +51,6 @@ export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
             <GithubActionsWidget entity={entity} branch="master" />
           </Grid>
         )}
-        <Grid item sm={8}>
-          <SentryIssuesWidget
-            sentryProjectId="sample-sentry-project-id"
-            statsFor="24h"
-          />
-        </Grid>
       </Grid>
     </Content>
   );

@@ -18,8 +18,6 @@ import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
 import { Config } from '@backstage/config';
-import { OAuthProvider } from '../lib/OAuthProvider';
-import { SamlAuthProvider } from './saml/provider';
 
 export type OAuthProviderOptions = {
   /**
@@ -174,7 +172,7 @@ export type AuthProviderFactory = (
   envConfig: Config,
   logger: Logger,
   issuer: TokenIssuer,
-) => OAuthProvider | SamlAuthProvider | undefined;
+) => AuthProviderRouteHandlers | undefined;
 
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;

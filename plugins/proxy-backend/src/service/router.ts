@@ -34,6 +34,7 @@ export interface RouterOptions {
 // given config.
 function buildMiddleware(
   pathPrefix: string,
+  logger: Logger,
   route: string,
   config: string | ProxyConfig,
 ): Proxy {
@@ -54,6 +55,9 @@ function buildMiddleware(
     fullConfig.changeOrigin = true;
   }
 
+  // Attach the logger to the proxy config
+  fullConfig.logProvider = () => logger;
+
   return createProxyMiddleware(fullConfig);
 }
 
@@ -66,7 +70,12 @@ export async function createRouter(
   Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     router.use(
       route,
-      buildMiddleware(options.pathPrefix, route, proxyRouteConfig),
+      buildMiddleware(
+        options.pathPrefix,
+        options.logger,
+        route,
+        proxyRouteConfig,
+      ),
     );
   });
 
