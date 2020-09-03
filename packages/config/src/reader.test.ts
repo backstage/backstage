@@ -35,6 +35,7 @@ const DATA = {
     strings: ['string1', 'string2'],
   },
   nestlings: [{ boolean: true }, { string: 'string' }, { number: 42 }] as {}[],
+  port: 'number',
 };
 
 function expectValidValues(config: ConfigReader) {
@@ -579,5 +580,18 @@ describe('ConfigReader.get()', () => {
         c: 'c1',
       },
     });
+  });
+
+  it('coerces number strings to numbers', () => {
+    const config = ConfigReader.fromConfigs([
+      {
+        data: {
+          port: '123',
+        },
+        context: '1',
+      },
+    ]);
+
+    expect(config.getNumber('port')).toEqual(123);
   });
 });
