@@ -25,10 +25,9 @@ import {
   makeProfileInfo,
   executeFetchUserProfileStrategy,
   PassportDoneCallback,
-  RedirectInfo,
-} from '../../lib/PassportStrategyHelper';
+} from '../../lib/passport';
 
-import { AuthProviderConfig } from '../types';
+import { AuthProviderConfig, RedirectInfo } from '../types';
 
 import {
   OAuthProvider,

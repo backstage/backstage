@@ -29,9 +29,8 @@ import {
   makeProfileInfo,
   executeFetchUserProfileStrategy,
   PassportDoneCallback,
-  RedirectInfo,
-} from '../../lib/PassportStrategyHelper';
-import { AuthProviderConfig } from '../types';
+} from '../../lib/passport';
+import { AuthProviderConfig, RedirectInfo } from '../types';
 import { Logger } from 'winston';
 import { StateStore } from 'passport-oauth2';
 import { TokenIssuer } from '../../identity';

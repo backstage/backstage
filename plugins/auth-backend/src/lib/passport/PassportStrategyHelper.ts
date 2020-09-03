@@ -17,7 +17,7 @@
 import express from 'express';
 import passport from 'passport';
 import jwtDecoder from 'jwt-decode';
-import { ProfileInfo } from '../providers/types';
+import { ProfileInfo, RedirectInfo } from '../../providers/types';
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,
@@ -62,17 +62,6 @@ export const makeProfileInfo = (
     picture,
     displayName,
   };
-};
-
-export type RedirectInfo = {
-  /**
-   * URL to redirect to
-   */
-  url: string;
-  /**
-   * Status code to use for the redirect
-   */
-  status?: number;
 };
 
 export const executeRedirectStrategy = async (

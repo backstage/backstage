@@ -24,7 +24,7 @@ import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   PassportDoneCallback,
-} from '../../lib/PassportStrategyHelper';
+} from '../../lib/passport';
 import {
   AuthProviderConfig,
   AuthProviderRouteHandlers,

@@ -15,8 +15,7 @@
  */
 
 import express from 'express';
-import { AuthResponse } from '../../providers/types';
-import { RedirectInfo } from '../PassportStrategyHelper';
+import { AuthResponse, RedirectInfo } from '../../providers/types';
 
 /**
  * Common options for passport.js-based OAuth providers

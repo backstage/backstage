@@ -32,6 +32,17 @@ export type AuthProviderConfig = {
   appUrl: string;
 };
 
+export type RedirectInfo = {
+  /**
+   * URL to redirect to
+   */
+  url: string;
+  /**
+   * Status code to use for the redirect
+   */
+  status?: number;
+};
+
 /**
  * Any Auth provider needs to implement this interface which handles the routes in the
  * auth backend. Any auth API requests from the frontend reaches these methods.

@@ -21,9 +21,8 @@ import {
   executeRedirectStrategy,
   makeProfileInfo,
   PassportDoneCallback,
-  RedirectInfo,
-} from '../../lib/PassportStrategyHelper';
-import { AuthProviderConfig } from '../types';
+} from '../../lib/passport';
+import { AuthProviderConfig, RedirectInfo } from '../types';
 import {
   OAuthProvider,
   OAuthProviderOptions,
