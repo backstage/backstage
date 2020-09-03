@@ -22,6 +22,7 @@ import { Logger } from 'winston';
 import { createAuthProviderRouter } from '../providers';
 import { Config } from '@backstage/config';
 import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
+import { NotFoundError } from '@backstage/backend-common';
 
 export interface RouterOptions {
   logger: Logger;
@@ -87,6 +88,11 @@ export async function createRouter(
       baseUrl: authUrl,
     }),
   );
+
+  router.use('/:provider/', req => {
+    const { provider } = req.params;
+    throw new NotFoundError(`No auth provider registered for '${provider}'`);
+  });
 
   return router;
 }
