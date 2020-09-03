@@ -81,7 +81,7 @@ import {
 import {
   GithubPullRequestsClient,
   githubPullRequestsApiRef,
-} from '@roadiehq/backstage-plugin-github-pull-requests';
+} from '@backstage/plugin-github-prs';
 import { GCPClient, GCPApiRef } from '@backstage/plugin-gcp-projects';
 
 export const apis = (config: ConfigApi) => {

@@ -37,6 +37,7 @@ import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { EntityPageDocs } from '../EntityPageDocs/EntityDocsPage';
 import { EntityPageApi } from '../EntityPageApi/EntityPageApi';
 import { EntityPageCi } from '../EntityPageCi/EntityPageCi';
+import { EntityPagePull } from '../EntityPagePull/EntityPagePull';
 import { EntityPageOverview } from '../EntityPageOverview/EntityPageOverview';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
@@ -149,6 +150,11 @@ export const EntityPage: FC<{}> = () => {
     {
       id: 'quality',
       label: 'Quality',
+    },
+    {
+      id: 'pr',
+      label: 'Pull Requests',
+      content: (e: Entity) => <EntityPagePull entity={e} />,
     },
     {
       id: 'docs',
