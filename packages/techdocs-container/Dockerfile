@@ -18,12 +18,11 @@ FROM python:3.8-alpine
 RUN apk update && apk --no-cache add gcc musl-dev openjdk11-jdk curl graphviz ttf-dejavu fontconfig
 
 RUN curl -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2020.16.jar/download > /opt/plantuml.jar
-RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.0.3
+RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.0.4
 
 # Create script to call plantuml.jar from a location in path
 
-RUN echo "java -jar '/opt/plantuml.jar' ${@}" >> /usr/local/bin/plantuml
+RUN echo $'#!/bin/sh\n\njava -jar '/opt/plantuml.jar' ${@}' >> /usr/local/bin/plantuml
 RUN chmod 755 /usr/local/bin/plantuml
-
 
 ENTRYPOINT [ "mkdocs" ]
