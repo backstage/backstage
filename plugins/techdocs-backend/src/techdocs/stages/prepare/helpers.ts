@@ -123,7 +123,7 @@ export const checkoutGithubRepository = async (
     return repositoryTmpPath;
   }
 
-  if (user !== '' && token !== '') {
+  if (user && token) {
     parsedGitLocation.token = `${user}:${token}`;
   }
 
