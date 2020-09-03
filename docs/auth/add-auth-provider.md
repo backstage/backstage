@@ -118,7 +118,7 @@ export class ProviderAAuthProvider implements AuthProviderRouteHandlers {
 }
 ```
 
-#### Factory method
+#### Factory function
 
 Each provider exports a factory function that instantiates the provider. The
 factory should implement [AuthProviderFactory](#AuthProviderFactory), which
@@ -159,8 +159,8 @@ export const createOktaProvider: AuthProviderFactory = ({
   });
 ```
 
-The purpose of the different environment is to allow for a single auth-backend
-to service as the authentication service for multiple different frontend
+The purpose of the different environments is to allow for a single auth-backend
+to serve as the authentication service for multiple different frontend
 environments, such as local development, staging, and production.
 
 The factory function for other providers can be a lot simpler, as they might not
@@ -191,7 +191,7 @@ export const createProviderAProvider: AuthProviderFactory = ({ config }) => {
 > http://www.passportjs.org/docs/configure/
 
 **`plugins/auth-backend/src/providers/providerA/index.ts`** is simply
-re-exporting the create method to be used for hooking the provider up to the
+re-exporting the factory function to be used for hooking the provider up to the
 backend.
 
 ```ts
@@ -202,8 +202,8 @@ export { createProviderAProvider } from './provider';
 
 **`plugins/auth-backend/src/providers/factories.ts`** When the `auth-backend`
 starts it sets up routing for all the available providers by calling
-`createAuthProviderRouter` on each provider. You need to import the create
-method from the provider and add it to the factory:
+`createAuthProviderRouter` on each provider. You need to import the factory
+function from the provider and add it to the factory:
 
 ```ts
 import { createProviderAProvider } from './providerA';
