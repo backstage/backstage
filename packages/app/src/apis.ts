@@ -114,7 +114,7 @@ export const apis = (config: ConfigApi) => {
 
   builder.add(featureFlagsApiRef, new FeatureFlags());
 
-  builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
+  builder.add(lighthouseApiRef, LighthouseRestApi.fromConfig(config));
 
   builder.add(travisCIApiRef, new TravisCIApi());
   builder.add(githubPullRequestsApiRef, new GithubPullRequestsClient());

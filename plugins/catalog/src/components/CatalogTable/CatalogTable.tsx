@@ -75,12 +75,7 @@ const columns: TableColumn<Entity>[] = [
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
-            <Chip
-              key={t}
-              label={t}
-              color="secondary"
-              style={{ marginBottom: '0px' }}
-            />
+            <Chip key={t} label={t} style={{ marginBottom: '0px' }} />
           ))}
       </>
     ),

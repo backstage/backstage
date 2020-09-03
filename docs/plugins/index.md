@@ -21,7 +21,7 @@ To create a plugin, follow the steps outlined [here](create-a-plugin.md).
 
 If you start developing a plugin that you aim to release as open source, we
 suggest that you create a new
-[new Issue](https://github.com/spotify/backstage/issues/new?template=plugin_template.md).
+[new Issue](https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME).
 This helps the community know what plugins are in development.
 
 You can also use this process if you have an idea for a good plugin but you hope

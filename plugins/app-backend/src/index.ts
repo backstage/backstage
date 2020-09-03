@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { render } from '@testing-library/react';
-import React from 'react';
-import { EntityMetadataCard } from './EntityMetadataCard';
-
-describe('EntityMetadataCard component', () => {
-  it('should display entity name if provided', async () => {
-    const testEntity: Entity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
-      metadata: { name: 'test' },
-    };
-    const rendered = await render(<EntityMetadataCard entity={testEntity} />);
-    expect(await rendered.findByText('test')).toBeInTheDocument();
-  });
-});
+export * from './service/router';

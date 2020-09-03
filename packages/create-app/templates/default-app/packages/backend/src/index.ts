@@ -7,7 +7,7 @@
  */
 
 import {
-  createDatabase,
+  createDatabaseClient,
   createServiceBuilder,
   loadBackendConfig,
   getRootLogger,
@@ -27,11 +27,14 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
 
   return (plugin: string): PluginEnvironment => {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
-    const database = createDatabase(config.getConfig('backend.database'), {
-      connection: {
-        database: `backstage_plugin_${plugin}`,
+    const database = createDatabaseClient(
+      config.getConfig('backend.database'),
+      {
+        connection: {
+          database: `backstage_plugin_${plugin}`,
+        },
       },
-    });
+    );
     return { logger, database, config };
   };
 }
@@ -55,7 +58,7 @@ async function main() {
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
     .addRouter('/techdocs', await techdocs(techdocsEnv))
-    .addRouter('/proxy', await proxy(proxyEnv));
+    .addRouter('/proxy', await proxy(proxyEnv, '/proxy'));
 
   await service.start().catch(err => {
     console.log(err);
