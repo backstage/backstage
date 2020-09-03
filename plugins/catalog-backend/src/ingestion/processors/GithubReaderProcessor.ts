@@ -24,12 +24,12 @@ export class GithubReaderProcessor implements LocationProcessor {
   private privateToken: string;
 
   constructor(config?: Config) {
-    if (config == undefined){
-      this.privateToken = ''
+    if (config === undefined) {
+      this.privateToken = '';
     } else {
       this.privateToken =
-      config.getOptionalString('catalog.processors.github.privateToken') ??
-      '';
+        config.getOptionalString('catalog.processors.github.privateToken') ??
+        '';
     }
   }
 

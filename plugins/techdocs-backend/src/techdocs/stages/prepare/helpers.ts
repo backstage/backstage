@@ -113,8 +113,8 @@ export const checkoutGithubRepository = async (
     parsedGitLocation.name,
     parsedGitLocation.ref,
   );
-  
-  console.log(repoUrl)
+
+  console.log(repoUrl);
 
   if (fs.existsSync(repositoryTmpPath)) {
     const repository = await Repository.open(repositoryTmpPath);
@@ -125,8 +125,8 @@ export const checkoutGithubRepository = async (
     return repositoryTmpPath;
   }
 
-  if (user != '' && token != ''){
-    parsedGitLocation.token = user+":"+token;
+  if (user !== '' && token !== '') {
+    parsedGitLocation.token = `${user}:${token}`;
   }
 
   const repositoryCheckoutUrl = parsedGitLocation.toString('https');
