@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",
-    "@types/inquirer": "^6.5.0",
+    "@types/inquirer": "^7.3.1",
     "@types/ora": "^3.2.0",
     "@types/react-dev-utils": "^9.0.4",
     "@types/recursive-readdir": "^2.2.0",
