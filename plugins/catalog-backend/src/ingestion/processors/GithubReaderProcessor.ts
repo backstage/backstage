@@ -28,7 +28,7 @@ export class GithubReaderProcessor implements LocationProcessor {
       this.privateToken = '';
     } else {
       this.privateToken =
-        config.getOptionalString('catalog.processors.github.privateToken') ??
+        config?.getOptionalString('catalog.processors.github.privateToken') ??
         '';
     }
   }
