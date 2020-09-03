@@ -17,13 +17,12 @@
 import express from 'express';
 import passport from 'passport';
 import { Strategy as OAuth2Strategy } from 'passport-oauth2';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
 import {
   OAuthProvider,
   OAuthProviderOptions,
   OAuthProviderHandlers,
   OAuthResponse,
+  OAuthEnvironmentHandler,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -33,8 +32,7 @@ import {
   makeProfileInfo,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { AuthProviderConfig, RedirectInfo } from '../types';
-import { Config } from '@backstage/config';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -158,31 +156,30 @@ export class OAuth2AuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createOAuth2Provider(
-  config: AuthProviderConfig,
-  _: string,
-  envConfig: Config,
-  _logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const providerId = 'oauth2';
-  const clientId = envConfig.getString('clientId');
-  const clientSecret = envConfig.getString('clientSecret');
-  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
-  const authorizationUrl = envConfig.getString('authorizationUrl');
-  const tokenUrl = envConfig.getString('tokenUrl');
+export const createOAuth2Provider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    const providerId = 'oauth2';
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+    const authorizationUrl = envConfig.getString('authorizationUrl');
+    const tokenUrl = envConfig.getString('tokenUrl');
 
-  const provider = new OAuth2AuthProvider({
-    clientId,
-    clientSecret,
-    callbackUrl,
-    authorizationUrl,
-    tokenUrl,
-  });
+    const provider = new OAuth2AuthProvider({
+      clientId,
+      clientSecret,
+      callbackUrl,
+      authorizationUrl,
+      tokenUrl,
+    });
 
-  return OAuthProvider.fromConfig(config, provider, {
-    disableRefresh: false,
-    providerId,
-    tokenIssuer,
+    return OAuthProvider.fromConfig(globalConfig, provider, {
+      disableRefresh: false,
+      providerId,
+      tokenIssuer,
+    });
   });
-}

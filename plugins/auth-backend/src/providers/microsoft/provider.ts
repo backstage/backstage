@@ -27,17 +27,15 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 
-import { AuthProviderConfig, RedirectInfo } from '../types';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 
 import {
   OAuthProvider,
   OAuthProviderOptions,
   OAuthProviderHandlers,
   OAuthResponse,
+  OAuthEnvironmentHandler,
 } from '../../lib/oauth';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
-import { Config } from '@backstage/config';
 
 import got from 'got';
 
@@ -204,34 +202,33 @@ export class MicrosoftAuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createMicrosoftProvider(
-  config: AuthProviderConfig,
-  _: string,
-  envConfig: Config,
-  _logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const providerId = 'microsoft';
+export const createMicrosoftProvider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    const providerId = 'microsoft';
 
-  const clientId = envConfig.getString('clientId');
-  const clientSecret = envConfig.getString('clientSecret');
-  const tenantID = envConfig.getString('tenantId');
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+    const tenantID = envConfig.getString('tenantId');
 
-  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
-  const authorizationUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/authorize`;
-  const tokenUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/token`;
+    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+    const authorizationUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/authorize`;
+    const tokenUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/token`;
 
-  const provider = new MicrosoftAuthProvider({
-    clientId,
-    clientSecret,
-    callbackUrl,
-    authorizationUrl,
-    tokenUrl,
+    const provider = new MicrosoftAuthProvider({
+      clientId,
+      clientSecret,
+      callbackUrl,
+      authorizationUrl,
+      tokenUrl,
+    });
+
+    return OAuthProvider.fromConfig(globalConfig, provider, {
+      disableRefresh: false,
+      providerId,
+      tokenIssuer,
+    });
   });
-
-  return OAuthProvider.fromConfig(config, provider, {
-    disableRefresh: false,
-    providerId,
-    tokenIssuer,
-  });
-}

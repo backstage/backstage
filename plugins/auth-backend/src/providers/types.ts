@@ -108,24 +108,18 @@ export interface AuthProviderRouteHandlers {
    * @param {express.Response} res
    */
   logout?(req: express.Request, res: express.Response): Promise<void>;
-
-  /**
-   *(Optional) A method to identify the environment Context of the Request
-   *
-   *Request
-   *- contains the environment context information encoded in the request
-   *  @param {express.Request} req
-   */
-  identifyEnv?(req: express.Request): string | undefined;
 }
 
+export type AuthProviderFactoryOptions = {
+  globalConfig: AuthProviderConfig;
+  config: Config;
+  logger: Logger;
+  tokenIssuer: TokenIssuer;
+};
+
 export type AuthProviderFactory = (
-  globalConfig: AuthProviderConfig,
-  env: string,
-  envConfig: Config,
-  logger: Logger,
-  issuer: TokenIssuer,
-) => AuthProviderRouteHandlers | undefined;
+  options: AuthProviderFactoryOptions,
+) => AuthProviderRouteHandlers;
 
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;

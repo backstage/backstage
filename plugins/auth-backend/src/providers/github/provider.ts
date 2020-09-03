@@ -22,17 +22,15 @@ import {
   makeProfileInfo,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { AuthProviderConfig, RedirectInfo } from '../types';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 import {
   OAuthProvider,
   OAuthProviderOptions,
   OAuthProviderHandlers,
   OAuthResponse,
+  OAuthEnvironmentHandler,
 } from '../../lib/oauth';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
 import passport from 'passport';
-import { Config } from '@backstage/config';
 
 export type GithubAuthProviderOptions = OAuthProviderOptions & {
   tokenUrl?: string;
@@ -136,43 +134,42 @@ export class GithubAuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createGithubProvider(
-  config: AuthProviderConfig,
-  _: string,
-  envConfig: Config,
-  _logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const providerId = 'github';
-  const clientId = envConfig.getString('clientId');
-  const clientSecret = envConfig.getString('clientSecret');
-  const enterpriseInstanceUrl = envConfig.getOptionalString(
-    'enterpriseInstanceUrl',
-  );
-  const authorizationUrl = enterpriseInstanceUrl
-    ? `${enterpriseInstanceUrl}/login/oauth/authorize`
-    : undefined;
-  const tokenUrl = enterpriseInstanceUrl
-    ? `${enterpriseInstanceUrl}/login/oauth/access_token`
-    : undefined;
-  const userProfileUrl = enterpriseInstanceUrl
-    ? `${enterpriseInstanceUrl}/api/v3/user`
-    : undefined;
-  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
+export const createGithubProvider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    const providerId = 'github';
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+    const enterpriseInstanceUrl = envConfig.getOptionalString(
+      'enterpriseInstanceUrl',
+    );
+    const authorizationUrl = enterpriseInstanceUrl
+      ? `${enterpriseInstanceUrl}/login/oauth/authorize`
+      : undefined;
+    const tokenUrl = enterpriseInstanceUrl
+      ? `${enterpriseInstanceUrl}/login/oauth/access_token`
+      : undefined;
+    const userProfileUrl = enterpriseInstanceUrl
+      ? `${enterpriseInstanceUrl}/api/v3/user`
+      : undefined;
+    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-  const provider = new GithubAuthProvider({
-    clientId,
-    clientSecret,
-    callbackUrl,
-    tokenUrl,
-    userProfileUrl,
-    authorizationUrl,
-  });
+    const provider = new GithubAuthProvider({
+      clientId,
+      clientSecret,
+      callbackUrl,
+      tokenUrl,
+      userProfileUrl,
+      authorizationUrl,
+    });
 
-  return OAuthProvider.fromConfig(config, provider, {
-    disableRefresh: true,
-    persistScopes: true,
-    providerId,
-    tokenIssuer,
+    return OAuthProvider.fromConfig(globalConfig, provider, {
+      disableRefresh: true,
+      persistScopes: true,
+      providerId,
+      tokenIssuer,
+    });
   });
-}

@@ -19,6 +19,7 @@ import {
   OAuthProviderOptions,
   OAuthProviderHandlers,
   OAuthResponse,
+  OAuthEnvironmentHandler,
 } from '../../lib/oauth';
 import { Strategy as OktaStrategy } from 'passport-okta-oauth';
 import passport from 'passport';
@@ -30,11 +31,8 @@ import {
   executeFetchUserProfileStrategy,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { AuthProviderConfig, RedirectInfo } from '../types';
-import { Logger } from 'winston';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 import { StateStore } from 'passport-oauth2';
-import { TokenIssuer } from '../../identity';
-import { Config } from '@backstage/config';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -169,29 +167,28 @@ export class OktaAuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createOktaProvider(
-  config: AuthProviderConfig,
-  _: string,
-  envConfig: Config,
-  _logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const providerId = 'okta';
-  const clientId = envConfig.getString('clientId');
-  const clientSecret = envConfig.getString('clientSecret');
-  const audience = envConfig.getString('audience');
-  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
+export const createOktaProvider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    const providerId = 'okta';
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+    const audience = envConfig.getString('audience');
+    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-  const provider = new OktaAuthProvider({
-    audience,
-    clientId,
-    clientSecret,
-    callbackUrl,
-  });
+    const provider = new OktaAuthProvider({
+      audience,
+      clientId,
+      clientSecret,
+      callbackUrl,
+    });
 
-  return OAuthProvider.fromConfig(config, provider, {
-    disableRefresh: false,
-    providerId,
-    tokenIssuer,
+    return OAuthProvider.fromConfig(globalConfig, provider, {
+      disableRefresh: false,
+      providerId,
+      tokenIssuer,
+    });
   });
-}

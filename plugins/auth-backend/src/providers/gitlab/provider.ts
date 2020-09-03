@@ -22,17 +22,15 @@ import {
   makeProfileInfo,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { AuthProviderConfig, RedirectInfo } from '../types';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 import {
   OAuthProvider,
   OAuthProviderOptions,
   OAuthProviderHandlers,
   OAuthResponse,
+  OAuthEnvironmentHandler,
 } from '../../lib/oauth';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
 import passport from 'passport';
-import { Config } from '@backstage/config';
 
 export type GitlabAuthProviderOptions = OAuthProviderOptions & {
   baseUrl: string;
@@ -139,30 +137,29 @@ export class GitlabAuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createGitlabProvider(
-  config: AuthProviderConfig,
-  _: string,
-  envConfig: Config,
-  _logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const providerId = 'gitlab';
-  const clientId = envConfig.getString('clientId');
-  const clientSecret = envConfig.getString('clientSecret');
-  const audience = envConfig.getString('audience');
-  const baseUrl = audience || 'https://gitlab.com';
-  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
+export const createGitlabProvider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    const providerId = 'gitlab';
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+    const audience = envConfig.getString('audience');
+    const baseUrl = audience || 'https://gitlab.com';
+    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-  const provider = new GitlabAuthProvider({
-    clientId,
-    clientSecret,
-    callbackUrl,
-    baseUrl,
-  });
+    const provider = new GitlabAuthProvider({
+      clientId,
+      clientSecret,
+      callbackUrl,
+      baseUrl,
+    });
 
-  return OAuthProvider.fromConfig(config, provider, {
-    disableRefresh: true,
-    providerId,
-    tokenIssuer,
+    return OAuthProvider.fromConfig(globalConfig, provider, {
+      disableRefresh: true,
+      providerId,
+      tokenIssuer,
+    });
   });
-}
