@@ -145,25 +145,4 @@ describe('loadConfig', () => {
       },
     ]);
   });
-
-  it('coerces port to a number', async () => {
-    await expect(
-      loadConfig({
-        rootPaths: ['/secret-port'],
-        env: 'production',
-        shouldReadSecrets: true,
-      }),
-    ).resolves.toEqual([
-      {
-        context: 'app-config.yaml',
-        data: {
-          backend: {
-            listen: {
-              port: 12345,
-            },
-          },
-        },
-      },
-    ]);
-  });
 });
