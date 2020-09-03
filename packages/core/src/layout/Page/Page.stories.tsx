@@ -174,14 +174,31 @@ const DataGrid: React.FC<{}> = () => (
   </Grid>
 );
 
-export const PluginWithData = () => {
+const ExampleHeader: React.FC<{}> = () => (
+  <Header title="Example" subtitle="This an example plugin">
+    <HeaderLabel label="Owner" value="Owner" />
+    <HeaderLabel label="Lifecycle" value="Lifecycle" />
+  </Header>
+);
+
+const ExampleContentHeader: React.FC<{ selectedTab?: number }> = ({
+  selectedTab,
+}) => (
+  <ContentHeader
+    title={selectedTab !== undefined ? tabs[selectedTab].label : 'Header'}
+  >
+    <SupportButton>
+      This Plugin is an example. This text could provide usefull information for
+      the user.
+    </SupportButton>
+  </ContentHeader>
+);
+
+export const PluginWithData: React.FC<{}> = () => {
   const [selectedTab, setSelectedTab] = useState<number>(2);
   return (
     <Page theme={pageTheme.tool}>
-      <Header title="Example" subtitle="This an example plugin">
-        <HeaderLabel label="Owner" value="Owner" />
-        <HeaderLabel label="Lifecycle" value="Lifecycle" />
-      </Header>
+      <ExampleHeader />
       <HeaderTabs
         selectedIndex={selectedTab}
         onChange={index => setSelectedTab(index)}
@@ -191,35 +208,19 @@ export const PluginWithData = () => {
         }))}
       />
       <Content>
-        <ContentHeader title={tabs[selectedTab].label}>
-          <SupportButton>
-            This Plugin is an example. This text could provide usefull
-            information for the user.
-          </SupportButton>
-        </ContentHeader>
+        <ExampleContentHeader selectedTab={selectedTab} />
         <DataGrid />
       </Content>
     </Page>
   );
 };
 
-export const PluginWithTable = () => {
+export const PluginWithTable: React.FC<{}> = () => {
   return (
     <Page theme={pageTheme.tool}>
-      <Header title="Example" subtitle="This an example plugin">
-        <HeaderLabel label="Owner" value="Owner" />
-        <HeaderLabel label="Lifecycle" value="Lifecycle" />
-      </Header>
+      <ExampleHeader />
       <Content>
-        <ContentHeader title="Header">
-          <Button color="primary" variant="contained">
-            Settings
-          </Button>
-          <SupportButton>
-            This Plugin is an example. This text could provide usefull
-            information for the user.
-          </SupportButton>
-        </ContentHeader>
+        <ExampleContentHeader />
         <Table
           options={{ paging: true, padding: 'dense' }}
           data={generateTestData(10)}
