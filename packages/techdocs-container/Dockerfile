@@ -12,9 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM python:3.7.7-alpine3.12
+FROM python:3.8-alpine
 
-RUN apk update && apk --no-cache add gcc musl-dev
-RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.0.3 mkdocs==1.1.2 mkdocs-material==5.3.2 mkdocs-monorepo-plugin==0.4.5 pymdown-extensions==7.1
+
+RUN apk update && apk --no-cache add gcc musl-dev openjdk11-jdk curl graphviz ttf-dejavu fontconfig
+
+RUN curl -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2020.16.jar/download > /opt/plantuml.jar
+RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.0.3
+
+# Create script to call plantuml.jar from a location in path
+
+RUN echo "java -jar '/opt/plantuml.jar' ${@}" >> /usr/local/bin/plantuml
+RUN chmod 755 /usr/local/bin/plantuml
+
 
 ENTRYPOINT [ "mkdocs" ]
