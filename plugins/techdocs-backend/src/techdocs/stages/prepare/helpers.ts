@@ -114,8 +114,6 @@ export const checkoutGithubRepository = async (
     parsedGitLocation.ref,
   );
 
-  console.log(repoUrl);
-
   if (fs.existsSync(repositoryTmpPath)) {
     const repository = await Repository.open(repositoryTmpPath);
     await repository.mergeBranches(
