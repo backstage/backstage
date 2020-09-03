@@ -4769,9 +4769,9 @@
     rollup "^0.63.4"
 
 "@types/rollup-plugin-postcss@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@types/rollup-plugin-postcss/-/rollup-plugin-postcss-2.0.0.tgz#b1bcc686c7dbe441f2fcfb47cac01acc508f46c0"
-  integrity sha512-lw4LvCcWpQ/Yomb9bxT69uAN5ZfW6nhL9itEu3z0IzsNNqKalwIDo7pEK8jxoiHQmcPaYzayAfo4M1JT/h8crw==
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@types/rollup-plugin-postcss/-/rollup-plugin-postcss-2.0.1.tgz#f2c73a458b035db8af361c4a7d921f74c6d4dffa"
+  integrity sha512-q+o1V6536wwIIlwJzEjm09emg/1QIceJXo01h6fTA1JJY4p/QQTOc10mizp4NhmwRMB8LVOThCgkwvQgzvJFjQ==
   dependencies:
     "@types/cssnano" "*"
     "@types/node" "*"
