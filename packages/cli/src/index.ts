@@ -44,6 +44,10 @@ const main = (argv: string[]) => {
     .description(
       'Builds a docker image from the package, with all local deps included',
     )
+    .option(
+      '--docker-opts <docker-opts>',
+      'Options that are forwarded to the docker build command. Ex: --docker-opts "--build-arg VAR1 --build-arg VAR2"',
+    )
     .action(
       lazyAction(() => import('./commands/backend/buildImage'), 'default'),
     );
