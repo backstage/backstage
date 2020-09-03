@@ -30,6 +30,14 @@ jest.mock('fs-extra', () => {
         sessionKey: development-key
     `,
     '/root/secrets/session-key.txt': 'abc123',
+    '/secret-port/app-config.yaml': `
+      backend:
+        listen:
+          port:
+            $secret:
+              file: secrets/port.txt
+    `,
+    '/secret-port/secrets/port.txt': '12345',
   };
 
   return {
@@ -132,6 +140,27 @@ describe('loadConfig', () => {
         data: {
           app: {
             sessionKey: 'development-key',
+          },
+        },
+      },
+    ]);
+  });
+
+  it('coerces port to a number', async () => {
+    await expect(
+      loadConfig({
+        rootPaths: ['/secret-port'],
+        env: 'production',
+        shouldReadSecrets: true,
+      }),
+    ).resolves.toEqual([
+      {
+        context: 'app-config.yaml',
+        data: {
+          backend: {
+            listen: {
+              port: 12345,
+            },
           },
         },
       },
