@@ -110,3 +110,7 @@
 .Author a:hover {
   color: white;
 }
+
+#add-plugin-card {
+  border: 1px solid #36baa2;
+}

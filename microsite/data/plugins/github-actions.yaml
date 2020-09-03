@@ -1,7 +1,7 @@
 ---
 title: GitHub Actions
 author: Spotify
-authorUrl: https://www.spotify.com/
+authorUrl: https://github.com/spotify
 category: CI
 description: GitHub Actions makes it easy to automate all your software workflows, now with world-class CI/CD. Build, test, and deploy your code right from GitHub.
 documentation: https://github.com/spotify/backstage/tree/master/plugins/github-actions
