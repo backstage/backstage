@@ -29,7 +29,7 @@
     "node-fetch": "^2.6.0",
     "pgtools": "^0.3.0",
     "tree-kill": "^1.2.2",
-    "ts-node": "^8.6.2",
+    "ts-node": "^9.0.0",
     "zombie": "^6.1.4"
   }
 }

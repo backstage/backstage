@@ -42,7 +42,7 @@
     "@types/ora": "^3.2.0",
     "@types/react-dev-utils": "^9.0.4",
     "@types/recursive-readdir": "^2.2.0",
-    "ts-node": "^8.6.2"
+    "ts-node": "^9.0.0"
   },
   "files": [
     "bin",

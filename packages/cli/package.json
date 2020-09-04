@@ -115,7 +115,7 @@
     "@types/webpack-dev-server": "^3.10.0",
     "del": "^5.1.0",
     "nodemon": "^2.0.2",
-    "ts-node": "^8.6.2"
+    "ts-node": "^9.0.0"
   },
   "files": [
     "asset-types",
