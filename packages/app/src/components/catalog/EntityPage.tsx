@@ -21,6 +21,7 @@ import {
   Router as CircleCIRouter,
   isPluginApplicableToEntity as isCircleCIAvailable,
 } from '@backstage/plugin-circleci';
+import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import React from 'react';
 import {
   EntityPageLayout,
@@ -69,6 +70,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="CI/CD"
       element={<CICDSwitcher entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/sentry"
+      title="Sentry"
+      element={<SentryRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -83,6 +89,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/ci-cd/*"
       title="CI/CD"
       element={<CICDSwitcher entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/sentry"
+      title="Sentry"
+      element={<SentryRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
