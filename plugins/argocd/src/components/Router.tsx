@@ -17,26 +17,26 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Routes, Route } from 'react-router';
 import { rootRouteRef } from '../plugin';
-import { PullRequestsTable } from './PullRequestsTable';
-import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
+import { ArgocdIframe } from './ArgocdPage';
+import { ARGOCD_ANNOTATION } from './useProjectName';
 import { WarningPanel } from '@backstage/core';
 
 const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]) &&
-  entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] !== '';
+  Boolean(entity.metadata.annotations?.[ARGOCD_ANNOTATION]) &&
+  entity.metadata.annotations?.[ARGOCD_ANNOTATION] !== '';
 
 export const Router = ({ entity }: { entity: Entity }) =>
   // TODO(shmidt-i): move warning to a separate standardized component
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title=" GitHubActions plugin:">
+    <WarningPanel title=" Argocd plugin:">
       `entity.metadata.annotations['
-      {GITHUB_ACTIONS_ANNOTATION}']` key is missing on the entity.{' '}
+      {ARGOCD_ANNOTATION}']` key is missing on the entity.{' '}
     </WarningPanel>
   ) : (
     <Routes>
       <Route
         path={`/${rootRouteRef.path}`}
-        element={<PullRequestsTable entity={entity} />}
+        element={<ArgocdIframe entity={entity} />}
       />
       )
     </Routes>

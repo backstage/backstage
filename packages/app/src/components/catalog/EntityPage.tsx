@@ -15,6 +15,8 @@
  */
 import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
 import { Router as GitHubPullRequestRouter } from '@backstage/plugin-github-prs';
+import { Router as ArgocdRequestRouter } from '@backstage/plugin-argocd';
+
 import React from 'react';
 import {
   EntityPageLayout,
@@ -48,6 +50,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/pr/*"
       title="Pull Requests"
       element={<GitHubPullRequestRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/argo/*"
+      title="ArgoCD"
+      element={<ArgocdRequestRouter entity={entity} />}
     />
   </EntityPageLayout>
 );

@@ -14,9 +14,48 @@
  * limitations under the License.
  */
 
+import React from 'react';
+import { Grid } from '@material-ui/core';
+import {
+  Header,
+  Page,
+  pageTheme,
+  Content,
+  ContentHeader,
+  HeaderLabel,
+  SupportButton,
+} from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
 
- export const ArgocdIframe = FC<{}> = () => (
-     return (
-         <iframe src="url" />
-     )
- )}
+export const ArgocdIframe = ({ entity }: { entity?: Entity }) => {
+  return (
+    <iframe
+      title="argocd"
+      src={entity?.metadata.annotations?.['argocd/endpoint']}
+      height="100%"
+      width="100%"
+      frameBorder="0"
+    />
+  );
+};
+
+const ArgocdPage = ({ entity }: { entity?: Entity }) => (
+  <Page theme={pageTheme.tool}>
+    <Header title="Welcome to ArgoCD!">
+      <HeaderLabel label="Owner" value="trivago" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+    <Content>
+      <ContentHeader title="ArgoCD plugin">
+        <SupportButton>Plugin to show a ArgoCD interface</SupportButton>
+      </ContentHeader>
+      <Grid container spacing={3} direction="column">
+        <Grid item>
+          <ArgocdIframe entity={entity} />
+        </Grid>
+      </Grid>
+    </Content>
+  </Page>
+);
+
+export default ArgocdPage;

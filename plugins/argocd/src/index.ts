@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 export { plugin } from './plugin';
+export { Router } from './components/Router';
+export { ARGOCD_ANNOTATION } from './components/useProjectName';

@@ -28,5 +28,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { PullRequestsTable, PullRequestsTableView } from './PullRequestsTable';
-export type { PullRequest } from '../usePullRequests';
+
+export { default, ArgocdIframe } from './ArgocdPage';

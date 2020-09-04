@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 import { createPlugin, createRouteRef } from '@backstage/core';
-import ExampleComponent from './components/ExampleComponent';
 
 export const rootRouteRef = createRouteRef({
-  path: '/argocd',
-  title: 'argocd',
+  path: '',
+  title: 'ArgoCD',
 });
 
 export const plugin = createPlugin({
   id: 'argocd',
-  register({ router }) {
-    router.addRoute(rootRouteRef, ExampleComponent);
-  },
 });

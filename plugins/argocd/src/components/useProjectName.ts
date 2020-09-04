@@ -33,7 +33,7 @@ import { useAsync } from 'react-use';
 import { catalogApiRef, EntityCompoundName } from '@backstage/plugin-catalog';
 import { useApi } from '@backstage/core';
 
-export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
+export const ARGOCD_ANNOTATION = 'argocd/endpoint';
 
 export const useProjectName = (name: EntityCompoundName) => {
   const catalogApi = useApi(catalogApiRef);
