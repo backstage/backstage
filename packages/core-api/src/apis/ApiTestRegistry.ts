@@ -31,7 +31,9 @@ export class ApiTestRegistry implements ApiHolder {
     return this.load(ref);
   }
 
-  register<A, I, D>(factory: ApiFactory<A, I, D>): ApiTestRegistry {
+  register<A, D extends { [name in string]: unknown }>(
+    factory: ApiFactory<A, D>,
+  ): ApiTestRegistry {
     this.factories.set(factory.implements, factory);
     return this;
   }

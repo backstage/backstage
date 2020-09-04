@@ -41,9 +41,9 @@ type FactoryTuple = {
 export class ApiFactoryRegistry implements ApiFactoryHolder {
   private readonly factories = new Map<AnyApiRef, FactoryTuple>();
 
-  register<Api, Impl, Deps extends { [name in string]: unknown }>(
+  register<Api, Deps extends { [name in string]: unknown }>(
     scope: ApiFactoryScope,
-    factory: ApiFactory<Api, Impl, Deps>,
+    factory: ApiFactory<Api, Deps>,
   ) {
     const level = ScopeLevels[scope];
     const existing = this.factories.get(factory.implements);
@@ -55,14 +55,12 @@ export class ApiFactoryRegistry implements ApiFactoryHolder {
     return true;
   }
 
-  get<T>(
-    api: ApiRef<T>,
-  ): ApiFactory<T, T, { [x: string]: unknown }> | undefined {
+  get<T>(api: ApiRef<T>): ApiFactory<T, { [x: string]: unknown }> | undefined {
     const tuple = this.factories.get(api);
     if (!tuple) {
       return undefined;
     }
-    return tuple.factory as ApiFactory<T, T, { [x: string]: unknown }>;
+    return tuple.factory as ApiFactory<T, { [x: string]: unknown }>;
   }
 
   getAllApis(): Set<AnyApiRef> {

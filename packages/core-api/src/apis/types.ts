@@ -30,24 +30,16 @@ export type ApiHolder = {
   get<T>(api: ApiRef<T>): T | undefined;
 };
 
-export type ApiFactory<
-  Api,
-  Impl,
-  Deps extends { [name in string]: unknown }
-> = {
+export type ApiFactory<Api, Deps extends { [name in string]: unknown }> = {
   implements: ApiRef<Api>;
   deps: TypesToApiRefs<Deps>;
-  factory(deps: Deps): Impl extends Api ? Impl : never;
+  factory(deps: Deps): Api;
 };
 
-export type AnyApiFactory = ApiFactory<
-  unknown,
-  unknown,
-  { [key in string]: unknown }
->;
+export type AnyApiFactory = ApiFactory<unknown, { [key in string]: unknown }>;
 
 export type ApiFactoryHolder = {
   get<T>(
     api: ApiRef<T>,
-  ): ApiFactory<T, T, { [key in string]: unknown }> | undefined;
+  ): ApiFactory<T, { [key in string]: unknown }> | undefined;
 };

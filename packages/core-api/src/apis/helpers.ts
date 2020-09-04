@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiFactory } from './types';
+import { ApiFactory, TypesToApiRefs } from './types';
 import { ApiRef } from './ApiRef';
 
 /**
@@ -26,25 +26,24 @@ export function createApiFactory<
   Api,
   Impl extends Api,
   Deps extends { [name in string]: unknown }
->(factory: ApiFactory<Api, Impl, Deps>): ApiFactory<Api, Impl, Deps>;
-export function createApiFactory<Api, Impl extends Api>(
+>(factory: ApiFactory<Api, Deps>): ApiFactory<Api, Deps>;
+export function createApiFactory<Api>(
   api: ApiRef<Api>,
-  instance: Impl,
-): ApiFactory<Api, Impl, {}>;
+  instance: Api,
+): ApiFactory<Api, {}>;
 export function createApiFactory<
   Api,
-  Impl extends Api,
   Deps extends { [name in string]: unknown }
 >(
-  factory: ApiFactory<Api, Impl, Deps> | ApiRef<Api>,
-  instance?: Impl,
-): ApiFactory<Api, Impl, Deps> {
+  factory: ApiFactory<Api, Deps> | ApiRef<Api>,
+  instance?: Api,
+): ApiFactory<Api, Deps> {
   if ('id' in factory) {
-    return ({
+    return {
       implements: factory,
-      deps: {},
+      deps: {} as TypesToApiRefs<Deps>,
       factory: () => instance!,
-    } as unknown) as ApiFactory<Api, Impl, Deps>;
+    };
   }
   return factory;
 }
