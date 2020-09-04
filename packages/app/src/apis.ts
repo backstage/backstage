@@ -38,6 +38,7 @@ import {
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 
 export const apis = [
+  // TODO(Rugvip): migrate to use /api
   createApiFactory({
     implements: discoveryApiRef,
     deps: { configApi: configApiRef },

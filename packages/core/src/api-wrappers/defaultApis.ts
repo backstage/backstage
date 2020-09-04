@@ -42,9 +42,19 @@ import {
   storageApiRef,
   WebStorage,
   createApiFactory,
+  configApiRef,
+  UrlPatternDiscovery,
 } from '@backstage/core-api';
 
 export const defaultApis = [
+  createApiFactory({
+    implements: discoveryApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) =>
+      UrlPatternDiscovery.compile(
+        `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
+      ),
+  }),
   createApiFactory(alertApiRef, new AlertApiForwarder()),
   createApiFactory({
     implements: errorApiRef,
