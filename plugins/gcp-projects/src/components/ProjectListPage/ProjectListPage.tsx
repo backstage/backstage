@@ -34,7 +34,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   Tooltip,
@@ -89,7 +88,7 @@ const PageContents = () => {
   }
 
   return (
-    <TableContainer component={Paper}>
+    <Table component={Paper}>
       <Table aria-label="GCP Projects table">
         <TableHead>
           <TableRow>
@@ -141,7 +140,7 @@ const PageContents = () => {
           ))}
         </TableBody>
       </Table>
-    </TableContainer>
+    </Table>
   );
 };
 
