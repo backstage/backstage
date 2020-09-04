@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
+import {
+  Router as GitHubActionsRouter,
+  isPluginApplicableToEntity as isGitHubActionsAvaiable,
+} from '@backstage/plugin-github-actions';
+import {
+  Router as CircleCIRouter,
+  isPluginApplicableToEntity as isCircleCIAvailable,
+} from '@backstage/plugin-circleci';
 import React from 'react';
 import {
   EntityPageLayout,
@@ -22,6 +29,25 @@ import {
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 import { Grid } from '@material-ui/core';
+import { WarningPanel } from '@backstage/core';
+
+const CICDSwitcher = ({ entity }: { entity: Entity }) => {
+  // This component is just an example of how you can implement your company's logic in entity page.
+  // You can for example enforce that all components of type 'service' should use GitHubActions
+  switch (true) {
+    case isGitHubActionsAvaiable(entity):
+      return <GitHubActionsRouter entity={entity} />;
+    case isCircleCIAvailable(entity):
+      return <CircleCIRouter entity={entity} />;
+    default:
+      return (
+        <WarningPanel title="CI/CD switcher:">
+          No CI/CD is available for this entity. Check corresponding
+          annotations!
+        </WarningPanel>
+      );
+  }
+};
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3}>
@@ -41,7 +67,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/ci-cd/*"
       title="CI/CD"
-      element={<GitHubActionsRouter entity={entity} />}
+      element={<CICDSwitcher entity={entity} />}
     />
   </EntityPageLayout>
 );
@@ -56,7 +82,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/ci-cd/*"
       title="CI/CD"
-      element={<GitHubActionsRouter entity={entity} />}
+      element={<CICDSwitcher entity={entity} />}
     />
   </EntityPageLayout>
 );

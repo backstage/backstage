@@ -99,7 +99,6 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarDivider />
       <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
       <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
-      <SidebarItem icon={BuildIcon} to="circleci" text="CircleCI" />
       <SidebarItem
         icon={graphiQLRouteRef.icon!}
         to={graphiQLRouteRef.path}
