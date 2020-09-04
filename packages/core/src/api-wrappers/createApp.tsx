@@ -17,7 +17,6 @@
 import React, { FC } from 'react';
 import privateExports, {
   AppOptions,
-  ApiRegistry,
   defaultSystemIcons,
   BootErrorPageProps,
   AppConfigLoader,
@@ -94,7 +93,7 @@ export function createApp(options?: AppOptions) {
     );
   };
 
-  const apis = options?.apis ?? ApiRegistry.from([]);
+  const apis = options?.apis ?? [];
   const icons = { ...defaultSystemIcons, ...options?.icons };
   const plugins = options?.plugins ?? [];
   const components = {
@@ -127,6 +126,7 @@ export function createApp(options?: AppOptions) {
     components,
     themes,
     configLoader,
+    defaultApiFactories: [],
   });
 
   app.verify();

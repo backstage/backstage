@@ -15,11 +15,9 @@
  */
 
 import {
-  ApiRegistry,
   alertApiRef,
   errorApiRef,
   AlertApiForwarder,
-  ConfigApi,
   ErrorApiForwarder,
   ErrorAlerter,
   featureFlagsApiRef,
@@ -44,6 +42,8 @@ import {
   microsoftAuthApiRef,
   storageApiRef,
   WebStorage,
+  createApiFactory,
+  configApiRef,
 } from '@backstage/core';
 
 import {
@@ -82,135 +82,162 @@ import {
   githubPullRequestsApiRef,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 
-export const apis = (config: ConfigApi) => {
-  // eslint-disable-next-line no-console
-  console.log(`Creating APIs for ${config.getString('app.title')}`);
-
-  const backendUrl = config.getString('backend.baseUrl');
-  const techdocsUrl = config.getString('techdocs.storageUrl');
-
-  const builder = ApiRegistry.builder();
-
-  const discoveryApi = builder.add(
-    discoveryApiRef,
-    UrlPatternDiscovery.compile(`${backendUrl}/{{ pluginId }}`),
-  );
-  const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
-  const errorApi = builder.add(
-    errorApiRef,
-    new ErrorAlerter(alertApi, new ErrorApiForwarder()),
-  );
-
-  builder.add(storageApiRef, WebStorage.create({ errorApi }));
-  builder.add(GCPApiRef, new GCPClient());
-  builder.add(
-    circleCIApiRef,
-    new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
-  );
-
-  builder.add(jenkinsApiRef, new JenkinsApi(`${backendUrl}/proxy/jenkins/api`));
-
-  builder.add(githubActionsApiRef, new GithubActionsClient());
-
-  builder.add(featureFlagsApiRef, new FeatureFlags());
-
-  builder.add(lighthouseApiRef, LighthouseRestApi.fromConfig(config));
-
-  builder.add(travisCIApiRef, new TravisCIApi());
-  builder.add(githubPullRequestsApiRef, new GithubPullRequestsClient());
-
-  const oauthRequestApi = builder.add(
-    oauthRequestApiRef,
-    new OAuthRequestManager(),
-  );
-
-  builder.add(
-    googleAuthApiRef,
-    GoogleAuth.create({
-      discoveryApi,
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    microsoftAuthApiRef,
-    MicrosoftAuth.create({
-      discoveryApi,
-      oauthRequestApi,
-    }),
-  );
-
-  const githubAuthApi = builder.add(
-    githubAuthApiRef,
-    GithubAuth.create({
-      discoveryApi,
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    oktaAuthApiRef,
-    OktaAuth.create({
-      discoveryApi,
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    gitlabAuthApiRef,
-    GitlabAuth.create({
-      discoveryApi,
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    auth0AuthApiRef,
-    Auth0Auth.create({
-      discoveryApi,
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    oauth2ApiRef,
-    OAuth2.create({
-      discoveryApi,
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(catalogApiRef, new CatalogClient({ discoveryApi }));
-
-  builder.add(scaffolderApiRef, new ScaffolderApi({ discoveryApi }));
-
-  builder.add(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008'));
-
-  builder.add(
-    graphQlBrowseApiRef,
-    GraphQLEndpoints.from([
-      GraphQLEndpoints.create({
-        id: 'gitlab',
-        title: 'GitLab',
-        url: 'https://gitlab.com/api/graphql',
+export const apis = [
+  createApiFactory(alertApiRef, new AlertApiForwarder()),
+  createApiFactory({
+    implements: errorApiRef,
+    deps: { alertApi: alertApiRef },
+    factory: ({ alertApi }) =>
+      new ErrorAlerter(alertApi, new ErrorApiForwarder()),
+  }),
+  createApiFactory({
+    implements: storageApiRef,
+    deps: { errorApi: errorApiRef },
+    factory: ({ errorApi }) => WebStorage.create({ errorApi }),
+  }),
+  createApiFactory({
+    implements: discoveryApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) =>
+      UrlPatternDiscovery.compile(
+        `${configApi.getString('backend.baseUrl')}/{{ pluginId }}`,
+      ),
+  }),
+  createApiFactory(GCPApiRef, new GCPClient()),
+  createApiFactory({
+    implements: circleCIApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) =>
+      new CircleCIApi(
+        `${configApi.getString('backend.baseUrl')}/proxy/circleci/api`,
+      ),
+  }),
+  createApiFactory({
+    implements: jenkinsApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) =>
+      new JenkinsApi(
+        `${configApi.getString('backend.baseUrl')}/proxy/jenkins/api`,
+      ),
+  }),
+  createApiFactory(githubActionsApiRef, new GithubActionsClient()),
+  createApiFactory(featureFlagsApiRef, new FeatureFlags()),
+  createApiFactory({
+    implements: lighthouseApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) => LighthouseRestApi.fromConfig(configApi),
+  }),
+  createApiFactory(travisCIApiRef, new TravisCIApi()),
+  createApiFactory(githubPullRequestsApiRef, new GithubPullRequestsClient()),
+  createApiFactory(oauthRequestApiRef, new OAuthRequestManager()),
+  createApiFactory({
+    implements: techRadarApiRef,
+    deps: {},
+    factory: () => new TechRadar({ width: 1500, height: 800 }),
+  }),
+  createApiFactory({
+    implements: googleAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      GoogleAuth.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    implements: microsoftAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      MicrosoftAuth.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    implements: githubAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      GithubAuth.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    implements: oktaAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      OktaAuth.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    implements: gitlabAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      GitlabAuth.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    implements: auth0AuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      Auth0Auth.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    implements: oauth2ApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      OAuth2.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    implements: catalogApiRef,
+    deps: { discoveryApi: discoveryApiRef },
+    factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
+  }),
+  createApiFactory({
+    implements: scaffolderApiRef,
+    deps: { discoveryApi: discoveryApiRef },
+    factory: ({ discoveryApi }) => new ScaffolderApi({ discoveryApi }),
+  }),
+  createApiFactory(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008')),
+  createApiFactory({
+    implements: graphQlBrowseApiRef,
+    deps: { errorApi: errorApiRef, githubAuthApi: githubAuthApiRef },
+    factory: ({ errorApi, githubAuthApi }) =>
+      GraphQLEndpoints.from([
+        GraphQLEndpoints.create({
+          id: 'gitlab',
+          title: 'GitLab',
+          url: 'https://gitlab.com/api/graphql',
+        }),
+        GraphQLEndpoints.github({
+          id: 'github',
+          title: 'GitHub',
+          errorApi,
+          githubAuthApi,
+        }),
+      ]),
+  }),
+  createApiFactory({
+    implements: rollbarApiRef,
+    deps: { discoveryApi: discoveryApiRef },
+    factory: ({ discoveryApi }) => new RollbarClient({ discoveryApi }),
+  }),
+  createApiFactory({
+    implements: techdocsStorageApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) =>
+      new TechDocsStorageApi({
+        apiOrigin: configApi.getString('techdocs.storageUrl'),
       }),
-      GraphQLEndpoints.github({
-        id: 'github',
-        title: 'GitHub',
-        errorApi,
-        githubAuthApi,
-      }),
-    ]),
-  );
-
-  builder.add(rollbarApiRef, new RollbarClient({ discoveryApi }));
-
-  builder.add(
-    techdocsStorageApiRef,
-    new TechDocsStorageApi({
-      apiOrigin: techdocsUrl,
-    }),
-  );
-
-  return builder.build();
-};
+  }),
+];
