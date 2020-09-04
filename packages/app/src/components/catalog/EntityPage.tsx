@@ -16,6 +16,7 @@
 import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
 import { Router as GitHubPullRequestRouter } from '@backstage/plugin-github-prs';
 import { Router as ArgocdRequestRouter } from '@backstage/plugin-argocd';
+import { Router as GrafanaRouter } from '@backstage/plugin-grafana';
 
 import React from 'react';
 import {
@@ -55,6 +56,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/argo/*"
       title="ArgoCD"
       element={<ArgocdRequestRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/grafana/*"
+      title="Grafana"
+      element={<GrafanaRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
