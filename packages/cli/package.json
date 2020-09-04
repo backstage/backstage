@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.21",
+  "version": "0.1.1-alpha.21.grab-fab",
   "private": false,
   "publishConfig": {
     "access": "public"
