@@ -19,7 +19,7 @@ import { Content, useApi } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { ApiCatalogTable } from '../ApiCatalogTable/ApiCatalogTable';
+import { ApiCatalogTable } from '../ApiCatalogTable';
 import ApiCatalogLayout from './ApiCatalogLayout';
 
 const CatalogPageContents = () => {
