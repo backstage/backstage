@@ -19,11 +19,8 @@ import {
   gitlabAuthApiRef,
   oktaAuthApiRef,
   githubAuthApiRef,
-<<<<<<< HEAD
   samlAuthApiRef,
-=======
   microsoftAuthApiRef,
->>>>>>> master
 } from '@backstage/core';
 
 export const providers = [

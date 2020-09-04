@@ -92,11 +92,6 @@ auth:
   providers:
     google:
       development:
-<<<<<<< HEAD
-        appOrigin: 'http://localhost:3000/'
-        secure: false
-=======
->>>>>>> master
         clientId:
           $secret:
             env: AUTH_GOOGLE_CLIENT_ID
@@ -105,11 +100,6 @@ auth:
             env: AUTH_GOOGLE_CLIENT_SECRET
     github:
       development:
-<<<<<<< HEAD
-        appOrigin: 'http://localhost:3000/'
-        secure: false
-=======
->>>>>>> master
         clientId:
           $secret:
             env: AUTH_GITHUB_CLIENT_ID
@@ -121,11 +111,6 @@ auth:
             env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:
       development:
-<<<<<<< HEAD
-        appOrigin: 'http://localhost:3000/'
-        secure: false
-=======
->>>>>>> master
         clientId:
           $secret:
             env: AUTH_GITLAB_CLIENT_ID
@@ -136,20 +121,10 @@ auth:
           $secret:
             env: GITLAB_BASE_URL
     saml:
-<<<<<<< HEAD
-      development:
-        entryPoint: 'http://localhost:7001/'
-        issuer: 'passport-saml'
+      entryPoint: 'http://localhost:7001/'
+      issuer: 'passport-saml'
     okta:
       development:
-        appOrigin: 'http://localhost:3000/'
-        secure: false
-=======
-      entryPoint: "http://localhost:7001/"
-      issuer: "passport-saml"
-    okta:
-      development:
->>>>>>> master
         clientId:
           $secret:
             env: AUTH_OKTA_CLIENT_ID
@@ -161,11 +136,6 @@ auth:
             env: AUTH_OKTA_AUDIENCE
     oauth2:
       development:
-<<<<<<< HEAD
-        appOrigin: 'http://localhost:3000/'
-        secure: false
-=======
->>>>>>> master
         clientId:
           $secret:
             env: AUTH_OAUTH2_CLIENT_ID

@@ -40,11 +40,8 @@ const app = createApp({
         <SignInPage
           {...props}
           providers={['guest', 'custom', ...providers]}
-<<<<<<< HEAD
-=======
           title="Select a sign-in method"
           align="center"
->>>>>>> master
         />
       );
     },

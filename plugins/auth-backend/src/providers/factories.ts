@@ -53,29 +53,7 @@ export const createAuthProviderRouter = (
 
   const router = Router();
 
-<<<<<<< HEAD
-  for (const env of envs) {
-    const envConfig = providerConfig.getConfig(env);
-    console.log(envConfig);
-    const provider = factory(globalConfig, env, envConfig, logger, issuer);
-    if (provider) {
-      envProviders[env] = provider;
-      envIdentifier = provider.identifyEnv;
-    }
-  }
-
-  if (typeof envIdentifier === 'undefined') {
-    throw Error(`No envIdentifier provided for '${providerId}'`);
-  }
-
-  const handler = new EnvironmentHandler(
-    providerId,
-    envProviders,
-    envIdentifier,
-  );
-=======
   const handler = factory({ globalConfig, config, logger, tokenIssuer });
->>>>>>> master
 
   router.get('/start', handler.start.bind(handler));
   router.get('/handler/frame', handler.frameHandler.bind(handler));

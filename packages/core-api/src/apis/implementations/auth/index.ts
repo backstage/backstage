@@ -19,9 +19,6 @@ export * from './gitlab';
 export * from './google';
 export * from './oauth2';
 export * from './okta';
-<<<<<<< HEAD
 export * from './saml';
-=======
 export * from './auth0';
 export * from './microsoft';
->>>>>>> master
