@@ -20,7 +20,7 @@ import { TechDocsDevStorageApi } from './api';
 import { techdocsStorageApiRef } from '../src';
 
 createDevApp()
-  .registerApiFactory({
+  .registerApi({
     deps: {},
     factory: () =>
       new TechDocsDevStorageApi({
