@@ -21,7 +21,7 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
-import { Command } from 'commander';
+//import { Command } from 'commander';
 import {
   parseOwnerIds,
   addCodeownersEntry,
@@ -88,9 +88,9 @@ export async function addPluginDependencyToApp(
   rootDir: string,
   pluginName: string,
   versionStr: string,
-  npmScope: string,
+  scopeNameWithSlash: string,
 ) {
-  const pluginPackage = `${npmScope}plugin-${pluginName}`;
+  const pluginPackage = `${scopeNameWithSlash}plugin-${pluginName}`;
   const packageFilePath = 'packages/app/package.json';
   const packageFile = resolvePath(rootDir, packageFilePath);
 
@@ -120,9 +120,9 @@ export async function addPluginDependencyToApp(
 export async function addPluginToApp(
   rootDir: string,
   pluginName: string,
-  npmScope: string,
+  scopeNameWithSlash: string,
 ) {
-  const pluginPackage = `${npmScope}plugin-${pluginName}`;
+  const pluginPackage = `${scopeNameWithSlash}plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
     .split('-')
     .map(name => capitalize(name))
@@ -180,16 +180,21 @@ export async function movePlugin(
   });
 }
 
-export default async (cmd: Command) => {
+export default async (cmd: any) => {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
-  let npmScope = '';
+  let scopeName = '';
+  let scopeNameWithSlash = '';
   if (cmd.scope) {
     if (cmd.scope.startsWith('@')) {
-      npmScope = `${cmd.scope}/`;
+      scopeName = `${cmd.scope}`;
     } else {
-      npmScope = `@${cmd.scope}/`;
+      scopeName = `@${cmd.scope}`;
     }
+    scopeNameWithSlash = `${scopeName}/`
   }
+
+  let privatePackage = true;
+  let registryURL = "https://gitlab.myteksi.net/api/v4/projects/5545/packages/npm/"
 
   const questions: Question[] = [
     {
@@ -253,7 +258,7 @@ export default async (cmd: Command) => {
     await createTemporaryPluginFolder(tempDir);
 
     Task.section('Preparing files');
-    await templatingTask(templateDir, tempDir, { ...answers, version });
+    await templatingTask(templateDir, tempDir, { ...answers, version, scopeName, privatePackage, registryURL });
 
     Task.section('Moving to final location');
     await movePlugin(tempDir, pluginDir, answers.id);
@@ -267,11 +272,11 @@ export default async (cmd: Command) => {
         paths.targetRoot,
         answers.id,
         version,
-        npmScope,
+        scopeNameWithSlash,
       );
 
       Task.section('Import plugin in app');
-      await addPluginToApp(paths.targetRoot, answers.id, npmScope);
+      await addPluginToApp(paths.targetRoot, answers.id, scopeNameWithSlash);
     }
 
     if (ownerIds && ownerIds.length) {
@@ -285,7 +290,7 @@ export default async (cmd: Command) => {
     Task.log();
     Task.log(
       `🥇  Successfully created ${chalk.cyan(
-        `${npmScope}plugin-${answers.id}`,
+        `${scopeNameWithSlash}plugin-${answers.id}`,
       )}`,
     );
     Task.log();
