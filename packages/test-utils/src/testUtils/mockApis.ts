@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { ApiTestRegistry } from '@backstage/core-api';
+import {
+  storageApiRef,
+  errorApiRef,
+  createApiFactory,
+} from '@backstage/core-api';
 import { MockErrorApi, MockStorageApi } from './apis';
 
-export function createMockApiRegistry(): ApiTestRegistry {
-  const registry = new ApiTestRegistry();
-
-  registry.register(MockErrorApi.factory);
-  registry.register(MockStorageApi.factory);
-
-  return registry;
-}
+export const mockApis = [
+  createApiFactory(errorApiRef, new MockErrorApi()),
+  createApiFactory(storageApiRef, MockStorageApi.create()),
+];
