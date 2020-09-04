@@ -22,7 +22,7 @@ import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
 import { WarningPanel } from '@backstage/core';
 
-const isPluginApplicableToEntity = (entity: Entity) =>
+export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]) &&
   entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] !== '';
 
