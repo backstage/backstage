@@ -34,24 +34,38 @@ enum ScopeLevels {
 }
 
 type FactoryTuple = {
-  level: number;
+  priority: number;
   factory: AnyApiFactory;
 };
 
+/**
+ * ApiFactoryRegistry is an ApiFactoryHolder implementation that enables
+ * registration of API Factories with different scope.
+ *
+ * Each scope has an assigned priority, where factories registered with
+ * higher priority scopes override ones with lower priority.
+ */
 export class ApiFactoryRegistry implements ApiFactoryHolder {
   private readonly factories = new Map<AnyApiRef, FactoryTuple>();
 
+  /**
+   * Register a new API factory. Returns true if the factory was added
+   * to the registry.
+   *
+   * A factory will not be added to the registry if there is already
+   * an existing factory with the same or higher priority.
+   */
   register<Api, Deps extends { [name in string]: unknown }>(
     scope: ApiFactoryScope,
     factory: ApiFactory<Api, Deps>,
   ) {
-    const level = ScopeLevels[scope];
+    const priority = ScopeLevels[scope];
     const existing = this.factories.get(factory.implements);
-    if (existing && existing.level > level) {
+    if (existing && existing.priority > priority) {
       return false;
     }
 
-    this.factories.set(factory.implements, { level, factory });
+    this.factories.set(factory.implements, { priority, factory });
     return true;
   }
 

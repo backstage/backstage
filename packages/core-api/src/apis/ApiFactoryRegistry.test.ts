@@ -42,12 +42,16 @@ describe('ApiFactoryRegistry', () => {
     const registry = new ApiFactoryRegistry();
     expect(registry.register('default', aFactory1)).toBe(true);
     expect(registry.get(aRef)).toBe(aFactory1);
+    expect(registry.register('default', aFactory2)).toBe(false);
+    expect(registry.get(aRef)).toBe(aFactory1);
     expect(registry.register('app', aFactory2)).toBe(true);
     expect(registry.get(aRef)).toBe(aFactory2);
     expect(registry.register('default', aFactory1)).toBe(false);
     expect(registry.get(aRef)).toBe(aFactory2);
     expect(registry.register('static', aFactory1)).toBe(true);
     expect(registry.get(aRef)).toBe(aFactory1);
+    expect(registry.register('static', aFactory2)).toBe(false);
+    expect(registry.get(aRef)).toBe(aFactory2);
     expect(registry.register('app', aFactory2)).toBe(false);
     expect(registry.get(aRef)).toBe(aFactory1);
     expect(registry.getAllApis()).toEqual(new Set([aRef]));
