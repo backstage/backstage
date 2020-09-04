@@ -86,7 +86,7 @@ const DetailsPage = () => {
   const details = status.value;
 
   return (
-    <TableContainer component={Paper} className={classes.table}>
+    <Table component={Paper} className={classes.table}>
       <Table>
         <TableBody>
           <TableRow>
@@ -144,7 +144,7 @@ const DetailsPage = () => {
           </TableRow>
         </TableBody>
       </Table>
-    </TableContainer>
+    </Table>
   );
 };
 

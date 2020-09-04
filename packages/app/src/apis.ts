@@ -84,7 +84,6 @@ import {
   githubPullRequestsApiRef,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 
-
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
   console.log(`Creating APIs for ${config.getString('app.title')}`);
@@ -105,7 +104,6 @@ export const apis = (config: ConfigApi) => {
   );
 
   builder.add(storageApiRef, WebStorage.create({ errorApi }));
-  builder.add(circleCIApiRef, new CircleCIApi());
   builder.add(GCPApiRef, new GCPClient());
   builder.add(
     circleCIApiRef,
