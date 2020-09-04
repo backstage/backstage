@@ -83,7 +83,7 @@ export class AzureApiReaderProcessor implements LocationProcessor {
 
   // Converts
   // from: https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{commitOrBranch}&_a=contents
-  // to:   https://dev.azure.com/{organization}/{project}/_apis/sourceProviders/{providerName}/filecontents?repository={repository}&commitOrBranch={commitOrBranch}&path={path}&api-version=6.0-preview.1
+  // to:   https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&version={commitOrBranch}
   buildRawUrl(target: string): URL {
     try {
       const url = new URL(target);
@@ -119,17 +119,19 @@ export class AzureApiReaderProcessor implements LocationProcessor {
         userOrOrg,
         project,
         '_apis',
-        'sourceProviders',
-        'TfsGit',
-        'filecontents',
+        'git',
+        'repositories',
+        repoName,
+        'items',
       ].join('/');
 
-      url.search = [
-        `repository=${repoName}`,
-        `commitOrBranch=${ref}`,
-        `path=${path}`,
-        'api-version=6.0-preview.1',
-      ].join('&');
+      const queryParams = [`path=${path}`];
+
+      if (ref) {
+        queryParams.push(`version=${ref}`);
+      }
+
+      url.search = queryParams.join('&');
 
       url.protocol = 'https';
 
