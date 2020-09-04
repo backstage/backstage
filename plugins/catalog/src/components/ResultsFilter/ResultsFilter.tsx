@@ -104,6 +104,7 @@ export const ResultsFilter = ({ availableTags }: Props) => {
             >
               <Checkbox
                 edge="start"
+                color="primary"
                 checked={selectedTags.includes(t)}
                 tabIndex={-1}
                 disableRipple
