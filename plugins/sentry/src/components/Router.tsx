@@ -19,31 +19,28 @@ import { Routes, Route } from 'react-router';
 import { WarningPanel } from '@backstage/core';
 import { SentryPluginWidget } from './SentryPluginWidget/SentryPluginWidget';
 
-const SENTRY_ANNOTATION = 'sentry.io/project-id';
+const SENTRY_ANNOTATION = 'sentry.io/project-slug';
 
-const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[SENTRY_ANNOTATION]) &&
-  entity.metadata.annotations?.[SENTRY_ANNOTATION] !== '';
+export const Router = ({ entity }: { entity: Entity }) => {
+  const projectId = entity.metadata.annotations?.[SENTRY_ANNOTATION];
 
-export const Router = ({ entity }: { entity: Entity }) =>
-  !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title="Sentry plugin:">
-      `entity.metadata.annotations['
-      {SENTRY_ANNOTATION}']` key is missing on the entity.{' '}
-    </WarningPanel>
-  ) : (
+  if (!projectId) {
+    return (
+      <WarningPanel title="Sentry plugin:">
+        <pre>{SENTRY_ANNOTATION}</pre> annotation is missing on the entity.
+      </WarningPanel>
+    );
+  }
+
+  return (
     <Routes>
       <Route
         path="/"
         element={
-          <SentryPluginWidget
-            sentryProjectId={
-              entity.metadata.annotations?.[SENTRY_ANNOTATION] || ''
-            }
-            statsFor="24h"
-          />
+          <SentryPluginWidget sentryProjectId={projectId} statsFor="24h" />
         }
       />
       )
     </Routes>
   );
+};
