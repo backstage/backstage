@@ -40,7 +40,7 @@ import {
 export const apis = [
   // TODO(Rugvip): migrate to use /api
   createApiFactory({
-    implements: discoveryApiRef,
+    api: discoveryApiRef,
     deps: { configApi: configApiRef },
     factory: ({ configApi }) =>
       UrlPatternDiscovery.compile(
@@ -48,7 +48,7 @@ export const apis = [
       ),
   }),
   createApiFactory({
-    implements: graphQlBrowseApiRef,
+    api: graphQlBrowseApiRef,
     deps: { errorApi: errorApiRef, githubAuthApi: githubAuthApiRef },
     factory: ({ errorApi, githubAuthApi }) =>
       GraphQLEndpoints.from([

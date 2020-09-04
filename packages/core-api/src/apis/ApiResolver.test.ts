@@ -25,17 +25,17 @@ const cRef = createApiRef<{ x: string }>({ id: 'c', description: '' });
 function createRegistry() {
   const registry = new ApiFactoryRegistry();
   registry.register('default', {
-    implements: aRef,
+    api: aRef,
     deps: {},
     factory: () => 1,
   });
   registry.register('default', {
-    implements: bRef,
+    api: bRef,
     deps: {},
     factory: () => 'b',
   });
   registry.register('default', {
-    implements: cRef,
+    api: cRef,
     deps: { b: bRef },
     factory: ({ b }) => ({ x: 'x', b }),
   });
@@ -45,17 +45,17 @@ function createRegistry() {
 function createLongCyclicRegistry() {
   const registry = new ApiFactoryRegistry();
   registry.register('default', {
-    implements: aRef,
+    api: aRef,
     deps: { b: bRef },
     factory: () => 1,
   });
   registry.register('default', {
-    implements: bRef,
+    api: bRef,
     deps: { c: cRef },
     factory: () => 'b',
   });
   registry.register('default', {
-    implements: cRef,
+    api: cRef,
     deps: { a: aRef },
     factory: () => ({ x: 'x' }),
   });
@@ -65,17 +65,17 @@ function createLongCyclicRegistry() {
 function createShortCyclicRegistry() {
   const registry = new ApiFactoryRegistry();
   registry.register('default', {
-    implements: aRef,
+    api: aRef,
     deps: { a: aRef },
     factory: () => 1,
   });
   registry.register('default', {
-    implements: bRef,
+    api: bRef,
     deps: { c: cRef },
     factory: () => 'b',
   });
   registry.register('default', {
-    implements: cRef,
+    api: cRef,
     deps: { b: bRef },
     factory: () => ({ x: 'x' }),
   });
@@ -162,7 +162,7 @@ describe('ApiResolver', () => {
     const registry = new ApiFactoryRegistry();
     const factory = jest.fn().mockReturnValue(2);
     registry.register('default', {
-      implements: aRef,
+      api: aRef,
       deps: {},
       factory,
     });

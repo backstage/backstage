@@ -21,7 +21,7 @@ import { plugin, GraphQLEndpoints, graphQlBrowseApiRef } from '../src';
 createDevApp()
   .registerPlugin(plugin)
   .registerApi({
-    implements: graphQlBrowseApiRef,
+    api: graphQlBrowseApiRef,
     deps: {
       errorApi: errorApiRef,
       githubAuthApi: githubAuthApiRef,

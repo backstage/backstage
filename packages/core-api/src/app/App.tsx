@@ -298,12 +298,12 @@ export class PrivateAppImpl implements BackstageApp {
     const registry = new ApiFactoryRegistry();
 
     registry.register('static', {
-      implements: appThemeApiRef,
+      api: appThemeApiRef,
       deps: {},
       factory: () => AppThemeSelector.createWithStorage(this.themes),
     });
     registry.register('static', {
-      implements: configApiRef,
+      api: configApiRef,
       deps: {},
       factory: () => {
         if (!this.configApi) {
@@ -315,7 +315,7 @@ export class PrivateAppImpl implements BackstageApp {
       },
     });
     registry.register('static', {
-      implements: identityApiRef,
+      api: identityApiRef,
       deps: {},
       factory: () => this.identityApi,
     });
@@ -329,7 +329,7 @@ export class PrivateAppImpl implements BackstageApp {
         if (!registry.register('default', factory)) {
           throw new Error(
             `Plugin ${plugin.getId()} tried to register duplicate or forbidden API factory for ${
-              factory.implements
+              factory.api
             }`,
           );
         }
@@ -339,7 +339,7 @@ export class PrivateAppImpl implements BackstageApp {
     for (const factory of this.apis) {
       if (!registry.register('app', factory)) {
         throw new Error(
-          `Duplicate or forbidden API factory for ${factory.implements} in app`,
+          `Duplicate or forbidden API factory for ${factory.api} in app`,
         );
       }
     }

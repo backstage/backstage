@@ -31,7 +31,7 @@ export type ApiHolder = {
 };
 
 export type ApiFactory<Api, Deps extends { [name in string]: unknown }> = {
-  implements: ApiRef<Api>;
+  api: ApiRef<Api>;
   deps: TypesToApiRefs<Deps>;
   factory(deps: Deps): Api;
 };

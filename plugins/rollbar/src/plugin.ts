@@ -29,7 +29,7 @@ export const plugin = createPlugin({
   id: 'rollbar',
   apis: [
     createApiFactory({
-      implements: rollbarApiRef,
+      api: rollbarApiRef,
       deps: { discoveryApi: discoveryApiRef },
       factory: ({ discoveryApi }) => new RollbarClient({ discoveryApi }),
     }),

@@ -40,7 +40,7 @@ export function createApiFactory<
 ): ApiFactory<Api, Deps> {
   if ('id' in factory) {
     return {
-      implements: factory,
+      api: factory,
       deps: {} as TypesToApiRefs<Deps>,
       factory: () => instance!,
     };

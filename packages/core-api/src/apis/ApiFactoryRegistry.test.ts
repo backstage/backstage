@@ -18,12 +18,12 @@ import { ApiFactoryRegistry } from './ApiFactoryRegistry';
 import { createApiRef } from './ApiRef';
 
 const aRef = createApiRef<number>({ id: 'a', description: '' });
-const aFactory1 = { implements: aRef, deps: {}, factory: () => 1 };
-const aFactory2 = { implements: aRef, deps: {}, factory: () => 2 };
+const aFactory1 = { api: aRef, deps: {}, factory: () => 1 };
+const aFactory2 = { api: aRef, deps: {}, factory: () => 2 };
 const bRef = createApiRef<string>({ id: 'b', description: '' });
-const bFactory = { implements: bRef, deps: {}, factory: () => 'x' };
+const bFactory = { api: bRef, deps: {}, factory: () => 'x' };
 const cRef = createApiRef<string>({ id: 'c', description: '' });
-const cFactory = { implements: cRef, deps: {}, factory: () => 'y' };
+const cFactory = { api: cRef, deps: {}, factory: () => 'y' };
 
 describe('ApiFactoryRegistry', () => {
   it('should be empty when created', () => {
@@ -51,7 +51,7 @@ describe('ApiFactoryRegistry', () => {
     expect(registry.register('static', aFactory1)).toBe(true);
     expect(registry.get(aRef)).toBe(aFactory1);
     expect(registry.register('static', aFactory2)).toBe(false);
-    expect(registry.get(aRef)).toBe(aFactory2);
+    expect(registry.get(aRef)).toBe(aFactory1);
     expect(registry.register('app', aFactory2)).toBe(false);
     expect(registry.get(aRef)).toBe(aFactory1);
     expect(registry.getAllApis()).toEqual(new Set([aRef]));

@@ -26,7 +26,7 @@ export const plugin = createPlugin({
   id: 'catalog',
   apis: [
     createApiFactory({
-      implements: catalogApiRef,
+      api: catalogApiRef,
       deps: { discoveryApi: discoveryApiRef },
       factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
     }),

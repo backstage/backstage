@@ -48,7 +48,7 @@ import {
 
 export const defaultApis = [
   createApiFactory({
-    implements: discoveryApiRef,
+    api: discoveryApiRef,
     deps: { configApi: configApiRef },
     factory: ({ configApi }) =>
       UrlPatternDiscovery.compile(
@@ -57,20 +57,20 @@ export const defaultApis = [
   }),
   createApiFactory(alertApiRef, new AlertApiForwarder()),
   createApiFactory({
-    implements: errorApiRef,
+    api: errorApiRef,
     deps: { alertApi: alertApiRef },
     factory: ({ alertApi }) =>
       new ErrorAlerter(alertApi, new ErrorApiForwarder()),
   }),
   createApiFactory({
-    implements: storageApiRef,
+    api: storageApiRef,
     deps: { errorApi: errorApiRef },
     factory: ({ errorApi }) => WebStorage.create({ errorApi }),
   }),
   createApiFactory(featureFlagsApiRef, new FeatureFlags()),
   createApiFactory(oauthRequestApiRef, new OAuthRequestManager()),
   createApiFactory({
-    implements: googleAuthApiRef,
+    api: googleAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
@@ -79,7 +79,7 @@ export const defaultApis = [
       GoogleAuth.create({ discoveryApi, oauthRequestApi }),
   }),
   createApiFactory({
-    implements: microsoftAuthApiRef,
+    api: microsoftAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
@@ -88,7 +88,7 @@ export const defaultApis = [
       MicrosoftAuth.create({ discoveryApi, oauthRequestApi }),
   }),
   createApiFactory({
-    implements: githubAuthApiRef,
+    api: githubAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
@@ -97,7 +97,7 @@ export const defaultApis = [
       GithubAuth.create({ discoveryApi, oauthRequestApi }),
   }),
   createApiFactory({
-    implements: oktaAuthApiRef,
+    api: oktaAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
@@ -106,7 +106,7 @@ export const defaultApis = [
       OktaAuth.create({ discoveryApi, oauthRequestApi }),
   }),
   createApiFactory({
-    implements: gitlabAuthApiRef,
+    api: gitlabAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
@@ -115,7 +115,7 @@ export const defaultApis = [
       GitlabAuth.create({ discoveryApi, oauthRequestApi }),
   }),
   createApiFactory({
-    implements: auth0AuthApiRef,
+    api: auth0AuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
@@ -124,7 +124,7 @@ export const defaultApis = [
       Auth0Auth.create({ discoveryApi, oauthRequestApi }),
   }),
   createApiFactory({
-    implements: oauth2ApiRef,
+    api: oauth2ApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,

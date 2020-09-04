@@ -23,7 +23,7 @@ export const plugin = createPlugin({
   id: 'circleci',
   apis: [
     createApiFactory({
-      implements: circleCIApiRef,
+      api: circleCIApiRef,
       deps: { configApi: configApiRef },
       factory: ({ configApi }) =>
         new CircleCIApi(

@@ -32,7 +32,7 @@ export const plugin = createPlugin({
   id: 'jenkins',
   apis: [
     createApiFactory({
-      implements: jenkinsApiRef,
+      api: jenkinsApiRef,
       deps: { configApi: configApiRef },
       factory: ({ configApi }) =>
         new JenkinsApi(

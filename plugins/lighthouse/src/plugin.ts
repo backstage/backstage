@@ -24,7 +24,7 @@ export const plugin = createPlugin({
   id: 'lighthouse',
   apis: [
     createApiFactory({
-      implements: lighthouseApiRef,
+      api: lighthouseApiRef,
       deps: { configApi: configApiRef },
       factory: ({ configApi }) => LighthouseRestApi.fromConfig(configApi),
     }),

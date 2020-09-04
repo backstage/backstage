@@ -74,16 +74,11 @@ export class ApiResolver implements ApiHolder {
       return undefined;
     }
 
-    if (loading.includes(factory.implements)) {
-      throw new Error(
-        `Circular dependency of api factory for ${factory.implements}`,
-      );
+    if (loading.includes(factory.api)) {
+      throw new Error(`Circular dependency of api factory for ${factory.api}`);
     }
 
-    const deps = this.loadDeps(ref, factory.deps, [
-      ...loading,
-      factory.implements,
-    ]);
+    const deps = this.loadDeps(ref, factory.deps, [...loading, factory.api]);
     const api = factory.factory(deps);
     this.apis.set(ref, api);
     return api as T;

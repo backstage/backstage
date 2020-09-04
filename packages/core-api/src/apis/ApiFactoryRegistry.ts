@@ -27,7 +27,7 @@ type ApiFactoryScope =
   | 'app' // Factories registered in the app, overriding default ones
   | 'static'; // APIs that can't be overridden, e.g. config
 
-enum ScopeLevels {
+enum ScopePriority {
   default = 10,
   app = 50,
   static = 100,
@@ -59,13 +59,13 @@ export class ApiFactoryRegistry implements ApiFactoryHolder {
     scope: ApiFactoryScope,
     factory: ApiFactory<Api, Deps>,
   ) {
-    const priority = ScopeLevels[scope];
-    const existing = this.factories.get(factory.implements);
-    if (existing && existing.priority > priority) {
+    const priority = ScopePriority[scope];
+    const existing = this.factories.get(factory.api);
+    if (existing && existing.priority >= priority) {
       return false;
     }
 
-    this.factories.set(factory.implements, { priority, factory });
+    this.factories.set(factory.api, { priority, factory });
     return true;
   }
 

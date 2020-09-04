@@ -28,7 +28,7 @@ export const plugin = createPlugin({
   id: 'scaffolder',
   apis: [
     createApiFactory({
-      implements: scaffolderApiRef,
+      api: scaffolderApiRef,
       deps: { discoveryApi: discoveryApiRef },
       factory: ({ discoveryApi }) => new ScaffolderApi({ discoveryApi }),
     }),
