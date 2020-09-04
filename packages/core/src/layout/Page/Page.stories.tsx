@@ -103,7 +103,7 @@ const tabs = [
   { label: 'Compliance Advisor' },
 ];
 
-const DataGrid: React.FC<{}> = () => (
+const DataGrid = () => (
   <Grid container>
     <Grid item xs container>
       <Grid item xs={12}>
@@ -174,16 +174,14 @@ const DataGrid: React.FC<{}> = () => (
   </Grid>
 );
 
-const ExampleHeader: React.FC<{}> = () => (
+const ExampleHeader = () => (
   <Header title="Example" subtitle="This an example plugin">
     <HeaderLabel label="Owner" value="Owner" />
     <HeaderLabel label="Lifecycle" value="Lifecycle" />
   </Header>
 );
 
-const ExampleContentHeader: React.FC<{ selectedTab?: number }> = ({
-  selectedTab,
-}) => (
+const ExampleContentHeader = ({ selectedTab }: { selectedTab?: number }) => (
   <ContentHeader
     title={selectedTab !== undefined ? tabs[selectedTab].label : 'Header'}
   >
@@ -194,7 +192,7 @@ const ExampleContentHeader: React.FC<{ selectedTab?: number }> = ({
   </ContentHeader>
 );
 
-export const PluginWithData: React.FC<{}> = () => {
+export const PluginWithData = () => {
   const [selectedTab, setSelectedTab] = useState<number>(2);
   return (
     <Page theme={pageTheme.tool}>
@@ -215,7 +213,7 @@ export const PluginWithData: React.FC<{}> = () => {
   );
 };
 
-export const PluginWithTable: React.FC<{}> = () => {
+export const PluginWithTable = () => {
   return (
     <Page theme={pageTheme.tool}>
       <ExampleHeader />
