@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+// TODO(shmidt-i): move to the app
 import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
-import { RecentWorkflowRunsCard as GithubActionsListWidget } from '@backstage/plugin-github-actions';
+import { LatestWorkflowsForBranchCard } from '@backstage/plugin-github-actions';
 import { Grid } from '@material-ui/core';
 import React, { FC } from 'react';
 
@@ -26,7 +27,7 @@ export const EntityPageCi: FC<{ entity: Entity }> = ({ entity }) => {
       <Grid container spacing={3}>
         {entity.metadata?.annotations?.['backstage.io/github-actions-id'] && (
           <Grid item sm={12}>
-            <GithubActionsListWidget entity={entity} branch="master" />
+            <LatestWorkflowsForBranchCard entity={entity} branch="master" />
           </Grid>
         )}
       </Grid>

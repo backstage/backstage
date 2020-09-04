@@ -17,7 +17,6 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
 import Knex from 'knex';
 import { Logger } from 'winston';
 import { createAuthProviderRouter } from '../providers';
@@ -53,8 +52,8 @@ export async function createRouter(
   });
 
   router.use(cookieParser());
-  router.use(bodyParser.urlencoded({ extended: false }));
-  router.use(bodyParser.json());
+  router.use(express.urlencoded({ extended: false }));
+  router.use(express.json());
 
   const providersConfig = options.config.getConfig('auth.providers');
   const providers = providersConfig.keys();

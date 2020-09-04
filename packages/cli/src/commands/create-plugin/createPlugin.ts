@@ -21,7 +21,7 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
-//import { Command } from 'commander';
+import { Command } from 'commander';
 import {
   parseOwnerIds,
   addCodeownersEntry,
@@ -29,6 +29,7 @@ import {
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
 import { Task, templatingTask } from '../../lib/tasks';
+import { version as backstageVersion } from '../../lib/version';
 
 const exec = promisify(execCb);
 
@@ -180,7 +181,7 @@ export async function movePlugin(
   });
 }
 
-export default async (cmd: any) => {
+export default async (cmd: Command) => {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
   let scopeName = '';
   let scopeNameWithSlash = '';
@@ -258,7 +259,11 @@ export default async (cmd: any) => {
     await createTemporaryPluginFolder(tempDir);
 
     Task.section('Preparing files');
-    await templatingTask(templateDir, tempDir, { ...answers, version, scopeName, privatePackage, registryURL });
+    await templatingTask(templateDir, tempDir, {
+      ...answers,
+      version,
+      backstageVersion,
+    });
 
     Task.section('Moving to final location');
     await movePlugin(tempDir, pluginDir, answers.id);

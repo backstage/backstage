@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+// TODO(shmidt-i): move to the app
 import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
-import { SentryIssuesWidget } from '@backstage/plugin-sentry';
-import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
+import { LatestWorkflowRunCard } from '@backstage/plugin-github-actions';
 import {
   JenkinsBuildsWidget,
   JenkinsLastBuildWidget,
 } from '@backstage/plugin-jenkins';
 import { Grid } from '@material-ui/core';
 import React, { FC } from 'react';
-import { EntityMetadataCard } from '../EntityMetadataCard/EntityMetadataCard';
+import { AboutCard } from '../AboutCard';
 
 export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
   return (
     <Content>
       <Grid container spacing={3}>
         <Grid item sm={4}>
-          <EntityMetadataCard entity={entity} />
+          <AboutCard entity={entity} />
         </Grid>
         {entity.metadata?.annotations?.[
           'backstage.io/jenkins-github-folder'
@@ -49,15 +49,9 @@ export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
         )}
         {entity.metadata?.annotations?.['backstage.io/github-actions-id'] && (
           <Grid item sm={3}>
-            <GithubActionsWidget entity={entity} branch="master" />
+            <LatestWorkflowRunCard entity={entity} branch="master" />
           </Grid>
         )}
-        <Grid item sm={8}>
-          <SentryIssuesWidget
-            sentryProjectId="sample-sentry-project-id"
-            statsFor="24h"
-          />
-        </Grid>
       </Grid>
     </Content>
   );

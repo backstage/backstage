@@ -25,7 +25,7 @@ import {
   yesPromptFunc,
 } from '../../lib/diff';
 import { paths } from '../../lib/paths';
-import { version } from '../../lib/version';
+import { version as backstageVersion } from '../../lib/version';
 
 export type PluginData = {
   id: string;
@@ -62,9 +62,12 @@ export default async (cmd: Command) => {
     promptFunc = yesPromptFunc;
   }
 
+  const { version } = await fs.readJson(paths.resolveTargetRoot('lerna.json'));
+
   const data = await readPluginData();
   const templateFiles = await diffTemplateFiles('default-plugin', {
     version,
+    backstageVersion,
     ...data,
   });
   await handleAllFiles(fileHandlers, templateFiles, promptFunc);
