@@ -16,7 +16,16 @@ backend:
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  '/circleci/api': https://circleci.com/api/v1.1
+  '/circleci/api':
+    target: https://circleci.com/api/v1.1
+    changeOrigin: true
+    pathRewrite:
+      '^/proxy/circleci/api/': '/'
+    headers:
+      Circle-Token:
+        $secret:
+          env: CIRCLECI_AUTH_TOKEN
+
   '/jenkins/api':
     target: http://localhost:8080
     headers:
