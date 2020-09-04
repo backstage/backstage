@@ -15,9 +15,11 @@
  */
 
 import { SessionManager, GetSessionOptions } from './types';
-import { SamlAuthConnector, SamlResponse } from '../AuthConnector/SamlAuthConnector';
+import {
+  SamlAuthConnector,
+  SamlResponse,
+} from '../AuthConnector/SamlAuthConnector';
 import { SessionStateTracker } from './SessionStateTracker';
-
 
 type Options = {
   connector: SamlAuthConnector<SamlResponse>;
@@ -27,18 +29,15 @@ export class SamlAuthSessionManager<T> implements SessionManager<T> {
   private readonly connector: SamlAuthConnector<SamlResponse>;
   private readonly stateTracker = new SessionStateTracker();
 
-  private currentSession: any | undefined; // FIXME: proper typing here
+  private currentSession: any | undefined; // FIXME: proper typing here?
 
   constructor(options: Options) {
     const { connector } = options;
 
     this.connector = connector;
-    // this.helper = new SessionScopeHelper
   }
 
   async getSession(options: GetSessionOptions): Promise<T | undefined> {
-    // eslint-disable-next-line no-console
-    console.log('==> this is from SamlAuthSessionManager getSession()');
     if (this.currentSession) {
       return this.currentSession;
     }

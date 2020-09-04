@@ -33,8 +33,6 @@ export class SamlAuthSessionStore<T> implements SamlAuthSessionManager<T> {
   }
 
   async getSession(options: GetSessionOptions): Promise<T | undefined> {
-    // eslint-disable-next-line no-console
-    console.log('==>> this is from SamlAuthSessionStore getSession()');
     const session = this.loadSession();
 
     if (session) {

@@ -36,7 +36,7 @@ export type SignInConfig = {
     | ApiRef<SamlApi>;
 };
 
-export type IdentityProviders = ('guest' | 'custom' | 'saml' | SignInConfig)[];
+export type IdentityProviders = ('guest' | 'custom' | SignInConfig)[];
 
 export type ProviderComponent = ComponentType<
   SignInPageProps & { config: SignInConfig }
@@ -44,9 +44,9 @@ export type ProviderComponent = ComponentType<
 
 export type ProviderLoader = (
   apis: ApiHolder,
-  apiRef: ApiRef<
-    OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
-  >,
+  apiRef:
+    | ApiRef<OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi>
+    | ApiRef<SamlApi>,
 ) => Promise<SignInResult | undefined>;
 
 export type SignInProvider = {

@@ -67,10 +67,6 @@ export class AppIdentity implements IdentityApi {
 
   // This is indirectly called by the sign-in page to continue into the app.
   setSignInResult(result: SignInResult) {
-    // eslint-disable-next-line no-console
-    console.log('this is from setSignInResult');
-    // eslint-disable-next-line no-console
-    console.log(result);
     if (this.hasIdentity) {
       return;
     }

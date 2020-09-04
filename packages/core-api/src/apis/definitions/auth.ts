@@ -108,6 +108,9 @@ export type SamlApi = {
 
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
 
+  // FIXME: is this needed?
+  getAccessToken(options?: AuthRequestOptions): Promise<string>;
+
   // Not sure if this is needed.
   logout(): Promise<void>;
 };

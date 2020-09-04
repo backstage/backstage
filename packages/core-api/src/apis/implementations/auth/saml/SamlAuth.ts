@@ -35,9 +35,6 @@ import {
 type CreateOptions = {
   apiOrigin: string;
   basePath: string;
-
-  // oauthRequestApi?: OAuthRequestApi;
-
   environment?: string;
   provider?: AuthProvider & { id: string };
 };
@@ -61,9 +58,6 @@ class SamlAuth implements SamlApi {
     environment = 'development',
     provider = DEFAULT_PROVIDER,
   }: CreateOptions) {
-    // eslint-disable-next-line no-console
-    console.log('this is from SamlAuth');
-
     const connector = new SamlAuthConnector<SamlSession>({
       apiOrigin,
       basePath,
@@ -87,35 +81,25 @@ class SamlAuth implements SamlApi {
   sessionState$(): Observable<SessionState> {
     return this.sessionManager.sessionState$();
   }
-  // constructor(private readonly sessionManager: any) {}
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor(private readonly sessionManager: SessionManager<SamlSession>) {
-    // eslint-disable-next-line no-console
-    console.log('this is the constructor');
-  }
+
+  constructor(private readonly sessionManager: SessionManager<SamlSession>) {}
 
   async getBackstageIdentity(
     options: AuthRequestOptions,
   ): Promise<BackstageIdentity | undefined> {
-    // eslint-disable-next-line no-console
-    console.log('===> Saml getBackstageIdentity()');
     const session = await this.sessionManager.getSession(options);
-    // eslint-disable-next-line no-console
-    console.log('this this thish lkkdfkkfkfji');
-    // eslint-disable-next-line no-console
-    console.log(session);
     return session?.backstageIdentity;
   }
 
   async getProfile(options: AuthRequestOptions = {}) {
-    // eslint-disable-next-line no-console
-    console.log('==> samlauth getprofile()');
     const session = await this.sessionManager.getSession(options);
-    // eslint-disable-next-line no-console
-    console.log('+++ this is the session from getProfile()');
-    // eslint-disable-next-line no-console
-    console.log(session);
     return session?.profile;
+  }
+
+  // FIXME: Is this needed?...
+  async getAccessToken(options: AuthRequestOptions) {
+    const session = await this.sessionManager.getSession(options);
+    return session?.userId ?? '';
   }
 
   async logout() {

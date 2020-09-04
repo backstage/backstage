@@ -36,11 +36,6 @@ const Component: ProviderComponent = ({ config, onResult }) => {
         instantPopup: true,
       });
 
-      // eslint-disable-next-line no-console
-      console.log('====++++++++++++++++++++++++++> handleLogin for commonProvider');
-      // eslint-disable-next-line no-console
-      console.log(identity);
-
       const profile = await authApi.getProfile();
       onResult({
         userId: identity!.id,

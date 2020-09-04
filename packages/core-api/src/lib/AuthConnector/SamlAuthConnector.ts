@@ -36,7 +36,8 @@ export type SamlResponse = {
   backstageIdentity: BackstageIdentity;
 };
 
-export class SamlAuthConnector<SamlResponse> implements AuthConnector<SamlResponse> {
+export class SamlAuthConnector<SamlResponse>
+  implements AuthConnector<SamlResponse> {
   private readonly apiOrigin: string;
   private readonly basePath: string;
   private readonly environment: string | undefined;
@@ -57,19 +58,13 @@ export class SamlAuthConnector<SamlResponse> implements AuthConnector<SamlRespon
   }
 
   async createSession(): Promise<SamlResponse> {
-    // eslint-disable-next-line no-console
-    console.log('==> from SamlAuthConnector createSession');
-
     const payload = await showLoginPopup({
-      url: 'http://localhost:7000/auth/saml/start', // FIXME: this should be from app.config or somewhere
+      url: 'http://localhost:7000/auth/saml/start', // FIXME: remove hardcoded here. should do something like buildUrl
       name: 'SAML Login', // FIXME: change this to provider name? and not hardcode the name
       origin: this.apiOrigin,
       width: 450,
       height: 730,
     });
-
-    // eslint-disable-next-line no-console
-    console.log(payload);
 
     return {
       ...payload,
@@ -77,15 +72,11 @@ export class SamlAuthConnector<SamlResponse> implements AuthConnector<SamlRespon
     };
   }
 
-  // TODO: do we need this for SAML?
-  async refreshSession(): Promise<any> {
-    // eslint-disable-next-line no-console
-    console.log('==> this is refresh session');
-  }
+  // FIXME: do we need this for SAML?
+  async refreshSession(): Promise<any> {}
 
   async removeSession(): Promise<void> {
-    // eslint-disable-next-line no-console
-    console.log('this removes the session');
+    // FIXME: remove hardcoded url here... should do something like buildUrl
     const res = await fetch('http://localhost:7000/auth/saml/logout', {
       method: 'POST',
       headers: {

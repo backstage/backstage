@@ -55,17 +55,6 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
       //       for non-oauth auth flows.
       // TODO: This flow doesn't issue an identity token that can be used to validate
       //       the identity of the user in other backends, which we need in some form.
-      console.log('===>');
-      console.log('===>');
-      console.log('===>');
-      console.log('===>');
-      console.log('===>');
-      console.log('===>');
-      console.log('===>');
-      console.log('===>');
-      console.log('===>');
-      console.log('===>');
-      console.log('===>');
       console.log('===> SamlAuthProvider constructor');
       console.log(profile);
       done(undefined, {
