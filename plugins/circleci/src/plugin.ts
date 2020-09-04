@@ -13,13 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin } from '@backstage/core';
+import { createPlugin, createApiFactory, configApiRef } from '@backstage/core';
 import { circleCIRouteRef, circleCIBuildRouteRef } from './route-refs';
 import BuildsPage from './pages/BuildsPage/BuildsPage';
 import BuildWithStepsPage from './pages/BuildWithStepsPage/BuildWithStepsPage';
+import { circleCIApiRef, CircleCIApi } from './api';
 
 export const plugin = createPlugin({
   id: 'circleci',
+  apis: [
+    createApiFactory({
+      implements: circleCIApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) =>
+        new CircleCIApi(
+          `${configApi.getString('backend.baseUrl')}/proxy/circleci/api`,
+        ),
+    }),
+  ],
   register({ router }) {
     router.addRoute(circleCIRouteRef, BuildsPage);
     router.addRoute(circleCIBuildRouteRef, BuildWithStepsPage);

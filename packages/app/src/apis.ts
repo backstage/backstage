@@ -24,31 +24,9 @@ import {
 } from '@backstage/core';
 
 import {
-  lighthouseApiRef,
-  LighthouseRestApi,
-} from '@backstage/plugin-lighthouse';
-
-import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
-import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
-
-import { gitOpsApiRef, GitOpsRestApi } from '@backstage/plugin-gitops-profiles';
-import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
-import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
-import {
-  techdocsStorageApiRef,
-  TechDocsStorageApi,
-} from '@backstage/plugin-techdocs';
-
-import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
-import { GCPClient, GCPApiRef } from '@backstage/plugin-gcp-projects';
-import {
-  GithubActionsClient,
-  githubActionsApiRef,
-} from '@backstage/plugin-github-actions';
-import { jenkinsApiRef, JenkinsApi } from '@backstage/plugin-jenkins';
 
 import {
   TravisCIApi,
@@ -68,47 +46,6 @@ export const apis = [
         `${configApi.getString('backend.baseUrl')}/{{ pluginId }}`,
       ),
   }),
-  createApiFactory(GCPApiRef, new GCPClient()),
-  createApiFactory({
-    implements: circleCIApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      new CircleCIApi(
-        `${configApi.getString('backend.baseUrl')}/proxy/circleci/api`,
-      ),
-  }),
-  createApiFactory({
-    implements: jenkinsApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      new JenkinsApi(
-        `${configApi.getString('backend.baseUrl')}/proxy/jenkins/api`,
-      ),
-  }),
-  createApiFactory(githubActionsApiRef, new GithubActionsClient()),
-  createApiFactory({
-    implements: lighthouseApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) => LighthouseRestApi.fromConfig(configApi),
-  }),
-  createApiFactory(travisCIApiRef, new TravisCIApi()),
-  createApiFactory(githubPullRequestsApiRef, new GithubPullRequestsClient()),
-  createApiFactory({
-    implements: techRadarApiRef,
-    deps: {},
-    factory: () => new TechRadar({ width: 1500, height: 800 }),
-  }),
-  createApiFactory({
-    implements: catalogApiRef,
-    deps: { discoveryApi: discoveryApiRef },
-    factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
-  }),
-  createApiFactory({
-    implements: scaffolderApiRef,
-    deps: { discoveryApi: discoveryApiRef },
-    factory: ({ discoveryApi }) => new ScaffolderApi({ discoveryApi }),
-  }),
-  createApiFactory(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008')),
   createApiFactory({
     implements: graphQlBrowseApiRef,
     deps: { errorApi: errorApiRef, githubAuthApi: githubAuthApiRef },
@@ -127,17 +64,8 @@ export const apis = [
         }),
       ]),
   }),
-  createApiFactory({
-    implements: rollbarApiRef,
-    deps: { discoveryApi: discoveryApiRef },
-    factory: ({ discoveryApi }) => new RollbarClient({ discoveryApi }),
-  }),
-  createApiFactory({
-    implements: techdocsStorageApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      new TechDocsStorageApi({
-        apiOrigin: configApi.getString('techdocs.storageUrl'),
-      }),
-  }),
+
+  // TODO: move to plugins
+  createApiFactory(travisCIApiRef, new TravisCIApi()),
+  createApiFactory(githubPullRequestsApiRef, new GithubPullRequestsClient()),
 ];
