@@ -1,24 +1,48 @@
-# Creating and publishing your docs
+---
+id: creating-and-publishing
+title: Creating and publishing your docs
+sidebar_label: Creating and Publishing Documentation
+---
 
 This section will guide you through:
 
-- Creating a basic setup for your documentation
-- Writing and previewing your documentation in a local Backstage environment
-- Creating a build ready for publication
-- Publishing your documentation and making your Backstage instance read your published docs.
+- [Create a basic documentation setup](#create-a-basic-documentation-setup)
+  - [Use the documentation template](#use-the-documentation-template)
+  - [Manually add documentation setup to already existing repository](#manually-add-documentation-setup-to-already-existing-repository)
+- [Writing and previewing your documentation](#writing-and-previewing-your-documentation)
 
 ## Prerequisities
 
-- [Docker](https://docs.docker.com/get-docker/)
-- Static file hosting
-- A working Backstage instance with TechDocs installed
-  (see [TechDocs getting started](getting-started.md))
+- A working Backstage instance with TechDocs installed (see
+  [TechDocs getting started](getting-started.md))
 
 ## Create a basic documentation setup
 
-In your home directory (also known as `~`), create a directory that contains your documentation (for example, `hello-docs`). Inside this directory, create a file called `mkdocs.yml`. Below is a basic example of how it could look.
+### Use the documentation template
 
-The `~/hello-docs/mkdocs.yml` file should have the following content:
+Your working Backstage instance should by default have a documentation template
+added. If not, follow these
+[instructions](../software-templates/installation.md#adding-templates) to add
+the documentation template.
+
+![Documentation Template](../../assets/techdocs/documentation-template.png)
+
+Create an entity from the documentation template and you will get the needed
+setup for free.
+
+!!! warning Currently the Backstage Software Templates are limited to create repositories
+inside GitHub organizations. You also need to generate an personal access token
+and use as an environment variable. Read more about this
+[here](../software-templates/installation.md#runtime-dependencies).
+
+### Manually add documentation setup to already existing repository
+
+Prerequisities:
+
+- `catalog-info.yml` file registered to Backstage.
+
+Create a `mkdocs.yml` file in the root of the repository with the following
+content:
 
 ```yaml
 site_name: 'example-docs'
@@ -30,13 +54,29 @@ plugins:
   - techdocs-core
 ```
 
-The `~/hello-docs/docs/index.md` should have the following content:
+Update your `catalog-info.yaml` file in the root of the repository with the
+following content:
+
+```yaml
+metadata:
+  annotations:
+    backstage.io/techdocs-ref: dir:./
+```
+
+Create a `/docs` folder in the root of the project with at least a `index.md`
+file. _(If you add more markdown files, make sure to update the nav in the
+mkdocs.yml file to get a proper navigation for your documentation.)_
+
+The `docs/index.md` can for example have the following content:
 
 ```md
 # example docs
 
 This is a basic example of documentation.
 ```
+
+Commit your changes, open a pull request and merge. You will now get your
+updated documentation next time you run Backstage!
 
 ## Writing and previewing your documentation
 
@@ -47,77 +87,6 @@ want to write your documentation.
 To do this you can run:
 
 ```bash
-cd ~/hello-docs/
+cd ~/<repository-path>/
 npx techdocs-cli serve
 ```
-
-## Build production ready documentation
-
-To get a build suitable for publication you can build your docs using the
-`spotify/techdocs` container:
-
-```bash
-cd ~/hello-docs/
-docker run -it -w /content -v $(pwd):/content spotify/techdocs build
-```
-
-You should now have a folder called `~/hello-docs/site/`.
-
-## Deploy to a file server
-
-In order to serve documentation to TechDocs, our Backstage plugin needs to download the HTML rendered from the previous step. This will likely exist on an external file server, or a storage solution such as Google Cloud Storage.
-
-When deploying documentation, it should be deployed on that file server/storage solution with the following convention: `{id}/{file}`. For example, if
-you want to upload the `getting-started/index.html` file for the `backstage`
-documentation site, we would upload it to our file server as
-`backstage/getting-started/index.html`.
-
-To explain further what this would look like for multiple documentation sites,
-take a look at this example file tree that would be represented on your file server:
-
-```md
-/backstage/index.html /backstage/getting-started/index.html
-/backstage/contributing/index.html /mkdocs/index.html
-/mkdocs/plugin-development/index.html
-/mkdocs/plugin-development/debugging/index.html
-```
-
-In this file tree, we have two documentation sites available: `backstage` and
-`mkdocs`. Each of them expose several pages. Let's say both of these are hosted
-on `http://example.com` as the server URL.
-
-When you configure the TechDocs plugin in Backstage to use `http://example.com`
-as the file server/storage solution, it will translate the following URLs to
-the file server:
-
-| Backstage URL                                             | File Server URL                                         |
-| --------------------------------------------------------- | ------------------------------------------------------- |
-| https://demo.backstage.io/docs/backstage/                 | http://example.com/backstage/index.html                 |
-| https://demo.backstage.io/docs/mkdocs/plugin-development/ | http://example.com/mkdocs/plugin-development/index.html |
-
-Then deploying new sites is easy: simply copy over the `site/`
-folder produced in the [Create documentation](#build-production-ready-documentation) step above to the file server/storage solution under the ID of the documentation site. It will then become immediately available in Backstage under
-the same ID as you can see in the table above.
-
-So, if the URL to your file server is `http://example.com/`, your
-`~/hello-docs/site` folder containing the documentation should be accessible at
-`http://example.com/hello-docs/`.
-
-## Configure TechDocs to read from file server
-
-In order for Backstage to show your documentation, it needs to know where you
-uploaded it.
-
-Make sure you have Backstage set up using
-[TechDocs getting started](getting-started.md).
-
-To point Backstage to your docs storage, add or change the following lines in
-your Backstage `app-config.yaml`:
-
-```yaml
-techdocs:
-  storageUrl: http://example.com
-```
-
-You can now start Backstage using `yarn start` and open up your browser at
-`http://localhost:3000/docs/hello-docs` to view your docs.

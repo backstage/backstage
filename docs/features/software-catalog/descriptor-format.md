@@ -1,4 +1,8 @@
-# Descriptor Format of Catalog Entities
+---
+id: descriptor-format
+title: Descriptor Format of Catalog Entities
+sidebar_label: YAML File Format
+---
 
 This section describes the default data shape and semantics of catalog entities.
 
@@ -14,6 +18,8 @@ humans. However, the structure and semantics is the same in both cases.
 - [Common to All Kinds: The Envelope](#common-to-all-kinds-the-envelope)
 - [Common to All Kinds: The Metadata](#common-to-all-kinds-the-metadata)
 - [Kind: Component](#kind-component)
+- [Kind: Template](#kind-template)
+- [Kind: API](#kind-api)
 
 ## Overall Shape Of An Entity
 
@@ -36,6 +42,7 @@ software catalog API.
     "labels": {
       "system": "public-websites"
     },
+    "tags": ["java"],
     "name": "artist-web",
     "uid": "2152f463-549d-4d8d-a94d-ce2b7676c6e2"
   },
@@ -60,6 +67,8 @@ metadata:
   annotations:
     example.com/service-discovery: artistweb
     circleci.com/project-slug: gh/example-org/artist-website
+  tags:
+    - java
 spec:
   type: website
   lifecycle: production
@@ -80,7 +89,7 @@ The root envelope object has the following structure.
 ### `apiVersion` and `kind` [required]
 
 The `kind` is the high level entity type being described.
-[ADR005](/docs/architecture-decisions/adr005-catalog-core-entities.md) describes
+[ADR005](../../architecture-decisions/adr005-catalog-core-entities.md) describes
 a number of core kinds that plugins can know of and understand, but an
 organization using Backstage is free to also add entities of other kinds to the
 catalog.
@@ -226,6 +235,20 @@ The `backstage.io/` prefix is reserved for use by Backstage core components.
 
 Values can be of any length, but are limited to being strings.
 
+### `tags` [optional]
+
+A list of single-valued strings, for example to classify catalog entities in
+various ways. This is different to the labels in metadata, as labels are
+key-value pairs.
+
+The values are user defined, for example the programming language used for the
+component, like `java` or `go`.
+
+This field is optional, and currently has no special semantics.
+
+Each tag must be sequences of `[a-zA-Z0-9]` separated by `-`, at most 63
+characters in total.
+
 ## Kind: Component
 
 Describes the following entity kind:
@@ -252,6 +275,8 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations@example.com
+  implementsApis:
+    - artist-api
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -312,14 +337,22 @@ Apart from being a string, the software catalog leaves the format of this field
 open to implementers to choose. Most commonly, it is set to the ID or email of a
 group of people in an organizational structure.
 
+### `spec.implementsApis` [optional]
+
+Links APIs that are implemented by the component, e.g. `artist-api`. This field
+is optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
 ## Kind: Template
 
 Describes the following entity kind:
 
-| Field                | Value                   |
-| -------------------- | ----------------------- |
-| `apiVersion`         | `backstage.io/v1alpha1` |
-| `Kind: Templatekind` | `Template`              |
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Template`              |
 
 A Template describes a skeleton for use with the Scaffolder. It is used for
 describing what templating library is supported, and also for documenting the
@@ -337,8 +370,8 @@ metadata:
   description:
     Next.js application skeleton for creating isomorphic web applications.
   tags:
-    - Recommended
-    - React
+    - recommended
+    - react
 spec:
   owner: web@example.com
   templater: cookiecutter
@@ -422,3 +455,76 @@ specify relative to the `template.yaml` definition.
 
 This is also particularly useful when you have multiple template definitions in
 the same repository but only a single `template.yaml` registered in backstage.
+
+## Kind: API
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `API`                   |
+
+An API describes an interface that can be exposed by a component. The API can be
+defined in different formats, like [OpenAPI](https://swagger.io/specification/),
+[AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/),
+[gRPC](https://developers.google.com/protocol-buffers), or other formats.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: artist-api
+  description: Retrieve artist details
+spec:
+  type: openapi
+  definition: |
+    openapi: "3.0.0"
+    info:
+      version: 1.0.0
+      title: Artist API
+      license:
+        name: MIT
+    servers:
+      - url: http://artist.spotify.net/v1
+    paths:
+      /artists:
+        get:
+          summary: List all artists
+    ...
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `API`, respectively.
+
+### `spec.type` [required]
+
+The type of the API definition as a string, e.g. `openapi`. This field is
+required.
+
+The software catalog accepts any type value, but an organisation should take
+great care to establish a proper taxonomy for these. Tools including Backstage
+itself may read this field and behave differently depending on its value. For
+example, an OpenAPI type API may be displayed using an OpenAPI viewer tooling in
+the Backstage interface.
+
+The current set of well-known and common values for this field is:
+
+- `openapi` - An API definition in YAML or JSON format based on the
+  [OpenAPI](https://swagger.io/specification/) version 2 or version 3 spec.
+- `asyncapi` - An API definition based on the
+  [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/) spec.
+- `grpc` - An API definition based on
+  [Protocol Buffers](https://developers.google.com/protocol-buffers) to use with
+  [gRPC](https://grpc.io/).
+
+### `spec.definition` [required]
+
+The definition of the API, based on the format defined by `spec.type`. This
+field is required.

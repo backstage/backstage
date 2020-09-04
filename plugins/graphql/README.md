@@ -1,13 +1,28 @@
-# graphql
+# GraphQL Backend
 
-Welcome to the graphql backend plugin!
+## Getting Started
 
-_This plugin was created through the Backstage CLI_
+This backend plugin can be started in a standalone mode from directly in this package
+with `yarn start`. However, it will have limited functionality and that process is
+most convenient when developing the plugin itself.
 
-## Getting started
+To run it within the backend do:
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/graphql](http://localhost:3000/graphql).
+1. Register the router in `packages/backend/src/index.ts`:
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+```ts
+const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
+
+const service = createServiceBuilder(module)
+  .loadConfig(configReader)
+  /** several different routers */
+  .addRouter('/graphql', await graphql(graphqlEnv));
+```
+
+2. Start the backend
+
+```bash
+yarn workspace example-backend start
+```
+
+This will launch the full example backend.

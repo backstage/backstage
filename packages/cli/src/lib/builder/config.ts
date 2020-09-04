@@ -88,15 +88,25 @@ export const makeConfigs = async (
         }),
         resolve({ mainFields }),
         commonjs({
-          include: ['node_modules/**', '../../node_modules/**'],
-          exclude: ['**/*.stories.*', '**/*.test.*'],
+          include: /node_modules/,
+          exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
         }),
         postcss(),
-        imageFiles({ exclude: '**/*.icon.svg' }),
+        imageFiles({
+          exclude: /\.icon\.svg$/,
+          include: [
+            /\.css$/,
+            /\.svg$/,
+            /\.png$/,
+            /\.gif$/,
+            /\.jpg$/,
+            /\.jpeg$/,
+          ],
+        }),
         json(),
         yaml(),
         svgr({
-          include: '**/*.icon.svg',
+          include: /\.icon\.svg$/,
           template: svgrTemplate,
         }),
         esbuild({

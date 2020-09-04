@@ -26,6 +26,10 @@ import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
+import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+import { Route, Routes, Navigate } from 'react-router';
+
+import { EntityPage } from './components/catalog/EntityPage';
 
 const app = createApp({
   apis,
@@ -36,6 +40,11 @@ const app = createApp({
         <SignInPage
           {...props}
           providers={['guest', 'custom', ...providers]}
+<<<<<<< HEAD
+=======
+          title="Select a sign-in method"
+          align="center"
+>>>>>>> master
         />
       );
     },
@@ -44,7 +53,18 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const AppRoutes = app.getRoutes();
+const deprecatedAppRoutes = app.getRoutes();
+
+const AppRoutes = () => (
+  <Routes>
+    <Route
+      path="/catalog/*"
+      element={<CatalogRouter EntityPage={EntityPage} />}
+    />
+    <Navigate key="/" to="/catalog" />
+    {...deprecatedAppRoutes}
+  </Routes>
+);
 
 const App: FC<{}> = () => (
   <AppProvider>

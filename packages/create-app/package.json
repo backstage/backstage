@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "Create app package for Backstage",
-  "version": "0.1.1-alpha.18",
+  "version": "0.1.1-alpha.21",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -22,12 +22,14 @@
   },
   "scripts": {
     "build": "backstage-cli build --outputs cjs",
-    "lint": "backstage-cli lint"
+    "lint": "backstage-cli lint",
+    "clean": "backstage-cli clean",
+    "start": "nodemon --"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1-alpha.18",
+    "@backstage/cli-common": "^0.1.1-alpha.21",
     "chalk": "^4.0.0",
-    "commander": "^4.1.1",
+    "commander": "^6.1.0",
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.3",
     "inquirer": "^7.0.4",
@@ -36,7 +38,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",
-    "@types/inquirer": "^6.5.0",
+    "@types/inquirer": "^7.3.1",
     "@types/ora": "^3.2.0",
     "@types/react-dev-utils": "^9.0.4",
     "@types/recursive-readdir": "^2.2.0",

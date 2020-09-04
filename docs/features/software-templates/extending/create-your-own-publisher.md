@@ -1,11 +1,14 @@
-# Create your own Publisher
+---
+id: extending-publisher
+title: Create your own Publisher
+---
 
 Publishers are responsible for pushing and storing the templated skeleton after
 the values have been templated by the `Templater`. See
 [Create your own templater](./create-your-own-templater.md) for more info.
 
-They recieve a directory or location where the templater has sucessfully run on,
-and is now ready to store somewhere. They also get given some other options
+They receive a directory or location where the templater has sucessfully run
+and is now ready to store somewhere. They also are given some other options
 which are sent from the frontend, such as the `storePath` which is a string of
 where the frontend thinks we should save this templated folder.
 
@@ -14,7 +17,7 @@ Currently we provide the following `publishers`:
 - `github`
 
 This publisher is passed through to the `createRouter` function of the
-`@spotify/plugin-scaffolder-backend`. Currently only one publisher is supported,
+`@spotify/plugin-scaffolder-backend`. Currently, only one publisher is supported,
 but PR's are always welcome.
 
 An full example backend can be found

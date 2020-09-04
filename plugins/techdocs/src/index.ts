@@ -15,3 +15,5 @@
  */
 
 export { plugin } from './plugin';
+export * from './reader';
+export * from './api';

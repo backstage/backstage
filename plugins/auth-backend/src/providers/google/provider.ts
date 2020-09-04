@@ -22,34 +22,36 @@ import {
   executeRefreshTokenStrategy,
   makeProfileInfo,
   executeFetchUserProfileStrategy,
-} from '../../lib/PassportStrategyHelper';
+  PassportDoneCallback,
+} from '../../lib/passport';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 import {
-  OAuthProviderHandlers,
-  RedirectInfo,
-  AuthProviderConfig,
+  OAuthAdapter,
+  OAuthHandlers,
   OAuthProviderOptions,
   OAuthResponse,
-  PassportDoneCallback,
-} from '../types';
-import { OAuthProvider } from '../../lib/OAuthProvider';
+  OAuthEnvironmentHandler,
+} from '../../lib/oauth';
 import passport from 'passport';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
-import { Config } from '@backstage/config';
 
 type PrivateInfo = {
   refreshToken: string;
 };
 
-export class GoogleAuthProvider implements OAuthProviderHandlers {
+export class GoogleAuthProvider implements OAuthHandlers {
   private readonly _strategy: GoogleStrategy;
 
   constructor(options: OAuthProviderOptions) {
     // TODO: throw error if env variables not set?
     this._strategy = new GoogleStrategy(
-      // We need passReqToCallback set to false to get params, but there's
-      // no matching type signature for that, so instead behold this beauty
-      { ...options, passReqToCallback: false as true },
+      {
+        clientID: options.clientId,
+        clientSecret: options.clientSecret,
+        callbackURL: options.callbackUrl,
+        // We need passReqToCallback set to false to get params, but there's
+        // no matching type signature for that, so instead behold this beauty
+        passReqToCallback: false as true,
+      },
       (
         accessToken: any,
         refreshToken: any,
@@ -143,44 +145,26 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createGoogleProvider(
-  { baseUrl }: AuthProviderConfig,
-  _: string,
-  envConfig: Config,
-  logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const providerId = 'google';
-  const secure = envConfig.getBoolean('secure');
-  const appOrigin = envConfig.getString('appOrigin');
-  const clientID = envConfig.getString('clientId');
-  const clientSecret = envConfig.getString('clientSecret');
-  const callbackURL = `${baseUrl}/${providerId}/handler/frame`;
+export const createGoogleProvider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    const providerId = 'google';
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-  const opts = {
-    clientID,
-    clientSecret,
-    callbackURL,
-  };
+    const provider = new GoogleAuthProvider({
+      clientId,
+      clientSecret,
+      callbackUrl,
+    });
 
-  if (!opts.clientID || !opts.clientSecret) {
-    if (process.env.NODE_ENV !== 'development') {
-      throw new Error(
-        'Failed to initialize Google auth provider, set AUTH_GOOGLE_CLIENT_ID and AUTH_GOOGLE_CLIENT_SECRET env vars',
-      );
-    }
-
-    logger.warn(
-      'Google auth provider disabled, set AUTH_GOOGLE_CLIENT_ID and AUTH_GOOGLE_CLIENT_SECRET env vars to enable',
-    );
-    return undefined;
-  }
-  return new OAuthProvider(new GoogleAuthProvider(opts), {
-    disableRefresh: false,
-    providerId,
-    secure,
-    baseUrl,
-    appOrigin,
-    tokenIssuer,
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
+      disableRefresh: false,
+      providerId,
+      tokenIssuer,
+    });
   });
-}

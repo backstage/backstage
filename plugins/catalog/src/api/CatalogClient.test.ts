@@ -18,25 +18,21 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
 import { Entity } from '@backstage/catalog-model';
+import { UrlPatternDiscovery } from '@backstage/core';
 
 const server = setupServer();
+const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
+const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
 describe('CatalogClient', () => {
   beforeAll(() => server.listen());
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
-  const mockApiOrigin = 'http://backstage:9191';
-  const mockBasePath = '/i-am-a-mock-base';
-  let client = new CatalogClient({
-    apiOrigin: mockApiOrigin,
-    basePath: mockBasePath,
-  });
+
+  let client = new CatalogClient({ discoveryApi });
 
   beforeEach(() => {
-    client = new CatalogClient({
-      apiOrigin: mockApiOrigin,
-      basePath: mockBasePath,
-    });
+    client = new CatalogClient({ discoveryApi });
   });
 
   describe('getEntiies', () => {
@@ -61,7 +57,7 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockApiOrigin}${mockBasePath}/entities`, (_, res, ctx) => {
+        rest.get(`${mockBaseUrl}/entities`, (_, res, ctx) => {
           return res(ctx.json(defaultResponse));
         }),
       );
@@ -75,15 +71,12 @@ describe('CatalogClient', () => {
     it('builds entity search filters properly', async () => {
       expect.assertions(2);
       server.use(
-        rest.get(
-          `${mockApiOrigin}${mockBasePath}/entities`,
-          (req, res, ctx) => {
-            expect(req.url.searchParams.toString()).toBe(
-              'a=1&b=2&b=3&%C3%B6=%3D',
-            );
-            return res(ctx.json([]));
-          },
-        ),
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          expect(req.url.searchParams.toString()).toBe(
+            'a=1&b=2&b=3&%C3%B6=%3D',
+          );
+          return res(ctx.json([]));
+        }),
       );
 
       const entities = await client.getEntities({

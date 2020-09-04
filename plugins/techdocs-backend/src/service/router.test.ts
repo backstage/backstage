@@ -24,12 +24,13 @@ import { createRouter } from './router';
 
 describe('createRouter', () => {
   let app: express.Express;
+  const logger = getVoidLogger();
 
   beforeAll(async () => {
     const router = await createRouter({
       preparers: new Preparers(),
       generators: new Generators(),
-      publisher: new LocalPublish(),
+      publisher: new LocalPublish(logger),
       logger: getVoidLogger(),
       dockerClient: new Docker(),
       config: ConfigReader.fromConfigs([]),

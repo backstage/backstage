@@ -41,14 +41,14 @@ export async function startStandaloneServer(
 
   logger.debug('Creating application...');
   const preparers = new Preparers();
-  const directoryPreparer = new DirectoryPreparer();
+  const directoryPreparer = new DirectoryPreparer(logger);
   preparers.register('dir', directoryPreparer);
 
   const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator();
+  const techdocsGenerator = new TechdocsGenerator(logger);
   generators.register('techdocs', techdocsGenerator);
 
-  const publisher = new LocalPublish();
+  const publisher = new LocalPublish(logger);
 
   const dockerClient = new Docker();
 

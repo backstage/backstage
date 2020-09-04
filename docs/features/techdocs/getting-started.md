@@ -1,17 +1,10 @@
-# Getting Started
+---
+id: getting-started
+title: Getting Started
+---
 
-> TechDocs is not yet feature complete - currently you can't set up a complete
-> end-to-end working TechDocs plugin without customizing the plugin itself.
-
-> What you can expect from TechDocs V.0 is a demonstration of how to integrate docs into
-> Backstage. TechDocs can create docs using
-> [mkdocs](https://www.mkdocs.org/), as well as read published docs. If you
-> publish generated docs and pass in a `storageUrl` in your `app-config.yaml`,
-> you can view them in Backstage by going to
-> `http://localhost:3000/docs/<remote-folder>`.
-
-TechDocs functions as a plugin to
-Backstage, so you will need to use Backstage to use TechDocs.
+TechDocs functions as a plugin to Backstage, so you will need to use Backstage
+to use TechDocs.
 
 ## What is Backstage?
 
@@ -38,17 +31,20 @@ To create a new Backstage application for TechDocs, run the following command:
 npx @backstage/cli create-app
 ```
 
-You will then be prompted to enter a name for your application. Once that's done, a new Backstage application will be created in a new folder. For
-example, if you choose the name `hello-world`, a new `hello-world` folder is created containing your new Backstage application.
+You will then be prompted to enter a name for your application. Once that's
+done, a new Backstage application will be created in a new folder. For example,
+if you choose the name `hello-world`, a new `hello-world` folder is created
+containing your new Backstage application.
 
 ## Installing TechDocs
 
-TechDocs is not provided with the Backstage application by default, so you will now need to set up TechDocs manually. It should take less
-than a minute.
+TechDocs is provided with the Backstage application by default. If you want to
+set up TechDocs manually, keep follow the instructions below.
 
 ### Adding the package
 
-The first step is to add the TechDocs plugin to your Backstage application. Navigate to your new Backstage application folder:
+The first step is to add the TechDocs plugin to your Backstage application.
+Navigate to your new Backstage application folder:
 
 ```bash
 cd hello-world/
@@ -61,7 +57,7 @@ cd packages/app
 yarn add @backstage/plugin-techdocs
 ```
 
-After a short while, the TechDocs plugin should be successfully installed. 
+After a short while, the TechDocs plugin should be successfully installed.
 
 Next, you need to set up some basic configuration. Enter the following command:
 
@@ -78,18 +74,29 @@ export { plugin as TechDocs } from '@backstage/plugin-techdocs';
 ### Setting the configuration
 
 TechDocs allows for configuration of the docs storage URL through your
-`app-config` file. The URL provided here is for demo docs to use for testing purposes.
+`app-config` file.
 
-To use the demo docs, add the following lines to `app-config.yaml`:
+The default storage URL:
 
 ```yaml
 techdocs:
-  storageUrl: https://techdocs-mock-sites.storage.googleapis.com
+  storageUrl: http://localhost:7000/techdocs/static/docs
 ```
+
+If you want to configure this to point to another storage URL, change the value
+of `storageUrl`.
 
 ## Run Backstage locally
 
-Change folder to your Backstage application root and run the following command:
+Change folder to `<backstage-project-root>/packages/backend` and run the
+following command:
+
+```bash
+yarn start
+```
+
+Open a new command line window. Change directory to your Backstage application
+root and run the following command:
 
 ```bash
 yarn start
@@ -99,5 +106,5 @@ Open your browser at [http://localhost:3000/docs/](http://localhost:3000/docs/).
 
 ## Additional reading
 
- * [Creating and publishing your docs](creating-and-publishing.md)
- * [Back to README](README.md)
+- [Creating and publishing your docs](creating-and-publishing.md)
+- [Back to README](README.md)

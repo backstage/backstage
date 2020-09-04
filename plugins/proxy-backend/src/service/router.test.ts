@@ -26,6 +26,7 @@ describe('createRouter', () => {
     const router = await createRouter({
       config,
       logger,
+      pathPrefix: '/proxy',
     });
     expect(router).toBeDefined();
   });

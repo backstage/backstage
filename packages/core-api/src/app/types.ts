@@ -168,5 +168,5 @@ export type BackstageApp = {
   /**
    * Routes component that contains all routes for plugin pages in the app.
    */
-  getRoutes(): ComponentType<{}>;
+  getRoutes(): JSX.Element[];
 };

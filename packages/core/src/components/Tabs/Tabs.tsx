@@ -48,7 +48,7 @@ export interface TabsProps {
   tabs: TabProps[];
 }
 
-const useStyles = makeStyles<BackstageTheme>((theme: BackstageTheme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     flexGrow: 1,
     width: '100%',
@@ -66,7 +66,7 @@ const useStyles = makeStyles<BackstageTheme>((theme: BackstageTheme) => ({
 
 export const Tabs: FC<TabsProps> = ({ tabs }) => {
   const classes = useStyles();
-  const [value, setValue] = useState([0, 0]); // [selectedChunckedNavIndex, selectedIndex]
+  const [value, setValue] = useState([0, 0]); // [selectedChunkedNavIndex, selectedIndex]
   const [navIndex, setNavIndex] = useState(0);
   const [numberOfChunkedElement, setNumberOfChunkedElement] = useState(0);
   const [chunkedTabs, setChunkedTabs] = useState<TabProps[][]>([[]]);
@@ -89,7 +89,7 @@ export const Tabs: FC<TabsProps> = ({ tabs }) => {
   const hasNextNavIndex = () => navIndex + 1 < chunkedTabs.length;
 
   useEffect(() => {
-    // Each time the window is resized we calculate how many tabs wwe can render given the window width
+    // Each time the window is resized we calculate how many tabs we can render given the window width
     const padding = 20; // The AppBar padding
 
     const numberOfTabIcons = navIndex === 0 ? 1 : 2;
@@ -99,7 +99,7 @@ export const Tabs: FC<TabsProps> = ({ tabs }) => {
     const newChunkedElementSize = Math.floor(wrapperWidth / 170);
 
     setNumberOfChunkedElement(newChunkedElementSize);
-    setChunkedTabs(chunkArray([...tabs], newChunkedElementSize));
+    setChunkedTabs(chunkArray(tabs, newChunkedElementSize));
     setValue([
       Math.floor(flattenIndex / newChunkedElementSize),
       flattenIndex % newChunkedElementSize,

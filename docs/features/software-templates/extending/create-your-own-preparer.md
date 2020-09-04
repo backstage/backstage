@@ -1,4 +1,7 @@
-# Create your own Preparer
+---
+id: extending-preparer
+title: Create your own Preparer
+---
 
 Preparers are responsible for reading the location of the definition of a
 [Template Entity](../../software-catalog/descriptor-format.md#kind-template) and
@@ -51,7 +54,7 @@ The `protocol` is set on the
 when added to the service catalog. You can see more about this `PreparerKey`
 here in [Register your own template](../adding-templates.md)
 
-**note:** Currently the catalog supports loading definitions from Github + Local
+**note:** Currently the catalog supports loading definitions from GitHub + Local
 Files, which translate into the two `PreparerKeys` `file` and `github`. To load
 from other places, not only will there need to be another preparer, but the
 support to load the location will also need to be added to the Catalog.

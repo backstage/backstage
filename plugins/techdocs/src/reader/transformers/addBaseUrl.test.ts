@@ -14,124 +14,65 @@
  * limitations under the License.
  */
 
-import { createTestShadowDom, FIXTURES, getSample } from '../../test-utils';
+import { createTestShadowDom } from '../../test-utils';
 import { addBaseUrl } from '../transformers';
+import { TechDocsStorage } from '../../api';
 
 const DOC_STORAGE_URL = 'https://example-host.storage.googleapis.com';
 
+const techdocsStorageApi: TechDocsStorage = {
+  getBaseUrl: jest.fn(() => DOC_STORAGE_URL),
+  getEntityDocs: () => new Promise(resolve => resolve('yes!')),
+};
+
+const fixture = `
+  <html>
+    <head>
+      <link type="stylesheet" href="astyle.css" />
+    </head>
+    <body>
+      <img src="test.jpg" />
+      <script type="javascript" src="script.js"></script>
+    </body>
+  </html>
+`;
+
+const mockEntityId = {
+  kind: '',
+  namespace: '',
+  name: '',
+};
+
 describe('addBaseUrl', () => {
   it('contains relative paths', () => {
-    const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE);
-
-    expect(getSample(shadowDom, 'img', 'src')).toEqual([
-      'img/win-py-install.png',
-      'img/initial-layout.png',
-    ]);
-    expect(getSample(shadowDom, 'link', 'href')).toEqual([
-      'https://www.mkdocs.org/',
-      'assets/images/favicon.png',
-    ]);
-    expect(getSample(shadowDom, 'script', 'src')).toEqual([
-      'https://www.google-analytics.com/analytics.js',
-      'assets/javascripts/vendor.d710d30a.min.js',
-    ]);
-  });
-
-  it('contains transformed absolute paths', () => {
-    const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
+    createTestShadowDom(fixture, {
       preTransformers: [
         addBaseUrl({
-          docStorageUrl: DOC_STORAGE_URL,
-          componentId: 'example-docs',
+          techdocsStorageApi,
+          entityId: mockEntityId,
           path: '',
         }),
       ],
       postTransformers: [],
     });
 
-    expect(getSample(shadowDom, 'img', 'src')).toEqual([
-      'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
-      'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
-    ]);
-    expect(getSample(shadowDom, 'link', 'href')).toEqual([
-      'https://www.mkdocs.org/',
-      'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
-    ]);
-    expect(getSample(shadowDom, 'script', 'src')).toEqual([
-      'https://www.google-analytics.com/analytics.js',
-      'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
-    ]);
-  });
-
-  it('includes path option without slash', () => {
-    const shadowDom = createTestShadowDom(
-      `
-      <img src="../img/win-py-install.png" />
-      <img src="../img/initial-layout.png" />
-      <link href="https://www.mkdocs.org/" />
-      <link href="../assets/images/favicon.png" />
-      <script src="https://www.google-analytics.com/analytics.js"></script>
-      <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-    `,
-      {
-        preTransformers: [
-          addBaseUrl({
-            docStorageUrl: DOC_STORAGE_URL,
-            componentId: 'example-docs',
-            path: 'examplepath',
-          }),
-        ],
-        postTransformers: [],
-      },
+    expect(techdocsStorageApi.getBaseUrl).toHaveBeenNthCalledWith(
+      1,
+      'test.jpg',
+      mockEntityId,
+      '',
     );
-
-    expect(getSample(shadowDom, 'img', 'src')).toEqual([
-      'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
-      'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
-    ]);
-    expect(getSample(shadowDom, 'link', 'href')).toEqual([
-      'https://www.mkdocs.org/',
-      'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
-    ]);
-    expect(getSample(shadowDom, 'script', 'src')).toEqual([
-      'https://www.google-analytics.com/analytics.js',
-      'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
-    ]);
-  });
-
-  it('includes path option with slash', () => {
-    const shadowDom = createTestShadowDom(
-      `
-      <img src="../img/win-py-install.png" />
-      <img src="../img/initial-layout.png" />
-      <link href="https://www.mkdocs.org/" />
-      <link href="../assets/images/favicon.png" />
-      <script src="https://www.google-analytics.com/analytics.js"></script>
-      <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-    `,
-      {
-        preTransformers: [
-          addBaseUrl({
-            docStorageUrl: DOC_STORAGE_URL,
-            componentId: 'example-docs',
-            path: 'examplepath/',
-          }),
-        ],
-        postTransformers: [],
-      },
+    expect(techdocsStorageApi.getBaseUrl).toHaveBeenNthCalledWith(
+      2,
+      'script.js',
+      mockEntityId,
+      '',
     );
-
-    expect(getSample(shadowDom, 'img', 'src')).toEqual([
-      'https://example-host.storage.googleapis.com/example-docs/img/win-py-install.png',
-      'https://example-host.storage.googleapis.com/example-docs/img/initial-layout.png',
-    ]);
-    expect(getSample(shadowDom, 'link', 'href')).toEqual([
-      'https://www.mkdocs.org/',
-      'https://example-host.storage.googleapis.com/example-docs/assets/images/favicon.png',
-    ]);
-    expect(getSample(shadowDom, 'script', 'src')).toEqual([
-      'https://www.google-analytics.com/analytics.js',
-      'https://example-host.storage.googleapis.com/example-docs/assets/javascripts/vendor.d710d30a.min.js',
-    ]);
+    expect(techdocsStorageApi.getBaseUrl).toHaveBeenNthCalledWith(
+      3,
+      'astyle.css',
+      mockEntityId,
+      '',
+    );
   });
 });

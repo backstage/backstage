@@ -24,13 +24,22 @@ import { SignInPageProps, useApi, configApiRef } from '@backstage/core-api';
 import { useSignInProviders, getSignInProviders } from './providers';
 import { IdentityProviders } from './types';
 import { Progress } from '../../components/Progress';
+import { useStyles } from './styles';
 
 export type Props = SignInPageProps & {
   providers: IdentityProviders;
+  title?: string;
+  align?: 'center' | 'left';
 };
 
-export const SignInPage: FC<Props> = ({ onResult, providers = [] }) => {
+export const SignInPage: FC<Props> = ({
+  onResult,
+  providers = [],
+  title,
+  align = 'left',
+}) => {
   const configApi = useApi(configApiRef);
+  const classes = useStyles();
 
   const signInProviders = getSignInProviders(providers);
   const [loading, providerElements] = useSignInProviders(
@@ -46,8 +55,16 @@ export const SignInPage: FC<Props> = ({ onResult, providers = [] }) => {
     <Page>
       <Header title={configApi.getString('app.title')} />
       <Content>
-        <ContentHeader title="Select a sign-in method" />
-        <Grid container>{providerElements}</Grid>
+        {title && <ContentHeader title={title} textAlign={align} />}
+        <Grid
+          container
+          justify={align === 'center' ? align : 'flex-start'}
+          spacing={2}
+          component="ul"
+          classes={classes}
+        >
+          {providerElements}
+        </Grid>
       </Content>
     </Page>
   );

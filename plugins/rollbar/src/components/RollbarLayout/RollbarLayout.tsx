@@ -17,6 +17,7 @@
 import React, { ReactNode } from 'react';
 import {
   Header,
+  HeaderLabel,
   Page,
   pageTheme,
   Content,
@@ -36,7 +37,10 @@ export const RollbarLayout = ({ title = 'Dashboard', children }: Props) => {
       <Header
         title="Rollbar"
         subtitle="Real-time error tracking & debugging tools for developers"
-      />
+      >
+        <HeaderLabel label="Owner" value="Spotify" />
+        <HeaderLabel label="Lifecycle" value="Alpha" />
+      </Header>
       <Content>
         <ContentHeader title={title}>
           <SupportButton>

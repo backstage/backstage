@@ -57,6 +57,12 @@ export default async (cmd: Command) => {
     }
   }
 
+  // This is the only thing that is not implemented by jest.run(), so we do it here instead
+  // https://github.com/facebook/jest/blob/cd8828f7bbec6e55b4df5e41e853a5133c4a3ee1/packages/jest-cli/bin/jest.js#L12
+  if (!process.env.NODE_ENV) {
+    (process.env as any).NODE_ENV = 'test';
+  }
+
   // eslint-disable-next-line jest/no-jest-import
   await require('jest').run(args);
 };

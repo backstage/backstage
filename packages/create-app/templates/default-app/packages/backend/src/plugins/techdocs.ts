@@ -1,6 +1,7 @@
 import {
   createRouter,
   DirectoryPreparer,
+  GithubPreparer,
   Preparers,
   Generators,
   LocalPublish,
@@ -14,15 +15,18 @@ export default async function createPlugin({
   config,
 }: PluginEnvironment) {
   const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator();
+  const techdocsGenerator = new TechdocsGenerator(logger);
+
   generators.register('techdocs', techdocsGenerator);
 
-  const directoryPreparer = new DirectoryPreparer();
   const preparers = new Preparers();
+  const directoryPreparer = new DirectoryPreparer(logger);
+  const githubPreparer = new GithubPreparer(logger);
 
   preparers.register('dir', directoryPreparer);
+  preparers.register('github', githubPreparer);
 
-  const publisher = new LocalPublish();
+  const publisher = new LocalPublish(logger);
 
   const dockerClient = new Docker();
 

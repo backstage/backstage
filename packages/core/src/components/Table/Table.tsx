@@ -127,7 +127,8 @@ function convertColumns<T extends object>(
 ): TableColumn<T>[] {
   return columns.map(column => {
     const headerStyle: React.CSSProperties = {};
-    const cellStyle: React.CSSProperties = {};
+    const cellStyle: React.CSSProperties =
+      typeof column.cellStyle === 'object' ? column.cellStyle : {};
 
     if (column.highlight) {
       headerStyle.color = theme.palette.textContrast;

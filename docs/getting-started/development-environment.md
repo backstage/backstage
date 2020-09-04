@@ -1,4 +1,7 @@
-# Development Environment
+---
+id: development-environment
+title: Development Environment
+---
 
 This section describes how to get set up for doing development on the Backstage
 repository.
@@ -82,7 +85,3 @@ yarn create-plugin # Create a new plugin
 > See
 > [package.json](https://github.com/spotify/backstage/blob/master/package.json)
 > for other yarn commands/options.
-
-[Next Step - Create a Backstage plugin](../plugins/create-a-plugin.md)
-
-[Back to Docs](../README.md)

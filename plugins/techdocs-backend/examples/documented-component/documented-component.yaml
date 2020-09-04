@@ -4,7 +4,7 @@ metadata:
   name: documented-component
   description: A Service with TechDocs documentation
   annotations:
-    backstage.io/techdocs-ref: 'dir:./'
+    backstage.io/techdocs-ref: 'github:https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component'
 spec:
   type: service
   lifecycle: experimental

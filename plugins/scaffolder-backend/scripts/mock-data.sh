@@ -4,6 +4,7 @@ for URL in \
   'react-ssr-template' \
   'springboot-grpc-template' \
   'create-react-app' \
+  'docs-template' \
 ; do \
   curl \
     --location \

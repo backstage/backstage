@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import { RollbarApi } from '../api';
@@ -37,6 +38,9 @@ describe('createRouter', () => {
     const router = await createRouter({
       rollbarApi,
       logger: getVoidLogger(),
+      config: ConfigReader.fromConfigs([
+        { context: 'abc', data: { rollbar: { accountToken: 'foo' } } },
+      ]),
     });
     app = express().use(router);
   });

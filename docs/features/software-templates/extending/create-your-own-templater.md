@@ -1,18 +1,21 @@
-# Creating your own Templater
+---
+id: extending-templater
+title: Creating your own Templater
+---
 
 Templaters are responsible for taking the directory path for the skeleton
 returned by the preparers, and then executing the templating command on top of
 the file and returning the completed template path. This may or may not be the
 same directory as the input directory.
 
-They also recieve additional values from the frontend, which can be used to
+They also receive additional values from the frontend, which can be used to
 interpolate into the skeleton files.
 
 Currently we provide the following templaters:
 
 - `cookiecutter`
 
-This templater is added the `TemplaterBuilder` and then passed into the
+This templater is added to the `TemplaterBuilder` and then passed into the
 `createRouter` function of the `@spotify/plugin-scaffolder-backend`
 
 An full example backend can be found
@@ -45,7 +48,7 @@ This `TemplaterKey` is used to select the correct templater from the
 `spec.templater` in the
 [Template Entity](../../software-catalog/descriptor-format.md#kind-template).
 
-If you wish to add a new templater you'll need to register it with the
+If you wish to add a new templater, you'll need to register it with the
 `TemplaterBuilder`.
 
 ### Creating your own Templater to add to the `TemplaterBuilder`
@@ -80,10 +83,10 @@ follows:
 - `dockerClient` - a [dockerode](https://github.com/apocas/dockerode) client to
   be able to run docker containers.
 
-_note_ currently the templaters that we provide are basically docker action
+_note_ Currently the templaters that we provide are basically Docker action
 containers that are run on top of the skeleton folder. This keeps dependencies
 to a minimal for running backstage scaffolder, but you don't /have/ to use
-docker. You could create your own templater that spins up an EC2 instance and
+Docker. You could create your own templater that spins up an EC2 instance and
 downloads the folder and does everything using an AMI if you want. It's entirely
 up to you!
 
@@ -113,8 +116,8 @@ metadata:
   description:
     Next.js application skeleton for creating isomorphic web applications.
   tags:
-    - Recommended
-    - React
+    - recommended
+    - react
 spec:
   owner: web@example.com
   templater: handlebars
@@ -135,7 +138,7 @@ spec:
         description: Description of the component
 ```
 
-You see that the `spec.templater` is set as `handlebars`, you'll need to
+You see that the `spec.templater` is set as `handlebars`, so you'll need to
 register this with the `TemplaterBuilder` like so:
 
 ```ts

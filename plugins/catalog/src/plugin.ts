@@ -15,14 +15,7 @@
  */
 
 import { createPlugin } from '@backstage/core';
-import { CatalogPage } from './components/CatalogPage/CatalogPage';
-import { EntityPage } from './components/EntityPage/EntityPage';
-import { entityRoute, rootRoute } from './routes';
 
 export const plugin = createPlugin({
   id: 'catalog',
-  register({ router }) {
-    router.addRoute(rootRoute, CatalogPage);
-    router.addRoute(entityRoute, EntityPage);
-  },
 });

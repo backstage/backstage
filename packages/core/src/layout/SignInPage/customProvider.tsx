@@ -17,7 +17,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import {
-  Grid,
   Typography,
   Button,
   FormControl,
@@ -28,8 +27,10 @@ import {
 import isEmpty from 'lodash/isEmpty';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
+import { GridItem } from './styles';
 
-const ID_TOKEN_REGEX = /^[a-z0-9+/]+\.[a-z0-9+/]+\.[a-z0-9+/]+$/i;
+// accept base64url format according to RFC7515 (https://tools.ietf.org/html/rfc7515#section-3)
+const ID_TOKEN_REGEX = /^[a-z0-9_\-]+\.[a-z0-9_\-]+\.[a-z0-9_\-]+$/i;
 
 const useFormStyles = makeStyles(theme => ({
   form: {
@@ -64,8 +65,8 @@ const Component: ProviderComponent = ({ onResult }) => {
   };
 
   return (
-    <Grid item>
-      <InfoCard title="Custom User">
+    <GridItem>
+      <InfoCard title="Custom User" variant="fullHeight">
         <Typography variant="body1">
           Enter your own User ID and credentials.
           <br />
@@ -109,13 +110,13 @@ const Component: ProviderComponent = ({ onResult }) => {
             color="primary"
             variant="outlined"
             className={classes.button}
-            disabled={!formState?.dirty || !isEmpty(errors)}
+            disabled={!formState?.isDirty || !isEmpty(errors)}
           >
             Continue
           </Button>
         </form>
       </InfoCard>
-    </Grid>
+    </GridItem>
   );
 };
 
