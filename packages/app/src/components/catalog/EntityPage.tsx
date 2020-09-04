@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import React from 'react';
 import {
+  AboutCard,
   EntityPageLayout,
   useEntity,
-  AboutCard,
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 import { Grid } from '@material-ui/core';
@@ -48,6 +49,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/sentry"
       title="Sentry"
       element={<SentryRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/api/*"
+      title="API"
+      element={<ApiDocsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );

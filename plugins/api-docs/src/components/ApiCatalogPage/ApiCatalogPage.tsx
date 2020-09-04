@@ -15,7 +15,6 @@
  */
 
 import { Content, useApi } from '@backstage/core';
-// TODO: Circular ref
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import React from 'react';
 import { useAsync } from 'react-use';
