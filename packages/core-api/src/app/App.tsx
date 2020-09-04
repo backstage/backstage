@@ -324,6 +324,18 @@ export class PrivateAppImpl implements BackstageApp {
       registry.register('default', factory);
     }
 
+    for (const plugin of this.plugins) {
+      for (const factory of plugin.getApis()) {
+        if (!registry.register('default', factory)) {
+          throw new Error(
+            `Plugin ${plugin.getId()} tried to register duplicate or forbidden API factory for ${
+              factory.implements
+            }`,
+          );
+        }
+      }
+    }
+
     for (const factory of this.apis) {
       if (!registry.register('app', factory)) {
         throw new Error(
