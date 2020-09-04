@@ -64,7 +64,7 @@ type FullAppOptions = {
   components: AppComponents;
   themes: AppTheme[];
   configLoader?: AppConfigLoader;
-  defaultApiFactories: Iterable<AnyApiFactory>;
+  defaultApis: Iterable<AnyApiFactory>;
 };
 
 function useConfigLoader(
@@ -112,7 +112,7 @@ export class PrivateAppImpl implements BackstageApp {
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
-  private readonly defaultApiFactories: Iterable<AnyApiFactory>;
+  private readonly defaultApis: Iterable<AnyApiFactory>;
 
   private readonly identityApi = new AppIdentity();
 
@@ -123,7 +123,7 @@ export class PrivateAppImpl implements BackstageApp {
     this.components = options.components;
     this.themes = options.themes;
     this.configLoader = options.configLoader;
-    this.defaultApiFactories = options.defaultApiFactories;
+    this.defaultApis = options.defaultApis;
   }
 
   getPlugins(): BackstagePlugin[] {
@@ -320,7 +320,7 @@ export class PrivateAppImpl implements BackstageApp {
       factory: () => this.identityApi,
     });
 
-    for (const factory of this.defaultApiFactories) {
+    for (const factory of this.defaultApis) {
       registry.register('default', factory);
     }
 

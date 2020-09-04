@@ -15,33 +15,10 @@
  */
 
 import {
-  alertApiRef,
   errorApiRef,
-  AlertApiForwarder,
-  ErrorApiForwarder,
-  ErrorAlerter,
-  featureFlagsApiRef,
-  FeatureFlags,
   discoveryApiRef,
   UrlPatternDiscovery,
-  GoogleAuth,
-  GithubAuth,
-  OAuth2,
-  OktaAuth,
-  GitlabAuth,
-  Auth0Auth,
-  MicrosoftAuth,
-  oauthRequestApiRef,
-  OAuthRequestManager,
-  googleAuthApiRef,
   githubAuthApiRef,
-  oauth2ApiRef,
-  oktaAuthApiRef,
-  gitlabAuthApiRef,
-  auth0AuthApiRef,
-  microsoftAuthApiRef,
-  storageApiRef,
-  WebStorage,
   createApiFactory,
   configApiRef,
 } from '@backstage/core';
@@ -83,18 +60,6 @@ import {
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 
 export const apis = [
-  createApiFactory(alertApiRef, new AlertApiForwarder()),
-  createApiFactory({
-    implements: errorApiRef,
-    deps: { alertApi: alertApiRef },
-    factory: ({ alertApi }) =>
-      new ErrorAlerter(alertApi, new ErrorApiForwarder()),
-  }),
-  createApiFactory({
-    implements: storageApiRef,
-    deps: { errorApi: errorApiRef },
-    factory: ({ errorApi }) => WebStorage.create({ errorApi }),
-  }),
   createApiFactory({
     implements: discoveryApiRef,
     deps: { configApi: configApiRef },
@@ -121,7 +86,6 @@ export const apis = [
       ),
   }),
   createApiFactory(githubActionsApiRef, new GithubActionsClient()),
-  createApiFactory(featureFlagsApiRef, new FeatureFlags()),
   createApiFactory({
     implements: lighthouseApiRef,
     deps: { configApi: configApiRef },
@@ -129,74 +93,10 @@ export const apis = [
   }),
   createApiFactory(travisCIApiRef, new TravisCIApi()),
   createApiFactory(githubPullRequestsApiRef, new GithubPullRequestsClient()),
-  createApiFactory(oauthRequestApiRef, new OAuthRequestManager()),
   createApiFactory({
     implements: techRadarApiRef,
     deps: {},
     factory: () => new TechRadar({ width: 1500, height: 800 }),
-  }),
-  createApiFactory({
-    implements: googleAuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      GoogleAuth.create({ discoveryApi, oauthRequestApi }),
-  }),
-  createApiFactory({
-    implements: microsoftAuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      MicrosoftAuth.create({ discoveryApi, oauthRequestApi }),
-  }),
-  createApiFactory({
-    implements: githubAuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      GithubAuth.create({ discoveryApi, oauthRequestApi }),
-  }),
-  createApiFactory({
-    implements: oktaAuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      OktaAuth.create({ discoveryApi, oauthRequestApi }),
-  }),
-  createApiFactory({
-    implements: gitlabAuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      GitlabAuth.create({ discoveryApi, oauthRequestApi }),
-  }),
-  createApiFactory({
-    implements: auth0AuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      Auth0Auth.create({ discoveryApi, oauthRequestApi }),
-  }),
-  createApiFactory({
-    implements: oauth2ApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      OAuth2.create({ discoveryApi, oauthRequestApi }),
   }),
   createApiFactory({
     implements: catalogApiRef,

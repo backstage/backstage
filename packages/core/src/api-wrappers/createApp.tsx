@@ -25,6 +25,7 @@ import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 import { ErrorPage } from '../layout/ErrorPage';
 import { Progress } from '../components/Progress';
+import { defaultApis } from './defaultApis';
 import { lightTheme, darkTheme } from '@backstage/theme';
 import { AppConfig, JsonObject } from '@backstage/config';
 
@@ -126,7 +127,7 @@ export function createApp(options?: AppOptions) {
     components,
     themes,
     configLoader,
-    defaultApiFactories: [],
+    defaultApis,
   });
 
   app.verify();
