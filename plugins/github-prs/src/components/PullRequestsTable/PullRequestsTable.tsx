@@ -36,6 +36,7 @@ import { useEntityCompoundName } from '@backstage/plugin-catalog';
 import { useProjectName } from '../useProjectName';
 import { usePullRequests, PullRequest } from '../usePullRequests';
 import { PullRequestState } from '../../types';
+import { Entity } from '@backstage/catalog-model';
 
 const generatedColumns: TableColumn[] = [
   {
@@ -143,13 +144,13 @@ export const PullRequestsTableView: FC<Props> = ({
   );
 };
 
-export const PullRequestsTable = () => {
+export const PullRequestsTable = ({ entity }: { entity: Entity }) => {
   let entityCompoundName = useEntityCompoundName();
   if (!entityCompoundName.name) {
     entityCompoundName = {
-      kind: 'Component',
-      name: 'backstage',
-      namespace: 'default',
+      kind: entity.kind,
+      name: entity.metadata.name,
+      namespace: entity.metadata.namespace || 'default',
     };
   }
   const [PRStatusFilter, setPRStatusFilter] = useState<PullRequestState>(

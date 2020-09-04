@@ -85,7 +85,7 @@ class DevAppBuilder {
 
     const AppProvider = app.getProvider();
     const AppRouter = app.getRouter();
-    const AppRoutes = app.getRoutes();
+    const deprecatedAppRoutes = app.getRoutes();
 
     const sidebar = this.setupSidebar(this.plugins);
 
@@ -99,7 +99,7 @@ class DevAppBuilder {
           <AppRouter>
             <SidebarPage>
               {sidebar}
-              <AppRoutes />
+              {deprecatedAppRoutes}
             </SidebarPage>
           </AppRouter>
         </AppProvider>
