@@ -15,20 +15,22 @@
  */
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Content, InfoCard, Progress } from '@backstage/core';
+import { InfoCard, Progress, Link } from '@backstage/core';
 import { BuildWithSteps, BuildStepAction } from '../../api';
-import { Grid, Box, Link, IconButton } from '@material-ui/core';
+import {
+  Grid,
+  Box,
+  IconButton,
+  Breadcrumbs,
+  Typography,
+  Link as MaterialLink,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { PluginHeader } from '../../components/PluginHeader';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
-import { Layout } from '../../components/Layout';
 import LaunchIcon from '@material-ui/icons/Launch';
-import { useSettings } from '../../state/useSettings';
 import { useBuildWithSteps } from '../../state/useBuildWithSteps';
-import { AppStateProvider } from '../../state';
-import { Settings } from '../../components/Settings';
 
-const IconLink = IconButton as typeof Link;
+const IconLink = (IconButton as any) as typeof MaterialLink;
 const BuildName: FC<{ build?: BuildWithSteps }> = ({ build }) => (
   <Box display="flex" alignItems="center">
     #{build?.build_num} - {build?.subject}
@@ -94,56 +96,13 @@ const pickClassName = (
   return classes.neutral;
 };
 
-const Page = () => (
-  <AppStateProvider>
-    <Layout>
-      <Content>
-        <BuildWithStepsView />
-        <Settings />
-      </Content>
-    </Layout>
-  </AppStateProvider>
-);
-
-const BuildWithStepsView: FC<{}> = () => {
-  const { buildId = '' } = useParams();
-  const classes = useStyles();
-  const [settings] = useSettings();
-  const [{ loading, value }, { startPolling, stopPolling }] = useBuildWithSteps(
-    parseInt(buildId, 10),
-  );
-
-  useEffect(() => {
-    startPolling();
-    return () => stopPolling();
-  }, [buildId, settings, startPolling, stopPolling]);
-
-  return (
-    <>
-      <PluginHeader title="Build info" />
-
-      <Grid container spacing={3} direction="column">
-        <Grid item>
-          <InfoCard
-            className={pickClassName(classes, value)}
-            title={<BuildName build={value} />}
-            cardClassName={classes.cardContent}
-          >
-            {loading ? <Progress /> : <BuildsList build={value} />}
-          </InfoCard>
-        </Grid>
-      </Grid>
-    </>
-  );
-};
-
 const BuildsList: FC<{ build?: BuildWithSteps }> = ({ build }) => (
   <Box>
     {build &&
       build.steps &&
       build.steps.map(
         ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
-          <ActionsList name={name} actions={actions} />
+          <ActionsList key={name} name={name} actions={actions} />
         ),
       )}
   </Box>
@@ -167,5 +126,35 @@ const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
   );
 };
 
-export default Page;
-export { BuildWithStepsView as BuildWithSteps };
+export const BuildWithStepsPage = () => {
+  const { buildId = '' } = useParams();
+  const classes = useStyles();
+  const [{ loading, value }, { startPolling, stopPolling }] = useBuildWithSteps(
+    parseInt(buildId, 10),
+  );
+
+  useEffect(() => {
+    startPolling();
+    return () => stopPolling();
+  }, [buildId, startPolling, stopPolling]);
+
+  return (
+    <>
+      <Breadcrumbs aria-label="breadcrumb">
+        <Link to="..">All builds</Link>
+        <Typography>Build details</Typography>
+      </Breadcrumbs>
+      <Grid container spacing={3} direction="column">
+        <Grid item>
+          <InfoCard
+            className={pickClassName(classes, value)}
+            title={<BuildName build={value} />}
+            cardClassName={classes.cardContent}
+          >
+            {loading ? <Progress /> : <BuildsList build={value} />}
+          </InfoCard>
+        </Grid>
+      </Grid>
+    </>
+  );
+};

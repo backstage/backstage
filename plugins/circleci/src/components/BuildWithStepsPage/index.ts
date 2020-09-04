@@ -13,17 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Header, Page, pageTheme, HeaderLabel } from '@backstage/core';
-
-export const Layout: React.FC = ({ children }) => {
-  return (
-    <Page theme={pageTheme.tool}>
-      <Header title="CircleCI" subtitle="See recent builds and their status">
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      {children}
-    </Page>
-  );
-};
+export { BuildWithStepsPage } from './BuildWithStepsPage';

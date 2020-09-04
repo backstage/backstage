@@ -13,24 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export type Settings = { owner: string; repo: string; token: string };
-export type SettingsState = Settings & {
-  showSettings: boolean;
-};
-
-export type State = SettingsState;
-
-type SettingsAction =
-  | {
-      type: 'setCredentials';
-      payload: {
-        repo: string;
-        owner: string;
-        token: string;
-      };
-    }
-  | { type: 'showSettings' }
-  | { type: 'hideSettings' };
-
-export type Action = SettingsAction;
+export { BuildsPage } from './BuildsPage';
