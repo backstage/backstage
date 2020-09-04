@@ -33,3 +33,4 @@ export { plugin as Jenkins } from '@backstage/plugin-jenkins';
 export { plugin as ApiDocs } from '@backstage/plugin-api-docs';
 export { plugin as GcpProjects } from '@backstage/plugin-gcp-projects';
 export { plugin as GithubPrs } from '@backstage/plugin-github-prs';
+export { plugin as Argocd } from '@backstage/plugin-argocd';
