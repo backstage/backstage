@@ -15,11 +15,35 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import fetch from 'node-fetch';
+import fetch, { RequestInit, HeadersInit } from 'node-fetch';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
+import { Config } from '@backstage/config';
 
 export class GithubReaderProcessor implements LocationProcessor {
+  private privateToken: string;
+
+  constructor(config?: Config) {
+    this.privateToken =
+      config?.getOptionalString('catalog.processors.github.privateToken') ?? '';
+  }
+
+  getRequestOptions(): RequestInit {
+    const headers: HeadersInit = {
+      Accept: 'application/vnd.github.v3.raw',
+    };
+
+    if (this.privateToken !== '') {
+      headers.Authorization = `token ${this.privateToken}`;
+    }
+
+    const requestOptions: RequestInit = {
+      headers,
+    };
+
+    return requestOptions;
+  }
+
   async readLocation(
     location: LocationSpec,
     optional: boolean,
@@ -34,7 +58,7 @@ export class GithubReaderProcessor implements LocationProcessor {
 
       // TODO(freben): Should "hard" errors thrown by this line be treated as
       // notFound instead of fatal?
-      const response = await fetch(url.toString());
+      const response = await fetch(url.toString(), this.getRequestOptions());
 
       if (response.ok) {
         const data = await response.buffer();

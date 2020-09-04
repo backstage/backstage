@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { WorkflowRunDetailsPage } from './WorkflowRunDetailsPage';
+export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
+export { OAuthAdapter } from './OAuthAdapter';
+export type {
+  OAuthHandlers,
+  OAuthProviderInfo,
+  OAuthProviderOptions,
+  OAuthResponse,
+  OAuthState,
+} from './types';

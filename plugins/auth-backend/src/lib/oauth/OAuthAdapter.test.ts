@@ -15,16 +15,9 @@
  */
 
 import express from 'express';
-import {
-  ensuresXRequestedWith,
-  postMessageResponse,
-  THOUSAND_DAYS_MS,
-  TEN_MINUTES_MS,
-  verifyNonce,
-  encodeState,
-  OAuthProvider,
-} from './OAuthProvider';
-import { WebMessageResponse, OAuthProviderHandlers } from '../providers/types';
+import { THOUSAND_DAYS_MS, TEN_MINUTES_MS, OAuthAdapter } from './OAuthAdapter';
+import { encodeState } from './helpers';
+import { OAuthHandlers } from './types';
 
 const mockResponseData = {
   providerInfo: {
@@ -41,149 +34,8 @@ const mockResponseData = {
   },
 };
 
-describe('OAuthProvider Utils', () => {
-  describe('verifyNonce', () => {
-    it('should throw error if cookie nonce missing', () => {
-      const state = { nonce: 'NONCE', env: 'development' };
-      const mockRequest = ({
-        cookies: {},
-        query: {
-          state: encodeState(state),
-        },
-      } as unknown) as express.Request;
-      expect(() => {
-        verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Auth response is missing cookie nonce');
-    });
-
-    it('should throw error if state nonce missing', () => {
-      const mockRequest = ({
-        cookies: {
-          'providera-nonce': 'NONCE',
-        },
-        query: {},
-      } as unknown) as express.Request;
-      expect(() => {
-        verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Invalid state passed via request');
-    });
-
-    it('should throw error if nonce mismatch', () => {
-      const state = { nonce: 'NONCEB', env: 'development' };
-      const mockRequest = ({
-        cookies: {
-          'providera-nonce': 'NONCEA',
-        },
-        query: {
-          state: encodeState(state),
-        },
-      } as unknown) as express.Request;
-      expect(() => {
-        verifyNonce(mockRequest, 'providera');
-      }).toThrowError('Invalid nonce');
-    });
-
-    it('should not throw any error if nonce matches', () => {
-      const state = { nonce: 'NONCE', env: 'development' };
-      const mockRequest = ({
-        cookies: {
-          'providera-nonce': 'NONCE',
-        },
-        query: {
-          state: encodeState(state),
-        },
-      } as unknown) as express.Request;
-      expect(() => {
-        verifyNonce(mockRequest, 'providera');
-      }).not.toThrow();
-    });
-  });
-
-  describe('postMessageResponse', () => {
-    const appOrigin = 'http://localhost:3000';
-    it('should post a message back with payload success', () => {
-      const mockResponse = ({
-        end: jest.fn().mockReturnThis(),
-        setHeader: jest.fn().mockReturnThis(),
-      } as unknown) as express.Response;
-
-      const data: WebMessageResponse = {
-        type: 'authorization_response',
-        response: {
-          providerInfo: {
-            accessToken: 'ACCESS_TOKEN',
-            idToken: 'ID_TOKEN',
-            expiresInSeconds: 10,
-            scope: 'email',
-          },
-          profile: {
-            email: 'foo@bar.com',
-          },
-          backstageIdentity: {
-            id: 'a',
-            idToken: 'a.b.c',
-          },
-        },
-      };
-      const jsonData = JSON.stringify(data);
-      const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
-
-      postMessageResponse(mockResponse, appOrigin, data);
-      expect(mockResponse.setHeader).toBeCalledTimes(3);
-      expect(mockResponse.end).toBeCalledTimes(1);
-      expect(mockResponse.end).toBeCalledWith(
-        expect.stringContaining(base64Data),
-      );
-    });
-
-    it('should post a message back with payload error', () => {
-      const mockResponse = ({
-        end: jest.fn().mockReturnThis(),
-        setHeader: jest.fn().mockReturnThis(),
-      } as unknown) as express.Response;
-
-      const data: WebMessageResponse = {
-        type: 'authorization_response',
-        error: new Error('Unknown error occured'),
-      };
-      const jsonData = JSON.stringify(data);
-      const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
-
-      postMessageResponse(mockResponse, appOrigin, data);
-      expect(mockResponse.setHeader).toBeCalledTimes(3);
-      expect(mockResponse.end).toBeCalledTimes(1);
-      expect(mockResponse.end).toBeCalledWith(
-        expect.stringContaining(base64Data),
-      );
-    });
-  });
-
-  describe('ensuresXRequestedWith', () => {
-    it('should return false if no header present', () => {
-      const mockRequest = ({
-        header: () => jest.fn(),
-      } as unknown) as express.Request;
-      expect(ensuresXRequestedWith(mockRequest)).toBe(false);
-    });
-
-    it('should return false if header present with incorrect value', () => {
-      const mockRequest = ({
-        header: () => 'INVALID',
-      } as unknown) as express.Request;
-      expect(ensuresXRequestedWith(mockRequest)).toBe(false);
-    });
-
-    it('should return true if header present with correct value', () => {
-      const mockRequest = ({
-        header: () => 'XMLHttpRequest',
-      } as unknown) as express.Request;
-      expect(ensuresXRequestedWith(mockRequest)).toBe(true);
-    });
-  });
-});
-
-describe('OAuthProvider', () => {
-  class MyAuthProvider implements OAuthProviderHandlers {
+describe('OAuthAdapter', () => {
+  class MyAuthProvider implements OAuthHandlers {
     async start() {
       return {
         url: '/url',
@@ -215,7 +67,7 @@ describe('OAuthProvider', () => {
   };
 
   it('sets the correct headers in start', async () => {
-    const oauthProvider = new OAuthProvider(
+    const oauthProvider = new OAuthAdapter(
       providerInstance,
       oAuthProviderOptions,
     );
@@ -250,7 +102,7 @@ describe('OAuthProvider', () => {
   });
 
   it('sets the refresh cookie if refresh is enabled', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
     });
@@ -284,7 +136,7 @@ describe('OAuthProvider', () => {
   });
 
   it('does not set the refresh cookie if refresh is disabled', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: true,
     });
@@ -309,7 +161,7 @@ describe('OAuthProvider', () => {
   });
 
   it('removes refresh cookie when logging out', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
     });
@@ -334,7 +186,7 @@ describe('OAuthProvider', () => {
 
   it('gets new access-token when refreshing', async () => {
     oAuthProviderOptions.disableRefresh = false;
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
     });
@@ -363,7 +215,7 @@ describe('OAuthProvider', () => {
   });
 
   it('handles refresh without capabilities', async () => {
-    const oauthProvider = new OAuthProvider(providerInstance, {
+    const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: true,
     });
