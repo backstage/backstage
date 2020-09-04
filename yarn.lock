@@ -2946,10 +2946,10 @@
   resolved "https://registry.npmjs.org/@sindresorhus/is/-/is-2.1.1.tgz#ceff6a28a5b4867c2dd4a1ba513de278ccbe8bb1"
   integrity sha512-/aPsuoj/1Dw/kzhkgz+ES6TxG0zfTMGLwuK2ZG00k/iJzYHTLCE8mVU8EPqEOp/lmxPoq1C1C9RYToRKb2KEfg==
 
-"@sindresorhus/is@^3.0.0":
-  version "3.1.1"
-  resolved "https://registry.npmjs.org/@sindresorhus/is/-/is-3.1.1.tgz#6e39e4222add8b362da35720c9dd5d53345d5851"
-  integrity sha512-tLnujxFtfH7F+i5ghUfgGlJsvyCKvUnSMFMlWybFdX9/DdX8svb4Zwx1gV0gkkVCHXtmPSetoAR3QlKfOld6Tw==
+"@sindresorhus/is@^3.1.1":
+  version "3.1.2"
+  resolved "https://registry.npmjs.org/@sindresorhus/is/-/is-3.1.2.tgz#548650de521b344e3781fbdb0ece4aa6f729afb8"
+  integrity sha512-JiX9vxoKMmu8Y3Zr2RVathBL1Cdu4Nt4MuNWemt1Nc06A0RAin9c5FArkhGsyMBWfCu4zj+9b+GxtjAnE4qqLQ==
 
 "@sinonjs/commons@^1.7.0":
   version "1.7.1"
@@ -11485,18 +11485,18 @@ got@^10.7.0:
     type-fest "^0.10.0"
 
 got@^11.5.2:
-  version "11.5.2"
-  resolved "https://registry.npmjs.org/got/-/got-11.5.2.tgz#772e3f3a06d9c7589c7c94dc3c83cdb31ddbf742"
-  integrity sha512-yUhpEDLeuGiGJjRSzEq3kvt4zJtAcjKmhIiwNp/eUs75tRlXfWcHo5tcBaMQtnjHWC7nQYT5HkY/l0QOQTkVww==
+  version "11.6.0"
+  resolved "https://registry.npmjs.org/got/-/got-11.6.0.tgz#4978c78f3cbc3a45ee95381f8bb6efd1db1f4638"
+  integrity sha512-ErhWb4IUjQzJ3vGs3+RR12NWlBDDkRciFpAkQ1LPUxi6OnwhGj07gQxjPsyIk69s7qMihwKrKquV6VQq7JNYLA==
   dependencies:
-    "@sindresorhus/is" "^3.0.0"
+    "@sindresorhus/is" "^3.1.1"
     "@szmarczak/http-timer" "^4.0.5"
     "@types/cacheable-request" "^6.0.1"
     "@types/responselike" "^1.0.0"
     cacheable-lookup "^5.0.3"
     cacheable-request "^7.0.1"
     decompress-response "^6.0.0"
-    http2-wrapper "^1.0.0-beta.5.0"
+    http2-wrapper "^1.0.0-beta.5.2"
     lowercase-keys "^2.0.0"
     p-cancelable "^2.0.0"
     responselike "^2.0.0"
@@ -12188,7 +12188,7 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
-http2-wrapper@^1.0.0-beta.5.0:
+http2-wrapper@^1.0.0-beta.5.2:
   version "1.0.0-beta.5.2"
   resolved "https://registry.npmjs.org/http2-wrapper/-/http2-wrapper-1.0.0-beta.5.2.tgz#8b923deb90144aea65cf834b016a340fc98556f3"
   integrity sha512-xYz9goEyBnC8XwXDTuC/MZ6t+MrKVQZOk4s7+PaDkwIsQd8IwqvM+0M6bA/2lvG8GHXcPdf+MejTUeO2LCPCeQ==
