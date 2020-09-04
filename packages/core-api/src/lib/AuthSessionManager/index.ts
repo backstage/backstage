@@ -16,5 +16,7 @@
 
 export { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
 export { StaticAuthSessionManager } from './StaticAuthSessionManager';
+export { SamlAuthSessionManager } from './SamlAuthSessionManager';
 export { AuthSessionStore } from './AuthSessionStore';
+export { SamlAuthSessionStore } from './SamlAuthSessionStore';
 export * from './types';

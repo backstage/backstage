@@ -19,6 +19,7 @@ import {
   gitlabAuthApiRef,
   oktaAuthApiRef,
   githubAuthApiRef,
+  samlAuthApiRef,
 } from '@backstage/core';
 
 export const providers = [
@@ -45,5 +46,11 @@ export const providers = [
     title: 'Okta',
     message: 'Sign In using Okta',
     apiRef: oktaAuthApiRef,
+  },
+  {
+    id: 'saml-auth-provider',
+    title: 'SAML',
+    message: 'Sign In using SAML',
+    apiRef: samlAuthApiRef,
   },
 ];

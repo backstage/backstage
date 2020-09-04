@@ -55,8 +55,21 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
       //       for non-oauth auth flows.
       // TODO: This flow doesn't issue an identity token that can be used to validate
       //       the identity of the user in other backends, which we need in some form.
+      console.log('===>');
+      console.log('===>');
+      console.log('===>');
+      console.log('===>');
+      console.log('===>');
+      console.log('===>');
+      console.log('===>');
+      console.log('===>');
+      console.log('===>');
+      console.log('===>');
+      console.log('===>');
+      console.log('===> SamlAuthProvider constructor');
+      console.log(profile);
       done(undefined, {
-        userId: profile.ID!,
+        userId: profile.nameID!,
         profile: {
           email: profile.email!,
           displayName: profile.displayName as string,
@@ -76,9 +89,9 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   ): Promise<void> {
     try {
       const {
-        response: { userId, profile },
+         response: { userId, profile },
       } = await executeFrameHandlerStrategy<SamlInfo>(req, this.strategy);
-
+      
       const id = userId;
       const idToken = await this.tokenIssuer.issueToken({
         claims: { sub: id },
@@ -107,8 +120,14 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     res.send('noop');
   }
 
-  identifyEnv(): string | undefined {
-    return undefined;
+  identifyEnv(req: express.Request): string | undefined {
+    const reqEnv = req.query.env?.toString();
+    if (reqEnv) {
+      return reqEnv;
+    }
+
+    // FIXME : do we want to always to return 'development' ?
+    return 'development';
   }
 }
 

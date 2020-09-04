@@ -9848,9 +9848,8 @@ file-loader@^4.2.0:
     loader-utils "^1.2.3"
     schema-utils "^2.5.0"
 
-"file-saver@github:eligrey/FileSaver.js#1.3.8":
+file-saver@eligrey/FileSaver.js#1.3.8:
   version "1.3.8"
-  uid e865e37af9f9947ddcced76b549e27dc45c1cb2e
   resolved "https://codeload.github.com/eligrey/FileSaver.js/tar.gz/e865e37af9f9947ddcced76b549e27dc45c1cb2e"
 
 file-system-cache@^1.0.5:
@@ -12977,7 +12976,7 @@ jspdf@1.5.3:
   integrity sha512-J9X76xnncMw+wIqb15HeWfPMqPwYxSpPY8yWPJ7rAZN/ZDzFkjCSZObryCyUe8zbrVRNiuCnIeQteCzMn7GnWw==
   dependencies:
     canvg "1.5.3"
-    file-saver "github:eligrey/FileSaver.js#1.3.8"
+    file-saver eligrey/FileSaver.js#1.3.8
     html2canvas "1.0.0-alpha.12"
     omggif "1.0.7"
     promise-polyfill "8.1.0"

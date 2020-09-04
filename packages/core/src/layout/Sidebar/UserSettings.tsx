@@ -49,6 +49,12 @@ export function SidebarUserSettings() {
     if (!sidebarOpen && open) setOpen(false);
   }, [open, sidebarOpen]);
 
+  // FIXME: Change this and remove the session storage stuff
+  const handleLogout = () => {
+    identityApi.logout();
+    window.sessionStorage.clear();
+  };
+
   return (
     <>
       <SidebarUserProfile open={open} setOpen={setOpen} />
@@ -91,7 +97,7 @@ export function SidebarUserSettings() {
         <SidebarItem
           icon={SignOutIcon}
           text="Sign Out"
-          onClick={() => identityApi.logout()}
+          onClick={handleLogout}
         />
       </Collapse>
     </>

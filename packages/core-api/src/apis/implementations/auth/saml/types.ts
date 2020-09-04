@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ProfileInfo, BackstageIdentity } from '../../../definitions';
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './saml';
+export type SamlSession = {
+  userId: string;
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
+};

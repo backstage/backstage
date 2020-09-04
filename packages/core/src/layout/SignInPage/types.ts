@@ -24,18 +24,19 @@ import {
   ProfileInfoApi,
   BackstageIdentityApi,
   SessionStateApi,
+  SamlApi,
 } from '@backstage/core-api';
 
 export type SignInConfig = {
   id: string;
   title: string;
   message: string;
-  apiRef: ApiRef<
-    OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
-  >;
+  apiRef:
+    | ApiRef<OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi>
+    | ApiRef<SamlApi>;
 };
 
-export type IdentityProviders = ('guest' | 'custom' | SignInConfig)[];
+export type IdentityProviders = ('guest' | 'custom' | 'saml' | SignInConfig)[];
 
 export type ProviderComponent = ComponentType<
   SignInPageProps & { config: SignInConfig }

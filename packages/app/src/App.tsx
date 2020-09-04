@@ -33,7 +33,10 @@ const app = createApp({
   components: {
     SignInPage: props => {
       return (
-        <SignInPage {...props} providers={['guest', 'custom', ...providers]} />
+        <SignInPage
+          {...props}
+          providers={['guest', 'custom', 'saml', ...providers]}
+        />
       );
     },
   },

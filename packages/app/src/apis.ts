@@ -38,6 +38,8 @@ import {
   gitlabAuthApiRef,
   storageApiRef,
   WebStorage,
+  SamlAuth,
+  samlAuthApiRef,
 } from '@backstage/core';
 
 import {
@@ -136,6 +138,14 @@ export const apis = (config: ConfigApi) => {
       apiOrigin: backendUrl,
       basePath: '/auth/',
       oauthRequestApi,
+    }),
+  );
+
+  builder.add(
+    samlAuthApiRef,
+    SamlAuth.create({
+      apiOrigin: backendUrl,
+      basePath: '/auth/',
     }),
   );
 

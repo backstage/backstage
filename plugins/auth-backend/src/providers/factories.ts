@@ -62,6 +62,7 @@ export const createAuthProviderRouter = (
 
   for (const env of envs) {
     const envConfig = providerConfig.getConfig(env);
+    console.log(envConfig);
     const provider = factory(globalConfig, env, envConfig, logger, issuer);
     if (provider) {
       envProviders[env] = provider;
