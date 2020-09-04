@@ -144,13 +144,13 @@ export const PullRequestsTableView: FC<Props> = ({
   );
 };
 
-export const PullRequestsTable = ({ entity }: { entity: Entity }) => {
+export const PullRequestsTable = ({ entity }: { entity?: Entity }) => {
   let entityCompoundName = useEntityCompoundName();
   if (!entityCompoundName.name) {
     entityCompoundName = {
-      kind: entity.kind,
-      name: entity.metadata.name,
-      namespace: entity.metadata.namespace || 'default',
+      kind: entity?.kind || 'service',
+      name: entity?.metadata.name || 'name',
+      namespace: entity?.metadata.namespace || 'default',
     };
   }
   const [PRStatusFilter, setPRStatusFilter] = useState<PullRequestState>(
