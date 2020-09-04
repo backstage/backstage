@@ -7,7 +7,7 @@
     "plugins/*/migrations"
   ],
   "compilerOptions": {
-    "outDir": "build",
+    "outDir": "dist-types",
     "rootDir": "."
   }
 }

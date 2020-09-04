@@ -37,7 +37,7 @@ export const makeConfigs = async (
   options: BuildOptions,
 ): Promise<RollupOptions[]> => {
   const typesInput = paths.resolveTargetRoot(
-    'build',
+    'dist-types',
     relativePath(paths.targetRoot, paths.targetDir),
     'src/index.d.ts',
   );
@@ -120,7 +120,7 @@ export const makeConfigs = async (
     configs.push({
       input: typesInput,
       output: {
-        file: 'build/index.d.ts',
+        file: 'dist-types/index.d.ts',
         format: 'es',
       },
       plugins: [dts()],
