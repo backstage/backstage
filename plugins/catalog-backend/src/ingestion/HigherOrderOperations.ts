@@ -116,14 +116,14 @@ export class HigherOrderOperations implements HigherOrderOperation {
    * Entities are read from their respective sources, are parsed and validated
    * according to the entity policy, and get inserted or updated in the catalog.
    * Entities that have disappeared from their location are left orphaned,
-   * without changes.i
+   * without changes.
    */
   async refreshAllLocations(): Promise<void> {
     const startTimestamp = new Date().valueOf();
-    // this.logger.info('Beginning locations refresh');
+    this.logger.info('Beginning locations refresh');
 
     const locations = await this.locationsCatalog.locations();
-    // this.logger.info(`Visiting ${locations.length} locations`);
+    this.logger.info(`Visiting ${locations.length} locations`);
 
     for (const { data: location } of locations) {
       this.logger.debug(
