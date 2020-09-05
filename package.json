@@ -30,8 +30,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "plugins/*",
-      "microsite"
+      "plugins/*"
     ]
   },
   "version": "1.0.0",
