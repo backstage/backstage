@@ -5,7 +5,9 @@ labels: rfc
 title: '[RFC] <name>'
 ---
 
-Status: Open for comments <!--- Open for comments |Closed for comments (RFC no longer maintained) --->
+**Status:** Open for comments
+
+<!--- Open for comments |Closed for comments (RFC no longer maintained) --->
 
 ## Need
 
