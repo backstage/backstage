@@ -6,10 +6,10 @@
   "license": "Apache-2.0",
   "private": {{privatePackage}},
   "publishConfig": {
+    {{#if registryURL}}"{{scopeName}}:registry":"{{registryURL}}",{{/if}}
     "access": "public",
     "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"{{#if registryURL}},
-    "{{scopeName}}:registry":"{{registryURL}}"{{/if}}
+    "types": "dist/index.d.ts"
   },
   "scripts": {
     "build": "backstage-cli plugin:build",
