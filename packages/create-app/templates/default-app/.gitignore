@@ -22,6 +22,7 @@ node_modules/
 
 # Build output
 dist
+dist-types
 
 # Temporary change files created by Vim
 *.swp
