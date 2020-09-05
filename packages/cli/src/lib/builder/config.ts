@@ -120,7 +120,7 @@ export const makeConfigs = async (
     configs.push({
       input: typesInput,
       output: {
-        file: 'dist-types/index.d.ts',
+        file: 'dist/index.d.ts',
         format: 'es',
       },
       plugins: [dts()],
