@@ -38,8 +38,6 @@ jobs:
       - name: yarn install
         run: yarn install --frozen-lockfile
       # End of yarn setup
-
-
 # Tests are broken on Windows, disabled for now
-      # - name: test
-      #   run: yarn lerna -- run test
+# - name: test
+#   run: yarn lerna -- run test
