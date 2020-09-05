@@ -29,7 +29,6 @@ import {
 } from '@material-ui/core';
 
 import React, { Suspense } from 'react';
-import { useEntityCompoundName } from '@backstage/plugin-catalog';
 import { useDownloadWorkflowRunLogs } from './useDownloadWorkflowRunLogs';
 import LinePart from 'react-lazylog/build/LinePart';
 import { useProjectName } from '../useProjectName';
