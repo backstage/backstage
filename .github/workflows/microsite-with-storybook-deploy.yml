@@ -54,8 +54,14 @@ jobs:
         run: yarn install --frozen-lockfile
       # End of yarn setup
 
+        # Previous install was to be able to build storybook, this is for the microsite, and we skip caching
+      - name: yarn install
+        run: yarn install --frozen-lockfile
+        working-directory: microsite
+
       - name: build microsite
-        run: yarn workspace backstage-microsite build
+        run: yarn build
+        working-directory: microsite
 
       - name: build storybook
         run: yarn workspace storybook build-storybook

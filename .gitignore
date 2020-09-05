@@ -90,10 +90,6 @@ typings/
 .nuxt
 dist
 
-# Microsite build output
-microsite/build
-microsite/i18n
-
 # Gatsby files
 .cache/
 # Comment in the public line in if your project uses Gatsby and not Next.js
