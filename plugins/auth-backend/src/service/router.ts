@@ -17,12 +17,12 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
 import Knex from 'knex';
 import { Logger } from 'winston';
 import { createAuthProviderRouter } from '../providers';
 import { Config } from '@backstage/config';
 import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
+import { NotFoundError } from '@backstage/backend-common';
 
 export interface RouterOptions {
   logger: Logger;
@@ -53,8 +53,8 @@ export async function createRouter(
   });
 
   router.use(cookieParser());
-  router.use(bodyParser.urlencoded({ extended: false }));
-  router.use(bodyParser.json());
+  router.use(express.urlencoded({ extended: false }));
+  router.use(express.json());
 
   const providersConfig = options.config.getConfig('auth.providers');
   const providers = providersConfig.keys();
@@ -88,6 +88,11 @@ export async function createRouter(
       baseUrl: authUrl,
     }),
   );
+
+  router.use('/:provider/', req => {
+    const { provider } = req.params;
+    throw new NotFoundError(`No auth provider registered for '${provider}'`);
+  });
 
   return router;
 }

@@ -20,7 +20,7 @@ import { AppConfig, JsonObject } from '@backstage/config';
 import {
   resolveStaticConfig,
   readConfigFile,
-  readEnv,
+  readEnvConfig,
   readSecret,
 } from './lib';
 
@@ -102,7 +102,7 @@ export async function loadConfig(
     );
   }
 
-  configs.push(...readEnv(process.env));
+  configs.push(...readEnvConfig(process.env));
 
   return configs;
 }

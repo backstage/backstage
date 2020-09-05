@@ -15,4 +15,5 @@
  */
 
 export { plugin } from './plugin';
+export { Router } from './components/Router';
 export { SentryPluginWidget as SentryIssuesWidget } from './components/SentryPluginWidget/SentryPluginWidget';

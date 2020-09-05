@@ -136,7 +136,7 @@ export class PrivateAppImpl implements BackstageApp {
     return this.icons[key];
   }
 
-  getRoutes(): ComponentType<{}> {
+  getRoutes(): JSX.Element[] {
     const routes = new Array<JSX.Element>();
     const registeredFeatureFlags = new Array<FeatureFlagsRegistryItem>();
 
@@ -191,14 +191,9 @@ export class PrivateAppImpl implements BackstageApp {
       FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
     }
 
-    const rendered = (
-      <Routes>
-        {routes}
-        <Route element={<NotFoundErrorPage />} />
-      </Routes>
-    );
+    routes.push(<Route element={<NotFoundErrorPage />} />);
 
-    return () => rendered;
+    return routes;
   }
 
   getProvider(): ComponentType<{}> {

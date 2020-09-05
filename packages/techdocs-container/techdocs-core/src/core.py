@@ -90,4 +90,7 @@ class TechDocsCore(BasePlugin):
         }
         config["markdown_extensions"].append("pymdownx.tilde")
 
+        config["markdown_extensions"].append("markdown_inline_graphviz")
+        config["markdown_extensions"].append("plantuml_markdown")
+
         return config

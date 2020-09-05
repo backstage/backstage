@@ -110,7 +110,7 @@ const Component: ProviderComponent = ({ onResult }) => {
             color="primary"
             variant="outlined"
             className={classes.button}
-            disabled={!formState?.dirty || !isEmpty(errors)}
+            disabled={!formState?.isDirty || !isEmpty(errors)}
           >
             Continue
           </Button>

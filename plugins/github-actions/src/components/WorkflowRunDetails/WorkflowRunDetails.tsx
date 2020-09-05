@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React from 'react';
-import { useEntityCompoundName } from '@backstage/plugin-catalog';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useProjectName } from '../useProjectName';
@@ -37,13 +36,16 @@ import {
   LinearProgress,
   CircularProgress,
   Theme,
-  Link,
+  Breadcrumbs,
+  Link as MaterialLink,
 } from '@material-ui/core';
 import { Jobs, Job, Step } from '../../api';
 import moment from 'moment';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
+import { Entity } from '@backstage/catalog-model';
+import { Link } from '@backstage/core';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -154,18 +156,8 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
   );
 };
 
-export const WorkflowRunDetails = () => {
-  let entityCompoundName = useEntityCompoundName();
-  if (!entityCompoundName.name) {
-    // TODO(shmidt-i): remove when is fully integrated
-    // into the entity view
-    entityCompoundName = {
-      kind: 'Component',
-      name: 'backstage',
-      namespace: 'default',
-    };
-  }
-  const projectName = useProjectName(entityCompoundName);
+export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
+  const projectName = useProjectName(entity);
 
   const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
   const details = useWorkflowRunsDetails(repo, owner);
@@ -184,6 +176,10 @@ export const WorkflowRunDetails = () => {
   }
   return (
     <div className={classes.root}>
+      <Breadcrumbs aria-label="breadcrumb">
+        <Link to="..">Workflow runs</Link>
+        <Typography>Workflow run details</Typography>
+      </Breadcrumbs>
       <TableContainer component={Paper} className={classes.table}>
         <Table>
           <TableBody>
@@ -225,10 +221,10 @@ export const WorkflowRunDetails = () => {
               </TableCell>
               <TableCell>
                 {details.value?.html_url && (
-                  <Link target="_blank" href={details.value.html_url}>
+                  <MaterialLink target="_blank" href={details.value.html_url}>
                     Workflow runs on GitHub{' '}
                     <ExternalLinkIcon className={classes.externalLinkIcon} />
-                  </Link>
+                  </MaterialLink>
                 )}
               </TableCell>
             </TableRow>

@@ -79,9 +79,10 @@ export const checkoutGitRepository = async (
 
   if (fs.existsSync(repositoryTmpPath)) {
     const repository = await Repository.open(repositoryTmpPath);
+    const currentBranchName = (await repository.getCurrentBranch()).shorthand();
     await repository.mergeBranches(
-      parsedGitLocation.ref,
-      `origin/${parsedGitLocation.ref}`,
+      currentBranchName,
+      `origin/${currentBranchName}`,
     );
     return repositoryTmpPath;
   }
@@ -90,6 +91,48 @@ export const checkoutGitRepository = async (
 
   fs.mkdirSync(repositoryTmpPath, { recursive: true });
   await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath, {});
+
+  return repositoryTmpPath;
+};
+
+// Could be merged with checkoutGitRepository
+export const checkoutGithubRepository = async (
+  repoUrl: string,
+): Promise<string> => {
+  const parsedGitLocation = parseGitUrl(repoUrl);
+
+  // Should propably not be hardcoded names of env variables, but seems too hard to access config down here
+  const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
+  const token = process.env.GITHUB_PRIVATE_TOKEN || '';
+
+  const repositoryTmpPath = path.join(
+    // fs.realpathSync fixes a problem with macOS returning a path that is a symlink
+    fs.realpathSync(os.tmpdir()),
+    'backstage-repo',
+    parsedGitLocation.source,
+    parsedGitLocation.owner,
+    parsedGitLocation.name,
+    parsedGitLocation.ref,
+  );
+
+  if (fs.existsSync(repositoryTmpPath)) {
+    const repository = await Repository.open(repositoryTmpPath);
+    const currentBranchName = (await repository.getCurrentBranch()).shorthand();
+    await repository.mergeBranches(
+      currentBranchName,
+      `origin/${currentBranchName}`,
+    );
+    return repositoryTmpPath;
+  }
+
+  if (user && token) {
+    parsedGitLocation.token = `${user}:${token}`;
+  }
+
+  const repositoryCheckoutUrl = parsedGitLocation.toString('https');
+
+  fs.mkdirSync(repositoryTmpPath, { recursive: true });
+  await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath);
 
   return repositoryTmpPath;
 };

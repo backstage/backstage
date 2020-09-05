@@ -15,32 +15,29 @@
  */
 
 import {
-    GeneratorBase,
-    SupportedGeneratorKey,
-    GeneratorBuilder,
-  } from './types';
-  
-  import { Entity } from '@backstage/catalog-model';
-  import { getGeneratorKey } from './helpers';
-  
-  export class Generators implements GeneratorBuilder {
-    private generatorMap = new Map<SupportedGeneratorKey, GeneratorBase>();
-  
-    register(templaterKey: SupportedGeneratorKey, templater: GeneratorBase) {
-      this.generatorMap.set(templaterKey, templater);
-    }
-  
-    get(entity: Entity): GeneratorBase {
-      const generatorKey = getGeneratorKey(entity);
-      const generator = this.generatorMap.get(generatorKey);
-  
-      if (!generator) {
-        throw new Error(
-          `No generator registered for entity: "${generatorKey}"`,
-        );
-      }
-  
-      return generator;
-    }
+  GeneratorBase,
+  SupportedGeneratorKey,
+  GeneratorBuilder,
+} from './types';
+
+import { Entity } from '@backstage/catalog-model';
+import { getGeneratorKey } from './helpers';
+
+export class Generators implements GeneratorBuilder {
+  private generatorMap = new Map<SupportedGeneratorKey, GeneratorBase>();
+
+  register(generatorKey: SupportedGeneratorKey, generator: GeneratorBase) {
+    this.generatorMap.set(generatorKey, generator);
   }
-  
+
+  get(entity: Entity): GeneratorBase {
+    const generatorKey = getGeneratorKey(entity);
+    const generator = this.generatorMap.get(generatorKey);
+
+    if (!generator) {
+      throw new Error(`No generator registered for entity: "${generatorKey}"`);
+    }
+
+    return generator;
+  }
+}

@@ -31,6 +31,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
+
   const logger = options.logger.child({ plugin: 'rollbar' });
   const config = options.config.getConfig('rollbar');
   const accessToken = !options.rollbarApi

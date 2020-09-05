@@ -74,6 +74,7 @@
       "plugins/create-a-plugin",
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
+      "plugins/integrating-plugin-into-service-catalog",
       {
         "type": "subcategory",
         "label": "Backends and APIs",
@@ -91,7 +92,7 @@
       {
         "type": "subcategory",
         "label": "Publishing",
-        "ids": ["plugins/publishing", "plugins/publish-private"]
+        "ids": ["plugins/publishing", "plugins/publish-private", "plugins/add-to-marketplace"]
       }
     ],
     "Configuration": [
