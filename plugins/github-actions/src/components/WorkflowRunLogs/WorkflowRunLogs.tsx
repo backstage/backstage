@@ -35,6 +35,7 @@ import LinePart from 'react-lazylog/build/LinePart';
 import { useProjectName } from '../useProjectName';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DescriptionIcon from '@material-ui/icons/Description';
+import { Entity } from '@backstage/catalog-model';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 
@@ -89,19 +90,9 @@ const DisplayLog = ({ jobLogs, className }: { jobLogs: any; className: string })
 /**
  * A component for Run Logs visualization. 
  */
-export const WorkflowRunLogs = ({ runId, inProgress }:{ runId: string, inProgress: boolean }) => {
+export const WorkflowRunLogs = ({ runId, inProgress, entity }:{ runId: string, inProgress: boolean, entity: Entity }) => {
   const classes = useStyles();
-  let entityCompoundName = useEntityCompoundName();
-  if (!entityCompoundName.name) {
-    // TODO(shmidt-i): remove when is fully integrated
-    // into the entity view
-    entityCompoundName = {
-      kind: 'Component',
-      name: 'backstage',
-      namespace: 'default',
-    };
-  }
-  const projectName = useProjectName(entityCompoundName);
+  const projectName = useProjectName(entity);
 
   const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
   const jobLogs = useDownloadWorkflowRunLogs(repo, owner, runId);
@@ -114,6 +105,7 @@ export const WorkflowRunLogs = ({ runId, inProgress }:{ runId: string, inProgres
   const handleClose = () => {
     setOpen(false);
   };
+
   return (
     <Accordion
     TransitionProps={{ unmountOnExit: true }}
