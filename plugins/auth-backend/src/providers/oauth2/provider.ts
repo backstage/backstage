@@ -23,6 +23,8 @@ import {
   OAuthHandlers,
   OAuthResponse,
   OAuthEnvironmentHandler,
+  OAuthStartRequest,
+  encodeState,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -84,16 +86,13 @@ export class OAuth2AuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(
-    req: express.Request,
-    options: Record<string, string>,
-  ): Promise<RedirectInfo> {
-    const providerOptions = {
-      ...options,
+  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+    return await executeRedirectStrategy(req, this._strategy, {
       accessType: 'offline',
       prompt: 'consent',
-    };
-    return await executeRedirectStrategy(req, this._strategy, providerOptions);
+      scope: req.scope,
+      state: encodeState(req.state),
+    });
   }
 
   async handler(

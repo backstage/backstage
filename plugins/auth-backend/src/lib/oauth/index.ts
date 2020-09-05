@@ -16,10 +16,12 @@
 
 export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
 export { OAuthAdapter } from './OAuthAdapter';
+export { encodeState } from './helpers';
 export type {
   OAuthHandlers,
   OAuthProviderInfo,
   OAuthProviderOptions,
   OAuthResponse,
   OAuthState,
+  OAuthStartRequest,
 } from './types';

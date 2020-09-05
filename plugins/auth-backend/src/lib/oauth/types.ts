@@ -67,6 +67,11 @@ export type OAuthState = {
   env: string;
 };
 
+export type OAuthStartRequest = express.Request<{}> & {
+  scope: string;
+  state: OAuthState;
+};
+
 /**
  * Any OAuth provider needs to implement this interface which has provider specific
  * handlers for different methods to perform authentication, get access tokens,
@@ -78,10 +83,7 @@ export interface OAuthHandlers {
    * @param {express.Request} req
    * @param options
    */
-  start(
-    req: express.Request,
-    options: Record<string, string>,
-  ): Promise<RedirectInfo>;
+  start(req: OAuthStartRequest): Promise<RedirectInfo>;
 
   /**
    * Handles the redirect from the auth provider when the user has signed in.
