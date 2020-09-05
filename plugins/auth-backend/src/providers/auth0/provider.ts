@@ -17,25 +17,22 @@
 import express from 'express';
 import passport from 'passport';
 import Auth0Strategy from './strategy';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
-import { OAuthProvider } from '../../lib/OAuthProvider';
+import {
+  OAuthAdapter,
+  OAuthProviderOptions,
+  OAuthHandlers,
+  OAuthResponse,
+  OAuthEnvironmentHandler,
+} from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   executeRefreshTokenStrategy,
   makeProfileInfo,
-} from '../../lib/PassportStrategyHelper';
-import {
-  AuthProviderConfig,
-  OAuthProviderHandlers,
-  OAuthResponse,
   PassportDoneCallback,
-  RedirectInfo,
-  OAuthProviderOptions,
-} from '../types';
-import { Config } from '@backstage/config';
+} from '../../lib/passport';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -45,7 +42,7 @@ export type Auth0AuthProviderOptions = OAuthProviderOptions & {
   domain: string;
 };
 
-export class Auth0AuthProvider implements OAuthProviderHandlers {
+export class Auth0AuthProvider implements OAuthHandlers {
   private readonly _strategy: Auth0Strategy;
 
   constructor(options: Auth0AuthProviderOptions) {
@@ -151,29 +148,28 @@ export class Auth0AuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createAuth0Provider(
-  config: AuthProviderConfig,
-  _: string,
-  envConfig: Config,
-  _logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const providerId = 'auth0';
-  const clientId = envConfig.getString('clientId');
-  const clientSecret = envConfig.getString('clientSecret');
-  const domain = envConfig.getString('domain');
-  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
+export const createAuth0Provider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    const providerId = 'auth0';
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+    const domain = envConfig.getString('domain');
+    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-  const provider = new Auth0AuthProvider({
-    clientId,
-    clientSecret,
-    callbackUrl,
-    domain,
-  });
+    const provider = new Auth0AuthProvider({
+      clientId,
+      clientSecret,
+      callbackUrl,
+      domain,
+    });
 
-  return OAuthProvider.fromConfig(config, provider, {
-    disableRefresh: true,
-    providerId,
-    tokenIssuer,
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
+      disableRefresh: true,
+      providerId,
+      tokenIssuer,
+    });
   });
-}

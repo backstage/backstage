@@ -17,12 +17,13 @@
 import express from 'express';
 import passport from 'passport';
 import jwtDecoder from 'jwt-decode';
-import {
-  RedirectInfo,
-  RefreshTokenResponse,
-  ProfileInfo,
-  ProviderStrategy,
-} from '../providers/types';
+import { ProfileInfo, RedirectInfo } from '../../providers/types';
+
+export type PassportDoneCallback<Res, Private = never> = (
+  err?: Error,
+  response?: Res,
+  privateInfo?: Private,
+) => void;
 
 export const makeProfileInfo = (
   profile: passport.Profile,
@@ -106,6 +107,18 @@ export const executeFrameHandlerStrategy = async <T, PrivateInfo = never>(
   );
 };
 
+type RefreshTokenResponse = {
+  /**
+   * An access token issued for the signed in user.
+   */
+  accessToken: string;
+  /**
+   * Optionally, the server can issue a new Refresh Token for the user
+   */
+  refreshToken?: string;
+  params: any;
+};
+
 export const executeRefreshTokenStrategy = async (
   providerStrategy: passport.Strategy,
   refreshToken: string,
@@ -154,6 +167,10 @@ export const executeRefreshTokenStrategy = async (
       },
     );
   });
+};
+
+type ProviderStrategy = {
+  userProfile(accessToken: string, callback: Function): void;
 };
 
 export const executeFetchUserProfileStrategy = async (

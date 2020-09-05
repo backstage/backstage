@@ -22,26 +22,23 @@ import {
   executeRefreshTokenStrategy,
   makeProfileInfo,
   executeFetchUserProfileStrategy,
-} from '../../lib/PassportStrategyHelper';
+  PassportDoneCallback,
+} from '../../lib/passport';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 import {
-  OAuthProviderHandlers,
-  RedirectInfo,
-  AuthProviderConfig,
+  OAuthAdapter,
+  OAuthHandlers,
   OAuthProviderOptions,
   OAuthResponse,
-  PassportDoneCallback,
-} from '../types';
-import { OAuthProvider } from '../../lib/OAuthProvider';
+  OAuthEnvironmentHandler,
+} from '../../lib/oauth';
 import passport from 'passport';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
-import { Config } from '@backstage/config';
 
 type PrivateInfo = {
   refreshToken: string;
 };
 
-export class GoogleAuthProvider implements OAuthProviderHandlers {
+export class GoogleAuthProvider implements OAuthHandlers {
   private readonly _strategy: GoogleStrategy;
 
   constructor(options: OAuthProviderOptions) {
@@ -148,27 +145,26 @@ export class GoogleAuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createGoogleProvider(
-  config: AuthProviderConfig,
-  _: string,
-  envConfig: Config,
-  _logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const providerId = 'google';
-  const clientId = envConfig.getString('clientId');
-  const clientSecret = envConfig.getString('clientSecret');
-  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
+export const createGoogleProvider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    const providerId = 'google';
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-  const provider = new GoogleAuthProvider({
-    clientId,
-    clientSecret,
-    callbackUrl,
-  });
+    const provider = new GoogleAuthProvider({
+      clientId,
+      clientSecret,
+      callbackUrl,
+    });
 
-  return OAuthProvider.fromConfig(config, provider, {
-    disableRefresh: false,
-    providerId,
-    tokenIssuer,
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
+      disableRefresh: false,
+      providerId,
+      tokenIssuer,
+    });
   });
-}
