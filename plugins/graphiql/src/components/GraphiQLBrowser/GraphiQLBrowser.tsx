@@ -24,7 +24,7 @@ import { BackstageTheme } from '@backstage/theme';
 
 const GraphiQL = React.lazy(() => import('graphiql'));
 
-const useStyles = makeStyles<BackstageTheme>((theme) => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     height: '100%',
     display: 'flex',

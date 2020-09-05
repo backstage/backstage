@@ -121,8 +121,8 @@ auth:
           $secret:
             env: GITLAB_BASE_URL
     saml:
-      entryPoint: "http://localhost:7001/"
-      issuer: "passport-saml"
+      entryPoint: 'http://localhost:7001/'
+      issuer: 'passport-saml'
     okta:
       development:
         clientId:

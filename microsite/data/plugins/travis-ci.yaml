@@ -7,4 +7,3 @@ description: View Travis CI builds for your service in Backstage.
 documentation: https://roadie.io/backstage/plugins/travis-ci
 iconUrl: https://roadie.io/static/af2941eaf0af675facb281d566f42e14/45f2b/travis-ci-mascot-200x200.png
 npmPackageName: '@roadiehq/backstage-plugin-travis-ci'
-
