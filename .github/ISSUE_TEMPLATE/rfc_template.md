@@ -1,6 +1,6 @@
 ---
 name: 'RFC'
-about: 'Request For Comments. Use this template when you want to get feedback from the community.'
+about: 'Request For Comments (RFC) from the community'
 labels: rfc
 title: '[RFC] <name>'
 ---
