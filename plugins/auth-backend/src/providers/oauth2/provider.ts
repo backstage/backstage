@@ -25,6 +25,7 @@ import {
   OAuthEnvironmentHandler,
   OAuthStartRequest,
   encodeState,
+  OAuthRefreshRequest,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -109,11 +110,11 @@ export class OAuth2AuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
+  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
     const refreshTokenResponse = await executeRefreshTokenStrategy(
       this._strategy,
-      refreshToken,
-      scope,
+      req.refreshToken,
+      req.scope,
     );
     const {
       accessToken,

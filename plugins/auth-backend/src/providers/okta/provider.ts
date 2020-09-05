@@ -22,6 +22,7 @@ import {
   OAuthEnvironmentHandler,
   OAuthStartRequest,
   encodeState,
+  OAuthRefreshRequest,
 } from '../../lib/oauth';
 import { Strategy as OktaStrategy } from 'passport-okta-oauth';
 import passport from 'passport';
@@ -126,11 +127,11 @@ export class OktaAuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
+  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
     const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
-      refreshToken,
-      scope,
+      req.refreshToken,
+      req.scope,
     );
 
     const profile = await executeFetchUserProfileStrategy(

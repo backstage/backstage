@@ -72,6 +72,11 @@ export type OAuthStartRequest = express.Request<{}> & {
   state: OAuthState;
 };
 
+export type OAuthRefreshRequest = express.Request<{}> & {
+  scope: string;
+  refreshToken: string;
+};
+
 /**
  * Any OAuth provider needs to implement this interface which has provider specific
  * handlers for different methods to perform authentication, get access tokens,
@@ -101,10 +106,7 @@ export interface OAuthHandlers {
    * @param {string} refreshToken
    * @param {string} scope
    */
-  refresh?(
-    refreshToken: string,
-    scope: string,
-  ): Promise<AuthResponse<OAuthProviderInfo>>;
+  refresh?(req: OAuthRefreshRequest): Promise<AuthResponse<OAuthProviderInfo>>;
 
   /**
    * (Optional) Sign out of the auth provider.

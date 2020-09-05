@@ -26,7 +26,7 @@ import { InputError } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity';
 import { verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
-import { OAuthHandlers, OAuthStartRequest } from './types';
+import { OAuthHandlers, OAuthStartRequest, OAuthRefreshRequest } from './types';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -182,8 +182,12 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
       const scope = req.query.scope?.toString() ?? '';
 
+      const forwardReq = Object.assign(req, { scope, refreshToken });
+
       // get new access_token
-      const response = await this.handlers.refresh(refreshToken, scope);
+      const response = await this.handlers.refresh(
+        forwardReq as OAuthRefreshRequest,
+      );
 
       await this.populateIdentity(response.backstageIdentity);
 
