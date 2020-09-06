@@ -41,7 +41,7 @@ export function registerCommands(program: CommanderStatic) {
     .helpOption(', --backstage-cli-help') // Let docker handle --help
     .option('--build', 'Build packages before packing them into the image')
     .description(
-      'Build a docker , all extra options are forwarded to docker build',
+      'Bundles the package into a docker image. All extra args are forwarded to docker image build',
     )
     .action(lazy(() => import('./backend/buildImage').then(m => m.default)));
 

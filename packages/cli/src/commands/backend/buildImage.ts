@@ -32,6 +32,7 @@ export default async (cmd: Command) => {
   const pkgPath = paths.resolveTarget(PKG_PATH);
   const pkg = await fs.readJson(pkgPath);
   const tempDistWorkspace = await createDistWorkspace([pkg.name], {
+    buildDependencies: Boolean(cmd.build),
     files: [
       'package.json',
       'yarn.lock',
