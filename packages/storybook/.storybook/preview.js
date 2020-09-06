@@ -22,4 +22,5 @@ addParameters({
     // Set the initial theme
     current: 'light',
   },
+  layout: 'fullscreen',
 });
