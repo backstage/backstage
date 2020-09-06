@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import { join as joinPath, relative as relativePath } from 'path';
 import { createDistWorkspace } from '../../lib/packager';
 import { paths } from '../../lib/paths';
 import { run } from '../../lib/run';
@@ -31,12 +32,13 @@ export default async (cmd: Command) => {
 
   const pkgPath = paths.resolveTarget(PKG_PATH);
   const pkg = await fs.readJson(pkgPath);
+  const appConfigs = await findAppConfigs();
   const tempDistWorkspace = await createDistWorkspace([pkg.name], {
     buildDependencies: Boolean(cmd.build),
     files: [
       'package.json',
       'yarn.lock',
-      'app-config.yaml',
+      ...appConfigs,
       { src: paths.resolveTarget('Dockerfile'), dest: 'Dockerfile' },
     ],
   });
@@ -49,3 +51,28 @@ export default async (cmd: Command) => {
 
   await fs.remove(tempDistWorkspace);
 };
+
+/**
+ * Find all config files to copy into the image
+ */
+async function findAppConfigs(): Promise<string[]> {
+  const files = [];
+
+  for (const name of await fs.readdir(paths.targetRoot)) {
+    if (name.startsWith('app-config.') && name.endsWith('.yaml')) {
+      files.push(name);
+    }
+  }
+
+  if (paths.targetRoot !== paths.targetDir) {
+    const dirPath = relativePath(paths.targetRoot, paths.targetDir);
+
+    for (const name of await fs.readdir(paths.targetDir)) {
+      if (name.startsWith('app-config.') && name.endsWith('.yaml')) {
+        files.push(joinPath(dirPath, name));
+      }
+    }
+  }
+
+  return files;
+}
