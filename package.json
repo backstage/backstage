@@ -24,6 +24,7 @@
     "create-oss-plugin": "backstage-cli create-plugin --scope backstage",
     "remove-plugin": "backstage-cli remove-plugin",
     "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push --force-publish; fi",
+    "prettier:check": "prettier --check .",
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
     "build-storybook": "yarn workspace storybook build-storybook"
@@ -31,8 +32,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "plugins/*",
-      "microsite"
+      "plugins/*"
     ]
   },
   "version": "1.0.0",

@@ -41,7 +41,15 @@ describe('AzureApiReaderProcessor', () => {
         target:
           'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         url: new URL(
-          'https://dev.azure.com/org-name/project-name/_apis/sourceProviders/TfsGit/filecontents?repository=repo-name&commitOrBranch=master&path=my-template.yaml&api-version=6.0-preview.1',
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
+        ),
+        err: undefined,
+      },
+      {
+        target:
+          'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
+        url: new URL(
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
         ),
         err: undefined,
       },

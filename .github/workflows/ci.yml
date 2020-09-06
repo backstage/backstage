@@ -69,6 +69,9 @@ jobs:
       - name: verify doc links
         run: node docs/verify-links.js
 
+      - name: prettier
+        run: yarn prettier:check
+
       - name: lint
         run: yarn lerna -- run lint --since origin/master
 
