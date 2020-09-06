@@ -18,10 +18,17 @@ import fs from 'fs-extra';
 import { createDistWorkspace } from '../../lib/packager';
 import { paths } from '../../lib/paths';
 import { run } from '../../lib/run';
+import { Command } from 'commander';
 
 const PKG_PATH = 'package.json';
 
-export default async (imageTag: string) => {
+export default async (cmd: Command) => {
+  // Skip the preparation steps if we're being asked for help
+  if (cmd.args.includes('--help')) {
+    await run('docker', ['image', 'build', '--help']);
+    return;
+  }
+
   const pkgPath = paths.resolveTarget(PKG_PATH);
   const pkg = await fs.readJson(pkgPath);
   const tempDistWorkspace = await createDistWorkspace([pkg.name], {
@@ -34,7 +41,8 @@ export default async (imageTag: string) => {
   });
   console.log(`Dist workspace ready at ${tempDistWorkspace}`);
 
-  await run('docker', ['build', '.', '-t', imageTag], {
+  // all args are forwarded to docker build
+  await run('docker', ['image', 'build', '.', ...cmd.args], {
     cwd: tempDistWorkspace,
   });
 
