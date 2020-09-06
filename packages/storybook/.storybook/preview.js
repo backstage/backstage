@@ -24,3 +24,22 @@ addParameters({
   },
   layout: 'fullscreen',
 });
+
+export const parameters = {
+  options: {
+    storySort: {
+      order: [
+        'Example Plugin',
+        'Header',
+        'Sidebar',
+        'Tabs',
+        'Information Card',
+        'Tabbed Card',
+        'Table',
+        'Status',
+        'Trendline',
+        'Progress Card',
+      ],
+    },
+  },
+};
