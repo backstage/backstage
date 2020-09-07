@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { Chip } from '@material-ui/core';
 
@@ -21,36 +22,20 @@ export default {
   component: Chip,
 };
 
-export const Default = () => (
-  <Chip label="Default" />
-);
+export const Default = () => <Chip label="Default" />;
 
 export const LargeDeletable = () => (
-  <Chip
-    label="Large deletable"
-    size="medium"
-    onDelete={() => ({})}
-  />
+  <Chip label="Large deletable" size="medium" onDelete={() => ({})} />
 );
 
 export const LargeNotDeletable = () => (
-  <Chip
-    label="Large not deletable"
-    size="medium"
-  />
+  <Chip label="Large not deletable" size="medium" />
 );
 
 export const SmallDeletable = () => (
-  <Chip
-    label="Small deletable"
-    size="small"
-    onDelete={() => ({})}
-  />
+  <Chip label="Small deletable" size="small" onDelete={() => ({})} />
 );
 
 export const SmallNotDeletable = () => (
-  <Chip
-    label="Small not deletable"
-    size="small"
-  />
+  <Chip label="Small not deletable" size="small" />
 );
