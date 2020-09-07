@@ -30,24 +30,28 @@ import { Entity } from '@backstage/catalog-model';
 export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
   return (
     <Grid container spacing={3} direction="column">
-      <Grid item>
-        <iframe
-          title="grafana"
-          src={entity?.metadata.annotations?.['grafana/graf-top']}
-          height="500px"
-          width="100%"
-          frameBorder="1"
-        />
-      </Grid>
-      <Grid item>
-        <iframe
-          title="grafana"
-          src={entity?.metadata.annotations?.['grafana/graf-bottom']}
-          height="500px"
-          width="100%"
-          frameBorder="1"
-        />
-      </Grid>
+      {entity?.metadata?.annotations?.['grafana/graf-top'] && (
+        <Grid item>
+          <iframe
+            title="grafana"
+            src={entity?.metadata.annotations?.['grafana/graf-top']}
+            height="500px"
+            width="100%"
+            frameBorder="1"
+          />
+        </Grid>
+      )}
+      {entity?.metadata?.annotations?.['grafana/graf-bottom'] && (
+        <Grid item>
+          <iframe
+            title="grafana"
+            src={entity?.metadata.annotations?.['grafana/graf-bottom']}
+            height="500px"
+            width="100%"
+            frameBorder="1"
+          />
+        </Grid>
+      )}
     </Grid>
   );
 };

@@ -61,13 +61,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
         element={<ArgocdRequestRouter entity={entity} />}
       />
     )}
-    {entity.metadata?.annotations?.['grafana/graf-top'] && (
-      <EntityPageLayout.Content
-        path="/grafana/*"
-        title="Grafana"
-        element={<GrafanaRouter entity={entity} />}
-      />
-    )}
+    <EntityPageLayout.Content
+      path="/grafana/*"
+      title="Grafana"
+      element={<GrafanaRouter entity={entity} />}
+    />
     {entity.metadata?.annotations?.['sentry.io/project-slug'] && (
       <EntityPageLayout.Content
         path="/sentry"
