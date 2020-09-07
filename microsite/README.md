@@ -2,11 +2,35 @@ This website was created with [Docusaurus](https://docusaurus.io/).
 
 # What's In This Document
 
-- [Get Started in 5 Minutes](#get-started-in-5-minutes)
+- [Getting Started](#getting-started)
 - [Directory Structure](#directory-structure)
 - [Editing Content](#editing-content)
 - [Adding Content](#adding-content)
 - [Full Documentation](#full-documentation)
+
+# Getting Started
+
+## Installation
+
+```
+$ yarn install
+```
+
+## Local Development
+
+```
+$ yarn start
+```
+
+This command starts a local development server and open up a browser window. Most changes are reflected live without having to restart the server.
+
+## Build
+
+```
+$ yarn build
+```
+
+This command generates static content into the `build` directory, which is what will be deployed to GitHub pages from the master branch.
 
 ## Directory Structure
 

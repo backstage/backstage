@@ -23,10 +23,10 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.1.1-alpha.21",
     "@backstage/core": "^0.1.1-alpha.21",
-    "@backstage/plugin-api-docs": "^0.1.1-alpha.21",
     "@backstage/plugin-github-actions": "^0.1.1-alpha.21",
     "@backstage/plugin-jenkins": "^0.1.1-alpha.21",
     "@backstage/plugin-scaffolder": "^0.1.1-alpha.21",
+    "@backstage/plugin-sentry": "^0.1.1-alpha.21",
     "@backstage/plugin-techdocs": "^0.1.1-alpha.21",
     "@backstage/theme": "^0.1.1-alpha.21",
     "@material-ui/core": "^4.9.1",
@@ -35,10 +35,12 @@
     "moment": "^2.26.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-helmet": "6.1.0",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3",
-    "swr": "^0.3.0"
+    "swr": "^0.3.0",
+    "@types/react": "^16.9"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.21",

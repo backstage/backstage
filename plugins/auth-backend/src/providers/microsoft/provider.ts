@@ -24,21 +24,21 @@ import {
   executeRefreshTokenStrategy,
   makeProfileInfo,
   executeFetchUserProfileStrategy,
-} from '../../lib/PassportStrategyHelper';
+  PassportDoneCallback,
+} from '../../lib/passport';
+
+import { RedirectInfo, AuthProviderFactory } from '../types';
 
 import {
-  OAuthProviderHandlers,
-  RedirectInfo,
-  AuthProviderConfig,
+  OAuthAdapter,
   OAuthProviderOptions,
+  OAuthHandlers,
   OAuthResponse,
-  PassportDoneCallback,
-} from '../types';
-
-import { OAuthProvider } from '../../lib/OAuthProvider';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
-import { Config } from '@backstage/config';
+  OAuthEnvironmentHandler,
+  OAuthStartRequest,
+  encodeState,
+  OAuthRefreshRequest,
+} from '../../lib/oauth';
 
 import got from 'got';
 
@@ -51,7 +51,7 @@ export type MicrosoftAuthProviderOptions = OAuthProviderOptions & {
   tokenUrl?: string;
 };
 
-export class MicrosoftAuthProvider implements OAuthProviderHandlers {
+export class MicrosoftAuthProvider implements OAuthHandlers {
   private readonly _strategy: MicrosoftStrategy;
 
   static transformAuthResponse(
@@ -114,11 +114,11 @@ export class MicrosoftAuthProvider implements OAuthProviderHandlers {
     );
   }
 
-  async start(
-    req: express.Request,
-    options: Record<string, string>,
-  ): Promise<RedirectInfo> {
-    return await executeRedirectStrategy(req, this._strategy, options);
+  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+    return await executeRedirectStrategy(req, this._strategy, {
+      scope: req.scope,
+      state: encodeState(req.state),
+    });
   }
 
   async handler(
@@ -135,11 +135,11 @@ export class MicrosoftAuthProvider implements OAuthProviderHandlers {
     };
   }
 
-  async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
+  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
     const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
-      refreshToken,
-      scope,
+      req.refreshToken,
+      req.scope,
     );
 
     const profile = await executeFetchUserProfileStrategy(
@@ -205,34 +205,33 @@ export class MicrosoftAuthProvider implements OAuthProviderHandlers {
   }
 }
 
-export function createMicrosoftProvider(
-  config: AuthProviderConfig,
-  _: string,
-  envConfig: Config,
-  _logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const providerId = 'microsoft';
+export const createMicrosoftProvider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    const providerId = 'microsoft';
 
-  const clientId = envConfig.getString('clientId');
-  const clientSecret = envConfig.getString('clientSecret');
-  const tenantID = envConfig.getString('tenantId');
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+    const tenantID = envConfig.getString('tenantId');
 
-  const callbackUrl = `${config.baseUrl}/${providerId}/handler/frame`;
-  const authorizationUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/authorize`;
-  const tokenUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/token`;
+    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+    const authorizationUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/authorize`;
+    const tokenUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/token`;
 
-  const provider = new MicrosoftAuthProvider({
-    clientId,
-    clientSecret,
-    callbackUrl,
-    authorizationUrl,
-    tokenUrl,
+    const provider = new MicrosoftAuthProvider({
+      clientId,
+      clientSecret,
+      callbackUrl,
+      authorizationUrl,
+      tokenUrl,
+    });
+
+    return OAuthAdapter.fromConfig(globalConfig, provider, {
+      disableRefresh: false,
+      providerId,
+      tokenIssuer,
+    });
   });
-
-  return OAuthProvider.fromConfig(config, provider, {
-    disableRefresh: false,
-    providerId,
-    tokenIssuer,
-  });
-}

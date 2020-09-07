@@ -30,6 +30,14 @@ jest.mock('fs-extra', () => {
         sessionKey: development-key
     `,
     '/root/secrets/session-key.txt': 'abc123',
+    '/secret-port/app-config.yaml': `
+      backend:
+        listen:
+          port:
+            $secret:
+              file: secrets/port.txt
+    `,
+    '/secret-port/secrets/port.txt': '12345',
   };
 
   return {

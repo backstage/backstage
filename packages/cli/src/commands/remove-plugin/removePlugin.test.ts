@@ -66,7 +66,7 @@ const createTestPluginFile = async (
   fse.copyFileSync(pluginsFilePath, testFilePath);
   const pluginNameCapitalized = testPluginName
     .split('-')
-    .map((name) => capitalize(name))
+    .map(name => capitalize(name))
     .join('');
   const exportStatement = `export { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
   addExportStatement(testFilePath, exportStatement);

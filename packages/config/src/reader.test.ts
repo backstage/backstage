@@ -88,7 +88,7 @@ function expectInvalidValues(config: ConfigReader) {
     "Invalid type in config for key 'string' in 'ctx', got string, wanted boolean",
   );
   expect(() => config.getNumber('string')).toThrow(
-    "Invalid type in config for key 'string' in 'ctx', got string, wanted number",
+    "Unable to convert config value for key 'string' in 'ctx' to a number",
   );
   expect(() => config.getString('one')).toThrow(
     "Invalid type in config for key 'one' in 'ctx', got number, wanted string",
@@ -579,5 +579,18 @@ describe('ConfigReader.get()', () => {
         c: 'c1',
       },
     });
+  });
+
+  it('coerces number strings to numbers', () => {
+    const config = ConfigReader.fromConfigs([
+      {
+        data: {
+          port: '123',
+        },
+        context: '1',
+      },
+    ]);
+
+    expect(config.getNumber('port')).toEqual(123);
   });
 });

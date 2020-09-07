@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget/AsyncApiDefinitionWidget';
-import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget/OpenApiDefinitionWidget';
-import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget/PlainApiDefinitionWidget';
+import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
+import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
+import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
 
 type Props = {
   type: string;

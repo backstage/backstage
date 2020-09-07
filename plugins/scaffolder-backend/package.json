@@ -48,7 +48,7 @@
     "@octokit/types": "^5.0.1",
     "@types/fs-extra": "^9.0.1",
     "@types/git-url-parse": "^9.0.0",
-    "@types/nodegit": "0.26.7",
+    "@types/nodegit": "0.26.8",
     "@types/supertest": "^2.0.8",
     "supertest": "^4.0.2",
     "yaml": "^1.10.0"
