@@ -72,7 +72,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const JobsList = ({ jobs }: { jobs?: Jobs }) => {
+const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
   const classes = useStyles();
   return (
     <Box>
@@ -84,6 +84,7 @@ const JobsList = ({ jobs }: { jobs?: Jobs }) => {
             className={
               job.status !== 'success' ? classes.failed : classes.success
             }
+            entity={entity}
           />
         ))}
     </Box>
@@ -112,7 +113,7 @@ const StepView = ({ step }: { step: Step }) => {
   );
 };
 
-const JobListItem = ({ job, className }: { job: Job; className: string }) => {
+const JobListItem = ({ job, className, entity }: { job: Job; className: string; entity: Entity }) => {
   const classes = useStyles();
   return (
     <Accordion
@@ -144,11 +145,13 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
       <WorkflowRunLogs 
       runId={job.id} 
       inProgress
+      entity={entity}
       /> 
       :
       <WorkflowRunLogs
         runId={job.id}
         inProgress={false}
+        entity={entity}
       />
       }
       
@@ -234,7 +237,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 {jobs.loading ? (
                   <CircularProgress />
                 ) : (
-                  <JobsList jobs={jobs.value} />
+                  <JobsList jobs={jobs.value} entity={entity}/>
                 )}
               </TableCell>
             </TableRow>

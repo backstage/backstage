@@ -89,7 +89,7 @@ const DisplayLog = ({ jobLogs, className }: { jobLogs: any; className: string })
 /**
  * A component for Run Logs visualization. 
  */
-export const WorkflowRunLogs = ({ runId, inProgress, entity }:{ runId: string, inProgress: boolean, entity: Entity }) => {
+export const WorkflowRunLogs = ({ entity, runId, inProgress }:{ entity: Entity, runId: string, inProgress: boolean }) => {
   const classes = useStyles();
   const projectName = useProjectName(entity);
 
