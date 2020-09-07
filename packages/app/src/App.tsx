@@ -27,6 +27,7 @@ import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Route, Routes, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
@@ -58,6 +59,7 @@ const AppRoutes = () => (
       path="/catalog/*"
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
+    <Route path="/docs/*" element={<DocsRouter />} />
     <Navigate key="/" to="/catalog" />
     {...deprecatedAppRoutes}
   </Routes>

@@ -15,6 +15,8 @@
  */
 import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
+import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
+
 import React from 'react';
 import {
   EntityPageLayout,
@@ -44,6 +46,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="API"
       element={<ApiDocsRouter entity={entity} />}
     />
+     <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -59,6 +66,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       title="CI/CD"
       element={<GitHubActionsRouter entity={entity} />}
     />
+     <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -68,6 +80,11 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
       path="/*"
       title="Overview"
       element={<OverviewContent entity={entity} />}
+    />
+     <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
