@@ -191,7 +191,7 @@ export class PrivateAppImpl implements BackstageApp {
       FeatureFlags.registeredFeatureFlags = registeredFeatureFlags;
     }
 
-    routes.push(<Route element={<NotFoundErrorPage />} />);
+    routes.push(<Route path="/*" element={<NotFoundErrorPage />} />);
 
     return routes;
   }
