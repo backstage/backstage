@@ -51,8 +51,6 @@ import {
   LighthouseRestApi,
 } from '@backstage/plugin-lighthouse';
 
-import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
-
 import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
 import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
@@ -179,14 +177,6 @@ export const apis = (config: ConfigApi) => {
     OAuth2.create({
       discoveryApi,
       oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    techRadarApiRef,
-    new TechRadar({
-      width: 1500,
-      height: 800,
     }),
   );
 

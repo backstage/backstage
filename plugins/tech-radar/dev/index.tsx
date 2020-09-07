@@ -15,14 +15,6 @@
  */
 
 import { createDevApp } from '@backstage/dev-utils';
-import { plugin } from '../src/plugin';
-import { techRadarApiRef, TechRadar } from '../src';
+import { plugin } from '../src';
 
-createDevApp()
-  .registerPlugin(plugin)
-  .registerApiFactory({
-    implements: techRadarApiRef,
-    deps: {},
-    factory: () => new TechRadar({ width: 1500, height: 800 }),
-  })
-  .render();
+createDevApp().registerPlugin(plugin).render();
