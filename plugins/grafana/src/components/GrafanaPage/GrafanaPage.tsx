@@ -24,36 +24,47 @@ import {
   ContentHeader,
   HeaderLabel,
   SupportButton,
+  InfoCard,
+  configApiRef,
+  useApi,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 
 export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
+  const config = useApi(configApiRef);
+  const grafanaUrl = config.getString('grafana.baseUrl');
   const middleHeight = innerHeight / 2;
+  const linkInfo = {
+    title: 'Go to Grafana',
+    link: grafanaUrl,
+  };
   return (
-    <Grid container spacing={3} direction="column">
-      {entity?.metadata?.annotations?.['grafana/graf-top'] && (
-        <Grid item>
-          <iframe
-            title="grafana"
-            src={entity?.metadata.annotations?.['grafana/graf-top']}
-            height={middleHeight}
-            width="100%"
-            frameBorder="1"
-          />
-        </Grid>
-      )}
-      {entity?.metadata?.annotations?.['grafana/graf-bottom'] && (
-        <Grid item>
-          <iframe
-            title="grafana"
-            src={entity?.metadata.annotations?.['grafana/graf-bottom']}
-            height={middleHeight}
-            width="100%"
-            frameBorder="1"
-          />
-        </Grid>
-      )}
-    </Grid>
+    <InfoCard title="Grafana Dashboards" deepLink={linkInfo}>
+      <Grid container spacing={3} direction="column">
+        {entity?.metadata?.annotations?.['grafana/graf-top'] && (
+          <Grid item>
+            <iframe
+              title="grafana"
+              src={entity?.metadata.annotations?.['grafana/graf-top']}
+              height={middleHeight}
+              width="100%"
+              frameBorder="1"
+            />
+          </Grid>
+        )}
+        {entity?.metadata?.annotations?.['grafana/graf-bottom'] && (
+          <Grid item>
+            <iframe
+              title="grafana"
+              src={entity?.metadata.annotations?.['grafana/graf-bottom']}
+              height={middleHeight}
+              width="100%"
+              frameBorder="1"
+            />
+          </Grid>
+        )}
+      </Grid>
+    </InfoCard>
   );
 };
 

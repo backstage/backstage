@@ -47,6 +47,9 @@ newrelic:
 lighthouse:
   baseUrl: http://localhost:3003
 
+grafana:
+  baseUrl: http://monitoring.trivago.trv
+
 catalog:
   rules:
     - allow: [Component, API, Group, Template, Location]
