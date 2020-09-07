@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
       border: `1px solid ${fade(theme.palette.primary.main, 0.5)}`,
       '&:hover': {
         textDecoration: 'none',
-        '&$disabled': {
+        '&.Mui-disabled': {
           backgroundColor: 'transparent',
         },
         border: `1px solid ${theme.palette.primary.main}`,
@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
           backgroundColor: 'transparent',
         },
       },
-      '&$disabled': {
+      '&.Mui-disabled': {
         color: theme.palette.action.disabled,
       },
     },

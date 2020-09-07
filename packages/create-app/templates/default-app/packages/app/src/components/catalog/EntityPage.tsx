@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
 import React from 'react';
 import {
@@ -37,6 +38,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/ci-cd/*"
       title="CI/CD"
       element={<GitHubActionsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/api/*"
+      title="API"
+      element={<ApiDocsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );

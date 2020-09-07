@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { Router } from './catalog';
-export { plugin } from './plugin';
+export { ApiCatalogPage } from './ApiCatalogPage';

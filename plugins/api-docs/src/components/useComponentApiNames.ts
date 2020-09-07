@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { Router } from './catalog';
-export { plugin } from './plugin';
+import { ComponentEntity } from '@backstage/catalog-model';
+
+export const useComponentApiNames = (entity: ComponentEntity) => {
+  return (entity.spec?.implementsApis as string[]) || [];
+};
