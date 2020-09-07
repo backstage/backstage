@@ -41,6 +41,7 @@ export default async (cmd: Command) => {
       ...appConfigs,
       { src: paths.resolveTarget('Dockerfile'), dest: 'Dockerfile' },
     ],
+    skeleton: 'skeleton.tar',
   });
   console.log(`Dist workspace ready at ${tempDistWorkspace}`);
 
