@@ -51,7 +51,7 @@ jobs:
         run: yarn lerna -- run lint
 
       - name: type checking and declarations
-        run: yarn tsc --incremental false
+        run: yarn tsc:full
 
       - name: build
         run: yarn build
