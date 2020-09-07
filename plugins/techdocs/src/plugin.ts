@@ -30,10 +30,7 @@
  */
 
 import { createPlugin, createRouteRef } from '@backstage/core';
-import { TechDocsHome } from './reader/components/TechDocsHome';
-import { TechDocsPage } from './reader/components/TechDocsPage';
 
-// Needs a landing page
 export const rootRouteRef = createRouteRef({
   path: '',
   title: 'TechDocs Landing Page',
@@ -51,8 +48,4 @@ export const rootCatalogDocsRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'techdocs',
-  // register({ router }) {
-  //   router.addRoute(rootRouteRef, TechDocsHome);
-  //   router.addRoute(rootDocsRouteRef, TechDocsPage);
-  // },
 });
