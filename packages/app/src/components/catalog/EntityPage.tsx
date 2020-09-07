@@ -54,21 +54,27 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Pull Requests"
       element={<GitHubPullRequestRouter entity={entity} />}
     />
-    <EntityPageLayout.Content
-      path="/argo/*"
-      title="ArgoCD"
-      element={<ArgocdRequestRouter entity={entity} />}
-    />
-    <EntityPageLayout.Content
-      path="/grafana/*"
-      title="Grafana"
-      element={<GrafanaRouter entity={entity} />}
-    />
-    <EntityPageLayout.Content
-      path="/sentry"
-      title="Sentry"
-      element={<SentryRouter entity={entity} />}
-    />
+    {entity.metadata?.annotations?.['argocd/endpoint'] && (
+      <EntityPageLayout.Content
+        path="/argo/*"
+        title="ArgoCD"
+        element={<ArgocdRequestRouter entity={entity} />}
+      />
+    )}
+    {entity.metadata?.annotations?.['grafana/graf-top'] && (
+      <EntityPageLayout.Content
+        path="/grafana/*"
+        title="Grafana"
+        element={<GrafanaRouter entity={entity} />}
+      />
+    )}
+    {entity.metadata?.annotations?.['sentry.io/project-slug'] && (
+      <EntityPageLayout.Content
+        path="/sentry"
+        title="Sentry"
+        element={<SentryRouter entity={entity} />}
+      />
+    )}
     <EntityPageLayout.Content
       path="/api/*"
       title="API"
