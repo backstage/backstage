@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { ProgressCard } from './ProgressCard';
-export { CircleProgress } from './CircleProgress';
-export { HorizontalProgress } from './HorizontalProgress';
+export { GaugeCard } from './GaugeCard';
+export { CircleGauge } from './CircleGauge';
+export { LinearGauge } from './LinearGauge';

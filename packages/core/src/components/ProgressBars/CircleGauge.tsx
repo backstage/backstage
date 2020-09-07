@@ -77,7 +77,7 @@ export function getProgressColor(
   return palette.status.ok;
 }
 
-export const CircleProgress: FC<Props> = props => {
+export const CircleGauge: FC<Props> = props => {
   const classes = useStyles(props);
   const theme = useTheme<BackstageTheme>();
   const { value, fractional, inverse, unit, max } = {

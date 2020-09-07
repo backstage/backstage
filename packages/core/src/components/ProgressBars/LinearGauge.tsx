@@ -19,7 +19,7 @@ import { Tooltip, useTheme } from '@material-ui/core';
 // @ts-ignore
 import { Line } from 'rc-progress';
 import { BackstageTheme } from '@backstage/theme';
-import { getProgressColor } from './CircleProgress';
+import { getProgressColor } from './CircleGauge';
 
 type Props = {
   /**
@@ -28,7 +28,7 @@ type Props = {
   value: number;
 };
 
-export const HorizontalProgress: FC<Props> = ({ value }) => {
+export const LinearGauge: FC<Props> = ({ value }) => {
   const theme = useTheme<BackstageTheme>();
   if (isNaN(value)) {
     return null;

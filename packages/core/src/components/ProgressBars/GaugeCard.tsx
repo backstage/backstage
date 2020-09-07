@@ -18,7 +18,7 @@ import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { InfoCard } from '../../layout/InfoCard';
 import { BottomLinkProps } from '../../layout/BottomLink';
-import { CircleProgress } from './CircleProgress';
+import { CircleProgress } from './CircleGauge';
 
 type Props = {
   title: string;
@@ -36,7 +36,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const ProgressCard: FC<Props> = props => {
+export const GaugeCard: FC<Props> = props => {
   const classes = useStyles(props);
   const { title, subheader, progress, deepLink, variant } = props;
 
