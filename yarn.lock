@@ -2951,9 +2951,9 @@
     react-lifecycles-compat "^3.0.4"
 
 "@rjsf/core@^2.1.0":
-  version "2.2.2"
-  resolved "https://registry.npmjs.org/@rjsf/core/-/core-2.2.2.tgz#1ebb6fe47448998f3b54e2dea8d58de8a46014dc"
-  integrity sha512-4d6DHIiTJEkUq5vyl4LIxLGIYYKKnHcprf94oVchUtGQvRFjNUDFxeFQoyr90oaxcBMs2WDDcCgjcFaKVyfErg==
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/@rjsf/core/-/core-2.3.0.tgz#334c73d2262ef1a8cda477e238067af7336c5599"
+  integrity sha512-OZKYHt9tjKhzOH4CvsPiCwepuIacqI++cNmnL2fsxh1IF+uEWGlo3NLDWhhSaBbOv9jps6a5YQcLbLtjNuSwug==
   dependencies:
     "@babel/runtime-corejs2" "^7.8.7"
     "@types/json-schema" "^7.0.4"
@@ -5438,17 +5438,7 @@ ajv@^5.0.0:
     fast-json-stable-stringify "^2.0.0"
     json-schema-traverse "^0.3.0"
 
-ajv@^6.1.0, ajv@^6.10.0, ajv@^6.10.1, ajv@^6.10.2, ajv@^6.12.2, ajv@^6.5.5, ajv@^6.7.0:
-  version "6.12.3"
-  resolved "https://registry.npmjs.org/ajv/-/ajv-6.12.3.tgz#18c5af38a111ddeb4f2697bd78d68abc1cabd706"
-  integrity sha512-4K0cK3L1hsqk9xIb2z9vs/XU+PGJZ9PNpJRDS9YLzmNdX6jmVPfamLvTJr0aDAusnHyCHO6MjzlkAsgtqp9teA==
-  dependencies:
-    fast-deep-equal "^3.1.1"
-    fast-json-stable-stringify "^2.0.0"
-    json-schema-traverse "^0.4.1"
-    uri-js "^4.2.2"
-
-ajv@^6.12.4:
+ajv@^6.1.0, ajv@^6.10.0, ajv@^6.10.1, ajv@^6.10.2, ajv@^6.12.2, ajv@^6.12.4, ajv@^6.5.5, ajv@^6.7.0:
   version "6.12.4"
   resolved "https://registry.npmjs.org/ajv/-/ajv-6.12.4.tgz#0614facc4522127fa713445c6bfd3ebd376e2234"
   integrity sha512-eienB2c9qVQs2KWexhkrdMLVDoIQCz5KSeLxwg9Lzk4DOfBtIK9PQwwufcsn1jjGuf9WZmqPMbGxOzfcuphJCQ==
