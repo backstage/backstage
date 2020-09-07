@@ -104,7 +104,9 @@ export function AboutCard({ entity }: AboutCardProps) {
             <IconLinkVertical
               label="View Techdocs"
               icon={<DocsIcon />}
-              href={`/docs/${''}`}
+              href={`/docs/${entity.kind}:${entity.metadata.namespace ?? ''}:${
+                entity.metadata.name
+              }`}
             />
           </nav>
         }

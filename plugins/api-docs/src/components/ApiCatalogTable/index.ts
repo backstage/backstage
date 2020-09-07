@@ -14,17 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Sparklines, SparklinesBars } from 'react-sparklines';
-
-type Props = {
-  counts: number[];
-};
-
-export const RollbarTrendGraph = ({ counts }: Props) => {
-  return (
-    <Sparklines data={counts} svgHeight={48} min={0} margin={4}>
-      <SparklinesBars barWidth={2} />
-    </Sparklines>
-  );
-};
+export { ApiCatalogTable } from './ApiCatalogTable';

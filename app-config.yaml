@@ -1,15 +1,11 @@
 app:
   title: Backstage Example App
-  baseUrl: http://localhost:3000
+  baseUrl: http://localhost:7000
 
 backend:
   baseUrl: http://localhost:7000
   listen:
     port: 7000
-  cors:
-    origin: http://localhost:3000
-    methods: [GET, POST, PUT, DELETE]
-    credentials: true
   database:
     client: sqlite3
     connection: ':memory:'
@@ -130,8 +126,8 @@ auth:
           $secret:
             env: GITLAB_BASE_URL
     saml:
-      entryPoint: "http://localhost:7001/"
-      issuer: "passport-saml"
+      entryPoint: 'http://localhost:7001/'
+      issuer: 'passport-saml'
     okta:
       development:
         clientId:

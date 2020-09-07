@@ -26,25 +26,57 @@ export { plugin as Rollbar } from '@backstage/plugin-rollbar';
 import { RollbarClient, rollbarApiRef } from '@backstage/plugin-rollbar';
 
 // ...
-
-builder.add(
-  rollbarApiRef,
-  new RollbarClient({
-    apiOrigin: backendUrl,
-    basePath: '/rollbar',
-  }),
-);
-
-// Alternatively you can use the mock client
-// builder.add(rollbarApiRef, new RollbarMockClient());
+builder.add(rollbarApiRef, new RollbarClient({ discoveryApi }));
 ```
 
-5. Run app with `yarn start` and navigate to `/rollbar`
+5. Add to the app `EntityPage` component:
+
+```ts
+// packages/app/src/components/catalog/EntityPage.tsx
+import { Router as RollbarRouter } from '@backstage/plugin-rollbar';
+
+// ...
+const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    // ...
+    <EntityPageLayout.Content
+      path="/rollbar"
+      title="Errors"
+      element={<RollbarRouter entity={entity} />}
+    />
+  </EntityPageLayout>
+);
+```
+
+6. Setup the `app.config.yaml` and account token environment variable
+
+```yaml
+# app.config.yaml
+rollbar:
+  organization: spotify
+  accountToken:
+    $secret:
+      env: ROLLBAR_ACCOUNT_TOKEN
+```
+
+7. Annotate entities with the rollbar project slug
+
+```yaml
+# pump-station-catalog-component.yaml
+# ...
+metadata:
+  annotations:
+    rollbar.com/project-slug: organization-name/project-name
+    # -- or just ---
+    rollbar.com/project-slug: project-name
+```
+
+8. Run app with `yarn start` and navigate to `/rollbar` or a catalog entity
 
 ## Features
 
-- List rollbar projects
-- View top active items for each project
+- List rollbar entities that are annotated with `rollbar.com/project-slug`
+- View top active items for each rollbar annotated entity
 
 ## Limitations
 

@@ -26,7 +26,7 @@ export function getRequestHeaders(token: string) {
 }
 
 export function getSentryApiForwarder(token: string, logger: Logger) {
-  return function fowardRequest(
+  return function forwardRequest(
     request: express.Request,
     response: express.Response,
   ) {

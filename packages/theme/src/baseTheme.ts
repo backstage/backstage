@@ -192,9 +192,30 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
     },
     MuiChip: {
       root: {
+        backgroundColor: '#D9D9D9',
         // By default there's no margin, but it's usually wanted, so we add some trailing margin
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
+      },
+      label: {
+        color: theme.palette.grey[900],
+        lineHeight: `${theme.spacing(2.5)}px`,
+        fontWeight: theme.typography.fontWeightMedium,
+        fontSize: `${theme.spacing(1.75)}px`,
+      },
+      labelSmall: {
+        fontSize: `${theme.spacing(1.5)}px`,
+      },
+      deleteIcon: {
+        color: theme.palette.grey[500],
+        width: `${theme.spacing(3)}px`,
+        height: `${theme.spacing(3)}px`,
+        margin: `0 ${theme.spacing(0.75)}px 0 -${theme.spacing(0.75)}px`,
+      },
+      deleteIconSmall: {
+        width: `${theme.spacing(2)}px`,
+        height: `${theme.spacing(2)}px`,
+        margin: `0 ${theme.spacing(0.5)}px 0 -${theme.spacing(0.5)}px`,
       },
     },
     MuiCardHeader: {

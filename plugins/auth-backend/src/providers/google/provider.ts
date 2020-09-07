@@ -31,6 +31,9 @@ import {
   OAuthProviderOptions,
   OAuthResponse,
   OAuthEnvironmentHandler,
+  OAuthStartRequest,
+  encodeState,
+  OAuthRefreshRequest,
 } from '../../lib/oauth';
 import passport from 'passport';
 
@@ -79,16 +82,13 @@ export class GoogleAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(
-    req: express.Request,
-    options: Record<string, string>,
-  ): Promise<RedirectInfo> {
-    const providerOptions = {
-      ...options,
+  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+    return await executeRedirectStrategy(req, this._strategy, {
       accessType: 'offline',
       prompt: 'consent',
-    };
-    return await executeRedirectStrategy(req, this._strategy, providerOptions);
+      scope: req.scope,
+      state: encodeState(req.state),
+    });
   }
 
   async handler(
@@ -105,11 +105,11 @@ export class GoogleAuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(refreshToken: string, scope: string): Promise<OAuthResponse> {
+  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
     const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
-      refreshToken,
-      scope,
+      req.refreshToken,
+      req.scope,
     );
 
     const profile = await executeFetchUserProfileStrategy(

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { ApiDefinitionCard } from './components/ApiDefinitionCard/ApiDefinitionCard';
+export { Router } from './catalog';
 export { plugin } from './plugin';

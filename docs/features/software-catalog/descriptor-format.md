@@ -235,6 +235,9 @@ The `backstage.io/` prefix is reserved for use by Backstage core components.
 
 Values can be of any length, but are limited to being strings.
 
+There is a list of [well-known annotations](well-known-annotations.md), but
+anybody is free to add more annotations as they see fit.
+
 ### `tags` [optional]
 
 A list of single-valued strings, for example to classify catalog entities in
@@ -290,7 +293,7 @@ Exactly equal to `backstage.io/v1alpha1` and `Component`, respectively.
 
 The type of component as a string, e.g. `website`. This field is required.
 
-The software catalog accepts any type value, but an organisation should take
+The software catalog accepts any type value, but an organization should take
 great care to establish a proper taxonomy for these. Tools including Backstage
 itself may read this field and behave differently depending on its value. For
 example, a website type component may present tooling in the Backstage interface
@@ -304,9 +307,9 @@ The current set of well-known and common values for this field is:
 
 ### `spec.lifecycle` [required]
 
-The lifecyle state of the component, e.g. `production`. This field is required.
+The lifecycle state of the component, e.g. `production`. This field is required.
 
-The software catalog accepts any lifecycle value, but an organisation should
+The software catalog accepts any lifecycle value, but an organization should
 take great care to establish a proper taxonomy for these.
 
 The current set of well-known and common values for this field is:
@@ -418,7 +421,7 @@ potentially search and group templates by these tags.
 The type of component as a string, e.g. `website`. This field is optional but
 recommended.
 
-The software catalog accepts any type value, but an organisation should take
+The software catalog accepts any type value, but an organization should take
 great care to establish a proper taxonomy for these. Tools including Backstage
 itself may read this field and behave differently depending on its value. For
 example, a website type component may present tooling in the Backstage interface
@@ -508,7 +511,7 @@ Exactly equal to `backstage.io/v1alpha1` and `API`, respectively.
 The type of the API definition as a string, e.g. `openapi`. This field is
 required.
 
-The software catalog accepts any type value, but an organisation should take
+The software catalog accepts any type value, but an organization should take
 great care to establish a proper taxonomy for these. Tools including Backstage
 itself may read this field and behave differently depending on its value. For
 example, an OpenAPI type API may be displayed using an OpenAPI viewer tooling in

@@ -4,7 +4,9 @@
      That makes it easier to understand the change so we can :shipit: faster. -->
 
 #### :heavy_check_mark: Checklist
+
 <!--- Put an `x` in all the boxes that apply: -->
+
 - [ ] All tests are passing `yarn test`
 - [ ] Screenshots attached (for UI changes)
 - [ ] Relevant documentation updated

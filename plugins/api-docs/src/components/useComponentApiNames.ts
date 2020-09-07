@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { RollbarTrendGraph } from './RollbarTrendGraph';
+import { ComponentEntity } from '@backstage/catalog-model';
 
-describe('RollbarTrendGraph component', () => {
-  it('should render a trend graph sparkline', async () => {
-    const mockCounts = [1, 2, 3, 4];
-    const rendered = render(
-      wrapInTestApp(
-        <RollbarTrendGraph counts={mockCounts} data-testid="graph" />,
-      ),
-    );
-    expect(rendered).toBeTruthy();
-  });
-});
+export const useComponentApiNames = (entity: ComponentEntity) => {
+  return (entity.spec?.implementsApis as string[]) || [];
+};

@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Entity } from '@backstage/catalog-model';
-import { Reader } from '@backstage/plugin-techdocs';
-import { Content } from '@backstage/core';
+import { useAsync } from 'react-use';
+import { useApi } from '@backstage/core';
+import {
+  catalogApiRef,
+  useEntityCompoundName,
+} from '@backstage/plugin-catalog';
 
-export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
-  return (
-    <Content>
-      <Reader
-        entityId={{
-          kind: entity.kind,
-          namespace: entity.metadata.namespace,
-          name: entity.metadata.name,
-        }}
-      />
-    </Content>
+export function useCatalogEntity() {
+  const catalogApi = useApi(catalogApiRef);
+  const { namespace, name } = useEntityCompoundName();
+
+  const { value: entity, error, loading } = useAsync(
+    () => catalogApi.getEntityByName({ kind: 'Component', namespace, name }),
+    [catalogApi, namespace, name],
   );
-};
+
+  return { entity, error, loading };
+}

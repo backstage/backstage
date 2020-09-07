@@ -21,12 +21,14 @@ import {
   Router as CircleCIRouter,
   isPluginApplicableToEntity as isCircleCIAvailable,
 } from '@backstage/plugin-circleci';
+import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
+import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import React from 'react';
 import {
+  AboutCard,
   EntityPageLayout,
   useEntity,
-  AboutCard,
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 import { Grid } from '@material-ui/core';
@@ -75,6 +77,16 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Sentry"
       element={<SentryRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/api/*"
+      title="API"
+      element={<ApiDocsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -95,15 +107,24 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       title="Sentry"
       element={<SentryRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
-
 const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
       element={<OverviewContent entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
