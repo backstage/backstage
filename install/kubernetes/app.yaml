@@ -18,10 +18,10 @@ spec:
         component: frontend
     spec:
       containers:
-      - name: app
-        image: spotify/backstage:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 80
-          name: app
-          protocol: TCP
+        - name: app
+          image: spotify/backstage:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: app
+              protocol: TCP

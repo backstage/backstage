@@ -30,6 +30,7 @@
     "@backstage/backend-common": "^0.1.1-alpha.21",
     "@backstage/cli-common": "^0.1.1-alpha.21",
     "@backstage/plugin-github-actions": "0.1.1-alpha.21",
+    "@backstage/plugin-api-docs": "0.1.1-alpha.21",
     "@backstage/catalog-model": "0.1.1-alpha.21",
     "@backstage/config": "^0.1.1-alpha.21",
     "@backstage/core": "^0.1.1-alpha.21",

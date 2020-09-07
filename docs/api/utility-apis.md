@@ -71,9 +71,8 @@ import {
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
-  ConfigApi
+  ConfigApi,
 } from '@backstage/core';
-
 
 const apis = (config: ConfigApi) => {
   const builder = ApiRegistry.builder();
@@ -84,7 +83,7 @@ const apis = (config: ConfigApi) => {
   // The error API uses the alert API to send error notifications to the user.
   builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
   return builder.build();
-}
+};
 
 const app = createApp({
   apis,

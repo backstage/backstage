@@ -16,18 +16,26 @@
 
 //  NEEDS WORK
 
-import { Link, useApi, googleAuthApiRef, InfoCard } from '@backstage/core';
+import {
+  Link,
+  useApi,
+  googleAuthApiRef,
+  HeaderLabel,
+  Page,
+  Header,
+  pageTheme,
+  SupportButton,
+  Content,
+  ContentHeader,
+} from '@backstage/core';
 import {
   LinearProgress,
-  makeStyles,
   Paper,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Theme,
   Tooltip,
   Typography,
   Button,
@@ -47,14 +55,12 @@ const LongText = ({ text, max }: { text: string; max: number }) => {
   );
 };
 
-const useStyles = makeStyles<Theme>(theme => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-  title: {
-    padding: theme.spacing(1, 0, 2, 0),
-  },
-}));
+const labels = (
+  <>
+    <HeaderLabel label="Owner" value="Spotify" />
+    <HeaderLabel label="Lifecycle" value="Production" />
+  </>
+);
 
 const PageContents = () => {
   const api = useApi(GCPApiRef);
@@ -76,13 +82,13 @@ const PageContents = () => {
   if (error) {
     return (
       <Typography variant="h2" color="error">
-        Failed to load projects, {error.message}{' '}
+        {error.message}{' '}
       </Typography>
     );
   }
 
   return (
-    <TableContainer component={Paper}>
+    <Table component={Paper}>
       <Table aria-label="GCP Projects table">
         <TableHead>
           <TableRow>
@@ -134,25 +140,25 @@ const PageContents = () => {
           ))}
         </TableBody>
       </Table>
-    </TableContainer>
+    </Table>
   );
 };
 
 export const ProjectListPage = () => {
-  const classes = useStyles();
-
   return (
-    <div className={classes.root}>
-      <Typography variant="h3" className={classes.title}>
-        GCP Projects
-      </Typography>
-      <InfoCard>
-        <Button variant="contained" color="primary" href="/gcp-projects/new">
-          Create new GCP Project
-        </Button>
-      </InfoCard>
-
-      <PageContents />
-    </div>
+    <Page theme={pageTheme.service}>
+      <Header title="GCP Projects" type="tool">
+        {labels}
+      </Header>
+      <Content>
+        <ContentHeader title="">
+          <Button variant="contained" color="primary" href="/gcp-projects/new">
+            New Project
+          </Button>
+          <SupportButton>All your software catalog entities</SupportButton>
+        </ContentHeader>
+        <PageContents />
+      </Content>
+    </Page>
   );
 };
