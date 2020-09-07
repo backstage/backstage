@@ -30,8 +30,7 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
 export const Router = ({ entity }: { entity: Entity }) =>
   !isPluginApplicableToEntity(entity) ? (
     <WarningPanel title="CircleCI plugin:">
-      `entity.metadata.annotations['{CIRCLECI_ANNOTATION}']` key is missing on
-      the entity.
+      <pre>{CIRCLECI_ANNOTATION}</pre> annotation is missing on the entity.
     </WarningPanel>
   ) : (
     <Routes>
