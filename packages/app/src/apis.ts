@@ -104,6 +104,7 @@ export const apis = (config: ConfigApi) => {
   );
 
   builder.add(storageApiRef, WebStorage.create({ errorApi }));
+  builder.add(GCPApiRef, new GCPClient());
   builder.add(
     circleCIApiRef,
     new CircleCIApi(`${backendUrl}/proxy/circleci/api`),

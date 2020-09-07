@@ -39,7 +39,7 @@ module.exports = {
       version: 'detect',
     },
   },
-  ignorePatterns: ['.eslintrc.js', '**/dist/**'],
+  ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
     'import/newline-after-import': 'error',
     'import/no-duplicates': 'warn',

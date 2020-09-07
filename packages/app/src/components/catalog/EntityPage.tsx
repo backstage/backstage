@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
 import { Router as GitHubPullRequestRouter } from '@backstage/plugin-github-prs';
 import { Router as ArgocdRequestRouter } from '@backstage/plugin-argocd';
 
+import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import React from 'react';
 import {
+  AboutCard,
   EntityPageLayout,
   useEntity,
-  AboutCard,
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 import { Grid } from '@material-ui/core';
@@ -56,6 +58,16 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="ArgoCD"
       element={<ArgocdRequestRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/sentry"
+      title="Sentry"
+      element={<SentryRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/api/*"
+      title="API"
+      element={<ApiDocsRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -70,6 +82,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/ci-cd/*"
       title="CI/CD"
       element={<GitHubActionsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/sentry"
+      title="Sentry"
+      element={<SentryRouter entity={entity} />}
     />
   </EntityPageLayout>
 );

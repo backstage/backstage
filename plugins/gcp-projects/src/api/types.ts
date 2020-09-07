@@ -22,15 +22,6 @@ export type Project = {
   createTime?: string;
 };
 
-export type ProjectTrivago = {
-  name: string;
-  projectNumber?: string;
-  projectId: string;
-  lifecycleState?: string;
-  createTime?: string;
-  email?: string | undefined;
-};
-
 export type ProjectDetails = {
   details: string;
 };

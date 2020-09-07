@@ -32,6 +32,7 @@ import {
   useApi,
 } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
+import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {
@@ -83,7 +84,7 @@ export const LatestWorkflowRunCard = ({
 }) => {
   const errorApi = useApi(errorApiRef);
   const [owner, repo] = (
-    entity?.metadata.annotations?.['backstage.io/github-actions-id'] ?? '/'
+    entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
   ).split('/');
   const [{ runs, loading, error }] = useWorkflowRuns({
     owner,
