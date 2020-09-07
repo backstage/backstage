@@ -24,19 +24,17 @@ export default {
 
 const SELECT_ITEMS = [
   {
-    label: "test 1",
-    value: "test_1"
+    label: 'test 1',
+    value: 'test_1',
   },
   {
-    label: "test 2",
-    value: "test_2"
+    label: 'test 2',
+    value: 'test_2',
   },
   {
-    label: "test 3",
-    value: "test_3"
-  }
-]
+    label: 'test 3',
+    value: 'test_3',
+  },
+];
 
-export const Default = () => (
-  <Select label="Default" items={SELECT_ITEMS} />
-);
+export const Default = () => <Select label="Default" items={SELECT_ITEMS} />;

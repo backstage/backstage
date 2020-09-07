@@ -110,9 +110,7 @@ export const SelectComponent = (props: Props) => {
         onOpen={() => setOpening(false)}
         onClose={() => setOpening(true)}
         input={<BootstrapInput />}
-        IconComponent={() => (
-            isOpen ? <ClosedDropdown /> : <OpenedDropdown />
-        )}
+        IconComponent={() => (isOpen ? <ClosedDropdown /> : <OpenedDropdown />)}
         MenuProps={{
           anchorOrigin: {
             vertical: 'bottom',

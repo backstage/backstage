@@ -30,11 +30,14 @@ const OpenedDropdown = () => {
   const classes = useStyles();
   return (
     <SvgIcon
-    className={classes.icon}
+      className={classes.icon}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M16.5 16L18 14.5L11.9297 8.42969L5.85938 14.5L7.35938 16L11.9297 11.4297L16.5 16Z" fill="#616161"/>
+      <path
+        d="M16.5 16L18 14.5L11.9297 8.42969L5.85938 14.5L7.35938 16L11.9297 11.4297L16.5 16Z"
+        fill="#616161"
+      />
     </SvgIcon>
   );
 };
