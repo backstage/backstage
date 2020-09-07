@@ -183,19 +183,11 @@ export async function movePlugin(
 
 export default async (cmd: Command) => {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
-  let scopeName = '';
-  let scopeNameWithSlash = '';
-  if (cmd.scope) {
-    if (cmd.scope.startsWith('@')) {
-      scopeName = `${cmd.scope}`;
-    } else {
-      scopeName = `@${cmd.scope}`;
-    }
-    scopeNameWithSlash = `${scopeName}/`
-  }
-
-  let privatePackage = true;
-  let registryURL = "https://gitlab.myteksi.net/api/v4/projects/5545/packages/npm/"
+  const scopeName = cmd.scope ? `@${cmd.scope.replace(/^@/, '')}` : '';
+  const scopeNameWithSlash = cmd.scope ? `${scopeName}/` : '';
+  const privatePackage = true;
+  const registryURL =
+    'https://gitlab.myteksi.net/api/v4/projects/5545/packages/npm/';
 
   const questions: Question[] = [
     {
@@ -263,6 +255,9 @@ export default async (cmd: Command) => {
       ...answers,
       version,
       backstageVersion,
+      scopeName,
+      privatePackage,
+      registryURL,
     });
 
     Task.section('Moving to final location');
