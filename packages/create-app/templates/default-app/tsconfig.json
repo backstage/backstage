@@ -8,7 +8,7 @@
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "dist-types",
     "rootDir": ".",
     "skipLibCheck": true
   }
