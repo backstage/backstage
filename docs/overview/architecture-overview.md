@@ -171,21 +171,19 @@ The frontend container can be built with a provided command.
 ```bash
 yarn install
 yarn tsc
-yarn build
-yarn run docker-build
+yarn run docker-build:app
 ```
 
 Running this will simply generate a Docker container containing the contents of
-the UIs `dist` directory. The resulting container will be about 50MB in size.
+the UIs `dist` directory.
 
-The backend container can be built by running the following command in the
-`packages/backend` directory.
+The backend container can be built by running the following command:
 
 ```bash
-yarn run build-image
+yarn run docker-build
 ```
 
-This will create a ~500MB container called `example-backend`.
+This will create a container called `example-backend`.
 
 The lighthouse-audit-service container is already publicly available in Docker
 Hub and can be downloaded and ran with
