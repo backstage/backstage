@@ -15,14 +15,14 @@
  */
 
 import { createPlugin } from '@backstage/core';
-import { RollbarPage } from './components/RollbarPage/RollbarPage';
+import { rootRouteRef, entityRouteRef } from './routes';
+import { RollbarHome } from './components/RollbarHome/RollbarHome';
 import { RollbarProjectPage } from './components/RollbarProjectPage/RollbarProjectPage';
-import { rootRoute, rootProjectRoute } from './routes';
 
 export const plugin = createPlugin({
   id: 'rollbar',
   register({ router }) {
-    router.addRoute(rootRoute, RollbarPage);
-    router.addRoute(rootProjectRoute, RollbarProjectPage);
+    router.addRoute(rootRouteRef, RollbarHome);
+    router.addRoute(entityRouteRef, RollbarProjectPage);
   },
 });

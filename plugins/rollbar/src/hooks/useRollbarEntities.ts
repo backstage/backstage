@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useAsync } from 'react-use';
-import { configApiRef, useApi } from '@backstage/core';
-import { rollbarApiRef } from '../../api/RollbarApi';
-import { RollbarLayout } from '../RollbarLayout/RollbarLayout';
-import { RollbarProjectTable } from './RollbarProjectTable';
+import { useApi, configApiRef } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog';
+import { ROLLBAR_ANNOTATION } from '../constants';
 
-export const RollbarPage = () => {
+export function useRollbarEntities() {
   const configApi = useApi(configApiRef);
-  const rollbarApi = useApi(rollbarApiRef);
-  const org =
+  const catalogApi = useApi(catalogApiRef);
+
+  const organization =
     configApi.getOptionalString('rollbar.organization') ??
     configApi.getString('organization.name');
-  const { value, loading, error } = useAsync(() => rollbarApi.getAllProjects());
 
-  return (
-    <RollbarLayout>
-      <RollbarProjectTable
-        projects={value || []}
-        organization={org}
-        loading={loading}
-        error={error}
-      />
-    </RollbarLayout>
-  );
-};
+  const { value, loading, error } = useAsync(async () => {
+    const entities = await catalogApi.getEntities();
+    return entities.filter(entity => {
+      return !!entity.metadata.annotations?.[ROLLBAR_ANNOTATION];
+    });
+  }, [catalogApi]);
+
+  return { entities: value, organization, loading, error };
+}

@@ -21,13 +21,14 @@ import {
   ConfigApi,
   configApiRef,
 } from '@backstage/core';
+import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import { RollbarApi, rollbarApiRef } from '../../api/RollbarApi';
 import { RollbarProject } from '../../api/types';
-import { RollbarPage } from './RollbarPage';
+import { RollbarHome } from './RollbarHome';
 
-describe('RollbarPage component', () => {
+describe('RollbarHome component', () => {
   const projects: RollbarProject[] = [
     { id: 123, name: 'abc', accountId: 1, status: 'enabled' },
     { id: 456, name: 'xyz', accountId: 1, status: 'enabled' },
@@ -47,6 +48,14 @@ describe('RollbarPage component', () => {
           apis={ApiRegistry.from([
             [rollbarApiRef, rollbarApi],
             [configApiRef, config],
+            [
+              catalogApiRef,
+              ({
+                async getEntities() {
+                  return [];
+                },
+              } as Partial<CatalogApi>) as CatalogApi,
+            ],
           ])}
         >
           {children}
@@ -55,7 +64,7 @@ describe('RollbarPage component', () => {
     );
 
   it('should render rollbar landing page', async () => {
-    const rendered = renderWrapped(<RollbarPage />);
+    const rendered = renderWrapped(<RollbarHome />);
     expect(rendered.getByText(/Rollbar/)).toBeInTheDocument();
   });
 });

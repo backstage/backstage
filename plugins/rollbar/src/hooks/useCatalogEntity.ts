@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { RollbarTrendGraph } from './RollbarTrendGraph';
+import { useAsync } from 'react-use';
+import { useApi } from '@backstage/core';
+import {
+  catalogApiRef,
+  useEntityCompoundName,
+} from '@backstage/plugin-catalog';
 
-describe('RollbarTrendGraph component', () => {
-  it('should render a trend graph sparkline', async () => {
-    const mockCounts = [1, 2, 3, 4];
-    const rendered = render(
-      wrapInTestApp(
-        <RollbarTrendGraph counts={mockCounts} data-testid="graph" />,
-      ),
-    );
-    expect(rendered).toBeTruthy();
-  });
-});
+export function useCatalogEntity() {
+  const catalogApi = useApi(catalogApiRef);
+  const { namespace, name } = useEntityCompoundName();
+
+  const { value: entity, error, loading } = useAsync(
+    () => catalogApi.getEntityByName({ kind: 'Component', namespace, name }),
+    [catalogApi, namespace, name],
+  );
+
+  return { entity, error, loading };
+}
