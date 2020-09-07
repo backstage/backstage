@@ -81,7 +81,11 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     const path = paths.resolveOwnRoot(pkgJsonPath);
     const pkgTemplate = await fs.readFile(path, 'utf8');
     const { dependencies = {}, devDependencies = {} } = JSON.parse(
-      handlebars.compile(pkgTemplate)({ version: '0.0.0' }),
+      handlebars.compile(pkgTemplate)({
+        version: '0.0.0',
+        privatePackage: true,
+        scopeName: '@backstage',
+      }),
     );
 
     Array<string>()
