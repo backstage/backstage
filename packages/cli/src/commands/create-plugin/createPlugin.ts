@@ -33,12 +33,12 @@ import { version as backstageVersion } from '../../lib/version';
 
 const exec = promisify(execCb);
 
-async function checkExists(rootDir: string, id: string) {
-  await Task.forItem('checking', id, async () => {
-    const destination = resolvePath(rootDir, 'plugins', id);
-
+async function checkExists(destination: string) {
+  await Task.forItem('checking', destination, async () => {
     if (await fs.pathExists(destination)) {
-      const existing = chalk.cyan(destination.replace(`${rootDir}/`, ''));
+      const existing = chalk.cyan(
+        destination.replace(`${paths.targetRoot}/`, ''),
+      );
       throw new Error(
         `A plugin with the same name already exists: ${existing}\nPlease try again with a different plugin ID`,
       );
@@ -235,16 +235,18 @@ export default async (cmd: Command) => {
   const appPackage = paths.resolveTargetRoot('packages/app');
   const templateDir = paths.resolveOwn('templates/default-plugin');
   const tempDir = resolvePath(os.tmpdir(), answers.id);
-  const pluginDir = paths.resolveTargetRoot('plugins', answers.id);
+  const pluginDir = (await fs.pathExists(paths.resolveTargetRoot('plugins')))
+    ? paths.resolveTargetRoot('plugins', answers.id)
+    : paths.resolveTargetRoot(answers.id);
   const ownerIds = parseOwnerIds(answers.owner);
-  const { version } = await fs.readJson(paths.resolveTargetRoot('lerna.json'));
+  const version = backstageVersion;
 
   Task.log();
   Task.log('Creating the plugin...');
 
   try {
     Task.section('Checking if the plugin ID is available');
-    await checkExists(paths.targetRoot, answers.id);
+    await checkExists(pluginDir);
 
     Task.section('Creating a temporary plugin directory');
     await createTemporaryPluginFolder(tempDir);
