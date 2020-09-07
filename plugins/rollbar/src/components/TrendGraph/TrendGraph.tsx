@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './api';
-export * from './routes';
-export { Router } from './components/Router';
-export { RollbarProjectPage } from './components/RollbarProjectPage/RollbarProjectPage';
-export { EntityPageRollbar } from './components/EntityPageRollbar/EntityPageRollbar';
-export { ROLLBAR_ANNOTATION } from './constants';
+import React from 'react';
+import { Sparklines, SparklinesBars } from 'react-sparklines';
+
+type Props = {
+  counts: number[];
+};
+
+export const TrendGraph = ({ counts }: Props) => {
+  return (
+    <Sparklines data={counts} svgHeight={48} min={0} margin={4}>
+      <SparklinesBars barWidth={2} />
+    </Sparklines>
+  );
+};

@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './api';
-export * from './routes';
-export { Router } from './components/Router';
-export { RollbarProjectPage } from './components/RollbarProjectPage/RollbarProjectPage';
-export { EntityPageRollbar } from './components/EntityPageRollbar/EntityPageRollbar';
-export { ROLLBAR_ANNOTATION } from './constants';
+import { useApi, configApiRef } from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
+import { ROLLBAR_ANNOTATION } from '../constants';
+
+export function useProjectSlugFromEntity(entity: Entity) {
+  const configApi = useApi(configApiRef);
+
+  const [project, organization] = (
+    entity?.metadata?.annotations?.[ROLLBAR_ANNOTATION] ?? ''
+  )
+    .split('/')
+    .reverse();
+
+  return {
+    project,
+    organization:
+      organization ??
+      configApi.getOptionalString('rollbar.organization') ??
+      configApi.getString('organization.name'),
+  };
+}

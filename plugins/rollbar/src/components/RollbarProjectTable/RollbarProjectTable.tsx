@@ -15,68 +15,49 @@
  */
 
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { Table, TableColumn } from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
 import { Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { Table, TableColumn } from '@backstage/core';
-import { RollbarProject } from '../../api/types';
-
-const projectUrl = (org: string, id: number) =>
-  `https://rollbar.com/${org}/all/items/?projects=${id}`;
+import { entityRouteRef } from '../../routes';
 
 const columns: TableColumn[] = [
   {
-    title: 'ID',
-    field: 'id',
-    type: 'numeric',
-    align: 'left',
-    width: '100px',
-  },
-  {
     title: 'Name',
-    field: 'name',
+    field: 'metadata.name',
     type: 'string',
     highlight: true,
-    render: (row: Partial<RollbarProject>) => (
-      <Link component={RouterLink} to={`/rollbar/${row.name}`}>
-        {row.name}
-      </Link>
-    ),
-  },
-  {
-    title: 'Status',
-    field: 'status',
-    type: 'string',
-  },
-  {
-    title: 'Open',
-    width: '10%',
-    render: (row: any) => (
+    render: (entity: any) => (
       <Link
-        href={projectUrl(row.organization, row.id)}
-        target="_blank"
-        rel="noreferrer"
+        component={RouterLink}
+        to={generatePath(entityRouteRef.path, {
+          optionalNamespaceAndName: [
+            entity.metadata.namespace,
+            entity.metadata.name,
+          ]
+            .filter(Boolean)
+            .join(':'),
+          kind: entity.kind,
+        })}
       >
-        <OpenInNewIcon />
+        {entity.metadata.name}
       </Link>
     ),
+  },
+  {
+    title: 'Description',
+    field: 'metadata.description',
   },
 ];
 
 type Props = {
-  projects: RollbarProject[];
+  entities: Entity[];
   loading: boolean;
-  organization: string;
   error?: any;
 };
 
-export const RollbarProjectTable = ({
-  projects,
-  organization,
-  loading,
-  error,
-}: Props) => {
+export const RollbarProjectTable = ({ entities, loading, error }: Props) => {
   if (error) {
     return (
       <div>
@@ -92,14 +73,13 @@ export const RollbarProjectTable = ({
       isLoading={loading}
       columns={columns}
       options={{
-        padding: 'dense',
         search: true,
         paging: true,
         pageSize: 10,
         showEmptyDataSourceMessage: !loading,
       }}
       title="Projects"
-      data={projects.map(p => ({ organization, ...p }))}
+      data={entities}
     />
   );
 };

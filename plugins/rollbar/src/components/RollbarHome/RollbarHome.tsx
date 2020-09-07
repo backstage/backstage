@@ -14,42 +14,26 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
-import {
-  Header,
-  HeaderLabel,
-  Page,
-  pageTheme,
-  Content,
-  ContentHeader,
-  SupportButton,
-} from '@backstage/core';
-import { Grid } from '@material-ui/core';
+import React from 'react';
+import { Content, Header, Page, pageTheme } from '@backstage/core';
+import { RollbarProjectTable } from '../RollbarProjectTable/RollbarProjectTable';
+import { useRollbarEntities } from '../../hooks/useRollbarEntities';
 
-type Props = {
-  title?: string;
-  children: ReactNode;
-};
+export const RollbarHome = () => {
+  const { entities, loading, error } = useRollbarEntities();
 
-export const RollbarLayout = ({ title = 'Dashboard', children }: Props) => {
   return (
     <Page theme={pageTheme.tool}>
       <Header
         title="Rollbar"
         subtitle="Real-time error tracking & debugging tools for developers"
-      >
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
+      />
       <Content>
-        <ContentHeader title={title}>
-          <SupportButton>
-            Rollbar plugin allows you to preview issues and navigate to rollbar.
-          </SupportButton>
-        </ContentHeader>
-        <Grid container spacing={3} direction="column">
-          {children}
-        </Grid>
+        <RollbarProjectTable
+          entities={entities || []}
+          loading={loading}
+          error={error}
+        />
       </Content>
     </Page>
   );
