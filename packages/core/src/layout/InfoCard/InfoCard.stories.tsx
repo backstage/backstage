@@ -37,7 +37,7 @@ const text = (
 
 const Wrapper: FC<{}> = ({ children }) => (
   <Grid container spacing={4}>
-    <Grid item xs="4">
+    <Grid item xs={4}>
       {children}
     </Grid>
   </Grid>
