@@ -17,7 +17,6 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Reader } from './reader';
-// import { Content } from '@backstage/core';
 
 export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
   return (
