@@ -11,6 +11,8 @@ import { AppSidebar } from './sidebar';
 import { Route, Routes, Navigate } from 'react-router';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+import { Router as ExploreRouter } from '@backstage/plugin-explore';
+
 import { EntityPage } from './components/catalog/EntityPage';
 
 const app = createApp({
@@ -30,12 +32,13 @@ const App: FC<{}> = () => (
       <SidebarPage>
         <AppSidebar />
         <Routes>
+          <Navigate key="/" to="/catalog" />
           <Route
             path="/catalog/*"
             element={<CatalogRouter EntityPage={EntityPage} />}
           />
           <Route path="/docs/*" element={<DocsRouter />} />
-          <Navigate key="/" to="/catalog" />
+          <Route path="/explore/*" element={<ExploreRouter />} />
           {deprecatedAppRoutes}
         </Routes>
       </SidebarPage>
