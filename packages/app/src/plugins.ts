@@ -34,8 +34,5 @@ export { plugin as ApiDocs } from '@backstage/plugin-api-docs';
 export { plugin as GcpProjects } from '@backstage/plugin-gcp-projects';
 export { plugin as GithubPrs } from '@backstage/plugin-github-prs';
 export { plugin as Argocd } from '@backstage/plugin-argocd';
-<<<<<<< HEAD
-// export { plugin as GithubPullRequests } from '@roadiehq/backstage-plugin-github-pull-requests';
-=======
 export { plugin as Grafana } from '@backstage/plugin-grafana';
->>>>>>> First try
+// export { plugin as GithubPullRequests } from '@roadiehq/backstage-plugin-github-pull-requests';
