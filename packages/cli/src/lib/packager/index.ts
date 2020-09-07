@@ -15,10 +15,14 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, relative as relativePath } from 'path';
+import {
+  join as joinPath,
+  resolve as resolvePath,
+  relative as relativePath,
+} from 'path';
 import { paths } from '../paths';
 import { run } from '../run';
-import tar from 'tar';
+import tar, { CreateOptions } from 'tar';
 import { tmpdir } from 'os';
 
 type LernaPackage = {
@@ -53,6 +57,12 @@ type Options = {
    * If set to true, the target packages are built before they are packaged into the workspace.
    */
   buildDependencies?: boolean;
+
+  /**
+   * If set, creates a skeleton tarball that contains all package.json files
+   * with the same structure as the workspace dir.
+   */
+  skeleton?: 'skeleton.tar';
 };
 
 /**
@@ -89,6 +99,24 @@ export async function createDistWorkspace(
     const dest = typeof file === 'string' ? file : file.dest;
     await fs.copy(paths.resolveTargetRoot(src), resolvePath(targetDir, dest));
   }
+
+  if (options.skeleton) {
+    const skeletonFiles = targets.map(target => {
+      const dir = relativePath(paths.targetRoot, target.location);
+      return joinPath(dir, 'package.json');
+    });
+
+    await tar.create(
+      {
+        file: resolvePath(targetDir, options.skeleton),
+        cwd: targetDir,
+        portable: true,
+        noMtime: true,
+      } as CreateOptions & { noMtime: boolean },
+      skeletonFiles,
+    );
+  }
+
   return targetDir;
 }
 
