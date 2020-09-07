@@ -21,6 +21,7 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import os from 'os';
+import { Command } from 'commander';
 import {
   parseOwnerIds,
   addCodeownersEntry,
@@ -32,12 +33,12 @@ import { version as backstageVersion } from '../../lib/version';
 
 const exec = promisify(execCb);
 
-async function checkExists(rootDir: string, id: string) {
-  await Task.forItem('checking', id, async () => {
-    const destination = resolvePath(rootDir, 'plugins', id);
-
+async function checkExists(destination: string) {
+  await Task.forItem('checking', destination, async () => {
     if (await fs.pathExists(destination)) {
-      const existing = chalk.cyan(destination.replace(`${rootDir}/`, ''));
+      const existing = chalk.cyan(
+        destination.replace(`${paths.targetRoot}/`, ''),
+      );
       throw new Error(
         `A plugin with the same name already exists: ${existing}\nPlease try again with a different plugin ID`,
       );
@@ -88,8 +89,9 @@ export async function addPluginDependencyToApp(
   rootDir: string,
   pluginName: string,
   versionStr: string,
+  scopeNameWithSlash: string,
 ) {
-  const pluginPackage = `@backstage/plugin-${pluginName}`;
+  const pluginPackage = `${scopeNameWithSlash}plugin-${pluginName}`;
   const packageFilePath = 'packages/app/package.json';
   const packageFile = resolvePath(rootDir, packageFilePath);
 
@@ -116,8 +118,12 @@ export async function addPluginDependencyToApp(
   });
 }
 
-export async function addPluginToApp(rootDir: string, pluginName: string) {
-  const pluginPackage = `@backstage/plugin-${pluginName}`;
+export async function addPluginToApp(
+  rootDir: string,
+  pluginName: string,
+  scopeNameWithSlash: string,
+) {
+  const pluginPackage = `${scopeNameWithSlash}plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
     .split('-')
     .map(name => capitalize(name))
@@ -175,8 +181,12 @@ export async function movePlugin(
   });
 }
 
-export default async () => {
+export default async (cmd: Command) => {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
+  const scopeName = cmd.scope ? `@${cmd.scope.replace(/^@/, '')}` : '';
+  const scopeNameWithSlash = cmd.scope ? `${scopeName}/` : '';
+  const privatePackage = cmd.private === false ? false : true;
+  const registryURL = cmd.npmRegistry;
 
   const questions: Question[] = [
     {
@@ -225,16 +235,18 @@ export default async () => {
   const appPackage = paths.resolveTargetRoot('packages/app');
   const templateDir = paths.resolveOwn('templates/default-plugin');
   const tempDir = resolvePath(os.tmpdir(), answers.id);
-  const pluginDir = paths.resolveTargetRoot('plugins', answers.id);
+  const pluginDir = (await fs.pathExists(paths.resolveTargetRoot('plugins')))
+    ? paths.resolveTargetRoot('plugins', answers.id)
+    : paths.resolveTargetRoot(answers.id);
   const ownerIds = parseOwnerIds(answers.owner);
-  const { version } = await fs.readJson(paths.resolveTargetRoot('lerna.json'));
+  const version = backstageVersion;
 
   Task.log();
   Task.log('Creating the plugin...');
 
   try {
     Task.section('Checking if the plugin ID is available');
-    await checkExists(paths.targetRoot, answers.id);
+    await checkExists(pluginDir);
 
     Task.section('Creating a temporary plugin directory');
     await createTemporaryPluginFolder(tempDir);
@@ -244,6 +256,9 @@ export default async () => {
       ...answers,
       version,
       backstageVersion,
+      scopeName,
+      privatePackage,
+      registryURL,
     });
 
     Task.section('Moving to final location');
@@ -254,10 +269,15 @@ export default async () => {
 
     if (await fs.pathExists(appPackage)) {
       Task.section('Adding plugin as dependency in app');
-      await addPluginDependencyToApp(paths.targetRoot, answers.id, version);
+      await addPluginDependencyToApp(
+        paths.targetRoot,
+        answers.id,
+        version,
+        scopeNameWithSlash,
+      );
 
       Task.section('Import plugin in app');
-      await addPluginToApp(paths.targetRoot, answers.id);
+      await addPluginToApp(paths.targetRoot, answers.id, scopeNameWithSlash);
     }
 
     if (ownerIds && ownerIds.length) {
@@ -271,7 +291,7 @@ export default async () => {
     Task.log();
     Task.log(
       `🥇  Successfully created ${chalk.cyan(
-        `@backstage/plugin-${answers.id}`,
+        `${scopeNameWithSlash}plugin-${answers.id}`,
       )}`,
     );
     Task.log();

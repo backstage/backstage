@@ -19,6 +19,7 @@ import fs from 'fs-extra';
 import handlebars from 'handlebars';
 import ora from 'ora';
 import { basename, dirname } from 'path';
+import { paths } from './paths';
 import recursive from 'recursive-readdir';
 
 const TASK_NAME_MAX_LENGTH = 14;
@@ -73,6 +74,10 @@ export async function templatingTask(
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
 
+  const isMonoRepo = (await fs.pathExists(paths.resolveTargetRoot('plugins')))
+    ? true
+    : false;
+
   for (const file of files) {
     const destinationFile = file.replace(templateDir, destinationDir);
     await fs.ensureDir(dirname(destinationFile));
@@ -92,6 +97,8 @@ export async function templatingTask(
         });
       });
     } else {
+      if (isMonoRepo && basename(file) === 'tsconfig.json') continue;
+
       await Task.forItem('copying', basename(file), async () => {
         await fs.copyFile(file, destinationFile).catch(error => {
           const destination = destinationFile;
