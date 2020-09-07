@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import { PreparerBase, PreparerBuilder } from './types';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
+import { PublisherBase, PublisherBuilder } from './types';
 import { RemoteProtocol } from '../types';
 
-export class Preparers implements PreparerBuilder {
-  private preparerMap = new Map<RemoteProtocol, PreparerBase>();
+export class Publishers implements PublisherBuilder {
+  private publisherMap = new Map<RemoteProtocol, PublisherBase>();
 
-  register(protocol: RemoteProtocol, preparer: PreparerBase) {
-    this.preparerMap.set(protocol, preparer);
+  register(protocol: RemoteProtocol, publisher: PublisherBase) {
+    this.publisherMap.set(protocol, publisher);
   }
 
-  get(template: TemplateEntityV1alpha1): PreparerBase {
+  get(template: TemplateEntityV1alpha1): PublisherBase {
     const { protocol } = parseLocationAnnotation(template);
-    const preparer = this.preparerMap.get(protocol);
+    const publisher = this.publisherMap.get(protocol);
 
-    if (!preparer) {
-      throw new Error(`No preparer registered for type: "${protocol}"`);
+    if (!publisher) {
+      throw new Error(`No publisher registered for type: "${protocol}"`);
     }
 
-    return preparer;
+    return publisher;
   }
 }

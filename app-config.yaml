@@ -116,6 +116,12 @@ scaffolder:
       $secret:
         env: GITHUB_ACCESS_TOKEN
     visibility: public # or 'internal' or 'private'
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token:
+        $secret:
+          env: GITLAB_ACCESS_TOKEN
 
 auth:
   providers:

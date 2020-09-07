@@ -20,32 +20,54 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
+import GitUriParser from 'git-url-parse';
+import { Clone, Cred } from 'nodegit';
+import { Config } from '@backstage/config';
 
-export class FilePreparer implements PreparerBase {
+export class GitlabPreparer implements PreparerBase {
+  private readonly privateToken: string;
+
+  constructor(config: Config) {
+    this.privateToken =
+      config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
+      '';
+  }
+
   async prepare(template: TemplateEntityV1alpha1): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
 
-    if (protocol !== 'file') {
+    if (['gitlab', 'gitlab/api'].indexOf(protocol) < 0) {
       throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'file'`,
+        `Wrong location protocol: ${protocol}, should be 'gitlab' or 'gitlab/api'`,
       );
     }
     const templateId = template.metadata.name;
+
+    const parsedGitLocation = GitUriParser(location);
+    const repositoryCheckoutUrl = parsedGitLocation.toString('https');
 
     const tempDir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), templateId),
     );
 
-    const parentDirectory = path.resolve(
-      path.dirname(location),
+    const templateDirectory = path.join(
+      `${path.dirname(parsedGitLocation.filepath)}`,
       template.spec.path ?? '.',
     );
 
-    await fs.copy(parentDirectory, tempDir, {
-      filter: src => src !== location,
-      recursive: true,
-    });
+    const options = this.privateToken
+      ? {
+          fetchOpts: {
+            callbacks: {
+              credentials: () =>
+                Cred.userpassPlaintextNew('oauth2', this.privateToken),
+            },
+          },
+        }
+      : {};
 
-    return tempDir;
+    await Clone.clone(repositoryCheckoutUrl, tempDir, options);
+
+    return path.resolve(tempDir, templateDirectory);
   }
 }

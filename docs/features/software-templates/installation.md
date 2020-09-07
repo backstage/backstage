@@ -87,13 +87,17 @@ import {
   createRouter,
   FilePreparer,
   GithubPreparer,
+  GitlabPreparer,
   Preparers,
+  Publishers,
   GithubPublisher,
+  GitlabPublisher,
   CreateReactAppTemplater,
   Templaters,
   RepoVisilityOptions,
 } from '@backstage/plugin-scaffolder-backend';
 import { Octokit } from '@octokit/rest';
+import { Gitlab } from '@gitbeaker/node';
 import type { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
 
@@ -104,17 +108,20 @@ export default async function createPlugin({
   const cookiecutterTemplater = new CookieCutter();
   const craTemplater = new CreateReactAppTemplater();
   const templaters = new Templaters();
-  // Register default templaters
   templaters.register('cookiecutter', cookiecutterTemplater);
   templaters.register('cra', craTemplater);
 
   const filePreparer = new FilePreparer();
   const githubPreparer = new GithubPreparer();
+  const gitlabPreparer = new GitlabPreparer(config);
   const preparers = new Preparers();
 
-  // Register default preparers
   preparers.register('file', filePreparer);
   preparers.register('github', githubPreparer);
+  preparers.register('gitlab', gitlabPreparer);
+  preparers.register('gitlab/api', gitlabPreparer);
+
+  const publishers = new Publishers();
 
   const githubToken = config.getString('scaffolder.github.token');
   const repoVisibility = config.getString(
@@ -122,17 +129,32 @@ export default async function createPlugin({
   ) as RepoVisilityOptions;
 
   const githubClient = new Octokit({ auth: githubToken });
-  const publisher = new GithubPublisher({
+  const githubPublisher = new GithubPublisher({
     client: githubClient,
     token: githubToken,
     repoVisibility,
   });
+  publishers.register('file', githubPublisher);
+  publishers.register('github', githubPublisher);
+
+  const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
+
+  if (gitLabConfig) {
+    const gitLabToken = gitLabConfig.getString('token');
+    const gitLabClient = new Gitlab({
+      host: gitLabConfig.getOptionalString('baseUrl'),
+      token: gitLabToken,
+    });
+    const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
+    publishers.register('gitlab', gitLabPublisher);
+    publishers.register('gitlab/api', gitLabPublisher);
+  }
 
   const dockerClient = new Docker();
   return await createRouter({
     preparers,
     templaters,
-    publisher,
+    publishers,
     logger,
     dockerClient,
   });
@@ -179,7 +201,7 @@ catalog:
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
 ```
 
-### Runtime Dependencies
+### Runtime Dependencies / Configuration
 
 For the scaffolder backend plugin to function, it needs a GitHub access token,
 and access to a running Docker daemon. You can create a GitHub access token
@@ -189,9 +211,17 @@ docs on creating private GitHub access tokens is available
 Note that the need for private GitHub access tokens will be replaced with GitHub
 Apps integration further down the line.
 
+#### Github
+
 The Github access token is retrieved from environment variables via the config.
 The config file needs to specify what environment variable the token is
 retrieved from. Your config should have the following objects.
+
+#### Gitlab
+
+For Gitlab, we currently support the configuration of the GitLab publisher and
+allows to configure the private access token and the base URL of a GitLab
+instance:
 
 ```yaml
 scaffolder:
@@ -200,6 +230,12 @@ scaffolder:
       $secret:
         env: GITHUB_ACCESS_TOKEN
     visibility: public # or 'internal' or 'private'
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token:
+        $secret:
+          env: SCAFFOLDER_GITLAB_PRIVATE_TOKEN
 ```
 
 You can configure who can see the new repositories that the scaffolder creates
