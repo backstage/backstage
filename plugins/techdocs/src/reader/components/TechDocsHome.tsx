@@ -16,11 +16,12 @@
 
 import React from 'react';
 import { useAsync } from 'react-use';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, generatePath } from 'react-router-dom';
 import { Grid } from '@material-ui/core';
 import { ItemCard, Progress, useApi } from '@backstage/core';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { catalogApiRef } from '@backstage/plugin-catalog';
+import { rootDocsRouteRef } from '../../plugin';
 
 export const TechDocsHome = () => {
   const catalogApi = useApi(catalogApiRef);
@@ -67,9 +68,11 @@ export const TechDocsHome = () => {
                 <ItemCard
                   onClick={() =>
                     navigate(
-                      `/docs/${entity.kind}:${
-                        entity.metadata.namespace ?? ''
-                      }:${entity.metadata.name}`,
+                      generatePath(rootDocsRouteRef.path, {
+                        entityId: `${entity.kind}:${
+                          entity.metadata.namespace ?? ''
+                        }:${entity.metadata.name}`,
+                      }),
                     )
                   }
                   title={entity.metadata.name}
