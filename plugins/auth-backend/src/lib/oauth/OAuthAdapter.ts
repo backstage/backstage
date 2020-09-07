@@ -24,9 +24,9 @@ import {
 } from '../../providers/types';
 import { InputError } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity';
-import { verifyNonce, encodeState } from './helpers';
+import { verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
-import { OAuthHandlers } from './types';
+import { OAuthHandlers, OAuthStartRequest, OAuthRefreshRequest } from './types';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -86,15 +86,12 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce);
 
-    const stateObject = { nonce: nonce, env: env };
-    const stateParameter = encodeState(stateObject);
+    const state = { nonce: nonce, env: env };
+    const forwardReq = Object.assign(req, { scope, state });
 
-    const queryParameters = {
-      scope,
-      state: stateParameter,
-    };
-
-    const { url, status } = await this.handlers.start(req, queryParameters);
+    const { url, status } = await this.handlers.start(
+      forwardReq as OAuthStartRequest,
+    );
 
     res.statusCode = status || 302;
     res.setHeader('Location', url);
@@ -185,8 +182,12 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
       const scope = req.query.scope?.toString() ?? '';
 
+      const forwardReq = Object.assign(req, { scope, refreshToken });
+
       // get new access_token
-      const response = await this.handlers.refresh(refreshToken, scope);
+      const response = await this.handlers.refresh(
+        forwardReq as OAuthRefreshRequest,
+      );
 
       await this.populateIdentity(response.backstageIdentity);
 

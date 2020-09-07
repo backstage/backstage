@@ -48,6 +48,11 @@ type Options = {
    * Defaults to ['yarn.lock', 'package.json'].
    */
   files?: FileEntry[];
+
+  /**
+   * If set to true, the target packages are built before they are packaged into the workspace.
+   */
+  buildDependencies?: boolean;
 };
 
 /**
@@ -67,6 +72,13 @@ export async function createDistWorkspace(
     (await fs.mkdtemp(resolvePath(tmpdir(), 'dist-workspace')));
 
   const targets = await findTargetPackages(packageNames);
+
+  if (options.buildDependencies) {
+    const scopeArgs = targets.flatMap(target => ['--scope', target.name]);
+    await run('yarn', ['lerna', 'run', ...scopeArgs, 'build'], {
+      cwd: paths.targetRoot,
+    });
+  }
 
   await moveToDistWorkspace(targetDir, targets);
 

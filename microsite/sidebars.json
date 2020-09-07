@@ -92,7 +92,11 @@
       {
         "type": "subcategory",
         "label": "Publishing",
-        "ids": ["plugins/publishing", "plugins/publish-private", "plugins/add-to-marketplace"]
+        "ids": [
+          "plugins/publishing",
+          "plugins/publish-private",
+          "plugins/add-to-marketplace"
+        ]
       }
     ],
     "Configuration": [

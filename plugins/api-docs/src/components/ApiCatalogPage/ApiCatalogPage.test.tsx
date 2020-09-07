@@ -16,7 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry, storageApiRef } from '@backstage/core';
-// TODO: Circular ref!
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
