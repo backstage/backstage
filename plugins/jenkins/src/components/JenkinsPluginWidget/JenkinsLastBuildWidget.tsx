@@ -68,7 +68,7 @@ export const JenkinsLastBuildWidget = ({
   branch: string;
 }) => {
   const [owner, repo] = (
-    entity?.metadata.annotations?.['backstage.io/jenkins-github-folder'] ?? '/'
+    entity?.metadata.annotations?.['jenkins.io/github-folder'] ?? '/'
   ).split('/');
   const [{ loading, value }] = useBuilds(owner, repo, branch);
 

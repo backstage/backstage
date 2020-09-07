@@ -63,7 +63,7 @@ metadata:
   name: 'your-component'
   description: 'a description'
   annotations:
-    backstage.io/jenkins-github-folder: 'folder-name/job-name'
+    jenkins.io/github-folder: 'folder-name/job-name'
 spec:
   type: service
   lifecycle: experimental

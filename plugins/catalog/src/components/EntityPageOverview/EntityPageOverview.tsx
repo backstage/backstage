@@ -36,16 +36,12 @@ export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
         <Grid item sm={4}>
           <AboutCard entity={entity} />
         </Grid>
-        {entity.metadata?.annotations?.[
-          'backstage.io/jenkins-github-folder'
-        ] && (
+        {entity.metadata?.annotations?.['jenkins.io/github-folder'] && (
           <Grid item sm={4}>
             <JenkinsLastBuildWidget entity={entity} branch="master" />
           </Grid>
         )}
-        {entity.metadata?.annotations?.[
-          'backstage.io/jenkins-github-folder'
-        ] && (
+        {entity.metadata?.annotations?.['jenkins.io/github-folder'] && (
           <Grid item sm={8}>
             <JenkinsBuildsWidget entity={entity} />
           </Grid>

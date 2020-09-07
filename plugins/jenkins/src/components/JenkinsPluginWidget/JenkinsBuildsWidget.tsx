@@ -20,7 +20,7 @@ import { Entity } from '@backstage/catalog-model';
 
 export const JenkinsBuildsWidget = ({ entity }: { entity: Entity }) => {
   const [owner, repo] = (
-    entity?.metadata.annotations?.['backstage.io/jenkins-github-folder'] ?? '/'
+    entity?.metadata.annotations?.['jenkins.io/github-folder'] ?? '/'
   ).split('/');
 
   return <Builds owner={owner} repo={repo} />;
