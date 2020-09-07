@@ -1,7 +1,7 @@
 ---
 id: software-catalog-overview
 title: Backstage Service Catalog (alpha)
-sidebar_label: Backstage Service Catalog
+sidebar_label: Overview
 ---
 
 ## What is a Service Catalog?

@@ -31,7 +31,7 @@
         ]
       }
     ],
-    "Features": [
+    "Core Features": [
       {
         "type": "subcategory",
         "label": "Software Catalog",
@@ -46,7 +46,7 @@
       },
       {
         "type": "subcategory",
-        "label": "Software creation templates",
+        "label": "Software Templates",
         "ids": [
           "features/software-templates/software-templates-index",
           "features/software-templates/adding-templates",
