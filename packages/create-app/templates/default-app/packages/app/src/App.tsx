@@ -10,6 +10,7 @@ import * as plugins from './plugins';
 import { AppSidebar } from './sidebar';
 import { Route, Routes, Navigate } from 'react-router';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { EntityPage } from './components/catalog/EntityPage';
 
 const app = createApp({
@@ -33,6 +34,7 @@ const App: FC<{}> = () => (
             path="/catalog/*"
             element={<CatalogRouter EntityPage={EntityPage} />}
           />
+          <Route path="/docs/*" element={<DocsRouter />} />
           <Navigate key="/" to="/catalog" />
           {deprecatedAppRoutes}
         </Routes>
