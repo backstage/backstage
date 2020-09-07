@@ -1,6 +1,7 @@
 ---
 id: software-templates-index
-title: Software Templates
+title: Backstage Software Templates
+sidebar_label: Overview
 ---
 
 The Software Templates part of Backstage is a tool that can help you create
