@@ -17,7 +17,6 @@ import React, { FC } from 'react';
 import { InfoCard } from '.';
 import { Grid, Typography } from '@material-ui/core';
 
-const cardContentStyle = { height: 200, width: 500 };
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export default {
@@ -38,22 +37,22 @@ const text = (
 
 const Wrapper: FC<{}> = ({ children }) => (
   <Grid container spacing={4}>
-    <Grid item>{children}</Grid>
+    <Grid item xs="4">
+      {children}
+    </Grid>
   </Grid>
 );
 
 export const Default = () => (
   <Wrapper>
-    <InfoCard title="Information Card">
-      <div style={cardContentStyle}>{text}</div>
-    </InfoCard>
+    <InfoCard title="Information Card">{text}</InfoCard>
   </Wrapper>
 );
 
 export const Subhead = () => (
   <Wrapper>
     <InfoCard title="Information Card" subheader="Subheader">
-      <div style={cardContentStyle}>{text}</div>
+      {text}
     </InfoCard>
   </Wrapper>
 );
@@ -61,7 +60,7 @@ export const Subhead = () => (
 export const LinkInFooter = () => (
   <Wrapper>
     <InfoCard title="Information Card" deepLink={linkInfo}>
-      <div style={cardContentStyle}>{text}</div>
+      {text}
     </InfoCard>
   </Wrapper>
 );
