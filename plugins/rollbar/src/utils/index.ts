@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Sparklines, SparklinesBars } from 'react-sparklines';
+export const buildProjectUrl = (org: string, id: number) =>
+  `https://rollbar.com/${org}/all/items/?projects=${id}`;
 
-type Props = {
-  counts: number[];
-};
-
-export const RollbarTrendGraph = ({ counts }: Props) => {
-  return (
-    <Sparklines data={counts} svgHeight={48} min={0} margin={4}>
-      <SparklinesBars barWidth={2} />
-    </Sparklines>
-  );
-};
+export const buildItemUrl = (org: string, project: string, id: number) =>
+  `https://rollbar.com/${org}/${project}/items/${id}`;

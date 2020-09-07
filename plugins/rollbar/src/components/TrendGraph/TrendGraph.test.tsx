@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './api';
-export * from './routes';
-export { Router } from './components/Router';
-export { RollbarProjectPage } from './components/RollbarProjectPage/RollbarProjectPage';
-export { EntityPageRollbar } from './components/EntityPageRollbar/EntityPageRollbar';
-export { ROLLBAR_ANNOTATION } from './constants';
+import React from 'react';
+import { render } from '@testing-library/react';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { TrendGraph } from './TrendGraph';
+
+describe('TrendGraph component', () => {
+  it('should render a trend graph sparkline', async () => {
+    const mockCounts = [1, 2, 3, 4];
+    const rendered = render(
+      wrapInTestApp(<TrendGraph counts={mockCounts} data-testid="graph" />),
+    );
+    expect(rendered).toBeTruthy();
+  });
+});

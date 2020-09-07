@@ -14,10 +14,5 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './api';
-export * from './routes';
-export { Router } from './components/Router';
-export { RollbarProjectPage } from './components/RollbarProjectPage/RollbarProjectPage';
-export { EntityPageRollbar } from './components/EntityPageRollbar/EntityPageRollbar';
-export { ROLLBAR_ANNOTATION } from './constants';
+export * from './RollbarApi';
+export * from './RollbarClient';

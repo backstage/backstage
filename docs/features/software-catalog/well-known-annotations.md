@@ -100,6 +100,24 @@ the same for all entities in the catalog.
 Specifying this annotation may enable Sentry related features in Backstage for
 that entity.
 
+### rollbar.com/project-slug
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    rollbar.com/project-slug: spotify/pump-station
+```
+
+The value of this annotation is the so-called slug (or alternatively, the ID) of
+a [Rollbar](https://rollbar.com) project within your organization. The value can
+be the format of `[organization]/[project-slug]` or just `[project-slug]`. When
+the organization slug is omitted the `app-config.yaml` will be used as a
+fallback (`rollbar.organization` followed by `organization.name`).
+
+Specifying this annotation may enable Rollbar related features in Backstage for
+that entity.
+
 ## Deprecated Annotations
 
 The following annotations are deprecated, and only listed here to aid in
