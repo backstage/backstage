@@ -34,7 +34,7 @@ export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
         <iframe
           title="grafana"
           src={entity?.metadata.annotations?.['grafana/graf-top']}
-          height="50%"
+          height="500px"
           width="100%"
           frameBorder="1"
         />
@@ -43,7 +43,7 @@ export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
         <iframe
           title="grafana"
           src={entity?.metadata.annotations?.['grafana/graf-bottom']}
-          height="50%"
+          height="500px"
           width="100%"
           frameBorder="1"
         />

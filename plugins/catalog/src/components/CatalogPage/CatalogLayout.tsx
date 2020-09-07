@@ -31,12 +31,13 @@ type Props = {
 
 const CatalogLayout = ({ children }: Props) => {
   const greeting = getTimeBasedGreeting();
+  const userName = useApi(identityApiRef).getProfile();
   const userId = useApi(identityApiRef).getUserId();
 
   return (
     <Page theme={pageTheme.home}>
       <Header
-        title={`${greeting.greeting}, ${userId}!`}
+        title={`${greeting.greeting}, ${userName.displayName || userId}!`}
         subtitle="Backstage Service Catalog"
         pageTitleOverride="Home"
       >
