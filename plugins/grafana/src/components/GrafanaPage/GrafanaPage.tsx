@@ -28,6 +28,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 
 export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
+  const middleHeight = innerHeight / 2;
   return (
     <Grid container spacing={3} direction="column">
       {entity?.metadata?.annotations?.['grafana/graf-top'] && (
@@ -35,7 +36,7 @@ export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
           <iframe
             title="grafana"
             src={entity?.metadata.annotations?.['grafana/graf-top']}
-            height="500px"
+            height={middleHeight}
             width="100%"
             frameBorder="1"
           />
@@ -46,7 +47,7 @@ export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
           <iframe
             title="grafana"
             src={entity?.metadata.annotations?.['grafana/graf-bottom']}
-            height="500px"
+            height={middleHeight}
             width="100%"
             frameBorder="1"
           />
