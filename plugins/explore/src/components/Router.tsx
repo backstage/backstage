@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
+import React from 'react';
+import { Route, Routes } from 'react-router';
+import { ExplorePluginPage } from './ExplorePluginPage';
+import { rootRouteRef } from '../plugin';
 
-export const rootRouteRef = createRouteRef({ path: '', title: 'Explore' });
-export const plugin = createPlugin({
-  id: 'explore',
-});
+export const Router = () => (
+  <Routes>
+    <Route path={`/${rootRouteRef.path}`} element={<ExplorePluginPage />} />
+  </Routes>
+);

@@ -56,6 +56,7 @@ const deprecatedAppRoutes = app.getRoutes();
 
 const AppRoutes = () => (
   <Routes>
+    <Navigate key="/" to="/catalog" />
     <Route
       path="/catalog/*"
       element={<CatalogRouter EntityPage={EntityPage} />}
@@ -65,7 +66,6 @@ const AppRoutes = () => (
       path="/tech-radar"
       element={<TechRadarRouter width={1500} height={800} />}
     />
-    <Navigate key="/" to="/catalog" />
     {...deprecatedAppRoutes}
   </Routes>
 );
