@@ -85,8 +85,8 @@ Click [here](https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMe
 - Give the app a name. e.g. `backstage-dev`
 - Select `Accounts in this organizational directory only` under supported account types.
 - Enter the callback URL for your backstage backend instance:
-   - For local development, this is likely `http://localhost:7000/auth/microsoft/handler/frame`
-   - For non-local deployments, this will be `https://{APP_FQDN}:{APP_BACKEND_PORT}/auth/microsoft/handler/frame`
+  - For local development, this is likely `http://localhost:7000/auth/microsoft/handler/frame`
+  - For non-local deployments, this will be `https://{APP_FQDN}:{APP_BACKEND_PORT}/auth/microsoft/handler/frame`
 - Click `Register`.
 
 We also need to generate a client secret so Backstage can authenticate as this app.

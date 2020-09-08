@@ -14,46 +14,48 @@
  * limitations under the License.
  */
 
-const pathExists = jest.fn();
-
-jest.mock('fs-extra', () => ({ pathExists }));
-
+import mockFs from 'mock-fs';
 import { resolveStaticConfig } from './resolver';
+
+function normalizePaths(paths: string[]) {
+  return paths.map(p =>
+    p
+      .replace(/^[a-z]:/i, '')
+      .split('\\')
+      .join('/'),
+  );
+}
 
 describe('resolveStaticConfig', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    mockFs.restore();
   });
 
   it('should resolve no files for empty roots', async () => {
+    mockFs({});
     const resolved = await resolveStaticConfig({
       env: 'development',
       rootPaths: [],
     });
 
-    expect(resolved).toEqual([]);
-    expect(pathExists).not.toHaveBeenCalled();
+    expect(normalizePaths(resolved)).toEqual([]);
   });
 
   it('should resolve a single app-config', async () => {
-    pathExists.mockImplementation(async (path: string) =>
-      ['/repo/app-config.yaml'].includes(path),
-    );
+    mockFs({ '/repo/app-config.yaml': '' });
     const resolved = await resolveStaticConfig({
       env: 'development',
       rootPaths: ['/repo'],
     });
 
-    expect(resolved).toEqual(['/repo/app-config.yaml']);
-    expect(pathExists).toHaveBeenCalledTimes(4);
+    expect(normalizePaths(resolved)).toEqual(['/repo/app-config.yaml']);
   });
 
   it('should resolve a app-configs in different directories', async () => {
-    pathExists.mockImplementation(async (path: string) =>
-      ['/repo/app-config.yaml', '/repo/packages/a/app-config.yaml'].includes(
-        path,
-      ),
-    );
+    mockFs({
+      '/repo/app-config.yaml': '',
+      '/repo/packages/a/app-config.yaml': '',
+    });
     const resolved = await resolveStaticConfig({
       env: 'development',
       rootPaths: [
@@ -64,53 +66,54 @@ describe('resolveStaticConfig', () => {
       ],
     });
 
-    expect(resolved).toEqual([
+    expect(normalizePaths(resolved)).toEqual([
       '/repo/app-config.yaml',
       '/repo/packages/a/app-config.yaml',
     ]);
-    expect(pathExists).toHaveBeenCalledTimes(16);
   });
 
   it('should resolve env and local configs', async () => {
-    pathExists.mockImplementation(async (path: string) =>
-      [
-        '/repo/app-config.yaml',
-        '/repo/app-config.local.yaml',
-        '/repo/app-config.production.yaml',
-        '/repo/app-config.production.local.yaml',
-        '/repo/app-config.development.local.yaml',
-        '/repo/packages/a/app-config.development.yaml',
-        '/repo/packages/a/app-config.local.yaml',
-      ].includes(path),
-    );
+    mockFs({
+      '/repo/app-config.yaml': '',
+      '/repo/app-config.local.yaml': '',
+      '/repo/app-config.production.yaml': '',
+      '/repo/app-config.production.local.yaml': '',
+      '/repo/app-config.development.local.yaml': '',
+      '/repo/packages/a/app-config.development.yaml': '',
+      '/repo/packages/a/app-config.local.yaml': '',
+    });
     const resolved = await resolveStaticConfig({
       env: 'development',
       rootPaths: ['/repo', '/repo/packages/a'],
     });
 
-    expect(resolved).toEqual([
+    expect(normalizePaths(resolved)).toEqual([
       '/repo/app-config.yaml',
       '/repo/app-config.local.yaml',
       '/repo/app-config.development.local.yaml',
       '/repo/packages/a/app-config.local.yaml',
       '/repo/packages/a/app-config.development.yaml',
     ]);
-    expect(pathExists).toHaveBeenCalledTimes(8);
   });
 
   it('resolves suffixed configs in the correct order', async () => {
-    pathExists.mockImplementation(async () => true);
+    mockFs({
+      '/repo/app-config.yaml': '',
+      '/repo/app-config.local.yaml': '',
+      '/repo/app-config.production.yaml': '',
+      '/repo/app-config.production.local.yaml': '',
+    });
+
     const resolved = await resolveStaticConfig({
       env: 'production',
       rootPaths: ['/repo'],
     });
 
-    expect(resolved).toEqual([
+    expect(normalizePaths(resolved)).toEqual([
       '/repo/app-config.yaml',
       '/repo/app-config.local.yaml',
       '/repo/app-config.production.yaml',
       '/repo/app-config.production.local.yaml',
     ]);
-    expect(pathExists).toHaveBeenCalledTimes(4);
   });
 });

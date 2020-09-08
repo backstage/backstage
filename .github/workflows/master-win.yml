@@ -39,7 +39,22 @@ jobs:
         run: yarn install --frozen-lockfile
       # End of yarn setup
 
+      - name: lint
+        run: yarn lerna -- run lint
 
-# Tests are broken on Windows, disabled for now
-      # - name: test
-      #   run: yarn lerna -- run test
+      - name: type checking and declarations
+        run: yarn tsc:full
+
+      - name: verify type dependencies
+        run: yarn lint:type-deps
+
+      - name: test
+        run: yarn lerna -- run test
+
+      - name: Discord notification
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0.2.0
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: 'Windows master build failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'

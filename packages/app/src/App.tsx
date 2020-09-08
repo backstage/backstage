@@ -27,6 +27,8 @@ import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Route, Routes, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
@@ -54,11 +56,16 @@ const deprecatedAppRoutes = app.getRoutes();
 
 const AppRoutes = () => (
   <Routes>
+    <Navigate key="/" to="/catalog" />
     <Route
       path="/catalog/*"
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
-    <Navigate key="/" to="/catalog" />
+    <Route path="/docs/*" element={<DocsRouter />} />
+    <Route
+      path="/tech-radar"
+      element={<TechRadarRouter width={1500} height={800} />}
+    />
     {...deprecatedAppRoutes}
   </Routes>
 );

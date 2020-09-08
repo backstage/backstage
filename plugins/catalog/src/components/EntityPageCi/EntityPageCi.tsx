@@ -17,7 +17,10 @@
 // TODO(shmidt-i): move to the app
 import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
-import { LatestWorkflowsForBranchCard } from '@backstage/plugin-github-actions';
+import {
+  LatestWorkflowsForBranchCard,
+  GITHUB_ACTIONS_ANNOTATION,
+} from '@backstage/plugin-github-actions';
 import { Grid } from '@material-ui/core';
 import React, { FC } from 'react';
 
@@ -25,7 +28,7 @@ export const EntityPageCi: FC<{ entity: Entity }> = ({ entity }) => {
   return (
     <Content>
       <Grid container spacing={3}>
-        {entity.metadata?.annotations?.['backstage.io/github-actions-id'] && (
+        {entity.metadata?.annotations?.[GITHUB_ACTIONS_ANNOTATION] && (
           <Grid item sm={12}>
             <LatestWorkflowsForBranchCard entity={entity} branch="master" />
           </Grid>

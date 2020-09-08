@@ -51,8 +51,6 @@ import {
   LighthouseRestApi,
 } from '@backstage/plugin-lighthouse';
 
-import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
-
 import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
 import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 
@@ -68,6 +66,7 @@ import {
 } from '@backstage/plugin-techdocs';
 
 import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
+import { GCPClient, GCPApiRef } from '@backstage/plugin-gcp-projects';
 import {
   GithubActionsClient,
   githubActionsApiRef,
@@ -103,6 +102,7 @@ export const apis = (config: ConfigApi) => {
   );
 
   builder.add(storageApiRef, WebStorage.create({ errorApi }));
+  builder.add(GCPApiRef, new GCPClient());
   builder.add(
     circleCIApiRef,
     new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
@@ -177,14 +177,6 @@ export const apis = (config: ConfigApi) => {
     OAuth2.create({
       discoveryApi,
       oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    techRadarApiRef,
-    new TechRadar({
-      width: 1500,
-      height: 800,
     }),
   );
 

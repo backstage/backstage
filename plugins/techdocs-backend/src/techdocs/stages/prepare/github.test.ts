@@ -18,6 +18,13 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { GithubPreparer } from './github';
 import { checkoutGithubRepository } from './helpers';
 
+function normalizePath(path: string) {
+  return path
+    .replace(/^[a-z]:/i, '')
+    .split('\\')
+    .join('/');
+}
+
 jest.mock('./helpers', () => ({
   ...jest.requireActual<{}>('./helpers'),
   checkoutGithubRepository: jest.fn(
@@ -51,7 +58,7 @@ describe('github preparer', () => {
 
     const tempDocsPath = await preparer.prepare(mockEntity);
     expect(checkoutGithubRepository).toHaveBeenCalledTimes(1);
-    expect(tempDocsPath).toEqual(
+    expect(normalizePath(tempDocsPath)).toEqual(
       '/tmp/backstage-repo/org/name/branch/plugins/techdocs-backend/examples/documented-component',
     );
   });

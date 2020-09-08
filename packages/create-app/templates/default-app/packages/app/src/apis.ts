@@ -29,8 +29,6 @@ import {
   TechDocsStorageApi,
 } from '@backstage/plugin-techdocs';
 
-import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
-
 import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
 
@@ -71,14 +69,6 @@ export const apis = (config: ConfigApi) => {
   );
 
   builder.add(scaffolderApiRef, new ScaffolderApi({ discoveryApi }));
-
-  builder.add(
-    techRadarApiRef,
-    new TechRadar({
-      width: 1500,
-      height: 800,
-    }),
-  );
 
   builder.add(
     techdocsStorageApiRef,

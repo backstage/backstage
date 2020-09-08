@@ -26,6 +26,7 @@ import { render } from '@testing-library/react';
 import { RollbarApi, rollbarApiRef } from '../../api/RollbarApi';
 import { RollbarTopActiveItem } from '../../api/types';
 import { RollbarProjectPage } from './RollbarProjectPage';
+import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog';
 
 describe('RollbarProjectPage component', () => {
   const items: RollbarTopActiveItem[] = [
@@ -60,6 +61,17 @@ describe('RollbarProjectPage component', () => {
           apis={ApiRegistry.from([
             [rollbarApiRef, rollbarApi],
             [configApiRef, config],
+            [
+              catalogApiRef,
+              ({
+                async getEntityByName() {
+                  return {
+                    metadata: { name: 'foo' },
+                    spec: { owner: 'bar', lifecycle: 'experimental' },
+                  } as any;
+                },
+              } as Partial<CatalogApi>) as CatalogApi,
+            ],
           ])}
         >
           {children}
@@ -69,6 +81,6 @@ describe('RollbarProjectPage component', () => {
 
   it('should render rollbar project page', async () => {
     const rendered = renderWrapped(<RollbarProjectPage />);
-    expect(rendered.getByText(/Top Active Items/)).toBeInTheDocument();
+    expect(rendered.getByText(/Rollbar/)).toBeInTheDocument();
   });
 });

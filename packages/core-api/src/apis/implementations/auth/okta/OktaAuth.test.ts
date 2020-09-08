@@ -23,7 +23,7 @@ const PREFIX = 'okta.';
 describe('OktaAuth', () => {
   it('should get refreshed access token', async () => {
     const getSession = jest.fn().mockResolvedValue({
-        providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
+      providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
     });
     const oktaAuth = new OktaAuth({ getSession } as any);
 
@@ -116,7 +116,10 @@ describe('OktaAuth', () => {
     ['profile email', ['profile', 'email']],
     [`${PREFIX}groups.manage`, [`${PREFIX}groups.manage`]],
     ['groups.read', [`${PREFIX}groups.read`]],
-    [`${PREFIX}groups.manage groups.read, openid`, [`${PREFIX}groups.manage`, `${PREFIX}groups.read`, 'openid']],
+    [
+      `${PREFIX}groups.manage groups.read, openid`,
+      [`${PREFIX}groups.manage`, `${PREFIX}groups.read`, 'openid'],
+    ],
     [`email\t ${PREFIX}groups.read`, ['email', `${PREFIX}groups.read`]],
 
     // Some incorrect scopes that we don't try to fix
@@ -126,4 +129,4 @@ describe('OktaAuth', () => {
   ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
     expect(OktaAuth.normalizeScopes(scope)).toEqual(new Set(scopes));
   });
-}); 
+});
