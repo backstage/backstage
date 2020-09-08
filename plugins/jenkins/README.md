@@ -14,17 +14,7 @@ Website: [https://jenkins.io/](https://jenkins.io/)
 yarn add @backstage/plugin-jenkins
 ```
 
-2. Add plugin API to your Backstage instance:
-
-```js
-// packages/app/src/api.ts
-import { JenkinsApi, jenkinsApiRef } from '@backstage/plugin-jenkins';
-
-const builder = ApiRegistry.builder();
-builder.add(jenkinsApiRef, new JenkinsApi(`${backendUrl}/proxy/jenkins/api`));
-```
-
-2. Add plugin itself:
+2. Add plugin:
 
 ```js
 // packages/app/src/plugins.ts

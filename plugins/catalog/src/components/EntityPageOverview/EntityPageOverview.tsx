@@ -21,10 +21,6 @@ import {
   LatestWorkflowRunCard,
   GITHUB_ACTIONS_ANNOTATION,
 } from '@backstage/plugin-github-actions';
-import {
-  JenkinsBuildsWidget,
-  JenkinsLastBuildWidget,
-} from '@backstage/plugin-jenkins';
 import { Grid } from '@material-ui/core';
 import React, { FC } from 'react';
 import { AboutCard } from '../AboutCard';
@@ -36,16 +32,6 @@ export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
         <Grid item sm={4}>
           <AboutCard entity={entity} />
         </Grid>
-        {entity.metadata?.annotations?.['jenkins.io/github-folder'] && (
-          <Grid item sm={4}>
-            <JenkinsLastBuildWidget entity={entity} branch="master" />
-          </Grid>
-        )}
-        {entity.metadata?.annotations?.['jenkins.io/github-folder'] && (
-          <Grid item sm={8}>
-            <JenkinsBuildsWidget entity={entity} />
-          </Grid>
-        )}
         {entity.metadata?.annotations?.[GITHUB_ACTIONS_ANNOTATION] && (
           <Grid item sm={3}>
             <LatestWorkflowRunCard entity={entity} branch="master" />

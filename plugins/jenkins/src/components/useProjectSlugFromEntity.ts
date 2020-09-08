@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useEntity } from '@backstage/plugin-catalog';
+import { JENKINS_ANNOTATION } from '../constants';
 
-import React from 'react';
-import { Builds } from '../../pages/BuildsPage/lib/Builds';
-import { Entity } from '@backstage/catalog-model';
+export const useProjectSlugFromEntity = () => {
+  const { entity } = useEntity();
 
-export const JenkinsBuildsWidget = ({ entity }: { entity: Entity }) => {
   const [owner, repo] = (
-    entity?.metadata.annotations?.['jenkins.io/github-folder'] ?? '/'
+    entity.metadata.annotations?.[JENKINS_ANNOTATION] ?? ''
   ).split('/');
-
-  return <Builds owner={owner} repo={repo} />;
+  return { owner, repo };
 };

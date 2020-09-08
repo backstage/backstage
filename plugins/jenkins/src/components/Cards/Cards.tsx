@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Entity } from '@backstage/catalog-model';
 import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
-import { useBuilds } from '../../state';
-import { JenkinsRunStatus } from '../../pages/BuildsPage/lib/Status';
+import { useBuilds } from '../useBuilds';
+import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
+import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {
@@ -38,6 +38,7 @@ const WidgetContent = ({
 }) => {
   const classes = useStyles();
   if (loading || !lastRun) return <LinearProgress />;
+
   return (
     <StructuredMetadataTable
       metadata={{
@@ -60,20 +61,10 @@ const WidgetContent = ({
   );
 };
 
-export const JenkinsLastBuildWidget = ({
-  entity,
-  branch = 'master',
-}: {
-  entity: Entity;
-  branch: string;
-}) => {
-  const [owner, repo] = (
-    entity?.metadata.annotations?.['jenkins.io/github-folder'] ?? '/'
-  ).split('/');
-  const [{ loading, value }] = useBuilds(owner, repo, branch);
-
-  const lastRun = value ?? {};
-
+export const LatestRunCard = ({ branch = 'master' }: { branch: string }) => {
+  const { owner, repo } = useProjectSlugFromEntity();
+  const [{ builds, loading }] = useBuilds(owner, repo, branch);
+  const lastRun = builds ?? {};
   return (
     <InfoCard title={`Last ${branch} build`}>
       <WidgetContent loading={loading} branch={branch} lastRun={lastRun} />
