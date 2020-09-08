@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { ApiTestRegistry } from '@backstage/core-api';
-import { MockErrorApi, MockStorageApi } from './apis';
+import React from 'react';
+import { Route, Routes } from 'react-router';
+import { ExplorePluginPage } from './ExplorePluginPage';
+import { rootRouteRef } from '../plugin';
 
-export function createMockApiRegistry(): ApiTestRegistry {
-  const registry = new ApiTestRegistry();
-
-  registry.register(MockErrorApi.factory);
-  registry.register(MockStorageApi.factory);
-
-  return registry;
-}
+export const Router = () => (
+  <Routes>
+    <Route path={`/${rootRouteRef.path}`} element={<ExplorePluginPage />} />
+  </Routes>
+);

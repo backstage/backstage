@@ -15,36 +15,52 @@
  */
 
 import { ApiRef } from './ApiRef';
-import { TypesToApiRefs, AnyApiRef, ApiHolder, ApiFactory } from './types';
+import {
+  ApiHolder,
+  ApiFactoryHolder,
+  AnyApiRef,
+  TypesToApiRefs,
+} from './types';
 
-export class ApiTestRegistry implements ApiHolder {
+export class ApiResolver implements ApiHolder {
   private readonly apis = new Map<AnyApiRef, unknown>();
-  private factories = new Map<
-    AnyApiRef,
-    ApiFactory<unknown, unknown, unknown>
-  >();
-  private savedFactories = new Map<
-    AnyApiRef,
-    ApiFactory<unknown, unknown, unknown>
-  >();
+
+  /**
+   * Validate factories by making sure that each of the apis can be created
+   * without hitting any circular dependencies.
+   */
+  static validateFactories(
+    factories: ApiFactoryHolder,
+    apis: Iterable<AnyApiRef>,
+  ) {
+    for (const api of apis) {
+      const heap = [api];
+      const allDeps = new Set<AnyApiRef>();
+
+      while (heap.length) {
+        const apiRef = heap.shift()!;
+        const factory = factories.get(apiRef);
+        if (!factory) {
+          continue;
+        }
+
+        for (const dep of Object.values(factory.deps)) {
+          if (dep === api) {
+            throw new Error(`Circular dependency of api factory for ${api}`);
+          }
+          if (!allDeps.has(dep)) {
+            allDeps.add(dep);
+            heap.push(dep);
+          }
+        }
+      }
+    }
+  }
+
+  constructor(private readonly factories: ApiFactoryHolder) {}
 
   get<T>(ref: ApiRef<T>): T | undefined {
     return this.load(ref);
-  }
-
-  register<A, I, D>(factory: ApiFactory<A, I, D>): ApiTestRegistry {
-    this.factories.set(factory.implements, factory);
-    return this;
-  }
-
-  reset() {
-    this.factories = this.savedFactories;
-    this.apis.clear();
-  }
-
-  save(): ApiTestRegistry {
-    this.savedFactories = new Map(this.factories);
-    return this;
   }
 
   private load<T>(ref: ApiRef<T>, loading: AnyApiRef[] = []): T | undefined {
@@ -58,16 +74,11 @@ export class ApiTestRegistry implements ApiHolder {
       return undefined;
     }
 
-    if (loading.includes(factory.implements)) {
-      throw new Error(
-        `Circular dependency of api factory for ${factory.implements}`,
-      );
+    if (loading.includes(factory.api)) {
+      throw new Error(`Circular dependency of api factory for ${factory.api}`);
     }
 
-    const deps = this.loadDeps(ref, factory.deps, [
-      ...loading,
-      factory.implements,
-    ]);
+    const deps = this.loadDeps(ref, factory.deps, [...loading, factory.api]);
     const api = factory.factory(deps);
     this.apis.set(ref, api);
     return api as T;

@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-import * as apiFactories from './apiFactories';
-import { ApiTestRegistry, ApiFactory } from '@backstage/core';
+import {
+  storageApiRef,
+  errorApiRef,
+  createApiFactory,
+} from '@backstage/core-api';
+import { MockErrorApi, MockStorageApi } from './apis';
 
-describe('apiFactories', () => {
-  it('should be possible to get an instance of each API', () => {
-    const registry = new ApiTestRegistry();
-    const factories: ApiFactory<unknown, unknown, unknown>[] = Object.values(
-      apiFactories,
-    );
-
-    for (const factory of factories) {
-      registry.register(factory);
-    }
-
-    for (const factory of factories) {
-      const api = registry.get(factory.implements);
-      expect(api).toBeDefined();
-    }
-  });
-});
+export const mockApis = [
+  createApiFactory(errorApiRef, new MockErrorApi()),
+  createApiFactory(storageApiRef, MockStorageApi.create()),
+];
