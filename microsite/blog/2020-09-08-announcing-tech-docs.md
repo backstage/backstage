@@ -14,7 +14,7 @@ We are quite sure the main reason for the success of TechDocs is our docs-like-c
 
 ![available-templates](assets/announcing-techdocs/docs-in-backstage.png)
 
-Watch this video to see [Spotify’s internal version of TechDocs](https://backstage.io/demos) in action. 
+Watch this video to see [Spotify’s internal version of TechDocs](https://backstage.io/demos) in action.
 
 But this is just one way to do it. Today we’re most excited for what the open version of TechDocs can become.
 
@@ -32,12 +32,11 @@ What we have on GitHub so far is a first iteration of TechDocs that you can use 
 
 More specifically, with this first iteration, you can:
 
-* Run TechDocs locally and read documentation.
-* Configure your entity (e.g. service, website) so that Backstage builds your documentation and serves it in TechDocs. Documentation is displayed on the Docs tab in the Service Catalog and on its own page.
-* Get documentation set up for free in your project when you create a new component out of one of the non-experimental templates (labeled with recommended). If you are looking for a standalone documentation project, use the docs-template.
-* Choose your own storage solution for the documentation.
-* Define your own API to interface with your documentation solution.
-
+- Run TechDocs locally and read documentation.
+- Configure your entity (e.g. service, website) so that Backstage builds your documentation and serves it in TechDocs. Documentation is displayed on the Docs tab in the Service Catalog and on its own page.
+- Get documentation set up for free in your project when you create a new component out of one of the non-experimental templates (labeled with recommended). If you are looking for a standalone documentation project, use the docs-template.
+- Choose your own storage solution for the documentation.
+- Define your own API to interface with your documentation solution.
 
 For a full overview, including getting started instructions, check out our [TechDocs Documentation](https://backstage.io/docs/features/techdocs/techdocs-overview).
 
@@ -59,7 +58,7 @@ For more information about this journey, take a look at my 20-minute talk from D
 
 We have come a long way, fast — both in our implementation and in our thinking. Here are some of the key problem areas that we are addressing. Note that they are in various stages of implementation, and we won’t be able to release everything within our minimum plugin. In fact, see this as an appetite taster. What we hope is that we can build together.
 
-### Stuck to unstuck 
+### Stuck to unstuck
 
 Very early on, we decided that the main problem we were trying to solve was to help engineers (when using technical documentation) go from stuck to unstuck, and fast. This became our guiding principle. Is what we are building helping engineers get unstuck faster? From this, it follows that we need to promote quality documentation on the one hand, and provide a high level of discoverability on the other. One without the other is not going to cut it.
 
@@ -86,7 +85,7 @@ In this problem area, we made use of Elasticsearch, the open source search engin
 ![available-templates](assets/announcing-techdocs/discover1.png)
 
 ![available-templates](assets/announcing-techdocs/discover2.png)
- 
+
 There is much more to do in the area of discoverability and search.
 
 ### Use case variations

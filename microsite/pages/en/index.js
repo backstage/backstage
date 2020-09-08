@@ -296,9 +296,7 @@ class Index extends React.Component {
                 src={`${baseUrl}animations/backstage-techdocs-icon-1.gif`}
               />
 
-              <Block.Subtitle>
-                Backstage TechDocs
-              </Block.Subtitle>
+              <Block.Subtitle>Backstage TechDocs</Block.Subtitle>
               <Block.Title small>Docs like code</Block.Title>
             </Block.TextBox>
             <Breakpoint
