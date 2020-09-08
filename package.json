@@ -1,5 +1,5 @@
 {
-  "name": "zalando-backstage",
+  "name": "@zalando-sunrise/backstage",
   "engines": {
     "node": "12"
   },
