@@ -15,12 +15,7 @@
  */
 
 import { createPlugin } from '@backstage/core';
-import { GraphiQLPage } from './components';
-import { graphiQLRouteRef } from './route-refs';
 
 export const plugin = createPlugin({
   id: 'graphiql',
-  register({ router }) {
-    router.addRoute(graphiQLRouteRef, GraphiQLPage);
-  },
 });
