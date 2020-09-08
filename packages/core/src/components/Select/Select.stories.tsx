@@ -37,4 +37,15 @@ const SELECT_ITEMS = [
   },
 ];
 
-export const Default = () => <Select label="Default" items={SELECT_ITEMS} />;
+export const Default = () => (
+  <Select placeholder="All results" label="Default" items={SELECT_ITEMS} />
+);
+
+export const Multiple = () => (
+  <Select
+    placeholder="All results"
+    label="Multiple"
+    items={SELECT_ITEMS}
+    multiple
+  />
+);

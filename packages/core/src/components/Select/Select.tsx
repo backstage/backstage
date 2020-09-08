@@ -28,6 +28,9 @@ import {
   Select,
   MenuItem,
   InputBase,
+  Chip,
+  Typography,
+  Checkbox,
 } from '@material-ui/core';
 
 import ClosedDropdown from './static/ClosedDropdown';
@@ -73,6 +76,14 @@ const useStyles = makeStyles((theme: Theme) =>
         color: theme.palette.text.primary,
       },
     },
+    chips: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    chip: {
+      margin: 2,
+    },
+    checkbox: {},
   }),
 );
 
@@ -85,16 +96,27 @@ type Props = {
   multiple?: boolean;
   items: Item[];
   label: string;
+  placeholder?: string;
 };
 
 export const SelectComponent = (props: Props) => {
-  const { multiple, items, label } = props;
+  const { multiple, items, label, placeholder } = props;
   const classes = useStyles();
-  const [value, setValue] = useState('');
-  const [isOpen, setOpening] = useState(true);
+  const [value, setValue] = useState<any[] | string | number>(
+    multiple ? [] : '',
+  );
+  const [canOpen, setCanOpen] = React.useState(false);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setValue(event.target.value as string);
+  };
+
+  const selectHandleOnOpen = () => {
+    setCanOpen(!canOpen);
+  };
+
+  const handleDelete = (selectedValue: string | number) => () => {
+    setValue(chips => (chips as any[]).filter(chip => chip !== selectedValue));
   };
 
   return (
@@ -105,12 +127,36 @@ export const SelectComponent = (props: Props) => {
       <Select
         id="select"
         value={value}
+        displayEmpty
         multiple={multiple}
         onChange={handleChange}
-        onOpen={() => setOpening(false)}
-        onClose={() => setOpening(true)}
+        onClick={selectHandleOnOpen}
+        open={canOpen}
         input={<BootstrapInput />}
-        IconComponent={() => (isOpen ? <ClosedDropdown /> : <OpenedDropdown />)}
+        renderValue={selected =>
+          multiple && (value as any[]).length !== 0 ? (
+            <div className={classes.chips}>
+              {(selected as string[]).map(selectedValue => (
+                <Chip
+                  key={items.find(el => el.value === selectedValue)?.label}
+                  label={items.find(el => el.value === selectedValue)?.label}
+                  clickable
+                  onDelete={handleDelete(selectedValue)}
+                  className={classes.chip}
+                />
+              ))}
+            </div>
+          ) : (
+            <Typography>
+              {(value as any[]).length === 0
+                ? placeholder || ''
+                : items.find(el => el.value === selected)?.label}
+            </Typography>
+          )
+        }
+        IconComponent={() =>
+          !canOpen ? <ClosedDropdown /> : <OpenedDropdown />
+        }
         MenuProps={{
           anchorOrigin: {
             vertical: 'bottom',
@@ -123,9 +169,21 @@ export const SelectComponent = (props: Props) => {
           getContentAnchorEl: null,
         }}
       >
+        {placeholder && (
+          <MenuItem value="" disabled>
+            {placeholder}
+          </MenuItem>
+        )}
         {items &&
           items.map(item => (
             <MenuItem key={item.value} value={item.value}>
+              {multiple && (
+                <Checkbox
+                  color="primary"
+                  checked={(value as any[]).includes(item.value) || false}
+                  className={classes.checkbox}
+                />
+              )}
               {item.label}
             </MenuItem>
           ))}
