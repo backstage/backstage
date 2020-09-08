@@ -297,7 +297,7 @@ class Index extends React.Component {
               />
 
               <Block.Subtitle>
-                Backstage TechDocs <span>(Coming Soon)</span>
+                Backstage TechDocs
               </Block.Subtitle>
               <Block.Title small>Docs like code</Block.Title>
             </Block.TextBox>
