@@ -1,5 +1,5 @@
 ---
-title: Announcing Tech Docs: Spotify’s docs-like-code for Backstage
+title: Announcing TechDocs: Spotify’s docs-like-code for Backstage
 author: Gary Niemen
 authorURL: https://github.com/garyniemen
 ---
