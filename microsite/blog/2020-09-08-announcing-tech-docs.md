@@ -4,7 +4,6 @@ author: Gary Niemen
 authorURL: https://github.com/garyniemen
 ---
 
-# Announcing TechDocs: Spotify’s docs-like-code plugin for Backstage
 Since we [open sourced Backstage](https://backstage.io/blog/2020/03/16/announcing-backstage), one of the most requested features has been for a technical documentation plugin. Well, good news. The first open source version of TechDocs is here. Now let’s start collaborating and making it better, together.
 
 <!--truncate-->
