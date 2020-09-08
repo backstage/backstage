@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import {
   Card,
   CardActions,
@@ -23,7 +23,6 @@ import {
   CardHeaderProps,
   Divider,
   withStyles,
-  createStyles,
   makeStyles,
 } from '@material-ui/core';
 import classNames from 'classnames';
@@ -31,36 +30,25 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 
 const useStyles = makeStyles(theme => ({
-  header: {
-    padding: theme.spacing(2, 2, 2, 2.5),
-  },
   noPadding: {
     padding: 0,
     '&:last-child': {
       paddingBottom: 0,
     },
   },
+  header: {
+    padding: theme.spacing(2, 2, 2, 2.5),
+  },
+  headerTitle: {
+    fontWeight: 700,
+  },
+  headerSubheader: {
+    paddingTop: theme.spacing(1),
+  },
+  headerAvatar: {},
+  headerAction: {},
+  headerContent: {},
 }));
-
-const useBoldHeaderStyles = makeStyles(theme =>
-  createStyles({
-    title: {
-      fontWeight: 700,
-    },
-    subheader: {
-      paddingTop: theme.spacing(1),
-    },
-    root: {},
-    avatar: {},
-    action: {},
-    content: {},
-  }),
-);
-
-const BoldHeader = ({ classes, ...props }: CardHeaderProps) => {
-  const styles = useBoldHeaderStyles({ classes });
-  return <CardHeader classes={styles} {...props} />;
-};
 
 const CardActionsTopRight = withStyles(theme => ({
   root: {
@@ -137,6 +125,8 @@ const VARIANT_STYLES = {
  *   <InfoCard variant="noShrink">...</InfoCard>
  */
 type Props = {
+  title?: ReactNode;
+  subheader?: ReactNode;
   divider?: boolean;
   deepLink?: BottomLinkProps;
   slackChannel?: string;
@@ -152,9 +142,9 @@ type Props = {
   actionsTopRight?: ReactNode;
   className?: string;
   noPadding?: boolean;
-} & Pick<CardHeaderProps, 'title' | 'subheader'>;
+};
 
-export const InfoCard: FC<Props> = ({
+export const InfoCard = ({
   title,
   subheader,
   divider,
@@ -170,7 +160,7 @@ export const InfoCard: FC<Props> = ({
   actionsTopRight,
   className,
   noPadding,
-}) => {
+}: Props): JSX.Element => {
   const classes = useStyles();
 
   /**
@@ -201,8 +191,15 @@ export const InfoCard: FC<Props> = ({
       <ErrorBoundary slackChannel={slackChannel}>
         {title && (
           <>
-            <BoldHeader
-              className={classes.header}
+            <CardHeader
+              classes={{
+                root: classes.header,
+                title: classes.headerTitle,
+                subheader: classes.headerSubheader,
+                avatar: classes.headerAvatar,
+                action: classes.headerAction,
+                content: classes.headerContent,
+              }}
               title={title}
               subheader={subheader}
               style={{ display: 'inline-block', ...headerStyle }}
