@@ -19,11 +19,10 @@ import { render, waitForElement } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
-import { withLogCollector } from '@backstage/test-utils-core';
 
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
-import { techRadarApiRef, TechRadar } from '../index';
-import RadarPage from './RadarPage';
+import { RadarPage } from './RadarPage';
+import { MockErrorApi, wrapInTestApp } from '@backstage/test-utils';
 
 describe('RadarPage', () => {
   beforeAll(() => {
@@ -35,24 +34,18 @@ describe('RadarPage', () => {
   });
 
   it('should render a progress bar', async () => {
-    const errorApi = { post: () => {} };
-    const techRadarApi = new TechRadar({
+    const techRadarProps = {
       width: 1200,
       height: 800,
       svgProps: { 'data-testid': 'tech-radar-svg' },
-    });
+    };
 
     const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={lightTheme}>
-        <ApiProvider
-          apis={ApiRegistry.from([
-            [errorApiRef, errorApi],
-            [techRadarApiRef, techRadarApi],
-          ])}
-        >
-          <RadarPage />
-        </ApiProvider>
-      </ThemeProvider>,
+      wrapInTestApp(
+        <ThemeProvider theme={lightTheme}>
+          <RadarPage {...techRadarProps} />
+        </ThemeProvider>,
+      ),
     );
 
     expect(getByTestId('progress')).toBeInTheDocument();
@@ -61,24 +54,18 @@ describe('RadarPage', () => {
   });
 
   it('should render a header with a svg', async () => {
-    const errorApi = { post: () => {} };
-    const techRadarApi = new TechRadar({
+    const techRadarProps = {
       width: 1200,
       height: 800,
       svgProps: { 'data-testid': 'tech-radar-svg' },
-    });
+    };
 
     const { getByText, getByTestId } = render(
-      <ThemeProvider theme={lightTheme}>
-        <ApiProvider
-          apis={ApiRegistry.from([
-            [errorApiRef, errorApi],
-            [techRadarApiRef, techRadarApi],
-          ])}
-        >
-          <RadarPage />
-        </ApiProvider>
-      </ThemeProvider>,
+      wrapInTestApp(
+        <ThemeProvider theme={lightTheme}>
+          <RadarPage {...techRadarProps} />
+        </ThemeProvider>,
+      ),
     );
 
     await waitForElement(() => getByTestId('tech-radar-svg'));
@@ -90,78 +77,29 @@ describe('RadarPage', () => {
   });
 
   it('should call the errorApi if load fails', async () => {
-    const errorApi = { post: jest.fn() };
+    const errorApi = new MockErrorApi({ collect: true });
     const techRadarLoadFail = () =>
       Promise.reject(new Error('404 Page Not Found'));
-    const techRadarApi = new TechRadar({
+    const techRadarProps = {
       width: 1200,
       height: 800,
       getData: techRadarLoadFail,
       svgProps: { 'data-testid': 'tech-radar-svg' },
-    });
+    };
 
     const { queryByTestId } = render(
       <ThemeProvider theme={lightTheme}>
-        <ApiProvider
-          apis={ApiRegistry.from([
-            [errorApiRef, errorApi],
-            [techRadarApiRef, techRadarApi],
-          ])}
-        >
-          <RadarPage />
+        <ApiProvider apis={ApiRegistry.with(errorApiRef, errorApi)}>
+          <RadarPage {...techRadarProps} />
         </ApiProvider>
       </ThemeProvider>,
     );
 
     await waitForElement(() => !queryByTestId('progress'));
 
-    expect(errorApi.post).toHaveBeenCalledTimes(1);
-    expect(errorApi.post).toHaveBeenCalledWith(new Error('404 Page Not Found'));
+    expect(errorApi.getErrors()).toEqual([
+      { error: new Error('404 Page Not Found'), context: undefined },
+    ]);
     expect(queryByTestId('tech-radar-svg')).not.toBeInTheDocument();
-  });
-
-  it('should not render without errorApiRef', () => {
-    const techRadarApi = new TechRadar({
-      width: 1200,
-      height: 800,
-    });
-
-    expect(
-      withLogCollector(['error'], () => {
-        expect(() => {
-          render(
-            <ThemeProvider theme={lightTheme}>
-              <ApiProvider
-                apis={ApiRegistry.from([[techRadarApiRef, techRadarApi]])}
-              >
-                <RadarPage />
-              </ApiProvider>
-            </ThemeProvider>,
-          );
-        }).toThrow();
-      }).error[0],
-    ).toMatch(
-      /^Error: Uncaught \[Error: No implementation available for apiRef{core.error}\]/,
-    );
-  });
-
-  it('should not render without techRadarApiRef', () => {
-    const errorApi = { post: () => {} };
-
-    expect(
-      withLogCollector(['error'], () => {
-        expect(() => {
-          render(
-            <ThemeProvider theme={lightTheme}>
-              <ApiProvider apis={ApiRegistry.from([[errorApiRef, errorApi]])}>
-                <RadarPage />
-              </ApiProvider>
-            </ThemeProvider>,
-          );
-        }).toThrow();
-      }).error[0],
-    ).toMatch(
-      /^Error: Uncaught \[Error: No implementation available for apiRef{plugin.techradar}\]/,
-    );
   });
 });
