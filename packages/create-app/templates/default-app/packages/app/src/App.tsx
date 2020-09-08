@@ -11,7 +11,6 @@ import { AppSidebar } from './sidebar';
 import { Route, Routes, Navigate } from 'react-router';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
-import { Router as ExploreRouter } from '@backstage/plugin-explore';
 
 import { EntityPage } from './components/catalog/EntityPage';
 
@@ -38,7 +37,6 @@ const App: FC<{}> = () => (
             element={<CatalogRouter EntityPage={EntityPage} />}
           />
           <Route path="/docs/*" element={<DocsRouter />} />
-          <Route path="/explore/*" element={<ExploreRouter />} />
           {deprecatedAppRoutes}
         </Routes>
       </SidebarPage>
