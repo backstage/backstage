@@ -5,9 +5,8 @@
       "dev",
       "migrations"
   ],
-  "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "dist-types",
-    "skipLibCheck": true
+    "rootDir": "."
   }
 }
