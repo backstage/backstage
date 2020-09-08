@@ -16,23 +16,55 @@
 import { PreparerBase } from './types';
 import { Entity } from '@backstage/catalog-model';
 import path from 'path';
-import { parseReferenceAnnotation } from './helpers';
+import { parseReferenceAnnotation, checkoutGitRepository } from './helpers';
+import { InputError } from '@backstage/backend-common';
+import parseGitUrl from 'git-url-parse';
+import { Logger } from 'winston';
 
 export class DirectoryPreparer implements PreparerBase {
-  prepare(entity: Entity): Promise<string> {
-    const { location: managedByLocation } = parseReferenceAnnotation(
+  private readonly logger: Logger;
+
+  constructor(logger: Logger) {
+    this.logger = logger;
+  }
+
+  private async resolveManagedByLocationToDir(entity: Entity) {
+    const { type, target } = parseReferenceAnnotation(
       'backstage.io/managed-by-location',
       entity,
     );
-    const { location: techdocsLocation } = parseReferenceAnnotation(
+
+    this.logger.debug(
+      `[TechDocs] Building docs for entity with type 'dir' and managed-by-location '${type}'`,
+    );
+    switch (type) {
+      case 'github': {
+        const parsedGitLocation = parseGitUrl(target);
+        const repoLocation = await checkoutGitRepository(target);
+
+        return path.dirname(
+          path.join(repoLocation, parsedGitLocation.filepath),
+        );
+      }
+      case 'file':
+        return path.dirname(target);
+      default:
+        throw new InputError(`Unable to resolve location type ${type}`);
+    }
+  }
+
+  async prepare(entity: Entity): Promise<string> {
+    const { target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
     );
 
-    const managedByLocationDirectory = path.dirname(managedByLocation);
+    const managedByLocationDirectory = await this.resolveManagedByLocationToDir(
+      entity,
+    );
 
     return new Promise(resolve => {
-      resolve(path.resolve(managedByLocationDirectory, techdocsLocation));
+      resolve(path.resolve(managedByLocationDirectory, target));
     });
   }
 }

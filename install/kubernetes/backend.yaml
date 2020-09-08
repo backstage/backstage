@@ -18,10 +18,10 @@ spec:
         component: backend
     spec:
       containers:
-      - name: backend
-        image: spotify/backstage-backend:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 7000
-          name: backend
-          protocol: TCP
+        - name: backend
+          image: spotify/backstage-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7000
+              name: backend
+              protocol: TCP

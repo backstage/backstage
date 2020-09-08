@@ -19,13 +19,18 @@ import { Grid } from '@material-ui/core';
 import { Builds as BuildsComp } from './lib/Builds';
 import { Layout } from '../../components/Layout';
 import { PluginHeader } from '../../components/PluginHeader';
+import { AppStateProvider } from '../../state/AppState';
+import { Settings } from '../../components/Settings';
 
 const BuildsPage: FC<{}> = () => (
-  <Layout>
-    <Content>
-      <Builds />
-    </Content>
-  </Layout>
+  <AppStateProvider>
+    <Layout>
+      <Content>
+        <Builds />
+        <Settings />
+      </Content>
+    </Layout>
+  </AppStateProvider>
 );
 
 const Builds = () => (

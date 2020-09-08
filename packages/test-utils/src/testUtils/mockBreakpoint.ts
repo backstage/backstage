@@ -54,6 +54,8 @@ export default function mockBreakpoint(initialBreakpoint: Breakpoint = 'xl') {
   let currentBreakpoint = initialBreakpoint;
   const queries = Array<Query>();
 
+  const previousMatchMedia: any = (window as any).matchMedia;
+
   (window as any).matchMedia = (query: string): QueryList => {
     const listeners = new Set<Listener>();
 
@@ -85,7 +87,7 @@ export default function mockBreakpoint(initialBreakpoint: Breakpoint = 'xl') {
       });
     },
     remove() {
-      delete window.matchMedia;
+      (window as any).matchMedia = previousMatchMedia;
     },
   };
 }

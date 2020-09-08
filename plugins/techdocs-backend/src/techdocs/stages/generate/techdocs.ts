@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import fs from 'fs-extra';
+import path from 'path';
+import os from 'os';
+import { Logger } from 'winston';
+
 import {
   GeneratorBase,
   GeneratorRunOptions,
   GeneratorRunResult,
 } from './types';
 import { runDockerContainer } from './helpers';
-import fs from 'fs-extra';
-import path from 'path';
-import os from 'os';
 
 export class TechdocsGenerator implements GeneratorBase {
+  private readonly logger: Logger;
+
+  constructor(logger: Logger) {
+    this.logger = logger;
+  }
+
   public async run({
     directory,
     logStream,
@@ -36,18 +45,26 @@ export class TechdocsGenerator implements GeneratorBase {
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
 
-    await runDockerContainer({
-      imageName: 'spotify/techdocs',
-      args: ['build', '-d', '/result'],
-      logStream,
-      docsDir: directory,
-      resultDir,
-      dockerClient,
-    });
-
-    console.log(
-      `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir}`,
-    );
+    try {
+      await runDockerContainer({
+        imageName: 'spotify/techdocs',
+        args: ['build', '-d', '/result'],
+        logStream,
+        docsDir: directory,
+        resultDir,
+        dockerClient,
+      });
+      this.logger.info(
+        `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir}`,
+      );
+    } catch (error) {
+      this.logger.debug(
+        `[TechDocs]: Failed to generate docs from ${directory} into ${resultDir}`,
+      );
+      throw new Error(
+        `Failed to generate docs from ${directory} into ${resultDir} with error ${error.message}`,
+      );
+    }
 
     return { resultDir };
   }

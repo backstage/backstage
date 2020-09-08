@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import {
   Content,
   Header,
@@ -30,7 +30,7 @@ import { graphQlBrowseApiRef } from '../../lib/api';
 import { GraphiQLBrowser } from '../GraphiQLBrowser';
 import { Typography } from '@material-ui/core';
 
-export const GraphiQLPage: FC<{}> = () => {
+export const GraphiQLPage = () => {
   const graphQlBrowseApi = useApi(graphQlBrowseApiRef);
   const endpoints = useAsync(() => graphQlBrowseApi.getEndpoints());
 

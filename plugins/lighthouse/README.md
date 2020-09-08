@@ -36,16 +36,24 @@ your [`apis.ts`](https://github.com/spotify/backstage/blob/master/packages/app/s
 
 ```js
 import { ApiHolder, ApiRegistry } from '@backstage/core';
+import { Config } from '@backstage/config';
 import {
   lighthouseApiRef,
   LighthouseRestApi,
 } from '@backstage/plugin-lighthouse';
 
-const builder = ApiRegistry.builder();
+export const apis = (config: ConfigApi) => {
+  const builder = ApiRegistry.builder();
 
-export const lighthouseApi =
-  new LighthouseRestApi(/* your service url here! */);
-builder.add(lighthouseApiRef, lighthouseApi);
+  builder.add(lighthouseApiRef, LighthouseRestApi.fromConfig(config));
 
-export default builder.build() as ApiHolder;
+  return builder.build() as ApiHolder;
+}
+```
+
+Then configure the lighthouse service url in your [`app-config.yaml`](https://github.com/spotify/backstage/blob/master/app-config.yaml).
+
+```yaml
+lighthouse:
+  baseUrl: http://your-service-url
 ```

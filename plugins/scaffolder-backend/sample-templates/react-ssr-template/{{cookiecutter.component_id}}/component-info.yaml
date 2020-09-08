@@ -5,7 +5,7 @@ metadata:
   description: {{cookiecutter.description}}
   annotations:
     github.com/project-slug: {{cookiecutter.storePath}}
-    backstage.io/github-actions-id: {{cookiecutter.storePath}}
+    backstage.io/techdocs-ref: github:https://github.com/{{cookiecutter.storePath}}
 spec:
   type: website
   lifecycle: experimental

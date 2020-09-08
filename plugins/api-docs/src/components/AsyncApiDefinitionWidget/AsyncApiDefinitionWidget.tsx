@@ -15,7 +15,7 @@
  */
 
 import AsyncApi from '@kyma-project/asyncapi-react';
-import React, { FC } from 'react';
+import React from 'react';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import '@kyma-project/asyncapi-react/lib/styles/fiori.css';
 
@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
       border: `1px solid ${fade(theme.palette.primary.main, 0.5)}`,
       '&:hover': {
         textDecoration: 'none',
-        '&$disabled': {
+        '&.Mui-disabled': {
           backgroundColor: 'transparent',
         },
         border: `1px solid ${theme.palette.primary.main}`,
@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
           backgroundColor: 'transparent',
         },
       },
-      '&$disabled': {
+      '&.Mui-disabled': {
         color: theme.palette.action.disabled,
       },
     },
@@ -135,9 +135,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const AsyncApiDefinitionWidget: FC<{
+type Props = {
   definition: any;
-}> = ({ definition }) => {
+};
+
+export const AsyncApiDefinitionWidget = ({ definition }: Props) => {
   const classes = useStyles();
 
   return (

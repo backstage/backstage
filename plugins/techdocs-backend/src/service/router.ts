@@ -19,7 +19,6 @@ import express from 'express';
 import Knex from 'knex';
 import fetch from 'node-fetch';
 import { Config } from '@backstage/config';
-import path from 'path';
 import Docker from 'dockerode';
 import {
   GeneratorBuilder,
@@ -27,6 +26,7 @@ import {
   PublisherBase,
   LocalPublish,
 } from '../techdocs';
+import { resolvePackagePath } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 
 type RouterOptions = {
@@ -39,24 +39,45 @@ type RouterOptions = {
   dockerClient: Docker;
 };
 
+const staticDocsDir = resolvePackagePath(
+  '@backstage/plugin-techdocs-backend',
+  'static/docs',
+);
+
 export async function createRouter({
   preparers,
   generators,
   publisher,
   config,
   dockerClient,
+  logger,
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
+
+  const getEntityId = (entity: Entity) => {
+    return `${entity.kind}:${entity.metadata.namespace ?? ''}:${
+      entity.metadata.name
+    }`;
+  };
 
   const buildDocsForEntity = async (entity: Entity) => {
     const preparer = preparers.get(entity);
     const generator = generators.get(entity);
 
+    logger.info(`[TechDocs] Running preparer on entity ${getEntityId(entity)}`);
+    const preparedDir = await preparer.prepare(entity);
+
+    logger.info(
+      `[TechDocs] Running generator on entity ${getEntityId(entity)}`,
+    );
     const { resultDir } = await generator.run({
-      directory: await preparer.prepare(entity),
+      directory: preparedDir,
       dockerClient,
     });
 
+    logger.info(
+      `[TechDocs] Running publisher on entity ${getEntityId(entity)}`,
+    );
     await publisher.publish({
       entity,
       directory: resultDir,
@@ -86,10 +107,7 @@ export async function createRouter({
   });
 
   if (publisher instanceof LocalPublish) {
-    router.use(
-      '/static/docs/',
-      express.static(path.resolve(__dirname, `../../static/docs`)),
-    );
+    router.use('/static/docs/', express.static(staticDocsDir));
     router.use(
       '/static/docs/:kind/:namespace/:name',
       async (req, res, next) => {

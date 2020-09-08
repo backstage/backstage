@@ -39,7 +39,7 @@ const testPluginPackage = `${BACKSTAGE}/plugin-${testPluginName}`;
 const tempDir = path.join(os.tmpdir(), 'remove-plugin-test');
 
 const removeEmptyLines = (file: string): string =>
-  file.split('\n').filter(Boolean).join('\n');
+  file.split(/\r?\n/).filter(Boolean).join('\n');
 
 const createTestPackageFile = async (
   testFilePath: string,
@@ -66,7 +66,7 @@ const createTestPluginFile = async (
   fse.copyFileSync(pluginsFilePath, testFilePath);
   const pluginNameCapitalized = testPluginName
     .split('-')
-    .map((name) => capitalize(name))
+    .map(name => capitalize(name))
     .join('');
   const exportStatement = `export { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
   addExportStatement(testFilePath, exportStatement);
@@ -100,7 +100,7 @@ describe('removePlugin', () => {
         const packageFileContent = removeEmptyLines(
           fse.readFileSync(packageFilePath, 'utf8'),
         );
-        expect(testFileContent === packageFileContent).toBe(true);
+        expect(testFileContent).toBe(packageFileContent);
       } finally {
         fse.removeSync(testFilePath);
       }
@@ -117,7 +117,7 @@ describe('removePlugin', () => {
         const pluginsFileContent = removeEmptyLines(
           fse.readFileSync(pluginsFilePaths, 'utf8'),
         );
-        expect(testFileContent === pluginsFileContent).toBe(true);
+        expect(testFileContent).toBe(pluginsFileContent);
       } finally {
         fse.removeSync(testFilePath);
       }
@@ -138,7 +138,7 @@ describe('removePlugin', () => {
           'test@gmail.com',
         ]);
         await removePluginFromCodeOwners(testFilePath, testPluginName);
-        expect(testFileContent === codeOwnersFileContent).toBeTruthy();
+        expect(testFileContent).toBe(codeOwnersFileContent);
       } finally {
         if (fse.existsSync(testFilePath)) fse.removeSync(testFilePath);
       }

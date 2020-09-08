@@ -65,6 +65,7 @@ yarn storybook # Start local storybook, useful for working on components in @bac
 yarn workspace @backstage/plugin-welcome start # Serve welcome plugin only, also supports --check
 
 yarn tsc # Run typecheck, use --watch for watch mode
+yarn tsc:full # Run full type checking, for example without skipLibCheck, use in CI
 
 yarn build # Build published versions of packages, depends on tsc
 
@@ -85,7 +86,3 @@ yarn create-plugin # Create a new plugin
 > See
 > [package.json](https://github.com/spotify/backstage/blob/master/package.json)
 > for other yarn commands/options.
-
-[Next Step - Create a Backstage plugin](../plugins/create-a-plugin.md)
-
-[Back to Docs](../README.md)

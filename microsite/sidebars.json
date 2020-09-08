@@ -5,7 +5,9 @@
       "overview/architecture-overview",
       "overview/architecture-terminology",
       "overview/roadmap",
-      "overview/vision"
+      "overview/vision",
+      "overview/background",
+      "overview/adopting"
     ],
     "Getting Started": [
       "getting-started/index",
@@ -29,7 +31,7 @@
         ]
       }
     ],
-    "Features": [
+    "Core Features": [
       {
         "type": "subcategory",
         "label": "Software Catalog",
@@ -37,7 +39,6 @@
           "features/software-catalog/software-catalog-overview",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
-          "features/software-catalog/populating-catalog",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/software-catalog-api"
@@ -45,7 +46,7 @@
       },
       {
         "type": "subcategory",
-        "label": "Software creation templates",
+        "label": "Software Templates",
         "ids": [
           "features/software-templates/software-templates-index",
           "features/software-templates/adding-templates",
@@ -73,6 +74,7 @@
       "plugins/create-a-plugin",
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
+      "plugins/integrating-plugin-into-service-catalog",
       {
         "type": "subcategory",
         "label": "Backends and APIs",
@@ -90,7 +92,11 @@
       {
         "type": "subcategory",
         "label": "Publishing",
-        "ids": ["plugins/publishing", "plugins/publish-private"]
+        "ids": [
+          "plugins/publishing",
+          "plugins/publish-private",
+          "plugins/add-to-marketplace"
+        ]
       }
     ],
     "Configuration": [
@@ -131,7 +137,7 @@
         "ids": ["api/backend"]
       }
     ],
-    "Tutorials": ["tutorials/index"],
+    "Tutorials": ["tutorials/journey"],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
       "architecture-decisions/adrs-adr001",

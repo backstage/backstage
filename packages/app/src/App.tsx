@@ -26,6 +26,13 @@ import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
+import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
+import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+import { Route, Routes, Navigate } from 'react-router';
+
+import { EntityPage } from './components/catalog/EntityPage';
 
 const app = createApp({
   apis,
@@ -46,7 +53,24 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const AppRoutes = app.getRoutes();
+const deprecatedAppRoutes = app.getRoutes();
+
+const AppRoutes = () => (
+  <Routes>
+    <Navigate key="/" to="/catalog" />
+    <Route
+      path="/catalog/*"
+      element={<CatalogRouter EntityPage={EntityPage} />}
+    />
+    <Route path="/docs/*" element={<DocsRouter />} />
+    <Route
+      path="/tech-radar"
+      element={<TechRadarRouter width={1500} height={800} />}
+    />
+    <Route path="/graphiql" element={<GraphiQLRouter />} />
+    {...deprecatedAppRoutes}
+  </Routes>
+);
 
 const App: FC<{}> = () => (
   <AppProvider>

@@ -17,21 +17,66 @@
 import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
-import createProxyMiddleware from 'http-proxy-middleware';
+import createProxyMiddleware, {
+  Config as ProxyConfig,
+  Proxy,
+} from 'http-proxy-middleware';
 import { Logger } from 'winston';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
+  // The URL path prefix that the router itself is mounted as, commonly "/proxy"
+  pathPrefix: string;
+}
+
+// Creates a proxy middleware, possibly with defaults added on top of the
+// given config.
+function buildMiddleware(
+  pathPrefix: string,
+  logger: Logger,
+  route: string,
+  config: string | ProxyConfig,
+): Proxy {
+  const fullConfig =
+    typeof config === 'string' ? { target: config } : { ...config };
+
+  // Default is to do a path rewrite that strips out the proxy's path prefix
+  // and the rest of the route.
+  if (fullConfig.pathRewrite === undefined) {
+    const routeWithSlash = route.endsWith('/') ? route : `${route}/`;
+    fullConfig.pathRewrite = {
+      [`^${pathPrefix}${routeWithSlash}`]: '/',
+    };
+  }
+
+  // Default is to update the Host header to the target
+  if (fullConfig.changeOrigin === undefined) {
+    fullConfig.changeOrigin = true;
+  }
+
+  // Attach the logger to the proxy config
+  fullConfig.logProvider = () => logger;
+
+  return createProxyMiddleware(fullConfig);
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const proxyConfig = options.config.get('proxy') ?? {};
+
+  const proxyConfig = options.config.getOptional('proxy') ?? {};
   Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
-    router.use(route, createProxyMiddleware(proxyRouteConfig));
+    router.use(
+      route,
+      buildMiddleware(
+        options.pathPrefix,
+        options.logger,
+        route,
+        proxyRouteConfig,
+      ),
+    );
   });
 
   return router;

@@ -39,4 +39,18 @@ $ git push origin -u new-release
 And then create a PR. Once the PR is approved and merged into master, the master
 build will publish new versions of all bumped packages.
 
+### Include new changes in existing release PR
+
+If you want to include some last minute changes to an existing release PR,
+follow these instructions:
+
+```sh
+$ git checkout master
+$ git pull
+$ git checkout new-release
+$ git reset --hard master
+$ yarn release
+$ git push --force
+```
+
 [Back to Docs](../README.md)

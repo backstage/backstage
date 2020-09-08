@@ -27,13 +27,15 @@ export interface RouterOptions {
 
 const makeRouter = (adapter: IdentityApi): express.Router => {
   const router = Router();
+  router.use(express.json());
+
   router.get('/users/:user/groups', async (req, res) => {
     const user = req.params.user;
     const type = req.query.type?.toString() ?? '';
-
     const response = await adapter.getUserGroups({ user, type });
     res.send(response);
   });
+
   return router;
 };
 

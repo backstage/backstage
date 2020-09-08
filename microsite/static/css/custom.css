@@ -58,7 +58,7 @@ ol,
 li,
 td {
   font-family: Helvetica Neue, sans-serif;
-  color: $textColor;
+  color: #e4e4e4;
 }
 
 .mainWrapper {
@@ -216,7 +216,7 @@ td {
 code {
   font-family: IBM Plex Mono, Menlo, Monaco, Consolas, Courier New, monospace;
   font-weight: 500;
-  background-color: #0e0e0e;
+  background-color: #272822;
 }
 
 /* .stripe {

@@ -71,18 +71,22 @@ import {
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
+  ConfigApi,
 } from '@backstage/core';
 
-const builder = ApiRegistry.builder();
+const apis = (config: ConfigApi) => {
+  const builder = ApiRegistry.builder();
 
-// The alert API is a self-contained implementation that shows alerts to the user.
-const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
+  // The alert API is a self-contained implementation that shows alerts to the user.
+  const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 
-// The error API uses the alert API to send error notifications to the user.
-builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
+  // The error API uses the alert API to send error notifications to the user.
+  builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
+  return builder.build();
+};
 
 const app = createApp({
-  apis: apiBuilder.build(),
+  apis,
   // ... other config
 });
 ```

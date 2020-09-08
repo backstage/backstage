@@ -39,7 +39,7 @@ const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
  *
  * APP_CONFIG_app_title='"My Title"'
  */
-export function readEnv(env: {
+export function readEnvConfig(env: {
   [name: string]: string | undefined;
 }): AppConfig[] {
   let data: JsonObject | undefined = undefined;

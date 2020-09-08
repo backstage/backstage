@@ -15,7 +15,10 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { buildSqlite3DatabaseConfig, createSqlite3Database } from './sqlite3';
+import {
+  buildSqliteDatabaseConfig,
+  createSqliteDatabaseClient,
+} from './sqlite3';
 
 describe('sqlite3', () => {
   const createConfig = (connection: any) =>
@@ -29,9 +32,9 @@ describe('sqlite3', () => {
       },
     ]);
 
-  describe(buildSqlite3DatabaseConfig, () => {
+  describe(buildSqliteDatabaseConfig, () => {
     it('buidls a string connection', () => {
-      expect(buildSqlite3DatabaseConfig(createConfig(':memory:'))).toEqual({
+      expect(buildSqliteDatabaseConfig(createConfig(':memory:'))).toEqual({
         client: 'sqlite3',
         connection: ':memory:',
         useNullAsDefault: true,
@@ -40,7 +43,7 @@ describe('sqlite3', () => {
 
     it('builds a filename connection', () => {
       expect(
-        buildSqlite3DatabaseConfig(
+        buildSqliteDatabaseConfig(
           createConfig({
             filename: '/path/to/foo',
           }),
@@ -56,7 +59,7 @@ describe('sqlite3', () => {
 
     it('replaces the connection with an override', () => {
       expect(
-        buildSqlite3DatabaseConfig(createConfig(':memory:'), {
+        buildSqliteDatabaseConfig(createConfig(':memory:'), {
           connection: { filename: '/path/to/foo' },
         }),
       ).toEqual({
@@ -69,10 +72,10 @@ describe('sqlite3', () => {
     });
   });
 
-  describe(createSqlite3Database, () => {
+  describe(createSqliteDatabaseClient, () => {
     it('creates an in memory knex instance', () => {
       expect(
-        createSqlite3Database(
+        createSqliteDatabaseClient(
           createConfig({
             client: 'sqlite3',
             connection: ':memory:',

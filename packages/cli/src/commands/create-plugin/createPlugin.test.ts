@@ -59,7 +59,7 @@ describe('createPlugin', () => {
         await createTemporaryPluginFolder(tempDir);
         await movePlugin(tempDir, pluginDir, id);
         await expect(fs.pathExists(pluginDir)).resolves.toBe(true);
-        expect(pluginDir).toMatch(`/plugins\/${id}`);
+        expect(pluginDir).toMatch(path.join('', 'plugins', id));
       } finally {
         await del(tempDir, { force: true });
         await del(rootDir, { force: true });

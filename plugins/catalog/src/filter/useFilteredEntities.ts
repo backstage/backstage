@@ -31,5 +31,6 @@ export function useFilteredEntities() {
     error: context.error,
     matchingEntities: context.matchingEntities,
     availableTags: context.availableTags,
+    reload: context.reload,
   };
 }

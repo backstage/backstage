@@ -12,7 +12,7 @@ Backstage natively supports tracking of the following component
 - Documentation
 - Other
 
-![](bsc-extend.png)
+![](../../assets/software-catalog/bsc-extend.png)
 
 Since these types are likely not the only kind of software you will want to
 track in Backstage, it is possible to
@@ -31,9 +31,10 @@ catalog.
 It might be tempting to put software that doesn't fit into any of the existing
 types into Other. There are a few reasons why we advice against this; firstly,
 we have found that it is preferred to match the conceptual model that your
-engineers have when describing your sofware. Secondly, Backstage helps your
-engineers manage their software by integrating the infratrucure tooling through
-plugins. Different plugins are used for managing different types of components.
+engineers have when describing your software. Secondly, Backstage helps your
+engineers manage their software by integrating the infrastructure tooling
+through plugins. Different plugins are used for managing different types of
+components.
 
 For example, the
 [Lighthouse plugin](https://github.com/spotify/backstage/tree/master/plugins/lighthouse)

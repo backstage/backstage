@@ -15,11 +15,7 @@
  */
 
 import { createPlugin } from '@backstage/core';
-import RadarPage from './components/RadarPage';
 
 export const plugin = createPlugin({
   id: 'tech-radar',
-  register({ router }) {
-    router.registerRoute('/tech-radar', RadarPage);
-  },
 });

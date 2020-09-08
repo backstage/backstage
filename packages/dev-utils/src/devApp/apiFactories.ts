@@ -24,6 +24,8 @@ import {
   AlertApiForwarder,
   oauthRequestApiRef,
   OAuthRequestManager,
+  UrlPatternDiscovery,
+  discoveryApiRef,
   GoogleAuth,
   googleAuthApiRef,
   GithubAuth,
@@ -58,46 +60,49 @@ export const oauthRequestApiFactory = createApiFactory({
   factory: () => new OAuthRequestManager(),
 });
 
+export const discoveryApiFactory = createApiFactory({
+  implements: discoveryApiRef,
+  deps: {},
+  factory: () =>
+    UrlPatternDiscovery.compile(`http://localhost:7000/{{ pluginId }}`),
+});
+
 export const googleAuthApiFactory = createApiFactory({
   implements: googleAuthApiRef,
-  deps: { oauthRequestApi: oauthRequestApiRef },
-  factory: ({ oauthRequestApi }) =>
+  deps: { discoveryApi: discoveryApiRef, oauthRequestApi: oauthRequestApiRef },
+  factory: ({ discoveryApi, oauthRequestApi }) =>
     GoogleAuth.create({
-      backendUrl: 'http://localhost:7000',
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
 });
 
 export const githubAuthApiFactory = createApiFactory({
   implements: githubAuthApiRef,
-  deps: { oauthRequestApi: oauthRequestApiRef },
-  factory: ({ oauthRequestApi }) =>
+  deps: { discoveryApi: discoveryApiRef, oauthRequestApi: oauthRequestApiRef },
+  factory: ({ discoveryApi, oauthRequestApi }) =>
     GithubAuth.create({
-      backendUrl: 'http://localhost:7000',
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
 });
 
 export const gitlabAuthApiFactory = createApiFactory({
   implements: gitlabAuthApiRef,
-  deps: { oauthRequestApi: oauthRequestApiRef },
-  factory: ({ oauthRequestApi }) =>
+  deps: { discoveryApi: discoveryApiRef, oauthRequestApi: oauthRequestApiRef },
+  factory: ({ discoveryApi, oauthRequestApi }) =>
     GitlabAuth.create({
-      backendUrl: 'http://localhost:7000',
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
 });
 
 export const auth0AuthApiFactory = createApiFactory({
   implements: auth0AuthApiRef,
-  deps: { oauthRequestApi: oauthRequestApiRef },
-  factory: ({ oauthRequestApi }) =>
+  deps: { discoveryApi: discoveryApiRef, oauthRequestApi: oauthRequestApiRef },
+  factory: ({ discoveryApi, oauthRequestApi }) =>
     Auth0Auth.create({
-      backendUrl: 'http://localhost:7000',
-      basePath: '/auth/',
+      discoveryApi,
       oauthRequestApi,
     }),
 });

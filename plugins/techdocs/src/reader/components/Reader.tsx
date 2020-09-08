@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useApi } from '@backstage/core';
+import { useApi, Progress } from '@backstage/core';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
@@ -131,5 +131,10 @@ export const Reader = ({ entityId }: Props) => {
     return <TechDocsNotFound />;
   }
 
-  return <div ref={shadowDomRef} />;
+  return (
+    <>
+      {loading ? <Progress /> : null}
+      <div ref={shadowDomRef} />
+    </>
+  );
 };

@@ -15,10 +15,13 @@
  */
 
 import { CodeSnippet } from '@backstage/core';
-import React, { FC } from 'react';
+import React from 'react';
 
-export const PlainApiDefinitionWidget: FC<{
+type Props = {
   definition: any;
-}> = ({ definition }) => {
-  return <CodeSnippet text={definition} language="yaml" />;
+  language: string;
+};
+
+export const PlainApiDefinitionWidget = ({ definition, language }: Props) => {
+  return <CodeSnippet text={definition} language={language} />;
 };
