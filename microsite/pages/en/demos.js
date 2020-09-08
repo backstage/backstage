@@ -83,7 +83,7 @@ const Background = props => {
           <Block.TextBox>
             <Block.Title>Make documentation easy</Block.Title>
             <Block.Paragraph>
-              Documentation! Everyone needs it, no one wants to create it, and no one can ever find it. Backstage follows a “docs like code” approach: you write documentation in Markdown files right alongside your code. This makes documentation easier to create, maintain, find — and, you know, actually use. This demo video showcases Spotify’s internal version of TechDocs. Learn more about the [open version of TechDocs]. (https://backstage.io/blog/2020/09/08/announcing-tech-docs)
+              Documentation! Everyone needs it, no one wants to create it, and no one can ever find it. Backstage follows a “docs like code” approach: you write documentation in Markdown files right alongside your code. This makes documentation easier to create, maintain, find — and, you know, actually use. This demo video showcases Spotify’s internal version of TechDocs. Learn more about the [open version of TechDocs](https://backstage.io/blog/2020/09/08/announcing-tech-docs).
             </Block.Paragraph>
             <Block.LinkButton
               href={'https://youtu.be/mOLCgdPw1iA'}
