@@ -62,8 +62,6 @@ const DEFAULT_PROVIDER = {
   icon: OAuth2Icon,
 };
 
-const SCOPE_PREFIX = '';
-
 class OAuth2
   implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, SessionStateApi {
   static create({
@@ -71,11 +69,7 @@ class OAuth2
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
-    defaultScopes = [
-      'openid',
-      `${SCOPE_PREFIX}userinfo.email`,
-      `${SCOPE_PREFIX}userinfo.profile`,
-    ],
+    defaultScopes = [],
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
