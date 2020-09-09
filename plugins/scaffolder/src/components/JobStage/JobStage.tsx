@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
   LinearProgress,
   Typography,
 } from '@material-ui/core';
@@ -98,7 +99,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
       : null;
 
   return (
-    <ExpansionPanel
+    <Accordion
       TransitionProps={{ unmountOnExit: true }}
       className={cn(
         classes.expansionPanel,
@@ -108,7 +109,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
       expanded={expanded}
       onChange={(_, newState) => setExpanded(newState)}
     >
-      <ExpansionPanelSummary
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
@@ -119,8 +120,8 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
         <Typography variant="button">
           {name} {timeElapsed && `(${timeElapsed})`}
         </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.expansionPanelDetails}>
         {log.length === 0 ? (
           <Box px={4}>No logs available for this step</Box>
         ) : (
@@ -130,7 +131,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
             </div>
           </Suspense>
         )}
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };

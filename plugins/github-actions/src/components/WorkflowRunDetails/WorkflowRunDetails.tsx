@@ -13,37 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
-import { useWorkflowRunJobs } from './useWorkflowRunJobs';
-import { useProjectName } from '../useProjectName';
-import {
-  makeStyles,
-  Box,
-  TableRow,
-  TableCell,
-  ListItemText,
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  Typography,
-  ExpansionPanelDetails,
-  TableContainer,
-  Table,
-  Paper,
-  TableBody,
-  LinearProgress,
-  CircularProgress,
-  Theme,
-  Breadcrumbs,
-  Link as MaterialLink,
-} from '@material-ui/core';
-import { Jobs, Job, Step } from '../../api';
-import moment from 'moment';
-import { WorkflowRunStatus } from '../WorkflowRunStatus';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExternalLinkIcon from '@material-ui/icons/Launch';
+
 import { Entity } from '@backstage/catalog-model';
 import { Link } from '@backstage/core';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Breadcrumbs,
+  CircularProgress,
+  LinearProgress,
+  Link as MaterialLink,
+  ListItemText,
+  makeStyles,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Theme,
+  Typography,
+} from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExternalLinkIcon from '@material-ui/icons/Launch';
+import moment from 'moment';
+import React from 'react';
+import { Job, Jobs, Step } from '../../api';
+import { useProjectName } from '../useProjectName';
+import { WorkflowRunStatus } from '../WorkflowRunStatus';
+import { useWorkflowRunJobs } from './useWorkflowRunJobs';
+import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -113,11 +114,8 @@ const StepView = ({ step }: { step: Step }) => {
 const JobListItem = ({ job, className }: { job: Job; className: string }) => {
   const classes = useStyles();
   return (
-    <ExpansionPanel
-      TransitionProps={{ unmountOnExit: true }}
-      className={className}
-    >
-      <ExpansionPanelSummary
+    <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
@@ -128,8 +126,8 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
         <Typography variant="button">
           {job.name} ({getElapsedTime(job.started_at, job.completed_at)})
         </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.expansionPanelDetails}>
         <TableContainer>
           <Table>
             {job.steps.map((step: Step) => (
@@ -137,8 +135,8 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
             ))}
           </Table>
         </TableContainer>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 
