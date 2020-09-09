@@ -76,7 +76,7 @@ export { plugin as TechDocs } from '@backstage/plugin-techdocs';
 TechDocs allows for configuration of the docs storage URL through your
 `app-config` file. We provide two different values to be configured,
 `requestUrl` and `storageUrl`. The `requestUrl` is what the reader will request
-it's data from, and `storageUrl` is where the backend can find the stored
+its data from, and `storageUrl` is where the backend can find the stored
 documentation.
 
 The default storage and request URLs:
