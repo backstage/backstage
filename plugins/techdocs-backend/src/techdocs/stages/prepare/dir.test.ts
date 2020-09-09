@@ -24,8 +24,8 @@ function normalizePath(path: string) {
     .join('/');
 }
 
-jest.mock('./helpers', () => ({
-  ...jest.requireActual<{}>('./helpers'),
+jest.mock('../../../helpers', () => ({
+  ...jest.requireActual<{}>('../../../helpers'),
   checkoutGithubRepository: jest.fn(
     () => '/tmp/backstage-repo/org/name/branch/',
   ),
