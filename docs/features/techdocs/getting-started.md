@@ -28,7 +28,7 @@ installed:
 To create a new Backstage application for TechDocs, run the following command:
 
 ```bash
-npx @backstage/cli create-app
+npx @backstage/create-app
 ```
 
 You will then be prompted to enter a name for your application. Once that's

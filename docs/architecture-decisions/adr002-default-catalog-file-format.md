@@ -68,7 +68,7 @@ metadata:
     lifecycle: production
     example.com/service-discovery-name: frobsawesome
   annotations:
-    circleci.com/project-slug: gh/example-org/frobs-awesome
+    circleci.com/project-slug: github/example-org/frobs-awesome
 spec:
   type: service
 ```

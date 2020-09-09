@@ -16,12 +16,21 @@
 
 import { createRouteRef } from '@backstage/core';
 
-export const rootRoute = createRouteRef({
+const NoIcon = () => null;
+
+export const rootRouteRef = createRouteRef({
+  icon: NoIcon,
   path: '/rollbar',
   title: 'Rollbar Home',
 });
 
-export const rootProjectRoute = createRouteRef({
-  path: '/rollbar/:componentId/*',
+export const entityRouteRef = createRouteRef({
+  path: '/rollbar/:optionalNamespaceAndName',
+  title: 'Rollbar',
+});
+
+export const catalogRouteRef = createRouteRef({
+  icon: NoIcon,
+  path: '',
   title: 'Rollbar',
 });

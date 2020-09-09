@@ -29,79 +29,40 @@ For either simple or advanced installations, you'll need to add the dependency u
 yarn add @backstage/plugin-tech-radar
 ```
 
-### Simple Configuration
+### Configuration
 
-In your `apis.ts` set up the simple "out of the box" implementation for Tech Radar:
-
-```ts
-import { ApiHolder, ApiRegistry } from '@backstage/core';
-import {
-  techRadarApiRef,
-  TechRadar,
-} from '@backstage/plugin-tech-radar';
-
-const builder = ApiRegistry.builder();
-
-builder.add(techRadarApiRef, new TechRadar({
-  width: 1400,
-  height: 800
-));
-
-export default builder.build() as ApiHolder;
-```
-
-Congrats, you're done! We'll just load it with [example data](src/sampleData.ts) to get you started. Just go to <http://localhost:3000/tech-radar> to see it live in action.
-
-And if you'd like to configure it more, such as providing it with your own data, see the `TechRadarApi` TypeScript interface below for the options:
-
-```ts
-export interface TechRadarComponentProps {
-  width: number;
-  height: number;
-  getData?: () => Promise<TechRadarLoaderResponse>;
-  svgProps?: object;
-}
-
-export interface TechRadarApi extends TechRadarComponentProps {
-  title?: string;
-  subtitle?: string;
-}
-```
-
-You can see the API directly over at [src/api.ts](./src/api.ts).
-
-### Advanced Configuration
-
-This way won't expose an `/tech-radar` path. Instead, you'll need to create your own Backstage plugin and use the Tech Radar as any other React UI component.
-
-In your Backstage app, run the following command:
-
-```sh
-yarn create-plugin
-```
-
-In your plugin, in any React component you'd like to import the Tech Radar, do the following:
+Modify your app routes to include the Router component exported from the tech radar, for example:
 
 ```tsx
-import { TechRadarComponent } from '@backstage/plugin-tech-radar';
+import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 
-function MyCustomRadar() {
-  return <TechRadarComponent width={1400} height={800} />;
-}
+// Inside App component
+<Routes>
+  {/* other routes ... */}
+  <Route
+    path="/tech-radar"
+    element={<TechRadarRouter width={1500} height={800} />}
+  />
+  {/* other routes ... */}
+</Routes>;
 ```
 
-If you'd like to configure it more, see the `TechRadarComponentProps` TypeScript interface for options:
+If you'd like to configure it more, see the `TechRadarPageProps` and `TechRadarComponentProps` types for options:
 
 ```ts
-export interface TechRadarComponentProps {
+export type TechRadarPageProps = TechRadarComponentProps & {
+  title?: string;
+  subtitle?: string;
+  pageTitle?: string;
+};
+
+export interface TechRadarPageProps {
   width: number;
   height: number;
   getData?: () => Promise<TechRadarLoaderResponse>;
   svgProps?: object;
 }
 ```
-
-You can see the API directly over at [src/api.ts](./src/api.ts).
 
 ## Frequently Asked Questions
 
@@ -111,7 +72,7 @@ You can see the API directly over at [src/api.ts](./src/api.ts).
 
 ### How do I load in my own data?
 
-It's simple. In both the Simple (Backstage plugin) and Advanced (React component) configurations, you can pass through a `getData` prop which expects a `Promise<TechRadarLoaderResponse>` signature. See more in [src/api.ts](./src/api.ts).
+It's simple, you can pass through a `getData` prop which expects a `Promise<TechRadarLoaderResponse>` signature.
 
 Here's an example:
 
@@ -133,42 +94,21 @@ const getHardCodedData = () =>
     ],
   });
 
-// Simple
-builder.add(techRadarApiRef, new TechRadar({
-  width: 1400,
-  height: 800,
-  getData: getHardCodedData
-));
-
-// Advanced
-<TechRadarComponent width={1400} height={800} getData={getHardCodedData} />
+<TechRadarComponent width={1400} height={800} getData={getHardCodedData} />;
 ```
 
 ### How do I write tests?
 
 You can use the `svgProps` option to pass custom React props to the `<svg>` element we create for the Tech Radar. This complements well with the `data-testid` attribute and the `@testing-library/react` library we use in Backstage.
 
-```ts
-// Simple
-builder.add(
-  techRadarApiRef,
-  new TechRadar({
-    width: 1400,
-    height: 800,
-    svgProps: {
-      'data-testid': 'tech-radar-svg',
-    },
-  }),
-);
-
-// Advanced
+```tsx
 <TechRadarComponent
   width={1400}
   height={800}
   svgProps={{
     'data-testid': 'tech-radar-svg',
   }}
-/>;
+/>
 
 // Then, in your tests...
 // const { getByTestId } = render(...);

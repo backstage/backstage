@@ -24,7 +24,7 @@ import privateExports, {
 } from '@backstage/core-api';
 import { RenderResult } from '@testing-library/react';
 import { renderWithEffects } from '@backstage/test-utils-core';
-import { createMockApiRegistry } from './mockApiRegistry';
+import { mockApis } from './mockApis';
 
 const { PrivateAppImpl } = privateExports;
 
@@ -58,10 +58,9 @@ export function wrapInTestApp(
   options: TestAppOptions = {},
 ): ReactElement {
   const { routeEntries = ['/'] } = options;
-  const apis = createMockApiRegistry();
 
   const app = new PrivateAppImpl({
-    apis,
+    apis: [],
     components: {
       NotFoundErrorPage,
       BootErrorPage,
@@ -80,6 +79,7 @@ export function wrapInTestApp(
         variant: 'light',
       },
     ],
+    defaultApis: mockApis,
   });
 
   let Wrapper: ComponentType;

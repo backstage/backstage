@@ -1,7 +1,7 @@
 ---
 id: software-catalog-overview
 title: Backstage Service Catalog (alpha)
-sidebar_label: Backstage Service Catalog
+sidebar_label: Overview
 ---
 
 ## What is a Service Catalog?
@@ -48,7 +48,7 @@ There are 3 ways to add components to the catalog:
 
 1. Manually register components
 2. Creating new components through Backstage
-3. Integrating with and [external source](external-integrations.md)
+3. Integrating with an [external source](external-integrations.md)
 
 ### Manually register components
 

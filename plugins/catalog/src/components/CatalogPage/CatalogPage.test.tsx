@@ -61,11 +61,9 @@ describe('CatalogPage', () => {
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
   };
-
   const testProfile: Partial<ProfileInfo> = {
     displayName: 'Display Name',
   };
-
   const indentityApi: Partial<IdentityApi> = {
     getUserId: () => 'tools@example.com',
     getProfile: () => testProfile,

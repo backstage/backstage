@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
+import { makeStyles, Typography } from '@material-ui/core';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
+import React from 'react';
 
 const useErrorOutlineStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
@@ -60,9 +60,10 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 type Props = {
   message?: React.ReactNode;
   title?: string;
+  children?: React.ReactNode;
 };
 
-export const WarningPanel: FC<Props> = props => {
+export const WarningPanel = (props: Props) => {
   const classes = useStyles(props);
   const { title, message, children } = props;
   return (

@@ -76,7 +76,7 @@ jobs:
         run: yarn lerna -- run lint --since origin/master
 
       - name: type checking and declarations
-        run: yarn tsc --incremental false
+        run: yarn tsc:full
 
       - name: build changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}

@@ -9,6 +9,7 @@
     "start": "yarn workspace app start",
     "build": "lerna run build",
     "tsc": "tsc",
+    "tsc:full": "tsc --skipLibCheck false --incremental false",
     "clean": "backstage-cli clean && lerna run clean",
     "diff": "lerna run diff --",
     "test": "lerna run test --since origin/master -- --coverage",
