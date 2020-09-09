@@ -20002,9 +20002,9 @@ swagger-ui-react@^3.31.1:
     zenscroll "^4.0.2"
 
 swr@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/swr/-/swr-0.3.0.tgz#69602953dd50ab07fe60c920fd63199256645675"
-  integrity sha512-3p0p5TWH0qiaKAph5wBkMwqe2WjNseITfjmdVoNzjqRZGn/gnpRi6whMDjhMVb/vp/yyDtKWPlyjid8QZH+UhA==
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/swr/-/swr-0.3.2.tgz#1197e06553f71afbc42dba758459f12daea96805"
+  integrity sha512-Bs5Bihq1hQ66O5bdKaL47iZ2nlAaBsd8tTLRLkw9stZeuBEfH7zSuQI95S2TpchL0ybsMq3isWwuso2uPvCfHA==
   dependencies:
     fast-deep-equal "2.0.1"
 
