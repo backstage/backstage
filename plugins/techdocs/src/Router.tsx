@@ -46,6 +46,10 @@ export const EmbeddedDocsRouter = ({ entity }: { entity: Entity }) => {
     return (
       <WarningPanel title="Techdocs plugin:">
         <pre>{TECHDOCS_ANNOTATION}</pre> annotation is missing on the entity.
+        <br />
+        <a href="https://backstage.io/docs/features/techdocs/creating-and-publishing">
+          Getting Started
+        </a>
       </WarningPanel>
     );
   }
