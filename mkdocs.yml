@@ -34,6 +34,7 @@ nav:
           - API: 'features/software-catalog/api.md'
       - Software creation templates:
           - Overview: 'features/software-templates/index.md'
+          - Installation: 'features/software-templates/installation.md'
           - Adding templates: 'features/software-templates/adding-templates.md'
           - Extending the Scaffolder:
               - Overview: 'features/software-templates/extending/index.md'
