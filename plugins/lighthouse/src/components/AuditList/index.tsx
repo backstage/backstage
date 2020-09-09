@@ -16,8 +16,8 @@
 
 import React, { useState, useMemo, FC, ReactNode } from 'react';
 import { useLocalStorage, useAsync } from 'react-use';
-import { useNavigate, Link } from 'react-router-dom';
-import { Grid, Button, Typography } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
+import { Grid, Button } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
 import {

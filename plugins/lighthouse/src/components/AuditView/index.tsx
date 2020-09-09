@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState, useEffect, ReactNode, FC } from 'react';
-import { Link, generatePath, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import {
   makeStyles,
