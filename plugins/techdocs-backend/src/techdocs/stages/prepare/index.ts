@@ -16,4 +16,4 @@
 export { DirectoryPreparer } from './dir';
 export { GithubPreparer } from './github';
 export { Preparers } from './preparers';
-export type { PreparerBuilder } from './types';
+export type { PreparerBuilder, PreparerBase } from './types';
