@@ -81,7 +81,9 @@ const Background = props => {
       <Block className="stripe-bottom bg-black-grey">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>
-            <Block.Title>Make documentation easy</Block.Title>
+            <Block.Title id="techdocs-demo">
+              Make documentation easy
+            </Block.Title>
             <Block.Paragraph>
               Documentation! Everyone needs it, no one wants to create it, and
               no one can ever find it. Backstage follows a “docs like code”
