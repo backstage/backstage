@@ -58,6 +58,29 @@ Currently the catalog supports loading definitions from GitHub + Local Files. To
 load from other places, not only will there need to be another preparer, but the
 support to load the location will also need to be added to the Catalog.
 
+You can add the template files to the catalog through
+[static location configuration](../software-catalog/configuration.md#static-location-configuration),
+for example
+
+```yaml
+catalog:
+  locations:
+    - type: github
+      target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+      rules:
+        - allow: [Template]
+```
+
+Templates can also be added by posting the to the catalog directly. Note that if
+you're doing this, you need to configure the catalog to allow template entities
+to be ingested from any source, for example:
+
+```yaml
+catalog:
+  rules:
+    - allow: [Component, API, Template]
+```
+
 For loading from a file, the following command should work when the backend is
 running:
 

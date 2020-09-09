@@ -26,7 +26,7 @@ refer to the type documentation under
 `plugins/auth-backend/src/providers/types.ts`.
 
 There are currently two different classes for two authentication mechanisms that
-implement this interface: an `OAuthProvider` for [OAuth](https://oauth.net/2/)
+implement this interface: an `OAuthAdapter` for [OAuth](https://oauth.net/2/)
 based mechanisms and a `SAMLAuthProvider` for
 [SAML](http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html)
 based mechanisms.
@@ -50,11 +50,12 @@ OAuth2) providers, you can configure them by setting the right variables in
 Each authentication provider (except SAML) needs five parameters: an OAuth
 client ID, a client secret, an authorization endpoint and a token endpoint, and
 an app origin. The app origin is the URL at which the frontend of the
-application is hosted. This is required because the application opens a popup
-window to perform the authentication, and once the flow is completed, the popup
-window sends a `postMessage` to the frontend application to indicate the result
-of the operation. Also this URL is used to verify that authentication requests
-are coming from only this endpoint.
+application is hosted, and it is read from the `app.baseUrl` config. This is
+required because the application opens a popup window to perform the
+authentication, and once the flow is completed, the popup window sends a
+`postMessage` to the frontend application to indicate the result of the
+operation. Also this URL is used to verify that authentication requests are
+coming from only this endpoint.
 
 These values are configured via the `app-config.yaml` present in the root of
 your app folder.
@@ -64,8 +65,6 @@ auth:
   providers:
     google:
       development:
-        appOrigin: "http://localhost:3000/"
-        secure: false
         clientId:
           $secret:
             env: AUTH_GOOGLE_CLIENT_ID
@@ -74,8 +73,6 @@ auth:
             env: AUTH_GOOGLE_CLIENT_SECRET
     github:
       development:
-        appOrigin: "http://localhost:3000/"
-        secure: false
         clientId:
           $secret:
             env: AUTH_GITHUB_CLIENT_ID
@@ -87,8 +84,6 @@ auth:
             env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:
       development:
-        appOrigin: "http://localhost:3000/"
-        secure: false
         clientId:
           $secret:
             ...
@@ -96,24 +91,34 @@ auth:
 
 ## Technical Notes
 
-### EnvironmentHandler
+### OAuthEnvironmentHandler
 
 The concept of an "env" is core to the way the auth backend works. It uses an
 `env` query parameter to identify the environment in which the application is
 running (`development`, `staging`, `production`, etc). Each runtime can support
 multiple environments at the same time and the right handler for each request is
 identified and dispatched to based on the `env` parameter. All
-`AuthProviderRouteHandlers` are wrapped within an `EnvironmentHandler`.
+`AuthProviderRouteHandlers` are wrapped within an `OAuthEnvironmentHandler`.
 
-An `EnvironmentHandler` takes an ID for each provider that it wraps, the
-handlers for each env the provider is supported in, and a function that, given a
-`Request` as argument, can extract the information about the env under which it
-should be processed.
+To instantiate multiple OAuth providers for different environments, use
+`OAuthEnvironmentHandler.mapConfig`. It's a helper to iterate over a
+configuration object that is a map of environment to configurations. See one of
+the existing OAuth providers for an example of how it is used.
 
-Each provider exposes a factory function `createXProvider` (where X is the name
-of the provider) that takes the global config, env and other parameters and
-returns an `AuthProviderRouteHandlers` for each env, and an `envIdentifier`
-function to identify the env of a request.
+Given the following configuration:
+
+```yaml
+development:
+  clientId: abc
+  clientSecret: secret
+production:
+  clientId: xyz
+  clientSecret: supersecret
+```
+
+The `OAuthEnvironmentHandler.mapConfig(config, envConfig => ...)` call will
+split the `config` by the top level `development` and `production` keys, and
+pass on each block as `envConfig`.
 
 For a list of currently available providers, look in the `factories` module
 located in `plugins/auth-backend/src/providers/factories.ts`

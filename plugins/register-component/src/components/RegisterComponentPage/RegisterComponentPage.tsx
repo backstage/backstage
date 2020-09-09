@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
 import {
   InfoCard,
@@ -26,6 +26,7 @@ import {
   Header,
   SupportButton,
   ContentHeader,
+  RouteRef,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
 import { catalogApiRef } from '@backstage/plugin-catalog';
@@ -54,7 +55,11 @@ const FormStates = {
 } as const;
 
 type ValuesOf<T> = T extends Record<any, infer V> ? V : never;
-const RegisterComponentPage: FC<{}> = () => {
+export const RegisterComponentPage = ({
+  catalogRouteRef,
+}: {
+  catalogRouteRef: RouteRef;
+}) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const [formState, setFormState] = useState<ValuesOf<typeof FormStates>>(
@@ -130,10 +135,9 @@ const RegisterComponentPage: FC<{}> = () => {
           entities={result.data!.entities}
           onClose={() => setFormState(FormStates.Idle)}
           classes={{ paper: classes.dialogPaper }}
+          catalogRouteRef={catalogRouteRef}
         />
       )}
     </Page>
   );
 };
-
-export default RegisterComponentPage;

@@ -6,7 +6,9 @@ title: Add to Marketplace
 ## Adding a Plugin to the Marketplace
 
 To add a new plugin to the [plugin marketplace](https://backstage.io/plugins)
-create a file in `data/plugins` with your plugin's information. Example:
+create a file in
+[`microsite/data/plugins`](https://github.com/spotify/backstage/tree/master/microsite/data/plugins)
+with your plugin's information. Example:
 
 ```yaml
 ---

@@ -63,6 +63,9 @@ async function main() {
 
   print('All tests successful, removing test dir');
   await fs.remove(rootDir);
+
+  // Just in case some child process was left hanging
+  process.exit(0);
 }
 
 /**

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import knex from 'knex';
-import { ConfigReader } from '@backstage/config';
+import knex, { PgConnectionConfig } from 'knex';
+import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
 
 /**
- * Creates a knex sqlite3 database connection
+ * Creates a knex postgres database connection
  *
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
  */
-export function createPgDatabase(
-  dbConfig: ConfigReader,
+export function createPgDatabaseClient(
+  dbConfig: Config,
   overrides?: knex.Config,
 ) {
   const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
@@ -40,24 +40,41 @@ export function createPgDatabase(
  * @param overrides Additional options to merge with the config
  */
 export function buildPgDatabaseConfig(
-  dbConfig: ConfigReader,
+  dbConfig: Config,
   overrides?: knex.Config,
 ) {
-  const connection = dbConfig.get('connection') as any;
-
   return mergeDatabaseConfig(
     dbConfig.get(),
     {
-      // Only parse the connection string when overrides are provided
-      connection:
-        overrides &&
-        (typeof connection === 'string' || connection instanceof String)
-          ? parsePgConnectionString(connection as string)
-          : connection,
+      connection: getPgConnectionConfig(dbConfig, !!overrides),
       useNullAsDefault: true,
     },
     overrides,
   );
+}
+
+/**
+ * Gets the postgres connection config
+ *
+ * @param dbConfig The database config
+ * @param parseConnectionString Flag to explictly control connection string parsing
+ */
+export function getPgConnectionConfig(
+  dbConfig: Config,
+  parseConnectionString?: boolean,
+): PgConnectionConfig | string {
+  const connection = dbConfig.get('connection') as any;
+  const isConnectionString =
+    typeof connection === 'string' || connection instanceof String;
+  const autoParse = typeof parseConnectionString !== 'boolean';
+
+  const shouldParseConnectionString = autoParse
+    ? isConnectionString
+    : parseConnectionString && isConnectionString;
+
+  return shouldParseConnectionString
+    ? parsePgConnectionString(connection as string)
+    : connection;
 }
 
 /**

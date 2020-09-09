@@ -49,6 +49,6 @@ jobs:
 
       - run: yarn tsc
       - name: yarn build
-        run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli --ignore backstage-microsite
+        run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli
       - name: run E2E test
         run: yarn workspace e2e-test start

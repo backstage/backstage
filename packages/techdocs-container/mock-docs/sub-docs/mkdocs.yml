@@ -1,4 +1,4 @@
 site_name: subdocs
 
 nav:
-  - Home 2: "index.md"
+  - Home 2: 'index.md'

@@ -17,8 +17,8 @@
 import { ComponentType } from 'react';
 import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
 import { BackstagePlugin } from '../plugin';
-import { ApiHolder } from '../apis';
-import { AppTheme, ConfigApi, ProfileInfo } from '../apis/definitions';
+import { AnyApiFactory } from '../apis';
+import { AppTheme, ProfileInfo } from '../apis/definitions';
 import { AppConfig } from '@backstage/config';
 
 export type BootErrorPageProps = {
@@ -77,16 +77,12 @@ export type AppComponents = {
  */
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
-// TODO(Rugvip): Temporary workaround for accessing config when instantiating APIs, we might want to do this differently
-export type Apis = ApiHolder | ((config: ConfigApi) => ApiHolder);
-
 export type AppOptions = {
   /**
-   * A holder of all APIs available in the app.
-   *
-   * Use for example ApiRegistry or ApiTestRegistry.
+   * A collection of ApiFactories to register in the application to either
+   * add add new ones, or override factories provided by default or by plugins.
    */
-  apis?: Apis;
+  apis?: Iterable<AnyApiFactory>;
 
   /**
    * Supply icons to override the default ones.
@@ -139,11 +135,6 @@ export type AppOptions = {
 
 export type BackstageApp = {
   /**
-   * Get the holder for all APIs available in the app.
-   */
-  getApis(): ApiHolder;
-
-  /**
    * Returns all plugins registered for the app.
    */
   getPlugins(): BackstagePlugin[];
@@ -168,5 +159,5 @@ export type BackstageApp = {
   /**
    * Routes component that contains all routes for plugin pages in the app.
    */
-  getRoutes(): ComponentType<{}>;
+  getRoutes(): JSX.Element[];
 };

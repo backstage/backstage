@@ -15,7 +15,13 @@ To create a Backstage app, you will need to have
 [NodeJS](https://nodejs.org/en/download/) Active LTS Release installed
 (currently v12).
 
-With `npx`:
+Backstage provides a utility for creating new apps. It guides you through the
+initial setup of selecting the name of the app and a database for the backend.
+The database options are either SQLite or PostgreSQL, where the latter requires
+you to set up a separate database instance. If in doubt, choose SQLite, but
+don't worry about the choice, it's easy to change later!
+
+The easiest way to run the create app package is with `npx`:
 
 ```bash
 npx @backstage/create-app
@@ -25,7 +31,7 @@ This will create a new Backstage App inside the current folder. The name of the
 app-folder is the name that was provided when prompted.
 
 <p align='center'>
-    <img src='https://github.com/spotify/backstage/raw/master/docs/getting-started/create-app_output.png' width='600' alt='create app'>
+  <img src='../assets/getting-started/create-app_output.png' width='600' alt='create app'>
 </p>
 
 Inside that directory, it will generate all the files and folder structure
@@ -80,3 +86,12 @@ yarn start
 
 _When `yarn start` is ready it should open up a browser window displaying your
 app, if not you can navigate to `http://localhost:3000`._
+
+In most cases you will want to start the backend as well, as it is required for
+the catalog to work, along with many other plugins.
+
+To start the backend, open a separate terminal session and run the following:
+
+```bash
+yarn --cwd packages/backend start
+```

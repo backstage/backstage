@@ -9,6 +9,8 @@ for URL in \
   'playback-lib-component.yaml' \
   'www-artist-component.yaml' \
   'shuffle-api-component.yaml' \
+  'petstore-api.yaml' \
+  'streetlights-api.yaml' \
 ; do \
   curl \
     --location \

@@ -15,4 +15,4 @@
  */
 
 export * from './types';
-export { default as OktaAuth } from './OktaAuth'; 
+export { default as OktaAuth } from './OktaAuth';

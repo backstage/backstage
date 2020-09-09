@@ -15,30 +15,36 @@
  */
 
 import knex from 'knex';
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
-import { createPgDatabase } from './postgres';
-import { createSqlite3Database } from './sqlite3';
+import { createPgDatabaseClient } from './postgres';
+import { createSqliteDatabaseClient } from './sqlite3';
 
 type DatabaseClient = 'pg' | 'sqlite3' | string;
 
 /**
  * Creates a knex database connection
  *
- * @param config The database config
+ * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
  */
-export function createDatabase(
-  config: ConfigReader,
+export function createDatabaseClient(
+  dbConfig: Config,
   overrides?: Partial<knex.Config>,
 ) {
-  const client: DatabaseClient = config.getString('client');
+  const client: DatabaseClient = dbConfig.getString('client');
 
   if (client === 'pg') {
-    return createPgDatabase(config, overrides);
+    return createPgDatabaseClient(dbConfig, overrides);
   } else if (client === 'sqlite3') {
-    return createSqlite3Database(config);
+    return createSqliteDatabaseClient(dbConfig);
   }
 
-  return knex(mergeDatabaseConfig(config.get(), overrides));
+  return knex(mergeDatabaseConfig(dbConfig.get(), overrides));
 }
+
+/**
+ * Alias for createDatabaseClient
+ * @deprecated Use createDatabaseClient instead
+ */
+export const createDatabase = createDatabaseClient;

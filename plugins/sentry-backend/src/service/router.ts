@@ -20,6 +20,8 @@ import { getSentryApiForwarder } from './sentry-api';
 
 export async function createRouter(logger: Logger): Promise<express.Router> {
   const router = Router();
+  router.use(express.json());
+
   const SENTRY_TOKEN = process.env.SENTRY_TOKEN;
   if (!SENTRY_TOKEN) {
     if (process.env.NODE_ENV !== 'development') {

@@ -50,7 +50,7 @@ export class CatalogRulesEnforcer {
    */
   static readonly defaultRules: CatalogRule[] = [
     {
-      allow: [{ kind: 'Component' }, { kind: 'API' }],
+      allow: ['Component', 'API', 'Location'].map(kind => ({ kind })),
     },
   ];
 
@@ -64,7 +64,7 @@ export class CatalogRulesEnforcer {
    * If there is no matching rule to allow an ingested entity, it will be rejected by the catalog.
    *
    * It also reads in rules from `catalog.locations`, where each location can have a list
-   * of allowed entity for the location, specified in an `allow` field.
+   * of rules for that specific location, specified in a `rules` field.
    *
    * For example:
    *
@@ -76,10 +76,12 @@ export class CatalogRulesEnforcer {
    *   locations:
    *   - type: github
    *     target: https://github.com/org/repo/blob/master/users.yaml
-   *     allow: [User, Group]
+   *     rules:
+   *       - allow: [User, Group]
    *   - type: github
    *     target: https://github.com/org/repo/blob/master/systems.yaml
-   *     allow: [System]
+   *     rules:
+   *       - allow: [System]
    * ```
    */
   static fromConfig(config: Config) {
@@ -97,22 +99,17 @@ export class CatalogRulesEnforcer {
     if (config.has('catalog.locations')) {
       const locationRules = config
         .getConfigArray('catalog.locations')
-        .flatMap(sub => {
-          if (!sub.has('allow')) {
+        .flatMap(locConf => {
+          if (!locConf.has('rules')) {
             return [];
           }
+          const type = locConf.getString('type');
+          const target = locConf.getString('target');
 
-          return [
-            {
-              allow: sub.getStringArray('allow').map(kind => ({ kind })),
-              locations: [
-                {
-                  type: sub.getString('type'),
-                  target: sub.getString('target'),
-                },
-              ],
-            },
-          ];
+          return locConf.getConfigArray('rules').map(ruleConf => ({
+            allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
+            locations: [{ type, target }],
+          }));
         });
 
       rules.push(...locationRules);

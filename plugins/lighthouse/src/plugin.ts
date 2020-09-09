@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
+import { createPlugin, createApiFactory, configApiRef } from '@backstage/core';
 import AuditList from './components/AuditList';
 import AuditView from './components/AuditView';
 import CreateAudit from './components/CreateAudit';
+import { lighthouseApiRef, LighthouseRestApi } from './api';
 
 export const plugin = createPlugin({
   id: 'lighthouse',
+  apis: [
+    createApiFactory({
+      api: lighthouseApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) => LighthouseRestApi.fromConfig(configApi),
+    }),
+  ],
   register({ router }) {
     router.registerRoute('/lighthouse', AuditList);
     router.registerRoute('/lighthouse/audit/:id', AuditView);

@@ -19,7 +19,6 @@ import express from 'express';
 import Knex from 'knex';
 import fetch from 'node-fetch';
 import { Config } from '@backstage/config';
-import path from 'path';
 import Docker from 'dockerode';
 import {
   GeneratorBuilder,
@@ -27,7 +26,9 @@ import {
   PublisherBase,
   LocalPublish,
 } from '../techdocs';
+import { resolvePackagePath } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { DocsBuilder } from './helpers';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -39,6 +40,11 @@ type RouterOptions = {
   dockerClient: Docker;
 };
 
+const staticDocsDir = resolvePackagePath(
+  '@backstage/plugin-techdocs-backend',
+  'static/docs',
+);
+
 export async function createRouter({
   preparers,
   generators,
@@ -49,80 +55,36 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
 
-  const getEntityId = (entity: Entity) => {
-    return `${entity.kind}:${entity.metadata.namespace ?? ''}:${
-      entity.metadata.name
-    }`;
-  };
-
-  const buildDocsForEntity = async (entity: Entity) => {
-    const preparer = preparers.get(entity);
-    const generator = generators.get(entity);
-
-    logger.info(`[TechDocs] Running preparer on entity ${getEntityId(entity)}`);
-    const preparedDir = await preparer.prepare(entity);
-
-    logger.info(
-      `[TechDocs] Running generator on entity ${getEntityId(entity)}`,
-    );
-    const { resultDir } = await generator.run({
-      directory: preparedDir,
-      dockerClient,
-    });
-
-    logger.info(
-      `[TechDocs] Running publisher on entity ${getEntityId(entity)}`,
-    );
-    await publisher.publish({
-      entity,
-      directory: resultDir,
-    });
-  };
-
-  router.get('/', async (_, res) => {
-    res.status(200).send('Hello TechDocs Backend');
-  });
-
-  // TODO: This route should not exist in the future
-  router.get('/buildall', async (_, res) => {
+  router.get('/docs/:kind/:namespace/:name/*', async (req, res) => {
     const baseUrl = config.getString('backend.baseUrl');
-    const entitiesResponse = (await (
-      await fetch(`${baseUrl}/catalog/entities`)
-    ).json()) as Entity[];
+    const storageUrl = config.getString('techdocs.storageUrl');
 
-    const entitiesWithDocs = entitiesResponse.filter(
-      entity => entity.metadata.annotations?.['backstage.io/techdocs-ref'],
-    );
+    const { kind, namespace, name } = req.params;
 
-    entitiesWithDocs.forEach(async entity => {
-      await buildDocsForEntity(entity);
+    const entity = (await (
+      await fetch(
+        `${baseUrl}/catalog/entities/by-name/${kind}/${namespace}/${name}`,
+      )
+    ).json()) as Entity;
+
+    const docsBuilder = new DocsBuilder({
+      preparers,
+      generators,
+      publisher,
+      dockerClient,
+      logger,
+      entity,
     });
 
-    res.send('Successfully generated documentation');
+    if (!(await docsBuilder.docsUpToDate())) {
+      await docsBuilder.build();
+    }
+
+    return res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
   if (publisher instanceof LocalPublish) {
-    router.use(
-      '/static/docs/',
-      express.static(path.resolve(__dirname, `../../static/docs`)),
-    );
-    router.use(
-      '/static/docs/:kind/:namespace/:name',
-      async (req, res, next) => {
-        const baseUrl = config.getString('backend.baseUrl');
-        const { kind, namespace, name } = req.params;
-
-        const entityResponse = await fetch(
-          `${baseUrl}/catalog/entities/by-name/${kind}/${namespace}/${name}`,
-        );
-        if (!entityResponse.ok) next();
-        const entity = (await entityResponse.json()) as Entity;
-
-        await buildDocsForEntity(entity);
-
-        res.redirect(req.originalUrl);
-      },
-    );
+    router.use('/static/docs', express.static(staticDocsDir));
   }
 
   return router;

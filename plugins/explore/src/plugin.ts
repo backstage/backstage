@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
-import ExplorePluginPage from './components/ExplorePluginPage';
+import { createPlugin, createRouteRef } from '@backstage/core';
 
+export const rootRouteRef = createRouteRef({ path: '', title: 'Explore' });
 export const plugin = createPlugin({
   id: 'explore',
-  register({ router }) {
-    router.registerRoute('/explore', ExplorePluginPage);
-  },
 });

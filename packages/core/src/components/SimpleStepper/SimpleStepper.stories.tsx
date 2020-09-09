@@ -51,7 +51,7 @@ export const ConditionalButtons = () => {
         <TextField
           variant="outlined"
           placeholder="Required*"
-          onChange={(e) => setRequired(!!e.target.value)}
+          onChange={e => setRequired(!!e.target.value)}
         />
       </SimpleStepperStep>
       <SimpleStepperStep title="Step 2">
