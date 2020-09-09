@@ -70,7 +70,6 @@ const AppRoutes = () => (
     />
     <Route path="/graphiql" element={<GraphiQLRouter />} />
     <Route path="/lighthouse/*" element={<LighthouseRouter />} />
-    <Navigate key="/" to="/catalog" />
     {...deprecatedAppRoutes}
   </Routes>
 );
