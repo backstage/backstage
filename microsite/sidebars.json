@@ -37,6 +37,7 @@
         "label": "Software Catalog",
         "ids": [
           "features/software-catalog/software-catalog-overview",
+          "features/software-catalog/installation",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
           "features/software-catalog/extending-the-model",
@@ -49,6 +50,7 @@
         "label": "Software Templates",
         "ids": [
           "features/software-templates/software-templates-index",
+          "features/software-templates/installation",
           "features/software-templates/adding-templates",
           "features/software-templates/extending/extending-index",
           "features/software-templates/extending/extending-templater",
