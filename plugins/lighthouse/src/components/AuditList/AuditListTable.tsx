@@ -23,8 +23,9 @@ import {
   CATEGORY_LABELS,
   buildSparklinesDataForItem,
 } from '../../utils';
-import { Link } from 'react-router-dom';
+import { Link, generatePath } from 'react-router-dom';
 import AuditStatusIcon from '../AuditStatusIcon';
+import { viewAuditRouteRef } from '../../plugin';
 
 const columns: TableColumn[] = [
   {
@@ -98,7 +99,13 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
 
     return {
       websiteUrl: (
-        <Link to={`audit/${website.lastAudit.id}`}>{website.url}</Link>
+        <Link
+          to={generatePath(viewAuditRouteRef.path, {
+            id: website.lastAudit.id,
+          })}
+        >
+          {website.url}
+        </Link>
       ),
       ...trendlines,
       lastReport: (

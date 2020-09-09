@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 import React, { useState, useEffect, ReactNode, FC } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  useParams,
+  useNavigate,
+  generatePath,
+  resolvePath,
+} from 'react-router-dom';
 import { useAsync } from 'react-use';
 import {
   makeStyles,
@@ -42,6 +48,7 @@ import { lighthouseApiRef, Website, Audit } from '../../api';
 import AuditStatusIcon from '../AuditStatusIcon';
 import LighthouseSupportButton from '../SupportButton';
 import { formatTime } from '../../utils';
+import { viewAuditRouteRef, createAuditRouteRef } from '../../plugin';
 
 const useStyles = makeStyles({
   contentGrid: {
@@ -75,7 +82,12 @@ const AuditLinkList: FC<AuditLinkListProps> = ({
         button
         component={Link}
         replace
-        to={`audit/${audit.id}`}
+        to={resolvePath(
+          generatePath(viewAuditRouteRef.path, {
+            id: audit.id,
+          }),
+          '../../',
+        )}
       >
         <ListItemIcon>
           <AuditStatusIcon audit={audit} />
@@ -155,7 +167,7 @@ const ConnectedAuditView: FC<{}> = () => {
     );
   }
 
-  let createAuditButtonUrl = 'create-audit';
+  let createAuditButtonUrl = createAuditRouteRef.path;
   if (value?.url) {
     createAuditButtonUrl += `?url=${encodeURIComponent(value.url)}`;
   }
