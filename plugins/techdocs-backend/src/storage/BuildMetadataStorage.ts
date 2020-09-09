@@ -13,6 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { TechdocsGenerator } from './techdocs';
-export { Generators } from './generators';
-export type { GeneratorBuilder, GeneratorBase } from './types';
+type buildInfo = {
+  // uid: timestamp
+  [key: string]: number;
+};
+
+const builds = {} as buildInfo;
+
+export class BuildMetadataStorage {
+  public entityUid: string;
+  private builds: buildInfo;
+
+  constructor(entityUid: string) {
+    this.entityUid = entityUid;
+    this.builds = builds;
+  }
+
+  storeBuildTimestamp() {
+    this.builds[this.entityUid] = Date.now();
+  }
+
+  getTimestamp() {
+    return this.builds[this.entityUid];
+  }
+}

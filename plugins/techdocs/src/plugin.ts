@@ -60,7 +60,7 @@ export const plugin = createPlugin({
       deps: { configApi: configApiRef },
       factory: ({ configApi }) =>
         new TechDocsStorageApi({
-          apiOrigin: configApi.getString('techdocs.storageUrl'),
+          apiOrigin: configApi.getString('techdocs.requestUrl'),
         }),
     }),
   ],
