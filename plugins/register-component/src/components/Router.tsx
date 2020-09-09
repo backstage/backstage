@@ -13,9 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { Route, Routes } from 'react-router';
+import { RegisterComponentPage } from './RegisterComponentPage';
+import { RouteRef } from '@backstage/core';
 
-import { createPlugin } from '@backstage/core';
-
-export const plugin = createPlugin({
-  id: 'register-component',
-});
+// As we don't know which path the catalog's router mounted on
+// We need to inject this from the app
+export const Router = ({ catalogRouteRef }: { catalogRouteRef: RouteRef }) => (
+  <Routes>
+    <Route
+      element={<RegisterComponentPage catalogRouteRef={catalogRouteRef} />}
+    />
+  </Routes>
+);
