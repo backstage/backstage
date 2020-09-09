@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
-import { InputError } from '@backstage/backend-common';
-import { RemoteProtocol } from './types';
+
+import os from 'os';
+import path from 'path';
 import parseGitUrl from 'git-url-parse';
 import { Clone, Repository } from 'nodegit';
 import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
+// @ts-ignore
+import defaultBranch from 'default-branch';
+import { Entity } from '@backstage/catalog-model';
+import { InputError } from '@backstage/backend-common';
+import { RemoteProtocol } from './techdocs/stages/prepare/types';
 
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
@@ -58,16 +61,43 @@ export const parseReferenceAnnotation = (
   };
 };
 
-export const clearGithubRepositoryCache = () => {
-  fs.removeSync(path.join(fs.realpathSync(os.tmpdir()), 'backstage-repo'));
+export const getLocationForEntity = (
+  entity: Entity,
+): ParsedLocationAnnotation => {
+  const { type, target } = parseReferenceAnnotation(
+    'backstage.io/techdocs-ref',
+    entity,
+  );
+
+  switch (type) {
+    case 'github':
+      return { type, target };
+    case 'dir':
+      if (path.isAbsolute(target)) return { type, target };
+
+      return parseReferenceAnnotation(
+        'backstage.io/managed-by-location',
+        entity,
+      );
+    default:
+      throw new Error(`Invalid reference annotation ${type}`);
+  }
 };
 
-export const checkoutGitRepository = async (
-  repoUrl: string,
+export const getGitHubRepositoryTempFolder = async (
+  repositoryUrl: string,
 ): Promise<string> => {
-  const parsedGitLocation = parseGitUrl(repoUrl);
+  const parsedGitLocation = parseGitUrl(repositoryUrl);
+  // removes .git from git location path
+  parsedGitLocation.git_suffix = false;
 
-  const repositoryTmpPath = path.join(
+  if (!parsedGitLocation.ref) {
+    parsedGitLocation.ref = await defaultBranch(
+      parsedGitLocation.toString('https'),
+    );
+  }
+
+  return path.join(
     // fs.realpathSync fixes a problem with macOS returning a path that is a symlink
     fs.realpathSync(os.tmpdir()),
     'backstage-repo',
@@ -76,48 +106,22 @@ export const checkoutGitRepository = async (
     parsedGitLocation.name,
     parsedGitLocation.ref,
   );
-
-  if (fs.existsSync(repositoryTmpPath)) {
-    const repository = await Repository.open(repositoryTmpPath);
-    const currentBranchName = (await repository.getCurrentBranch()).shorthand();
-    await repository.mergeBranches(
-      currentBranchName,
-      `origin/${currentBranchName}`,
-    );
-    return repositoryTmpPath;
-  }
-
-  const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-
-  fs.mkdirSync(repositoryTmpPath, { recursive: true });
-  await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath, {});
-
-  return repositoryTmpPath;
 };
 
-// Could be merged with checkoutGitRepository
 export const checkoutGithubRepository = async (
   repoUrl: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
+  const repositoryTmpPath = await getGitHubRepositoryTempFolder(repoUrl);
 
-  // Should propably not be hardcoded names of env variables, but seems too hard to access config down here
+  // TODO: Should propably not be hardcoded names of env variables, but seems too hard to access config down here
   const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
   const token = process.env.GITHUB_PRIVATE_TOKEN || '';
-
-  const repositoryTmpPath = path.join(
-    // fs.realpathSync fixes a problem with macOS returning a path that is a symlink
-    fs.realpathSync(os.tmpdir()),
-    'backstage-repo',
-    parsedGitLocation.source,
-    parsedGitLocation.owner,
-    parsedGitLocation.name,
-    parsedGitLocation.ref,
-  );
 
   if (fs.existsSync(repositoryTmpPath)) {
     const repository = await Repository.open(repositoryTmpPath);
     const currentBranchName = (await repository.getCurrentBranch()).shorthand();
+    await repository.fetch('origin');
     await repository.mergeBranches(
       currentBranchName,
       `origin/${currentBranchName}`,
@@ -135,4 +139,15 @@ export const checkoutGithubRepository = async (
   await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath);
 
   return repositoryTmpPath;
+};
+
+export const getLastCommitTimestamp = async (
+  repositoryUrl: string,
+): Promise<number> => {
+  const repositoryLocation = await checkoutGithubRepository(repositoryUrl);
+
+  const repository = await Repository.open(repositoryLocation);
+  const commit = await repository.getReferenceCommit('HEAD');
+
+  return commit.date().getTime();
 };

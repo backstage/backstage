@@ -87,7 +87,7 @@ export const apis = (config: ConfigApi) => {
   console.log(`Creating APIs for ${config.getString('app.title')}`);
 
   const backendUrl = config.getString('backend.baseUrl');
-  const techdocsUrl = config.getString('techdocs.storageUrl');
+  const techdocsUrl = config.getString('techdocs.requestUrl');
 
   const builder = ApiRegistry.builder();
 
