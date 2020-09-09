@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-import { ApiEntityV1alpha1 } from '@backstage/catalog-model';
+import { ApiEntity } from '@backstage/catalog-model';
 import { InfoCard } from '@backstage/core';
 import React from 'react';
-import { ApiDefinitionWidget } from '../ApiDefinitionWidget/ApiDefinitionWidget';
+import { ApiDefinitionWidget } from '../ApiDefinitionWidget';
+import { Alert } from '@material-ui/lab';
 
 type Props = {
   title?: string;
-  apiEntity: ApiEntityV1alpha1;
+  apiEntity?: ApiEntity;
 };
 
 export const ApiDefinitionCard = ({ title, apiEntity }: Props) => {
-  const type = apiEntity?.spec?.type || '';
-  const definition = apiEntity?.spec?.definition || '';
+  if (!apiEntity) {
+    return (
+      <InfoCard title={title}>
+        <Alert severity="error">Could not fetch the API</Alert>
+      </InfoCard>
+    );
+  }
 
   return (
-    <InfoCard title={title} subheader={type}>
-      <ApiDefinitionWidget type={type} definition={definition} />
+    <InfoCard title={title} subheader={apiEntity.spec.type}>
+      <ApiDefinitionWidget
+        type={apiEntity.spec.type}
+        definition={apiEntity.spec.definition}
+      />
     </InfoCard>
   );
 };

@@ -20,6 +20,13 @@ import Docker from 'dockerode';
 import { runDockerContainer } from './helpers';
 
 describe('helpers', () => {
+  if (process.platform === 'win32') {
+    // eslint-disable-next-line jest/no-focused-tests
+    it.only('should skip tests on windows', () => {
+      expect('test').not.toBe('run');
+    });
+  }
+
   const mockDocker = new Docker() as jest.Mocked<Docker>;
 
   beforeEach(() => {

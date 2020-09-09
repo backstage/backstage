@@ -15,15 +15,13 @@
  */
 
 import { useAsync } from 'react-use';
-import { catalogApiRef, EntityCompoundName } from '@backstage/plugin-catalog';
-import { useApi } from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
 
-export const useProjectName = (name: EntityCompoundName) => {
-  const catalogApi = useApi(catalogApiRef);
+export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
+export const useProjectName = (entity: Entity) => {
   const { value, loading, error } = useAsync(async () => {
-    const entity = await catalogApi.getEntityByName(name);
-    return entity?.metadata.annotations?.['github.com/project-slug'] ?? '';
+    return entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '';
   });
   return { value, loading, error };
 };

@@ -23,17 +23,15 @@ import {
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
-} from '../../lib/PassportStrategyHelper';
-import {
-  AuthProviderConfig,
-  AuthProviderRouteHandlers,
   PassportDoneCallback,
+} from '../../lib/passport';
+import {
+  AuthProviderRouteHandlers,
   ProfileInfo,
+  AuthProviderFactory,
 } from '../types';
-import { postMessageResponse } from '../../lib/OAuthProvider';
-import { Logger } from 'winston';
+import { postMessageResponse } from '../../lib/flow';
 import { TokenIssuer } from '../../identity';
-import { Config } from '@backstage/config';
 
 type SamlInfo = {
   userId: string;
@@ -119,15 +117,12 @@ type SAMLProviderOptions = {
   tokenIssuer: TokenIssuer;
 };
 
-export function createSamlProvider(
-  _authProviderConfig: AuthProviderConfig,
-  _env: string,
-  envConfig: Config,
-  _logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const entryPoint = envConfig.getString('entryPoint');
-  const issuer = envConfig.getString('issuer');
+export const createSamlProvider: AuthProviderFactory = ({
+  config,
+  tokenIssuer,
+}) => {
+  const entryPoint = config.getString('entryPoint');
+  const issuer = config.getString('issuer');
   const opts = {
     entryPoint,
     issuer,
@@ -136,4 +131,4 @@ export function createSamlProvider(
   };
 
   return new SamlAuthProvider(opts);
-}
+};

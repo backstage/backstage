@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAsyncRetry } from 'react-use';
-import { circleCIApiRef, GitType } from '../api/index';
+import { circleCIApiRef } from '../api/index';
 import { useAsyncPolling } from './useAsyncPolling';
-import { useSettings } from './useSettings';
+import { useProjectSlugFromEntity, mapVcsType } from './useBuilds';
 
 const INTERVAL_AMOUNT = 1500;
 export function useBuildWithSteps(buildId: number) {
-  const [{ token, repo, owner }] = useSettings();
+  const { vcs, repo, owner } = useProjectSlugFromEntity();
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 
+  const vcsOption = useMemo(
+    () => ({
+      owner: owner,
+      repo: repo,
+      type: mapVcsType(vcs),
+    }),
+    [owner, repo, vcs],
+  );
+
   const getBuildWithSteps = useCallback(async () => {
-    if (owner === '' || repo === '' || token === '') {
+    if (owner === '' || repo === '' || vcs === '') {
       return Promise.reject('No credentials provided');
     }
 
     try {
       const options = {
-        token: token,
-        vcs: {
-          owner: owner,
-          repo: repo,
-          type: GitType.GITHUB,
-        },
+        vcs: vcsOption,
       };
       const build = await api.getBuild(buildId, options);
       return Promise.resolve(build);
@@ -46,17 +50,12 @@ export function useBuildWithSteps(buildId: number) {
       errorApi.post(e);
       return Promise.reject(e);
     }
-  }, [token, owner, repo, buildId, api, errorApi]);
+  }, [vcsOption, buildId, api, errorApi]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const restartBuild = async () => {
     try {
       await api.retry(buildId, {
-        token: token,
-        vcs: {
-          owner: owner,
-          repo: repo,
-          type: GitType.GITHUB,
-        },
+        vcs: vcsOption,
       });
     } catch (e) {
       errorApi.post(e);

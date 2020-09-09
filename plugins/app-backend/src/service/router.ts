@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath, dirname } from 'path';
-import { notFoundHandler } from '@backstage/backend-common';
+import { resolve as resolvePath } from 'path';
+import { notFoundHandler, resolvePackagePath } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -23,19 +23,14 @@ import { injectEnvConfig } from '../lib/config';
 
 export interface RouterOptions {
   logger: Logger;
-  appPackageName?: string;
+  appPackageName: string;
   staticFallbackHandler?: express.Handler;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const appDistDir = resolvePath(
-    dirname(
-      __non_webpack_require__.resolve(`${options.appPackageName}/package.json`),
-    ),
-    'dist',
-  );
+  const appDistDir = resolvePackagePath(options.appPackageName, 'dist');
   options.logger.info(`Serving static app content from ${appDistDir}`);
 
   await injectEnvConfig({

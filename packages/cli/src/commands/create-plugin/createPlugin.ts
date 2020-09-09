@@ -28,6 +28,7 @@ import {
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
 import { Task, templatingTask } from '../../lib/tasks';
+import { version as backstageVersion } from '../../lib/version';
 
 const exec = promisify(execCb);
 
@@ -239,7 +240,11 @@ export default async () => {
     await createTemporaryPluginFolder(tempDir);
 
     Task.section('Preparing files');
-    await templatingTask(templateDir, tempDir, { ...answers, version });
+    await templatingTask(templateDir, tempDir, {
+      ...answers,
+      version,
+      backstageVersion,
+    });
 
     Task.section('Moving to final location');
     await movePlugin(tempDir, pluginDir, answers.id);

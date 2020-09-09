@@ -8,6 +8,20 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 > Collect changes for the next release below
 
+- Material-UI: Bumped to 4.11.0, which is the version that create-app will
+  resolve to, because we wanted to get the renaming of ExpansionPanel to
+  Accordion into place. This gets rid of a lot of console deprecation warnings
+  in newly scaffolded apps.
+
+- The backend plugin
+  [service builder](https://github.com/spotify/backstage/blob/master/packages/backend-common/src/service/lib/ServiceBuilderImpl.ts)
+  no longer adds `express.json()` automatically to all routes. While convenient
+  in a lot of cases, it also led to problems where for example the proxy
+  middleware could hang because the body had already been altered and could not
+  be streamed. Also, plugins that rather wanted to handle e.g. form encoded data
+  still had to cater to that manually. We therefore decided to let plugins add
+  `express.json()` themselves if they happen to deal with JSON data.
+
 ## v0.1.1-alpha.20
 
 - Includes https://github.com/spotify/backstage/pull/2097 to resolve issues with create-plugin command.

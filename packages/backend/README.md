@@ -37,6 +37,7 @@ yarn start
 
 Substitute `x` for actual values, or leave them as
 dummy values just to try out the backend without using the auth or sentry features.
+You can also, instead of using dummy values for a huge number of environment variables, remove those config directly from app-config.yaml file located in the root folder.
 
 The backend starts up on port 7000 per default.
 

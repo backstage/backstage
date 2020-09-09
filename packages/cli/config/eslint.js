@@ -39,7 +39,7 @@ module.exports = {
       version: 'detect',
     },
   },
-  ignorePatterns: ['.eslintrc.js', '**/dist/**'],
+  ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
     'import/newline-after-import': 'error',
     'import/no-duplicates': 'warn',
@@ -56,7 +56,12 @@ module.exports = {
     '@typescript-eslint/no-unused-expressions': 'error',
     '@typescript-eslint/no-unused-vars': [
       'warn',
-      { vars: 'all', args: 'after-used', ignoreRestSiblings: true },
+      {
+        vars: 'all',
+        args: 'after-used',
+        ignoreRestSiblings: true,
+        argsIgnorePattern: '^_',
+      },
     ],
     'no-restricted-imports': [
       2,

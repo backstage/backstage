@@ -7,14 +7,14 @@ metadata:
     component: ingress
 spec:
   rules:
-  - host: <HOSTNAME>
-    http:
-      paths:
-      - backend:
-          serviceName: backstage
-          servicePort: frontend
-        path: /
-      - backend:
-          serviceName: backstage-backend
-          servicePort: backend
-        path: /backend
+    - host: <HOSTNAME>
+      http:
+        paths:
+          - backend:
+              serviceName: backstage
+              servicePort: frontend
+            path: /
+          - backend:
+              serviceName: backstage-backend
+              servicePort: backend
+            path: /backend
