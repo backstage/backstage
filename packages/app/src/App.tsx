@@ -19,6 +19,7 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
+  createRouteRef,
 } from '@backstage/core';
 import React, { FC } from 'react';
 import Root from './components/Root';
@@ -31,6 +32,7 @@ import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
+import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Route, Routes, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
@@ -56,11 +58,16 @@ const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
 const deprecatedAppRoutes = app.getRoutes();
 
+const catalogRouteRef = createRouteRef({
+  path: '/catalog',
+  title: 'Service Catalog',
+});
+
 const AppRoutes = () => (
   <Routes>
     <Navigate key="/" to="/catalog" />
     <Route
-      path="/catalog/*"
+      path={`${catalogRouteRef.path}/*`}
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
     <Route path="/docs/*" element={<DocsRouter />} />
@@ -70,6 +77,10 @@ const AppRoutes = () => (
     />
     <Route path="/graphiql" element={<GraphiQLRouter />} />
     <Route path="/lighthouse/*" element={<LighthouseRouter />} />
+    <Route
+      path="/register-component"
+      element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
+    />
     {...deprecatedAppRoutes}
   </Routes>
 );
