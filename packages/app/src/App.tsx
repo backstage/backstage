@@ -28,6 +28,7 @@ import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Route, Routes, Navigate } from 'react-router';
 
@@ -66,6 +67,7 @@ const AppRoutes = () => (
       path="/tech-radar"
       element={<TechRadarRouter width={1500} height={800} />}
     />
+    <Route path="/graphiql" element={<GraphiQLRouter />} />
     {...deprecatedAppRoutes}
   </Routes>
 );

@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-export type Settings = { owner: string; repo: string; token: string };
-export type SettingsState = Settings & {
-  showSettings: boolean;
-};
+import {
+  storageApiRef,
+  errorApiRef,
+  createApiFactory,
+} from '@backstage/core-api';
+import { MockErrorApi, MockStorageApi } from './apis';
 
-export type State = SettingsState;
-
-type SettingsAction =
-  | {
-      type: 'setCredentials';
-      payload: {
-        repo: string;
-        owner: string;
-        token: string;
-      };
-    }
-  | { type: 'showSettings' }
-  | { type: 'hideSettings' };
-
-export type Action = SettingsAction;
+export const mockApis = [
+  createApiFactory(errorApiRef, new MockErrorApi()),
+  createApiFactory(storageApiRef, MockStorageApi.create()),
+];

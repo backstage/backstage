@@ -14,15 +14,36 @@
  * limitations under the License.
  */
 
-import { ApiFactory } from './types';
+import { ApiFactory, TypesToApiRefs } from './types';
+import { ApiRef } from './ApiRef';
 
 /**
  * Used to infer types for a standalone ApiFactory that isn't immediately passed
  * to another function.
  * This function doesn't actually do anything, it's only used to infer types.
  */
-export function createApiFactory<Api, Impl, Deps>(
-  factory: ApiFactory<Api, Impl, Deps>,
-): ApiFactory<Api, Impl, Deps> {
+export function createApiFactory<
+  Api,
+  Impl extends Api,
+  Deps extends { [name in string]: unknown }
+>(factory: ApiFactory<Api, Deps>): ApiFactory<Api, Deps>;
+export function createApiFactory<Api>(
+  api: ApiRef<Api>,
+  instance: Api,
+): ApiFactory<Api, {}>;
+export function createApiFactory<
+  Api,
+  Deps extends { [name in string]: unknown }
+>(
+  factory: ApiFactory<Api, Deps> | ApiRef<Api>,
+  instance?: Api,
+): ApiFactory<Api, Deps> {
+  if ('id' in factory) {
+    return {
+      api: factory,
+      deps: {} as TypesToApiRefs<Deps>,
+      factory: () => instance!,
+    };
+  }
   return factory;
 }
