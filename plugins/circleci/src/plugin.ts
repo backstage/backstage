@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createPlugin, createApiFactory, configApiRef } from '@backstage/core';
-import { circleCIRouteRef, circleCIBuildRouteRef } from './route-refs';
-import BuildsPage from './pages/BuildsPage/BuildsPage';
-import BuildWithStepsPage from './pages/BuildWithStepsPage/BuildWithStepsPage';
 import { circleCIApiRef, CircleCIApi } from './api';
 
 export const plugin = createPlugin({
@@ -31,8 +29,4 @@ export const plugin = createPlugin({
         ),
     }),
   ],
-  register({ router }) {
-    router.addRoute(circleCIRouteRef, BuildsPage);
-    router.addRoute(circleCIBuildRouteRef, BuildWithStepsPage);
-  },
 });

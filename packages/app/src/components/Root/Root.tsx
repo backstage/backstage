@@ -19,7 +19,6 @@ import PropTypes from 'prop-types';
 import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
-import BuildIcon from '@material-ui/icons/BuildRounded';
 import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
 import MapIcon from '@material-ui/icons/MyLocation';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
@@ -97,7 +96,6 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarDivider />
       <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
       <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
-      <SidebarItem icon={BuildIcon} to="circleci" text="CircleCI" />
       <SidebarItem
         icon={graphiQLRouteRef.icon!}
         to={graphiQLRouteRef.path}

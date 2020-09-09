@@ -17,7 +17,7 @@ import React, { FC } from 'react';
 import { Link, Typography, Box, IconButton } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
 import {
   StatusError,
   StatusWarning,
@@ -27,6 +27,7 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core';
+import { circleCIBuildRouteRef } from '../../../../route-refs';
 
 export type CITableBuildInfo = {
   id: string;
@@ -80,7 +81,10 @@ const generatedColumns: TableColumn[] = [
     field: 'buildName',
     highlight: true,
     render: (row: Partial<CITableBuildInfo>) => (
-      <Link component={RouterLink} to={`/circleci/build/${row.id}`}>
+      <Link
+        component={RouterLink}
+        to={`${generatePath(circleCIBuildRouteRef.path, { buildId: row.id! })}`}
+      >
         {row.buildName}
       </Link>
     ),

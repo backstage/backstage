@@ -32,10 +32,7 @@ type Props = {
 export const Router = ({ entity }: Props) =>
   !isPluginApplicableToEntity(entity) ? (
     <WarningPanel title="Rollbar plugin:">
-      <pre>
-        entity.metadata.annotations['{ROLLBAR_ANNOTATION}']` key is missing on
-        the entity.
-      </pre>
+      <pre>{ROLLBAR_ANNOTATION}</pre> annotation is missing on the entity.
     </WarningPanel>
   ) : (
     <Routes>

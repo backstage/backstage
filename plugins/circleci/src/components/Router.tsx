@@ -13,36 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { Entity } from '@backstage/catalog-model';
 import { Routes, Route } from 'react-router';
-import { rootRouteRef, buildRouteRef } from '../plugin';
-import { WorkflowRunDetails } from './WorkflowRunDetails';
-import { WorkflowRunsTable } from './WorkflowRunsTable';
-import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
+import { circleCIRouteRef, circleCIBuildRouteRef } from '../route-refs';
+import { BuildWithStepsPage } from './BuildWithStepsPage/';
+import { BuildsPage } from './BuildsPage';
+import { CIRCLECI_ANNOTATION } from '../constants';
+import { Entity } from '@backstage/catalog-model';
 import { WarningPanel } from '@backstage/core';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]) &&
-  entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] !== '';
+  Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]) &&
+  entity.metadata.annotations?.[CIRCLECI_ANNOTATION] !== '';
 
 export const Router = ({ entity }: { entity: Entity }) =>
-  // TODO(shmidt-i): move warning to a separate standardized component
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title=" GitHubActions plugin:">
-      <pre>{GITHUB_ACTIONS_ANNOTATION}</pre> annotation is missing on the
-      entity.
+    <WarningPanel title="CircleCI plugin:">
+      <pre>{CIRCLECI_ANNOTATION}</pre> annotation is missing on the entity.
     </WarningPanel>
   ) : (
     <Routes>
+      <Route path={`/${circleCIRouteRef.path}`} element={<BuildsPage />} />
       <Route
-        path={`/${rootRouteRef.path}`}
-        element={<WorkflowRunsTable entity={entity} />}
+        path={`/${circleCIBuildRouteRef.path}`}
+        element={<BuildWithStepsPage />}
       />
-      <Route
-        path={`/${buildRouteRef.path}`}
-        element={<WorkflowRunDetails entity={entity} />}
-      />
-      )
     </Routes>
   );

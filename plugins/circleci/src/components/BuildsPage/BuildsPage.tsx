@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { Builds } from './lib/Builds';
+import { Grid } from '@material-ui/core';
 
-export type Settings = { owner: string; repo: string; token: string };
-export type SettingsState = Settings & {
-  showSettings: boolean;
-};
-
-export type State = SettingsState;
-
-type SettingsAction =
-  | {
-      type: 'setCredentials';
-      payload: {
-        repo: string;
-        owner: string;
-        token: string;
-      };
-    }
-  | { type: 'showSettings' }
-  | { type: 'hideSettings' };
-
-export type Action = SettingsAction;
+export const BuildsPage = () => (
+  <Grid container spacing={3} direction="column">
+    <Grid item>
+      <Builds />
+    </Grid>
+  </Grid>
+);
