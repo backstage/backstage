@@ -16,7 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { GithubPreparer } from './github';
-import { checkoutGithubRepository } from './helpers';
+import { checkoutGithubRepository } from '../../../helpers';
 
 function normalizePath(path: string) {
   return path
