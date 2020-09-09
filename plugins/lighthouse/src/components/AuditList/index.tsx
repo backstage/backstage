@@ -16,8 +16,8 @@
 
 import React, { useState, useMemo, FC, ReactNode } from 'react';
 import { useLocalStorage, useAsync } from 'react-use';
-import { useNavigate } from 'react-router-dom';
-import { Grid, Button } from '@material-ui/core';
+import { useNavigate, Link } from 'react-router-dom';
+import { Grid, Button, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
 import {
@@ -37,6 +37,7 @@ import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 import LighthouseIntro, { LIGHTHOUSE_INTRO_LOCAL_STORAGE } from '../Intro';
 import AuditListTable from './AuditListTable';
+import { createAuditRouteRef } from '../../plugin';
 
 export const LIMIT = 10;
 
@@ -77,7 +78,7 @@ const AuditList: FC<{}> = () => {
             page={page}
             count={pageCount}
             onChange={(_event: Event, newPage: number) => {
-              navigate(`/lighthouse?page=${newPage}`);
+              navigate(`?page=${newPage}`);
             }}
           />
         )}
@@ -111,7 +112,7 @@ const AuditList: FC<{}> = () => {
           <Button
             variant="contained"
             color="primary"
-            href="/lighthouse/create-audit"
+            onClick={() => navigate(createAuditRouteRef.path)}
           >
             Create Audit
           </Button>

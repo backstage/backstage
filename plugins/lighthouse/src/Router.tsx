@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export { Router } from './Router';
-export * from './api';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { rootRouteRef, viewAuditRouteRef, createAuditRouteRef } from './plugin';
+import AuditList from './components/AuditList';
+import AuditView from './components/AuditView';
+import CreateAudit from './components/CreateAudit';
+
+export const Router = () => (
+  <Routes>
+    <Route path={`/${rootRouteRef.path}`} element={<AuditList />} />
+    <Route path={`/${viewAuditRouteRef.path}`} element={<AuditView />} />
+    <Route path={`/${createAuditRouteRef.path}`} element={<CreateAudit />} />
+  </Routes>
+);

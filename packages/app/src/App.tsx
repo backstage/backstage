@@ -30,6 +30,7 @@ import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Route, Routes, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
@@ -68,6 +69,8 @@ const AppRoutes = () => (
       element={<TechRadarRouter width={1500} height={800} />}
     />
     <Route path="/graphiql" element={<GraphiQLRouter />} />
+    <Route path="/lighthouse/*" element={<LighthouseRouter />} />
+    <Navigate key="/" to="/catalog" />
     {...deprecatedAppRoutes}
   </Routes>
 );

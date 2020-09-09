@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState, useEffect, ReactNode, FC } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, generatePath, useParams, useNavigate } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import {
   makeStyles,
@@ -75,7 +75,7 @@ const AuditLinkList: FC<AuditLinkListProps> = ({
         button
         component={Link}
         replace
-        to={`/lighthouse/audit/${audit.id}`}
+        to={`audit/${audit.id}`}
       >
         <ListItemIcon>
           <AuditStatusIcon audit={audit} />
@@ -116,6 +116,7 @@ const ConnectedAuditView: FC<{}> = () => {
   const lighthouseApi = useApi(lighthouseApiRef);
   const params = useParams() as { id: string };
   const classes = useStyles();
+  const navigate = useNavigate();
 
   const { loading, error, value: nextValue } = useAsync(
     async () => await lighthouseApi.getWebsiteForAuditId(params.id),
@@ -154,7 +155,7 @@ const ConnectedAuditView: FC<{}> = () => {
     );
   }
 
-  let createAuditButtonUrl = '/lighthouse/create-audit';
+  let createAuditButtonUrl = 'create-audit';
   if (value?.url) {
     createAuditButtonUrl += `?url=${encodeURIComponent(value.url)}`;
   }
@@ -176,9 +177,9 @@ const ConnectedAuditView: FC<{}> = () => {
           <Button
             variant="contained"
             color="primary"
-            href={createAuditButtonUrl}
+            onClick={() => navigate(`../../${createAuditButtonUrl}`)}
           >
-            Create Audit
+            Create New Audit
           </Button>
           <LighthouseSupportButton />
         </ContentHeader>

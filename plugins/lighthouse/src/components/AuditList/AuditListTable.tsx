@@ -23,7 +23,7 @@ import {
   CATEGORY_LABELS,
   buildSparklinesDataForItem,
 } from '../../utils';
-import { Link } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import AuditStatusIcon from '../AuditStatusIcon';
 
 const columns: TableColumn[] = [
@@ -94,9 +94,7 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
 
     return {
       websiteUrl: (
-        <Link href={`/lighthouse/audit/${website.lastAudit.id}`}>
-          {website.url}
-        </Link>
+        <Link to={`audit/${website.lastAudit.id}`}>{website.url}</Link>
       ),
       ...trendlines,
       lastReport: (
