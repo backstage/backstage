@@ -19,11 +19,13 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  CircularProgress,
   LinearProgress,
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import cn from 'classnames';
 import moment from 'moment';
 import React, { Suspense, useEffect, useState } from 'react';
@@ -38,8 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     order: -1,
-    marginRight: 0,
-    marginLeft: '-20px',
+    margin: '0 1em 0 -20px',
   },
   cardContent: {
     backgroundColor: theme.palette.background.default,
@@ -110,7 +111,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
       onChange={(_, newState) => setExpanded(newState)}
     >
       <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
+        expandIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
         IconButtonProps={{
@@ -118,7 +119,8 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
         }}
       >
         <Typography variant="button">
-          {name} {timeElapsed && `(${timeElapsed})`}
+          {name} {timeElapsed && `(${timeElapsed})`}{' '}
+          {startedAt && !endedAt && <CircularProgress size="1em" />}
         </Typography>
       </AccordionSummary>
       <AccordionDetails className={classes.expansionPanelDetails}>
