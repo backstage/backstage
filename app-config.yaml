@@ -1,22 +1,27 @@
 app:
   title: Backstage Example App
-  baseUrl: http://localhost:3000
+  baseUrl: http://localhost:7000
 
 backend:
   baseUrl: http://localhost:7000
   listen:
     port: 7000
-  cors:
-    origin: http://localhost:3000
-    methods: [GET, POST, PUT, DELETE]
-    credentials: true
   database:
     client: sqlite3
     connection: ':memory:'
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  '/circleci/api': https://circleci.com/api/v1.1
+  '/circleci/api':
+    target: https://circleci.com/api/v1.1
+    changeOrigin: true
+    pathRewrite:
+      '^/proxy/circleci/api/': '/'
+    headers:
+      Circle-Token:
+        $secret:
+          env: CIRCLECI_AUTH_TOKEN
+
   '/jenkins/api':
     target: http://localhost:8080
     headers:

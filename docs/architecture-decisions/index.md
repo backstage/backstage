@@ -4,7 +4,7 @@ title: Architecture Decision Records (ADR)
 sidebar_label: Overview
 ---
 
-The substantial architecture decisions made in the Backstage project lives here.
+The substantial architecture decisions made in the Backstage project live here.
 For more information about ADRs, when to write them, and why, please see
 [this blog post](https://engineering.atspotify.com/2020/04/14/when-should-i-write-an-architecture-decision-record/).
 

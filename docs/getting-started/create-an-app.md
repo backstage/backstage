@@ -80,3 +80,12 @@ yarn start
 
 _When `yarn start` is ready it should open up a browser window displaying your
 app, if not you can navigate to `http://localhost:3000`._
+
+In most cases you will want to start the backend as well, as it is required for
+the catalog to work, along with many other plugins.
+
+To start the backend, open a separate terminal session and run the following:
+
+```bash
+yarn --cwd packages/backend start
+```

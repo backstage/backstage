@@ -96,6 +96,8 @@ describe('GitHubPreparer', () => {
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity);
 
-    expect(response).toMatch(new RegExp(/\/template\/test\/1\/2\/3$/));
+    expect(response.split('\\').join('/')).toMatch(
+      /\/template\/test\/1\/2\/3$/,
+    );
   });
 });

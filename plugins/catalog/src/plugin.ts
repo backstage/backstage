@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
+import {
+  createPlugin,
+  createApiFactory,
+  discoveryApiRef,
+} from '@backstage/core';
+import { catalogApiRef } from './api/types';
+import { CatalogClient } from './api/CatalogClient';
 
 export const plugin = createPlugin({
   id: 'catalog',
+  apis: [
+    createApiFactory({
+      api: catalogApiRef,
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
+    }),
+  ],
 });
