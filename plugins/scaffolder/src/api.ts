@@ -53,7 +53,7 @@ export class ScaffolderApi {
     if (response.status !== 201) {
       const status = `${response.status} ${response.statusText}`;
       const body = await response.text();
-      throw new Error(`Backend request failed, ${status} ${body}`);
+      throw new Error(`Backend request failed, ${status} ${body.trim()}`);
     }
 
     const { id } = await response.json();
