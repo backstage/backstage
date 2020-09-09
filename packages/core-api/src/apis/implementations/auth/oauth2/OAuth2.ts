@@ -42,6 +42,7 @@ type CreateOptions = {
 
   environment?: string;
   provider?: AuthProvider & { id: string };
+  defaultScopes?: string[];
 };
 
 export type OAuth2Response = {
@@ -61,8 +62,6 @@ const DEFAULT_PROVIDER = {
   icon: OAuth2Icon,
 };
 
-const SCOPE_PREFIX = '';
-
 class OAuth2
   implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, SessionStateApi {
   static create({
@@ -70,6 +69,7 @@ class OAuth2
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
+    defaultScopes = [],
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
@@ -93,11 +93,7 @@ class OAuth2
 
     const sessionManager = new RefreshingAuthSessionManager({
       connector,
-      defaultScopes: new Set([
-        'openid',
-        `${SCOPE_PREFIX}userinfo.email`,
-        `${SCOPE_PREFIX}userinfo.profile`,
-      ]),
+      defaultScopes: new Set(defaultScopes),
       sessionScopes: (session: OAuth2Session) => session.providerInfo.scopes,
       sessionShouldRefresh: (session: OAuth2Session) => {
         const expiresInSec =
