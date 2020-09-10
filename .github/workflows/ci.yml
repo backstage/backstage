@@ -101,6 +101,11 @@ jobs:
           yarn lerna -- run test -- --coverage
           bash <(curl -s https://codecov.io/bash)
 
+      - name: upload coverage
+        run: |
+          yarn test:all
+          bash <(curl -s https://codecov.io/bash)
+
       - name: verify plugin template
         run: yarn lerna -- run diff -- --check
 
