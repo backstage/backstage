@@ -17,4 +17,5 @@
 export { plugin } from './plugin';
 export * from './api';
 export * from './route-refs';
-export { CircleCIWidget } from './components/CircleCIWidget';
+export { Router, isPluginApplicableToEntity } from './components/Router';
+export { CIRCLECI_ANNOTATION } from './constants';

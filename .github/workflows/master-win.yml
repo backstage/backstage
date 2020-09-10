@@ -43,7 +43,7 @@ jobs:
         run: yarn lerna -- run lint
 
       - name: type checking and declarations
-        run: yarn tsc --incremental false
+        run: yarn tsc:full
 
       - name: verify type dependencies
         run: yarn lint:type-deps

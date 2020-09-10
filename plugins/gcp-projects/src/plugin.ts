@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
+import {
+  createPlugin,
+  createRouteRef,
+  createApiFactory,
+} from '@backstage/core';
 import { ProjectListPage } from './components/ProjectListPage';
 import { ProjectDetailsPage } from './components/ProjectDetailsPage';
 import { NewProjectPage } from './components/NewProjectPage';
+import { GCPApiRef, GCPClient } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '/gcp-projects',
@@ -34,6 +39,7 @@ export const NewProjectRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'gcp-projects',
+  apis: [createApiFactory(GCPApiRef, new GCPClient())],
   register({ router }) {
     router.addRoute(rootRouteRef, ProjectListPage);
     router.addRoute(ProjectRouteRef, ProjectDetailsPage);

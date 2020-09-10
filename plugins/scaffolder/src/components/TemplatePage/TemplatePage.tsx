@@ -91,8 +91,12 @@ export const TemplatePage = () => {
   const handleClose = () => setJobId(null);
 
   const handleCreate = async () => {
-    const job = await scaffolderApi.scaffold(template!, formState);
-    setJobId(job);
+    try {
+      const job = await scaffolderApi.scaffold(template!, formState);
+      setJobId(job);
+    } catch (e) {
+      errorApi.post(e);
+    }
   };
 
   const [entity, setEntity] = React.useState<TemplateEntityV1alpha1 | null>(
@@ -157,7 +161,7 @@ export const TemplatePage = () => {
           />
         )}
         {template && (
-          <InfoCard title={template.metadata.title as string} noPadding>
+          <InfoCard title={template.metadata.title} noPadding>
             <MultistepJsonForm
               formData={formState}
               onChange={handleChange}
