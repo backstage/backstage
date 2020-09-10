@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-export { ProviderSettingsItem } from './ProviderSettingsItem';
-export { OAuthProviderSettings } from './OAuthProviderSettings';
-export { OIDCProviderSettings } from './OIDCProviderSettings';
-// export { UserProfile } from './UserProfile';
-export { SidebarUserSettings } from './UserSettings';
+import { useApi, identityApiRef } from '@backstage/core-api';
+
+export const useUserProfile = () => {
+  const identityApi = useApi(identityApiRef);
+  const userId = identityApi.getUserId();
+  const profile = identityApi.getProfile();
+  const displayName = profile.displayName ?? userId;
+
+  return { profile, displayName };
+};
