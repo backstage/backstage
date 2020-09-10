@@ -15,24 +15,13 @@
  */
 
 import GitlabIcon from '@material-ui/icons/AcUnit';
-import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
-import { GitlabSession } from './types';
-import {
-  OAuthApi,
-  SessionStateApi,
-  SessionState,
-  ProfileInfo,
-  BackstageIdentity,
-  AuthRequestOptions,
-} from '../../../definitions/auth';
+import { gitlabAuthApiRef } from '../../../definitions/auth';
 import {
   OAuthRequestApi,
   AuthProvider,
   DiscoveryApi,
 } from '../../../definitions';
-import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import { StaticAuthSessionManager } from '../../../../lib/AuthSessionManager';
-import { Observable } from '../../../../types';
+import { OAuth2 } from '../oauth2';
 
 type CreateOptions = {
   discoveryApi: DiscoveryApi;
@@ -42,94 +31,26 @@ type CreateOptions = {
   provider?: AuthProvider & { id: string };
 };
 
-export type GitlabAuthResponse = {
-  providerInfo: {
-    accessToken: string;
-    scope: string;
-    expiresInSeconds: number;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
-};
-
 const DEFAULT_PROVIDER = {
   id: 'gitlab',
   title: 'Gitlab',
   icon: GitlabIcon,
 };
 
-class GitlabAuth implements OAuthApi, SessionStateApi {
+class GitlabAuth {
   static create({
     discoveryApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
-  }: CreateOptions) {
-    const connector = new DefaultAuthConnector({
+  }: CreateOptions): typeof gitlabAuthApiRef.T {
+    return OAuth2.create({
       discoveryApi,
-      environment,
-      provider,
       oauthRequestApi,
-      sessionTransform(res: GitlabAuthResponse): GitlabSession {
-        return {
-          ...res,
-          providerInfo: {
-            accessToken: res.providerInfo.accessToken,
-            scopes: GitlabAuth.normalizeScope(res.providerInfo.scope),
-            expiresAt: new Date(
-              Date.now() + res.providerInfo.expiresInSeconds * 1000,
-            ),
-          },
-        };
-      },
+      provider,
+      environment,
+      defaultScopes: ['read_user'],
     });
-
-    const sessionManager = new StaticAuthSessionManager({
-      connector,
-      defaultScopes: new Set(['read_user']),
-      sessionScopes: (session: GitlabSession) => session.providerInfo.scopes,
-    });
-
-    return new GitlabAuth(sessionManager);
-  }
-
-  sessionState$(): Observable<SessionState> {
-    return this.sessionManager.sessionState$();
-  }
-
-  constructor(private readonly sessionManager: SessionManager<GitlabSession>) {}
-
-  async getAccessToken(scope?: string, options?: AuthRequestOptions) {
-    const session = await this.sessionManager.getSession({
-      ...options,
-      scopes: GitlabAuth.normalizeScope(scope),
-    });
-    return session?.providerInfo.accessToken ?? '';
-  }
-
-  async getBackstageIdentity(
-    options: AuthRequestOptions = {},
-  ): Promise<BackstageIdentity | undefined> {
-    const session = await this.sessionManager.getSession(options);
-    return session?.backstageIdentity;
-  }
-
-  async getProfile(options: AuthRequestOptions = {}) {
-    const session = await this.sessionManager.getSession(options);
-    return session?.profile;
-  }
-
-  async logout() {
-    await this.sessionManager.removeSession();
-  }
-
-  static normalizeScope(scope?: string): Set<string> {
-    if (!scope) {
-      return new Set();
-    }
-
-    const scopeList = Array.isArray(scope) ? scope : scope.split(' ');
-    return new Set(scopeList);
   }
 }
 export default GitlabAuth;
