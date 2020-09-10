@@ -28,12 +28,16 @@ export class GithubReaderProcessor implements LocationProcessor {
       config?.getOptionalString('catalog.processors.github.privateToken') ?? '';
   }
 
-  getRequestOptions(): RequestInit {
+  getRequestOptions(token?: string): RequestInit {
     const headers: HeadersInit = {
       Accept: 'application/vnd.github.v3.raw',
     };
 
-    if (this.privateToken !== '') {
+    if (token !== '') {
+      headers.Authorization = `token ${token}`;
+    }
+
+    if (token === '' && this.privateToken !== '') {
       headers.Authorization = `token ${this.privateToken}`;
     }
 
@@ -58,7 +62,10 @@ export class GithubReaderProcessor implements LocationProcessor {
 
       // TODO(freben): Should "hard" errors thrown by this line be treated as
       // notFound instead of fatal?
-      const response = await fetch(url.toString(), this.getRequestOptions());
+      const response = await fetch(
+        url.toString(),
+        this.getRequestOptions(location.token),
+      );
 
       if (response.ok) {
         const data = await response.buffer();

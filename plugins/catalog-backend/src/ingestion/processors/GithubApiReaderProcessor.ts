@@ -29,12 +29,16 @@ export class GithubApiReaderProcessor implements LocationProcessor {
       '';
   }
 
-  getRequestOptions(): RequestInit {
+  getRequestOptions(token?: string): RequestInit {
     const headers: HeadersInit = {
       Accept: 'application/vnd.github.v3.raw',
     };
 
-    if (this.privateToken !== '') {
+    if (token !== '') {
+      headers.Authorization = `token ${token}`;
+    }
+
+    if (token === '' && this.privateToken !== '') {
       headers.Authorization = `token ${this.privateToken}`;
     }
 
@@ -57,7 +61,10 @@ export class GithubApiReaderProcessor implements LocationProcessor {
     try {
       const url = this.buildRawUrl(location.target);
 
-      const response = await fetch(url.toString(), this.getRequestOptions());
+      const response = await fetch(
+        url.toString(),
+        this.getRequestOptions(location.token),
+      );
 
       if (response.ok) {
         const data = await response.buffer();

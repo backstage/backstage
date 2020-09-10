@@ -82,7 +82,8 @@ export class HigherOrderOperations implements HigherOrderOperation {
         };
 
     // Read the location fully, bailing on any errors
-    const readerOutput = await this.locationReader.read(spec);
+    const readerOutput = await this.locationReader.read(spec, spec.token);
+
     if (readerOutput.errors.length) {
       const item = readerOutput.errors[0];
       throw new InputError(

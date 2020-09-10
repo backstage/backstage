@@ -42,7 +42,7 @@ export type LocationReader = {
    * @throws An error if the location was handled by this reader, but could not
    *         be read
    */
-  read(location: LocationSpec): Promise<ReadLocationResult>;
+  read(location: LocationSpec, token?: string): Promise<ReadLocationResult>;
 };
 
 export type ReadLocationResult = {

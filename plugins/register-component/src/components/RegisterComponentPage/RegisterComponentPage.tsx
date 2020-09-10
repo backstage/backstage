@@ -82,7 +82,8 @@ export const RegisterComponentPage = ({
 
   const handleSubmit = async (formData: Record<string, string>) => {
     setFormState(FormStates.Submitting);
-    const { componentLocation: target } = formData;
+    const { componentLocation: target, componentToken: token } = formData;
+
     try {
       const typeMapping = [
         { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
@@ -93,10 +94,8 @@ export const RegisterComponentPage = ({
 
       const type = typeMapping.filter(item => item.url.test(target))[0].type;
 
-      const data = await catalogApi.addLocation(type, target);
-
+      const data = await catalogApi.addLocation(type, target, token);
       if (!isMounted()) return;
-
       setResult({ error: null, data });
       setFormState(FormStates.Success);
     } catch (e) {

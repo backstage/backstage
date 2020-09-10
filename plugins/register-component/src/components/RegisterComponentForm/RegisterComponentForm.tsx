@@ -21,11 +21,15 @@ import {
   FormHelperText,
   LinearProgress,
   TextField,
+  Switch,
+  FormControlLabel,
 } from '@material-ui/core';
+import { useApi } from '@backstage/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ComponentIdValidators } from '../../util/validate';
+import { githubAuthApiRef } from '@backstage/core-api';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   form: {
@@ -50,6 +54,15 @@ const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
   const classes = useStyles();
   const hasErrors = !!errors.componentLocation;
   const dirty = formState?.isDirty;
+  const githubAuthApi = useApi(githubAuthApiRef);
+
+  const [token, setToken] = useState('');
+
+  const handleClick = async () => {
+    const tokenPromise = githubAuthApi.getAccessToken('repo');
+    const tokenWait = await tokenPromise;
+    setToken(tokenWait);
+  };
 
   return submitting ? (
     <LinearProgress data-testid="loading-progress" />
@@ -76,6 +89,21 @@ const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
             required: true,
             validate: ComponentIdValidators,
           })}
+        />
+        <FormControlLabel
+          id="registerComponentCheckBox"
+          name="componentPrivate"
+          control={<Switch color="primary" name="switch" />}
+          label="Private Repo"
+          labelPlacement="end"
+          onClick={handleClick}
+        />
+
+        <TextField
+          name="componentToken"
+          value={token}
+          type="hidden"
+          inputRef={register({})}
         />
 
         {errors.componentLocation && (
