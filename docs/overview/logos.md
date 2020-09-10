@@ -9,16 +9,31 @@ Guidelines for how to use the Backstage logo and icon can be found
 
 ## Backstage logo
 
-[![](/logo_assets/svg/Logo_White.svg)](/logo_assets/svg/Logo_White.svg)
+<a href="/logo_assets/svg/Logo_White.svg">
+  <img src="/logo_assets/svg/Logo_White.svg" width="600" />
+</a>
 
-[![](/logo_assets/svg/Logo_Teal.svg)](/logo_assets/svg/Logo_Teal.svg)
+<a href="/logo_assets/svg/Logo_Teal.svg">
+  <img src="/logo_assets/svg/Logo_Teal.svg" width="600" />
+</a>
 
-[![](/logo_assets/svg/Logo_Black.svg)](/logo_assets/svg/Logo_Black.svg)
+<a href="/logo_assets/svg/Logo_Black.svg">
+  <img src="/logo_assets/svg/Logo_Black.svg" width="600" style="background-color:white" />
+</a>
 
 ## Backstage icon
 
-[![](/logo_assets/svg/Icon_White.svg)](/logo_assets/svg/Icon_White.svg)
-
-[![](/logo_assets/svg/Icon_Teal.svg)](/logo_assets/svg/Icon_Teal.svg)
-
-[![](/logo_assets/svg/Icon_Gradient.svg)](/logo_assets/svg/Icon_Gradient.svg)
+<div>
+  <a href="/logo_assets/svg/Icon_White.svg">
+    <img src="/logo_assets/svg/Icon_White.svg" width="180" height="180" />
+  </a>
+  <a href="/logo_assets/svg/Icon_Teal.svg">
+    <img src="/logo_assets/svg/Icon_Teal.svg" width="180" height="180" />
+  </a>
+  <a href="/logo_assets/svg/Icon_Gradient.svg">
+    <img src="/logo_assets/svg/Icon_Gradient.svg" width="180" height="180" />
+  </a>
+  <a href="/logo_assets/svg/Icon_Black.svg">
+    <img src="/logo_assets/svg/Icon_Black.svg" width="180" height="180" style="background-color:white" />
+  </a>
+</div>
