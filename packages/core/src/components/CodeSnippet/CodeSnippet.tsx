@@ -20,19 +20,22 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco, dark } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import { useTheme } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
+import { CopyTextButton } from '../CopyTextButton';
 
 type Props = {
   text: string;
   language: string;
   showLineNumbers?: boolean;
+  showCopyCodeButton?: boolean;
 };
 
 const defaultProps = {
   showLineNumbers: false,
+  showCopyCodeButton: false,
 };
 
 export const CodeSnippet: FC<Props> = props => {
-  const { text, language, showLineNumbers } = {
+  const { text, language, showLineNumbers, showCopyCodeButton } = {
     ...defaultProps,
     ...props,
   };
@@ -41,13 +44,20 @@ export const CodeSnippet: FC<Props> = props => {
   const mode = theme.palette.type === 'dark' ? dark : docco;
 
   return (
-    <SyntaxHighlighter
-      language={language}
-      style={mode}
-      showLineNumbers={showLineNumbers}
-    >
-      {text}
-    </SyntaxHighlighter>
+    <div style={{ position: 'relative' }}>
+      <SyntaxHighlighter
+        language={language}
+        style={mode}
+        showLineNumbers={showLineNumbers}
+      >
+        {text}
+      </SyntaxHighlighter>
+      {showCopyCodeButton && (
+        <div style={{ position: 'absolute', top: 0, right: 0 }}>
+          <CopyTextButton text={text} />
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -56,4 +66,5 @@ CodeSnippet.propTypes = {
   text: PropTypes.string.isRequired,
   language: PropTypes.string.isRequired,
   showLineNumbers: PropTypes.bool,
+  showCopyCodeButton: PropTypes.bool,
 };
