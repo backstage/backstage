@@ -15,101 +15,23 @@
  */
 
 import GoogleAuth from './GoogleAuth';
-
-const theFuture = new Date(Date.now() + 3600000);
-const thePast = new Date(Date.now() - 10);
+import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
+import { UrlPatternDiscovery } from '../../DiscoveryApi';
 
 const PREFIX = 'https://www.googleapis.com/auth/';
 
+const getSession = jest.fn();
+
+jest.mock('../../../../lib/AuthSessionManager', () => ({
+  ...(jest.requireActual('../../../../lib/AuthSessionManager') as any),
+  RefreshingAuthSessionManager: class {
+    getSession = getSession;
+  },
+}));
+
 describe('GoogleAuth', () => {
-  it('should get refreshed access token', async () => {
-    const getSession = jest.fn().mockResolvedValue({
-      providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
-    });
-    const googleAuth = new GoogleAuth({ getSession } as any);
-
-    expect(await googleAuth.getAccessToken()).toBe('access-token');
-    expect(getSession).toBeCalledTimes(1);
-  });
-
-  it('should get refreshed id token', async () => {
-    const getSession = jest.fn().mockResolvedValue({
-      providerInfo: { idToken: 'id-token', expiresAt: theFuture },
-    });
-    const googleAuth = new GoogleAuth({ getSession } as any);
-
-    expect(await googleAuth.getIdToken()).toBe('id-token');
-    expect(getSession).toBeCalledTimes(1);
-  });
-
-  it('should get optional id token', async () => {
-    const getSession = jest.fn().mockResolvedValue({
-      providerInfo: { idToken: 'id-token', expiresAt: theFuture },
-    });
-    const googleAuth = new GoogleAuth({ getSession } as any);
-
-    expect(await googleAuth.getIdToken({ optional: true })).toBe('id-token');
-    expect(getSession).toBeCalledTimes(1);
-  });
-
-  it('should share popup closed errors', async () => {
-    const error = new Error('NOPE');
-    error.name = 'RejectedError';
-    const getSession = jest
-      .fn()
-      .mockResolvedValueOnce({
-        providerInfo: {
-          accessToken: 'access-token',
-          expiresAt: theFuture,
-          scopes: new Set([`${PREFIX}not-enough`]),
-        },
-      })
-      .mockRejectedValue(error);
-    const googleAuth = new GoogleAuth({ getSession } as any);
-
-    // Make sure we have a session before we do the double request, so that we get past the !this.currentSession check
-    await expect(googleAuth.getAccessToken()).resolves.toBe('access-token');
-
-    const promise1 = googleAuth.getAccessToken('more');
-    const promise2 = googleAuth.getAccessToken('more');
-    await expect(promise1).rejects.toBe(error);
-    await expect(promise2).rejects.toBe(error);
-    expect(getSession).toBeCalledTimes(3);
-  });
-
-  it('should wait for all session refreshes', async () => {
-    const initialSession = {
-      providerInfo: {
-        idToken: 'token1',
-        expiresAt: theFuture,
-        scopes: new Set(),
-      },
-    };
-    const getSession = jest
-      .fn()
-      .mockResolvedValueOnce(initialSession)
-      .mockResolvedValue({
-        providerInfo: {
-          idToken: 'token2',
-          expiresAt: theFuture,
-          scopes: new Set(),
-        },
-      });
-    const googleAuth = new GoogleAuth({ getSession } as any);
-
-    // Grab the expired session first
-    await expect(googleAuth.getIdToken()).resolves.toBe('token1');
-    expect(getSession).toBeCalledTimes(1);
-
-    initialSession.providerInfo.expiresAt = thePast;
-
-    const promise1 = googleAuth.getIdToken();
-    const promise2 = googleAuth.getIdToken();
-    const promise3 = googleAuth.getIdToken();
-    await expect(promise1).resolves.toBe('token2');
-    await expect(promise2).resolves.toBe('token2');
-    await expect(promise3).resolves.toBe('token2');
-    expect(getSession).toBeCalledTimes(4); // De-duping of session requests happens in client
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   it.each([
@@ -136,6 +58,12 @@ describe('GoogleAuth', () => {
     [`${PREFIX}profile`, [`${PREFIX}profile`]],
     [`${PREFIX}openid`, [`${PREFIX}openid`]],
   ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
-    expect(GoogleAuth.normalizeScopes(scope)).toEqual(new Set(scopes));
+    const googleAuth = GoogleAuth.create({
+      oauthRequestApi: new MockOAuthApi(),
+      discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
+    });
+
+    googleAuth.getAccessToken(scope);
+    expect(getSession).toHaveBeenCalledWith({ scopes: new Set(scopes) });
   });
 });

@@ -13,102 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import OktaAuth from './OktaAuth';
 
-const theFuture = new Date(Date.now() + 3600000);
-const thePast = new Date(Date.now() - 10);
+import OktaAuth from './OktaAuth';
+import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
+import { UrlPatternDiscovery } from '../../DiscoveryApi';
 
 const PREFIX = 'okta.';
 
+const getSession = jest.fn();
+
+jest.mock('../../../../lib/AuthSessionManager', () => ({
+  ...(jest.requireActual('../../../../lib/AuthSessionManager') as any),
+  RefreshingAuthSessionManager: class {
+    getSession = getSession;
+  },
+}));
+
 describe('OktaAuth', () => {
-  it('should get refreshed access token', async () => {
-    const getSession = jest.fn().mockResolvedValue({
-      providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
-    });
-    const oktaAuth = new OktaAuth({ getSession } as any);
-
-    expect(await oktaAuth.getAccessToken()).toBe('access-token');
-    expect(getSession).toBeCalledTimes(1);
-  });
-
-  it('should get refreshed id token', async () => {
-    const getSession = jest.fn().mockResolvedValue({
-      providerInfo: { idToken: 'id-token', expiresAt: theFuture },
-    });
-    const oktaAuth = new OktaAuth({ getSession } as any);
-
-    expect(await oktaAuth.getIdToken()).toBe('id-token');
-    expect(getSession).toBeCalledTimes(1);
-  });
-
-  it('should get optional id token', async () => {
-    const getSession = jest.fn().mockResolvedValue({
-      providerInfo: { idToken: 'id-token', expiresAt: theFuture },
-    });
-    const oktaAuth = new OktaAuth({ getSession } as any);
-
-    expect(await oktaAuth.getIdToken({ optional: true })).toBe('id-token');
-    expect(getSession).toBeCalledTimes(1);
-  });
-
-  it('should share popup closed errors', async () => {
-    const error = new Error('NOPE');
-    error.name = 'RejectedError';
-    const getSession = jest
-      .fn()
-      .mockResolvedValueOnce({
-        providerInfo: {
-          accessToken: 'access-token',
-          expiresAt: theFuture,
-          scopes: new Set([`not-a-scope`]),
-        },
-      })
-      .mockRejectedValue(error);
-    const oktaAuth = new OktaAuth({ getSession } as any);
-
-    // Make sure we have a session before we do the double request, so that we get past the !this.currentSession check
-    await expect(oktaAuth.getAccessToken()).resolves.toBe('access-token');
-
-    const promise1 = oktaAuth.getAccessToken('more');
-    const promise2 = oktaAuth.getAccessToken('more');
-    await expect(promise1).rejects.toBe(error);
-    await expect(promise2).rejects.toBe(error);
-    expect(getSession).toBeCalledTimes(3);
-  });
-
-  it('should wait for all session refreshes', async () => {
-    const initialSession = {
-      providerInfo: {
-        idToken: 'token1',
-        expiresAt: theFuture,
-        scopes: new Set(),
-      },
-    };
-    const getSession = jest
-      .fn()
-      .mockResolvedValueOnce(initialSession)
-      .mockResolvedValue({
-        providerInfo: {
-          idToken: 'token2',
-          expiresAt: theFuture,
-          scopes: new Set(),
-        },
-      });
-    const oktaAuth = new OktaAuth({ getSession } as any);
-
-    // Grab the expired session first
-    await expect(oktaAuth.getIdToken()).resolves.toBe('token1');
-    expect(getSession).toBeCalledTimes(1);
-
-    initialSession.providerInfo.expiresAt = thePast;
-
-    const promise1 = oktaAuth.getIdToken();
-    const promise2 = oktaAuth.getIdToken();
-    const promise3 = oktaAuth.getIdToken();
-    await expect(promise1).resolves.toBe('token2');
-    await expect(promise2).resolves.toBe('token2');
-    await expect(promise3).resolves.toBe('token2');
-    expect(getSession).toBeCalledTimes(4); // De-duping of session requests happens in client
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   it.each([
@@ -127,6 +50,12 @@ describe('OktaAuth', () => {
     [`${PREFIX}profile`, [`${PREFIX}profile`]],
     [`${PREFIX}openid`, [`${PREFIX}openid`]],
   ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
-    expect(OktaAuth.normalizeScopes(scope)).toEqual(new Set(scopes));
+    const auth = OktaAuth.create({
+      oauthRequestApi: new MockOAuthApi(),
+      discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
+    });
+
+    auth.getAccessToken(scope);
+    expect(getSession).toHaveBeenCalledWith({ scopes: new Set(scopes) });
   });
 });
