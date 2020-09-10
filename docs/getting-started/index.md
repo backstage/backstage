@@ -46,6 +46,5 @@ guide, which can help you get setup with a Backstage development environment.
 
 ### Next steps
 
-Take a look at the
-[Running Backstage Locally](/docs/getting-started/running-backstage-locally)
+Take a look at the [Running Backstage Locally](./running-backstage-locally.md)
 guide to learn how to set up Backstage, and how to develop on the platform.
