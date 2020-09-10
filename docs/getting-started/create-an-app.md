@@ -37,43 +37,38 @@ app-folder is the name that was provided when prompted.
 Inside that directory, it will generate all the files and folder structure
 needed for you to run your app.
 
-### Folder structure
+### General folder structure
+
+Below is a simplified layout of the files and folders generated when creating an
+app.
 
 ```
 app
-├── README.md
+├── app-config.yaml
 ├── lerna.json
 ├── package.json
-├── prettier.config.js
-├── tsconfig.json
-├── packages
-│   └── app
-│       ├── package.json
-│       ├── tsconfig.json
-│       ├── public
-│       │   └──  ...
-│       └── src
-│           ├── App.test.tsx
-│           ├── App.tsx
-│           ├── index.tsx
-│           ├── plugins.ts
-│           └── setupTests.ts
-└── plugins
-    └── welcome
-        ├── README.md
-        ├── package.json
-        ├── tsconfig.json
-        └── src
-            ├── index.ts
-            ├── plugin.test.ts
-            ├── plugin.ts
-            ├── setupTests.ts
-            └── components
-                ├── Timer
-                │   └──  ...
-                └── WelcomePage
-                    └──  ...
+└── packages
+    ├── app
+    └── backend
 ```
+
+- **app-config.yaml**: Main configuration file for the app. See
+  [Configuration](https://backstage.io/docs/conf/) for more information.
+- **lerna.json**: Contains information about workspaces and other lerna
+  configuration needed for the monorepo setup.
+- **package.json**: Root package.json for the project. _Note: Be sure that you
+  don't add any npm dependencies here as they probably should be installed in
+  the intended workspace rather than in the root._
+- **packages/**: Lerna leaf packages or "workspaces". Everything here is going
+  to be a separate package, managed by lerna.
+- **packages/app/**: An fully functioning Backstage frontend app, that acts as a
+  good starting point for you to get to know Backstage.
+- **packages/backend/**: We include a backend that helps power features such as
+  [Authentication](https://backstage.io/docs/auth/),
+  [Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview),
+  [Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
+  and [TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview)
+  amongst other things.
 
 ## Run the app
 
@@ -90,8 +85,9 @@ app, if not you can navigate to `http://localhost:3000`._
 In most cases you will want to start the backend as well, as it is required for
 the catalog to work, along with many other plugins.
 
-To start the backend, open a separate terminal session and run the following:
+To start the backend, open a separate terminal session and run the following in
+the root directory:
 
 ```bash
-yarn --cwd packages/backend start
+yarn workspace backend start
 ```

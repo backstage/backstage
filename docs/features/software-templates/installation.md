@@ -1,4 +1,7 @@
-# Installing in your Backstage App
+---
+id: installation
+title: Installing in your Backstage App
+---
 
 The scaffolder plugin comes in two packages, `@backstage/plugin-scaffolder` and
 `@backstage/plugin-scaffolder-backend`. Each has their own installation steps,

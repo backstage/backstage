@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import * as React from 'react';
+import classnames from 'classnames';
 import { makeStyles, Link } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
 
 export type IconLinkVerticalProps = {
   icon?: React.ReactNode;
   href?: string;
+  disabled?: boolean;
   label: string;
 };
 
@@ -29,6 +31,9 @@ const useIconStyles = makeStyles({
     justifyItems: 'center',
     gridGap: 4,
     textAlign: 'center',
+  },
+  disabled: {
+    color: 'gray',
   },
   label: {
     fontSize: '0.7rem',
@@ -41,9 +46,24 @@ const useIconStyles = makeStyles({
 export function IconLinkVertical({
   icon = <LinkIcon />,
   href = '#',
+  disabled = false,
   ...props
 }: IconLinkVerticalProps) {
   const classes = useIconStyles();
+
+  if (disabled) {
+    return (
+      <Link
+        className={classnames(classes.link, classes.disabled)}
+        underline="none"
+        {...props}
+      >
+        {icon}
+        <span className={classes.label}>{props.label}</span>
+      </Link>
+    );
+  }
+
   return (
     <Link className={classes.link} href={href} {...props}>
       {icon}

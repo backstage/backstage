@@ -88,5 +88,5 @@ To do this you can run:
 
 ```bash
 cd ~/<repository-path>/
-npx techdocs-cli serve
+npx @techdocs/cli serve
 ```
