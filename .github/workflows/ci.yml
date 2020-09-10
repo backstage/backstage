@@ -92,16 +92,11 @@ jobs:
       - name: test changed packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: |
-          yarn lerna -- run test --since origin/master -- --coverage
+          yarn test
           bash <(curl -s https://codecov.io/bash)
 
       - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: |
-          yarn lerna -- run test -- --coverage
-          bash <(curl -s https://codecov.io/bash)
-
-      - name: upload coverage
         run: |
           yarn test:all
           bash <(curl -s https://codecov.io/bash)
