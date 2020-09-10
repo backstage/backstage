@@ -89,11 +89,9 @@ jobs:
       - name: verify type dependencies
         run: yarn lint:type-deps
 
-      - name: test changed packages (and upload coverage)
+      - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: |
-          yarn lerna -- run test --since origin/master -- --coverage
-          bash <(curl -s https://codecov.io/bash)
+        run: yarn lerna -- run test --since origin/master -- --coverage
 
       - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
