@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { ProfileInfo, BackstageIdentity } from '../../../definitions';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { rootRouteRef, viewAuditRouteRef, createAuditRouteRef } from './plugin';
+import AuditList from './components/AuditList';
+import AuditView from './components/AuditView';
+import CreateAudit from './components/CreateAudit';
 
-export type Auth0Session = {
-  providerInfo: {
-    idToken: string;
-    accessToken: string;
-    scopes: Set<string>;
-    expiresAt: Date;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
-};
+export const Router = () => (
+  <Routes>
+    <Route path={`/${rootRouteRef.path}`} element={<AuditList />} />
+    <Route path={`/${viewAuditRouteRef.path}`} element={<AuditView />} />
+    <Route path={`/${createAuditRouteRef.path}`} element={<CreateAudit />} />
+  </Routes>
+);

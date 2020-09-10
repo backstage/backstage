@@ -27,6 +27,10 @@ export const rewriteDocLinks = (): Transformer => {
         .forEach((elem: T) => {
           const elemAttribute = elem.getAttribute(attributeName);
           if (elemAttribute) {
+            // if link is external, add target to open in a new window or tab
+            if (elemAttribute.match(/^https?:\/\//i)) {
+              elem.setAttribute('target', '_blank');
+            }
             const normalizedWindowLocation = window.location.href.endsWith('/')
               ? window.location.href
               : `${window.location.href}/`;

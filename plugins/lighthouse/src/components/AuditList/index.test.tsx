@@ -63,7 +63,7 @@ describe('AuditList', () => {
     expect(element).toBeInTheDocument();
   });
 
-  it('renders a link to create a new audit', async () => {
+  it('renders a button to create a new audit', async () => {
     const rendered = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
@@ -71,12 +71,8 @@ describe('AuditList', () => {
         </ApiProvider>,
       ),
     );
-    const element = await rendered.findByText('Create Audit');
-    expect(element).toBeInTheDocument();
-    expect(element.parentElement).toHaveAttribute(
-      'href',
-      '/lighthouse/create-audit',
-    );
+    const button = await rendered.findByText('Create Audit');
+    expect(button).toBeInTheDocument();
   });
 
   describe('pagination', () => {
@@ -87,7 +83,7 @@ describe('AuditList', () => {
           <ApiProvider apis={apis}>
             <AuditList />
           </ApiProvider>,
-          { routeEntries: ['/lighthouse?page=2'] },
+          { routeEntries: ['?page=2'] },
         ),
       );
       expect(mockFetch).toHaveBeenLastCalledWith(
@@ -137,13 +133,13 @@ describe('AuditList', () => {
             <ApiProvider apis={apis}>
               <AuditList />
             </ApiProvider>,
-            { routeEntries: ['/lighthouse?page=2'] },
+            { routeEntries: ['?page=2'] },
           ),
         );
         const element = await rendered.findByLabelText(/Go to page 1/);
         fireEvent.click(element);
 
-        expect(useNavigate()).toHaveBeenCalledWith(`/lighthouse?page=1`);
+        expect(useNavigate()).toHaveBeenCalledWith(`?page=1`);
       });
     });
   });
