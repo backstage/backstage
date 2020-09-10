@@ -92,13 +92,18 @@ jobs:
       - name: test changed packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: |
-          yarn test
+          yarn lerna -- run test --since origin/master -- --coverage
           bash <(curl -s https://codecov.io/bash)
 
       - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: |
-          yarn test:all
+          yarn lerna -- run test -- --coverage
+          bash <(curl -s https://codecov.io/bash)
+
+      - name: TEMP - test if coverage is found
+        run: |
+          yarn lerna -- run test -- --coverage
           bash <(curl -s https://codecov.io/bash)
 
       - name: verify plugin template

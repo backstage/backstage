@@ -61,7 +61,7 @@ jobs:
 
       - name: test (and upload coverage)
         run: |
-          yarn test:all
+          yarn lerna -- run test -- --coverage
           bash <(curl -s https://codecov.io/bash)
 
       # Publishes current version of packages that are not already present in the registry
