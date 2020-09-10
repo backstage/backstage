@@ -74,7 +74,7 @@ export async function templatingTask(
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
 
-  const isMonoRepo = paths.resolveTargetRoot('lerna.json');
+  const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
 
   for (const file of files) {
     const destinationFile = file.replace(templateDir, destinationDir);

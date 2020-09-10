@@ -237,9 +237,11 @@ export default async (cmd: Command) => {
   const appPackage = paths.resolveTargetRoot('packages/app');
   const templateDir = paths.resolveOwn('templates/default-plugin');
   const tempDir = resolvePath(os.tmpdir(), answers.id);
-  const pluginDir = (await fs.pathExists(paths.resolveTargetRoot('plugins')))
+  const pluginDir = (await fs.pathExists(paths.resolveTargetRoot('lerna.json')))
     ? paths.resolveTargetRoot('plugins', answers.id)
     : paths.resolveTargetRoot(answers.id);
+  console.log(await paths.resolveTargetRoot('lerna.json'));
+  console.log(await pluginDir);
   const ownerIds = parseOwnerIds(answers.owner);
   const version = backstageVersion;
 
