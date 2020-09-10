@@ -94,9 +94,9 @@ const siteConfig = {
 
   // Open Graph and Twitter card images.
   ogImage:
-    'logo_assets/png/Backstage Identity_Assets_Artwork_RGB_04 Icon_Teal.png',
+    'logo_assets/png/Backstage%20Identity_Assets_Artwork_RGB_04%20Icon_Teal.png',
   twitterImage:
-    'logo_assets/png/Backstage Identity_Assets_Artwork_RGB_04 Icon_Teal.png',
+    'logo_assets/png/Backstage%20Identity_Assets_Artwork_RGB_04%20Icon_Teal.png',
 
   // For sites with a sizable amount of content, set collapsible to true.
   // Expand/collapse the links and subcategories under categories.
