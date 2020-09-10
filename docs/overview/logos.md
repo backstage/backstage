@@ -5,7 +5,9 @@ sidebar_label: Logo assets
 ---
 
 Guidelines for how to use the Backstage logo and icon can be found
-[here](/logo_assets/Backstage_Identity_Assets_Overview.pdf).
+[here](/logo_assets/Backstage_Identity_Assets_Overview.pdf). The assets below
+are all in `.svg` format. Other formats are available in the
+[repository](https://github.com/spotify/backstage/tree/master/microsite/static/logo_assets).
 
 ## Backstage logo
 
