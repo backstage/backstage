@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import * as React from 'react';
+import classnames from 'classnames';
 import { makeStyles, Link } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
 
@@ -32,10 +33,6 @@ const useIconStyles = makeStyles({
     textAlign: 'center',
   },
   disabled: {
-    display: 'grid',
-    justifyItems: 'center',
-    gridGap: 4,
-    textAlign: 'center',
     color: 'gray',
   },
   label: {
@@ -56,7 +53,11 @@ export function IconLinkVertical({
 
   if (disabled) {
     return (
-      <Link className={classes.disabled} underline="none" {...props}>
+      <Link
+        className={classnames(classes.link, classes.disabled)}
+        underline="none"
+        {...props}
+      >
         {icon}
         <span className={classes.label}>{props.label}</span>
       </Link>
