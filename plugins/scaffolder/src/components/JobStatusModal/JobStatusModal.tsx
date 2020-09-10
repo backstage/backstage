@@ -51,7 +51,7 @@ export const JobStatusModal = ({
   return (
     <Dialog open onClose={onClose} fullWidth>
       <DialogTitle id="responsive-dialog-title">
-        Creating component...
+        Creating Component...
       </DialogTitle>
       <DialogContent>
         {!job ? (
