@@ -37,6 +37,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     display: 'flex',
     flexFlow: 'column nowrap',
   },
+  hidden: {
+    visibility: 'hidden',
+  },
   submit: {
     marginTop: theme.spacing(1),
   },
@@ -101,6 +104,8 @@ const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
 
         <TextField
           name="componentToken"
+          id="componentToken"
+          className={classes.hidden}
           value={token}
           type="hidden"
           inputRef={register({})}
