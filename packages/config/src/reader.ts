@@ -49,6 +49,9 @@ const errors = {
   missing(key: string) {
     return `Missing required config value at '${key}'`;
   },
+  convert(key: string, context: string, expected: string) {
+    return `Unable to convert config value for key '${key}' in '${context}' to a ${expected}`;
+  },
 };
 
 export class ConfigReader implements Config {
@@ -183,10 +186,22 @@ export class ConfigReader implements Config {
   }
 
   getOptionalNumber(key: string): number | undefined {
-    return this.readConfigValue(
+    const value = this.readConfigValue<string | number>(
       key,
-      value => typeof value === 'number' || { expected: 'number' },
+      val =>
+        typeof val === 'number' ||
+        typeof val === 'string' || { expected: 'number' },
     );
+    if (typeof value === 'number' || value === undefined) {
+      return value;
+    }
+    const number = Number(value);
+    if (!Number.isFinite(number)) {
+      throw new Error(
+        errors.convert(this.fullKey(key), this.context, 'number'),
+      );
+    }
+    return number;
   }
 
   getBoolean(key: string): boolean {

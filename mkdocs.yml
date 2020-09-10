@@ -10,6 +10,7 @@ nav:
       - Vision: 'overview/vision.md'
       - The Spotify story: 'overview/background.md'
       - Strategies for adopting: 'overview/adopting.md'
+      - Logo assets: 'overview/logos.md'
   - Getting started:
       - Running Backstage locally: 'getting-started/index.md'
       - Installation: 'getting-started/installation.md'
@@ -34,6 +35,7 @@ nav:
           - API: 'features/software-catalog/api.md'
       - Software creation templates:
           - Overview: 'features/software-templates/index.md'
+          - Installation: 'features/software-templates/installation.md'
           - Adding templates: 'features/software-templates/adding-templates.md'
           - Extending the Scaffolder:
               - Overview: 'features/software-templates/extending/index.md'

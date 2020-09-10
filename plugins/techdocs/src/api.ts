@@ -42,7 +42,9 @@ export class TechDocsStorageApi implements TechDocsStorage {
   async getEntityDocs(entityId: ParsedEntityId, path: string) {
     const { kind, namespace, name } = entityId;
 
-    const url = `${this.apiOrigin}/${kind}/${namespace ? namespace : 'default'}/${name}/${path}`;
+    const url = `${this.apiOrigin}/${kind}/${
+      namespace ? namespace : 'default'
+    }/${name}/${path}`;
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
@@ -64,7 +66,9 @@ export class TechDocsStorageApi implements TechDocsStorage {
 
     return new URL(
       oldBaseUrl,
-      `${this.apiOrigin}/${kind}/${namespace ? namespace : 'default'}/${name}/${path}`,
+      `${this.apiOrigin}/${kind}/${
+        namespace ? namespace : 'default'
+      }/${name}/${path}`,
     ).toString();
   }
 }

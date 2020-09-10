@@ -1,10 +1,11 @@
 ---
 id: software-templates-index
-title: Software Templates
+title: Backstage Software Templates
+sidebar_label: Overview
 ---
 
 The Software Templates part of Backstage is a tool that can help you create
-Components inside Backstage. By default, it  has the ability to load skeletons of
+Components inside Backstage. By default, it has the ability to load skeletons of
 code, template in some variables, and then publish the template to some location
 like GitHub.
 
@@ -14,12 +15,15 @@ like GitHub.
 
 ### Getting Started
 
-The Software Templates are available under `/create`. If you've followed
-[Installing in your Backstage App](./installation.md) in your separate App or
-[Getting Started with Backstage](../../getting-started) for this repo, you
-should be able to reach `http://localhost:3000/create`.
+> Be sure to have covered [Installing in your Backstage App](./installation.md)
+> for your separate App or
+> [Getting Started with Backstage](../../getting-started) for this repo before
+> proceeding.
 
-You should get something that looks similar to this:
+The Software Templates are available under `/create`. For local development you
+should be able to reach them at `http://localhost:3000/create`.
+
+Once there, you should see something that looks similar to this:
 
 ![Create Image](../../assets/software-templates/create.png)
 

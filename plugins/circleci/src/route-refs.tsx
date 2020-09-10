@@ -33,11 +33,11 @@ const CircleCIIcon: FC<SvgIconProps> = props => (
 
 export const circleCIRouteRef = createRouteRef({
   icon: CircleCIIcon,
-  path: '/circleci',
+  path: '',
   title: 'CircleCI | All builds',
 });
 
 export const circleCIBuildRouteRef = createRouteRef({
-  path: '/circleci/build/:buildId',
+  path: ':buildId',
   title: 'CircleCI | Build info',
 });

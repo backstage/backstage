@@ -47,21 +47,21 @@ describe('createRouter', () => {
     const response = await request(app).get('/index.html');
 
     expect(response.status).toBe(200);
-    expect(response.text).toBe('this is index.html\n');
+    expect(response.text.trim()).toBe('this is index.html');
   });
 
   it('returns other.html', async () => {
     const response = await request(app).get('/other.html');
 
     expect(response.status).toBe(200);
-    expect(response.text).toBe('this is other.html\n');
+    expect(response.text.trim()).toBe('this is other.html');
   });
 
   it('returns index.html if missing', async () => {
     const response = await request(app).get('/missing.html');
 
     expect(response.status).toBe(200);
-    expect(response.text).toBe('this is index.html\n');
+    expect(response.text.trim()).toBe('this is index.html');
   });
 });
 
@@ -83,11 +83,11 @@ describe('createRouter with static fallback handler', () => {
 
     const response1 = await request(app).get('/static/main.txt');
     expect(response1.status).toBe(200);
-    expect(response1.text).toBe('this is main.txt\n');
+    expect(response1.text.trim()).toBe('this is main.txt');
 
     const response2 = await request(app).get('/static/test.txt');
     expect(response2.status).toBe(200);
-    expect(response2.text).toBe('this is test.txt');
+    expect(response2.text.trim()).toBe('this is test.txt');
 
     const response3 = await request(app).get('/static/missing.txt');
     expect(response3.status).toBe(404);

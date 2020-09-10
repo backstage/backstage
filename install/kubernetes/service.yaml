@@ -11,10 +11,10 @@ spec:
     app: backstage
     component: frontend
   ports:
-  - name: frontend
-    port: 80
-    protocol: TCP
-    targetPort: app
+    - name: frontend
+      port: 80
+      protocol: TCP
+      targetPort: app
 ---
 apiVersion: v1
 kind: Service
@@ -29,7 +29,7 @@ spec:
     app: backstage
     component: backend
   ports:
-  - name: backend
-    port: 7000 
-    protocol: TCP
-    targetPort: backend
+    - name: backend
+      port: 7000
+      protocol: TCP
+      targetPort: backend

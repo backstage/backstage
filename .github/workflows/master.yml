@@ -51,7 +51,7 @@ jobs:
         run: yarn lerna -- run lint
 
       - name: type checking and declarations
-        run: yarn tsc --incremental false
+        run: yarn tsc:full
 
       - name: build
         run: yarn build
@@ -71,9 +71,9 @@ jobs:
       # Tags the commit with the version in the core package if the tag doesn't exist
       - uses: Klemensas/action-autotag@1.2.3
         with:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          package_root: "packages/core"
-          tag_prefix: "v"
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          package_root: 'packages/core'
+          tag_prefix: 'v'
 
       - name: Discord notification
         if: ${{ failure() }}

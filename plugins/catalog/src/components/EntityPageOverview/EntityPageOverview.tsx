@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+// TODO(shmidt-i): move to the app
 import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
-import { Widget as GithubActionsWidget } from '@backstage/plugin-github-actions';
+import {
+  LatestWorkflowRunCard,
+  GITHUB_ACTIONS_ANNOTATION,
+} from '@backstage/plugin-github-actions';
 import {
   JenkinsBuildsWidget,
   JenkinsLastBuildWidget,
@@ -46,9 +50,9 @@ export const EntityPageOverview: FC<{ entity: Entity }> = ({ entity }) => {
             <JenkinsBuildsWidget entity={entity} />
           </Grid>
         )}
-        {entity.metadata?.annotations?.['backstage.io/github-actions-id'] && (
+        {entity.metadata?.annotations?.[GITHUB_ACTIONS_ANNOTATION] && (
           <Grid item sm={3}>
-            <GithubActionsWidget entity={entity} branch="master" />
+            <LatestWorkflowRunCard entity={entity} branch="master" />
           </Grid>
         )}
       </Grid>

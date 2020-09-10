@@ -18,15 +18,17 @@
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');
+  const mockNavigation = jest.fn();
   return {
     ...actual,
     useParams: jest.fn(() => ({})),
+    useNavigate: jest.fn(() => mockNavigation),
   };
 });
 
 import React from 'react';
 import mockFetch from 'jest-fetch-mock';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { ApiRegistry, ApiProvider } from '@backstage/core';
 
@@ -34,11 +36,13 @@ import AuditView from '.';
 import { lighthouseApiRef, LighthouseRestApi, Audit, Website } from '../../api';
 import { formatTime } from '../../utils';
 import * as data from '../../__fixtures__/website-response.json';
+import { act } from 'react-dom/test-utils';
 
 const { useParams }: { useParams: jest.Mock } = jest.requireMock(
   'react-router-dom',
 );
 const websiteResponse = data as Website;
+const { useNavigate } = jest.requireMock('react-router-dom');
 
 describe('AuditView', () => {
   let apis: ApiRegistry;
@@ -70,7 +74,7 @@ describe('AuditView', () => {
     expect(iframe).toHaveAttribute('src', `https://lighthouse/v1/audits/${id}`);
   });
 
-  it('renders a link to create a new audit for this website', async () => {
+  it('renders a button to click to create a new audit for this website', async () => {
     const rendered = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
@@ -79,13 +83,15 @@ describe('AuditView', () => {
       ),
     );
 
-    const button = await rendered.findByText('Create Audit');
+    const button = await rendered.findByText('Create New Audit');
     expect(button).toBeInTheDocument();
-    expect(button.parentElement).toHaveAttribute(
-      'href',
-      `/lighthouse/create-audit?url=${encodeURIComponent(
-        'https://spotify.com',
-      )}`,
+
+    act(() => {
+      fireEvent.click(button);
+    });
+
+    expect(useNavigate()).toHaveBeenCalledWith(
+      `../../create-audit?url=${encodeURIComponent('https://spotify.com')}`,
     );
   });
 
@@ -151,7 +157,7 @@ describe('AuditView', () => {
         expect(
           rendered.getByText(formatTime(a.timeCreated)).parentElement
             ?.parentElement,
-        ).toHaveAttribute('href', `/lighthouse/audit/${a.id}`);
+        ).toHaveAttribute('href', `/audit/${a.id}`);
       });
     });
   });

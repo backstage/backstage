@@ -102,9 +102,14 @@ export function AboutCard({ entity }: AboutCardProps) {
           <nav className={classes.links}>
             <IconLinkVertical label="View Source" {...codeLink} />
             <IconLinkVertical
+              disabled={
+                !entity.metadata.annotations?.['backstage.io/techdocs-ref']
+              }
               label="View Techdocs"
               icon={<DocsIcon />}
-              href={`/docs/${''}`}
+              href={`/docs/${entity.kind}:${entity.metadata.namespace ?? ''}:${
+                entity.metadata.name
+              }`}
             />
           </nav>
         }

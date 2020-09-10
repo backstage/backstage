@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 declare module 'passport-okta-oauth' {
-
   export class Strategy {
-    constructor(options: any, verify: any)
+    constructor(options: any, verify: any);
   }
 }
-  

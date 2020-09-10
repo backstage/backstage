@@ -37,7 +37,7 @@ export const makeConfigs = async (
   options: BuildOptions,
 ): Promise<RollupOptions[]> => {
   const typesInput = paths.resolveTargetRoot(
-    'dist',
+    'dist-types',
     relativePath(paths.targetRoot, paths.targetDir),
     'src/index.d.ts',
   );

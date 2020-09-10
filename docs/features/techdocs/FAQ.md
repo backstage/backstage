@@ -12,8 +12,8 @@ to? Edit this file
 
 ## Technology
 
-- [What static site generator is TechDocs using?](./#what-static-site-generator-is-techdocs-using)
-- [What is the mkdocs-techdocs-core plugin?](./#what-is-the-mkdocs-techdocs-core-plugin)
+- [What static site generator is TechDocs using?](#what-static-site-generator-is-techdocs-using)
+- [What is the mkdocs-techdocs-core plugin?](#what-is-the-mkdocs-techdocs-core-plugin)
 
 #### What static site generator is TechDocs using?
 

@@ -15,6 +15,9 @@
  */
 
 export { plugin } from './plugin';
-export * from './api/RollbarApi';
-export { RollbarClient } from './api/RollbarClient';
-export { RollbarMockClient } from './api/RollbarMockClient';
+export * from './api';
+export * from './routes';
+export { Router } from './components/Router';
+export { RollbarProjectPage } from './components/RollbarProjectPage/RollbarProjectPage';
+export { EntityPageRollbar } from './components/EntityPageRollbar/EntityPageRollbar';
+export { ROLLBAR_ANNOTATION } from './constants';
