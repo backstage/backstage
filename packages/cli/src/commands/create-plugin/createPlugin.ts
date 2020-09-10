@@ -87,11 +87,9 @@ export const addExportStatement = async (
 
 export async function addPluginDependencyToApp(
   rootDir: string,
-  pluginName: string,
   versionStr: string,
-  scopeNameWithSlash: string,
+  pluginPackage: string,
 ) {
-  const pluginPackage = `${scopeNameWithSlash}plugin-${pluginName}`;
   const packageFilePath = 'packages/app/package.json';
   const packageFile = resolvePath(rootDir, packageFilePath);
 
@@ -121,9 +119,8 @@ export async function addPluginDependencyToApp(
 export async function addPluginToApp(
   rootDir: string,
   pluginName: string,
-  scopeNameWithSlash: string,
+  pluginPackage: string,
 ) {
-  const pluginPackage = `${scopeNameWithSlash}plugin-${pluginName}`;
   const pluginNameCapitalized = pluginName
     .split('-')
     .map(name => capitalize(name))
@@ -183,10 +180,6 @@ export async function movePlugin(
 
 export default async (cmd: Command) => {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
-  const scopeName = cmd.scope ? `@${cmd.scope.replace(/^@/, '')}` : '';
-  const scopeNameWithSlash = cmd.scope ? `${scopeName}/` : '';
-  const privatePackage = cmd.private === false ? false : true;
-  const registryURL = cmd.npmRegistry;
 
   const questions: Question[] = [
     {
@@ -231,6 +224,13 @@ export default async (cmd: Command) => {
   }
 
   const answers: Answers = await inquirer.prompt(questions);
+  const packageName = cmd.scope
+    ? `@${cmd.scope.replace(/^@/, '')}/plugin-${answers.id}`
+    : `plugin-${answers.id}`;
+  const scopeName = cmd.scope ? `@${cmd.scope.replace(/^@/, '')}` : '';
+  const registryURL = (cmd.npmRegistry &&
+    cmd.scope)`"${scopeName}:registry": "${cmd.npmRegistry}",`;
+  const privatePackage = cmd.private === false ? false : true;
 
   const appPackage = paths.resolveTargetRoot('packages/app');
   const templateDir = paths.resolveOwn('templates/default-plugin');
@@ -257,6 +257,7 @@ export default async (cmd: Command) => {
       version,
       backstageVersion,
       scopeName,
+      packageName,
       privatePackage,
       registryURL,
     });
@@ -269,15 +270,10 @@ export default async (cmd: Command) => {
 
     if (await fs.pathExists(appPackage)) {
       Task.section('Adding plugin as dependency in app');
-      await addPluginDependencyToApp(
-        paths.targetRoot,
-        answers.id,
-        version,
-        scopeNameWithSlash,
-      );
+      await addPluginDependencyToApp(paths.targetRoot, version, packageName);
 
       Task.section('Import plugin in app');
-      await addPluginToApp(paths.targetRoot, answers.id, scopeNameWithSlash);
+      await addPluginToApp(paths.targetRoot, answers.id, packageName);
     }
 
     if (ownerIds && ownerIds.length) {
@@ -289,11 +285,7 @@ export default async (cmd: Command) => {
     }
 
     Task.log();
-    Task.log(
-      `🥇  Successfully created ${chalk.cyan(
-        `${scopeNameWithSlash}plugin-${answers.id}`,
-      )}`,
-    );
+    Task.log(`🥇  Successfully created ${chalk.cyan(`${packageName}`)}`);
     Task.log();
     Task.exit();
   } catch (error) {
