@@ -17,8 +17,6 @@ We are quite sure the main reason for the success of TechDocs is our docs-like-c
 
 ![available-templates](assets/announcing-techdocs/docs-in-backstage.png)
 
-Watch this video to see [Spotify’s internal version of TechDocs](https://backstage.io/demos) in action.
-
 But this is just one way to do it. Today we’re most excited for what the open version of TechDocs can become.
 
 ## Okay, let’s start collaborating

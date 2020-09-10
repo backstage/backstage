@@ -15,5 +15,8 @@
  */
 
 export { ApiDefinitionCard } from './ApiDefinitionCard';
+export { AsyncApiDefinitionWidget } from './AsyncApiDefinitionWidget';
+export { OpenApiDefinitionWidget } from './OpenApiDefinitionWidget';
+export { PlainApiDefinitionWidget } from './PlainApiDefinitionWidget';
 export { useComponentApiNames } from './useComponentApiNames';
 export { useComponentApiEntities } from './useComponentApiEntities';

@@ -26,9 +26,11 @@ export const addLinkClickListener = ({
   return dom => {
     Array.from(dom.getElementsByTagName('a')).forEach(elem => {
       elem.addEventListener('click', (e: MouseEvent) => {
-        e.preventDefault();
         const target = e.target as HTMLAnchorElement;
-        if (target?.getAttribute('href')) {
+        const href = target?.getAttribute('href');
+        if (!href) return;
+        if (!href.match(/^https?:\/\//i)) {
+          e.preventDefault();
           onClick(e, target.getAttribute('href')!);
         }
       });
