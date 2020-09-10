@@ -87,8 +87,8 @@ export const addExportStatement = async (
 
 export async function addPluginDependencyToApp(
   rootDir: string,
-  versionStr: string,
   pluginPackage: string,
+  versionStr: string,
 ) {
   const packageFilePath = 'packages/app/package.json';
   const packageFile = resolvePath(rootDir, packageFilePath);
@@ -274,7 +274,7 @@ export default async (cmd: Command) => {
 
     if (await fs.pathExists(appPackage)) {
       Task.section('Adding plugin as dependency in app');
-      await addPluginDependencyToApp(paths.targetRoot, version, packageName);
+      await addPluginDependencyToApp(paths.targetRoot, packageName, version);
 
       Task.section('Import plugin in app');
       await addPluginToApp(paths.targetRoot, answers.id, packageName);
