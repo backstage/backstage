@@ -47,7 +47,7 @@ export const SettingsDialog = ({
   return (
     <Card className={classes.root}>
       <CardHeader
-        avatar={<SignInAvatar />}
+        avatar={<SignInAvatar size={48} />}
         action={<UserSettingsMenu />}
         title={displayName}
         subheader={profile.email}

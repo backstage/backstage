@@ -18,41 +18,18 @@ import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Avatar } from '@material-ui/core';
 import { useUserProfile } from './useUserProfileInfo';
+import { sidebarConfig } from '../config';
 
-// const useStyles = makeStyles<BackstageTheme, { size: number }>({
-//   avatar: {
-//     width: ({ size }) => size,
-//     height: ({ size }) => size,
-//   },
-// });
-
-// export const SignInAvatar = ({ size = 24 }: { size?: number }) => {
-//   const classes = useStyles({ size });
-//   const { profile, displayName } = useUserProfile();
-
-//   return (
-//     <Avatar src={profile.picture} className={classes.avatar}>
-//       {displayName[0]}
-//     </Avatar>
-//   );
-// };
-
-// const useStyles = makeStyles({
-//   avatar: {
-//     width: 24,
-//     height: 24,
-//   },
-// });
-
-const useStyles = makeStyles({
+const useStyles = makeStyles<BackstageTheme, { size: number }>({
   avatar: {
-    width: 24,
-    height: 24,
+    width: ({ size }) => size,
+    height: ({ size }) => size,
   },
 });
 
-export const SignInAvatar = () => {
-  const classes = useStyles();
+export const SignInAvatar = ({ size }: { size?: number }) => {
+  const { iconSize } = sidebarConfig;
+  const classes = useStyles(size ? { size } : { size: iconSize });
   const { profile, displayName } = useUserProfile();
 
   return (
