@@ -8,16 +8,21 @@ sidebar_label: Overview
 
 <!-- Intro, backstory, etc.: -->
 
-Wait, what is TechDocs? TechDocs is Spotify’s homegrown docs-like-code solution
-built directly into Backstage. Today, it is now one of the core products in
-Spotify’s developer experience offering with 2,400+ documentation sites and
-1,000+ engineers using it daily.
+TechDocs is Spotify’s homegrown docs-like-code solution built directly into
+Backstage. This means engineers write their documentation in Markdown files
+which live together with their code.
+
+Today, it is one of the core products in Spotify’s developer experience offering
+with 2,400+ documentation sites and 1,000+ engineers using it daily. Read more
+about TechDocs and the philosophy in its
+[announcement blog post](https://backstage.io/blog/2020/09/08/announcing-tech-docs).
+🎉
 
 ## Features
 
-- A centralized place to discover documentation.
+- A centralized place to discover and read documentation.
 
-- A clear end-to-end docs-like-code solution. (_Coming soon in V.1_)
+- A clear end-to-end docs-like-code solution.
 
 - A tightly coupled feedback loop with the developer workflow. (_Coming soon in
   V.3_)
@@ -44,7 +49,7 @@ Spotify’s developer experience offering with 2,400+ documentation sites and
 #### TechDocs V.0
 
 - As a user I can navigate to a manually curated docs explore page.
-- As a user I can navigte to and read mock documentation that is manually
+- As a user I can navigate to and read mock documentation that is manually
   uploaded by the TechDocs core team.
 
 #### TechDocs V.1
