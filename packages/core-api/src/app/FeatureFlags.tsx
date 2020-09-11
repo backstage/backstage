@@ -81,9 +81,11 @@ export class UserFlags extends Map<FeatureFlagName, FeatureFlagState> {
   }
 
   toggle(name: FeatureFlagName): FeatureFlagState {
-    Boolean(super.get(name))
-      ? super.set(name, FeatureFlagState.Off)
-      : super.set(name, FeatureFlagState.On);
+    if (super.get(name) === FeatureFlagState.On) {
+      super.set(name, FeatureFlagState.Off);
+    } else {
+      super.set(name, FeatureFlagState.On);
+    }
     return super.get(name) || FeatureFlagState.Off;
   }
 
