@@ -113,6 +113,10 @@ td {
   color: $navigatorTitleTextColor;
 }
 
+.toc .toggleNav .navGroup .navGroupSubcategoryTitle {
+  color: $navGroupSubcategoryTitleColor;
+}
+
 .toc .toggleNav ul li a,
 .onPageNav a {
   color: $navigatorItemTextColor;

@@ -69,6 +69,7 @@ const siteConfig = {
     textColor: '#FFFFFF',
     navigatorTitleTextColor: '#e4e4e4',
     navigatorItemTextColor: '#9e9e9e',
+    navGroupSubcategoryTitleColor: '#9e9e9e',
   },
 
   /* Colors for syntax highlighting */
