@@ -189,9 +189,9 @@ Apps integration further down the line.
 > **Right now it is only possible to scaffold repositories inside GitHub
 > organizations, and not under personal accounts.**
 
-The Github access token is retrieved from environment variables by the
-config. The config file needs to specify what environment variable the 
-token is retrieved from. Your config should have the following objects.
+The Github access token is retrieved from environment variables by the config.
+The config file needs to specify what environment variable the token is
+retrieved from. Your config should have the following objects.
 
 ```yaml
 scaffolder:
