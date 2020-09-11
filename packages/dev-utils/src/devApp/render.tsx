@@ -31,6 +31,7 @@ import {
   AnyApiFactory,
 } from '@backstage/core';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
+import { Routes } from 'react-router';
 
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
 type BackstagePlugin = ReturnType<typeof createPlugin>;
@@ -97,7 +98,7 @@ class DevAppBuilder {
           <AppRouter>
             <SidebarPage>
               {sidebar}
-              {deprecatedAppRoutes}
+              <Routes>{deprecatedAppRoutes}</Routes>
             </SidebarPage>
           </AppRouter>
         </AppProvider>
