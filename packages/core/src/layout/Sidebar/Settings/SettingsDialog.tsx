@@ -15,13 +15,7 @@
  */
 
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  makeStyles,
-} from '@material-ui/core';
+import { Card, CardContent, CardHeader, makeStyles } from '@material-ui/core';
 import { AppSettingsList } from './AppSettingsList';
 import { AuthProvidersList } from './AuthProviderList';
 import { FeatureFlagsList } from './FeatureFlagsList';
@@ -52,11 +46,8 @@ export const SettingsDialog = ({ providerSettings }: Props) => {
         subheader={profile.email}
       />
       <CardContent>
-        <Divider />
         <AppSettingsList />
-        <Divider />
         <AuthProvidersList providerSettings={providerSettings} />
-        <Divider />
         <FeatureFlagsList />
       </CardContent>
     </Card>

@@ -19,20 +19,28 @@ import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { useApi, featureFlagsApiRef } from '@backstage/core-api';
 import { FlagItem } from './FeatureFlagsItem';
+import { Divider } from '@material-ui/core';
 
 export const FeatureFlagsList = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const featureFlags = featureFlagsApi.getRegisteredFlags();
 
+  if (featureFlags.length === 0) {
+    return null;
+  }
+
   return (
-    <List dense subheader={<ListSubheader>Feature Flags</ListSubheader>}>
-      {featureFlags.map(featureFlag => (
-        <FlagItem
-          key={featureFlag.name}
-          featureFlag={featureFlag}
-          api={featureFlagsApi}
-        />
-      ))}
-    </List>
+    <>
+      <Divider />
+      <List dense subheader={<ListSubheader>Feature Flags</ListSubheader>}>
+        {featureFlags.map(featureFlag => (
+          <FlagItem
+            key={featureFlag.name}
+            featureFlag={featureFlag}
+            api={featureFlagsApi}
+          />
+        ))}
+      </List>
+    </>
   );
 };

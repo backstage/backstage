@@ -17,13 +17,23 @@
 import React from 'react';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import { Divider } from '@material-ui/core';
 
 type Props = {
   providerSettings?: React.ReactNode;
 };
 
-export const AuthProvidersList = ({ providerSettings }: Props) => (
-  <List subheader={<ListSubheader>Available Auth Providers</ListSubheader>}>
-    {providerSettings}
-  </List>
-);
+export const AuthProvidersList = ({ providerSettings }: Props) => {
+  if (!providerSettings) {
+    return null;
+  }
+
+  return (
+    <>
+      <Divider />
+      <List subheader={<ListSubheader>Available Auth Providers</ListSubheader>}>
+        {providerSettings}
+      </List>
+    </>
+  );
+};
