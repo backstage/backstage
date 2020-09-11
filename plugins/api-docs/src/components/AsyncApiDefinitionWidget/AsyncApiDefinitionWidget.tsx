@@ -136,7 +136,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type Props = {
-  definition: any;
+  definition: string;
 };
 
 export const AsyncApiDefinitionWidget = ({ definition }: Props) => {
