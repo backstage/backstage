@@ -4,9 +4,11 @@ metadata:
   name: streetlights
   description: The Smartylighting Streetlights API allows you to remotely manage the city lights.
   tags:
-    - unstable
+    - mqtt
 spec:
   type: asyncapi
+  lifecycle: production
+  owner: streetlights@example.com
   definition: |
     asyncapi: 2.0.0
     info:
