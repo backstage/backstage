@@ -196,6 +196,7 @@ async function createApp(
       env: {
         ...process.env,
         APP_CONFIG_app_baseUrl: '"http://localhost:3001"',
+        APP_CONFIG_scaffolder_github_token: '"abc"',
       },
     });
 
