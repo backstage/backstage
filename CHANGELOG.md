@@ -8,6 +8,11 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 > Collect changes for the next release below
 
+- Material-UI: Bumped to 4.11.0, which is the version that create-app will
+  resolve to, because we wanted to get the renaming of ExpansionPanel to
+  Accordion into place. This gets rid of a lot of console deprecation warnings
+  in newly scaffolded apps.
+
 - The backend plugin
   [service builder](https://github.com/spotify/backstage/blob/master/packages/backend-common/src/service/lib/ServiceBuilderImpl.ts)
   no longer adds `express.json()` automatically to all routes. While convenient

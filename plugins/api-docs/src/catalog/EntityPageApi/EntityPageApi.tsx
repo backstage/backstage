@@ -39,7 +39,7 @@ export const EntityPageApi: FC<{ entity: Entity }> = ({ entity }) => {
     <Grid container spacing={3}>
       {apiNames.map(api => (
         <Grid item xs={12} key={api}>
-          <ApiDefinitionCard title={api} apiEntity={apiEntities!.get(api)} />
+          <ApiDefinitionCard apiEntity={apiEntities!.get(api)} />
         </Grid>
       ))}
     </Grid>

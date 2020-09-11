@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
 import {
@@ -76,7 +76,7 @@ describe('<CopyTextButton />', () => {
       ),
     );
     const button = rendered.getByTitle('mockTooltip');
-    button.click();
+    fireEvent.click(button);
     expect(document.execCommand).toHaveBeenCalled();
     rendered.getByText('mockTooltip');
   });

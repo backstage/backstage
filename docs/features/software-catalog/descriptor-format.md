@@ -34,7 +34,7 @@ software catalog API.
     "annotations": {
       "backstage.io/managed-by-location": "file:/tmp/component-info.yaml",
       "example.com/service-discovery": "artistweb",
-      "circleci.com/project-slug": "gh/example-org/artist-website"
+      "circleci.com/project-slug": "github/example-org/artist-website"
     },
     "description": "The place to be, for great artists",
     "etag": "ZjU2MWRkZWUtMmMxZS00YTZiLWFmMWMtOTE1NGNiZDdlYzNk",
@@ -66,7 +66,7 @@ metadata:
     system: public-websites
   annotations:
     example.com/service-discovery: artistweb
-    circleci.com/project-slug: gh/example-org/artist-website
+    circleci.com/project-slug: github/example-org/artist-website
   tags:
     - java
 spec:

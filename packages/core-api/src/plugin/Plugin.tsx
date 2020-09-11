@@ -24,9 +24,11 @@ import {
 } from './types';
 import { validateBrowserCompat, validateFlagName } from '../app/FeatureFlags';
 import { RouteRef } from '../routing';
+import { AnyApiFactory } from '../apis';
 
 export type PluginConfig = {
   id: string;
+  apis?: Iterable<AnyApiFactory>;
   register?(hooks: PluginHooks): void;
 };
 
@@ -63,6 +65,10 @@ export class PluginImpl {
 
   getId(): string {
     return this.config.id;
+  }
+
+  getApis(): Iterable<AnyApiFactory> {
+    return this.config.apis ?? [];
   }
 
   output(): PluginOutput[] {
