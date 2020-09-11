@@ -6,10 +6,6 @@ sidebar_label: FAQ
 
 This page answers frequently asked questions about [TechDocs](README.md).
 
-_Got a question that you think others might be interested in knowing the answer
-to? Edit this file
-[here](https://github.com/spotify/backstage/edit/master/docs/features/techdocs/FAQ.md)._
-
 ## Technology
 
 - [What static site generator is TechDocs using?](#what-static-site-generator-is-techdocs-using)
