@@ -3,6 +3,28 @@
   "version": "0.0.0",
   "private": true,
   "bundled": true,
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "scripts": {
+    "start": "backstage-cli app:serve",
+    "build": "backstage-cli app:build",
+    "test": "backstage-cli test",
+    "lint": "backstage-cli lint",
+    "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
+    "test:e2e:ci": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
+    "cy:dev": "cypress open",
+    "cy:run": "cypress run"
+  },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -39,27 +61,5 @@
     "cypress": "^4.2.0",
     "eslint-plugin-cypress": "^2.10.3",
     "start-server-and-test": "^1.10.11"
-  },
-  "scripts": {
-    "start": "backstage-cli app:serve",
-    "build": "backstage-cli app:build",
-    "test": "backstage-cli test",
-    "lint": "backstage-cli lint",
-    "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
-    "test:e2e:ci": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
-    "cy:dev": "cypress open",
-    "cy:run": "cypress run"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }

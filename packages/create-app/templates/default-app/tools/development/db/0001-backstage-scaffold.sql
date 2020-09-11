@@ -1,0 +1,3 @@
+CREATE DATABASE backstage_plugin_auth;
+CREATE DATABASE backstage_plugin_catalog;
+CREATE DATABASE backstage_plugin_identity;
