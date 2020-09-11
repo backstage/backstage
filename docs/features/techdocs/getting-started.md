@@ -6,35 +6,8 @@ title: Getting Started
 TechDocs functions as a plugin to Backstage, so you will need to use Backstage
 to use TechDocs.
 
-## What is Backstage?
-
-Backstage is an open platform for building developer portals. It’s based on the
-developer portal we’ve been using internally at Spotify for over four years.
-[Read more here](https://github.com/spotify/backstage).
-
-## Prerequisities
-
-In order to use Backstage and TechDocs, you need to have the following
-installed:
-
-- [Node.js](https://nodejs.org) Active LTS (long term support), currently v12
-- [Yarn](https://yarnpkg.com/getting-started/install)
-
-## Creating a new Backstage app
-
-> If you have already created a Backstage application, jump to
-> [Installing TechDocs](#installing-techdocs), otherwise complete this step.
-
-To create a new Backstage application for TechDocs, run the following command:
-
-```bash
-npx @backstage/create-app
-```
-
-You will then be prompted to enter a name for your application. Once that's
-done, a new Backstage application will be created in a new folder. For example,
-if you choose the name `hello-world`, a new `hello-world` folder is created
-containing your new Backstage application.
+If you haven't setup Backstage already, start
+[here](../../getting-started/index.md).
 
 ## Installing TechDocs
 
