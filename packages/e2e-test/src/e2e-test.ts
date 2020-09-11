@@ -196,7 +196,6 @@ async function createApp(
       env: {
         ...process.env,
         APP_CONFIG_app_baseUrl: '"http://localhost:3001"',
-        APP_CONFIG_scaffolder_github_token: '"abc"',
       },
     });
 
@@ -273,6 +272,10 @@ async function createPlugin(pluginName: string, appDir: string) {
 async function testAppServe(pluginName: string, appDir: string) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
+    env: {
+      ...process.env,
+      GITHUB_ACCESS_TOKEN: 'abc',
+    },
   });
   Browser.localhost('localhost', 3000);
 
@@ -343,6 +346,10 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
 
   const child = spawnPiped(['yarn', 'workspace', 'backend', 'start'], {
     cwd: appDir,
+    env: {
+      ...process.env,
+      GITHUB_ACCESS_TOKEN: 'abc',
+    },
   });
 
   let stdout = '';
