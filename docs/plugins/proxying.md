@@ -52,7 +52,10 @@ configuration will lead to the proxy acting on backend requests to
 
 The value inside each route is either a simple URL string, or an object on the
 format accepted by
-[http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware).
+[http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware). It
+is also possible to limit the forwarded HTTP methods with the configuration
+`allowedMethods`, for example `allowedMethods: ['GET']` to enforce read-only
+access.
 
 If the value is a string, it is assumed to correspond to:
 
