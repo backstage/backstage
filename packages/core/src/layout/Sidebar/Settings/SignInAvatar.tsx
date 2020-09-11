@@ -27,7 +27,9 @@ const useStyles = makeStyles<BackstageTheme, { size: number }>({
   },
 });
 
-export const SignInAvatar = ({ size }: { size?: number }) => {
+type Props = { size?: number };
+
+export const SignInAvatar = ({ size }: Props) => {
   const { iconSize } = sidebarConfig;
   const classes = useStyles(size ? { size } : { size: iconSize });
   const { profile, displayName } = useUserProfile();

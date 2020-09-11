@@ -22,11 +22,10 @@ import {
   Divider,
   makeStyles,
 } from '@material-ui/core';
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import { SidebarPinButton } from './PinButton';
+import { AppSettingsList } from './AppSettingsList';
+import { AuthProvidersList } from './AuthProviderList';
+import { FeatureFlagsList } from './FeatureFlagsList';
 import { SignInAvatar } from './SignInAvatar';
-import { SidebarThemeToggle } from './ThemeToggle';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from './useUserProfileInfo';
 
@@ -36,11 +35,11 @@ const useStyles = makeStyles({
   },
 });
 
-export const SettingsDialog = ({
-  providerSettings,
-}: {
+type Props = {
   providerSettings?: React.ReactNode;
-}) => {
+};
+
+export const SettingsDialog = ({ providerSettings }: Props) => {
   const classes = useStyles();
   const { profile, displayName } = useUserProfile();
 
@@ -54,16 +53,11 @@ export const SettingsDialog = ({
       />
       <CardContent>
         <Divider />
-        <List dense subheader={<ListSubheader>App Settings</ListSubheader>}>
-          <SidebarThemeToggle />
-          <SidebarPinButton />
-        </List>
+        <AppSettingsList />
         <Divider />
-        <List
-          subheader={<ListSubheader>Available Auth Providers</ListSubheader>}
-        >
-          {providerSettings}
-        </List>
+        <AuthProvidersList providerSettings={providerSettings} />
+        <Divider />
+        <FeatureFlagsList />
       </CardContent>
     </Card>
   );

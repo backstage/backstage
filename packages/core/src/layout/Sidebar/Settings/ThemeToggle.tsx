@@ -37,7 +37,7 @@ export const SidebarThemeToggle = () => {
   );
 
   const themeIds = appThemeApi.getInstalledThemes();
-  // TODO: can these be put on the theme itself?
+  // TODO(marcuseide): can these be put on the theme itself?
   const themeIcons = {
     dark: <DarkIcon />,
     light: <LightIcon />,

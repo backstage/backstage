@@ -50,7 +50,7 @@ export const SidebarPinButton = () => {
       <ListItemSecondaryAction>
         <ToggleButton
           size="small"
-          value="check"
+          value="pin"
           selected={isPinned}
           onChange={() => {
             toggleSidebarPinState();

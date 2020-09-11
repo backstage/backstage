@@ -22,11 +22,11 @@ import { SidebarItem } from '../Items';
 import { useUserProfile } from './useUserProfileInfo';
 import { SidebarContext } from '../config';
 
-export const SidebarUserSettings = ({
-  providerSettings,
-}: {
+type Props = {
   providerSettings?: React.ReactNode;
-}) => {
+};
+
+export const SidebarUserSettings = ({ providerSettings }: Props) => {
   const { isOpen: sidebarOpen } = useContext(SidebarContext);
   const { displayName } = useUserProfile();
   const [open, setOpen] = React.useState(false);
@@ -44,7 +44,6 @@ export const SidebarUserSettings = ({
     setOpen(false);
   };
 
-  // Close the provider list when sidebar collapse
   useEffect(() => {
     if (!sidebarOpen && open) setOpen(false);
   }, [open, sidebarOpen]);
