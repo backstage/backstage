@@ -29,7 +29,7 @@ Spotify’s developer experience offering with 2,400+ documentation sites and
 | Version                 | Description                                                                                                                         |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | [TechDocs V.0 ✅][v0]   | Read docs in Backstage - Enable anyone to get a reader experience working in Backstage. [See V.0 Use Cases.](#techdocs-v0)          |
-| [TechDocs V.1 🚧][v1]   | TechDocs end to end (alpha) - Alpha of TechDocs that you can use end to end - and contribute to. [See V.1 Use Cases.](#techdocs-v1) |
+| [TechDocs V.1 ✅][v1]   | TechDocs end to end (alpha) - Alpha of TechDocs that you can use end to end - and contribute to. [See V.1 Use Cases.](#techdocs-v1) |
 | [TechDocs V.2 🔮⌛][v2] | Platform stability and compatibility improvements. [See V.2 Use Cases.](#techdocs-v2)                                               |
 | TechDocs V.3 🔮⌛       | Widget Architecture - TechDocs widget architecture available, so the community can create their own customized features.            |
 
