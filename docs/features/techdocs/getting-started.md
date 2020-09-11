@@ -47,7 +47,7 @@ export { plugin as TechDocs } from '@backstage/plugin-techdocs';
 ### Setting the configuration
 
 TechDocs allows for configuration of the docs storage URL through your
-`app-config` file. We provide two different values to be configured,
+`app-config.yaml` file. We provide two different values to be configured,
 `requestUrl` and `storageUrl`. The `requestUrl` is what the reader will request
 its data from, and `storageUrl` is where the backend can find the stored
 documentation.
@@ -60,13 +60,13 @@ techdocs:
   requestUrl: http://localhost:7000/techdocs/docs
 ```
 
-If you want `techdocs-backend` to manage building and publishing you want
+If you want `techdocs-backend` to manage building and publishing, you want
 `requestUrl` to point to the default value (or wherever `techdocs-backend` is
 hosted). `storageUrl` should be where your publisher publishes your docs. Using
 the default `LocalPublish` that is the default value.
 
 If you have a setup where you are not using `techdocs-backend` for managing
-building and publishing of your documentation you want to change the
+building and publishing of your documentation, you want to change the
 `requestUrl` to point to your storage. In this case `storageUrl` is not
 required.
 
