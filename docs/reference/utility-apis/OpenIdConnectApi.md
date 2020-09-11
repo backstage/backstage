@@ -1,11 +1,15 @@
 # OpenIdConnectApi
 
 The OpenIdConnectApi type is defined at
-[packages/core-api/src/apis/definitions/auth.ts:104](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/auth.ts#L104).
+[packages/core-api/src/apis/definitions/auth.ts:104](https://github.com/spotify/backstage/blob/82d329555c16af46db9b4e5cd2f44a3cc006a52e/packages/core-api/src/apis/definitions/auth.ts#L104).
 
 The following Utility APIs implement this type:
 
+- [auth0AuthApiRef](./README.md#auth0auth)
+
 - [googleAuthApiRef](./README.md#googleauth)
+
+- [microsoftAuthApiRef](./README.md#microsoftauth)
 
 - [oauth2ApiRef](./README.md#oauth2)
 
@@ -70,6 +74,6 @@ export type AuthRequestOptions = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/auth.ts#L40).
+[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/spotify/backstage/blob/82d329555c16af46db9b4e5cd2f44a3cc006a52e/packages/core-api/src/apis/definitions/auth.ts#L40).
 
 Referenced by: [getIdToken](#getidtoken).

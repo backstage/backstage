@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
+import {
+  createPlugin,
+  createRouteRef,
+  createApiFactory,
+  configApiRef,
+} from '@backstage/core';
 import { DetailedViewPage } from './pages/BuildWithStepsPage';
+import { jenkinsApiRef, JenkinsApi } from './api';
 
 export const buildRouteRef = createRouteRef({
   path: '/jenkins/job',
@@ -24,6 +30,16 @@ export const buildRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'jenkins',
+  apis: [
+    createApiFactory({
+      api: jenkinsApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) =>
+        new JenkinsApi(
+          `${configApi.getString('backend.baseUrl')}/proxy/jenkins/api`,
+        ),
+    }),
+  ],
   register({ router }) {
     router.addRoute(buildRouteRef, DetailedViewPage);
   },

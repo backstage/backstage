@@ -15,8 +15,9 @@
  */
 
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
 import { Entity } from '@backstage/catalog-model';
+import { Route, Routes } from 'react-router-dom';
+import { WarningPanel } from '@backstage/core';
 
 import {
   rootRouteRef,
@@ -26,6 +27,8 @@ import {
 import { TechDocsHome } from './reader/components/TechDocsHome';
 import { TechDocsPage } from './reader/components/TechDocsPage';
 import { EntityPageDocs } from './EntityPageDocs';
+
+const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
 export const Router = () => {
   return (
@@ -37,6 +40,20 @@ export const Router = () => {
 };
 
 export const EmbeddedDocsRouter = ({ entity }: { entity: Entity }) => {
+  const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
+
+  if (!projectId) {
+    return (
+      <WarningPanel title="Techdocs plugin:">
+        <pre>{TECHDOCS_ANNOTATION}</pre> annotation is missing on the entity.
+        <br />
+        <a href="https://backstage.io/docs/features/techdocs/creating-and-publishing">
+          Getting Started
+        </a>
+      </WarningPanel>
+    );
+  }
+
   return (
     <Routes>
       <Route
