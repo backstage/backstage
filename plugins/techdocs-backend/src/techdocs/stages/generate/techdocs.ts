@@ -48,7 +48,7 @@ export class TechdocsGenerator implements GeneratorBase {
     );
 
     try {
-      const mkdocsInstalled = await commandExists('cookiecutter');
+      const mkdocsInstalled = await commandExists('mkdocs');
       if (mkdocsInstalled) {
         await runCommand({
           command: 'mkdocs',
