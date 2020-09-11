@@ -84,8 +84,14 @@ Depending on the work you're doing, you often also want to run the example backe
 cd packages/backend
 
 yarn start
+```
 
-yarn lerna run mock-data # Populate the backend with mock data
+To populate the backend with mock data, run the following command from the project root:
+
+```bash
+
+yarn lerna run mock-data
+
 ```
 
 And that's it! You are good to go 👍
