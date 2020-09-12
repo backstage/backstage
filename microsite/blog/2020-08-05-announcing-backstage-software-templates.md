@@ -39,7 +39,7 @@ You can customize Backstage Software Templates to fit your organization’s stan
 
 ## Getting started
 
-The sample Software Templates are available under `/create`. If you're setting up Backstage for the first time, follow [Getting Started with Backstage](https://backstage.io/docs/getting-started/) and go to `http://localhost:3000/create`. If you’ve already been running Backstage locally, run the command `yarn lerna run mock-data` to load the new sample templates into the Service Catalog first.
+The sample Software Templates are available under `/create`. If you're setting up Backstage for the first time, follow [Getting Started with Backstage](https://backstage.io/docs/getting-started/) and go to `http://localhost:3000/create`.
 
 ![available-templates](assets/2020-08-05/templates.png)
 
