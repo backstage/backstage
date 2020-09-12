@@ -48,12 +48,10 @@ yarn start
 
 That starts up a backend instance on port 7000.
 
-In the other window, we will first populate the catalog with some nice mock data
-to look at, and then launch the frontend. These commands are run from the
-project root, not inside the backend directory.
+In the other window, we will then launch the frontend. This command is run from
+the project root, not inside the backend directory.
 
 ```bash
-yarn lerna run mock-data
 yarn start
 ```
 
