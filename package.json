@@ -66,5 +66,8 @@
     "transformModules": [
       "@kyma-project/asyncapi-react"
     ]
+  },
+  "dependencies": {
+    "@changesets/cli": "2.10.2"
   }
 }
