@@ -30,4 +30,4 @@ export type PreparerBuilder = {
   get(entity: Entity): PreparerBase;
 };
 
-export type RemoteProtocol = 'dir' | string;
+export type RemoteProtocol = 'dir' | 'github' | 'file';

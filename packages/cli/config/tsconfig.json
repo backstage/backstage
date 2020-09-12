@@ -25,6 +25,7 @@
     "removeComments": false,
     "resolveJsonModule": true,
     "sourceMap": false,
+    "skipLibCheck": true,
     "strict": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,

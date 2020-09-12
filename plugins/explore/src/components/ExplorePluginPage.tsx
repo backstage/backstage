@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
 import {
   Content,
@@ -107,7 +107,7 @@ const toolsCards = [
   },
 ];
 
-const ExplorePluginPage: FC<{}> = () => {
+export const ExplorePluginPage = () => {
   const classes = useStyles();
   return (
     <Page theme={pageTheme.home}>
@@ -130,5 +130,3 @@ const ExplorePluginPage: FC<{}> = () => {
     </Page>
   );
 };
-
-export default ExplorePluginPage;

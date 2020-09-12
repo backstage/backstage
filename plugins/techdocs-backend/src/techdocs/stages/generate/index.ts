@@ -15,4 +15,4 @@
  */
 export { TechdocsGenerator } from './techdocs';
 export { Generators } from './generators';
-export type { GeneratorBuilder } from './types';
+export type { GeneratorBuilder, GeneratorBase } from './types';

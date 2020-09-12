@@ -20,9 +20,9 @@ import { circleCIApiRef, CircleCIApi } from '../src/api';
 
 createDevApp()
   .registerPlugin(plugin)
-  .registerApiFactory({
+  .registerApi({
+    api: circleCIApiRef,
     deps: {},
     factory: () => new CircleCIApi(),
-    implements: circleCIApiRef,
   })
   .render();

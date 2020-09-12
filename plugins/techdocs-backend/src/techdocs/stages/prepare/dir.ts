@@ -16,7 +16,10 @@
 import { PreparerBase } from './types';
 import { Entity } from '@backstage/catalog-model';
 import path from 'path';
-import { parseReferenceAnnotation, checkoutGitRepository } from './helpers';
+import {
+  parseReferenceAnnotation,
+  checkoutGithubRepository,
+} from '../../../helpers';
 import { InputError } from '@backstage/backend-common';
 import parseGitUrl from 'git-url-parse';
 import { Logger } from 'winston';
@@ -40,7 +43,7 @@ export class DirectoryPreparer implements PreparerBase {
     switch (type) {
       case 'github': {
         const parsedGitLocation = parseGitUrl(target);
-        const repoLocation = await checkoutGitRepository(target);
+        const repoLocation = await checkoutGithubRepository(target);
 
         return path.dirname(
           path.join(repoLocation, parsedGitLocation.filepath),

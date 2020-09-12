@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, FC } from 'react';
+
 import {
   Accordion,
+  AccordionDetails,
   AccordionSummary,
   Typography,
-  AccordionDetails,
 } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import React, { FC, useEffect } from 'react';
 
 const useStyles = makeStyles({
   accordionDetails: {
@@ -45,10 +46,7 @@ export const ActionOutput: FC<{
   useEffect(() => {}, [url]);
 
   return (
-    <Accordion
-      TransitionProps={{ unmountOnExit: true }}
-      className={className}
-    >
+    <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}

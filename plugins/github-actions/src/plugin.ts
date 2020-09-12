@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
+import {
+  createPlugin,
+  createRouteRef,
+  createApiFactory,
+} from '@backstage/core';
+import { githubActionsApiRef, GithubActionsClient } from './api';
 
 // TODO(freben): This is just a demo route for now
 export const rootRouteRef = createRouteRef({
@@ -29,4 +34,5 @@ export const buildRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'github-actions',
+  apis: [createApiFactory(githubActionsApiRef, new GithubActionsClient())],
 });

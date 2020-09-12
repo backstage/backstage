@@ -7,10 +7,12 @@
       "overview/roadmap",
       "overview/vision",
       "overview/background",
-      "overview/adopting"
+      "overview/adopting",
+      "overview/logos"
     ],
     "Getting Started": [
       "getting-started/index",
+      "getting-started/running-backstage-locally",
       "getting-started/installation",
       "getting-started/development-environment",
       "getting-started/create-an-app",
@@ -31,12 +33,13 @@
         ]
       }
     ],
-    "Features": [
+    "Core Features": [
       {
         "type": "subcategory",
         "label": "Software Catalog",
         "ids": [
           "features/software-catalog/software-catalog-overview",
+          "features/software-catalog/installation",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
           "features/software-catalog/extending-the-model",
@@ -46,9 +49,10 @@
       },
       {
         "type": "subcategory",
-        "label": "Software creation templates",
+        "label": "Software Templates",
         "ids": [
           "features/software-templates/software-templates-index",
+          "features/software-templates/installation",
           "features/software-templates/adding-templates",
           "features/software-templates/extending/extending-index",
           "features/software-templates/extending/extending-templater",
