@@ -1,3 +1,4 @@
+import classes from '*.css';
 /*
  * Copyright 2020 Spotify AB
  *
@@ -15,7 +16,12 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Typography, useTheme } from '@material-ui/core';
+import {
+  makeStyles,
+  Typography,
+  useTheme,
+  IconButton,
+} from '@material-ui/core';
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -39,7 +45,7 @@ import MTable, {
   MTableToolbar,
   Options,
 } from 'material-table';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState } from 'react';
 
 const tableIcons = {
   Add: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
@@ -107,7 +113,7 @@ const useHeaderStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-const useToolbarStyles = makeStyles<BackstageTheme>(theme => ({
+const useToolbarStyles = makeStyles<BackstageTheme>((theme) => ({
   root: {
     padding: theme.spacing(3, 0, 2.5, 2.5),
   },
@@ -119,6 +125,25 @@ const useToolbarStyles = makeStyles<BackstageTheme>(theme => ({
   searchField: {
     paddingRight: theme.spacing(2),
   },
+}));
+
+const useFilterStyles = makeStyles<BackstageTheme>(() => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+}));
+
+const useTableStyles = makeStyles<BackstageTheme>(() => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  filters: {
+    height: '100%',
+    width: '250px',
+  }
 }));
 
 function convertColumns<T extends object>(
@@ -152,6 +177,7 @@ export interface TableProps<T extends object = {}>
   extends MaterialTableProps<T> {
   columns: TableColumn<T>[];
   subtitle?: string;
+  filters?: any[];
 }
 
 export function Table<T extends object = {}>({
@@ -159,11 +185,17 @@ export function Table<T extends object = {}>({
   options,
   title,
   subtitle,
+  filters,
   ...props
 }: TableProps<T>) {
   const headerClasses = useHeaderStyles();
   const toolbarClasses = useToolbarStyles();
+  const tableClasses = useTableStyles();
+  const filtersClasses = useFilterStyles();
+
   const theme = useTheme<BackstageTheme>();
+
+  const [filtersOpen, toggleFilters] = useState(false);
 
   const MTColumns = convertColumns(columns, theme);
 
@@ -174,14 +206,27 @@ export function Table<T extends object = {}>({
   };
 
   return (
+    <div className={tableClasses.root}>
+      {filtersOpen && <div className={tableClasses.filters}>Filters</div>}
     <MTable<T>
       components={{
         Header: headerProps => (
           <MTableHeader classes={headerClasses} {...headerProps} />
         ),
-        Toolbar: toolbarProps => (
-          <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
-        ),
+        Toolbar: toolbarProps =>
+          filters?.length ? (
+            <div className={filtersClasses.root}>
+              <div className={filtersClasses.root}>
+                <IconButton onClick={() => toggleFilters(el => !el)} aria-label="filter list">
+                  <FilterList />
+                </IconButton>
+                <Typography variant="h6">Filters</Typography>
+              </div>
+              <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
+            </div>
+          ) : (
+            <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
+          ),
       }}
       options={{ ...defaultOptions, ...options }}
       columns={MTColumns}
@@ -198,5 +243,6 @@ export function Table<T extends object = {}>({
       }
       {...props}
     />
+    </div>
   );
 }
