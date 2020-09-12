@@ -44,6 +44,7 @@ export class GithubPublisher implements PublisherBase {
     values: RequiredTemplateValues & Record<string, JsonValue>,
   ) {
     const [owner, name] = values.storePath.split('/');
+    const access = values.access as string;
 
     const user = await this.client.users.getByUsername({ username: owner });
 
@@ -53,6 +54,27 @@ export class GithubPublisher implements PublisherBase {
         : this.client.repos.createForAuthenticatedUser({ name });
 
     const { data } = await repoCreationPromise;
+
+    if (access.match(new RegExp(`${owner}/.+`))) {
+      const [, team] = access.split('/');
+      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
+        org: owner,
+        team_slug: team,
+        owner,
+        repo: name,
+        permission: 'admin',
+      });
+    } else {
+      // no need to add access if it's the person who own's the personal account
+      if (access !== owner) {
+        await this.client.repos.addCollaborator({
+          owner,
+          repo: name,
+          username: access,
+          permission: 'admin',
+        });
+      }
+    }
 
     return data?.clone_url;
   }

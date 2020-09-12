@@ -30,6 +30,7 @@ const { mockGithubClient } = require('@octokit/rest') as {
   mockGithubClient: {
     repos: jest.Mocked<Octokit['repos']>;
     users: jest.Mocked<Octokit['users']>;
+    teams: jest.Mocked<Octokit['teams']>;
   };
 };
 
@@ -76,6 +77,7 @@ describe('GitHub Publisher', () => {
         values: {
           storePath: 'blam/test',
           owner: 'bob',
+          access: 'blam/team',
         },
         directory: '/tmp/test',
       });
@@ -83,6 +85,15 @@ describe('GitHub Publisher', () => {
       expect(mockGithubClient.repos.createInOrg).toHaveBeenCalledWith({
         org: 'blam',
         name: 'test',
+      });
+      expect(
+        mockGithubClient.teams.addOrUpdateRepoPermissionsInOrg,
+      ).toHaveBeenCalledWith({
+        org: 'blam',
+        team_slug: 'team',
+        owner: 'blam',
+        repo: 'test',
+        permission: 'admin',
       });
     });
 
@@ -102,6 +113,7 @@ describe('GitHub Publisher', () => {
         values: {
           storePath: 'blam/test',
           owner: 'bob',
+          access: 'blam',
         },
         directory: '/tmp/test',
       });
@@ -111,14 +123,49 @@ describe('GitHub Publisher', () => {
       ).toHaveBeenCalledWith({
         name: 'test',
       });
+      expect(mockGithubClient.repos.addCollaborator).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should invite other user in the authed user', async () => {
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'mockclone',
+      },
+    } as OctokitResponse<ReposCreateInOrgResponseData>);
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: {
+        type: 'User',
+      },
+    } as OctokitResponse<UsersGetByUsernameResponseData>);
+
+    await publisher.publish({
+      values: {
+        storePath: 'blam/test',
+        owner: 'bob',
+        access: 'bob',
+      },
+      directory: '/tmp/test',
+    });
+
+    expect(
+      mockGithubClient.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      name: 'test',
+    });
+    expect(mockGithubClient.repos.addCollaborator).toHaveBeenCalledWith({
+      owner: 'blam',
+      repo: 'test',
+      username: 'bob',
+      permission: 'admin',
     });
   });
 
   describe('publish: createGitDirectory', () => {
     const values = {
-      isOrg: true,
       storePath: 'blam/test',
       owner: 'lols',
+      access: 'lols',
     };
 
     const mockDir = '/tmp/test/dir';

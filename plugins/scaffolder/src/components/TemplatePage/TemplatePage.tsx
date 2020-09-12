@@ -54,7 +54,7 @@ const useTemplate = (
 
 const OWNER_REPO_SCHEMA = {
   $schema: 'http://json-schema.org/draft-07/schema#' as const,
-  required: ['storePath', 'owner'],
+  required: ['storePath', 'owner', 'access'],
   properties: {
     owner: {
       type: 'string' as const,
@@ -66,6 +66,11 @@ const OWNER_REPO_SCHEMA = {
       type: 'string' as const,
       title: 'Store path',
       description: 'GitHub store path in org/repo format',
+    },
+    access: {
+      type: 'string' as const,
+      title: 'Access',
+      description: 'Who should have access, in user or owner/team format',
     },
   },
 };
