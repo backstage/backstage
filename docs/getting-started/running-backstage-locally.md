@@ -89,5 +89,3 @@ instance of Backstage with your own plugins.
 - [Create a Backstage Plugin](../plugins/create-a-plugin.md)
 - [Structure of a Plugin](../plugins/structure-of-a-plugin.md)
 - [Utility APIs](../api/utility-apis.md)
-
-[Back to Docs](../README.md)
