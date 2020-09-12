@@ -67,8 +67,9 @@ const siteConfig = {
     primaryColor: '#36BAA2',
     secondaryColor: '#121212',
     textColor: '#FFFFFF',
-    navigatorTitleTextColor: '#9e9e9e',
-    navigatorItemTextColor: '#616161',
+    navigatorTitleTextColor: '#e4e4e4',
+    navigatorItemTextColor: '#9e9e9e',
+    navGroupSubcategoryTitleColor: '#9e9e9e',
   },
 
   /* Colors for syntax highlighting */
