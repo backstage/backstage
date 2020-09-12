@@ -93,9 +93,11 @@ jobs:
         if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn lerna -- run test --since origin/master -- --coverage
 
-      - name: test all packages
+      - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: yarn lerna -- run test -- --coverage
+        run: |
+          yarn lerna -- run test -- --coverage
+          bash <(curl -s https://codecov.io/bash)
 
       - name: verify plugin template
         run: yarn lerna -- run diff -- --check

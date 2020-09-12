@@ -7,17 +7,23 @@ WORKDIR /usr/src/app
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
 ADD yarn.lock package.json skeleton.tar ./
 
-RUN apt update && apt install -y git python python-dev python-pip g++
+RUN apt update && apt install -y git build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev curl
 
-RUN apt install -y openjdk-8-jdk graphviz ttf-dejavu fontconfig
+RUN curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
 
-RUN curl -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2020.16.jar/download > /opt/plantuml.jar
-RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.0.4
+RUN tar -xf Python-3.8.2.tar.xz
 
-# Create script to call plantuml.jar from a location in path
+RUN cd Python-3.8.2
 
-RUN echo $'#!/bin/sh\n\njava -jar '/opt/plantuml.jar' ${@}' >> /usr/local/bin/plantuml
-RUN chmod 755 /usr/local/bin/plantuml
+RUN ./configure --enable-optimizations
+
+RUN make -j 4
+
+RUN make altinstall
+
+RUN apt install -y mkdocs 
+
+RUN pip3.8 install mkdocs-techdocs-core
 
 RUN pip install cookiecutter && \
     apt remove -y g++ python-pip python-dev && \

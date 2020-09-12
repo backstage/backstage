@@ -114,6 +114,7 @@ export const runCommand = async ({
   await new Promise((resolve, reject) => {
     const process = spawn(command, args, options);
 
+
     process.stdout.on('data', stream => {
       logStream.write(stream);
     });
