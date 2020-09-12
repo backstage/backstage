@@ -1,7 +1,7 @@
 site_name: 'mock-docs'
 site_description: 'mock-docs site description'
 
-nav: 
+nav:
   - Home: index.md
   - SubDocs: '!include ./sub-docs/mkdocs.yml'
 

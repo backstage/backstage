@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './types';
 export { default as GoogleAuth } from './GoogleAuth';

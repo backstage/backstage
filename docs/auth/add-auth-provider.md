@@ -48,22 +48,35 @@ provider class which implements a handler for the chosen framework.
 #### Adding an OAuth based provider
 
 If we're adding an `OAuth` based provider we would implement the
-[OAuthProviderHandlers](#OAuthProviderHandlers) interface.
+[OAuthProviderHandlers](#OAuthProviderHandlers) interface. By implementing this
+interface we can use the `OAuthProvider` class provided by `lib/oauth`, meaning
+we don't need to implement the full
+[AuthProviderRouteHandlers](#AuthProviderRouteHandlers) interface that providers
+otherwise need to implement.
 
-The provider class takes the provider's configuration as a class parameter. It
-also imports the `Strategy` from the passport package.
+The provider class takes the provider's options as a class parameter. It also
+imports the `Strategy` from the passport package.
 
 ```ts
 import { Strategy as ProviderAStrategy } from 'passport-provider-a';
 
+export type ProviderAProviderOptions = OAuthProviderOptions & {
+  // extra options here
+}
+
 export class ProviderAAuthProvider implements OAuthProviderHandlers {
-  private readonly providerConfig: AuthProviderConfig;
   private readonly _strategy: ProviderAStrategy;
 
-  constructor(providerConfig: AuthProviderConfig) {
-    this.providerConfig = providerConfig;
+  constructor(options: ProviderAProviderOptions) {
     this._strategy = new ProviderAStrategy(
-      { ...providerConfig.options },
+      {
+        clientID: options.clientId,
+        clientSecret: options.clientSecret,
+        callbackURL: options.callbackUrl,
+        passReqToCallback: false as true,
+        response_type: 'code',
+        /// ... etc
+      }
       verifyFunction, // See the "Verify Callback" section
     );
   }
@@ -82,14 +95,18 @@ An non-`OAuth` based provider could implement
 [AuthProviderRouteHandlers](#AuthProviderRouteHandlers) instead.
 
 ```ts
+type ProviderAOptions = {
+  // ...
+};
+
 export class ProviderAAuthProvider implements AuthProviderRouteHandlers {
-  private readonly providerConfig: AuthProviderConfig;
   private readonly _strategy: ProviderAStrategy;
 
-  constructor(providerConfig: AuthProviderConfig) {
-    this.providerConfig = providerConfig;
+  constructor(options: ProviderAOptions) {
     this._strategy = new ProviderAStrategy(
-      { ...providerConfig.options },
+      {
+        // ...
+      },
       verifyFunction, // See the "Verify Callback" section
     );
   }
@@ -101,31 +118,61 @@ export class ProviderAAuthProvider implements AuthProviderRouteHandlers {
 }
 ```
 
-#### Create method
+#### Factory function
 
-Each provider exports a create method that creates the provider instance,
-optionally extending a supported authorization framework. This method exists to
-allow for flexibility if additional frameworks are supported in the future.
+Each provider exports a factory function that instantiates the provider. The
+factory should implement [AuthProviderFactory](#AuthProviderFactory), which
+passes in a object with utilities for configuration, logging, token issuing,
+etc. The factory should return an implementation of
+[AuthProviderRouteHandlers](#AuthProviderRouteHandlers).
 
-Implementing OAuth by returning an instance of `OAuthProvider` based of the
-provider's class:
+The factory is what decides the mapping from
+[static configuration](../conf/index.md) to the creation of auth providers. For
+example, OAuth providers use `OAuthEnvironmentHandler` to allow for multiple
+different configurations, one for each environment, which looks like this;
 
 ```ts
-export function createProviderAProvider(config: AuthProviderConfig) {
-  const provider = new ProviderAAuthProvider(config);
-  const oauthProvider = new OAuthProvider(provider, config.provider, true);
-  return oauthProvider;
-}
+export const createOktaProvider: AuthProviderFactory = ({
+  globalConfig,
+  config,
+  tokenIssuer,
+}) =>
+  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+    // read options from config
+    const clientId = envConfig.getString('clientId');
+    const clientSecret = envConfig.getString('clientSecret');
+
+    // instantiate our OAuthProviderHandlers implementation
+    const provider = new OktaAuthProvider({
+      audience,
+      clientId,
+      clientSecret,
+      callbackUrl,
+    });
+
+    // Wrap the OAuthProviderHandlers with OAuthProvider, which implements AuthProviderRouteHandlers
+    return OAuthProvider.fromConfig(globalConfig, provider, {
+      disableRefresh: false,
+      providerId,
+      tokenIssuer,
+    });
+  });
 ```
 
-Not extending with OAuth, the main difference here is that the create method is
-returning a instance of the class without adding the OAuth authorization
-framework to it.
+The purpose of the different environments is to allow for a single auth-backend
+to serve as the authentication service for multiple different frontend
+environments, such as local development, staging, and production.
+
+The factory function for other providers can be a lot simpler, as they might not
+have configuration for each environment. Looking something like this:
 
 ```ts
-export function createProviderAProvider(config: AuthProviderConfig) {
-  return new ProviderAAuthProvider(config);
-}
+export const createProviderAProvider: AuthProviderFactory = ({ config }) => {
+  const a = config.getString('a');
+  const b = config.getString('b');
+
+  return new ProviderAAuthProvider({ a, b });
+};
 ```
 
 #### Verify Callback
@@ -144,7 +191,7 @@ export function createProviderAProvider(config: AuthProviderConfig) {
 > http://www.passportjs.org/docs/configure/
 
 **`plugins/auth-backend/src/providers/providerA/index.ts`** is simply
-re-exporting the create method to be used for hooking the provider up to the
+re-exporting the factory function to be used for hooking the provider up to the
 backend.
 
 ```ts
@@ -153,26 +200,14 @@ export { createProviderAProvider } from './provider';
 
 ### Hook it up to the backend
 
-**`plugins/auth-backend/src/providers/config.ts`** The provider needs to be
-configured properly so you need to add it to the list of configured providers,
-all of which implement [AuthProviderConfig](#AuthProviderConfig):
-
-```ts
-export const providers = [
-  {
-    provider: 'providerA',  # used as an identifier
-    options: { ... },       # consult the provider documentation for which options you should provide
-    disableRefresh: true    # if the provider lacks refresh tokens
-  },
-```
-
 **`plugins/auth-backend/src/providers/factories.ts`** When the `auth-backend`
 starts it sets up routing for all the available providers by calling
-`createAuthProviderRouter` on each provider. You need to import the create
-method from the provider and add it to the factory:
+`createAuthProviderRouter` on each provider. You need to import the factory
+function from the provider and add it to the factory:
 
 ```ts
 import { createProviderAProvider } from './providerA';
+
 const factories: { [providerId: string]: AuthProviderFactory } = {
   providerA: createProviderAProvider,
 };
@@ -203,10 +238,21 @@ web browser and you should be able to trigger the authorization flow.
 
 ```ts
 export interface OAuthProviderHandlers {
-  start(req: express.Request, options: any): Promise<any>;
-  handler(req: express.Request): Promise<any>;
-  refresh?(refreshToken: string, scope: string): Promise<any>;
-  logout?(): Promise<any>;
+  start(
+    req: express.Request,
+    options: Record<string, string>,
+  ): Promise<RedirectInfo>;
+  handler(
+    req: express.Request,
+  ): Promise<{
+    response: AuthResponse<OAuthProviderInfo>;
+    refreshToken?: string;
+  }>;
+  refresh?(
+    refreshToken: string,
+    scope: string,
+  ): Promise<AuthResponse<OAuthProviderInfo>>;
+  logout?(): Promise<void>;
 }
 ```
 
@@ -221,12 +267,17 @@ export interface AuthProviderRouteHandlers {
 }
 ```
 
-##### AuthProviderConfig
+##### AuthProviderFactory
 
 ```ts
-export type AuthProviderConfig = {
-  provider: string;
-  options: any;
-  disableRefresh?: boolean;
+export type AuthProviderFactoryOptions = {
+  globalConfig: AuthProviderConfig;
+  config: Config;
+  logger: Logger;
+  tokenIssuer: TokenIssuer;
 };
+
+export type AuthProviderFactory = (
+  options: AuthProviderFactoryOptions,
+) => AuthProviderRouteHandlers;
 ```

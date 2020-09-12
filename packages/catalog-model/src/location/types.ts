@@ -17,6 +17,7 @@
 export type LocationSpec = {
   type: string;
   target: string;
+  token?: string;
 };
 
 export type Location = {

@@ -30,7 +30,10 @@ const Plugins = () => (
     <div className="PluginPageLayout">
       <div className="PluginPageHeader">
         <h2>Plugin marketplace</h2>
-        <p>Open source plugins that you can add to your Backstage deployment</p>
+        <p>
+          Open source plugins that you can add to your Backstage deployment.
+          Learn how to build a <a href="/docs/plugins">plugin</a>.
+        </p>
         <span>
           <a
             className="PluginAddNewButton ButtonFilled"

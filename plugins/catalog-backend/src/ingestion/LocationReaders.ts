@@ -77,7 +77,7 @@ export class LocationReaders implements LocationReader {
     return [
       StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
-      new GithubReaderProcessor(),
+      new GithubReaderProcessor(config),
       new GithubApiReaderProcessor(config),
       new GitlabApiReaderProcessor(config),
       new GitlabReaderProcessor(),

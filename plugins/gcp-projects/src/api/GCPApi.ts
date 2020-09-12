@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef, ProfileInfo } from '@backstage/core';
-import { Project } from './types';
+import { createApiRef } from '@backstage/core';
+import { Project, Operation } from './types';
 
 export const GCPApiRef = createApiRef<GCPApi>({
   id: 'plugin.gcpprojects.service',
@@ -28,6 +28,7 @@ export type GCPApi = {
   createProject: (
     projectName: string,
     projectId: string,
-    profile?: Promise<ProfileInfo | undefined>,
-  ) => Promise<string>;
+    owner: string,
+    token: string,
+  ) => Promise<Operation>;
 };

@@ -14,23 +14,93 @@
  * limitations under the License.
  */
 
-import { ApiEntityV1alpha1 } from '@backstage/catalog-model';
-import { InfoCard } from '@backstage/core';
+import { ApiEntity } from '@backstage/catalog-model';
+import { TabbedCard, CardTab } from '@backstage/core';
 import React from 'react';
-import { ApiDefinitionWidget } from '../ApiDefinitionWidget/ApiDefinitionWidget';
+import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
+import { Alert } from '@material-ui/lab';
+import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
+import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
 
-type Props = {
-  title?: string;
-  apiEntity: ApiEntityV1alpha1;
+type ApiDefinitionWidget = {
+  type: string;
+  title: string;
+  component: (definition: string) => React.ReactElement;
+  rawLanguage?: string;
 };
 
-export const ApiDefinitionCard = ({ title, apiEntity }: Props) => {
-  const type = apiEntity?.spec?.type || '';
-  const definition = apiEntity?.spec?.definition || '';
+export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
+  return [
+    {
+      type: 'openapi',
+      title: 'OpenAPI',
+      rawLanguage: 'yaml',
+      component: definition => (
+        <OpenApiDefinitionWidget definition={definition} />
+      ),
+    },
+    {
+      type: 'asyncapi',
+      title: 'AsyncAPI',
+      rawLanguage: 'yaml',
+      component: definition => (
+        <AsyncApiDefinitionWidget definition={definition} />
+      ),
+    },
+  ];
+}
+
+type Props = {
+  apiEntity?: ApiEntity;
+  definitionWidgets?: ApiDefinitionWidget[];
+};
+
+const defaultProps = {
+  definitionWidgets: defaultDefinitionWidgets(),
+};
+
+export const ApiDefinitionCard = (props: Props) => {
+  const { apiEntity, definitionWidgets } = {
+    ...defaultProps,
+    ...props,
+  };
+
+  if (!apiEntity) {
+    return <Alert severity="error">Could not fetch the API</Alert>;
+  }
+
+  const definitionWidget = definitionWidgets.find(
+    d => d.type === apiEntity.spec.type,
+  );
+
+  if (definitionWidget) {
+    return (
+      <TabbedCard title={apiEntity.metadata.name}>
+        <CardTab label={definitionWidget.title}>
+          {definitionWidget.component(apiEntity.spec.definition)}
+        </CardTab>
+        <CardTab label="Raw">
+          <PlainApiDefinitionWidget
+            definition={apiEntity.spec.definition}
+            language={definitionWidget.rawLanguage || apiEntity.spec.type}
+          />
+        </CardTab>
+      </TabbedCard>
+    );
+  }
 
   return (
-    <InfoCard title={title} subheader={type}>
-      <ApiDefinitionWidget type={type} definition={definition} />
-    </InfoCard>
+    <TabbedCard
+      title={apiEntity.metadata.name}
+      children={[
+        // Has to be an array, otherwise typescript doesn't like that this has only a single child
+        <CardTab label={apiEntity.spec.type}>
+          <PlainApiDefinitionWidget
+            definition={apiEntity.spec.definition}
+            language={apiEntity.spec.type}
+          />
+        </CardTab>,
+      ]}
+    />
   );
 };

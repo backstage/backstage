@@ -24,7 +24,9 @@ import {
   GeneratorRunOptions,
   GeneratorRunResult,
 } from './types';
-import { runDockerContainer } from './helpers';
+import { runDockerContainer, runCommand } from './helpers';
+
+const commandExists = require('command-exists-promise');
 
 export class TechdocsGenerator implements GeneratorBase {
   private readonly logger: Logger;
@@ -46,17 +48,29 @@ export class TechdocsGenerator implements GeneratorBase {
     );
 
     try {
-      await runDockerContainer({
-        imageName: 'spotify/techdocs',
-        args: ['build', '-d', '/result'],
-        logStream,
-        docsDir: directory,
-        resultDir,
-        dockerClient,
-      });
-      this.logger.info(
-        `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir}`,
-      );
+      const mkdocsInstalled = await commandExists('mkdocs');
+      if (mkdocsInstalled) {
+        await runCommand({
+          command: 'mkdocs',
+          args: ['build', '-d', resultDir, '-v'],
+          options: {
+            cwd: directory,
+          },
+          logStream,
+        });
+      } else {
+        await runDockerContainer({
+          imageName: 'spotify/techdocs',
+          args: ['build', '-d', '/result'],
+          logStream,
+          docsDir: directory,
+          resultDir,
+          dockerClient,
+        });
+        this.logger.info(
+          `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir}`,
+        );
+      }
     } catch (error) {
       this.logger.debug(
         `[TechDocs]: Failed to generate docs from ${directory} into ${resultDir}`,

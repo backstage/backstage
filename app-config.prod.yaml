@@ -47,6 +47,7 @@ organization:
 
 techdocs:
   storageUrl: http://frontdesk.trivago.cloud/techdocs/static/docs
+  requestUrl: http://frontdesk.trivago.cloud/techdocs/docs
 
 sentry:
   organization: trivago
@@ -99,9 +100,12 @@ catalog:
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
     - type: github
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+    - type: github
+      target: https://github.com/frontdesk-development/cookiecutter-argocd/blob/master/template.yaml
 
 lighthouse:
   baseUrl: http://frontdesk.trivago.cloud/lighthouse-be
 
 grafana:
   baseUrl: http://monitoring.trivago.trv
+

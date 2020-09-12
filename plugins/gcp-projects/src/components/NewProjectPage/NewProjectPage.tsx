@@ -15,15 +15,7 @@
  */
 
 import React, { FC, useState } from 'react';
-import {
-  Grid,
-  Button,
-  TextField,
-  LinearProgress,
-  Typography,
-  Dialog,
-  DialogTitle,
-} from '@material-ui/core';
+import { Grid, Button, TextField } from '@material-ui/core';
 
 import {
   InfoCard,
@@ -32,65 +24,28 @@ import {
   SimpleStepper,
   SimpleStepperStep,
   StructuredMetadataTable,
-  useApi,
-  googleAuthApiRef,
+  HeaderLabel,
+  Page,
+  Header,
+  pageTheme,
+  SupportButton,
 } from '@backstage/core';
 
-import { GCPApiRef } from '../../api';
-import { useAsync } from 'react-use';
-
-export const NewProjectPage: FC<{}> = () => {
+export const Project: FC<{}> = () => {
   const [projectName, setProjectName] = useState('');
   const [projectId, setProjectId] = useState('');
-  interface SimpleDialogProps {
-    open: boolean;
-    onClose: () => void;
-  }
-
-  function SimpleDialog(props: SimpleDialogProps) {
-    const { onClose, open } = props;
-
-    const handleClose = () => {
-      onClose();
-    };
-
-    return (
-      <Dialog
-        onClose={handleClose}
-        aria-labelledby="simple-dialog-title"
-        open={open}
-      >
-        <ResponseFromMiddleman
-          projectName={projectName}
-          projectId={projectId}
-        />
-      </Dialog>
-    );
-  }
-
-  const [done, setDone] = useState(false);
+  const [disabled, setDisabled] = useState(true);
 
   const metadata = {
     ProjectName: projectName,
     ProjectId: projectId,
   };
 
-  const [open, setOpen] = useState(false);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const createNewProject = () => {
-    setOpen(true);
-  };
-
   return (
     <Content>
-      <ContentHeader title="Create new GCP Project" />
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <InfoCard>
+        <Grid item xs={12} md={6}>
+          <InfoCard title="Create new GCP Project">
             <SimpleStepper>
               <SimpleStepperStep title="Project Name">
                 <TextField
@@ -114,88 +69,63 @@ export const NewProjectPage: FC<{}> = () => {
                   fullWidth
                 />
               </SimpleStepperStep>
-              <SimpleStepperStep title="Commit" end>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setDone(true)}
-                >
-                  Finish
-                </Button>
+
+              <SimpleStepperStep
+                title="Review"
+                actions={{
+                  nextText: 'Confirm',
+                  onNext: () => setDisabled(false),
+                }}
+              >
+                <StructuredMetadataTable metadata={metadata} />
               </SimpleStepperStep>
             </SimpleStepper>
+            <Button
+              variant="text"
+              data-testid="cancel-button"
+              color="primary"
+              href="/gcp-projects"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={disabled}
+              href={`newProject?projectName=${encodeURIComponent(
+                projectName,
+              )},projectId=${encodeURIComponent(projectId)}`}
+            >
+              Create
+            </Button>
           </InfoCard>
         </Grid>
-        {done === true ? (
-          <Grid item xs={12} md={8}>
-            <InfoCard title="Project Info:">
-              <StructuredMetadataTable metadata={metadata} />
-              <br />
-              <br />
-              <br />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={createNewProject}
-              >
-                Confirm
-              </Button>
-              <SimpleDialog open={open} onClose={handleClose} />
-            </InfoCard>
-          </Grid>
-        ) : (
-          <br />
-        )}
       </Grid>
     </Content>
   );
 };
 
-export const ResponseFromMiddleman: FC<{
-  projectName: string;
-  projectId: string;
-}> = ({ projectName, projectId }) => {
-  const api = useApi(GCPApiRef);
-  const googleAuthApi = useApi(googleAuthApiRef);
-  const profile = googleAuthApi.getProfile();
-  const { loading, error, value } = useAsync(async () => {
-    const result = api.createProject(projectName, projectId, profile);
-    return await result;
-  });
+const labels = (
+  <>
+    <HeaderLabel label="Owner" value="Spotify" />
+    <HeaderLabel label="Lifecycle" value="Production" />
+  </>
+);
 
-  if (loading) {
-    return (
-      <DialogTitle id="simple-dialog-title" title="Middleman">
-        Waiting for middleman to respond...
-        <LinearProgress />
-      </DialogTitle>
-    );
-  }
-
-  if (error) {
-    return (
-      <Typography variant="h2" color="error">
-        Failed to talk to middleman, with err: {error.message}{' '}
-      </Typography>
-    );
-  }
-
+export const NewProjectPage = () => {
   return (
-    <InfoCard title="Pull request created">
-      <DialogTitle id="simple-dialog-title" title="Pull Request">
-        <a
-          target="_blank"
-          href={value}
-          className="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary"
-        >
-          {value}
-        </a>
-        <br />
-        <br />
-      </DialogTitle>
-      <Button variant="contained" color="primary" href="/gcp-projects">
-        Close
-      </Button>
-    </InfoCard>
+    <Page theme={pageTheme.service}>
+      <Header title="New GCP Project" type="tool">
+        {labels}
+      </Header>
+      <Content>
+        <ContentHeader title="">
+          <SupportButton>
+            This plugin allows you to view and interact with your gcp projects.
+          </SupportButton>
+        </ContentHeader>
+        <Project />
+      </Content>
+    </Page>
   );
 };

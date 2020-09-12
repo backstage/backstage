@@ -15,8 +15,7 @@
  */
 
 import { GCPApi } from './GCPApi';
-import { Project, Status, ProjectTrivago } from './types';
-import { ProfileInfo } from '@backstage/core';
+import { Project, Operation, Status } from './types';
 
 const BaseURL =
   'https://content-cloudresourcemanager.googleapis.com/v1/projects';
@@ -81,37 +80,45 @@ export class GCPClient implements GCPApi {
   async createProject(
     projectName: string,
     projectId: string,
-    profile?: Promise<ProfileInfo | undefined>,
-  ): Promise<string> {
+    token: string,
+  ): Promise<Operation> {
     const status: Status = {
       code: 0,
       message: '',
       details: [],
     };
 
-    // Trivago Specific
-    const waitProfile = await profile;
-
-    const newProject: ProjectTrivago = {
-      name: projectName,
-      projectId: projectId,
-      email: waitProfile?.email,
+    const op: Operation = {
+      name: '',
+      metadata: '',
+      done: true,
+      error: status,
+      response: '',
     };
 
-    const cuerpo = JSON.stringify(newProject);
+    const newProject: Project = {
+      name: projectName,
+      projectId: projectId,
+    };
+
+    const body = JSON.stringify(newProject);
 
     const middleManURL = 'http://127.0.0.1:8089/newProject';
     const response = await fetch(middleManURL, {
+      headers: new Headers({
+        Accept: '*/*',
+        Authorization: `Bearer ${token}`,
+      }),
+      body: body,
       method: 'POST',
-      body: cuerpo,
     });
 
     if (!response.ok) {
       status.code = response.status;
-      return 'Error';
+      return op;
     }
 
-    const data = await response.text();
+    const data = await response.json();
 
     return data;
   }

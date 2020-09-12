@@ -19,7 +19,7 @@ import { render, waitForElement } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
-import { withLogCollector } from '@backstage/test-utils-core';
+import { withLogCollector } from '@backstage/test-utils';
 
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
 import RadarComponent from './RadarComponent';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
 import {
   InfoCard,
@@ -26,6 +26,7 @@ import {
   Header,
   SupportButton,
   ContentHeader,
+  RouteRef,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
 import { catalogApiRef } from '@backstage/plugin-catalog';
@@ -54,7 +55,11 @@ const FormStates = {
 } as const;
 
 type ValuesOf<T> = T extends Record<any, infer V> ? V : never;
-const RegisterComponentPage: FC<{}> = () => {
+export const RegisterComponentPage = ({
+  catalogRouteRef,
+}: {
+  catalogRouteRef: RouteRef;
+}) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const [formState, setFormState] = useState<ValuesOf<typeof FormStates>>(
@@ -77,7 +82,8 @@ const RegisterComponentPage: FC<{}> = () => {
 
   const handleSubmit = async (formData: Record<string, string>) => {
     setFormState(FormStates.Submitting);
-    const { componentLocation: target } = formData;
+    const { componentLocation: target, componentToken: token } = formData;
+
     try {
       const typeMapping = [
         { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
@@ -88,10 +94,8 @@ const RegisterComponentPage: FC<{}> = () => {
 
       const type = typeMapping.filter(item => item.url.test(target))[0].type;
 
-      const data = await catalogApi.addLocation(type, target);
-
+      const data = await catalogApi.addLocation(type, target, token);
       if (!isMounted()) return;
-
       setResult({ error: null, data });
       setFormState(FormStates.Success);
     } catch (e) {
@@ -130,10 +134,9 @@ const RegisterComponentPage: FC<{}> = () => {
           entities={result.data!.entities}
           onClose={() => setFormState(FormStates.Idle)}
           classes={{ paper: classes.dialogPaper }}
+          catalogRouteRef={catalogRouteRef}
         />
       )}
     </Page>
   );
 };
-
-export default RegisterComponentPage;

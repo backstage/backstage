@@ -10,7 +10,9 @@
 /docs/features/techdocs              @spotify/techdocs-core
 /packages/techdocs-cli               @spotify/techdocs-core
 /packages/techdocs-container         @spotify/techdocs-core
+/plugins/argocd                      @trivago/ebarrios
 /plugins/gcp-projects                @ebarrios
 /plugins/github-prs                  @ebarrios
+/plugins/grafana                     @trivago/ebarrios
 /plugins/techdocs                    @spotify/techdocs-core
 /plugins/techdocs-backend            @spotify/techdocs-core

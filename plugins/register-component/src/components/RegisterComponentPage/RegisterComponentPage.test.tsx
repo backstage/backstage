@@ -16,10 +16,15 @@
 
 import React from 'react';
 import { render, cleanup } from '@testing-library/react';
-import RegisterComponentPage from './RegisterComponentPage';
+import { RegisterComponentPage } from './RegisterComponentPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { errorApiRef, ApiProvider, ApiRegistry } from '@backstage/core';
+import {
+  errorApiRef,
+  ApiProvider,
+  ApiRegistry,
+  createRouteRef,
+} from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -45,7 +50,12 @@ const setup = () => ({
         ])}
       >
         <ThemeProvider theme={lightTheme}>
-          <RegisterComponentPage />
+          <RegisterComponentPage
+            catalogRouteRef={createRouteRef({
+              path: '/catalog',
+              title: 'Service Catalog',
+            })}
+          />
         </ThemeProvider>
       </ApiProvider>
     </MemoryRouter>,

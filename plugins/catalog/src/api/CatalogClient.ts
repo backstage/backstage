@@ -91,7 +91,7 @@ export class CatalogClient implements CatalogApi {
     return this.getOptional(`/entities/by-name/${kind}/${namespace}/${name}`);
   }
 
-  async addLocation(type: string, target: string) {
+  async addLocation(type: string, target: string, token?: string) {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations`,
       {
@@ -99,7 +99,7 @@ export class CatalogClient implements CatalogApi {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ type, target }),
+        body: JSON.stringify({ type, target, token }),
       },
     );
 

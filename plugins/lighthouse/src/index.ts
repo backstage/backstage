@@ -15,4 +15,5 @@
  */
 
 export { plugin } from './plugin';
+export { Router } from './Router';
 export * from './api';
