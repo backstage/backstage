@@ -114,11 +114,13 @@ export class GithubActionsClient implements GithubActionsApi {
     repo: string;
     runId: number;
   }): Promise<EndpointInterface> {
-    const workflow = await new Octokit({ auth: token }).actions.downloadJobLogsForWorkflowRun({
+    const workflow = await new Octokit({
+      auth: token,
+    }).actions.downloadJobLogsForWorkflowRun({
       owner,
       repo,
       job_id: runId,
     });
     return workflow.data;
   }
-};
+}

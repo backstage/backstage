@@ -18,19 +18,23 @@ import { useApi, githubAuthApiRef } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubActionsApiRef } from '../../api';
 
-export const useDownloadWorkflowRunLogs = (repo: string, owner: string, id: string) => {
-    const api = useApi(githubActionsApiRef);
-    const auth = useApi(githubAuthApiRef);
-    const details = useAsync(async () => {
-      const token = await auth.getAccessToken(['repo']);
-      return repo && owner
-        ? api.downloadJobLogsForWorkflowRun({
-            token,
-            owner,
-            repo,
-            runId: parseInt(id, 10),
-          })
-        : Promise.reject('No repo/owner provided');
-    }, [repo, owner, id]);
-    return details;
-  };
+export const useDownloadWorkflowRunLogs = (
+  repo: string,
+  owner: string,
+  id: string,
+) => {
+  const api = useApi(githubActionsApiRef);
+  const auth = useApi(githubAuthApiRef);
+  const details = useAsync(async () => {
+    const token = await auth.getAccessToken(['repo']);
+    return repo && owner
+      ? api.downloadJobLogsForWorkflowRun({
+          token,
+          owner,
+          repo,
+          runId: parseInt(id, 10),
+        })
+      : Promise.reject('No repo/owner provided');
+  }, [repo, owner, id]);
+  return details;
+};

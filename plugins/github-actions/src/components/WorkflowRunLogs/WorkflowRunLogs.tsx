@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { 
-    Accordion,
-    AccordionSummary,
-    CircularProgress,
-    Fade,
-    LinearProgress,
-    makeStyles,
-    Modal,
-    Theme,
-    Tooltip,
-    Typography,
-    Zoom
+import {
+  Accordion,
+  AccordionSummary,
+  CircularProgress,
+  Fade,
+  LinearProgress,
+  makeStyles,
+  Modal,
+  Theme,
+  Tooltip,
+  Typography,
+  Zoom,
 } from '@material-ui/core';
 
 import React, { Suspense } from 'react';
@@ -39,57 +39,74 @@ import { Entity } from '@backstage/catalog-model';
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 
 const useStyles = makeStyles<Theme>(() => ({
-    button: {
-      order: -1,
-      marginRight: 0,
-      marginLeft: '-20px',
-    },
-    modal: {
-      display: 'flex',
-      alignItems: 'center',
-      width: '85%',
-      height: '85%',
-      justifyContent: 'center',
-      margin: 'auto'
-    },
-    normalLog:{
-      height: '75vh', 
-      width: '100%'
-    },
-    modalLog:{
-      height: '100%',
-      width: '100%'
-    }
-  }));
+  button: {
+    order: -1,
+    marginRight: 0,
+    marginLeft: '-20px',
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '85%',
+    height: '85%',
+    justifyContent: 'center',
+    margin: 'auto',
+  },
+  normalLog: {
+    height: '75vh',
+    width: '100%',
+  },
+  modalLog: {
+    height: '100%',
+    width: '100%',
+  },
+}));
 
-const DisplayLog = ({ jobLogs, className }: { jobLogs: any; className: string }) =>{
-  return(
-        <Suspense fallback={<LinearProgress />}>
-            <div className={className}>
-                <LazyLog 
-                text={jobLogs ?? "No Values Found"} 
-                extraLines={1} 
-                caseInsensitive
-                enableSearch
-                formatPart={(line) => {
-                    if(line.toLocaleLowerCase().includes("error") 
-                    || line.toLocaleLowerCase().includes("failed")
-                    || line.toLocaleLowerCase().includes("failure"))
-                    {
-                        return <LinePart style={{color: 'red'}} part={{text: line}}/>
-                    }
-                    return line;
-                }}
-                />
-            </div>
-        </Suspense>
-    )
-}
+const DisplayLog = ({
+  jobLogs,
+  className,
+}: {
+  jobLogs: any;
+  className: string;
+}) => {
+  return (
+    <Suspense fallback={<LinearProgress />}>
+      <div className={className}>
+        <LazyLog
+          text={jobLogs ?? 'No Values Found'}
+          extraLines={1}
+          caseInsensitive
+          enableSearch
+          formatPart={line => {
+            if (
+              line.toLocaleLowerCase().includes('error') ||
+              line.toLocaleLowerCase().includes('failed') ||
+              line.toLocaleLowerCase().includes('failure')
+            ) {
+              return (
+                <LinePart style={{ color: 'red' }} part={{ text: line }} />
+              );
+            }
+            return line;
+          }}
+        />
+      </div>
+    </Suspense>
+  );
+};
 
 /**
- * A component for Run Logs visualization. 
+ * A component for Run Logs visualization.
  */
-export const WorkflowRunLogs = ({ entity, runId, inProgress }:{ entity: Entity, runId: string, inProgress: boolean }) => {
+export const WorkflowRunLogs = ({
+  entity,
+  runId,
+  inProgress,
+}: {
+  entity: Entity;
+  runId: string;
+  inProgress: boolean;
+}) => {
   const classes = useStyles();
   const projectName = useProjectName(entity);
 
@@ -106,42 +123,47 @@ export const WorkflowRunLogs = ({ entity, runId, inProgress }:{ entity: Entity, 
   };
 
   return (
-    <Accordion
-    TransitionProps={{ unmountOnExit: true }}
-    disabled={inProgress}
-    >
-        <AccordionSummary
+    <Accordion TransitionProps={{ unmountOnExit: true }} disabled={inProgress}>
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
         IconButtonProps={{
-            className: classes.button,
+          className: classes.button,
         }}
+      >
+        <Typography variant="button">
+          {jobLogs.loading ? <CircularProgress /> : 'Job Log'}
+        </Typography>
+        <Tooltip title="Open Log" TransitionComponent={Zoom} arrow>
+          <DescriptionIcon
+            onClick={event => {
+              event.stopPropagation();
+              handleOpen();
+            }}
+            style={{ marginLeft: 'auto' }}
+          />
+        </Tooltip>
+        <Modal
+          className={classes.modal}
+          onClick={event => event.stopPropagation()}
+          open={open}
+          onClose={handleClose}
         >
-            <Typography variant="button">
-              {jobLogs.loading ? <CircularProgress /> : "Job Log"}
-            </Typography>
-            <Tooltip title="Open Log" TransitionComponent={Zoom} arrow>
-              <DescriptionIcon  
-              onClick={(event) => {
-                event.stopPropagation()
-                handleOpen()
-              }}
-              style={{marginLeft: 'auto'}}
-              />
-            </Tooltip>
-            <Modal
-              className={classes.modal}
-              onClick={(event) => event.stopPropagation()}
-              open={open}
-              onClose={handleClose}
-            >
-              <Fade in={open}>
-                <DisplayLog jobLogs={jobLogs.value || undefined} className={classes.modalLog}/>
-              </Fade>
-            </Modal>
-        </AccordionSummary>
-        {jobLogs.value && <DisplayLog jobLogs={jobLogs.value || undefined} className={classes.normalLog}/>}
+          <Fade in={open}>
+            <DisplayLog
+              jobLogs={jobLogs.value || undefined}
+              className={classes.modalLog}
+            />
+          </Fade>
+        </Modal>
+      </AccordionSummary>
+      {jobLogs.value && (
+        <DisplayLog
+          jobLogs={jobLogs.value || undefined}
+          className={classes.normalLog}
+        />
+      )}
     </Accordion>
   );
 };

@@ -112,7 +112,15 @@ const StepView = ({ step }: { step: Step }) => {
   );
 };
 
-const JobListItem = ({ job, className, entity }: { job: Job; className: string; entity: Entity }) => {
+const JobListItem = ({
+  job,
+  className,
+  entity,
+}: {
+  job: Job;
+  className: string;
+  entity: Entity;
+}) => {
   const classes = useStyles();
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
@@ -137,20 +145,11 @@ const JobListItem = ({ job, className, entity }: { job: Job; className: string; 
           </Table>
         </TableContainer>
       </AccordionDetails>
-      {job.status === "queued" || job.status === "in_progress" ? 
-      <WorkflowRunLogs 
-      runId={job.id} 
-      inProgress
-      entity={entity}
-      /> 
-      :
-      <WorkflowRunLogs
-        runId={job.id}
-        inProgress={false}
-        entity={entity}
-      />
-      }
-      
+      {job.status === 'queued' || job.status === 'in_progress' ? (
+        <WorkflowRunLogs runId={job.id} inProgress entity={entity} />
+      ) : (
+        <WorkflowRunLogs runId={job.id} inProgress={false} entity={entity} />
+      )}
     </Accordion>
   );
 };
@@ -233,7 +232,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 {jobs.loading ? (
                   <CircularProgress />
                 ) : (
-                  <JobsList jobs={jobs.value} entity={entity}/>
+                  <JobsList jobs={jobs.value} entity={entity} />
                 )}
               </TableCell>
             </TableRow>
