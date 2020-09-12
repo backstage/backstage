@@ -42,6 +42,7 @@ type RunDockerContainerOptions = {
 export type RunCommandOptions = {
   command: string;
   args: string[];
+  options: object;
   logStream?: Writable;
 };
 
@@ -101,15 +102,18 @@ export async function runDockerContainer({
  * @param options the options object
  * @param options.command the command to run
  * @param options.args the arguments to pass the command
+ * @param options.options options used in spawn
  * @param options.logStream the log streamer to capture log messages
  */
 export const runCommand = async ({
   command,
   args,
+  options,
   logStream = new PassThrough(),
 }: RunCommandOptions) => {
   await new Promise((resolve, reject) => {
-    const process = spawn(command, args);
+    const process = spawn(command, args, options);
+
 
     process.stdout.on('data', stream => {
       logStream.write(stream);
