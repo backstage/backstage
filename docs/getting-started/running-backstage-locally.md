@@ -58,6 +58,17 @@ yarn start
 That starts up the frontend on port 3000, and should automatically open a
 browser window showing it.
 
+## Authentication
+
+When Backstage starts, you can choose to enter as a Guest user and start
+exploring.
+
+But you can also set up any of the available authentication methods. The easiest
+option will be GitHub. To setup GitHub authentication in Backstage, see
+[these instructions](https://github.com/spotify/backstage/tree/master/plugins/auth-backend#github).
+
+---
+
 Congratulations! That should be it. Let us know how it went
 [on discord](https://discord.gg/EBHEGzX), file issues for any
 [feature](https://github.com/spotify/backstage/issues/new?labels=help+wanted&template=feature_template.md)
