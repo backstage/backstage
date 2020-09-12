@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: example-apis
+  description: A collection of all Backstage example APIs
+spec:
+  type: github
+  targets:
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/hello-world-api.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/streetlights-api.yaml
