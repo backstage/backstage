@@ -43,10 +43,11 @@ nav:
               - Create your own Templater: 'features/software-templates/extending/create-your-own-templater.md'
               - Create your own Publisher: 'features/software-templates/extending/create-your-own-publisher.md'
               - Create your own Preparer: 'features/software-templates/extending/create-your-own-preparer.md'
-      - Docs-like-code:
+      - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'
           - Concepts: 'features/techdocs/concepts.md'
+          - TechDocs Architecture: 'features/techdocs/architecture.md'
           - Creating and Publishing Documentation: 'features/techdocs/creating-and-publishing.md'
           - FAQ: 'features/techdocs/FAQ.md'
   - Plugins:
