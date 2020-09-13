@@ -387,8 +387,8 @@ export default ExampleFetchComponent;
 
 ### Plugin Summary
 
-`ExampleComponent.tsc` makes use of Backstage's Identity API. Using that, we gain
-access to free and easy data about ourself. e.g. Name, email, etc. For more
+`ExampleComponent.tsc` makes use of Backstage's Identity API. Using that, we
+gain access to free and easy data about ourself. e.g. Name, email, etc. For more
 detailed work in `ExampleFetchComponent.tsx`, we make use of Backstage's
 GithubAuth API for getting the access token. Because graphql can be a pain and
 we already have `@octokit/graphql` in the project, we leverage the ease that
