@@ -22,6 +22,7 @@ import {
   Checkbox,
   ListItemText,
   Collapse,
+  Typography
 } from '@material-ui/core';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -34,12 +35,20 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: '100%',
+      minWidth: 10,
       maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: 'transparent',
+      "&:hover": {
+        backgroundColor: "transparent"
+    }
     },
     nested: {
-      paddingLeft: theme.spacing(4),
+      paddingLeft: theme.spacing(5),
+      height: '32px'
     },
+    listItemIcon: {
+      minWidth: 10
+    }
   }),
 );
 
@@ -69,6 +78,7 @@ type Option = {
 
 type Props = {
   subCategories: SubCategory[];
+  label: string;
 };
 
 /* REDUCER */
@@ -179,6 +189,8 @@ export const CheckboxTree = (props: Props) => {
     dispatch({ type: 'openCategory', payload: value });
   };
   return (
+    <div>
+    <Typography variant="button">{props.label}</Typography>
     <List className={classes.root}>
       {Object.values(state).map(item => {
         const labelId = `checkbox-list-label-${item?.label}`;
@@ -195,7 +207,7 @@ export const CheckboxTree = (props: Props) => {
                 })
               }
             >
-              <ListItemIcon>
+              <ListItemIcon className={classes.listItemIcon}>
                 <Checkbox
                   color="primary"
                   edge="start"
@@ -229,7 +241,7 @@ export const CheckboxTree = (props: Props) => {
                       })
                     }
                   >
-                    <ListItemIcon>
+                    <ListItemIcon className={classes.listItemIcon}>
                       <Checkbox
                         color="primary"
                         edge="start"
@@ -248,5 +260,6 @@ export const CheckboxTree = (props: Props) => {
         );
       })}
     </List>
+    </div>
   );
 };
