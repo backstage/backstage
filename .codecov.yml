@@ -4,5 +4,5 @@ coverage:
   status:
     project:
       default:
-        threshold: 2% # Ref: https://docs.codecov.io/docs/codecovyml-reference#coveragestatus
+        threshold: 0% # Ref: https://docs.codecov.io/docs/codecovyml-reference#coveragestatus
         target: auto
