@@ -24,6 +24,7 @@ import defaultBranch from 'default-branch';
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
+import { Logger } from 'winston';
 
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
@@ -110,6 +111,7 @@ export const getGitHubRepositoryTempFolder = async (
 
 export const checkoutGithubRepository = async (
   repoUrl: string,
+  logger: Logger,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
   const repositoryTmpPath = await getGitHubRepositoryTempFolder(repoUrl);
@@ -130,7 +132,10 @@ export const checkoutGithubRepository = async (
         `origin/${currentBranchName}`,
       );
       return repositoryTmpPath;
-    } catch {
+    } catch (e) {
+      logger.info(
+        `Found error "${e.message}" in cached repository "${repoUrl}" when getting latest changes. Removing cached repository.`,
+      );
       fs.removeSync(repositoryTmpPath);
     }
   }
@@ -149,8 +154,12 @@ export const checkoutGithubRepository = async (
 
 export const getLastCommitTimestamp = async (
   repositoryUrl: string,
+  logger: Logger,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGithubRepository(repositoryUrl);
+  const repositoryLocation = await checkoutGithubRepository(
+    repositoryUrl,
+    logger,
+  );
 
   const repository = await Repository.open(repositoryLocation);
   const commit = await repository.getReferenceCommit('HEAD');
