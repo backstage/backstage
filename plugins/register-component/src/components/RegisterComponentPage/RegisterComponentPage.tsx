@@ -85,7 +85,8 @@ export const RegisterComponentPage = ({
     const { componentLocation: target } = formData;
     try {
       const typeMapping = [
-        { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
+        /** Make support self-hosted gitlab */
+        { url: /gitlab*/g, type: 'gitlab' },
         { url: /https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
         { url: /https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
         { url: /.*/, type: 'github' },
