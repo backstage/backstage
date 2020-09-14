@@ -110,13 +110,17 @@ export const getGitHubRepositoryTempFolder = async (
 
 export const checkoutGithubRepository = async (
   repoUrl: string,
+  privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
   const repositoryTmpPath = await getGitHubRepositoryTempFolder(repoUrl);
 
   // TODO: Should propably not be hardcoded names of env variables, but seems too hard to access config down here
   const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
-  const token = process.env.GITHUB_PRIVATE_TOKEN || '';
+  let token = process.env.GITHUB_PRIVATE_TOKEN || '';
+  if (privateToken === '') {
+    token = privateToken;
+  }
 
   if (fs.existsSync(repositoryTmpPath)) {
     const repository = await Repository.open(repositoryTmpPath);
@@ -143,8 +147,12 @@ export const checkoutGithubRepository = async (
 
 export const getLastCommitTimestamp = async (
   repositoryUrl: string,
+  privateToken?: string,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGithubRepository(repositoryUrl);
+  const repositoryLocation = await checkoutGithubRepository(
+    repositoryUrl,
+    privateToken,
+  );
 
   const repository = await Repository.open(repositoryLocation);
   const commit = await repository.getReferenceCommit('HEAD');

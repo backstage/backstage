@@ -23,6 +23,9 @@ import {
 import { InputError } from '@backstage/backend-common';
 import parseGitUrl from 'git-url-parse';
 import { Logger } from 'winston';
+import { githubAuthApiRef } from '@backstage/core-api';
+import { useApi } from '@backstage/core';
+import { useState } from 'react';
 
 export class DirectoryPreparer implements PreparerBase {
   private readonly logger: Logger;
@@ -42,8 +45,15 @@ export class DirectoryPreparer implements PreparerBase {
     );
     switch (type) {
       case 'github': {
+        const [token, setToken] = useState('');
+        const githubAuthApi = useApi(githubAuthApiRef);
+
+        const tokenPromise = githubAuthApi.getAccessToken('repo');
+        const tokenWait = await tokenPromise;
+        setToken(tokenWait);
+
         const parsedGitLocation = parseGitUrl(target);
-        const repoLocation = await checkoutGithubRepository(target);
+        const repoLocation = await checkoutGithubRepository(target, token);
 
         return path.dirname(
           path.join(repoLocation, parsedGitLocation.filepath),
