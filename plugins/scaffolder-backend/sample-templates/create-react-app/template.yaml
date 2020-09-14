@@ -26,7 +26,7 @@ spec:
       description:
         title: Description
         type: string
-        description: Description of the component
+        description: Help others understand what this website is for.
       use_typescript:
         title:  Use Typescript
         type: boolean
