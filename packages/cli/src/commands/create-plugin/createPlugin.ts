@@ -240,8 +240,6 @@ export default async (cmd: Command) => {
   const pluginDir = (await fs.pathExists(paths.resolveTargetRoot('lerna.json')))
     ? paths.resolveTargetRoot('plugins', answers.id)
     : paths.resolveTargetRoot(answers.id);
-  console.log(await paths.resolveTargetRoot('lerna.json'));
-  console.log(await pluginDir);
   const ownerIds = parseOwnerIds(answers.owner);
   const version = backstageVersion;
 
