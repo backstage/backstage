@@ -46,8 +46,8 @@ organization:
   name: trivago
 
 techdocs:
-  storageUrl: http://frontdesk.trivago.cloud/techdocs/static/docs
-  requestUrl: http://frontdesk.trivago.cloud/techdocs/docs
+  storageUrl: http://frontdesk.trivago.cloud/backend/techdocs/static/docs
+  requestUrl: http://frontdesk.trivago.cloud/backend/techdocs/docs
 
 sentry:
   organization: trivago
