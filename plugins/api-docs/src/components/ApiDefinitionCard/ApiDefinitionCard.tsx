@@ -15,12 +15,13 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { TabbedCard, CardTab } from '@backstage/core';
+import { CardTab, TabbedCard } from '@backstage/core';
+import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
-import { Alert } from '@material-ui/lab';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
+import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
 
 type ApiDefinitionWidget = {
   type: string;
@@ -45,6 +46,14 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       rawLanguage: 'yaml',
       component: definition => (
         <AsyncApiDefinitionWidget definition={definition} />
+      ),
+    },
+    {
+      type: 'graphql',
+      title: 'GraphQL',
+      rawLanguage: 'graphql',
+      component: definition => (
+        <GraphQlDefinitionWidget definition={definition} />
       ),
     },
   ];
