@@ -1,0 +1,39 @@
+version: '3'
+
+volumes:
+  yarn_cache: null
+  node_modules: null
+
+services:
+  main:
+    container_name: backstage
+    build:
+      dockerfile: main.Dockerfile
+      context: .
+    depends_on:
+      - db
+    ports:
+      - '3000:3000'
+      - '7000:7000'
+    command: |
+      bash -c '(yarn install || sleep 600) && exec yarn start'
+    working_dir: /project/backstage
+    volumes:
+      - ../../:/project/backstage
+      - node_modules:/project/backstage/node_modules
+      - yarn_cache:/usr/local/share/.cache/yarn
+    environment:
+      NODE_ENV: development
+      POSTGRES_PORT: '5432'
+      POSTGRES_HOST: 'backstage-db'
+      POSTGRES_USER: 'backstage'
+      POSTGRES_PASSWORD: 'backstage'
+  db:
+    image: 'postgres:11'
+    container_name: backstage-db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 'backstage'
+      POSTGRES_USER: 'backstage'
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d
