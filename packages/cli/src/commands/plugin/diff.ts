@@ -65,9 +65,11 @@ export default async (cmd: Command) => {
   const { version } = await fs.readJson(paths.resolveTargetRoot('lerna.json'));
 
   const data = await readPluginData();
+  const privatePackage = false;
   const templateFiles = await diffTemplateFiles('default-plugin', {
     version,
     backstageVersion,
+    privatePackage,
     ...data,
   });
   await handleAllFiles(fileHandlers, templateFiles, promptFunc);

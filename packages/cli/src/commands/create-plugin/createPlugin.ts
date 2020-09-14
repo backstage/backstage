@@ -224,7 +224,7 @@ export default async (cmd: Command) => {
   }
 
   const answers: Answers = await inquirer.prompt(questions);
-  const packageName = cmd.scope
+  const name = cmd.scope
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${answers.id}`
     : `plugin-${answers.id}`;
   const scopeName = cmd.scope ? `@${cmd.scope.replace(/^@/, '')}` : '';
@@ -261,7 +261,7 @@ export default async (cmd: Command) => {
       version,
       backstageVersion,
       scopeName,
-      packageName,
+      name,
       privatePackage,
       registryURL,
     });
@@ -274,10 +274,10 @@ export default async (cmd: Command) => {
 
     if (await fs.pathExists(appPackage)) {
       Task.section('Adding plugin as dependency in app');
-      await addPluginDependencyToApp(paths.targetRoot, packageName, version);
+      await addPluginDependencyToApp(paths.targetRoot, name, version);
 
       Task.section('Import plugin in app');
-      await addPluginToApp(paths.targetRoot, answers.id, packageName);
+      await addPluginToApp(paths.targetRoot, answers.id, name);
     }
 
     if (ownerIds && ownerIds.length) {
@@ -289,7 +289,7 @@ export default async (cmd: Command) => {
     }
 
     Task.log();
-    Task.log(`🥇  Successfully created ${chalk.cyan(`${packageName}`)}`);
+    Task.log(`🥇  Successfully created ${chalk.cyan(`${name}`)}`);
     Task.log();
     Task.exit();
   } catch (error) {
