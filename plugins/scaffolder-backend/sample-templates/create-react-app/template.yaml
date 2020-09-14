@@ -22,7 +22,7 @@ spec:
       component_id:
         title: Name
         type: string
-        description: Unique name of the component
+        description: Unique name of the component. Lowercase, URL-safe characters only.
       description:
         title: Description
         type: string
