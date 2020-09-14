@@ -119,14 +119,20 @@ export const checkoutGithubRepository = async (
   const token = process.env.GITHUB_PRIVATE_TOKEN || '';
 
   if (fs.existsSync(repositoryTmpPath)) {
-    const repository = await Repository.open(repositoryTmpPath);
-    const currentBranchName = (await repository.getCurrentBranch()).shorthand();
-    await repository.fetch('origin');
-    await repository.mergeBranches(
-      currentBranchName,
-      `origin/${currentBranchName}`,
-    );
-    return repositoryTmpPath;
+    try {
+      const repository = await Repository.open(repositoryTmpPath);
+      const currentBranchName = (
+        await repository.getCurrentBranch()
+      ).shorthand();
+      await repository.fetch('origin');
+      await repository.mergeBranches(
+        currentBranchName,
+        `origin/${currentBranchName}`,
+      );
+      return repositoryTmpPath;
+    } catch {
+      fs.removeSync(repositoryTmpPath);
+    }
   }
 
   if (user && token) {
