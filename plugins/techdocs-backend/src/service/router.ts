@@ -59,6 +59,7 @@ export async function createRouter({
     const baseUrl = config.getString('backend.baseUrl');
     const storageUrl = config.getString('techdocs.storageUrl');
 
+    const token = req.headers.authorization || '';
     const { kind, namespace, name } = req.params;
 
     const entity = (await (
@@ -74,10 +75,11 @@ export async function createRouter({
       dockerClient,
       logger,
       entity,
+      token,
     });
 
     if (!(await docsBuilder.docsUpToDate())) {
-      await docsBuilder.build();
+      await docsBuilder.build(token);
     }
 
     return res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);

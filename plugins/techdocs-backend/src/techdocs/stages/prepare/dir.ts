@@ -23,9 +23,6 @@ import {
 import { InputError } from '@backstage/backend-common';
 import parseGitUrl from 'git-url-parse';
 import { Logger } from 'winston';
-import { githubAuthApiRef } from '@backstage/core-api';
-import { useApi } from '@backstage/core';
-import { useState } from 'react';
 
 export class DirectoryPreparer implements PreparerBase {
   private readonly logger: Logger;
@@ -34,7 +31,7 @@ export class DirectoryPreparer implements PreparerBase {
     this.logger = logger;
   }
 
-  private async resolveManagedByLocationToDir(entity: Entity) {
+  private async resolveManagedByLocationToDir(entity: Entity, token?: string) {
     const { type, target } = parseReferenceAnnotation(
       'backstage.io/managed-by-location',
       entity,
@@ -45,13 +42,6 @@ export class DirectoryPreparer implements PreparerBase {
     );
     switch (type) {
       case 'github': {
-        const [token, setToken] = useState('');
-        const githubAuthApi = useApi(githubAuthApiRef);
-
-        const tokenPromise = githubAuthApi.getAccessToken('repo');
-        const tokenWait = await tokenPromise;
-        setToken(tokenWait);
-
         const parsedGitLocation = parseGitUrl(target);
         const repoLocation = await checkoutGithubRepository(target, token);
 
@@ -66,7 +56,7 @@ export class DirectoryPreparer implements PreparerBase {
     }
   }
 
-  async prepare(entity: Entity): Promise<string> {
+  async prepare(entity: Entity, token?: string): Promise<string> {
     const { target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
@@ -74,6 +64,7 @@ export class DirectoryPreparer implements PreparerBase {
 
     const managedByLocationDirectory = await this.resolveManagedByLocationToDir(
       entity,
+      token,
     );
 
     return new Promise(resolve => {

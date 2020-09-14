@@ -17,7 +17,7 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Route, Routes } from 'react-router-dom';
-import { WarningPanel } from '@backstage/core';
+import { WarningPanel, useApi } from '@backstage/core';
 
 import {
   rootRouteRef,
@@ -27,6 +27,7 @@ import {
 import { TechDocsHome } from './reader/components/TechDocsHome';
 import { TechDocsPage } from './reader/components/TechDocsPage';
 import { EntityPageDocs } from './EntityPageDocs';
+import { githubAuthApiRef } from '@backstage/core-api';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
@@ -41,6 +42,8 @@ export const Router = () => {
 
 export const EmbeddedDocsRouter = ({ entity }: { entity: Entity }) => {
   const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
+  const githubAuthApi = useApi(githubAuthApiRef);
+  const tokenPromise = githubAuthApi.getAccessToken('repo');
 
   if (!projectId) {
     return (
@@ -58,7 +61,7 @@ export const EmbeddedDocsRouter = ({ entity }: { entity: Entity }) => {
     <Routes>
       <Route
         path={`/${rootCatalogDocsRouteRef.path}`}
-        element={<EntityPageDocs entity={entity} />}
+        element={<EntityPageDocs entity={entity} tokenPromise={tokenPromise} />}
       />
     </Routes>
   );

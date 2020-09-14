@@ -39,6 +39,7 @@ type DocsBuilderArguments = {
   entity: Entity;
   logger: Logger;
   dockerClient: Docker;
+  token: string;
 };
 
 export class DocsBuilder {
@@ -65,11 +66,11 @@ export class DocsBuilder {
     this.dockerClient = dockerClient;
   }
 
-  public async build() {
+  public async build(token?: string) {
     this.logger.info(
       `[TechDocs] Running preparer on entity ${getEntityId(this.entity)}`,
     );
-    const preparedDir = await this.preparer.prepare(this.entity);
+    const preparedDir = await this.preparer.prepare(this.entity, token);
 
     this.logger.info(
       `[TechDocs] Running generator on entity ${getEntityId(this.entity)}`,

@@ -35,9 +35,10 @@ import { TechDocsNotFound } from './TechDocsNotFound';
 
 type Props = {
   entityId: ParsedEntityId;
+  tokenPromise: Promise<string>;
 };
 
-export const Reader = ({ entityId }: Props) => {
+export const Reader = ({ entityId, tokenPromise }: Props) => {
   const { kind, namespace, name } = entityId;
   const { '*': path } = useParams();
 
@@ -46,7 +47,11 @@ export const Reader = ({ entityId }: Props) => {
   const navigate = useNavigate();
 
   const { value, loading, error } = useAsync(async () => {
-    return techdocsStorageApi.getEntityDocs({ kind, namespace, name }, path);
+    return techdocsStorageApi.getEntityDocs(
+      { kind, namespace, name },
+      path,
+      await tokenPromise,
+    );
   }, [techdocsStorageApi, kind, namespace, name, path]);
 
   React.useEffect(() => {

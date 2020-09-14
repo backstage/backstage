@@ -39,7 +39,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
     this.apiOrigin = apiOrigin;
   }
 
-  async getEntityDocs(entityId: ParsedEntityId, path: string) {
+  async getEntityDocs(entityId: ParsedEntityId, path: string, token?: string) {
     const { kind, namespace, name } = entityId;
 
     const url = `${this.apiOrigin}/${kind}/${
@@ -48,6 +48,11 @@ export class TechDocsStorageApi implements TechDocsStorage {
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
+      {
+        headers: new Headers({
+          Authorization: `${token}`,
+        }),
+      },
     );
 
     if (request.status === 404) {

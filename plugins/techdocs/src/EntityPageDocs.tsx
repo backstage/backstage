@@ -18,7 +18,13 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Reader } from './reader';
 
-export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
+export const EntityPageDocs = ({
+  entity,
+  tokenPromise,
+}: {
+  entity: Entity;
+  tokenPromise: Promise<string>;
+}) => {
   return (
     <Reader
       entityId={{
@@ -26,6 +32,7 @@ export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
         namespace: entity.metadata.namespace,
         name: entity.metadata.name,
       }}
+      tokenPromise={tokenPromise}
     />
   );
 };

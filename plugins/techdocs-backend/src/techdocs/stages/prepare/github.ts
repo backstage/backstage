@@ -32,7 +32,7 @@ export class GithubPreparer implements PreparerBase {
     this.logger = logger;
   }
 
-  async prepare(entity: Entity): Promise<string> {
+  async prepare(entity: Entity, token?: string): Promise<string> {
     const { type, target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
@@ -43,7 +43,7 @@ export class GithubPreparer implements PreparerBase {
     }
 
     try {
-      const repoPath = await checkoutGithubRepository(target);
+      const repoPath = await checkoutGithubRepository(target, token);
 
       const parsedGitLocation = parseGitUrl(target);
       return path.join(repoPath, parsedGitLocation.filepath);

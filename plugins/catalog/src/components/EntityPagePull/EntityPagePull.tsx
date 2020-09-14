@@ -25,7 +25,7 @@ export const EntityPagePull: FC<{ entity: Entity }> = ({ entity }) => {
     <Content>
       <Grid container spacing={3}>
         <Grid item sm={12}>
-          <GithubPullListWidget entity={entity} branch="master" />
+          <GithubPullListWidget entity={entity} />
         </Grid>
       </Grid>
     </Content>
