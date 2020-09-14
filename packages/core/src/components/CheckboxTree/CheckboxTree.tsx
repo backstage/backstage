@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   List,
@@ -22,7 +22,7 @@ import {
   Checkbox,
   ListItemText,
   Collapse,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -38,17 +38,17 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: 10,
       maxWidth: 360,
       backgroundColor: 'transparent',
-      "&:hover": {
-        backgroundColor: "transparent"
-    }
+      '&:hover': {
+        backgroundColor: 'transparent',
+      },
     },
     nested: {
       paddingLeft: theme.spacing(5),
-      height: '32px'
+      height: '32px',
     },
     listItemIcon: {
-      minWidth: 10
-    }
+      minWidth: 10,
+    },
   }),
 );
 
@@ -76,9 +76,10 @@ type Option = {
   isChecked?: boolean;
 };
 
-type Props = {
+export type CheckboxTreeProps = {
   subCategories: SubCategory[];
   label: string;
+  onChange: (arg: any) => any;
 };
 
 /* REDUCER */
@@ -168,7 +169,7 @@ const indexer = (
         [el.label]: {
           label: el.label,
           isChecked: el.isChecked || false,
-          isOpen: true,
+          isOpen: false,
           options: indexer(el.options),
         },
       };
@@ -179,7 +180,8 @@ const indexer = (
     };
   }, {});
 
-export const CheckboxTree = (props: Props) => {
+export const CheckboxTree = (props: CheckboxTreeProps) => {
+  const { onChange } = props;
   const classes = useStyles();
 
   const [state, dispatch] = useReducer(reducer, indexer(props.subCategories));
@@ -188,78 +190,99 @@ export const CheckboxTree = (props: Props) => {
     event.stopPropagation();
     dispatch({ type: 'openCategory', payload: value });
   };
+
+  const handleChange = () => {
+    const values = Object.values(state).map(category => ({
+      category: category.label,
+      selected: Object.values(category.options)
+        .filter(option => option.isChecked)
+        .map(option => option.value),
+    }));
+    onChange(values);
+  };
+
   return (
     <div>
-    <Typography variant="button">{props.label}</Typography>
-    <List className={classes.root}>
-      {Object.values(state).map(item => {
-        const labelId = `checkbox-list-label-${item?.label}`;
+      <Typography variant="button">{props.label}</Typography>
+      <List className={classes.root}>
+        {Object.values(state).map(item => {
+          const labelId = `checkbox-list-label-${item?.label}`;
 
-        return (
-          <div key={item.label}>
-            <ListItem
-              dense
-              button
-              onClick={() =>
-                dispatch({
-                  type: 'checkCategory',
-                  payload: item.label,
-                })
-              }
-            >
-              <ListItemIcon className={classes.listItemIcon}>
-                <Checkbox
-                  color="primary"
-                  edge="start"
-                  checked={item.isChecked}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={item.label} />
-              {item.options?.length ? (
-                <ExpandLess onClick={event => handleOpen(event, item.label)} />
-              ) : (
-                <ExpandMore onClick={event => handleOpen(event, item.label)} />
-              )}
-            </ListItem>
-            <Collapse in={item.isOpen} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                {Object.values(item.options).map(option => (
-                  <ListItem
-                    button
-                    key={option.label}
-                    className={classes.nested}
-                    onClick={() =>
-                      dispatch({
-                        type: 'checkOption',
-                        payload: {
-                          subCategoryLabel: item.label,
-                          optionLabel: option.label,
-                        },
-                      })
-                    }
-                  >
-                    <ListItemIcon className={classes.listItemIcon}>
-                      <Checkbox
-                        color="primary"
-                        edge="start"
-                        checked={option.isChecked}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{ 'aria-labelledby': labelId }}
+          return (
+            <div key={item.label}>
+              <ListItem
+                dense
+                button
+                onClick={async () => {
+                  await dispatch({
+                    type: 'checkCategory',
+                    payload: item.label,
+                  });
+                  handleChange();
+                }}
+              >
+                <ListItemIcon className={classes.listItemIcon}>
+                  <Checkbox
+                    color="primary"
+                    edge="start"
+                    checked={item.isChecked}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{ 'aria-labelledby': labelId }}
+                  />
+                </ListItemIcon>
+                <ListItemText id={labelId} primary={item.label} />
+                {Object.values(item.options).length ? (
+                  <>
+                    {item.isOpen ? (
+                      <ExpandLess
+                        onClick={event => handleOpen(event, item.label)}
                       />
-                    </ListItemIcon>
-                    <ListItemText primary={option.label} />
-                  </ListItem>
-                ))}
-              </List>
-            </Collapse>
-          </div>
-        );
-      })}
-    </List>
+                    ) : (
+                      <ExpandMore
+                        onClick={event => handleOpen(event, item.label)}
+                      />
+                    )}
+                  </>
+                ) : null}
+              </ListItem>
+              <Collapse in={item.isOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {Object.values(item.options).map(option => (
+                    <ListItem
+                      button
+                      key={option.label}
+                      className={classes.nested}
+                      onClick={async () => {
+                        await dispatch({
+                          type: 'checkOption',
+                          payload: {
+                            subCategoryLabel: item.label,
+                            optionLabel: option.label,
+                          },
+                        });
+                        handleChange();
+                      }}
+                    >
+                      <ListItemIcon className={classes.listItemIcon}>
+                        <Checkbox
+                          color="primary"
+                          edge="start"
+                          checked={option.isChecked}
+                          tabIndex={-1}
+                          disableRipple
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText primary={option.label} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            </div>
+          );
+        })}
+      </List>
     </div>
   );
 };

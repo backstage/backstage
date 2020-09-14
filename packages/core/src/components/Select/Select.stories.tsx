@@ -38,7 +38,12 @@ const SELECT_ITEMS = [
 ];
 
 export const Default = () => (
-  <Select placeholder="All results" label="Default" items={SELECT_ITEMS} />
+  <Select
+    onChange={el => {}}
+    placeholder="All results"
+    label="Default"
+    items={SELECT_ITEMS}
+  />
 );
 
 export const Multiple = () => (
@@ -47,5 +52,6 @@ export const Multiple = () => (
     label="Multiple"
     items={SELECT_ITEMS}
     multiple
+    onChange={el => {}}
   />
 );

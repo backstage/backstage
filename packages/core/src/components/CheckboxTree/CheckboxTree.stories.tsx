@@ -65,5 +65,9 @@ export default {
 };
 
 export const Default = () => (
-  <CheckboxTree label="default" subCategories={CHECKBOX_TREE_ITEMS} />
+  <CheckboxTree
+    onChange={el => {}}
+    label="default"
+    subCategories={CHECKBOX_TREE_ITEMS}
+  />
 );
