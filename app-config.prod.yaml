@@ -3,7 +3,7 @@ app:
   baseUrl: http://frontdesk.trivago.cloud
 
 backend:
-  baseUrl: http://frontdesk.trivago.cloud
+  baseUrl: http://frontdesk.trivago.cloud/backend
   listen:
     port: 7000
   cors:
@@ -90,6 +90,13 @@ auth:
             env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
 
 catalog:
+  rules:
+    - allow: [Component, API, Group, Template, Location]
+  processors:
+    githubApi:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
   locations:
     # Backstage Example Templates
     - type: github

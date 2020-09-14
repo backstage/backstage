@@ -34,17 +34,14 @@ const WidgetContent = ({
   return <PullRequestsTable />;
 };
 
-export const Widget = ({
-  entity,
-  branch = 'master',
-}: {
-  entity: Entity;
-  branch: string;
-}) => {
+export const Widget = ({ entity }: { entity: Entity }) => {
   const errorApi = useApi(errorApiRef);
   const [owner, repo] = (
-    entity?.metadata.annotations?.['backstage.io/github-actions-id'] ?? '/'
+    entity?.metadata.annotations?.['github.com/project-slug'] ?? '/'
   ).split('/');
+  const branch =
+    entity?.metadata.annotations?.['github.com/project-slug-branch'] ||
+    'master';
   const [{ loading, error }] = usePullRequests({
     owner,
     repo,
