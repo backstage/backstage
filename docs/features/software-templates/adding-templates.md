@@ -105,13 +105,6 @@ curl \
 This should then have added the catalog, and also should now be listed under the
 create page at http://localhost:3000/create.
 
-Alternatively, if you want to get setup with some mock templates that are
-already provided, run the following to load those templates:
-
-```
-yarn lerna run mock-data
-```
-
 The `type` field which is chosen in the request to add the `template.yaml` to
 the Service Catalog here, will be come the `PreparerKey` which will be used to
 select the `Preparer` when creating a job.

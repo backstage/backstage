@@ -12,6 +12,7 @@
     ],
     "Getting Started": [
       "getting-started/index",
+      "getting-started/running-backstage-locally",
       "getting-started/installation",
       "getting-started/development-environment",
       "getting-started/create-an-app",
@@ -61,11 +62,12 @@
       },
       {
         "type": "subcategory",
-        "label": "Docs-like-code",
+        "label": "TechDocs",
         "ids": [
           "features/techdocs/techdocs-overview",
           "features/techdocs/getting-started",
           "features/techdocs/concepts",
+          "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
           "features/techdocs/faqs"
         ]
