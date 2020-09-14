@@ -35,7 +35,7 @@ const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 moment.relativeTimeThreshold('ss', 0);
 
 const useStyles = makeStyles(theme => ({
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
   cardContent: {
     backgroundColor: theme.palette.background.default,
   },
-  expansionPanel: {
+  accordion: {
     position: 'relative',
     '&:after': {
       pointerEvents: 'none',
@@ -103,7 +103,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
     <Accordion
       TransitionProps={{ unmountOnExit: true }}
       className={cn(
-        classes.expansionPanel,
+        classes.accordion,
         classes[status.toLowerCase() as keyof ReturnType<typeof useStyles>] ??
           classes.neutral,
       )}
@@ -123,7 +123,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
           {startedAt && !endedAt && <CircularProgress size="1em" />}
         </Typography>
       </AccordionSummary>
-      <AccordionDetails className={classes.expansionPanelDetails}>
+      <AccordionDetails className={classes.accordionDetails}>
         {log.length === 0 ? (
           <Box px={4}>No logs available for this step</Box>
         ) : (

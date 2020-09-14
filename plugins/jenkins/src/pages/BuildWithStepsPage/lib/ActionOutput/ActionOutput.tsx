@@ -25,7 +25,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React, { FC, useEffect } from 'react';
 
 const useStyles = makeStyles({
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -57,7 +57,7 @@ export const ActionOutput: FC<{
       >
         <Typography variant="button">{name}</Typography>
       </AccordionSummary>
-      <AccordionDetails className={classes.expansionPanelDetails}>
+      <AccordionDetails className={classes.accordionDetails}>
         Nothing here...
       </AccordionDetails>
     </Accordion>

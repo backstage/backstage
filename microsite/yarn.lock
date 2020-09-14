@@ -2228,10 +2228,10 @@ dir-glob@2.0.0:
     arrify "^1.0.1"
     path-type "^3.0.0"
 
-docusaurus@^2.0.0-alpha.61:
-  version "2.0.0-alpha.63"
-  resolved "https://registry.npmjs.org/docusaurus/-/docusaurus-2.0.0-alpha.63.tgz#40402d47b18c42b62e93beb78ce06e000cb88312"
-  integrity sha512-R19pAqcTemJMt7Qykd7ogB2i6R86vbE4/vA/l5/Uuh7xg7ixSKOVZ5M7d9uSoX5jCALOwEyp5iJdleznXUVwAw==
+docusaurus@^2.0.0-alpha.64:
+  version "2.0.0-alpha.64"
+  resolved "https://registry.yarnpkg.com/docusaurus/-/docusaurus-2.0.0-alpha.64.tgz#7833960e9d338403894a27b79058aa4076a676d3"
+  integrity sha512-ARCx0GwAvc5qx7AHvRVZidZuoDTfaaGXzgmkU23NahU6jzO/aK2Q1bH8IKNEQ5C2JuDerQ/hHDh80N20ijk82g==
   dependencies:
     "@babel/core" "^7.9.0"
     "@babel/plugin-proposal-class-properties" "^7.8.3"

@@ -4,8 +4,8 @@ title: Running Backstage Locally
 ---
 
 First make sure you are using NodeJS with an Active LTS Release, currently v12.
-This is made easy with a version manager such as nvm which allows for version
-switching.
+This is made easy with a version manager such as
+[nvm](https://github.com/nvm-sh/nvm) which allows for version switching.
 
 ```bash
 # Checking your version
@@ -48,17 +48,26 @@ yarn start
 
 That starts up a backend instance on port 7000.
 
-In the other window, we will first populate the catalog with some nice mock data
-to look at, and then launch the frontend. These commands are run from the
-project root, not inside the backend directory.
+In the other window, we will then launch the frontend. This command is run from
+the project root, not inside the backend directory.
 
 ```bash
-yarn lerna run mock-data
 yarn start
 ```
 
 That starts up the frontend on port 3000, and should automatically open a
 browser window showing it.
+
+## Authentication
+
+When Backstage starts, you can choose to enter as a Guest user and start
+exploring.
+
+But you can also set up any of the available authentication methods. The easiest
+option will be GitHub. To setup GitHub authentication in Backstage, see
+[these instructions](https://github.com/spotify/backstage/tree/master/plugins/auth-backend#github).
+
+---
 
 Congratulations! That should be it. Let us know how it went
 [on discord](https://discord.gg/EBHEGzX), file issues for any
@@ -80,5 +89,3 @@ instance of Backstage with your own plugins.
 - [Create a Backstage Plugin](../plugins/create-a-plugin.md)
 - [Structure of a Plugin](../plugins/structure-of-a-plugin.md)
 - [Utility APIs](../api/utility-apis.md)
-
-[Back to Docs](../README.md)
