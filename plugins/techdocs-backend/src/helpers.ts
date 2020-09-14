@@ -17,7 +17,7 @@
 import os from 'os';
 import path from 'path';
 import parseGitUrl from 'git-url-parse';
-import { Clone, Repository } from 'nodegit';
+import { Clone, Repository, Cred } from 'nodegit';
 import fs from 'fs-extra';
 // @ts-ignore
 import defaultBranch from 'default-branch';
@@ -86,8 +86,12 @@ export const getLocationForEntity = (
 
 export const getGitHubRepositoryTempFolder = async (
   repositoryUrl: string,
+  privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repositoryUrl);
+  parsedGitLocation.token = privateToken || '';
+  parsedGitLocation.ref = 'master'; // ESTE ESTE ESTE ESTE
+
   // removes .git from git location path
   parsedGitLocation.git_suffix = false;
 
@@ -113,23 +117,38 @@ export const checkoutGithubRepository = async (
   privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
-  const repositoryTmpPath = await getGitHubRepositoryTempFolder(repoUrl);
+
+  parsedGitLocation.token = privateToken || '';
+  const repositoryTmpPath = await getGitHubRepositoryTempFolder(
+    repoUrl,
+    privateToken,
+  );
 
   // TODO: Should propably not be hardcoded names of env variables, but seems too hard to access config down here
   const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
   let token = process.env.GITHUB_PRIVATE_TOKEN || '';
-  if (privateToken === '') {
-    token = privateToken;
+  if (privateToken !== '') {
+    token = privateToken || '';
   }
 
   if (fs.existsSync(repositoryTmpPath)) {
     const repository = await Repository.open(repositoryTmpPath);
+
     const currentBranchName = (await repository.getCurrentBranch()).shorthand();
-    await repository.fetch('origin');
+
+    await repository.fetch('origin', {
+      callbacks: {
+        credentials: () => {
+          return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
+        },
+      },
+    });
+
     await repository.mergeBranches(
       currentBranchName,
       `origin/${currentBranchName}`,
     );
+
     return repositoryTmpPath;
   }
 
@@ -140,7 +159,15 @@ export const checkoutGithubRepository = async (
   const repositoryCheckoutUrl = parsedGitLocation.toString('https');
 
   fs.mkdirSync(repositoryTmpPath, { recursive: true });
-  await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath);
+  await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath, {
+    fetchOpts: {
+      callbacks: {
+        credentials: () => {
+          return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
+        },
+      },
+    },
+  });
 
   return repositoryTmpPath;
 };

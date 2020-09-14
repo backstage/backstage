@@ -78,7 +78,7 @@ export async function createRouter({
       token,
     });
 
-    if (!(await docsBuilder.docsUpToDate())) {
+    if (!(await docsBuilder.docsUpToDate(token))) {
       await docsBuilder.build(token);
     }
 

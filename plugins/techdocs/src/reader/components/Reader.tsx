@@ -47,10 +47,11 @@ export const Reader = ({ entityId, tokenPromise }: Props) => {
   const navigate = useNavigate();
 
   const { value, loading, error } = useAsync(async () => {
+    const token = await tokenPromise;
     return techdocsStorageApi.getEntityDocs(
       { kind, namespace, name },
       path,
-      await tokenPromise,
+      token,
     );
   }, [techdocsStorageApi, kind, namespace, name, path]);
 

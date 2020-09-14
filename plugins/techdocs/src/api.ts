@@ -24,7 +24,11 @@ export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
 });
 
 export interface TechDocsStorage {
-  getEntityDocs(entityId: ParsedEntityId, path: string): Promise<string>;
+  getEntityDocs(
+    entityId: ParsedEntityId,
+    path: string,
+    token?: string,
+  ): Promise<string>;
   getBaseUrl(
     oldBaseUrl: string,
     entityId: ParsedEntityId,
@@ -50,7 +54,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
       {
         headers: new Headers({
-          Authorization: `${token}`,
+          Authorization: token || '',
         }),
       },
     );

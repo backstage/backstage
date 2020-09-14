@@ -49,6 +49,7 @@ export class DocsBuilder {
   private entity: Entity;
   private logger: Logger;
   private dockerClient: Docker;
+  private token: string;
 
   constructor({
     preparers,
@@ -57,6 +58,7 @@ export class DocsBuilder {
     entity,
     logger,
     dockerClient,
+    token,
   }: DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
@@ -64,13 +66,16 @@ export class DocsBuilder {
     this.entity = entity;
     this.logger = logger;
     this.dockerClient = dockerClient;
+    this.token = token;
   }
 
   public async build(token?: string) {
+    console.log('@@@@@@ toke: ', token);
+    console.log('@@@@@@@@@@@ this.token: ', this.token);
     this.logger.info(
       `[TechDocs] Running preparer on entity ${getEntityId(this.entity)}`,
     );
-    const preparedDir = await this.preparer.prepare(this.entity, token);
+    const preparedDir = await this.preparer.prepare(this.entity, this.token);
 
     this.logger.info(
       `[TechDocs] Running generator on entity ${getEntityId(this.entity)}`,
@@ -97,7 +102,7 @@ export class DocsBuilder {
     new BuildMetadataStorage(this.entity.metadata.uid).storeBuildTimestamp();
   }
 
-  public async docsUpToDate() {
+  public async docsUpToDate(token?: string) {
     if (!this.entity.metadata.uid) {
       throw new Error(
         'Trying to build documentation for entity not in service catalog',
@@ -111,7 +116,8 @@ export class DocsBuilder {
 
     // Should probably be broken out and handled per type later. Doing this for now since we only support github age checks
     if (type === 'github') {
-      const lastCommit = await getLastCommitTimestamp(target);
+      const lastCommit = await getLastCommitTimestamp(target, token);
+
       const storageTimeStamp = buildMetadataStorage.getTimestamp();
 
       // Check if documentation source is newer than what we have
