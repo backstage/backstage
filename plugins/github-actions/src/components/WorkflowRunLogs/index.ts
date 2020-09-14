@@ -13,35 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export type Step = {
-  name: string;
-  status: string;
-  conclusion: string;
-  number: number; // starts from 1
-  started_at: string;
-  completed_at: string;
-};
-
-export type Job = {
-  html_url: string;
-  status: string;
-  conclusion: string;
-  started_at: string;
-  completed_at: string;
-  id: string;
-  name: string;
-  steps: Step[];
-};
-
-export type Jobs = {
-  total_count: number;
-  jobs: Job[];
-};
-
-export enum BuildStatus {
-  'success',
-  'failure',
-  'pending',
-  'running',
-}
+export { WorkflowRunLogs } from './WorkflowRunLogs';

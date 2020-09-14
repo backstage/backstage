@@ -53,6 +53,9 @@ export class TechdocsGenerator implements GeneratorBase {
         await runCommand({
           command: 'mkdocs',
           args: ['build', '-d', resultDir, '-v'],
+          options: {
+            cwd: directory,
+          },
           logStream,
         });
       } else {

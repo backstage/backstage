@@ -30,7 +30,7 @@ import React, { FC, Suspense, useEffect, useState } from 'react';
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 moment.relativeTimeThreshold('ss', 0);
 const useStyles = makeStyles({
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -80,7 +80,7 @@ export const ActionOutput: FC<{
           {name} ({timeElapsed})
         </Typography>
       </AccordionSummary>
-      <AccordionDetails className={classes.expansionPanelDetails}>
+      <AccordionDetails className={classes.accordionDetails}>
         {messages.length === 0 ? (
           'Nothing here...'
         ) : (

@@ -105,3 +105,7 @@ catalog:
 
 lighthouse:
   baseUrl: http://frontdesk.trivago.cloud/lighthouse-be
+
+grafana:
+  baseUrl: http://monitoring.trivago.trv
+

@@ -3,8 +3,8 @@
 This package is an EXAMPLE of a Backstage backend.
 
 The main purpose of this package is to provide a test bed for Backstage plugins
-that have a backend part. Feel free to experiment locally or within your fork
-by adding dependencies and routes to this backend, to try things out.
+that have a backend part. Feel free to experiment locally or within your fork by
+adding dependencies and routes to this backend, to try things out.
 
 Our goal is to eventually amend the create-app flow of the CLI, such that a
 production ready version of a backend skeleton is made alongside the frontend
@@ -33,34 +33,32 @@ LOG_LEVEL=debug \
 yarn start
 ```
 
-Substitute `x` for actual values, or leave them as
-dummy values just to try out the backend without using the auth or sentry features.
+Substitute `x` for actual values, or leave them as dummy values just to try out
+the backend without using the auth or sentry features.
 
 The backend starts up on port 7000 per default.
 
 ## Populating The Catalog
 
-If you want to use the catalog functionality, you need to add so called locations
-to the backend. These are places where the backend can find some entity descriptor
-data to consume and serve.
+If you want to use the catalog functionality, you need to add so called
+locations to the backend. These are places where the backend can find some
+entity descriptor data to consume and serve. For more information, see
+[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog).
 
-To get started, you can issue the following after starting the backend, from inside
-the `plugins/catalog-backend` directory:
-
-```bash
-yarn mock-data
-```
-
-You should then start seeing data on `localhost:7000/catalog/entities`.
-
-The catalog currently runs in-memory only, so feel free to try it out, but it will
-need to be re-populated on next startup.
+To get started quickly, this template already includes some statically configured example locations
+in `app-config.yaml` under `catalog.locations`. You can remove and replace these locations as you
+like, and also override them for local development in `app-config.local.yaml`.
 
 ## Authentication
 
-We chose [Passport](http://www.passportjs.org/) as authentication platform due to its comprehensive set of supported authentication [strategies](http://www.passportjs.org/packages/).
+We chose [Passport](http://www.passportjs.org/) as authentication platform due
+to its comprehensive set of supported authentication
+[strategies](http://www.passportjs.org/packages/).
 
-Read more about the [auth-backend](https://github.com/spotify/backstage/blob/master/plugins/auth-backend/README.md) and [how to add a new provider](https://github.com/spotify/backstage/blob/master/docs/auth/add-auth-provider.md)
+Read more about the
+[auth-backend](https://github.com/spotify/backstage/blob/master/plugins/auth-backend/README.md)
+and
+[how to add a new provider](https://github.com/spotify/backstage/blob/master/docs/auth/add-auth-provider.md)
 
 ## Documentation
 
