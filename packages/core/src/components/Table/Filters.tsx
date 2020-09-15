@@ -80,7 +80,7 @@ export const Filters = (props: Props) => {
 
   useEffect(() => {
     onChangeFilters(selectedFilters);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilters]);
 
   // As material table doesn't provide a way to add a column filter tab we will make our own filter logic
@@ -99,12 +99,25 @@ export const Filters = (props: Props) => {
               <CheckboxTree
                 key={filter.element.label}
                 {...(filter.element as CheckboxTreeProps)}
-                onChange={
-                  el => ({})
-                  // setSelectedFilters({
-                  //   ...selectedFilters,
-                  //   [filter.element.label]: el,
-                  // })
+                onChange={el =>
+                  setSelectedFilters({
+                    ...selectedFilters,
+                    [filter.element.label]: el
+                      .filter(
+                        (checkboxFilter: any) =>
+                          checkboxFilter.category ||
+                          checkboxFilter.selectedChilds.length,
+                      )
+                      .map((checkboxFilter: any) =>
+                        checkboxFilter.category
+                          ? [
+                              ...checkboxFilter.selectedChilds,
+                              checkboxFilter.category,
+                            ]
+                          : checkboxFilter.selectedChilds,
+                      )
+                      .flat(),
+                  })
                 }
               />
             ) : (

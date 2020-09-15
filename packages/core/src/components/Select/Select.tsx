@@ -24,17 +24,18 @@ import {
 
 import {
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   InputBase,
   Chip,
   Typography,
   Checkbox,
+  ClickAwayListener
 } from '@material-ui/core';
 
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
+import { idea } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 
 const BootstrapInput = withStyles((theme: Theme) =>
   createStyles({
@@ -118,8 +119,19 @@ export const SelectComponent = (props: SelectProps) => {
   };
 
   const selectHandleOnOpen = () => {
-    setCanOpen(!canOpen);
+    setCanOpen(previous => {
+      if (multiple) {
+        return true
+      }
+      return !previous
+    });
   };
+
+  const handleClickAway = (event: React.ChangeEvent<any>) => {
+    if (event.target.id !== "menu-item") {
+      setCanOpen(false);
+    }
+  }
 
   const handleDelete = (selectedValue: string | number) => () => {
     const newValue = (value as any[]).filter(chip => chip !== selectedValue)
@@ -130,9 +142,9 @@ export const SelectComponent = (props: SelectProps) => {
   return (
     <div className={classes.root}>
       <Typography variant="button">{label}</Typography>
+      <ClickAwayListener onClickAway={handleClickAway}>
       <FormControl className={classes.formControl}>
         <Select
-          id="select"
           value={value}
           displayEmpty
           multiple={multiple}
@@ -177,13 +189,13 @@ export const SelectComponent = (props: SelectProps) => {
           }}
         >
           {placeholder && (
-            <MenuItem value="" disabled>
+            <MenuItem value={[]}>
               {placeholder}
             </MenuItem>
           )}
           {items &&
             items.map(item => (
-              <MenuItem key={item.value} value={item.value}>
+              <MenuItem id="menu-item" key={item.value} value={item.value}>
                 {multiple && (
                   <Checkbox
                     color="primary"
@@ -196,6 +208,7 @@ export const SelectComponent = (props: SelectProps) => {
             ))}
         </Select>
       </FormControl>
+      </ClickAwayListener>
     </div>
   );
 };

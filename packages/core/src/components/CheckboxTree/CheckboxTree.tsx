@@ -191,15 +191,16 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
     dispatch({ type: 'openCategory', payload: value });
   };
 
-  const handleChange = () => {
+  useEffect(() => {
     const values = Object.values(state).map(category => ({
-      category: category.label,
-      selected: Object.values(category.options)
+      category: category.isChecked ? category.label : null,
+      selectedChilds: Object.values(category.options)
         .filter(option => option.isChecked)
         .map(option => option.value),
     }));
     onChange(values);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   return (
     <div>
@@ -213,13 +214,12 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
               <ListItem
                 dense
                 button
-                onClick={async () => {
-                  await dispatch({
+                onClick={() =>
+                  dispatch({
                     type: 'checkCategory',
                     payload: item.label,
-                  });
-                  handleChange();
-                }}
+                  })
+                }
               >
                 <ListItemIcon className={classes.listItemIcon}>
                   <Checkbox
@@ -253,16 +253,15 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
                       button
                       key={option.label}
                       className={classes.nested}
-                      onClick={async () => {
-                        await dispatch({
+                      onClick={() =>
+                        dispatch({
                           type: 'checkOption',
                           payload: {
                             subCategoryLabel: item.label,
                             optionLabel: option.label,
                           },
-                        });
-                        handleChange();
-                      }}
+                        })
+                      }
                     >
                       <ListItemIcon className={classes.listItemIcon}>
                         <Checkbox

@@ -138,6 +138,7 @@ const useFilterStyles = makeStyles<BackstageTheme>(() => ({
 const useTableStyles = makeStyles<BackstageTheme>(() => ({
   root: {
     display: 'flex',
+    alignItems: 'start',
   },
 }));
 
@@ -212,23 +213,20 @@ export function Table<T extends object = {}>({
   const getFieldByTitle = (titleValue: string | keyof T) =>
     columns.find(el => el.title === titleValue)?.field;
 
-    
-    const onChangeFilters = (selectedFilters: any) => {
+  const onChangeFilters = (selectedFilters: any) => {
     const selectedFiltersArray = Object.values(selectedFilters);
     if (selectedFiltersArray.flat().length) {
       const newData = (props.data as any[]).filter(
         el =>
-          !!Object.entries(selectedFilters).find(
-            ([key, value]) => {
-              if (Array.isArray(value)) {
-                return value.includes(el[getFieldByTitle(key)])
-              }
-              return el[getFieldByTitle(key)] === value
-            },
-          ),
+          !!Object.entries(selectedFilters).find(([key, value]) => {
+            if (Array.isArray(value)) {
+              return value.includes(el[getFieldByTitle(key)]);
+            }
+            return el[getFieldByTitle(key)] === value;
+          }),
       );
       setTableData(newData);
-      setSelectedFiltersLength(selectedFiltersArray.flat().length)
+      setSelectedFiltersLength(selectedFiltersArray.flat().length);
     } else {
       setTableData(props.data as any[]);
     }
@@ -283,7 +281,9 @@ export function Table<T extends object = {}>({
                   >
                     <FilterList />
                   </IconButton>
-            <Typography variant="h6">Filters ({ selectedFiltersLength })</Typography>
+                  <Typography variant="h6">
+                    Filters ({selectedFiltersLength})
+                  </Typography>
                 </div>
                 <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
               </div>
