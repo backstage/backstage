@@ -11,7 +11,7 @@ This section will guide you through:
   - [Manually add documentation setup to already existing repository](#manually-add-documentation-setup-to-already-existing-repository)
 - [Writing and previewing your documentation](#writing-and-previewing-your-documentation)
 
-## Prerequisities
+## Prerequisites
 
 - A working Backstage instance with TechDocs installed (see
   [TechDocs getting started](getting-started.md))
@@ -29,11 +29,6 @@ the documentation template.
 
 Create an entity from the documentation template and you will get the needed
 setup for free.
-
-!!! warning Currently the Backstage Software Templates are limited to create
-repositories inside GitHub organizations. You also need to generate an personal
-access token and use as an environment variable. Read more about this
-[here](../software-templates/installation.md#runtime-dependencies).
 
 ### Manually add documentation setup to already existing repository
 
@@ -81,12 +76,12 @@ updated documentation next time you run Backstage!
 ## Writing and previewing your documentation
 
 Using the `techdocs-cli` you can preview your docs inside a local Backstage
-instance and get automatic recompilation on changes. This is useful for when you
-want to write your documentation.
+instance and get live reload on changes. This is useful when you want to preview
+your documentation while writing.
 
 To do this you can run:
 
 ```bash
-cd ~/<repository-path>/
-npx techdocs-cli serve
+cd /path/to/docs-repository/
+npx @techdocs/cli serve
 ```

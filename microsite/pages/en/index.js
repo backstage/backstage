@@ -296,9 +296,7 @@ class Index extends React.Component {
                 src={`${baseUrl}animations/backstage-techdocs-icon-1.gif`}
               />
 
-              <Block.Subtitle>
-                Backstage TechDocs <span>(Coming Soon)</span>
-              </Block.Subtitle>
+              <Block.Subtitle>Backstage TechDocs</Block.Subtitle>
               <Block.Title small>Docs like code</Block.Title>
             </Block.TextBox>
             <Breakpoint
@@ -373,19 +371,11 @@ class Index extends React.Component {
         </Block>
 
         <ActionBlock className="stripe bg-teal">
-          <ActionBlock.Title>Subscribe to our newsletter</ActionBlock.Title>
-          <ActionBlock.Subtitle>
-            TechDocs is our most used feature at Spotify. Be the first to know
-            when{' '}
-            <a href="https://github.com/spotify/backstage/projects/5">
-              the open source version
-            </a>{' '}
-            ships.
-          </ActionBlock.Subtitle>
+          <ActionBlock.Title>Learn more about TechDocs</ActionBlock.Title>
           <ActionBlock.Link
-            href={`https://mailchi.mp/spotify/backstage-community`}
+            href={`https://backstage.io/docs/features/techdocs/techdocs-overview`}
           >
-            Subscribe
+            Docs
           </ActionBlock.Link>
         </ActionBlock>
 

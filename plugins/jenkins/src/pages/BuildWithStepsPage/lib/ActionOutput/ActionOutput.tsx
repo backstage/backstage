@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, FC } from 'react';
+
 import {
-  ExpansionPanel,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Typography,
-  ExpansionPanelDetails,
 } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import React, { FC, useEffect } from 'react';
 
 const useStyles = makeStyles({
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -45,11 +46,8 @@ export const ActionOutput: FC<{
   useEffect(() => {}, [url]);
 
   return (
-    <ExpansionPanel
-      TransitionProps={{ unmountOnExit: true }}
-      className={className}
-    >
-      <ExpansionPanelSummary
+    <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
@@ -58,10 +56,10 @@ export const ActionOutput: FC<{
         }}
       >
         <Typography variant="button">{name}</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.accordionDetails}>
         Nothing here...
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };

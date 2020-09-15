@@ -19,6 +19,9 @@ export const mockGithubClient = {
     createInOrg: jest.fn(),
     createForAuthenticatedUser: jest.fn(),
   },
+  users: {
+    getByUsername: jest.fn(),
+  },
 };
 
 export class Octokit {

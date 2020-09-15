@@ -21,6 +21,7 @@ import {
   IdentityApi,
   identityApiRef,
   storageApiRef,
+  ProfileInfo,
 } from '@backstage/core';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render } from '@testing-library/react';
@@ -60,8 +61,12 @@ describe('CatalogPage', () => {
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
   };
+  const testProfile: Partial<ProfileInfo> = {
+    displayName: 'Display Name',
+  };
   const indentityApi: Partial<IdentityApi> = {
     getUserId: () => 'tools@example.com',
+    getProfile: () => testProfile,
   };
 
   const renderWrapped = (children: React.ReactNode) =>

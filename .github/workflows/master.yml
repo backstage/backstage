@@ -51,7 +51,7 @@ jobs:
         run: yarn lerna -- run lint
 
       - name: type checking and declarations
-        run: yarn tsc --incremental false
+        run: yarn tsc:full
 
       - name: build
         run: yarn build
@@ -59,8 +59,10 @@ jobs:
       - name: verify type dependencies
         run: yarn lint:type-deps
 
-      - name: test
-        run: yarn lerna -- run test -- --coverage
+      - name: test (and upload coverage)
+        run: |
+          yarn lerna -- run test -- --coverage
+          bash <(curl -s https://codecov.io/bash)
 
       # Publishes current version of packages that are not already present in the registry
       - name: publish

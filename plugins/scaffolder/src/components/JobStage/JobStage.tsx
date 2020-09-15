@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
+  CircularProgress,
   LinearProgress,
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import cn from 'classnames';
 import moment from 'moment';
 import React, { Suspense, useEffect, useState } from 'react';
@@ -32,18 +35,17 @@ const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 moment.relativeTimeThreshold('ss', 0);
 
 const useStyles = makeStyles(theme => ({
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
     order: -1,
-    marginRight: 0,
-    marginLeft: '-20px',
+    margin: '0 1em 0 -20px',
   },
   cardContent: {
     backgroundColor: theme.palette.background.default,
   },
-  expansionPanel: {
+  accordion: {
     position: 'relative',
     '&:after': {
       pointerEvents: 'none',
@@ -98,18 +100,18 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
       : null;
 
   return (
-    <ExpansionPanel
+    <Accordion
       TransitionProps={{ unmountOnExit: true }}
       className={cn(
-        classes.expansionPanel,
+        classes.accordion,
         classes[status.toLowerCase() as keyof ReturnType<typeof useStyles>] ??
           classes.neutral,
       )}
       expanded={expanded}
       onChange={(_, newState) => setExpanded(newState)}
     >
-      <ExpansionPanelSummary
-        expandIcon={<ExpandMoreIcon />}
+      <AccordionSummary
+        expandIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
         IconButtonProps={{
@@ -117,10 +119,11 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
         }}
       >
         <Typography variant="button">
-          {name} {timeElapsed && `(${timeElapsed})`}
+          {name} {timeElapsed && `(${timeElapsed})`}{' '}
+          {startedAt && !endedAt && <CircularProgress size="1em" />}
         </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.accordionDetails}>
         {log.length === 0 ? (
           <Box px={4}>No logs available for this step</Box>
         ) : (
@@ -130,7 +133,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
             </div>
           </Suspense>
         )}
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };

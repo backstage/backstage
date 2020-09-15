@@ -42,7 +42,11 @@ export async function serveBundle(options: ServeOptions) {
     contentBase: paths.targetPublic,
     contentBasePublicPath: config.output?.publicPath,
     publicPath: config.output?.publicPath,
-    historyApiFallback: true,
+    historyApiFallback: {
+      // Paths with dots should still use the history fallback.
+      // See https://github.com/facebookincubator/create-react-app/issues/387.
+      disableDotRule: true,
+    },
     clientLogLevel: 'warning',
     stats: 'errors-warnings',
     https: url.protocol === 'https:',

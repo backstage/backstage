@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  Router as GitHubActionsRouter,
+  isPluginApplicableToEntity as isGitHubActionsAvailable,
+} from '@backstage/plugin-github-actions';
+import {
+  Router as CircleCIRouter,
+  isPluginApplicableToEntity as isCircleCIAvailable,
+} from '@backstage/plugin-circleci';
 import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
-import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
+import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
+
 import React from 'react';
 import {
   EntityPageLayout,
@@ -22,9 +31,33 @@ import {
   AboutCard,
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
+import { Grid } from '@material-ui/core';
+import { WarningPanel } from '@backstage/core';
+
+const CICDSwitcher = ({ entity }: { entity: Entity }) => {
+  // This component is just an example of how you can implement your company's logic in entity page.
+  // You can for example enforce that all components of type 'service' should use GitHubActions
+  switch (true) {
+    case isGitHubActionsAvailable(entity):
+      return <GitHubActionsRouter entity={entity} />;
+    case isCircleCIAvailable(entity):
+      return <CircleCIRouter entity={entity} />;
+    default:
+      return (
+        <WarningPanel title="CI/CD switcher:">
+          No CI/CD is available for this entity. Check corresponding
+          annotations!
+        </WarningPanel>
+      );
+  }
+};
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
-  <AboutCard entity={entity} />
+  <Grid container spacing={3}>
+    <Grid item>
+      <AboutCard entity={entity} />
+    </Grid>
+  </Grid>
 );
 
 const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
@@ -37,12 +70,17 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/ci-cd/*"
       title="CI/CD"
-      element={<GitHubActionsRouter entity={entity} />}
+      element={<CICDSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/api/*"
       title="API"
       element={<ApiDocsRouter entity={entity} />}
+    />
+     <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
@@ -57,7 +95,12 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/ci-cd/*"
       title="CI/CD"
-      element={<GitHubActionsRouter entity={entity} />}
+      element={<CICDSwitcher entity={entity} />}
+    />
+     <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
@@ -68,6 +111,11 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
       path="/*"
       title="Overview"
       element={<OverviewContent entity={entity} />}
+    />
+     <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
