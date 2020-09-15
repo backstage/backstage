@@ -50,7 +50,6 @@ python -m black src/
 
 ## Changelog
 
-
 ### 0.0.5
 
 - Downgrade some versions of markdown extensions to versions that are more stable
