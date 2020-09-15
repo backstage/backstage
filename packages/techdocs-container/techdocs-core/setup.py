@@ -18,7 +18,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mkdocs-techdocs-core',
-    version='0.0.4',
+    version='0.0.5',
     description='A Mkdocs package that contains TechDocs defaults',
     long_description='',
     keywords='mkdocs',
