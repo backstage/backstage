@@ -6,7 +6,8 @@
   "license": "Apache-2.0",
   "private": {{privatePackage}},
   "publishConfig": {
-    {{{registryURL}}}
+{{#if npmRegistry}}    {{{npmRegistry}}},
+{{/if}}
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"

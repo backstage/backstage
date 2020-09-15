@@ -228,10 +228,10 @@ export default async (cmd: Command) => {
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${answers.id}`
     : `plugin-${answers.id}`;
   const scopeName = cmd.scope ? `@${cmd.scope.replace(/^@/, '')}` : '';
-  const registryURL =
+  const npmRegistry =
     cmd.npmRegistry && cmd.scope
-      ? `"${scopeName}:registry": "${cmd.npmRegistry}",`
-      : null;
+      ? `"${scopeName}:registry": "${cmd.npmRegistry}"`
+      : '';
   const privatePackage = cmd.private === false ? false : true;
 
   const appPackage = paths.resolveTargetRoot('packages/app');
@@ -261,7 +261,7 @@ export default async (cmd: Command) => {
       scopeName,
       name,
       privatePackage,
-      registryURL,
+      npmRegistry,
     });
 
     Task.section('Moving to final location');
