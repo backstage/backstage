@@ -32,7 +32,7 @@ const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
   },
   value: {
     fontWeight: 'bold',
-    fontSize: 18
+    fontSize: 18,
   },
   header: {
     display: 'flex',

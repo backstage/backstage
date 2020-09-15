@@ -41,15 +41,15 @@ const useStyles = makeStyles((theme: Theme) =>
       '&:hover': {
         backgroundColor: 'transparent',
       },
-      '&:active' : {
+      '&:active': {
         animation: 'none',
-        transform: 'none'
+        transform: 'none',
       },
     },
     nested: {
       paddingLeft: theme.spacing(5),
       height: '32px',
-      '&:hover' : {
+      '&:hover': {
         backgroundColor: 'transparent',
       },
     },
@@ -57,16 +57,16 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: 10,
     },
     listItem: {
-      '&:hover' : {
+      '&:hover': {
         backgroundColor: 'transparent',
       },
     },
     text: {
       '& span, & svg': {
         fontWeight: 'normal',
-        fontSize: 14
-      }
-    }
+        fontSize: 14,
+      },
+    },
   }),
 );
 
@@ -198,7 +198,6 @@ const indexer = (
     };
   }, {});
 
-
 export const CheckboxTree = (props: CheckboxTreeProps) => {
   const { onChange } = props;
   const classes = useStyles();
@@ -225,76 +224,79 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
     <div>
       <Typography variant="button">{props.label}</Typography>
       <List className={classes.root}>
-        {Object.values(state).map(item => 
-            <div key={item.label}>
-              <ListItem
-                className={classes.listItem}
-                dense
-                button
-                onClick={() => 
-                  dispatch({
-                    type: 'checkCategory',
-                    payload: item.label,
-                  })
-                }
-              >
-                <ListItemIcon className={classes.listItemIcon}>
-                  <Checkbox
-                    color="primary"
-                    edge="start"
-                    checked={item.isChecked}
-                    tabIndex={-1}
-                    disableRipple
-                  />
-                </ListItemIcon>
-                <ListItemText className={classes.text} primary={item.label} />
-                {Object.values(item.options).length ? (
-                  <>
-                    {item.isOpen ? (
-                      <ExpandLess
-                        onClick={event => handleOpen(event, item.label)}
+        {Object.values(state).map(item => (
+          <div key={item.label}>
+            <ListItem
+              className={classes.listItem}
+              dense
+              button
+              onClick={() =>
+                dispatch({
+                  type: 'checkCategory',
+                  payload: item.label,
+                })
+              }
+            >
+              <ListItemIcon className={classes.listItemIcon}>
+                <Checkbox
+                  color="primary"
+                  edge="start"
+                  checked={item.isChecked}
+                  tabIndex={-1}
+                  disableRipple
+                />
+              </ListItemIcon>
+              <ListItemText className={classes.text} primary={item.label} />
+              {Object.values(item.options).length ? (
+                <>
+                  {item.isOpen ? (
+                    <ExpandLess
+                      onClick={event => handleOpen(event, item.label)}
+                    />
+                  ) : (
+                    <ExpandMore
+                      onClick={event => handleOpen(event, item.label)}
+                    />
+                  )}
+                </>
+              ) : null}
+            </ListItem>
+            <Collapse in={item.isOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {Object.values(item.options).map(option => (
+                  <ListItem
+                    button
+                    key={option.label}
+                    className={classes.nested}
+                    onClick={() =>
+                      dispatch({
+                        type: 'checkOption',
+                        payload: {
+                          subCategoryLabel: item.label,
+                          optionLabel: option.label,
+                        },
+                      })
+                    }
+                  >
+                    <ListItemIcon className={classes.listItemIcon}>
+                      <Checkbox
+                        color="primary"
+                        edge="start"
+                        checked={option.isChecked}
+                        tabIndex={-1}
+                        disableRipple
                       />
-                    ) : (
-                      <ExpandMore
-                        onClick={event => handleOpen(event, item.label)}
-                      />
-                    )}
-                  </>
-                ) : null}
-              </ListItem>
-              <Collapse in={item.isOpen} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  {Object.values(item.options).map(option => (
-                    <ListItem
-                      button
-                      key={option.label}
-                      className={classes.nested}
-                      onClick={() =>
-                        dispatch({
-                          type: 'checkOption',
-                          payload: {
-                            subCategoryLabel: item.label,
-                            optionLabel: option.label,
-                          },
-                        })
-                      }
-                    >
-                      <ListItemIcon className={classes.listItemIcon}>
-                        <Checkbox
-                          color="primary"
-                          edge="start"
-                          checked={option.isChecked}
-                          tabIndex={-1}
-                          disableRipple
-                        />
-                      </ListItemIcon>
-                      <ListItemText className={classes.text} primary={option.label} />
-                    </ListItem>
-                  ))}
-                </List>
-              </Collapse>
-            </div>
-        )}
+                    </ListItemIcon>
+                    <ListItemText
+                      className={classes.text}
+                      primary={option.label}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
+          </div>
+        ))}
       </List>
     </div>
   );

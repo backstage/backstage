@@ -30,7 +30,7 @@ import {
   Chip,
   Typography,
   Checkbox,
-  ClickAwayListener
+  ClickAwayListener,
 } from '@material-ui/core';
 
 import ClosedDropdown from './static/ClosedDropdown';
@@ -121,20 +121,20 @@ export const SelectComponent = (props: SelectProps) => {
   const selectHandleOnOpen = () => {
     setCanOpen(previous => {
       if (multiple) {
-        return true
+        return true;
       }
-      return !previous
+      return !previous;
     });
   };
 
   const handleClickAway = (event: React.ChangeEvent<any>) => {
-    if (event.target.id !== "menu-item") {
+    if (event.target.id !== 'menu-item') {
       setCanOpen(false);
     }
-  }
+  };
 
   const handleDelete = (selectedValue: string | number) => () => {
-    const newValue = (value as any[]).filter(chip => chip !== selectedValue)
+    const newValue = (value as any[]).filter(chip => chip !== selectedValue);
     setValue(newValue);
     onChange(newValue);
   };
@@ -143,71 +143,69 @@ export const SelectComponent = (props: SelectProps) => {
     <div className={classes.root}>
       <Typography variant="button">{label}</Typography>
       <ClickAwayListener onClickAway={handleClickAway}>
-      <FormControl className={classes.formControl}>
-        <Select
-          value={value}
-          displayEmpty
-          multiple={multiple}
-          onChange={handleChange}
-          onClick={selectHandleOnOpen}
-          open={canOpen}
-          input={<BootstrapInput />}
-          renderValue={selected =>
-            multiple && (value as any[]).length !== 0 ? (
-              <div className={classes.chips}>
-                {(selected as string[]).map(selectedValue => (
-                  <Chip
-                    key={items.find(el => el.value === selectedValue)?.value}
-                    label={items.find(el => el.value === selectedValue)?.label}
-                    clickable
-                    onDelete={handleDelete(selectedValue)}
-                    className={classes.chip}
-                  />
-                ))}
-              </div>
-            ) : (
-              <Typography>
-                {(value as any[]).length === 0
-                  ? placeholder || ''
-                  : items.find(el => el.value === selected)?.label}
-              </Typography>
-            )
-          }
-          IconComponent={() =>
-            !canOpen ? <ClosedDropdown /> : <OpenedDropdown />
-          }
-          MenuProps={{
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'left',
-            },
-            transformOrigin: {
-              vertical: 'top',
-              horizontal: 'left',
-            },
-            getContentAnchorEl: null,
-          }}
-        >
-          {placeholder && (
-            <MenuItem value={[]}>
-              {placeholder}
-            </MenuItem>
-          )}
-          {items &&
-            items.map(item => (
-              <MenuItem id="menu-item" key={item.value} value={item.value}>
-                {multiple && (
-                  <Checkbox
-                    color="primary"
-                    checked={(value as any[]).includes(item.value) || false}
-                    className={classes.checkbox}
-                  />
-                )}
-                {item.label}
-              </MenuItem>
-            ))}
-        </Select>
-      </FormControl>
+        <FormControl className={classes.formControl}>
+          <Select
+            value={value}
+            displayEmpty
+            multiple={multiple}
+            onChange={handleChange}
+            onClick={selectHandleOnOpen}
+            open={canOpen}
+            input={<BootstrapInput />}
+            renderValue={selected =>
+              multiple && (value as any[]).length !== 0 ? (
+                <div className={classes.chips}>
+                  {(selected as string[]).map(selectedValue => (
+                    <Chip
+                      key={items.find(el => el.value === selectedValue)?.value}
+                      label={
+                        items.find(el => el.value === selectedValue)?.label
+                      }
+                      clickable
+                      onDelete={handleDelete(selectedValue)}
+                      className={classes.chip}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Typography>
+                  {(value as any[]).length === 0
+                    ? placeholder || ''
+                    : items.find(el => el.value === selected)?.label}
+                </Typography>
+              )
+            }
+            IconComponent={() =>
+              !canOpen ? <ClosedDropdown /> : <OpenedDropdown />
+            }
+            MenuProps={{
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left',
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'left',
+              },
+              getContentAnchorEl: null,
+            }}
+          >
+            {placeholder && <MenuItem value={[]}>{placeholder}</MenuItem>}
+            {items &&
+              items.map(item => (
+                <MenuItem id="menu-item" key={item.value} value={item.value}>
+                  {multiple && (
+                    <Checkbox
+                      color="primary"
+                      checked={(value as any[]).includes(item.value) || false}
+                      className={classes.checkbox}
+                    />
+                  )}
+                  {item.label}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
       </ClickAwayListener>
     </div>
   );

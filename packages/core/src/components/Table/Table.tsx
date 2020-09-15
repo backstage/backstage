@@ -135,8 +135,8 @@ const useFilterStyles = makeStyles<BackstageTheme>(() => ({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 18
-  }
+    fontSize: 18,
+  },
 }));
 
 const useTableStyles = makeStyles<BackstageTheme>(() => ({
