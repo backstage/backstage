@@ -15,6 +15,7 @@ backend:
     connection: ':memory:'
   {{/if}}
   {{#if dbTypePG}}
+  # config options: https://node-postgres.com/api/client
   database:
     client: pg
     connection:
