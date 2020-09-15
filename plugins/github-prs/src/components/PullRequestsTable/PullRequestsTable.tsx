@@ -29,7 +29,14 @@
  * limitations under the License.
  */
 import React, { FC, useState } from 'react';
-import { Typography, Box, Paper, ButtonGroup, Button } from '@material-ui/core';
+import {
+  Typography,
+  Box,
+  Paper,
+  ButtonGroup,
+  Button,
+  Grid,
+} from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Table, TableColumn } from '@backstage/core';
 import { useEntityCompoundName } from '@backstage/plugin-catalog';
@@ -202,7 +209,17 @@ export const PullRequestsTable = ({ entity }: { entity?: Entity }) => {
         onChangePage={setPage}
       />
       <br />
-      <PullRequestsStats />
+      <Wrapper>
+        <PullRequestsStats />
+      </Wrapper>
     </>
   );
 };
+
+const Wrapper: FC<{}> = ({ children }) => (
+  <Grid container spacing={4}>
+    <Grid item xs="auto">
+      {children}
+    </Grid>
+  </Grid>
+);
