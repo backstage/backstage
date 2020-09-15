@@ -35,7 +35,6 @@ import {
 
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
-import { idea } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 
 const BootstrapInput = withStyles((theme: Theme) =>
   createStyles({
