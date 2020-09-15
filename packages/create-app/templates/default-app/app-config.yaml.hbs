@@ -37,7 +37,7 @@ backend:
         #  $secret:
         #    file: <file-path>/ca/server.crt
         $secret:
-          env: POSTGRES_SSL_OPTIONS
+          env: POSTGRES_SSL_OPTIONS # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions
   {{/if}}
 
 proxy:
