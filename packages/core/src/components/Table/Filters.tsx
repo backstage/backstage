@@ -105,11 +105,11 @@ export const Filters = (props: Props) => {
                     [filter.element.label]: el
                       .filter(
                         (checkboxFilter: any) =>
-                          checkboxFilter.category ||
+                          checkboxFilter.category !== null ||
                           checkboxFilter.selectedChilds.length,
                       )
                       .map((checkboxFilter: any) =>
-                        checkboxFilter.category
+                        checkboxFilter.category !== null
                           ? [
                               ...checkboxFilter.selectedChilds,
                               checkboxFilter.category,

@@ -230,10 +230,10 @@ export function Table<T extends object = {}>({
           }),
       );
       setTableData(newData);
-      setSelectedFiltersLength(selectedFiltersArray.flat().length);
     } else {
       setTableData(props.data as any[]);
     }
+    setSelectedFiltersLength(selectedFiltersArray.flat().length);
   };
 
   const constructFilters = (filterConfig: TableFilter[], dataValue: any[]) => {
