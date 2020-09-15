@@ -116,9 +116,9 @@ export const getGitHubRepositoryTempFolder = async (
 
 export const checkoutGithubRepository = async (
   repoUrl: string,
+  logger: Logger,
   branch?: string,
   privateToken?: string,
-  logger: Logger,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
 
@@ -189,14 +189,14 @@ export const checkoutGithubRepository = async (
 export const getLastCommitTimestamp = async (
   repositoryUrl: string,
   branch: string,
-  privateToken?: string,
   logger: Logger,
+  privateToken?: string,
 ): Promise<number> => {
   const repositoryLocation = await checkoutGithubRepository(
     repositoryUrl,
+    logger,
     branch,
     privateToken,
-    logger,
   );
 
   const repository = await Repository.open(repositoryLocation);

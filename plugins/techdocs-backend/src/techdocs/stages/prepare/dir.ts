@@ -45,9 +45,9 @@ export class DirectoryPreparer implements PreparerBase {
         const parsedGitLocation = parseGitUrl(target);
         const repoLocation = await checkoutGithubRepository(
           target,
+          this.logger,
           entity.metadata.annotations?.['github.com/project-slug-branch'],
           token,
-          this.logger,
         );
 
         return path.dirname(
