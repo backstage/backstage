@@ -231,7 +231,7 @@ describe('GitHub Publisher', () => {
       repoVisibility: 'internal',
     });
 
-    it('creates a repo in an organisation with internal visibility', async () => {
+    it('creates a repo in an organisation if the organisation with private visibility', async () => {
       mockGithubClient.repos.createInOrg.mockResolvedValue({
         data: {
           clone_url: 'mockclone',

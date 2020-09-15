@@ -103,6 +103,7 @@ export default async function createPlugin({
   const cookiecutterTemplater = new CookieCutter();
   const craTemplater = new CreateReactAppTemplater();
   const templaters = new Templaters();
+  // Register default templaters
   templaters.register('cookiecutter', cookiecutterTemplater);
   templaters.register('cra', craTemplater);
 
@@ -110,6 +111,7 @@ export default async function createPlugin({
   const githubPreparer = new GithubPreparer();
   const preparers = new Preparers();
 
+  // Register default preparers
   preparers.register('file', filePreparer);
   preparers.register('github', githubPreparer);
 
