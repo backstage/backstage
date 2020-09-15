@@ -27,7 +27,7 @@ export interface TechDocsStorage {
   getEntityDocs(
     entityId: ParsedEntityId,
     path: string,
-    token?: string,
+    token: string,
   ): Promise<string>;
   getBaseUrl(
     oldBaseUrl: string,
@@ -43,7 +43,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
     this.apiOrigin = apiOrigin;
   }
 
-  async getEntityDocs(entityId: ParsedEntityId, path: string, token?: string) {
+  async getEntityDocs(entityId: ParsedEntityId, path: string, token: string) {
     const { kind, namespace, name } = entityId;
 
     const url = `${this.apiOrigin}/${kind}/${
@@ -54,7 +54,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
       {
         headers: new Headers({
-          Authorization: token || '',
+          Authorization: token,
         }),
       },
     );

@@ -70,8 +70,7 @@ export class DocsBuilder {
   }
 
   public async build(token?: string) {
-    console.log('@@@@@@ toke: ', token);
-    console.log('@@@@@@@@@@@ this.token: ', this.token);
+    console.log(token);
     this.logger.info(
       `[TechDocs] Running preparer on entity ${getEntityId(this.entity)}`,
     );
@@ -88,6 +87,7 @@ export class DocsBuilder {
     this.logger.info(
       `[TechDocs] Running publisher on entity ${getEntityId(this.entity)}`,
     );
+
     await this.publisher.publish({
       entity: this.entity,
       directory: resultDir,
@@ -102,7 +102,7 @@ export class DocsBuilder {
     new BuildMetadataStorage(this.entity.metadata.uid).storeBuildTimestamp();
   }
 
-  public async docsUpToDate(token?: string) {
+  public async docsUpToDate(token: string) {
     if (!this.entity.metadata.uid) {
       throw new Error(
         'Trying to build documentation for entity not in service catalog',

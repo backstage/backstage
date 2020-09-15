@@ -59,6 +59,10 @@ export async function createRouter({
     const baseUrl = config.getString('backend.baseUrl');
     const storageUrl = config.getString('techdocs.storageUrl');
 
+    if (typeof req.headers.authorization === 'undefined') {
+      return res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
+    }
+
     const token = req.headers.authorization || '';
     const { kind, namespace, name } = req.params;
 
