@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Router as FirebaseFunctionsRouter } from '@roadiehq/backstage-plugin-firebase-functions';
 import {
   Router as GitHubActionsRouter,
   isPluginApplicableToEntity as isGitHubActionsAvailable,
@@ -86,6 +87,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/docs/*"
       title="Docs"
       element={<DocsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/firebase-functions/*"
+      title="Firebase functions"
+      element={<FirebaseFunctionsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
