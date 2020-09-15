@@ -42,6 +42,7 @@
           "features/software-catalog/installation",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
+          "features/software-catalog/well-known-annotations",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/software-catalog-api"
