@@ -72,7 +72,7 @@ export const JobStatusModal = ({
       {entity && (
         <DialogActions>
           <Button
-            to={generatePath(entityRoute.path, {
+            to={generatePath(`/catalog/${entityRoute.path}`, {
               kind: entity.kind,
               optionalNamespaceAndName: [
                 entity.metadata.namespace,
