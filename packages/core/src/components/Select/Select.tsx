@@ -122,7 +122,9 @@ export const SelectComponent = (props: SelectProps) => {
   };
 
   const handleDelete = (selectedValue: string | number) => () => {
-    setValue(chips => (chips as any[]).filter(chip => chip !== selectedValue));
+    const newValue = (value as any[]).filter(chip => chip !== selectedValue)
+    setValue(newValue);
+    onChange(newValue);
   };
 
   return (

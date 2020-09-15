@@ -75,12 +75,7 @@ export const Filters = (props: Props) => {
   // Trigger re-rendering
   const handleClick = () => {
     setSelectedFilters({});
-    setFilters([
-      ...props.filters.map(el => ({
-        type: el.type,
-        element: { ...el.element },
-      })),
-    ]);
+    setFilters([...props.filters]);
   };
 
   useEffect(() => {

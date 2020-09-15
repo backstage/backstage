@@ -1,4 +1,3 @@
-import classes from '*.css';
 /*
  * Copyright 2020 Spotify AB
  *
@@ -45,7 +44,7 @@ import MTable, {
   MTableToolbar,
   Options,
 } from 'material-table';
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import { Filters } from './Filters';
 
 const tableIcons = {
@@ -199,6 +198,7 @@ export function Table<T extends object = {}>({
   const theme = useTheme<BackstageTheme>();
 
   const [filtersOpen, toggleFilters] = useState(false);
+  const [selectedFiltersLength, setSelectedFiltersLength] = useState(0);
   const [tableData, setTableData] = useState(data as any[]);
 
   const MTColumns = convertColumns(columns, theme);
@@ -212,15 +212,25 @@ export function Table<T extends object = {}>({
   const getFieldByTitle = (titleValue: string | keyof T) =>
     columns.find(el => el.title === titleValue)?.field;
 
-  const onChangeFilters = (selectedFilters: any) => {
-    if (Object.values(selectedFilters).length) {
+    
+    const onChangeFilters = (selectedFilters: any) => {
+    const selectedFiltersArray = Object.values(selectedFilters);
+    if (selectedFiltersArray.flat().length) {
       const newData = (props.data as any[]).filter(
         el =>
           !!Object.entries(selectedFilters).find(
-            ([key, value]) => el[getFieldByTitle(key)] === value,
+            ([key, value]) => {
+              if (Array.isArray(value)) {
+                return value.includes(el[getFieldByTitle(key)])
+              }
+              return el[getFieldByTitle(key)] === value
+            },
           ),
       );
       setTableData(newData);
+      setSelectedFiltersLength(selectedFiltersArray.flat().length)
+    } else {
+      setTableData(props.data as any[]);
     }
   };
 
@@ -273,7 +283,7 @@ export function Table<T extends object = {}>({
                   >
                     <FilterList />
                   </IconButton>
-                  <Typography variant="h6">Filters</Typography>
+            <Typography variant="h6">Filters ({ selectedFiltersLength })</Typography>
                 </div>
                 <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
               </div>
