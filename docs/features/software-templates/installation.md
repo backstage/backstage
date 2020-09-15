@@ -177,9 +177,6 @@ docs on creating private GitHub access tokens is available
 Note that the need for private GitHub access tokens will be replaced with GitHub
 Apps integration further down the line.
 
-> **Right now it is only possible to scaffold repositories inside GitHub
-> organizations, and not under personal accounts.**
-
 The GitHub access token is passed along using the `GITHUB_ACCESS_TOKEN`
 environment variable.
 
