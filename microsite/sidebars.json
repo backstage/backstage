@@ -42,6 +42,7 @@
           "features/software-catalog/installation",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
+          "features/software-catalog/well-known-annotations",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/software-catalog-api"
@@ -62,11 +63,12 @@
       },
       {
         "type": "subcategory",
-        "label": "Docs-like-code",
+        "label": "TechDocs",
         "ids": [
           "features/techdocs/techdocs-overview",
           "features/techdocs/getting-started",
           "features/techdocs/concepts",
+          "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
           "features/techdocs/faqs"
         ]

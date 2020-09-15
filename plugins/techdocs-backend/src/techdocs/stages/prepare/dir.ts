@@ -47,6 +47,7 @@ export class DirectoryPreparer implements PreparerBase {
           target,
           entity.metadata.annotations?.['github.com/project-slug-branch'],
           token,
+          this.logger,
         );
 
         return path.dirname(

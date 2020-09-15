@@ -47,6 +47,7 @@ export class GithubPreparer implements PreparerBase {
         target,
         entity.metadata.annotations?.['github.com/project-slug-branch'],
         token,
+        this.logger,
       );
 
       const parsedGitLocation = parseGitUrl(target);

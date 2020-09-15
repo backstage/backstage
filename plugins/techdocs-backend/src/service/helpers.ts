@@ -121,6 +121,7 @@ export class DocsBuilder {
         this.entity.metadata.annotations?.['github.com/project-slug-branch'] ||
           'master',
         token,
+        this.logger,
       );
 
       const storageTimeStamp = buildMetadataStorage.getTimestamp();

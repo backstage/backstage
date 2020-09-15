@@ -48,17 +48,20 @@ export class GithubPublisher implements PublisherBase {
   ) {
     const [owner, name] = values.storePath.split('/');
 
-    const repoCreationPromise = values.isOrg
-      ? this.client.repos.createInOrg({
-          name,
-          org: owner,
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-          visibility: 'internal',
-          private: true,
-        })
-      : this.client.repos.createForAuthenticatedUser({ name });
+    const user = await this.client.users.getByUsername({ username: owner });
+
+    const repoCreationPromise =
+      user.data.type === 'Organization'
+        ? this.client.repos.createInOrg({
+            name,
+            org: owner,
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+            visibility: 'internal',
+            private: true,
+          })
+        : this.client.repos.createForAuthenticatedUser({ name });
 
     const { data } = await repoCreationPromise;
 
