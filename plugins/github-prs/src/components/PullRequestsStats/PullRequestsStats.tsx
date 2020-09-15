@@ -47,6 +47,7 @@ const cardContentStyle = { heightX: 200, width: 500, minHeight: '178px' };
 
 export const PullRequestsStats: FC<{}> = () => {
   let entityCompoundName = useEntityCompoundName();
+
   if (!entityCompoundName.name) {
     entityCompoundName = {
       kind: 'Component',

@@ -37,6 +37,7 @@ import { useProjectName } from '../useProjectName';
 import { usePullRequests, PullRequest } from '../usePullRequests';
 import { PullRequestState } from '../../types';
 import { Entity } from '@backstage/catalog-model';
+import { PullRequestsStats } from '../PullRequestsStats/PullRequestsStats';
 
 const generatedColumns: TableColumn[] = [
   {
@@ -200,6 +201,8 @@ export const PullRequestsTable = ({ entity }: { entity?: Entity }) => {
         onChangePageSize={setPageSize}
         onChangePage={setPage}
       />
+      <br />
+      <PullRequestsStats />
     </>
   );
 };
