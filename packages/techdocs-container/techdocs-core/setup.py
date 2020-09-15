@@ -28,7 +28,7 @@ setup(
     license='Apache-2.0',
     python_requires='>=3.7',
     install_requires=[
-        'mkdocs==1.1.2',
+        'mkdocs>=1.1.2',
         'mkdocs-material==5.3.2',
         'mkdocs-monorepo-plugin==0.4.5',
         'plantuml-markdown==3.1.2',
