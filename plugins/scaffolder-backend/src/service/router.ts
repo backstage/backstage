@@ -28,7 +28,7 @@ import {
   TemplaterBuilder,
   PublisherBase,
 } from '../scaffolder';
-import {validate, ValidatorResult} from 'jsonschema';
+import { validate, ValidatorResult } from 'jsonschema';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -85,7 +85,10 @@ export async function createRouter(
       const values: RequiredTemplateValues & Record<string, JsonValue> =
         req.body.values;
 
-      const validationResult: ValidatorResult = validate(values, template.spec.schema);
+      const validationResult: ValidatorResult = validate(
+        values,
+        template.spec.schema,
+      );
       if (!validationResult.valid) {
         res.status(400).json({ errors: validationResult.errors });
         return;
