@@ -30,7 +30,7 @@ import {
   Table,
   StatusOK,
   TableColumn,
-  ProgressCard,
+  GaugeCard,
   TrendLine,
 } from '../../components';
 import { Box, Typography, Link, Chip, Grid } from '@material-ui/core';
@@ -120,14 +120,14 @@ const DataGrid = () => (
         direction="row"
       >
         <Grid item xs={6}>
-          <ProgressCard
+          <GaugeCard
             title="GKE Usage Score"
             subheader="This should be above 75%"
             progress={0.87}
           />
         </Grid>
         <Grid item xs={6}>
-          <ProgressCard
+          <GaugeCard
             title="Deployment Score"
             subheader="This should be above 40%"
             progress={0.58}
