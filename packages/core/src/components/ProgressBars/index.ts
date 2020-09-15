@@ -15,5 +15,5 @@
  */
 
 export { GaugeCard } from './GaugeCard';
-export { CircleGauge } from './CircleGauge';
+export { GaugeProgress } from './GaugeProgress';
 export { LinearGauge } from './LinearGauge';
