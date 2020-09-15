@@ -45,6 +45,7 @@ export class GithubPreparer implements PreparerBase {
     try {
       const repoPath = await checkoutGithubRepository(
         target,
+        this.logger,
         entity.metadata.annotations?.['github.com/project-slug-branch'],
         token,
       );

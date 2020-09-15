@@ -24,6 +24,7 @@ import defaultBranch from 'default-branch';
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
+import { Logger } from 'winston';
 
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
@@ -115,6 +116,7 @@ export const getGitHubRepositoryTempFolder = async (
 
 export const checkoutGithubRepository = async (
   repoUrl: string,
+  logger: Logger,
   branch?: string,
   privateToken?: string,
 ): Promise<string> => {
@@ -135,24 +137,33 @@ export const checkoutGithubRepository = async (
   }
 
   if (fs.existsSync(repositoryTmpPath)) {
-    const repository = await Repository.open(repositoryTmpPath);
+    try {
+      const repository = await Repository.open(repositoryTmpPath);
 
-    const currentBranchName = (await repository.getCurrentBranch()).shorthand();
+      const currentBranchName = (
+        await repository.getCurrentBranch()
+      ).shorthand();
 
-    await repository.fetch('origin', {
-      callbacks: {
-        credentials: () => {
-          return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
+      await repository.fetch('origin', {
+        callbacks: {
+          credentials: () => {
+            return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
+          },
         },
-      },
-    });
+      });
 
-    await repository.mergeBranches(
-      currentBranchName,
-      `origin/${currentBranchName}`,
-    );
+      await repository.mergeBranches(
+        currentBranchName,
+        `origin/${currentBranchName}`,
+      );
 
-    return repositoryTmpPath;
+      return repositoryTmpPath;
+    } catch (e) {
+      logger.info(
+        `Found error "${e.message}" in cached repository "${repoUrl}" when getting latest changes. Removing cached repository.`,
+      );
+      fs.removeSync(repositoryTmpPath);
+    }
   }
 
   if (user && token) {
@@ -178,10 +189,12 @@ export const checkoutGithubRepository = async (
 export const getLastCommitTimestamp = async (
   repositoryUrl: string,
   branch: string,
+  logger: Logger,
   privateToken?: string,
 ): Promise<number> => {
   const repositoryLocation = await checkoutGithubRepository(
     repositoryUrl,
+    logger,
     branch,
     privateToken,
   );

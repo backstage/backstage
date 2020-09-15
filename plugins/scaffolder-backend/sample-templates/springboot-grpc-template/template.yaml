@@ -25,7 +25,7 @@ spec:
       description:
         title: Description
         type: string
-        description: Description of the component
+        description: Help others understand what this service does.
       http_port:
         title: Port
         type: integer

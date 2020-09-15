@@ -19,11 +19,18 @@ jest.mock('nodegit');
 
 import { Octokit } from '@octokit/rest';
 import * as NodeGit from 'nodegit';
-import { OctokitResponse, ReposCreateInOrgResponseData } from '@octokit/types';
+import {
+  OctokitResponse,
+  ReposCreateInOrgResponseData,
+  UsersGetByUsernameResponseData,
+} from '@octokit/types';
 import { GithubPublisher } from './github';
 
 const { mockGithubClient } = require('@octokit/rest') as {
-  mockGithubClient: { repos: jest.Mocked<Octokit['repos']> };
+  mockGithubClient: {
+    repos: jest.Mocked<Octokit['repos']>;
+    users: jest.Mocked<Octokit['users']>;
+  };
 };
 
 const {
@@ -59,10 +66,14 @@ describe('GitHub Publisher', () => {
           clone_url: 'mockclone',
         },
       } as OctokitResponse<ReposCreateInOrgResponseData>);
+      mockGithubClient.users.getByUsername.mockResolvedValue({
+        data: {
+          type: 'Organization',
+        },
+      } as OctokitResponse<UsersGetByUsernameResponseData>);
 
       await publisher.publish({
         values: {
-          isOrg: true,
           storePath: 'blam/test',
           owner: 'bob',
         },
@@ -82,6 +93,11 @@ describe('GitHub Publisher', () => {
           clone_url: 'mockclone',
         },
       } as OctokitResponse<ReposCreateInOrgResponseData>);
+      mockGithubClient.users.getByUsername.mockResolvedValue({
+        data: {
+          type: 'User',
+        },
+      } as OctokitResponse<UsersGetByUsernameResponseData>);
 
       await publisher.publish({
         values: {
@@ -114,6 +130,12 @@ describe('GitHub Publisher', () => {
         clone_url: 'mockclone',
       },
     } as OctokitResponse<ReposCreateInOrgResponseData>);
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: {
+        type: 'Organization',
+      },
+    } as OctokitResponse<UsersGetByUsernameResponseData>);
+
     it('should call init on the repo with the directory', async () => {
       await publisher.publish({
         values,

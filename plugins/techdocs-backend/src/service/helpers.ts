@@ -120,6 +120,7 @@ export class DocsBuilder {
         target,
         this.entity.metadata.annotations?.['github.com/project-slug-branch'] ||
           'master',
+        this.logger,
         token,
       );
 
