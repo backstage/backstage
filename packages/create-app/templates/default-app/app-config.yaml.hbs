@@ -30,13 +30,6 @@ backend:
       password:
         $secret:
           env: POSTGRES_PASSWORD
-      # https://node-postgres.com/features/ssl
-      ssl:
-        #ca: # if you have a CA file and want to verify it you can uncomment this section
-        #  $secret:
-        #    file: <file-path>/ca/server.crt
-        $secret:
-          env: POSTGRES_SSL_OPTIONS
   {{/if}}
 
 proxy:
