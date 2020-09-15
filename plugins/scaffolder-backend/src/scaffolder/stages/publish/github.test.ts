@@ -242,7 +242,7 @@ describe('GitHub Publisher', () => {
           type: 'Organization',
         },
       } as OctokitResponse<UsersGetByUsernameResponseData>);
-      
+
       await publisher.publish({
         values: {
           isOrg: true,

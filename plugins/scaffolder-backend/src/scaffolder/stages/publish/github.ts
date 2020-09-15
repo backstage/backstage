@@ -67,11 +67,11 @@ export class GithubPublisher implements PublisherBase {
     const repoCreationPromise =
       user.data.type === 'Organization'
         ? this.client.repos.createInOrg({
-          name,
-          org: owner,
-          private: this.repoVisibility !== 'public',
-          visibility: this.repoVisibility,
-        })
+            name,
+            org: owner,
+            private: this.repoVisibility !== 'public',
+            visibility: this.repoVisibility,
+          })
         : this.client.repos.createForAuthenticatedUser({ name });
 
     const { data } = await repoCreationPromise;
