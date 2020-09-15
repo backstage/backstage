@@ -116,7 +116,12 @@ export class DocsBuilder {
 
     // Should probably be broken out and handled per type later. Doing this for now since we only support github age checks
     if (type === 'github') {
-      const lastCommit = await getLastCommitTimestamp(target, token);
+      const lastCommit = await getLastCommitTimestamp(
+        target,
+        this.entity.metadata.annotations?.['github.com/project-slug-branch'] ||
+          'master',
+        token,
+      );
 
       const storageTimeStamp = buildMetadataStorage.getTimestamp();
 

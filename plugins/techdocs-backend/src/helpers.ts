@@ -86,11 +86,12 @@ export const getLocationForEntity = (
 
 export const getGitHubRepositoryTempFolder = async (
   repositoryUrl: string,
+  branch?: string,
   privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repositoryUrl);
   parsedGitLocation.token = privateToken || '';
-  parsedGitLocation.ref = 'master'; // ESTE ESTE ESTE ESTE
+  parsedGitLocation.ref = branch || 'master';
 
   // removes .git from git location path
   parsedGitLocation.git_suffix = false;
@@ -114,6 +115,7 @@ export const getGitHubRepositoryTempFolder = async (
 
 export const checkoutGithubRepository = async (
   repoUrl: string,
+  branch?: string,
   privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
@@ -121,6 +123,7 @@ export const checkoutGithubRepository = async (
   parsedGitLocation.token = privateToken || '';
   const repositoryTmpPath = await getGitHubRepositoryTempFolder(
     repoUrl,
+    branch,
     privateToken,
   );
 
@@ -174,10 +177,12 @@ export const checkoutGithubRepository = async (
 
 export const getLastCommitTimestamp = async (
   repositoryUrl: string,
+  branch: string,
   privateToken?: string,
 ): Promise<number> => {
   const repositoryLocation = await checkoutGithubRepository(
     repositoryUrl,
+    branch,
     privateToken,
   );
 

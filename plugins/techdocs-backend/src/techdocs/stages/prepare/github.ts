@@ -43,9 +43,11 @@ export class GithubPreparer implements PreparerBase {
     }
 
     try {
-      console.log(`################### Checking out repo: `);
-      const repoPath = await checkoutGithubRepository(target, token);
-      console.log(`################### After checking out repo:  `, repoPath);
+      const repoPath = await checkoutGithubRepository(
+        target,
+        entity.metadata.annotations?.['github.com/project-slug-branch'],
+        token,
+      );
 
       const parsedGitLocation = parseGitUrl(target);
       return path.join(repoPath, parsedGitLocation.filepath);
