@@ -41,14 +41,32 @@ const useStyles = makeStyles((theme: Theme) =>
       '&:hover': {
         backgroundColor: 'transparent',
       },
+      '&:active' : {
+        animation: 'none',
+        transform: 'none'
+      },
     },
     nested: {
       paddingLeft: theme.spacing(5),
       height: '32px',
+      '&:hover' : {
+        backgroundColor: 'transparent',
+      },
     },
     listItemIcon: {
       minWidth: 10,
     },
+    listItem: {
+      '&:hover' : {
+        backgroundColor: 'transparent',
+      },
+    },
+    text: {
+      '& span, & svg': {
+        fontWeight: 'normal',
+        fontSize: 14
+      }
+    }
   }),
 );
 
@@ -180,6 +198,7 @@ const indexer = (
     };
   }, {});
 
+
 export const CheckboxTree = (props: CheckboxTreeProps) => {
   const { onChange } = props;
   const classes = useStyles();
@@ -206,15 +225,13 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
     <div>
       <Typography variant="button">{props.label}</Typography>
       <List className={classes.root}>
-        {Object.values(state).map(item => {
-          const labelId = `checkbox-list-label-${item?.label}`;
-
-          return (
+        {Object.values(state).map(item => 
             <div key={item.label}>
               <ListItem
+                className={classes.listItem}
                 dense
                 button
-                onClick={() =>
+                onClick={() => 
                   dispatch({
                     type: 'checkCategory',
                     payload: item.label,
@@ -228,10 +245,9 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
                     checked={item.isChecked}
                     tabIndex={-1}
                     disableRipple
-                    inputProps={{ 'aria-labelledby': labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={labelId} primary={item.label} />
+                <ListItemText className={classes.text} primary={item.label} />
                 {Object.values(item.options).length ? (
                   <>
                     {item.isOpen ? (
@@ -270,17 +286,15 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
                           checked={option.isChecked}
                           tabIndex={-1}
                           disableRipple
-                          inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </ListItemIcon>
-                      <ListItemText primary={option.label} />
+                      <ListItemText className={classes.text} primary={option.label} />
                     </ListItem>
                   ))}
                 </List>
               </Collapse>
             </div>
-          );
-        })}
+        )}
       </List>
     </div>
   );

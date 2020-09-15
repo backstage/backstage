@@ -30,7 +30,10 @@ const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
     flexDirection: 'column',
     marginRight: theme.spacing(3),
   },
-  value: {},
+  value: {
+    fontWeight: 'bold',
+    fontSize: 18
+  },
   header: {
     display: 'flex',
     alignItems: 'center',
@@ -44,9 +47,6 @@ const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
     '& > *': {
       marginTop: theme.spacing(2),
     },
-  },
-  clear: {
-    textTransform: 'none',
   },
 }));
 
@@ -88,7 +88,7 @@ export const Filters = (props: Props) => {
     <div className={classes.root}>
       <div className={classes.header}>
         <div className={classes.value}>Filters</div>
-        <Button className={classes.clear} color="primary" onClick={handleClick}>
+        <Button color="primary" onClick={handleClick}>
           Clear all
         </Button>
       </div>

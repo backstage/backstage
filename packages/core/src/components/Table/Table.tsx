@@ -133,6 +133,10 @@ const useFilterStyles = makeStyles<BackstageTheme>(() => ({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 18
+  }
 }));
 
 const useTableStyles = makeStyles<BackstageTheme>(() => ({
@@ -281,7 +285,7 @@ export function Table<T extends object = {}>({
                   >
                     <FilterList />
                   </IconButton>
-                  <Typography variant="h6">
+                  <Typography className={filtersClasses.title}>
                     Filters ({selectedFiltersLength})
                   </Typography>
                 </div>
