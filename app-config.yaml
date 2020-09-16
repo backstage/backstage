@@ -57,6 +57,10 @@ catalog:
   rules:
     - allow: [Component, API, Group, Template, Location]
   processors:
+    github:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
     githubApi:
       privateToken:
         $secret:
