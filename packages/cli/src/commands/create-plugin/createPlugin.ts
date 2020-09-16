@@ -228,10 +228,7 @@ export default async (cmd: Command) => {
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${answers.id}`
     : `plugin-${answers.id}`;
   const scopeName = cmd.scope ? `@${cmd.scope.replace(/^@/, '')}` : '';
-  const npmRegistry =
-    cmd.npmRegistry && cmd.scope
-      ? `"${scopeName}:registry": "${cmd.npmRegistry}"`
-      : '';
+  const npmRegistry = cmd.npmRegistry && cmd.scope ? cmd.npmRegistry : '';
   const privatePackage = cmd.private === false ? false : true;
   const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
   const appPackage = paths.resolveTargetRoot('packages/app');

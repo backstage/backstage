@@ -7,7 +7,7 @@
 {{#if privatePackage}}  "private": {{privatePackage}},
 {{/if}}
   "publishConfig": {
-{{#if npmRegistry}}    {{{npmRegistry}}},
+{{#if npmRegistry}}    "{{scopeName}}:registry": "{{npmRegistry}}",
 {{/if}}
     "access": "public",
     "main": "dist/index.esm.js",

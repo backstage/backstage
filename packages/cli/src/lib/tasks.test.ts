@@ -37,6 +37,11 @@ describe('templatingTask', () => {
     try {
       await templatingTask(tmplDir, destDir, {
         version: '0.0.0',
+        backstageVersiona: '0.0.0',
+        scopeName: '@backstage',
+        name: '@backstage/plugin-test',
+        privatePackage: true,
+        npmRegistry: 'https://registry.npmjs.org/',
       });
 
       await expect(
