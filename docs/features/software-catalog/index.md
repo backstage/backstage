@@ -2,8 +2,7 @@
 id: software-catalog-overview
 title: Backstage Service Catalog (alpha)
 sidebar_label: Overview
-description: The Backstage Service Catalog — actually, a software catalog, since it includes more than just services — is a centralized system that keeps track of ownership and metadata for all the software in your ecosystem (services, websites,
-libraries, data pipelines, etc)
+description: The Backstage Service Catalog — actually, a software catalog, since it includes more than just services
 ---
 
 ## What is a Service Catalog?
