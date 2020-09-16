@@ -64,16 +64,14 @@ export class GithubPublisher implements PublisherBase {
         repo: name,
         permission: 'admin',
       });
-    } else {
       // no need to add access if it's the person who own's the personal account
-      if (access && access !== owner) {
-        await this.client.repos.addCollaborator({
-          owner,
-          repo: name,
-          username: access,
-          permission: 'admin',
-        });
-      }
+    } else if (access && access !== owner) {
+      await this.client.repos.addCollaborator({
+        owner,
+        repo: name,
+        username: access,
+        permission: 'admin',
+      });
     }
 
     return data?.clone_url;
