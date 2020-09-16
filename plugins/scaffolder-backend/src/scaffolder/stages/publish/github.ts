@@ -59,7 +59,7 @@ export class GithubPublisher implements PublisherBase {
               authorization: `Bearer ${token}`,
             },
             visibility: 'internal',
-            private: true,
+            private: false,
           })
         : this.client.repos.createForAuthenticatedUser({ name });
 
