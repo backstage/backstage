@@ -18,6 +18,7 @@ from mkdocs.plugins import BasePlugin, PluginCollection
 from mkdocs.theme import Theme
 from mkdocs.contrib.search import SearchPlugin
 from mkdocs_monorepo_plugin.plugin import MonorepoPlugin
+from pymdownx.emoji import to_svg
 import tempfile
 import os
 
@@ -77,7 +78,7 @@ class TechDocsCore(BasePlugin):
         config["markdown_extensions"].append("pymdownx.details")
         config["markdown_extensions"].append("pymdownx.emoji")
         config["mdx_configs"]["pymdownx.emoji"] = {
-            "emoji_generator": "!!python/name:pymdownx.emoji.to_svg",
+            "emoji_generator": to_svg
         }
         config["markdown_extensions"].append("pymdownx.inlinehilite")
         config["markdown_extensions"].append("pymdownx.magiclink")
