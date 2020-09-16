@@ -188,10 +188,7 @@ docs on creating private GitHub access tokens is available
 Note that the need for private GitHub access tokens will be replaced with GitHub
 Apps integration further down the line.
 
-> **Right now it is only possible to scaffold repositories inside GitHub
-> organizations, and not under personal accounts.**
-
-The Github access token is retrieved from environment variables by the config.
+The Github access token is retrieved from environment variables via the config.
 The config file needs to specify what environment variable the token is
 retrieved from. Your config should have the following objects.
 
@@ -203,6 +200,11 @@ scaffolder:
         env: GITHUB_ACCESS_TOKEN
     visibility: public # or 'internal' or 'private'
 ```
+
+You can configure who can see the new repositories that the scaffolder creates
+by specifying `visibility` option. Valid options are `public`, `private` and
+`internal`. `internal` options is for GitHub Enterprise clients, which means
+public within the organization.
 
 ### Running the Backend
 
