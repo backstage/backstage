@@ -233,11 +233,11 @@ export default async (cmd: Command) => {
       ? `"${scopeName}:registry": "${cmd.npmRegistry}"`
       : '';
   const privatePackage = cmd.private === false ? false : true;
-
+  const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
   const appPackage = paths.resolveTargetRoot('packages/app');
   const templateDir = paths.resolveOwn('templates/default-plugin');
   const tempDir = resolvePath(os.tmpdir(), answers.id);
-  const pluginDir = (await fs.pathExists(paths.resolveTargetRoot('lerna.json')))
+  const pluginDir = isMonoRepo
     ? paths.resolveTargetRoot('plugins', answers.id)
     : paths.resolveTargetRoot(answers.id);
   const ownerIds = parseOwnerIds(answers.owner);
