@@ -26,6 +26,7 @@ import {
 } from '@material-ui/core';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import produce from 'immer';
 
 type IndexedObject<T> = {
   [key: string]: T;
@@ -110,18 +111,7 @@ type checkOptionPayload = {
 type Action =
   | { type: 'checkOption'; payload: checkOptionPayload }
   | { type: 'checkCategory'; payload: string }
-  | { type: 'openCategory'; payload: string };
-
-const checkAllOptions = (
-  arr: Option[],
-  isChecked: boolean,
-): IndexedObject<Option> =>
-  arr.reduce((accumulator, el) => {
-    return {
-      ...accumulator,
-      [el.label]: { ...el, isChecked },
-    };
-  }, {});
+  | { type: 'toggleCategory'; payload: string };
 
 const reducer = (
   state: IndexedObject<SubCategoryWithIndexedOptions>,
@@ -129,49 +119,30 @@ const reducer = (
 ) => {
   switch (action.type) {
     case 'checkOption': {
-      const newOptions = {
-        ...state[action.payload.subCategoryLabel].options,
-        [action.payload.optionLabel]: {
-          ...state[action.payload.subCategoryLabel].options[
-            action.payload.optionLabel
-          ],
-          isChecked: !state[action.payload.subCategoryLabel].options[
-            action.payload.optionLabel
-          ].isChecked,
-        },
-      };
-
-      return {
-        ...state,
-        [action.payload.subCategoryLabel]: {
-          ...state[action.payload.subCategoryLabel],
-          isChecked: Object.values(newOptions).every(
-            option => option.isChecked,
-          ),
-          options: newOptions,
-        },
-      };
+      return produce(state, newState => {
+        const category = newState[action.payload.subCategoryLabel];
+        const option = category.options[action.payload.optionLabel];
+        option.isChecked = !option.isChecked;
+        category.isChecked = Object.values(category.options).every(
+          o => o.isChecked,
+        );
+      });
     }
     case 'checkCategory':
-      return {
-        ...state,
-        [action.payload]: {
-          ...state[action.payload],
-          isChecked: !state[action.payload].isChecked,
-          options: checkAllOptions(
-            Object.values(state[action.payload].options),
-            !state[action.payload].isChecked,
-          ),
-        },
-      };
-    case 'openCategory':
-      return {
-        ...state,
-        [action.payload]: {
-          ...state[action.payload],
-          isOpen: !state[action.payload].isOpen,
-        },
-      };
+      return produce(state, newState => {
+        const category = newState[action.payload];
+        const options = category.options;
+        category.isChecked = !category.isChecked;
+        // eslint-disable-next-line guard-for-in
+        for (const option in options) {
+          options[option].isChecked = category.isChecked;
+        }
+      });
+    case 'toggleCategory':
+      return produce(state, newState => {
+        const category = newState[action.payload];
+        category.isOpen = !category.isOpen;
+      });
     default:
       return state;
   }
@@ -206,7 +177,7 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
 
   const handleOpen = (event: any, value: any) => {
     event.stopPropagation();
-    dispatch({ type: 'openCategory', payload: value });
+    dispatch({ type: 'toggleCategory', payload: value });
   };
 
   useEffect(() => {
