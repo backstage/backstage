@@ -1,7 +1,7 @@
 ---
 id: figma
 title: Figma
-description: Documentation on Using Figma to build your own plugins for
+description: Documentation on using Figma to build your own plugins for
 Backstage
 ---
 
