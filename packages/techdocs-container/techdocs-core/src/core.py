@@ -77,9 +77,7 @@ class TechDocsCore(BasePlugin):
         config["markdown_extensions"].append("pymdownx.critic")
         config["markdown_extensions"].append("pymdownx.details")
         config["markdown_extensions"].append("pymdownx.emoji")
-        config["mdx_configs"]["pymdownx.emoji"] = {
-            "emoji_generator": to_svg
-        }
+        config["mdx_configs"]["pymdownx.emoji"] = {"emoji_generator": to_svg}
         config["markdown_extensions"].append("pymdownx.inlinehilite")
         config["markdown_extensions"].append("pymdownx.magiclink")
         config["markdown_extensions"].append("pymdownx.mark")
