@@ -86,3 +86,9 @@ export const Languages = () => (
     <CodeSnippet text={PYTHON} language="python" showLineNumbers />
   </InfoCard>
 );
+
+export const CopyCode = () => (
+  <InfoCard title="Copy Code">
+    <CodeSnippet text={JAVASCRIPT} language="javascript" showCopyCodeButton />
+  </InfoCard>
+);

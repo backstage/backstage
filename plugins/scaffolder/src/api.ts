@@ -30,6 +30,8 @@ export class ScaffolderApi {
   }
 
   /**
+   * Executes the scaffolding of a component, given a template and its
+   * parameter values.
    *
    * @param template Template entity for the scaffolder to use. New project is going to be created out of this template.
    * @param values Parameters for the template, e.g. name, description
@@ -44,12 +46,13 @@ export class ScaffolderApi {
       headers: {
         'Content-Type': 'application/json',
       },
-      // TODO(shmidt-i): when repo picker is implemented, take isOrg from it
-      body: JSON.stringify({ template, values: { ...values, isOrg: true } }),
+      body: JSON.stringify({ template, values: { ...values } }),
     });
 
     if (response.status !== 201) {
-      throw new Error(await response.text());
+      const status = `${response.status} ${response.statusText}`;
+      const body = await response.text();
+      throw new Error(`Backend request failed, ${status} ${body.trim()}`);
     }
 
     const { id } = await response.json();
@@ -57,9 +60,8 @@ export class ScaffolderApi {
   }
 
   async getJob(jobId: string) {
-    const url = `${await this.discoveryApi.getBaseUrl(
-      'scaffolder',
-    )}/v1/job/${encodeURIComponent(jobId)}`;
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const url = `${baseUrl}/v1/job/${encodeURIComponent(jobId)}`;
     return fetch(url).then(x => x.json());
   }
 }

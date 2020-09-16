@@ -1,9 +1,14 @@
 FROM nginx:mainline
 
+# The purpose of this image is to serve the frontend app content separately.
+# By default the Backstage backend uses the app-backend plugin to serve the
+# app from the backend itself, but it may be desirable to move the frontend
+# content serving to a separate deployment, in which case this image can be used.
+
 # This dockerfile requires the app to be built on the host first, as it
 # simply copies in the build output into the image.
 
-# The safest way to build this image is to use `yarn docker-build`
+# The safest way to build this image is to use `yarn docker-build:app`
 
 RUN apt-get update && apt-get -y install jq && rm -rf /var/lib/apt/lists/*
 

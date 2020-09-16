@@ -42,8 +42,8 @@ export class CircleCIApi {
     this.apiUrl = apiUrl;
   }
 
-  async retry(buildNumber: number, options: CircleCIOptions) {
-    return postBuildActions(options.token, buildNumber, BuildAction.RETRY, {
+  async retry(buildNumber: number, options: Partial<CircleCIOptions>) {
+    return postBuildActions('', buildNumber, BuildAction.RETRY, {
       circleHost: this.apiUrl,
       ...options.vcs,
     });
@@ -51,9 +51,9 @@ export class CircleCIApi {
 
   async getBuilds(
     { limit = 10, offset = 0 }: { limit: number; offset: number },
-    options: CircleCIOptions,
+    options: Partial<CircleCIOptions>,
   ) {
-    return getBuildSummaries(options.token, {
+    return getBuildSummaries('', {
       options: {
         limit,
         offset,
@@ -64,12 +64,12 @@ export class CircleCIApi {
     });
   }
 
-  async getUser(options: CircleCIOptions) {
-    return getMe(options.token, { circleHost: this.apiUrl, ...options });
+  async getUser(options: Partial<CircleCIOptions>) {
+    return getMe('', { circleHost: this.apiUrl, ...options });
   }
 
-  async getBuild(buildNumber: number, options: CircleCIOptions) {
-    return getFullBuild(options.token, buildNumber, {
+  async getBuild(buildNumber: number, options: Partial<CircleCIOptions>) {
+    return getFullBuild('', buildNumber, {
       circleHost: this.apiUrl,
       ...options.vcs,
     });

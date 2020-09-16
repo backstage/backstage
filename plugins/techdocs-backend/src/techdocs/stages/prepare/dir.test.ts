@@ -15,11 +15,20 @@
  */
 import { DirectoryPreparer } from './dir';
 import { getVoidLogger } from '@backstage/backend-common';
-import { checkoutGitRepository } from './helpers';
+import { checkoutGithubRepository } from '../../../helpers';
 
-jest.mock('./helpers', () => ({
-  ...jest.requireActual<{}>('./helpers'),
-  checkoutGitRepository: jest.fn(() => '/tmp/backstage-repo/org/name/branch/'),
+function normalizePath(path: string) {
+  return path
+    .replace(/^[a-z]:/i, '')
+    .split('\\')
+    .join('/');
+}
+
+jest.mock('../../../helpers', () => ({
+  ...jest.requireActual<{}>('../../../helpers'),
+  checkoutGithubRepository: jest.fn(
+    () => '/tmp/backstage-repo/org/name/branch/',
+  ),
 }));
 
 const logger = getVoidLogger();
@@ -47,7 +56,7 @@ describe('directory preparer', () => {
       'backstage.io/techdocs-ref': 'dir:./our-documentation',
     });
 
-    expect(await directoryPreparer.prepare(mockEntity)).toEqual(
+    expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
       '/directory/our-documentation',
     );
   });
@@ -61,7 +70,7 @@ describe('directory preparer', () => {
       'backstage.io/techdocs-ref': 'dir:/our-documentation/techdocs',
     });
 
-    expect(await directoryPreparer.prepare(mockEntity)).toEqual(
+    expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
       '/our-documentation/techdocs',
     );
   });
@@ -75,9 +84,9 @@ describe('directory preparer', () => {
       'backstage.io/techdocs-ref': 'dir:./docs',
     });
 
-    expect(await directoryPreparer.prepare(mockEntity)).toEqual(
+    expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
       '/tmp/backstage-repo/org/name/branch/docs',
     );
-    expect(checkoutGitRepository).toHaveBeenCalledTimes(1);
+    expect(checkoutGithubRepository).toHaveBeenCalledTimes(1);
   });
 });

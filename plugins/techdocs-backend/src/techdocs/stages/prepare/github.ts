@@ -18,7 +18,11 @@ import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 import parseGitUrl from 'git-url-parse';
-import { parseReferenceAnnotation, checkoutGithubRepository } from './helpers';
+import {
+  parseReferenceAnnotation,
+  checkoutGithubRepository,
+} from '../../../helpers';
+
 import { Logger } from 'winston';
 
 export class GithubPreparer implements PreparerBase {
@@ -39,7 +43,7 @@ export class GithubPreparer implements PreparerBase {
     }
 
     try {
-      const repoPath = await checkoutGithubRepository(target);
+      const repoPath = await checkoutGithubRepository(target, this.logger);
 
       const parsedGitLocation = parseGitUrl(target);
       return path.join(repoPath, parsedGitLocation.filepath);

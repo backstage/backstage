@@ -19,5 +19,6 @@ import { paths } from '../../lib/paths';
 
 export default async function clean() {
   await fs.remove(paths.resolveTarget('dist'));
+  await fs.remove(paths.resolveTarget('dist-types'));
   await fs.remove(paths.resolveTarget('coverage'));
 }

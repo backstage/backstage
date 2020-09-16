@@ -29,6 +29,7 @@ export type Job = {
   conclusion: string;
   started_at: string;
   completed_at: string;
+  id: string;
   name: string;
   steps: Step[];
 };

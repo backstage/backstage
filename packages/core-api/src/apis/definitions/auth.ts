@@ -317,7 +317,11 @@ export const microsoftAuthApiRef = createApiRef<
  * Provides authentication for custom identity providers.
  */
 export const oauth2ApiRef = createApiRef<
-  OAuthApi & OpenIdConnectApi & ProfileInfoApi & SessionStateApi
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    SessionStateApi &
+    BackstageIdentityApi
 >({
   id: 'core.auth.oauth2',
   description: 'Example of how to use oauth2 custom provider',

@@ -26,36 +26,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-      - name: cache all node_modules
-        id: cache-modules
-        uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
-      - name: find location of global yarn cache
-        id: yarn-cache
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: cache global yarn cache
-        uses: actions/cache@v2
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: yarn install
+
+      # We avoid caching in this workflow, as we're running an install of both the top-level
+      # dependencies and the microsite. We leave it to the main master workflow to produce the
+      # cache, as that results in a smaller bundle.
+      - name: top-level yarn install
         run: yarn install --frozen-lockfile
-      # End of yarn setup
+      - name: microsite yarn install
+        run: yarn install --frozen-lockfile
+        working-directory: microsite
 
       - name: build microsite
-        run: yarn workspace backstage-microsite build
+        run: yarn build
+        working-directory: microsite
 
       - name: build storybook
         run: yarn workspace storybook build-storybook
