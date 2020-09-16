@@ -70,6 +70,10 @@ catalog:
     - type: github
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
   processors:
+    github:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
     githubApi:
       privateToken:
         $secret:
