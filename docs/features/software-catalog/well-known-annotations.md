@@ -51,13 +51,13 @@ The value of this annotation is a location reference string (see above). If this
 annotation is specified, it is expected to point to a repository that the
 TechDocs system can read and generate docs from.
 
-### backstage.io/jenkins-github-folder
+### jenkins.io/github-folder
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    backstage.io/jenkins-github-folder: folder-name/job-name
+    jenkins.io/github-folder: folder-name/job-name
 ```
 
 The value of this annotation is the path to a job on Jenkins, that builds this

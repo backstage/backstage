@@ -56,8 +56,9 @@ export function useBuilds(owner: string, repo: string, branch?: string) {
     });
   }, [repo, getBuilds]);
 
-  const { loading, value, retry } = useAsyncRetry(
-    () => getBuilds().then(builds => builds ?? [], restartBuild),
+  const { loading, value: builds, retry } = useAsyncRetry(
+    () =>
+      getBuilds().then(retrievedBuilds => retrievedBuilds ?? [], restartBuild),
     [page, pageSize, getBuilds],
   );
 
@@ -67,12 +68,12 @@ export function useBuilds(owner: string, repo: string, branch?: string) {
       page,
       pageSize,
       loading,
-      value,
+      builds,
       projectName,
       total,
     },
     {
-      getBuilds,
+      builds,
       setPage,
       setPageSize,
       restartBuild,

@@ -20,11 +20,15 @@ import {
   createApiFactory,
   configApiRef,
 } from '@backstage/core';
-import { DetailedViewPage } from './pages/BuildWithStepsPage';
 import { jenkinsApiRef, JenkinsApi } from './api';
 
+export const rootRouteRef = createRouteRef({
+  path: '',
+  title: 'Jenkins',
+});
+
 export const buildRouteRef = createRouteRef({
-  path: '/jenkins/job',
+  path: 'run/:branch/:buildNumber',
   title: 'Jenkins run',
 });
 
@@ -40,10 +44,4 @@ export const plugin = createPlugin({
         ),
     }),
   ],
-  register({ router }) {
-    router.addRoute(buildRouteRef, DetailedViewPage);
-  },
 });
-
-export { JenkinsBuildsWidget } from './components/JenkinsPluginWidget/JenkinsBuildsWidget';
-export { JenkinsLastBuildWidget } from './components/JenkinsPluginWidget/JenkinsLastBuildWidget';

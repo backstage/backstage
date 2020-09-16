@@ -13,4 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './Layout';
+import { useEntity } from '@backstage/plugin-catalog';
+import { JENKINS_ANNOTATION } from '../constants';
+
+export const useProjectSlugFromEntity = () => {
+  const { entity } = useEntity();
+
+  const [owner, repo] = (
+    entity.metadata.annotations?.[JENKINS_ANNOTATION] ?? ''
+  ).split('/');
+  return { owner, repo };
+};
