@@ -7,3 +7,5 @@
 **/.git/**
 **/public/**
 **/microsite/**
+**/templates/**
+**/sample-templates/**
