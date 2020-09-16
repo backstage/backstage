@@ -70,7 +70,7 @@ const OWNER_REPO_SCHEMA = {
     access: {
       type: 'string' as const,
       title: 'Access',
-      description: 'Who should have access, in user or owner/team format',
+      description: 'Who should have access, in org/team or user format',
     },
   },
 };
