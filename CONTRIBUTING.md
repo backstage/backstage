@@ -74,7 +74,7 @@ Also be sure to skim through our [ADRs](https://github.com/spotify/backstage/tre
 
 # Creating Changesets
 
-We use [changesets](https://github.com/atlassian/changesets) to help us prepare releases. It helps us make sure that every package effected by a change gets a proper version number and an entry in it's CHANGELOG.md. To make the process of generating releases easy it helps when contributors include changesets with their pull requests.
+We use [changesets](https://github.com/atlassian/changesets) to help us prepare releases. It helps us make sure that every package affected by a change gets a proper version number and an entry in its `CHANGELOG.md`. To make the process of generating releases easy. it helps when contributors include changesets with their pull requests.
 
 ## To create a changeset
 
