@@ -112,6 +112,7 @@ describe('GitHub Publisher', () => {
           mockGithubClient.repos.createForAuthenticatedUser,
         ).toHaveBeenCalledWith({
           name: 'test',
+          private: false,
         });
       });
     });
@@ -231,7 +232,7 @@ describe('GitHub Publisher', () => {
       repoVisibility: 'internal',
     });
 
-    it('creates a repo in an organisation if the organisation with private visibility', async () => {
+    it('creates a private repository in the organization with visibility set to internal', async () => {
       mockGithubClient.repos.createInOrg.mockResolvedValue({
         data: {
           clone_url: 'mockclone',
@@ -257,6 +258,42 @@ describe('GitHub Publisher', () => {
         name: 'test',
         private: true,
         visibility: 'internal',
+      });
+    });
+  });
+
+  describe('private visibility in a user account', () => {
+    const publisher = new GithubPublisher({
+      client: new Octokit(),
+      token: 'abc',
+      repoVisibility: 'private',
+    });
+
+    it('creates a private repository', async () => {
+      mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+        data: {
+          clone_url: 'mockclone',
+        },
+      } as OctokitResponse<ReposCreateInOrgResponseData>);
+      mockGithubClient.users.getByUsername.mockResolvedValue({
+        data: {
+          type: 'User',
+        },
+      } as OctokitResponse<UsersGetByUsernameResponseData>);
+
+      await publisher.publish({
+        values: {
+          storePath: 'blam/test',
+          owner: 'bob',
+        },
+        directory: '/tmp/test',
+      });
+
+      expect(
+        mockGithubClient.repos.createForAuthenticatedUser,
+      ).toHaveBeenCalledWith({
+        name: 'test',
+        private: true,
       });
     });
   });

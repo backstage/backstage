@@ -72,7 +72,10 @@ export class GithubPublisher implements PublisherBase {
             private: this.repoVisibility !== 'public',
             visibility: this.repoVisibility,
           })
-        : this.client.repos.createForAuthenticatedUser({ name });
+        : this.client.repos.createForAuthenticatedUser({
+            name,
+            private: this.repoVisibility === 'private',
+          });
 
     const { data } = await repoCreationPromise;
 
