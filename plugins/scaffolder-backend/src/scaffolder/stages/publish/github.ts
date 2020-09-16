@@ -21,10 +21,27 @@ import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
 
+export type RepoVisilityOptions = 'private' | 'internal' | 'public';
+
+interface GithubPublisherParams {
+  client: Octokit;
+  token: string;
+  repoVisibility: RepoVisilityOptions;
+}
+
 export class GithubPublisher implements PublisherBase {
   private client: Octokit;
-  constructor({ client }: { client: Octokit }) {
+  private token: string;
+  private repoVisibility: RepoVisilityOptions;
+
+  constructor({
+    client,
+    token,
+    repoVisibility = 'public',
+  }: GithubPublisherParams) {
     this.client = client;
+    this.token = token;
+    this.repoVisibility = repoVisibility;
   }
 
   async publish({
@@ -49,8 +66,16 @@ export class GithubPublisher implements PublisherBase {
 
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.client.repos.createInOrg({ name, org: owner })
-        : this.client.repos.createForAuthenticatedUser({ name });
+        ? this.client.repos.createInOrg({
+            name,
+            org: owner,
+            private: this.repoVisibility !== 'public',
+            visibility: this.repoVisibility,
+          })
+        : this.client.repos.createForAuthenticatedUser({
+            name,
+            private: this.repoVisibility === 'private',
+          });
 
     const { data } = await repoCreationPromise;
 
@@ -76,10 +101,7 @@ export class GithubPublisher implements PublisherBase {
     await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
       callbacks: {
         credentials: () => {
-          return Cred.userpassPlaintextNew(
-            process.env.GITHUB_ACCESS_TOKEN as string,
-            'x-oauth-basic',
-          );
+          return Cred.userpassPlaintextNew(this.token, 'x-oauth-basic');
         },
       },
     });

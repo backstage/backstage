@@ -90,16 +90,19 @@ import {
   GithubPublisher,
   CreateReactAppTemplater,
   Templaters,
+  RepoVisilityOptions,
 } from '@backstage/plugin-scaffolder-backend';
 import { Octokit } from '@octokit/rest';
 import type { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
 
-export default async function createPlugin({ logger }: PluginEnvironment) {
+export default async function createPlugin({
+  logger,
+  config,
+}: PluginEnvironment) {
   const cookiecutterTemplater = new CookieCutter();
   const craTemplater = new CreateReactAppTemplater();
   const templaters = new Templaters();
-
   // Register default templaters
   templaters.register('cookiecutter', cookiecutterTemplater);
   templaters.register('cra', craTemplater);
@@ -112,9 +115,17 @@ export default async function createPlugin({ logger }: PluginEnvironment) {
   preparers.register('file', filePreparer);
   preparers.register('github', githubPreparer);
 
-  // Create GitHub client with your access token from environment variables
-  const githubClient = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
-  const publisher = new GithubPublisher({ client: githubClient });
+  const githubToken = config.getString('scaffolder.github.token');
+  const repoVisibility = config.getString(
+    'scaffolder.github.visibility',
+  ) as RepoVisilityOptions;
+
+  const githubClient = new Octokit({ auth: githubToken });
+  const publisher = new GithubPublisher({
+    client: githubClient,
+    token: githubToken,
+    repoVisibility,
+  });
 
   const dockerClient = new Docker();
   return await createRouter({
@@ -177,8 +188,23 @@ docs on creating private GitHub access tokens is available
 Note that the need for private GitHub access tokens will be replaced with GitHub
 Apps integration further down the line.
 
-The GitHub access token is passed along using the `GITHUB_ACCESS_TOKEN`
-environment variable.
+The Github access token is retrieved from environment variables via the config.
+The config file needs to specify what environment variable the token is
+retrieved from. Your config should have the following objects.
+
+```yaml
+scaffolder:
+  github:
+    token:
+      $secret:
+        env: GITHUB_ACCESS_TOKEN
+    visibility: public # or 'internal' or 'private'
+```
+
+You can configure who can see the new repositories that the scaffolder creates
+by specifying `visibility` option. Valid options are `public`, `private` and
+`internal`. `internal` options is for GitHub Enterprise clients, which means
+public within the organization.
 
 ### Running the Backend
 
