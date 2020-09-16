@@ -1,6 +1,7 @@
 ---
 id: concepts
 title: Concepts
+description: Documentation on concepts that are introduced with Spotify's docs-like-code solution in Backstage
 ---
 
 This page describes concepts that are introduced with Spotify's docs-like-code

@@ -1,6 +1,7 @@
 ---
 id: create-an-app
 title: Create an App
+description: Documentation on Creating an App
 ---
 
 To get set up quickly with your own Backstage project you can create a Backstage

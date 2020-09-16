@@ -1,6 +1,7 @@
 ---
 id: existing-plugins
 title: Existing plugins
+description: Lists of open source Existing plugins
 ---
 
 ## Open source plugins

@@ -1,6 +1,7 @@
 ---
 id: deployment-other
 title: Other
+description: Documentation on different ways of Deployment
 ---
 
 ## Deploying Locally

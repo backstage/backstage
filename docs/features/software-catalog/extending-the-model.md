@@ -1,6 +1,7 @@
 ---
 id: extending-the-model
 title: Extending the model
+description: Documentation on Extending the model
 ---
 
 Backstage natively supports tracking of the following component

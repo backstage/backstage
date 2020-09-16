@@ -2,6 +2,7 @@
 id: adrs-overview
 title: Architecture Decision Records (ADR)
 sidebar_label: Overview
+description:
 ---
 
 The substantial architecture decisions made in the Backstage project live here.

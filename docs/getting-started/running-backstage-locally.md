@@ -1,6 +1,7 @@
 ---
 id: running-backstage-locally
 title: Running Backstage Locally
+description: Documentation on How to run Backstage Locally
 ---
 
 First make sure you are using NodeJS with an Active LTS Release, currently v12.

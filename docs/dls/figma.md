@@ -1,6 +1,7 @@
 ---
 id: figma
 title: Figma
+description: Documentation on Using Figma to build your own plugins for Backstage
 ---
 
 We have a [Figma component library](https://www.figma.com/@backstage) that you

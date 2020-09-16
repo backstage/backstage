@@ -2,6 +2,7 @@
 id: creating-and-publishing
 title: Creating and publishing your docs
 sidebar_label: Creating and Publishing Documentation
+description: Guidance on How to Create and Publish Documentation
 ---
 
 This section will guide you through:
