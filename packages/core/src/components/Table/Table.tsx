@@ -45,7 +45,7 @@ import MTable, {
   Options,
 } from 'material-table';
 import React, { forwardRef, useState } from 'react';
-import { Filters } from './Filters';
+import { Filters, SelectedFilters } from './Filters';
 
 const tableIcons = {
   Add: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
@@ -217,17 +217,19 @@ export function Table<T extends object = {}>({
   const getFieldByTitle = (titleValue: string | keyof T) =>
     columns.find(el => el.title === titleValue)?.field;
 
-  const onChangeFilters = (selectedFilters: any) => {
+  const onChangeFilters = (selectedFilters: SelectedFilters) => {
     const selectedFiltersArray = Object.values(selectedFilters);
     if (selectedFiltersArray.flat().length) {
       const newData = (props.data as any[]).filter(
         el =>
-          !!Object.entries(selectedFilters).find(([key, value]) => {
-            if (Array.isArray(value)) {
-              return value.includes(el[getFieldByTitle(key)]);
-            }
-            return el[getFieldByTitle(key)] === value;
-          }),
+          !!Object.entries(selectedFilters)
+            .filter(([, value]) => !!value.length)
+            .every(([key, value]) => {
+              if (Array.isArray(value)) {
+                return value.includes(el[getFieldByTitle(key)]);
+              }
+              return el[getFieldByTitle(key)] === value;
+            }),
       );
       setTableData(newData);
     } else {

@@ -59,6 +59,10 @@ export type Filter = {
     | Without<SelectProps, 'onChange'>;
 };
 
+export type SelectedFilters = {
+  [key: string]: string | string[];
+};
+
 type Props = {
   filters: Filter[];
   onChangeFilters: (arg: any) => any;
@@ -70,7 +74,7 @@ export const Filters = (props: Props) => {
   const { onChangeFilters } = props;
 
   const [filters, setFilters] = useState(props.filters);
-  const [selectedFilters, setSelectedFilters] = useState({});
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({});
 
   // Trigger re-rendering
   const handleClick = () => {
