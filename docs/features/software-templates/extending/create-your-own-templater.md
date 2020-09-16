@@ -1,6 +1,7 @@
 ---
 id: extending-templater
 title: Creating your own Templater
+description: Documentation on Creating your own Templater
 ---
 
 Templaters are responsible for taking the directory path for the skeleton

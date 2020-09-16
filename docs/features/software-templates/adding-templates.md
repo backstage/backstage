@@ -1,6 +1,7 @@
 ---
 id: adding-templates
 title: Adding your own Templates
+description: Documentation on Adding your own Templates
 ---
 
 Templates are stored in the **Service Catalog** under a kind `Template`. The

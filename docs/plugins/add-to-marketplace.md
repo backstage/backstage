@@ -1,6 +1,7 @@
 ---
 id: add-to-marketplace
 title: Add to Marketplace
+description: Documentation on Adding Plugin to Marketplace
 ---
 
 ## Adding a Plugin to the Marketplace

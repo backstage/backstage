@@ -1,6 +1,7 @@
 ---
 id: testing
 title: Testing with Jest
+description: Documentation on How to do unit testing with Jest
 ---
 
 Backstage uses [Jest](https://facebook.github.io/jest/) for all our unit testing
