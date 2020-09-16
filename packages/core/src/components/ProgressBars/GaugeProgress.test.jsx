@@ -17,32 +17,32 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { CircleProgress, getProgressColor } from './CircleProgress';
+import { GaugeProgress, getProgressColor } from './GaugeProgress';
 
-describe('<CircleProgress />', () => {
+describe('<GaugeProgress />', () => {
   it('renders without exploding', () => {
     const { getByText } = render(
-      wrapInTestApp(<CircleProgress value={10} fractional={false} />),
+      wrapInTestApp(<GaugeProgress value={10} fractional={false} />),
     );
     getByText('10%');
   });
   it('handles fractional prop', () => {
     const { getByText } = render(
-      wrapInTestApp(<CircleProgress value={0.1} fractional />),
+      wrapInTestApp(<GaugeProgress value={0.1} fractional />),
     );
     getByText('10%');
   });
 
   it('handles max prop', () => {
     const { getByText } = render(
-      wrapInTestApp(<CircleProgress value={1} max={10} fractional={false} />),
+      wrapInTestApp(<GaugeProgress value={1} max={10} fractional={false} />),
     );
     getByText('1%');
   });
 
   it('handles unit prop', () => {
     const { getByText } = render(
-      wrapInTestApp(<CircleProgress value={10} fractional={false} unit="m" />),
+      wrapInTestApp(<GaugeProgress value={10} fractional={false} unit="m" />),
     );
     getByText('10m');
   });

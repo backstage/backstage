@@ -18,32 +18,30 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 
-import { ProgressCard } from './ProgressCard';
+import { GaugeCard } from './GaugeCard';
 
 const minProps = { title: 'Tingle upgrade', progress: 0.12 };
 
-describe('<ProgressCard />', () => {
+describe('<GaugeCard />', () => {
   it('renders without exploding', () => {
-    const { getByText } = render(wrapInTestApp(<ProgressCard {...minProps} />));
+    const { getByText } = render(wrapInTestApp(<GaugeCard {...minProps} />));
     expect(getByText(/Tingle.*/)).toBeInTheDocument();
   });
 
   it('renders progress and title', () => {
-    const { getByText } = render(wrapInTestApp(<ProgressCard {...minProps} />));
+    const { getByText } = render(wrapInTestApp(<GaugeCard {...minProps} />));
     expect(getByText(/Tingle.*/)).toBeInTheDocument();
     expect(getByText(/12%.*/)).toBeInTheDocument();
   });
 
   it('does not render deepLink', () => {
-    const { queryByText } = render(
-      wrapInTestApp(<ProgressCard {...minProps} />),
-    );
+    const { queryByText } = render(wrapInTestApp(<GaugeCard {...minProps} />));
     expect(queryByText('View more')).not.toBeInTheDocument();
   });
 
   it('handles invalid numbers', () => {
     const badProps = { title: 'Tingle upgrade', progress: 'hejjo' };
-    const { getByText } = render(wrapInTestApp(<ProgressCard {...badProps} />));
+    const { getByText } = render(wrapInTestApp(<GaugeCard {...badProps} />));
     expect(getByText(/N\/A.*/)).toBeInTheDocument();
   });
 });

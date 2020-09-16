@@ -22,7 +22,7 @@ module.exports = {
     const [jsLoader] = config.module.rules.splice(0, 1);
     if (jsLoader.use[0].loader !== 'babel-loader') {
       throw new Error(
-        `Unexpected loader removed from storybook config, ${jsonLoader.use[0].loader}`,
+        `Unexpected loader removed from storybook config, ${jsLoader.use[0].loader}`,
       );
     }
 
