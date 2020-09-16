@@ -1,7 +1,8 @@
 ---
 id: journey
 title: Future developer journey
-description: Document describes a possible journey of a future Backstage plugin developer
+description: Document describes a possible journey of a future Backstage
+plugin developer
 ---
 
 > This document describes a possible journey of a **_future_** Backstage plugin
