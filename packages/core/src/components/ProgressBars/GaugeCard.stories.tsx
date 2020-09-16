@@ -15,26 +15,26 @@
  */
 
 import React from 'react';
-import { ProgressCard } from './ProgressCard';
+import { GaugeCard } from './GaugeCard';
 import { Grid } from '@material-ui/core';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export default {
   title: 'Progress Card',
-  component: ProgressCard,
+  component: GaugeCard,
 };
 
 export const Default = () => (
   <Grid container spacing={2}>
     <Grid item>
-      <ProgressCard title="Progress" progress={0.3} />
+      <GaugeCard title="Progress" progress={0.3} />
     </Grid>
     <Grid item>
-      <ProgressCard title="Progress" progress={0.57} />
+      <GaugeCard title="Progress" progress={0.57} />
     </Grid>
     <Grid item>
-      <ProgressCard title="Progress" progress={0.89} />
+      <GaugeCard title="Progress" progress={0.89} />
     </Grid>
   </Grid>
 );
@@ -42,21 +42,17 @@ export const Default = () => (
 export const Subhead = () => (
   <Grid container spacing={2}>
     <Grid item>
-      <ProgressCard
-        title="Progress"
-        subheader="With a subheader"
-        progress={0.3}
-      />
+      <GaugeCard title="Progress" subheader="With a subheader" progress={0.3} />
     </Grid>
     <Grid item>
-      <ProgressCard
+      <GaugeCard
         title="Progress"
         subheader="With a subheader"
         progress={0.57}
       />
     </Grid>
     <Grid item>
-      <ProgressCard
+      <GaugeCard
         title="Progress"
         subheader="With a subheader"
         progress={0.89}
@@ -68,13 +64,13 @@ export const Subhead = () => (
 export const LinkInFooter = () => (
   <Grid container spacing={2}>
     <Grid item>
-      <ProgressCard title="Progress" deepLink={linkInfo} progress={0.3} />
+      <GaugeCard title="Progress" deepLink={linkInfo} progress={0.3} />
     </Grid>
     <Grid item>
-      <ProgressCard title="Progress" deepLink={linkInfo} progress={0.57} />
+      <GaugeCard title="Progress" deepLink={linkInfo} progress={0.57} />
     </Grid>
     <Grid item>
-      <ProgressCard title="Progress" deepLink={linkInfo} progress={0.89} />
+      <GaugeCard title="Progress" deepLink={linkInfo} progress={0.89} />
     </Grid>
   </Grid>
 );

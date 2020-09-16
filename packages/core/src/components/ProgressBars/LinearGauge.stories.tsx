@@ -15,29 +15,29 @@
  */
 
 import React from 'react';
-import { HorizontalProgress } from './HorizontalProgress';
+import { LinearGauge } from './LinearGauge';
 
 const containerStyle = { width: 300 };
 
 export default {
-  title: 'HorizontalProgress',
-  component: HorizontalProgress,
+  title: 'LinearGauge',
+  component: LinearGauge,
 };
 
 export const Default = () => (
   <div style={containerStyle}>
-    <HorizontalProgress value={0.8} />
+    <LinearGauge value={0.8} />
   </div>
 );
 
 export const MediumProgress = () => (
   <div style={containerStyle}>
-    <HorizontalProgress value={0.5} />
+    <LinearGauge value={0.5} />
   </div>
 );
 
 export const LowProgress = () => (
   <div style={containerStyle}>
-    <HorizontalProgress value={0.2} />
+    <LinearGauge value={0.2} />
   </div>
 );
