@@ -91,6 +91,15 @@ export async function templatingTask(
           );
         });
       });
+    } else {
+      await Task.forItem('copying', basename(file), async () => {
+        await fs.copyFile(file, destinationFile).catch(error => {
+          const destination = destinationFile;
+          throw new Error(
+            `Failed to copy file to ${destination} : ${error.message}`,
+          );
+        });
+      });
     }
   }
 }
