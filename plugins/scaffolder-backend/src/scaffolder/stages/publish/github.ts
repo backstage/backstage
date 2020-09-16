@@ -55,7 +55,7 @@ export class GithubPublisher implements PublisherBase {
 
     const { data } = await repoCreationPromise;
 
-    if (access.match(new RegExp(`${owner}/.+`))) {
+    if (access && access.match(new RegExp(`${owner}/.+`))) {
       const [, team] = access.split('/');
       await this.client.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
@@ -66,7 +66,7 @@ export class GithubPublisher implements PublisherBase {
       });
     } else {
       // no need to add access if it's the person who own's the personal account
-      if (access !== owner) {
+      if (access && access !== owner) {
         await this.client.repos.addCollaborator({
           owner,
           repo: name,
