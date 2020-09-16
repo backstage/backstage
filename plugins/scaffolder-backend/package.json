@@ -17,8 +17,7 @@
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean",
-    "mock-data": "./scripts/mock-data.sh"
+    "clean": "backstage-cli clean"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.1.1-alpha.21",
@@ -45,7 +44,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.21",
-    "@octokit/types": "^5.0.1",
+    "@octokit/types": "^5.4.1",
     "@types/fs-extra": "^9.0.1",
     "@types/git-url-parse": "^9.0.0",
     "@types/nodegit": "0.26.8",

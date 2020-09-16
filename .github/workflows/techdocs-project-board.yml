@@ -1,0 +1,53 @@
+name: Automatically add new TechDocs Issues and PRs to the GitHub project board
+# Development of TechDocs in Backstage is managed by this Kanban board - https://github.com/spotify/backstage/projects/5
+# New issues with TechDocs in their title or docs-like-code label will be added to the board.
+
+on:
+  issues:
+    types: [opened, reopened, labeled, edited]
+  pull_request:
+    types: [opened, reopened, labeled, edited]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  assign_issue_or_pr_to_project:
+    runs-on: ubuntu-latest
+    name: Triage
+    steps:
+      - name: Assign new issue to Incoming based on its title.
+        uses: srggrs/assign-one-project-github-action@1.2.0
+        if: |
+          contains(github.event.issue.title, 'TechDocs') ||
+          contains(github.event.issue.title, 'techdocs') ||
+          contains(github.event.issue.title, 'Techdocs')
+        with:
+          project: 'https://github.com/spotify/backstage/projects/5'
+          column_name: 'Incoming'
+
+      - name: Assign new issue to Incoming based on its label.
+        uses: srggrs/assign-one-project-github-action@1.2.0
+        if: |
+          contains(github.event.issue.labels.*.name, 'docs-like-code')
+        with:
+          project: 'https://github.com/spotify/backstage/projects/5'
+          column_name: 'Incoming'
+
+      - name: Assign new PR to Incoming based on its title.
+        uses: srggrs/assign-one-project-github-action@1.2.0
+        if: |
+          contains(github.event.pull_request.title, 'TechDocs') ||
+          contains(github.event.pull_request.title, 'techdocs') ||
+          contains(github.event.pull_request.title, 'Techdocs')
+        with:
+          project: 'https://github.com/spotify/backstage/projects/5'
+          column_name: 'Incoming'
+
+      - name: Assign new PR to Incoming based on its label.
+        uses: srggrs/assign-one-project-github-action@1.2.0
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'docs-like-code')
+        with:
+          project: 'https://github.com/spotify/backstage/projects/5'
+          column_name: 'Incoming'

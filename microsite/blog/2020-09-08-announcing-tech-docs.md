@@ -6,6 +6,9 @@ authorURL: https://github.com/garyniemen
 
 Since we [open sourced Backstage](https://backstage.io/blog/2020/03/16/announcing-backstage), one of the most requested features has been for a technical documentation plugin. Well, good news. The first open source version of TechDocs is here. Now let’s start collaborating and making it better, together.
 
+<iframe width="780" height="440" src="https://www.youtube.com/embed/mOLCgdPw1iA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+
 <!--truncate-->
 
 Internally, we call it TechDocs. It’s the most used plugin at Spotify by far — accounting for about 20% of our Backstage traffic (even though it is just one of 130+ plugins). Its popularity is evidence of something simple: We made documentation so easy to create, find, and use — people actually use it.
@@ -13,8 +16,6 @@ Internally, we call it TechDocs. It’s the most used plugin at Spotify by far �
 We are quite sure the main reason for the success of TechDocs is our docs-like-code approach — engineers write their technical documentation in Markdown files that live together with the code. During CI, a documentation site is created using MkDocs, and all sites are rendered centrally in a Backstage plugin. On top of the static documentation, we incorporate additional metadata about the documentation site — such as owner, open GitHub Issues, Slack support channel, and Stack Overflow Enterprise tags.
 
 ![available-templates](assets/announcing-techdocs/docs-in-backstage.png)
-
-Watch this video to see [Spotify’s internal version of TechDocs](https://backstage.io/demos) in action.
 
 But this is just one way to do it. Today we’re most excited for what the open version of TechDocs can become.
 

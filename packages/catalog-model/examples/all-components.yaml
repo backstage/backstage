@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: example-components
+  description: A collection of all Backstage example components
+spec:
+  type: github
+  targets:
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml

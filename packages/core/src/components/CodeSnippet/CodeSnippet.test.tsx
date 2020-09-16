@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 
 import { CodeSnippet } from './CodeSnippet';
@@ -54,5 +54,15 @@ describe('<CodeSnippet />', () => {
     expect(queryByText(/1/)).toBeInTheDocument();
     expect(queryByText(/2/)).toBeInTheDocument();
     expect(queryByText(/3/)).toBeInTheDocument();
+  });
+
+  it('copy code using button', async () => {
+    document.execCommand = jest.fn();
+    const rendered = render(
+      wrapInTestApp(<CodeSnippet {...minProps} showCopyCodeButton />),
+    );
+    const button = rendered.getByTitle('Text copied to clipboard');
+    fireEvent.click(button);
+    expect(document.execCommand).toHaveBeenCalled();
   });
 });

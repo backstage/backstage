@@ -13,7 +13,7 @@
     "rename-version": "docusaurus-rename-version"
   },
   "devDependencies": {
-    "docusaurus": "^2.0.0-alpha.61",
+    "docusaurus": "^2.0.0-alpha.64",
     "js-yaml": "^3.14.0"
   }
 }

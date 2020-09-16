@@ -58,10 +58,7 @@ describe('AuditListTable', () => {
     if (!website)
       throw new Error('https://anchor.fm must be present in fixture');
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute(
-      'href',
-      `/lighthouse/audit/${website.lastAudit.id}`,
-    );
+    expect(link).toHaveAttribute('href', `/audit/${website.lastAudit.id}`);
   });
 
   it('renders the dates that are available for a given row', () => {
