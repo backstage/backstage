@@ -104,10 +104,10 @@ request an access token.
 
 The following diagram visualizes the flow described in the previous section.
 
-![](oauth-popup-flow.svg)
+![Sequence Diagram](../assets/auth/oauth-popup-flow.svg)
 
 <!--
-@startuml oauth-popup-flow
+@startuml /../assets/auth/oauth-popup-flow
 
 skinparam monochrome true
 skinparam shadowing false
