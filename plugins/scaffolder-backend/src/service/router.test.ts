@@ -56,7 +56,6 @@ describe('createRouter', () => {
         owner: 'web@example.com',
         path: '.',
         schema: {
-          type: 'string',
           properties: {
             component_id: {
               description: 'Unique name of the component',
