@@ -91,7 +91,7 @@ export const TemplatePage = () => {
   const [jobId, setJobId] = useState<string | null>(null);
   const handleClose = () => setJobId(null);
   const githubAuthApi = useApi(githubAuthApiRef);
-  const tokenPromise = githubAuthApi.getAccessToken('repo');
+  const tokenPromise = githubAuthApi.getAccessToken('repo, repo_deployment');
 
   const handleCreate = async () => {
     const token = await tokenPromise;
