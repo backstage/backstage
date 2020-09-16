@@ -55,6 +55,25 @@ scaffolder:
     visibility: public # or 'internal' or 'private'
 
 catalog:
+  rules:
+    - allow: [Component, API, Group, Template, Location]
+  processors:
+    github:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
+    githubApi:
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        # Example for how to add your GitHub Enterprise instance:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
   locations:
     # Backstage example components
     - type: github
