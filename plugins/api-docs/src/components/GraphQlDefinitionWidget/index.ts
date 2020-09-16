@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Builds } from '../../pages/BuildsPage/lib/Builds';
-import { Entity } from '@backstage/catalog-model';
-
-export const JenkinsBuildsWidget = ({ entity }: { entity: Entity }) => {
-  const [owner, repo] = (
-    entity?.metadata.annotations?.['backstage.io/jenkins-github-folder'] ?? '/'
-  ).split('/');
-
-  return <Builds owner={owner} repo={repo} />;
-};
+export { GraphQlDefinitionWidget } from './GraphQlDefinitionWidget';

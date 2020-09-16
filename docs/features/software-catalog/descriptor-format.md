@@ -471,6 +471,7 @@ Describes the following entity kind:
 An API describes an interface that can be exposed by a component. The API can be
 defined in different formats, like [OpenAPI](https://swagger.io/specification/),
 [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/),
+[GraphQL](https://graphql.org/learn/schema/),
 [gRPC](https://developers.google.com/protocol-buffers), or other formats.
 
 Descriptor files for this kind may look as follows.

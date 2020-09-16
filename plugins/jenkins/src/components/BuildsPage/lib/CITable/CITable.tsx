@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { Link, Typography, Box, IconButton } from '@material-ui/core';
+import { Box, IconButton, Link, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
-import { Link as RouterLink } from 'react-router-dom';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { Table, TableColumn } from '@backstage/core';
 import { JenkinsRunStatus } from '../Status';
+import { useBuilds } from '../../../useBuilds';
+import { useProjectSlugFromEntity } from '../../../useProjectSlugFromEntity';
+import { buildRouteRef } from '../../../../plugin';
 
 export type CITableBuildInfo = {
   id: string;
   buildName: string;
-  buildUrl?: string;
+  buildNumber: number;
+  buildUrl: string;
   source: {
     branchName: string;
     url: string;
     displayName: string;
+    author?: string;
     commit: {
       hash: string;
     };
@@ -105,7 +110,13 @@ const generatedColumns: TableColumn[] = [
     field: 'buildName',
     highlight: true,
     render: (row: Partial<CITableBuildInfo>) => (
-      <Link component={RouterLink} to={`/jenkins/job?url=${row.id}`}>
+      <Link
+        component={RouterLink}
+        to={generatePath(buildRouteRef.path, {
+          branch: row.source?.branchName!,
+          buildNumber: row.buildNumber?.toString()!,
+        })}
+      >
         {row.buildName}
       </Link>
     ),
@@ -177,7 +188,8 @@ type Props = {
   pageSize: number;
   onChangePageSize: (pageSize: number) => void;
 };
-export const CITable: FC<Props> = ({
+
+export const CITableView: FC<Props> = ({
   projectName,
   loading,
   pageSize,
@@ -191,7 +203,7 @@ export const CITable: FC<Props> = ({
   return (
     <Table
       isLoading={loading}
-      options={{ paging: true, pageSize }}
+      options={{ paging: true, pageSize, padding: 'dense' }}
       totalCount={total}
       page={page}
       actions={[
@@ -202,7 +214,7 @@ export const CITable: FC<Props> = ({
           onClick: () => retry(),
         },
       ]}
-      data={builds}
+      data={builds ?? []}
       onChangePage={onChangePage}
       onChangeRowsPerPage={onChangePageSize}
       title={
@@ -213,6 +225,21 @@ export const CITable: FC<Props> = ({
         </Box>
       }
       columns={generatedColumns}
+    />
+  );
+};
+
+export const CITable = () => {
+  const { owner, repo } = useProjectSlugFromEntity();
+
+  const [tableProps, { setPage, retry, setPageSize }] = useBuilds(owner, repo);
+
+  return (
+    <CITableView
+      {...tableProps}
+      retry={retry}
+      onChangePageSize={setPageSize}
+      onChangePage={setPage}
     />
   );
 };

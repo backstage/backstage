@@ -16,7 +16,7 @@
 import { errorApiRef, useApi } from '@backstage/core';
 import { useCallback } from 'react';
 import { useAsyncRetry } from 'react-use';
-import { jenkinsApiRef } from '../api/index';
+import { jenkinsApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
 
 const INTERVAL_AMOUNT = 1500;
