@@ -36,6 +36,7 @@
     "git-url-parse": "^11.1.2",
     "globby": "^11.0.0",
     "helmet": "^4.0.0",
+    "jsonschema": "^1.2.6",
     "morgan": "^1.10.0",
     "nodegit": "0.26.5",
     "uuid": "^8.2.0",
