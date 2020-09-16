@@ -49,7 +49,7 @@ export class GithubPublisher implements PublisherBase {
     const [owner, name] = values.storePath.split('/');
 
     const user = await this.client.users.getByUsername({ username: owner });
-
+    console.log('########## Github Token fro creating the repo:', token);
     const repoCreationPromise =
       user.data.type === 'Organization'
         ? this.client.repos.createInOrg({
@@ -58,8 +58,6 @@ export class GithubPublisher implements PublisherBase {
             headers: {
               authorization: `Bearer ${token}`,
             },
-            visibility: 'internal',
-            private: false,
           })
         : this.client.repos.createForAuthenticatedUser({ name });
 
