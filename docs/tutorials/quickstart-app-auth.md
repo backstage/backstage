@@ -196,4 +196,4 @@ builder.add(
 
 > You're probably eager to write your first custom plugin. Follow this next
 > tutorial for an in-depth look at a custom GitHub repository browser plugin.
-> [TODO](#).
+> [Adding Custom Plugin to Existing Monorepo App](quickstart-app-plugin.md).
