@@ -18,6 +18,10 @@ import {
   isPluginApplicableToEntity as isGitHubActionsAvailable,
 } from '@backstage/plugin-github-actions';
 import {
+  Router as CloudbuildRouter,
+  isPluginApplicableToEntity as isCloudbuildAvailable,
+} from '@backstage/plugin-cloudbuild';
+import {
   Router as CircleCIRouter,
   isPluginApplicableToEntity as isCircleCIAvailable,
 } from '@backstage/plugin-circleci';
@@ -42,6 +46,8 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <GitHubActionsRouter entity={entity} />;
     case isCircleCIAvailable(entity):
       return <CircleCIRouter entity={entity} />;
+    case isCloudbuildAvailable(entity):
+      return <CloudbuildRouter entity={entity} />;
     default:
       return (
         <WarningPanel title="CI/CD switcher:">
