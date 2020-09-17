@@ -20,6 +20,7 @@ import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import React from 'react';
+import { apiDocsConfigRef } from '../../config';
 import { ApiExplorerPage } from './ApiExplorerPage';
 
 describe('ApiCatalogPage', () => {
@@ -32,6 +33,7 @@ describe('ApiCatalogPage', () => {
           metadata: {
             name: 'Entity1',
           },
+          spec: { type: 'openapi' },
         },
         {
           apiVersion: 'backstage.io/v1alpha1',
@@ -39,10 +41,15 @@ describe('ApiCatalogPage', () => {
           metadata: {
             name: 'Entity2',
           },
+          spec: { type: 'openapi' },
         },
       ] as Entity[]),
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
+  };
+
+  const apiDocsConfig = {
+    getApiDefinitionWidget: () => undefined,
   };
 
   const renderWrapped = (children: React.ReactNode) =>
@@ -52,6 +59,7 @@ describe('ApiCatalogPage', () => {
           apis={ApiRegistry.from([
             [catalogApiRef, catalogApi],
             [storageApiRef, MockStorageApi.create()],
+            [apiDocsConfigRef, apiDocsConfig],
           ])}
         >
           {children}
