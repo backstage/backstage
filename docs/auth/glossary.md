@@ -1,6 +1,7 @@
 ---
 id: glossary
 title: Glossary
+description: All Glossaries related to auth
 ---
 
 - **Popup** - A separate browser window opened on top of the previous one.
