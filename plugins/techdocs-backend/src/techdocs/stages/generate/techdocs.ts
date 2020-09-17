@@ -18,6 +18,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import { Logger } from 'winston';
+import { PassThrough } from 'stream';
 
 import {
   GeneratorBase,
@@ -26,18 +27,40 @@ import {
 } from './types';
 import { runDockerContainer, runCommand } from './helpers';
 
-const commandExists = require('command-exists-promise');
+type TechdocsGeneratorOptions = {
+  // This option enables users to configure if they want to use TechDocs container
+  // or generate without the container.
+  // This is used to avoid running into Docker in Docker environment.
+  useTechdocsContainer: boolean;
+};
+
+const createStream = (): [string[], PassThrough] => {
+  const log = [] as Array<string>;
+
+  const stream = new PassThrough();
+  stream.on('data', chunk => {
+    const textValue = chunk.toString().trim();
+    if (textValue?.length > 1) log.push(textValue);
+  });
+
+  return [log, stream];
+};
 
 export class TechdocsGenerator implements GeneratorBase {
   private readonly logger: Logger;
+  private readonly options: TechdocsGeneratorOptions;
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, options?: TechdocsGeneratorOptions) {
+    const defaultOptions = {
+      useTechdocsContainer: true,
+    };
+
     this.logger = logger;
+    this.options = { ...defaultOptions, ...options };
   }
 
   public async run({
     directory,
-    logStream,
     dockerClient,
   }: GeneratorRunOptions): Promise<GeneratorRunResult> {
     const tmpdirPath = os.tmpdir();
@@ -46,10 +69,10 @@ export class TechdocsGenerator implements GeneratorBase {
     const resultDir = fs.mkdtempSync(
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
+    const [log, logStream] = createStream();
 
     try {
-      const mkdocsInstalled = await commandExists('mkdocs');
-      if (mkdocsInstalled) {
+      if (this.options.useTechdocsContainer === false) {
         await runCommand({
           command: 'mkdocs',
           args: ['build', '-d', resultDir, '-v'],
@@ -75,6 +98,7 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(
         `[TechDocs]: Failed to generate docs from ${directory} into ${resultDir}`,
       );
+      this.logger.debug(`[TechDocs]: Build failed with error: ${log}`);
       throw new Error(
         `Failed to generate docs from ${directory} into ${resultDir} with error ${error.message}`,
       );

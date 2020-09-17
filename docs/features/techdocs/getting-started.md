@@ -71,6 +71,30 @@ building and publishing of your documentation, you want to change the
 `requestUrl` to point to your storage. In this case `storageUrl` is not
 required.
 
+### Disable Docker in Docker situation (Optional)
+
+The TechDocs backend plugin runs a docker container with mkdocs to generate the
+frontend of the docs from source files (Markdown). If you are deploying
+Backstage using Docker, this will mean that your Backstage Docker container will
+try to run another Docker container for TechDocs backend.
+
+To avoid this problem, we have a configuration available. If you go to
+`packages/backend/src/plugins/techdocs.ts`, you can find the line where we
+create a new TechDocs Generator. (Also see [Concepts](concepts.md)).
+
+```
+const techdocsGenerator = new TechdocsGenerator(logger);
+```
+
+You can pass an options object as a second argument here.
+
+```
+const techdocsGenerator = new TechdocsGenerator(logger, { useTechdocsContainer: false });
+```
+
+Setting `useTechdocsContainer` to `false` means that TechDocs backend will not
+run another Docker container, and will use locally available `mkdocs` instead.
+
 ## Run Backstage locally
 
 Change folder to `<backstage-project-root>/packages/backend` and run the
