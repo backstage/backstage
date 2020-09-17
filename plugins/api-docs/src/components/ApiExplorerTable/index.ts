@@ -14,24 +14,4 @@
  * limitations under the License.
  */
 
-import { Header, Page, pageTheme } from '@backstage/core';
-import React from 'react';
-
-type Props = {
-  children?: React.ReactNode;
-};
-
-const ApiCatalogLayout = ({ children }: Props) => {
-  return (
-    <Page theme={pageTheme.home}>
-      <Header
-        title="APIs"
-        subtitle="Backstage API Catalog"
-        pageTitleOverride="Home"
-      />
-      {children}
-    </Page>
-  );
-};
-
-export default ApiCatalogLayout;
+export { ApiExplorerTable } from './ApiExplorerTable';

@@ -14,31 +14,42 @@
  * limitations under the License.
  */
 
-import { Content, useApi } from '@backstage/core';
+import { Content, ContentHeader, SupportButton, useApi } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
+import { Button } from '@material-ui/core';
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { ApiCatalogTable } from '../ApiCatalogTable';
-import ApiCatalogLayout from './ApiCatalogLayout';
+import { ApiExplorerTable } from '../ApiExplorerTable';
+import { ApiExplorerLayout } from './ApiExplorerLayout';
 
-const CatalogPageContents = () => {
+export const ApiExplorerPage = () => {
   const catalogApi = useApi(catalogApiRef);
   const { loading, error, value: matchingEntities } = useAsync(() => {
     return catalogApi.getEntities({ kind: 'API' });
   }, [catalogApi]);
 
   return (
-    <ApiCatalogLayout>
+    <ApiExplorerLayout>
       <Content>
-        <ApiCatalogTable
+        <ContentHeader title="">
+          <Button
+            variant="contained"
+            color="primary"
+            component={RouterLink}
+            to="/register-component"
+          >
+            Register Existing API
+          </Button>
+          <SupportButton>All your APIs</SupportButton>
+        </ContentHeader>
+        <ApiExplorerTable
           titlePreamble="APIs"
           entities={matchingEntities!}
           loading={loading}
           error={error}
         />
       </Content>
-    </ApiCatalogLayout>
+    </ApiExplorerLayout>
   );
 };
-
-export const ApiCatalogPage = () => <CatalogPageContents />;
