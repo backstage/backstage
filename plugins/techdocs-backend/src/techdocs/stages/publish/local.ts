@@ -49,7 +49,7 @@ export class LocalPublish implements PublisherBase {
 
     if (!fs.existsSync(publishDir)) {
       this.logger.info(
-        `[TechDocs]: Could not find ${publishDir}, creates the directory.`,
+        `[TechDocs]: Could not find ${publishDir}, this creates the directory.`,
       );
       fs.mkdirSync(publishDir, { recursive: true });
     }
