@@ -49,7 +49,6 @@ export class GithubPublisher implements PublisherBase {
     const [owner, name] = values.storePath.split('/');
 
     const user = await this.client.users.getByUsername({ username: owner });
-    console.log('########## Github Token fro creating the repo:', token);
     const repoCreationPromise =
       user.data.type === 'Organization'
         ? this.client.repos.createInOrg({
@@ -57,7 +56,9 @@ export class GithubPublisher implements PublisherBase {
             org: owner,
             headers: {
               authorization: `Bearer ${token}`,
+              Accept: `application/vnd.github.nebula-preview+json`,
             },
+            visibility: 'internal',
           })
         : this.client.repos.createForAuthenticatedUser({ name });
 
