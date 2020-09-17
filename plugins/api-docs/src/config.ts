@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-export type { ApiDefinitionWidget } from './ApiDefinitionCard';
-export {
-  ApiDefinitionCard,
-  defaultDefinitionWidgets,
-} from './ApiDefinitionCard';
-export { AsyncApiDefinitionWidget } from './AsyncApiDefinitionWidget';
-export { OpenApiDefinitionWidget } from './OpenApiDefinitionWidget';
-export { PlainApiDefinitionWidget } from './PlainApiDefinitionWidget';
-export { useComponentApiNames } from './useComponentApiNames';
-export { useComponentApiEntities } from './useComponentApiEntities';
+import { ApiEntity } from '@backstage/catalog-model';
+import { createApiRef } from '@backstage/core';
+import { ApiDefinitionWidget } from './components';
+
+export const apiDocsConfigRef = createApiRef<ApiDocsConfig>({
+  id: 'plugin.api-docs.config',
+  description: 'Used to configure api-docs widgets',
+});
+
+export interface ApiDocsConfig {
+  getApiDefinitionWidget: (
+    apiEntity: ApiEntity,
+  ) => ApiDefinitionWidget | undefined;
+}
