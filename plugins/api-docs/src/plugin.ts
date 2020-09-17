@@ -15,14 +15,14 @@
  */
 
 import { createPlugin } from '@backstage/core';
-import { ApiCatalogPage } from './components/ApiCatalogPage/ApiCatalogPage';
+import { ApiExplorerPage } from './components/ApiExplorerPage/ApiExplorerPage';
 import { ApiEntityPage } from './components/ApiEntityPage/ApiEntityPage';
 import { entityRoute, rootRoute } from './routes';
 
 export const plugin = createPlugin({
   id: 'api-docs',
   register({ router }) {
-    router.addRoute(rootRoute, ApiCatalogPage);
+    router.addRoute(rootRoute, ApiExplorerPage);
     router.addRoute(entityRoute, ApiEntityPage);
   },
 });

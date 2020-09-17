@@ -34,7 +34,7 @@ You get to take full advantage of a platform that we at Spotify have been using 
 Just run the backstage-cli:
 
 ```bash
-npx @backstage/cli create-app
+npx @backstage/create-app
 ```
 
 Name your app, and we will create everything you need:
@@ -50,7 +50,7 @@ yarn start
 
 And you are good to go! 👍
 
-Read the full documentation on how to [create an app](/docs/getting-started/create-an-app.md) on GitHub.
+Read the full documentation on how to [create an app](/docs/getting-started/create-an-app) on GitHub.
 
 ## What do I get? (Let's get technical...)
 

@@ -20,6 +20,7 @@ import { cleanup, render } from '@testing-library/react';
 import React, { ComponentProps } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { RegisterComponentResultDialog } from './RegisterComponentResultDialog';
+import { createRouteRef } from '@backstage/core';
 
 const setup = (
   props?: Partial<ComponentProps<typeof RegisterComponentResultDialog>>,
@@ -30,6 +31,10 @@ const setup = (
         <RegisterComponentResultDialog
           onClose={() => {}}
           entities={[]}
+          catalogRouteRef={createRouteRef({
+            path: '/catalog',
+            title: 'Service Catalog',
+          })}
           {...props}
         />
       </ThemeProvider>

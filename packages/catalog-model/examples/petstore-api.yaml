@@ -3,8 +3,13 @@ kind: API
 metadata:
   name: petstore
   description: The petstore API
+  tags:
+    - store
+    - rest
 spec:
   type: openapi
+  lifecycle: experimental
+  owner: pets@example.com
   definition: |
     openapi: "3.0.0"
     info:

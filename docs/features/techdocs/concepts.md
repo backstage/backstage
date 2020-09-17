@@ -1,6 +1,8 @@
 ---
 id: concepts
 title: Concepts
+description: Documentation on concepts that are introduced with
+Spotify's docs-like-code solution in Backstage
 ---
 
 This page describes concepts that are introduced with Spotify's docs-like-code
@@ -8,9 +10,9 @@ solution in Backstage.
 
 ### TechDocs Core Plugin
 
-The TechDocs Core Plugin is a MkDocs plugin created as a wrapper around multiple
-MkDocs plugins and Python Markdown extensions to standardize the configuration
-of MkDocs used for TechDocs.
+The TechDocs Core Plugin is an [MkDocs](https://www.mkdocs.org/) plugin created
+as a wrapper around multiple MkDocs plugins and Python Markdown extensions to
+standardize the configuration of MkDocs used for TechDocs.
 
 [TechDocs Core](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/techdocs-core/README.md)
 
@@ -42,7 +44,7 @@ sites with the Backstage UI.
 
 The TechDocs Reader purpose is also to open up the opportunity to integrate
 TechDocs widgets for a customized full-featured TechDocs experience.
-([coming soon V.2](https://github.com/spotify/backstage/milestone/17))
+([coming soon V.3](./README.md#project-roadmap))
 
 [TechDocs Reader](https://github.com/spotify/backstage/blob/master/plugins/techdocs/src/reader/README.md)
 
@@ -53,4 +55,4 @@ Reader. The reason why transformers were introduced was to provide a way to
 transform the HTML content on pre and post render (e.g. rewrite docs links or
 modify css).
 
-[Transformers API docs](https://github.com/spotify/backstage/blob/master/plugins/techdocs/src/reader/transformers/README.md)
+[Transformers API docs](https://github.com/spotify/backstage/blob/master/plugins/techdocs/src/reader/README.md)

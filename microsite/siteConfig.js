@@ -17,17 +17,12 @@ const siteConfig = {
   url: 'https://backstage.io', // Your website URL
   cname: 'backstage.io',
   baseUrl: '/', // Base URL for your project */
-  // For github.io type URLs, you would set the url and baseUrl like:
-  //   url: 'https://facebook.github.io',
-  //   baseUrl: '/test-site/',
+  editUrl: 'https://github.com/spotify/backstage/edit/master/docs/',
 
   // Used for publishing and more
   projectName: 'backstage',
   organizationName: 'Spotify',
   fossWebsite: 'https://spotify.github.io/',
-  // For top-level user or org sites, the organization is still the same.
-  // e.g., for the https://JoelMarcey.github.io site, it would be set like...
-  //   organizationName: 'JoelMarcey'
 
   // Google Analytics
   gaTrackingId: 'UA-48912878-10',
@@ -35,12 +30,17 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     {
-      href: 'https://github.com/spotify/backstage#backstage',
+      href: 'https://github.com/spotify/backstage',
       label: 'GitHub',
     },
     {
       doc: 'overview/what-is-backstage',
+      href: '/docs',
       label: 'Docs',
+    },
+    {
+      page: 'plugins',
+      label: 'Plugins',
     },
     {
       page: 'blog',
@@ -50,10 +50,6 @@ const siteConfig = {
     {
       page: 'demos',
       label: 'Demos',
-    },
-    {
-      page: 'background',
-      label: 'The Spotify story',
     },
     {
       href: 'https://mailchi.mp/spotify/backstage-community',
@@ -71,8 +67,9 @@ const siteConfig = {
     primaryColor: '#36BAA2',
     secondaryColor: '#121212',
     textColor: '#FFFFFF',
-    navigatorTitleTextColor: '#9e9e9e',
-    navigatorItemTextColor: '#616161',
+    navigatorTitleTextColor: '#e4e4e4',
+    navigatorItemTextColor: '#9e9e9e',
+    navGroupSubcategoryTitleColor: '#9e9e9e',
   },
 
   /* Colors for syntax highlighting */
@@ -97,8 +94,10 @@ const siteConfig = {
   cleanUrl: true,
 
   // Open Graph and Twitter card images.
-  ogImage: 'img/logo-gradient-on-dark.svg',
-  twitterImage: 'img/logo-gradient-on-dark.svg',
+  ogImage:
+    'logo_assets/png/Backstage_Identity_Assets_Artwork_RGB_04_Icon_Teal.png',
+  twitterImage:
+    'logo_assets/png/Backstage_Identity_Assets_Artwork_RGB_04_Icon_Teal.png',
 
   // For sites with a sizable amount of content, set collapsible to true.
   // Expand/collapse the links and subcategories under categories.
@@ -118,6 +117,12 @@ const siteConfig = {
   stylesheets: [
     'https://fonts.googleapis.com/css?family=IBM+Plex+Mono:500,700&display=swap',
   ],
+
+  algolia: {
+    apiKey: '8d115c9875ba0f4feaee95bab55a1645',
+    indexName: 'backstage',
+    searchParameters: {}, // Optional (if provided by Algolia)
+  },
 };
 
 module.exports = siteConfig;

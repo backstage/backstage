@@ -15,17 +15,34 @@
  */
 
 import { GitlabApiReaderProcessor } from './GitlabApiReaderProcessor';
+import { ConfigReader } from '@backstage/config';
 
 describe('GitlabApiReaderProcessor', () => {
+  const createConfig = (token: string | undefined) =>
+    ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          catalog: {
+            processors: {
+              gitlabApi: {
+                privateToken: token,
+              },
+            },
+          },
+        },
+      },
+    ]);
+
   it('should build raw api', () => {
-    const processor = new GitlabApiReaderProcessor();
+    const processor = new GitlabApiReaderProcessor(createConfig(undefined));
 
     const tests = [
       {
         target:
           'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
         url: new URL(
-          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml?ref=branch',
+          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         ),
         err: undefined,
       },
@@ -33,7 +50,7 @@ describe('GitlabApiReaderProcessor', () => {
         target:
           'https://gitlab.example.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
         url: new URL(
-          'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml?ref=branch',
+          'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         ),
         err: undefined,
       },
@@ -41,7 +58,7 @@ describe('GitlabApiReaderProcessor', () => {
         target:
           'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/to/file.yaml', // Repo not in subgroup
         url: new URL(
-          'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml?ref=branch',
+          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         ),
         err: undefined,
       },
@@ -50,7 +67,7 @@ describe('GitlabApiReaderProcessor', () => {
           'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/',
         url: null,
         err:
-          'Incorrect url: https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/, Error: Gitlab url does not end in .ya?ml',
+          'Incorrect url: https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/, Error: GitLab url does not end in .ya?ml',
       },
     ];
 
@@ -59,8 +76,14 @@ describe('GitlabApiReaderProcessor', () => {
         expect(() => processor.buildRawUrl(test.target, 12345)).toThrowError(
           test.err,
         );
+      } else if (test.url) {
+        expect(processor.buildRawUrl(test.target, 12345).toString()).toEqual(
+          test.url.toString(),
+        );
       } else {
-        expect(processor.buildRawUrl(test.target, 12345)).toEqual(test.url);
+        throw new Error(
+          'This should not have happened. Either err or url should have matched.',
+        );
       }
     }
   });
@@ -77,6 +100,16 @@ describe('GitlabApiReaderProcessor', () => {
       },
       {
         token: '',
+        err:
+          "Invalid type in config for key 'catalog.processors.gitlabApi.privateToken' in '', got empty-string, wanted string",
+        expect: {
+          headers: {
+            'PRIVATE-TOKEN': '',
+          },
+        },
+      },
+      {
+        token: undefined,
         expect: {
           headers: {
             'PRIVATE-TOKEN': '',
@@ -86,9 +119,16 @@ describe('GitlabApiReaderProcessor', () => {
     ];
 
     for (const test of tests) {
-      process.env.GITLAB_PRIVATE_TOKEN = test.token;
-      const processor = new GitlabApiReaderProcessor();
-      expect(processor.getRequestOptions()).toEqual(test.expect);
+      if (test.err) {
+        expect(
+          () => new GitlabApiReaderProcessor(createConfig(test.token)),
+        ).toThrowError(test.err);
+      } else {
+        const processor = new GitlabApiReaderProcessor(
+          createConfig(test.token),
+        );
+        expect(processor.getRequestOptions()).toEqual(test.expect);
+      }
     }
   });
 });

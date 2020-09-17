@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
 import {
   InfoCard,
@@ -26,6 +26,7 @@ import {
   Header,
   SupportButton,
   ContentHeader,
+  RouteRef,
 } from '@backstage/core';
 import RegisterComponentForm from '../RegisterComponentForm';
 import { catalogApiRef } from '@backstage/plugin-catalog';
@@ -54,7 +55,11 @@ const FormStates = {
 } as const;
 
 type ValuesOf<T> = T extends Record<any, infer V> ? V : never;
-const RegisterComponentPage: FC<{}> = () => {
+export const RegisterComponentPage = ({
+  catalogRouteRef,
+}: {
+  catalogRouteRef: RouteRef;
+}) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const [formState, setFormState] = useState<ValuesOf<typeof FormStates>>(
@@ -79,7 +84,16 @@ const RegisterComponentPage: FC<{}> = () => {
     setFormState(FormStates.Submitting);
     const { componentLocation: target } = formData;
     try {
-      const data = await catalogApi.addLocation('github', target);
+      const typeMapping = [
+        { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
+        { url: /https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
+        { url: /https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
+        { url: /.*/, type: 'github' },
+      ];
+
+      const type = typeMapping.filter(item => item.url.test(target))[0].type;
+
+      const data = await catalogApi.addLocation(type, target);
 
       if (!isMounted()) return;
 
@@ -121,10 +135,9 @@ const RegisterComponentPage: FC<{}> = () => {
           entities={result.data!.entities}
           onClose={() => setFormState(FormStates.Idle)}
           classes={{ paper: classes.dialogPaper }}
+          catalogRouteRef={catalogRouteRef}
         />
       )}
     </Page>
   );
 };
-
-export default RegisterComponentPage;

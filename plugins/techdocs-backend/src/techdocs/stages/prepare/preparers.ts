@@ -16,7 +16,7 @@
 
 import { PreparerBase, RemoteProtocol, PreparerBuilder } from './types';
 import { Entity } from '@backstage/catalog-model';
-import { parseReferenceAnnotation } from './helpers';
+import { parseReferenceAnnotation } from '../../../helpers';
 
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();
@@ -26,11 +26,14 @@ export class Preparers implements PreparerBuilder {
   }
 
   get(entity: Entity): PreparerBase {
-    const { protocol } = parseReferenceAnnotation('backstage.io/techdocs-ref', entity);
-    const preparer = this.preparerMap.get(protocol);
+    const { type } = parseReferenceAnnotation(
+      'backstage.io/techdocs-ref',
+      entity,
+    );
+    const preparer = this.preparerMap.get(type);
 
     if (!preparer) {
-      throw new Error(`No preparer registered for type: "${protocol}"`);
+      throw new Error(`No preparer registered for type: "${type}"`);
     }
 
     return preparer;

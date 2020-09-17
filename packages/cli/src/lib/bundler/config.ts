@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
@@ -25,6 +27,9 @@ import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { BundlingOptions, BackendBundlingOptions } from './types';
+import { version } from '../../lib/version';
+import { paths as cliPaths } from '../../lib/paths';
+import { runPlain } from '../run';
 
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
@@ -35,10 +40,40 @@ export function resolveBaseUrl(config: Config): URL {
   }
 }
 
-export function createConfig(
+async function readBuildInfo() {
+  const timestamp = Date.now();
+
+  let commit = 'unknown';
+  try {
+    commit = await runPlain('git', 'rev-parse', 'HEAD');
+  } catch (error) {
+    console.warn(`WARNING: Failed to read git commit, ${error}`);
+  }
+
+  let gitVersion = 'unknown';
+  try {
+    gitVersion = await runPlain('git', 'describe', '--always');
+  } catch (error) {
+    console.warn(`WARNING: Failed to describe git version, ${error}`);
+  }
+
+  const { version: packageVersion } = await fs.readJson(
+    cliPaths.resolveTarget('package.json'),
+  );
+
+  return {
+    cliVersion: version,
+    gitVersion,
+    packageVersion,
+    timestamp,
+    commit,
+  };
+}
+
+export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
-): webpack.Configuration {
+): Promise<webpack.Configuration> {
   const { checksEnabled, isDev } = options;
 
   const { plugins, loaders } = transforms(options);
@@ -78,6 +113,13 @@ export function createConfig(
           baseUrl: validBaseUrl.href,
         },
       },
+    }),
+  );
+
+  const buildInfo = await readBuildInfo();
+  plugins.push(
+    new webpack.DefinePlugin({
+      'process.env.BUILD_INFO': JSON.stringify(buildInfo),
     }),
   );
 
@@ -130,13 +172,22 @@ export function createConfig(
   };
 }
 
-export function createBackendConfig(
+export async function createBackendConfig(
   paths: BundlingPaths,
   options: BackendBundlingOptions,
-): webpack.Configuration {
+): Promise<webpack.Configuration> {
   const { checksEnabled, isDev } = options;
 
   const { loaders } = transforms(options);
+
+  // Find all local monorepo packages and their node_modules, and mark them as external.
+  const LernaProject = require('@lerna/project');
+  const project = new LernaProject(cliPaths.targetDir);
+  const packages = await project.getPackages();
+  const localPackageNames = packages.map((p: any) => p.name);
+  const moduleDirs = packages.map((p: any) =>
+    resolvePath(p.location, 'node_modules'),
+  );
 
   return {
     mode: isDev ? 'development' : 'production',
@@ -152,11 +203,8 @@ export function createBackendConfig(
     externals: [
       nodeExternals({
         modulesDir: paths.rootNodeModules,
-        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
-      }),
-      nodeExternals({
-        modulesDir: paths.targetNodeModules,
-        whitelist: ['webpack/hot/poll?100', /\@backstage\/.*/],
+        additionalModuleDirs: moduleDirs,
+        allowlist: ['webpack/hot/poll?100', ...localPackageNames],
       }),
     ],
     target: 'node' as const,
@@ -178,7 +226,7 @@ export function createBackendConfig(
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['browser', 'module', 'main'],
-      modules: [paths.targetNodeModules, paths.rootNodeModules],
+      modules: [paths.rootNodeModules, ...moduleDirs],
       plugins: [
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
@@ -198,9 +246,17 @@ export function createBackendConfig(
       chunkFilename: isDev
         ? '[name].chunk.js'
         : '[name].[chunkhash:8].chunk.js',
+      ...(isDev
+        ? {
+            devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
+          }
+        : {}),
     },
     plugins: [
-      new StartServerPlugin('main.js'),
+      new StartServerPlugin({
+        name: 'main.js',
+        nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
+      }),
       new webpack.HotModuleReplacementPlugin(),
       ...(checksEnabled
         ? [

@@ -15,37 +15,30 @@
  */
 
 import { loadConfig } from './loader';
-
-jest.mock('fs-extra', () => {
-  const mockFiles: { [path in string]: string } = {
-    '/root/app-config.yaml': `
-      app:
-        title: Example App
-        sessionKey:
-          $secret:
-            file: secrets/session-key.txt
-    `,
-    '/root/app-config.development.yaml': `
-      app:
-        sessionKey: development-key
-    `,
-    '/root/secrets/session-key.txt': 'abc123',
-  };
-
-  return {
-    async readFile(path: string) {
-      if (path in mockFiles) {
-        return mockFiles[path];
-      }
-      throw new Error(`File not found, ${path}`);
-    },
-    async pathExists(path: string) {
-      return path in mockFiles;
-    },
-  };
-});
+import mockFs from 'mock-fs';
 
 describe('loadConfig', () => {
+  beforeAll(() => {
+    mockFs({
+      '/root/app-config.yaml': `
+        app:
+          title: Example App
+          sessionKey:
+            $secret:
+              file: secrets/session-key.txt
+      `,
+      '/root/app-config.development.yaml': `
+        app:
+          sessionKey: development-key
+      `,
+      '/root/secrets/session-key.txt': 'abc123',
+    });
+  });
+
+  afterAll(() => {
+    mockFs.restore();
+  });
+
   it('loads config without secrets', async () => {
     await expect(
       loadConfig({

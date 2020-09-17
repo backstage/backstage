@@ -1,12 +1,15 @@
 ---
 id: software-templates-index
-title: Software Templates
+title: Backstage Software Templates
+sidebar_label: Overview
+description: The Software Templates part of Backstage is a tool that can help
+you create Components inside Backstage
 ---
 
 The Software Templates part of Backstage is a tool that can help you create
-Components inside Backstage. It by default has the ability to load skeletons of
-code, template in some variables and then publish the template to some location
-like GitHub.
+Components inside Backstage. By default, it has the ability to load skeletons of
+code, template in some variables, and then publish the template to some
+locations like GitHub or GitLab.
 
 <video width="100%" height="100%" controls>
   <source src="https://backstage.io/blog/assets/2020-08-05/feature.mp4" type="video/mp4">
@@ -14,12 +17,15 @@ like GitHub.
 
 ### Getting Started
 
-The Software Templates are available under `/create`. If you've followed
-[Installing in your Backstage App](./installation.md) in your separate App or
-[Getting Started with Backstage](../../getting-started) for this repo, you
-should be able to reach `http://localhost:3000/create`.
+> Be sure to have covered [Installing in your Backstage App](./installation.md)
+> for your separate App or
+> [Getting Started with Backstage](../../getting-started) for this repo before
+> proceeding.
 
-You should get something that looks similar to this:
+The Software Templates are available under `/create`. For local development you
+should be able to reach them at `http://localhost:3000/create`.
+
+Once there, you should see something that looks similar to this:
 
 ![Create Image](../../assets/software-templates/create.png)
 
@@ -33,9 +39,11 @@ internally.
 ![Enter some variables](../../assets/software-templates/template-picked.png)
 
 After filling in these variables, you'll get some more fields to fill out which
-are required for backstage usage. The owner, which is a `user` in the backstage
-system, and the `storePath` which right now must be a Github Organisation and a
-non-existing github repository name in the format `organisation/reponame`.
+are required for backstage usage: the owner, (which is a `user` in the backstage
+system), the `storePath` (which right now must be a GitHub Organisation or
+GitHub user), a non-existing github repository name in the format
+`organisation/reponame`, and a GitHub team or user account which should be
+granted admin access to the repository.
 
 ![Enter backstage vars](../../assets/software-templates/template-picked-2.png)
 
@@ -51,13 +59,13 @@ It shouldn't take too long, and you'll have a success screen!
 ![Templating Complete](../../assets/software-templates/complete.png)
 
 If it fails, you'll be able to click on each section to get the log from the
-step that failed which can be helpful to debug.
+step that failed which can be helpful in debugging.
 
 ![Templating failed](../../assets/software-templates/failed.png)
 
 ### View Component in Catalog
 
-When it's been created you'll see the `View in Catalog` button, which will take
+When it's been created, you'll see the `View in Catalog` button, which will take
 you to the registered component in the catalog:
 
 ![Catalog](../../assets/software-templates/go-to-catalog.png)

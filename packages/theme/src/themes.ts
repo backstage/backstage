@@ -15,7 +15,7 @@
  */
 
 import { createTheme } from './baseTheme';
-import { blue, yellow } from '@material-ui/core/colors';
+import { yellow } from '@material-ui/core/colors';
 
 export const lightTheme = createTheme({
   palette: {
@@ -39,7 +39,7 @@ export const lightTheme = createTheme({
       },
     },
     primary: {
-      main: blue[500],
+      main: '#2E77D0',
     },
     banner: {
       info: '#2E77D0',
@@ -95,7 +95,7 @@ export const darkTheme = createTheme({
       },
     },
     primary: {
-      main: blue[500],
+      main: '#2E77D0',
     },
     banner: {
       info: '#2E77D0',

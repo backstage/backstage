@@ -29,6 +29,7 @@ const DEFAULT_RESERVED_ENTITY_FIELDS: string[] = [
   'metadata.description',
   'metadata.labels',
   'metadata.annotations',
+  'metadata.tags',
   // The below items are known to appear in core kinds, and therefore should
   // not be appearing in metadata (which would indicate that the user made a
   // mistake in where to place them).

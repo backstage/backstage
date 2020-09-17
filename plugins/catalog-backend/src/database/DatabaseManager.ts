@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, resolvePackagePath } from '@backstage/backend-common';
 import { makeValidator } from '@backstage/catalog-model';
 import Knex from 'knex';
-import path from 'path';
 import { Logger } from 'winston';
 import { CommonDatabase } from './CommonDatabase';
 import { Database } from './types';
 
-const migrationsDir = path.resolve(
-  require.resolve('@backstage/plugin-catalog-backend/package.json'),
-  '../migrations',
+const migrationsDir = resolvePackagePath(
+  '@backstage/plugin-catalog-backend',
+  'migrations',
 );
 
 export type CreateDatabaseOptions = {

@@ -1,6 +1,7 @@
 ---
 id: createPlugin-feature-flags
 title: createPlugin - feature flags
+description: Documentation on createPlugin - feature flags
 ---
 
 The `featureFlags` object passed to the `register` function makes it possible

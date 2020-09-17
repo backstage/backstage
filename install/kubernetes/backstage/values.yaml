@@ -1,12 +1,12 @@
 app:
   enabled: true
-  nameOverride: ""
-  fullnameOverride: ""
+  nameOverride: ''
+  fullnameOverride: ''
   replicaCount: 1
   serviceAccount:
     create: false
-    Name: ""
-  image: 
+    Name: ''
+  image:
     repository: spotify/backstage
     tag: latest
     pullPolicy: Always
@@ -15,20 +15,23 @@ app:
     port: 80
   ingress:
     enabled: false
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: "nginx"
     hosts:
-    - host: backstage.local
-      paths:
-      - /
+      - host: backstage.local
+        paths:
+          - /
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
   imagePullSecrets: []
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
-  securityContext: {}
+  securityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -48,12 +51,12 @@ app:
 
 backend:
   enabled: false
-  nameOverride: ""
-  fullnameOverride: ""
+  nameOverride: ''
+  fullnameOverride: ''
   replicaCount: 1
   serviceAccount:
     create: false
-    Name: ""
+    Name: ''
   image:
     repository: spotify/backstage-backend
     tag: latest
@@ -63,20 +66,23 @@ backend:
     port: 7000
   ingress:
     enabled: false
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: "nginx"
     hosts:
-    - host: backstage.local
-      paths:
-      - /backend
+      - host: backstage.local
+        paths:
+          - /backend
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
   imagePullSecrets: []
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
-  securityContext: {}
+  securityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL

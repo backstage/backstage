@@ -23,8 +23,8 @@ const useStyles = makeStyles(theme => ({
   header: {
     color: theme.palette.common.white,
     padding: theme.spacing(2, 2, 6),
-    backgroundImage: (props: { gradientStart: string; gradientStop: string }) =>
-      `linear-gradient(-137deg, ${props.gradientStart} 0%, ${props.gradientStop} 100%)`,
+    backgroundImage: (props: { backgroundImage: string }) =>
+      props.backgroundImage,
   },
   content: {
     padding: theme.spacing(2),
@@ -56,8 +56,7 @@ export const TemplateCard = ({
   name,
 }: TemplateCardProps) => {
   const theme = pageTheme[type] ?? pageTheme.other;
-  const [gradientStart, gradientStop] = theme.gradient.colors;
-  const classes = useStyles({ gradientStart, gradientStop });
+  const classes = useStyles({ backgroundImage: theme.backgroundImage });
   const href = generatePath(templateRoute.path, { templateName: name });
 
   return (

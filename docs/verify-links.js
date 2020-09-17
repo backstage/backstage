@@ -53,6 +53,11 @@ async function verifyUrl(basePath, url) {
       return { url, basePath, problem: 'not-relative' };
     }
 
+    const staticPath = resolvePath(projectRoot, 'microsite/static', `.${url}`);
+    if (await fs.pathExists(staticPath)) {
+      return;
+    }
+
     path = resolvePath(projectRoot, `.${url}`);
   } else {
     path = resolvePath(dirname(resolvePath(projectRoot, basePath)), url);
@@ -103,7 +108,9 @@ async function main() {
     console.log(`Found ${badUrls.length} bad links within repo`);
     for (const { url, basePath, problem } of badUrls) {
       if (problem === 'missing') {
-        console.error(`Unable to reach ${url}, linked from ${basePath}`);
+        console.error(
+          `Unable to reach ${url} from root or microsite/static/, linked from ${basePath}`,
+        );
       } else if (problem === 'not-relative') {
         console.error('Links to /docs/ must be relative');
         console.error(`  From: ${basePath}`);

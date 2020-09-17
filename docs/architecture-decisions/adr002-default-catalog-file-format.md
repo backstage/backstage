@@ -2,6 +2,7 @@
 id: adrs-adr002
 title: ADR002: Default Software Catalog File Format
 sidebar_label: ADR002
+description: Architecture Decision Record (ADR) log on Default Software Catalog File Format
 ---
 
 | Created    | Status |
@@ -68,7 +69,7 @@ metadata:
     lifecycle: production
     example.com/service-discovery-name: frobsawesome
   annotations:
-    circleci.com/project-slug: gh/example-org/frobs-awesome
+    circleci.com/project-slug: github/example-org/frobs-awesome
 spec:
   type: service
 ```

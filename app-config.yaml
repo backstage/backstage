@@ -1,38 +1,40 @@
 app:
   title: Backstage Example App
-  baseUrl: http://localhost:3000
+  baseUrl: http://localhost:7000
 
 backend:
   baseUrl: http://localhost:7000
   listen:
-    host: 0.0.0.0
     port: 7000
-  cors:
-    origin: http://localhost:3000
-    methods: [GET, POST, PUT, DELETE]
-    credentials: true
+  database:
+    client: sqlite3
+    connection: ':memory:'
 
+# See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
   '/circleci/api':
-    target: 'https://circleci.com/api/v1.1'
+    target: https://circleci.com/api/v1.1
     changeOrigin: true
     pathRewrite:
       '^/proxy/circleci/api/': '/'
+    headers:
+      Circle-Token:
+        $secret:
+          env: CIRCLECI_AUTH_TOKEN
+
   '/jenkins/api':
-    target: 'http://localhost:8080'
-    changeOrigin: true
+    target: http://localhost:8080
     headers:
       Authorization:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
-    pathRewrite:
-      '^/proxy/jenkins/api/': '/'
 
 organization:
   name: Spotify
 
 techdocs:
   storageUrl: http://localhost:7000/techdocs/static/docs
+  requestUrl: http://localhost:7000/techdocs/docs
 
 sentry:
   organization: spotify
@@ -48,12 +50,83 @@ newrelic:
     baseUrl: 'https://api.newrelic.com/v2'
     key: NEW_RELIC_REST_API_KEY
 
+lighthouse:
+  baseUrl: http://localhost:3003
+
+catalog:
+  rules:
+    - allow: [Component, API, Group, Template, Location]
+  processors:
+    github:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
+    githubApi:
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        # Example for how to add your GitHub Enterprise instance:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
+    bitbucketApi:
+      username:
+        $secret:
+          env: BITBUCKET_USERNAME
+      appPassword:
+        $secret:
+          env: BITBUCKET_APP_PASSWORD
+    gitlabApi:
+      privateToken:
+        $secret:
+          env: GITLAB_PRIVATE_TOKEN
+    azureApi:
+      privateToken:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
+
+  locations:
+    # Backstage example components
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+
+    # Example component for github-actions
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
+
+    # Example component for techdocs
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+
+    # Backstage example APIs
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+
+    # Backstage example templates
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+
+scaffolder:
+  github:
+    token:
+      $secret:
+        env: GITHUB_ACCESS_TOKEN
+    visibility: public # or 'internal' or 'private'
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token:
+        $secret:
+          env: GITLAB_ACCESS_TOKEN
+
 auth:
   providers:
     google:
       development:
-        appOrigin: "http://localhost:3000/"
-        secure: false
         clientId:
           $secret:
             env: AUTH_GOOGLE_CLIENT_ID
@@ -62,8 +135,6 @@ auth:
             env: AUTH_GOOGLE_CLIENT_SECRET
     github:
       development:
-        appOrigin: "http://localhost:3000/"
-        secure: false
         clientId:
           $secret:
             env: AUTH_GITHUB_CLIENT_ID
@@ -75,8 +146,6 @@ auth:
             env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:
       development:
-        appOrigin: "http://localhost:3000/"
-        secure: false
         clientId:
           $secret:
             env: AUTH_GITLAB_CLIENT_ID
@@ -86,14 +155,11 @@ auth:
         audience:
           $secret:
             env: GITLAB_BASE_URL
-    # saml:
-    #   development:
-    #     entryPoint: "http://localhost:7001/"
-    #     issuer: "passport-saml"
+    saml:
+      entryPoint: 'http://localhost:7001/'
+      issuer: 'passport-saml'
     okta:
       development:
-        appOrigin: "http://localhost:3000/"
-        secure: false
         clientId:
           $secret:
             env: AUTH_OKTA_CLIENT_ID
@@ -105,17 +171,37 @@ auth:
             env: AUTH_OKTA_AUDIENCE
     oauth2:
       development:
-        appOrigin: "http://localhost:3000/"
-        secure: false
         clientId:
           $secret:
             env: AUTH_OAUTH2_CLIENT_ID
         clientSecret:
           $secret:
             env: AUTH_OAUTH2_CLIENT_SECRET
-        authorizationURL:
+        authorizationUrl:
           $secret:
             env: AUTH_OAUTH2_AUTH_URL
-        tokenURL:
+        tokenUrl:
           $secret:
             env: AUTH_OAUTH2_TOKEN_URL
+    auth0:
+      development:
+        clientId:
+          $secret:
+            env: AUTH_AUTH0_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_AUTH0_CLIENT_SECRET
+        domain:
+          $secret:
+            env: AUTH_AUTH0_DOMAIN
+    microsoft:
+      development:
+        clientId:
+          $secret:
+            env: AUTH_MICROSOFT_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_MICROSOFT_CLIENT_SECRET
+        tenantId:
+          $secret:
+            env: AUTH_MICROSOFT_TENANT_ID

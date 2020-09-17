@@ -7,8 +7,13 @@ nav:
       - Backstage architecture: 'overview/architecture-overview.md'
       - Architecture and terminology: 'overview/architecture-terminology.md'
       - Roadmap: 'overview/roadmap.md'
+      - Vision: 'overview/vision.md'
+      - The Spotify story: 'overview/background.md'
+      - Strategies for adopting: 'overview/adopting.md'
+      - Logo assets: 'overview/logos.md'
   - Getting started:
-      - Running Backstage locally: 'getting-started/index.md'
+      - Getting Started: 'getting-started/index.md'
+      - Running Backstage locally: 'getting-started/running-backstage-locally.md'
       - Installation: 'getting-started/installation.md'
       - Local development: 'getting-started/development-environment.md'
       - Demo deployment: https://backstage-demo.roadie.io
@@ -25,26 +30,26 @@ nav:
           - Overview: 'features/software-catalog/index.md'
           - System model: 'features/software-catalog/system-model.md'
           - YAML File Format: 'features/software-catalog/descriptor-format.md'
+          - Well-known Annotations: 'features/software-catalog/well-known-annotations.md'
+          - Configuration: 'features/software-catalog/configuration.md'
           - Extending the model: 'features/software-catalog/extending-the-model.md'
           - External integrations: 'features/software-catalog/external-integrations.md'
           - API: 'features/software-catalog/api.md'
       - Software creation templates:
           - Overview: 'features/software-templates/index.md'
+          - Installation: 'features/software-templates/installation.md'
           - Adding templates: 'features/software-templates/adding-templates.md'
           - Extending the Scaffolder:
               - Overview: 'features/software-templates/extending/index.md'
               - Create your own Templater: 'features/software-templates/extending/create-your-own-templater.md'
               - Create your own Publisher: 'features/software-templates/extending/create-your-own-publisher.md'
               - Create your own Preparer: 'features/software-templates/extending/create-your-own-preparer.md'
-      - Docs-like-code:
+      - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'
           - Concepts: 'features/techdocs/concepts.md'
-          - Reading Documentation: 'features/techdocs/reading-documentation.md'
-          - Writing Documentation: 'features/techdocs/writing-documentation.md'
-          - Publishing Documentation: 'features/techdocs/publishing-documentation.md'
-          - Contributing: 'features/techdocs/contributing.md'
-          - Debugging: 'features/techdocs/debugging.md'
+          - TechDocs Architecture: 'features/techdocs/architecture.md'
+          - Creating and Publishing Documentation: 'features/techdocs/creating-and-publishing.md'
           - FAQ: 'features/techdocs/FAQ.md'
   - Plugins:
       - Overview: 'plugins/index.md'
@@ -70,6 +75,7 @@ nav:
       - Overview: 'auth/index.md'
       - Add auth provider: 'auth/add-auth-provider.md'
       - Auth backend: 'auth/auth-backend.md'
+      - Auth backend class structure: 'auth/auth-backend-classes.md'
       - OAuth: 'auth/oauth.md'
       - Glossary: 'auth/glossary.md'
   - Designing for Backstage:

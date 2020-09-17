@@ -2,6 +2,8 @@
 id: descriptor-format
 title: Descriptor Format of Catalog Entities
 sidebar_label: YAML File Format
+description: Documentation on Descriptor Format of Catalog Entities which
+describes the default data shape and semantics of catalog entities
 ---
 
 This section describes the default data shape and semantics of catalog entities.
@@ -34,7 +36,7 @@ software catalog API.
     "annotations": {
       "backstage.io/managed-by-location": "file:/tmp/component-info.yaml",
       "example.com/service-discovery": "artistweb",
-      "circleci.com/project-slug": "gh/example-org/artist-website"
+      "circleci.com/project-slug": "github/example-org/artist-website"
     },
     "description": "The place to be, for great artists",
     "etag": "ZjU2MWRkZWUtMmMxZS00YTZiLWFmMWMtOTE1NGNiZDdlYzNk",
@@ -42,6 +44,7 @@ software catalog API.
     "labels": {
       "system": "public-websites"
     },
+    "tags": ["java"],
     "name": "artist-web",
     "uid": "2152f463-549d-4d8d-a94d-ce2b7676c6e2"
   },
@@ -65,7 +68,9 @@ metadata:
     system: public-websites
   annotations:
     example.com/service-discovery: artistweb
-    circleci.com/project-slug: gh/example-org/artist-website
+    circleci.com/project-slug: github/example-org/artist-website
+  tags:
+    - java
 spec:
   type: website
   lifecycle: production
@@ -232,6 +237,23 @@ The `backstage.io/` prefix is reserved for use by Backstage core components.
 
 Values can be of any length, but are limited to being strings.
 
+There is a list of [well-known annotations](well-known-annotations.md), but
+anybody is free to add more annotations as they see fit.
+
+### `tags` [optional]
+
+A list of single-valued strings, for example to classify catalog entities in
+various ways. This is different to the labels in metadata, as labels are
+key-value pairs.
+
+The values are user defined, for example the programming language used for the
+component, like `java` or `go`.
+
+This field is optional, and currently has no special semantics.
+
+Each tag must be sequences of `[a-zA-Z0-9]` separated by `-`, at most 63
+characters in total.
+
 ## Kind: Component
 
 Describes the following entity kind:
@@ -273,7 +295,7 @@ Exactly equal to `backstage.io/v1alpha1` and `Component`, respectively.
 
 The type of component as a string, e.g. `website`. This field is required.
 
-The software catalog accepts any type value, but an organisation should take
+The software catalog accepts any type value, but an organization should take
 great care to establish a proper taxonomy for these. Tools including Backstage
 itself may read this field and behave differently depending on its value. For
 example, a website type component may present tooling in the Backstage interface
@@ -287,9 +309,9 @@ The current set of well-known and common values for this field is:
 
 ### `spec.lifecycle` [required]
 
-The lifecyle state of the component, e.g. `production`. This field is required.
+The lifecycle state of the component, e.g. `production`. This field is required.
 
-The software catalog accepts any lifecycle value, but an organisation should
+The software catalog accepts any lifecycle value, but an organization should
 take great care to establish a proper taxonomy for these.
 
 The current set of well-known and common values for this field is:
@@ -353,8 +375,8 @@ metadata:
   description:
     Next.js application skeleton for creating isomorphic web applications.
   tags:
-    - Recommended
-    - React
+    - recommended
+    - react
 spec:
   owner: web@example.com
   templater: cookiecutter
@@ -401,7 +423,7 @@ potentially search and group templates by these tags.
 The type of component as a string, e.g. `website`. This field is optional but
 recommended.
 
-The software catalog accepts any type value, but an organisation should take
+The software catalog accepts any type value, but an organization should take
 great care to establish a proper taxonomy for these. Tools including Backstage
 itself may read this field and behave differently depending on its value. For
 example, a website type component may present tooling in the Backstage interface
@@ -451,6 +473,7 @@ Describes the following entity kind:
 An API describes an interface that can be exposed by a component. The API can be
 defined in different formats, like [OpenAPI](https://swagger.io/specification/),
 [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/),
+[GraphQL](https://graphql.org/learn/schema/),
 [gRPC](https://developers.google.com/protocol-buffers), or other formats.
 
 Descriptor files for this kind may look as follows.
@@ -463,6 +486,8 @@ metadata:
   description: Retrieve artist details
 spec:
   type: openapi
+  lifecycle: production
+  owner: artist-relations@example.com
   definition: |
     openapi: "3.0.0"
     info:
@@ -491,7 +516,7 @@ Exactly equal to `backstage.io/v1alpha1` and `API`, respectively.
 The type of the API definition as a string, e.g. `openapi`. This field is
 required.
 
-The software catalog accepts any type value, but an organisation should take
+The software catalog accepts any type value, but an organization should take
 great care to establish a proper taxonomy for these. Tools including Backstage
 itself may read this field and behave differently depending on its value. For
 example, an OpenAPI type API may be displayed using an OpenAPI viewer tooling in
@@ -506,6 +531,41 @@ The current set of well-known and common values for this field is:
 - `grpc` - An API definition based on
   [Protocol Buffers](https://developers.google.com/protocol-buffers) to use with
   [gRPC](https://grpc.io/).
+
+### `spec.lifecycle` [required]
+
+The lifecycle state of the API, e.g. `production`. This field is required.
+
+The software catalog accepts any lifecycle value, but an organization should
+take great care to establish a proper taxonomy for these.
+
+The current set of well-known and common values for this field is:
+
+- `experimental` - an experiment or early, non-production API, signaling that
+  users may not prefer to consume it over other more established APIs, or that
+  there are low or no reliability guarantees
+- `production` - an established, owned, maintained API
+- `deprecated` - an API that is at the end of its lifecycle, and may disappear
+  at a later point in time
+
+### `spec.owner` [required]
+
+The owner of the API, e.g. `artist-relations@example.com`. This field is
+required.
+
+In Backstage, the owner of an API is the singular entity (commonly a team) that
+bears ultimate responsibility for the API, and has the authority and capability
+to develop and maintain it. They will be the point of contact if something goes
+wrong, or if features are to be requested. The main purpose of this field is for
+display purposes in Backstage, so that people looking at catalog items can get
+an understanding of to whom this API belongs. It is not to be used by automated
+processes to for example assign authorization in runtime systems. There may be
+others that also develop or otherwise touch the API, but there will always be
+one ultimate owner.
+
+Apart from being a string, the software catalog leaves the format of this field
+open to implementers to choose. Most commonly, it is set to the ID or email of a
+group of people in an organizational structure.
 
 ### `spec.definition` [required]
 

@@ -17,12 +17,12 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
 import Knex from 'knex';
 import { Logger } from 'winston';
 import { createAuthProviderRouter } from '../providers';
 import { Config } from '@backstage/config';
 import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
+import { NotFoundError } from '@backstage/backend-common';
 
 export interface RouterOptions {
   logger: Logger;
@@ -36,6 +36,7 @@ export async function createRouter(
   const router = Router();
   const logger = options.logger.child({ plugin: 'auth' });
 
+  const appUrl = options.config.getString('app.baseUrl');
   const backendUrl = options.config.getString('backend.baseUrl');
   const authUrl = `${backendUrl}/auth`;
 
@@ -52,8 +53,8 @@ export async function createRouter(
   });
 
   router.use(cookieParser());
-  router.use(bodyParser.urlencoded({ extended: false }));
-  router.use(bodyParser.json());
+  router.use(express.urlencoded({ extended: false }));
+  router.use(express.json());
 
   const providersConfig = options.config.getConfig('auth.providers');
   const providers = providersConfig.keys();
@@ -64,14 +65,20 @@ export async function createRouter(
       const providerConfig = providersConfig.getConfig(providerId);
       const providerRouter = createAuthProviderRouter(
         providerId,
-        { baseUrl: authUrl },
+        { baseUrl: authUrl, appUrl },
         providerConfig,
         logger,
         tokenIssuer,
       );
       router.use(`/${providerId}`, providerRouter);
     } catch (e) {
-      logger.error(e.message);
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          `Failed to initialize ${providerId} auth provider, ${e.message}`,
+        );
+      }
+
+      logger.warn(`Skipping ${providerId} auth provider, ${e.message}`);
     }
   }
 
@@ -81,6 +88,11 @@ export async function createRouter(
       baseUrl: authUrl,
     }),
   );
+
+  router.use('/:provider/', req => {
+    const { provider } = req.params;
+    throw new NotFoundError(`No auth provider registered for '${provider}'`);
+  });
 
   return router;
 }

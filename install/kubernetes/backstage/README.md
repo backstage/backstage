@@ -23,7 +23,7 @@
 | app.resources               | Kubernetes Pod resource requests/limits                   | `{}`                |
 | app.nodeSelector            | Node selectors for scheduling app/frontend pods           | `{}`                |
 | app.tolerations             | Tolerations for scheduling app/frontend pods              | `{}`                |
-| app.affinity                | Affinity setttings for scheduling app/frontend pods       | `{}`                |
+| app.affinity                | Affinity settings for scheduling app/frontend pods        | `{}`                |
 
 ## Backend Values
 
@@ -48,4 +48,4 @@
 | backend.resources               | Kubernetes Pod resource requests/limits                       | `{}`                |
 | backend.nodeSelector            | Node selectors for scheduling backend pods                    | `{}`                |
 | backend.tolerations             | Tolerations for scheduling backend pods                       | `{}`                |
-| backend.affinity                | Affinity setttings for scheduling backend pods                | `{}`                |
+| backend.affinity                | Affinity settings for scheduling backend pods                 | `{}`                |

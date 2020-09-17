@@ -18,74 +18,6 @@ import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
 import { Config } from '@backstage/config';
-import { OAuthProvider } from '../lib/OAuthProvider';
-import { SamlAuthProvider } from './saml/provider';
-
-export type OAuthProviderOptions = {
-  /**
-   * Client ID of the auth provider.
-   */
-  clientID: string;
-  /**
-   * Client Secret of the auth provider.
-   */
-  clientSecret: string;
-  /**
-   * Callback URL to be passed to the auth provider to redirect to after the user signs in.
-   */
-  callbackURL: string;
-};
-
-export type GenericOAuth2ProviderOptions = OAuthProviderOptions & {
-  authorizationURL: string;
-  tokenURL: string;
-};
-
-export type OAuthProviderConfig = {
-  /**
-   * Cookies can be marked with a secure flag to send cookies only when the request
-   * is over an encrypted channel (HTTPS).
-   *
-   * For development environment we don't mark the cookie as secure since we serve
-   * localhost over HTTP.
-   */
-  secure: boolean;
-  /**
-   * The protocol://domain[:port] where the app (frontend) is hosted. This is used to post messages back
-   * to the window that initiates an auth request.
-   */
-  appOrigin: string;
-  /**
-   * Client ID of the auth provider.
-   */
-  clientId: string;
-  /**
-   * Client Secret of the auth provider.
-   */
-  clientSecret: string;
-  /**
-   * The location of the OAuth Authorization Server
-   */
-  audience?: string;
-};
-
-export type GenericOAuth2ProviderConfig = OAuthProviderConfig & {
-  authorizationURL: string;
-  tokenURL: string;
-};
-
-export type EnvironmentProviderConfig = {
-  /**
-   * key, values are environment names and OAuthProviderConfigs
-   *
-   * For e.g
-   * {
-   *   development: DevelopmentOAuthProviderConfig
-   *   production: ProductionOAuthProviderConfig
-   * }
-   */
-  [key: string]: OAuthProviderConfig;
-};
 
 export type AuthProviderConfig = {
   /**
@@ -93,50 +25,23 @@ export type AuthProviderConfig = {
    * callbackURL to redirect to once the user signs in to the auth provider.
    */
   baseUrl: string;
+
+  /**
+   * The base URL of the app as provided by app.baseUrl
+   */
+  appUrl: string;
 };
 
-/**
- * Any OAuth provider needs to implement this interface which has provider specific
- * handlers for different methods to perform authentication, get access tokens,
- * refresh tokens and perform sign out.
- */
-export interface OAuthProviderHandlers {
+export type RedirectInfo = {
   /**
-   * This method initiates a sign in request with an auth provider.
-   * @param {express.Request} req
-   * @param options
+   * URL to redirect to
    */
-  start(
-    req: express.Request,
-    options: Record<string, string>,
-  ): Promise<RedirectInfo>;
-
+  url: string;
   /**
-   * Handles the redirect from the auth provider when the user has signed in.
-   * @param {express.Request} req
+   * Status code to use for the redirect
    */
-  handler(
-    req: express.Request,
-  ): Promise<{
-    response: AuthResponse<OAuthProviderInfo>;
-    refreshToken?: string;
-  }>;
-
-  /**
-   * (Optional) Given a refresh token and scope fetches a new access token from the auth provider.
-   * @param {string} refreshToken
-   * @param {string} scope
-   */
-  refresh?(
-    refreshToken: string,
-    scope: string,
-  ): Promise<AuthResponse<OAuthProviderInfo>>;
-
-  /**
-   * (Optional) Sign out of the auth provider.
-   */
-  logout?(): Promise<void>;
-}
+  status?: number;
+};
 
 /**
  * Any Auth provider needs to implement this interface which handles the routes in the
@@ -203,32 +108,24 @@ export interface AuthProviderRouteHandlers {
    * @param {express.Response} res
    */
   logout?(req: express.Request, res: express.Response): Promise<void>;
-
-  /**
-   *(Optional) A method to identify the environment Context of the Request
-   *
-   *Request
-   *- contains the environment context information encoded in the request
-   *  @param {express.Request} req
-   */
-  identifyEnv?(req: express.Request): string | undefined;
 }
 
+export type AuthProviderFactoryOptions = {
+  globalConfig: AuthProviderConfig;
+  config: Config;
+  logger: Logger;
+  tokenIssuer: TokenIssuer;
+};
+
 export type AuthProviderFactory = (
-  globalConfig: AuthProviderConfig,
-  env: string,
-  envConfig: Config,
-  logger: Logger,
-  issuer: TokenIssuer,
-) => OAuthProvider | SamlAuthProvider | undefined;
+  options: AuthProviderFactoryOptions,
+) => AuthProviderRouteHandlers;
 
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
   backstageIdentity?: BackstageIdentity;
 };
-
-export type OAuthResponse = AuthResponse<OAuthProviderInfo>;
 
 export type BackstageIdentity = {
   /**
@@ -240,63 +137,6 @@ export type BackstageIdentity = {
    * An ID token that can be used to authenticate the user within Backstage.
    */
   idToken?: string;
-};
-
-export type OAuthProviderInfo = {
-  /**
-   * An access token issued for the signed in user.
-   */
-  accessToken: string;
-  /**
-   * (Optional) Id token issued for the signed in user.
-   */
-  idToken?: string;
-  /**
-   * Expiry of the access token in seconds.
-   */
-  expiresInSeconds?: number;
-  /**
-   * Scopes granted for the access token.
-   */
-  scope: string;
-};
-
-export type OAuthPrivateInfo = {
-  /**
-   * A refresh token issued for the signed in user.
-   */
-  refreshToken: string;
-};
-
-/**
- * Payload sent as a post message after the auth request is complete.
- * If successful then has a valid payload with Auth information else contains an error.
- */
-export type WebMessageResponse =
-  | {
-      type: 'authorization_response';
-      response: AuthResponse<unknown>;
-    }
-  | {
-      type: 'authorization_response';
-      error: Error;
-    };
-
-export type PassportDoneCallback<Res, Private = never> = (
-  err?: Error,
-  response?: Res,
-  privateInfo?: Private,
-) => void;
-
-export type RedirectInfo = {
-  /**
-   * URL to redirect to
-   */
-  url: string;
-  /**
-   * Status code to use for the redirect
-   */
-  status?: number;
 };
 
 /**
@@ -320,35 +160,3 @@ export type ProfileInfo = {
    */
   picture?: string;
 };
-
-export type RefreshTokenResponse = {
-  /**
-   * An access token issued for the signed in user.
-   */
-  accessToken: string;
-  params: any;
-};
-
-export type ProviderStrategy = {
-  userProfile(accessToken: string, callback: Function): void;
-};
-
-export type SAMLProviderConfig = {
-  entryPoint: string;
-  issuer: string;
-};
-
-export type SAMLEnvironmentProviderConfig = {
-  [key: string]: SAMLProviderConfig;
-};
-
-export type OAuthState = {
-  /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
-   */
-  nonce: string;
-  env: string;
-};
-
-export type EnvironmentIdentifierFn = (
-  req: express.Request,
-) => string | undefined;

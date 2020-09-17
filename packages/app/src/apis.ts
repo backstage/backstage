@@ -15,187 +15,58 @@
  */
 
 import {
-  ApiRegistry,
-  alertApiRef,
   errorApiRef,
-  AlertApiForwarder,
-  ConfigApi,
-  ErrorApiForwarder,
-  ErrorAlerter,
-  featureFlagsApiRef,
-  FeatureFlags,
-  GoogleAuth,
-  GithubAuth,
-  OAuth2,
-  OktaAuth,
-  GitlabAuth,
-  oauthRequestApiRef,
-  OAuthRequestManager,
-  googleAuthApiRef,
+  discoveryApiRef,
+  UrlPatternDiscovery,
   githubAuthApiRef,
-  oauth2ApiRef,
-  oktaAuthApiRef,
-  gitlabAuthApiRef,
-  storageApiRef,
-  WebStorage,
+  createApiFactory,
+  configApiRef,
 } from '@backstage/core';
 
-import {
-  lighthouseApiRef,
-  LighthouseRestApi,
-} from '@backstage/plugin-lighthouse';
-
-import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
-
-import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
-import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
-
-import { gitOpsApiRef, GitOpsRestApi } from '@backstage/plugin-gitops-profiles';
 import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
-import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
 
-import { rollbarApiRef, RollbarClient } from '@backstage/plugin-rollbar';
 import {
-  GithubActionsClient,
-  githubActionsApiRef,
-} from '@backstage/plugin-github-actions';
-import { jenkinsApiRef, JenkinsApi } from '@backstage/plugin-jenkins';
+  TravisCIApi,
+  travisCIApiRef,
+} from '@roadiehq/backstage-plugin-travis-ci';
+import {
+  GithubPullRequestsClient,
+  githubPullRequestsApiRef,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
 
-import { TravisCIApi, travisCIApiRef } from '@roadiehq/backstage-plugin-travis-ci';
+export const apis = [
+  // TODO(Rugvip): migrate to use /api
+  createApiFactory({
+    api: discoveryApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) =>
+      UrlPatternDiscovery.compile(
+        `${configApi.getString('backend.baseUrl')}/{{ pluginId }}`,
+      ),
+  }),
+  createApiFactory({
+    api: graphQlBrowseApiRef,
+    deps: { errorApi: errorApiRef, githubAuthApi: githubAuthApiRef },
+    factory: ({ errorApi, githubAuthApi }) =>
+      GraphQLEndpoints.from([
+        GraphQLEndpoints.create({
+          id: 'gitlab',
+          title: 'GitLab',
+          url: 'https://gitlab.com/api/graphql',
+        }),
+        GraphQLEndpoints.github({
+          id: 'github',
+          title: 'GitHub',
+          errorApi,
+          githubAuthApi,
+        }),
+      ]),
+  }),
 
-export const apis = (config: ConfigApi) => {
-  // eslint-disable-next-line no-console
-  console.log(`Creating APIs for ${config.getString('app.title')}`);
-
-  const backendUrl = config.getString('backend.baseUrl');
-
-  const builder = ApiRegistry.builder();
-
-  const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
-  const errorApi = builder.add(
-    errorApiRef,
-    new ErrorAlerter(alertApi, new ErrorApiForwarder()),
-  );
-
-  builder.add(storageApiRef, WebStorage.create({ errorApi }));
-  builder.add(
-    circleCIApiRef,
-    new CircleCIApi(`${backendUrl}/proxy/circleci/api`),
-  );
-
-  builder.add(jenkinsApiRef, new JenkinsApi(`${backendUrl}/proxy/jenkins/api`));
-
-  builder.add(githubActionsApiRef, new GithubActionsClient());
-
-  builder.add(featureFlagsApiRef, new FeatureFlags());
-
-  builder.add(lighthouseApiRef, new LighthouseRestApi('http://localhost:3003'));
-
-  builder.add(travisCIApiRef, new TravisCIApi());
-
-  const oauthRequestApi = builder.add(
-    oauthRequestApiRef,
-    new OAuthRequestManager(),
-  );
-
-  builder.add(
-    googleAuthApiRef,
-    GoogleAuth.create({
-      apiOrigin: backendUrl,
-      basePath: '/auth/',
-      oauthRequestApi,
-    }),
-  );
-
-  const githubAuthApi = builder.add(
-    githubAuthApiRef,
-    GithubAuth.create({
-      apiOrigin: backendUrl,
-      basePath: '/auth/',
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    oktaAuthApiRef,
-    OktaAuth.create({
-      apiOrigin: backendUrl,
-      basePath: '/auth/',
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    gitlabAuthApiRef,
-    GitlabAuth.create({
-      apiOrigin: backendUrl,
-      basePath: '/auth/',
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    oauth2ApiRef,
-    OAuth2.create({
-      apiOrigin: backendUrl,
-      basePath: '/auth/',
-      oauthRequestApi,
-    }),
-  );
-
-  builder.add(
-    techRadarApiRef,
-    new TechRadar({
-      width: 1500,
-      height: 800,
-    }),
-  );
-
-  builder.add(
-    catalogApiRef,
-    new CatalogClient({
-      apiOrigin: backendUrl,
-      basePath: '/catalog',
-    }),
-  );
-
-  builder.add(
-    scaffolderApiRef,
-    new ScaffolderApi({
-      apiOrigin: backendUrl,
-      basePath: '/scaffolder/v1',
-    }),
-  );
-
-  builder.add(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008'));
-
-  builder.add(
-    graphQlBrowseApiRef,
-    GraphQLEndpoints.from([
-      GraphQLEndpoints.create({
-        id: 'gitlab',
-        title: 'GitLab',
-        url: 'https://gitlab.com/api/graphql',
-      }),
-      GraphQLEndpoints.github({
-        id: 'github',
-        title: 'GitHub',
-        errorApi,
-        githubAuthApi,
-      }),
-    ]),
-  );
-
-  builder.add(
-    rollbarApiRef,
-    new RollbarClient({
-      apiOrigin: backendUrl,
-      basePath: '/rollbar',
-    }),
-  );
-
-  return builder.build();
-};
+  // TODO: move to plugins
+  createApiFactory(travisCIApiRef, new TravisCIApi()),
+  createApiFactory(githubPullRequestsApiRef, new GithubPullRequestsClient()),
+];

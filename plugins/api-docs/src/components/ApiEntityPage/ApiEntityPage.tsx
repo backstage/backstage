@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiEntityV1alpha1, Entity } from '@backstage/catalog-model';
+import { ApiEntity, Entity } from '@backstage/catalog-model';
 import {
   Content,
   errorApiRef,
@@ -25,16 +25,16 @@ import {
   Progress,
   useApi,
 } from '@backstage/core';
-// TODO: Circular ref
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React, { FC, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { ApiDefinitionCard } from '../ApiDefinitionCard/ApiDefinitionCard';
+import { ApiDefinitionCard } from '../ApiDefinitionCard';
 
 const REDIRECT_DELAY = 1000;
+
 function headerProps(
   kind: string,
   namespace: string | undefined,
@@ -59,15 +59,18 @@ export const getPageTheme = (entity?: Entity): PageTheme => {
   return pageTheme[themeKey] ?? pageTheme.home;
 };
 
-const EntityPageTitle: FC<{ title: string; entity: Entity | undefined }> = ({
-  title,
-}) => (
+type EntityPageTitleProps = {
+  title: string;
+  entity: Entity | undefined;
+};
+
+const EntityPageTitle = ({ title }: EntityPageTitleProps) => (
   <Box display="inline-flex" alignItems="center" height="1em">
     {title}
   </Box>
 );
 
-export const ApiEntityPage: FC<{}> = () => {
+export const ApiEntityPage = () => {
   const { optionalNamespaceAndName } = useParams() as {
     optionalNamespaceAndName: string;
   };
@@ -122,7 +125,7 @@ export const ApiEntityPage: FC<{}> = () => {
       {entity && (
         <>
           <Content>
-            <ApiDefinitionCard apiEntity={entity as ApiEntityV1alpha1} />
+            <ApiDefinitionCard apiEntity={entity as ApiEntity} />
           </Content>
         </>
       )}

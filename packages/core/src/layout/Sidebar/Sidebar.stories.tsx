@@ -23,10 +23,13 @@ import {
   SidebarSearchField,
   SidebarSpace,
   SidebarUserSettings,
+  OAuthProviderSettings,
 } from '.';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import Star from '@material-ui/icons/Star';
 import { MemoryRouter } from 'react-router-dom';
+import { githubAuthApiRef } from '@backstage/core-api';
 
 export default {
   title: 'Sidebar',
@@ -55,6 +58,14 @@ export const SampleSidebar = () => (
     <SidebarIntro />
     <SidebarSpace />
     <SidebarDivider />
-    <SidebarUserSettings />
+    <SidebarUserSettings
+      providerSettings={
+        <OAuthProviderSettings
+          title="Github"
+          apiRef={githubAuthApiRef}
+          icon={Star}
+        />
+      }
+    />
   </Sidebar>
 );

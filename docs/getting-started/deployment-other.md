@@ -1,6 +1,7 @@
 ---
 id: deployment-other
 title: Other
+description: Documentation on different ways of Deployment
 ---
 
 ## Deploying Locally
@@ -10,21 +11,20 @@ title: Other
 Run the following commands if you have Docker environment
 
 ```bash
+$ yarn install
 $ yarn docker-build
-$ docker run --rm -it -p 80:80 spotify/backstage
+$ docker run --rm -it -p 7000:7000 -e NODE_ENV=development example-backend:latest
 ```
 
 Then open http://localhost/ on your browser.
 
 ### Running with `docker-compose`
 
-Run the following commands if you have docker and docker-compose for a full
-example, with the example backend also deployed.
+There is also a `docker-compose.yaml` that you can use to replace the previous
+`docker run` command:
 
 ```bash
-$ yarn docker-build:all
+$ yarn install
+$ yarn docker-build
 $ docker-compose up
 ```
-
-Then open http://localhost:3000 on your browser to see the example app with an
-example backend.

@@ -14,6 +14,24 @@
  * limitations under the License.
  */
 import { DirectoryPreparer } from './dir';
+import { getVoidLogger } from '@backstage/backend-common';
+import { checkoutGithubRepository } from '../../../helpers';
+
+function normalizePath(path: string) {
+  return path
+    .replace(/^[a-z]:/i, '')
+    .split('\\')
+    .join('/');
+}
+
+jest.mock('../../../helpers', () => ({
+  ...jest.requireActual<{}>('../../../helpers'),
+  checkoutGithubRepository: jest.fn(
+    () => '/tmp/backstage-repo/org/name/branch/',
+  ),
+}));
+
+const logger = getVoidLogger();
 
 const createMockEntity = (annotations: {}) => {
   return {
@@ -30,7 +48,7 @@ const createMockEntity = (annotations: {}) => {
 
 describe('directory preparer', () => {
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is relative', async () => {
-    const directoryPreparer = new DirectoryPreparer();
+    const directoryPreparer = new DirectoryPreparer(logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
@@ -38,13 +56,13 @@ describe('directory preparer', () => {
       'backstage.io/techdocs-ref': 'dir:./our-documentation',
     });
 
-    expect(await directoryPreparer.prepare(mockEntity)).toEqual(
+    expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
       '/directory/our-documentation',
     );
   });
 
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is absolute', async () => {
-    const directoryPreparer = new DirectoryPreparer();
+    const directoryPreparer = new DirectoryPreparer(logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
@@ -52,8 +70,23 @@ describe('directory preparer', () => {
       'backstage.io/techdocs-ref': 'dir:/our-documentation/techdocs',
     });
 
-    expect(await directoryPreparer.prepare(mockEntity)).toEqual(
+    expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
       '/our-documentation/techdocs',
     );
+  });
+
+  it('should merge managed-by-location and techdocs-ref when managed-by-location is a git repository', async () => {
+    const directoryPreparer = new DirectoryPreparer(logger);
+
+    const mockEntity = createMockEntity({
+      'backstage.io/managed-by-location':
+        'github:https://github.com/spotify/backstage/blob/master/catalog-info.yaml',
+      'backstage.io/techdocs-ref': 'dir:./docs',
+    });
+
+    expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
+      '/tmp/backstage-repo/org/name/branch/docs',
+    );
+    expect(checkoutGithubRepository).toHaveBeenCalledTimes(1);
   });
 });

@@ -6,10 +6,74 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 ## Next Release
 
+### @backstage/core
+
+- Introduced initial version of an inverted app/plugin relationship, where plugins export components for apps to use, instead registering themselves directly into the app. This enables more fine-grained control of plugin features, and also composition of plugins such as catalog pages with additional cards and tabs. This breaks the use of `RouteRef`s, and there will be more changes related to this in the future, but this change lays the initial foundation. See `packages/app` and followup PRs for how to update plugins for this change. [#2076](https://github.com/spotify/backstage/pull/2076)
+- Switch to an automatic dependency injection mechanism for all Utility APIs, allowing plugins to ship default implementations of their APIs. See [https://backstage.io/docs/api/utility-apis](https://backstage.io/docs/api/utility-apis). [#2285](https://github.com/spotify/backstage/pull/2285)
+
 > Collect changes for the next release below
+
+### @backstage/cli
+
+- Change `backstage-cli backend:build-image` to forward all args to `docker image build`, instead of just tag. Also add `--build` flag for building all dependent packages before packaging the workspace for the docker build. [#2299](https://github.com/spotify/backstage/pull/2299)
 
 ### @backstage/create-app
 
+- Change root `tsc` output dir to `dist-types`, in order to allow for standalone plugin repos. [#2278](https://github.com/spotify/backstage/pull/2278)
+
+## v0.1.1-alpha.21
+
+- Added many more frontend plugins to the template along with the sidebar. [#1942](https://github.com/spotify/backstage/pull/1942), [#2084](https://github.com/spotify/backstage/pull/2084)
+
+### @backstage/core
+
+- Material-UI: Bumped to 4.11.0, which is the version that create-app will
+  resolve to, because we wanted to get the renaming of ExpansionPanel to
+  Accordion into place. This gets rid of a lot of console deprecation warnings
+  in newly scaffolded apps.
+
+### @backstage/cli
+
+- Set `NODE_ENV` to `test` when running test. [#2214](https://github.com/spotify/backstage/pull/2214)
+
+- Fix for backend plugins names requiring to be prefixed with `@backstage` to build. [#2224](https://github.com/spotify/backstage/pull/2224)
+
+### @backstage/backend-common
+
+- The backend plugin
+  [service builder](https://github.com/spotify/backstage/blob/master/packages/backend-common/src/service/lib/ServiceBuilderImpl.ts)
+  no longer adds `express.json()` automatically to all routes. While convenient
+  in a lot of cases, it also led to problems where for example the proxy
+  middleware could hang because the body had already been altered and could not
+  be streamed. Also, plugins that rather wanted to handle e.g. form encoded data
+  still had to cater to that manually. We therefore decided to let plugins add
+  `express.json()` themselves if they happen to deal with JSON data.
+
+### @backstage/catalog-backend
+
+- Add rules configuration for catalog location and entity kinds. The default rules should cover most use-cases, but you may need to allow specific entity kinds when using things like Template or Group entities. [#2118](https://github.com/spotify/backstage/pull/2118)
+
+## v0.1.1-alpha.20
+
+### @backstage/cli
+
+- Use config files according to `NODE_ENV` when serving and building frontend packages. [#2077](https://github.com/spotify/backstage/pull/2077)
+
+- Pin `rollup-plugin-dts` to avoid a later broken version. [#2097](https://github.com/spotify/backstage/pull/2097)
+
+## v0.1.1-alpha.19
+
+### @backstage/backend-common
+
+- Allow listen host and port to be configured separately, in order to support PORT environment variables. [#1950](https://github.com/spotify/backstage/pull/1950)
+
+### @backstage/core
+
+- Added new `DiscoveryApi` for discovering backend endpoint in the frontend, and use in most plugins. See [packages/app/src/apis.ts](https://github.com/spotify/backstage/blob/master/packages/app/src/apis.ts) for how to register in your app. [#2074](https://github.com/spotify/backstage/pull/2074)
+
+### @backstage/create-app
+
+- Added catalog and scaffolder frontend plugins to the template along with the sidebar. [#1942](https://github.com/spotify/backstage/pull/1942), [#2084](https://github.com/spotify/backstage/pull/2084)
 - Many plugins have been added to the catalog and will for now be required to be added to separate apps as well. This will be solved as [#1536](https://github.com/spotify/backstage/issues/1536) gets sorted out, but for now you may need to install some plugins just to get pages to work.
 
 ### @backstage/catalog-backend

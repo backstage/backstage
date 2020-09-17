@@ -1,70 +1,51 @@
 ---
 id: index
-title: Running Backstage Locally
+title: Getting Started
+description: Documentation on How to get started with Backstage
 ---
 
-To get up and running with a local Backstage to evaluate it, let's clone it off
-of GitHub and run an initial build. First make sure that you have at least node
-version 12 installed locally.
+There are two different ways to get started with Backstage, either by creating a
+standalone app, or by cloning this repo. Which method you use depends on what
+you're planning to do.
+
+Creating a standalone instance makes it simpler to customize the application for
+your needs whilst staying up to date with the project. You will also depend on
+`@backstage` packages from NPM, making the project much smaller. This is the
+recommended approach if you want to kick the tyres of Backstage or setup your
+own instance.
+
+On the other hand, if you want to contribute plugins or to the project in
+general, it's easier to fork and clone this project. That will let you stay up
+to date with the latest changes, and gives you an easier path to make Pull
+Requests towards this repo.
+
+### Creating a Standalone App
+
+Backstage provides the `@backstage/create-app` package to scaffold standalone
+instances of Backstage. You will need to have
+[NodeJS](https://nodejs.org/en/download/) Active LTS Release installed
+(currently v12), and [yarn](https://classic.yarnpkg.com/en/docs/install). You
+will also need to have [Docker](https://docs.docker.com/engine/install/)
+installed to use some features like Software Templates and TechDocs.
+
+Using `npx` you can then run the following to create an app in a chosen
+subdirectory of your current working directory:
 
 ```bash
-# Start from your local development folder
-git clone git@github.com:spotify/backstage.git
-cd backstage
-
-# Fetch our dependencies and run an initial build
-yarn install
-yarn tsc
-yarn build
+npx @backstage/create-app
 ```
 
-Phew! Now you have a local repository that's ready to run and to add any open
-source contributions into.
+You will be taken through a wizard to create your app, and the output should
+look something like this. You can read more about this process
+[here](https://backstage.io/docs/getting-started/create-an-app).
 
-We are now going to launch two things: an example Backstage frontend app, and an
-example Backstage backend that the frontend talks to. You are going to need two
-terminal windows, both starting from the Backstage project root.
+### Contributing to Backstage
 
-In the first window, run
+You can read more in our
+[CONTRIBUTING](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md)
+guide, which can help you get setup with a Backstage development environment.
 
-```bash
-cd packages/backend
-yarn start
-```
+### Next steps
 
-That starts up a backend instance on port 7000.
-
-In the other window, we will first populate the catalog with some nice mock data
-to look at, and then launch the frontend. These commands are run from the
-project root, not inside the backend directory.
-
-```bash
-yarn lerna run mock-data
-yarn start
-```
-
-That starts up the frontend on port 3000, and should automatically open a
-browser window showing it.
-
-Congratulations! That should be it. Let us know how it went
-[on discord](https://discord.gg/EBHEGzX), file issues for any
-[feature](https://github.com/spotify/backstage/issues/new?labels=help+wanted&template=feature_template.md)
-or
-[plugin suggestions](https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),
-or
-[bugs](https://github.com/spotify/backstage/issues/new?labels=bug&template=bug_template.md)
-you have, and feel free to
-[contribute](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md)!
-
-## Creating a Plugin
-
-The value of Backstage grows with every new plugin that gets added. Here is a
-collection of tutorials that will guide you through setting up and extending an
-instance of Backstage with your own plugins.
-
-- [Development Environment](development-environment.md)
-- [Create a Backstage Plugin](../plugins/create-a-plugin.md)
-- [Structure of a Plugin](../plugins/structure-of-a-plugin.md)
-- [Utility APIs](../api/utility-apis.md)
-
-[Back to Docs](../README.md)
+Take a look at the [Running Backstage Locally](./running-backstage-locally.md)
+guide to learn how to set up Backstage, and how to develop on the platform.

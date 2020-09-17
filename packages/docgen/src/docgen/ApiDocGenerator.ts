@@ -15,7 +15,11 @@
  */
 
 import ts from 'typescript';
-import { relative } from 'path';
+import {
+  relative as relativePath,
+  sep as pathSep,
+  posix as posixPath,
+} from 'path';
 import {
   ExportedInstance,
   ApiDoc,
@@ -24,6 +28,12 @@ import {
   TypeInfo,
   TypeLink,
 } from './types';
+
+// Always use unix path separators for the relative file
+// paths, since we'll be using those for HTTP URLs.
+function relativeLink(basePath: string, filePath: string) {
+  return relativePath(basePath, filePath).split(pathSep).join(posixPath.sep);
+}
 
 /**
  * The ApiDocGenerator uses the typescript compiler API to build the data structure that
@@ -58,7 +68,7 @@ export default class ApiDocGenerator {
 
     const id = this.getObjectPropertyLiteral(info, 'id');
     const description = this.getObjectPropertyLiteral(info, 'description');
-    const file = relative(this.basePath, source.fileName);
+    const file = relativeLink(this.basePath, source.fileName);
     const { line } = source.getLineAndCharacterOfPosition(
       apiInstance.node.getStart(),
     );
@@ -111,7 +121,7 @@ export default class ApiDocGenerator {
     const name = (type.aliasSymbol || type.symbol).name;
     const [declaration] = (type.aliasSymbol || type.symbol).declarations;
     const sourceFile = declaration.getSourceFile();
-    const file = relative(this.basePath, sourceFile.fileName);
+    const file = relativeLink(this.basePath, sourceFile.fileName);
     const { line } = sourceFile.getLineAndCharacterOfPosition(
       declaration.getStart(),
     );
@@ -234,7 +244,7 @@ export default class ApiDocGenerator {
     const { line } = sourceFile.getLineAndCharacterOfPosition(
       declaration.getStart(),
     );
-    const file = relative(this.basePath, sourceFile.fileName);
+    const file = relativeLink(this.basePath, sourceFile.fileName);
     const typeInfo = {
       id: (symbol as any).id,
       name: symbol.name,

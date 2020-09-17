@@ -4,7 +4,7 @@ Website: [https://jenkins.io/](https://jenkins.io/)
 
 <img src="./src/assets/last-master-build.png"  alt="Last master build"/>
 <img src="./src/assets/folder-results.png"  alt="Folder results"/>
-<img src="./src/assets/build-details.png"  alt="Build detials"/>
+<img src="./src/assets/build-details.png"  alt="Build details"/>
 
 ## Setup
 
@@ -14,17 +14,7 @@ Website: [https://jenkins.io/](https://jenkins.io/)
 yarn add @backstage/plugin-jenkins
 ```
 
-2. Add plugin API to your Backstage instance:
-
-```js
-// packages/app/src/api.ts
-import { JenkinsApi, jenkinsApiRef } from '@backstage/plugin-jenkins';
-
-const builder = ApiRegistry.builder();
-builder.add(jenkinsApiRef, new JenkinsApi(`${backendUrl}/proxy/jenkins/api`));
-```
-
-2. Add plugin itself:
+2. Add plugin:
 
 ```js
 // packages/app/src/plugins.ts
@@ -63,7 +53,7 @@ metadata:
   name: 'your-component'
   description: 'a description'
   annotations:
-    backstage.io/jenkins-github-folder: 'folder-name/job-name'
+    jenkins.io/github-folder: 'folder-name/job-name'
 spec:
   type: service
   lifecycle: experimental

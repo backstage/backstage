@@ -19,7 +19,6 @@ import express from 'express';
 import Knex from 'knex';
 import fetch from 'node-fetch';
 import { Config } from '@backstage/config';
-import path from 'path';
 import Docker from 'dockerode';
 import {
   GeneratorBuilder,
@@ -27,7 +26,9 @@ import {
   PublisherBase,
   LocalPublish,
 } from '../techdocs';
+import { resolvePackagePath } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { DocsBuilder } from './helpers';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -39,53 +40,51 @@ type RouterOptions = {
   dockerClient: Docker;
 };
 
+const staticDocsDir = resolvePackagePath(
+  '@backstage/plugin-techdocs-backend',
+  'static/docs',
+);
+
 export async function createRouter({
   preparers,
   generators,
   publisher,
   config,
   dockerClient,
+  logger,
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
 
-  router.get('/', async (_, res) => {
-    res.status(200).send('Hello TechDocs Backend');
-  });
-
-  // TODO: This route should not exist in the future
-  router.get('/buildall', async (_, res) => {
+  router.get('/docs/:kind/:namespace/:name/*', async (req, res) => {
     const baseUrl = config.getString('backend.baseUrl');
-    const entitiesResponse = (await (
-      await fetch(`${baseUrl}/catalog/entities`)
-    ).json()) as Entity[];
+    const storageUrl = config.getString('techdocs.storageUrl');
 
-    const entitiesWithDocs = entitiesResponse.filter(
-      entity => entity.metadata.annotations?.['backstage.io/techdocs-ref'],
-    );
+    const { kind, namespace, name } = req.params;
 
-    entitiesWithDocs.forEach(async entity => {
-      const preparer = preparers.get(entity);
-      const generator = generators.get(entity);
+    const entity = (await (
+      await fetch(
+        `${baseUrl}/catalog/entities/by-name/${kind}/${namespace}/${name}`,
+      )
+    ).json()) as Entity;
 
-      const { resultDir } = await generator.run({
-        directory: await preparer.prepare(entity),
-        dockerClient,
-      });
-
-      publisher.publish({
-        entity,
-        directory: resultDir,
-      });
+    const docsBuilder = new DocsBuilder({
+      preparers,
+      generators,
+      publisher,
+      dockerClient,
+      logger,
+      entity,
     });
 
-    res.send('Successfully generated documentation');
+    if (!(await docsBuilder.docsUpToDate())) {
+      await docsBuilder.build();
+    }
+
+    return res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
   if (publisher instanceof LocalPublish) {
-    router.use(
-      '/static/docs/',
-      express.static(path.resolve(__dirname, `../../static/docs`)),
-    );
+    router.use('/static/docs', express.static(staticDocsDir));
   }
 
   return router;

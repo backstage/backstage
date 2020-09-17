@@ -1,6 +1,7 @@
 ---
 id: utility-apis
 title: Utility APIs
+description: Backstage Utility APIs
 ---
 
 ## Introduction
@@ -17,7 +18,7 @@ Utility APIs. While the `createPlugin` API is focused on the initialization
 plugins and the app, the Utility APIs provide ways for plugins to communicate
 during their entire life cycle.
 
-## Usage
+## Consuming APIs
 
 Each Utility API is tied to an `ApiRef` instance, which is a global singleton
 object without any additional state or functionality, its only purpose is to
@@ -55,47 +56,112 @@ from any component inside Backstage, including the ones in `@backstage/core`.
 The only requirement is that they are beneath the `AppProvider` in the react
 tree.
 
-## Registering Utility API Implementations
+## Supplying APIs
 
-The Backstage App is responsible for providing implementations for all Utility
-APIs required by plugins. The example app in this repo registers its APIs inside
-[src/apis.ts](/packages/app/src/apis.ts). Here's an example of how to wire up
-the `ErrorApi` inside an app:
+### API Factories
+
+APIs are registered in the form of `ApiFactories`, which encapsulate the process
+of instantiating an API. It is a collection of three things: the `ApiRef` of the
+API to instantiate, a list of all required dependencies, and a factory function
+that returns a new API instance.
+
+For example, this is the default `ApiFactory` for the `ErrorApi`:
 
 ```ts
-import {
-  ApiRegistry,
-  createApp,
-  alertApiRef,
-  errorApiRef,
-  AlertApiForwarder,
-  ErrorApiForwarder,
-  ErrorAlerter,
-} from '@backstage/core';
-
-const builder = ApiRegistry.builder();
-
-// The alert API is a self-contained implementation that shows alerts to the user.
-const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
-
-// The error API uses the alert API to send error notifications to the user.
-builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
-
-const app = createApp({
-  apis: apiBuilder.build(),
-  // ... other config
+createApiFactory({
+  api: errorApiRef,
+  deps: { alertApi: alertApiRef },
+  factory: ({ alertApi }) =>
+    new ErrorAlerter(alertApi, new ErrorApiForwarder()),
 });
 ```
 
-The `ApiRegistry` is used to register all Utility APIs in the app and associate
-them with `ApiRef`s. It implements the `ApiHolder` interface, which enables it
-to provide an API implementation given an `ApiRef`.
+In this example the `errorApiRef` is our API, which encapsulates the `ErrorApi`
+type. The `alertApiRef` is our single dependency, which we give the name
+`alertApi`, and is then passed on to the factory function, which returns an
+implementation of the `ErrorApi`.
 
-Note that our `ErrorApi` implementation depends on another Utility API, the
-`AlertApi`. This is the method with which APIs can depend on other APIs, using
-manual dependency injection at the initialization of the app. In general, if you
-want to depend on another Utility API in an implementation of an API, you import
-the type for that API and make it a constructor parameter.
+The `createApiFactory` function is a thin wrapper that enables TypeScript type
+inference. You may notice that there are no type annotations in the above
+example, and that is because we're able to infer all types from the `ApiRef`s.
+TypeScript will make sure that the return value of the `factory` function
+matches the type embedded in `api`'s `ApiRef`, in this case the `ErrorApi`. It
+will also match the types between the `deps` and the parameters of the `factory`
+function, again using the type embedded within the `ApiRef`s.
+
+## Registering API Factories
+
+The responsibility for adding Utility APIs to a Backstage app lies in three
+different locations: the Backstage core library, each plugin included in the
+app, and the app itself.
+
+### Core APIs
+
+Starting with the Backstage core library, it provides implementation for all of
+the core APIs. The core APIs are the ones exported by `@backstage/core`, such as
+the `errorApiRef` and `configApiRef`. You can find a full list of them
+[here](../reference/utility-apis/README.md).
+
+The core APIs are loaded for any app created with `createApp` from
+`@backstage/core`, which means that there is no step that needs to be taken to
+include these APIs in an app.
+
+### Plugin APIs
+
+In addition to the core APIs, plugins can define and export their own APIs.
+While doing so they should usually also provide default implementations of their
+own APIs, for example, the `catalog` plugin exports `catalogApiRef`, and also
+supplies a default `ApiFactory` of that API using the `CatalogClient`. There is
+one restriction to plugin-provided API Factories: plugins may not supply
+factories for core APIs, trying to do so will cause the app to crash.
+
+Plugins supply their APIs through the `apis` option of `createPlugin`, for
+example:
+
+```ts
+export const plugin = createPlugin({
+  id: 'techdocs',
+  apis: [
+    createApiFactory({
+      api: techdocsStorageApiRef,
+      deps: { configApi: configApiRef },
+      factory({ configApi }) {
+        return new TechDocsStorageApi({
+          apiOrigin: configApi.getString('techdocs.storageUrl'),
+        });
+      },
+    }),
+  ],
+});
+```
+
+### App APIs
+
+Lastly, the app itself is the final point where APIs can be added, and what has
+the final say in what APIs will be loaded at runtime. The app may override the
+factories for any of the core or plugin APIs, with the exception of the config,
+app theme, and identity APIs. These are static APIs that are tied into the
+`createApp` implementation, and therefore not possible to override.
+
+Overriding APIs is useful for apps that want to switch out behavior to tailor it
+to their environment. In some cases plugins may also export multiple
+implementations of the same API, where they each have their own different
+requirements on for example backend storage and surrounding environment.
+
+Supplying APIs to the app works just like for plugins:
+
+```ts
+const app = createApp({
+  apis: [
+    /* ApiFactories */
+  ],
+  // ... other options
+});
+```
+
+A common pattern is to export a list of all APIs from `apis.ts`, next to
+`App.tsx`. See the [example app in this repo](../../packages/app/src/apis.ts)
+for an example.
 
 ## Custom implementations of Utility APIs
 
@@ -123,19 +189,33 @@ implement the `ErrorApi`, as it is checked by the type embedded in the
 
 ## Defining custom Utility APIs
 
-The pattern for plugins defining their own Utility APIs is not fully established
-yet. The current way is for the plugin to export its own `ApiRef` and type for
-the API, along with one or more implementations. It is then up to the app to
-import, and register those APIs. See for example the
-[lighthouse](/plugins/lighthouse/src/api.ts) or
-[graphiql](/plugins/graphiql/src/lib/api/types.ts) plugins for examples of this.
+Plugins are free to define their own Utility APIs. Simply define the TypeScript
+interface for the API, and create an `ApiRef` using `createApiRef` exported from
+`@backstage/core`. Also be sure to provide at least one implementation of the
+API, and to declare a default factory for the API in `createPlugin`.
 
-The goal is to make this process a bit smoother, but that requires work in other
-parts of Backstage, like configuration management. So it remains as a TODO. If
-you have more questions regarding this, or have an idea for an API that you want
-to share outside your plugin, hit us up in
-[GitHub issues](https://github.com/spotify/backstage/issues/new/choose) or the
-[Backstage Discord server](https://discord.gg/EBHEGzX).
+Custom Utility APIs can be either public or private, which it is up to the
+plugin to choose. Private APIs do not expose an external API surface, and it's
+therefore possible to make breaking changes to the API without affecting other
+users of the plugin. If an API is made public however, it opens up for other
+plugins to make use of the API, and it also makes it possible for users for your
+plugin to override the API in the app. It is however important to maintain
+backwards compatibility of public APIs, as you may otherwise break apps that are
+using your plugin.
+
+To make an API public, simply export the `ApiRef` of the API, and any associated
+types. To make an API private, just avoid exporting the `ApiRef`, but still be
+sure to supply a default factory to `createPlugin`.
+
+Private APIs are useful for plugins that want to depend on other APIs outside of
+React components, but not have to expose an entire API surface to maintain. When
+using private APIs, it is fine to use the `typeof` of an implementing class as
+the type parameter passed to `createApiRef`, while public APIs should always
+define a separate TypeScript interface type.
+
+Plugins may depend on APIs from other plugins, both in React components and as
+dependencies to API factories. Do however be sure to not cause circular
+dependencies between plugins.
 
 ## Architecture
 

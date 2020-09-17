@@ -7,6 +7,14 @@
 
 /* your custom css */
 
+/* override font color for new dark tech docs styling */
+table {
+  color: white;
+}
+table tr:nth-child(2n) {
+  background-color: #2b2b2b;
+}
+
 @media only screen and (min-device-width: 360px) and (max-device-width: 736px) {
 }
 
@@ -50,7 +58,7 @@ ol,
 li,
 td {
   font-family: Helvetica Neue, sans-serif;
-  color: $textColor;
+  color: #e4e4e4;
 }
 
 .mainWrapper {
@@ -103,6 +111,10 @@ td {
 
 .toc .toggleNav .navGroup .navGroupCategoryTitle {
   color: $navigatorTitleTextColor;
+}
+
+.toc .toggleNav .navGroup .navGroupSubcategoryTitle {
+  color: $navGroupSubcategoryTitleColor;
 }
 
 .toc .toggleNav ul li a,
@@ -195,6 +207,54 @@ td {
   border-radius: 0.25rem;
 }
 
+/*
+ * Fix for viewing Table of Contents bar on documentation
+ * and blog pages on smaller screens.
+ */
+@media only screen and (max-width: 1023px) {
+  /* Nav bar hides the docs toc bar */
+  .docMainWrapper {
+    margin-top: 4rem;
+  }
+
+  /* Toc bar does not have to be fixed */
+  .docsNavContainer {
+    position: unset;
+    width: 95vw;
+    z-index: 100;
+    margin-left: -2vw;
+  }
+
+  /* Toc bar does not have to be fixed when slider is active */
+  .docsSliderActive .toc .navBreadcrumb,
+  .tocActive .navBreadcrumb {
+    position: unset;
+  }
+
+  /* Fix unexpected width increase when toc is toggled */
+  .docsSliderActive .toc .navBreadcrumb,
+  .tocActive .navBreadcrumb {
+    width: inherit;
+  }
+
+  /* This pseudo-element stops toc toggle button to be clicked */
+  header.postHeader::before {
+    height: 2em !important;
+    margin-top: -2em !important;
+  }
+
+  /* This pseudo-element stops toc toggle button to be clicked */
+  #__docusaurus.postHeaderTitle::before {
+    height: 1em;
+    margin-top: -1em;
+  }
+
+  /* Useless button causing trouble */
+  .tocToggler {
+    display: none;
+  }
+}
+
 /* content */
 .postContainer blockquote {
   color: $textColor;
@@ -208,7 +268,7 @@ td {
 code {
   font-family: IBM Plex Mono, Menlo, Monaco, Consolas, Courier New, monospace;
   font-weight: 500;
-  background-color: #0e0e0e;
+  background-color: #272822;
 }
 
 /* .stripe {
@@ -280,17 +340,17 @@ code {
   background: linear-gradient(70.44deg, #121212 75%, #5d817b 100%);
 }
 .bg-teal-top-right {
-  background: 
+  background:
   /* linear-gradient(
       178.64deg,
       rgba(255, 255, 255, 0) 57.61%,
       rgba(255, 255, 255, 0.17) 127.71%
-    ), */ 
+    ), */
     /* linear-gradient(
       144.35deg,
       rgba(98, 197, 179, 0) 56.68%,
       rgba(98, 197, 179, 0.59) 109.25%
-    ), */ 
+    ), */
     /* linear-gradient(
       192.29deg,
       rgba(155, 240, 225, 0) 54.17%,

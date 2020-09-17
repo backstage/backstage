@@ -28,11 +28,14 @@ module.exports = {
   env: {
     jest: true,
   },
+  globals: {
+    __non_webpack_require__: 'readonly',
+  },
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  ignorePatterns: ['.eslintrc.js', '**/dist/**'],
+  ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
     'no-console': 0, // Permitted in console programs
     'new-cap': ['error', { capIsNew: false }], // Because Express constructs things e.g. like 'const r = express.Router()'

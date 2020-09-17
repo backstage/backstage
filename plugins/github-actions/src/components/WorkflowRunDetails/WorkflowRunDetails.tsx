@@ -13,35 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { useEntityCompoundName } from '@backstage/plugin-catalog';
-import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
-import { useWorkflowRunJobs } from './useWorkflowRunJobs';
-import { useProjectName } from '../useProjectName';
+import { Entity } from '@backstage/catalog-model';
+import { Link } from '@backstage/core';
 import {
-  makeStyles,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
-  TableRow,
-  TableCell,
-  ListItemText,
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  Typography,
-  ExpansionPanelDetails,
-  TableContainer,
-  Table,
-  Paper,
-  TableBody,
-  LinearProgress,
+  Breadcrumbs,
   CircularProgress,
+  LinearProgress,
+  Link as MaterialLink,
+  ListItemText,
+  makeStyles,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
   Theme,
-  Link,
+  Typography,
 } from '@material-ui/core';
-import { Jobs, Job, Step } from '../../api';
-import moment from 'moment';
-import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
+import moment from 'moment';
+import React from 'react';
+import { Job, Jobs, Step } from '../../api';
+import { useProjectName } from '../useProjectName';
+import { WorkflowRunStatus } from '../WorkflowRunStatus';
+import { useWorkflowRunJobs } from './useWorkflowRunJobs';
+import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
+import { WorkflowRunLogs } from '../WorkflowRunLogs';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -54,7 +57,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   table: {
     padding: theme.spacing(1),
   },
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -68,7 +71,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const JobsList = ({ jobs }: { jobs?: Jobs }) => {
+const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
   const classes = useStyles();
   return (
     <Box>
@@ -80,6 +83,7 @@ const JobsList = ({ jobs }: { jobs?: Jobs }) => {
             className={
               job.status !== 'success' ? classes.failed : classes.success
             }
+            entity={entity}
           />
         ))}
     </Box>
@@ -108,14 +112,19 @@ const StepView = ({ step }: { step: Step }) => {
   );
 };
 
-const JobListItem = ({ job, className }: { job: Job; className: string }) => {
+const JobListItem = ({
+  job,
+  className,
+  entity,
+}: {
+  job: Job;
+  className: string;
+  entity: Entity;
+}) => {
   const classes = useStyles();
   return (
-    <ExpansionPanel
-      TransitionProps={{ unmountOnExit: true }}
-      className={className}
-    >
-      <ExpansionPanelSummary
+    <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
+      <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`panel-${name}-content`}
         id={`panel-${name}-header`}
@@ -126,8 +135,8 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
         <Typography variant="button">
           {job.name} ({getElapsedTime(job.started_at, job.completed_at)})
         </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.accordionDetails}>
         <TableContainer>
           <Table>
             {job.steps.map((step: Step) => (
@@ -135,23 +144,18 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
             ))}
           </Table>
         </TableContainer>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+      {job.status === 'queued' || job.status === 'in_progress' ? (
+        <WorkflowRunLogs runId={job.id} inProgress entity={entity} />
+      ) : (
+        <WorkflowRunLogs runId={job.id} inProgress={false} entity={entity} />
+      )}
+    </Accordion>
   );
 };
 
-export const WorkflowRunDetails = () => {
-  let entityCompoundName = useEntityCompoundName();
-  if (!entityCompoundName.name) {
-    // TODO(shmidt-i): remove when is fully integrated
-    // into the entity view
-    entityCompoundName = {
-      kind: 'Component',
-      name: 'backstage',
-      namespace: 'default',
-    };
-  }
-  const projectName = useProjectName(entityCompoundName);
+export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
+  const projectName = useProjectName(entity);
 
   const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
   const details = useWorkflowRunsDetails(repo, owner);
@@ -170,6 +174,10 @@ export const WorkflowRunDetails = () => {
   }
   return (
     <div className={classes.root}>
+      <Breadcrumbs aria-label="breadcrumb">
+        <Link to="..">Workflow runs</Link>
+        <Typography>Workflow run details</Typography>
+      </Breadcrumbs>
       <TableContainer component={Paper} className={classes.table}>
         <Table>
           <TableBody>
@@ -211,10 +219,10 @@ export const WorkflowRunDetails = () => {
               </TableCell>
               <TableCell>
                 {details.value?.html_url && (
-                  <Link target="_blank" href={details.value.html_url}>
+                  <MaterialLink target="_blank" href={details.value.html_url}>
                     Workflow runs on GitHub{' '}
                     <ExternalLinkIcon className={classes.externalLinkIcon} />
-                  </Link>
+                  </MaterialLink>
                 )}
               </TableCell>
             </TableRow>
@@ -224,7 +232,7 @@ export const WorkflowRunDetails = () => {
                 {jobs.loading ? (
                   <CircularProgress />
                 ) : (
-                  <JobsList jobs={jobs.value} />
+                  <JobsList jobs={jobs.value} entity={entity} />
                 )}
               </TableCell>
             </TableRow>
