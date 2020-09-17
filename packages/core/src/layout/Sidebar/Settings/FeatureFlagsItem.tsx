@@ -53,11 +53,7 @@ export const FlagItem = ({ featureFlag, api }: Props) => {
           selected={enabled}
           onChange={toggleFlag}
         >
-          <Tooltip
-            placement="top"
-            arrow
-            title={Boolean(enabled) ? 'Disable' : 'Enable'}
-          >
+          <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
             <CheckIcon />
           </Tooltip>
         </ToggleButton>
