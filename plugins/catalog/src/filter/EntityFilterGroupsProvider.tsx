@@ -62,6 +62,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
   }>({});
   const [matchingEntities, setMatchingEntities] = useState<Entity[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [isCatalogEmpty, setCatalogEmpty] = useState<boolean>(false);
 
   useEffect(() => {
     doReload();
@@ -86,6 +87,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
       ),
     );
     setAvailableTags(collectTags(entities));
+    setCatalogEmpty(entities !== undefined && entities.length === 0);
   }, [entities, error]);
 
   const register = useCallback(
@@ -143,6 +145,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
     filterGroupStates,
     matchingEntities,
     availableTags,
+    isCatalogEmpty,
   };
 }
 
