@@ -62,9 +62,17 @@ catalog:
         $secret:
           env: GITHUB_PRIVATE_TOKEN
     githubApi:
-      privateToken:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        # Example for how to add your GitHub Enterprise instance:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
     bitbucketApi:
       username:
         $secret:
