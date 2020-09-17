@@ -14,116 +14,149 @@
  * limitations under the License.
  */
 
-import { GithubApiReaderProcessor } from './GithubApiReaderProcessor';
+import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import {
+  getRawUrl,
+  getRequestOptions,
+  GithubApiReaderProcessor,
+  ProviderConfig,
+  readConfig,
+} from './GithubApiReaderProcessor';
 
 describe('GithubApiReaderProcessor', () => {
-  const createConfig = (token: string | undefined) =>
-    ConfigReader.fromConfigs([
-      {
-        context: '',
-        data: {
-          catalog: {
-            processors: {
-              githubApi: {
-                privateToken: token,
-              },
-            },
-          },
-        },
-      },
-    ]);
+  describe('getRequestOptions', () => {
+    it('sets the correct API version', () => {
+      const config: ProviderConfig = { target: '', apiBaseUrl: '' };
+      expect((getRequestOptions(config).headers as any).Accept).toEqual(
+        'application/vnd.github.v3.raw',
+      );
+    });
 
-  it('should build raw api', () => {
-    const processor = new GithubApiReaderProcessor(createConfig(undefined));
-
-    const tests = [
-      {
-        target: 'https://github.com/a/b/blob/master/path/to/c.yaml',
-        url: new URL(
-          'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=master',
-        ),
-        err: undefined,
-      },
-      {
-        target: 'https://api.com/a/b/blob/master/path/to/c.yaml',
-        url: null,
-        err:
-          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong GitHub URL or Invalid file path',
-      },
-      {
-        target: 'com/a/b/blob/master/path/to/c.yaml',
-        url: null,
-        err:
-          'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
-      },
-      {
-        target:
-          'https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml',
-        url: new URL(
-          'https://api.github.com/repos/spotify/backstage/contents/packages/catalog-model/examples/playback-order-component.yaml?ref=master',
-        ),
-        err: undefined,
-      },
-    ];
-
-    for (const test of tests) {
-      if (test.err) {
-        expect(() => processor.buildRawUrl(test.target)).toThrowError(test.err);
-      } else if (test.url) {
-        expect(processor.buildRawUrl(test.target).toString()).toEqual(
-          test.url.toString(),
-        );
-      } else {
-        throw new Error(
-          'This should not have happened. Either err or url should have matched.',
-        );
-      }
-    }
+    it('inserts a token when needed', () => {
+      const withToken: ProviderConfig = {
+        target: '',
+        apiBaseUrl: '',
+        token: 'A',
+      };
+      const withoutToken: ProviderConfig = {
+        target: '',
+        apiBaseUrl: '',
+      };
+      expect(
+        (getRequestOptions(withToken).headers as any).Authorization,
+      ).toEqual('token A');
+      expect(
+        (getRequestOptions(withoutToken).headers as any).Authorization,
+      ).toBeUndefined();
+    });
   });
 
-  it('should return request options', () => {
-    const tests = [
-      {
-        token: '0123456789',
-        expect: {
-          headers: {
-            Accept: 'application/vnd.github.v3.raw',
-            Authorization: 'token 0123456789',
-          },
-        },
-      },
-      {
-        token: '',
-        err:
-          "Invalid type in config for key 'catalog.processors.githubApi.privateToken' in '', got empty-string, wanted string",
-        expect: {
-          headers: {
-            Accept: 'application/vnd.github.v3.raw',
-          },
-        },
-      },
-      {
-        token: undefined,
-        expect: {
-          headers: {
-            Accept: 'application/vnd.github.v3.raw',
-          },
-        },
-      },
-    ];
+  describe('getRawUrl', () => {
+    it('rejects targets that do not look like URLs', () => {
+      const config: ProviderConfig = { target: '', apiBaseUrl: '' };
+      expect(() => getRawUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
+    });
 
-    for (const test of tests) {
-      if (test.err) {
-        expect(
-          () => new GithubApiReaderProcessor(createConfig(test.token)),
-        ).toThrowError(test.err);
-      } else {
-        const processor = new GithubApiReaderProcessor(
-          createConfig(test.token),
-        );
-        expect(processor.getRequestOptions()).toEqual(test.expect);
-      }
+    it('passes through the happy path', () => {
+      const config: ProviderConfig = {
+        target: 'https://github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      expect(
+        getRawUrl(
+          'https://github.com/a/b/blob/branchname/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL(
+          'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname',
+        ),
+      );
+    });
+  });
+
+  describe('readConfig', () => {
+    function config(
+      providers: { target: string; apiBaseUrl?: string; token?: string }[],
+    ) {
+      return ConfigReader.fromConfigs([
+        {
+          context: '',
+          data: {
+            catalog: { processors: { githubApi: { providers } } },
+          },
+        },
+      ]);
     }
+
+    it('adds a default GitHub entry when missing', () => {
+      const output = readConfig(config([]));
+      expect(output).toEqual([
+        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
+      ]);
+    });
+
+    it('injects the correct GitHub API base URL when missing', () => {
+      const output = readConfig(config([{ target: 'https://github.com' }]));
+      expect(output).toEqual([
+        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
+      ]);
+    });
+
+    it('rejects custom targets with no API base URL', () => {
+      expect(() =>
+        readConfig(config([{ target: 'https://ghe.company.com' }])),
+      ).toThrow(
+        'Provider at https://ghe.company.com must configure an explicit apiBaseUrl',
+      );
+    });
+
+    it('rejects funky configs', () => {
+      expect(() => readConfig(config([{ target: 7 } as any]))).toThrow(
+        /target/,
+      );
+      expect(() => readConfig(config([{ noTarget: '7' } as any]))).toThrow(
+        /target/,
+      );
+      expect(() =>
+        readConfig(
+          config([{ target: 'https://github.com', apiBaseUrl: 7 } as any]),
+        ),
+      ).toThrow(/apiBaseUrl/);
+      expect(() =>
+        readConfig(config([{ target: 'https://github.com', token: 7 } as any])),
+      ).toThrow(/token/);
+    });
+  });
+
+  describe('implementation', () => {
+    it('rejects unknown types', async () => {
+      const processor = new GithubApiReaderProcessor([
+        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
+      ]);
+      const location: LocationSpec = {
+        type: 'not-github/api',
+        target: 'https://github.com',
+      };
+      await expect(
+        processor.readLocation(location, false, () => {}),
+      ).resolves.toBeFalsy();
+    });
+
+    it('rejects unknown targets', async () => {
+      const processor = new GithubApiReaderProcessor([
+        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
+      ]);
+      const location: LocationSpec = {
+        type: 'github/api',
+        target: 'https://not.github.com/apa',
+      };
+      await expect(
+        processor.readLocation(location, false, () => {}),
+      ).rejects.toThrow(
+        /There is no GitHub provider that matches https:\/\/not.github.com\/apa/,
+      );
+    });
   });
 });

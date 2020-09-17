@@ -1,6 +1,8 @@
 ---
 id: external-integrations
 title: External integrations
+description: Documentation on External integrations to integrate systems
+with Backstage
 ---
 
 Backstage natively supports storing software components in

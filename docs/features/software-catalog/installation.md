@@ -1,6 +1,7 @@
 ---
 id: installation
 title: Installing in your Backstage App
+description: Documentation on How to install Backstage Plugin
 ---
 
 The catalog plugin comes in two packages, `@backstage/plugin-catalog` and
