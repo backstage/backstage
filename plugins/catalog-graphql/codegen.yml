@@ -9,7 +9,7 @@ generates:
       afterOneFileWrite:
         - eslint --fix
     config:
-      contextType: '@graphql-modules/core#ModuleContext'
+      contextType: "@graphql-modules/core#ModuleContext"
       allowParentTypeOverride: true
       useIndexSignature: true
       defaultMapper: Partial<{T}>

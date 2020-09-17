@@ -55,7 +55,6 @@ export async function createModule(
       },
     },
     CatalogEntity: {
-      // TODO - use symbols here instead of strings.
       metadata: entity => ({ ...entity.metadata!, entity }),
       spec: entity => ({ ...entity.spec!, entity }),
     },
