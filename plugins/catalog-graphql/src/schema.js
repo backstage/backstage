@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const EntityMetadataFields = /* GraphQL */ `
+const metadataFields = /* GraphQL */ `
   name: String!
   annotations: JSONObject!
   annotation(name: String!): JSON
@@ -25,36 +25,32 @@ const EntityMetadataFields = /* GraphQL */ `
   generation: Int!
 `;
 
-const EntityMetadata = /* GraphQL */ `
+const schema = /* GraphQL */ `
   scalar JSON
   scalar JSONObject
   
   interface EntityMetadata {
-    ${EntityMetadataFields}
+    ${metadataFields}
   }
 
   type DefaultEntityMetadata implements EntityMetadata {
-    ${EntityMetadataFields}
+    ${metadataFields}
   }
 
   type ComponentMetadata implements EntityMetadata {
-    ${EntityMetadataFields}
+    ${metadataFields}
     # mock field to prove extensions working
     relationships: String
   }
 
   type TemplateMetadata implements EntityMetadata {
-    ${EntityMetadataFields}
+    ${metadataFields}
     # mock field to prove extensions working
     updatedBy: String
   }
-<<<<<<< HEAD
  
   # TODO: move this definition into plugin-scaffolder-graphql
-=======
-
->>>>>>> 94d28cb5c81798c80b32bf4fa8d834cb873ec06a
-  type TemplateEntitySpec {
+    type TemplateEntitySpec {
     type: String!
     path: String
     schema: JSONObject!
@@ -89,4 +85,4 @@ const EntityMetadata = /* GraphQL */ `
   }
 `;
 
-module.exports = EntityMetadata;
+export default schema;
