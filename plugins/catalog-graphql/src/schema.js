@@ -50,7 +50,7 @@ const schema = /* GraphQL */ `
   }
  
   # TODO: move this definition into plugin-scaffolder-graphql
-    type TemplateEntitySpec {
+  type TemplateEntitySpec {
     type: String!
     path: String
     schema: JSONObject!
