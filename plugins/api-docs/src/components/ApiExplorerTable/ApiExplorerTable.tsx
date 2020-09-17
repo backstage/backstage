@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core';
-import { Link } from '@material-ui/core';
+import { Link, Chip } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
@@ -46,24 +46,51 @@ const columns: TableColumn<Entity>[] = [
     ),
   },
   {
+    title: 'Owner',
+    field: 'spec.owner',
+  },
+  {
+    title: 'Lifecycle',
+    field: 'spec.lifecycle',
+  },
+  {
+    title: 'Type', // TODO: Resolve the type display name using the API from https://github.com/spotify/backstage/pull/2451
+    field: 'spec.type',
+  },
+  {
     title: 'Description',
     field: 'metadata.description',
   },
+  {
+    title: 'Tags',
+    field: 'metadata.tags',
+    cellStyle: {
+      padding: '0px 16px 0px 20px',
+    },
+    render: (entity: Entity) => (
+      <>
+        {entity.metadata.tags &&
+          entity.metadata.tags.map(t => (
+            <Chip key={t} label={t} style={{ marginBottom: '0px' }} />
+          ))}
+      </>
+    ),
+  },
 ];
 
-type CatalogTableProps = {
+type ExplorerTableProps = {
   entities: Entity[];
   titlePreamble: string;
   loading: boolean;
   error?: any;
 };
 
-export const ApiCatalogTable = ({
+export const ApiExplorerTable = ({
   entities,
   loading,
   error,
   titlePreamble,
-}: CatalogTableProps) => {
+}: ExplorerTableProps) => {
   if (error) {
     return (
       <div>

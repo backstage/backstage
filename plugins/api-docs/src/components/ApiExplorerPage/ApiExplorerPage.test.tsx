@@ -20,7 +20,7 @@ import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import React from 'react';
-import { ApiCatalogPage } from './ApiCatalogPage';
+import { ApiExplorerPage } from './ApiExplorerPage';
 
 describe('ApiCatalogPage', () => {
   const catalogApi: Partial<CatalogApi> = {
@@ -63,7 +63,7 @@ describe('ApiCatalogPage', () => {
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    const { findByText } = renderWrapped(<ApiCatalogPage />);
+    const { findByText } = renderWrapped(<ApiExplorerPage />);
     expect(await findByText(/APIs \(2\)/)).toBeInTheDocument();
   });
 });

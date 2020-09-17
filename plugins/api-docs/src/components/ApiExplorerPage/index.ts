@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ApiCatalogTable } from './ApiCatalogTable';
+export { ApiExplorerPage } from './ApiExplorerPage';

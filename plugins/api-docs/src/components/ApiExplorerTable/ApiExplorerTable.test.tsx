@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import * as React from 'react';
-import { ApiCatalogTable } from './ApiCatalogTable';
+import { ApiExplorerTable } from './ApiExplorerTable';
 
 const entites: Entity[] = [
   {
@@ -42,7 +42,7 @@ describe('ApiCatalogTable component', () => {
   it('should render error message when error is passed in props', async () => {
     const rendered = render(
       wrapInTestApp(
-        <ApiCatalogTable
+        <ApiExplorerTable
           titlePreamble="APIs"
           entities={[]}
           loading={false}
@@ -59,7 +59,7 @@ describe('ApiCatalogTable component', () => {
   it('should display entity names when loading has finished and no error occurred', async () => {
     const rendered = render(
       wrapInTestApp(
-        <ApiCatalogTable
+        <ApiExplorerTable
           titlePreamble="APIs"
           entities={entites}
           loading={false}
