@@ -61,7 +61,6 @@ export class GithubPublisher implements PublisherBase {
     values: RequiredTemplateValues & Record<string, JsonValue>,
   ) {
     const [owner, name] = values.storePath.split('/');
-    const access = values.access as string;
 
     const user = await this.client.users.getByUsername({ username: owner });
 
@@ -80,7 +79,8 @@ export class GithubPublisher implements PublisherBase {
 
     const { data } = await repoCreationPromise;
 
-    if (access && access.match(new RegExp(`${owner}/.+`))) {
+    const access = values.access as string;
+    if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
       await this.client.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
