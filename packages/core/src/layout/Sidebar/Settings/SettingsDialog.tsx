@@ -15,13 +15,20 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, makeStyles } from '@material-ui/core';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  makeStyles,
+  Divider,
+} from '@material-ui/core';
 import { AppSettingsList } from './AppSettingsList';
 import { AuthProvidersList } from './AuthProviderList';
 import { FeatureFlagsList } from './FeatureFlagsList';
 import { SignInAvatar } from './SignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from './useUserProfileInfo';
+import { useApi, featureFlagsApiRef } from '@backstage/core-api';
 
 const useStyles = makeStyles({
   root: {
@@ -36,6 +43,8 @@ type Props = {
 export const SettingsDialog = ({ providerSettings }: Props) => {
   const classes = useStyles();
   const { profile, displayName } = useUserProfile();
+  const featureFlagsApi = useApi(featureFlagsApiRef);
+  const featureFlags = featureFlagsApi.getRegisteredFlags();
 
   return (
     <Card className={classes.root}>
@@ -47,8 +56,18 @@ export const SettingsDialog = ({ providerSettings }: Props) => {
       />
       <CardContent>
         <AppSettingsList />
-        <AuthProvidersList providerSettings={providerSettings} />
-        <FeatureFlagsList />
+        {providerSettings && (
+          <>
+            <Divider />
+            <AuthProvidersList providerSettings={providerSettings} />
+          </>
+        )}
+        {featureFlags.length > 0 && (
+          <>
+            <Divider />
+            <FeatureFlagsList featureFlags={featureFlags} />
+          </>
+        )}
       </CardContent>
     </Card>
   );

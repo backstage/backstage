@@ -15,7 +15,11 @@
  */
 
 import React from 'react';
-import { FeatureFlagName, FeatureFlagsApi } from '@backstage/core-api';
+import {
+  FeatureFlagName,
+  useApi,
+  featureFlagsApiRef,
+} from '@backstage/core-api';
 import {
   ListItem,
   ListItemSecondaryAction,
@@ -25,12 +29,18 @@ import {
 import CheckIcon from '@material-ui/icons/CheckCircle';
 import { ToggleButton } from '@material-ui/lab';
 
-type Props = {
-  featureFlag: { name: FeatureFlagName; pluginId: string };
-  api: FeatureFlagsApi;
+export type Item = {
+  name: FeatureFlagName;
+  pluginId: string;
 };
 
-export const FlagItem = ({ featureFlag, api }: Props) => {
+type Props = {
+  featureFlag: Item;
+};
+
+export const FlagItem = ({ featureFlag }: Props) => {
+  const api = useApi(featureFlagsApiRef);
+
   const [enabled, setEnabled] = React.useState(
     Boolean(api.getFlags().get(featureFlag.name)),
   );
