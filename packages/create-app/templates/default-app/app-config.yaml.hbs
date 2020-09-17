@@ -15,6 +15,7 @@ backend:
     connection: ':memory:'
   {{/if}}
   {{#if dbTypePG}}
+  # config options: https://node-postgres.com/api/client
   database:
     client: pg
     connection:
@@ -30,6 +31,11 @@ backend:
       password:
         $secret:
           env: POSTGRES_PASSWORD
+      # https://node-postgres.com/features/ssl
+      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+        #ca: # if you have a CA file and want to verify it you can uncomment this section
+        #  $secret:
+        #    file: <file-path>/ca/server.crt
   {{/if}}
 
 proxy:
