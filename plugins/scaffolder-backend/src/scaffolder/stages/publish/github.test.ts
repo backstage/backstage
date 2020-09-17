@@ -147,6 +147,7 @@ describe('GitHub Publisher', () => {
           storePath: 'blam/test',
           owner: 'bob',
           access: 'bob',
+          description: 'description',
         },
         directory: '/tmp/test',
       });
@@ -154,6 +155,7 @@ describe('GitHub Publisher', () => {
       expect(
         mockGithubClient.repos.createForAuthenticatedUser,
       ).toHaveBeenCalledWith({
+        description: 'description',
         name: 'test',
         private: false,
       });
