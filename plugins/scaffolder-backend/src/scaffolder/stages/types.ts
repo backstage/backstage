@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './publishers';
-export * from './github';
-export * from './gitlab';
-export * from './types';
+export type RemoteProtocol = 'file' | 'github' | 'gitlab' | 'gitlab/api';

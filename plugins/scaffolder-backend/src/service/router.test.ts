@@ -18,21 +18,20 @@ import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
-import { Templaters, Preparers, PublisherBase } from '../scaffolder';
+import { Templaters, Preparers, Publishers } from '../scaffolder';
 import Docker from 'dockerode';
 
 jest.mock('dockerode');
 
 describe('createRouter', () => {
   let app: express.Express;
-  const publisher: jest.Mocked<PublisherBase> = { publish: jest.fn() };
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
       preparers: new Preparers(),
       templaters: new Templaters(),
-      publisher: publisher,
+      publishers: new Publishers(),
       dockerClient: new Docker(),
     });
     app = express().use(router);
