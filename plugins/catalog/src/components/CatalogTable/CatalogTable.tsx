@@ -64,6 +64,11 @@ const columns: TableColumn<Entity>[] = [
   {
     title: 'Description',
     field: 'metadata.description',
+    render: (entity: any) => (
+      <Link href={entity.metadata.description || '#'}>
+        {entity.metadata.description}
+      </Link>
+    ),
   },
   {
     title: 'Tags',

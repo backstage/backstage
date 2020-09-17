@@ -20,14 +20,14 @@ import { HeaderLabel } from '../HeaderLabel';
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
 const utcOptions = { timeZone: 'UTC', ...timeFormat };
 const nycOptions = { timeZone: 'America/New_York', ...timeFormat };
-const tyoOptions = { timeZone: 'Asia/Tokyo', ...timeFormat };
-const stoOptions = { timeZone: 'Europe/Stockholm', ...timeFormat };
+const denOptions = { timeZone: 'America/Denver', ...timeFormat };
+const telavOptions = { timeZone: 'Asia/Tel_Aviv', ...timeFormat };
 
 const defaultTimes = {
-  timeNY: '',
+  timeNYC: '',
   timeUTC: '',
-  timeTYO: '',
-  timeSTO: '',
+  timeDEN: '',
+  timeTELAV: '',
 };
 
 function getTimes() {
@@ -36,16 +36,16 @@ function getTimes() {
 
   // Using the browser native toLocaleTimeString instead of huge moment-tz
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
-  const timeNY = d.toLocaleTimeString(lang, nycOptions);
+  const timeNYC = d.toLocaleTimeString(lang, nycOptions);
   const timeUTC = d.toLocaleTimeString(lang, utcOptions);
-  const timeTYO = d.toLocaleTimeString(lang, tyoOptions);
-  const timeSTO = d.toLocaleTimeString(lang, stoOptions);
+  const timeDEN = d.toLocaleTimeString(lang, denOptions);
+  const timeTELAV = d.toLocaleTimeString(lang, telavOptions);
 
-  return { timeNY, timeUTC, timeTYO, timeSTO };
+  return { timeNYC, timeUTC, timeDEN, timeTELAV };
 }
 
 export const HomepageTimer: FC<{}> = () => {
-  const [{ timeNY, timeUTC, timeTYO, timeSTO }, setTimes] = React.useState(
+  const [{ timeNYC, timeUTC, timeDEN, timeTELAV }, setTimes] = React.useState(
     defaultTimes,
   );
 
@@ -63,10 +63,10 @@ export const HomepageTimer: FC<{}> = () => {
 
   return (
     <>
-      <HeaderLabel label="NYC" value={timeNY} />
       <HeaderLabel label="UTC" value={timeUTC} />
-      <HeaderLabel label="STO" value={timeSTO} />
-      <HeaderLabel label="TYO" value={timeTYO} />
+      <HeaderLabel label="BOS" value={timeNYC} />
+      <HeaderLabel label="TEL AVIV" value={timeTELAV} />
+      <HeaderLabel label="DEN" value={timeDEN} />
     </>
   );
 };

@@ -88,7 +88,7 @@ export const RegisterComponentPage = ({
         { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
         { url: /https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
         { url: /https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
-        { url: /.*/, type: 'github' },
+        { url: /.*/, type: 'github/api' },
       ];
 
       const type = typeMapping.filter(item => item.url.test(target))[0].type;

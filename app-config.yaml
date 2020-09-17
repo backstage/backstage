@@ -1,5 +1,5 @@
 app:
-  title: Backstage Example App
+  title: ClimaCell Backstage
   baseUrl: http://localhost:7000
 
 backend:
@@ -30,7 +30,7 @@ proxy:
           env: JENKINS_BASIC_AUTH_HEADER
 
 organization:
-  name: Spotify
+  name: ClimaCell
 
 techdocs:
   storageUrl: http://localhost:7000/techdocs/static/docs
@@ -76,23 +76,17 @@ catalog:
       privateToken:
         $secret:
           env: AZURE_PRIVATE_TOKEN
-  exampleEntityLocations:
-    github:
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-      - https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/hello-world-api.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/streetlights-api.yaml
+  locations:
+    - type: github/api
+      target: https://github.com/climacell/test-backstage-catalog/blob/master/andromeda-component.yaml
+    - type: github/api
+      target: https://github.com/climacell/test-backstage-catalog/blob/master/website-components/argocd-dev-component.yaml
+    - type: github/api
+      target: https://github.com/climacell/test-backstage-catalog/blob/master/website-components/datadog-andromeda-controllers-component.yaml
+    - type: github/api
+      target: https://github.com/climacell/test-backstage-catalog/blob/master/website-components/datadog-andromeda-overview-component.yaml
+    - type: github/api
+      target: https://github.com/climacell/test-backstage-catalog/blob/master/website-components/datadog-andromeda-workgroups-component.yaml
 
 auth:
   providers:
