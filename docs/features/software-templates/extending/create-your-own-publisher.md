@@ -1,6 +1,7 @@
 ---
 id: extending-publisher
 title: Create your own Publisher
+description: Documentation on Creating your own Publisher
 ---
 
 Publishers are responsible for pushing and storing the templated skeleton after

@@ -1,6 +1,7 @@
 ---
 id: publishing
 title: Publishing
+description: Documentation on Publishing NPM packages
 ---
 
 ## NPM

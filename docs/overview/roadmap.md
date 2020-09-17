@@ -1,6 +1,7 @@
 ---
 id: roadmap
 title: Project roadmap
+description: Roadmap of Backstage Project
 ---
 
 ## Current status

@@ -15,6 +15,7 @@
  */
 import type { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
+import { RemoteProtocol } from '../types';
 
 export type PreparerBase = {
   /**
@@ -32,5 +33,3 @@ export type PreparerBuilder = {
   register(protocol: RemoteProtocol, preparer: PreparerBase): void;
   get(template: TemplateEntityV1alpha1): PreparerBase;
 };
-
-export type RemoteProtocol = 'file' | 'github';

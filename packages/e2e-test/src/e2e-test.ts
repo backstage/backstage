@@ -272,24 +272,37 @@ async function createPlugin(pluginName: string, appDir: string) {
 async function testAppServe(pluginName: string, appDir: string) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
+    env: {
+      ...process.env,
+      GITHUB_ACCESS_TOKEN: 'abc',
+    },
   });
   Browser.localhost('localhost', 3000);
 
   let successful = false;
   try {
-    const browser = new Browser();
+    for (let attempts = 1; ; attempts++) {
+      try {
+        const browser = new Browser();
 
-    await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
-    await waitForPageWithText(
-      browser,
-      `/${pluginName}`,
-      `Welcome to ${pluginName}!`,
-    );
+        await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
+        await waitForPageWithText(
+          browser,
+          `/${pluginName}`,
+          `Welcome to ${pluginName}!`,
+        );
 
-    print('Both App and Plugin loaded correctly');
-    successful = true;
-  } catch (error) {
-    throw new Error(`App serve test failed, ${error}`);
+        print('Both App and Plugin loaded correctly');
+        successful = true;
+        break;
+      } catch (error) {
+        if (attempts >= 5) {
+          throw new Error(`App serve test failed, ${error}`);
+        }
+        console.log(`App serve failed, trying again, ${error}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
   } finally {
     // Kill entire process group, otherwise we'll end up with hanging serve processes
     killTree(startApp.pid);
@@ -342,6 +355,10 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
 
   const child = spawnPiped(['yarn', 'workspace', 'backend', 'start'], {
     cwd: appDir,
+    env: {
+      ...process.env,
+      GITHUB_ACCESS_TOKEN: 'abc',
+    },
   });
 
   let stdout = '';
