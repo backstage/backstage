@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { Writable, PassThrough } from 'stream';
 import Docker from 'dockerode';
 import { SupportedGeneratorKey } from './types';
+import { spawn } from 'child_process';
 
 // TODO: Implement proper support for more generators.
 export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
@@ -36,6 +37,13 @@ type RunDockerContainerOptions = {
   resultDir: string;
   dockerClient: Docker;
   createOptions?: Docker.ContainerCreateOptions;
+};
+
+export type RunCommandOptions = {
+  command: string;
+  args: string[];
+  options: object;
+  logStream?: Writable;
 };
 
 export async function runDockerContainer({
@@ -96,3 +104,41 @@ export async function runDockerContainer({
 
   return { error, statusCode };
 }
+
+/**
+ *
+ * @param options the options object
+ * @param options.command the command to run
+ * @param options.args the arguments to pass the command
+ * @param options.options options used in spawn
+ * @param options.logStream the log streamer to capture log messages
+ */
+export const runCommand = async ({
+  command,
+  args,
+  options,
+  logStream = new PassThrough(),
+}: RunCommandOptions) => {
+  await new Promise((resolve, reject) => {
+    const process = spawn(command, args, options);
+
+    process.stdout.on('data', stream => {
+      logStream.write(stream);
+    });
+
+    process.stderr.on('data', stream => {
+      logStream.write(stream);
+    });
+
+    process.on('error', error => {
+      return reject(error);
+    });
+
+    process.on('close', code => {
+      if (code !== 0) {
+        return reject(`Command ${command} failed, exit code: ${code}`);
+      }
+      return resolve();
+    });
+  });
+};
