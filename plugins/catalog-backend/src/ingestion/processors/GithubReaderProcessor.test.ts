@@ -17,18 +17,20 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
+  getApiUrl,
+  getApiRequestOptions,
   getRawUrl,
-  getRequestOptions,
-  GithubApiReaderProcessor,
+  getRawRequestOptions,
+  GithubReaderProcessor,
   ProviderConfig,
   readConfig,
-} from './GithubApiReaderProcessor';
+} from './GithubReaderProcessor';
 
-describe('GithubApiReaderProcessor', () => {
-  describe('getRequestOptions', () => {
+describe('GithubReaderProcessor', () => {
+  describe('getApiRequestOptions', () => {
     it('sets the correct API version', () => {
       const config: ProviderConfig = { target: '', apiBaseUrl: '' };
-      expect((getRequestOptions(config).headers as any).Accept).toEqual(
+      expect((getApiRequestOptions(config).headers as any).Accept).toEqual(
         'application/vnd.github.v3.raw',
       );
     });
@@ -44,11 +46,82 @@ describe('GithubApiReaderProcessor', () => {
         apiBaseUrl: '',
       };
       expect(
-        (getRequestOptions(withToken).headers as any).Authorization,
+        (getApiRequestOptions(withToken).headers as any).Authorization,
       ).toEqual('token A');
       expect(
-        (getRequestOptions(withoutToken).headers as any).Authorization,
+        (getApiRequestOptions(withoutToken).headers as any).Authorization,
       ).toBeUndefined();
+    });
+  });
+
+  describe('getRawRequestOptions', () => {
+    it('inserts a token when needed', () => {
+      const withToken: ProviderConfig = {
+        target: '',
+        rawBaseUrl: '',
+        token: 'A',
+      };
+      const withoutToken: ProviderConfig = {
+        target: '',
+        rawBaseUrl: '',
+      };
+      expect(
+        (getRawRequestOptions(withToken).headers as any).Authorization,
+      ).toEqual('token A');
+      expect(
+        (getRawRequestOptions(withoutToken).headers as any).Authorization,
+      ).toBeUndefined();
+    });
+  });
+
+  describe('getApiUrl', () => {
+    it('rejects targets that do not look like URLs', () => {
+      const config: ProviderConfig = { target: '', apiBaseUrl: '' };
+      expect(() => getApiUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
+    });
+
+    it('happy path for github', () => {
+      const config: ProviderConfig = {
+        target: 'https://github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      expect(
+        getApiUrl(
+          'https://github.com/a/b/blob/branchname/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL(
+          'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname',
+        ),
+      );
+      expect(
+        getApiUrl(
+          'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL(
+          'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname',
+        ),
+      );
+    });
+
+    it('happy path for ghe', () => {
+      const config: ProviderConfig = {
+        target: 'https://ghe.mycompany.net',
+        apiBaseUrl: 'https://ghe.mycompany.net/api/v3',
+      };
+      expect(
+        getApiUrl(
+          'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL(
+          'https://ghe.mycompany.net/api/v3/repos/a/b/contents/path/to/c.yaml?ref=branchname',
+        ),
+      );
     });
   });
 
@@ -58,10 +131,10 @@ describe('GithubApiReaderProcessor', () => {
       expect(() => getRawUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
     });
 
-    it('passes through the happy path', () => {
+    it('happy path for github', () => {
       const config: ProviderConfig = {
         target: 'https://github.com',
-        apiBaseUrl: 'https://api.github.com',
+        rawBaseUrl: 'https://raw.githubusercontent.com',
       };
       expect(
         getRawUrl(
@@ -70,8 +143,23 @@ describe('GithubApiReaderProcessor', () => {
         ),
       ).toEqual(
         new URL(
-          'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname',
+          'https://raw.githubusercontent.com/a/b/branchname/path/to/c.yaml',
         ),
+      );
+    });
+
+    it('happy path for ghe', () => {
+      const config: ProviderConfig = {
+        target: 'https://ghe.mycompany.net',
+        rawBaseUrl: 'https://ghe.mycompany.net/raw',
+      };
+      expect(
+        getRawUrl(
+          'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL('https://ghe.mycompany.net/raw/a/b/branchname/path/to/c.yaml'),
       );
     });
   });
@@ -84,7 +172,7 @@ describe('GithubApiReaderProcessor', () => {
         {
           context: '',
           data: {
-            catalog: { processors: { githubApi: { providers } } },
+            catalog: { processors: { github: { providers } } },
           },
         },
       ]);
@@ -93,22 +181,30 @@ describe('GithubApiReaderProcessor', () => {
     it('adds a default GitHub entry when missing', () => {
       const output = readConfig(config([]));
       expect(output).toEqual([
-        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
+        {
+          target: 'https://github.com',
+          apiBaseUrl: 'https://api.github.com',
+          rawBaseUrl: 'https://raw.githubusercontent.com',
+        },
       ]);
     });
 
     it('injects the correct GitHub API base URL when missing', () => {
       const output = readConfig(config([{ target: 'https://github.com' }]));
       expect(output).toEqual([
-        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
+        {
+          target: 'https://github.com',
+          apiBaseUrl: 'https://api.github.com',
+          rawBaseUrl: 'https://raw.githubusercontent.com',
+        },
       ]);
     });
 
-    it('rejects custom targets with no API base URL', () => {
+    it('rejects custom targets with no base URLs', () => {
       expect(() =>
         readConfig(config([{ target: 'https://ghe.company.com' }])),
       ).toThrow(
-        'Provider at https://ghe.company.com must configure an explicit apiBaseUrl',
+        'Provider at https://ghe.company.com must configure an explicit apiBaseUrl or rawBaseUrl',
       );
     });
 
@@ -132,7 +228,7 @@ describe('GithubApiReaderProcessor', () => {
 
   describe('implementation', () => {
     it('rejects unknown types', async () => {
-      const processor = new GithubApiReaderProcessor([
+      const processor = new GithubReaderProcessor([
         { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
       ]);
       const location: LocationSpec = {
@@ -145,7 +241,7 @@ describe('GithubApiReaderProcessor', () => {
     });
 
     it('rejects unknown targets', async () => {
-      const processor = new GithubApiReaderProcessor([
+      const processor = new GithubReaderProcessor([
         { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
       ]);
       const location: LocationSpec = {

@@ -27,7 +27,6 @@ import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEn
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
-import { GithubApiReaderProcessor } from './processors/GithubApiReaderProcessor';
 import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
 import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
@@ -77,8 +76,7 @@ export class LocationReaders implements LocationReader {
     return [
       StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
-      new GithubReaderProcessor(config),
-      GithubApiReaderProcessor.fromConfig(config),
+      GithubReaderProcessor.fromConfig(config),
       new GitlabApiReaderProcessor(config),
       new GitlabReaderProcessor(),
       new BitbucketApiReaderProcessor(config),

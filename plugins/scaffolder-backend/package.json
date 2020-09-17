@@ -33,7 +33,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.0",
-    "git-url-parse": "^11.1.2",
+    "git-url-parse": "^11.2.0",
     "globby": "^11.0.0",
     "helmet": "^4.0.0",
     "jsonschema": "^1.2.6",
