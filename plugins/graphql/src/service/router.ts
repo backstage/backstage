@@ -19,7 +19,6 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import fs from 'fs';
-import path from 'path';
 import { GraphQLModule } from '@graphql-modules/core';
 import { ApolloServer } from 'apollo-server-express';
 import { createModule as createCatalogModule } from '@backstage/plugin-catalog-graphql';
