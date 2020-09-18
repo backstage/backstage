@@ -19,7 +19,6 @@ import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
   ActionsGetWorkflowRunResponseData,
-  EndpointInterface,
   Build,
 } from '../api/types';
 
@@ -59,11 +58,12 @@ export class CloudbuildClient implements CloudbuildApi {
         }),
       },
     );
+
     const builds: Build[] = await workflowRuns.json();
 
     const response: ActionsListWorkflowRunsForRepoResponseData = {
       total_count: builds.length,
-      workflow_runs: builds,
+      builds: builds,
     };
 
     return response;
@@ -112,23 +112,5 @@ export class CloudbuildClient implements CloudbuildApi {
     const build: ActionsGetWorkflowResponseData = await workflow.json();
 
     return build;
-  }
-  async downloadJobLogsForWorkflowRun({}: // token,
-  // projectId,
-  // runId,
-  {
-    // token: string;
-    // projectId: string;
-    // runId: string;
-  }): Promise<EndpointInterface> {
-    // console.log("Token: ",token," projectId: ", projectId," runId: ",runId)
-    // const workflow = await new Octokit({
-    //   auth: token,
-    // }).actions.downloadJobLogsForWorkflowRun({
-    //   owner,
-    //   repo,
-    //   job_id: runId,
-    // });
-    return [];
   }
 }

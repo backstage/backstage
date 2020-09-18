@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-// export type Step = {
-//   name: string;
-//   status: string;
-//   conclusion: string;
-//   number: number; // starts from 1
-//   started_at: string;
-//   completed_at: string;
-// };
-
-// export type Job = {
-//   html_url: string;
-//   status: string;
-//   conclusion: string;
-//   started_at: string;
-//   completed_at: string;
-//   id: string;
-//   name: string;
-//   steps: Step[];
-// };
 export interface Build {
   id: string;
   status: string;
@@ -61,37 +42,9 @@ export type Jobs = {
   jobs: Build[];
 };
 
-// export enum BuildStatus {
-//   'success',
-//   'failure',
-//   'pending',
-//   'running',
-// }
-
 export interface ActionsListWorkflowRunsForRepoResponseData {
   total_count: number;
-  workflow_runs: {
-    id: string;
-    status: string;
-    source: Source;
-    createTime: string;
-    startTime: string;
-    steps: Step[];
-    timeout: string;
-    projectId: string;
-    logsBucket: string;
-    sourceProvenance: SourceProvenance;
-    buildTriggerId: string;
-    options: Options;
-    logUrl: string;
-    substitutions: Substitutions;
-    tags: string[];
-    queueTtl: string;
-    name: string;
-    finishTime: any;
-    results: Results;
-    timing: Timing2;
-  }[];
+  builds: Build[];
 }
 export type ActionsGetWorkflowResponseData = {
   id: string;
@@ -137,7 +90,6 @@ export type ActionsGetWorkflowRunResponseData = {
   results: Results;
   timing: Timing2;
 };
-export type EndpointInterface = {};
 
 export interface Step {
   name: string;

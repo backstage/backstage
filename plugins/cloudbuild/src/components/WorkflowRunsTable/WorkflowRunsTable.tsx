@@ -35,7 +35,6 @@ export type WorkflowRun = {
   status: string;
   substitutions: Substitutions;
   createTime: string;
-  org: string;
   onReRunClick: () => void;
 };
 
@@ -73,7 +72,7 @@ const generatedColumns: TableColumn[] = [
         // to={`https://www.github.com/trivago/${row.message}`}
         to={generatePath(buildRouteRef.path, { id: row.id! })}
       >
-        {row.org}/{row.message}
+        {row.message}
       </Link>
     ),
   },

@@ -46,7 +46,7 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
         ): WorkflowRun[] => {
           setTotal(workflowRunsData.total_count);
           // Transformation here
-          return workflowRunsData.workflow_runs.builds.map(run => ({
+          return workflowRunsData.builds.builds.map(run => ({
             message: run.substitutions.REPO_NAME,
             id: `${run.id}`,
             onReRunClick: async () => {
@@ -71,7 +71,6 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
             status: run.status,
             url: run.logUrl,
             googleUrl: run.logUrl,
-            org: 'trivago',
             createTime: run.createTime,
           }));
         },

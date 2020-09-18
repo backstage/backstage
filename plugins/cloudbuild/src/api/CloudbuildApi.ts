@@ -19,7 +19,6 @@ import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
   ActionsGetWorkflowRunResponseData,
-  EndpointInterface,
 } from '../api/types';
 
 export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
@@ -62,13 +61,4 @@ export type CloudbuildApi = {
     projectId: string;
     runId: string;
   }) => Promise<any>;
-  downloadJobLogsForWorkflowRun: ({
-    token,
-    projectId,
-    runId,
-  }: {
-    token: string;
-    projectId: string;
-    runId: string;
-  }) => Promise<EndpointInterface>;
 };
