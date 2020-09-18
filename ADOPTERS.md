@@ -13,3 +13,4 @@
 | [Talkdesk](https://www.talkdesk.com)         | [@jaime-talkdesk](https://github.com/jaime-talkdesk)         | Initial work for Engineering Portal and Self Provisioning to R&D                                 |
 | [Wealthsimple](https://www.wealthsimple.com) | [@andrewthauer](https://github.com/andrewthauer)             | Developer portal, service catalog, documentation and tooling                                     |
 | [Grab](https://www.grab.com)                 | [@althafh](https://github.com/althafh)                       | Initial work as a unified interface for all of Grab's internal tooling                           |
+| [Chotot](https://www.chotot.com)                 | [@brucehuynh-ct](https://github.com/brucehuynh-ct)       | Chotot's internal tooling for system viewability                         |
