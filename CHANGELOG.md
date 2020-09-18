@@ -6,12 +6,14 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 ## Next Release
 
+> Collect changes for the next release below
+
+## v0.1.1-alpha.22
+
 ### @backstage/core
 
 - Introduced initial version of an inverted app/plugin relationship, where plugins export components for apps to use, instead registering themselves directly into the app. This enables more fine-grained control of plugin features, and also composition of plugins such as catalog pages with additional cards and tabs. This breaks the use of `RouteRef`s, and there will be more changes related to this in the future, but this change lays the initial foundation. See `packages/app` and followup PRs for how to update plugins for this change. [#2076](https://github.com/spotify/backstage/pull/2076)
 - Switch to an automatic dependency injection mechanism for all Utility APIs, allowing plugins to ship default implementations of their APIs. See [https://backstage.io/docs/api/utility-apis](https://backstage.io/docs/api/utility-apis). [#2285](https://github.com/spotify/backstage/pull/2285)
-
-> Collect changes for the next release below
 
 ### @backstage/cli
 
