@@ -35,6 +35,8 @@ organization:
 techdocs:
   storageUrl: http://localhost:7000/techdocs/static/docs
   requestUrl: http://localhost:7000/techdocs/docs
+  generators:
+    techdocs: 'docker'
 
 sentry:
   organization: spotify

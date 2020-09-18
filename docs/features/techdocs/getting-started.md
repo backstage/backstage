@@ -78,22 +78,22 @@ frontend of the docs from source files (Markdown). If you are deploying
 Backstage using Docker, this will mean that your Backstage Docker container will
 try to run another Docker container for TechDocs backend.
 
-To avoid this problem, we have a configuration available. If you go to
-`packages/backend/src/plugins/techdocs.ts`, you can find the line where we
-create a new TechDocs Generator. (Also see [Concepts](concepts.md)).
+To avoid this problem, we have a configuration available. You can set a value in
+your `app-config.yaml` that tells the techdocs generator if it should run the
+`local` mkdocs or run it from `docker`. This defaults to running as `docker` if
+no config is provided.
 
-```
-const techdocsGenerator = new TechdocsGenerator(logger);
-```
-
-You can pass an options object as a second argument here.
-
-```
-const techdocsGenerator = new TechdocsGenerator(logger, { useTechdocsContainer: false });
+```yaml
+techdocs:
+  generators:
+    techdocs: local
 ```
 
-Setting `useTechdocsContainer` to `false` means that TechDocs backend will not
-run another Docker container, and will use locally available `mkdocs` instead.
+Setting `generators.techdocs` to `local` means you will have to make sure your
+environment is compatible with techdocs. You will have to install the
+`mkdocs-techdocs-container` and 'mkdocs' package from pip, as well as graphviz
+and plantuml from your package manager. This has only been tested with python
+3.7 and python 3.8.
 
 ## Run Backstage locally
 
