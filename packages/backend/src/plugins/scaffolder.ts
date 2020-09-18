@@ -45,10 +45,13 @@ export default async function createPlugin({
 
   const filePreparer = new FilePreparer();
   const githubPreparer = new GithubPreparer();
+  const gitlabPreparer = new GitlabPreparer(config);
   const preparers = new Preparers();
 
   preparers.register('file', filePreparer);
   preparers.register('github', githubPreparer);
+  preparers.register('gitlab', gitlabPreparer);
+  preparers.register('gitlab/api', gitlabPreparer);
 
   const publishers = new Publishers();
 
@@ -65,6 +68,19 @@ export default async function createPlugin({
   });
   publishers.register('file', githubPublisher);
   publishers.register('github', githubPublisher);
+
+  const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
+
+  if (gitLabConfig) {
+    const gitLabToken = gitLabConfig.getString('token');
+    const gitLabClient = new Gitlab({
+      host: gitLabConfig.getOptionalString('baseUrl'),
+      token: gitLabToken,
+    });
+    const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
+    publishers.register('gitlab', gitLabPublisher);
+    publishers.register('gitlab/api', gitLabPublisher);
+  }
 
   const dockerClient = new Docker();
   return await createRouter({
