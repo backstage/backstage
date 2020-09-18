@@ -3,7 +3,7 @@
 !!! test
 Testing somethin
 
-Abbreviations: 
+Abbreviations:
 Some text about MOCDOC
 
 This is a paragraph.
@@ -62,6 +62,7 @@ digraph G {
 :bulb:
 
 === "JavaScript"
+
     ```javascript
     import { test } from 'something';
 
@@ -69,6 +70,7 @@ digraph G {
     ```
 
 === "Java"
+
     ```java
     public void function() {
         test();
@@ -81,5 +83,5 @@ import { test } from 'something';
 const addThingToThing = (a, b) a + b;
 ```
 
-
+<!-- prettier-ignore -->
 *[MOCDOC]: Mock Documentation
