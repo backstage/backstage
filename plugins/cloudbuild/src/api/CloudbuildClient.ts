@@ -18,8 +18,7 @@ import { CloudbuildApi } from './CloudbuildApi';
 import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
-  ActionsGetWorkflowRunResponseData,
-  Build,
+  Builds,
 } from '../api/types';
 
 export class CloudbuildClient implements CloudbuildApi {
@@ -59,11 +58,11 @@ export class CloudbuildClient implements CloudbuildApi {
       },
     );
 
-    const builds: Build[] = await workflowRuns.json();
+    const builds: Builds = await workflowRuns.json();
 
     const response: ActionsListWorkflowRunsForRepoResponseData = {
-      total_count: builds.length,
-      builds: builds,
+      total_count: builds.builds.length,
+      builds: builds.builds,
     };
 
     return response;
@@ -99,7 +98,7 @@ export class CloudbuildClient implements CloudbuildApi {
     token: string;
     projectId: string;
     id: string;
-  }): Promise<ActionsGetWorkflowRunResponseData> {
+  }): Promise<ActionsGetWorkflowResponseData> {
     const workflow = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${projectId}/builds/${id}`,
       {

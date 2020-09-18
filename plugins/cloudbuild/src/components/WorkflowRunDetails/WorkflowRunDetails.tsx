@@ -60,97 +60,11 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-// const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
-//   const classes = useStyles();
-//   return (
-//     <Box>
-//       {jobs &&
-//         jobs.total_count > 0 &&
-//         jobs.jobs.map((job: Build) => (
-//           <JobListItem
-//             job={job}
-//             className={
-//               job.status !== 'success' ? classes.failed : classes.success
-//             }
-//             entity={entity}
-//           />
-//         ))}
-//     </Box>
-//   );
-// };
-
-// const getElapsedTime = (start: string, end: string) => {
-//   const diff = moment(moment(end || moment()).diff(moment(start)));
-//   const timeElapsed = diff.format('m [minutes] s [seconds]');
-//   return timeElapsed;
-// };
-
-// const StepView = ({ step }: { step: Step }) => {
-//   return (
-//     <TableRow>
-//       <TableCell>
-//         <ListItemText
-//           primary={step.name}
-//           secondary={getElapsedTime(step.pullTiming.startTime, step.pullTiming.endTime)}
-//         />
-//       </TableCell>
-//       <TableCell>
-//         <WorkflowRunStatus status={step.status.toUpperCase()} />
-//       </TableCell>
-//     </TableRow>
-//   );
-// };
-
-// const JobListItem = ({
-//   job,
-//   className,
-//   entity,
-// }: {
-//   job: Build;
-//   className: string;
-//   entity: Entity;
-// }) => {
-//   const classes = useStyles();
-//   return (
-//     <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
-//       <AccordionSummary
-//         expandIcon={<ExpandMoreIcon />}
-//         aria-controls={`panel-${name}-content`}
-//         id={`panel-${name}-header`}
-//         IconButtonProps={{
-//           className: classes.button,
-//         }}
-//       >
-//         <Typography variant="button">
-//           {job.name} ({getElapsedTime(job.startTime, job.finishTime)})
-//         </Typography>
-//       </AccordionSummary>
-//       <AccordionDetails className={classes.accordionDetails}>
-//         <TableContainer>
-//           <Table>
-//             {job.steps.map((step: Step) => (
-//               <StepView step={step} />
-//             ))}
-//           </Table>
-//         </TableContainer>
-//       </AccordionDetails>
-//       {job.status === 'QUEUED' || job.status === 'WORKING' ? (
-//         <WorkflowRunLogs runId={job.id} inProgress entity={entity} />
-//       ) : (
-//         <WorkflowRunLogs runId={job.id} inProgress={false} entity={entity} />
-//       )}
-//     </Accordion>
-//   );
-// };
-
 export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
-  // const projectName = useProjectName(entity);
   const { value: projectName, loading, error } = useProjectName(entity);
   const [projectId] = (projectName ?? '/').split('/');
 
-  // const [projectId] = projectName.value ? projectName.value : [];
   const details = useWorkflowRunsDetails(projectId);
-  // const steps = useWorkflowRunJobs(projectId)
 
   const classes = useStyles();
   if (error) {
@@ -216,16 +130,6 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 )}
               </TableCell>
             </TableRow>
-            {/* <TableRow>
-              <TableCell colSpan={2}>
-                <Typography noWrap>Jobs</Typography>
-                {loading ? (
-                  <CircularProgress />
-                ) : (
-                  <JobsList jobs={steps.value} entity={entity} />
-                )}
-              </TableCell>
-            </TableRow> */}
           </TableBody>
         </Table>
       </TableContainer>

@@ -14,61 +14,16 @@
  * limitations under the License.
  */
 
-export interface Build {
-  id: string;
-  status: string;
-  source: Source;
-  createTime: string;
-  startTime: string;
-  steps: Step[];
-  timeout: string;
-  projectId: string;
-  logsBucket: string;
-  sourceProvenance: SourceProvenance;
-  buildTriggerId: string;
-  options: Options;
-  logUrl: string;
-  substitutions: Substitutions;
-  tags: string[];
-  queueTtl: string;
-  name: string;
-  finishTime: any;
-  results: Results;
-  timing: Timing2;
-}
-
-export type Jobs = {
-  total_count: number;
-  jobs: Build[];
-};
-
 export interface ActionsListWorkflowRunsForRepoResponseData {
   total_count: number;
-  builds: Build[];
+  builds: ActionsGetWorkflowResponseData[];
 }
-export type ActionsGetWorkflowResponseData = {
-  id: string;
-  status: string;
-  source: Source;
-  createTime: string;
-  startTime: string;
-  steps: Step[];
-  timeout: string;
-  projectId: string;
-  logsBucket: string;
-  sourceProvenance: SourceProvenance;
-  buildTriggerId: string;
-  options: Options;
-  logUrl: string;
-  substitutions: Substitutions;
-  tags: string[];
-  queueTtl: string;
-  name: string;
-  finishTime: any;
-  results: Results;
-  timing: Timing2;
+
+export type Builds = {
+  builds: ActionsGetWorkflowResponseData[];
 };
-export type ActionsGetWorkflowRunResponseData = {
+
+export type ActionsGetWorkflowResponseData = {
   id: string;
   status: string;
   source: Source;

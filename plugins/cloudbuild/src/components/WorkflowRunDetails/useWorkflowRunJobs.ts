@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 import { useAsync } from 'react-use';
-import { Jobs } from '../../api/types';
+import { ActionsListWorkflowRunsForRepoResponseData } from '../../api/types';
 
 export const useWorkflowRunJobs = (jobsUrl?: string) => {
-  const jobs = useAsync(async (): Promise<Jobs> => {
+  const jobs = useAsync(async (): Promise<
+    ActionsListWorkflowRunsForRepoResponseData
+  > => {
     if (jobsUrl === undefined) {
       return {
         total_count: 0,
-        jobs: [],
+        builds: [],
       };
     }
 

@@ -46,7 +46,7 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
         ): WorkflowRun[] => {
           setTotal(workflowRunsData.total_count);
           // Transformation here
-          return workflowRunsData.builds.builds.map(run => ({
+          return workflowRunsData.builds.map(run => ({
             message: run.substitutions.REPO_NAME,
             id: `${run.id}`,
             onReRunClick: async () => {
