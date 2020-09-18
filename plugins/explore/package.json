@@ -29,8 +29,8 @@
     "classnames": "^2.2.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^15.3.3",
-    "react-router": "6.0.0-beta.0"
+    "react-router": "6.0.0-beta.0",
+    "react-use": "^15.3.3"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.21",
