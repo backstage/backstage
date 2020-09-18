@@ -21,7 +21,7 @@ import {
   Router as CloudbuildRouter,
   isPluginApplicableToEntity as isCloudbuildAvailable,
 } from '@backstage/plugin-cloudbuild';
- import {
+import {
   Router as JenkinsRouter,
   isPluginApplicableToEntity as isJenkinsAvailable,
   LatestRunCard as JenkinsLatestRunCard,
