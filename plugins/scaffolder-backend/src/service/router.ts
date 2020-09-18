@@ -93,7 +93,7 @@ export async function createRouter(
             name: 'Prepare the skeleton',
             handler: async ctx => {
               const preparer = preparers.get(ctx.entity);
-              const skeletonDir = await preparer.prepare(ctx.entity, {
+              const skeletonDir = await preparer.prepare(ctx.entity, token, {
                 logger: ctx.logger,
               });
               return { skeletonDir };

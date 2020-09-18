@@ -109,6 +109,8 @@ catalog:
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
     - type: github
       target: https://github.com/frontdesk-development/cookiecutter-argocd/blob/master/template.yaml
+    - type: github
+      target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
 
 lighthouse:
   baseUrl: http://frontdesk.trivago.cloud/lighthouse-be
