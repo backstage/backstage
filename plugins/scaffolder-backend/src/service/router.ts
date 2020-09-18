@@ -26,13 +26,13 @@ import {
   RequiredTemplateValues,
   StageContext,
   TemplaterBuilder,
-  PublisherBase,
+  PublisherBuilder,
 } from '../scaffolder';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templaters: TemplaterBuilder;
-  publisher: PublisherBase;
+  publishers: PublisherBuilder;
 
   logger: Logger;
   dockerClient: Docker;
@@ -47,7 +47,7 @@ export async function createRouter(
   const {
     preparers,
     templaters,
-    publisher,
+    publishers,
     logger: parentLogger,
     dockerClient,
   } = options;
@@ -93,7 +93,7 @@ export async function createRouter(
             name: 'Prepare the skeleton',
             handler: async ctx => {
               const preparer = preparers.get(ctx.entity);
-              const skeletonDir = await preparer.prepare(ctx.entity, token, {
+              const skeletonDir = await preparer.prepare(ctx.entity, {
                 logger: ctx.logger,
               });
               return { skeletonDir };
@@ -116,6 +116,7 @@ export async function createRouter(
           {
             name: 'Publish template',
             handler: async (ctx: StageContext<{ resultDir: string }>) => {
+              const publisher = publishers.get(ctx.entity);
               ctx.logger.info('Will now store the template');
               const { remoteUrl } = await publisher.publish({
                 entity: ctx.entity,
