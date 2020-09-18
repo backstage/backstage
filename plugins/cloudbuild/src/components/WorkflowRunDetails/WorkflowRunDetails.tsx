@@ -113,9 +113,11 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
             </TableRow>
             <TableRow>
               <TableCell>
-                <Typography noWrap>Author</Typography>
+                <Typography noWrap>Service Account</Typography>
               </TableCell>
-              <TableCell>{`${details.value?.name}`}</TableCell>
+              <TableCell>
+                {`${details.value?.projectId}`}@cloudbuild.gserviceaccount.com
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
