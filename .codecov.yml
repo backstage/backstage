@@ -8,4 +8,4 @@ coverage:
         target: auto
 
 ignore:
-  - "**/plugins/*-graphql"
+  - '**/plugins/*-graphql'
