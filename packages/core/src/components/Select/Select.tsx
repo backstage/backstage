@@ -114,8 +114,8 @@ export const SelectComponent = (props: SelectProps) => {
   const [canOpen, setCanOpen] = React.useState(false);
 
   useEffect(() => {
-    setValue(multiple ? [] : "")
-  }, [props.triggerReset, multiple])
+    setValue(multiple ? [] : '');
+  }, [props.triggerReset, multiple]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setValue(event.target.value as any);

@@ -81,7 +81,7 @@ export const Filters = (props: Props) => {
   const handleClick = () => {
     setSelectedFilters({});
     setFilters([...props.filters]);
-    triggerReset(el => !el)
+    triggerReset(el => !el);
   };
 
   useEffect(() => {
