@@ -3,9 +3,8 @@
 !!! test
 Testing somethin
 
+Abbreviations: 
 Some text about MOCDOC
-
-\*[MOCDOC]: Mock Documentation
 
 This is a paragraph.
 {: #test_id .test_class }
@@ -61,3 +60,26 @@ digraph G {
 ```
 
 :bulb:
+
+=== "JavaScript"
+    ```javascript
+    import { test } from 'something';
+
+    const addThingToThing = (a, b) a + b;
+    ```
+
+=== "Java"
+    ```java
+    public void function() {
+        test();
+    }
+    ```
+
+```javascript
+import { test } from 'something';
+
+const addThingToThing = (a, b) a + b;
+```
+
+
+*[MOCDOC]: Mock Documentation

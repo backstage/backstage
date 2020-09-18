@@ -48,6 +48,35 @@ python -m black src/
 
 **Note:** This will write to all Python files in `src/` with the formatted code. If you would like to only check to see if it passes, simply append the `--check` flag.
 
+## MkDocs plugins and extensions
+
+The TechDocs Core MkDocs plugin comes with a set of extensions and plugins that mkdocs supports. Below you can find a list of all extensions and plugins that are included in the
+TechDocs Core plugin:
+
+Plugins:
+ - search
+ - mkdocs-monorepo-plugin
+
+Extensions:
+  - admonition
+  - toc
+  - pymdown
+      - caret
+      - critic
+      - details
+      - emoji
+      - inlinehilite
+      - magiclink
+      - mark
+      - smartsymobls
+      - highlight
+      - extra
+      - tabbed
+      - tasklist
+      - tilde
+  - markdown_inline_graphviz
+  - plantuml_markdown
+
 ## Changelog
 
 ### 0.0.7
