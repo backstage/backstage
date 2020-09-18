@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-export { ProviderSettingsItem } from './ProviderSettingsItem';
-export { OAuthProviderSettings } from './OAuthProviderSettings';
-export { OIDCProviderSettings } from './OIDCProviderSettings';
-export { SidebarUserSettings } from './UserSettings';
+import React from 'react';
+import List from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import { FlagItem, Item } from './FeatureFlagsItem';
+
+type Props = {
+  featureFlags: Item[];
+};
+
+export const FeatureFlagsList = ({ featureFlags }: Props) => (
+  <List dense subheader={<ListSubheader>Feature Flags</ListSubheader>}>
+    {featureFlags.map(featureFlag => (
+      <FlagItem key={featureFlag.name} featureFlag={featureFlag} />
+    ))}
+  </List>
+);

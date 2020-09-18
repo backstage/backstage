@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { Table, TableColumn } from '@backstage/core';
-import { Link, Chip } from '@material-ui/core';
+import { ApiEntityV1alpha1, Entity } from '@backstage/catalog-model';
+import { Table, TableColumn, useApi } from '@backstage/core';
+import { Chip, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
+import { apiDocsConfigRef } from '../../config';
 import { entityRoute } from '../../routes';
+
+const ApiTypeTitle = ({ apiEntity }: { apiEntity: ApiEntityV1alpha1 }) => {
+  const config = useApi(apiDocsConfigRef);
+  const definition = config.getApiDefinitionWidget(apiEntity);
+  const type = definition ? definition.title : apiEntity.spec.type;
+
+  return <span>{type}</span>;
+};
 
 const columns: TableColumn<Entity>[] = [
   {
@@ -54,8 +63,11 @@ const columns: TableColumn<Entity>[] = [
     field: 'spec.lifecycle',
   },
   {
-    title: 'Type', // TODO: Resolve the type display name using the API from https://github.com/spotify/backstage/pull/2451
+    title: 'Type',
     field: 'spec.type',
+    render: (entity: Entity) => (
+      <ApiTypeTitle apiEntity={entity as ApiEntityV1alpha1} />
+    ),
   },
   {
     title: 'Description',

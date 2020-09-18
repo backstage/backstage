@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-export { ProviderSettingsItem } from './ProviderSettingsItem';
-export { OAuthProviderSettings } from './OAuthProviderSettings';
-export { OIDCProviderSettings } from './OIDCProviderSettings';
-export { SidebarUserSettings } from './UserSettings';
+import { ApiEntity } from '@backstage/catalog-model';
+import { createApiRef } from '@backstage/core';
+import { ApiDefinitionWidget } from './components';
+
+export const apiDocsConfigRef = createApiRef<ApiDocsConfig>({
+  id: 'plugin.api-docs.config',
+  description: 'Used to configure api-docs widgets',
+});
+
+export interface ApiDocsConfig {
+  getApiDefinitionWidget: (
+    apiEntity: ApiEntity,
+  ) => ApiDefinitionWidget | undefined;
+}

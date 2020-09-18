@@ -1,7 +1,6 @@
 ---
 id: adrs-adr008
 title: ADR008: Default Catalog File Name
-sidebar_label: ADR008
 description: Architecture Decision Record (ADR) log on Default Catalog File Name
 ---
 

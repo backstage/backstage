@@ -1,7 +1,6 @@
 ---
 id: adrs-adr006
 title: ADR006: Avoid React.FC and React.SFC
-sidebar_label: ADR006
 description: Architecture Decision Record (ADR) log on Avoid React.FC and React.SFC
 ---
 
