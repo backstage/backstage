@@ -7,8 +7,3 @@ nav:
 
 plugins:
   - techdocs-core
-
-markdown_extensions:
-  - pymdownx.highlight:
-      linenums: true
-  
