@@ -76,8 +76,7 @@ export class GithubPublisher implements PublisherBase {
               authorization: `Bearer ${token}`,
               Accept: `application/vnd.github.nebula-preview+json`,
             },
-            private: this.repoVisibility !== 'public',
-            visibility: this.repoVisibility,
+            visibility: 'internal',
             description,
           })
         : this.client.repos.createForAuthenticatedUser({
