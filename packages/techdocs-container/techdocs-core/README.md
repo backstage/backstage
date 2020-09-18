@@ -50,6 +50,18 @@ python -m black src/
 
 ## Changelog
 
+### 0.0.7
+
+- Fix an issue with configuration of emoji support
+
+### 0.0.6
+
+- Further adjustments to versions to find ones that are compatible
+
+### 0.0.5
+
+- Downgrade some versions of markdown extensions to versions that are more stable
+
 ### 0.0.4
 
 - Added support for more mkdocs extensions

@@ -110,7 +110,7 @@ export class DocsBuilder {
 
     // Should probably be broken out and handled per type later. Doing this for now since we only support github age checks
     if (type === 'github') {
-      const lastCommit = await getLastCommitTimestamp(target);
+      const lastCommit = await getLastCommitTimestamp(target, this.logger);
       const storageTimeStamp = buildMetadataStorage.getTimestamp();
 
       // Check if documentation source is newer than what we have

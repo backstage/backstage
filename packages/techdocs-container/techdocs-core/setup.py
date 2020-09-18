@@ -18,7 +18,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mkdocs-techdocs-core',
-    version='0.0.4',
+    version='0.0.7',
     description='A Mkdocs package that contains TechDocs defaults',
     long_description='',
     keywords='mkdocs',
@@ -31,10 +31,10 @@ setup(
         'mkdocs>=1.1.2',
         'mkdocs-material==5.3.2',
         'mkdocs-monorepo-plugin==0.4.5',
-        'plantuml-markdown==3.4.0',
+        'plantuml-markdown==3.1.2',
         'markdown_inline_graphviz_extension==1.1',
         'pygments==2.6.1',
-        'pymdown-extensions==7.1'
+        'pymdown-extensions==8.0.0'
     ],
     classifiers=[
         'Development Status :: 1 - Planning',

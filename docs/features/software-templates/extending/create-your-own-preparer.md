@@ -1,6 +1,7 @@
 ---
 id: extending-preparer
 title: Create your own Preparer
+description: Documentation on Creating your own Preparer
 ---
 
 Preparers are responsible for reading the location of the definition of a

@@ -23,11 +23,13 @@ export const rootRoute = createRouteRef({
   path: '/api-docs',
   title: 'APIs',
 });
+
 export const entityRoute = createRouteRef({
   icon: NoIcon,
   path: '/api-docs/:optionalNamespaceAndName/',
   title: 'API',
 });
+
 export const catalogRoute = createRouteRef({
   icon: NoIcon,
   path: '',
