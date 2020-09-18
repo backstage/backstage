@@ -1,7 +1,7 @@
 ---
 id: adrs-adr007
 title: ADR007: Use MSW to mock http requests
-sidebar_label: ADR007
+description: Architecture Decision Record (ADR) log on Use MSW to mock http requests
 ---
 
 ## Context

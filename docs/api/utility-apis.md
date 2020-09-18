@@ -1,6 +1,7 @@
 ---
 id: utility-apis
 title: Utility APIs
+description: Backstage Utility APIs
 ---
 
 ## Introduction

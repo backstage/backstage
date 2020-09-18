@@ -1,6 +1,7 @@
 ---
 id: proxying
 title: Proxying
+description: Documentation on Proxying
 ---
 
 ## Overview

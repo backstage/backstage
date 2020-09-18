@@ -1070,3 +1070,14 @@ code {
     margin: auto;
   }
 }
+
+.cncf-block {
+  text-align: center;
+}
+
+.cncf-logo {
+  background: center no-repeat url(../img/cncf-white.svg);
+  width: 100%;
+  height: 100px;
+  margin-bottom: 40px;
+}

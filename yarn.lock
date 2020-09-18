@@ -1400,6 +1400,34 @@
   dependencies:
     yaml-ast-parser "0.0.43"
 
+"@gitbeaker/core@^23.5.0":
+  version "23.5.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-23.5.0.tgz#e0be44eecd0d7bf5418c161997c36d45b0c1ba81"
+  integrity sha512-5geLk7SxAttABBJZxfuSp72lSYWRyRId583vGCpKB6ISkoDhP+vJxdE6ypmtOJPV4CaSRZhluAGAZd968pi9ng==
+  dependencies:
+    "@gitbeaker/requester-utils" "^23.5.0"
+    form-data "^3.0.0"
+    li "^1.3.0"
+    xcase "^2.0.1"
+
+"@gitbeaker/node@^23.5.0":
+  version "23.5.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-23.5.0.tgz#0243be78aad148e7d6b5d79b7acc340748b5fa94"
+  integrity sha512-GEyhcrF1Lm8YmsmwntfzuhXnq00TrG14wNZP2Hg+DGgexG25eBbbcyFXuFZlBFSaGMQlsc8aPeuEyfyGmgpwnw==
+  dependencies:
+    "@gitbeaker/core" "^23.5.0"
+    "@gitbeaker/requester-utils" "^23.5.0"
+    got "^11.1.4"
+    xcase "^2.0.1"
+
+"@gitbeaker/requester-utils@^23.5.0":
+  version "23.5.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-23.5.0.tgz#e6f5d0216cb978be95e6bf40adf606f23d426f14"
+  integrity sha512-MdmInOO4unkApvtbv6PnIpDYXosgZgClSOqbxF5S4aJRCZVTJ6oPjMoNP8luhyT9xQeknpKxn9Iv8psEh7IC1Q==
+  dependencies:
+    query-string "^6.12.1"
+    xcase "^2.0.1"
+
 "@graphql-tools/delegate@6.0.15":
   version "6.0.15"
   resolved "https://registry.npmjs.org/@graphql-tools/delegate/-/delegate-6.0.15.tgz#9e060bfc31fe7735bd5b2b401e98dea3fa5d3b25"
@@ -5796,7 +5824,7 @@ arrify@^1.0.1:
   resolved "https://registry.npmjs.org/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
   integrity sha1-iYUI2iIm84DfkEcoRWhJwVAaSw0=
 
-asap@^2.0.0, asap@~2.0.3, asap@~2.0.6:
+asap@^2.0.0, asap@~2.0.6:
   version "2.0.6"
   resolved "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY=
@@ -10695,10 +10723,17 @@ git-up@^4.0.0:
     is-ssh "^1.3.0"
     parse-url "^5.0.0"
 
-git-url-parse@^11.1.2, git-url-parse@^11.1.3:
+git-url-parse@^11.1.2:
   version "11.1.3"
   resolved "https://registry.npmjs.org/git-url-parse/-/git-url-parse-11.1.3.tgz#03625b6fc09905e9ad1da7bb2b84be1bf9123143"
   integrity sha512-GPsfwticcu52WQ+eHp0IYkAyaOASgYdtsQDIt4rUp6GbiNt1P9ddrh3O0kQB0eD4UJZszVqNT3+9Zwcg40fywA==
+  dependencies:
+    git-up "^4.0.0"
+
+git-url-parse@^11.2.0:
+  version "11.2.0"
+  resolved "https://registry.npmjs.org/git-url-parse/-/git-url-parse-11.2.0.tgz#2955fd51befd6d96ea1389bbe2ef57e8e6042b04"
+  integrity sha512-KPoHZg8v+plarZvto4ruIzzJLFQoRx+sUs5DQSr07By9IBKguVd+e6jwrFR6/TP6xrCJlNV1tPqLO1aREc7O2g==
   dependencies:
     git-up "^4.0.0"
 
@@ -10943,6 +10978,23 @@ got@^10.7.0:
     responselike "^2.0.0"
     to-readable-stream "^2.0.0"
     type-fest "^0.10.0"
+
+got@^11.1.4:
+  version "11.6.2"
+  resolved "https://registry.npmjs.org/got/-/got-11.6.2.tgz#79d7bb8c11df212b97f25565407a1f4ae73210ec"
+  integrity sha512-/21qgUePCeus29Jk7MEti8cgQUNXFSWfIevNIk4H7u1wmXNDrGPKPY6YsPY+o9CIT/a2DjCjRz0x1nM9FtS2/A==
+  dependencies:
+    "@sindresorhus/is" "^3.1.1"
+    "@szmarczak/http-timer" "^4.0.5"
+    "@types/cacheable-request" "^6.0.1"
+    "@types/responselike" "^1.0.0"
+    cacheable-lookup "^5.0.3"
+    cacheable-request "^7.0.1"
+    decompress-response "^6.0.0"
+    http2-wrapper "^1.0.0-beta.5.2"
+    lowercase-keys "^2.0.0"
+    p-cancelable "^2.0.0"
+    responselike "^2.0.0"
 
 got@^11.5.2:
   version "11.6.0"
@@ -13288,6 +13340,11 @@ jsonpointer@^4.0.1:
   resolved "https://registry.npmjs.org/jsonpointer/-/jsonpointer-4.0.1.tgz#4fd92cb34e0e9db3c89c8622ecf51f9b978c6cb9"
   integrity sha1-T9kss04OnbPInIYi7PUfm5eMbLk=
 
+jsonschema@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.npmjs.org/jsonschema/-/jsonschema-1.2.6.tgz#52b0a8e9dc06bbae7295249d03e4b9faee8a0c0b"
+  integrity sha512-SqhURKZG07JyKKeo/ir24QnS4/BV7a6gQy93bUSe4lUdNp0QNpIz2c9elWJQ9dpc5cQYY6cvCzgRwy0MQCLyqA==
+
 jspdf-autotable@3.5.3:
   version "3.5.3"
   resolved "https://registry.npmjs.org/jspdf-autotable/-/jspdf-autotable-3.5.3.tgz#2f73adb07f340e7dbf22950e3e6c8bf853991479"
@@ -13583,6 +13640,11 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+li@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/li/-/li-1.3.0.tgz#22c59bcaefaa9a8ef359cf759784e4bf106aea1b"
+  integrity sha1-IsWbyu+qmo7zWc91l4TkvxBq6hs=
 
 liftoff@3.1.0:
   version "3.1.0"
@@ -15040,30 +15102,7 @@ node-request-interceptor@^0.3.5:
     debug "^4.1.1"
     headers-utils "^1.2.0"
 
-nodegit-promise@~4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/nodegit-promise/-/nodegit-promise-4.0.0.tgz#5722b184f2df7327161064a791d2e842c9167b34"
-  integrity sha1-VyKxhPLfcycWEGSnkdLoQskWezQ=
-  dependencies:
-    asap "~2.0.3"
-
-nodegit@0.26.5:
-  version "0.26.5"
-  resolved "https://registry.npmjs.org/nodegit/-/nodegit-0.26.5.tgz#1534d8aaa52de7acfbbe18de28df2075de86f7d2"
-  integrity sha512-l9l2zhcJ0V7FYzPdXIsuJcXN8UnLuhQgM+377HJfCYE/eupL/OWtMVvUOq42F9dRsgC3bAYH9j2Xbwr0lpYVZQ==
-  dependencies:
-    fs-extra "^7.0.0"
-    json5 "^2.1.0"
-    lodash "^4.17.14"
-    nan "^2.14.0"
-    node-gyp "^4.0.0"
-    node-pre-gyp "^0.13.0"
-    promisify-node "~0.3.0"
-    ramda "^0.25.0"
-    request-promise-native "^1.0.5"
-    tar-fs "^1.16.3"
-
-nodegit@^0.27.0:
+nodegit@0.27.0, nodegit@^0.27.0:
   version "0.27.0"
   resolved "https://registry.npmjs.org/nodegit/-/nodegit-0.27.0.tgz#4e8cc236f60e1c97324a5acff99056fe116a6ebe"
   integrity sha512-E9K4gPjWiA0b3Tx5lfWCzG7Cvodi2idl3V5UD2fZrOrHikIfrN7Fc2kWLtMUqqomyoToYJLeIC8IV7xb1CYRLA==
@@ -16990,13 +17029,6 @@ promise@^8.0.3:
   dependencies:
     asap "~2.0.6"
 
-promisify-node@~0.3.0:
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/promisify-node/-/promisify-node-0.3.0.tgz#b4b55acf90faa7d2b8b90ca396899086c03060cf"
-  integrity sha1-tLVaz5D6p9K4uQyjlomQhsAwYM8=
-  dependencies:
-    nodegit-promise "~4.0.0"
-
 prompts@^2.0.1:
   version "2.3.2"
   resolved "https://registry.npmjs.org/prompts/-/prompts-2.3.2.tgz#480572d89ecf39566d2bd3fe2c9fccb7c4c0b068"
@@ -17174,6 +17206,15 @@ query-string@^4.1.0:
   dependencies:
     object-assign "^4.1.0"
     strict-uri-encode "^1.0.0"
+
+query-string@^6.12.1:
+  version "6.13.1"
+  resolved "https://registry.npmjs.org/query-string/-/query-string-6.13.1.tgz#d913ccfce3b4b3a713989fe6d39466d92e71ccad"
+  integrity sha512-RfoButmcK+yCta1+FuU8REvisx1oEzhMKwhLUNcepQTPGcNMp1sIqjnfCtfnvGSQZQEhaBHvccujtWoUV3TTbA==
+  dependencies:
+    decode-uri-component "^0.2.0"
+    split-on-first "^1.0.0"
+    strict-uri-encode "^2.0.0"
 
 querystring-browser@^1.0.4:
   version "1.0.4"
@@ -19303,6 +19344,11 @@ split-ca@^1.0.1:
   resolved "https://registry.npmjs.org/split-ca/-/split-ca-1.0.1.tgz#6c83aff3692fa61256e0cd197e05e9de157691a6"
   integrity sha1-bIOv82kvphJW4M0ZfgXp3hV2kaY=
 
+split-on-first@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/split-on-first/-/split-on-first-1.1.0.tgz#f610afeee3b12bce1d0c30425e76398b78249a5f"
+  integrity sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==
+
 split-string@^3.0.1, split-string@^3.0.2:
   version "3.1.0"
   resolved "https://registry.npmjs.org/split-string/-/split-string-3.1.0.tgz#7cb09dda3a86585705c64b39a6466038682e8fe2"
@@ -19569,6 +19615,11 @@ strict-uri-encode@^1.0.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/strict-uri-encode/-/strict-uri-encode-1.1.0.tgz#279b225df1d582b1f54e65addd4352e18faa0713"
   integrity sha1-J5siXfHVgrH1TmWt3UNS4Y+qBxM=
+
+strict-uri-encode@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"
+  integrity sha1-ucczDHBChi9rFC3CdLvMWGbONUY=
 
 string-argv@0.3.1:
   version "0.3.1"
@@ -21812,6 +21863,11 @@ x-is-string@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmjs.org/x-is-string/-/x-is-string-0.1.0.tgz#474b50865af3a49a9c4657f05acd145458f77d82"
   integrity sha1-R0tQhlrzpJqcRlfwWs0UVFj3fYI=
+
+xcase@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/xcase/-/xcase-2.0.1.tgz#c7fa72caa0f440db78fd5673432038ac984450b9"
+  integrity sha1-x/pyyqD0QNt4/VZzQyA4rJhEULk=
 
 xdg-basedir@^4.0.0:
   version "4.0.0"

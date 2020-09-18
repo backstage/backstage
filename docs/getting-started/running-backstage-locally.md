@@ -1,22 +1,41 @@
 ---
 id: running-backstage-locally
 title: Running Backstage Locally
+description: Documentation on How to run Backstage Locally
 ---
+
+## Prerequisites
+
+- Node.js
 
 First make sure you are using NodeJS with an Active LTS Release, currently v12.
 This is made easy with a version manager such as
 [nvm](https://github.com/nvm-sh/nvm) which allows for version switching.
 
 ```bash
-# Checking your version
-node --version
-> v14.7.0
-
-# Adding a second node version
+# Installing a new version
 nvm install 12
 > Downloading and installing node v12.18.3...
 > Now using node v12.18.3 (npm v6.14.6)
+
+# Checking your version
+node --version
+> v12.18.3
 ```
+
+- yarn
+
+Please refer to the
+[installation instructions for yarn](https://classic.yarnpkg.com/en/docs/install/).
+
+- Docker
+
+We use Docker for few of our core features. So, you will need Docker installed
+locally to use features like Software Templates and TechDocs. Please refer to
+the
+[installation instructions for Docker](https://docs.docker.com/engine/install/).
+
+## Clone and Build
 
 To get up and running with a local Backstage to evaluate it, let's clone it off
 of GitHub and run an initial build.

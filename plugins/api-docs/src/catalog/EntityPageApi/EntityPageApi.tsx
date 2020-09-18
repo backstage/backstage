@@ -16,15 +16,19 @@
 
 import { ComponentEntity, Entity } from '@backstage/catalog-model';
 import { Progress } from '@backstage/core';
-import React, { FC } from 'react';
 import { Grid } from '@material-ui/core';
+import React from 'react';
 import {
   ApiDefinitionCard,
   useComponentApiEntities,
   useComponentApiNames,
 } from '../../components';
 
-export const EntityPageApi: FC<{ entity: Entity }> = ({ entity }) => {
+type Props = {
+  entity: Entity;
+};
+
+export const EntityPageApi = ({ entity }: Props) => {
   const apiNames = useComponentApiNames(entity as ComponentEntity);
 
   const { apiEntities, loading } = useComponentApiEntities({

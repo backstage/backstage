@@ -1,6 +1,7 @@
 ---
 id: architecture-overview
 title: Architecture overview
+description: Documentation on Architecture overview
 ---
 
 ## Overview

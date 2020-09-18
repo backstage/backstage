@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { PreparerBase, RemoteProtocol, PreparerBuilder } from './types';
+import { PreparerBase, PreparerBuilder } from './types';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from './helpers';
+import { parseLocationAnnotation } from '../helpers';
+import { RemoteProtocol } from '../types';
 
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();
