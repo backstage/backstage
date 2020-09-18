@@ -41,7 +41,7 @@ From the terminal:
 ℹ ｢wds｣: Project is running at http://localhost:3000/
 ```
 
-Once the app compiles, a browser window should have popped with your stand alone
+Once the app compiles, a browser window should have popped with your stand-alone
 application loaded at `localhost:3000`. This could take a couple minutes.
 
 ```zsh
