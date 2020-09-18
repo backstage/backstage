@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-export { ProviderSettingsItem } from './ProviderSettingsItem';
-export { OAuthProviderSettings } from './OAuthProviderSettings';
-export { OIDCProviderSettings } from './OIDCProviderSettings';
-export { SidebarUserSettings } from './UserSettings';
+import React from 'react';
+import List from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
+
+type Props = {
+  providerSettings: React.ReactNode;
+};
+
+export const AuthProvidersList = ({ providerSettings }: Props) => (
+  <List subheader={<ListSubheader>Available Auth Providers</ListSubheader>}>
+    {providerSettings}
+  </List>
+);

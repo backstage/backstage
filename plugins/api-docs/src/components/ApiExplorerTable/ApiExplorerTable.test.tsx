@@ -15,9 +15,11 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import * as React from 'react';
+import { apiDocsConfigRef } from '../../config';
 import { ApiExplorerTable } from './ApiExplorerTable';
 
 const entites: Entity[] = [
@@ -25,29 +27,38 @@ const entites: Entity[] = [
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'API',
     metadata: { name: 'api1' },
+    spec: { type: 'openapi' },
   },
   {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'API',
     metadata: { name: 'api2' },
+    spec: { type: 'openapi' },
   },
   {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'API',
     metadata: { name: 'api3' },
+    spec: { type: 'grpc' },
   },
 ];
+
+const apiRegistry = ApiRegistry.with(apiDocsConfigRef, {
+  getApiDefinitionWidget: () => undefined,
+});
 
 describe('ApiCatalogTable component', () => {
   it('should render error message when error is passed in props', async () => {
     const rendered = render(
       wrapInTestApp(
-        <ApiExplorerTable
-          titlePreamble="APIs"
-          entities={[]}
-          loading={false}
-          error={{ code: 'error' }}
-        />,
+        <ApiProvider apis={apiRegistry}>
+          <ApiExplorerTable
+            titlePreamble="APIs"
+            entities={[]}
+            loading={false}
+            error={{ code: 'error' }}
+          />
+        </ApiProvider>,
       ),
     );
     const errorMessage = await rendered.findByText(
@@ -59,11 +70,13 @@ describe('ApiCatalogTable component', () => {
   it('should display entity names when loading has finished and no error occurred', async () => {
     const rendered = render(
       wrapInTestApp(
-        <ApiExplorerTable
-          titlePreamble="APIs"
-          entities={entites}
-          loading={false}
-        />,
+        <ApiProvider apis={apiRegistry}>
+          <ApiExplorerTable
+            titlePreamble="APIs"
+            entities={entites}
+            loading={false}
+          />
+        </ApiProvider>,
       ),
     );
     expect(rendered.getByText(/APIs \(3\)/)).toBeInTheDocument();

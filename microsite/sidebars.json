@@ -40,6 +40,7 @@
         "ids": [
           "features/software-catalog/software-catalog-overview",
           "features/software-catalog/installation",
+          "features/software-catalog/configuration",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
           "features/software-catalog/well-known-annotations",

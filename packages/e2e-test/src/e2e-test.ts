@@ -403,5 +403,15 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   }
 }
 
-process.on('unhandledRejection', handleError);
+process.on('unhandledRejection', (error: Error) => {
+  // Try to avoid exiting if the unhandled error is coming from jsdom, i.e. zombie.
+  // Those are typically errors on the page that should be benign, at least in the
+  // context of this test. We have other ways of asserting that the page is being
+  // rendered correctly.
+  if (error?.stack?.includes('node_modules/jsdom/lib')) {
+    console.log(`Ignored error inside jsdom, ${error}`);
+  } else {
+    handleError(error);
+  }
+});
 main().catch(handleError);
