@@ -1,4 +1,4 @@
-# cloudbuild
+# Google cloudbuild
 
 Welcome to the Google cloudbuild plugin!
 
