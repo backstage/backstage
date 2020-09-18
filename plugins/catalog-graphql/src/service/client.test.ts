@@ -14,10 +14,46 @@
  * limitations under the License.
  */
 import { CatalogClient } from './client';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
 describe('Catalog GraphQL Module', () => {
-  it('create a new client', () => {
-    void new CatalogClient('http://localhost:1234');
-    expect(true).toBe(true);
+  const worker = setupServer();
+
+  beforeAll(() => worker.listen());
+  afterAll(() => worker.close());
+
+  afterEach(() => worker.resetHandlers());
+
+  const baseUrl = 'http://localhost:1234';
+
+  it('will return the entities', async () => {
+    const expectedResponse = [{ id: 'something' }];
+
+    worker.use(
+      rest.get(`${baseUrl}/catalog/entities`, (_, res, ctx) =>
+        res(ctx.status(200), ctx.json(expectedResponse)),
+      ),
+    );
+
+    const client = new CatalogClient(baseUrl);
+
+    const response = await client.list();
+
+    expect(response).toEqual(expectedResponse);
+  });
+
+  it('throws an error with the text', async () => {
+    const expectedResponse = 'something broke';
+
+    worker.use(
+      rest.get(`${baseUrl}/catalog/entities`, (_, res, ctx) =>
+        res(ctx.status(500), ctx.text(expectedResponse)),
+      ),
+    );
+
+    const client = new CatalogClient(baseUrl);
+
+    await expect(() => client.list()).rejects.toThrow(expectedResponse);
   });
 });

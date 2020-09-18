@@ -56,7 +56,11 @@ export async function createRouter(
 
   const router = Router();
 
-  const apolloMiddlware = server.getMiddleware({ path: '/' });
+  router.get('/health', (_, response) => {
+    response.send({ status: 'ok' });
+  });
+
+  const apolloMiddleware = server.getMiddleware({ path: '/' });
 
   if (process.env.NODE_ENV === 'development')
     router.use(
@@ -67,11 +71,7 @@ export async function createRouter(
       }),
     );
 
-  router.use(apolloMiddlware);
-
-  router.get('/health', (_, response) => {
-    response.send({ status: 'ok' });
-  });
+  router.use(apolloMiddleware);
 
   router.use(errorHandler());
 

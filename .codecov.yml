@@ -6,7 +6,3 @@ coverage:
       default:
         threshold: 0% # Ref: https://docs.codecov.io/docs/codecovyml-reference#coveragestatus
         target: auto
-
-ignore:
-  - './src/plugins/*-graphql/**/*'
-  - './src/plugins/graphql/*'
