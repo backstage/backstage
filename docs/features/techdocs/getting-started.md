@@ -1,6 +1,7 @@
 ---
 id: getting-started
 title: Getting Started
+description: Getting Started Guidelines
 ---
 
 TechDocs functions as a plugin to Backstage, so you will need to use Backstage

@@ -26,13 +26,14 @@ import {
   RequiredTemplateValues,
   StageContext,
   TemplaterBuilder,
-  PublisherBase,
+  PublisherBuilder,
 } from '../scaffolder';
+import { validate, ValidatorResult } from 'jsonschema';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templaters: TemplaterBuilder;
-  publisher: PublisherBase;
+  publishers: PublisherBuilder;
 
   logger: Logger;
   dockerClient: Docker;
@@ -47,7 +48,7 @@ export async function createRouter(
   const {
     preparers,
     templaters,
-    publisher,
+    publishers,
     logger: parentLogger,
     dockerClient,
   } = options;
@@ -85,6 +86,15 @@ export async function createRouter(
         req.body.values;
 
       const token: string = req.body.token;
+      const validationResult: ValidatorResult = validate(
+        values,
+        template.spec.schema,
+      );
+      if (!validationResult.valid) {
+        res.status(400).json({ errors: validationResult.errors });
+        return;
+      }
+
       const job = jobProcessor.create({
         entity: template,
         values,
@@ -116,6 +126,7 @@ export async function createRouter(
           {
             name: 'Publish template',
             handler: async (ctx: StageContext<{ resultDir: string }>) => {
+              const publisher = publishers.get(ctx.entity);
               ctx.logger.info('Will now store the template');
               const { remoteUrl } = await publisher.publish({
                 entity: ctx.entity,

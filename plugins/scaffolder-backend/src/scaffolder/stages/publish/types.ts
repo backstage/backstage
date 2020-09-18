@@ -16,6 +16,7 @@
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { RequiredTemplateValues } from '../templater';
 import { JsonValue } from '@backstage/config';
+import { RemoteProtocol } from '../types';
 
 /**
  * Publisher is in charge of taking a folder created by
@@ -34,4 +35,9 @@ export type PublisherBase = {
     directory: string;
     token: string;
   }): Promise<{ remoteUrl: string }>;
+};
+
+export type PublisherBuilder = {
+  register(protocol: RemoteProtocol, publisher: PublisherBase): void;
+  get(template: TemplateEntityV1alpha1): PublisherBase;
 };

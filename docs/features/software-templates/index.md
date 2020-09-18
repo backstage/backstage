@@ -2,12 +2,14 @@
 id: software-templates-index
 title: Backstage Software Templates
 sidebar_label: Overview
+description: The Software Templates part of Backstage is a tool that can help
+you create Components inside Backstage
 ---
 
 The Software Templates part of Backstage is a tool that can help you create
 Components inside Backstage. By default, it has the ability to load skeletons of
-code, template in some variables, and then publish the template to some location
-like GitHub.
+code, template in some variables, and then publish the template to some
+locations like GitHub or GitLab.
 
 <video width="100%" height="100%" controls>
   <source src="https://backstage.io/blog/assets/2020-08-05/feature.mp4" type="video/mp4">
@@ -38,8 +40,10 @@ internally.
 
 After filling in these variables, you'll get some more fields to fill out which
 are required for backstage usage: the owner, (which is a `user` in the backstage
-system), the `storePath` (which right now must be a GitHub Organisation), and a
-non-existing github repository name in the format `organisation/reponame`.
+system), the `storePath` (which right now must be a GitHub Organisation or
+GitHub user), a non-existing github repository name in the format
+`organisation/reponame`, and a GitHub team or user account which should be
+granted admin access to the repository.
 
 ![Enter backstage vars](../../assets/software-templates/template-picked-2.png)
 

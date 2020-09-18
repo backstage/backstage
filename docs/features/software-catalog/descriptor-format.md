@@ -2,6 +2,8 @@
 id: descriptor-format
 title: Descriptor Format of Catalog Entities
 sidebar_label: YAML File Format
+description: Documentation on Descriptor Format of Catalog Entities which
+describes the default data shape and semantics of catalog entities
 ---
 
 This section describes the default data shape and semantics of catalog entities.
@@ -471,6 +473,7 @@ Describes the following entity kind:
 An API describes an interface that can be exposed by a component. The API can be
 defined in different formats, like [OpenAPI](https://swagger.io/specification/),
 [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/),
+[GraphQL](https://graphql.org/learn/schema/),
 [gRPC](https://developers.google.com/protocol-buffers), or other formats.
 
 Descriptor files for this kind may look as follows.
@@ -483,6 +486,8 @@ metadata:
   description: Retrieve artist details
 spec:
   type: openapi
+  lifecycle: production
+  owner: artist-relations@example.com
   definition: |
     openapi: "3.0.0"
     info:
@@ -526,6 +531,41 @@ The current set of well-known and common values for this field is:
 - `grpc` - An API definition based on
   [Protocol Buffers](https://developers.google.com/protocol-buffers) to use with
   [gRPC](https://grpc.io/).
+
+### `spec.lifecycle` [required]
+
+The lifecycle state of the API, e.g. `production`. This field is required.
+
+The software catalog accepts any lifecycle value, but an organization should
+take great care to establish a proper taxonomy for these.
+
+The current set of well-known and common values for this field is:
+
+- `experimental` - an experiment or early, non-production API, signaling that
+  users may not prefer to consume it over other more established APIs, or that
+  there are low or no reliability guarantees
+- `production` - an established, owned, maintained API
+- `deprecated` - an API that is at the end of its lifecycle, and may disappear
+  at a later point in time
+
+### `spec.owner` [required]
+
+The owner of the API, e.g. `artist-relations@example.com`. This field is
+required.
+
+In Backstage, the owner of an API is the singular entity (commonly a team) that
+bears ultimate responsibility for the API, and has the authority and capability
+to develop and maintain it. They will be the point of contact if something goes
+wrong, or if features are to be requested. The main purpose of this field is for
+display purposes in Backstage, so that people looking at catalog items can get
+an understanding of to whom this API belongs. It is not to be used by automated
+processes to for example assign authorization in runtime systems. There may be
+others that also develop or otherwise touch the API, but there will always be
+one ultimate owner.
+
+Apart from being a string, the software catalog leaves the format of this field
+open to implementers to choose. Most commonly, it is set to the ID or email of a
+group of people in an organizational structure.
 
 ### `spec.definition` [required]
 

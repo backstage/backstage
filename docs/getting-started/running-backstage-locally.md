@@ -1,6 +1,7 @@
 ---
 id: running-backstage-locally
 title: Running Backstage Locally
+description: Documentation on How to run Backstage Locally
 ---
 
 ## Prerequisites

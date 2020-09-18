@@ -55,6 +55,14 @@ export async function runDockerContainer({
   dockerClient,
   createOptions,
 }: RunDockerContainerOptions) {
+  try {
+    await dockerClient.ping();
+  } catch (e) {
+    throw new Error(
+      `This operation requires Docker. Docker does not appear to be available. Docker.ping() failed with: ${e.message}`,
+    );
+  }
+
   await new Promise((resolve, reject) => {
     dockerClient.pull(imageName, {}, (err, stream) => {
       if (err) return reject(err);
@@ -113,7 +121,6 @@ export const runCommand = async ({
 }: RunCommandOptions) => {
   await new Promise((resolve, reject) => {
     const process = spawn(command, args, options);
-
 
     process.stdout.on('data', stream => {
       logStream.write(stream);
