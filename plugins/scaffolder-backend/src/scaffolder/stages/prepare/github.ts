@@ -21,10 +21,13 @@ import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 import GitUriParser from 'git-url-parse';
-import { Clone } from 'nodegit';
+import { Clone, Cred } from 'nodegit';
 
 export class GithubPreparer implements PreparerBase {
-  async prepare(template: TemplateEntityV1alpha1): Promise<string> {
+  async prepare(
+    template: TemplateEntityV1alpha1,
+    token: string,
+  ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
 
     if (protocol !== 'github') {
@@ -46,7 +49,13 @@ export class GithubPreparer implements PreparerBase {
     );
 
     await Clone.clone(repositoryCheckoutUrl, tempDir, {
-      // TODO(blam): Maybe need some auth here?
+      fetchOpts: {
+        callbacks: {
+          credentials: () => {
+            return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
+          },
+        },
+      },
     });
 
     return path.resolve(tempDir, templateDirectory);
