@@ -15,7 +15,7 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import { CITableBuildInfo } from '../pages/BuildsPage/lib/CITable';
+import { CITableBuildInfo } from '../components/BuildsPage/lib/CITable';
 
 const jenkins = require('jenkins');
 
@@ -64,6 +64,21 @@ export class JenkinsApi {
         };
       })
       .pop();
+
+    const author = jobDetails.actions
+      .filter(
+        (action: any) =>
+          action._class ===
+          'jenkins.scm.api.metadata.ContributorMetadataAction',
+      )
+      .map((action: any) => {
+        return action.contributorDisplayName;
+      })
+      .pop();
+
+    if (author) {
+      scmInfo.author = author;
+    }
 
     return scmInfo;
   }
@@ -154,12 +169,15 @@ export class JenkinsApi {
     if (jobScmInfo) {
       source.url = jobScmInfo?.url;
       source.displayName = jobScmInfo?.displayName;
+      source.author = jobScmInfo?.author;
     }
 
     const path = new URL(jenkinsResult.url).pathname;
 
     return {
       id: path,
+      buildNumber: jenkinsResult.number,
+      buildUrl: jenkinsResult.url,
       buildName: jenkinsResult.fullDisplayName,
       status: jenkinsResult.building ? 'running' : jenkinsResult.result,
       onRestartClick: () => {

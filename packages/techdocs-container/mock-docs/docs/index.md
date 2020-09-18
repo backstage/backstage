@@ -59,3 +59,5 @@ digraph G {
   Goofy <-- MickeyMouse: responds
 @enduml
 ```
+
+:bulb:

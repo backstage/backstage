@@ -14,9 +14,6 @@ To evaluate TechDocs and have a greater amount of functionality available, inste
 # in one terminal window, run this from from the very root of the Backstage project
 cd packages/backend
 yarn start
-
-# open another terminal window, and run the following from the very root of the Backstage project
-yarn lerna run mock-data
 ```
 
 ## What techdocs-backend does

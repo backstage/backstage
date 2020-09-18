@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { Entity } from '@backstage/catalog-model';
 import { Link } from '@backstage/core';
 import {
@@ -45,6 +44,7 @@ import { useProjectName } from '../useProjectName';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
+import { WorkflowRunLogs } from '../WorkflowRunLogs';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -57,7 +57,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   table: {
     padding: theme.spacing(1),
   },
-  expansionPanelDetails: {
+  accordionDetails: {
     padding: 0,
   },
   button: {
@@ -71,7 +71,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const JobsList = ({ jobs }: { jobs?: Jobs }) => {
+const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
   const classes = useStyles();
   return (
     <Box>
@@ -83,6 +83,7 @@ const JobsList = ({ jobs }: { jobs?: Jobs }) => {
             className={
               job.status !== 'success' ? classes.failed : classes.success
             }
+            entity={entity}
           />
         ))}
     </Box>
@@ -111,7 +112,15 @@ const StepView = ({ step }: { step: Step }) => {
   );
 };
 
-const JobListItem = ({ job, className }: { job: Job; className: string }) => {
+const JobListItem = ({
+  job,
+  className,
+  entity,
+}: {
+  job: Job;
+  className: string;
+  entity: Entity;
+}) => {
   const classes = useStyles();
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
@@ -127,7 +136,7 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
           {job.name} ({getElapsedTime(job.started_at, job.completed_at)})
         </Typography>
       </AccordionSummary>
-      <AccordionDetails className={classes.expansionPanelDetails}>
+      <AccordionDetails className={classes.accordionDetails}>
         <TableContainer>
           <Table>
             {job.steps.map((step: Step) => (
@@ -136,6 +145,11 @@ const JobListItem = ({ job, className }: { job: Job; className: string }) => {
           </Table>
         </TableContainer>
       </AccordionDetails>
+      {job.status === 'queued' || job.status === 'in_progress' ? (
+        <WorkflowRunLogs runId={job.id} inProgress entity={entity} />
+      ) : (
+        <WorkflowRunLogs runId={job.id} inProgress={false} entity={entity} />
+      )}
     </Accordion>
   );
 };
@@ -218,7 +232,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 {jobs.loading ? (
                   <CircularProgress />
                 ) : (
-                  <JobsList jobs={jobs.value} />
+                  <JobsList jobs={jobs.value} entity={entity} />
                 )}
               </TableCell>
             </TableRow>

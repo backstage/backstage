@@ -1,6 +1,8 @@
 ---
 id: concepts
 title: Concepts
+description: Documentation on concepts that are introduced with
+Spotify's docs-like-code solution in Backstage
 ---
 
 This page describes concepts that are introduced with Spotify's docs-like-code
@@ -8,9 +10,9 @@ solution in Backstage.
 
 ### TechDocs Core Plugin
 
-The TechDocs Core Plugin is a MkDocs plugin created as a wrapper around multiple
-MkDocs plugins and Python Markdown extensions to standardize the configuration
-of MkDocs used for TechDocs.
+The TechDocs Core Plugin is an [MkDocs](https://www.mkdocs.org/) plugin created
+as a wrapper around multiple MkDocs plugins and Python Markdown extensions to
+standardize the configuration of MkDocs used for TechDocs.
 
 [TechDocs Core](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/techdocs-core/README.md)
 

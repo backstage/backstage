@@ -18,16 +18,21 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import createProxyMiddleware, {
-  Config as ProxyConfig,
+  Config as ProxyMiddlewareConfig,
   Proxy,
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
+import http from 'http';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
   // The URL path prefix that the router itself is mounted as, commonly "/proxy"
   pathPrefix: string;
+}
+
+export interface ProxyConfig extends ProxyMiddlewareConfig {
+  allowedMethods?: string[];
 }
 
 // Creates a proxy middleware, possibly with defaults added on top of the
@@ -58,7 +63,12 @@ function buildMiddleware(
   // Attach the logger to the proxy config
   fullConfig.logProvider = () => logger;
 
-  return createProxyMiddleware(fullConfig);
+  // Only permit the allowed HTTP methods if configured
+  const filter = (_pathname: string, req: http.IncomingMessage): boolean => {
+    return fullConfig?.allowedMethods?.includes(req.method!) ?? true;
+  };
+
+  return createProxyMiddleware(filter, fullConfig);
 }
 
 export async function createRouter(
