@@ -31,7 +31,7 @@ export interface ModuleOptions {
 export async function createModule(
   options: ModuleOptions,
 ): Promise<GraphQLModule> {
-  const typeDefs = require('../schema');
+  const { default: typeDefs } = require('../schema');
 
   const catalogClient = new CatalogClient(
     options.config.getString('backend.baseUrl'),
