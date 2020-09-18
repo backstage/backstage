@@ -14,31 +14,53 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import { OAuthApi, OpenIdConnectApi, IconComponent } from '@backstage/core-api';
-import { SidebarItem } from '../Items';
-import { IconButton, Tooltip } from '@material-ui/core';
-import StarBorder from '@material-ui/icons/StarBorder';
+import React from 'react';
+import { IconComponent, OAuthApi, OpenIdConnectApi } from '@backstage/core-api';
+import {
+  ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  ListItemText,
+  Tooltip,
+} from '@material-ui/core';
 import PowerButton from '@material-ui/icons/PowerSettingsNew';
+import { ToggleButton } from '@material-ui/lab';
 
-export const ProviderSettingsItem: FC<{
+type Props = {
   title: string;
   icon: IconComponent;
   signedIn: boolean;
   api: OAuthApi | OpenIdConnectApi;
   signInHandler: Function;
-}> = ({ title, icon, signedIn, api, signInHandler }) => {
-  return (
-    <SidebarItem key={title} text={title} icon={icon ?? StarBorder}>
-      <IconButton onClick={() => (signedIn ? api.logout() : signInHandler())}>
+};
+
+export const ProviderSettingsItem = ({
+  title,
+  icon: Icon,
+  signedIn,
+  api,
+  signInHandler,
+}: Props) => (
+  <ListItem>
+    <ListItemIcon>
+      <Icon />
+    </ListItemIcon>
+    <ListItemText primary={title} />
+    <ListItemSecondaryAction>
+      <ToggleButton
+        size="small"
+        value={title}
+        selected={signedIn}
+        onChange={() => (signedIn ? api.logout() : signInHandler())}
+      >
         <Tooltip
           placement="top"
           arrow
           title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
         >
-          <PowerButton color={signedIn ? 'secondary' : 'primary'} />
+          <PowerButton />
         </Tooltip>
-      </IconButton>
-    </SidebarItem>
-  );
-};
+      </ToggleButton>
+    </ListItemSecondaryAction>
+  </ListItem>
+);
