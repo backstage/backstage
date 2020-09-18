@@ -54,30 +54,40 @@ The TechDocs Core MkDocs plugin comes with a set of extensions and plugins that 
 TechDocs Core plugin:
 
 Plugins:
- - search
- - mkdocs-monorepo-plugin
+
+- search
+- mkdocs-monorepo-plugin
 
 Extensions:
-  - admonition
-  - toc
-  - pymdown
-      - caret
-      - critic
-      - details
-      - emoji
-      - inlinehilite
-      - magiclink
-      - mark
-      - smartsymobls
-      - highlight
-      - extra
-      - tabbed
-      - tasklist
-      - tilde
-  - markdown_inline_graphviz
-  - plantuml_markdown
+
+- admonition
+- toc
+- pymdown
+  - caret
+  - critic
+  - details
+  - emoji
+  - inlinehilite
+  - magiclink
+  - mark
+  - smartsymobls
+  - highlight
+  - extra
+  - tabbed
+  - tasklist
+  - tilde
+- markdown_inline_graphviz
+- plantuml_markdown
 
 ## Changelog
+
+### 0.0.8
+
+- Superfences and Codehilite doesn't work very well together (squidfunk/mkdocs-material#1604) so therefore the codehilite extension is replaced by pymdownx.highlight
+
+- pymdownx.tabbed is added to support tabs to group markdown content, such as codeblocks.
+
+- "PyMdown Extensions includes three extensions that are meant to replace their counterpart in the default Python Markdown extensions." Therefore some extensions has been taken away in this version that comes by default from pymdownx.extra which is added now (https://facelessuser.github.io/pymdown-extensions/usage_notes/#incompatible-extensions)
 
 ### 0.0.7
 
