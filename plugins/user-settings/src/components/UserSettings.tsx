@@ -21,8 +21,17 @@ import { SettingsDialog } from './SettingsDialog';
 import { SidebarItem, SidebarContext } from '@backstage/core';
 import { useUserProfile } from './useUserProfileInfo';
 
+export type ProviderSettings = JSX.Element;
+
 type Props = {
-  providerSettings?: React.ReactNode;
+  /**
+   * Available auth providers. Providers will be rendered as children
+   * of a MUI List.
+   *
+   * If undefined, providers that are configured in app-config.yaml
+   * will be displayed instead.
+   */
+  providerSettings?: ProviderSettings;
 };
 
 export const UserSettings = ({ providerSettings }: Props) => {

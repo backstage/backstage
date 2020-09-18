@@ -18,11 +18,11 @@ import React from 'react';
 import { List, ListSubheader } from '@material-ui/core';
 
 type Props = {
-  providerSettings: React.ReactNode;
+  providers: React.ReactNode;
 };
 
-export const AuthProvidersList = ({ providerSettings }: Props) => (
+export const AuthProvidersList = ({ providers }: Props) => (
   <List subheader={<ListSubheader>Available Auth Providers</ListSubheader>}>
-    {providerSettings}
+    {providers}
   </List>
 );

@@ -29,7 +29,7 @@ import React from 'react';
 import { OAuthProviderSettings } from './OAuthProviderSettings';
 import { OIDCProviderSettings } from './OIDCProviderSettings';
 
-export const DefaultProviderSettings = () => {
+export const ConfiguredProviderSettings = () => {
   const configApi = useApi(configApiRef);
   const providersConfig = configApi.getOptionalConfig('auth.providers');
   const providers = providersConfig?.keys() ?? [];

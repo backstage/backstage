@@ -29,6 +29,8 @@ import { SignInAvatar } from './SignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from './useUserProfileInfo';
 import { useApi, featureFlagsApiRef } from '@backstage/core';
+import { ConfiguredProviderSettings } from './ConfiguredProviderSettings';
+import { ProviderSettings } from './UserSettings';
 
 const useStyles = makeStyles({
   root: {
@@ -37,7 +39,7 @@ const useStyles = makeStyles({
 });
 
 type Props = {
-  providerSettings?: React.ReactNode;
+  providerSettings?: ProviderSettings;
 };
 
 export const SettingsDialog = ({ providerSettings }: Props) => {
@@ -45,6 +47,8 @@ export const SettingsDialog = ({ providerSettings }: Props) => {
   const { profile, displayName } = useUserProfile();
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const featureFlags = featureFlagsApi.getRegisteredFlags();
+
+  const providers = providerSettings ?? <ConfiguredProviderSettings />;
 
   return (
     <Card className={classes.root}>
@@ -56,12 +60,8 @@ export const SettingsDialog = ({ providerSettings }: Props) => {
       />
       <CardContent>
         <AppSettingsList />
-        {providerSettings && (
-          <>
-            <Divider />
-            <AuthProvidersList providerSettings={providerSettings} />
-          </>
-        )}
+        <Divider />
+        <AuthProvidersList providers={providers} />
         {featureFlags.length > 0 && (
           <>
             <Divider />
