@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   createStyles,
   makeStyles,
@@ -102,6 +102,7 @@ export type SelectProps = {
   label: string;
   placeholder?: string;
   onChange: (arg: any) => any;
+  triggerReset?: boolean;
 };
 
 export const SelectComponent = (props: SelectProps) => {
@@ -111,6 +112,10 @@ export const SelectComponent = (props: SelectProps) => {
     multiple ? [] : '',
   );
   const [canOpen, setCanOpen] = React.useState(false);
+
+  useEffect(() => {
+    setValue(multiple ? [] : "")
+  }, [props.triggerReset, multiple])
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setValue(event.target.value as any);

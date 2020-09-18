@@ -75,11 +75,13 @@ export const Filters = (props: Props) => {
 
   const [filters, setFilters] = useState(props.filters);
   const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({});
+  const [reset, triggerReset] = useState(false);
 
   // Trigger re-rendering
   const handleClick = () => {
     setSelectedFilters({});
     setFilters([...props.filters]);
+    triggerReset(el => !el)
   };
 
   useEffect(() => {
@@ -101,6 +103,7 @@ export const Filters = (props: Props) => {
           filters.map(filter =>
             filter.type === 'checkbox-tree' ? (
               <CheckboxTree
+                triggerReset={reset}
                 key={filter.element.label}
                 {...(filter.element as CheckboxTreeProps)}
                 onChange={el =>
@@ -126,6 +129,7 @@ export const Filters = (props: Props) => {
               />
             ) : (
               <Select
+                triggerReset={reset}
                 key={filter.element.label}
                 {...(filter.element as SelectProps)}
                 onChange={el =>

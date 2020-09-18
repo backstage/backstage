@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* eslint-disable guard-for-in */
 import React, { useEffect, useReducer } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
@@ -98,6 +99,7 @@ type Option = {
 export type CheckboxTreeProps = {
   subCategories: SubCategory[];
   label: string;
+  triggerReset?: boolean;
   onChange: (arg: any) => any;
 };
 
@@ -111,7 +113,8 @@ type checkOptionPayload = {
 type Action =
   | { type: 'checkOption'; payload: checkOptionPayload }
   | { type: 'checkCategory'; payload: string }
-  | { type: 'toggleCategory'; payload: string };
+  | { type: 'toggleCategory'; payload: string }
+  | { type: 'triggerReset' };
 
 const reducer = (
   state: IndexedObject<SubCategoryWithIndexedOptions>,
@@ -128,21 +131,32 @@ const reducer = (
         );
       });
     }
-    case 'checkCategory':
+    case 'checkCategory': {
       return produce(state, newState => {
         const category = newState[action.payload];
         const options = category.options;
         category.isChecked = !category.isChecked;
-        // eslint-disable-next-line guard-for-in
         for (const option in options) {
           options[option].isChecked = category.isChecked;
         }
       });
+    }
     case 'toggleCategory':
       return produce(state, newState => {
         const category = newState[action.payload];
         category.isOpen = !category.isOpen;
       });
+    case 'triggerReset': {
+      return produce(state, newState => {
+        for (const category in newState) {
+          newState[category].isChecked = false;
+          for (const option in newState[category].options) {
+            newState[category].options[option].isChecked =
+              newState[category].isChecked;
+          }
+        }
+      });
+    }
     default:
       return state;
   }
@@ -190,6 +204,10 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
     onChange(values);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
+
+  useEffect(() => {
+    dispatch({ type: 'triggerReset' });
+  }, [props.triggerReset]);
 
   return (
     <div>
