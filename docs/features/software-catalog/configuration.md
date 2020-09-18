@@ -1,6 +1,7 @@
 ---
 id: software-catalog-configuration
 title: Catalog Configuration
+description: Documentation on Software Catalog Configuration
 ---
 
 ## Static Location Configuration

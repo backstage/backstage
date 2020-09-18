@@ -1,6 +1,7 @@
 ---
 id: app-custom-theme
 title: Customize the look-and-feel of your App
+description: Documentation on Customizing look and feel of the App
 ---
 
 Backstage ships with a default theme with a light and dark mode variant. The

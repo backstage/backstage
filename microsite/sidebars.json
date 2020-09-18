@@ -143,7 +143,11 @@
         "ids": ["api/backend"]
       }
     ],
-    "Tutorials": ["tutorials/journey"],
+    "Tutorials": [
+      "tutorials/journey",
+      "tutorials/quickstart-app-auth",
+      "tutorials/quickstart-app-plugin"
+    ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
       "architecture-decisions/adrs-adr001",

@@ -1,7 +1,7 @@
 ---
 id: adrs-adr005
 title: ADR005: Catalog Core Entities
-sidebar_label: ADR005
+description: Architecture Decision Record (ADR) log on Catalog Core Entities
 ---
 
 | Created    | Status |
