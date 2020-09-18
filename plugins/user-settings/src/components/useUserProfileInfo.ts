@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApi, identityApiRef } from '@backstage/core-api';
+import { useApi, identityApiRef } from '@backstage/core';
 
 export const useUserProfile = () => {
   const identityApi = useApi(identityApiRef);

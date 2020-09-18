@@ -13,17 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-
-type Props = {
-  providerSettings: React.ReactNode;
-};
-
-export const AuthProvidersList = ({ providerSettings }: Props) => (
-  <List subheader={<ListSubheader>Available Auth Providers</ListSubheader>}>
-    {providerSettings}
-  </List>
-);
+export { plugin } from './plugin';
+export { UserSettings } from './components/UserSettings';

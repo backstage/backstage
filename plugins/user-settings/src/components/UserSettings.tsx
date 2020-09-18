@@ -18,15 +18,14 @@ import React, { useEffect, useContext } from 'react';
 import { Popover } from '@material-ui/core';
 import { SignInAvatar } from './SignInAvatar';
 import { SettingsDialog } from './SettingsDialog';
-import { SidebarItem } from '../Items';
+import { SidebarItem, SidebarContext } from '@backstage/core';
 import { useUserProfile } from './useUserProfileInfo';
-import { SidebarContext } from '../config';
 
 type Props = {
   providerSettings?: React.ReactNode;
 };
 
-export const SidebarUserSettings = ({ providerSettings }: Props) => {
+export const UserSettings = ({ providerSettings }: Props) => {
   const { isOpen: sidebarOpen } = useContext(SidebarContext);
   const { displayName } = useUserProfile();
   const [open, setOpen] = React.useState(false);

@@ -15,11 +15,7 @@
  */
 
 import React from 'react';
-import {
-  FeatureFlagName,
-  useApi,
-  featureFlagsApiRef,
-} from '@backstage/core-api';
+import { FeatureFlagName, useApi, featureFlagsApiRef } from '@backstage/core';
 import {
   ListItem,
   ListItemSecondaryAction,

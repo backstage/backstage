@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createDevApp } from '@backstage/dev-utils';
+import { plugin } from '../src/plugin';
 
-export { ProviderSettingsItem } from './ProviderSettingsItem';
-export { SidebarUserSettings } from './UserSettings';
+createDevApp().registerPlugin(plugin).render();

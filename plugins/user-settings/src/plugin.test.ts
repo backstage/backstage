@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { plugin } from './plugin';
 
-export { Sidebar } from './Bar';
-export { SidebarPage, SidebarPinStateContext } from './Page';
-export type { SidebarPinStateContextType } from './Page';
-export {
-  SidebarDivider,
-  SidebarItem,
-  SidebarSearchField,
-  SidebarSpace,
-  SidebarSpacer,
-} from './Items';
-export { IntroCard, SidebarIntro } from './Intro';
-export {
-  SIDEBAR_INTRO_LOCAL_STORAGE,
-  SidebarContext,
-  sidebarConfig,
-} from './config';
-export type { SidebarContextType } from './config';
+describe('user-settings', () => {
+  it('should export plugin', () => {
+    expect(plugin).toBeDefined();
+  });
+});

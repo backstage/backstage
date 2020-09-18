@@ -35,11 +35,10 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-  SidebarUserSettings,
-  DefaultProviderSettings,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
 import { graphiQLRouteRef } from '@backstage/plugin-graphiql';
+import { UserSettings } from '@backstage/plugin-user-settings';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -103,7 +102,7 @@ const Root: FC<{}> = ({ children }) => (
       />
       <SidebarSpace />
       <SidebarDivider />
-      <SidebarUserSettings providerSettings={<DefaultProviderSettings />} />
+      <UserSettings />
     </Sidebar>
     {children}
   </SidebarPage>

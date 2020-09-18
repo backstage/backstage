@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React from 'react';
+import { IconComponent, OAuthApi, OpenIdConnectApi } from '@backstage/core';
 import {
   ListItem,
   ListItemIcon,

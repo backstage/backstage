@@ -28,7 +28,7 @@ import { FeatureFlagsList } from './FeatureFlagsList';
 import { SignInAvatar } from './SignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from './useUserProfileInfo';
-import { useApi, featureFlagsApiRef } from '@backstage/core-api';
+import { useApi, featureFlagsApiRef } from '@backstage/core';
 
 const useStyles = makeStyles({
   root: {
