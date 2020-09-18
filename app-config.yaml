@@ -121,9 +121,6 @@ catalog:
 
 scaffolder:
   github:
-    token:
-      $secret:
-        env: GITHUB_ACCESS_TOKEN
     visibility: public # or 'internal' or 'private'
   gitlab:
     api:

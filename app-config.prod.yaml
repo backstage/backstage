@@ -116,3 +116,7 @@ lighthouse:
 grafana:
   baseUrl: http://monitoring.trivago.trv
 
+scaffolder:
+  github:
+    visibility: internal # or 'public' or 'private'
+
