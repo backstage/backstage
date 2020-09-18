@@ -72,11 +72,10 @@ class TechDocsCore(BasePlugin):
         config["markdown_extensions"].append("pymdownx.mark")
         config["markdown_extensions"].append("pymdownx.smartsymbols")
         config["markdown_extensions"].append("pymdownx.highlight")
-
-        config["markdown_extensions"].append("pymdownx.extra")
         config["mdx_configs"]["pymdownx.highlight"] = {
             "linenums": True,
         }
+        config["markdown_extensions"].append("pymdownx.extra")
         config["mdx_configs"]["pymdownx.betterem"] = {
             "smart_enable": "all",
         }
