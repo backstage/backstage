@@ -21,6 +21,10 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 - Change root `tsc` output dir to `dist-types`, in order to allow for standalone plugin repos. [#2278](https://github.com/spotify/backstage/pull/2278)
 
+### @backstage/catalog-backend
+
+- We have simplified the way that GitHub ingestion works. The `catalog.processors.githubApi` key is deprecated, in favor of `catalog.processors.github`. At the same time, the location type `github/api` is likewise deprecated, in favor of `github`. This location type now serves both raw HTTP reads and APIv3 reads, depending on how you configure it. It also supports having several providers at once - for example, both public GitHub and an internal GitHub Enterprise, with different keys. If you still use the `catalog.processors.githubApi` config key, things will work but you will get a deprecation warning at startup. In a later release, support for the old key will go away entirely. See the [configuration section in the docs](https://backstage.io/docs/features/software-catalog/configuration) for more details.
+
 ## v0.1.1-alpha.21
 
 - Added many more frontend plugins to the template along with the sidebar. [#1942](https://github.com/spotify/backstage/pull/1942), [#2084](https://github.com/spotify/backstage/pull/2084)

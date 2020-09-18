@@ -462,6 +462,19 @@ class Index extends React.Component {
             Contribute
           </ActionBlock.Link>
         </ActionBlock>
+
+        <Block small className="bg-black-grey cncf-block">
+          <Block.Container center>
+            <Block.SmallTitle small>
+              Backstage is a{' '}
+              <a href="https://www.cncf.io">
+                Cloud Native Computing Foundation
+              </a>{' '}
+              sandbox project
+            </Block.SmallTitle>
+            <div className="cncf-logo" />
+          </Block.Container>
+        </Block>
       </main>
     );
   }
