@@ -187,10 +187,11 @@ builder.add(
 );
 ```
 
-> Start the backend and frontend as before. When the browser loads, you should
-> be presented with a login page for GitHub. Login as usual with your GitHub
-> account. If this is your first time, you will be asked to authorize and then
-> are redirected to the catalog page if all is well.
+8. Start the backend and frontend as before
+
+When the browser loads, you should be presented with a login page for GitHub.
+Login as usual with your GitHub account. If this is your first time, you will be
+asked to authorize and then are redirected to the catalog page if all is well.
 
 # Where to go from here
 
