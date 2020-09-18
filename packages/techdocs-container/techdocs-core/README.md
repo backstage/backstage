@@ -55,14 +55,14 @@ TechDocs Core plugin:
 
 Plugins:
 
-- search
-- mkdocs-monorepo-plugin
+- [search](https://www.mkdocs.org/user-guide/configuration/#search)
+- [mkdocs-monorepo-plugin](https://github.com/spotify/mkdocs-monorepo-plugin)
 
 Extensions:
 
-- admonition
-- toc
-- pymdown
+- [admonition](https://squidfunk.github.io/mkdocs-material/reference/admonitions/#admonitions)
+- [toc](https://python-markdown.github.io/extensions/toc/)
+- [pymdown](https://facelessuser.github.io/pymdown-extensions/)
   - caret
   - critic
   - details
@@ -76,8 +76,8 @@ Extensions:
   - tabbed
   - tasklist
   - tilde
-- markdown_inline_graphviz
-- plantuml_markdown
+- [markdown_inline_graphviz](https://pypi.org/project/markdown-inline-graphviz/)
+- [plantuml_markdown](https://pypi.org/project/plantuml-markdown/)
 
 ## Changelog
 
