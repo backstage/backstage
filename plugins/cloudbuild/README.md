@@ -1,6 +1,6 @@
 # cloudbuild
 
-Welcome to the cloudbuild plugin!
+Welcome to the Google cloudbuild plugin!
 
 _This plugin was created through the Backstage CLI_
 
