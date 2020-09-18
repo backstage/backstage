@@ -132,6 +132,11 @@ scaffolder:
       token:
         $secret:
           env: GITLAB_ACCESS_TOKEN
+  azure:
+    api:
+      token:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
 
 auth:
   providers:
