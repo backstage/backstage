@@ -35,6 +35,8 @@ organization:
 techdocs:
   storageUrl: http://localhost:7000/techdocs/static/docs
   requestUrl: http://localhost:7000/techdocs/docs
+  generators:
+    techdocs: 'docker'
 
 sentry:
   organization: spotify
@@ -58,18 +60,20 @@ catalog:
     - allow: [Component, API, Group, Template, Location]
   processors:
     github:
-      privateToken:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
-    githubApi:
       providers:
         - target: https://github.com
           token:
             $secret:
               env: GITHUB_PRIVATE_TOKEN
-        # Example for how to add your GitHub Enterprise instance:
+        #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
         #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+        # - target: https://ghe.example.net
+        #   rawBaseUrl: https://ghe.example.net/raw
         #   token:
         #     $secret:
         #       env: GHE_PRIVATE_TOKEN

@@ -3,6 +3,8 @@ name: E2E Test Linux
 on:
   pull_request:
     paths-ignore:
+      - 'contrib/**'
+      - 'docs/**'
       - 'microsite/**'
 
 jobs:
