@@ -237,7 +237,9 @@ export default async (cmd: Command) => {
     ? paths.resolveTargetRoot('plugins', answers.id)
     : paths.resolveTargetRoot(answers.id);
   const ownerIds = parseOwnerIds(answers.owner);
-  const version = backstageVersion;
+  const { version } = isMonoRepo
+    ? await fs.readJson(paths.resolveTargetRoot('lerna.json'))
+    : { version: '0.1.0' };
 
   Task.log();
   Task.log('Creating the plugin...');
