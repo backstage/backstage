@@ -75,9 +75,17 @@ catalog:
         $secret:
           env: GITHUB_PRIVATE_TOKEN
     githubApi:
-      privateToken:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        # Example for how to add your GitHub Enterprise instance:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
     bitbucketApi:
       username:
         $secret:
@@ -110,6 +118,19 @@ catalog:
       - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
       - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/hello-world-api.yaml
       - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/streetlights-api.yaml
+
+scaffolder:
+  github:
+    token:
+      $secret:
+        env: GITHUB_ACCESS_TOKEN
+    visibility: public # or 'internal' or 'private'
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token:
+        $secret:
+          env: GITLAB_ACCESS_TOKEN
 
 auth:
   providers:

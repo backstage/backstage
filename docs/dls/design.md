@@ -1,6 +1,7 @@
 ---
 id: design
 title: Design
+description: Documentation on Design
 ---
 
 ![header](../assets/dls/designheader-updated.png)

@@ -1,6 +1,7 @@
 ---
 id: index
 title: User Authentication and Authorization in Backstage
+description: Documentation on User Authentication and Authorization in Backstage
 ---
 
 ## Summary

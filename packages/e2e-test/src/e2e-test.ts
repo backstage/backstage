@@ -272,6 +272,10 @@ async function createPlugin(pluginName: string, appDir: string) {
 async function testAppServe(pluginName: string, appDir: string) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
+    env: {
+      ...process.env,
+      GITHUB_ACCESS_TOKEN: 'abc',
+    },
   });
   Browser.localhost('localhost', 3000);
 
@@ -351,6 +355,10 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
 
   const child = spawnPiped(['yarn', 'workspace', 'backend', 'start'], {
     cwd: appDir,
+    env: {
+      ...process.env,
+      GITHUB_ACCESS_TOKEN: 'abc',
+    },
   });
 
   let stdout = '';
@@ -395,5 +403,15 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   }
 }
 
-process.on('unhandledRejection', handleError);
+process.on('unhandledRejection', (error: Error) => {
+  // Try to avoid exiting if the unhandled error is coming from jsdom, i.e. zombie.
+  // Those are typically errors on the page that should be benign, at least in the
+  // context of this test. We have other ways of asserting that the page is being
+  // rendered correctly.
+  if (error?.stack?.includes('node_modules/jsdom/lib')) {
+    console.log(`Ignored error inside jsdom, ${error}`);
+  } else {
+    handleError(error);
+  }
+});
 main().catch(handleError);
