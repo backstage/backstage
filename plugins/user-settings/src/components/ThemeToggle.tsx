@@ -16,8 +16,6 @@
 
 import React from 'react';
 import { useObservable } from 'react-use';
-import LightIcon from '@material-ui/icons/WbSunny';
-import DarkIcon from '@material-ui/icons/Brightness2';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
 import { appThemeApiRef, useApi } from '@backstage/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -37,11 +35,6 @@ export const SidebarThemeToggle = () => {
   );
 
   const themeIds = appThemeApi.getInstalledThemes();
-  // TODO(marcuseide): can these be put on the theme itself?
-  const themeIcons = {
-    dark: <DarkIcon />,
-    light: <LightIcon />,
-  };
 
   const handleSetTheme = (
     _event: React.MouseEvent<HTMLElement>,
@@ -71,7 +64,7 @@ export const SidebarThemeToggle = () => {
                 arrow
                 title={`Select ${theme.variant} theme`}
               >
-                {themeIcons[theme.variant]}
+                {themeIds.find(t => t.id === theme.id)!.icon ?? <AutoIcon />}
               </Tooltip>
             </ToggleButton>
           ))}
