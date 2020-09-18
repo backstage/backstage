@@ -71,6 +71,30 @@ building and publishing of your documentation, you want to change the
 `requestUrl` to point to your storage. In this case `storageUrl` is not
 required.
 
+### Disable Docker in Docker situation (Optional)
+
+The TechDocs backend plugin runs a docker container with mkdocs to generate the
+frontend of the docs from source files (Markdown). If you are deploying
+Backstage using Docker, this will mean that your Backstage Docker container will
+try to run another Docker container for TechDocs backend.
+
+To avoid this problem, we have a configuration available. You can set a value in
+your `app-config.yaml` that tells the techdocs generator if it should run the
+`local` mkdocs or run it from `docker`. This defaults to running as `docker` if
+no config is provided.
+
+```yaml
+techdocs:
+  generators:
+    techdocs: local
+```
+
+Setting `generators.techdocs` to `local` means you will have to make sure your
+environment is compatible with techdocs. You will have to install the
+`mkdocs-techdocs-container` and 'mkdocs' package from pip, as well as graphviz
+and plantuml from your package manager. This has only been tested with python
+3.7 and python 3.8.
+
 ## Run Backstage locally
 
 Change folder to `<backstage-project-root>/packages/backend` and run the
