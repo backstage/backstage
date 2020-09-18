@@ -70,7 +70,7 @@ export class TechdocsGenerator implements GeneratorBase {
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
     const [log, logStream] = createStream();
-    console.log(this.options.runGeneratorIn);
+
     try {
       switch (this.options.runGeneratorIn) {
         case 'local':
