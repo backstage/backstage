@@ -4,6 +4,9 @@ Welcome to the not-found (a.k.a 404) plugin!
 
 _This plugin was created through the Backstage CLI_
 
+**Note**
+Due to _react-router_ configurations, where the \* always matches, please ensure that this plugin is the **last** registered route
+
 ## Getting started
 
 Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/\*](http://localhost:3000/*).
