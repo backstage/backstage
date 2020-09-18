@@ -129,12 +129,12 @@ export class GithubPublisher implements PublisherBase {
       oid,
       [],
     );
-
+    console.log('this.Token: ', this.token);
     const remoteRepo = await Remote.create(repo, 'origin', remote);
     await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
       callbacks: {
         credentials: () => {
-          return Cred.userpassPlaintextNew(this.token, 'x-oauth-basic');
+          return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
         },
       },
     });
