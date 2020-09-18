@@ -18,6 +18,7 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
 import fetch, { HeadersInit, RequestInit } from 'node-fetch';
+import { Logger } from 'winston';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
@@ -139,8 +140,15 @@ export function getRawUrl(target: string, provider: ProviderConfig): URL {
   }
 }
 
-export function readConfig(config: Config): ProviderConfig[] {
+export function readConfig(config: Config, logger: Logger): ProviderConfig[] {
   const providers: ProviderConfig[] = [];
+
+  // TODO(freben): Deprecate the old config root entirely in a later release
+  if (config.has('catalog.processors.githubApi')) {
+    logger.warn(
+      'The catalog.processors.githubApi configuration key has been deprecated, please use catalog.processors.github instead',
+    );
+  }
 
   // In a previous version of the configuration, we only supported github,
   // and the "privateToken" key held the token to use for it. The new
@@ -202,8 +210,8 @@ export function readConfig(config: Config): ProviderConfig[] {
 export class GithubReaderProcessor implements LocationProcessor {
   private providers: ProviderConfig[];
 
-  static fromConfig(config: Config) {
-    return new GithubReaderProcessor(readConfig(config));
+  static fromConfig(config: Config, logger: Logger) {
+    return new GithubReaderProcessor(readConfig(config, logger));
   }
 
   constructor(providers: ProviderConfig[]) {
@@ -238,7 +246,6 @@ export class GithubReaderProcessor implements LocationProcessor {
       const options = useApi
         ? getApiRequestOptions(provider)
         : getRawRequestOptions(provider);
-      console.log(url.toString());
       const response = await fetch(url.toString(), options);
 
       if (response.ok) {

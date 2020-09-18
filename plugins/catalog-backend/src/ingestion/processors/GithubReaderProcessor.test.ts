@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
-  getApiUrl,
   getApiRequestOptions,
-  getRawUrl,
+  getApiUrl,
   getRawRequestOptions,
+  getRawUrl,
   GithubReaderProcessor,
   ProviderConfig,
   readConfig,
@@ -179,7 +180,7 @@ describe('GithubReaderProcessor', () => {
     }
 
     it('adds a default GitHub entry when missing', () => {
-      const output = readConfig(config([]));
+      const output = readConfig(config([]), getVoidLogger());
       expect(output).toEqual([
         {
           target: 'https://github.com',
@@ -190,7 +191,10 @@ describe('GithubReaderProcessor', () => {
     });
 
     it('injects the correct GitHub API base URL when missing', () => {
-      const output = readConfig(config([{ target: 'https://github.com' }]));
+      const output = readConfig(
+        config([{ target: 'https://github.com' }]),
+        getVoidLogger(),
+      );
       expect(output).toEqual([
         {
           target: 'https://github.com',
@@ -202,26 +206,33 @@ describe('GithubReaderProcessor', () => {
 
     it('rejects custom targets with no base URLs', () => {
       expect(() =>
-        readConfig(config([{ target: 'https://ghe.company.com' }])),
+        readConfig(
+          config([{ target: 'https://ghe.company.com' }]),
+          getVoidLogger(),
+        ),
       ).toThrow(
         'Provider at https://ghe.company.com must configure an explicit apiBaseUrl or rawBaseUrl',
       );
     });
 
     it('rejects funky configs', () => {
-      expect(() => readConfig(config([{ target: 7 } as any]))).toThrow(
-        /target/,
-      );
-      expect(() => readConfig(config([{ noTarget: '7' } as any]))).toThrow(
-        /target/,
-      );
+      expect(() =>
+        readConfig(config([{ target: 7 } as any]), getVoidLogger()),
+      ).toThrow(/target/);
+      expect(() =>
+        readConfig(config([{ noTarget: '7' } as any]), getVoidLogger()),
+      ).toThrow(/target/);
       expect(() =>
         readConfig(
           config([{ target: 'https://github.com', apiBaseUrl: 7 } as any]),
+          getVoidLogger(),
         ),
       ).toThrow(/apiBaseUrl/);
       expect(() =>
-        readConfig(config([{ target: 'https://github.com', token: 7 } as any])),
+        readConfig(
+          config([{ target: 'https://github.com', token: 7 } as any]),
+          getVoidLogger(),
+        ),
       ).toThrow(/token/);
     });
   });
