@@ -17,8 +17,13 @@
 import { IconComponent } from '../icons';
 
 export const resolveRoute = Symbol('resolve-route');
+export const ref = Symbol('route-ref');
 
-export type ConcreteRoute = {
+export type ReferencedRoute = {
+  [ref](): unknown;
+};
+
+export type ConcreteRoute = ReferencedRoute & {
   [resolveRoute](path: string): string;
 };
 

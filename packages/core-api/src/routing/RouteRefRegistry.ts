@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { ConcreteRoute, resolveRoute } from './types';
+import { ConcreteRoute, ref, resolveRoute, ReferencedRoute } from './types';
 
 const rootRoute: ConcreteRoute = {
+  [ref]() {
+    return this;
+  },
   [resolveRoute]: () => '',
 };
 
@@ -25,18 +28,18 @@ export type RouteRefResolver = {
 };
 
 class Node {
-  readonly children = new Map<ConcreteRoute, Node>();
+  readonly children = new Map<unknown, Node>();
 
   constructor(readonly path: string, readonly parent: Node | undefined) {}
 
   /**
    * Look up a node in the tree given a path.
    */
-  findNode(routes: ConcreteRoute[]): Node | undefined {
+  findNode(routes: ReferencedRoute[]): Node | undefined {
     let node = this as Node | undefined;
 
     for (let i = 0; i < routes.length; i++) {
-      node = node?.children.get(routes[i]);
+      node = node?.children.get(routes[i][ref]());
     }
 
     return node;
@@ -48,7 +51,7 @@ class Node {
    *
    * Returns true if the node was added, or false if the node already existed.
    */
-  addNode(routes: ConcreteRoute[], path: string): boolean {
+  addNode(routes: ReferencedRoute[], path: string): boolean {
     if (routes.length === 0) {
       throw new Error('Must provide at least 1 route to add routing node');
     }
@@ -59,11 +62,12 @@ class Node {
     }
 
     const lastRoute = routes[routes.length - 1];
-    if (parentNode.children.has(lastRoute)) {
+    const lastRouteRef = lastRoute[ref]();
+    if (parentNode.children.has(lastRouteRef)) {
       return false;
     }
 
-    parentNode.children.set(lastRoute, new Node(path, parentNode));
+    parentNode.children.set(lastRouteRef, new Node(path, parentNode));
     return true;
   }
 
@@ -107,7 +111,7 @@ export class RouteRefRegistry {
    * Register a new leaf path for a sequence of routes. All ancestor
    * routes must already exist.
    */
-  registerRoute(routes: ConcreteRoute[], path: string): boolean {
+  registerRoute(routes: ReferencedRoute[], path: string): boolean {
     return this.root.addNode(routes, path);
   }
 

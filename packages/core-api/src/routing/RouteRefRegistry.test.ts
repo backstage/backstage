@@ -17,12 +17,14 @@
 import { RouteRefRegistry } from './RouteRefRegistry';
 import { createRouteRef } from './RouteRef';
 
-const dummyConfig = { path: '/', icon: null, title: 'my-title' };
+const dummyConfig = { path: '/', icon: () => null, title: 'my-title' };
 const ref1 = createRouteRef(dummyConfig);
 const ref11 = createRouteRef(dummyConfig);
 const ref12 = createRouteRef(dummyConfig);
 const ref121 = createRouteRef(dummyConfig);
 const ref2 = createRouteRef(dummyConfig);
+const ref2a = ref2.createSubRoute({ path: '/a' });
+const ref2b = ref2.createSubRoute<{ id: string }>({ path: '/b/:id' });
 
 describe('RouteRefRegistry', () => {
   it('should be constructed with a root route', () => {
@@ -30,7 +32,7 @@ describe('RouteRefRegistry', () => {
     expect(registry.resolveRoute([], [])).toBe('');
   });
 
-  it('should register and resolve some routes', () => {
+  it('should register and resolve some absolute routes', () => {
     const registry = new RouteRefRegistry();
     expect(registry.registerRoute([ref1], '1')).toBe(true);
     expect(registry.registerRoute([ref1, ref11], '11')).toBe(true);
@@ -57,6 +59,39 @@ describe('RouteRefRegistry', () => {
     );
     expect(registry.resolveRoute([ref1, ref12, ref121], [ref12])).toBe('/1/12');
     expect(registry.resolveRoute([ref1, ref12, ref121], [ref1])).toBe('/1');
+  });
+
+  it('should register and resolve with sub routes', () => {
+    const registry = new RouteRefRegistry();
+    expect(registry.registerRoute([ref1], '1')).toBe(true);
+    expect(registry.registerRoute([ref2], '2')).toBe(true);
+    expect(registry.registerRoute([ref2a], '2')).toBe(true);
+    expect(registry.registerRoute([ref2a, ref1], '1')).toBe(true);
+    expect(registry.registerRoute([ref2a, ref2], '2')).toBe(true);
+    expect(registry.registerRoute([ref2b], '2')).toBe(true);
+    expect(registry.registerRoute([ref2b, ref1], '1')).toBe(true);
+    expect(registry.registerRoute([ref2b, ref2], '2')).toBe(true);
+
+    expect(registry.resolveRoute([], [ref1])).toBe('/1');
+    expect(registry.resolveRoute([], [ref2])).toBe('/2');
+    expect(registry.resolveRoute([], [ref2a.link({}), ref1])).toBe('/2/a/1');
+    expect(registry.resolveRoute([], [ref2a.link({}), ref2])).toBe('/2/a/2');
+    expect(registry.resolveRoute([ref2a.link({})], [ref2])).toBe('/2/a/2');
+    expect(registry.resolveRoute([ref2a.link({}), ref1], [ref2])).toBe(
+      '/2/a/2',
+    );
+    expect(registry.resolveRoute([], [ref2b.link({ id: 'abc' }), ref1])).toBe(
+      '/2/b/abc/1',
+    );
+    expect(registry.resolveRoute([], [ref2b.link({ id: 'xyz' }), ref2])).toBe(
+      '/2/b/xyz/2',
+    );
+    expect(registry.resolveRoute([ref2b.link({ id: 'abc' })], [ref2])).toBe(
+      '/2/b/abc/2',
+    );
+    expect(
+      registry.resolveRoute([ref2b.link({ id: 'abc' }), ref1], [ref2]),
+    ).toBe('/2/b/abc/2');
   });
 
   it('should throw when registering routes incorrectly', () => {
