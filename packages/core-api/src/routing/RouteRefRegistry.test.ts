@@ -15,13 +15,14 @@
  */
 
 import { RouteRefRegistry } from './RouteRefRegistry';
-import { resolveRoute } from './types';
+import { createRouteRef } from './RouteRef';
 
-const ref1 = { [resolveRoute]: (path: string) => path };
-const ref11 = { [resolveRoute]: (path: string) => path };
-const ref12 = { [resolveRoute]: (path: string) => path };
-const ref121 = { [resolveRoute]: (path: string) => path };
-const ref2 = { [resolveRoute]: (path: string) => path };
+const dummyConfig = { path: '/', icon: null, title: 'my-title' };
+const ref1 = createRouteRef(dummyConfig);
+const ref11 = createRouteRef(dummyConfig);
+const ref12 = createRouteRef(dummyConfig);
+const ref121 = createRouteRef(dummyConfig);
+const ref2 = createRouteRef(dummyConfig);
 
 describe('RouteRefRegistry', () => {
   it('should be constructed with a root route', () => {

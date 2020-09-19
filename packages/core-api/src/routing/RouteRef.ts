@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { RouteRefConfig } from './types';
+import { ConcreteRoute, resolveRoute, RouteRefConfig } from './types';
 
-export class AbsoluteRouteRef {
+export class AbsoluteRouteRef implements ConcreteRoute {
   constructor(private readonly config: RouteRefConfig) {}
 
   get icon() {
@@ -30,6 +30,10 @@ export class AbsoluteRouteRef {
 
   get title() {
     return this.config.title;
+  }
+
+  [resolveRoute](path: string) {
+    return path;
   }
 }
 
