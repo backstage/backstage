@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-export const resolveRoute = Symbol('resolve-route');
-
-type ConcreteRoute = {
-  [resolveRoute](path: string): string;
-};
+import { ConcreteRoute, resolveRoute } from './types';
 
 const rootRoute: ConcreteRoute = {
   [resolveRoute]: () => '',

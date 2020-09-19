@@ -14,30 +14,25 @@
  * limitations under the License.
  */
 
-import type { RouteRefConfig, RouteRefOverrideConfig } from './types';
+import type { RouteRefConfig } from './types';
 
-export class MutableRouteRef {
-  private effectiveConfig: RouteRefConfig = this.config;
-
+export class AbsoluteRouteRef {
   constructor(private readonly config: RouteRefConfig) {}
 
-  override(overrideConfig: RouteRefOverrideConfig) {
-    this.effectiveConfig = { ...this.config, ...overrideConfig };
-  }
-
   get icon() {
-    return this.effectiveConfig.icon;
+    return this.config.icon;
   }
 
+  // TODO(Rugvip): Remove this, routes are looked up via the registry instead
   get path() {
-    return this.effectiveConfig.path;
+    return this.config.path;
   }
 
   get title() {
-    return this.effectiveConfig.title;
+    return this.config.title;
   }
 }
 
-export function createRouteRef(config: RouteRefConfig): MutableRouteRef {
-  return new MutableRouteRef(config);
+export function createRouteRef(config: RouteRefConfig): AbsoluteRouteRef {
+  return new AbsoluteRouteRef(config);
 }

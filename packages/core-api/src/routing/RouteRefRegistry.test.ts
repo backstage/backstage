@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { RouteRefRegistry, resolveRoute } from './RouteRefRegistry';
+import { RouteRefRegistry } from './RouteRefRegistry';
+import { resolveRoute } from './types';
 
 const ref1 = { [resolveRoute]: (path: string) => path };
 const ref11 = { [resolveRoute]: (path: string) => path };

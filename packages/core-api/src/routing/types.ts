@@ -16,7 +16,14 @@
 
 import { IconComponent } from '../icons';
 
+export const resolveRoute = Symbol('resolve-route');
+
+export type ConcreteRoute = {
+  [resolveRoute](path: string): string;
+};
+
 export type RouteRef = {
+  // TODO(Rugvip): Remove path, look up via registry instead
   path: string;
   icon?: IconComponent;
   title: string;
@@ -26,10 +33,4 @@ export type RouteRefConfig = {
   path: string;
   icon?: IconComponent;
   title: string;
-};
-
-export type RouteRefOverrideConfig = {
-  path?: string;
-  icon?: IconComponent;
-  title?: string;
 };
