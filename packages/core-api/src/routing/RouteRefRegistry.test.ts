@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { RouteRefRegistry } from './RouteRefRegistry';
+import { RouteRefRegistry, resolveRoute } from './RouteRefRegistry';
 
-const ref1 = {};
-const ref11 = {};
-const ref12 = {};
-const ref121 = {};
-const ref2 = {};
+const ref1 = { [resolveRoute]: (path: string) => path };
+const ref11 = { [resolveRoute]: (path: string) => path };
+const ref12 = { [resolveRoute]: (path: string) => path };
+const ref121 = { [resolveRoute]: (path: string) => path };
+const ref2 = { [resolveRoute]: (path: string) => path };
 
 describe('RouteRefRegistry', () => {
   it('should be constructed with a root route', () => {
@@ -41,18 +41,20 @@ describe('RouteRefRegistry', () => {
     expect(registry.registerRoute([ref2], '2')).toBe(true);
     expect(registry.registerRoute([ref2], 'duplicate')).toBe(false);
 
-    expect(registry.resolveRoute([], [ref1])).toBe('1');
+    expect(registry.resolveRoute([], [ref1])).toBe('/1');
     expect(registry.resolveRoute([], [ref11])).toBe(undefined);
-    expect(registry.resolveRoute([], [ref1, ref11])).toBe('11');
-    expect(registry.resolveRoute([ref1], [ref11])).toBe('11');
-    expect(registry.resolveRoute([ref1], [ref2])).toBe('2');
-    expect(registry.resolveRoute([ref1, ref12, ref121], [])).toBe('121');
-    expect(registry.resolveRoute([ref1, ref12, ref121], [ref121])).toBe('121');
-    expect(registry.resolveRoute([ref1, ref12, ref121], [ref12, ref121])).toBe(
-      '121',
+    expect(registry.resolveRoute([], [ref1, ref11])).toBe('/1/11');
+    expect(registry.resolveRoute([ref1], [ref11])).toBe('/1/11');
+    expect(registry.resolveRoute([ref1], [ref2])).toBe('/2');
+    expect(registry.resolveRoute([ref1, ref12, ref121], [])).toBe('/1/12/121');
+    expect(registry.resolveRoute([ref1, ref12, ref121], [ref121])).toBe(
+      '/1/12/121',
     );
-    expect(registry.resolveRoute([ref1, ref12, ref121], [ref12])).toBe('12');
-    expect(registry.resolveRoute([ref1, ref12, ref121], [ref1])).toBe('1');
+    expect(registry.resolveRoute([ref1, ref12, ref121], [ref12, ref121])).toBe(
+      '/1/12/121',
+    );
+    expect(registry.resolveRoute([ref1, ref12, ref121], [ref12])).toBe('/1/12');
+    expect(registry.resolveRoute([ref1, ref12, ref121], [ref1])).toBe('/1');
   });
 
   it('should throw when registering routes incorrectly', () => {

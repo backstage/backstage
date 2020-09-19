@@ -14,21 +14,30 @@
  * limitations under the License.
  */
 
+export const resolveRoute = Symbol('resolve-route');
+
+type ConcreteRoute = {
+  [resolveRoute](path: string): string;
+};
+
+const rootRoute: ConcreteRoute = {
+  [resolveRoute]: () => '',
+};
+
 export type RouteRefResolver = {
-  resolveRoute(from: unknown[], to: unknown[]): string;
+  resolveRoute(from: ConcreteRoute[], to: ConcreteRoute[]): string;
 };
 
 class Node {
-  readonly children = new Map<unknown, Node>();
+  readonly children = new Map<ConcreteRoute, Node>();
 
   constructor(readonly path: string, readonly parent: Node | undefined) {}
 
   /**
    * Look up a node in the tree given a path.
    */
-  findNode(routes: unknown[]): Node | undefined {
-    // eslint-disable-next-line consistent-this
-    let node: Node | undefined = this;
+  findNode(routes: ConcreteRoute[]): Node | undefined {
+    let node = this as Node | undefined;
 
     for (let i = 0; i < routes.length; i++) {
       node = node?.children.get(routes[i]);
@@ -43,7 +52,7 @@ class Node {
    *
    * Returns true if the node was added, or false if the node already existed.
    */
-  addNode(routes: unknown[], path: string): boolean {
+  addNode(routes: ConcreteRoute[], path: string): boolean {
     if (routes.length === 0) {
       throw new Error('Must provide at least 1 route to add routing node');
     }
@@ -61,6 +70,35 @@ class Node {
     parentNode.children.set(lastRoute, new Node(path, parentNode));
     return true;
   }
+
+  /**
+   * Resolve an absolute URL that represents this node in the routing tree, using
+   * using the supplied concrete routes and ancestors of this node.
+   *
+   * The length of the provided routes array must match the depth of
+   * the routing tree that this node is at, or an error will be thrown.
+   */
+  resolve(routes: ConcreteRoute[]) {
+    const parts = Array(routes.length);
+
+    let node = this as Node | undefined;
+    for (let i = routes.length - 1; i >= 0; i--) {
+      if (!node) {
+        throw new Error('Route resolve missing required parent');
+      }
+
+      const route = routes[i];
+      parts[i] = route[resolveRoute](node.path);
+
+      node = node.parent;
+    }
+
+    if (node) {
+      throw new Error('Route resolve did not reach root');
+    }
+
+    return parts.join('/');
+  }
 }
 
 /**
@@ -73,12 +111,12 @@ export class RouteRefRegistry {
    * Register a new leaf path for a sequence of routes. All ancestor
    * routes must already exist.
    */
-  registerRoute(routes: unknown[], path: string): boolean {
+  registerRoute(routes: ConcreteRoute[], path: string): boolean {
     return this.root.addNode(routes, path);
   }
 
   /**
-   * Resolve a route from a point in the routing tree.
+   * Resolve an absolute path from a point in the routing tree.
    *
    * The route referenced by `from` must exist, and is the starting
    * point for the search, walking up the tree until a subtree that
@@ -87,14 +125,21 @@ export class RouteRefRegistry {
    * If `from` is empty, the search starts and ends at the root node.
    * If `to` is empty, the route referenced by `from` will always be returned.
    */
-  resolveRoute(from: unknown[], to: unknown[]): string | undefined {
-    let fromNode = this.root.findNode(from);
+  resolveRoute(from: ConcreteRoute[], to: ConcreteRoute[]): string | undefined {
+    // Keep track of the `from` routes and pop the last ones as we traverse up
+    // the routing tree. The list of concrete routes that we're passing to
+    // `node.resolve()` should only include the ones in the resolve path.
+    const concreteStack = from.slice();
 
+    let fromNode = this.root.findNode(from);
     while (fromNode) {
       const resolvedNode = fromNode.findNode(to);
       if (resolvedNode) {
-        return resolvedNode.path;
+        return resolvedNode.resolve([rootRoute].concat(concreteStack, to));
       }
+
+      // Search at this level of the tree failed, move up to parent
+      concreteStack.pop();
       fromNode = fromNode.parent;
     }
 
