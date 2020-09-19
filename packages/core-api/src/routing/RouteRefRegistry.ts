@@ -1,0 +1,103 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+export type RouteRefResolver = {
+  resolveRoute(from: unknown[], to: unknown[]): string;
+};
+
+class Node {
+  readonly children = new Map<unknown, Node>();
+
+  constructor(readonly path: string, readonly parent: Node | undefined) {}
+
+  /**
+   * Look up a node in the tree given a path.
+   */
+  findNode(routes: unknown[]): Node | undefined {
+    // eslint-disable-next-line consistent-this
+    let node: Node | undefined = this;
+
+    for (let i = 0; i < routes.length; i++) {
+      node = node?.children.get(routes[i]);
+    }
+
+    return node;
+  }
+
+  /**
+   * Assigns a path to a leaf node in the routing tree. All ancestor
+   * nodes of the new leaf node must already exist, or an error will be thrown.
+   *
+   * Returns true if the node was added, or false if the node already existed.
+   */
+  addNode(routes: unknown[], path: string): boolean {
+    if (routes.length === 0) {
+      throw new Error('Must provide at least 1 route to add routing node');
+    }
+
+    const parentNode = this.findNode(routes.slice(0, -1));
+    if (!parentNode) {
+      throw new Error('Could not find parent for new routing node');
+    }
+
+    const lastRoute = routes[routes.length - 1];
+    if (parentNode.children.has(lastRoute)) {
+      return false;
+    }
+
+    parentNode.children.set(lastRoute, new Node(path, parentNode));
+    return true;
+  }
+}
+
+/**
+ * A registry for resolving route refs into concrete string routes.
+ */
+export class RouteRefRegistry {
+  private readonly root = new Node('', undefined);
+
+  /**
+   * Register a new leaf path for a sequence of routes. All ancestor
+   * routes must already exist.
+   */
+  registerRoute(routes: unknown[], path: string): boolean {
+    return this.root.addNode(routes, path);
+  }
+
+  /**
+   * Resolve a route from a point in the routing tree.
+   *
+   * The route referenced by `from` must exist, and is the starting
+   * point for the search, walking up the tree until a subtree that
+   * matches the routes reference in `to` are found.
+   *
+   * If `from` is empty, the search starts and ends at the root node.
+   * If `to` is empty, the route referenced by `from` will always be returned.
+   */
+  resolveRoute(from: unknown[], to: unknown[]): string | undefined {
+    let fromNode = this.root.findNode(from);
+
+    while (fromNode) {
+      const resolvedNode = fromNode.findNode(to);
+      if (resolvedNode) {
+        return resolvedNode.path;
+      }
+      fromNode = fromNode.parent;
+    }
+
+    return undefined;
+  }
+}
