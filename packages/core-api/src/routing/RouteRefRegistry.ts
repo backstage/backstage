@@ -68,8 +68,10 @@ class Node {
 
     const lastRoute = routes[routes.length - 1];
     const lastRouteRef = lastRoute[routeReference];
-    if (parentNode.children.has(lastRouteRef)) {
-      return false;
+
+    const existingNode = parentNode.children.get(lastRouteRef);
+    if (existingNode) {
+      return existingNode.path === path;
     }
 
     parentNode.children.set(lastRouteRef, new Node(path, parentNode));

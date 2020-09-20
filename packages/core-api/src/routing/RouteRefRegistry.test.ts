@@ -44,6 +44,7 @@ describe('RouteRefRegistry', () => {
     expect(registry.registerRoute([ref1, ref12], 'duplicate')).toBe(false);
     expect(registry.registerRoute([ref2], '2')).toBe(true);
     expect(registry.registerRoute([ref2], 'duplicate')).toBe(false);
+    expect(registry.registerRoute([ref2], '2')).toBe(true);
 
     expect(registry.resolveRoute([], [ref1])).toBe('/1');
     expect(registry.resolveRoute([], [ref11])).toBe(undefined);
