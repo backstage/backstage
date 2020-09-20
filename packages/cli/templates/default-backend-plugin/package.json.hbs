@@ -17,16 +17,16 @@
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean",
-    "mock-data": "./scripts/mock-data.sh"
+    "clean": "backstage-cli clean"
   },
   "dependencies": {
     "@backstage/backend-common": "^{{version}}",
+    "@backstage/config": "^{{version}}",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
-    "whatwg-fetch": "^2.0.0",
     "winston": "^3.2.1",
+    "node-fetch": "^2.6.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {

@@ -61,6 +61,10 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('create-plugin')
+    .option(
+      '--backend',
+      'Create plugin with the backend dependencies as default',
+    )
     .description('Creates a new plugin in the current repository')
     .action(
       lazy(() => import('./create-plugin/createPlugin').then(m => m.default)),

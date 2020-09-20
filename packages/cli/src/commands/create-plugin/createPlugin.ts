@@ -175,7 +175,7 @@ export async function movePlugin(
   });
 }
 
-export default async () => {
+export default async ({ backend }: { backend: boolean }) => {
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
 
   const questions: Question[] = [
@@ -223,7 +223,9 @@ export default async () => {
   const answers: Answers = await inquirer.prompt(questions);
 
   const appPackage = paths.resolveTargetRoot('packages/app');
-  const templateDir = paths.resolveOwn('templates/default-plugin');
+  const templateDir = paths.resolveOwn(
+    backend ? 'templates/default-backend-plugin' : 'templates/default-plugin',
+  );
   const tempDir = resolvePath(os.tmpdir(), answers.id);
   const pluginDir = paths.resolveTargetRoot('plugins', answers.id);
   const ownerIds = parseOwnerIds(answers.owner);
@@ -240,6 +242,7 @@ export default async () => {
     await createTemporaryPluginFolder(tempDir);
 
     Task.section('Preparing files');
+
     await templatingTask(templateDir, tempDir, {
       ...answers,
       version,
@@ -252,7 +255,7 @@ export default async () => {
     Task.section('Building the plugin');
     await buildPlugin(pluginDir);
 
-    if (await fs.pathExists(appPackage)) {
+    if ((await fs.pathExists(appPackage)) && !backend) {
       Task.section('Adding plugin as dependency in app');
       await addPluginDependencyToApp(paths.targetRoot, answers.id, version);
 
