@@ -41,14 +41,28 @@ const items: RollbarTopActiveItem[] = [
 describe('RollbarTopItemsTable component', () => {
   it('should render empty data message when loaded and no data', async () => {
     const rendered = render(
-      wrapInTestApp(<RollbarTopItemsTable items={[]} loading={false} />),
+      wrapInTestApp(
+        <RollbarTopItemsTable
+          items={[]}
+          organization="foo"
+          project="bar"
+          loading={false}
+        />,
+      ),
     );
     expect(rendered.getByText(/No records to display/)).toBeInTheDocument();
   });
 
   it('should display item attributes when loading has finished', async () => {
     const rendered = render(
-      wrapInTestApp(<RollbarTopItemsTable items={items} loading={false} />),
+      wrapInTestApp(
+        <RollbarTopItemsTable
+          items={items}
+          organization="foo"
+          project="bar"
+          loading={false}
+        />,
+      ),
     );
     expect(rendered.getByText(/1234/)).toBeInTheDocument();
     expect(rendered.getByText(/Error in foo/)).toBeInTheDocument();

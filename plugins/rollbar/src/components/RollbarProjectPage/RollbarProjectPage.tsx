@@ -15,29 +15,22 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core';
-import { rollbarApiRef } from '../../api/RollbarApi';
-import { RollbarLayout } from '../RollbarLayout/RollbarLayout';
-import { RollbarTopItemsTable } from '../RollbarTopItemsTable/RollbarTopItemsTable';
+import { Content, Header, HeaderLabel, Page, pageTheme } from '@backstage/core';
+import { useCatalogEntity } from '../../hooks/useCatalogEntity';
+import { RollbarProject } from '../RollbarProject/RollbarProject';
 
 export const RollbarProjectPage = () => {
-  const rollbarApi = useApi(rollbarApiRef);
-  const { componentId } = useParams() as {
-    componentId: string;
-  };
-  const { value, loading } = useAsync(() =>
-    rollbarApi
-      .getTopActiveItems(componentId, 168)
-      .then(data =>
-        data.sort((a, b) => b.item.occurrences - a.item.occurrences),
-      ),
-  );
+  const { entity } = useCatalogEntity();
 
   return (
-    <RollbarLayout>
-      <RollbarTopItemsTable loading={loading} items={value || []} />
-    </RollbarLayout>
+    <Page theme={pageTheme.tool}>
+      <Header title={entity?.metadata?.name} subtitle="Rollbar Project">
+        <HeaderLabel label="Owner" value={entity?.spec?.owner} />
+        <HeaderLabel label="Lifecycle" value={entity?.spec?.lifecycle} />
+      </Header>
+      <Content>
+        {entity ? <RollbarProject entity={entity} /> : 'Loading'}
+      </Content>
+    </Page>
   );
 };

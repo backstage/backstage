@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -28,25 +28,50 @@ import {
   Button,
 } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
-import { StructuredMetadataTable } from '@backstage/core';
-import { generatePath } from 'react-router';
-import {
-  entityRoute,
-  rootRoute as catalogRootRoute,
-} from '@backstage/plugin-catalog';
+import { StructuredMetadataTable, RouteRef } from '@backstage/core';
+import { generatePath, resolvePath } from 'react-router';
+import { entityRoute } from '@backstage/plugin-catalog';
 import { Link as RouterLink } from 'react-router-dom';
 
 type Props = {
   onClose: () => void;
   classes?: Record<string, string>;
   entities: Entity[];
+  catalogRouteRef: RouteRef;
 };
 
-export const RegisterComponentResultDialog: FC<Props> = ({
+const getEntityCatalogPath = ({
+  entity,
+  catalogRouteRef,
+}: {
+  entity: Entity;
+  catalogRouteRef: RouteRef;
+}) => {
+  const optionalNamespaceAndName = [
+    entity.metadata.namespace,
+    entity.metadata.name,
+  ]
+    .filter(Boolean)
+    .join(':');
+
+  const relativeEntityPathInsideCatalog = generatePath(entityRoute.path, {
+    optionalNamespaceAndName,
+    kind: entity.kind,
+  });
+
+  const resolvedAbsolutePath = resolvePath(
+    relativeEntityPathInsideCatalog,
+    catalogRouteRef.path,
+  )?.pathname;
+  return resolvedAbsolutePath;
+};
+
+export const RegisterComponentResultDialog = ({
   onClose,
   classes,
   entities,
-}) => (
+  catalogRouteRef,
+}: Props) => (
   <Dialog open onClose={onClose} classes={classes}>
     <DialogTitle>Component Registration Result</DialogTitle>
     <DialogContent>
@@ -55,16 +80,7 @@ export const RegisterComponentResultDialog: FC<Props> = ({
       </DialogContentText>
       <List>
         {entities.map((entity: any, index: number) => {
-          const entityPath = generatePath(entityRoute.path, {
-            optionalNamespaceAndName: [
-              entity.metadata.namespace,
-              entity.metadata.name,
-            ]
-              .filter(Boolean)
-              .join(':'),
-            kind: entity.kind,
-          });
-
+          const entityPath = getEntityCatalogPath({ entity, catalogRouteRef });
           return (
             <React.Fragment
               key={`${entity.metadata.namespace}-${entity.metadata.name}`}
@@ -90,7 +106,11 @@ export const RegisterComponentResultDialog: FC<Props> = ({
       </List>
     </DialogContent>
     <DialogActions>
-      <Button component={RouterLink} to={catalogRootRoute.path} color="default">
+      <Button
+        component={RouterLink}
+        to={`/${catalogRouteRef.path}`}
+        color="default"
+      >
         To Catalog
       </Button>
     </DialogActions>

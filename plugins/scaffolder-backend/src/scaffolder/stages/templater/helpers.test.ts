@@ -20,6 +20,13 @@ import Docker from 'dockerode';
 import { runDockerContainer } from './helpers';
 
 describe('helpers', () => {
+  if (process.platform === 'win32') {
+    // eslint-disable-next-line jest/no-focused-tests
+    it.only('should skip tests on windows', () => {
+      expect('test').not.toBe('run');
+    });
+  }
+
   const mockDocker = new Docker() as jest.Mocked<Docker>;
 
   beforeEach(() => {
@@ -123,6 +130,26 @@ describe('helpers', () => {
         }),
       ).rejects.toThrow(
         /Docker container returned a non-zero exit code \(123\)/,
+      );
+    });
+
+    it('should pass through the user and group id from the host machine and set the home dir', async () => {
+      await runDockerContainer({
+        imageName,
+        args,
+        templateDir,
+        resultDir,
+        dockerClient: mockDocker,
+      });
+
+      expect(mockDocker.run).toHaveBeenCalledWith(
+        imageName,
+        args,
+        expect.any(Stream),
+        expect.objectContaining({
+          User: `${process.getuid()}:${process.getgid()}`,
+          Env: ['HOME=/tmp'],
+        }),
       );
     });
 

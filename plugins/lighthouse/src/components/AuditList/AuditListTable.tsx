@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { Table, TableColumn, TrendLine, useApi } from '@backstage/core';
 import { Website, lighthouseApiRef } from '../../api';
 import { useInterval } from 'react-use';
@@ -23,15 +23,16 @@ import {
   CATEGORY_LABELS,
   buildSparklinesDataForItem,
 } from '../../utils';
-import { Link } from '@material-ui/core';
+import { Link, generatePath } from 'react-router-dom';
 import AuditStatusIcon from '../AuditStatusIcon';
+import { viewAuditRouteRef } from '../../plugin';
 
 const columns: TableColumn[] = [
   {
     title: 'Website URL',
     field: 'websiteUrl',
   },
-  ...CATEGORIES.map((category) => ({
+  ...CATEGORIES.map(category => ({
     title: CATEGORY_LABELS[category],
     field: category,
   })),
@@ -55,8 +56,12 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
   const [websiteState, setWebsiteState] = useState(items);
   const lighthouseApi = useApi(lighthouseApiRef);
 
+  useEffect(() => {
+    setWebsiteState(items);
+  }, [items]);
+
   const runRefresh = (websites: Website[]) => {
-    websites.forEach(async (website) => {
+    websites.forEach(async website => {
       const response = await lighthouseApi.getWebsiteForAuditId(
         website.lastAudit.id,
       );
@@ -64,7 +69,7 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
       if (auditStatus === 'COMPLETED' || auditStatus === 'FAILED') {
         const newWebsiteData = websiteState.slice(0);
         newWebsiteData[
-          newWebsiteData.findIndex((w) => w.url === response.url)
+          newWebsiteData.findIndex(w => w.url === response.url)
         ] = response;
         setWebsiteState(newWebsiteData);
       }
@@ -72,7 +77,7 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
   };
 
   const runningWebsiteAudits = websiteState
-    ? websiteState.filter((website) => website.lastAudit.status === 'RUNNING')
+    ? websiteState.filter(website => website.lastAudit.status === 'RUNNING')
     : [];
 
   useInterval(
@@ -80,10 +85,10 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
     runningWebsiteAudits.length > 0 ? 5000 : null,
   );
 
-  const data = websiteState.map((website) => {
+  const data = websiteState.map(website => {
     const trendlineData = buildSparklinesDataForItem(website);
     const trendlines: any = {};
-    CATEGORIES.forEach((category) => {
+    CATEGORIES.forEach(category => {
       trendlines[category] = (
         <TrendLine
           title={`trendline for ${CATEGORY_LABELS[category]} category of ${website.url}`}
@@ -94,7 +99,11 @@ export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
 
     return {
       websiteUrl: (
-        <Link href={`/lighthouse/audit/${website.lastAudit.id}`}>
+        <Link
+          to={generatePath(viewAuditRouteRef.path, {
+            id: website.lastAudit.id,
+          })}
+        >
           {website.url}
         </Link>
       ),

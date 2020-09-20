@@ -16,12 +16,15 @@
 
 import React from 'react';
 import { Table, TableColumn } from '@backstage/core';
+import { Box, Link, Typography } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import {
   RollbarFrameworkId,
   RollbarLevel,
   RollbarTopActiveItem,
 } from '../../api/types';
-import { RollbarTrendGraph } from '../RollbarTrendGraph/RollbarTrendGraph';
+import { buildItemUrl } from '../../utils';
+import { TrendGraph } from '../TrendGraph/TrendGraph';
 
 const columns: TableColumn[] = [
   {
@@ -30,6 +33,15 @@ const columns: TableColumn[] = [
     type: 'string',
     align: 'left',
     width: '70px',
+    render: (data: any) => (
+      <Link
+        href={buildItemUrl(data.org, data.project, data.item.counter)}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {data.item.counter}
+      </Link>
+    ),
   },
   {
     title: 'Title',
@@ -40,9 +52,7 @@ const columns: TableColumn[] = [
   {
     title: 'Trend',
     sorting: false,
-    render: data => (
-      <RollbarTrendGraph counts={(data as RollbarTopActiveItem).counts} />
-    ),
+    render: (data: any) => <TrendGraph counts={data.counts} />,
   },
   {
     title: 'Occurrences',
@@ -81,22 +91,47 @@ const columns: TableColumn[] = [
 
 type Props = {
   items: RollbarTopActiveItem[];
+  organization: string;
+  project: string;
   loading: boolean;
+  error?: any;
 };
 
-export const RollbarTopItemsTable = ({ items, loading }: Props) => {
+export const RollbarTopItemsTable = ({
+  items,
+  organization,
+  project,
+  loading,
+  error,
+}: Props) => {
+  if (error) {
+    return (
+      <div>
+        <Alert severity="error">
+          Error encountered while fetching rollbar top items. {error.toString()}
+        </Alert>
+      </div>
+    );
+  }
+
   return (
     <Table
       isLoading={loading}
       columns={columns}
       options={{
         padding: 'dense',
-        paging: false,
         search: true,
+        paging: true,
+        pageSize: 5,
         showEmptyDataSourceMessage: !loading,
       }}
-      title="Top Active Items"
-      data={items}
+      title={
+        <Box display="flex" alignItems="center">
+          <Box mr={1} />
+          <Typography variant="h6">Top Active Items / {project}</Typography>
+        </Box>
+      }
+      data={items.map(i => ({ org: organization, project, ...i }))}
     />
   );
 };

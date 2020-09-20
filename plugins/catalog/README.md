@@ -9,5 +9,5 @@ supply the base views to show and manage them.
 
 ## Links
 
-- (Backend part of the plugin)[https://github.com/spotify/backstage/tree/master/plugins/catalog-backend]
-- (The Backstage homepage)[https://backstage.io]
+- [Backend part of the plugin](https://github.com/spotify/backstage/tree/master/plugins/catalog-backend)
+- [The Backstage homepage](https://backstage.io)

@@ -17,7 +17,7 @@ import { createApiRef } from '../ApiRef';
 import { Config } from '@backstage/config';
 
 // Using interface to make the ConfigApi name show up in docs
-export interface ConfigApi extends Config {}
+export type ConfigApi = Config;
 
 export const configApiRef = createApiRef<ConfigApi>({
   id: 'core.config',

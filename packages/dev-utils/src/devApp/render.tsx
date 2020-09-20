@@ -26,13 +26,12 @@ import {
   SidebarSpacer,
   ApiFactory,
   createPlugin,
-  ApiTestRegistry,
-  ApiHolder,
   AlertDisplay,
   OAuthRequestDialog,
+  AnyApiFactory,
 } from '@backstage/core';
-import * as defaultApiFactories from './apiFactories';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
+import { Routes } from 'react-router';
 
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
 type BackstagePlugin = ReturnType<typeof createPlugin>;
@@ -43,7 +42,7 @@ type BackstagePlugin = ReturnType<typeof createPlugin>;
  */
 class DevAppBuilder {
   private readonly plugins = new Array<BackstagePlugin>();
-  private readonly factories = new Array<ApiFactory<any, any, any>>();
+  private readonly apis = new Array<AnyApiFactory>();
   private readonly rootChildren = new Array<ReactNode>();
 
   /**
@@ -57,10 +56,10 @@ class DevAppBuilder {
   /**
    * Register an API factory to add to the app
    */
-  registerApiFactory<Api, Impl, Deps>(
-    factory: ApiFactory<Api, Impl, Deps>,
+  registerApi<Api, Deps extends { [name in string]: unknown }>(
+    factory: ApiFactory<Api, Deps>,
   ): DevAppBuilder {
-    this.factories.push(factory);
+    this.apis.push(factory);
     return this;
   }
 
@@ -79,13 +78,13 @@ class DevAppBuilder {
    */
   build(): ComponentType<{}> {
     const app = createApp({
-      apis: this.setupApiRegistry(this.factories),
+      apis: this.apis,
       plugins: this.plugins,
     });
 
     const AppProvider = app.getProvider();
     const AppRouter = app.getRouter();
-    const AppRoutes = app.getRoutes();
+    const deprecatedAppRoutes = app.getRoutes();
 
     const sidebar = this.setupSidebar(this.plugins);
 
@@ -99,7 +98,7 @@ class DevAppBuilder {
           <AppRouter>
             <SidebarPage>
               {sidebar}
-              <AppRoutes />
+              <Routes>{deprecatedAppRoutes}</Routes>
             </SidebarPage>
           </AppRouter>
         </AppProvider>
@@ -170,37 +169,22 @@ class DevAppBuilder {
     );
   }
 
-  // Set up an API registry that merges together default implementations with ones provided through config.
-  private setupApiRegistry(
-    providedFactories: ApiFactory<any, any, any>[],
-  ): ApiHolder {
-    const providedApis = new Set(
-      providedFactories.map(factory => factory.implements),
-    );
-
-    // Exlude any default API factory that we receive a factory for in the config
-    const defaultFactories = Object.values(defaultApiFactories).filter(
-      factory => !providedApis.has(factory.implements),
-    );
-    const allFactories = [...defaultFactories, ...providedFactories];
-
-    // Use a test registry with dependency injection so that the consumer
-    // can override APIs but still depend on the default implementations.
-    const registry = new ApiTestRegistry();
-    for (const factory of allFactories) {
-      registry.register(factory);
-    }
-
-    return registry;
-  }
-
   private findPluginPaths(plugins: BackstagePlugin[]) {
     const paths = new Array<string>();
 
     for (const plugin of plugins) {
       for (const output of plugin.output()) {
-        if (output.type === 'legacy-route') {
-          paths.push(output.path);
+        switch (output.type) {
+          case 'legacy-route': {
+            paths.push(output.path);
+            break;
+          }
+          case 'route': {
+            paths.push(output.target.path);
+            break;
+          }
+          default:
+            break;
         }
       }
     }

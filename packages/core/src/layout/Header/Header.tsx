@@ -14,59 +14,63 @@
  * limitations under the License.
  */
 
-import React, { Fragment, ReactNode, CSSProperties, FC } from 'react';
+import React, { ReactNode, CSSProperties, FC, useContext } from 'react';
 import { Helmet } from 'react-helmet';
 import { Typography, Tooltip, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
-import { Theme } from '../Page/Page';
-import { Waves } from './Waves';
+import { PageThemeContext } from '../Page/Page';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  header: {
-    gridArea: 'pageHeader',
-    padding: theme.spacing(3),
-    minHeight: 118,
-    width: '100%',
-    boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
-    position: 'relative',
-    zIndex: 100,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  leftItemsBox: {
-    flex: '1 1 auto',
-  },
-  rightItemsBox: {
-    flex: '0 1 auto',
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    marginRight: theme.spacing(1),
-  },
-  title: {
-    color: theme.palette.bursts.fontColor,
-    lineHeight: '1.0em',
-    wordBreak: 'break-all',
-    fontSize: 'calc(24px + 6 * ((100vw - 320px) / 680))',
-    marginBottom: theme.spacing(1),
-  },
-  subtitle: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    lineHeight: '1.0em',
-  },
-  type: {
-    textTransform: 'uppercase',
-    fontSize: 11,
-    opacity: 0.8,
-    marginBottom: theme.spacing(1),
-    color: theme.palette.bursts.fontColor,
-  },
-}));
+const useStyles = makeStyles<BackstageTheme, { backgroundImage: string }>(
+  theme => ({
+    header: {
+      gridArea: 'pageHeader',
+      padding: theme.spacing(3),
+      minHeight: 118,
+      width: '100%',
+      boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
+      position: 'relative',
+      zIndex: 100,
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      backgroundImage: props => props.backgroundImage,
+      backgroundPosition: 'center',
+      backgroundSize: 'cover',
+    },
+    leftItemsBox: {
+      flex: '1 1 auto',
+    },
+    rightItemsBox: {
+      flex: '0 1 auto',
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      marginRight: theme.spacing(1),
+    },
+    title: {
+      color: theme.palette.bursts.fontColor,
+      lineHeight: '1.0em',
+      wordBreak: 'break-all',
+      fontSize: 'calc(24px + 6 * ((100vw - 320px) / 680))',
+      marginBottom: theme.spacing(1),
+    },
+    subtitle: {
+      color: 'rgba(255, 255, 255, 0.8)',
+      lineHeight: '1.0em',
+    },
+    type: {
+      textTransform: 'uppercase',
+      fontSize: 11,
+      opacity: 0.8,
+      marginBottom: theme.spacing(1),
+      color: theme.palette.bursts.fontColor,
+    },
+  }),
+);
 
 type HeaderStyles = ReturnType<typeof useStyles>;
 
@@ -159,32 +163,28 @@ export const Header: FC<Props> = ({
   type,
   typeLink,
 }) => {
-  const classes = useStyles();
+  const theme = useContext(PageThemeContext);
+  const classes = useStyles({ backgroundImage: theme.backgroundImage });
   const documentTitle = pageTitleOverride || title;
   const pageTitle = title || pageTitleOverride;
   const titleTemplate = `${documentTitle} | %s | Backstage`;
   const defaultTitle = `${documentTitle} | Backstage`;
 
   return (
-    <Fragment>
+    <>
       <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
-      <Theme.Consumer>
-        {theme => (
-          <header style={style} className={classes.header}>
-            <Waves theme={theme} />
-            <div className={classes.leftItemsBox}>
-              <TypeFragment classes={classes} type={type} typeLink={typeLink} />
-              <TitleFragment
-                classes={classes}
-                pageTitle={pageTitle}
-                tooltip={tooltip}
-              />
-              <SubtitleFragment classes={classes} subtitle={subtitle} />
-            </div>
-            <div className={classes.rightItemsBox}>{children}</div>
-          </header>
-        )}
-      </Theme.Consumer>
-    </Fragment>
+      <header style={style} className={classes.header}>
+        <div className={classes.leftItemsBox}>
+          <TypeFragment classes={classes} type={type} typeLink={typeLink} />
+          <TitleFragment
+            classes={classes}
+            pageTitle={pageTitle}
+            tooltip={tooltip}
+          />
+          <SubtitleFragment classes={classes} subtitle={subtitle} />
+        </div>
+        <div className={classes.rightItemsBox}>{children}</div>
+      </header>
+    </>
   );
 };

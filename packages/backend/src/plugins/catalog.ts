@@ -29,8 +29,9 @@ import { useHotCleanup } from '@backstage/backend-common';
 export default async function createPlugin({
   logger,
   database,
+  config,
 }: PluginEnvironment) {
-  const locationReader = new LocationReaders(logger);
+  const locationReader = new LocationReaders({ logger, config });
 
   const db = await DatabaseManager.createDatabase(database, { logger });
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);

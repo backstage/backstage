@@ -32,11 +32,12 @@ import {
   useApi,
 } from '@backstage/core';
 
-import { lighthouseApiRef, WebsiteListResponse } from '../../api';
+import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 import LighthouseIntro, { LIGHTHOUSE_INTRO_LOCAL_STORAGE } from '../Intro';
 import AuditListTable from './AuditListTable';
+import { createAuditRouteRef } from '../../plugin';
 
 export const LIMIT = 10;
 
@@ -50,7 +51,7 @@ const AuditList: FC<{}> = () => {
     : 1;
 
   const lighthouseApi = useApi(lighthouseApiRef);
-  const { value, loading, error } = useAsync<WebsiteListResponse>(
+  const { value, loading, error } = useAsync(
     async () =>
       await lighthouseApi.getWebsiteList({
         limit: LIMIT,
@@ -77,7 +78,7 @@ const AuditList: FC<{}> = () => {
             page={page}
             count={pageCount}
             onChange={(_event: Event, newPage: number) => {
-              navigate(`/lighthouse?page=${newPage}`);
+              navigate(`?page=${newPage}`);
             }}
           />
         )}
@@ -111,7 +112,7 @@ const AuditList: FC<{}> = () => {
           <Button
             variant="contained"
             color="primary"
-            href="/lighthouse/create-audit"
+            onClick={() => navigate(createAuditRouteRef.path)}
           >
             Create Audit
           </Button>

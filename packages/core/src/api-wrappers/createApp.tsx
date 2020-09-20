@@ -17,7 +17,6 @@
 import React, { FC } from 'react';
 import privateExports, {
   AppOptions,
-  ApiRegistry,
   defaultSystemIcons,
   BootErrorPageProps,
   AppConfigLoader,
@@ -26,6 +25,7 @@ import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 import { ErrorPage } from '../layout/ErrorPage';
 import { Progress } from '../components/Progress';
+import { defaultApis } from './defaultApis';
 import { lightTheme, darkTheme } from '@backstage/theme';
 import { AppConfig, JsonObject } from '@backstage/config';
 
@@ -60,7 +60,7 @@ export const defaultConfigLoader: AppConfigLoader = async (
   if (runtimeConfigJson !== '__app_injected_runtime_config__'.toUpperCase()) {
     try {
       const data = JSON.parse(runtimeConfigJson) as JsonObject;
-      configs.unshift({ data, context: 'env' });
+      configs.push({ data, context: 'env' });
     } catch (error) {
       throw new Error(`Failed to load runtime configuration, ${error}`);
     }
@@ -94,7 +94,7 @@ export function createApp(options?: AppOptions) {
     );
   };
 
-  const apis = options?.apis ?? ApiRegistry.from([]);
+  const apis = options?.apis ?? [];
   const icons = { ...defaultSystemIcons, ...options?.icons };
   const plugins = options?.plugins ?? [];
   const components = {
@@ -127,6 +127,7 @@ export function createApp(options?: AppOptions) {
     components,
     themes,
     configLoader,
+    defaultApis,
   });
 
   app.verify();

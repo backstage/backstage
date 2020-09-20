@@ -25,13 +25,11 @@ export {
   SidebarSpacer,
 } from './Items';
 export { IntroCard, SidebarIntro } from './Intro';
-export { SidebarPinButton } from './PinButton';
 export {
   SIDEBAR_INTRO_LOCAL_STORAGE,
   SidebarContext,
   sidebarConfig,
 } from './config';
 export type { SidebarContextType } from './config';
-export { SidebarThemeToggle } from './SidebarThemeToggle';
-export { SidebarUserSettings } from './UserSettings';
+export { DefaultProviderSettings } from './DefaultProviderSettings';
 export * from './Settings';

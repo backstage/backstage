@@ -20,8 +20,8 @@ import { lighthouseApiRef, LighthouseRestApi } from '../src';
 
 createDevApp()
   .registerPlugin(plugin)
-  .registerApiFactory({
-    implements: lighthouseApiRef,
+  .registerApi({
+    api: lighthouseApiRef,
     deps: {},
     factory: () => new LighthouseRestApi('http://localhost:3003'),
   })

@@ -34,7 +34,8 @@ export const SentryPluginWidget: FC<{
   const errorApi = useApi<ErrorApi>(errorApiRef);
   const configApi = useApi(configApiRef);
   const org = configApi.getString('sentry.organization');
-  const api = sentryApiFactory(org);
+  const backendBaseUrl = configApi.getString('backend.baseUrl');
+  const api = sentryApiFactory(org, backendBaseUrl);
 
   const { loading, value, error } = useAsync(
     () => api.fetchIssues(sentryProjectId, statsFor),

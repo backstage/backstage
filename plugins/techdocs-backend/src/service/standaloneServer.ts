@@ -18,6 +18,15 @@ import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import Docker from 'dockerode';
+import {
+  Preparers,
+  DirectoryPreparer,
+  Generators,
+  TechdocsGenerator,
+  LocalPublish,
+} from '../techdocs';
+import { ConfigReader } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
@@ -29,11 +38,30 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'techdocs-backend' });
+  const config = ConfigReader.fromConfigs([]);
 
   logger.debug('Creating application...');
+  const preparers = new Preparers();
+  const directoryPreparer = new DirectoryPreparer(logger);
+  preparers.register('dir', directoryPreparer);
+
+  const generators = new Generators();
+  const techdocsGenerator = new TechdocsGenerator(logger, config);
+  generators.register('techdocs', techdocsGenerator);
+
+  const publisher = new LocalPublish(logger);
+
+  const dockerClient = new Docker();
 
   logger.debug('Starting application server...');
-  const router = await createRouter({ logger });
+  const router = await createRouter({
+    preparers,
+    generators,
+    logger,
+    publisher,
+    dockerClient,
+    config,
+  });
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })
     .addRouter('/techdocs', router);

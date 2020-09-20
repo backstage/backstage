@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
-import { BuildDetailsPage } from './components/BuildDetailsPage';
-import { BuildListPage } from './components/BuildListPage';
+import {
+  createPlugin,
+  createRouteRef,
+  createApiFactory,
+} from '@backstage/core';
+import { githubActionsApiRef, GithubActionsClient } from './api';
 
 // TODO(freben): This is just a demo route for now
 export const rootRouteRef = createRouteRef({
-  path: '/github-actions',
+  path: '',
   title: 'GitHub Actions',
 });
+
 export const buildRouteRef = createRouteRef({
-  path: '/github-actions/build/:id',
-  title: 'GitHub Actions Build',
+  path: ':id',
+  title: 'GitHub Actions Workflow Run',
 });
 
 export const plugin = createPlugin({
   id: 'github-actions',
-  register({ router }) {
-    router.addRoute(rootRouteRef, BuildListPage);
-    router.addRoute(buildRouteRef, BuildDetailsPage);
-  },
+  apis: [createApiFactory(githubActionsApiRef, new GithubActionsClient())],
 });

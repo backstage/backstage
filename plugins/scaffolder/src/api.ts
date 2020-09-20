@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
@@ -23,21 +23,15 @@ export const scaffolderApiRef = createApiRef<ScaffolderApi>({
 });
 
 export class ScaffolderApi {
-  private apiOrigin: string;
-  private basePath: string;
+  private readonly discoveryApi: DiscoveryApi;
 
-  constructor({
-    apiOrigin,
-    basePath,
-  }: {
-    apiOrigin: string;
-    basePath: string;
-  }) {
-    this.apiOrigin = apiOrigin;
-    this.basePath = basePath;
+  constructor(options: { discoveryApi: DiscoveryApi }) {
+    this.discoveryApi = options.discoveryApi;
   }
 
   /**
+   * Executes the scaffolding of a component, given a template and its
+   * parameter values.
    *
    * @param template Template entity for the scaffolder to use. New project is going to be created out of this template.
    * @param values Parameters for the template, e.g. name, description
@@ -46,18 +40,19 @@ export class ScaffolderApi {
     template: TemplateEntityV1alpha1,
     values: Record<string, any>,
   ) {
-    const url = `${this.apiOrigin}${this.basePath}/jobs`;
+    const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v1/jobs`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      // TODO(shmidt-i): when repo picker is implemented, take isOrg from it
-      body: JSON.stringify({ template, values: { ...values, isOrg: true } }),
+      body: JSON.stringify({ template, values: { ...values } }),
     });
 
     if (response.status !== 201) {
-      throw new Error(await response.text());
+      const status = `${response.status} ${response.statusText}`;
+      const body = await response.text();
+      throw new Error(`Backend request failed, ${status} ${body.trim()}`);
     }
 
     const { id } = await response.json();
@@ -65,9 +60,8 @@ export class ScaffolderApi {
   }
 
   async getJob(jobId: string) {
-    const url = `${this.apiOrigin}${this.basePath}/job/${encodeURIComponent(
-      jobId,
-    )}`;
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const url = `${baseUrl}/v1/job/${encodeURIComponent(jobId)}`;
     return fetch(url).then(x => x.json());
   }
 }

@@ -201,7 +201,7 @@ const ProfileCatalog: FC<{}> = () => {
     setRunStatus([]);
 
     const cloneResponse = await api.cloneClusterFromTemplate({
-      templateRepository: templateRepo,
+      templateRepository: templateRepo!,
       gitHubToken: githubAccessToken,
       gitHubUser: githubUsername,
       targetOrg: gitHubOrg,
@@ -224,7 +224,7 @@ const ProfileCatalog: FC<{}> = () => {
       gitHubUser: githubUsername,
       targetOrg: gitHubOrg,
       targetRepo: gitHubRepo,
-      profiles: gitopsProfiles,
+      profiles: gitopsProfiles!,
     });
 
     if (applyProfileResp.error === undefined) {

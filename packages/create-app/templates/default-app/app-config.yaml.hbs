@@ -1,0 +1,110 @@
+app:
+  title: Scaffolded Backstage App
+  baseUrl: http://localhost:7000
+
+organization:
+  name: Acme Corporation
+
+backend:
+  baseUrl: http://localhost:7000
+  listen:
+    port: 7000
+  {{#if dbTypeSqlite}}
+  database:
+    client: sqlite3
+    connection: ':memory:'
+  {{/if}}
+  {{#if dbTypePG}}
+  # config options: https://node-postgres.com/api/client
+  database:
+    client: pg
+    connection:
+      host:
+        $secret:
+          env: POSTGRES_HOST
+      port:
+        $secret:
+          env: POSTGRES_PORT
+      user:
+        $secret:
+          env: POSTGRES_USER
+      password:
+        $secret:
+          env: POSTGRES_PASSWORD
+      # https://node-postgres.com/features/ssl
+      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+        #ca: # if you have a CA file and want to verify it you can uncomment this section
+        #  $secret:
+        #    file: <file-path>/ca/server.crt
+  {{/if}}
+
+proxy:
+  '/test':
+    target: 'https://example.com'
+    changeOrigin: true
+
+techdocs:
+  storageUrl: http://localhost:7000/techdocs/static/docs
+  requestUrl: http://localhost:7000/techdocs/docs
+  generators:
+    techdocs: 'docker'
+
+lighthouse:
+  baseUrl: http://localhost:3003
+
+auth:
+  providers: {}
+
+scaffolder:
+  github:
+    token:
+      $secret:
+        env: GITHUB_ACCESS_TOKEN
+    visibility: public # or 'internal' or 'private'
+
+catalog:
+  rules:
+    - allow: [Component, API, Group, Template, Location]
+  processors:
+    github:
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        # Example for how to add your GitHub Enterprise instance:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
+  locations:
+    # Backstage example components
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+
+    # Backstage example APIs
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+
+    # Backstage example templates
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+      rules:
+        - allow: [Template]
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+      rules:
+        - allow: [Template]
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+      rules:
+        - allow: [Template]
+    - type: github
+      target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+      rules:
+        - allow: [Template]
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+      rules:
+        - allow: [Template]

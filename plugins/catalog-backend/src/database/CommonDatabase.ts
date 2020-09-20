@@ -29,7 +29,6 @@ import {
 } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
 import type { Logger } from 'winston';
 import { buildEntitySearch } from './search';
 import type {
@@ -344,10 +343,16 @@ export class CommonDatabase implements Database {
     entityName?: string,
     message?: string,
   ): Promise<void> {
-    return this.database<DatabaseLocationUpdateLogEvent>(
+    // Remove log entries older than a day
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 1);
+    await this.database<DatabaseLocationUpdateLogEvent>('location_update_log')
+      .where('created_at', '<', cutoff.toISOString())
+      .del();
+
+    await this.database<DatabaseLocationUpdateLogEvent>(
       'location_update_log',
     ).insert({
-      id: uuidv4(),
       status,
       location_id: locationId,
       entity_name: entityName,

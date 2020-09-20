@@ -16,16 +16,25 @@
 
 from mkdocs.plugins import BasePlugin, PluginCollection
 from mkdocs.theme import Theme
-
 from mkdocs.contrib.search import SearchPlugin
-
 from mkdocs_monorepo_plugin.plugin import MonorepoPlugin
+from pymdownx.emoji import to_svg
+import tempfile
+import os
 
 
 class TechDocsCore(BasePlugin):
     def on_config(self, config):
+        fp = open(os.path.join(tempfile.gettempdir(), "techdocs_metadata.json"), "w+")
+        fp.write(
+            '{\n  "site_name": "{{ config.site_name }}",\n  "site_description": "{{ config.site_description }}"\n}'
+        )
+
         # Theme
-        config["theme"] = Theme(name="material")
+        config["theme"] = Theme(
+            name="material", static_templates=["techdocs_metadata.json",],
+        )
+        config["theme"].dirs.append(tempfile.gettempdir())
 
         # Plugins
         del config["plugins"]["techdocs-core"]
@@ -68,9 +77,7 @@ class TechDocsCore(BasePlugin):
         config["markdown_extensions"].append("pymdownx.critic")
         config["markdown_extensions"].append("pymdownx.details")
         config["markdown_extensions"].append("pymdownx.emoji")
-        config["mdx_configs"]["pymdownx.emoji"] = {
-            "emoji_generator": "!!python/name:pymdownx.emoji.to_svg",
-        }
+        config["mdx_configs"]["pymdownx.emoji"] = {"emoji_generator": to_svg}
         config["markdown_extensions"].append("pymdownx.inlinehilite")
         config["markdown_extensions"].append("pymdownx.magiclink")
         config["markdown_extensions"].append("pymdownx.mark")
@@ -81,5 +88,8 @@ class TechDocsCore(BasePlugin):
             "custom_checkbox": True,
         }
         config["markdown_extensions"].append("pymdownx.tilde")
+
+        config["markdown_extensions"].append("markdown_inline_graphviz")
+        config["markdown_extensions"].append("plantuml_markdown")
 
         return config

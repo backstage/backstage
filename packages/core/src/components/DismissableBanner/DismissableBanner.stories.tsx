@@ -89,7 +89,7 @@ export const WithLink = () => (
         message={
           <Typography>
             This is a dismissable banner with a link:{' '}
-            <Link href="http://example.com" color="textSecondary">
+            <Link href="http://example.com" color="textPrimary">
               example.com
             </Link>
           </Typography>

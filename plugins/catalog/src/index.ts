@@ -18,3 +18,8 @@ export { plugin } from './plugin';
 export * from './api/CatalogClient';
 export * from './api/types';
 export * from './routes';
+export { useEntityCompoundName } from './components/useEntityCompoundName';
+export { Router } from './components/Router';
+export { useEntity } from './hooks/useEntity';
+export { AboutCard } from './components/AboutCard';
+export { EntityPageLayout } from './components/EntityPageLayout';

@@ -78,7 +78,7 @@ const CreateAudit: FC<{}> = () => {
           },
         },
       });
-      navigate('/lighthouse');
+      navigate('..');
     } catch (err) {
       errorApi.post(err);
     } finally {
@@ -154,7 +154,7 @@ const CreateAudit: FC<{}> = () => {
                     <Button
                       variant="outlined"
                       color="primary"
-                      href="/lighthouse"
+                      onClick={() => navigate('..')}
                       disabled={submitting}
                     >
                       Cancel

@@ -19,7 +19,11 @@ import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { Observable } from '../../../../types';
-import { AuthProvider, OAuthRequestApi } from '../../../definitions';
+import {
+  AuthProvider,
+  OAuthRequestApi,
+  DiscoveryApi,
+} from '../../../definitions';
 import {
   AuthRequestOptions,
   BackstageIdentity,
@@ -29,17 +33,23 @@ import {
   ProfileInfoApi,
   SessionState,
   SessionStateApi,
+  BackstageIdentityApi,
 } from '../../../definitions/auth';
 import { OAuth2Session } from './types';
 
-type CreateOptions = {
-  apiOrigin: string;
-  basePath: string;
+type Options = {
+  sessionManager: SessionManager<OAuth2Session>;
+  scopeTransform: (scopes: string[]) => string[];
+};
 
+type CreateOptions = {
+  discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
   environment?: string;
   provider?: AuthProvider & { id: string };
+  defaultScopes?: string[];
+  scopeTransform?: (scopes: string[]) => string[];
 };
 
 export type OAuth2Response = {
@@ -59,20 +69,23 @@ const DEFAULT_PROVIDER = {
   icon: OAuth2Icon,
 };
 
-const SCOPE_PREFIX = '';
-
 class OAuth2
-  implements OAuthApi, OpenIdConnectApi, ProfileInfoApi, SessionStateApi {
+  implements
+    OAuthApi,
+    OpenIdConnectApi,
+    ProfileInfoApi,
+    BackstageIdentityApi,
+    SessionStateApi {
   static create({
-    apiOrigin,
-    basePath,
+    discoveryApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
+    defaultScopes = [],
+    scopeTransform = x => x,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
-      apiOrigin,
-      basePath,
+      discoveryApi,
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,
@@ -82,7 +95,10 @@ class OAuth2
           providerInfo: {
             idToken: res.providerInfo.idToken,
             accessToken: res.providerInfo.accessToken,
-            scopes: OAuth2.normalizeScopes(res.providerInfo.scope),
+            scopes: OAuth2.normalizeScopes(
+              scopeTransform,
+              res.providerInfo.scope,
+            ),
             expiresAt: new Date(
               Date.now() + res.providerInfo.expiresInSeconds * 1000,
             ),
@@ -93,11 +109,7 @@ class OAuth2
 
     const sessionManager = new RefreshingAuthSessionManager({
       connector,
-      defaultScopes: new Set([
-        'openid',
-        `${SCOPE_PREFIX}userinfo.email`,
-        `${SCOPE_PREFIX}userinfo.profile`,
-      ]),
+      defaultScopes: new Set(defaultScopes),
       sessionScopes: (session: OAuth2Session) => session.providerInfo.scopes,
       sessionShouldRefresh: (session: OAuth2Session) => {
         const expiresInSec =
@@ -106,20 +118,26 @@ class OAuth2
       },
     });
 
-    return new OAuth2(sessionManager);
+    return new OAuth2({ sessionManager, scopeTransform });
+  }
+
+  private readonly sessionManager: SessionManager<OAuth2Session>;
+  private readonly scopeTransform: (scopes: string[]) => string[];
+
+  constructor(options: Options) {
+    this.sessionManager = options.sessionManager;
+    this.scopeTransform = options.scopeTransform;
   }
 
   sessionState$(): Observable<SessionState> {
     return this.sessionManager.sessionState$();
   }
 
-  constructor(private readonly sessionManager: SessionManager<OAuth2Session>) {}
-
   async getAccessToken(
     scope?: string | string[],
     options?: AuthRequestOptions,
   ) {
-    const normalizedScopes = OAuth2.normalizeScopes(scope);
+    const normalizedScopes = OAuth2.normalizeScopes(this.scopeTransform, scope);
     const session = await this.sessionManager.getSession({
       ...options,
       scopes: normalizedScopes,
@@ -148,16 +166,19 @@ class OAuth2
     return session?.profile;
   }
 
-  static normalizeScopes(scopes?: string | string[]): Set<string> {
+  private static normalizeScopes(
+    scopeTransform: (scopes: string[]) => string[],
+    scopes?: string | string[],
+  ): Set<string> {
     if (!scopes) {
       return new Set();
     }
 
     const scopeList = Array.isArray(scopes)
       ? scopes
-      : scopes.split(/[\s]/).filter(Boolean);
+      : scopes.split(/[\s|,]/).filter(Boolean);
 
-    return new Set(scopeList);
+    return new Set(scopeTransform(scopeList));
   }
 }
 

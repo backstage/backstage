@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { readEnv } from './env';
+import { readEnvConfig } from './env';
 
-describe('readEnv', () => {
+describe('readEnvConfig', () => {
   it('should return empty config for empty env', () => {
-    expect(readEnv({})).toEqual([]);
+    expect(readEnvConfig({})).toEqual([]);
   });
 
   it('should return empty config for no matching keys', () => {
     expect(
-      readEnv({
+      readEnvConfig({
         NODE_ENV: 'production',
         NOPE_ENV: 'development',
         APP_CONFIG: 'foo',
@@ -34,21 +34,53 @@ describe('readEnv', () => {
 
   it('should create config from env', () => {
     expect(
-      readEnv({
+      readEnvConfig({
         NODE_ENV: 'production',
         APP_CONFIG_foo: '"bar"',
         APP_CONFIG_numbers_a: '1',
         APP_CONFIG_numbers_b: '2',
         APP_CONFIG_numbers_c: 'false',
-        APP_CONFIG_numbers_d: undefined,
+        APP_CONFIG_numbers_d: 'abc',
+        APP_CONFIG_numbers_e: undefined,
         APP_CONFIG_very_deep_nested_config_object: '{}',
       }),
     ).toEqual([
       {
         data: {
           foo: 'bar',
-          numbers: { a: 1, b: 2, c: false },
+          numbers: { a: 1, b: 2, c: false, d: 'abc' },
           very: { deep: { nested: { config: { object: {} } } } },
+        },
+        context: 'env',
+      },
+    ]);
+  });
+
+  it('should accept string values', () => {
+    expect(
+      readEnvConfig({ APP_CONFIG_foo: '"abc"', APP_CONFIG_bar: 'xyz' }),
+    ).toEqual([
+      {
+        data: {
+          foo: 'abc',
+          bar: 'xyz',
+        },
+        context: 'env',
+      },
+    ]);
+  });
+
+  it('should accept complex objects', () => {
+    expect(
+      readEnvConfig({
+        APP_CONFIG_foo: '{ "a": 123, "b": "123", "c": [] }',
+        APP_CONFIG_bar: '[123, "abc", {}]',
+      }),
+    ).toEqual([
+      {
+        data: {
+          foo: { a: 123, b: '123', c: [] },
+          bar: [123, 'abc', {}],
         },
         context: 'env',
       },
@@ -63,23 +95,28 @@ describe('readEnv', () => {
     ['APP_CONFIG_fo o'],
     ['APP_CONFIG_foo_(foo)_foo'],
   ])('should reject invalid key %p', key => {
-    expect(() => readEnv({ [key]: '0' })).toThrow(
+    expect(() => readEnvConfig({ [key]: '0' })).toThrow(
       `Invalid env config key '${key.replace('APP_CONFIG_', '')}'`,
     );
   });
 
-  it.each([['hello'], ['"hello'], ['{'], ['}'], ['123abc']])(
-    'should reject invalid value %p',
+  it.each([['hello'], ['"hello'], ['{'], ['}']])(
+    'should fallback to string when invalid json value %p',
     value => {
-      expect(() => readEnv({ APP_CONFIG_foo: value })).toThrow(
-        /^Failed to parse JSON-serialized config value for key 'foo', SyntaxError: /,
-      );
+      expect(readEnvConfig({ APP_CONFIG_foo: value })).toEqual([
+        {
+          data: {
+            foo: value,
+          },
+          context: 'env',
+        },
+      ]);
     },
   );
 
   it('should not allow null as a value', () => {
     expect(() =>
-      readEnv({
+      readEnvConfig({
         APP_CONFIG_foo: 'null',
       }),
     ).toThrow(
@@ -89,7 +126,7 @@ describe('readEnv', () => {
 
   it('should not allow duplicate values', () => {
     expect(() =>
-      readEnv({
+      readEnvConfig({
         APP_CONFIG_foo_bar: '1',
         APP_CONFIG_foo_bar_baz: '2',
       }),
@@ -100,7 +137,7 @@ describe('readEnv', () => {
 
   it('should not allow mixing of objects and other values', () => {
     expect(() =>
-      readEnv({
+      readEnvConfig({
         APP_CONFIG_nested_foo: '1',
         APP_CONFIG_nested: '2',
       }),

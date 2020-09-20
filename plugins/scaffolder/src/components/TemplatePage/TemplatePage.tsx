@@ -67,6 +67,11 @@ const OWNER_REPO_SCHEMA = {
       title: 'Store path',
       description: 'GitHub store path in org/repo format',
     },
+    access: {
+      type: 'string' as const,
+      title: 'Access',
+      description: 'Who should have access, in org/team or user format',
+    },
   },
 };
 
@@ -91,8 +96,12 @@ export const TemplatePage = () => {
   const handleClose = () => setJobId(null);
 
   const handleCreate = async () => {
-    const job = await scaffolderApi.scaffold(template!, formState);
-    setJobId(job);
+    try {
+      const job = await scaffolderApi.scaffold(template!, formState);
+      setJobId(job);
+    } catch (e) {
+      errorApi.post(e);
+    }
   };
 
   const [entity, setEntity] = React.useState<TemplateEntityV1alpha1 | null>(
@@ -136,7 +145,7 @@ export const TemplatePage = () => {
   }
 
   return (
-    <Page theme={pageTheme.other}>
+    <Page theme={pageTheme.home}>
       <Header
         pageTitleOverride="Create a new component"
         title={
@@ -157,7 +166,7 @@ export const TemplatePage = () => {
           />
         )}
         {template && (
-          <InfoCard title={template.metadata.title as string} noPadding>
+          <InfoCard title={template.metadata.title} noPadding>
             <MultistepJsonForm
               formData={formState}
               onChange={handleChange}

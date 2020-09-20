@@ -15,3 +15,6 @@
  */
 
 export { plugin } from './plugin';
+export { Router, EmbeddedDocsRouter } from './Router';
+export * from './reader';
+export * from './api';

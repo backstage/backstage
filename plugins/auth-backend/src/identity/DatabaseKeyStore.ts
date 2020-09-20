@@ -15,13 +15,13 @@
  */
 
 import Knex from 'knex';
-import path from 'path';
 import { utc } from 'moment';
+import { resolvePackagePath } from '@backstage/backend-common';
 import { AnyJWK, KeyStore, StoredKey } from './types';
 
-const migrationsDir = path.resolve(
-  require.resolve('@backstage/plugin-auth-backend/package.json'),
-  '../migrations',
+const migrationsDir = resolvePackagePath(
+  '@backstage/plugin-auth-backend',
+  'migrations',
 );
 
 const TABLE = 'signing_keys';

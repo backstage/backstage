@@ -15,12 +15,18 @@
  */
 
 import * as React from 'react';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigApi,
+  configApiRef,
+} from '@backstage/core';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import { RollbarApi, rollbarApiRef } from '../../api/RollbarApi';
 import { RollbarTopActiveItem } from '../../api/types';
 import { RollbarProjectPage } from './RollbarProjectPage';
+import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog';
 
 describe('RollbarProjectPage component', () => {
   const items: RollbarTopActiveItem[] = [
@@ -43,11 +49,31 @@ describe('RollbarProjectPage component', () => {
   const rollbarApi: Partial<RollbarApi> = {
     getTopActiveItems: () => Promise.resolve(items),
   };
+  const config: Partial<ConfigApi> = {
+    getString: () => 'foo',
+    getOptionalString: () => 'foo',
+  };
 
   const renderWrapped = (children: React.ReactNode) =>
     render(
       wrapInTestApp(
-        <ApiProvider apis={ApiRegistry.from([[rollbarApiRef, rollbarApi]])}>
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [rollbarApiRef, rollbarApi],
+            [configApiRef, config],
+            [
+              catalogApiRef,
+              ({
+                async getEntityByName() {
+                  return {
+                    metadata: { name: 'foo' },
+                    spec: { owner: 'bar', lifecycle: 'experimental' },
+                  } as any;
+                },
+              } as Partial<CatalogApi>) as CatalogApi,
+            ],
+          ])}
+        >
           {children}
         </ApiProvider>,
       ),
@@ -55,6 +81,6 @@ describe('RollbarProjectPage component', () => {
 
   it('should render rollbar project page', async () => {
     const rendered = renderWrapped(<RollbarProjectPage />);
-    expect(rendered.getByText(/Top Active Items/)).toBeInTheDocument();
+    expect(rendered.getByText(/Rollbar/)).toBeInTheDocument();
   });
 });

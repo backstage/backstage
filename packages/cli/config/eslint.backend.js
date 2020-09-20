@@ -28,11 +28,14 @@ module.exports = {
   env: {
     jest: true,
   },
+  globals: {
+    __non_webpack_require__: 'readonly',
+  },
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  ignorePatterns: ['.eslintrc.js', '**/dist/**'],
+  ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
     'no-console': 0, // Permitted in console programs
     'new-cap': ['error', { capIsNew: false }], // Because Express constructs things e.g. like 'const r = express.Router()'
@@ -55,6 +58,16 @@ module.exports = {
     ],
     // Avoid cross-package imports
     'no-restricted-imports': [2, { patterns: ['**/../../**/*/src/**'] }],
+    // Avoid default import from winston as it breaks at runtime
+    'no-restricted-syntax': [
+      'error',
+      {
+        message:
+          'Default import from winston is not allowed, import `* as winston` instead.',
+        selector:
+          'ImportDeclaration[source.value="winston"] ImportDefaultSpecifier',
+      },
+    ],
   },
   overrides: [
     {

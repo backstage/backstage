@@ -47,3 +47,27 @@ python -m black src/
 ```
 
 **Note:** This will write to all Python files in `src/` with the formatted code. If you would like to only check to see if it passes, simply append the `--check` flag.
+
+## Changelog
+
+### 0.0.7
+
+- Fix an issue with configuration of emoji support
+
+### 0.0.6
+
+- Further adjustments to versions to find ones that are compatible
+
+### 0.0.5
+
+- Downgrade some versions of markdown extensions to versions that are more stable
+
+### 0.0.4
+
+- Added support for more mkdocs extensions
+  - mkdocs-material
+  - mkdocs-monorepo-plugin
+  - plantuml-markdown
+  - markdown_inline_graphviz_extension
+  - pygments
+  - pymdown-extensions

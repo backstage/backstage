@@ -1,4 +1,8 @@
-# Support and community
+---
+id: support
+title: Support and community
+description: Support and Community Details and Links
+---
 
 - [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the
   project

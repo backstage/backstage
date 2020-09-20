@@ -20,10 +20,11 @@ import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
   ActionsGetWorkflowRunResponseData,
+  EndpointInterface,
 } from '@octokit/types';
 
 export class GithubActionsClient implements GithubActionsApi {
-  reRunWorkflow({
+  async reRunWorkflow({
     token,
     owner,
     repo,
@@ -33,8 +34,8 @@ export class GithubActionsClient implements GithubActionsApi {
     owner: string;
     repo: string;
     runId: number;
-  }) {
-    new Octokit({ auth: token }).actions.reRunWorkflow({
+  }): Promise<any> {
+    return new Octokit({ auth: token }).actions.reRunWorkflow({
       owner,
       repo,
       run_id: runId,
@@ -46,12 +47,14 @@ export class GithubActionsClient implements GithubActionsApi {
     repo,
     pageSize = 100,
     page = 0,
+    branch,
   }: {
     token: string;
     owner: string;
     repo: string;
     pageSize?: number;
     page?: number;
+    branch?: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
     const workflowRuns = await new Octokit({
       auth: token,
@@ -60,6 +63,7 @@ export class GithubActionsClient implements GithubActionsApi {
       repo,
       per_page: pageSize,
       page,
+      ...(branch ? { branch } : {}),
     });
     return workflowRuns.data;
   }
@@ -98,5 +102,25 @@ export class GithubActionsClient implements GithubActionsApi {
       run_id: id,
     });
     return run.data;
+  }
+  async downloadJobLogsForWorkflowRun({
+    token,
+    owner,
+    repo,
+    runId,
+  }: {
+    token: string;
+    owner: string;
+    repo: string;
+    runId: number;
+  }): Promise<EndpointInterface> {
+    const workflow = await new Octokit({
+      auth: token,
+    }).actions.downloadJobLogsForWorkflowRun({
+      owner,
+      repo,
+      job_id: runId,
+    });
+    return workflow.data;
   }
 }

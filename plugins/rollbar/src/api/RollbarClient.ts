@@ -20,26 +20,21 @@ import {
   RollbarProject,
   RollbarTopActiveItem,
 } from './types';
+import { DiscoveryApi } from '@backstage/core';
 
 export class RollbarClient implements RollbarApi {
-  private apiOrigin: string;
-  private basePath: string;
+  private readonly discoveryApi: DiscoveryApi;
 
-  constructor({
-    apiOrigin,
-    basePath,
-  }: {
-    apiOrigin: string;
-    basePath: string;
-  }) {
-    this.apiOrigin = apiOrigin;
-    this.basePath = basePath;
+  constructor(options: { discoveryApi: DiscoveryApi }) {
+    this.discoveryApi = options.discoveryApi;
   }
 
   async getAllProjects(): Promise<RollbarProject[]> {
-    const path = `/projects`;
+    return await this.get(`/projects`);
+  }
 
-    return await this.get(path);
+  async getProject(projectName: string): Promise<RollbarProject> {
+    return await this.get(`/projects/${projectName}`);
   }
 
   async getTopActiveItems(
@@ -47,19 +42,17 @@ export class RollbarClient implements RollbarApi {
     hours = 24,
     environment = 'production',
   ): Promise<RollbarTopActiveItem[]> {
-    const path = `/projects/${project}/top_active_items?environment=${environment}&hours=${hours}`;
-
-    return await this.get(path);
+    return await this.get(
+      `/projects/${project}/top_active_items?environment=${environment}&hours=${hours}`,
+    );
   }
 
   async getProjectItems(project: string): Promise<RollbarItemsResponse> {
-    const path = `/projects/${project}/items`;
-
-    return await this.get(path);
+    return await this.get(`/projects/${project}/items`);
   }
 
   private async get(path: string): Promise<any> {
-    const url = `${this.apiOrigin}${this.basePath}${path}`;
+    const url = `${await this.discoveryApi.getBaseUrl('rollbar')}${path}`;
     const response = await fetch(url);
 
     if (!response.ok) {

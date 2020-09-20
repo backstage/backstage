@@ -3,12 +3,6 @@
 .vscode/
 .vsls.json
 
-# @spotify/web-script build output
-cjs/
-esm/
-types/
-build/
-
 # Logs
 logs
 *.log
@@ -95,6 +89,7 @@ typings/
 # Nuxt.js build / generate output
 .nuxt
 dist
+dist-types
 
 # Gatsby files
 .cache/
@@ -125,3 +120,6 @@ dist
 
 # MkDocs build output
 site
+
+# Local configuration files
+*.local.yaml

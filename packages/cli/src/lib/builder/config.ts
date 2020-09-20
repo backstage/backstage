@@ -26,6 +26,7 @@ import imageFiles from 'rollup-plugin-image-files';
 import svgr from '@svgr/rollup';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
+import yaml from '@rollup/plugin-yaml';
 import { RollupOptions, OutputOptions } from 'rollup';
 
 import { BuildOptions, Output } from './types';
@@ -36,7 +37,7 @@ export const makeConfigs = async (
   options: BuildOptions,
 ): Promise<RollupOptions[]> => {
   const typesInput = paths.resolveTargetRoot(
-    'dist',
+    'dist-types',
     relativePath(paths.targetRoot, paths.targetDir),
     'src/index.d.ts',
   );
@@ -87,14 +88,18 @@ export const makeConfigs = async (
         }),
         resolve({ mainFields }),
         commonjs({
-          include: ['node_modules/**', '../../node_modules/**'],
-          exclude: ['**/*.stories.*', '**/*.test.*'],
+          include: /node_modules/,
+          exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
         }),
         postcss(),
-        imageFiles({ exclude: '**/*.icon.svg' }),
+        imageFiles({
+          exclude: /\.icon\.svg$/,
+          include: [/\.svg$/, /\.png$/, /\.gif$/, /\.jpg$/, /\.jpeg$/],
+        }),
         json(),
+        yaml(),
         svgr({
-          include: '**/*.icon.svg',
+          include: /\.icon\.svg$/,
           template: svgrTemplate,
         }),
         esbuild({

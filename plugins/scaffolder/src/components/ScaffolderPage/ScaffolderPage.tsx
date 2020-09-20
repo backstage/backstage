@@ -26,9 +26,10 @@ import {
   Progress,
   SupportButton,
   useApi,
+  WarningPanel,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
-import { Button, Grid, Typography, Link } from '@material-ui/core';
+import { Button, Grid, Link, Typography } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import useStaleWhileRevalidate from 'swr';
@@ -46,7 +47,8 @@ const getTemplateCardProps = (
     tags: (template.metadata?.tags as string[]) ?? [],
   };
 };
-export const ScaffolderPage: React.FC<{}> = () => {
+
+export const ScaffolderPage = () => {
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -64,25 +66,25 @@ export const ScaffolderPage: React.FC<{}> = () => {
   }, [error, errorApi]);
 
   return (
-    <Page theme={pageTheme.other}>
+    <Page theme={pageTheme.home}>
       <Header
-        pageTitleOverride="Create a new component"
+        pageTitleOverride="Create a New Component"
         title={
           <>
-            Create a new component <Lifecycle alpha shorthand />
+            Create a New Component <Lifecycle alpha shorthand />
           </>
         }
         subtitle="Create new software components using standard templates"
       />
       <Content>
-        <ContentHeader title="Available templates">
+        <ContentHeader title="Available Templates">
           <Button
             variant="contained"
             color="primary"
             component={RouterLink}
             to="/register-component"
           >
-            Register existing component
+            Register Existing Component
           </Button>
           <SupportButton>
             Create new software components using standard templates. Different
@@ -95,22 +97,22 @@ export const ScaffolderPage: React.FC<{}> = () => {
           <Typography variant="body2">
             Shoot! Looks like you don't have any templates. Check out the
             documentation{' '}
-            <Link href="docs/backstage/features/software-templates/adding-templates">
+            <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
               here!
             </Link>
           </Typography>
         )}
         {error && (
-          <Typography variant="body2">
+          <WarningPanel>
             Oops! Something went wrong loading the templates: {error.message}
-          </Typography>
+          </WarningPanel>
         )}
         <Grid container>
           {templates &&
             templates?.length > 0 &&
             templates.map(template => {
               return (
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid key={template.metadata.uid} item xs={12} sm={6} md={3}>
                   <TemplateCard {...getTemplateCardProps(template)} />
                 </Grid>
               );

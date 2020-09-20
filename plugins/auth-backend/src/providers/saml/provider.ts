@@ -23,21 +23,14 @@ import {
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
-} from '../../lib/PassportStrategyHelper';
-import {
-  AuthProviderConfig,
-  AuthProviderRouteHandlers,
-  EnvironmentProviderConfig,
-  SAMLProviderConfig,
   PassportDoneCallback,
-  ProfileInfo,
-} from '../types';
-import { postMessageResponse } from '../../lib/OAuthProvider';
+} from '../../lib/passport';
 import {
-  EnvironmentHandlers,
-  EnvironmentHandler,
-} from '../../lib/EnvironmentHandler';
-import { Logger } from 'winston';
+  AuthProviderRouteHandlers,
+  ProfileInfo,
+  AuthProviderFactory,
+} from '../types';
+import { postMessageResponse } from '../../lib/flow';
 import { TokenIssuer } from '../../identity';
 
 type SamlInfo = {
@@ -111,6 +104,10 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   async logout(_req: express.Request, res: express.Response): Promise<void> {
     res.send('noop');
   }
+
+  identifyEnv(): string | undefined {
+    return undefined;
+  }
 }
 
 type SAMLProviderOptions = {
@@ -120,32 +117,18 @@ type SAMLProviderOptions = {
   tokenIssuer: TokenIssuer;
 };
 
-export function createSamlProvider(
-  _authProviderConfig: AuthProviderConfig,
-  providerConfig: EnvironmentProviderConfig,
-  logger: Logger,
-  tokenIssuer: TokenIssuer,
-) {
-  const envProviders: EnvironmentHandlers = {};
+export const createSamlProvider: AuthProviderFactory = ({
+  config,
+  tokenIssuer,
+}) => {
+  const entryPoint = config.getString('entryPoint');
+  const issuer = config.getString('issuer');
+  const opts = {
+    entryPoint,
+    issuer,
+    path: '/auth/saml/handler/frame',
+    tokenIssuer,
+  };
 
-  for (const [env, envConfig] of Object.entries(providerConfig)) {
-    const config = (envConfig as unknown) as SAMLProviderConfig;
-    const opts = {
-      entryPoint: config.entryPoint,
-      issuer: config.issuer,
-      path: '/auth/saml/handler/frame',
-      tokenIssuer,
-    };
-
-    if (!opts.entryPoint || !opts.issuer) {
-      logger.warn(
-        'SAML auth provider disabled, set entryPoint and entryPoint in saml auth config to enable',
-      );
-      continue;
-    }
-
-    envProviders[env] = new SamlAuthProvider(opts);
-  }
-
-  return new EnvironmentHandler('saml', envProviders);
-}
+  return new SamlAuthProvider(opts);
+};

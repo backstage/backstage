@@ -35,6 +35,9 @@ describe('ReservedFieldsEntityPolicy', () => {
           backstage.io/custom: ValueStuff
         annotations:
           example.com/bindings: are-secret
+        tags:
+          - java
+          - data
       spec:
         custom: stuff
     `);

@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { Config, ConfigReader } from '@backstage/config';
 import {
   Entity,
   EntityPolicies,
@@ -26,9 +27,13 @@ import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEn
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
-import { GithubApiReaderProcessor } from './processors/GithubApiReaderProcessor';
+import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
+import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
+import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
+import { UrlReaderProcessor } from './processors/UrlReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
+import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
 import * as result from './processors/results';
 import {
   LocationProcessor,
@@ -41,9 +46,16 @@ import {
 } from './processors/types';
 import { YamlProcessor } from './processors/YamlProcessor';
 import { LocationReader, ReadLocationResult } from './types';
+import { CatalogRulesEnforcer } from './CatalogRules';
 
 // The max amount of nesting depth of generated work items
 const MAX_DEPTH = 10;
+
+type Options = {
+  logger?: Logger;
+  config?: Config;
+  processors?: LocationProcessor[];
+};
 
 /**
  * Implements the reading of a location through a series of processor tasks.
@@ -51,15 +63,27 @@ const MAX_DEPTH = 10;
 export class LocationReaders implements LocationReader {
   private readonly logger: Logger;
   private readonly processors: LocationProcessor[];
+  private readonly rulesEnforcer: CatalogRulesEnforcer;
 
-  static defaultProcessors(
-    entityPolicy: EntityPolicy = new EntityPolicies(),
-  ): LocationProcessor[] {
+  static defaultProcessors(options: {
+    logger: Logger;
+    config?: Config;
+    entityPolicy?: EntityPolicy;
+  }): LocationProcessor[] {
+    const {
+      logger,
+      config = new ConfigReader({}, 'missing-config'),
+      entityPolicy = new EntityPolicies(),
+    } = options;
     return [
+      StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
-      new GithubReaderProcessor(),
-      new GithubApiReaderProcessor(),
+      GithubReaderProcessor.fromConfig(config, logger),
+      new GitlabApiReaderProcessor(config),
       new GitlabReaderProcessor(),
+      new BitbucketApiReaderProcessor(config),
+      new AzureApiReaderProcessor(config),
+      new UrlReaderProcessor(),
       new YamlProcessor(),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
@@ -67,12 +91,16 @@ export class LocationReaders implements LocationReader {
     ];
   }
 
-  constructor(
-    logger: Logger = getVoidLogger(),
-    processors: LocationProcessor[] = LocationReaders.defaultProcessors(),
-  ) {
+  constructor({
+    logger = getVoidLogger(),
+    config,
+    processors = LocationReaders.defaultProcessors({ logger, config }),
+  }: Options) {
     this.logger = logger;
     this.processors = processors;
+    this.rulesEnforcer = config
+      ? CatalogRulesEnforcer.fromConfig(config)
+      : new CatalogRulesEnforcer(CatalogRulesEnforcer.defaultRules);
   }
 
   async read(location: LocationSpec): Promise<ReadLocationResult> {
@@ -89,11 +117,20 @@ export class LocationReaders implements LocationReader {
         } else if (item.type === 'data') {
           await this.handleData(item, emit);
         } else if (item.type === 'entity') {
-          const entity = await this.handleEntity(item, emit);
-          output.entities.push({
-            entity,
-            location: item.location,
-          });
+          if (this.rulesEnforcer.isAllowed(item.entity, item.location)) {
+            const entity = await this.handleEntity(item, emit);
+            output.entities.push({
+              entity,
+              location: item.location,
+            });
+          } else {
+            output.errors.push({
+              location: item.location,
+              error: new Error(
+                `Entity of kind ${item.entity.kind} is not allowed from location ${item.location.target}:${item.location.type}`,
+              ),
+            });
+          }
         } else if (item.type === 'error') {
           await this.handleError(item, emit);
           output.errors.push({

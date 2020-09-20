@@ -18,9 +18,15 @@ import {
   OAuthRequestManager,
   OktaAuth,
   oktaAuthApiRef,
+  Auth0Auth,
+  auth0AuthApiRef,
+  configApiRef,
+  ConfigReader,
 } from '@backstage/core';
 
 const builder = ApiRegistry.builder();
+
+builder.add(configApiRef, ConfigReader.fromConfigs([]));
 
 const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 
@@ -68,6 +74,15 @@ builder.add(
 builder.add(
   oktaAuthApiRef,
   OktaAuth.create({
+    apiOrigin: 'http://localhost:7000',
+    basePath: '/auth/',
+    oauthRequestApi,
+  }),
+);
+
+builder.add(
+  auth0AuthApiRef,
+  Auth0Auth.create({
     apiOrigin: 'http://localhost:7000',
     basePath: '/auth/',
     oauthRequestApi,

@@ -77,7 +77,7 @@ export class GitlabReaderProcessor implements LocationProcessor {
         blobKeyword !== 'blob' ||
         !restOfPath.join('/').match(/\.yaml$/)
       ) {
-        throw new Error('Wrong Gitlab URL');
+        throw new Error('Wrong GitLab URL');
       }
 
       // Replace 'blob' with 'raw'

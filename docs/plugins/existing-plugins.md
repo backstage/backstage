@@ -1,4 +1,8 @@
-# Existing plugins
+---
+id: existing-plugins
+title: Existing plugins
+description: Lists of existing open source plugins
+---
 
 ## Open source plugins
 

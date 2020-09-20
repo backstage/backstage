@@ -37,26 +37,19 @@ yarn start
 
 Substitute `x` for actual values, or leave them as
 dummy values just to try out the backend without using the auth or sentry features.
+You can also, instead of using dummy values for a huge number of environment variables, remove those config directly from app-config.yaml file located in the root folder.
 
 The backend starts up on port 7000 per default.
 
 ## Populating The Catalog
 
-If you want to use the catalog functionality, you need to add so called locations
-to the backend. These are places where the backend can find some entity descriptor
-data to consume and serve.
+If you want to use the catalog functionality, you need to add so called
+locations to the backend. These are places where the backend can find some
+entity descriptor data to consume and serve. For more information, see
+[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog).
 
-To get started, you can issue the following after starting the backend, from inside
-the `plugins/catalog-backend` directory:
-
-```bash
-yarn mock-data
-```
-
-You should then start seeing data on `localhost:7000/catalog/entities`.
-
-The catalog currently runs in-memory only, so feel free to try it out, but it will
-need to be re-populated on next startup.
+For convenience we already include some statically configured example locations
+in `app-config.yaml` under `catalog.locations`. For local development you can override these in your own `app-config.local.yaml`.
 
 ## Authentication
 

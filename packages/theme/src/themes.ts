@@ -15,7 +15,7 @@
  */
 
 import { createTheme } from './baseTheme';
-import { blue, yellow } from '@material-ui/core/colors';
+import { yellow } from '@material-ui/core/colors';
 
 export const lightTheme = createTheme({
   palette: {
@@ -39,7 +39,11 @@ export const lightTheme = createTheme({
       },
     },
     primary: {
-      main: blue[500],
+      main: '#2E77D0',
+    },
+    banner: {
+      info: '#2E77D0',
+      error: '#E22134',
     },
     border: '#E6E6E6',
     textContrast: '#000000',
@@ -55,7 +59,10 @@ export const lightTheme = createTheme({
     linkHover: '#2196F3',
     link: '#0A6EBE',
     gold: yellow.A700,
-    sidebar: '#171717',
+    navigation: {
+      background: '#171717',
+      indicator: '#9BF0E1',
+    },
     pinSidebarButton: {
       icon: '#181818',
       background: '#BDBDBD',
@@ -88,7 +95,11 @@ export const darkTheme = createTheme({
       },
     },
     primary: {
-      main: blue[500],
+      main: '#2E77D0',
+    },
+    banner: {
+      info: '#2E77D0',
+      error: '#E22134',
     },
     border: '#E6E6E6',
     textContrast: '#FFFFFF',
@@ -104,7 +115,10 @@ export const darkTheme = createTheme({
     linkHover: '#2196F3',
     link: '#0A6EBE',
     gold: yellow.A700,
-    sidebar: '#424242',
+    navigation: {
+      background: '#424242',
+      indicator: '#9BF0E1',
+    },
     pinSidebarButton: {
       icon: '#404040',
       background: '#BDBDBD',
