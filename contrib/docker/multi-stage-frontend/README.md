@@ -17,5 +17,3 @@ After a successful build, You can simply run backstage frontend with the followi
 ```
 docker run -it --rm -p 3080:80 backstage
 ```
-
-
