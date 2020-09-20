@@ -46,6 +46,8 @@ proxy:
 techdocs:
   storageUrl: http://localhost:7000/techdocs/static/docs
   requestUrl: http://localhost:7000/techdocs/docs
+  generators:
+    techdocs: 'docker'
 
 lighthouse:
   baseUrl: http://localhost:3003
@@ -65,10 +67,6 @@ catalog:
     - allow: [Component, API, Group, Template, Location]
   processors:
     github:
-      privateToken:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
-    githubApi:
       providers:
         - target: https://github.com
           token:

@@ -343,7 +343,14 @@ export class CommonDatabase implements Database {
     entityName?: string,
     message?: string,
   ): Promise<void> {
-    return this.database<DatabaseLocationUpdateLogEvent>(
+    // Remove log entries older than a day
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 1);
+    await this.database<DatabaseLocationUpdateLogEvent>('location_update_log')
+      .where('created_at', '<', cutoff.toISOString())
+      .del();
+
+    await this.database<DatabaseLocationUpdateLogEvent>(
       'location_update_log',
     ).insert({
       status,
