@@ -1,10 +1,5 @@
 FROM node:12 AS build
 
-# This dockerfile does not require the app to be built on the host machine.
-# simply builds backstage in node image then transfers compiled files to nginx container.
-
-# You can build this image with `docker build -f Dockerfile.standalone -t backstage .`
-
 RUN mkdir /app
 COPY . /app
 WORKDIR /app
@@ -12,7 +7,7 @@ WORKDIR /app
 RUN yarn install
 RUN yarn workspace example-app build
 
-# Contruct backstage image
+# Contruct backstage-frontend image
 FROM nginx:mainline
 
 RUN apt-get update && apt-get -y install jq && rm -rf /var/lib/apt/lists/*

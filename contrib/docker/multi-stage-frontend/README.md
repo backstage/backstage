@@ -9,11 +9,11 @@ You can simply run the following command to build backstage.
 
 ```
 # Make sure you are in the root directory of backstage then run
-docker build -t backstage -f ./contrib/docker/multi-stage-frontend/Dockerfile .
+docker build -t backstage-frontend -f ./contrib/docker/multi-stage-frontend/Dockerfile .
 ```
 
 After a successful build, You can simply run backstage frontend with the following command.
 
 ```
-docker run -it --rm -p 3080:80 backstage
+docker run -it --rm -p 3080:80 backstage-frontend
 ```
