@@ -27,7 +27,7 @@ type SubRouteConfig = {
   path: string;
 };
 
-export class SubRouteRef<T extends { [name in string]: string }>
+export class SubRouteRef<T extends { [name in string]: string } | never = never>
   implements ReferencedRoute {
   constructor(
     private readonly parent: ConcreteRoute,
@@ -38,11 +38,11 @@ export class SubRouteRef<T extends { [name in string]: string }>
     return this;
   }
 
-  link(params: T): ConcreteRoute {
+  link<Args extends T extends never ? [] : [T]>(...args: Args): ConcreteRoute {
     return {
       [routeReference]: this,
       [resolveRoute]: (path: string) => {
-        const ownPart = generatePath(this.config.path, params);
+        const ownPart = generatePath(this.config.path, args[0] ?? {});
         const parentPart = this.parent[resolveRoute](path);
         return parentPart + ownPart;
       },
@@ -66,7 +66,7 @@ export class AbsoluteRouteRef implements ConcreteRoute {
     return this.config.title;
   }
 
-  createSubRoute<T extends { [name in string]: string }>(
+  createSubRoute<T extends { [name in string]: string } | never = never>(
     config: SubRouteConfig,
   ) {
     return new SubRouteRef<T>(this, config);

@@ -75,12 +75,10 @@ describe('RouteRefRegistry', () => {
 
     expect(registry.resolveRoute([], [ref1])).toBe('/1');
     expect(registry.resolveRoute([], [ref2])).toBe('/2');
-    expect(registry.resolveRoute([], [ref2a.link({}), ref1])).toBe('/2/a/1');
-    expect(registry.resolveRoute([], [ref2a.link({}), ref2])).toBe('/2/a/2');
-    expect(registry.resolveRoute([ref2a.link({})], [ref2])).toBe('/2/a/2');
-    expect(registry.resolveRoute([ref2a.link({}), ref1], [ref2])).toBe(
-      '/2/a/2',
-    );
+    expect(registry.resolveRoute([], [ref2a.link(), ref1])).toBe('/2/a/1');
+    expect(registry.resolveRoute([], [ref2a.link(), ref2])).toBe('/2/a/2');
+    expect(registry.resolveRoute([ref2a.link()], [ref2])).toBe('/2/a/2');
+    expect(registry.resolveRoute([ref2a.link(), ref1], [ref2])).toBe('/2/a/2');
     expect(registry.resolveRoute([], [ref2b.link({ id: 'abc' }), ref1])).toBe(
       '/2/b/abc/1',
     );
