@@ -240,10 +240,12 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
                 <>
                   {item.isOpen ? (
                     <ExpandLess
+                      data-testid="expandable"
                       onClick={event => handleOpen(event, item.label)}
                     />
                   ) : (
                     <ExpandMore
+                      data-testid="expandable"
                       onClick={event => handleOpen(event, item.label)}
                     />
                   )}

@@ -150,6 +150,7 @@ export const SelectComponent = (props: SelectProps) => {
         <FormControl className={classes.formControl}>
           <Select
             value={value}
+            data-testid="select"
             displayEmpty
             multiple={multiple}
             onChange={handleChange}
