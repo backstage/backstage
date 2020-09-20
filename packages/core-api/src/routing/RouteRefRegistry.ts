@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { ConcreteRoute, ref, resolveRoute, ReferencedRoute } from './types';
+import {
+  ConcreteRoute,
+  routeReference,
+  resolveRoute,
+  ReferencedRoute,
+} from './types';
 
 const rootRoute: ConcreteRoute = {
-  [ref]() {
+  get [routeReference]() {
     return this;
   },
   [resolveRoute]: () => '',
@@ -39,7 +44,7 @@ class Node {
     let node = this as Node | undefined;
 
     for (let i = 0; i < routes.length; i++) {
-      node = node?.children.get(routes[i][ref]());
+      node = node?.children.get(routes[i][routeReference]);
     }
 
     return node;
@@ -62,7 +67,7 @@ class Node {
     }
 
     const lastRoute = routes[routes.length - 1];
-    const lastRouteRef = lastRoute[ref]();
+    const lastRouteRef = lastRoute[routeReference];
     if (parentNode.children.has(lastRouteRef)) {
       return false;
     }

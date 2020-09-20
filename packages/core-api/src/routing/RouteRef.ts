@@ -14,28 +14,33 @@
  * limitations under the License.
  */
 
-import { ConcreteRoute, ref, resolveRoute, RouteRefConfig } from './types';
+import {
+  ConcreteRoute,
+  routeReference,
+  ReferencedRoute,
+  resolveRoute,
+  RouteRefConfig,
+} from './types';
 import { generatePath } from 'react-router-dom';
 
 type SubRouteConfig = {
   path: string;
 };
 
-export class SubRouteRef<T extends { [name in string]: string }> {
+export class SubRouteRef<T extends { [name in string]: string }>
+  implements ReferencedRoute {
   constructor(
     private readonly parent: ConcreteRoute,
     private readonly config: SubRouteConfig,
   ) {}
 
-  [ref]() {
+  get [routeReference]() {
     return this;
   }
 
   link(params: T): ConcreteRoute {
-    const selfRef = this as unknown;
-
     return {
-      [ref]: () => selfRef,
+      [routeReference]: this,
       [resolveRoute]: (path: string) => {
         const ownPart = generatePath(this.config.path, params);
         const parentPart = this.parent[resolveRoute](path);
@@ -67,7 +72,7 @@ export class AbsoluteRouteRef implements ConcreteRoute {
     return new SubRouteRef<T>(this, config);
   }
 
-  [ref]() {
+  get [routeReference]() {
     return this;
   }
 
