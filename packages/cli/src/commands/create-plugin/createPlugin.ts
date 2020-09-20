@@ -176,6 +176,7 @@ export async function movePlugin(
 }
 
 export default async ({ backend }: { backend: boolean }) => {
+  console.warn(backend);
   const codeownersPath = await getCodeownersFilePath(paths.targetRoot);
 
   const questions: Question[] = [
