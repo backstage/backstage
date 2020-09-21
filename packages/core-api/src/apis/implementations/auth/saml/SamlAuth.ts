@@ -25,7 +25,7 @@ import {
   AuthRequestOptions,
   SamlApi,
 } from '../../../definitions/auth';
-import { AuthProvider } from '../../../definitions';
+import { AuthProvider, DiscoveryApi } from '../../../definitions';
 import { SamlSession } from './types';
 import {
   SamlAuthSessionManager,
@@ -33,8 +33,7 @@ import {
 } from '../../../../lib/AuthSessionManager';
 
 type CreateOptions = {
-  apiOrigin: string;
-  basePath: string;
+  discoveryApi: DiscoveryApi;
   environment?: string;
   provider?: AuthProvider & { id: string };
 };
@@ -53,14 +52,12 @@ const DEFAULT_PROVIDER = {
 
 class SamlAuth implements SamlApi {
   static create({
-    apiOrigin,
-    basePath,
+    discoveryApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
   }: CreateOptions) {
     const connector = new SamlAuthConnector<SamlSession>({
-      apiOrigin,
-      basePath,
+      discoveryApi,
       environment,
       provider,
     });
@@ -74,7 +71,6 @@ class SamlAuth implements SamlApi {
       storageKey: 'samlSession',
     });
 
-    // return new SamlAuth(authSessionStore);
     return new SamlAuth(authSessionStore);
   }
 

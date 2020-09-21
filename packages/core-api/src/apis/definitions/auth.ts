@@ -332,5 +332,5 @@ export const oauth2ApiRef = createApiRef<
  */
 export const samlAuthApiRef = createApiRef<SamlApi>({
   id: 'core.auth.saml',
-  description: 'provides authentication towards saml based provider',
+  description: 'Example of how to use SAML custom provider',
 });

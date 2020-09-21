@@ -17,15 +17,13 @@ import {
   AuthProvider,
   ProfileInfo,
   BackstageIdentity,
+  DiscoveryApi,
 } from '../../apis/definitions';
 import { AuthConnector } from './types';
 import { showLoginPopup } from '../loginPopup';
 
-const DEFAULT_BASE_PATH = '/api/auth';
-
 type Options = {
-  apiOrigin?: string;
-  basePath?: string;
+  discoveryApi: DiscoveryApi;
   environment?: string;
   provider: AuthProvider & { id: string };
 };
@@ -38,30 +36,24 @@ export type SamlResponse = {
 
 export class SamlAuthConnector<SamlResponse>
   implements AuthConnector<SamlResponse> {
-  private readonly apiOrigin: string;
-  private readonly basePath: string;
+  private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string | undefined;
   private readonly provider: AuthProvider & { id: string };
 
   constructor(options: Options) {
-    const {
-      apiOrigin = window.location.origin,
-      basePath = DEFAULT_BASE_PATH,
-      environment,
-      provider,
-    } = options;
+    const { discoveryApi, environment, provider } = options;
 
-    this.apiOrigin = apiOrigin;
-    this.basePath = basePath;
+    this.discoveryApi = discoveryApi;
     this.environment = environment;
     this.provider = provider;
   }
 
   async createSession(): Promise<SamlResponse> {
+    const popupUrl = await this.buildUrl('/start');
     const payload = await showLoginPopup({
-      url: 'http://localhost:7000/auth/saml/start', // FIXME: remove hardcoded here. should do something like buildUrl
+      url: popupUrl,
       name: 'SAML Login', // FIXME: change this to provider name? and not hardcode the name
-      origin: this.apiOrigin,
+      origin: new URL(popupUrl).origin,
       width: 450,
       height: 730,
     });
@@ -76,8 +68,7 @@ export class SamlAuthConnector<SamlResponse>
   async refreshSession(): Promise<any> {}
 
   async removeSession(): Promise<void> {
-    // FIXME: remove hardcoded url here... should do something like buildUrl
-    const res = await fetch('http://localhost:7000/auth/saml/logout', {
+    const res = await fetch(await this.buildUrl('/logout'), {
       method: 'POST',
       headers: {
         'x-requested-with': 'XMLHttpRequest',
@@ -92,5 +83,10 @@ export class SamlAuthConnector<SamlResponse>
       error.status = res.status;
       throw error;
     }
+  }
+
+  private async buildUrl(path: string): Promise<string> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('auth');
+    return `${baseUrl}/${this.provider.id}${path}?env=${this.environment}`;
   }
 }
