@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import { getRootLogger } from '@backstage/backend-common';
-import yn from 'yn';
-import { startStandaloneServer } from './service/standaloneServer';
+import { createApiRef } from '@backstage/core';
+import { Project, Operation } from './types';
 
-const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7000;
-const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
-const logger = getRootLogger();
-
-startStandaloneServer({ port, enableCors, logger }).catch(err => {
-  logger.error(err);
-  process.exit(1);
+export const gcpApiRef = createApiRef<GcpApi>({
+  id: 'plugin.gcpprojects.service',
+  description: 'Used by the GCP Projects plugin to make requests',
 });
 
-process.on('SIGINT', () => {
-  logger.info('CTRL+C pressed; exiting.');
-  process.exit(0);
-});
+export type GcpApi = {
+  listProjects(): Promise<Project[]>;
+  getProject(projectId: string): Promise<Project>;
+  createProject(options: {
+    projectId: string;
+    projectName: string;
+  }): Promise<Operation>;
+};
