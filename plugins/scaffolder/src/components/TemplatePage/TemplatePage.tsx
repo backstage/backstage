@@ -67,6 +67,11 @@ const OWNER_REPO_SCHEMA = {
       title: 'Store path',
       description: 'GitHub store path in org/repo format',
     },
+    access: {
+      type: 'string' as const,
+      title: 'Access',
+      description: 'Who should have access, in org/team or user format',
+    },
   },
 };
 

@@ -1,6 +1,7 @@
 ---
 id: index
 title: Getting Started
+description: Documentation on How to get started with Backstage
 ---
 
 There are two different ways to get started with Backstage, either by creating a

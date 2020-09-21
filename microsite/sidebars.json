@@ -40,6 +40,7 @@
         "ids": [
           "features/software-catalog/software-catalog-overview",
           "features/software-catalog/installation",
+          "features/software-catalog/configuration",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
           "features/software-catalog/well-known-annotations",
@@ -143,7 +144,11 @@
         "ids": ["api/backend"]
       }
     ],
-    "Tutorials": ["tutorials/journey"],
+    "Tutorials": [
+      "tutorials/journey",
+      "tutorials/quickstart-app-auth",
+      "tutorials/quickstart-app-plugin"
+    ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
       "architecture-decisions/adrs-adr001",

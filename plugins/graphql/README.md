@@ -2,9 +2,9 @@
 
 ## Getting Started
 
-This backend plugin can be started in a standalone mode from directly in this package
-with `yarn start`. However, it will have limited functionality and that process is
-most convenient when developing the plugin itself.
+This is the GraphQL Backend plugin.
+
+It is responsible for merging different `graphql-plugins` together to provide the end schema.
 
 To run it within the backend do:
 

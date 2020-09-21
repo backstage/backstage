@@ -17,6 +17,7 @@ spec:
   schema:
     required: 
       - component_id
+      - description
     properties:
       component_id:
         title: Name

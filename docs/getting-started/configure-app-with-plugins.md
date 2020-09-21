@@ -1,6 +1,7 @@
 ---
 id: configure-app-with-plugins
 title: Configuring App with plugins
+description: Documentation on How Configuring App with plugins
 ---
 
 ## Adding existing plugins to your app

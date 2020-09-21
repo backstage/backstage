@@ -17,7 +17,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from './helpers';
+import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 import GitUriParser from 'git-url-parse';
