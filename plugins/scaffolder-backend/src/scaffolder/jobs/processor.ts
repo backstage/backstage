@@ -55,7 +55,7 @@ export class JobProcessor implements Processor {
       values,
       logger,
       logStream: stream,
-      token,
+      token: token,
     };
 
     const job: Job = {

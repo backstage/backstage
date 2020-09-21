@@ -84,13 +84,12 @@ export async function createRouter(
       const values: RequiredTemplateValues & Record<string, JsonValue> =
         req.body.values;
 
-      const token: string = req.body.token;
-      console.log('Request Body: ', req.body);
+      const githuApptoken: string = req.body.token;
       console.log('Request body token: ', req.body.token);
-      console.log('Request: ', req);
+      console.log('githuApptoken: ', githuApptoken);
       const job = jobProcessor.create({
         entity: template,
-        token: token,
+        token: githuApptoken,
         values,
         stages: [
           {
