@@ -20,6 +20,7 @@ import {
   oktaAuthApiRef,
   githubAuthApiRef,
   microsoftAuthApiRef,
+  auth0AuthApiRef,
 } from '@backstage/core';
 
 export const providers = [
@@ -52,5 +53,11 @@ export const providers = [
     title: 'Okta',
     message: 'Sign In using Okta',
     apiRef: oktaAuthApiRef,
+  },
+  {
+    id: 'auth0-auth-provider',
+    title: 'Auth0',
+    message: 'Sign in using Auth0',
+    apiRef: auth0AuthApiRef,
   },
 ];
