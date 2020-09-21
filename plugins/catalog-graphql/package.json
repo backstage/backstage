@@ -40,7 +40,7 @@
     "@graphql-codegen/typescript-resolvers": "^1.17.7",
     "ts-node": "^8.10.2",
     "eslint-plugin-graphql": "^4.0.0",
-    "msw": "^0.19.5",
+    "msw": "^0.20.5",
     "supertest": "^4.0.2"
   },
   "files": [

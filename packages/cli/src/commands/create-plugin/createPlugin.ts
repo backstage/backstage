@@ -272,7 +272,7 @@ export default async (cmd: Command) => {
     Task.section('Building the plugin');
     await buildPlugin(pluginDir);
 
-    if ((await fs.pathExists(appPackage)) && !backend) {
+    if ((await fs.pathExists(appPackage)) && !cmd.backend) {
       Task.section('Adding plugin as dependency in app');
       await addPluginDependencyToApp(paths.targetRoot, name, version);
 
