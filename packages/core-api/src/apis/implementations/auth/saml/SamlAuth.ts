@@ -28,8 +28,8 @@ import {
 import { AuthProvider, DiscoveryApi } from '../../../definitions';
 import { SamlSession } from './types';
 import {
-  SamlAuthSessionManager,
-  SamlAuthSessionStore,
+  AuthSessionStore,
+  StaticAuthSessionManager,
 } from '../../../../lib/AuthSessionManager';
 
 type CreateOptions = {
@@ -62,11 +62,11 @@ class SamlAuth implements SamlApi {
       provider,
     });
 
-    const sessionManager = new SamlAuthSessionManager<SamlSession>({
+    const sessionManager = new StaticAuthSessionManager<SamlSession>({
       connector,
     });
 
-    const authSessionStore = new SamlAuthSessionStore<SamlSession>({
+    const authSessionStore = new AuthSessionStore<SamlSession>({
       manager: sessionManager,
       storageKey: 'samlSession',
     });
