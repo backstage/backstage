@@ -27,6 +27,7 @@ export type StageContext<T = {}> = {
   entity: TemplateEntityV1alpha1;
   logger: Logger;
   logStream: Writable;
+  token: string;
 } & T;
 
 export type ProcessorStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
