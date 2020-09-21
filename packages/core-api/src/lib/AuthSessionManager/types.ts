@@ -36,13 +36,6 @@ export type SessionManager<T> = {
   sessionState$(): Observable<SessionState>;
 };
 
-// FIXME do we need this?
-export type SamlAuthSessionManager<T> = {
-  getSession(options: GetSessionOptions): Promise<T | undefined>;
-  removeSession(): Promise<void>;
-  sessionState$(): Observable<SessionState>;
-};
-
 /**
  * A function called to determine the scopes of a session.
  */
