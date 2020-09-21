@@ -136,6 +136,7 @@ const useFilterStyles = makeStyles<BackstageTheme>(() => ({
   title: {
     fontWeight: 'bold',
     fontSize: 18,
+    whiteSpace: 'nowrap',
   },
 }));
 
@@ -311,6 +312,7 @@ export function Table<T extends object = {}>({
           </>
         }
         data={tableData}
+        style={{ width: '100%' }}
         {...propsWithoutData}
       />
     </div>
