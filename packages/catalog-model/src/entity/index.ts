@@ -17,6 +17,8 @@
 export { entityMetaGeneratedFields } from './Entity';
 export type { Entity, EntityMeta } from './Entity';
 export * from './policies';
+export { parseEntityName, parseEntityRef, serializeEntityRef } from './ref';
+export type { EntityRefContext } from './ref';
 export {
   entityHasChanges,
   generateEntityEtag,

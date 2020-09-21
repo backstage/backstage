@@ -32,6 +32,7 @@ nav:
           - Configuration: 'features/software-catalog/configuration.md'
           - System model: 'features/software-catalog/system-model.md'
           - YAML File Format: 'features/software-catalog/descriptor-format.md'
+          - Entity References: 'features/software-catalog/references.md'
           - Well-known Annotations: 'features/software-catalog/well-known-annotations.md'
           - Extending the model: 'features/software-catalog/extending-the-model.md'
           - External integrations: 'features/software-catalog/external-integrations.md'
@@ -104,6 +105,7 @@ nav:
       - ADR006 - Avoid React.FC and React.SFC: 'architecture-decisions/adr006-avoid-react-fc.md'
       - ADR007 - Use MSW for Network Request Mocking: 'architecture-decisions/adr007-use-msw-to-mock-service-requests.md'
       - ADR008 - Default Catalog File Name: 'architecture-decisions/adr008-default-catalog-file-name.md'
+      - ADR009 - Entity References: 'architecture-decisions/adr009-entity-references.md'
   - Contribute: '../CONTRIBUTING.md'
   - Support: 'overview/support.md'
   - FAQ: FAQ.md
