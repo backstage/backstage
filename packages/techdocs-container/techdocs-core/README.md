@@ -67,6 +67,7 @@ Extensions:
   - critic
   - details
   - emoji
+  - superfences
   - inlinehilite
   - magiclink
   - mark
