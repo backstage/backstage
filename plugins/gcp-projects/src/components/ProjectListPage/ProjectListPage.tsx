@@ -17,18 +17,19 @@
 //  NEEDS WORK
 
 import {
-  Link,
-  useApi,
-  googleAuthApiRef,
-  HeaderLabel,
-  Page,
-  Header,
-  pageTheme,
-  SupportButton,
   Content,
   ContentHeader,
+  Header,
+  HeaderLabel,
+  Link,
+  Page,
+  pageTheme,
+  SupportButton,
+  useApi,
+  WarningPanel,
 } from '@backstage/core';
 import {
+  Button,
   LinearProgress,
   Paper,
   Table,
@@ -38,11 +39,10 @@ import {
   TableRow,
   Tooltip,
   Typography,
-  Button,
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { GCPApiRef, Project } from '../../api';
+import { gcpApiRef, Project } from '../../api';
 
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
@@ -63,27 +63,17 @@ const labels = (
 );
 
 const PageContents = () => {
-  const api = useApi(GCPApiRef);
-  const googleApi = useApi(googleAuthApiRef);
+  const api = useApi(gcpApiRef);
 
-  const { loading, error, value } = useAsync(async () => {
-    const token = await googleApi.getAccessToken(
-      'https://www.googleapis.com/auth/cloud-platform.read-only',
-    );
-
-    const projects = api.listProjects({ token });
-    return projects;
-  });
+  const { loading, error, value } = useAsync(() => api.listProjects());
 
   if (loading) {
     return <LinearProgress />;
-  }
-
-  if (error) {
+  } else if (error) {
     return (
-      <Typography variant="h2" color="error">
-        {error.message}{' '}
-      </Typography>
+      <WarningPanel title="Failed to load projects">
+        {error.toString()}
+      </WarningPanel>
     );
   }
 

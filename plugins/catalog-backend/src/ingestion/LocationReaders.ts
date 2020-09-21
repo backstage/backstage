@@ -27,7 +27,6 @@ import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEn
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
-import { GithubApiReaderProcessor } from './processors/GithubApiReaderProcessor';
 import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
 import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
@@ -67,18 +66,19 @@ export class LocationReaders implements LocationReader {
   private readonly rulesEnforcer: CatalogRulesEnforcer;
 
   static defaultProcessors(options: {
+    logger: Logger;
     config?: Config;
     entityPolicy?: EntityPolicy;
   }): LocationProcessor[] {
     const {
+      logger,
       config = new ConfigReader({}, 'missing-config'),
       entityPolicy = new EntityPolicies(),
     } = options;
     return [
       StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
-      new GithubReaderProcessor(config),
-      GithubApiReaderProcessor.fromConfig(config),
+      GithubReaderProcessor.fromConfig(config, logger),
       new GitlabApiReaderProcessor(config),
       new GitlabReaderProcessor(),
       new BitbucketApiReaderProcessor(config),
@@ -94,7 +94,7 @@ export class LocationReaders implements LocationReader {
   constructor({
     logger = getVoidLogger(),
     config,
-    processors = LocationReaders.defaultProcessors({ config }),
+    processors = LocationReaders.defaultProcessors({ logger, config }),
   }: Options) {
     this.logger = logger;
     this.processors = processors;
