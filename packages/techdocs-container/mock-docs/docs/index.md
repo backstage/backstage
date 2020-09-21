@@ -77,6 +77,18 @@ digraph G {
     }
     ```
 
+```java tab="java"
+    public void function() {
+      test();
+    }
+```
+
+```java tab="java 2"
+    public void function() {
+      test();
+    }
+```
+
 ```javascript
 import { test } from 'something';
 

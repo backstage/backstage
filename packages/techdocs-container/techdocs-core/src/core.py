@@ -68,6 +68,10 @@ class TechDocsCore(BasePlugin):
         config["markdown_extensions"].append("pymdownx.magiclink")
         config["markdown_extensions"].append("pymdownx.mark")
         config["markdown_extensions"].append("pymdownx.smartsymbols")
+        config["markdown_extensions"].append("pymdownx.superfences")
+        config["mdx_configs"]["pymdownx.superfences"] = {
+            "legacy_tab_classes": True,
+        }
         config["markdown_extensions"].append("pymdownx.highlight")
         config["mdx_configs"]["pymdownx.highlight"] = {
             "linenums": True,

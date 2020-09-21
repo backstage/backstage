@@ -34,7 +34,7 @@ setup(
         "plantuml-markdown==3.1.2",
         "markdown_inline_graphviz_extension==1.1",
         "pygments==2.6.1",
-        "pymdown-extensions==8.0.0",
+        "pymdown-extensions==7.1",
     ],
     classifiers=[
         "Development Status :: 1 - Planning",
