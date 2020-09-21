@@ -101,15 +101,11 @@ export type OAuthApi = {
  * This API provides access to SAML 2 credentials. Verify user access with identity provider.
  */
 export type SamlApi = {
-  // Not sure what Promise call back should have.
   getBackstageIdentity(
     options?: AuthRequestOptions,
   ): Promise<BackstageIdentity | undefined>;
 
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
-
-  // FIXME: is this needed?
-  getAccessToken(options?: AuthRequestOptions): Promise<string>;
 
   // Not sure if this is needed.
   logout(): Promise<void>;

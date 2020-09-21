@@ -92,12 +92,6 @@ class SamlAuth implements SamlApi {
     return session?.profile;
   }
 
-  // FIXME: Is this needed?...
-  async getAccessToken(options: AuthRequestOptions) {
-    const session = await this.sessionManager.getSession(options);
-    return session?.userId ?? '';
-  }
-
   async logout() {
     await this.sessionManager.removeSession();
   }

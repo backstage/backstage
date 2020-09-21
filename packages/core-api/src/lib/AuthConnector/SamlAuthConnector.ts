@@ -19,7 +19,6 @@ import {
   BackstageIdentity,
   DiscoveryApi,
 } from '../../apis/definitions';
-import { AuthConnector } from './types';
 import { showLoginPopup } from '../loginPopup';
 
 type Options = {
@@ -34,8 +33,7 @@ export type SamlResponse = {
   backstageIdentity: BackstageIdentity;
 };
 
-export class SamlAuthConnector<SamlResponse>
-  implements AuthConnector<SamlResponse> {
+export class SamlAuthConnector<SamlResponse> {
   private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string | undefined;
   private readonly provider: AuthProvider & { id: string };
@@ -52,7 +50,7 @@ export class SamlAuthConnector<SamlResponse>
     const popupUrl = await this.buildUrl('/start');
     const payload = await showLoginPopup({
       url: popupUrl,
-      name: 'SAML Login', // FIXME: change this to provider name? and not hardcode the name
+      name: `${this.provider.title} Login`,
       origin: new URL(popupUrl).origin,
       width: 450,
       height: 730,
@@ -63,9 +61,6 @@ export class SamlAuthConnector<SamlResponse>
       id: payload.profile.email,
     };
   }
-
-  // FIXME: do we need this for SAML?
-  async refreshSession(): Promise<any> {}
 
   async removeSession(): Promise<void> {
     const res = await fetch(await this.buildUrl('/logout'), {
