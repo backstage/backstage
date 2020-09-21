@@ -119,8 +119,10 @@ If everything is saved, you should see your name, id, and email on the
 github-playground page. Our data accessed is synchronous. So we just grab and
 go.
 
+https://github.com/spotify/backstage/tree/master/contrib
+
 6. Here is the entire file for reference
-   [ExampleComponent.tsx](https://github.com/johnson-jesse/simple-backstage-app-plugin/blob/master/plugins/github-playground/src/components/ExampleComponent/ExampleComponent.md)
+   [ExampleComponent.tsx](https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md)
 
 # The Wipe
 
@@ -299,7 +301,7 @@ return (
 8. After saving that, and given we don't have any errors, you should see a table
    with basic information on your repositories.
 9. Here is the entire file for reference
-   [ExampleFetchComponent.tsx](https://github.com/johnson-jesse/simple-backstage-app-plugin/blob/master/plugins/github-playground/src/components/ExampleFetchComponent/ExampleFetchComponent.md)
+   [ExampleFetchComponent.tsx](https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleFetchComponent.md)
 10. We finished! You should see your own GitHub repository's information
     displayed in a basic table. If you run into issues, you can compare the repo
     that backs this document,
