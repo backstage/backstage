@@ -8,7 +8,7 @@ describe('ExampleComponent', () => {
   it('should render', () => {
     const rendered = render(
       <ThemeProvider theme={lightTheme}>
-      <ExampleComponent />
+        <ExampleComponent />
       </ThemeProvider>,
       );
       expect(rendered.getByText('Welcome to {{ id }}!')).toBeInTheDocument();
