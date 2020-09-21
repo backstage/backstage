@@ -69,6 +69,7 @@ describe('JobProcessor', () => {
       const processor = new JobProcessor();
 
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages: [],
@@ -83,6 +84,7 @@ describe('JobProcessor', () => {
       const processor = new JobProcessor();
 
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages: [],
@@ -96,6 +98,7 @@ describe('JobProcessor', () => {
       const processor = new JobProcessor();
 
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages: [],
@@ -119,6 +122,7 @@ describe('JobProcessor', () => {
       const processor = new JobProcessor();
 
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages,
@@ -142,6 +146,7 @@ describe('JobProcessor', () => {
     it('should return the exact same instance of the job when one is created', async () => {
       const processor = new JobProcessor();
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages: [],
@@ -154,6 +159,7 @@ describe('JobProcessor', () => {
     it('throws an error when the status of the job is not in pending state', async () => {
       const processor = new JobProcessor();
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages: [],
@@ -180,6 +186,7 @@ describe('JobProcessor', () => {
 
       const processor = new JobProcessor();
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages,
@@ -206,6 +213,7 @@ describe('JobProcessor', () => {
 
       const processor = new JobProcessor();
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages,
@@ -242,6 +250,7 @@ describe('JobProcessor', () => {
 
       const processor = new JobProcessor();
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages,
@@ -281,6 +290,7 @@ describe('JobProcessor', () => {
 
       const processor = new JobProcessor();
       const job = processor.create({
+        token: '',
         entity: mockEntity,
         values: mockValues,
         stages,

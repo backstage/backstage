@@ -88,16 +88,18 @@ export async function createRouter(
       console.log('Request body token: ', req.body.token);
       console.log('Token: ', token);
       const job = jobProcessor.create({
+        token: token,
         entity: template,
         values,
         stages: [
           {
             name: 'Prepare the skeleton',
-            handler: async ctx => {
+            handler: async (ctx: StageContext<{ token: string }>) => {
               const preparer = preparers.get(ctx.entity);
               ctx.logger.info('Will now prepare the skeleton');
               ctx.logger.info('Token: ', token);
               ctx.logger.info('Values token: ', req.body.values.token);
+              ctx.logger.info('ctx.Token: ', ctx.token);
               const skeletonDir = await preparer.prepare(ctx.entity, token, {
                 logger: ctx.logger,
               });
@@ -106,10 +108,13 @@ export async function createRouter(
           },
           {
             name: 'Run the templater',
-            handler: async (ctx: StageContext<{ skeletonDir: string }>) => {
+            handler: async (
+              ctx: StageContext<{ skeletonDir: string; token: string }>,
+            ) => {
               const templater = templaters.get(ctx.entity);
               ctx.logger.info('Will now run the template');
               ctx.logger.info('Token: ', token);
+              ctx.logger.info('ctx.Token: ', ctx.token);
               const { resultDir } = await templater.run({
                 directory: ctx.skeletonDir,
                 dockerClient,
@@ -122,10 +127,13 @@ export async function createRouter(
           },
           {
             name: 'Publish template',
-            handler: async (ctx: StageContext<{ resultDir: string }>) => {
+            handler: async (
+              ctx: StageContext<{ resultDir: string; token: string }>,
+            ) => {
               const publisher = publishers.get(ctx.entity);
               ctx.logger.info('Will now store the template');
               ctx.logger.info('Token: ', token);
+              ctx.logger.info('ctx.Token: ', ctx.token);
               const { remoteUrl } = await publisher.publish({
                 entity: ctx.entity,
                 values: ctx.values,

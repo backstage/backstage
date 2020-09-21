@@ -37,10 +37,12 @@ export class JobProcessor implements Processor {
   private jobs = new Map<string, Job>();
 
   create({
+    token,
     entity,
     values,
     stages,
   }: {
+    token: string;
     entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;
     stages: StageInput[];
@@ -49,6 +51,7 @@ export class JobProcessor implements Processor {
     const { logger, stream } = makeLogStream({ id });
 
     const context: StageContext = {
+      token,
       entity,
       values,
       logger,
