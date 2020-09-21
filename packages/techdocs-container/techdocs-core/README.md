@@ -48,7 +48,71 @@ python -m black src/
 
 **Note:** This will write to all Python files in `src/` with the formatted code. If you would like to only check to see if it passes, simply append the `--check` flag.
 
+## MkDocs plugins and extensions
+
+The TechDocs Core MkDocs plugin comes with a set of extensions and plugins that mkdocs supports. Below you can find a list of all extensions and plugins that are included in the
+TechDocs Core plugin:
+
+Plugins:
+
+- [search](https://www.mkdocs.org/user-guide/configuration/#search)
+- [mkdocs-monorepo-plugin](https://github.com/spotify/mkdocs-monorepo-plugin)
+
+Extensions:
+
+- [admonition](https://squidfunk.github.io/mkdocs-material/reference/admonitions/#admonitions)
+- [toc](https://python-markdown.github.io/extensions/toc/)
+- [pymdown](https://facelessuser.github.io/pymdown-extensions/)
+  - caret
+  - critic
+  - details
+  - emoji
+  - superfences
+  - inlinehilite
+  - magiclink
+  - mark
+  - smartsymobls
+  - highlight
+  - extra
+  - tabbed
+  - tasklist
+  - tilde
+- [markdown_inline_graphviz](https://pypi.org/project/markdown-inline-graphviz/)
+- [plantuml_markdown](https://pypi.org/project/plantuml-markdown/)
+
 ## Changelog
+
+### 0.0.8
+
+- Superfences and Codehilite doesn't work very well together (squidfunk/mkdocs-material#1604) so therefore the codehilite extension is replaced by pymdownx.highlight
+
+* Uses pymdownx extensions v.7.1 instead of 8.0.0 to allow legacy_tab_classes config. This makes the techdocs core plugin compatible with the usage of tabs for grouping markdown with the following syntax:
+
+````
+    ```java tab="java 2"
+        public void function() {
+            ....
+        }
+    ```
+````
+
+as well as the new
+
+````
+    === "Java"
+
+    ```java
+    public void function() {
+        ....
+    }
+    ```
+````
+
+The pymdownx extension will be bumped too 8.0.0 in the near future.
+
+- pymdownx.tabbed is added to support tabs to group markdown content, such as codeblocks.
+
+- "PyMdown Extensions includes three extensions that are meant to replace their counterpart in the default Python Markdown extensions." Therefore some extensions has been taken away in this version that comes by default from pymdownx.extra which is added now (https://facelessuser.github.io/pymdown-extensions/usage_notes/#incompatible-extensions)
 
 ### 0.0.7
 
