@@ -82,7 +82,7 @@ export const RegisterComponentPage = ({
 
   const handleSubmit = async (formData: Record<string, string>) => {
     setFormState(FormStates.Submitting);
-    const { componentLocation: target } = formData;
+    const { scmType, componentLocation: target } = formData;
     try {
       const typeMapping = [
         { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
@@ -91,8 +91,10 @@ export const RegisterComponentPage = ({
         { url: /.*/, type: 'github' },
       ];
 
-      const type = typeMapping.filter(item => item.url.test(target))[0].type;
-
+      const type =
+        scmType === 'AUTO'
+          ? typeMapping.filter(item => item.url.test(target))[0].type
+          : scmType;
       const data = await catalogApi.addLocation(type, target);
 
       if (!isMounted()) return;

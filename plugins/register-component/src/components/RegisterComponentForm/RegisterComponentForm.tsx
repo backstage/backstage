@@ -21,10 +21,13 @@ import {
   FormHelperText,
   LinearProgress,
   TextField,
+  Select,
+  MenuItem,
+  InputLabel,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { FC } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { ComponentIdValidators } from '../../util/validate';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -44,7 +47,7 @@ export type Props = {
 };
 
 const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
-  const { register, handleSubmit, errors, formState } = useForm({
+  const { control, register, handleSubmit, errors, formState } = useForm({
     mode: 'onChange',
   });
   const classes = useStyles();
@@ -83,6 +86,30 @@ const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
             {errors.componentLocation.message}
           </FormHelperText>
         )}
+      </FormControl>
+
+      <FormControl variant="outlined">
+        <InputLabel id="scmLabel">SCM Detection</InputLabel>
+        <Controller
+          control={control}
+          name="scmType"
+          defaultValue="AUTO"
+          render={({ onChange, onBlur, value }) => (
+            <Select
+              labelId="scmLabel"
+              id="scmSelect"
+              label="scmLabel"
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+            >
+              <MenuItem value="AUTO">Auto-detect</MenuItem>
+              <MenuItem value="gitlab">GitLab</MenuItem>
+              <MenuItem value="bitbucket/api">Bitbucket</MenuItem>
+              <MenuItem value="azure/api">Azure</MenuItem>
+            </Select>
+          )}
+        />
       </FormControl>
       <Button
         id="registerComponentFormSubmit"
