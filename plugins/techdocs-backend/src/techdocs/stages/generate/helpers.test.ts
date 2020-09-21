@@ -51,6 +51,10 @@ describe('helpers', () => {
       jest
         .spyOn(mockDocker, 'run')
         .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
+
+      jest
+        .spyOn(mockDocker, 'ping')
+        .mockResolvedValue(Buffer.from('OK', 'utf-8'));
     });
 
     const imageName = 'spotify/techdocs';
@@ -98,6 +102,40 @@ describe('helpers', () => {
           },
         },
       );
+    });
+
+    it('should ping docker to test availability', async () => {
+      await runDockerContainer({
+        imageName,
+        args,
+        docsDir,
+        resultDir,
+        dockerClient: mockDocker,
+      });
+
+      expect(mockDocker.ping).toHaveBeenCalled();
+    });
+
+    describe('where docker is unavailable', () => {
+      const dockerError = 'a docker error';
+
+      beforeEach(() => {
+        jest.spyOn(mockDocker, 'ping').mockImplementationOnce(() => {
+          throw new Error(dockerError);
+        });
+      });
+
+      it('should throw with a descriptive error message including the docker error message', async () => {
+        await expect(
+          runDockerContainer({
+            imageName,
+            args,
+            docsDir,
+            resultDir,
+            dockerClient: mockDocker,
+          }),
+        ).rejects.toThrow(new RegExp(`.+: ${dockerError}`));
+      });
     });
   });
 });

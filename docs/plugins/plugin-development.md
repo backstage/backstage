@@ -1,6 +1,7 @@
 ---
 id: plugin-development
 title: Plugin Development
+description: Documentation on Plugin Development
 ---
 
 Backstage plugins provide features to a Backstage App.

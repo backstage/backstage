@@ -43,7 +43,7 @@ export class GithubPreparer implements PreparerBase {
     }
 
     try {
-      const repoPath = await checkoutGithubRepository(target);
+      const repoPath = await checkoutGithubRepository(target, this.logger);
 
       const parsedGitLocation = parseGitUrl(target);
       return path.join(repoPath, parsedGitLocation.filepath);

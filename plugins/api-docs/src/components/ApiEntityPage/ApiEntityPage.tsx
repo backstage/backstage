@@ -34,6 +34,7 @@ import { useAsync } from 'react-use';
 import { ApiDefinitionCard } from '../ApiDefinitionCard';
 
 const REDIRECT_DELAY = 1000;
+
 function headerProps(
   kind: string,
   namespace: string | undefined,

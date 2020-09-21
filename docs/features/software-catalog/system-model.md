@@ -1,6 +1,7 @@
 ---
 id: system-model
 title: System Model
+description: Documentation on System Model
 ---
 
 We believe that a strong shared understanding and terminology around software

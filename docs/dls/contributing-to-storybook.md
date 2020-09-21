@@ -1,6 +1,7 @@
 ---
 id: contributing-to-storybook
 title: Contributing to Storybook
+description: Documentation on How to Contribute to Storybook
 ---
 
 You find our storybook at

@@ -33,6 +33,8 @@ describe('ApiV1alpha1Policy', () => {
       },
       spec: {
         type: 'openapi',
+        lifecycle: 'production',
+        owner: 'me',
         definition: `
 openapi: "3.0.0"
 info:
@@ -107,6 +109,36 @@ components:
   it('rejects empty type', async () => {
     (entity as any).spec.type = '';
     await expect(policy.enforce(entity)).rejects.toThrow(/type/);
+  });
+
+  it('rejects missing lifecycle', async () => {
+    delete (entity as any).spec.lifecycle;
+    await expect(policy.enforce(entity)).rejects.toThrow(/lifecycle/);
+  });
+
+  it('rejects wrong lifecycle', async () => {
+    (entity as any).spec.lifecycle = 7;
+    await expect(policy.enforce(entity)).rejects.toThrow(/lifecycle/);
+  });
+
+  it('rejects empty lifecycle', async () => {
+    (entity as any).spec.lifecycle = '';
+    await expect(policy.enforce(entity)).rejects.toThrow(/lifecycle/);
+  });
+
+  it('rejects missing owner', async () => {
+    delete (entity as any).spec.owner;
+    await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
+  });
+
+  it('rejects wrong owner', async () => {
+    (entity as any).spec.owner = 7;
+    await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
+  });
+
+  it('rejects empty owner', async () => {
+    (entity as any).spec.owner = '';
+    await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
   });
 
   it('rejects missing definition', async () => {

@@ -18,24 +18,49 @@ import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import { Logger } from 'winston';
+import { PassThrough } from 'stream';
+import { Config } from '@backstage/config';
 
 import {
   GeneratorBase,
   GeneratorRunOptions,
   GeneratorRunResult,
 } from './types';
-import { runDockerContainer } from './helpers';
+import { runDockerContainer, runCommand } from './helpers';
+
+type TechdocsGeneratorOptions = {
+  // This option enables users to configure if they want to use TechDocs container
+  // or generate without the container.
+  // This is used to avoid running into Docker in Docker environment.
+  runGeneratorIn: string;
+};
+
+const createStream = (): [string[], PassThrough] => {
+  const log = [] as Array<string>;
+
+  const stream = new PassThrough();
+  stream.on('data', chunk => {
+    const textValue = chunk.toString().trim();
+    if (textValue?.length > 1) log.push(textValue);
+  });
+
+  return [log, stream];
+};
 
 export class TechdocsGenerator implements GeneratorBase {
   private readonly logger: Logger;
+  private readonly options: TechdocsGeneratorOptions;
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, config: Config) {
     this.logger = logger;
+    this.options = {
+      runGeneratorIn:
+        config.getOptionalString('techdocs.generators.techdocs') ?? 'docker',
+    };
   }
 
   public async run({
     directory,
-    logStream,
     dockerClient,
   }: GeneratorRunOptions): Promise<GeneratorRunResult> {
     const tmpdirPath = os.tmpdir();
@@ -44,23 +69,46 @@ export class TechdocsGenerator implements GeneratorBase {
     const resultDir = fs.mkdtempSync(
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
+    const [log, logStream] = createStream();
 
     try {
-      await runDockerContainer({
-        imageName: 'spotify/techdocs',
-        args: ['build', '-d', '/result'],
-        logStream,
-        docsDir: directory,
-        resultDir,
-        dockerClient,
-      });
-      this.logger.info(
-        `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir}`,
-      );
+      switch (this.options.runGeneratorIn) {
+        case 'local':
+          await runCommand({
+            command: 'mkdocs',
+            args: ['build', '-d', resultDir, '-v'],
+            options: {
+              cwd: directory,
+            },
+            logStream,
+          });
+          this.logger.info(
+            `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir} using local mkdocs`,
+          );
+          break;
+        case 'docker':
+          await runDockerContainer({
+            imageName: 'spotify/techdocs',
+            args: ['build', '-d', '/result'],
+            logStream,
+            docsDir: directory,
+            resultDir,
+            dockerClient,
+          });
+          this.logger.info(
+            `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir} using techdocs-container`,
+          );
+          break;
+        default:
+          throw new Error(
+            `Invalid config value "${this.options.runGeneratorIn}" provided in 'techdocs.generators.techdocs'.`,
+          );
+      }
     } catch (error) {
       this.logger.debug(
         `[TechDocs]: Failed to generate docs from ${directory} into ${resultDir}`,
       );
+      this.logger.debug(`[TechDocs]: Build failed with error: ${log}`);
       throw new Error(
         `Failed to generate docs from ${directory} into ${resultDir} with error ${error.message}`,
       );

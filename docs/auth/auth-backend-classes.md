@@ -1,6 +1,7 @@
 ---
 id: auth-backend-classes
 title: Auth backend classes
+description: Documentation on Auth backend classes
 ---
 
 ## How Does Authentication Work?
