@@ -40,12 +40,10 @@ export class JobProcessor implements Processor {
     entity,
     values,
     stages,
-    token,
   }: {
     entity: TemplateEntityV1alpha1;
     values: RequiredTemplateValues & Record<string, JsonValue>;
     stages: StageInput[];
-    token: string;
   }): Job {
     const id = uuid.v4();
     const { logger, stream } = makeLogStream({ id });
@@ -55,7 +53,6 @@ export class JobProcessor implements Processor {
       values,
       logger,
       logStream: stream,
-      token: token,
     };
 
     const job: Job = {

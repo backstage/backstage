@@ -25,6 +25,7 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 export type RequiredTemplateValues = {
   owner: string;
   storePath: string;
+  token: string;
 };
 
 /**
