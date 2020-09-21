@@ -113,6 +113,7 @@ const RegisterComponentForm: FC<Props> = ({ onSubmit, submitting }) => {
       </FormControl>
       <Button
         id="registerComponentFormSubmit"
+        data-testid="registerComponentFormSubmit"
         variant="contained"
         color="primary"
         type="submit"
