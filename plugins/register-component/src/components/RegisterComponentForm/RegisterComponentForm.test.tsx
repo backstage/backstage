@@ -41,7 +41,9 @@ describe('RegisterComponentForm', () => {
       ),
     ).toBeInTheDocument();
 
-    const submit = (await rendered.getByRole('button')) as HTMLButtonElement;
+    const submit = (await rendered.getByTestId(
+      'registerComponentFormSubmit',
+    )) as HTMLButtonElement;
     expect(submit.disabled).toBeTruthy();
   });
 
@@ -54,7 +56,9 @@ describe('RegisterComponentForm', () => {
         target: { value: 'https://example.com/blob/master/component.yaml' },
       });
     });
-    const submit = (await rendered.getByRole('button')) as HTMLButtonElement;
+    const submit = (await rendered.getByTestId(
+      'registerComponentFormSubmit',
+    )) as HTMLButtonElement;
 
     expect(submit.disabled).toBeFalsy();
   });
