@@ -66,6 +66,8 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
 
   const details = useWorkflowRunsDetails(projectId);
 
+  const serviceAccount = (details.value?.logUrl ?? '=').split('=');
+
   const classes = useStyles();
   if (error) {
     return (
@@ -116,7 +118,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 <Typography noWrap>Service Account</Typography>
               </TableCell>
               <TableCell>
-                {`${details.value?.projectId}`}@cloudbuild.gserviceaccount.com
+                {`${serviceAccount[1]}`}@cloudbuild.gserviceaccount.com
               </TableCell>
             </TableRow>
             <TableRow>
