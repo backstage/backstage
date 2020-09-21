@@ -85,12 +85,10 @@ export async function createRouter(
         req.body.values;
 
       const token: string = req.body.token;
-      console.log('Request Body: ', req.body);
       console.log('Request body token: ', req.body.token);
-      console.log('Request: ', req);
+      console.log('Token: ', token);
       const job = jobProcessor.create({
         entity: template,
-        token: token,
         values,
         stages: [
           {
@@ -98,14 +96,11 @@ export async function createRouter(
             handler: async ctx => {
               const preparer = preparers.get(ctx.entity);
               ctx.logger.info('Will now prepare the skeleton');
-              ctx.logger.info('Token: ', ctx.token);
-              const skeletonDir = await preparer.prepare(
-                ctx.entity,
-                ctx.token,
-                {
-                  logger: ctx.logger,
-                },
-              );
+              ctx.logger.info('Token: ', token);
+              ctx.logger.info('Values token: ', req.body.values.token);
+              const skeletonDir = await preparer.prepare(ctx.entity, token, {
+                logger: ctx.logger,
+              });
               return { skeletonDir };
             },
           },
@@ -114,7 +109,7 @@ export async function createRouter(
             handler: async (ctx: StageContext<{ skeletonDir: string }>) => {
               const templater = templaters.get(ctx.entity);
               ctx.logger.info('Will now run the template');
-              ctx.logger.info('Token: ', ctx.token);
+              ctx.logger.info('Token: ', token);
               const { resultDir } = await templater.run({
                 directory: ctx.skeletonDir,
                 dockerClient,
