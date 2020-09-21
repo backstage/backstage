@@ -27,13 +27,11 @@ import Close from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   root: {
-    // position: 'relative',
     padding: theme.spacing(0),
     marginBottom: theme.spacing(0),
     marginTop: theme.spacing(0),
     display: 'flex',
     flexFlow: 'row nowrap',
-    // zIndex: 'unset'
   },
   // showing on top
   topPosition: {
