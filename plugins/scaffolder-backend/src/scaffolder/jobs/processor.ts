@@ -94,6 +94,7 @@ export class JobProcessor implements Processor {
           id: job.id,
           stage: stage.name,
         });
+
         // Attach the logger to the stage, and setup some timestamps.
         stage.log = log;
         stage.startedAt = Date.now();

@@ -50,7 +50,8 @@ export class ScaffolderApi {
       // TODO(shmidt-i): when repo picker is implemented, take isOrg from it
       body: JSON.stringify({
         template,
-        values: { ...values, isOrg: true, token: token },
+        values: { ...values, isOrg: true },
+        token: token,
       }),
     });
 
