@@ -31,16 +31,10 @@ interface GithubPublisherParams {
 
 export class GithubPublisher implements PublisherBase {
   private client: Octokit;
-  private token: string;
   private repoVisibility: RepoVisilityOptions;
 
-  constructor({
-    client,
-    token,
-    repoVisibility = 'internal',
-  }: GithubPublisherParams) {
+  constructor({ client, repoVisibility = 'internal' }: GithubPublisherParams) {
     this.client = client;
-    this.token = token;
     this.repoVisibility = repoVisibility;
   }
 
@@ -115,7 +109,6 @@ export class GithubPublisher implements PublisherBase {
     remote: string,
     token: string,
   ): Promise<void> {
-    console.log('this.Token: ', this.token);
     const repo = await Repository.init(directory, 0);
     const index = await repo.refreshIndex();
     await index.addAll();
@@ -133,7 +126,7 @@ export class GithubPublisher implements PublisherBase {
     await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
       callbacks: {
         credentials: () => {
-          return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
+          return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
         },
       },
     });
