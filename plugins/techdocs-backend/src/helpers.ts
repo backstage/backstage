@@ -26,6 +26,7 @@ import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
 import { Logger } from 'winston';
 
+// Enables core.longpaths on windows to prevent crashing when checking out repos with long foldernames and/or deep nesting
 // @ts-ignore
 NodeGit.Libgit2.opts(28, 1);
 
