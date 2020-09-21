@@ -48,6 +48,8 @@ organization:
 techdocs:
   storageUrl: http://frontdesk.trivago.cloud/backend/techdocs/static/docs
   requestUrl: http://frontdesk.trivago.cloud/backend/techdocs/docs
+  generators:
+    techdocs: 'local'
 
 sentry:
   organization: trivago
@@ -120,5 +122,8 @@ grafana:
 
 scaffolder:
   github:
+    token:
+      $secret:
+        env: GITHUB_ACCESS_TOKEN
     visibility: internal # or 'public' or 'private'
 

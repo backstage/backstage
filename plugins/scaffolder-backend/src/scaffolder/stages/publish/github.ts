@@ -48,6 +48,7 @@ export class GithubPublisher implements PublisherBase {
     token: string;
   }): Promise<{ remoteUrl: string }> {
     const remoteUrl = await this.createRemote(values, token);
+    console.log('Push to remote token: ', token);
     await this.pushToRemote(directory, remoteUrl, token);
 
     return { remoteUrl };
