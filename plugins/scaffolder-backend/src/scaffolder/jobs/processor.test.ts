@@ -72,7 +72,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages: [],
-        token: '',
       });
 
       expect(job.id).toMatch(
@@ -87,7 +86,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages: [],
-        token: '',
       });
 
       expect(job.context.entity).toBe(mockEntity);
@@ -101,7 +99,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages: [],
-        token: '',
       });
 
       expect(job.status).toBe('PENDING');
@@ -125,7 +122,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages,
-        token: '',
       });
 
       expect(job.stages).toHaveLength(stages.length);
@@ -149,7 +145,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages: [],
-        token: '',
       });
 
       expect(processor.get(job.id)).toBe(job);
@@ -162,7 +157,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages: [],
-        token: '',
       });
 
       job.status = 'STARTED';
@@ -189,7 +183,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages,
-        token: '',
       });
 
       await processor.run(job);
@@ -216,7 +209,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages,
-        token: '',
       });
 
       await processor.run(job);
@@ -253,7 +245,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages,
-        token: '',
       });
 
       await processor.run(job);
@@ -293,7 +284,6 @@ describe('JobProcessor', () => {
         entity: mockEntity,
         values: mockValues,
         stages,
-        token: '',
       });
 
       await processor.run(job);
