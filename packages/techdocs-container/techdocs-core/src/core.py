@@ -14,7 +14,7 @@
  * limitations under the License.
 """
 
-from mkdocs.plugins import BasePlugin, PluginCollection
+from mkdocs.plugins import BasePlugin
 from mkdocs.theme import Theme
 from mkdocs.contrib.search import SearchPlugin
 from mkdocs_monorepo_plugin.plugin import MonorepoPlugin
