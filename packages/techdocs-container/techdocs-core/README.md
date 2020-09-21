@@ -86,19 +86,19 @@ Extensions:
 
 - Superfences and Codehilite doesn't work very well together (squidfunk/mkdocs-material#1604) so therefore the codehilite extension is replaced by pymdownx.highlight
 
+* Uses pymdownx extensions v.7.1 instead of 8.0.0 to allow legacy_tab_classes config. This makes the techdocs core plugin compatible with the usage of tabs for grouping markdown with the following syntax:
 
-- Uses pymdownx extensions v.7.1 instead of 8.0.0 to allow legacy_tab_classes config. This makes the techdocs core plugin compatible with the usage of tabs for grouping markdown with the following syntax:
-```
-     ```java tab="java 2"
-          public void function() {
-             ....
-         }
-     ```
-```
+````
+    ```java tab="java 2"
+        public void function() {
+            ....
+        }
+    ```
+````
 
-as well as the new 
+as well as the new
 
-```
+````
     === "Java"
 
     ```java
@@ -106,7 +106,8 @@ as well as the new
         ....
     }
     ```
-```
+````
+
 The pymdownx extension will be bumped too 8.0.0 in the near future.
 
 - pymdownx.tabbed is added to support tabs to group markdown content, such as codeblocks.
