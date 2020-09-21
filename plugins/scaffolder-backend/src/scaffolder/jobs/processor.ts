@@ -101,7 +101,6 @@ export class JobProcessor implements Processor {
         // Attach the logger to the stage, and setup some timestamps.
         stage.log = log;
         stage.startedAt = Date.now();
-        console.log('Job.context.token: ', job.context.token);
 
         try {
           // Run the handler with the context created for the Job and some

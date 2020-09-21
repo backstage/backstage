@@ -58,10 +58,12 @@ export class GithubPublisher implements PublisherBase {
     values: RequiredTemplateValues & Record<string, JsonValue>,
     token: string,
   ) {
+    console.log('Inside createRemote... Token: ', token);
     const [owner, name] = values.storePath.split('/');
     const description = values.description as string;
 
     const user = await this.client.users.getByUsername({ username: owner });
+    console.log('User data type => ', user.data.type);
     const repoCreationPromise =
       user.data.type === 'Organization'
         ? this.client.repos.createInOrg({
@@ -81,6 +83,7 @@ export class GithubPublisher implements PublisherBase {
           });
 
     const { data } = await repoCreationPromise;
+    console.log('repocreation promise data => ', data);
 
     const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
@@ -91,6 +94,9 @@ export class GithubPublisher implements PublisherBase {
         owner,
         repo: name,
         permission: 'admin',
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
@@ -99,6 +105,9 @@ export class GithubPublisher implements PublisherBase {
         repo: name,
         username: access,
         permission: 'admin',
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
       });
     }
 
