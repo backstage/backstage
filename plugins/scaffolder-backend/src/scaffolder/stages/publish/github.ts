@@ -62,7 +62,10 @@ export class GithubPublisher implements PublisherBase {
     const [owner, name] = values.storePath.split('/');
     const description = values.description as string;
 
-    const user = await this.client.users.getByUsername({ username: owner });
+    const user = await this.client.users.getByUsername({
+      username: owner,
+      headers: { authorization: `Bearer ${token}` },
+    });
     console.log('User data type => ', user.data.type);
     const repoCreationPromise =
       user.data.type === 'Organization'
