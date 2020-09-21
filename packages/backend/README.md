@@ -10,6 +10,11 @@ Our goal is to eventually amend the create-app flow of the CLI, such that a
 production ready version of a backend skeleton is made alongside the frontend
 app. Until then, feel free to experiment here!
 
+## Production
+
+You need to generate a base image with cookiecutter and mkdocs installed with the 
+Docker file called: Dockerfile.baseWithCookiecutterAndMkdocs
+
 ## Development
 
 To run the example backend, first go to the project root and run

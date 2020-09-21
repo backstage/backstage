@@ -101,6 +101,7 @@ export const TemplatePage = () => {
   const handleCreate = async () => {
     const token = await tokenPromise;
     try {
+      console.log("Token inside handleCreate: ",token)
       const job = await scaffolderApi.scaffold(template!, formState, token);
       setJobId(job);
     } catch (e) {
