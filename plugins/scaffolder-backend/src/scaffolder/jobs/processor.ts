@@ -49,6 +49,7 @@ export class JobProcessor implements Processor {
   }): Job {
     const id = uuid.v4();
     const { logger, stream } = makeLogStream({ id });
+    console.log('Token inside jobProcessor.create:', token);
 
     const context: StageContext = {
       token,
@@ -57,6 +58,8 @@ export class JobProcessor implements Processor {
       logger,
       logStream: stream,
     };
+
+    console.log('Token inside jobProcessor.create context: ', context.token);
 
     const job: Job = {
       id,
@@ -98,6 +101,7 @@ export class JobProcessor implements Processor {
         // Attach the logger to the stage, and setup some timestamps.
         stage.log = log;
         stage.startedAt = Date.now();
+        console.log('Job.context.token: ', job.context.token);
 
         try {
           // Run the handler with the context created for the Job and some
