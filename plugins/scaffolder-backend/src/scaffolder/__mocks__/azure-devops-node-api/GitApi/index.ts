@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './publishers';
-export * from './github';
-export * from './gitlab';
-export * from './azure';
-export * from './types';
+
+export const mockGitApi = {
+  createRepository: jest.fn(),
+};
+
+export class GitApi {
+  constructor() {
+    return mockGitApi;
+  }
+}

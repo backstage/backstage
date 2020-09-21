@@ -28,6 +28,7 @@
     "@octokit/rest": "^18.0.0",
     "@types/dockerode": "^2.5.32",
     "@types/express": "^4.17.6",
+    "azure-devops-node-api": "^10.1.1",
     "command-exists-promise": "^2.0.2",
     "compression": "^1.7.4",
     "cors": "^2.8.5",

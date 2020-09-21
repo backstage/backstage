@@ -25,12 +25,14 @@ import {
   Publishers,
   GithubPublisher,
   GitlabPublisher,
+  AzurePublisher,
   CreateReactAppTemplater,
   Templaters,
   RepoVisibilityOptions,
 } from '@backstage/plugin-scaffolder-backend';
 import { Octokit } from '@octokit/rest';
 import { Gitlab } from '@gitbeaker/node';
+import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import type { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
 
@@ -102,6 +104,33 @@ export default async function createPlugin({
       publishers.register('gitlab/api', gitLabPublisher);
     } catch (e) {
       const providerName = 'gitlab';
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
+        );
+      }
+
+      logger.warn(
+        `Skipping ${providerName} scaffolding provider, ${e.message}`,
+      );
+    }
+  }
+
+  const azureConfig = config.getOptionalConfig('scaffolder.azure.api');
+  if (azureConfig) {
+    try {
+      const organization = azureConfig.getString('organization');
+      const azureToken = azureConfig.getString('token');
+
+      const serverUrl = `https://dev.azure.com/${organization}`;
+      const authHandler = getPersonalAccessTokenHandler(azureToken);
+      const webApi = new WebApi(serverUrl, authHandler);
+      const azureClient = await webApi.getGitApi();
+
+      const azurePublisher = new AzurePublisher(azureClient, azureToken);
+      publishers.register('azure/api', azurePublisher);
+    } catch (e) {
+      const providerName = 'azure';
       if (process.env.NODE_ENV !== 'development') {
         throw new Error(
           `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,

@@ -245,13 +245,18 @@ scaffolder:
 
 #### Azure DevOps
 
-For Azure DevOps we currently support the preparer stage with the configuration
-of a private access token (PAT) when needed:
+For Azure DevOps we support both the preparer and publisher stage with the
+configuration of a private access token (PAT) when needed. For the publisher
+it's also required to define the organization that you want to create the
+repository in.
 
 ```yaml
 scaffolder:
   azure:
     api:
+      organization:
+        $secret:
+          env: AZURE_ORGANIZATION
       token:
         $secret:
           env: AZURE_PRIVATE_TOKEN

@@ -134,6 +134,9 @@ scaffolder:
           env: GITLAB_ACCESS_TOKEN
   azure:
     api:
+      organization:
+        $secret:
+          env: AZURE_ORGANIZATION
       token:
         $secret:
           env: AZURE_PRIVATE_TOKEN
