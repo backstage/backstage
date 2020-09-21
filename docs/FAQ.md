@@ -1,6 +1,7 @@
 ---
 id: FAQ
 title: FAQ
+description: All FAQ related to Backstage
 ---
 
 ## Product FAQ

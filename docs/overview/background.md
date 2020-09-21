@@ -1,6 +1,7 @@
 ---
 id: background
 title: The Spotify Story
+description: Documentation on Background and Story behind making of Backstage
 ---
 
 Backstage was born out of necessity at Spotify. We found that as we grew, our
