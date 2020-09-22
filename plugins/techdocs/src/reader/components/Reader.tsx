@@ -21,6 +21,8 @@ import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ParsedEntityId } from '../../types';
+import { useTheme } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 
 import transformer, {
   addBaseUrl,
@@ -30,6 +32,7 @@ import transformer, {
   modifyCss,
   onCssReady,
   sanitizeDOM,
+  injectCss,
 } from '../transformers';
 import { TechDocsNotFound } from './TechDocsNotFound';
 
@@ -40,6 +43,7 @@ type Props = {
 export const Reader = ({ entityId }: Props) => {
   const { kind, namespace, name } = entityId;
   const { '*': path } = useParams();
+  const theme = useTheme<BackstageTheme>();
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const [shadowDomRef, shadowRoot] = useShadowDom();
@@ -112,6 +116,14 @@ export const Reader = ({ entityId }: Props) => {
           (dom as HTMLElement).style.removeProperty('opacity');
         },
       }),
+      injectCss({
+        css: `
+        body {
+          font-family: ${theme.typography.fontFamily};
+          color: ${theme.palette.text.primary};
+        }
+        `,
+      }),
     ]);
   }, [
     name,
@@ -125,6 +137,7 @@ export const Reader = ({ entityId }: Props) => {
     entityId,
     navigate,
     techdocsStorageApi,
+    theme,
   ]);
 
   if (error) {
