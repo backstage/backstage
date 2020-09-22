@@ -43,7 +43,7 @@ export const UserSettingsMenu = () => {
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem onClick={() => identityApi.logout()}>
+        <MenuItem onClick={() => identityApi.signOut()}>
           <ListItemIcon>
             <SignOutIcon />
           </ListItemIcon>

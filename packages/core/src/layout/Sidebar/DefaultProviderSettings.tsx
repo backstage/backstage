@@ -25,7 +25,7 @@ import {
 } from '@backstage/core-api';
 import Star from '@material-ui/icons/Star';
 import React from 'react';
-import { OAuthProviderSettings, OIDCProviderSettings } from './Settings';
+import { ProviderSettingsItem } from './Settings';
 
 export const DefaultProviderSettings = () => {
   const configApi = useApi(configApiRef);
@@ -35,42 +35,42 @@ export const DefaultProviderSettings = () => {
   return (
     <>
       {providers.includes('google') && (
-        <OIDCProviderSettings
+        <ProviderSettingsItem
           title="Google"
           apiRef={googleAuthApiRef}
           icon={Star}
         />
       )}
       {providers.includes('microsoft') && (
-        <OIDCProviderSettings
+        <ProviderSettingsItem
           title="Microsoft"
           apiRef={microsoftAuthApiRef}
           icon={Star}
         />
       )}
       {providers.includes('github') && (
-        <OAuthProviderSettings
+        <ProviderSettingsItem
           title="Github"
           apiRef={githubAuthApiRef}
           icon={Star}
         />
       )}
       {providers.includes('gitlab') && (
-        <OAuthProviderSettings
+        <ProviderSettingsItem
           title="Gitlab"
           apiRef={gitlabAuthApiRef}
           icon={Star}
         />
       )}
       {providers.includes('okta') && (
-        <OIDCProviderSettings
+        <ProviderSettingsItem
           title="Okta"
           apiRef={oktaAuthApiRef}
           icon={Star}
         />
       )}
       {providers.includes('oauth2') && (
-        <OIDCProviderSettings
+        <ProviderSettingsItem
           title="YourOrg"
           apiRef={oauth2ApiRef}
           icon={Star}
