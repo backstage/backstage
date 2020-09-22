@@ -1,7 +1,7 @@
 # OAuthApi
 
 The OAuthApi type is defined at
-[packages/core-api/src/apis/definitions/auth.ts:67](https://github.com/spotify/backstage/blob/82d329555c16af46db9b4e5cd2f44a3cc006a52e/packages/core-api/src/apis/definitions/auth.ts#L67).
+[packages/core-api/src/apis/definitions/auth.ts:67](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L67).
 
 The following Utility APIs implement this type:
 
@@ -50,14 +50,6 @@ getAccessToken(
   ): Promise&lt;string&gt;
 </pre>
 
-### logout()
-
-Log out the user's session. This will reload the page.
-
-<pre>
-logout(): Promise&lt;void&gt;
-</pre>
-
 ## Supporting types
 
 These types are part of the API declaration, but may not be unique to this API.
@@ -90,7 +82,7 @@ export type AuthRequestOptions = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/spotify/backstage/blob/82d329555c16af46db9b4e5cd2f44a3cc006a52e/packages/core-api/src/apis/definitions/auth.ts#L40).
+[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L40).
 
 Referenced by: [getAccessToken](#getaccesstoken).
 
@@ -116,6 +108,6 @@ export type OAuthScope = string | string[]
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:38](https://github.com/spotify/backstage/blob/82d329555c16af46db9b4e5cd2f44a3cc006a52e/packages/core-api/src/apis/definitions/auth.ts#L38).
+[packages/core-api/src/apis/definitions/auth.ts:38](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L38).
 
 Referenced by: [getAccessToken](#getaccesstoken).

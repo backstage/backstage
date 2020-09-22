@@ -1,66 +1,54 @@
-# ErrorApi
+# SessionApi
 
-The ErrorApi type is defined at
-[packages/core-api/src/apis/definitions/ErrorApi.ts:53](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/ErrorApi.ts#L53).
+The SessionApi type is defined at
+[packages/core-api/src/apis/definitions/auth.ts:190](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L190).
 
-The following Utility API implements this type: [errorApiRef](./README.md#error)
+The following Utility APIs implement this type:
+
+- [auth0AuthApiRef](./README.md#auth0auth)
+
+- [githubAuthApiRef](./README.md#githubauth)
+
+- [gitlabAuthApiRef](./README.md#gitlabauth)
+
+- [googleAuthApiRef](./README.md#googleauth)
+
+- [microsoftAuthApiRef](./README.md#microsoftauth)
+
+- [oauth2ApiRef](./README.md#oauth2)
+
+- [oktaAuthApiRef](./README.md#oktaauth)
 
 ## Members
 
-### post()
+### signIn()
 
-Post an error for handling by the application.
+Sign in with a minimum set of permissions.
 
 <pre>
-post(error: <a href="#error">Error</a>, context?: <a href="#errorcontext">ErrorContext</a>): void
+signIn(): Promise&lt;void&gt;
 </pre>
 
-### error\$()
+### signOut()
 
-Observe errors posted by other parts of the application.
+Sign out from the current session. This will reload the page.
 
 <pre>
-error$(): <a href="#observable">Observable</a>&lt;{ error: <a href="#error">Error</a>; context?: <a href="#errorcontext">ErrorContext</a> }&gt;
+signOut(): Promise&lt;void&gt;
+</pre>
+
+### sessionState\$()
+
+Observe the current state of the auth session. Emits the current state on
+subscription.
+
+<pre>
+sessionState$(): <a href="#observable">Observable</a>&lt;<a href="#sessionstate">SessionState</a>&gt;
 </pre>
 
 ## Supporting types
 
 These types are part of the API declaration, but may not be unique to this API.
-
-### Error
-
-Mirrors the javascript Error class, for the purpose of providing documentation
-and optional fields.
-
-<pre>
-type Error = {
-  name: string;
-  message: string;
-  stack?: string;
-}
-</pre>
-
-Defined at
-[packages/core-api/src/apis/definitions/ErrorApi.ts:24](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/ErrorApi.ts#L24).
-
-Referenced by: [post](#post), [error\$](#error).
-
-### ErrorContext
-
-Provides additional information about an error that was posted to the
-application.
-
-<pre>
-export type ErrorContext = {
-  // If set to true, this error should not be displayed to the user. Defaults to false.
-  hidden?: boolean;
-}
-</pre>
-
-Defined at
-[packages/core-api/src/apis/definitions/ErrorApi.ts:33](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/ErrorApi.ts#L33).
-
-Referenced by: [post](#post), [error\$](#error).
 
 ### Observable
 
@@ -89,7 +77,7 @@ export type Observable&lt;T&gt; = {
 Defined at
 [packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/types.ts#L53).
 
-Referenced by: [error\$](#error).
+Referenced by: [sessionState\$](#sessionstate).
 
 ### Observer
 
@@ -109,6 +97,22 @@ Defined at
 [packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/types.ts#L24).
 
 Referenced by: [Observable](#observable).
+
+### SessionState
+
+Session state values passed to subscribers of the SessionApi.
+
+<pre>
+export enum SessionState {
+  SignedIn = 'SignedIn',
+  SignedOut = 'SignedOut',
+}
+</pre>
+
+Defined at
+[packages/core-api/src/apis/definitions/auth.ts:182](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L182).
+
+Referenced by: [sessionState\$](#sessionstate).
 
 ### Subscription
 
