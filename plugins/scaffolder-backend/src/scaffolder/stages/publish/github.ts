@@ -66,30 +66,20 @@ export class GithubPublisher implements PublisherBase {
     const description = values.description as string;
     console.log('Description: ', description);
 
-    // const user = await this.client.users.getByUsername({
-    //   username: owner,
-    // });
-    // console.log('User data type: ', user);
-    console.log('Visibility: ', this.repoVisibility);
-
+    const user = await this.client.users.getByUsername({ username: owner });
+    console.log('User data type:', user.data.type);
     const repoCreationPromise =
-      // user.data.type === 'Organization'
-      // ? this.client.repos.createInOrg({
-      this.client.repos.createInOrg({
-        name,
-        org: owner,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/vnd.github.nebula-preview+json',
-        },
-        visibility: 'internal',
-        description,
-      });
-    // : this.client.repos.createForAuthenticatedUser({
-    //     name,
-    //     private: this.repoVisibility === 'private',
-    //     description,
-    //   });
+      user.data.type === 'Organization'
+        ? this.client.repos.createInOrg({
+            name,
+            org: owner,
+            headers: {
+              Accept: `application/vnd.github.nebula-preview+json`,
+              authorization: `Bearer ${token}`,
+            },
+            visibility: this.repoVisibility,
+          })
+        : this.client.repos.createForAuthenticatedUser({ name });
 
     console.log('repoCreationPromise: ', repoCreationPromise);
     const { data } = await repoCreationPromise;
