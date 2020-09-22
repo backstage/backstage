@@ -26,7 +26,6 @@ export const sanitizeDOM = (): Transformer => {
       allowedTags: TECHDOCS_ALLOWED_TAGS,
       allowedAttributes: TECHDOCS_ALLOWED_ATTRIBUTES,
       allowedSchemes: ['http', 'https', 'ftp', 'mailto', 'data', 'blob'],
-      allowVulnerableTags: true,
     });
 
     return new DOMParser().parseFromString(sanitizedHtml, 'text/html')
