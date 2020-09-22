@@ -69,7 +69,7 @@ export class GithubPublisher implements PublisherBase {
     const url = `https://api.github.com/users/${owner}`;
     const userType = await fetch(url, {
       headers: new Headers({
-        Authorization: `Bearer ${await token}`,
+        Authorization: `Bearer ${token}`,
       }),
     });
 
