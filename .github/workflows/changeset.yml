@@ -1,0 +1,19 @@
+name: Changeset
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  create-release-pr:
+    name: Create Changeset PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install Dependencies
+        run: yarn --frozen-lockfile
+      - name: Create Release Pull Request
+        uses: changesets/action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
