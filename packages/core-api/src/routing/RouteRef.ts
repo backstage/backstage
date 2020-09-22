@@ -84,3 +84,8 @@ export class AbsoluteRouteRef implements ConcreteRoute {
 export function createRouteRef(config: RouteRefConfig): AbsoluteRouteRef {
   return new AbsoluteRouteRef(config);
 }
+
+// TODO(Rugvip): Added for backwards compatibility, remove once old usage is gone
+// We may want to avoid exporting the AbsoluteRouteRef itself though, and consider
+// a different model for how to create sub routes, just avoid this
+export type MutableRouteRef = AbsoluteRouteRef;
