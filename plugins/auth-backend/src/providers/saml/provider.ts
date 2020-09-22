@@ -111,7 +111,6 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
       return reqEnv;
     }
 
-    // FIXME : do we want to always to return 'development' ?
     return 'development';
   }
 }
