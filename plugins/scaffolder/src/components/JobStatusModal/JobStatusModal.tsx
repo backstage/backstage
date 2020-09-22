@@ -46,7 +46,7 @@ export const JobStatusModal = ({
   const jobStatus = job?.status ?? '';
 
   useEffect(() => {
-    if (jobStatus === 'COMPLETED') onComplete(job);
+    if (jobStatus === 'COMPLETED') onComplete(job!);
   }, [jobStatus, onComplete]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

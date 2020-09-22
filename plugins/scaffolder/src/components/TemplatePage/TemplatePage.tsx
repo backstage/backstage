@@ -27,7 +27,7 @@ import {
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import useStaleWhileRevalidate from 'swr';
 import { scaffolderApiRef } from '../../api';
@@ -108,27 +108,30 @@ export const TemplatePage = () => {
     null,
   );
 
-  const handleCreateComplete = async (job: Job) => {
-    const componentYaml = job.metadata.remoteUrl?.replace(
-      /\.git$/,
-      '/blob/master/component-info.yaml',
-    );
-
-    if (!componentYaml) {
-      errorApi.post(
-        new Error(
-          `Failed to find component-info.yaml file in ${job.metadata.remoteUrl}.`,
-        ),
+  const handleCreateComplete = useCallback(
+    async (job: Job) => {
+      const componentYaml = job.metadata.remoteUrl?.replace(
+        /\.git$/,
+        '/blob/master/component-info.yaml',
       );
-      return;
-    }
 
-    const {
-      entities: [createdEntity],
-    } = await catalogApi.addLocation('github', componentYaml);
+      if (!componentYaml) {
+        errorApi.post(
+          new Error(
+            `Failed to find component-info.yaml file in ${job.metadata.remoteUrl}.`,
+          ),
+        );
+        return;
+      }
 
-    setEntity((createdEntity as any) as TemplateEntityV1alpha1);
-  };
+      const {
+        entities: [createdEntity],
+      } = await catalogApi.addLocation('github', componentYaml);
+
+      setEntity((createdEntity as any) as TemplateEntityV1alpha1);
+    },
+    [catalogApi, setEntity, errorApi],
+  );
 
   if (!loading && !template) {
     errorApi.post(new Error('Template was not found.'));
