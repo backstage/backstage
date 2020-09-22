@@ -31,7 +31,7 @@ interface GithubPublisherParams {
 
 export class GithubPublisher implements PublisherBase {
   private client: Octokit;
-  private repoVisibility: RepoVisilityOptions;
+  private repoVisibility: RepoVisilityOptions = 'internal';
 
   constructor({ client, repoVisibility = 'internal' }: GithubPublisherParams) {
     this.client = client;
@@ -79,7 +79,7 @@ export class GithubPublisher implements PublisherBase {
           authorization: `Bearer ${token}`,
           Accept: `application/vnd.github.nebula-preview+json`,
         },
-        visibility: 'internal',
+        visibility: this.repoVisibility,
         description,
       });
     // : this.client.repos.createForAuthenticatedUser({
