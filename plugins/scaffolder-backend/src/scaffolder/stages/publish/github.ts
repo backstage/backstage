@@ -66,9 +66,8 @@ export class GithubPublisher implements PublisherBase {
 
     const user = await this.client.users.getByUsername({
       username: 'trivago',
-      headers: { authorization: `Bearer ${token}` },
     });
-    console.log('User data type => ', user);
+    console.log('User data type: ', user);
 
     const repoCreationPromise =
       user.data.type === 'Organization'
@@ -89,7 +88,7 @@ export class GithubPublisher implements PublisherBase {
           });
 
     const { data } = await repoCreationPromise;
-    console.log('repocreation promise data => ', data);
+    console.log('repocreation promise data: ', data);
 
     const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
