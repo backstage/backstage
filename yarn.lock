@@ -5215,6 +5215,13 @@
     "@types/node" "*"
     rollup "^0.63.4"
 
+"@types/sanitize-html@^1.27.0":
+  version "1.27.0"
+  resolved "https://registry.npmjs.org/@types/sanitize-html/-/sanitize-html-1.27.0.tgz#77702dc856f16efecc005014c1d2e45b1f2cbc56"
+  integrity sha512-j7Vnh3P7W4ZcoRsHNO2HpwA2m1d0c2+l39xqSQqH0+WlfcvKypgZp45eCC7NJ75ZyXPxNb2PSbIL6LtZ6E0Qbw==
+  dependencies:
+    htmlparser2 "^4.1.0"
+
 "@types/serve-handler@^6.1.0":
   version "6.1.0"
   resolved "https://registry.npmjs.org/@types/serve-handler/-/serve-handler-6.1.0.tgz#6952aaf864e542297ce8a2480b3e0d9ea59de7f6"
