@@ -62,6 +62,8 @@ export class SamlAuthConnector<SamlResponse> {
     };
   }
 
+  async refreshSession(): Promise<any> {}
+
   async removeSession(): Promise<void> {
     const res = await fetch(await this.buildUrl('/logout'), {
       method: 'POST',
