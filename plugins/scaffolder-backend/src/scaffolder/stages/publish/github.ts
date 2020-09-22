@@ -47,7 +47,9 @@ export class GithubPublisher implements PublisherBase {
     directory: string;
     token: string;
   }): Promise<{ remoteUrl: string }> {
+    console.log('Inside Publish function..');
     const remoteUrl = await this.createRemote(values, token);
+    console.log('Remote Url created: ', remoteUrl);
     console.log('Push to remote token: ', token);
     await this.pushToRemote(directory, remoteUrl, token);
 
@@ -68,6 +70,7 @@ export class GithubPublisher implements PublisherBase {
     //   username: owner,
     // });
     // console.log('User data type: ', user);
+    console.log('Visibility: ', this.repoVisibility);
 
     const repoCreationPromise =
       // user.data.type === 'Organization'
@@ -76,10 +79,10 @@ export class GithubPublisher implements PublisherBase {
         name,
         org: owner,
         headers: {
-          authorization: `Bearer ${token}`,
-          Accept: `application/vnd.github.nebula-preview+json`,
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github.nebula-preview+json',
         },
-        visibility: this.repoVisibility,
+        visibility: 'internal',
         description,
       });
     // : this.client.repos.createForAuthenticatedUser({
