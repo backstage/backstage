@@ -20,8 +20,22 @@ import { Route, Routes } from 'react-router-dom';
 
 import { rootCatalogKubernetesRouteRef } from './plugin';
 import { KubernetesContent } from './components/KubernetesContent';
+import { WarningPanel } from '@backstage/core';
+
+const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes';
 
 export const Router = ({ entity }: { entity: Entity }) => {
+  const kubernetesAnnotationValue =
+    entity.metadata.annotations?.[KUBERNETES_ANNOTATION];
+
+  if (!kubernetesAnnotationValue) {
+    return (
+      <WarningPanel title="Kubernetes plugin:">
+        <pre>{KUBERNETES_ANNOTATION}</pre> annotation is missing on the entity.
+      </WarningPanel>
+    );
+  }
+
   return (
     <Routes>
       <Route

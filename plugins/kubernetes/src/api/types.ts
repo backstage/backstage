@@ -16,12 +16,12 @@
 
 import { createApiRef } from '@backstage/core';
 
-export const kubernetesApiRef = createApiRef<KubernetesBackendApi>({
+export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
   description:
     'Used by the Kubernetes plugin to make requests to accompanying backend',
 });
 
-export interface KubernetesBackendApi {
+export interface KubernetesApi {
   getObjectsByServiceId(serviceId: String): Promise<{}>;
 }

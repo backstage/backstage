@@ -15,9 +15,9 @@
  */
 
 import { DiscoveryApi } from '@backstage/core';
-import { KubernetesBackendApi } from './types';
+import { KubernetesApi } from './types';
 
-export class KubernetesBackendClient implements KubernetesBackendApi {
+export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
 
   constructor(options: { discoveryApi: DiscoveryApi }) {
