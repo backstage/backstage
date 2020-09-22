@@ -85,8 +85,6 @@ export async function createRouter(
         req.body.values;
 
       const token: string = req.body.token;
-      console.log('Request body token: ', req.body.token);
-      console.log('Token: ', token);
       const job = jobProcessor.create({
         token: token,
         entity: template,

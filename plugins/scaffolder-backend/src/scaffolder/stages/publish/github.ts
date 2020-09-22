@@ -47,10 +47,8 @@ export class GithubPublisher implements PublisherBase {
     directory: string;
     token: string;
   }): Promise<{ remoteUrl: string }> {
-    console.log('Inside Publish function..');
     const remoteUrl = await this.createRemote(values, token);
-    console.log('Remote Url created: ', remoteUrl);
-    console.log('Push to remote token: ', token);
+
     await this.pushToRemote(directory, remoteUrl, token);
 
     return { remoteUrl };
@@ -61,16 +59,12 @@ export class GithubPublisher implements PublisherBase {
     token: string,
   ) {
     const githubClientPublish = new Octokit({ auth: token });
-    console.log('Inside createRemote... Token:', token);
     const [owner, name] = values.storePath.split('/');
-    console.log('Owner:', owner, 'Name:', name);
     const description = values.description as string;
-    console.log('Description:', description);
 
     const user = await githubClientPublish.users.getByUsername({
       username: owner,
     });
-    console.log('User data type:', user.data.type);
     const repoCreationPromise =
       user.data.type === 'Organization'
         ? githubClientPublish.repos.createInOrg({
@@ -81,15 +75,14 @@ export class GithubPublisher implements PublisherBase {
               Accept: `application/vnd.github.nebula-preview+json`,
             },
             visibility: this.repoVisibility,
+            description: description,
           })
         : this.client.repos.createForAuthenticatedUser({ name });
 
-    console.log('repoCreationPromise: ', repoCreationPromise);
     const { data } = await repoCreationPromise;
 
     const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
-      console.log('access starts with ${owner}/', access);
       const [, team] = access.split('/');
       await githubClientPublish.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
