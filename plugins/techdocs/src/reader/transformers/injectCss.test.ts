@@ -17,7 +17,7 @@
 import { createTestShadowDom } from '../../test-utils';
 import { injectCss } from '../transformers';
 
-describe('rewriteDocLinks', () => {
+describe('injectCss', () => {
   it('should not do anything', () => {
     const html = `
         <html>
