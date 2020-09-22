@@ -60,29 +60,25 @@ export class GithubPublisher implements PublisherBase {
     values: RequiredTemplateValues & Record<string, JsonValue>,
     token: string,
   ) {
+    const githubClientPublish = new Octokit({ auth: token });
     console.log('Inside createRemote... Token:', token);
     const [owner, name] = values.storePath.split('/');
     console.log('Owner:', owner, 'Name:', name);
     const description = values.description as string;
     console.log('Description:', description);
 
-    const url = `https://api.github.com/users/${owner}/${token}`;
-    console.log('URL ENDPOINT ', url);
-
-    const user = await this.client.users.getByUsername({
+    const user = await githubClientPublish.users.getByUsername({
       username: owner,
-      headers: { authorization: `Bearer ${token}` },
     });
     console.log('User data type:', user.data.type);
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.client.repos.createInOrg({
+        ? githubClientPublish.repos.createInOrg({
             // this.client.repos.createInOrg({
             name,
             org: owner,
             headers: {
               Accept: `application/vnd.github.nebula-preview+json`,
-              authorization: `Bearer ${token}`,
             },
             visibility: this.repoVisibility,
           })
@@ -95,26 +91,20 @@ export class GithubPublisher implements PublisherBase {
     if (access?.startsWith(`${owner}/`)) {
       console.log('access starts with ${owner}/', access);
       const [, team] = access.split('/');
-      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
+      await githubClientPublish.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
         team_slug: team,
         owner,
         repo: name,
         permission: 'admin',
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
-      await this.client.repos.addCollaborator({
+      await githubClientPublish.repos.addCollaborator({
         owner,
         repo: name,
         username: access,
         permission: 'admin',
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
       });
     }
 
