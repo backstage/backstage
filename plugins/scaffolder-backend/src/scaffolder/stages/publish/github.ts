@@ -62,11 +62,20 @@ export class GithubPublisher implements PublisherBase {
   ) {
     console.log('Inside createRemote... Token: ', token);
     const [owner, name] = values.storePath.split('/');
-    console.log('Owner:', owner, 'Name: ', name);
+    console.log('Owner:', owner, 'Name:', name);
     const description = values.description as string;
-    console.log('Description: ', description);
+    console.log('Description:', description);
 
-    const user = await this.client.users.getByUsername({ username: owner });
+    const url = `https://api.github.com/users/${owner}`;
+    const userType = await fetch(url, {
+      headers: new Headers({
+        Authorization: `Bearer ${await token}`,
+      }),
+    });
+
+    const user = await userType.json();
+
+    // const user = await this.client.users.getByUsername({ username: owner, headers: { authorization: `Bearer ${token}`} });
     console.log('User data type:', user.data.type);
     const repoCreationPromise =
       user.data.type === 'Organization'
