@@ -64,36 +64,35 @@ export class GithubPublisher implements PublisherBase {
     const description = values.description as string;
     console.log('Description: ', description);
 
-    // const user = await this.client.users.getByUsername({
-    //   username: owner,
-    // });
-    // console.log('User data type: ', user);
+    const user = await this.client.users.getByUsername({
+      username: owner,
+    });
+    console.log('User data type: ', user);
 
     const repoCreationPromise =
-      // user.data.type === 'Organization'
-      this.client.repos.createInOrg({
-        name,
-        org: owner,
-        headers: {
-          authorization: `Bearer ${token}`,
-          accept: `application/vnd.github.nebula-preview+json`,
-        },
-        visibility: this.repoVisibility,
-        description,
-      });
-    // : this.client.repos.createForAuthenticatedUser({
-    //     name,
-    //     private: this.repoVisibility === 'private',
-    //     description,
-    //   });
+      user.data.type === 'Organization'
+        ? this.client.repos.createInOrg({
+            name,
+            org: owner,
+            headers: {
+              authorization: `Bearer ${token}`,
+              Accept: `application/vnd.github.nebula-preview+json`,
+            },
+            visibility: 'internal',
+            description,
+          })
+        : this.client.repos.createForAuthenticatedUser({
+            name,
+            private: this.repoVisibility === 'private',
+            description,
+          });
 
-    console.log('Repo creation Promise: ', repoCreationPromise);
-
+    console.log('repoCreationPromise: ', repoCreationPromise);
     const { data } = await repoCreationPromise;
-    console.log('repocreation promise data: ', data);
 
     const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
+      console.log('access starts with ${owner}/', access);
       const [, team] = access.split('/');
       await this.client.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
