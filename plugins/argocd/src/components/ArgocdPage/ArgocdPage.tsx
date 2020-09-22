@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Button } from '@material-ui/core';
 import {
   Header,
   Page,
@@ -29,13 +29,24 @@ import { Entity } from '@backstage/catalog-model';
 
 export const ArgocdIframe = ({ entity }: { entity?: Entity }) => {
   return (
-    <iframe
-      title="argocd"
-      src={entity?.metadata.annotations?.['argocd/endpoint']}
-      height="100%"
-      width="100%"
-      frameBorder="0"
-    />
+    <>
+      <ContentHeader title="">
+        <Button
+          variant="contained"
+          color="primary"
+          href={entity?.metadata.annotations?.['argocd/endpoint']}
+        >
+          Go To ArgoCD
+        </Button>
+      </ContentHeader>
+      <iframe
+        title="argocd"
+        src={entity?.metadata.annotations?.['argocd/endpoint']}
+        height="100%"
+        width="100%"
+        frameBorder="0"
+      />
+    </>
   );
 };
 
