@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import { runDockerContainer } from './helpers';
-import { TemplaterBase, TemplaterRunOptions } from '.';
+import { runDockerContainer } from '../helpers';
+import { TemplaterBase, TemplaterRunOptions } from '..';
 import path from 'path';
-import { TemplaterRunResult } from './types';
+import { TemplaterRunResult } from '../types';
 import * as yaml from 'yaml';
+import { GITHUB_ACTIONS_ANNOTATION } from '@backstage/plugin-github-actions';
 
 export class CreateReactAppTemplater implements TemplaterBase {
   public async run(options: TemplaterRunOptions): Promise<TemplaterRunResult> {
     const {
       component_id: componentName,
       use_typescript: withTypescript,
+      use_github_actions: withGithubActions,
       description,
       owner,
     } = options.values;
@@ -48,6 +50,23 @@ export class CreateReactAppTemplater implements TemplaterBase {
       },
     });
 
+    const extraAnnotations: Record<string, string> = {};
+    const finalDir = path.resolve(
+      resultDir,
+      options.values.component_id as string,
+    );
+
+    if (withGithubActions) {
+      await fs.promises.mkdir(`${finalDir}/.github`);
+      await fs.promises.mkdir(`${finalDir}/.github/workflows`);
+      await fs.promises.copyFile(
+        `${__dirname}/templates/.github/workflows/main.yml`,
+        `${finalDir}/.github/workflows/main.yml`,
+      );
+
+      extraAnnotations[GITHUB_ACTIONS_ANNOTATION] = options.values.storePath;
+    }
+
     // Need to also make a component-info.yaml to store the data about the service.
     const componentInfo = {
       apiVersion: 'backstage.io/v1alpha1',
@@ -55,6 +74,9 @@ export class CreateReactAppTemplater implements TemplaterBase {
       metadata: {
         name: componentName,
         description,
+        annotations: {
+          ...extraAnnotations,
+        },
       },
       spec: {
         type: 'website',
@@ -62,11 +84,6 @@ export class CreateReactAppTemplater implements TemplaterBase {
         owner,
       },
     };
-
-    const finalDir = path.resolve(
-      resultDir,
-      options.values.component_id as string,
-    );
 
     await fs.promises.writeFile(
       `${finalDir}/component-info.yaml`,

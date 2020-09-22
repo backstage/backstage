@@ -30,13 +30,13 @@ import {
 
 import React, { Suspense } from 'react';
 import { useDownloadWorkflowRunLogs } from './useDownloadWorkflowRunLogs';
-import LinePart from 'react-lazylog/build/LinePart';
 import { useProjectName } from '../useProjectName';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DescriptionIcon from '@material-ui/icons/Description';
 import { Entity } from '@backstage/catalog-model';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
+const LinePart = React.lazy(() => import('react-lazylog/build/LinePart'));
 
 const useStyles = makeStyles<Theme>(() => ({
   button: {

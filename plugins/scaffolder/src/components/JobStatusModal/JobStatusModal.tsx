@@ -43,10 +43,11 @@ export const JobStatusModal = ({
   entity,
 }: Props) => {
   const job = useJobPolling(jobId);
+  const jobStatus = job?.status ?? '';
 
   useEffect(() => {
-    if (job?.status === 'COMPLETED') onComplete(job);
-  }, [job, onComplete]);
+    if (jobStatus === 'COMPLETED') onComplete(job);
+  }, [jobStatus, onComplete]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Dialog open onClose={onClose} fullWidth>
