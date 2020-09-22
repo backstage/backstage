@@ -21,6 +21,7 @@ import {
   oauth2ApiRef,
   oktaAuthApiRef,
   microsoftAuthApiRef,
+  samlAuthApiRef,
   useApi,
 } from '@backstage/core-api';
 import Star from '@material-ui/icons/Star';
@@ -66,6 +67,13 @@ export const DefaultProviderSettings = () => {
         <OIDCProviderSettings
           title="Okta"
           apiRef={oktaAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {providers.includes('saml') && (
+        <OIDCProviderSettings
+          title="SAML"
+          apiRef={samlAuthApiRef}
           icon={Star}
         />
       )}

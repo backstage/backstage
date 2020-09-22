@@ -87,6 +87,11 @@ class SamlAuth implements SamlApi {
     return session?.backstageIdentity;
   }
 
+  async getIdToken(options: AuthRequestOptions = {}) {
+    const session = await this.sessionManager.getSession(options);
+    return session?.backstageIdentity ?? '';
+  }
+
   async getProfile(options: AuthRequestOptions = {}) {
     const session = await this.sessionManager.getSession(options);
     return session?.profile;

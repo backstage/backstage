@@ -29,7 +29,7 @@ import { ProviderSettingsItem } from './ProviderSettingsItem';
 export type OIDCProviderSidebarProps = {
   title: string;
   icon: IconComponent;
-  apiRef: ApiRef<OpenIdConnectApi & SessionStateApi>;
+  apiRef: ApiRef<OpenIdConnectApi & SessionStateApi> | ApiRef<any>;
 };
 
 export const OIDCProviderSettings: FC<OIDCProviderSidebarProps> = ({
