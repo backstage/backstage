@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-kubernetes-backend';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment) {
-  return await createRouter({ logger, config });
+export interface ClusterDetails {
+  name: string;
+  url: string;
 }
+
+export interface KubernetesClusterLocator {
+  getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+}
+
+export type ClusterLocatorMethod = 'configMultiTenant' | 'http';

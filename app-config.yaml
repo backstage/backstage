@@ -55,6 +55,12 @@ newrelic:
 lighthouse:
   baseUrl: http://localhost:3003
 
+kubernetes:
+  clusterLocatorMethod: "configMultiTenant"
+  clusters:
+    - url: https://192.168.64.2:8443
+      name: minikube
+
 catalog:
   rules:
     - allow: [Component, API, Group, Template, Location]
