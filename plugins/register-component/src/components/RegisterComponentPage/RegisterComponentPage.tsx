@@ -28,7 +28,7 @@ import {
   ContentHeader,
   RouteRef,
 } from '@backstage/core';
-import RegisterComponentForm from '../RegisterComponentForm';
+import { RegisterComponentForm } from '../RegisterComponentForm';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { useMountedState } from 'react-use';
 import { Entity, Location } from '@backstage/catalog-model';
@@ -55,6 +55,7 @@ const FormStates = {
 } as const;
 
 type ValuesOf<T> = T extends Record<any, infer V> ? V : never;
+
 export const RegisterComponentPage = ({
   catalogRouteRef,
 }: {
@@ -85,9 +86,9 @@ export const RegisterComponentPage = ({
     const { scmType, componentLocation: target } = formData;
     try {
       const typeMapping = [
-        { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
-        { url: /https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
-        { url: /https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
+        { url: /^https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
+        { url: /^https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
+        { url: /^https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
         { url: /.*/, type: 'github' },
       ];
 
