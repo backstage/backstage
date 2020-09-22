@@ -24,8 +24,7 @@
     "build": "backstage-cli build --outputs cjs",
     "lint": "backstage-cli lint",
     "clean": "backstage-cli clean",
-    "cli": "node ./bin/backstage-create-app",
-    "start": "nodemon --"
+    "start": "node ./bin/backstage-create-app"
   },
   "dependencies": {
     "@backstage/cli-common": "^0.1.1-alpha.22",

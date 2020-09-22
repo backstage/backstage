@@ -1,18 +1,16 @@
-version: "3.4"
+version: '3.4'
 services:
-  {{#if dbTypePG}}
   postgres:
     image: postgres:11-alpine
     container_name: postgres
     restart: always
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_USER: backstage
       POSTGRES_PASSWORD: backstage
     volumes:
       - ./tools/development/db/:/docker-entrypoint-initdb.d
-  {{/if}}
   backstage:
     image: node:12
     container_name: backstage
@@ -21,24 +19,20 @@ services:
     tty: true
     environment:
       NODE_ENV: development
-      {{#if dbTypePG}}
       POSTGRES_HOST: postgres
       POSTGRES_USER: backstage
       POSTGRES_PASSWORD: backstage
-      {{/if}}
-    {{#if dbTypePG}}
     depends_on:
       - postgres
-    {{/if}}
     ports:
       # App server
-      - "3000:3000"
+      - '3000:3000'
       # Backend server port
-      - "7000:7000"
+      - '7000:7000'
       # Backend Node debug port
-      - "9229:9229"
+      - '9229:9229'
     volumes:
-       - .:/workdir
-       - node_modules:/workdir/node_modules
+      - .:/workdir
+      - node_modules:/workdir/node_modules
 volumes:
   node_modules:
