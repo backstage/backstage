@@ -60,12 +60,12 @@ export class GithubPublisher implements PublisherBase {
   ) {
     console.log('Inside createRemote... Token: ', token);
     const [owner, name] = values.storePath.split('/');
-    console.log('Owner: ', owner, ' Name: ', name);
+    console.log('Owner:', owner, 'Name: ', name);
     const description = values.description as string;
     console.log('Description: ', description);
 
     const user = await this.client.users.getByUsername({
-      username: owner,
+      username: 'trivago',
       headers: { authorization: `Bearer ${token}` },
     });
     console.log('User data type => ', user);
