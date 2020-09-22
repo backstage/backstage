@@ -115,7 +115,7 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 > Log into http://github.com
 > Navigate to (Settings > Developer Settings > OAuth Apps > New OAuth App)[https://github.com/settings/applications/new]
 > Set Homepage URL = http://localhost:3000
-> Set Callback URL = http://localhost:7000/auth/github
+> Set Callback URL = http://localhost:7000/api/auth/github
 > Click [Register application]
 > On the next page, copy and paste your new Client ID and Client Secret to the environment variables above, `AUTH_GITHUB_CLIENT_ID` & `AUTH_GITHUB_CLIENT_SECRET`
 > Don't forget to `source` that profile file again if necessary.
