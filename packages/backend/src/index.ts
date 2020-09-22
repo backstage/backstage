@@ -34,6 +34,7 @@ import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import identity from './plugins/identity';
+import kubernetes from './plugins/kubernetes';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
@@ -73,6 +74,7 @@ async function main() {
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
   const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
+  const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
@@ -86,6 +88,7 @@ async function main() {
     .addRouter('/auth', await auth(authEnv))
     .addRouter('/identity', await identity(identityEnv))
     .addRouter('/techdocs', await techdocs(techdocsEnv))
+    .addRouter('/kubernetes', await kubernetes(kubernetesEnv))
     .addRouter('/proxy', await proxy(proxyEnv, '/proxy'))
     .addRouter('/graphql', await graphql(graphqlEnv))
     .addRouter('', await app(appEnv));
