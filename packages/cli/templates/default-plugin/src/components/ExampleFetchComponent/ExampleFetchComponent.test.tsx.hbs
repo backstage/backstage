@@ -17,7 +17,7 @@ describe('ExampleFetchComponent', () => {
 
   // setup mock response
   beforeEach(() => {
-    server.use(rest.get('/*', (_, res, ctx) => res(ctx.status(200), ctx.delay(2000), ctx.json({}))))
+    server.use(rest.get('https://randomuser.me/*', (_, res, ctx) => res(ctx.status(200), ctx.delay(2000), ctx.json({}))))
   })
   it('should render', async () => {
     const rendered = render(<ExampleFetchComponent />);
