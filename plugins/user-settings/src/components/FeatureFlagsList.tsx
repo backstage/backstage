@@ -14,19 +14,59 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import { FlagItem, Item } from './FeatureFlagsItem';
+import React, { useState, useEffect } from 'react';
+import { List, ListSubheader } from '@material-ui/core';
+import {
+  useApi,
+  featureFlagsApiRef,
+  FeatureFlagName,
+  FeatureFlagState,
+  FeatureFlagsRegistryItem,
+} from '@backstage/core';
+import { FlagItem } from './FeatureFlagsItem';
 
 type Props = {
-  featureFlags: Item[];
+  featureFlags: FeatureFlagsRegistryItem[];
 };
 
-export const FeatureFlagsList = ({ featureFlags }: Props) => (
-  <List dense subheader={<ListSubheader>Feature Flags</ListSubheader>}>
-    {featureFlags.map(featureFlag => (
-      <FlagItem key={featureFlag.name} featureFlag={featureFlag} />
-    ))}
-  </List>
-);
+export const FeatureFlagsList = ({ featureFlags }: Props) => {
+  const featureFlagApi = useApi(featureFlagsApiRef);
+  const [state, setState] = useState<Record<FeatureFlagName, FeatureFlagState>>(
+    {},
+  );
+
+  useEffect(() => {
+    featureFlags.map(featureFlag => {
+      setState({
+        [featureFlag.name]: featureFlagApi.getFlags().get(featureFlag.name),
+      });
+    });
+  }, [featureFlagApi, featureFlags]);
+
+  const toggleFlag = (flagName: FeatureFlagName) => {
+    const newState = featureFlagApi.getFlags().toggle(flagName);
+
+    setState(prevState => ({
+      ...prevState,
+      [flagName]: newState,
+    }));
+    featureFlagApi.getFlags().save();
+  };
+
+  return (
+    <List dense subheader={<ListSubheader>Feature Flags</ListSubheader>}>
+      {featureFlags.map(featureFlag => {
+        const enabled = Boolean(state[featureFlag.name]);
+
+        return (
+          <FlagItem
+            key={featureFlag.name}
+            flag={featureFlag}
+            enabled={enabled}
+            toggleHandler={toggleFlag}
+          />
+        );
+      })}
+    </List>
+  );
+};

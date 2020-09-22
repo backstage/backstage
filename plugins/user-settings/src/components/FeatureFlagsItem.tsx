@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { FeatureFlagName, useApi, featureFlagsApiRef } from '@backstage/core';
 import {
   ListItem,
   ListItemSecondaryAction,
@@ -24,46 +23,31 @@ import {
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/CheckCircle';
 import { ToggleButton } from '@material-ui/lab';
-
-export type Item = {
-  name: FeatureFlagName;
-  pluginId: string;
-};
+import { FeatureFlagsRegistryItem } from '@backstage/core';
 
 type Props = {
-  featureFlag: Item;
+  flag: FeatureFlagsRegistryItem;
+  enabled: boolean;
+  toggleHandler: Function;
 };
 
-export const FlagItem = ({ featureFlag }: Props) => {
-  const api = useApi(featureFlagsApiRef);
-
-  const [enabled, setEnabled] = React.useState(
-    Boolean(api.getFlags().get(featureFlag.name)),
-  );
-
-  const toggleFlag = () => {
-    const newState = api.getFlags().toggle(featureFlag.name);
-    setEnabled(Boolean(newState));
-  };
-
-  return (
-    <ListItem>
-      <ListItemText
-        primary={featureFlag.name}
-        secondary={`Registered in ${featureFlag.pluginId} plugin`}
-      />
-      <ListItemSecondaryAction>
-        <ToggleButton
-          size="small"
-          value="flag"
-          selected={enabled}
-          onChange={toggleFlag}
-        >
-          <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
-            <CheckIcon />
-          </Tooltip>
-        </ToggleButton>
-      </ListItemSecondaryAction>
-    </ListItem>
-  );
-};
+export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
+  <ListItem>
+    <ListItemText
+      primary={flag.name}
+      secondary={`Registered in ${flag.pluginId} plugin`}
+    />
+    <ListItemSecondaryAction>
+      <ToggleButton
+        size="small"
+        value="flag"
+        selected={enabled}
+        onChange={() => toggleHandler(flag.name)}
+      >
+        <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
+          <CheckIcon />
+        </Tooltip>
+      </ToggleButton>
+    </ListItemSecondaryAction>
+  </ListItem>
+);
