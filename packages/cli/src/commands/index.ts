@@ -62,6 +62,9 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('create-plugin')
     .description('Creates a new plugin in the current repository')
+    .option('--scope <scope>', 'NPM scope')
+    .option('--npm-registry <URL>', 'NPM registry URL')
+    .option('--no-private', 'Public NPM Package')
     .action(
       lazy(() => import('./create-plugin/createPlugin').then(m => m.default)),
     );

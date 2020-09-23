@@ -21,18 +21,18 @@ import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
 
-export type RepoVisilityOptions = 'private' | 'internal' | 'public';
+export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
 interface GithubPublisherParams {
   client: Octokit;
   token: string;
-  repoVisibility: RepoVisilityOptions;
+  repoVisibility: RepoVisibilityOptions;
 }
 
 export class GithubPublisher implements PublisherBase {
   private client: Octokit;
   private token: string;
-  private repoVisibility: RepoVisilityOptions;
+  private repoVisibility: RepoVisibilityOptions;
 
   constructor({
     client,
