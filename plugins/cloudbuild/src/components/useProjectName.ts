@@ -17,7 +17,7 @@
 import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
 
-export const CLOUDBUILD_ANNOTATION = 'google.com/cloudbuild';
+export const CLOUDBUILD_ANNOTATION = 'google.com/cloudbuild-project-slug';
 
 export const useProjectName = (entity: Entity) => {
   const { value, loading, error } = useAsync(async () => {
