@@ -19,12 +19,13 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
-  ClusterDetails,
   ClusterLocatorMethod,
   KubernetesClusterLocator,
 } from '../cluster-locator/types';
 import { MultiTenantConfigClusterLocator } from '../cluster-locator/MultiTenantConfigClusterLocator';
-import k8s from '@kubernetes/client-node';
+import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { KubernetesClientProvider } from './K8sClientProvider';
+import { handleGetKubernetesObjectsByServiceId } from './getKubernetesObjectsByServiceIdHandler';
 
 export interface RouterOptions {
   logger: Logger;
@@ -50,54 +51,32 @@ const getClusterLocator = (config: Config): KubernetesClusterLocator => {
   }
 };
 
-const buildK8sClient = (clusterDetails: ClusterDetails) => {
-  const cluster = {
-    name: clusterDetails.name,
-    server: clusterDetails.url,
-  };
-
-  const user = {
-    name: 'my-user',
-    token: 'some-token',
-  };
-
-  const context = {
-    name: `${clusterDetails.name}`,
-    user: user.name,
-    cluster: cluster.name,
-  };
-
-  const kc = new k8s.KubeConfig();
-  kc.loadFromOptions({
-    clusters: [cluster],
-    users: [user],
-    contexts: [context],
-    currentContext: context.name,
-  });
-  return kc.makeApiClient(k8s.CoreV1Api);
-};
-
 const makeRouter = (logger: Logger, config: Config): express.Router => {
   const clusterLocator = getClusterLocator(config);
+
+  const fetcher = new KubernetesClientBasedFetcher(
+    new KubernetesClientProvider(),
+    logger,
+  );
 
   const router = Router();
   router.use(express.json());
 
+  // TODO error handling
   router.get('/services/:serviceId', async (req, res) => {
     const serviceId = req.params.serviceId;
 
-    clusterLocator.getClusterByServiceId(serviceId).then(assignedClusters => {
-      logger.info(
-        `serviceId=${serviceId} found in clusters=${JSON.stringify(
-          assignedClusters,
-        )}`,
+    try {
+      const response = await handleGetKubernetesObjectsByServiceId(
+        serviceId,
+        fetcher,
+        clusterLocator,
+        logger,
       );
-
-      assignedClusters.map(c => {
-        const k8sClient = buildK8sClient(c);
-      });
-      res.send({ serviceId });
-    });
+      res.send(response);
+    } catch (e) {
+      res.status(500).send({ error: e.message });
+    }
   });
 
   return router;

@@ -16,14 +16,7 @@
 
 import React, { FC, useEffect, useState } from 'react';
 import { Typography, Grid } from '@material-ui/core';
-import {
-  InfoCard,
-  Page,
-  pageTheme,
-  Content,
-  ContentHeader,
-  useApi,
-} from '@backstage/core';
+import { InfoCard, Page, pageTheme, Content, useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 
@@ -31,7 +24,7 @@ import { kubernetesApiRef } from '../../api/types';
 
 export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
   const kubernetesApi = useApi(kubernetesApiRef);
-  const [kubernetesObjects, setKubernetesObjects] = useState<{} | undefined>(
+  const [kubernetesObjects, setKubernetesObjects] = useState<any | undefined>(
     undefined,
   );
   const [error, setError] = useState<string | undefined>(undefined);
@@ -50,21 +43,30 @@ export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
   return (
     <Page theme={pageTheme.tool}>
       <Content>
-        <ContentHeader title="This is where you would see your kubernetes objects" />
         <Grid container spacing={3} direction="column">
-          <Grid item>
-            <InfoCard title="This is where you would see your kubernetes objects">
-              <Typography variant="body1">
-                {kubernetesObjects === undefined && <div>loading....</div>}
-                {error !== undefined && <div>{error}</div>}
-                {kubernetesObjects !== undefined && (
-                  <div>
-                    backend response: {JSON.stringify(kubernetesObjects)}
-                  </div>
-                )}
-              </Typography>
-            </InfoCard>
-          </Grid>
+          {kubernetesObjects === undefined && <div>loading....</div>}
+          {error !== undefined && <div>{error}</div>}
+          {kubernetesObjects !== undefined && (
+            <div>
+              {Object.entries(kubernetesObjects).map(([key, value]) => (
+                <Grid item>
+                  <InfoCard key={key} title={key}>
+                    <Typography variant="body1">
+                      <div>
+                        {Object.entries(value as any).map(([k, val]) => (
+                          <div>
+                            <br />
+                            {k}:{' '}
+                            {(val as any[]).map(v => v.metadata.name).join(' ')}
+                          </div>
+                        ))}
+                      </div>
+                    </Typography>
+                  </InfoCard>
+                </Grid>
+              ))}
+            </div>
+          )}
         </Grid>
       </Content>
     </Page>

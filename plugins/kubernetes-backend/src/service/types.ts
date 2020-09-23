@@ -14,15 +14,28 @@
  * limitations under the License.
  */
 
-export interface ClusterDetails {
-  name: string;
-  url: string;
-  // TODO this will eventually be configured by the auth translation work
-  serviceAccountToken: string | undefined;
+import {
+  AppsV1Api,
+  CoreV1Api,
+  V1ConfigMap,
+  V1Deployment,
+  V1Pod,
+  V1ReplicaSet,
+  V1Secret,
+} from '@kubernetes/client-node';
+
+export interface Clients {
+  core: CoreV1Api;
+  apps: AppsV1Api;
 }
 
-export interface KubernetesClusterLocator {
-  getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+// cluster name to k8s objects
+export interface ObjectsByServiceIdResponse {
+  [key: string]: {
+    configMaps: Array<V1ConfigMap>;
+    deployments: Array<V1Deployment>;
+    pods: Array<V1Pod>;
+    replicaSets: Array<V1ReplicaSet>;
+    secrets: Array<V1Secret>;
+  };
 }
-
-export type ClusterLocatorMethod = 'configMultiTenant' | 'http';
