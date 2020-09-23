@@ -30,6 +30,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
+import qs from 'qs';
 import React from 'react';
 import { useProjectName } from '../useProjectName';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
@@ -66,8 +67,6 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
 
   const details = useWorkflowRunsDetails(projectId);
 
-  const serviceAccount = (details.value?.logUrl ?? '=').split('=');
-
   const classes = useStyles();
   if (error) {
     return (
@@ -77,7 +76,14 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
     );
   } else if (loading) {
     return <LinearProgress />;
+  } else if (details.value?.logUrl === undefined) {
+    return <LinearProgress />;
   }
+
+  const serviceAccount = qs.parse(new URL(details.value?.logUrl).search, {
+    ignoreQueryPrefix: true,
+  }).project;
+
   return (
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">
@@ -118,7 +124,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 <Typography noWrap>Service Account</Typography>
               </TableCell>
               <TableCell>
-                {`${serviceAccount[1]}`}@cloudbuild.gserviceaccount.com
+                {`${serviceAccount}`}@cloudbuild.gserviceaccount.com
               </TableCell>
             </TableRow>
             <TableRow>
