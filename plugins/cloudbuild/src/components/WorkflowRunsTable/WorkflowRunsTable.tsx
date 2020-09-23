@@ -35,7 +35,7 @@ export type WorkflowRun = {
   status: string;
   substitutions: Substitutions;
   createTime: string;
-  onReRunClick: () => void;
+  rerun: () => void;
 };
 
 const generatedColumns: TableColumn[] = [
@@ -105,7 +105,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Actions',
     render: (row: Partial<WorkflowRun>) => (
       <Tooltip title="Rerun workflow">
-        <IconButton onClick={row.onReRunClick}>
+        <IconButton onClick={row.rerun}>
           <RetryIcon />
         </IconButton>
       </Tooltip>

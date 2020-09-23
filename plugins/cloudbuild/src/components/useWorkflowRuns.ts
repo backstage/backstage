@@ -44,7 +44,7 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
           return workflowRunsData.builds.map(run => ({
             message: run.substitutions.REPO_NAME,
             id: run.id,
-            onReRunClick: async () => {
+            rerun: async () => {
               try {
                 await api.reRunWorkflow({
                   projectId,
