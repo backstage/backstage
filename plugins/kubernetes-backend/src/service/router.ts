@@ -24,7 +24,7 @@ import {
 } from '../cluster-locator/types';
 import { MultiTenantConfigClusterLocator } from '../cluster-locator/MultiTenantConfigClusterLocator';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { KubernetesClientProvider } from './K8sClientProvider';
+import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { handleGetKubernetesObjectsByServiceId } from './getKubernetesObjectsByServiceIdHandler';
 
 export interface RouterOptions {

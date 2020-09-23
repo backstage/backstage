@@ -22,7 +22,7 @@ import {
   V1Secret,
 } from '@kubernetes/client-node';
 import { ClusterDetails } from '../cluster-locator/types';
-import { KubernetesClientProvider } from './K8sClientProvider';
+import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { V1Service } from '@kubernetes/client-node/dist/gen/model/v1Service';
 import { Clients } from './types';
 import { Logger } from 'winston';
