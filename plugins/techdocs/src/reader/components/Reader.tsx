@@ -21,6 +21,8 @@ import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ParsedEntityId } from '../../types';
+import { useTheme } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 
 import transformer, {
   addBaseUrl,
@@ -30,6 +32,7 @@ import transformer, {
   modifyCss,
   onCssReady,
   sanitizeDOM,
+  injectCss,
 } from '../transformers';
 import { TechDocsNotFound } from './TechDocsNotFound';
 
@@ -40,6 +43,7 @@ type Props = {
 export const Reader = ({ entityId }: Props) => {
   const { kind, namespace, name } = entityId;
   const { '*': path } = useParams();
+  const theme = useTheme<BackstageTheme>();
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const [shadowDomRef, shadowRoot] = useShadowDom();
@@ -73,6 +77,18 @@ export const Reader = ({ entityId }: Props) => {
         },
       }),
       removeMkdocsHeader(),
+      injectCss({
+        css: `
+        body {
+          font-family: ${theme.typography.fontFamily};
+          --md-text-color: ${theme.palette.text.primary};
+          --md-text-link-color: ${theme.palette.primary.main};
+
+          --md-code-fg-color: ${theme.palette.text.primary};
+          --md-code-bg-color: ${theme.palette.background.paper};
+        }
+        `,
+      }),
     ]);
 
     if (!transformedElement) {
@@ -125,6 +141,7 @@ export const Reader = ({ entityId }: Props) => {
     entityId,
     navigate,
     techdocsStorageApi,
+    theme,
   ]);
 
   if (error) {
