@@ -10,9 +10,9 @@ coverage:
 # Since Backstage is a mono repo, flags here help in getting the code coverage of individual packages.
 # Documentation: https://docs.codecov.io/docs/flags
 flags:
-  packages-core:
+  core:
     paths:
       - packages/core/
-  packages-core-api:
+  core-api:
     paths:
       - packages/core-api/
