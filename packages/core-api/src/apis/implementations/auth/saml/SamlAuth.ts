@@ -23,7 +23,9 @@ import {
   BackstageIdentity,
   SessionState,
   AuthRequestOptions,
-  SamlApi,
+  ProfileInfoApi,
+  BackstageIdentityApi,
+  SessionApi,
 } from '../../../definitions/auth';
 import { AuthProvider, DiscoveryApi } from '../../../definitions';
 import { SamlSession } from './types';
@@ -50,7 +52,7 @@ const DEFAULT_PROVIDER = {
   icon: SamlIcon,
 };
 
-class SamlAuth implements SamlApi {
+class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
   static create({
     discoveryApi,
     environment = 'development',
@@ -80,6 +82,13 @@ class SamlAuth implements SamlApi {
 
   constructor(private readonly sessionManager: SessionManager<SamlSession>) {}
 
+  async signIn() {
+    await this.getBackstageIdentity({});
+  }
+  async signOut() {
+    await this.sessionManager.removeSession();
+  }
+
   async getBackstageIdentity(
     options: AuthRequestOptions,
   ): Promise<BackstageIdentity | undefined> {
@@ -95,10 +104,6 @@ class SamlAuth implements SamlApi {
   async getProfile(options: AuthRequestOptions = {}) {
     const session = await this.sessionManager.getSession(options);
     return session?.profile;
-  }
-
-  async logout() {
-    await this.sessionManager.removeSession();
   }
 }
 

@@ -93,20 +93,6 @@ export type OAuthApi = {
 };
 
 /**
- * This API provides access to SAML 2 credentials. Verify user access with identity provider.
- */
-export type SamlApi = {
-  getBackstageIdentity(
-    options?: AuthRequestOptions,
-  ): Promise<BackstageIdentity | undefined>;
-
-  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
-
-  // Not sure if this is needed.
-  logout(): Promise<void>;
-};
-
-/**
  * This API provides access to OpenID Connect credentials. It lets you request ID tokens,
  * which can be passed to backend services to prove the user's identity.
  */
@@ -328,7 +314,9 @@ export const oauth2ApiRef = createApiRef<
 /**
  * Provides authentication for saml based identity providers
  */
-export const samlAuthApiRef = createApiRef<SamlApi>({
+export const samlAuthApiRef = createApiRef<
+  ProfileInfoApi & BackstageIdentityApi & SessionApi
+>({
   id: 'core.auth.saml',
   description: 'Example of how to use SAML custom provider',
 });
