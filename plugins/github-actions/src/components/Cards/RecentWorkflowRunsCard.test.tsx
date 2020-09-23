@@ -18,7 +18,7 @@ import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsC
 import React from 'react';
 import { render } from '@testing-library/react';
 import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
-import { useApi } from '@backstage/core-api';
+import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core-api';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
@@ -27,7 +27,11 @@ import { MemoryRouter } from 'react-router';
 jest.mock('../useWorkflowRuns', () => ({
   useWorkflowRuns: jest.fn(),
 }));
-jest.mock('@backstage/core-api');
+
+const mockErrorApi: jest.Mocked<typeof errorApiRef.T> = {
+  post: jest.fn(),
+  error$: jest.fn(),
+};
 
 describe('<RecentWorkflowRunsCard />', () => {
   const entity = {
@@ -52,11 +56,9 @@ describe('<RecentWorkflowRunsCard />', () => {
     source: { branchName: `branch-${n}` },
     status: 'completed',
   }));
-  const mockErrorApi = { post: jest.fn() };
 
   beforeEach(() => {
     (useWorkflowRuns as jest.Mock).mockReturnValue([{ runs: workflowRuns }]);
-    (useApi as jest.Mock).mockReturnValue(mockErrorApi);
   });
 
   afterEach(() => {
@@ -67,7 +69,9 @@ describe('<RecentWorkflowRunsCard />', () => {
     render(
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
-          <RecentWorkflowRunsCard {...props} />
+          <ApiProvider apis={ApiRegistry.with(errorApiRef, mockErrorApi)}>
+            <RecentWorkflowRunsCard {...props} />
+          </ApiProvider>
         </MemoryRouter>
       </ThemeProvider>,
     );

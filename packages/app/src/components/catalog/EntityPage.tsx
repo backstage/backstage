@@ -64,14 +64,18 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3}>
     <Grid item md={6}>
-      {isJenkinsAvailable(entity) && <JenkinsLatestRunCard branch="master" />}
-      {isGitHubActionsAvailable(entity) && (
-        <RecentWorkflowRunsCard entity={entity} />
-      )}
-    </Grid>
-    <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
+    {isJenkinsAvailable(entity) && (
+      <Grid item md={6}>
+        <JenkinsLatestRunCard branch="master" />
+      </Grid>
+    )}
+    {isGitHubActionsAvailable(entity) && (
+      <Grid item md={6}>
+        <RecentWorkflowRunsCard entity={entity} />
+      </Grid>
+    )}
   </Grid>
 );
 
