@@ -26,6 +26,7 @@ import { useProjectName } from '../useProjectName';
 import { Entity } from '@backstage/catalog-model';
 import { Substitutions } from '../../api/types';
 import { buildRouteRef } from '../../plugin';
+import moment from 'moment';
 
 export type WorkflowRun = {
   id: string;
@@ -94,10 +95,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Created',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>
-          {row.createTime?.substring(6, 7)}/{row.createTime?.substring(8, 10)}/
-          {row.createTime?.substring(0, 4)}, {row.createTime?.substring(11, 16)}
-        </p>
+        <p>{moment(row.createTime).format('DD-MM-YYYY hh:mm:ss')}</p>
       </Typography>
     ),
   },
