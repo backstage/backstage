@@ -20,19 +20,16 @@ import {
   SignInResult,
   ApiHolder,
   ApiRef,
-  OAuthApi,
   ProfileInfoApi,
   BackstageIdentityApi,
-  SessionStateApi,
+  SessionApi,
 } from '@backstage/core-api';
 
 export type SignInConfig = {
   id: string;
   title: string;
   message: string;
-  apiRef: ApiRef<
-    OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
-  >;
+  apiRef: ApiRef<ProfileInfoApi & BackstageIdentityApi & SessionApi>;
 };
 
 export type IdentityProviders = ('guest' | 'custom' | SignInConfig)[];
@@ -43,9 +40,7 @@ export type ProviderComponent = ComponentType<
 
 export type ProviderLoader = (
   apis: ApiHolder,
-  apiRef: ApiRef<
-    OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
-  >,
+  apiRef: ApiRef<ProfileInfoApi & BackstageIdentityApi & SessionApi>,
 ) => Promise<SignInResult | undefined>;
 
 export type SignInProvider = {
