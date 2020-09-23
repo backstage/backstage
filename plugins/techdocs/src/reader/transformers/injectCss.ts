@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { findPaths } from '@backstage/cli-common';
-import { loadConfig } from '@backstage/config-loader';
+import type { Transformer } from './index';
 
-/**
- * Load configuration for a Backend
- */
-export async function loadBackendConfig() {
-  const paths = findPaths(__dirname);
-  const configs = await loadConfig({
-    env: process.env.NODE_ENV ?? 'development',
-    rootPaths: [paths.targetRoot, paths.targetDir],
-    shouldReadSecrets: true,
-  });
-  return configs;
-}
+type InjectCssOptions = {
+  css: string;
+};
+
+export const injectCss = ({ css }: InjectCssOptions): Transformer => {
+  return dom => {
+    dom
+      .getElementsByTagName('head')[0]
+      .insertAdjacentHTML('beforeend', `<style>${css}</style>`);
+
+    return dom;
+  };
+};
