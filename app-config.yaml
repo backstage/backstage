@@ -133,10 +133,8 @@ scaffolder:
         $secret:
           env: GITLAB_ACCESS_TOKEN
   azure:
+    baseUrl: https://dev.azure.com/{your-organization}
     api:
-      organization:
-        $secret:
-          env: AZURE_ORGANIZATION
       token:
         $secret:
           env: AZURE_PRIVATE_TOKEN

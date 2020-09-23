@@ -116,15 +116,14 @@ export default async function createPlugin({
     }
   }
 
-  const azureConfig = config.getOptionalConfig('scaffolder.azure.api');
+  const azureConfig = config.getOptionalConfig('scaffolder.azure');
   if (azureConfig) {
     try {
-      const organization = azureConfig.getString('organization');
-      const azureToken = azureConfig.getString('token');
+      const baseUrl = azureConfig.getString('baseUrl');
+      const azureToken = azureConfig.getConfig('api').getString('token');
 
-      const serverUrl = `https://dev.azure.com/${organization}`;
       const authHandler = getPersonalAccessTokenHandler(azureToken);
-      const webApi = new WebApi(serverUrl, authHandler);
+      const webApi = new WebApi(baseUrl, authHandler);
       const azureClient = await webApi.getGitApi();
 
       const azurePublisher = new AzurePublisher(azureClient, azureToken);
