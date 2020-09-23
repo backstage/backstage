@@ -26,7 +26,7 @@ Out of the box, Backstage includes:
 
 For more information go to [backstage.io](https://backstage.io) or join our [Discord chatroom](https://discord.gg/EBHEGzX).
 
-Backstage is a CNCF Sandbox project. Read the announcement [here]().
+Backstage is a CNCF Sandbox project. Read the announcement [here](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox).
 
 ## Project roadmap
 
