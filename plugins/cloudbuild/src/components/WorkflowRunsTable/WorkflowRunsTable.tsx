@@ -57,7 +57,6 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
         <p>{row.id?.substring(0, 8)}</p>
-        {/* <p>{row.substitutions?.COMMIT_SHA}</p> */}
       </Typography>
     ),
   },
@@ -69,7 +68,6 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<WorkflowRun>) => (
       <Link
         component={RouterLink}
-        // to={`https://www.github.com/trivago/${row.message}`}
         to={generatePath(buildRouteRef.path, { id: row.id! })}
       >
         {row.message}
