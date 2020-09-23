@@ -22,7 +22,6 @@ export const useWorkflowRunJobs = (jobsUrl?: string) => {
   > => {
     if (jobsUrl === undefined) {
       return {
-        total_count: 0,
         builds: [],
       };
     }
