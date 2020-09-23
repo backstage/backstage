@@ -73,10 +73,10 @@ export const RegisterComponentResultDialog = ({
   catalogRouteRef,
 }: Props) => (
   <Dialog open onClose={onClose} classes={classes}>
-    <DialogTitle>Component Registration Result</DialogTitle>
+    <DialogTitle>Registration Result</DialogTitle>
     <DialogContent>
       <DialogContentText>
-        The following components have been succefully created:
+        The following entities have been successfully created:
       </DialogContentText>
       <List>
         {entities.map((entity: any, index: number) => {
