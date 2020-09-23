@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { Link } from '@backstage/core';
+import { Link, WarningPanel } from '@backstage/core';
 import {
   Breadcrumbs,
   LinearProgress,
@@ -71,9 +71,9 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   const classes = useStyles();
   if (error) {
     return (
-      <Typography variant="h6" color="error">
-        Failed to load build, {error.message}
-      </Typography>
+      <WarningPanel title="Error:">
+        Failed to load build, {error.message}.
+      </WarningPanel>
     );
   } else if (loading) {
     return <LinearProgress />;
