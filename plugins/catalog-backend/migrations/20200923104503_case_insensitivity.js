@@ -14,4 +14,19 @@
  * limitations under the License.
  */
 
-export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
+// @ts-check
+
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
+  await knex('entities')
+    .where({ namespace: null })
+    .update({ namespace: 'default' });
+  await knex('entities_search').update({
+    key: knex.raw('LOWER(key)'),
+    value: knex.raw('LOWER(value)'),
+  });
+};
+
+exports.down = async function down() {};

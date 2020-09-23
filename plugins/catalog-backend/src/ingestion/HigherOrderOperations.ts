@@ -18,6 +18,7 @@ import { InputError } from '@backstage/backend-common';
 import {
   Entity,
   entityHasChanges,
+  getEntityName,
   Location,
   LocationSpec,
 } from '@backstage/catalog-model';
@@ -162,16 +163,14 @@ export class HigherOrderOperations implements HigherOrderOperation {
       const { entity } = item;
 
       this.logger.debug(
-        `Read entity kind="${entity.kind}" name="${
-          entity.metadata.name
-        }" namespace="${entity.metadata.namespace || ''}"`,
+        `Read entity kind="${entity.kind}" namespace="${
+          entity.metadata.namespace || ''
+        }" name="${entity.metadata.name}"`,
       );
 
       try {
         const previous = await this.entitiesCatalog.entityByName(
-          entity.kind,
-          entity.metadata.namespace,
-          entity.metadata.name,
+          getEntityName(entity),
         );
 
         if (!previous) {

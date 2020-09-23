@@ -14,4 +14,16 @@
  * limitations under the License.
  */
 
-export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
+/**
+ * The namespace that entities without an explicit namespace fall into.
+ */
+export const ENTITY_DEFAULT_NAMESPACE = 'default';
+
+/**
+ * The keys of EntityMeta that are auto-generated.
+ */
+export const ENTITY_META_GENERATED_FIELDS = [
+  'uid',
+  'etag',
+  'generation',
+] as const;
