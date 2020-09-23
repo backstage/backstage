@@ -31,7 +31,7 @@ import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   AboutCard,
   EntityPageLayout,
@@ -61,21 +61,34 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   }
 };
 
+const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
+  let content: ReactNode;
+  switch (true) {
+    case isJenkinsAvailable(entity):
+      content = <JenkinsLatestRunCard branch="master" />;
+      break;
+    case isGitHubActionsAvailable(entity):
+      content = <RecentWorkflowRunsCard entity={entity} />;
+      break;
+    default:
+      content = null;
+  }
+  if (!content) {
+    return null;
+  }
+  return (
+    <Grid item sm={6}>
+      {content}
+    </Grid>
+  );
+};
+
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3}>
     <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
-    {isJenkinsAvailable(entity) && (
-      <Grid item md={6}>
-        <JenkinsLatestRunCard branch="master" />
-      </Grid>
-    )}
-    {isGitHubActionsAvailable(entity) && (
-      <Grid item md={6}>
-        <RecentWorkflowRunsCard entity={entity} />
-      </Grid>
-    )}
+    <RecentCICDRunsSwitcher entity={entity} />
   </Grid>
 );
 
