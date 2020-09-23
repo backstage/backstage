@@ -6,7 +6,7 @@ authorURL: https://twitter.com/stalund
 
 **TL;DR** The Cloud Native Computing Foundation (CNCF) announced that Backstage can begin incubating as an early stage project in the [CNCF Sandbox](https://www.cncf.io/sandbox-projects/). Released open source in March, the platform is built around an advanced service catalog and is designed to streamline software development from end to end.
 
-![available-templates](assets/cncf-sandbox/cncf.png)
+![cncf](assets/cncf-sandbox/cncf.png)
 
 <!--truncate-->
 
