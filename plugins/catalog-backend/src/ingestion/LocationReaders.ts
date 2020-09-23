@@ -80,7 +80,7 @@ export class LocationReaders implements LocationReader {
       new FileReaderProcessor(),
       GithubReaderProcessor.fromConfig(config, logger),
       new GitlabApiReaderProcessor(config),
-      new GitlabReaderProcessor(),
+      GitlabReaderProcessor.fromConfig(config, logger),
       new BitbucketApiReaderProcessor(config),
       new AzureApiReaderProcessor(config),
       new UrlReaderProcessor(),
