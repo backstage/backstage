@@ -56,3 +56,16 @@ export const Default = () => (
     </InfoCard>
   </Wrapper>
 );
+
+export const DenseTable = () => (
+  <Wrapper>
+    <InfoCard
+      title="Dense Structured Metadata Table"
+      subheader="Wrapped in InfoCard"
+    >
+      <div style={cardContentStyle}>
+        <StructuredMetadataTable metadata={metadata} dense />
+      </div>
+    </InfoCard>
+  </Wrapper>
+);
