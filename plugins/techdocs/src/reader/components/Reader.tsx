@@ -82,7 +82,7 @@ export const Reader = ({ entityId }: Props) => {
         body {
           font-family: ${theme.typography.fontFamily};
           --md-text-color: ${theme.palette.text.primary};
-          --md-text-link-color: ${theme.palette.primary.main}
+          --md-text-link-color: ${theme.palette.primary.main};
         }
         `,
       }),
