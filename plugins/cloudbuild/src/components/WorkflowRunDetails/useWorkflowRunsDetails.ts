@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi, googleAuthApiRef } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { cloudbuildApiRef } from '../../api';
 
 export const useWorkflowRunsDetails = (projectId: string) => {
   const api = useApi(cloudbuildApiRef);
-  const auth = useApi(googleAuthApiRef);
   const { id } = useParams();
   const details = useAsync(async () => {
-    const token = await auth.getAccessToken([
-      'https://www.googleapis.com/auth/cloud-platform',
-    ]);
     return projectId
       ? api.getWorkflowRun({
-          token,
           projectId,
           id: id,
         })

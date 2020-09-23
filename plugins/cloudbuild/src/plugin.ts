@@ -17,6 +17,7 @@ import {
   createPlugin,
   createRouteRef,
   createApiFactory,
+  googleAuthApiRef,
 } from '@backstage/core';
 import { cloudbuildApiRef, CloudbuildClient } from './api';
 
@@ -32,5 +33,13 @@ export const buildRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'cloudbuild',
-  apis: [createApiFactory(cloudbuildApiRef, new CloudbuildClient())],
+  apis: [
+    createApiFactory({
+      api: cloudbuildApiRef,
+      deps: { googleAuthApi: googleAuthApiRef },
+      factory({ googleAuthApi }) {
+        return new CloudbuildClient(googleAuthApi);
+      },
+    }),
+  ],
 });

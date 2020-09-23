@@ -26,15 +26,10 @@ export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
 });
 
 export type CloudbuildApi = {
-  listWorkflowRuns: ({
-    token,
-    projectId,
-  }: {
-    token: string;
+  listWorkflowRuns: (request: {
     projectId: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
   getWorkflow: ({
-    token,
     projectId,
     id,
   }: {
@@ -43,20 +38,16 @@ export type CloudbuildApi = {
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
   getWorkflowRun: ({
-    token,
     projectId,
     id,
   }: {
-    token: string;
     projectId: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
   reRunWorkflow: ({
-    token,
     projectId,
     runId,
   }: {
-    token: string;
     projectId: string;
     runId: string;
   }) => Promise<any>;

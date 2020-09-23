@@ -17,12 +17,11 @@ import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { WorkflowRun } from './WorkflowRunsTable/WorkflowRunsTable';
 import { cloudbuildApiRef } from '../api/CloudbuildApi';
-import { useApi, googleAuthApiRef, errorApiRef } from '@backstage/core';
+import { useApi, errorApiRef } from '@backstage/core';
 import { ActionsListWorkflowRunsForRepoResponseData } from '../api/types';
 
 export function useWorkflowRuns({ projectId }: { projectId: string }) {
   const api = useApi(cloudbuildApiRef);
-  const auth = useApi(googleAuthApiRef);
   const errorApi = useApi(errorApiRef);
 
   const [total, setTotal] = useState(0);
@@ -32,12 +31,8 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
   const { loading, value: runs, retry, error } = useAsyncRetry<
     WorkflowRun[]
   >(async () => {
-    const token = await auth.getAccessToken([
-      'https://www.googleapis.com/auth/cloud-platform',
-    ]);
     return api
       .listWorkflowRuns({
-        token,
         projectId,
       })
       .then(
@@ -52,7 +47,6 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
             onReRunClick: async () => {
               try {
                 await api.reRunWorkflow({
-                  token,
                   projectId,
                   runId: run.id,
                 });

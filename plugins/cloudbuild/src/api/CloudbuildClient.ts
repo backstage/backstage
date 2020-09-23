@@ -20,40 +20,43 @@ import {
   ActionsGetWorkflowResponseData,
   Builds,
 } from '../api/types';
+import { OAuthApi } from '@backstage/core';
 
 export class CloudbuildClient implements CloudbuildApi {
+  constructor(private readonly googleAuthApi: OAuthApi) {}
+
   async reRunWorkflow({
-    token,
     projectId,
     runId,
   }: {
-    token: string;
     projectId: string;
     runId: string;
   }): Promise<any> {
     return await fetch(
-      `https://cloudbuild.googleapis.com/v1/projects/${projectId}/builds/${runId}:retry`,
+      `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
+        projectId,
+      )}/builds/${encodeURIComponent(runId)}:retry`,
       {
         headers: new Headers({
           Accept: '*/*',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${await this.getToken()}`,
         }),
       },
     );
   }
   async listWorkflowRuns({
-    token,
     projectId,
   }: {
-    token: string;
     projectId: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
     const workflowRuns = await fetch(
-      `https://cloudbuild.googleapis.com/v1/projects/${projectId}/builds`,
+      `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
+        projectId,
+      )}/builds`,
       {
         headers: new Headers({
           Accept: '*/*',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${await this.getToken()}`,
         }),
       },
     );
@@ -68,20 +71,20 @@ export class CloudbuildClient implements CloudbuildApi {
     return response;
   }
   async getWorkflow({
-    token,
     projectId,
     id,
   }: {
-    token: string;
     projectId: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
     const workflow = await fetch(
-      `https://cloudbuild.googleapis.com/v1/projects/${projectId}/builds/${id}`,
+      `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
+        projectId,
+      )}/builds/${encodeURIComponent(id)}`,
       {
         headers: new Headers({
           Accept: '*/*',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${await this.getToken()}`,
         }),
       },
     );
@@ -91,25 +94,35 @@ export class CloudbuildClient implements CloudbuildApi {
     return build;
   }
   async getWorkflowRun({
-    token,
     projectId,
     id,
   }: {
-    token: string;
     projectId: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
     const workflow = await fetch(
-      `https://cloudbuild.googleapis.com/v1/projects/${projectId}/builds/${id}`,
+      `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
+        projectId,
+      )}/builds/${encodeURIComponent(id)}`,
       {
         headers: new Headers({
           Accept: '*/*',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${await this.getToken()}`,
         }),
       },
     );
     const build: ActionsGetWorkflowResponseData = await workflow.json();
 
     return build;
+  }
+
+  async getToken(): Promise<string> {
+    // NOTE(freben - gcp-projects): There's a .read-only variant of this scope that we could
+    // use for readonly operations, but that means we would ask the user for a
+    // second auth during creation and I decided to keep the wider scope for
+    // all ops for now
+    return this.googleAuthApi.getAccessToken(
+      'https://www.googleapis.com/auth/cloud-platform',
+    );
   }
 }
