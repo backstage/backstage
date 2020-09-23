@@ -31,8 +31,8 @@ export class CloudbuildClient implements CloudbuildApi {
   }: {
     projectId: string;
     runId: string;
-  }): Promise<any> {
-    return await fetch(
+  }): Promise<void> {
+    await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         projectId,
       )}/builds/${encodeURIComponent(runId)}:retry`,
