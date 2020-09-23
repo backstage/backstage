@@ -15,13 +15,8 @@
  */
 
 export interface ActionsListWorkflowRunsForRepoResponseData {
-  total_count: number;
   builds: ActionsGetWorkflowResponseData[];
 }
-
-export type Builds = {
-  builds: ActionsGetWorkflowResponseData[];
-};
 
 export type ActionsGetWorkflowResponseData = {
   id: string;

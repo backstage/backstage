@@ -39,7 +39,7 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
         (
           workflowRunsData: ActionsListWorkflowRunsForRepoResponseData,
         ): WorkflowRun[] => {
-          setTotal(workflowRunsData.total_count);
+          setTotal(workflowRunsData.builds.length);
           // Transformation here
           return workflowRunsData.builds.map(run => ({
             message: run.substitutions.REPO_NAME,

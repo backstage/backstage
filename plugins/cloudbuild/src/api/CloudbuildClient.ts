@@ -18,7 +18,6 @@ import { CloudbuildApi } from './CloudbuildApi';
 import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
-  Builds,
 } from '../api/types';
 import { OAuthApi } from '@backstage/core';
 
@@ -61,14 +60,9 @@ export class CloudbuildClient implements CloudbuildApi {
       },
     );
 
-    const builds: Builds = await workflowRuns.json();
+    const builds: ActionsListWorkflowRunsForRepoResponseData = await workflowRuns.json();
 
-    const response: ActionsListWorkflowRunsForRepoResponseData = {
-      total_count: builds.builds.length,
-      builds: builds.builds,
-    };
-
-    return response;
+    return builds;
   }
   async getWorkflow({
     projectId,

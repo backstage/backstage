@@ -23,13 +23,12 @@ import { CLOUDBUILD_ANNOTATION } from './useProjectName';
 import { WarningPanel } from '@backstage/core';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[CLOUDBUILD_ANNOTATION]) &&
-  entity.metadata.annotations?.[CLOUDBUILD_ANNOTATION] !== '';
+  Boolean(entity.metadata.annotations?.[CLOUDBUILD_ANNOTATION]);
 
 export const Router = ({ entity }: { entity: Entity }) =>
   // TODO(shmidt-i): move warning to a separate standardized component
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title=" Cloudbuild plugin:">
+    <WarningPanel title="Cloudbuild plugin:">
       <pre>{CLOUDBUILD_ANNOTATION}</pre> annotation is missing on the entity.
     </WarningPanel>
   ) : (
