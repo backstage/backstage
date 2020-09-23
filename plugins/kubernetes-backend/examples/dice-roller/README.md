@@ -24,7 +24,6 @@ An app to roll dice (it doesn't actually do that).
 Update `app-config.yaml` as follows.
 
 ```yaml
-
 ---
 kubernetes:
   clusterLocatorMethod: 'configMultiTenant'

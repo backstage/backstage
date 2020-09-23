@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: dice-roller
   labels:
-    "backstage.io/kubernetes": dice-roller
+    'backstage.io/kubernetes': dice-roller
 spec:
   selector:
     matchLabels:
@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app: dice-roller
-        "backstage.io/kubernetes": dice-roller
+        'backstage.io/kubernetes': dice-roller
     spec:
       containers:
         - name: nginx
@@ -22,36 +22,33 @@ spec:
             - containerPort: 80
 
 ---
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: dice-roller
   namespace: default
   labels:
-    "backstage.io/kubernetes": dice-roller
+    'backstage.io/kubernetes': dice-roller
 data:
   foo: bar
 
 ---
-
 apiVersion: v1
 kind: Secret
 metadata:
   name: dice-roller
   labels:
-    "backstage.io/kubernetes": dice-roller
+    'backstage.io/kubernetes': dice-roller
 type: Opaque
 data:
   username: YWRtaW4=
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: dice-roller
   labels:
-    "backstage.io/kubernetes": dice-roller
+    'backstage.io/kubernetes': dice-roller
 spec:
   selector:
     app: dice-roller
@@ -68,7 +65,6 @@ metadata:
 automountServiceAccountToken: false
 
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
