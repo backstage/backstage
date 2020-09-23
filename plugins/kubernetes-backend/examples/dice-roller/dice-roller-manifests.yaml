@@ -26,7 +26,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: myconfig
+  name: dice-roller
   namespace: default
   labels:
     "backstage.io/kubernetes": dice-roller
