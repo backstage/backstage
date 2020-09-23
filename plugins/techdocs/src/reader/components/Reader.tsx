@@ -77,6 +77,14 @@ export const Reader = ({ entityId }: Props) => {
         },
       }),
       removeMkdocsHeader(),
+      injectCss({
+        css: `
+        body {
+          font-family: ${theme.typography.fontFamily};
+          color: ${theme.palette.text.primary};
+        }
+        `,
+      }),
     ]);
 
     if (!transformedElement) {
@@ -115,14 +123,6 @@ export const Reader = ({ entityId }: Props) => {
         onLoaded: (dom: Element) => {
           (dom as HTMLElement).style.removeProperty('opacity');
         },
-      }),
-      injectCss({
-        css: `
-        body {
-          font-family: ${theme.typography.fontFamily};
-          color: ${theme.palette.text.primary};
-        }
-        `,
       }),
     ]);
   }, [

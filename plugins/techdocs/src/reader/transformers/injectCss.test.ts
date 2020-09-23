@@ -18,7 +18,7 @@ import { createTestShadowDom } from '../../test-utils';
 import { injectCss } from '../transformers';
 
 describe('injectCss', () => {
-  it('should not do anything', () => {
+  it('should inject style with passed css in head', () => {
     const html = `
         <html>
             <head></head>
@@ -28,8 +28,8 @@ describe('injectCss', () => {
     const injectedCss = '* {background-color: #fff}';
 
     const shadowDom = createTestShadowDom(html, {
-      preTransformers: [],
-      postTransformers: [injectCss({ css: injectedCss })],
+      preTransformers: [injectCss({ css: injectedCss })],
+      postTransformers: [],
     });
 
     const styleElement = shadowDom.querySelector('head > style');
