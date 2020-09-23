@@ -50,9 +50,9 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   message: {
     display: 'flex',
     alignItems: 'center',
-    color: theme.palette.banner.textColor,
+    color: theme.palette.banner.text,
     '& a': {
-      color: theme.palette.banner.linkColor,
+      color: theme.palette.banner.link,
     },
   },
   info: {
@@ -70,12 +70,12 @@ type Props = {
   fixed?: boolean;
 };
 
-export const DismissableBanner: FC<Props> = ({
+export const DismissableBanner = ({
   variant,
   message,
   id,
   fixed = false,
-}) => {
+}: Props) => {
   const classes = useStyles();
   const storageApi = useApi(storageApiRef);
   const notificationsStore = storageApi.forBucket('notifications');
@@ -109,11 +109,7 @@ export const DismissableBanner: FC<Props> = ({
           : { vertical: 'top', horizontal: 'center' }
       }
       open={!dismissedBanners.has(id)}
-      classes={
-        fixed
-          ? { root: classes.root }
-          : { root: classNames(classes.topPosition, classes.root) }
-      }
+      classes={{ root: classNames(classes.root, fixed && classes.topPosition) }}
     >
       <SnackbarContent
         classes={{
