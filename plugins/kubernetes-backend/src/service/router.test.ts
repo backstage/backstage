@@ -77,5 +77,14 @@ describe('router', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(result);
     });
+
+    it('internal error: lists kubernetes objects', async () => {
+      handleGetByServiceId.mockRejectedValue(Error('some internal error'));
+
+      const response = await request(app).get('/services/test-service');
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toEqual({ error: 'some internal error' });
+    });
   });
 });
