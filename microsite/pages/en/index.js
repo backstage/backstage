@@ -471,8 +471,8 @@ class Index extends React.Component {
                 Cloud Native Computing Foundation
               </a>{' '}
               sandbox project
+              <div className="cncf-logo" />
             </Block.SmallTitle>
-            <div className="cncf-logo" />
           </Block.Container>
         </Block>
       </main>

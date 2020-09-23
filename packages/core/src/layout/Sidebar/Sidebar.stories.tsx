@@ -23,7 +23,7 @@ import {
   SidebarSearchField,
   SidebarSpace,
   SidebarUserSettings,
-  OAuthProviderSettings,
+  ProviderSettingsItem,
 } from '.';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -60,7 +60,7 @@ export const SampleSidebar = () => (
     <SidebarDivider />
     <SidebarUserSettings
       providerSettings={
-        <OAuthProviderSettings
+        <ProviderSettingsItem
           title="Github"
           apiRef={githubAuthApiRef}
           icon={Star}

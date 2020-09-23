@@ -21,7 +21,7 @@
     "docgen": "lerna run docgen",
     "docker-build:app": "yarn workspace example-app build && docker build . -t spotify/backstage",
     "docker-build": "yarn tsc && yarn workspace example-backend build-image",
-    "create-plugin": "backstage-cli create-plugin",
+    "create-plugin": "backstage-cli create-plugin --scope backstage --no-private",
     "remove-plugin": "backstage-cli remove-plugin",
     "release": "if [ \"$(git symbolic-ref --short HEAD)\" = master ]; then echo \"don't try to release master\"; exit 1; else lerna version --no-push --force-publish; fi",
     "prettier:check": "prettier --check .",
@@ -37,6 +37,7 @@
   },
   "version": "1.0.0",
   "devDependencies": {
+    "@changesets/cli": "2.10.2",
     "@spotify/eslint-config-oss": "^1.0.1",
     "@spotify/prettier-config": "^8.0.0",
     "concurrently": "^5.2.0",
