@@ -22,6 +22,7 @@ import { Config } from '@backstage/config';
 import { CatalogClient } from '../service/client';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 import { Entity } from '@backstage/catalog-model';
+import typeDefs from '../schema';
 
 export interface ModuleOptions {
   logger: Logger;
@@ -31,8 +32,6 @@ export interface ModuleOptions {
 export async function createModule(
   options: ModuleOptions,
 ): Promise<GraphQLModule> {
-  const { default: typeDefs } = require('../schema');
-
   const catalogClient = new CatalogClient(
     options.config.getString('backend.baseUrl'),
   );
