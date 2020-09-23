@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { CompoundEntityRef, EntityName, EntityRef } from '../types';
+import { EntityName, EntityRef } from '../types';
 
 /**
  * The context of defaults that entity reference parsing happens within.
  */
-export type EntityRefContext = {
+type EntityRefContext = {
   /** The default kind, if none is given in the reference */
   defaultKind?: string;
   /** The default namespace, if none is given in the reference */
@@ -53,19 +53,7 @@ export function parseEntityName(
     );
   }
 
-  // This is a corner case - when the ref contained a namespace but it was the
-  // empty string (so the default did not kick in)
-  if (!namespace) {
-    throw new Error(
-      `Entity reference ${kind}:${name} did not contain a namespace`,
-    );
-  }
-
-  return {
-    kind,
-    namespace: namespace!,
-    name,
-  };
+  return { kind, namespace, name };
 }
 
 /**
@@ -81,14 +69,42 @@ export function parseEntityName(
  */
 export function parseEntityRef(
   ref: EntityRef,
+  context?: { defaultKind: string },
+): {
+  kind: string;
+  namespace?: string;
+  name: string;
+};
+export function parseEntityRef(
+  ref: EntityRef,
+  context?: { defaultNamespace: string },
+): {
+  kind?: string;
+  namespace: string;
+  name: string;
+};
+export function parseEntityRef(
+  ref: EntityRef,
+  context?: { defaultKind: string; defaultNamespace: string },
+): {
+  kind: string;
+  namespace: string;
+  name: string;
+};
+export function parseEntityRef(
+  ref: EntityRef,
   context: EntityRefContext = {},
-): CompoundEntityRef {
+): {
+  kind?: string;
+  namespace?: string;
+  name: string;
+} {
   if (!ref) {
     throw new Error(`Entity reference must not be empty`);
   }
 
   if (typeof ref === 'string') {
-    const match = /^(?:([^:/]+):)?(?:([^:/]+)\/)?([^:/]+)$/.exec(ref.trim());
+    const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref.trim());
     if (!match) {
       throw new Error(
         `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`,
@@ -96,8 +112,8 @@ export function parseEntityRef(
     }
 
     return {
-      kind: match[1] ?? context.defaultKind,
-      namespace: match[2] ?? context.defaultNamespace,
+      kind: match[1]?.slice(0, -1) ?? context.defaultKind,
+      namespace: match[2]?.slice(0, -1) ?? context.defaultNamespace,
       name: match[3],
     };
   }
@@ -127,9 +143,11 @@ export function parseEntityRef(
  * @param ref The reference to serialize
  * @returns The same reference on either string or compound form
  */
-export function serializeEntityRef(
-  ref: CompoundEntityRef | EntityName,
-): EntityRef {
+export function serializeEntityRef(ref: {
+  kind?: string;
+  namespace?: string;
+  name: string;
+}): EntityRef {
   const { kind, namespace, name } = ref;
   if (
     kind?.includes(':') ||

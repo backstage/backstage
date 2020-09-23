@@ -45,20 +45,18 @@ export type EntityName = {
 };
 
 /**
- * A reference by name to an entity, where the kind and/or the namespace can be
- * left out.
+ * A reference by name to an entity, either as a compact string representation,
+ * or as a compound reference structure.
+ *
+ * The string representation is on the form [<kind>:][<namespace>/]<name>.
  *
  * Left-out parts of the reference need to be handled by the application,
  * either by rejecting the reference or by falling back to default values.
  */
-export type CompoundEntityRef = {
-  kind?: string;
-  namespace?: string;
-  name: string;
-};
-
-/**
- * A reference by name to an entity, either as a compact string representation,
- * or as a compound reference structure.
- */
-export type EntityRef = string | CompoundEntityRef;
+export type EntityRef =
+  | string
+  | {
+      kind?: string;
+      namespace?: string;
+      name: string;
+    };

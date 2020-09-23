@@ -68,33 +68,40 @@ describe('ref', () => {
       expect(() =>
         parseEntityName({ kind: '', namespace: 'b', name: 'c' }),
       ).toThrow();
+      expect(() => parseEntityName({ namespace: 'b', name: 'c' })).toThrow();
       expect(() =>
         parseEntityName({ kind: 'a', namespace: '', name: 'c' }),
       ).toThrow();
+      expect(() => parseEntityName({ kind: 'a', name: 'c' })).not.toThrow();
       expect(() =>
         parseEntityName({ kind: 'a', namespace: 'b', name: '' }),
+      ).toThrow();
+      expect(() =>
+        parseEntityName({ kind: 'a', namespace: 'b' } as any),
       ).toThrow();
       // two are empty
       expect(() =>
         parseEntityName({ kind: '', namespace: '', name: 'c' }),
       ).toThrow();
+      expect(() => parseEntityName({ name: 'c' })).toThrow();
       expect(() =>
         parseEntityName({ kind: '', namespace: 'b', name: '' }),
       ).toThrow();
+      expect(() => parseEntityName({ namespace: 'b' } as any)).toThrow();
       expect(() =>
         parseEntityName({ kind: 'a', namespace: '', name: '' }),
       ).toThrow();
+      expect(() => parseEntityName({ kind: 'a' } as any)).toThrow();
       // three are empty
       expect(() =>
         parseEntityName({ kind: '', namespace: '', name: '' }),
       ).toThrow();
+      expect(() => parseEntityName({} as any)).toThrow();
       // one is left out, one empty
       expect(() => parseEntityName({ namespace: '', name: 'c' })).toThrow();
       expect(() => parseEntityName({ namespace: 'b', name: '' })).toThrow();
       expect(() => parseEntityName({ kind: '', name: 'c' })).toThrow();
       expect(() => parseEntityName({ kind: 'a', name: '' })).toThrow();
-      // nothing at all
-      expect(() => parseEntityName({} as any)).toThrow();
     });
 
     it('adds defaults where necessary to strings', () => {
