@@ -23,9 +23,15 @@ import {
   KubernetesClusterLocator,
 } from '../cluster-locator/types';
 import { MultiTenantConfigClusterLocator } from '../cluster-locator/MultiTenantConfigClusterLocator';
-import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import {
+  KubernetesClientBasedFetcher,
+  KubernetesFetcher,
+} from './KubernetesFetcher';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
-import { handleGetKubernetesObjectsByServiceId } from './getKubernetesObjectsByServiceIdHandler';
+import {
+  GetKubernetesObjectsByServiceIdHandler,
+  handleGetKubernetesObjectsByServiceId,
+} from './getKubernetesObjectsByServiceIdHandler';
 
 export interface RouterOptions {
   logger: Logger;
@@ -51,14 +57,12 @@ const getClusterLocator = (config: Config): KubernetesClusterLocator => {
   }
 };
 
-const makeRouter = (logger: Logger, config: Config): express.Router => {
-  const clusterLocator = getClusterLocator(config);
-
-  const fetcher = new KubernetesClientBasedFetcher(
-    new KubernetesClientProvider(),
-    logger,
-  );
-
+export const makeRouter = (
+  logger: Logger,
+  fetcher: KubernetesFetcher,
+  clusterLocator: KubernetesClusterLocator,
+  handleGetByServiceId: GetKubernetesObjectsByServiceIdHandler,
+): express.Router => {
   const router = Router();
   router.use(express.json());
 
@@ -67,7 +71,7 @@ const makeRouter = (logger: Logger, config: Config): express.Router => {
     const serviceId = req.params.serviceId;
 
     try {
-      const response = await handleGetKubernetesObjectsByServiceId(
+      const response = await handleGetByServiceId(
         serviceId,
         fetcher,
         clusterLocator,
@@ -88,5 +92,18 @@ export async function createRouter(
   const logger = options.logger;
 
   logger.info('Initializing Kubernetes backend');
-  return makeRouter(logger, options.config);
+
+  const clusterLocator = getClusterLocator(options.config);
+
+  const fetcher = new KubernetesClientBasedFetcher(
+    new KubernetesClientProvider(),
+    logger,
+  );
+
+  return makeRouter(
+    logger,
+    fetcher,
+    clusterLocator,
+    handleGetKubernetesObjectsByServiceId,
+  );
 }

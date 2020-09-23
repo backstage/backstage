@@ -19,12 +19,19 @@ import { KubernetesClusterLocator } from '../cluster-locator/types';
 import { Logger } from 'winston';
 import { ObjectsByServiceIdResponse } from './types';
 
-export const handleGetKubernetesObjectsByServiceId = async (
+export type GetKubernetesObjectsByServiceIdHandler = (
   serviceId: string,
   fetcher: KubernetesFetcher,
   clusterLocator: KubernetesClusterLocator,
   logger: Logger,
-): Promise<ObjectsByServiceIdResponse> => {
+) => Promise<ObjectsByServiceIdResponse>;
+
+export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServiceIdHandler = async (
+  serviceId,
+  fetcher,
+  clusterLocator,
+  logger,
+) => {
   const clusterDetails = await clusterLocator.getClusterByServiceId(serviceId);
 
   logger.info(
