@@ -81,7 +81,8 @@ export const Reader = ({ entityId }: Props) => {
         css: `
         body {
           font-family: ${theme.typography.fontFamily};
-          color: ${theme.palette.text.primary};
+          --md-text-color: ${theme.palette.text.primary};
+          --md-text-link-color: ${theme.palette.primary.main}
         }
         `,
       }),
