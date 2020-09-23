@@ -26,7 +26,7 @@ import {
   GitlabPublisher,
   CreateReactAppTemplater,
   Templaters,
-  RepoVisilityOptions,
+  RepoVisibilityOptions,
 } from '@backstage/plugin-scaffolder-backend';
 import { Octokit } from '@octokit/rest';
 import { Gitlab } from '@gitbeaker/node';
@@ -61,7 +61,7 @@ export default async function createPlugin({
     try {
       const repoVisibility = githubConfig.getString(
         'visibility',
-      ) as RepoVisilityOptions;
+      ) as RepoVisibilityOptions;
 
       const githubToken = githubConfig.getString('token');
       const githubClient = new Octokit({ auth: githubToken });
