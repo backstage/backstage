@@ -19,7 +19,7 @@ An app to roll dice (it doesn't actually do that).
 4. Get service account token (see below)
 5. Start Backstage UI and backend
 6. Register existing component in Backstage
-   - https://github.com/mclarke47/dice-roller/blob/master/component.yaml
+   - https://github.com/mclarke47/dice-roller/blob/master/catalog-info.yaml
 
 Update `app-config.yaml` as follows.
 
