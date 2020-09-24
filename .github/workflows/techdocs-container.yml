@@ -1,0 +1,43 @@
+name: Master Build TechDocs Container DockerHub Publish
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'packages/techdocs-container/**'
+      - '.github/workflows/techdocs-container.yml'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.7]
+
+    env:
+      TECHDOCS_CORE_PATH: ./packages/techdocs-container/techdocs-core
+
+    name: Python ${{ matrix.node-version }} on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+
+      # Build Docker Image
+      - name: Build Docker image
+        uses: docker/build-push-action@v1.1.0
+        with:
+          path: packages/techdocs-container
+          push: true
+          tags: |
+          spotify/techdocs:latest
+          spotify/techdocs:1.0.0
+      # https://github.com/docker/build-push-action#update-dockerhub-repo-description
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v2
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          DOCKERHUB_REPOSITORY: spotify/techdocs
+          README_FILEPATH: packages/techdocs-container/README.md
+
