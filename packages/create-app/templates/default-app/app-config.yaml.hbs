@@ -67,10 +67,6 @@ catalog:
     - allow: [Component, API, Group, Template, Location]
   processors:
     github:
-      privateToken:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
-    githubApi:
       providers:
         - target: https://github.com
           token:

@@ -32,6 +32,10 @@ If you start developing a plugin that you aim to release as open source, we sugg
 
 You can also use this process if you have an idea for a good plugin but you hope that someone else will pick up the work.
 
+## Adding Non-code Contributions
+
+Since there is such a large landscape of possible development, build, and deployment environments, we welcome community contributions in these areas in the [`/contrib`](https://github.com/spotify/backstage/tree/master/contrib) folder of the project. This is an excellent place to put things that help out the community at large, but which may not fit within the scope of the core product to support natively. Here, you will find Helm charts, alternative Docker images, and much more.
+
 ## Write Documentation
 
 The current documentation is very limited. Help us make the `/docs` folder come alive.
@@ -71,6 +75,21 @@ All code is formatted with `prettier` using the configuration in the repo. If po
 If you're contributing to the backend or CLI tooling, be mindful of cross-platform support. [This](https://shapeshed.com/writing-cross-platform-node/) blog post is a good guide of what to keep in mind when writing cross-platform NodeJS.
 
 Also be sure to skim through our [ADRs](https://github.com/spotify/backstage/tree/master/docs/architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](https://github.com/spotify/backstage/blob/master/docs/architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
+
+# Creating Changesets
+
+We use [changesets](https://github.com/atlassian/changesets) to help us prepare releases. It helps us make sure that every package affected by a change gets a proper version number and an entry in its `CHANGELOG.md`. To make the process of generating releases easy. it helps when contributors include changesets with their pull requests.
+
+## To create a changeset
+
+1. Run `yarn changeset`
+2. Select which packages you want to include a changeset for
+3. Select impact of change that you're introducing (minor, major or patch)
+4. Add generated changset to Git
+5. Push the commit with your changeset to the branch associated with your PR
+6. Accept our gratitude for making the release process easier on the maintainer
+
+For more information, checkout [adding a changeset](https://github.com/atlassian/changesets/blob/master/docs/adding-a-changeset.md) documentation in changesets repository.
 
 # Code of Conduct
 

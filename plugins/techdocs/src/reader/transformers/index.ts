@@ -21,6 +21,7 @@ export * from './removeMkdocsHeader';
 export * from './modifyCss';
 export * from './onCssReady';
 export * from './sanitizeDOM';
+export * from './injectCss';
 
 export type Transformer = (dom: Element) => Element;
 

@@ -35,4 +35,4 @@ export { plugin as GcpProjects } from '@backstage/plugin-gcp-projects';
 export { plugin as GithubPrs } from '@backstage/plugin-github-prs';
 export { plugin as Argocd } from '@backstage/plugin-argocd';
 export { plugin as Grafana } from '@backstage/plugin-grafana';
-// export { plugin as GithubPullRequests } from '@roadiehq/backstage-plugin-github-pull-requests';
+export { plugin as Kubernetes } from '@backstage/plugin-kubernetes';

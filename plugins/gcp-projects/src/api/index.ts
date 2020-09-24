@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from './GCPApi';
-export * from './GCPClient';
+export * from './GcpApi';
+export * from './GcpClient';
 export * from './types';

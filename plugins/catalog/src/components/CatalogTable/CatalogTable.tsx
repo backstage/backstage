@@ -16,11 +16,10 @@
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
 import { Chip, Link } from '@material-ui/core';
-import Add from '@material-ui/icons/Add';
 import Edit from '@material-ui/icons/Edit';
 import GitHub from '@material-ui/icons/GitHub';
 import { Alert } from '@material-ui/lab';
-import React, { Dispatch } from 'react';
+import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
@@ -87,7 +86,6 @@ type CatalogTableProps = {
   titlePreamble: string;
   loading: boolean;
   error?: any;
-  onAddMockData: Dispatch<void>;
 };
 
 export const CatalogTable = ({
@@ -95,7 +93,6 @@ export const CatalogTable = ({
   loading,
   error,
   titlePreamble,
-  onAddMockData,
 }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
 
@@ -150,13 +147,6 @@ export const CatalogTable = ({
         tooltip: favouriteEntityTooltip(isStarred),
         onClick: () => toggleStarredEntity(rowData),
       };
-    },
-    {
-      icon: () => <Add />,
-      tooltip: 'Add example components',
-      isFreeAction: true,
-      onClick: onAddMockData,
-      hidden: !(entities && entities.length === 0),
     },
   ];
 

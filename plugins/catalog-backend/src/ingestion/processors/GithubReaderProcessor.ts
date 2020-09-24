@@ -15,37 +15,233 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import fetch, { RequestInit, HeadersInit } from 'node-fetch';
+import { Config } from '@backstage/config';
+import parseGitUri from 'git-url-parse';
+import fetch, { HeadersInit, RequestInit } from 'node-fetch';
+import { Logger } from 'winston';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
-import { Config } from '@backstage/config';
 
-export class GithubReaderProcessor implements LocationProcessor {
-  private privateToken: string;
+/**
+ * The configuration parameters for a single GitHub API provider.
+ */
+export type ProviderConfig = {
+  /**
+   * The prefix of the target that this matches on, e.g. "https://github.com",
+   * with no trailing slash.
+   */
+  target: string;
 
-  constructor(config?: Config) {
-    this.privateToken =
-      config?.getOptionalString('catalog.processors.github.privateToken') ?? '';
+  /**
+   * The base URL of the API of this provider, e.g. "https://api.github.com",
+   * with no trailing slash.
+   *
+   * May be omitted specifically for GitHub; then it will be deduced.
+   *
+   * The API will always be preferred if both its base URL and a token are
+   * present.
+   */
+  apiBaseUrl?: string;
+
+  /**
+   * The base URL of the raw fetch endpoint of this provider, e.g.
+   * "https://raw.githubusercontent.com", with no trailing slash.
+   *
+   * May be omitted specifically for GitHub; then it will be deduced.
+   *
+   * The API will always be preferred if both its base URL and a token are
+   * present.
+   */
+  rawBaseUrl?: string;
+
+  /**
+   * The authorization token to use for requests to this provider.
+   *
+   * If no token is specified, anonymous access is used.
+   */
+  token?: string;
+};
+
+// getRequestOptions(token?: string): RequestInit {
+//   const headers: HeadersInit = {
+//     Accept: 'application/vnd.github.v3.raw',
+//   };
+
+//   if (token !== '') {
+//     headers.Authorization = `token ${token}`;
+//   }
+
+//   if (token === '' && this.privateToken !== '') {
+//     headers.Authorization = `token ${this.privateToken}`;
+
+export function getApiRequestOptions(
+  provider: ProviderConfig,
+  token?: string,
+): RequestInit {
+  const headers: HeadersInit = {
+    Accept: 'application/vnd.github.v3.raw',
+  };
+
+  if (provider.token) {
+    headers.Authorization = `token ${provider.token}`;
   }
 
-  getRequestOptions(token?: string): RequestInit {
-    const headers: HeadersInit = {
-      Accept: 'application/vnd.github.v3.raw',
-    };
+  if (token) {
+    headers.Authorization = `token ${token}`;
+  }
 
-    if (token !== '') {
-      headers.Authorization = `token ${token}`;
+  return {
+    headers,
+  };
+}
+
+export function getRawRequestOptions(
+  provider: ProviderConfig,
+  token?: string,
+): RequestInit {
+  const headers: HeadersInit = {};
+
+  if (provider.token) {
+    headers.Authorization = `token ${provider.token}`;
+  }
+
+  if (token) {
+    headers.Authorization = `token ${token}`;
+  }
+
+  return {
+    headers,
+  };
+}
+
+// Converts for example
+// from: https://github.com/a/b/blob/branchname/path/to/c.yaml
+// to:   https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname
+export function getApiUrl(target: string, provider: ProviderConfig): URL {
+  try {
+    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
+
+    if (
+      !owner ||
+      !name ||
+      !ref ||
+      (filepathtype !== 'blob' && filepathtype !== 'raw') ||
+      !filepath?.match(/\.ya?ml$/)
+    ) {
+      throw new Error('Wrong URL or invalid file path');
     }
 
-    if (token === '' && this.privateToken !== '') {
-      headers.Authorization = `token ${this.privateToken}`;
+    const pathWithoutSlash = filepath.replace(/^\//, '');
+    return new URL(
+      `${provider.apiBaseUrl}/repos/${owner}/${name}/contents/${pathWithoutSlash}?ref=${ref}`,
+    );
+  } catch (e) {
+    throw new Error(`Incorrect URL: ${target}, ${e}`);
+  }
+}
+
+// Converts for example
+// from: https://github.com/a/b/blob/branchname/c.yaml
+// to:   https://raw.githubusercontent.com/a/b/branchname/c.yaml
+export function getRawUrl(target: string, provider: ProviderConfig): URL {
+  try {
+    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
+
+    if (
+      !owner ||
+      !name ||
+      !ref ||
+      (filepathtype !== 'blob' && filepathtype !== 'raw') ||
+      !filepath?.match(/\.ya?ml$/)
+    ) {
+      throw new Error('Wrong URL or invalid file path');
     }
 
-    const requestOptions: RequestInit = {
-      headers,
-    };
+    const pathWithoutSlash = filepath.replace(/^\//, '');
+    return new URL(
+      `${provider.rawBaseUrl}/${owner}/${name}/${ref}/${pathWithoutSlash}`,
+    );
+  } catch (e) {
+    throw new Error(`Incorrect URL: ${target}, ${e}`);
+  }
+}
 
-    return requestOptions;
+export function readConfig(config: Config, logger: Logger): ProviderConfig[] {
+  const providers: ProviderConfig[] = [];
+
+  // TODO(freben): Deprecate the old config root entirely in a later release
+  if (config.has('catalog.processors.githubApi')) {
+    logger.warn(
+      'The catalog.processors.githubApi configuration key has been deprecated, please use catalog.processors.github instead',
+    );
+  }
+
+  // In a previous version of the configuration, we only supported github,
+  // and the "privateToken" key held the token to use for it. The new
+  // configuration method is to use the "providers" key instead.
+  const providerConfigs =
+    config.getOptionalConfigArray('catalog.processors.github.providers') ??
+    config.getOptionalConfigArray('catalog.processors.githubApi.providers') ??
+    [];
+  const legacyToken =
+    config.getOptionalString('catalog.processors.github.privateToken') ??
+    config.getOptionalString('catalog.processors.githubApi.privateToken');
+
+  // First read all the explicit providers
+  for (const providerConfig of providerConfigs) {
+    const target = providerConfig.getString('target').replace(/\/+$/, '');
+    let apiBaseUrl = providerConfig.getOptionalString('apiBaseUrl');
+    let rawBaseUrl = providerConfig.getOptionalString('rawBaseUrl');
+    const token = providerConfig.getOptionalString('token');
+
+    if (apiBaseUrl) {
+      apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+    } else if (target === 'https://github.com') {
+      apiBaseUrl = 'https://api.github.com';
+    }
+
+    if (rawBaseUrl) {
+      rawBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+    } else if (target === 'https://github.com') {
+      rawBaseUrl = 'https://raw.githubusercontent.com';
+    }
+
+    if (!apiBaseUrl && !rawBaseUrl) {
+      throw new Error(
+        `Provider at ${target} must configure an explicit apiBaseUrl or rawBaseUrl`,
+      );
+    }
+
+    providers.push({ target, apiBaseUrl, rawBaseUrl, token });
+  }
+
+  // If no explicit github.com provider was added, put one in the list as
+  // a convenience
+  if (!providers.some(p => p.target === 'https://github.com')) {
+    providers.push({
+      target: 'https://github.com',
+      apiBaseUrl: 'https://api.github.com',
+      rawBaseUrl: 'https://raw.githubusercontent.com',
+      token: legacyToken,
+    });
+  }
+
+  return providers;
+}
+
+/**
+ * A processor that adds the ability to read files from GitHub v3 APIs, such as
+ * the one exposed by GitHub itself.
+ */
+export class GithubReaderProcessor implements LocationProcessor {
+  private providers: ProviderConfig[];
+
+  static fromConfig(config: Config, logger: Logger) {
+    return new GithubReaderProcessor(readConfig(config, logger));
+  }
+
+  constructor(providers: ProviderConfig[]) {
+    this.providers = providers;
   }
 
   async readLocation(
@@ -53,19 +249,30 @@ export class GithubReaderProcessor implements LocationProcessor {
     optional: boolean,
     emit: LocationProcessorEmit,
   ): Promise<boolean> {
-    if (location.type !== 'github') {
+    // The github/api type is for backward compatibility
+    if (location.type !== 'github' && location.type !== 'github/api') {
       return false;
     }
 
-    try {
-      const url = this.buildRawUrl(location.target);
-
-      // TODO(freben): Should "hard" errors thrown by this line be treated as
-      // notFound instead of fatal?
-      const response = await fetch(
-        url.toString(),
-        this.getRequestOptions(location.token),
+    const provider = this.providers.find(p =>
+      location.target.startsWith(`${p.target}/`),
+    );
+    if (!provider) {
+      throw new Error(
+        `There is no GitHub provider that matches ${location.target}. Please add a configuration entry for it under catalog.processors.github.providers.`,
       );
+    }
+
+    try {
+      const useApi =
+        provider.apiBaseUrl && (provider.token || !provider.rawBaseUrl);
+      const url = useApi
+        ? getApiUrl(location.target, provider)
+        : getRawUrl(location.target, provider);
+      const options = useApi
+        ? getApiRequestOptions(provider, location.token)
+        : getRawRequestOptions(provider, location.token);
+      const response = await fetch(url.toString(), options);
 
       if (response.ok) {
         const data = await response.buffer();
@@ -86,42 +293,5 @@ export class GithubReaderProcessor implements LocationProcessor {
     }
 
     return true;
-  }
-
-  // Converts
-  // from: https://github.com/a/b/blob/master/c.yaml
-  // to:   https://raw.githubusercontent.com/a/b/master/c.yaml
-  private buildRawUrl(target: string): URL {
-    try {
-      const url = new URL(target);
-
-      const [
-        empty,
-        userOrOrg,
-        repoName,
-        blobKeyword,
-        ...restOfPath
-      ] = url.pathname.split('/');
-
-      if (
-        url.hostname !== 'github.com' ||
-        empty !== '' ||
-        userOrOrg === '' ||
-        repoName === '' ||
-        blobKeyword !== 'blob' ||
-        !restOfPath.join('/').match(/\.yaml$/)
-      ) {
-        throw new Error('Wrong GitHub URL');
-      }
-
-      // Removing the "blob" part
-      url.pathname = [empty, userOrOrg, repoName, ...restOfPath].join('/');
-      url.hostname = 'raw.githubusercontent.com';
-      url.protocol = 'https';
-
-      return url;
-    } catch (e) {
-      throw new Error(`Incorrect url: ${target}, ${e}`);
-    }
   }
 }

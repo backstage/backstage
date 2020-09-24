@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
 import {
-  Grid,
+  Content,
+  ContentHeader,
+  Header,
+  HeaderLabel,
+  InfoCard,
+  Page,
+  pageTheme,
+  SimpleStepper,
+  SimpleStepperStep,
+  StructuredMetadataTable,
+  SupportButton,
+} from '@backstage/core';
+import {
   Button,
+  Grid,
   TextField,
   FormControlLabel,
   Switch,
 } from '@material-ui/core';
+import React, { useState } from 'react';
 
-import {
-  InfoCard,
-  Content,
-  ContentHeader,
-  SimpleStepper,
-  SimpleStepperStep,
-  StructuredMetadataTable,
-  HeaderLabel,
-  Page,
-  Header,
-  pageTheme,
-  SupportButton,
-} from '@backstage/core';
-
-export const Project: FC<{}> = () => {
+export const Project = () => {
   const [projectName, setProjectName] = useState('');
   const [projectEmail, setProjectEmail] = useState('');
   const [projectDescription, setProjectDescription] = useState('');

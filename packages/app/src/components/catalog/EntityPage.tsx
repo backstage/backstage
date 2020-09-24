@@ -33,6 +33,7 @@ import { Router as GrafanaRouter } from '@backstage/plugin-grafana';
 
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
+import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
 import React from 'react';
 import {
   AboutCard,
@@ -122,6 +123,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Docs"
       element={<DocsRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/kubernetes/*"
+      title="Kubernetes"
+      element={<KubernetesRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -146,6 +152,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/docs/*"
       title="Docs"
       element={<DocsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/kubernetes/*"
+      title="Kubernetes"
+      element={<KubernetesRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
