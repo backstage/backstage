@@ -6,7 +6,7 @@ metadata:
   tags:
     - go
   annotations:
-    'backstage.io/kubernetes': dice-roller
+    'backstage.io/kubernetes-id': dice-roller
 spec:
   type: service
   lifecycle: production

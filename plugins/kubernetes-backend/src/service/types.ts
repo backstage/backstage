@@ -14,28 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  AppsV1Api,
-  CoreV1Api,
-  V1ConfigMap,
-  V1Deployment,
-  V1Pod,
-  V1ReplicaSet,
-  V1Secret,
-} from '@kubernetes/client-node';
+import { AppsV1Api, CoreV1Api } from '@kubernetes/client-node';
 
 export interface Clients {
   core: CoreV1Api;
   apps: AppsV1Api;
-}
-
-// cluster name to k8s objects
-export interface ObjectsByServiceIdResponse {
-  [key: string]: {
-    configMaps: Array<V1ConfigMap>;
-    deployments: Array<V1Deployment>;
-    pods: Array<V1Pod>;
-    replicaSets: Array<V1ReplicaSet>;
-    secrets: Array<V1Secret>;
-  };
 }

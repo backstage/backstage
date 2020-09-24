@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-export interface ClusterDetails {
-  name: string;
-  url: string;
-  // TODO this will eventually be configured by the auth translation work
-  serviceAccountToken: string | undefined;
-}
-
-export interface KubernetesClusterLocator {
-  getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
-}
-
 export type ClusterLocatorMethod = 'configMultiTenant' | 'http';

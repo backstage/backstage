@@ -17,10 +17,12 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
-import { KubernetesFetcher } from './KubernetesFetcher';
-import { KubernetesClusterLocator } from '../cluster-locator/types';
 import { makeRouter } from './router';
-import { ObjectsByServiceIdResponse } from './types';
+import {
+  KubernetesClusterLocator,
+  KubernetesFetcher,
+  ObjectsByServiceIdResponse,
+} from '..';
 
 describe('router', () => {
   let app: express.Express;
@@ -30,12 +32,7 @@ describe('router', () => {
 
   beforeAll(async () => {
     kubernetesFetcher = {
-      fetchServicesByServiceId: jest.fn(),
-      fetchPodsByServiceId: jest.fn(),
-      fetchConfigMapsByServiceId: jest.fn(),
-      fetchSecretsByServiceId: jest.fn(),
-      fetchDeploymentsByServiceId: jest.fn(),
-      fetchReplicaSetsByServiceId: jest.fn(),
+      fetchObjectsByServiceId: jest.fn(),
     };
 
     kubernetesClusterLocator = {

@@ -21,38 +21,16 @@ import {
   V1ReplicaSet,
   V1Secret,
 } from '@kubernetes/client-node';
-import { ClusterDetails } from '../cluster-locator/types';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { V1Service } from '@kubernetes/client-node/dist/gen/model/v1Service';
 import { Clients } from './types';
 import { Logger } from 'winston';
-
-export interface KubernetesFetcher {
-  fetchServicesByServiceId(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-  ): Promise<Array<V1Service>>;
-  fetchPodsByServiceId(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-  ): Promise<Array<V1Pod>>;
-  fetchConfigMapsByServiceId(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-  ): Promise<Array<V1ConfigMap>>;
-  fetchSecretsByServiceId(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-  ): Promise<Array<V1Secret>>;
-  fetchDeploymentsByServiceId(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-  ): Promise<Array<V1Deployment>>;
-  fetchReplicaSetsByServiceId(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-  ): Promise<Array<V1ReplicaSet>>;
-}
+import {
+  KubernetesFetcher,
+  ClusterDetails,
+  KubernetesObjectTypes,
+  FetchResponse,
+} from '..';
 
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private readonly k8sClientProvider: KubernetesClientProvider;
@@ -61,6 +39,60 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   constructor(k8sClientProvider: KubernetesClientProvider, logger: Logger) {
     this.k8sClientProvider = k8sClientProvider;
     this.logger = logger;
+  }
+
+  fetchByObjectType(
+    serviceId: string,
+    clusterDetails: ClusterDetails,
+    type: KubernetesObjectTypes,
+  ): Promise<FetchResponse> {
+    switch (type) {
+      case 'pods':
+        return this.fetchPodsByServiceId(serviceId, clusterDetails).then(r => ({
+          type: type,
+          resources: r,
+        }));
+      case 'configmaps':
+        return this.fetchConfigMapsByServiceId(
+          serviceId,
+          clusterDetails,
+        ).then(r => ({ type: type, resources: r }));
+      case 'deployments':
+        return this.fetchDeploymentsByServiceId(
+          serviceId,
+          clusterDetails,
+        ).then(r => ({ type: type, resources: r }));
+      case 'replicasets':
+        return this.fetchReplicaSetsByServiceId(
+          serviceId,
+          clusterDetails,
+        ).then(r => ({ type: type, resources: r }));
+      case 'secrets':
+        return this.fetchSecretsByServiceId(
+          serviceId,
+          clusterDetails,
+        ).then(r => ({ type: type, resources: r }));
+      case 'services':
+        return this.fetchServicesByServiceId(
+          serviceId,
+          clusterDetails,
+        ).then(r => ({ type: type, resources: r }));
+      default:
+        // unrecognised type
+        throw new Error(`unrecognised type=${type}`);
+    }
+  }
+
+  fetchObjectsByServiceId(
+    serviceId: string,
+    clusterDetails: ClusterDetails,
+    objectTypesToFetch: Set<KubernetesObjectTypes>,
+  ): Promise<FetchResponse[]> {
+    return Promise.all(
+      Array.from(objectTypesToFetch).map(type => {
+        return this.fetchByObjectType(serviceId, clusterDetails, type);
+      }),
+    );
   }
 
   private singleClusterFetch<T>(
@@ -80,7 +112,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     });
   }
 
-  fetchServicesByServiceId(
+  private fetchServicesByServiceId(
     serviceId: string,
     clusterDetails: ClusterDetails,
   ): Promise<Array<V1Service>> {
@@ -89,12 +121,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         false,
         '',
         '',
-        `backstage.io/kubernetes=${serviceId}`,
+        `backstage.io/kubernetes-id=${serviceId}`,
       ),
     );
   }
 
-  fetchPodsByServiceId(
+  private fetchPodsByServiceId(
     serviceId: string,
     clusterDetails: ClusterDetails,
   ): Promise<Array<V1Pod>> {
@@ -103,12 +135,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         false,
         '',
         '',
-        `backstage.io/kubernetes=${serviceId}`,
+        `backstage.io/kubernetes-id=${serviceId}`,
       ),
     );
   }
 
-  fetchConfigMapsByServiceId(
+  private fetchConfigMapsByServiceId(
     serviceId: string,
     clusterDetails: ClusterDetails,
   ): Promise<Array<V1ConfigMap>> {
@@ -117,12 +149,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         false,
         '',
         '',
-        `backstage.io/kubernetes=${serviceId}`,
+        `backstage.io/kubernetes-id=${serviceId}`,
       ),
     );
   }
 
-  fetchSecretsByServiceId(
+  private fetchSecretsByServiceId(
     serviceId: string,
     clusterDetails: ClusterDetails,
   ): Promise<Array<V1Secret>> {
@@ -131,12 +163,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         false,
         '',
         '',
-        `backstage.io/kubernetes=${serviceId}`,
+        `backstage.io/kubernetes-id=${serviceId}`,
       ),
     );
   }
 
-  fetchDeploymentsByServiceId(
+  private fetchDeploymentsByServiceId(
     serviceId: string,
     clusterDetails: ClusterDetails,
   ): Promise<Array<V1Deployment>> {
@@ -145,12 +177,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         false,
         '',
         '',
-        `backstage.io/kubernetes=${serviceId}`,
+        `backstage.io/kubernetes-id=${serviceId}`,
       ),
     );
   }
 
-  fetchReplicaSetsByServiceId(
+  private fetchReplicaSetsByServiceId(
     serviceId: string,
     clusterDetails: ClusterDetails,
   ): Promise<Array<V1ReplicaSet>> {
@@ -159,7 +191,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         false,
         '',
         '',
-        `backstage.io/kubernetes=${serviceId}`,
+        `backstage.io/kubernetes-id=${serviceId}`,
       ),
     );
   }

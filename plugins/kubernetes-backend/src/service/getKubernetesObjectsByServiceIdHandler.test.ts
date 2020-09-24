@@ -16,26 +16,46 @@
 
 import { handleGetKubernetesObjectsByServiceId } from './getKubernetesObjectsByServiceIdHandler';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ClusterDetails } from '../cluster-locator/types';
+import { ClusterDetails } from '..';
 
 const TEST_SERVICE_ID = 'my-service';
 
-const fetchConfigMapsByServiceId = jest.fn();
-const fetchDeploymentsByServiceId = jest.fn();
-const fetchPodsByServiceId = jest.fn();
-const fetchReplicaSetsByServiceId = jest.fn();
-const fetchSecretsByServiceId = jest.fn();
-const fetchServicesByServiceId = jest.fn();
+const fetchObjectsByServiceId = jest.fn();
 
 const getClusterByServiceId = jest.fn();
 
-const mockFetch = (mock: jest.Mock, type: string) => {
+const mockFetch = (mock: jest.Mock) => {
   mock.mockImplementation((serviceId: string, clusterDetails: ClusterDetails) =>
     Promise.resolve([
       {
-        metadata: {
-          name: `my-${type}-${serviceId}-${clusterDetails.name}`,
-        },
+        type: 'pods',
+        resources: [
+          {
+            metadata: {
+              name: `my-pods-${serviceId}-${clusterDetails.name}`,
+            },
+          },
+        ],
+      },
+      {
+        type: 'configmaps',
+        resources: [
+          {
+            metadata: {
+              name: `my-configmaps-${serviceId}-${clusterDetails.name}`,
+            },
+          },
+        ],
+      },
+      {
+        type: 'services',
+        resources: [
+          {
+            metadata: {
+              name: `my-services-${serviceId}-${clusterDetails.name}`,
+            },
+          },
+        ],
       },
     ]),
   );
@@ -55,22 +75,12 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       ]),
     );
 
-    mockFetch(fetchConfigMapsByServiceId, 'cm');
-    mockFetch(fetchDeploymentsByServiceId, 'deploy');
-    mockFetch(fetchPodsByServiceId, 'po');
-    mockFetch(fetchReplicaSetsByServiceId, 'rs');
-    mockFetch(fetchSecretsByServiceId, 'secrets');
-    mockFetch(fetchServicesByServiceId, 'svc');
+    mockFetch(fetchObjectsByServiceId);
 
     const result = await handleGetKubernetesObjectsByServiceId(
       TEST_SERVICE_ID,
       {
-        fetchConfigMapsByServiceId,
-        fetchDeploymentsByServiceId,
-        fetchPodsByServiceId,
-        fetchReplicaSetsByServiceId,
-        fetchSecretsByServiceId,
-        fetchServicesByServiceId,
+        fetchObjectsByServiceId,
       },
       {
         getClusterByServiceId,
@@ -79,57 +89,47 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
     );
 
     expect(getClusterByServiceId.mock.calls.length).toBe(1);
-    expect(fetchConfigMapsByServiceId.mock.calls.length).toBe(1);
-    expect(fetchDeploymentsByServiceId.mock.calls.length).toBe(1);
-    expect(fetchPodsByServiceId.mock.calls.length).toBe(1);
-    expect(fetchReplicaSetsByServiceId.mock.calls.length).toBe(1);
-    expect(fetchSecretsByServiceId.mock.calls.length).toBe(1);
-    expect(fetchServicesByServiceId.mock.calls.length).toBe(1);
+    expect(fetchObjectsByServiceId.mock.calls.length).toBe(1);
     expect(result).toStrictEqual({
-      'test-cluster': {
-        configMaps: [
-          {
-            metadata: {
-              name: 'my-cm-my-service-test-cluster',
-            },
+      items: [
+        {
+          cluster: {
+            name: 'test-cluster',
           },
-        ],
-        deployments: [
-          {
-            metadata: {
-              name: 'my-deploy-my-service-test-cluster',
+          resources: [
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-pods-my-service-test-cluster',
+                  },
+                },
+              ],
+              type: 'pods',
             },
-          },
-        ],
-        pods: [
-          {
-            metadata: {
-              name: 'my-po-my-service-test-cluster',
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-configmaps-my-service-test-cluster',
+                  },
+                },
+              ],
+              type: 'configmaps',
             },
-          },
-        ],
-        replicaSets: [
-          {
-            metadata: {
-              name: 'my-rs-my-service-test-cluster',
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-services-my-service-test-cluster',
+                  },
+                },
+              ],
+              type: 'services',
             },
-          },
-        ],
-        secrets: [
-          {
-            metadata: {
-              name: 'my-secrets-my-service-test-cluster',
-            },
-          },
-        ],
-        services: [
-          {
-            metadata: {
-              name: 'my-svc-my-service-test-cluster',
-            },
-          },
-        ],
-      },
+          ],
+        },
+      ],
     });
   });
 
@@ -145,22 +145,12 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       ]),
     );
 
-    mockFetch(fetchConfigMapsByServiceId, 'cm');
-    mockFetch(fetchDeploymentsByServiceId, 'deploy');
-    mockFetch(fetchPodsByServiceId, 'po');
-    mockFetch(fetchReplicaSetsByServiceId, 'rs');
-    mockFetch(fetchSecretsByServiceId, 'secrets');
-    mockFetch(fetchServicesByServiceId, 'svc');
+    mockFetch(fetchObjectsByServiceId);
 
     const result = await handleGetKubernetesObjectsByServiceId(
       TEST_SERVICE_ID,
       {
-        fetchConfigMapsByServiceId,
-        fetchDeploymentsByServiceId,
-        fetchPodsByServiceId,
-        fetchReplicaSetsByServiceId,
-        fetchSecretsByServiceId,
-        fetchServicesByServiceId,
+        fetchObjectsByServiceId,
       },
       {
         getClusterByServiceId,
@@ -169,101 +159,84 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
     );
 
     expect(getClusterByServiceId.mock.calls.length).toBe(1);
-    expect(fetchConfigMapsByServiceId.mock.calls.length).toBe(2);
-    expect(fetchDeploymentsByServiceId.mock.calls.length).toBe(2);
-    expect(fetchPodsByServiceId.mock.calls.length).toBe(2);
-    expect(fetchReplicaSetsByServiceId.mock.calls.length).toBe(2);
-    expect(fetchSecretsByServiceId.mock.calls.length).toBe(2);
-    expect(fetchServicesByServiceId.mock.calls.length).toBe(2);
+    expect(fetchObjectsByServiceId.mock.calls.length).toBe(2);
     expect(result).toStrictEqual({
-      'other-cluster': {
-        configMaps: [
-          {
-            metadata: {
-              name: 'my-cm-my-service-other-cluster',
-            },
+      items: [
+        {
+          cluster: {
+            name: 'test-cluster',
           },
-        ],
-        deployments: [
-          {
-            metadata: {
-              name: 'my-deploy-my-service-other-cluster',
+          resources: [
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-pods-my-service-test-cluster',
+                  },
+                },
+              ],
+              type: 'pods',
             },
-          },
-        ],
-        pods: [
-          {
-            metadata: {
-              name: 'my-po-my-service-other-cluster',
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-configmaps-my-service-test-cluster',
+                  },
+                },
+              ],
+              type: 'configmaps',
             },
-          },
-        ],
-        replicaSets: [
-          {
-            metadata: {
-              name: 'my-rs-my-service-other-cluster',
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-services-my-service-test-cluster',
+                  },
+                },
+              ],
+              type: 'services',
             },
+          ],
+        },
+        {
+          cluster: {
+            name: 'other-cluster',
           },
-        ],
-        secrets: [
-          {
-            metadata: {
-              name: 'my-secrets-my-service-other-cluster',
+          resources: [
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-pods-my-service-other-cluster',
+                  },
+                },
+              ],
+              type: 'pods',
             },
-          },
-        ],
-        services: [
-          {
-            metadata: {
-              name: 'my-svc-my-service-other-cluster',
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-configmaps-my-service-other-cluster',
+                  },
+                },
+              ],
+              type: 'configmaps',
             },
-          },
-        ],
-      },
-      'test-cluster': {
-        configMaps: [
-          {
-            metadata: {
-              name: 'my-cm-my-service-test-cluster',
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'my-services-my-service-other-cluster',
+                  },
+                },
+              ],
+              type: 'services',
             },
-          },
-        ],
-        deployments: [
-          {
-            metadata: {
-              name: 'my-deploy-my-service-test-cluster',
-            },
-          },
-        ],
-        pods: [
-          {
-            metadata: {
-              name: 'my-po-my-service-test-cluster',
-            },
-          },
-        ],
-        replicaSets: [
-          {
-            metadata: {
-              name: 'my-rs-my-service-test-cluster',
-            },
-          },
-        ],
-        secrets: [
-          {
-            metadata: {
-              name: 'my-secrets-my-service-test-cluster',
-            },
-          },
-        ],
-        services: [
-          {
-            metadata: {
-              name: 'my-svc-my-service-test-cluster',
-            },
-          },
-        ],
-      },
+          ],
+        },
+      ],
     });
   });
 });

@@ -15,18 +15,19 @@
  */
 
 import React, { FC, useEffect, useState } from 'react';
-import { Typography, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { InfoCard, Page, pageTheme, Content, useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
+import { ObjectsByServiceIdResponse } from '@backstage/plugin-kubernetes-backend';
 
 // TODO this is a temporary component used to construct the Kubernetes plugin boilerplate
 
 export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
   const kubernetesApi = useApi(kubernetesApiRef);
-  const [kubernetesObjects, setKubernetesObjects] = useState<any | undefined>(
-    undefined,
-  );
+  const [kubernetesObjects, setKubernetesObjects] = useState<
+    ObjectsByServiceIdResponse | undefined
+  >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -48,20 +49,18 @@ export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
           {error !== undefined && <div>{error}</div>}
           {kubernetesObjects !== undefined && (
             <div>
-              {Object.entries(kubernetesObjects).map(([key, value]) => (
-                <Grid item>
-                  <InfoCard key={key} title={key}>
-                    <Typography variant="body1">
-                      <div>
-                        {Object.entries(value as any).map(([k, val]) => (
-                          <div>
-                            <br />
-                            {k}:{' '}
-                            {(val as any[]).map(v => v.metadata.name).join(' ')}
-                          </div>
-                        ))}
+              {kubernetesObjects.items.map((item, i) => (
+                <Grid item key={i}>
+                  <InfoCard key={item.cluster.name} title={item.cluster.name}>
+                    {item.resources.map((fr, j) => (
+                      <div key={j}>
+                        <br />
+                        {fr.type}:{' '}
+                        {(fr.resources as any)
+                          .map((v: any) => v.metadata.name)
+                          .join(' ')}
                       </div>
-                    </Typography>
+                    ))}
                   </InfoCard>
                 </Grid>
               ))}

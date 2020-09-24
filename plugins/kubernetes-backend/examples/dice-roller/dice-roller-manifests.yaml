@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: dice-roller
   labels:
-    'backstage.io/kubernetes': dice-roller
+    'backstage.io/kubernetes-id': dice-roller
 spec:
   selector:
     matchLabels:
@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app: dice-roller
-        'backstage.io/kubernetes': dice-roller
+        'backstage.io/kubernetes-id': dice-roller
     spec:
       containers:
         - name: nginx
@@ -28,7 +28,7 @@ metadata:
   name: dice-roller
   namespace: default
   labels:
-    'backstage.io/kubernetes': dice-roller
+    'backstage.io/kubernetes-id': dice-roller
 data:
   foo: bar
 
@@ -38,7 +38,7 @@ kind: Secret
 metadata:
   name: dice-roller
   labels:
-    'backstage.io/kubernetes': dice-roller
+    'backstage.io/kubernetes-id': dice-roller
 type: Opaque
 data:
   username: YWRtaW4=
@@ -48,7 +48,7 @@ kind: Service
 metadata:
   name: dice-roller
   labels:
-    'backstage.io/kubernetes': dice-roller
+    'backstage.io/kubernetes-id': dice-roller
 spec:
   selector:
     app: dice-roller

@@ -14,23 +14,37 @@
  * limitations under the License.
  */
 
-import { KubernetesFetcher } from './KubernetesFetcher';
-import { KubernetesClusterLocator } from '../cluster-locator/types';
 import { Logger } from 'winston';
-import { ObjectsByServiceIdResponse } from './types';
+import {
+  KubernetesClusterLocator,
+  KubernetesFetcher,
+  KubernetesObjectTypes,
+  ObjectsByServiceIdResponse,
+} from '..';
 
 export type GetKubernetesObjectsByServiceIdHandler = (
   serviceId: string,
   fetcher: KubernetesFetcher,
   clusterLocator: KubernetesClusterLocator,
   logger: Logger,
+  objectsToFetch?: Set<KubernetesObjectTypes>,
 ) => Promise<ObjectsByServiceIdResponse>;
+
+const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
+  'pods',
+  'services',
+  'configmaps',
+  'secrets',
+  'deployments',
+  'replicasets',
+]);
 
 export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServiceIdHandler = async (
   serviceId,
   fetcher,
   clusterLocator,
   logger,
+  objectsToFetch = DEFAULT_OBJECTS,
 ) => {
   const clusterDetails = await clusterLocator.getClusterByServiceId(serviceId);
 
@@ -40,31 +54,16 @@ export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServic
 
   return Promise.all(
     clusterDetails.map(cd => {
-      return Promise.all([
-        fetcher.fetchPodsByServiceId(serviceId, cd),
-        fetcher.fetchServicesByServiceId(serviceId, cd),
-        fetcher.fetchConfigMapsByServiceId(serviceId, cd),
-        fetcher.fetchSecretsByServiceId(serviceId, cd),
-        fetcher.fetchDeploymentsByServiceId(serviceId, cd),
-        fetcher.fetchReplicaSetsByServiceId(serviceId, cd),
-      ]).then(
-        ([pods, services, configMaps, secrets, deployments, replicaSets]) => {
+      return fetcher
+        .fetchObjectsByServiceId(serviceId, cd, objectsToFetch)
+        .then(result => {
           return {
-            [cd.name]: {
-              pods,
-              services,
-              configMaps,
-              secrets,
-              deployments,
-              replicaSets,
+            cluster: {
+              name: cd.name,
             },
+            resources: result,
           };
-        },
-      );
+        });
     }),
-  ).then(result => {
-    return result.reduce((prev, next) => {
-      return Object.assign(prev, next);
-    }, {} as ObjectsByServiceIdResponse);
-  });
+  ).then(r => ({ items: r }));
 };

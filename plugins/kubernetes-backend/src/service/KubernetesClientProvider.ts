@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ClusterDetails } from '../cluster-locator/types';
+import { ClusterDetails } from '..';
 import { AppsV1Api, CoreV1Api, KubeConfig } from '@kubernetes/client-node';
 
 export class KubernetesClientProvider {

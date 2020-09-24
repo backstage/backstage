@@ -27,7 +27,7 @@ describe('MultiTenantConfigClusterLocator', () => {
       'ctx',
     );
 
-    const sut = MultiTenantConfigClusterLocator.readConfig(
+    const sut = MultiTenantConfigClusterLocator.fromConfig(
       config.getConfigArray('clusters'),
     );
 
@@ -49,7 +49,7 @@ describe('MultiTenantConfigClusterLocator', () => {
       'ctx',
     );
 
-    const sut = MultiTenantConfigClusterLocator.readConfig(
+    const sut = MultiTenantConfigClusterLocator.fromConfig(
       config.getConfigArray('clusters'),
     );
 
@@ -83,7 +83,7 @@ describe('MultiTenantConfigClusterLocator', () => {
       'ctx',
     );
 
-    const sut = MultiTenantConfigClusterLocator.readConfig(
+    const sut = MultiTenantConfigClusterLocator.fromConfig(
       config.getConfigArray('clusters'),
     );
 

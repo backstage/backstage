@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ClusterDetails, KubernetesClusterLocator } from './types';
 import { Config } from '@backstage/config';
+import { ClusterDetails, KubernetesClusterLocator } from '..';
 
 // This cluster locator assumes that every service is located on every cluster
 // Therefore it will always return all clusters in an app configuration file
@@ -27,7 +27,7 @@ export class MultiTenantConfigClusterLocator
     this.clusterDetails = clusterDetails;
   }
 
-  static readConfig(config: Config[]): MultiTenantConfigClusterLocator {
+  static fromConfig(config: Config[]): MultiTenantConfigClusterLocator {
     return new MultiTenantConfigClusterLocator(
       config.map(c => {
         return {
@@ -42,6 +42,6 @@ export class MultiTenantConfigClusterLocator
   // As this implementation always returns all clusters serviceId is ignored here
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getClusterByServiceId(_serviceId: string): Promise<ClusterDetails[]> {
-    return Promise.resolve(this.clusterDetails);
+    return this.clusterDetails;
   }
 }

@@ -18,20 +18,15 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import {
-  ClusterLocatorMethod,
-  KubernetesClusterLocator,
-} from '../cluster-locator/types';
+import { ClusterLocatorMethod } from '../cluster-locator/types';
 import { MultiTenantConfigClusterLocator } from '../cluster-locator/MultiTenantConfigClusterLocator';
-import {
-  KubernetesClientBasedFetcher,
-  KubernetesFetcher,
-} from './KubernetesFetcher';
+import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
   GetKubernetesObjectsByServiceIdHandler,
   handleGetKubernetesObjectsByServiceId,
 } from './getKubernetesObjectsByServiceIdHandler';
+import { KubernetesClusterLocator, KubernetesFetcher } from '..';
 
 export interface RouterOptions {
   logger: Logger;
@@ -45,7 +40,7 @@ const getClusterLocator = (config: Config): KubernetesClusterLocator => {
 
   switch (clusterLocatorMethod) {
     case 'configMultiTenant':
-      return MultiTenantConfigClusterLocator.readConfig(
+      return MultiTenantConfigClusterLocator.fromConfig(
         config.getConfigArray('kubernetes.clusters'),
       );
     case 'http':

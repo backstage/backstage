@@ -22,7 +22,7 @@ import { rootCatalogKubernetesRouteRef } from './plugin';
 import { KubernetesContent } from './components/KubernetesContent';
 import { WarningPanel } from '@backstage/core';
 
-const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes';
+const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
 
 export const Router = ({ entity }: { entity: Entity }) => {
   const kubernetesAnnotationValue =
