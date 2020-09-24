@@ -5,7 +5,6 @@ nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
       - Backstage architecture: 'overview/architecture-overview.md'
-      - Architecture and terminology: 'overview/architecture-terminology.md'
       - Roadmap: 'overview/roadmap.md'
       - Vision: 'overview/vision.md'
       - The Spotify story: 'overview/background.md'
