@@ -25,8 +25,8 @@ jobs:
           path: packages/techdocs-container
           push: true
           tags: |
-          spotify/techdocs:latest
-          spotify/techdocs:1.0.0
+            spotify/techdocs:latest
+            spotify/techdocs:1.0.0
       # https://github.com/docker/build-push-action#update-dockerhub-repo-description
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v2
@@ -35,4 +35,3 @@ jobs:
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
           DOCKERHUB_REPOSITORY: spotify/techdocs
           README_FILEPATH: packages/techdocs-container/README.md
-
