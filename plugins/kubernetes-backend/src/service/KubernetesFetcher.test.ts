@@ -33,10 +33,10 @@ describe('KubernetesClientProvider', () => {
       getAppsClientByClusterDetails: jest.fn(() => clientMock),
     };
 
-    const sut = new KubernetesClientBasedFetcher(
+    const sut = new KubernetesClientBasedFetcher({
       kubernetesClientProvider,
-      getVoidLogger(),
-    );
+      logger: getVoidLogger(),
+    });
 
     clientMock.listPodForAllNamespaces.mockResolvedValueOnce({
       body: {

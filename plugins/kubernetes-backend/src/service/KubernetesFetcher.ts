@@ -38,12 +38,20 @@ export interface Clients {
   apps: AppsV1Api;
 }
 
+export interface KubernetesClientBasedFetcherOptions {
+  kubernetesClientProvider: KubernetesClientProvider;
+  logger: Logger;
+}
+
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
-  private readonly k8sClientProvider: KubernetesClientProvider;
+  private readonly kubernetesClientProvider: KubernetesClientProvider;
   private readonly logger: Logger;
 
-  constructor(k8sClientProvider: KubernetesClientProvider, logger: Logger) {
-    this.k8sClientProvider = k8sClientProvider;
+  constructor({
+    kubernetesClientProvider,
+    logger,
+  }: KubernetesClientBasedFetcherOptions) {
+    this.kubernetesClientProvider = kubernetesClientProvider;
     this.logger = logger;
   }
 
@@ -105,10 +113,10 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     clusterDetails: ClusterDetails,
     fn: (client: Clients) => Promise<{ body: { items: Array<T> } }>,
   ): Promise<Array<T>> {
-    const core = this.k8sClientProvider.getCoreClientByClusterDetails(
+    const core = this.kubernetesClientProvider.getCoreClientByClusterDetails(
       clusterDetails,
     );
-    const apps = this.k8sClientProvider.getAppsClientByClusterDetails(
+    const apps = this.kubernetesClientProvider.getAppsClientByClusterDetails(
       clusterDetails,
     );
 

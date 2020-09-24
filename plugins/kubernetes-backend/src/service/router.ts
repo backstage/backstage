@@ -90,10 +90,10 @@ export async function createRouter(
 
   const clusterLocator = getClusterLocator(options.config);
 
-  const fetcher = new KubernetesClientBasedFetcher(
-    new KubernetesClientProvider(),
+  const fetcher = new KubernetesClientBasedFetcher({
+    kubernetesClientProvider: new KubernetesClientProvider(),
     logger,
-  );
+  });
 
   return makeRouter(
     logger,
