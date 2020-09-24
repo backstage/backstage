@@ -38,10 +38,11 @@ export type SignInResult = {
    * Function used to retrieve an ID token for the signed in user.
    */
   getIdToken?: () => Promise<string>;
+
   /**
-   * Logout handler that will be called if the user requests a logout.
+   * Sign out handler that will be called if the user requests to sign out.
    */
-  logout?: () => Promise<void>;
+  signOut?: () => Promise<void>;
 };
 
 export type SignInPageProps = {
