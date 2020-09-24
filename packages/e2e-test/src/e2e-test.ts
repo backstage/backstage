@@ -55,6 +55,9 @@ async function main() {
   print('Creating a Backstage Plugin');
   const pluginName = await createPlugin('test-plugin', appDir);
 
+  print('Creating a Backstage Backend Plugin');
+  await createPlugin('test-backend-plugin', appDir, ['--backend']);
+
   print('Starting the app');
   await testAppServe(pluginName, appDir);
 
@@ -238,8 +241,12 @@ async function overrideModuleResolutions(appDir: string, workspaceDir: string) {
 /**
  * Uses create-plugin command to create a new plugin in the app
  */
-async function createPlugin(pluginName: string, appDir: string) {
-  const child = spawnPiped(['yarn', 'create-plugin'], {
+async function createPlugin(
+  pluginName: string,
+  appDir: string,
+  options: string[] = [],
+) {
+  const child = spawnPiped(['yarn', 'create-plugin', ...options], {
     cwd: appDir,
   });
 
