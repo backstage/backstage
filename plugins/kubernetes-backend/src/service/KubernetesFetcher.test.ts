@@ -55,7 +55,7 @@ describe('KubernetesClientProvider', () => {
         items: [
           {
             metadata: {
-              name: 'pod-name',
+              name: 'service-name',
             },
           },
         ],
@@ -69,7 +69,7 @@ describe('KubernetesClientProvider', () => {
         url: 'http://localhost:9999',
         serviceAccountToken: undefined,
       },
-      new Set(['pods']),
+      new Set(['pods', 'services']),
     );
 
     expect(result).toStrictEqual([
@@ -103,6 +103,6 @@ describe('KubernetesClientProvider', () => {
     ).toBe(2);
     expect(
       kubernetesClientProvider.getCoreClientByClusterDetails.mock.calls.length,
-    ).toBe(1);
+    ).toBe(2);
   });
 });
