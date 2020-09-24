@@ -41,7 +41,6 @@ type CreateOptions = {
 };
 
 export type SamlAuthResponse = {
-  userId: string;
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentity;
 };
@@ -94,11 +93,6 @@ class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
   ): Promise<BackstageIdentity | undefined> {
     const session = await this.sessionManager.getSession(options);
     return session?.backstageIdentity;
-  }
-
-  async getIdToken(options: AuthRequestOptions = {}) {
-    const session = await this.sessionManager.getSession(options);
-    return session?.backstageIdentity ?? '';
   }
 
   async getProfile(options: AuthRequestOptions = {}) {
