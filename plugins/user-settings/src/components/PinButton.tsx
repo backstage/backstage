@@ -37,7 +37,7 @@ export const SidebarPinButton = () => {
       arrow
       title={`${isPinned ? 'Unpin' : 'Pin'} Sidebar`}
     >
-      {isPinned ? <LockIcon /> : <LockOpenIcon />}
+      {isPinned ? <LockIcon color="primary" /> : <LockOpenIcon />}
     </Tooltip>
   );
 

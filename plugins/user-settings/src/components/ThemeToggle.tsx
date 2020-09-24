@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { cloneElement } from 'react';
 import { useObservable } from 'react-use';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
-import { appThemeApiRef, useApi } from '@backstage/core';
+import { AppTheme, appThemeApiRef, useApi } from '@backstage/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {
@@ -47,6 +47,23 @@ export const SidebarThemeToggle = () => {
     }
   };
 
+  const ThemeIcon = ({ theme }: { theme: AppTheme }) => {
+    const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
+    const icon = themeIcon ? (
+      cloneElement(themeIcon, {
+        color: themeId === theme.id ? 'primary' : undefined,
+      })
+    ) : (
+      <AutoIcon color={themeId === theme.id ? 'primary' : undefined} />
+    );
+
+    return (
+      <Tooltip placement="top" arrow title={`Select ${theme.variant} theme`}>
+        {icon}
+      </Tooltip>
+    );
+  };
+
   return (
     <ListItem>
       <ListItemText primary="Theme" secondary="Change the theme mode" />
@@ -59,18 +76,12 @@ export const SidebarThemeToggle = () => {
         >
           {themeIds.map(theme => (
             <ToggleButton key={theme.id} value={theme.variant}>
-              <Tooltip
-                placement="top"
-                arrow
-                title={`Select ${theme.variant} theme`}
-              >
-                {themeIds.find(t => t.id === theme.id)!.icon ?? <AutoIcon />}
-              </Tooltip>
+              <ThemeIcon theme={theme} />
             </ToggleButton>
           ))}
           <ToggleButton value="auto">
             <Tooltip placement="top" arrow title="Select auto theme">
-              <AutoIcon />
+              <AutoIcon color={themeId === undefined ? 'primary' : undefined} />
             </Tooltip>
           </ToggleButton>
         </ToggleButtonGroup>

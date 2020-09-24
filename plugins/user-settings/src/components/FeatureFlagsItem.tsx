@@ -45,7 +45,7 @@ export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
         onChange={() => toggleHandler(flag.name)}
       >
         <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
-          <CheckIcon />
+          <CheckIcon color={enabled ? 'primary' : undefined} />
         </Tooltip>
       </ToggleButton>
     </ListItemSecondaryAction>

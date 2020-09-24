@@ -77,15 +77,9 @@ export const ProviderSettingsItem: FC<OAuthProviderSidebarProps> = ({
           selected={signedIn}
           onChange={() => (signedIn ? api.signOut() : api.signIn())}
         >
-          <Tooltip
-            placement="top"
-            arrow
-            title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
-          >
-            <PowerButton />
-          </Tooltip>
-        </ToggleButton>
-      </ListItemSecondaryAction>
-    </ListItem>
-  );
-};
+          <PowerButton color={signedIn ? 'primary' : undefined} />
+        </Tooltip>
+      </ToggleButton>
+    </ListItemSecondaryAction>
+  </ListItem>
+);
