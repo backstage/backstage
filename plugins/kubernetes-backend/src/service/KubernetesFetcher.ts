@@ -47,7 +47,19 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     this.logger = logger;
   }
 
-  fetchByObjectType(
+  fetchObjectsByServiceId(
+    serviceId: string,
+    clusterDetails: ClusterDetails,
+    objectTypesToFetch: Set<KubernetesObjectTypes>,
+  ): Promise<FetchResponse[]> {
+    return Promise.all(
+      Array.from(objectTypesToFetch).map(type => {
+        return this.fetchByObjectType(serviceId, clusterDetails, type);
+      }),
+    );
+  }
+
+  private fetchByObjectType(
     serviceId: string,
     clusterDetails: ClusterDetails,
     type: KubernetesObjectTypes,
@@ -87,18 +99,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         // unrecognised type
         throw new Error(`unrecognised type=${type}`);
     }
-  }
-
-  fetchObjectsByServiceId(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-    objectTypesToFetch: Set<KubernetesObjectTypes>,
-  ): Promise<FetchResponse[]> {
-    return Promise.all(
-      Array.from(objectTypesToFetch).map(type => {
-        return this.fetchByObjectType(serviceId, clusterDetails, type);
-      }),
-    );
   }
 
   private singleClusterFetch<T>(
