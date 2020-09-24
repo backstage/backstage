@@ -70,6 +70,7 @@
           "features/techdocs/concepts",
           "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
+          "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
         ]
       }
