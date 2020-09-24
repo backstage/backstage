@@ -33,8 +33,8 @@ organization:
   name: Spotify
 
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
-  requestUrl: http://localhost:7000/techdocs/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  requestUrl: http://localhost:7000/api/techdocs/docs
   generators:
     techdocs: 'docker'
 
@@ -54,6 +54,10 @@ newrelic:
 
 lighthouse:
   baseUrl: http://localhost:3003
+
+kubernetes:
+  clusterLocatorMethod: 'configMultiTenant'
+  clusters: []
 
 catalog:
   rules:

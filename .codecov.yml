@@ -13,6 +13,8 @@ flags:
   core:
     paths:
       - packages/core/
+    carryforward: true
   core-api:
     paths:
       - packages/core-api/
+    carryforward: true

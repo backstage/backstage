@@ -28,6 +28,7 @@ export interface RouterOptions {
   logger: Logger;
   database: Knex;
   config: Config;
+  basePath?: string;
 }
 
 export async function createRouter(
@@ -38,7 +39,8 @@ export async function createRouter(
 
   const appUrl = options.config.getString('app.baseUrl');
   const backendUrl = options.config.getString('backend.baseUrl');
-  const authUrl = `${backendUrl}/auth`;
+  // TODO(Rugvip): Replace with service discovery of external URL
+  const authUrl = backendUrl + (options.basePath ?? '/api/auth');
 
   const keyDurationSeconds = 3600;
 

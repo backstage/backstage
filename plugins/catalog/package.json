@@ -53,7 +53,8 @@
     "jest-fetch-mock": "^3.0.3",
     "msw": "^0.20.5",
     "react-test-renderer": "^16.13.1",
-    "whatwg-fetch": "^3.4.0"
+    "whatwg-fetch": "^3.4.0",
+    "node-fetch": "^2.6.1"
   },
   "files": [
     "dist"

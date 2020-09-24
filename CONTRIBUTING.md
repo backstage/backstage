@@ -32,6 +32,10 @@ If you start developing a plugin that you aim to release as open source, we sugg
 
 You can also use this process if you have an idea for a good plugin but you hope that someone else will pick up the work.
 
+## Adding Non-code Contributions
+
+Since there is such a large landscape of possible development, build, and deployment environments, we welcome community contributions in these areas in the [`/contrib`](https://github.com/spotify/backstage/tree/master/contrib) folder of the project. This is an excellent place to put things that help out the community at large, but which may not fit within the scope of the core product to support natively. Here, you will find Helm charts, alternative Docker images, and much more.
+
 ## Write Documentation
 
 The current documentation is very limited. Help us make the `/docs` folder come alive.

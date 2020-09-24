@@ -26,6 +26,8 @@ Out of the box, Backstage includes:
 
 For more information go to [backstage.io](https://backstage.io) or join our [Discord chatroom](https://discord.gg/EBHEGzX).
 
+🎉 Backstage is a CNCF Sandbox project. Read the announcement [here](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox).
+
 ## Project roadmap
 
 A detailed project roadmap, including already delivered milestones, is available [here](https://backstage.io/docs/overview/roadmap).
@@ -51,10 +53,8 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
 - [Adopters](ADOPTERS.md) - Companies already using Backstage
 - [Blog](https://backstage.io/blog/) - Announcements and updates
-- [Newsletter](https://mailchi.mp/spotify/backstage-community)
+- [Newsletter](https://mailchi.mp/spotify/backstage-community) - Subscribe to our email newsletter
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
-
-Or, if you are an open source developer and are interested in joining our team, please reach out to [foss-opportunities@spotify.com ](mailto:foss-opportunities@spotify.com)
 
 ## License
 

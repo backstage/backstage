@@ -17,19 +17,65 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { Config } from '@backstage/config';
+import { ClusterLocatorMethod } from '../cluster-locator/types';
+import { MultiTenantConfigClusterLocator } from '../cluster-locator/MultiTenantConfigClusterLocator';
+import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { KubernetesClientProvider } from './KubernetesClientProvider';
+import {
+  GetKubernetesObjectsByServiceIdHandler,
+  handleGetKubernetesObjectsByServiceId,
+} from './getKubernetesObjectsByServiceIdHandler';
+import { KubernetesClusterLocator, KubernetesFetcher } from '..';
 
 export interface RouterOptions {
   logger: Logger;
+  config: Config;
 }
 
-const makeRouter = (logger: Logger): express.Router => {
+const getClusterLocator = (config: Config): KubernetesClusterLocator => {
+  const clusterLocatorMethod = config.getString(
+    'kubernetes.clusterLocatorMethod',
+  ) as ClusterLocatorMethod;
+
+  switch (clusterLocatorMethod) {
+    case 'configMultiTenant':
+      return MultiTenantConfigClusterLocator.fromConfig(
+        config.getConfigArray('kubernetes.clusters'),
+      );
+    case 'http':
+      throw new Error('not implemented');
+    default:
+      throw new Error(
+        `Unsupported kubernetes.clusterLocatorMethod "${clusterLocatorMethod}"`,
+      );
+  }
+};
+
+export const makeRouter = (
+  logger: Logger,
+  fetcher: KubernetesFetcher,
+  clusterLocator: KubernetesClusterLocator,
+  handleGetByServiceId: GetKubernetesObjectsByServiceIdHandler,
+): express.Router => {
   const router = Router();
   router.use(express.json());
 
+  // TODO error handling
   router.get('/services/:serviceId', async (req, res) => {
     const serviceId = req.params.serviceId;
-    logger.info(`HERE ${serviceId}`);
-    res.send({ serviceId });
+
+    try {
+      const response = await handleGetByServiceId(
+        serviceId,
+        fetcher,
+        clusterLocator,
+        logger,
+      );
+      res.send(response);
+    } catch (e) {
+      res.status(500).send({ error: e.message });
+    }
   });
 
   return router;
@@ -41,5 +87,18 @@ export async function createRouter(
   const logger = options.logger;
 
   logger.info('Initializing Kubernetes backend');
-  return makeRouter(logger);
+
+  const clusterLocator = getClusterLocator(options.config);
+
+  const fetcher = new KubernetesClientBasedFetcher({
+    kubernetesClientProvider: new KubernetesClientProvider(),
+    logger,
+  });
+
+  return makeRouter(
+    logger,
+    fetcher,
+    clusterLocator,
+    handleGetKubernetesObjectsByServiceId,
+  );
 }

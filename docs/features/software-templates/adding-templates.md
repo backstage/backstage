@@ -88,7 +88,7 @@ running:
 ```sh
 curl \
   --location \
-  --request POST 'localhost:7000/catalog/locations' \
+  --request POST 'localhost:7000/api/catalog/locations' \
   --header 'Content-Type: application/json' \
   --data-raw "{\"type\": \"file\", \"target\": \"${YOUR PATH HERE}/template.yaml\"}"
 ```
@@ -98,7 +98,7 @@ If loading from a Git location, you can run the following
 ```sh
 curl \
   --location \
-  --request POST 'localhost:7000/catalog/locations' \
+  --request POST 'localhost:7000/api/catalog/locations' \
   --header 'Content-Type: application/json' \
   --data-raw "{\"type\": \"github\", \"target\": \"https://${YOUR GITHUB REPO}blob/master/${PATH TO FOLDER}/template.yaml\"}"
 ```
