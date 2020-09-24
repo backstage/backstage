@@ -21,10 +21,27 @@ import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
 
+export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
+
+interface GithubPublisherParams {
+  client: Octokit;
+  token: string;
+  repoVisibility: RepoVisibilityOptions;
+}
+
 export class GithubPublisher implements PublisherBase {
   private client: Octokit;
-  constructor({ client }: { client: Octokit }) {
+  private token: string;
+  private repoVisibility: RepoVisibilityOptions;
+
+  constructor({
+    client,
+    token,
+    repoVisibility = 'public',
+  }: GithubPublisherParams) {
     this.client = client;
+    this.token = token;
+    this.repoVisibility = repoVisibility;
   }
 
   async publish({
@@ -44,12 +61,46 @@ export class GithubPublisher implements PublisherBase {
     values: RequiredTemplateValues & Record<string, JsonValue>,
   ) {
     const [owner, name] = values.storePath.split('/');
+    const description = values.description as string;
 
-    const repoCreationPromise = values.isOrg
-      ? this.client.repos.createInOrg({ name, org: owner })
-      : this.client.repos.createForAuthenticatedUser({ name });
+    const user = await this.client.users.getByUsername({ username: owner });
+
+    const repoCreationPromise =
+      user.data.type === 'Organization'
+        ? this.client.repos.createInOrg({
+            name,
+            org: owner,
+            private: this.repoVisibility !== 'public',
+            visibility: this.repoVisibility,
+            description,
+          })
+        : this.client.repos.createForAuthenticatedUser({
+            name,
+            private: this.repoVisibility === 'private',
+            description,
+          });
 
     const { data } = await repoCreationPromise;
+
+    const access = values.access as string;
+    if (access?.startsWith(`${owner}/`)) {
+      const [, team] = access.split('/');
+      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
+        org: owner,
+        team_slug: team,
+        owner,
+        repo: name,
+        permission: 'admin',
+      });
+      // no need to add access if it's the person who own's the personal account
+    } else if (access && access !== owner) {
+      await this.client.repos.addCollaborator({
+        owner,
+        repo: name,
+        username: access,
+        permission: 'admin',
+      });
+    }
 
     return data?.clone_url;
   }
@@ -73,10 +124,7 @@ export class GithubPublisher implements PublisherBase {
     await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
       callbacks: {
         credentials: () => {
-          return Cred.userpassPlaintextNew(
-            process.env.GITHUB_ACCESS_TOKEN as string,
-            'x-oauth-basic',
-          );
+          return Cred.userpassPlaintextNew(this.token, 'x-oauth-basic');
         },
       },
     });

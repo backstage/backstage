@@ -35,6 +35,8 @@ organization:
 techdocs:
   storageUrl: http://localhost:7000/techdocs/static/docs
   requestUrl: http://localhost:7000/techdocs/docs
+  generators:
+    techdocs: 'docker'
 
 sentry:
   organization: spotify
@@ -57,10 +59,24 @@ catalog:
   rules:
     - allow: [Component, API, Group, Template, Location]
   processors:
-    githubApi:
-      privateToken:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
+    github:
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using the API:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+        # - target: https://ghe.example.net
+        #   rawBaseUrl: https://ghe.example.net/raw
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
     bitbucketApi:
       username:
         $secret:
@@ -76,23 +92,40 @@ catalog:
       privateToken:
         $secret:
           env: AZURE_PRIVATE_TOKEN
-  exampleEntityLocations:
-    github:
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-      - https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/hello-world-api.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/streetlights-api.yaml
+
+  locations:
+    # Backstage example components
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+
+    # Example component for github-actions
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
+
+    # Example component for techdocs
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+
+    # Backstage example APIs
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+
+    # Backstage example templates
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+
+scaffolder:
+  github:
+    token:
+      $secret:
+        env: GITHUB_ACCESS_TOKEN
+    visibility: public # or 'internal' or 'private'
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token:
+        $secret:
+          env: GITLAB_ACCESS_TOKEN
 
 auth:
   providers:

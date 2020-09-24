@@ -17,38 +17,34 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='mkdocs-techdocs-core',
-    version='0.0.4',
-    description='A Mkdocs package that contains TechDocs defaults',
-    long_description='',
-    keywords='mkdocs',
-    url='https://github.com/spotify/backstage',
-    author='TechDocs Core',
-    author_email='pulp-fiction@spotify.com',
-    license='Apache-2.0',
-    python_requires='>=3.7',
+    name="mkdocs-techdocs-core",
+    version="0.0.8",
+    description="A Mkdocs package that contains TechDocs defaults",
+    long_description="",
+    keywords="mkdocs",
+    url="https://github.com/spotify/backstage",
+    author="TechDocs Core",
+    author_email="pulp-fiction@spotify.com",
+    license="Apache-2.0",
+    python_requires=">=3.7",
     install_requires=[
-        'mkdocs>=1.1.2',
-        'mkdocs-material==5.3.2',
-        'mkdocs-monorepo-plugin==0.4.5',
-        'plantuml-markdown==3.4.0',
-        'markdown_inline_graphviz_extension==1.1',
-        'pygments==2.6.1',
-        'pymdown-extensions==7.1'
+        "mkdocs>=1.1.2",
+        "mkdocs-material==5.3.2",
+        "mkdocs-monorepo-plugin==0.4.5",
+        "plantuml-markdown==3.1.2",
+        "markdown_inline_graphviz_extension==1.1",
+        "pygments==2.6.1",
+        "pymdown-extensions==7.1",
     ],
     classifiers=[
-        'Development Status :: 1 - Planning',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Information Technology',
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.7'
+        "Development Status :: 1 - Planning",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.7",
     ],
     packages=find_packages(),
-    entry_points={
-        'mkdocs.plugins': [
-            'techdocs-core = src.core:TechDocsCore'
-        ]
-    }
+    entry_points={"mkdocs.plugins": ["techdocs-core = src.core:TechDocsCore"]},
 )

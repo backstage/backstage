@@ -1,6 +1,7 @@
 ---
 id: defining
 title: Defining Configuration for your Plugin
+description: Documentation on Defining Configuration for your Plugin
 ---
 
 There is currently no tooling support or helpers for defining plugin

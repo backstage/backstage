@@ -90,11 +90,6 @@ export type OAuthApi = {
     scope?: OAuthScope,
     options?: AuthRequestOptions,
   ): Promise<string>;
-
-  /**
-   * Log out the user's session. This will reload the page.
-   */
-  logout(): Promise<void>;
 };
 
 /**
@@ -114,11 +109,6 @@ export type OpenIdConnectApi = {
    * The returned promise can be rejected, but only if the user rejects the login request.
    */
   getIdToken(options?: AuthRequestOptions): Promise<string>;
-
-  /**
-   * Log out the user's session. This will reload the page.
-   */
-  logout(): Promise<void>;
 };
 
 /**
@@ -187,7 +177,7 @@ export type ProfileInfo = {
 };
 
 /**
- * Session state values passed to subscribers of the SessionStateApi.
+ * Session state values passed to subscribers of the SessionApi.
  */
 export enum SessionState {
   SignedIn = 'SignedIn',
@@ -195,10 +185,22 @@ export enum SessionState {
 }
 
 /**
- * This API provides access to an sessionState$ observable which provides an update when the
- * user performs a sign in or sign out from an auth provider.
+ * The SessionApi provides basic controls for any auth provider that is tied to a persistent session.
  */
-export type SessionStateApi = {
+export type SessionApi = {
+  /**
+   * Sign in with a minimum set of permissions.
+   */
+  signIn(): Promise<void>;
+
+  /**
+   * Sign out from the current session. This will reload the page.
+   */
+  signOut(): Promise<void>;
+
+  /**
+   * Observe the current state of the auth session. Emits the current state on subscription.
+   */
   sessionState$(): Observable<SessionState>;
 };
 
@@ -215,7 +217,7 @@ export const googleAuthApiRef = createApiRef<
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionStateApi
+    SessionApi
 >({
   id: 'core.auth.google',
   description: 'Provides authentication towards Google APIs and identities',
@@ -228,7 +230,7 @@ export const googleAuthApiRef = createApiRef<
  * for a full list of supported scopes.
  */
 export const githubAuthApiRef = createApiRef<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >({
   id: 'core.auth.github',
   description: 'Provides authentication towards GitHub APIs',
@@ -245,7 +247,7 @@ export const oktaAuthApiRef = createApiRef<
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionStateApi
+    SessionApi
 >({
   id: 'core.auth.okta',
   description: 'Provides authentication towards Okta APIs',
@@ -258,7 +260,7 @@ export const oktaAuthApiRef = createApiRef<
  * for a full list of supported scopes.
  */
 export const gitlabAuthApiRef = createApiRef<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >({
   id: 'core.auth.gitlab',
   description: 'Provides authentication towards GitLab APIs',
@@ -271,7 +273,7 @@ export const gitlabAuthApiRef = createApiRef<
  * for a full list of supported scopes.
  */
 export const auth0AuthApiRef = createApiRef<
-  OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionStateApi
+  OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >({
   id: 'core.auth.auth0',
   description: 'Provides authentication towards Auth0 APIs',
@@ -289,7 +291,7 @@ export const microsoftAuthApiRef = createApiRef<
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionStateApi
+    SessionApi
 >({
   id: 'core.auth.microsoft',
   description: 'Provides authentication towards Microsoft APIs and identities',
@@ -302,8 +304,8 @@ export const oauth2ApiRef = createApiRef<
   OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
-    SessionStateApi &
-    BackstageIdentityApi
+    BackstageIdentityApi &
+    SessionApi
 >({
   id: 'core.auth.oauth2',
   description: 'Example of how to use oauth2 custom provider',

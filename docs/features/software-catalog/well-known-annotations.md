@@ -2,6 +2,9 @@
 id: well-known-annotations
 title: Well-known Annotations on Catalog Entities
 sidebar_label: Well-known Annotations
+description: Documentation on lists a number of well known Annotations, that
+have defined semantics. They can be attached to catalog entities and consumed
+by plugins as needed
 ---
 
 This section lists a number of well known
@@ -51,13 +54,13 @@ The value of this annotation is a location reference string (see above). If this
 annotation is specified, it is expected to point to a repository that the
 TechDocs system can read and generate docs from.
 
-### backstage.io/jenkins-github-folder
+### jenkins.io/github-folder
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    backstage.io/jenkins-github-folder: folder-name/job-name
+    jenkins.io/github-folder: folder-name/job-name
 ```
 
 The value of this annotation is the path to a job on Jenkins, that builds this

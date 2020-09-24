@@ -1,6 +1,7 @@
 ---
 id: structure-of-a-plugin
 title: Structure of a Plugin
+description: Details about structure of a plugin
 ---
 
 Nice, you have a new plugin! We'll soon see how we can develop it into doing

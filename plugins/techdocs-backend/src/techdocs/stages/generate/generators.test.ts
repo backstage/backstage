@@ -16,6 +16,7 @@
 
 import { Generators, TechdocsGenerator } from './';
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 
 const logger = getVoidLogger();
 
@@ -38,7 +39,10 @@ describe('generators', () => {
 
   it('should return correct registered generator', async () => {
     const generators = new Generators();
-    const techdocs = new TechdocsGenerator(logger);
+    const techdocs = new TechdocsGenerator(
+      logger,
+      ConfigReader.fromConfigs([]),
+    );
 
     generators.register('techdocs', techdocs);
 

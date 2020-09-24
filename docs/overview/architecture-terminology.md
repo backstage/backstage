@@ -1,6 +1,7 @@
 ---
 id: architecture-terminology
 title: Architecture terminology
+description: Documentation on Architecture terminology
 ---
 
 Backstage is constructed out of three parts. We separate Backstage in this way

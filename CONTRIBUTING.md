@@ -62,35 +62,7 @@ Have you started using Backstage? Adding your company to [ADOPTERS](ADOPTERS.md)
 
 So...feel ready to jump in? Let's do this. 👏🏻💯
 
-To run a Backstage app, you will need to have the following installed:
-
-- [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-- [NodeJS](https://nodejs.org/en/download/) - Active LTS Release, currently v12
-- [yarn](https://classic.yarnpkg.com/en/docs/install)
-
-After cloning this repo, open a terminal window and start the example app using the following commands from the project root:
-
-```bash
-yarn install # Install dependencies
-
-yarn start # Start dev server, use --check to enable linting and type-checks
-```
-
-The final `yarn start` command should open a local instance of Backstage in your browser, otherwise open one of the URLs printed in the terminal.
-
-Depending on the work you're doing, you often also want to run the example backend. Start the backend in a separate terminal session using the following:
-
-```bash
-cd packages/backend
-
-yarn start
-
-yarn lerna run mock-data # Populate the backend with mock data
-```
-
-And that's it! You are good to go 👍
-
-If you need help, just jump into our [Discord chatroom](https://discord.gg/MUpMjP2).
+Start by reading our [Getting Started](https://backstage.io/docs/getting-started/) page. If you need help, just jump into our [Discord chatroom](https://discord.gg/MUpMjP2).
 
 # Coding Guidelines
 
@@ -99,6 +71,21 @@ All code is formatted with `prettier` using the configuration in the repo. If po
 If you're contributing to the backend or CLI tooling, be mindful of cross-platform support. [This](https://shapeshed.com/writing-cross-platform-node/) blog post is a good guide of what to keep in mind when writing cross-platform NodeJS.
 
 Also be sure to skim through our [ADRs](https://github.com/spotify/backstage/tree/master/docs/architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](https://github.com/spotify/backstage/blob/master/docs/architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
+
+# Creating Changesets
+
+We use [changesets](https://github.com/atlassian/changesets) to help us prepare releases. It helps us make sure that every package affected by a change gets a proper version number and an entry in its `CHANGELOG.md`. To make the process of generating releases easy. it helps when contributors include changesets with their pull requests.
+
+## To create a changeset
+
+1. Run `yarn changeset`
+2. Select which packages you want to include a changeset for
+3. Select impact of change that you're introducing (minor, major or patch)
+4. Add generated changset to Git
+5. Push the commit with your changeset to the branch associated with your PR
+6. Accept our gratitude for making the release process easier on the maintainer
+
+For more information, checkout [adding a changeset](https://github.com/atlassian/changesets/blob/master/docs/adding-a-changeset.md) documentation in changesets repository.
 
 # Code of Conduct
 

@@ -33,6 +33,7 @@ export type FilterGroupsContext = {
   filterGroupStates: { [filterGroupId: string]: FilterGroupStates };
   matchingEntities: Entity[];
   availableTags: string[];
+  isCatalogEmpty: boolean;
 };
 
 /**

@@ -1,7 +1,7 @@
 ---
 id: adrs-adr003
 title: ADR003: Avoid Default Exports and Prefer Named Exports
-sidebar_label: ADR003
+description: Architecture Decision Record (ADR) log on Avoid Default Exports and Prefer Named Exports
 ---
 
 | Created    | Status |

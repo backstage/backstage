@@ -59,8 +59,13 @@ jobs:
       - name: verify type dependencies
         run: yarn lint:type-deps
 
-      - name: test
-        run: yarn lerna -- run test -- --coverage
+      - name: test (and upload coverage)
+        run: |
+          yarn lerna -- run test -- --coverage
+          bash <(curl -s https://codecov.io/bash)
+          # Upload code coverage for some specific flags. Also see .codecov.yml
+          bash <(curl -s https://codecov.io/bash) -f packages/core/coverage/* -F core
+          bash <(curl -s https://codecov.io/bash) -f packages/core-api/coverage/* -F core-api
 
       # Publishes current version of packages that are not already present in the registry
       - name: publish

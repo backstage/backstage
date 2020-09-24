@@ -12,7 +12,8 @@ nav:
       - Strategies for adopting: 'overview/adopting.md'
       - Logo assets: 'overview/logos.md'
   - Getting started:
-      - Running Backstage locally: 'getting-started/index.md'
+      - Getting Started: 'getting-started/index.md'
+      - Running Backstage locally: 'getting-started/running-backstage-locally.md'
       - Installation: 'getting-started/installation.md'
       - Local development: 'getting-started/development-environment.md'
       - Demo deployment: https://backstage-demo.roadie.io
@@ -27,9 +28,11 @@ nav:
   - Features:
       - Software Catalog:
           - Overview: 'features/software-catalog/index.md'
+          - Installation: 'features/software-catalog/installation.md'
+          - Configuration: 'features/software-catalog/configuration.md'
           - System model: 'features/software-catalog/system-model.md'
           - YAML File Format: 'features/software-catalog/descriptor-format.md'
-          - Configuration: 'features/software-catalog/configuration.md'
+          - Well-known Annotations: 'features/software-catalog/well-known-annotations.md'
           - Extending the model: 'features/software-catalog/extending-the-model.md'
           - External integrations: 'features/software-catalog/external-integrations.md'
           - API: 'features/software-catalog/api.md'
@@ -42,10 +45,11 @@ nav:
               - Create your own Templater: 'features/software-templates/extending/create-your-own-templater.md'
               - Create your own Publisher: 'features/software-templates/extending/create-your-own-publisher.md'
               - Create your own Preparer: 'features/software-templates/extending/create-your-own-preparer.md'
-      - Docs-like-code:
+      - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'
           - Concepts: 'features/techdocs/concepts.md'
+          - TechDocs Architecture: 'features/techdocs/architecture.md'
           - Creating and Publishing Documentation: 'features/techdocs/creating-and-publishing.md'
           - FAQ: 'features/techdocs/FAQ.md'
   - Plugins:

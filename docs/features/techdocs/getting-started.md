@@ -1,40 +1,14 @@
 ---
 id: getting-started
 title: Getting Started
+description: Getting Started Guidelines
 ---
 
 TechDocs functions as a plugin to Backstage, so you will need to use Backstage
 to use TechDocs.
 
-## What is Backstage?
-
-Backstage is an open platform for building developer portals. It’s based on the
-developer portal we’ve been using internally at Spotify for over four years.
-[Read more here](https://github.com/spotify/backstage).
-
-## Prerequisities
-
-In order to use Backstage and TechDocs, you need to have the following
-installed:
-
-- [Node.js](https://nodejs.org) Active LTS (long term support), currently v12
-- [Yarn](https://yarnpkg.com/getting-started/install)
-
-## Creating a new Backstage app
-
-> If you have already created a Backstage application, jump to
-> [Installing TechDocs](#installing-techdocs), otherwise complete this step.
-
-To create a new Backstage application for TechDocs, run the following command:
-
-```bash
-npx @backstage/create-app
-```
-
-You will then be prompted to enter a name for your application. Once that's
-done, a new Backstage application will be created in a new folder. For example,
-if you choose the name `hello-world`, a new `hello-world` folder is created
-containing your new Backstage application.
+If you haven't setup Backstage already, start
+[here](../../getting-started/index.md).
 
 ## Installing TechDocs
 
@@ -74,7 +48,7 @@ export { plugin as TechDocs } from '@backstage/plugin-techdocs';
 ### Setting the configuration
 
 TechDocs allows for configuration of the docs storage URL through your
-`app-config` file. We provide two different values to be configured,
+`app-config.yaml` file. We provide two different values to be configured,
 `requestUrl` and `storageUrl`. The `requestUrl` is what the reader will request
 its data from, and `storageUrl` is where the backend can find the stored
 documentation.
@@ -87,15 +61,39 @@ techdocs:
   requestUrl: http://localhost:7000/techdocs/docs
 ```
 
-If you want `techdocs-backend` to manage building and publishing you want
+If you want `techdocs-backend` to manage building and publishing, you want
 `requestUrl` to point to the default value (or wherever `techdocs-backend` is
 hosted). `storageUrl` should be where your publisher publishes your docs. Using
 the default `LocalPublish` that is the default value.
 
 If you have a setup where you are not using `techdocs-backend` for managing
-building and publishing of your documentation you want to change the
+building and publishing of your documentation, you want to change the
 `requestUrl` to point to your storage. In this case `storageUrl` is not
 required.
+
+### Disable Docker in Docker situation (Optional)
+
+The TechDocs backend plugin runs a docker container with mkdocs to generate the
+frontend of the docs from source files (Markdown). If you are deploying
+Backstage using Docker, this will mean that your Backstage Docker container will
+try to run another Docker container for TechDocs backend.
+
+To avoid this problem, we have a configuration available. You can set a value in
+your `app-config.yaml` that tells the techdocs generator if it should run the
+`local` mkdocs or run it from `docker`. This defaults to running as `docker` if
+no config is provided.
+
+```yaml
+techdocs:
+  generators:
+    techdocs: local
+```
+
+Setting `generators.techdocs` to `local` means you will have to make sure your
+environment is compatible with techdocs. You will have to install the
+`mkdocs-techdocs-container` and 'mkdocs' package from pip, as well as graphviz
+and plantuml from your package manager. This has only been tested with python
+3.7 and python 3.8.
 
 ## Run Backstage locally
 
