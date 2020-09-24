@@ -23,7 +23,7 @@ with open(path.join(this_dir, "README.md"), encoding="utf-8") as file:
 
 setup(
     name="mkdocs-techdocs-core",
-    version="0.0.8",
+    version="0.0.9",
     description="A Mkdocs package that contains TechDocs defaults",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -43,7 +43,7 @@ setup(
         "pymdown-extensions==7.1",
     ],
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
         "License :: OSI Approved :: Apache Software License",
