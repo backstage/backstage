@@ -63,7 +63,7 @@ export async function createRouter({
 
     const entity = (await (
       await fetch(
-        `${baseUrl}/catalog/entities/by-name/${kind}/${namespace}/${name}`,
+        `${baseUrl}/api/catalog/entities/by-name/${kind}/${namespace}/${name}`,
       )
     ).json()) as Entity;
 
