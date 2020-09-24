@@ -195,7 +195,9 @@ export const SelectComponent = (props: SelectProps) => {
               getContentAnchorEl: null,
             }}
           >
-            {placeholder && <MenuItem value={[]}>{placeholder}</MenuItem>}
+            {placeholder && !multiple && (
+              <MenuItem value={[]}>{placeholder}</MenuItem>
+            )}
             {items &&
               items.map(item => (
                 <MenuItem id="menu-item" key={item.value} value={item.value}>
