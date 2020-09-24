@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { CorsOptions } from 'cors';
 
 export type BaseOptions = {
@@ -71,7 +71,7 @@ export type CertificateAttributes = {
  * }
  * ```
  */
-export function readBaseOptions(config: ConfigReader): BaseOptions {
+export function readBaseOptions(config: Config): BaseOptions {
   if (typeof config.get('listen') === 'string') {
     // TODO(freben): Expand this to support more addresses and perhaps optional
     const { host, port } = parseListenAddress(config.getString('listen'));
@@ -105,7 +105,7 @@ export function readBaseOptions(config: ConfigReader): BaseOptions {
  * }
  * ```
  */
-export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
+export function readCorsOptions(config: Config): CorsOptions | undefined {
   const cc = config.getOptionalConfig('cors');
   if (!cc) {
     return undefined;
@@ -138,9 +138,7 @@ export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
  * }
  * ```
  */
-export function readHttpsSettings(
-  config: ConfigReader,
-): HttpsSettings | undefined {
+export function readHttpsSettings(config: Config): HttpsSettings | undefined {
   const cc = config.getOptionalConfig('https');
 
   if (!cc) {
@@ -157,7 +155,7 @@ export function readHttpsSettings(
 }
 
 function getOptionalStringOrStrings(
-  config: ConfigReader,
+  config: Config,
   key: string,
 ): string | string[] | undefined {
   const value = config.getOptional(key);

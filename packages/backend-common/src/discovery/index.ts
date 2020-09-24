@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-export * from './config';
-export * from './database';
-export * from './discovery';
-export * from './errors';
-export * from './logging';
-export * from './middleware';
-export * from './service';
-export * from './paths';
-export * from './hot';
+export { SingleHostDiscovery } from './SingleHostDiscovery';
+export type { PluginEndpointDiscovery } from './types';

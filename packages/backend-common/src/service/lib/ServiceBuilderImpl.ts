@@ -39,7 +39,7 @@ import {
 import { createHttpServer, createHttpsServer } from './hostFactory';
 import { metricsHandler } from './metrics';
 
-const DEFAULT_PORT = 7000;
+export const DEFAULT_PORT = 7000;
 // '' is express default, which listens to all interfaces
 const DEFAULT_HOST = '';
 
