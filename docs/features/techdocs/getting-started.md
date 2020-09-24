@@ -57,8 +57,8 @@ The default storage and request URLs:
 
 ```yaml
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
-  requestUrl: http://localhost:7000/techdocs/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  requestUrl: http://localhost:7000/api/techdocs/docs
 ```
 
 If you want `techdocs-backend` to manage building and publishing, you want

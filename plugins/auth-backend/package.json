@@ -58,7 +58,8 @@
     "@types/passport-google-oauth20": "^2.0.3",
     "@types/passport-microsoft": "^0.0.0",
     "@types/passport-saml": "^1.1.2",
-    "jest-fetch-mock": "^3.0.3"
+    "jest-fetch-mock": "^3.0.3",
+    "msw": "^0.20.5"
   },
   "files": [
     "dist",
