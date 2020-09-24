@@ -15,6 +15,8 @@
  */
 
 import {
+  AppsV1Api,
+  CoreV1Api,
   V1ConfigMap,
   V1Deployment,
   V1Pod,
@@ -23,7 +25,6 @@ import {
 } from '@kubernetes/client-node';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { V1Service } from '@kubernetes/client-node/dist/gen/model/v1Service';
-import { Clients } from './types';
 import { Logger } from 'winston';
 import {
   KubernetesFetcher,
@@ -31,6 +32,11 @@ import {
   KubernetesObjectTypes,
   FetchResponse,
 } from '..';
+
+export interface Clients {
+  core: CoreV1Api;
+  apps: AppsV1Api;
+}
 
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private readonly k8sClientProvider: KubernetesClientProvider;

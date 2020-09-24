@@ -30,16 +30,11 @@ export interface ClusterDetails {
   serviceAccountToken: string | undefined;
 }
 
-export interface KubernetesClusterLocator {
-  getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
-}
-
 export interface ClusterObjects {
   cluster: { name: string };
   resources: FetchResponse[];
 }
 
-// cluster name to k8s objects
 export interface ObjectsByServiceIdResponse {
   items: ClusterObjects[];
 }
@@ -92,10 +87,17 @@ export interface ReplicaSetsFetchResponse {
   resources: Array<V1ReplicaSet>;
 }
 
+// Fetches information from a kubernetes cluster using the cluster details object
+// to target a specific cluster
 export interface KubernetesFetcher {
   fetchObjectsByServiceId(
     serviceId: string,
     clusterDetails: ClusterDetails,
     objectTypesToFetch: Set<KubernetesObjectTypes>,
   ): Promise<FetchResponse[]>;
+}
+
+// Used to locate which cluster(s) a service is running on
+export interface KubernetesClusterLocator {
+  getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
 }
