@@ -16,9 +16,6 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.7]
 
-    env:
-      TECHDOCS_CORE_PATH: ./packages/techdocs-container/techdocs-core
-
     name: Python ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
