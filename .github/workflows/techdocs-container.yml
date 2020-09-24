@@ -14,9 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.7]
 
-    name: Python ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
 
