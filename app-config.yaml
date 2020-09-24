@@ -55,6 +55,10 @@ newrelic:
 lighthouse:
   baseUrl: http://localhost:3003
 
+kubernetes:
+  clusterLocatorMethod: 'configMultiTenant'
+  clusters: []
+
 catalog:
   rules:
     - allow: [Component, API, Group, Template, Location]

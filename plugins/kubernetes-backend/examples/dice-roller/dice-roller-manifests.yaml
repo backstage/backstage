@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dice-roller
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  selector:
+    matchLabels:
+      app: dice-roller
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: dice-roller
+        'backstage.io/kubernetes-id': dice-roller
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dice-roller
+  namespace: default
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+data:
+  foo: bar
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dice-roller
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+type: Opaque
+data:
+  username: YWRtaW4=
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dice-roller
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  selector:
+    app: dice-roller
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dice-roller
+automountServiceAccountToken: false
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sa-admin
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: dice-roller
+    namespace: default

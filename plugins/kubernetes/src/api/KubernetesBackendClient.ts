@@ -16,6 +16,7 @@
 
 import { DiscoveryApi } from '@backstage/core';
 import { KubernetesApi } from './types';
+import { ObjectsByServiceIdResponse } from '@backstage/plugin-kubernetes-backend';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -37,7 +38,9 @@ export class KubernetesBackendClient implements KubernetesApi {
     return await response.json();
   }
 
-  async getObjectsByServiceId(serviceId: String): Promise<{}> {
+  async getObjectsByServiceId(
+    serviceId: String,
+  ): Promise<ObjectsByServiceIdResponse> {
     return await this.getRequired(`/services/${serviceId}`);
   }
 }
