@@ -4,6 +4,67 @@ title: Catalog Configuration
 description: Documentation on Software Catalog Configuration
 ---
 
+## Processors
+
+The catalog makes use of so called processors to perform all kinds of ingestion
+tasks, such as reading raw entity data from a remote source, parsing it,
+transforming it, and validating it. These processors are configured under the
+`catalog.processors` key.
+
+### Processor: github
+
+The `github` processor is responsible for fetching entity data from files on
+GitHub or GitHub Enterprise. The configuration for this processor lives under
+`catalog.processors.github`. Example:
+
+```yaml
+catalog:
+  processors:
+    github:
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        - target: https://ghe.example.net
+          apiBaseUrl: https://ghe.example.net/api/v3
+          rawBaseUrl: https://ghe.example.net/raw
+          token:
+            $secret:
+              env: GHE_PRIVATE_TOKEN
+```
+
+The main subkey is `providers`, where you can list the various GitHub compatible
+providers you want to be able to fetch data from. Each entry is a structure with
+up to four elements:
+
+- `target` (required): The string prefix of the location target that you want to
+  match on, with no trailing slash. For GitHub, it should be exactly
+  `https://github.com`.
+- `token` (optional): An authentication token as expected by GitHub. If
+  supplied, it will be passed along with all calls to this provider, both API
+  and raw. If it is not supplied, anonymous access will be used.
+- `apiBaseUrl` (optional): If you want to communicate using the APIv3 method
+  with this provider, specify the base URL for its endpoint here, with no
+  trailing slash. Specifically when the target is github, you can leave it out
+  to be inferred automatically. For a GitHub Enterprise installation, it is
+  commonly at `https://api.<host>` or `https://<host>/api/v3`.
+- `rawBaseUrl` (optional): If you want to communicate using the raw HTTP method
+  with this provider, specify the base URL for its endpoint here, with no
+  trailing slash. Specifically when the target is public GitHub, you can leave
+  it out to be inferred automatically. For a GitHub Enterprise installation, it
+  is commonly at `https://api.<host>` or `https://<host>/api/v3`.
+
+You need to supply either `apiBaseUrl` or `rawBaseUrl` or both (except for
+public GitHub, for which we can infer them). The `apiBaseUrl` will always be
+preferred over the other if a `token` is given, otherwise `rawBaseUrl` will be
+preferred.
+
+If you do not supply a public GitHub provider, one will be added automatically,
+silently at startup for convenience. So you only have to list it if you want to
+supply a token for it - and if you do, you can also leave out the `apiBaseUrl`
+and `rawBaseUrl` fields.
+
 ## Static Location Configuration
 
 To enable declarative catalog setups, it is possible to add locations to the

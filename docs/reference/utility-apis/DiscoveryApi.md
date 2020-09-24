@@ -1,7 +1,7 @@
 # DiscoveryApi
 
 The DiscoveryApi type is defined at
-[packages/core-api/src/apis/definitions/DiscoveryApi.ts:30](https://github.com/spotify/backstage/blob/82d329555c16af46db9b4e5cd2f44a3cc006a52e/packages/core-api/src/apis/definitions/DiscoveryApi.ts#L30).
+[packages/core-api/src/apis/definitions/DiscoveryApi.ts:30](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/DiscoveryApi.ts#L30).
 
 The following Utility API implements this type:
 [discoveryApiRef](./README.md#discovery)

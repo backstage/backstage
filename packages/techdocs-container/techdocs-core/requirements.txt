@@ -7,7 +7,7 @@ mkdocs-monorepo-plugin==0.4.5
 plantuml-markdown==3.1.2
 markdown_inline_graphviz_extension==1.1
 pygments==2.6.1
-pymdown-extensions==8.0.0
+pymdown-extensions==7.1
 
 # The linter using for Python
 # Note: This requires Python 3.6+ to run, but can format Python 2 code too.

@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createApiRef } from '@backstage/core';
-import { Project, Operation } from './types';
-
-export const GCPApiRef = createApiRef<GCPApi>({
-  id: 'plugin.gcpprojects.service',
-  description: 'Used by the GCP Projects plugin to make requests',
-});
-
-export type GCPApi = {
-  listProjects: ({ token }: { token: string }) => Promise<Project[]>;
-  getProject: (projectId: string, token: Promise<string>) => Promise<Project>;
-  createProject: (
-    projectName: string,
-    projectId: string,
-    owner: string,
-    token: string,
-  ) => Promise<Operation>;
-};
+export {};

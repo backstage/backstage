@@ -17,7 +17,7 @@
 import os from 'os';
 import path from 'path';
 import parseGitUrl from 'git-url-parse';
-import { Clone, Repository, Cred } from 'nodegit';
+import NodeGit, { Clone, Repository, Cred } from 'nodegit';
 import fs from 'fs-extra';
 // @ts-ignore
 import defaultBranch from 'default-branch';
@@ -25,6 +25,10 @@ import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
 import { Logger } from 'winston';
+
+// Enables core.longpaths on windows to prevent crashing when checking out repos with long foldernames and/or deep nesting
+// @ts-ignore
+NodeGit.Libgit2.opts(28, 1);
 
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;

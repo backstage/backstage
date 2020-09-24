@@ -24,8 +24,7 @@ import { Entity } from '@backstage/catalog-model';
 import { WarningPanel } from '@backstage/core';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]) &&
-  entity.metadata.annotations?.[CIRCLECI_ANNOTATION] !== '';
+  Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]);
 
 export const Router = ({ entity }: { entity: Entity }) =>
   !isPluginApplicableToEntity(entity) ? (

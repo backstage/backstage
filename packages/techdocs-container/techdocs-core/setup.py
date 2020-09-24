@@ -14,41 +14,43 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from setuptools import setup, find_packages
+from os import path
 
+# read the contents of the README file in the current directory
+this_dir = path.abspath(path.dirname(__file__))
+with open(path.join(this_dir, "README.md"), encoding="utf-8") as file:
+    long_description = file.read()
 
 setup(
-    name='mkdocs-techdocs-core',
-    version='0.0.7',
-    description='A Mkdocs package that contains TechDocs defaults',
-    long_description='',
-    keywords='mkdocs',
-    url='https://github.com/spotify/backstage',
-    author='TechDocs Core',
-    author_email='pulp-fiction@spotify.com',
-    license='Apache-2.0',
-    python_requires='>=3.7',
+    name="mkdocs-techdocs-core",
+    version="0.0.8",
+    description="A Mkdocs package that contains TechDocs defaults",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    keywords="mkdocs",
+    url="https://github.com/spotify/backstage",
+    author="TechDocs Core",
+    author_email="pulp-fiction@spotify.com",
+    license="Apache-2.0",
+    python_requires=">=3.7",
     install_requires=[
-        'mkdocs>=1.1.2',
-        'mkdocs-material==5.3.2',
-        'mkdocs-monorepo-plugin==0.4.5',
-        'plantuml-markdown==3.1.2',
-        'markdown_inline_graphviz_extension==1.1',
-        'pygments==2.6.1',
-        'pymdown-extensions==8.0.0'
+        "mkdocs>=1.1.2",
+        "mkdocs-material==5.3.2",
+        "mkdocs-monorepo-plugin==0.4.5",
+        "plantuml-markdown==3.1.2",
+        "markdown_inline_graphviz_extension==1.1",
+        "pygments==2.6.1",
+        "pymdown-extensions==7.1",
     ],
     classifiers=[
-        'Development Status :: 1 - Planning',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Information Technology',
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.7'
+        "Development Status :: 1 - Planning",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.7",
     ],
     packages=find_packages(),
-    entry_points={
-        'mkdocs.plugins': [
-            'techdocs-core = src.core:TechDocsCore'
-        ]
-    }
+    entry_points={"mkdocs.plugins": ["techdocs-core = src.core:TechDocsCore"]},
 )

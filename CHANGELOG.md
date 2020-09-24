@@ -6,12 +6,18 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 ## Next Release
 
+> Collect changes for the next release below
+
+### @backstage/core
+
+- Renamed `SessionStateApi` to `SessionApi` and `logout` to `signOut`. Custom implementations of the `SingInPage` app-component will need to rename their `logout` function. The different auth provider items for the `UserSettingsMenu` have been consolidated into a single `ProviderSettingsItem`, meaning you need to replace existing usages of `OAuthProviderSettings` and `OIDCProviderSettings`. [#2555](https://github.com/spotify/backstage/pull/2555).
+
+## v0.1.1-alpha.22
+
 ### @backstage/core
 
 - Introduced initial version of an inverted app/plugin relationship, where plugins export components for apps to use, instead registering themselves directly into the app. This enables more fine-grained control of plugin features, and also composition of plugins such as catalog pages with additional cards and tabs. This breaks the use of `RouteRef`s, and there will be more changes related to this in the future, but this change lays the initial foundation. See `packages/app` and followup PRs for how to update plugins for this change. [#2076](https://github.com/spotify/backstage/pull/2076)
 - Switch to an automatic dependency injection mechanism for all Utility APIs, allowing plugins to ship default implementations of their APIs. See [https://backstage.io/docs/api/utility-apis](https://backstage.io/docs/api/utility-apis). [#2285](https://github.com/spotify/backstage/pull/2285)
-
-> Collect changes for the next release below
 
 ### @backstage/cli
 
@@ -20,6 +26,10 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 ### @backstage/create-app
 
 - Change root `tsc` output dir to `dist-types`, in order to allow for standalone plugin repos. [#2278](https://github.com/spotify/backstage/pull/2278)
+
+### @backstage/catalog-backend
+
+- We have simplified the way that GitHub ingestion works. The `catalog.processors.githubApi` key is deprecated, in favor of `catalog.processors.github`. At the same time, the location type `github/api` is likewise deprecated, in favor of `github`. This location type now serves both raw HTTP reads and APIv3 reads, depending on how you configure it. It also supports having several providers at once - for example, both public GitHub and an internal GitHub Enterprise, with different keys. If you still use the `catalog.processors.githubApi` config key, things will work but you will get a deprecation warning at startup. In a later release, support for the old key will go away entirely. See the [configuration section in the docs](https://backstage.io/docs/features/software-catalog/configuration) for more details.
 
 ## v0.1.1-alpha.21
 
