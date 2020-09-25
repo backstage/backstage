@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Router as FirebaseFunctionsRouter } from '@roadiehq/backstage-plugin-firebase-functions';
+import {
+  Router as FirebaseFunctionsRouter,
+  isPluginApplicableToEntity as isFirebaseFunctionsAvailable,
+  FirebaseFunctionWidget,
+} from '@roadiehq/backstage-plugin-firebase-functions';
 import {
   Router as GitHubActionsRouter,
   isPluginApplicableToEntity as isGitHubActionsAvailable,
@@ -63,12 +67,17 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3}>
-    <Grid item>
+    <Grid item sm={4}>
       <AboutCard entity={entity} />
     </Grid>
     {isJenkinsAvailable(entity) && (
       <Grid item sm={4}>
         <JenkinsLatestRunCard branch="master" />
+      </Grid>
+    )}
+    {isFirebaseFunctionsAvailable(entity) && (
+      <Grid item sm={4}>
+        <FirebaseFunctionWidget entity={entity} />
       </Grid>
     )}
   </Grid>
