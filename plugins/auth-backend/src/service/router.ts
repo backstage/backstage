@@ -22,13 +22,16 @@ import { Logger } from 'winston';
 import { createAuthProviderRouter } from '../providers';
 import { Config } from '@backstage/config';
 import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
-import { NotFoundError } from '@backstage/backend-common';
+import {
+  NotFoundError,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 
 export interface RouterOptions {
   logger: Logger;
   database: Knex;
   config: Config;
-  basePath?: string;
+  discovery: PluginEndpointDiscovery;
 }
 
 export async function createRouter(
@@ -38,9 +41,7 @@ export async function createRouter(
   const logger = options.logger.child({ plugin: 'auth' });
 
   const appUrl = options.config.getString('app.baseUrl');
-  const backendUrl = options.config.getString('backend.baseUrl');
-  // TODO(Rugvip): Replace with service discovery of external URL
-  const authUrl = backendUrl + (options.basePath ?? '/api/auth');
+  const authUrl = await options.discovery.getExternalBaseUrl('auth');
 
   const keyDurationSeconds = 3600;
 

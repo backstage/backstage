@@ -14,24 +14,5 @@
  * limitations under the License.
  */
 
-import { createRouter } from './router';
-import * as winston from 'winston';
-import { ConfigReader } from '@backstage/config';
-import {
-  loadBackendConfig,
-  SingleHostDiscovery,
-} from '@backstage/backend-common';
-
-describe('createRouter', () => {
-  it('works', async () => {
-    const logger = winston.createLogger();
-    const config = ConfigReader.fromConfigs(await loadBackendConfig());
-    const discovery = SingleHostDiscovery.fromConfig(config);
-    const router = await createRouter({
-      config,
-      logger,
-      discovery,
-    });
-    expect(router).toBeDefined();
-  });
-});
+export { SingleHostDiscovery } from './SingleHostDiscovery';
+export type { PluginEndpointDiscovery } from './types';

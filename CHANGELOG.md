@@ -8,13 +8,27 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 > Collect changes for the next release below
 
+### Backend (example-backend, or backends created with @backstage/create-app)
+
+- The default mount point for backend plugins have been changed to `/api`. These changes are done in the backend package itself, so it is recommended that you sync up existing backend packages with this new pattern. [#2562](https://github.com/spotify/backstage/pull/2562)
+- A service discovery mechanism for backend plugins has been added, and is now a requirement for several backend plugins. See [packages/backend/src/index.ts](./packages/backend/src/index.ts) for how to set it up using `SingleHostDiscovery` from `@backstage/backend-common`. Note that the default base path for plugins is set to `/api` to that change, but it can be set to use the old behavior via the `basePath` option. [#2600](https://github.com/spotify/backstage/pull/2600)
+
 ### @backstage/core
 
 - Renamed `SessionStateApi` to `SessionApi` and `logout` to `signOut`. Custom implementations of the `SingInPage` app-component will need to rename their `logout` function. The different auth provider items for the `UserSettingsMenu` have been consolidated into a single `ProviderSettingsItem`, meaning you need to replace existing usages of `OAuthProviderSettings` and `OIDCProviderSettings`. [#2555](https://github.com/spotify/backstage/pull/2555).
 
 ### @backstage/auth-backend
 
-- The default mount path of backend plugins was changed to `/api/:pluginId`, and as part of that it was needed to enable configuration of the base path of the auth backend, so that it can construct redirect URLs correctly. The default base path is `/api/auth`, but you need to set this to `/auth` if you want to keep using the old path. Note that you will also need to reconfigure any allowed redirect URLs to include `/api` if you switch to the new recommended pattern. [#2562](https://github.com/spotify/backstage/pull/2562)
+- The default mount path of backend plugins was changed to `/api/:pluginId`, and as part of that it was needed to enable configuration of the base path of the auth backend, so that it can construct redirect URLs correctly. Note that you will also need to reconfigure any allowed redirect URLs to include `/api` if you switch to the new recommended pattern. [#2562](https://github.com/spotify/backstage/pull/2562)
+- The auth backend now requires an implementation of `PluginEndpointDiscovery` from `@backstage/backend-common` to be passed in as `discovery`. See the changes to `@backstage/backend`.
+
+### @backstage/proxy-backend
+
+- The proxy backend now requires an implementation of `PluginEndpointDiscovery` from `@backstage/backend-common` to be passed in as `discovery`. See the changes to `@backstage/backend`.
+
+### @backstage/techdocs-backend
+
+- The TechDocs backend now requires an implementation of `PluginEndpointDiscovery` from `@backstage/backend-common` to be passed in as `discovery`. See the changes to `@backstage/backend`.
 
 ## v0.1.1-alpha.22
 
