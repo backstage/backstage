@@ -15,6 +15,23 @@
  */
 
 import { EntityName, EntityRef } from '../types';
+import { ENTITY_DEFAULT_NAMESPACE } from './constants';
+import { Entity } from './Entity';
+
+/**
+ * Extracts the kind, namespace and name that form the name triplet of the
+ * given entity.
+ *
+ * @param entity An entity
+ * @returns The complete entity name
+ */
+export function getEntityName(entity: Entity): EntityName {
+  return {
+    kind: entity.kind,
+    namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
+    name: entity.metadata.name,
+  };
+}
 
 /**
  * The context of defaults that entity reference parsing happens within.
@@ -43,7 +60,7 @@ export function parseEntityName(
   context: EntityRefContext = {},
 ): EntityName {
   const { kind, namespace, name } = parseEntityRef(ref, {
-    defaultNamespace: 'default',
+    defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
     ...context,
   });
 

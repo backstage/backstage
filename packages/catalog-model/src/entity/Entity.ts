@@ -87,7 +87,7 @@ export type EntityMeta = JsonObject & {
   /**
    * The name of the entity.
    *
-   * Must be uniqe within the catalog at any given point in time, for any
+   * Must be unique within the catalog at any given point in time, for any
    * given namespace + kind pair.
    */
   name: string;
@@ -120,8 +120,3 @@ export type EntityMeta = JsonObject & {
    */
   tags?: string[];
 };
-
-/**
- * The keys of EntityMeta that are auto-generated.
- */
-export const entityMetaGeneratedFields = ['uid', 'etag', 'generation'] as const;
