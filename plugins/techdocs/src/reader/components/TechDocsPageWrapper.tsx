@@ -15,22 +15,25 @@
  */
 
 import React from 'react';
-import { Header, Content, Page, pageTheme } from '@backstage/core';
+import { Content, Page, pageTheme } from '@backstage/core';
+import { TechDocsHeader } from './TechDocsHeader';
 
 type TechDocsPageWrapperProps = {
   title: string;
   subtitle: string;
   children: any;
+  labels?: any;
 };
 
 export const TechDocsPageWrapper = ({
   children,
   title,
   subtitle,
+  labels,
 }: TechDocsPageWrapperProps) => {
   return (
     <Page theme={pageTheme.documentation}>
-      <Header title={title} subtitle={subtitle} />
+      <TechDocsHeader labels={labels} title={title} subtitle={subtitle} />
       <Content>{children}</Content>
     </Page>
   );
