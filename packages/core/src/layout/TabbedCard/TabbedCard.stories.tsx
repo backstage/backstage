@@ -50,6 +50,25 @@ export const Default = () => {
   );
 };
 
+export const WithSubheader = () => {
+  return (
+    <TabbedCard title="Default Example Header" subheader="Subheader">
+      <CardTab label="Option 1">
+        <div style={cardContentStyle}>Some content</div>
+      </CardTab>
+      <CardTab label="Option 2">
+        <div style={cardContentStyle}>Some content 2</div>
+      </CardTab>
+      <CardTab label="Option 3">
+        <div style={cardContentStyle}>Some content 3</div>
+      </CardTab>
+      <CardTab label="Option 4">
+        <div style={cardContentStyle}>Some content 4</div>
+      </CardTab>
+    </TabbedCard>
+  );
+};
+
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export const WithFooterLink = () => {

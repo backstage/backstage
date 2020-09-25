@@ -28,6 +28,7 @@ import {
 import classNames from 'classnames';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
+import { getVariantStyles } from './variants';
 
 const useStyles = makeStyles(theme => ({
   noPadding: {
@@ -58,51 +59,6 @@ const CardActionsTopRight = withStyles(theme => ({
     float: 'right',
   },
 }))(CardActions);
-
-const VARIANT_STYLES = {
-  card: {
-    flex: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    fullHeight: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-    },
-    height100: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: 'calc(100% - 10px)', // for pages without content header
-      marginBottom: '10px',
-    },
-    contentheader: {
-      height: 'calc(100% - 40px)', // for pages with content header
-    },
-    contentheadertabs: {
-      height: 'calc(100% - 97px)', // for pages with content header and tabs (Tingle)
-    },
-    noShrink: {
-      flexShrink: 0,
-    },
-    minheight300: {
-      minHeight: 300,
-      overflow: 'initial',
-    },
-  },
-  cardContent: {
-    fullHeight: {
-      flex: 1,
-    },
-    height100: {
-      flex: 1,
-    },
-    contentRow: {
-      display: 'flex',
-      flexDirection: 'row',
-    },
-  },
-};
 
 /**
  * InfoCard is used to display a paper-styled block on the screen, similar to a panel.
@@ -163,32 +119,10 @@ export const InfoCard = ({
   noPadding,
 }: Props): JSX.Element => {
   const classes = useStyles();
-
-  /**
-   * If variant is specified, we build up styles for that particular variant for both
-   * the Card and the CardContent (since these need to be synced)
-   */
-  let calculatedStyle = {};
-  let calculatedCardStyle = {};
-
-  if (variant) {
-    const variants = variant.split(/[\s]+/g);
-    variants.forEach(name => {
-      calculatedStyle = {
-        ...calculatedStyle,
-        ...VARIANT_STYLES.card[name as keyof typeof VARIANT_STYLES['card']],
-      };
-      calculatedCardStyle = {
-        ...calculatedCardStyle,
-        ...VARIANT_STYLES.cardContent[
-          name as keyof typeof VARIANT_STYLES['cardContent']
-        ],
-      };
-    });
-  }
+  const { cardStyle, contentStyle } = getVariantStyles(variant);
 
   return (
-    <Card style={calculatedStyle} className={className}>
+    <Card style={cardStyle} className={className}>
       <ErrorBoundary slackChannel={slackChannel}>
         {title && (
           <>
@@ -217,7 +151,7 @@ export const InfoCard = ({
           className={classNames(cardClassName, {
             [classes.noPadding]: noPadding,
           })}
-          style={calculatedCardStyle}
+          style={contentStyle}
         >
           {children}
         </CardContent>

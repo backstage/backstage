@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import React, { FC, useState, ReactElement, ReactNode } from 'react';
+import React, { useState, ReactElement, ReactNode } from 'react';
 import {
   Card,
   CardContent,
   CardHeader,
   Divider,
-  withStyles,
   makeStyles,
   Tabs,
   Tab,
@@ -28,6 +27,7 @@ import {
 } from '@material-ui/core';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { getVariantStyles } from '../InfoCard/variants';
 
 const useTabsStyles = makeStyles(theme => ({
   root: {
@@ -38,31 +38,46 @@ const useTabsStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.info.main,
     height: theme.spacing(0.3),
   },
+  header: {
+    padding: theme.spacing(2, 2, 2, 2.5),
+  },
+  headerTitle: {
+    fontWeight: 700,
+  },
+  headerSubheader: {
+    paddingTop: theme.spacing(1),
+  },
+  noPadding: {
+    padding: 0,
+    '&:last-child': {
+      paddingBottom: 0,
+    },
+  },
 }));
-
-const BoldHeader = withStyles(theme => ({
-  root: { padding: theme.spacing(2, 2, 2, 2.5), display: 'inline-block' },
-  title: { fontWeight: 700 },
-  subheader: { paddingTop: theme.spacing(1) },
-}))(CardHeader);
 
 type Props = {
   slackChannel?: string;
   children?: ReactElement<TabProps>[];
   onChange?: (event: React.ChangeEvent<{}>, value: number | string) => void;
   title?: string;
+  subheader?: string;
   value?: number | string;
   deepLink?: BottomLinkProps;
+  variant?: string;
+  noPadding?: boolean;
 };
 
-const TabbedCard: FC<Props> = ({
+const TabbedCard = ({
   slackChannel = '#backstage',
   children,
   title,
+  subheader,
   deepLink,
   value,
   onChange,
-}) => {
+  variant,
+  noPadding,
+}: Props) => {
   const tabsClasses = useTabsStyles();
   const [selectedIndex, selectIndex] = useState(0);
 
@@ -82,19 +97,36 @@ const TabbedCard: FC<Props> = ({
     });
   }
 
+  const { cardStyle, contentStyle } = getVariantStyles(variant);
+
   return (
-    <Card>
+    <Card style={cardStyle}>
       <ErrorBoundary slackChannel={slackChannel}>
-        {title && <BoldHeader title={title} />}
+        {title && (
+          <CardHeader
+            classes={{
+              root: tabsClasses.header,
+              title: tabsClasses.headerTitle,
+              subheader: tabsClasses.headerSubheader,
+            }}
+            title={title}
+            subheader={subheader}
+          />
+        )}
         <Tabs
-          classes={tabsClasses}
+          classes={{ root: tabsClasses.root, indicator: tabsClasses.indicator }}
           value={value || selectedIndex}
           onChange={handleChange}
         >
           {children}
         </Tabs>
         <Divider />
-        <CardContent>{selectedTabContent}</CardContent>
+        <CardContent
+          className={noPadding ? tabsClasses.noPadding : undefined}
+          style={contentStyle}
+        >
+          {selectedTabContent}
+        </CardContent>
         {deepLink && <BottomLink {...deepLink} />}
       </ErrorBoundary>
     </Card>
@@ -118,7 +150,7 @@ type CardTabProps = TabProps & {
   children: ReactNode;
 };
 
-const CardTab: FC<CardTabProps> = ({ children, ...props }) => {
+const CardTab = ({ children, ...props }: CardTabProps) => {
   const classes = useCardTabStyles();
 
   return <Tab disableRipple classes={classes} {...props} />;
