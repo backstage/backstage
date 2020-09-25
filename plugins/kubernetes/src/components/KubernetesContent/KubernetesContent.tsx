@@ -14,17 +14,57 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
-import { InfoCard, Page, pageTheme, Content, useApi } from '@backstage/core';
+import {
+  Content,
+  InfoCard,
+  Page,
+  pageTheme,
+  Progress,
+  useApi,
+} from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
-import { ObjectsByServiceIdResponse } from '@backstage/plugin-kubernetes-backend';
+import {
+  FetchResponse,
+  ObjectsByServiceIdResponse,
+} from '@backstage/plugin-kubernetes-backend';
+import { DeploymentTables } from '../DeploymentTables';
+import { DeploymentTriple } from '../../types/types';
 
-// TODO this is a temporary component used to construct the Kubernetes plugin boilerplate
+const findDeployments = (fetchResponse: FetchResponse[]): DeploymentTriple => {
+  return fetchResponse.reduce(
+    (prev, next) => {
+      switch (next.type) {
+        case 'deployments':
+          prev.deployments.push(...next.resources);
+          break;
+        case 'pods':
+          prev.pods.push(...next.resources);
+          break;
+        case 'replicasets':
+          prev.replicaSets.push(...next.resources);
+          break;
+        default:
+      }
+      return prev;
+    },
+    {
+      pods: [],
+      replicaSets: [],
+      deployments: [],
+    } as DeploymentTriple,
+  );
+};
 
-export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
+// TODO proper error handling
+
+type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
+
+export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   const kubernetesApi = useApi(kubernetesApiRef);
+
   const [kubernetesObjects, setKubernetesObjects] = useState<
     ObjectsByServiceIdResponse | undefined
   >(undefined);
@@ -45,27 +85,17 @@ export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
     <Page theme={pageTheme.tool}>
       <Content>
         <Grid container spacing={3} direction="column">
-          {kubernetesObjects === undefined && <div>loading....</div>}
+          {kubernetesObjects === undefined && <Progress />}
           {error !== undefined && <div>{error}</div>}
-          {kubernetesObjects !== undefined && (
-            <div>
-              {kubernetesObjects.items.map((item, i) => (
-                <Grid item key={i}>
-                  <InfoCard key={item.cluster.name} title={item.cluster.name}>
-                    {item.resources.map((fr, j) => (
-                      <div key={j}>
-                        <br />
-                        {fr.type}:{' '}
-                        {(fr.resources as any)
-                          .map((v: any) => v.metadata.name)
-                          .join(' ')}
-                      </div>
-                    ))}
-                  </InfoCard>
-                </Grid>
-              ))}
-            </div>
-          )}
+          {kubernetesObjects?.items.map((item, i) => (
+            <Grid item key={i}>
+              <InfoCard title={item.cluster.name} subheader="Cluster">
+                <DeploymentTables
+                  deploymentTriple={findDeployments(item.resources)}
+                />
+              </InfoCard>
+            </Grid>
+          ))}
         </Grid>
       </Content>
     </Page>
