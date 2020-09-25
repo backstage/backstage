@@ -15,5 +15,5 @@
  */
 
 export { DefaultAuthConnector } from './DefaultAuthConnector';
-export { SamlAuthConnector } from './SamlAuthConnector';
+export { DirectAuthConnector } from './DirectAuthConnector';
 export * from './types';

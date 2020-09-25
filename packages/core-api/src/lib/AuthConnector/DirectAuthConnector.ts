@@ -27,13 +27,13 @@ type Options = {
   provider: AuthProvider & { id: string };
 };
 
-export type SamlResponse = {
+export type DirectAuthResponse = {
   userId: string;
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentity;
 };
 
-export class SamlAuthConnector<SamlResponse> {
+export class DirectAuthConnector<DirectAuthResponse> {
   private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string | undefined;
   private readonly provider: AuthProvider & { id: string };
@@ -46,7 +46,7 @@ export class SamlAuthConnector<SamlResponse> {
     this.provider = provider;
   }
 
-  async createSession(): Promise<SamlResponse> {
+  async createSession(): Promise<DirectAuthResponse> {
     const popupUrl = await this.buildUrl('/start');
     const payload = await showLoginPopup({
       url: popupUrl,

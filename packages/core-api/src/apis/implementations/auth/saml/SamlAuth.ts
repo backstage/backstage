@@ -15,7 +15,7 @@
  */
 
 import SamlIcon from '@material-ui/icons/AcUnit';
-import { SamlAuthConnector } from '../../../../lib/AuthConnector';
+import { DirectAuthConnector } from '../../../../lib/AuthConnector';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { Observable } from '../../../../types';
 import {
@@ -57,7 +57,7 @@ class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
     environment = 'development',
     provider = DEFAULT_PROVIDER,
   }: CreateOptions) {
-    const connector = new SamlAuthConnector<SamlSession>({
+    const connector = new DirectAuthConnector<SamlSession>({
       discoveryApi,
       environment,
       provider,
