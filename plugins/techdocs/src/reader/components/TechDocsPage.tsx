@@ -19,14 +19,84 @@ import { useParams } from 'react-router-dom';
 
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { Reader } from './Reader';
+import { useApi, HeaderLabel, Link } from '@backstage/core';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import { TechDocsMetadata } from '../../metadata';
+import { useAsync } from 'react-use';
+import { techdocsStorageApiRef } from '../../api';
+import { catalogApiRef } from '@backstage/plugin-catalog';
 
 export const TechDocsPage = () => {
-  const { entityId } = useParams();
-
+  const { entityId, '*': path } = useParams();
+  const catalogApi = useApi(catalogApiRef);
   const [kind, namespace, name] = entityId.split(':');
+  const techdocsStorageApi = useApi(techdocsStorageApiRef);
+  const optionalNamespace = namespace ? namespace : 'default';
+  const techDocsMetadata = new TechDocsMetadata();
+
+  const { value, loading, error } = useAsync(async () => {
+    const docsUrl = `http://localhost:7000/api/techdocs/static/docs/${kind}/${optionalNamespace}/${name}`;
+    return {
+      entityDocs: await techdocsStorageApi.getEntityDocs(
+        { kind, namespace, name },
+        path,
+      ),
+      mkDocsMetadata: await techDocsMetadata.getMkDocsMetaData(docsUrl),
+      entityMetadata: await catalogApi.getEntityByName({
+        kind,
+        namespace: optionalNamespace,
+        name,
+      }),
+    };
+  }, [kind, namespace, name, path]);
+
+  if (loading || error || !value) return null;
+
+  const { entityDocs, entityMetadata, mkDocsMetadata } = value;
+
+  if (!entityDocs) return null;
+
+  const { metadata, spec } = entityMetadata;
+
+  const repoURL = metadata.annotations['backstage.io/techdocs-ref'].replace(
+    'github:',
+    '',
+  );
+
+  // Header Labels to show additional metadata
+  const labels = (
+    <>
+      <HeaderLabel
+        label="Component"
+        value={
+          <Link style={{ color: '#fff' }} to={`/catalog/${kind}/${name}`}>
+            {name}
+          </Link>
+        }
+      />
+      <HeaderLabel label="Site Owner" value={spec?.owner} />
+      <HeaderLabel label="Lifecycle" value={spec?.lifecycle} />
+      <HeaderLabel
+        label=""
+        value={
+          <a href={repoURL} target="_blank">
+            <GitHubIcon style={{ marginTop: '-25px', fill: '#fff' }} />
+          </a>
+        }
+      />
+    </>
+  );
 
   return (
-    <TechDocsPageWrapper title={name} subtitle={name}>
+    <TechDocsPageWrapper
+      labels={labels}
+      title={mkDocsMetadata.siteName}
+      subtitle={
+        mkDocsMetadata.siteDescription === 'None' || undefined
+          ? ''
+          : mkDocsMetadata.siteDescription
+      }
+    >
       <Reader
         entityId={{
           kind,
