@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { createAuthProviderRouter } from './factories';
+export { createAuthProvider } from './factories';
