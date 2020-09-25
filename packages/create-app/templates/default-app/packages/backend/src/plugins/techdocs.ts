@@ -13,6 +13,7 @@ import Docker from 'dockerode';
 export default async function createPlugin({
   logger,
   config,
+  discovery,
 }: PluginEnvironment) {
   const generators = new Generators();
   const techdocsGenerator = new TechdocsGenerator(logger, config);
@@ -37,5 +38,6 @@ export default async function createPlugin({
     dockerClient,
     logger,
     config,
+    discovery,
   });
 }

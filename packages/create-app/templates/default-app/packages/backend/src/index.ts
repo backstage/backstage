@@ -14,6 +14,7 @@ import {
   getRootLogger,
   useHotMemoize,
   notFoundHandler,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
 import auth from './plugins/auth';
@@ -37,7 +38,8 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
         },
       },
     );
-    return { logger, database, config };
+    const discovery = SingleHostDiscovery.fromConfig(config);
+    return { logger, database, config, discovery };
   };
 }
 
@@ -59,7 +61,7 @@ async function main() {
   apiRouter.use('/auth', await auth(authEnv))
   apiRouter.use('/identity', await identity(identityEnv))
   apiRouter.use('/techdocs', await techdocs(techdocsEnv))
-  apiRouter.use('/proxy', await proxy(proxyEnv, '/api/proxy'))
+  apiRouter.use('/proxy', await proxy(proxyEnv))
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
