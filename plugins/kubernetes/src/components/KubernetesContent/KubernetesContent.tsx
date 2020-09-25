@@ -87,20 +87,15 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
         <Grid container spacing={3} direction="column">
           {kubernetesObjects === undefined && <Progress />}
           {error !== undefined && <div>{error}</div>}
-          {kubernetesObjects !== undefined &&
-            kubernetesObjects.items.map((item, i) => (
-              <Grid item key={i}>
-                <InfoCard
-                  key={item.cluster.name}
-                  title={item.cluster.name}
-                  subheader="Cluster"
-                >
-                  <DeploymentTables
-                    deploymentTriple={findDeployments(item.resources)}
-                  />
-                </InfoCard>
-              </Grid>
-            ))}
+          {kubernetesObjects?.items.map((item, i) => (
+            <Grid item key={i}>
+              <InfoCard title={item.cluster.name} subheader="Cluster">
+                <DeploymentTables
+                  deploymentTriple={findDeployments(item.resources)}
+                />
+              </InfoCard>
+            </Grid>
+          ))}
         </Grid>
       </Content>
     </Page>

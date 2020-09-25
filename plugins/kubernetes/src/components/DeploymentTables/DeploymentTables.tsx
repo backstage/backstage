@@ -181,7 +181,6 @@ export const DeploymentTables = ({
 
   return (
     <Grid
-      style={{ width: '100%' }}
       container
       direction="column"
       justify="flex-start"
