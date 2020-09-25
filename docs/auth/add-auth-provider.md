@@ -1,6 +1,7 @@
 ---
 id: add-auth-provider
 title: Adding authentication providers
+description: Documentation on Adding authentication providers
 ---
 
 ## Passport

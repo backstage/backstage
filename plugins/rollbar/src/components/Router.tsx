@@ -23,7 +23,7 @@ import { ROLLBAR_ANNOTATION } from '../constants';
 import { EntityPageRollbar } from './EntityPageRollbar/EntityPageRollbar';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  entity.metadata.annotations?.[ROLLBAR_ANNOTATION] !== '';
+  Boolean(entity.metadata.annotations?.[ROLLBAR_ANNOTATION]);
 
 type Props = {
   entity: Entity;

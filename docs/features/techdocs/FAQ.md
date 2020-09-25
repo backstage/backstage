@@ -2,6 +2,7 @@
 id: faqs
 title: TechDocs FAQ
 sidebar_label: FAQ
+description: This page answers frequently asked questions about TechDocs
 ---
 
 This page answers frequently asked questions about [TechDocs](README.md).

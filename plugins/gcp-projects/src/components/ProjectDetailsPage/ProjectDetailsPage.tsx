@@ -15,6 +15,17 @@
  */
 
 import {
+  Content,
+  ContentHeader,
+  Header,
+  HeaderLabel,
+  Page,
+  pageTheme,
+  SupportButton,
+  useApi,
+  WarningPanel,
+} from '@backstage/core';
+import {
   Button,
   ButtonGroup,
   LinearProgress,
@@ -27,20 +38,9 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import {
-  useApi,
-  googleAuthApiRef,
-  HeaderLabel,
-  Page,
-  Header,
-  pageTheme,
-  SupportButton,
-  Content,
-  ContentHeader,
-} from '@backstage/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { GCPApiRef } from '../../api';
+import { gcpApiRef } from '../../api';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -56,33 +56,26 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 const DetailsPage = () => {
-  const api = useApi(GCPApiRef);
-  const googleApi = useApi(googleAuthApiRef);
-  const token = googleApi.getAccessToken(
-    'https://www.googleapis.com/auth/cloud-platform.read-only',
-  );
-
+  const api = useApi(gcpApiRef);
   const classes = useStyles();
-  const status = useAsync(
-    () =>
+
+  const { loading, error, value: details } = useAsync(
+    async () =>
       api.getProject(
         decodeURIComponent(location.search.split('projectId=')[1]),
-        token,
       ),
     [location.search],
   );
 
-  if (status.loading) {
+  if (loading) {
     return <LinearProgress />;
-  } else if (status.error) {
+  } else if (error) {
     return (
-      <Typography variant="h6" color="error">
-        Failed to load build, {status.error.message}
-      </Typography>
+      <WarningPanel title="Failed to load project">
+        {error.toString()}
+      </WarningPanel>
     );
   }
-
-  const details = status.value;
 
   return (
     <Table component={Paper} className={classes.table}>

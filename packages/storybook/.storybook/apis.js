@@ -36,7 +36,7 @@ builder.add(identityApiRef, {
   getUserId: () => 'guest',
   getProfile: () => ({ email: 'guest@example.com' }),
   getIdToken: () => undefined,
-  logout: async () => {},
+  signOut: async () => {},
 });
 
 const oauthRequestApi = builder.add(

@@ -1,7 +1,7 @@
 # IdentityApi
 
 The IdentityApi type is defined at
-[packages/core-api/src/apis/definitions/IdentityApi.ts:22](https://github.com/spotify/backstage/blob/82d329555c16af46db9b4e5cd2f44a3cc006a52e/packages/core-api/src/apis/definitions/IdentityApi.ts#L22).
+[packages/core-api/src/apis/definitions/IdentityApi.ts:22](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/IdentityApi.ts#L22).
 
 The following Utility API implements this type:
 [identityApiRef](./README.md#identity)
@@ -40,12 +40,12 @@ identity, such as a demo user or mocked user for e2e tests.
 getIdToken(): Promise&lt;string | undefined&gt;
 </pre>
 
-### logout()
+### signOut()
 
-Log out the current user
+Sign out the current user
 
 <pre>
-logout(): Promise&lt;void&gt;
+signOut(): Promise&lt;void&gt;
 </pre>
 
 ## Supporting types
@@ -76,6 +76,6 @@ export type ProfileInfo = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:172](https://github.com/spotify/backstage/blob/82d329555c16af46db9b4e5cd2f44a3cc006a52e/packages/core-api/src/apis/definitions/auth.ts#L172).
+[packages/core-api/src/apis/definitions/auth.ts:162](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L162).
 
 Referenced by: [getProfile](#getprofile).

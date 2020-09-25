@@ -38,6 +38,7 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'techdocs-backend' });
+  const config = ConfigReader.fromConfigs([]);
 
   logger.debug('Creating application...');
   const preparers = new Preparers();
@@ -45,7 +46,7 @@ export async function startStandaloneServer(
   preparers.register('dir', directoryPreparer);
 
   const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator(logger);
+  const techdocsGenerator = new TechdocsGenerator(logger, config);
   generators.register('techdocs', techdocsGenerator);
 
   const publisher = new LocalPublish(logger);
@@ -59,7 +60,7 @@ export async function startStandaloneServer(
     logger,
     publisher,
     dockerClient,
-    config: ConfigReader.fromConfigs([]),
+    config,
   });
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })

@@ -15,7 +15,7 @@ export default async function createPlugin({
   config,
 }: PluginEnvironment) {
   const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator(logger);
+  const techdocsGenerator = new TechdocsGenerator(logger, config);
 
   generators.register('techdocs', techdocsGenerator);
 

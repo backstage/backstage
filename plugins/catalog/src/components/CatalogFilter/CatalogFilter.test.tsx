@@ -58,7 +58,7 @@ describe('Catalog Filter', () => {
       ] as Entity[]),
   };
 
-  const indentityApi: Partial<IdentityApi> = {
+  const identityApi: Partial<IdentityApi> = {
     getUserId: () => 'tools@example.com',
   };
 
@@ -68,7 +68,7 @@ describe('Catalog Filter', () => {
         <ApiProvider
           apis={ApiRegistry.from([
             [catalogApiRef, catalogApi],
-            [identityApiRef, indentityApi],
+            [identityApiRef, identityApi],
             [storageApiRef, MockStorageApi.create()],
           ])}
         >
