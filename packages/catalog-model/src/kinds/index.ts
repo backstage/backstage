@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+export { ApiEntityV1alpha1Policy } from './ApiEntityV1alpha1';
+export type {
+  ApiEntityV1alpha1 as ApiEntity,
+  ApiEntityV1alpha1,
+} from './ApiEntityV1alpha1';
 export { ComponentEntityV1alpha1Policy } from './ComponentEntityV1alpha1';
 export type {
   ComponentEntityV1alpha1 as ComponentEntity,
@@ -34,8 +39,8 @@ export type {
   TemplateEntityV1alpha1 as TemplateEntity,
   TemplateEntityV1alpha1,
 } from './TemplateEntityV1alpha1';
-export { ApiEntityV1alpha1Policy } from './ApiEntityV1alpha1';
+export { UserEntityV1alpha1Policy } from './UserEntityV1alpha1';
 export type {
-  ApiEntityV1alpha1 as ApiEntity,
-  ApiEntityV1alpha1,
-} from './ApiEntityV1alpha1';
+  UserEntityV1alpha1 as UserEntity,
+  UserEntityV1alpha1,
+} from './UserEntityV1alpha1';
