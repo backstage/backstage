@@ -25,6 +25,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import { ConfigReader } from '@backstage/config';
 
 export interface ApplicationOptions {
   enableCors: boolean;
@@ -35,6 +36,7 @@ export async function createStandaloneApplication(
   options: ApplicationOptions,
 ): Promise<express.Application> {
   const { enableCors, logger } = options;
+  const config = ConfigReader.fromConfigs([]);
   const app = express();
 
   app.use(helmet());
@@ -44,7 +46,7 @@ export async function createStandaloneApplication(
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger }));
+  app.use('/', await createRouter({ logger, config }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

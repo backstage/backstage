@@ -1,4 +1,4 @@
-FROM node:12 AS build
+FROM node:12-buster AS build
 
 RUN mkdir /app
 COPY . /app

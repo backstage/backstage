@@ -53,7 +53,9 @@
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "jest-fetch-mock": "^3.0.3",
-    "react-router-dom": "6.0.0-beta.0"
+    "react-router-dom": "6.0.0-beta.0",
+    "msw": "^0.20.5",
+    "node-fetch": "^2.6.1"
   },
   "files": [
     "dist"

@@ -3,7 +3,6 @@
     "Overview": [
       "overview/what-is-backstage",
       "overview/architecture-overview",
-      "overview/architecture-terminology",
       "overview/roadmap",
       "overview/vision",
       "overview/background",
@@ -43,6 +42,7 @@
           "features/software-catalog/configuration",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
+          "features/software-catalog/references",
           "features/software-catalog/well-known-annotations",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
@@ -71,6 +71,7 @@
           "features/techdocs/concepts",
           "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
+          "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
         ]
       }
@@ -158,7 +159,8 @@
       "architecture-decisions/adrs-adr005",
       "architecture-decisions/adrs-adr006",
       "architecture-decisions/adrs-adr007",
-      "architecture-decisions/adrs-adr008"
+      "architecture-decisions/adrs-adr008",
+      "architecture-decisions/adrs-adr009"
     ],
     "Contribute": ["../CONTRIBUTING"],
     "Support": ["overview/support"],

@@ -14,13 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from setuptools import setup, find_packages
+from os import path
 
+# read the contents of the README file in the current directory
+this_dir = path.abspath(path.dirname(__file__))
+with open(path.join(this_dir, "README.md"), encoding="utf-8") as file:
+    long_description = file.read()
 
 setup(
     name="mkdocs-techdocs-core",
-    version="0.0.8",
+    version="0.0.9",
     description="A Mkdocs package that contains TechDocs defaults",
-    long_description="",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     keywords="mkdocs",
     url="https://github.com/spotify/backstage",
     author="TechDocs Core",
@@ -37,7 +43,7 @@ setup(
         "pymdown-extensions==7.1",
     ],
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
         "License :: OSI Approved :: Apache Software License",

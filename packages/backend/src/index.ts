@@ -22,12 +22,15 @@
  * Happy hacking!
  */
 
+import Router from 'express-promise-router';
 import {
   createDatabaseClient,
   createServiceBuilder,
   loadBackendConfig,
   getRootLogger,
   useHotMemoize,
+  notFoundHandler,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
@@ -57,7 +60,8 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
         },
       },
     );
-    return { logger, database, config };
+    const discovery = SingleHostDiscovery.fromConfig(config);
+    return { logger, database, config, discovery };
   };
 }
 
@@ -78,19 +82,23 @@ async function main() {
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
+  const apiRouter = Router();
+  apiRouter.use('/catalog', await catalog(catalogEnv));
+  apiRouter.use('/rollbar', await rollbar(rollbarEnv));
+  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+  apiRouter.use('/sentry', await sentry(sentryEnv));
+  apiRouter.use('/auth', await auth(authEnv));
+  apiRouter.use('/identity', await identity(identityEnv));
+  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
+  apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
+  apiRouter.use('/proxy', await proxy(proxyEnv));
+  apiRouter.use('/graphql', await graphql(graphqlEnv));
+  apiRouter.use(notFoundHandler());
+
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
     .addRouter('', await healthcheck(healthcheckEnv))
-    .addRouter('/catalog', await catalog(catalogEnv))
-    .addRouter('/rollbar', await rollbar(rollbarEnv))
-    .addRouter('/scaffolder', await scaffolder(scaffolderEnv))
-    .addRouter('/sentry', await sentry(sentryEnv))
-    .addRouter('/auth', await auth(authEnv))
-    .addRouter('/identity', await identity(identityEnv))
-    .addRouter('/techdocs', await techdocs(techdocsEnv))
-    .addRouter('/kubernetes', await kubernetes(kubernetesEnv))
-    .addRouter('/proxy', await proxy(proxyEnv, '/proxy'))
-    .addRouter('/graphql', await graphql(graphqlEnv))
+    .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
 
   await service.start().catch(err => {

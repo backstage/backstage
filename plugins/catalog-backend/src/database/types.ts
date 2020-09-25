@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Entity, Location } from '@backstage/catalog-model';
+import type { Entity, EntityName, Location } from '@backstage/catalog-model';
 
 export type DbEntitiesRow = {
   id: string;
@@ -129,11 +129,9 @@ export type Database = {
 
   entities(tx: unknown, filters?: EntityFilters): Promise<DbEntityResponse[]>;
 
-  entity(
+  entityByName(
     tx: unknown,
-    kind: string,
-    name: string,
-    namespace?: string,
+    name: EntityName,
   ): Promise<DbEntityResponse | undefined>;
 
   entityByUid(tx: unknown, uid: string): Promise<DbEntityResponse | undefined>;

@@ -15,25 +15,19 @@
  */
 
 import React, { FC, useEffect, useState } from 'react';
-import { Typography, Grid } from '@material-ui/core';
-import {
-  InfoCard,
-  Page,
-  pageTheme,
-  Content,
-  ContentHeader,
-  useApi,
-} from '@backstage/core';
+import { Grid } from '@material-ui/core';
+import { InfoCard, Page, pageTheme, Content, useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
+import { ObjectsByServiceIdResponse } from '@backstage/plugin-kubernetes-backend';
 
 // TODO this is a temporary component used to construct the Kubernetes plugin boilerplate
 
 export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
   const kubernetesApi = useApi(kubernetesApiRef);
-  const [kubernetesObjects, setKubernetesObjects] = useState<{} | undefined>(
-    undefined,
-  );
+  const [kubernetesObjects, setKubernetesObjects] = useState<
+    ObjectsByServiceIdResponse | undefined
+  >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -50,21 +44,28 @@ export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
   return (
     <Page theme={pageTheme.tool}>
       <Content>
-        <ContentHeader title="This is where you would see your kubernetes objects" />
         <Grid container spacing={3} direction="column">
-          <Grid item>
-            <InfoCard title="This is where you would see your kubernetes objects">
-              <Typography variant="body1">
-                {kubernetesObjects === undefined && <div>loading....</div>}
-                {error !== undefined && <div>{error}</div>}
-                {kubernetesObjects !== undefined && (
-                  <div>
-                    backend response: {JSON.stringify(kubernetesObjects)}
-                  </div>
-                )}
-              </Typography>
-            </InfoCard>
-          </Grid>
+          {kubernetesObjects === undefined && <div>loading....</div>}
+          {error !== undefined && <div>{error}</div>}
+          {kubernetesObjects !== undefined && (
+            <div>
+              {kubernetesObjects.items.map((item, i) => (
+                <Grid item key={i}>
+                  <InfoCard key={item.cluster.name} title={item.cluster.name}>
+                    {item.resources.map((fr, j) => (
+                      <div key={j}>
+                        <br />
+                        {fr.type}:{' '}
+                        {(fr.resources as any)
+                          .map((v: any) => v.metadata.name)
+                          .join(' ')}
+                      </div>
+                    ))}
+                  </InfoCard>
+                </Grid>
+              ))}
+            </div>
+          )}
         </Grid>
       </Content>
     </Page>
