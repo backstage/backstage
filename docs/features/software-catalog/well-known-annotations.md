@@ -41,6 +41,27 @@ expecting a two-item array out of it. The format of the target part is
 type-dependent and could conceivably even be an empty string, but the separator
 colon is always present.
 
+### backstage.io/definition-at-location
+
+```yaml
+# Example
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: petstore
+  annotations:
+    backstage.io/definition-at-location: 'url:https://petstore.swagger.io/v2/swagger.json'
+spec:
+  type: openapi
+```
+
+This annotation allows to fetch an API definition from another location, instead
+of wrapping the API definition inside the definition field. This allows to
+easitly consume existing API definition. The definition is fetched during
+ingestion by a processor and included in the entity. It is updated on every
+refresh. The annotation contains a location reference string that contains the
+location processor type and the target.
+
 ### backstage.io/techdocs-ref
 
 ```yaml

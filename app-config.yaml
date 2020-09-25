@@ -9,6 +9,8 @@ backend:
   database:
     client: sqlite3
     connection: ':memory:'
+  csp:
+    connect-src: ["'self'", 'https:']
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
@@ -33,8 +35,8 @@ organization:
   name: Spotify
 
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
-  requestUrl: http://localhost:7000/techdocs/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  requestUrl: http://localhost:7000/api/techdocs/docs
   generators:
     techdocs: 'docker'
 
@@ -54,6 +56,10 @@ newrelic:
 
 lighthouse:
   baseUrl: http://localhost:3003
+
+kubernetes:
+  clusterLocatorMethod: 'configMultiTenant'
+  clusters: []
 
 catalog:
   rules:

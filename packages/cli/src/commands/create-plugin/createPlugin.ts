@@ -231,7 +231,11 @@ export default async (cmd: Command) => {
   const privatePackage = cmd.private === false ? false : true;
   const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
   const appPackage = paths.resolveTargetRoot('packages/app');
-  const templateDir = paths.resolveOwn('templates/default-plugin');
+  const templateDir = paths.resolveOwn(
+    cmd.backend
+      ? 'templates/default-backend-plugin'
+      : 'templates/default-plugin',
+  );
   const tempDir = resolvePath(os.tmpdir(), answers.id);
   const pluginDir = isMonoRepo
     ? paths.resolveTargetRoot('plugins', answers.id)
@@ -252,6 +256,7 @@ export default async (cmd: Command) => {
     await createTemporaryPluginFolder(tempDir);
 
     Task.section('Preparing files');
+
     await templatingTask(templateDir, tempDir, {
       ...answers,
       version,
@@ -267,7 +272,7 @@ export default async (cmd: Command) => {
     Task.section('Building the plugin');
     await buildPlugin(pluginDir);
 
-    if (await fs.pathExists(appPackage)) {
+    if ((await fs.pathExists(appPackage)) && !cmd.backend) {
       Task.section('Adding plugin as dependency in app');
       await addPluginDependencyToApp(paths.targetRoot, name, version);
 

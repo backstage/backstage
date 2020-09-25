@@ -1,7 +1,7 @@
 ---
 id: what-is-backstage
 title: What is Backstage?
-description: Backsatge is an open platform for building developer portals.
+description: Backstage is an open platform for building developer portals.
 Powered by a centralized service catalog, Backstage restores order to your microservices and infrastructure
 ---
 
@@ -33,7 +33,14 @@ Out of the box, Backstage includes:
   [open source plugins](https://github.com/spotify/backstage/tree/master/plugins)
   that further expand Backstage’s customizability and functionality
 
-### Benefits
+## Backstage and the CNCF
+
+Backstage is a CNCF Sandbox project. Read the announcement
+[here](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox).
+
+<img src="https://backstage.io/img/cncf-white.svg" width="400" />
+
+## Benefits
 
 - For _engineering managers_, it allows you to maintain standards and best
   practices across the organization, and can help you manage your whole tech

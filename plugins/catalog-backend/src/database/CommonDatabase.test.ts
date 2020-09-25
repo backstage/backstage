@@ -395,5 +395,90 @@ describe('CommonDatabase', () => {
         ]),
       );
     });
+
+    it('can get all specific entities for matching filters case insensitively)', async () => {
+      const entities: Entity[] = [
+        { apiVersion: 'A', kind: 'K1', metadata: { name: 'N' } },
+        {
+          apiVersion: 'a',
+          kind: 'k2',
+          metadata: { name: 'n' },
+          spec: { c: 'Some' },
+        },
+        {
+          apiVersion: 'a',
+          kind: 'k3',
+          metadata: { name: 'n' },
+          spec: { c: null },
+        },
+      ];
+
+      await db.transaction(async tx => {
+        for (const entity of entities) {
+          await db.addEntity(tx, { entity });
+        }
+      });
+
+      const rows = await db.transaction(async tx =>
+        db.entities(tx, [
+          { key: 'ApiVersioN', values: ['A'] },
+          { key: 'spEc.C', values: [null, 'some'] },
+        ]),
+      );
+
+      expect(rows.length).toEqual(3);
+      expect(rows).toEqual(
+        expect.arrayContaining([
+          {
+            locationId: undefined,
+            entity: expect.objectContaining({ kind: 'K1' }),
+          },
+          {
+            locationId: undefined,
+            entity: expect.objectContaining({ kind: 'k2' }),
+          },
+          {
+            locationId: undefined,
+            entity: expect.objectContaining({ kind: 'k3' }),
+          },
+        ]),
+      );
+    });
+  });
+
+  describe('entityByName', () => {
+    it('can get entities case insensitively', async () => {
+      const entities: Entity[] = [
+        {
+          apiVersion: 'a',
+          kind: 'k1',
+          metadata: { name: 'n' },
+        },
+        {
+          apiVersion: 'B',
+          kind: 'K2',
+          metadata: { name: 'N', namespace: 'NS' },
+        },
+      ];
+
+      await db.transaction(async tx => {
+        for (const entity of entities) {
+          await db.addEntity(tx, { entity });
+        }
+      });
+
+      const e1 = await db.transaction(async tx =>
+        db.entityByName(tx, { kind: 'k1', namespace: 'default', name: 'n' }),
+      );
+      expect(e1!.entity.metadata.name).toEqual('n');
+      const e2 = await db.transaction(async tx =>
+        db.entityByName(tx, { kind: 'k2', namespace: 'nS', name: 'n' }),
+      );
+      expect(e2!.entity.metadata.name).toEqual('N');
+      const e3 = await db.transaction(async tx =>
+        db.entityByName(tx, { kind: 'unknown', namespace: 'nS', name: 'n' }),
+      );
+      expect(e3).toBeUndefined();
+    });
   });
 });

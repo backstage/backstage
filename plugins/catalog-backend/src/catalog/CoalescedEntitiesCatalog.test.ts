@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { CoalescedEntitiesCatalog } from './CoalescedEntitiesCatalog';
 import { EntitiesCatalog } from './types';
@@ -115,9 +115,13 @@ describe('CoalescedEntitiesCatalog', () => {
       c1.entityByName.mockResolvedValueOnce(undefined);
       c2.entityByName.mockResolvedValueOnce(e2);
       const catalog = new CoalescedEntitiesCatalog([c1, c2], logger);
-      await expect(catalog.entityByName('k', undefined, 'n2')).resolves.toBe(
-        e2,
-      );
+      await expect(
+        catalog.entityByName({
+          kind: 'k',
+          namespace: ENTITY_DEFAULT_NAMESPACE,
+          name: 'n2',
+        }),
+      ).resolves.toBe(e2);
       expect(c1.entityByName).toBeCalledTimes(1);
       expect(c2.entityByName).toBeCalledTimes(1);
     });
@@ -127,7 +131,11 @@ describe('CoalescedEntitiesCatalog', () => {
       c2.entityByName.mockResolvedValueOnce(undefined);
       const catalog = new CoalescedEntitiesCatalog([c1, c2], logger);
       await expect(
-        catalog.entityByName('k', undefined, 'n2'),
+        catalog.entityByName({
+          kind: 'k',
+          namespace: ENTITY_DEFAULT_NAMESPACE,
+          name: 'n2',
+        }),
       ).resolves.toBeUndefined();
       expect(c1.entityByName).toBeCalledTimes(1);
       expect(c2.entityByName).toBeCalledTimes(1);
@@ -137,9 +145,13 @@ describe('CoalescedEntitiesCatalog', () => {
       c1.entityByName.mockResolvedValueOnce(e1);
       c2.entityByName.mockRejectedValueOnce(new Error('boo'));
       const catalog = new CoalescedEntitiesCatalog([c1, c2], logger);
-      await expect(catalog.entityByName('k', undefined, 'n2')).resolves.toBe(
-        e1,
-      );
+      await expect(
+        catalog.entityByName({
+          kind: 'k',
+          namespace: ENTITY_DEFAULT_NAMESPACE,
+          name: 'n2',
+        }),
+      ).resolves.toBe(e1);
       expect(c1.entityByName).toBeCalledTimes(1);
       expect(c2.entityByName).toBeCalledTimes(1);
       expect(mockLogger.warn).toBeCalledWith(expect.stringMatching(/boo/));
