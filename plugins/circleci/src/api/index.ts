@@ -26,7 +26,7 @@ import {
   BuildSummary,
   GitType,
 } from 'circleci-api';
-import { createApiRef } from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 
 export { GitType };
 export type { BuildWithSteps, BuildStepAction, BuildSummary };
@@ -36,15 +36,28 @@ export const circleCIApiRef = createApiRef<CircleCIApi>({
   description: 'Used by the CircleCI plugin to make requests',
 });
 
+const DEFAULT_PROXY_PATH = '/circleci/api';
+
+type Options = {
+  discoveryApi: DiscoveryApi;
+  /**
+   * Path to use for requests via the proxy, defaults to /circleci/api
+   */
+  proxyPath?: string;
+};
+
 export class CircleCIApi {
-  apiUrl: string;
-  constructor(apiUrl: string = '/circleci/api') {
-    this.apiUrl = apiUrl;
+  private readonly discoveryApi: DiscoveryApi;
+  private readonly proxyPath: string;
+
+  constructor(options: Options) {
+    this.discoveryApi = options.discoveryApi;
+    this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
   }
 
   async retry(buildNumber: number, options: Partial<CircleCIOptions>) {
     return postBuildActions('', buildNumber, BuildAction.RETRY, {
-      circleHost: this.apiUrl,
+      circleHost: await this.getApiUrl(),
       ...options.vcs,
     });
   }
@@ -59,19 +72,24 @@ export class CircleCIApi {
         offset,
       },
       vcs: {},
-      circleHost: this.apiUrl,
+      circleHost: await this.getApiUrl(),
       ...options,
     });
   }
 
   async getUser(options: Partial<CircleCIOptions>) {
-    return getMe('', { circleHost: this.apiUrl, ...options });
+    return getMe('', { circleHost: await this.getApiUrl(), ...options });
   }
 
   async getBuild(buildNumber: number, options: Partial<CircleCIOptions>) {
     return getFullBuild('', buildNumber, {
-      circleHost: this.apiUrl,
+      circleHost: await this.getApiUrl(),
       ...options.vcs,
     });
+  }
+
+  private async getApiUrl() {
+    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
+    return proxyUrl + this.proxyPath;
   }
 }

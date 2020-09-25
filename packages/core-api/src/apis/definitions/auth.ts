@@ -310,3 +310,13 @@ export const oauth2ApiRef = createApiRef<
   id: 'core.auth.oauth2',
   description: 'Example of how to use oauth2 custom provider',
 });
+
+/**
+ * Provides authentication for saml based identity providers
+ */
+export const samlAuthApiRef = createApiRef<
+  ProfileInfoApi & BackstageIdentityApi & SessionApi
+>({
+  id: 'core.auth.saml',
+  description: 'Example of how to use SAML custom provider',
+});

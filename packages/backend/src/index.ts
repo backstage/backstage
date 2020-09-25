@@ -30,6 +30,7 @@ import {
   getRootLogger,
   useHotMemoize,
   notFoundHandler,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
@@ -59,7 +60,8 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
         },
       },
     );
-    return { logger, database, config };
+    const discovery = SingleHostDiscovery.fromConfig(config);
+    return { logger, database, config, discovery };
   };
 }
 
@@ -85,11 +87,11 @@ async function main() {
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
   apiRouter.use('/sentry', await sentry(sentryEnv));
-  apiRouter.use('/auth', await auth(authEnv, '/api/auth'));
+  apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/identity', await identity(identityEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
-  apiRouter.use('/proxy', await proxy(proxyEnv, '/api/proxy'));
+  apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use(notFoundHandler());
 

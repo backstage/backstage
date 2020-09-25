@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 import {
-  Router as GitHubActionsRouter,
   isPluginApplicableToEntity as isGitHubActionsAvailable,
+  RecentWorkflowRunsCard,
+  Router as GitHubActionsRouter,
 } from '@backstage/plugin-github-actions';
 import {
-  Router as JenkinsRouter,
   isPluginApplicableToEntity as isJenkinsAvailable,
   LatestRunCard as JenkinsLatestRunCard,
+  Router as JenkinsRouter,
 } from '@backstage/plugin-jenkins';
 import {
-  Router as CircleCIRouter,
   isPluginApplicableToEntity as isCircleCIAvailable,
+  Router as CircleCIRouter,
 } from '@backstage/plugin-circleci';
 import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   AboutCard,
   EntityPageLayout,
@@ -60,16 +61,34 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   }
 };
 
+const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
+  let content: ReactNode;
+  switch (true) {
+    case isJenkinsAvailable(entity):
+      content = <JenkinsLatestRunCard branch="master" />;
+      break;
+    case isGitHubActionsAvailable(entity):
+      content = <RecentWorkflowRunsCard entity={entity} />;
+      break;
+    default:
+      content = null;
+  }
+  if (!content) {
+    return null;
+  }
+  return (
+    <Grid item sm={6}>
+      {content}
+    </Grid>
+  );
+};
+
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3}>
-    <Grid item>
+    <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
-    {isJenkinsAvailable(entity) && (
-      <Grid item sm={4}>
-        <JenkinsLatestRunCard branch="master" />
-      </Grid>
-    )}
+    <RecentCICDRunsSwitcher entity={entity} />
   </Grid>
 );
 

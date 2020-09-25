@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { CorsOptions } from 'cors';
 
 export type BaseOptions = {
@@ -58,6 +58,13 @@ export type CertificateAttributes = {
 };
 
 /**
+ * A map from CSP directive names to their values.
+ *
+ * Added here since helmet doesn't export this type publicly.
+ */
+export type CspOptions = Record<string, string[]>;
+
+/**
  * Reads some base options out of a config object.
  *
  * @param config The root of a backend config object
@@ -71,7 +78,7 @@ export type CertificateAttributes = {
  * }
  * ```
  */
-export function readBaseOptions(config: ConfigReader): BaseOptions {
+export function readBaseOptions(config: Config): BaseOptions {
   if (typeof config.get('listen') === 'string') {
     // TODO(freben): Expand this to support more addresses and perhaps optional
     const { host, port } = parseListenAddress(config.getString('listen'));
@@ -105,7 +112,7 @@ export function readBaseOptions(config: ConfigReader): BaseOptions {
  * }
  * ```
  */
-export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
+export function readCorsOptions(config: Config): CorsOptions | undefined {
   const cc = config.getOptionalConfig('cors');
   if (!cc) {
     return undefined;
@@ -124,6 +131,33 @@ export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
 }
 
 /**
+ * Attempts to read a CSP options object from the root of a config object.
+ *
+ * @param config The root of a backend config object
+ * @returns A CSP options object, or undefined if not specified
+ *
+ * @example
+ * ```yaml
+ * backend:
+ *   csp:
+ *     connect-src: ["'self'", 'http:', 'https:']
+ * ```
+ */
+export function readCspOptions(config: Config): CspOptions | undefined {
+  const cc = config.getOptionalConfig('csp');
+  if (!cc) {
+    return undefined;
+  }
+
+  const result: CspOptions = {};
+  for (const key of cc.keys()) {
+    result[key] = cc.getStringArray(key);
+  }
+
+  return result;
+}
+
+/**
  * Attempts to read a https settings object from the root of a config object.
  *
  * @param config The root of a backend config object
@@ -138,9 +172,7 @@ export function readCorsOptions(config: ConfigReader): CorsOptions | undefined {
  * }
  * ```
  */
-export function readHttpsSettings(
-  config: ConfigReader,
-): HttpsSettings | undefined {
+export function readHttpsSettings(config: Config): HttpsSettings | undefined {
   const cc = config.getOptionalConfig('https');
 
   if (!cc) {
@@ -157,7 +189,7 @@ export function readHttpsSettings(
 }
 
 function getOptionalStringOrStrings(
-  config: ConfigReader,
+  config: Config,
   key: string,
 ): string | string[] | undefined {
   const value = config.getOptional(key);

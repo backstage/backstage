@@ -27,7 +27,7 @@ describe('DatabaseEntitiesCatalog', () => {
       addEntity: jest.fn(),
       updateEntity: jest.fn(),
       entities: jest.fn(),
-      entity: jest.fn(),
+      entityByName: jest.fn(),
       entityByUid: jest.fn(),
       removeEntity: jest.fn(),
       addLocation: jest.fn(),
@@ -61,12 +61,12 @@ describe('DatabaseEntitiesCatalog', () => {
       const catalog = new DatabaseEntitiesCatalog(db);
       const result = await catalog.addOrUpdateEntity(entity);
 
-      expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
-        { key: 'kind', values: ['b'] },
-        { key: 'name', values: ['c'] },
-        { key: 'namespace', values: ['d'] },
-      ]);
+      expect(db.entityByName).toHaveBeenCalledTimes(1);
+      expect(db.entityByName).toHaveBeenCalledWith(expect.anything(), {
+        kind: 'b',
+        namespace: 'd',
+        name: 'c',
+      });
       expect(db.addEntity).toHaveBeenCalledTimes(1);
       expect(result).toBe(entity);
     });
@@ -146,18 +146,18 @@ describe('DatabaseEntitiesCatalog', () => {
         },
       };
 
-      db.entities.mockResolvedValue([{ entity: existing }]);
+      db.entityByName.mockResolvedValue({ entity: existing });
       db.updateEntity.mockResolvedValue({ entity: existing });
 
       const catalog = new DatabaseEntitiesCatalog(db);
       const result = await catalog.addOrUpdateEntity(added);
 
-      expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
-        { key: 'kind', values: ['b'] },
-        { key: 'name', values: ['c'] },
-        { key: 'namespace', values: ['d'] },
-      ]);
+      expect(db.entityByName).toHaveBeenCalledTimes(1);
+      expect(db.entityByName).toHaveBeenCalledWith(expect.anything(), {
+        kind: 'b',
+        namespace: 'd',
+        name: 'c',
+      });
       expect(db.updateEntity).toHaveBeenCalledTimes(1);
       expect(db.updateEntity).toHaveBeenCalledWith(
         expect.anything(),

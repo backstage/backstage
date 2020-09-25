@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: dice-roller
-  replicas: 2
+  replicas: 10
   template:
     metadata:
       labels:
@@ -20,6 +20,38 @@ spec:
           image: nginx:1.14.2
           ports:
             - containerPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dice-roller-canary
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  selector:
+    matchLabels:
+      app: dice-roller-canary
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: dice-roller-canary
+        'backstage.io/kubernetes-id': dice-roller
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          ports:
+            - containerPort: 80
+        - name: side-car
+          image: nginx:1.14.2
+          ports:
+            - containerPort: 81
+        - name: other-side-car
+          image: nginx:1.14.2
+          ports:
+            - containerPort: 82
 
 ---
 apiVersion: v1

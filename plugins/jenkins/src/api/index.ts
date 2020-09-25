@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { CITableBuildInfo } from '../components/BuildsPage/lib/CITable';
 
 const jenkins = require('jenkins');
@@ -24,28 +24,42 @@ export const jenkinsApiRef = createApiRef<JenkinsApi>({
   description: 'Used by the Jenkins plugin to make requests',
 });
 
-export class JenkinsApi {
-  apiUrl: string;
-  jenkins: any;
+const DEFAULT_PROXY_PATH = '/jenkins/api';
 
-  constructor(apiUrl: string) {
-    this.apiUrl = apiUrl;
-    this.jenkins = jenkins({ baseUrl: apiUrl, promisify: true });
+type Options = {
+  discoveryApi: DiscoveryApi;
+  /**
+   * Path to use for requests via the proxy, defaults to /jenkins/api
+   */
+  proxyPath?: string;
+};
+
+export class JenkinsApi {
+  private readonly discoveryApi: DiscoveryApi;
+  private readonly proxyPath: string;
+
+  constructor(options: Options) {
+    this.discoveryApi = options.discoveryApi;
+    this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
+  }
+
+  private async getClient() {
+    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
+    return jenkins({ baseUrl: proxyUrl + this.proxyPath, promisify: true });
   }
 
   async retry(buildName: string) {
+    const client = await this.getClient();
     // looks like the current SDK only supports triggering a new build
     // can't see any support for replay (re-running the specific build with the same SCM info)
-    return await this.jenkins.job.build(buildName);
+    return await client.job.build(buildName);
   }
 
   async getLastBuild(jobName: string) {
-    const job = await this.jenkins.job.get(jobName);
+    const client = await this.getClient();
+    const job = await client.job.get(jobName);
 
-    const lastBuild = await this.jenkins.build.get(
-      jobName,
-      job.lastBuild.number,
-    );
+    const lastBuild = await client.build.get(jobName, job.lastBuild.number);
     return lastBuild;
   }
 
@@ -84,17 +98,19 @@ export class JenkinsApi {
   }
 
   async getJob(jobName: string) {
-    return this.jenkins.job.get({
+    const client = await this.getClient();
+    return client.job.get({
       name: jobName,
       depth: 1,
     });
   }
 
   async getFolder(folderName: string) {
-    const folder = await this.jenkins.job.get(folderName);
+    const client = await this.getClient();
+    const folder = await client.job.get(folderName);
     const results = [];
     for (const jobSummary of folder.jobs) {
-      const jobDetails = await this.jenkins.job.get({
+      const jobDetails = await client.job.get({
         name: `${folderName}/${jobSummary.name}`,
         depth: 1,
       });
@@ -104,7 +120,7 @@ export class JenkinsApi {
         // skipping folders inside folders for now
       } else {
         for (const buildDetails of jobDetails.builds) {
-          const build = await this.jenkins.build.get({
+          const build = await client.build.get({
             name: `${folderName}/${jobSummary.name}`,
             number: buildDetails.number,
             depth: 1,
@@ -191,10 +207,11 @@ export class JenkinsApi {
   }
 
   async getBuild(buildName: string) {
+    const client = await this.getClient();
     const { jobName, buildNumber } = this.extractJobDetailsFromBuildName(
       buildName,
     );
-    const buildResult = await this.jenkins.build.get(jobName, buildNumber);
+    const buildResult = await client.build.get(jobName, buildNumber);
     return buildResult;
   }
 
