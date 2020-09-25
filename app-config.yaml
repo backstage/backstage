@@ -9,6 +9,8 @@ backend:
   database:
     client: sqlite3
     connection: ':memory:'
+  csp:
+    connect-src: ["'self'", 'https:']
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:

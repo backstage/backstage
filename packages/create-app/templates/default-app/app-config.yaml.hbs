@@ -9,6 +9,8 @@ backend:
   baseUrl: http://localhost:7000
   listen:
     port: 7000
+  csp:
+    connect-src: ["'self'", 'https:']
   {{#if dbTypeSqlite}}
   database:
     client: sqlite3
