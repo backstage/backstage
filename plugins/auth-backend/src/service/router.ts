@@ -19,7 +19,7 @@ import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import Knex from 'knex';
 import { Logger } from 'winston';
-import { createAuthProviderRouter } from '../providers';
+import { createAuthProvider } from '../providers';
 import { Config } from '@backstage/config';
 import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
 import {
@@ -65,15 +65,26 @@ export async function createRouter(
   for (const providerId of providers) {
     logger.info(`Configuring provider, ${providerId}`);
     try {
-      const providerConfig = providersConfig.getConfig(providerId);
-      const providerRouter = createAuthProviderRouter(
-        providerId,
-        { baseUrl: authUrl, appUrl },
-        providerConfig,
+      const provider = createAuthProvider(providerId, {
+        globalConfig: { baseUrl: authUrl, appUrl },
+        config: providersConfig.getConfig(providerId),
         logger,
         tokenIssuer,
-      );
-      router.use(`/${providerId}`, providerRouter);
+      });
+
+      const r = Router();
+
+      r.get('/start', provider.start.bind(provider));
+      r.get('/handler/frame', provider.frameHandler.bind(provider));
+      r.post('/handler/frame', provider.frameHandler.bind(provider));
+      if (provider.logout) {
+        r.post('/logout', provider.logout.bind(provider));
+      }
+      if (provider.refresh) {
+        r.get('/refresh', provider.refresh.bind(provider));
+      }
+
+      router.use(`/${providerId}`, r);
     } catch (e) {
       if (process.env.NODE_ENV !== 'development') {
         throw new Error(
