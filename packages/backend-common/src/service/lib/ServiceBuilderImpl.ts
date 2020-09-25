@@ -31,10 +31,12 @@ import {
 } from '../../middleware';
 import { ServiceBuilder } from '../types';
 import {
+  CspOptions,
+  HttpsSettings,
   readBaseOptions,
   readCorsOptions,
+  readCspOptions,
   readHttpsSettings,
-  HttpsSettings,
 } from './config';
 import { createHttpServer, createHttpsServer } from './hostFactory';
 import { metricsHandler } from './metrics';
@@ -42,12 +44,27 @@ import { metricsHandler } from './metrics';
 const DEFAULT_PORT = 7000;
 // '' is express default, which listens to all interfaces
 const DEFAULT_HOST = '';
+// taken from the helmet source code - don't seem to be exported
+const DEFAULT_CSP = {
+  'default-src': ["'self'"],
+  'base-uri': ["'self'"],
+  'block-all-mixed-content': [],
+  'font-src': ["'self'", 'https:', 'data:'],
+  'frame-ancestors': ["'self'"],
+  'img-src': ["'self'", 'data:'],
+  'object-src': ["'none'"],
+  'script-src': ["'self'"],
+  'script-src-attr': ["'none'"],
+  'style-src': ["'self'", 'https:', "'unsafe-inline'"],
+  'upgrade-insecure-requests': [],
+};
 
 export class ServiceBuilderImpl implements ServiceBuilder {
   private port: number | undefined;
   private host: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
+  private cspOptions: CspOptions | undefined;
   private httpsSettings: HttpsSettings | undefined;
   private enableMetrics: boolean = true;
   private routers: [string, Router][];
@@ -77,6 +94,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     const corsOptions = readCorsOptions(backendConfig);
     if (corsOptions) {
       this.corsOptions = corsOptions;
+    }
+
+    const cspOptions = readCspOptions(backendConfig);
+    if (cspOptions) {
+      this.cspOptions = cspOptions;
     }
 
     const httpsSettings = readHttpsSettings(backendConfig);
@@ -115,6 +137,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  setCsp(options: CspOptions): ServiceBuilder {
+    this.cspOptions = options;
+    return this;
+  }
+
   addRouter(root: string, router: Router): ServiceBuilder {
     this.routers.push([root, router]);
     return this;
@@ -127,10 +154,20 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       host,
       logger,
       corsOptions,
+      cspOptions,
       httpsSettings,
     } = this.getOptions();
 
-    app.use(helmet());
+    app.use(
+      helmet({
+        contentSecurityPolicy: {
+          directives: {
+            ...DEFAULT_CSP,
+            ...cspOptions,
+          },
+        },
+      }),
+    );
     if (corsOptions) {
       app.use(cors(corsOptions));
     }
@@ -177,6 +214,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     host: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
+    cspOptions?: CspOptions;
     httpsSettings?: HttpsSettings;
   } {
     return {
@@ -184,6 +222,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       host: this.host ?? DEFAULT_HOST,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
+      cspOptions: this.cspOptions,
       httpsSettings: this.httpsSettings,
     };
   }
