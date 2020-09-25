@@ -26,6 +26,10 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 - The TechDocs backend now requires an implementation of `PluginEndpointDiscovery` from `@backstage/backend-common` to be passed in as `discovery`. See the changes to `@backstage/backend`.
 
+### @backstage/plugin-identity-backend
+
+- This plugin was removed, remove it from your backend if it's there. [#2616](https://github.com/spotify/backstage/pull/2616)
+
 ## v0.1.1-alpha.23
 
 ### @backstage/core
