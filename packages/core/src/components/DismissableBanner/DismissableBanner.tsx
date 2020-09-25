@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-api';
 import { useObservable } from 'react-use';
 import classNames from 'classnames';

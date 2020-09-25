@@ -44,8 +44,8 @@ export const lightTheme = createTheme({
     banner: {
       info: '#2E77D0',
       error: '#E22134',
-      textColor: '#FFFFFF',
-      linkColor: '#000000',
+      text: '#FFFFFF',
+      link: '#000000',
     },
     border: '#E6E6E6',
     textContrast: '#000000',
