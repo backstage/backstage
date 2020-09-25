@@ -26,7 +26,6 @@ import {
   Router as JenkinsRouter,
   isPluginApplicableToEntity as isJenkinsAvailable,
   LatestRunCard as JenkinsLatestRunCard,
-  Router as JenkinsRouter,
 } from '@backstage/plugin-jenkins';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
