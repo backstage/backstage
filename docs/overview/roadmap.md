@@ -27,10 +27,11 @@ We have divided the project into three high-level _phases_:
   With a single catalog, Backstage makes it easy for a team to manage ten
   services — and makes it possible for your company to manage thousands of them.
 
-- 🐇 **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is
-  different. By fostering a vibrant community of contributors we hope to provide
-  an ecosystem of Open Source plugins/integrations that allows you to pick the
-  tools that match your stack.
+- 🐇 **Phase 3:** Ecosystem (ongoing, see
+  [Plugin Marketplace](https://backstage.io/plugins)) - Everyone's
+  infrastructure stack is different. By fostering a vibrant community of
+  contributors we hope to provide an ecosystem of Open Source
+  plugins/integrations that allows you to pick the tools that match your stack.
 
 ## Detailed roadmap
 
@@ -53,23 +54,23 @@ guidelines to get started.
   it much easier to see how a plugin can be built that integrates with the
   Backstage Service Catalog.
 
+- **[Kubernetes support](https://github.com/spotify/backstage/milestone/20)** -
+  Native support for Kubernetes, making it easier for developers to see and
+  manage their services running in k8s.
+
+- **[Helm charts](https://github.com/spotify/backstage/issues/2540)** - Provide
+  Helm charts for easy deployments of Backstage and its subsystems on
+  Kubernetes.
+
+- **[Backstage platform is stable](https://github.com/spotify/backstage/milestone/19)** -
+  The platform APIs and features are stable and can be depended on for
+  production use. After this plugins will require little to no maintenance.
+
 - **Backstage Design System** - By providing design guidelines for common plugin
   layouts together, rich set of reusable UI components
   ([Storybook](https://backstage.io/storybook)) and Figma design resources. The
   Design System will make it easy to design and build plugins that are
   consistent across the platform -- supporting both developers and designers.
-
-- **[TechDocs v1](https://github.com/spotify/backstage/milestone/16)** - Our
-  docs-like-code feature TechDocs working end to end.
-
-- **[Initial GraphQL API](https://github.com/spotify/backstage/milestone/13)** -
-  A GraphQL API will open up the rich metadata provided by Backstage in a single
-  query. Plugins can easily query this API as well as extend the model where
-  needed.
-
-- **Production deployments** - Provide instructions and default configurations
-  (e.g. through Helm charts) for easy deployments of Backstage and its
-  subsystems on Kubernetes.
 
 - **Cloud Cost Insights plugin (from Spotify)** - Spotify teams are fully
   responsible for their own software, including the cost of the cloud resources
@@ -96,10 +97,6 @@ Chances are that someone will jump in and help build it.
 
 ### Future work 🔮
 
-- **[Backstage platform is stable](https://github.com/spotify/backstage/milestone/19)** -
-  The platform APIs and features are stable and can be depended on for
-  production use. After this plugins will require little to no maintenance.
-
 - **Deploy a product demo at `demo.backstage.io`** - Deploy a typical Backstage
   deployment available publicly so that people can click around and get a feel
   for the product without having to install anything.
@@ -118,8 +115,15 @@ Chances are that someone will jump in and help build it.
   [AWS](https://github.com/spotify/backstage/issues/290),
   [Azure](https://github.com/spotify/backstage/issues/348) and others.
 
+- **[Initial GraphQL API](https://github.com/spotify/backstage/milestone/13)** -
+  A GraphQL API will open up the rich metadata provided by Backstage in a single
+  query. Plugins can easily query this API as well as extend the model where
+  needed.
+
 ### Completed milestones ✅
 
+- [Donate Backstage to the CNCF 🎉](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox)
+- [TechDocs v1](https://backstage.io/blog/2020/09/08/announcing-tech-docs)
 - [Plugin marketplace](https://backstage.io/plugins)
 - [Improved and move documentation to backstage.io](https://backstage.io/docs/overview/what-is-backstage)
 - [Backstage Service Catalog (alpha)](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)
