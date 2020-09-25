@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createPlugin, createApiFactory, configApiRef } from '@backstage/core';
+import {
+  createPlugin,
+  createApiFactory,
+  discoveryApiRef,
+} from '@backstage/core';
 import { circleCIApiRef, CircleCIApi } from './api';
 
 export const plugin = createPlugin({
@@ -22,11 +26,8 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: circleCIApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
-        new CircleCIApi(
-          `${configApi.getString('backend.baseUrl')}/proxy/circleci/api`,
-        ),
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) => new CircleCIApi({ discoveryApi }),
     }),
   ],
 });

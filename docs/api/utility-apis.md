@@ -97,7 +97,7 @@ app, and the app itself.
 
 ### Core APIs
 
-Starting with the Backstage core library, it provides implementation for all of
+Starting with the Backstage core library, it provides implementations for all of
 the core APIs. The core APIs are the ones exported by `@backstage/core`, such as
 the `errorApiRef` and `configApiRef`. You can find a full list of them
 [here](../reference/utility-apis/README.md).
@@ -113,7 +113,7 @@ While doing so they should usually also provide default implementations of their
 own APIs, for example, the `catalog` plugin exports `catalogApiRef`, and also
 supplies a default `ApiFactory` of that API using the `CatalogClient`. There is
 one restriction to plugin-provided API Factories: plugins may not supply
-factories for core APIs, trying to do so will cause the app to crash.
+factories for core APIs, trying to do so will cause the app to refuse to start.
 
 Plugins supply their APIs through the `apis` option of `createPlugin`, for
 example:
