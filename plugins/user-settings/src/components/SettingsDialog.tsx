@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ChangeEvent, RefObject, useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
   CardHeader,
   makeStyles,
-  Divider,
+  PopoverActions,
 } from '@material-ui/core';
 import { AppSettingsList } from './AppSettingsList';
 import { AuthProvidersList } from './AuthProviderList';
@@ -28,27 +28,52 @@ import { FeatureFlagsList } from './FeatureFlagsList';
 import { SignInAvatar } from './SignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from './useUserProfileInfo';
-import { useApi, featureFlagsApiRef } from '@backstage/core';
+import {
+  useApi,
+  featureFlagsApiRef,
+  TabbedCard,
+  CardTab,
+  InfoCard,
+} from '@backstage/core';
 import { ConfiguredProviderSettings } from './ConfiguredProviderSettings';
 import { ProviderSettings } from './UserSettings';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles({
   root: {
     minWidth: 400,
+    maxWidth: 500,
   },
 });
 
 type Props = {
+  popoverActionRef: RefObject<PopoverActions | null>;
   providerSettings?: ProviderSettings;
 };
 
-export const SettingsDialog = ({ providerSettings }: Props) => {
+export const SettingsDialog = ({
+  popoverActionRef,
+  providerSettings,
+}: Props) => {
   const classes = useStyles();
   const { profile, displayName } = useUserProfile();
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const featureFlags = featureFlagsApi.getRegisteredFlags();
+  const [selectedTab, setSelectedTab] = useState<string | number>('auth');
 
   const providers = providerSettings ?? <ConfiguredProviderSettings />;
+
+  const handleChange = (
+    _ev: ChangeEvent<{}>,
+    newSelectedTab: string | number,
+  ) => {
+    setSelectedTab(newSelectedTab);
+  };
+
+  // Update the position of the popover to handle different heights
+  useEffect(() => {
+    popoverActionRef?.current?.updatePosition();
+  }, [selectedTab, popoverActionRef]);
 
   return (
     <Card className={classes.root}>
@@ -59,15 +84,34 @@ export const SettingsDialog = ({ providerSettings }: Props) => {
         subheader={profile.email}
       />
       <CardContent>
-        <AppSettingsList />
-        <Divider />
-        <AuthProvidersList providers={providers} />
-        {featureFlags.length > 0 && (
-          <>
-            <Divider />
-            <FeatureFlagsList featureFlags={featureFlags} />
-          </>
-        )}
+        <InfoCard
+          title="App Settings"
+          subheader="General settings related to how the app feels and looks"
+          variant="flat"
+          noPadding
+        >
+          <AppSettingsList />
+        </InfoCard>
+        <TabbedCard
+          title="Additional Settings"
+          subheader="Settings that are specific to a plugin, or feature of the app"
+          variant="flat"
+          value={selectedTab}
+          onChange={handleChange}
+          noPadding
+        >
+          <CardTab value="auth" label="Auth Providers">
+            <AuthProvidersList providers={providers} />
+          </CardTab>
+          <CardTab value="flags" label="Feature Flags">
+            {featureFlags.length > 0 ? (
+              <FeatureFlagsList featureFlags={featureFlags} />
+            ) : (
+              // TODO(marcuseide): Replace with empty state component
+              <Alert severity="info">No registered Feature Flags found</Alert>
+            )}
+          </CardTab>
+        </TabbedCard>
       </CardContent>
     </Card>
   );

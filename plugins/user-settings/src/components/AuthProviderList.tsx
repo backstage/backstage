@@ -15,14 +15,12 @@
  */
 
 import React from 'react';
-import { List, ListSubheader } from '@material-ui/core';
+import { List } from '@material-ui/core';
 
 type Props = {
   providers: React.ReactNode;
 };
 
 export const AuthProvidersList = ({ providers }: Props) => (
-  <List subheader={<ListSubheader>Available Auth Providers</ListSubheader>}>
-    {providers}
-  </List>
+  <List dense>{providers}</List>
 );

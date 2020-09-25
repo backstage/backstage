@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { List, ListSubheader } from '@material-ui/core';
+import { List } from '@material-ui/core';
 import { SidebarThemeToggle } from './ThemeToggle';
 import { SidebarPinButton } from './PinButton';
 
 export const AppSettingsList = () => (
-  <List dense subheader={<ListSubheader>App Settings</ListSubheader>}>
+  <List dense>
     <SidebarThemeToggle />
     <SidebarPinButton />
   </List>

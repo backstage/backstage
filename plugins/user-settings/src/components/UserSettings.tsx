@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useContext } from 'react';
-import { Popover } from '@material-ui/core';
+import { Popover, PopoverActions } from '@material-ui/core';
 import { SignInAvatar } from './SignInAvatar';
 import { SettingsDialog } from './SettingsDialog';
 import { SidebarItem, SidebarContext } from '@backstage/core';
@@ -41,6 +41,7 @@ export const UserSettings = ({ providerSettings }: Props) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | undefined>(
     undefined,
   );
+  const popoverActionRef = React.useRef<PopoverActions | null>(null);
 
   const handleOpen = (event?: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event?.currentTarget ?? undefined);
@@ -66,6 +67,7 @@ export const UserSettings = ({ providerSettings }: Props) => {
         icon={SidebarAvatar}
       />
       <Popover
+        action={popoverActionRef}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -78,7 +80,10 @@ export const UserSettings = ({ providerSettings }: Props) => {
           horizontal: 'left',
         }}
       >
-        <SettingsDialog providerSettings={providerSettings} />
+        <SettingsDialog
+          popoverActionRef={popoverActionRef}
+          providerSettings={providerSettings}
+        />
       </Popover>
     </>
   );

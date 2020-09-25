@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { List, ListSubheader } from '@material-ui/core';
+import { List } from '@material-ui/core';
 import {
   useApi,
   featureFlagsApiRef,
@@ -54,7 +54,7 @@ export const FeatureFlagsList = ({ featureFlags }: Props) => {
   };
 
   return (
-    <List dense subheader={<ListSubheader>Feature Flags</ListSubheader>}>
+    <List dense>
       {featureFlags.map(featureFlag => {
         const enabled = Boolean(state[featureFlag.name]);
 
