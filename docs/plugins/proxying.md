@@ -23,7 +23,7 @@ const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
 const service = createServiceBuilder(module)
   .loadConfig(configReader)
   /** ... other routers ... */
-  .addRouter('/proxy', await proxy(proxyEnv, '/proxy'));
+  .addRouter('/proxy', await proxy(proxyEnv));
 ```
 
 ## Configuration
