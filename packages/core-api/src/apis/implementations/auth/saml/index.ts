@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { DefaultAuthConnector } from './DefaultAuthConnector';
-export { DirectAuthConnector } from './DirectAuthConnector';
-export * from './types';
+export { default as SamlAuth } from './SamlAuth';

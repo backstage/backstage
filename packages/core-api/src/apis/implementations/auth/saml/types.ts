@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ProfileInfo, BackstageIdentity } from '../../../definitions';
 
-export { DefaultAuthConnector } from './DefaultAuthConnector';
-export { DirectAuthConnector } from './DirectAuthConnector';
-export * from './types';
+export type SamlSession = {
+  userId: string;
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
+};
