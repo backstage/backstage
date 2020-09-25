@@ -47,20 +47,33 @@ export const SidebarThemeToggle = () => {
     }
   };
 
+  // ToggleButtonGroup uses React.children.map instead of context
+  // so wrapping with Tooltip breaks ToggleButton functionality.
+  const TooltipToggleButton = ({
+    children,
+    title,
+    value,
+    ...props
+  }: {
+    children: JSX.Element;
+    title: string;
+    value: string;
+  }) => (
+    <Tooltip placement="top" arrow title={title}>
+      <ToggleButton value={value} {...props}>
+        {children}
+      </ToggleButton>
+    </Tooltip>
+  );
+
   const ThemeIcon = ({ theme }: { theme: AppTheme }) => {
     const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
-    const icon = themeIcon ? (
+    return themeIcon ? (
       cloneElement(themeIcon, {
         color: themeId === theme.id ? 'primary' : undefined,
       })
     ) : (
       <AutoIcon color={themeId === theme.id ? 'primary' : undefined} />
-    );
-
-    return (
-      <Tooltip placement="top" arrow title={`Select ${theme.variant} theme`}>
-        {icon}
-      </Tooltip>
     );
   };
 
@@ -75,9 +88,12 @@ export const SidebarThemeToggle = () => {
           onChange={handleSetTheme}
         >
           {themeIds.map(theme => (
-            <ToggleButton key={theme.id} value={theme.variant}>
+            <TooltipToggleButton
+              title={`Select ${theme.variant} theme`}
+              value={theme.variant}
+            >
               <ThemeIcon theme={theme} />
-            </ToggleButton>
+            </TooltipToggleButton>
           ))}
           <ToggleButton value="auto">
             <Tooltip placement="top" arrow title="Select auto theme">

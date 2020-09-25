@@ -38,16 +38,16 @@ export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
       secondary={`Registered in ${flag.pluginId} plugin`}
     />
     <ListItemSecondaryAction>
-      <ToggleButton
-        size="small"
-        value="flag"
-        selected={enabled}
-        onChange={() => toggleHandler(flag.name)}
-      >
-        <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
+      <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
+        <ToggleButton
+          size="small"
+          value="flag"
+          selected={enabled}
+          onChange={() => toggleHandler(flag.name)}
+        >
           <CheckIcon color={enabled ? 'primary' : undefined} />
-        </Tooltip>
-      </ToggleButton>
+        </ToggleButton>
+      </Tooltip>
     </ListItemSecondaryAction>
   </ListItem>
 );

@@ -35,51 +35,47 @@ import {
 
 type OAuthProviderSidebarProps = {
   title: string;
+  description: string;
   icon: IconComponent;
   apiRef: ApiRef<SessionApi>;
 };
 
 export const ProviderSettingsItem: FC<OAuthProviderSidebarProps> = ({
   title,
+  description,
   icon: Icon,
-  apiRef,
-}) => {
-  const api = useApi(apiRef);
-  const [signedIn, setSignedIn] = useState(false);
-
-  useEffect(() => {
-    let didCancel = false;
-
-    const subscription = api
-      .sessionState$()
-      .subscribe((sessionState: SessionState) => {
-        if (!didCancel) {
-          setSignedIn(sessionState === SessionState.SignedIn);
-        }
-      });
-
-    return () => {
-      didCancel = true;
-      subscription.unsubscribe();
-    };
-  }, [api]);
-
-  return (
-    <ListItem>
-      <ListItemIcon>
-        <Icon />
-      </ListItemIcon>
-      <ListItemText primary={title} />
-      <ListItemSecondaryAction>
+  signedIn,
+  api,
+  signInHandler,
+}: Props) => (
+  <ListItem>
+    <ListItemIcon>
+      <Icon />
+    </ListItemIcon>
+    <ListItemText
+      primary={title}
+      secondary={
+        <Tooltip placement="top" arrow title={description}>
+          <span>{description}</span>
+        </Tooltip>
+      }
+      secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
+    />
+    <ListItemSecondaryAction>
+      <Tooltip
+        placement="top"
+        arrow
+        title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
+      >
         <ToggleButton
           size="small"
           value={title}
           selected={signedIn}
-          onChange={() => (signedIn ? api.signOut() : api.signIn())}
+          onChange={() => (signedIn ? api.logout() : signInHandler())}
         >
           <PowerButton color={signedIn ? 'primary' : undefined} />
-        </Tooltip>
-      </ToggleButton>
+        </ToggleButton>
+      </Tooltip>
     </ListItemSecondaryAction>
   </ListItem>
 );

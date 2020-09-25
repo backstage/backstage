@@ -71,6 +71,7 @@ export const OAuthProviderSettings: FC<OAuthProviderSidebarProps> = ({
   return (
     <ProviderSettingsItem
       title={title}
+      description={apiRef.description}
       icon={icon}
       signedIn={signedIn}
       api={api}

@@ -31,15 +31,8 @@ export const SidebarPinButton = () => {
     SidebarPinStateContext,
   );
 
-  const PinIcon = () => (
-    <Tooltip
-      placement="top"
-      arrow
-      title={`${isPinned ? 'Unpin' : 'Pin'} Sidebar`}
-    >
-      {isPinned ? <LockIcon color="primary" /> : <LockOpenIcon />}
-    </Tooltip>
-  );
+  const PinIcon = () =>
+    isPinned ? <LockIcon color="primary" /> : <LockOpenIcon />;
 
   return (
     <ListItem>
@@ -48,16 +41,22 @@ export const SidebarPinButton = () => {
         secondary="Prevent the sidebar from collapsing"
       />
       <ListItemSecondaryAction>
-        <ToggleButton
-          size="small"
-          value="pin"
-          selected={isPinned}
-          onChange={() => {
-            toggleSidebarPinState();
-          }}
+        <Tooltip
+          placement="top"
+          arrow
+          title={`${isPinned ? 'Unpin' : 'Pin'} Sidebar`}
         >
-          <PinIcon />
-        </ToggleButton>
+          <ToggleButton
+            size="small"
+            value="pin"
+            selected={isPinned}
+            onChange={() => {
+              toggleSidebarPinState();
+            }}
+          >
+            <PinIcon />
+          </ToggleButton>
+        </Tooltip>
       </ListItemSecondaryAction>
     </ListItem>
   );
