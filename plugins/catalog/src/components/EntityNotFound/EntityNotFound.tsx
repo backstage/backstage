@@ -1,0 +1,90 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { FC } from 'react';
+import { Grid, Button, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import {
+  Header,
+  Page,
+  Content,
+  ContentHeader,
+  HeaderLabel,
+  pageTheme,
+  SupportButton,
+} from '@backstage/core';
+import { BackstageTheme } from '@backstage/theme';
+
+import { Illo } from './Illo';
+
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  container: {
+    paddingTop: theme.spacing(6),
+  },
+  title: {
+    paddingBottom: theme.spacing(2),
+  },
+  body: {
+    paddingBottom: theme.spacing(4),
+  },
+}));
+
+export const EntityNotFound: FC<{}> = () => {
+  const classes = useStyles();
+
+  return (
+    <Page theme={pageTheme.tool}>
+      <Illo />
+      <Header title="Component" subtitle="Component information">
+        <HeaderLabel label="Owner" value="Spotify" />
+        <HeaderLabel label="Lifecycle" value="Alpha" />
+      </Header>
+      <Content>
+        <ContentHeader
+          title="Component Name"
+          description="Subtitle for component"
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => window.location.reload()}
+          >
+            Refresh
+          </Button>
+          <SupportButton>All your software catalog entities</SupportButton>
+        </ContentHeader>
+        <Grid container className={classes.container}>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="h4" className={classes.title}>
+              Entity was not found
+            </Typography>
+            <Typography variant="body1" className={classes.body}>
+              Want to help us build this? Check out our Getting Started
+              documentation.{' '}
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              href="https://backstage.io/docs"
+            >
+              DOCS
+            </Button>
+          </Grid>
+        </Grid>
+      </Content>
+    </Page>
+  );
+};
