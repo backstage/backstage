@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   LinearProgress,
@@ -43,16 +43,19 @@ export const JobStatusModal = ({
   entity,
 }: Props) => {
   const job = useJobPolling(jobId);
+  const [dialogTitle, setDialogTitle] = useState('Creating component...');
 
   useEffect(() => {
-    if (job?.status === 'COMPLETED') onComplete(job);
-  }, [job, onComplete]);
+    if (job?.status === 'COMPLETED') {
+      setDialogTitle('Successfully created component');
+      onComplete(job);
+    } else if (job?.status === 'FAILED')
+      setDialogTitle('Failed to create component');
+  }, [job, onComplete, setDialogTitle]);
 
   return (
     <Dialog open onClose={onClose} fullWidth>
-      <DialogTitle id="responsive-dialog-title">
-        Creating Component...
-      </DialogTitle>
+      <DialogTitle id="responsive-dialog-title">{dialogTitle}</DialogTitle>
       <DialogContent>
         {!job ? (
           <LinearProgress />
