@@ -210,7 +210,7 @@ type Viewer = {
 };
 ```
 
-# The Tabel Model
+# The Table Model
 
 Using Backstage's own component library, let's define a custom table. This
 component will get used if we have data to display.
