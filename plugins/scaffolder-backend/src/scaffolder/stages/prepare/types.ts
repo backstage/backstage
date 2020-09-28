@@ -19,9 +19,9 @@ import { RemoteProtocol } from '../types';
 
 export type PreparerBase = {
   /**
-   * Given an Entity definition from the Service Catalog, go and prepare a directory
+   * Given an Entity definition from the Services Catalog, go and prepare a directory
    * with contents from the remote location in temporary storage and return the path
-   * @param template The template entity from the Service Catalog
+   * @param template The template entity from the Services Catalog
    */
   prepare(
     template: TemplateEntityV1alpha1,

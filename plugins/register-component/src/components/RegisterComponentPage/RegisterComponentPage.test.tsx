@@ -62,7 +62,7 @@ describe('RegisterComponentPage', () => {
       <RegisterComponentPage
         catalogRouteRef={createRouteRef({
           path: '/catalog',
-          title: 'Service Catalog',
+          title: 'Services Catalog',
         })}
       />,
       { wrapper: Wrapper },
