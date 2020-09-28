@@ -174,11 +174,8 @@ async function readTextLocation(params: ResolverParams): Promise<string> {
   const newLocation = relativeLocation(params);
 
   try {
-    const response = await params.read(newLocation);
-    if (response.type !== 'data') {
-      throw new Error(`Expected data, got ${response.type}`);
-    }
-    return response.data.toString('utf-8');
+    const data = await params.read(newLocation);
+    return data.toString('utf-8');
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} could not read location ${params.value}, ${e}`,
