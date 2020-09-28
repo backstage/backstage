@@ -28,7 +28,7 @@ describe('JobProcessor', () => {
           'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
       },
       name: 'graphql-starter',
-      title: 'GraphQL Services',
+      title: 'GraphQL Service',
       description:
         'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
       uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',

@@ -37,7 +37,7 @@ describe('RegisterComponentResultDialog', () => {
         entities={[]}
         catalogRouteRef={createRouteRef({
           path: '/catalog',
-          title: 'Services Catalog',
+          title: 'Service Catalog',
         })}
       />,
       { wrapper: Wrapper },
@@ -76,7 +76,7 @@ describe('RegisterComponentResultDialog', () => {
         entities={entities}
         catalogRouteRef={createRouteRef({
           path: '/catalog',
-          title: 'Services Catalog',
+          title: 'Service Catalog',
         })}
       />,
       { wrapper: Wrapper },

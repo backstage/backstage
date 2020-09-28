@@ -36,7 +36,7 @@ const worker = setupWorker(
   }),
 );
 
-// Start the Mock Services Worker
+// Start the Mock Service Worker
 worker.start();
 ```
 

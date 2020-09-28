@@ -43,7 +43,7 @@ const data = [
   },
   {
     status: <StatusError>Error</StatusError>,
-    usage: 'Services could not be created',
+    usage: 'Service could not be created',
   },
   {
     status: <StatusAborted>Aborted</StatusAborted>,

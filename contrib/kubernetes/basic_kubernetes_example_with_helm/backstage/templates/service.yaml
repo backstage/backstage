@@ -1,6 +1,6 @@
 {{- if .Values.app.enabled }}
 apiVersion: v1
-kind: Services
+kind: Service
 metadata:
   name: {{ include "backstage.fullname" . }}-app
   labels:
@@ -19,7 +19,7 @@ spec:
 {{- if .Values.app.enabled }}
 ---
 apiVersion: v1
-kind: Services
+kind: Service
 metadata:
   name: {{ include "backstage.fullname" . }}-backend
   labels:
@@ -30,7 +30,7 @@ spec:
     - port: {{ .Values.backend.service.port }}
       targetPort: backend
       protocol: TCP
-      name: backend
+      name: backend 
   selector:
     app.kubernetes.io/name: {{ include "backstage.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

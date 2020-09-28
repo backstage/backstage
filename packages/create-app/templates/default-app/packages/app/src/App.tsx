@@ -28,7 +28,7 @@ const deprecatedAppRoutes = app.getRoutes();
 
 const catalogRouteRef = createRouteRef({
   path: '/catalog',
-  title: 'Services Catalog',
+  title: 'Service Catalog',
 });
 
 

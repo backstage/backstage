@@ -18,9 +18,9 @@ import { Logger } from 'winston';
 
 export type PreparerBase = {
   /**
-   * Given an Entity definition from the Services Catalog, go and prepare a directory
+   * Given an Entity definition from the Service Catalog, go and prepare a directory
    * with contents from the location in temporary storage and return the path
-   * @param entity The entity from the Services Catalog
+   * @param entity The entity from the Service Catalog
    */
   prepare(entity: Entity, opts?: { logger: Logger }): Promise<string>;
 };

@@ -2,7 +2,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Template
 metadata:
   name: springboot-template
-  title: Spring Boot gRPC Services
+  title: Spring Boot gRPC Service
   description: Create a simple microservice using gRPC and Spring Boot Java
   tags:
     - recommended
