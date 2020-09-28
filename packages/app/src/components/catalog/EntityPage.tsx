@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 import {
+  isPluginApplicableToEntity as isTravisCIAvailable,
+  RecentTravisCIBuildsWidget,
+  Router as TravisCIRouter,
+} from '@roadiehq/backstage-plugin-travis-ci';
+import {
   isPluginApplicableToEntity as isGitHubActionsAvailable,
   RecentWorkflowRunsCard,
   Router as GitHubActionsRouter,
@@ -51,6 +56,8 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <GitHubActionsRouter entity={entity} />;
     case isCircleCIAvailable(entity):
       return <CircleCIRouter entity={entity} />;
+    case isTravisCIAvailable(entity):
+      return <TravisCIRouter entity={entity} />;
     default:
       return (
         <WarningPanel title="CI/CD switcher:">
@@ -69,6 +76,9 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
       break;
     case isGitHubActionsAvailable(entity):
       content = <RecentWorkflowRunsCard entity={entity} />;
+      break;
+    case isTravisCIAvailable(entity):
+      content = <RecentTravisCIBuildsWidget entity={entity} />;
       break;
     default:
       content = null;
