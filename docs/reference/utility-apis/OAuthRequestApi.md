@@ -11,7 +11,8 @@ The following Utility API implements this type:
 ### createAuthRequester()
 
 A utility for showing login popups or similar things, and merging together
-multiple requests for different scopes into one request that inclues all scopes.
+multiple requests for different scopes into one request that includes all
+scopes.
 
 The passed in options provide information about the login provider, and how to
 handle auth requests.
@@ -30,7 +31,7 @@ createAuthRequester&lt;AuthResponse&gt;(
 
 ### authRequest\$()
 
-Observers panding auth requests. The returned observable will emit all current
+Observers pending auth requests. The returned observable will emit all current
 active auth request, at most one for each created auth requester.
 
 Each request has its own info about the login provider, forwarded from the auth
@@ -156,7 +157,7 @@ Referenced by: [authRequest\$](#authrequest).
 
 ### Observer
 
-This file contains non-react related core types used throught Backstage.
+This file contains non-react related core types used through Backstage.
 
 Observer interface for consuming an Observer, see TC39.
 

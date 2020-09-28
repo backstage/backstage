@@ -17,7 +17,7 @@ useful at the bottom of this document. At it's core, theres 3 simple stages.
 2. Template some variables into the skeleton
 3. Send the templated skeleton somewhere
 
-These three steps are translated to the folllowing stages under the hood in the
+These three steps are translated to the following stages under the hood in the
 scaffolder that you will need to know:
 
 1. Prepare
@@ -82,7 +82,7 @@ Once that has been posted, a job will be setup with different stages, and the
 job processor will complete each stage before moving onto the next stage, whilst
 collecting logs and mutating the running job.
 
-Here's some futher reading that you might find useful:
+Here's some further reading that you might find useful:
 
 - [Adding your own Template](../adding-templates.md)
 - [Creating your own Templater](./create-your-own-templater.md)
