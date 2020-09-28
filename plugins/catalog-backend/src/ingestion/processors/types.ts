@@ -52,7 +52,7 @@ export type LocationProcessor = {
    * @param location The location that the entity came from
    * @param read Reads the contents of a location
    * @param emit A sink for auxiliary items resulting from the processing
-   * @returns The same entity or a modifid version of it
+   * @returns The same entity or a modified version of it
    */
   processEntity?(
     entity: Entity,
