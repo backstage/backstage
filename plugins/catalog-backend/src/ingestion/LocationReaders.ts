@@ -258,10 +258,9 @@ export class LocationReaders implements LocationReader {
     }
   }
 
-  private async readLocation(
-    location: LocationSpec,
-  ): Promise<LocationProcessorResult> {
-    let locationResult: LocationProcessorResult | undefined;
+  private async readLocation(location: LocationSpec): Promise<Buffer> {
+    let data: Buffer | undefined = undefined;
+    let error: Error | undefined = undefined;
 
     await this.handleLocation(
       {
@@ -269,13 +268,29 @@ export class LocationReaders implements LocationReader {
         location,
         optional: false,
       },
-      r => (locationResult = r),
+      output => {
+        if (output.type === 'error' && !error) {
+          error = output.error;
+        } else if (output.type === 'data') {
+          if (data) {
+            if (!error) {
+              error = new Error(
+                'More than one piece of data loaded unexpectedly',
+              );
+            }
+          } else {
+            data = output.data;
+          }
+        }
+      },
     );
 
-    if (!locationResult) {
-      throw new Error('No location loaded');
+    if (error) {
+      throw error;
+    } else if (!data) {
+      throw new Error('No data loaded');
     }
 
-    return locationResult;
+    return data;
   }
 }

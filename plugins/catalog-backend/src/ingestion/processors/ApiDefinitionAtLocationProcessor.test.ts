@@ -14,9 +14,7 @@ import { ApiEntity, Entity, LocationSpec } from '@backstage/catalog-model';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { ApiDefinitionAtLocationProcessor } from './ApiDefinitionAtLocationProcessor';
-import { LocationProcessorResult } from './types';
 
 describe('ApiDefinitionAtLocationProcessor', () => {
   let processor: ApiDefinitionAtLocationProcessor;
@@ -45,11 +43,7 @@ describe('ApiDefinitionAtLocationProcessor', () => {
   });
 
   it('should skip entities without annotation', async () => {
-    const read = jest.fn(
-      (): Promise<LocationProcessorResult> => {
-        throw new Error();
-      },
-    );
+    const read = jest.fn().mockRejectedValue(new Error('boo'));
 
     const generated = (await processor.processEntity(
       entity,
@@ -67,14 +61,7 @@ describe('ApiDefinitionAtLocationProcessor', () => {
         'url:http://example.com/openapi.yaml',
     };
 
-    const read = jest.fn(
-      (l: LocationSpec): Promise<LocationProcessorResult> =>
-        Promise.resolve({
-          type: 'data',
-          data: Buffer.from('Hello'),
-          location: l,
-        }),
-    );
+    const read = jest.fn().mockResolvedValue(Buffer.from('Hello'));
 
     const generated = (await processor.processEntity(
       entity,
@@ -95,38 +82,12 @@ describe('ApiDefinitionAtLocationProcessor', () => {
       'backstage.io/definition-at-location': 'missing',
     };
 
-    const read = jest.fn(
-      (l: LocationSpec): Promise<LocationProcessorResult> =>
-        Promise.resolve({
-          type: 'error',
-          error: new Error('Failed to load location'),
-          location: l,
-        }),
-    );
+    const read = jest
+      .fn()
+      .mockRejectedValue(new Error('Failed to load location'));
 
     await expect(
       processor.processEntity(entity, location, () => {}, read),
-    ).rejects.toThrow('Failed to read location: Failed to load location');
-  });
-
-  it('should throw errors if location read has wrong type', async () => {
-    entity.metadata.annotations = {
-      'backstage.io/definition-at-location': 'wrong',
-    };
-
-    const read = jest.fn(
-      (l: LocationSpec): Promise<LocationProcessorResult> =>
-        Promise.resolve({
-          type: 'location',
-          optional: false,
-          location: l,
-        }),
-    );
-
-    await expect(
-      processor.processEntity(entity, location, () => {}, read),
-    ).rejects.toThrow(
-      `Only supports location processor results of type 'data', but got 'location'`,
-    );
+    ).rejects.toThrow('Failed to load location');
   });
 });

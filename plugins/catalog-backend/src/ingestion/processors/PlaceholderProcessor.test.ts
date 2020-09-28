@@ -22,9 +22,16 @@ import {
   ResolverParams,
   yamlPlaceholderResolver,
 } from './PlaceholderProcessor';
-import { LocationProcessorRead } from './types';
+import { LocationProcessorEmit, LocationProcessorRead } from './types';
 
 describe('PlaceholderProcessor', () => {
+  const emit: LocationProcessorEmit = jest.fn();
+  const read: jest.MockedFunction<LocationProcessorRead> = jest.fn();
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('returns placeholder-free data unchanged', async () => {
     const input: Entity = {
       apiVersion: 'a',
@@ -35,18 +42,11 @@ describe('PlaceholderProcessor', () => {
       foo: async () => 'replaced',
     });
     await expect(
-      processor.processEntity(
-        input,
-        { type: 't', target: 'l' },
-        jest.fn(),
-        jest.fn(),
-      ),
+      processor.processEntity(input, { type: 't', target: 'l' }, emit, read),
     ).resolves.toBe(input);
   });
 
   it('replaces placeholders deep in the data', async () => {
-    const emit = jest.fn();
-    const read = jest.fn();
     const upperResolver: PlaceholderResolver = jest.fn(async ({ value }) =>
       value!.toString().toUpperCase(),
     );
@@ -84,8 +84,6 @@ describe('PlaceholderProcessor', () => {
   });
 
   it('rejects multiple placeholders', async () => {
-    const emit = jest.fn();
-    const read: LocationProcessorRead = jest.fn();
     const processor = new PlaceholderProcessor({
       foo: jest.fn(),
       bar: jest.fn(),
@@ -111,8 +109,6 @@ describe('PlaceholderProcessor', () => {
   });
 
   it('rejects unknown placeholders', async () => {
-    const emit = jest.fn();
-    const read: LocationProcessorRead = jest.fn();
     const processor = new PlaceholderProcessor({
       bar: jest.fn(),
     });
@@ -135,14 +131,7 @@ describe('PlaceholderProcessor', () => {
   });
 
   it('has builtin text support', async () => {
-    const emit = jest.fn();
-    const read: LocationProcessorRead = jest
-      .fn()
-      .mockImplementation(async location => ({
-        type: 'data',
-        location,
-        data: Buffer.from('TEXT', 'utf-8'),
-      }));
+    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
     const processor = PlaceholderProcessor.default();
 
     await expect(
@@ -175,14 +164,9 @@ describe('PlaceholderProcessor', () => {
   });
 
   it('has builtin json support', async () => {
-    const emit = jest.fn();
-    const read: LocationProcessorRead = jest
-      .fn()
-      .mockImplementation(async location => ({
-        type: 'data',
-        location,
-        data: Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
-      }));
+    read.mockResolvedValue(
+      Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
+    );
     const processor = PlaceholderProcessor.default();
 
     await expect(
@@ -215,14 +199,7 @@ describe('PlaceholderProcessor', () => {
   });
 
   it('has builtin yaml support', async () => {
-    const emit = jest.fn();
-    const read: LocationProcessorRead = jest
-      .fn()
-      .mockImplementation(async location => ({
-        type: 'data',
-        location,
-        data: Buffer.from('foo:\n  - bar: 7', 'utf-8'),
-      }));
+    read.mockResolvedValue(Buffer.from('foo:\n  - bar: 7', 'utf-8'));
     const processor = PlaceholderProcessor.default();
 
     await expect(
@@ -256,65 +233,46 @@ describe('PlaceholderProcessor', () => {
 });
 
 describe('yamlPlaceholderResolver', () => {
-  let read: jest.MockedFunction<LocationProcessorRead>;
-  let params: ResolverParams;
+  const read: jest.MockedFunction<LocationProcessorRead> = jest.fn();
+  const params: ResolverParams = {
+    key: 'a',
+    value: './file.yaml',
+    location: {
+      type: 'github',
+      target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+    },
+    read,
+  };
 
   beforeEach(() => {
-    read = jest.fn();
-    params = {
-      key: 'a',
-      value: './file.yaml',
-      location: {
-        type: 'github',
-        target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
-      },
-      read,
-    };
+    jest.resetAllMocks();
   });
 
   it('parses valid yaml', async () => {
-    read.mockImplementation(async location => ({
-      type: 'data',
-      location,
-      data: Buffer.from('foo:\n  - bar: 7', 'utf-8'),
-    }));
-
+    read.mockResolvedValue(Buffer.from('foo:\n  - bar: 7', 'utf-8'));
     await expect(yamlPlaceholderResolver(params)).resolves.toEqual({
       foo: [{ bar: 7 }],
     });
   });
 
   it('rejects invalid yaml', async () => {
-    read.mockImplementation(async location => ({
-      type: 'data',
-      location,
-      data: Buffer.from('a: 1\n----\n', 'utf-8'),
-    }));
-
+    read.mockResolvedValue(Buffer.from('a: 1\n----\n', 'utf-8'));
     await expect(yamlPlaceholderResolver(params)).rejects.toThrow(
       'Placeholder $a found an error in the data at ./file.yaml, YAMLSemanticError: Implicit map keys need to be followed by map values',
     );
   });
 
   it('rejects multi-document yaml', async () => {
-    read.mockImplementation(async location => ({
-      type: 'data',
-      location,
-      data: Buffer.from('foo: 1\n---\nbar: 2\n', 'utf-8'),
-    }));
-
+    read.mockResolvedValue(Buffer.from('foo: 1\n---\nbar: 2\n', 'utf-8'));
     await expect(yamlPlaceholderResolver(params)).rejects.toThrow(
       'Placeholder $a expected to find exactly one document of data at ./file.yaml, found 2',
     );
   });
 
   it('parses valid json', async () => {
-    read.mockImplementation(async location => ({
-      type: 'data',
-      location,
-      data: Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
-    }));
-
+    read.mockResolvedValue(
+      Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
+    );
     await expect(yamlPlaceholderResolver(params)).resolves.toEqual({
       a: ['b', 7],
     });
@@ -322,41 +280,32 @@ describe('yamlPlaceholderResolver', () => {
 });
 
 describe('jsonPlaceholderResolver', () => {
-  let read: jest.MockedFunction<LocationProcessorRead>;
-  let params: ResolverParams;
+  const read: jest.MockedFunction<LocationProcessorRead> = jest.fn();
+  const params: ResolverParams = {
+    key: 'a',
+    value: './file.json',
+    location: {
+      type: 'github',
+      target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+    },
+    read,
+  };
 
   beforeEach(() => {
-    read = jest.fn();
-    params = {
-      key: 'a',
-      value: './file.json',
-      location: {
-        type: 'github',
-        target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
-      },
-      read,
-    };
+    jest.resetAllMocks();
   });
 
   it('parses valid json', async () => {
-    read.mockImplementation(async location => ({
-      type: 'data',
-      location,
-      data: Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
-    }));
-
+    read.mockResolvedValue(
+      Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
+    );
     await expect(jsonPlaceholderResolver(params)).resolves.toEqual({
       a: ['b', 7],
     });
   });
 
   it('rejects invalid json', async () => {
-    read.mockImplementation(async location => ({
-      type: 'data',
-      location,
-      data: Buffer.from('}', 'utf-8'),
-    }));
-
+    read.mockResolvedValue(Buffer.from('}', 'utf-8'));
     await expect(jsonPlaceholderResolver(params)).rejects.toThrow(
       'Placeholder $a failed to parse JSON data at ./file.json, SyntaxError: Unexpected token } in JSON at position 0',
     );
