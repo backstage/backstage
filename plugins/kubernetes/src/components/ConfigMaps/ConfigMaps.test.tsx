@@ -30,7 +30,7 @@ describe('ConfigMaps', () => {
 
     // title
     expect(getByText('dice-roller')).toBeInTheDocument();
-    expect(getByText('ConfigMap')).toBeInTheDocument();
+    expect(getByText('Config Map')).toBeInTheDocument();
 
     // values
     expect(getByText('Immutable')).toBeInTheDocument();

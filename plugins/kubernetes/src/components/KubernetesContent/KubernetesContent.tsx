@@ -34,13 +34,22 @@ import {
 } from '@backstage/plugin-kubernetes-backend';
 import { DeploymentTables } from '../DeploymentTables';
 import { DeploymentTriple } from '../../types/types';
-import { V1ConfigMap, V1Service } from '@kubernetes/client-node';
+import {
+  ExtensionsV1beta1Ingress,
+  V1ConfigMap,
+  V1HorizontalPodAutoscaler,
+  V1Service,
+} from '@kubernetes/client-node';
 import { Services } from '../Services';
 import { ConfigMaps } from '../ConfigMaps';
+import { Ingresses } from '../Ingresses';
+import { HorizontalPodAutoscalers } from '../HorizontalPodAutoscalers';
 
 interface GroupedResponses extends DeploymentTriple {
   services: V1Service[];
   configMaps: V1ConfigMap[];
+  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+  ingresses: ExtensionsV1beta1Ingress[];
 }
 
 const groupResponses = (fetchResponse: FetchResponse[]) => {
@@ -62,6 +71,12 @@ const groupResponses = (fetchResponse: FetchResponse[]) => {
         case 'configmaps':
           prev.configMaps.push(...next.resources);
           break;
+        case 'horizontalpodautoscalers':
+          prev.horizontalPodAutoscalers.push(...next.resources);
+          break;
+        case 'ingresses':
+          prev.ingresses.push(...next.resources);
+          break;
         default:
       }
       return prev;
@@ -72,6 +87,8 @@ const groupResponses = (fetchResponse: FetchResponse[]) => {
       deployments: [],
       services: [],
       configMaps: [],
+      horizontalPodAutoscalers: [],
+      ingresses: [],
     } as GroupedResponses,
   );
 };
@@ -130,6 +147,8 @@ const Cluster = ({ clusterObjects }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
 
   const configMaps = groupedResponses.configMaps;
+  const hpas = groupedResponses.horizontalPodAutoscalers;
+  const ingresses = groupedResponses.ingresses;
 
   return (
     <>
@@ -151,8 +170,18 @@ const Cluster = ({ clusterObjects }: ClusterProps) => {
           <Services services={groupedResponses.services} />
         </CardTab>
         {configMaps && (
-          <CardTab value="three" label="ConfigMaps">
+          <CardTab value="three" label="Config Maps">
             <ConfigMaps configMaps={configMaps} />
+          </CardTab>
+        )}
+        {hpas && (
+          <CardTab value="four" label="Horizontal Pod Autoscalers">
+            <HorizontalPodAutoscalers hpas={hpas} />
+          </CardTab>
+        )}
+        {ingresses && (
+          <CardTab value="five" label="Ingresses">
+            <Ingresses ingresses={ingresses} />
           </CardTab>
         )}
       </TabbedCard>
