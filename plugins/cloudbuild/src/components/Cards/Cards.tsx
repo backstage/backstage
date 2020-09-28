@@ -18,18 +18,13 @@ import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRun, WorkflowRunsTable } from '../WorkflowRunsTable';
 import { Entity } from '@backstage/catalog-model';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
-import {
-  Link,
-  Theme,
-  makeStyles,
-  LinearProgress,
-  Typography,
-} from '@material-ui/core';
+import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
 import {
   InfoCard,
   StructuredMetadataTable,
   errorApiRef,
   useApi,
+  WarningPanel,
 } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { CLOUDBUILD_ANNOTATION } from '../useProjectName';
@@ -53,7 +48,8 @@ const WidgetContent = ({
   branch: string;
 }) => {
   const classes = useStyles();
-  if (error) return <Typography>Couldn't fetch latest {branch} run</Typography>;
+  if (error)
+    return <WarningPanel>Couldn't fetch latest {branch} run</WarningPanel>;
   if (loading) return <LinearProgress />;
   return (
     <StructuredMetadataTable
