@@ -76,7 +76,7 @@ data:
   username: YWRtaW4=
 ---
 apiVersion: v1
-kind: Services
+kind: Service
 metadata:
   name: dice-roller
   labels:
@@ -97,7 +97,7 @@ spec:
 ---
 
 apiVersion: v1
-kind: Services
+kind: Service
 metadata:
   name: dice-roller-lb
   labels:
