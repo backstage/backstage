@@ -39,7 +39,7 @@ export const UserSettingsMenu = () => {
 
   return (
     <>
-      <IconButton onClick={handleOpen}>
+      <IconButton aria-label="more" onClick={handleOpen}>
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>

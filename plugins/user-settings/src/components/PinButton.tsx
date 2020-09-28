@@ -26,7 +26,7 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { ToggleButton } from '@material-ui/lab';
 import { SidebarPinStateContext } from '@backstage/core';
 
-export const SidebarPinButton = () => {
+export const PinButton = () => {
   const { isPinned, toggleSidebarPinState } = useContext(
     SidebarPinStateContext,
   );

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { List } from '@material-ui/core';
-import { ThemeToggle } from './ThemeToggle';
-import { PinButton } from './PinButton';
 
-export const AppSettingsList = () => (
-  <List dense>
-    <ThemeToggle />
-    <PinButton />
-  </List>
-);
+import * as React from 'react';
+import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { UserSettings } from './UserSettings';
+
+describe('<UserSettings />', () => {
+  it('renders', async () => {
+    const rendered = await renderWithEffects(wrapInTestApp(<UserSettings />));
+    expect(rendered.getByText('G')).toBeInTheDocument();
+  });
+});

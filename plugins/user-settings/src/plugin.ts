@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 import { createPlugin } from '@backstage/core';
-// import ExampleComponent from './components/ExampleComponent';
-
-// export const rootRouteRef = createRouteRef({
-//   path: '/user-settings',
-//   title: 'user-settings',
-// });
 
 export const plugin = createPlugin({
   id: 'user-settings',
-  // apis: [createApiFactory(GCPApiRef, new GCPClient())],
-  // register({ router }) {
-  //   router.addRoute(rootRouteRef, ExampleComponent);
-  // },
 });

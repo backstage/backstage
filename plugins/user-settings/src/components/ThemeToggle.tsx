@@ -27,7 +27,7 @@ import {
   Tooltip,
 } from '@material-ui/core';
 
-export const SidebarThemeToggle = () => {
+export const ThemeToggle = () => {
   const appThemeApi = useApi(appThemeApiRef);
   const themeId = useObservable(
     appThemeApi.activeThemeId$(),
@@ -89,7 +89,8 @@ export const SidebarThemeToggle = () => {
         >
           {themeIds.map(theme => (
             <TooltipToggleButton
-              title={`Select ${theme.variant} theme`}
+              key={theme.id}
+              title={`Select ${theme.title}`}
               value={theme.variant}
             >
               <ThemeIcon theme={theme} />
