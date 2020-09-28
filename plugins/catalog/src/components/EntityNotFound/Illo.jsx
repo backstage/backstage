@@ -21,7 +21,7 @@ import IlloSvgUrl from './illo.svg';
 const useStyles = makeStyles({
   illo: {
     maxWidth: '60%',
-    top: 200,
+    top: 100,
     right: 20,
     position: 'absolute',
   },
