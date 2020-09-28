@@ -95,7 +95,6 @@ spec:
       name: port2
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
