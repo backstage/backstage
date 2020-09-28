@@ -33,7 +33,6 @@ export type CloudbuildApi = {
     projectId,
     id,
   }: {
-    token: string;
     projectId: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
