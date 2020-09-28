@@ -22,7 +22,7 @@ or
 We currently do not use any pattern for how to structure exports. There is a mix
 of package-level re-exports deep into the directory tree, shallow re-exports for
 each directory, exports using `*` and explicit lists of each symbol, etc. The
-mix and lack of predictability makes it difficult to reason about the boundaries
+mix and lack of predictability make it difficult to reason about the boundaries
 of a module, and for example knowing whether it is safe to export a symbol in a
 given file.
 

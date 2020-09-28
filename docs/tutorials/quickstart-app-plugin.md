@@ -312,6 +312,6 @@ return (
 > Break apart ExampleFetchComponent into smaller logical parts contained in
 > their own files. Rename your components to something other than ExampleXxx.
 >
-> You might be real proud of a plugin you develop. Follow this next tutorial for
-> an in-depth look at publishing and including that for the entire Backstage
+> You might be really proud of a plugin you develop. Follow this next tutorial
+> for an in-depth look at publishing and including that for the entire Backstage
 > community. [TODO](#).

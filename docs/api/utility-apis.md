@@ -248,8 +248,8 @@ directly tied to React.
 The indirection provided by Utility APIs also makes it straightforward to test
 components that depend on APIs, and to provide a standard common development
 environment for plugins. A proper test wrapper with mocked API implementations
-is not yet ready, but it will provided as a part of `@backstage/test-utils`. It
-will provide mocked variants of APIs, with additional methods for asserting a
+is not yet ready, but it will be provided as a part of `@backstage/test-utils`.
+It will provide mocked variants of APIs, with additional methods for asserting a
 component's interaction with the API.
 
 The common development environment for plugins is included in
