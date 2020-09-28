@@ -3,7 +3,8 @@ name: Check Markdown files quality
 on:
   pull_request:
     branches: [master]
-    paths: '**.md'
+    paths: 
+      - '**.md'
 
 jobs:
   check-all-files:
