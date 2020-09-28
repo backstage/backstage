@@ -19,6 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # vale does not support pattern to ignore folders
+      # therefore it is necessary to use it before node_modules are installed
+      - name: documentation quality check
+        uses: errata-ai/vale-action@v1.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
