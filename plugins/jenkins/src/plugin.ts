@@ -18,13 +18,17 @@ import {
   createPlugin,
   createRouteRef,
   createApiFactory,
-  configApiRef,
+  discoveryApiRef,
 } from '@backstage/core';
-import { DetailedViewPage } from './pages/BuildWithStepsPage';
 import { jenkinsApiRef, JenkinsApi } from './api';
 
+export const rootRouteRef = createRouteRef({
+  path: '',
+  title: 'Jenkins',
+});
+
 export const buildRouteRef = createRouteRef({
-  path: '/jenkins/job',
+  path: 'run/:branch/:buildNumber',
   title: 'Jenkins run',
 });
 
@@ -33,17 +37,8 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: jenkinsApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
-        new JenkinsApi(
-          `${configApi.getString('backend.baseUrl')}/proxy/jenkins/api`,
-        ),
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) => new JenkinsApi({ discoveryApi }),
     }),
   ],
-  register({ router }) {
-    router.addRoute(buildRouteRef, DetailedViewPage);
-  },
 });
-
-export { JenkinsBuildsWidget } from './components/JenkinsPluginWidget/JenkinsBuildsWidget';
-export { JenkinsLastBuildWidget } from './components/JenkinsPluginWidget/JenkinsLastBuildWidget';

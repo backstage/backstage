@@ -18,11 +18,11 @@ yarn start
 
 ## What techdocs-backend does
 
-This plugin is the backend part of the techdocs plugin. It provides building and serving of your docs without having to use another service and hosting provider. To use it set your techdocs storageUrl in your `app-config.yml` to `http://localhost:7000/techdocs/static/docs`.
+This plugin is the backend part of the techdocs plugin. It provides building and serving of your docs without having to use another service and hosting provider. To use it set your techdocs storageUrl in your `app-config.yml` to `http://localhost:7000/api/techdocs/static/docs`.
 
 ```yaml
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
 ```
 
 ## Extending techdocs-backend

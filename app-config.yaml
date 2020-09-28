@@ -9,6 +9,8 @@ backend:
   database:
     client: sqlite3
     connection: ':memory:'
+  csp:
+    connect-src: ["'self'", 'https:']
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
@@ -33,8 +35,10 @@ organization:
   name: Spotify
 
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
-  requestUrl: http://localhost:7000/techdocs/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  requestUrl: http://localhost:7000/api/techdocs/docs
+  generators:
+    techdocs: 'docker'
 
 sentry:
   organization: spotify
@@ -53,14 +57,32 @@ newrelic:
 lighthouse:
   baseUrl: http://localhost:3003
 
+kubernetes:
+  clusterLocatorMethod: 'configMultiTenant'
+  clusters: []
+
 catalog:
   rules:
     - allow: [Component, API, Group, Template, Location]
   processors:
-    githubApi:
-      privateToken:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
+    github:
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using the API:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+        # - target: https://ghe.example.net
+        #   rawBaseUrl: https://ghe.example.net/raw
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
     bitbucketApi:
       username:
         $secret:
@@ -97,6 +119,19 @@ catalog:
     # Backstage example templates
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+
+scaffolder:
+  github:
+    token:
+      $secret:
+        env: GITHUB_ACCESS_TOKEN
+    visibility: public # or 'internal' or 'private'
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token:
+        $secret:
+          env: GITLAB_ACCESS_TOKEN
 
 auth:
   providers:

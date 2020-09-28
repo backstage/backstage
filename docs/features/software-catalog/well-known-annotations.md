@@ -2,6 +2,9 @@
 id: well-known-annotations
 title: Well-known Annotations on Catalog Entities
 sidebar_label: Well-known Annotations
+description: Documentation on lists a number of well known Annotations, that
+have defined semantics. They can be attached to catalog entities and consumed
+by plugins as needed
 ---
 
 This section lists a number of well known
@@ -38,6 +41,27 @@ expecting a two-item array out of it. The format of the target part is
 type-dependent and could conceivably even be an empty string, but the separator
 colon is always present.
 
+### backstage.io/definition-at-location
+
+```yaml
+# Example
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: petstore
+  annotations:
+    backstage.io/definition-at-location: 'url:https://petstore.swagger.io/v2/swagger.json'
+spec:
+  type: openapi
+```
+
+This annotation allows to fetch an API definition from another location, instead
+of wrapping the API definition inside the definition field. This allows to
+easitly consume existing API definition. The definition is fetched during
+ingestion by a processor and included in the entity. It is updated on every
+refresh. The annotation contains a location reference string that contains the
+location processor type and the target.
+
 ### backstage.io/techdocs-ref
 
 ```yaml
@@ -51,13 +75,13 @@ The value of this annotation is a location reference string (see above). If this
 annotation is specified, it is expected to point to a repository that the
 TechDocs system can read and generate docs from.
 
-### backstage.io/jenkins-github-folder
+### jenkins.io/github-folder
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    backstage.io/jenkins-github-folder: folder-name/job-name
+    jenkins.io/github-folder: folder-name/job-name
 ```
 
 The value of this annotation is the path to a job on Jenkins, that builds this

@@ -22,11 +22,11 @@ spec:
       component_id:
         title: Name
         type: string
-        description: Unique name of the component
+        description: Unique name of the component. Lowercase, URL-safe characters only.
       description:
         title: Description
         type: string
-        description: Description of the component
+        description: Help others understand what this website is for.
       use_typescript:
         title:  Use Typescript
         type: boolean

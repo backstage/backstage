@@ -83,14 +83,14 @@ export const useSignInProviders = (
   const apiHolder = useApiHolder();
   const [loading, setLoading] = useState(true);
 
-  // This decorates the result with logout logic from this hook
+  // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(
     (result: SignInResult) => {
       onResult({
         ...result,
-        logout: async () => {
+        signOut: async () => {
           localStorage.removeItem(PROVIDER_STORAGE_KEY);
-          await result.logout?.();
+          await result.signOut?.();
         },
       });
     },

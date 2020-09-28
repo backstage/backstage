@@ -1,6 +1,7 @@
 ---
 id: integrating-plugin-into-service-catalog
 title: Integrate into the Service Catalog
+description: Documentation on How to integrate plugin into service catalog
 ---
 
 > This is an advanced use case and currently is an experimental feature. Expect

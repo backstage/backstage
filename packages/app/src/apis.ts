@@ -16,11 +16,8 @@
 
 import {
   errorApiRef,
-  discoveryApiRef,
-  UrlPatternDiscovery,
   githubAuthApiRef,
   createApiFactory,
-  configApiRef,
 } from '@backstage/core';
 
 import {
@@ -38,15 +35,6 @@ import {
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 
 export const apis = [
-  // TODO(Rugvip): migrate to use /api
-  createApiFactory({
-    api: discoveryApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      UrlPatternDiscovery.compile(
-        `${configApi.getString('backend.baseUrl')}/{{ pluginId }}`,
-      ),
-  }),
   createApiFactory({
     api: graphQlBrowseApiRef,
     deps: { errorApi: errorApiRef, githubAuthApi: githubAuthApiRef },

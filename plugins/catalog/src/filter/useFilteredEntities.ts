@@ -31,6 +31,7 @@ export function useFilteredEntities() {
     error: context.error,
     matchingEntities: context.matchingEntities,
     availableTags: context.availableTags,
+    isCatalogEmpty: context.isCatalogEmpty,
     reload: context.reload,
   };
 }

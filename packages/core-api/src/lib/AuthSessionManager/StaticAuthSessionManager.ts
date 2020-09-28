@@ -23,7 +23,7 @@ type Options<T> = {
   /** The connector used for acting on the auth session */
   connector: AuthConnector<T>;
   /** Used to get the scope of the session */
-  sessionScopes: (session: T) => Set<string>;
+  sessionScopes?: (session: T) => Set<string>;
   /** The default scopes that should always be present in a session, defaults to none. */
   defaultScopes?: Set<string>;
 };

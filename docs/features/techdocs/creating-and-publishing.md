@@ -2,6 +2,7 @@
 id: creating-and-publishing
 title: Creating and publishing your docs
 sidebar_label: Creating and Publishing Documentation
+description: Guidance on how to create and publish documentation
 ---
 
 This section will guide you through:
@@ -29,11 +30,6 @@ the documentation template.
 
 Create an entity from the documentation template and you will get the needed
 setup for free.
-
-!!! warning Currently the Backstage Software Templates are limited to create
-repositories inside GitHub organizations. You also need to generate an personal
-access token and use as an environment variable. Read more about this
-[here](../software-templates/installation.md#runtime-dependencies).
 
 ### Manually add documentation setup to already existing repository
 

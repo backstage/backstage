@@ -1,6 +1,7 @@
 ---
 id: index
 title: User Authentication and Authorization in Backstage
+description: Documentation on User Authentication and Authorization in Backstage
 ---
 
 ## Summary
@@ -33,6 +34,13 @@ full list of providers, see the
 [Utility API References](../reference/utility-apis/README.md).
 
 ### Identity - WIP
+
+> NOTE: Identity management and the `SignInPage` in Backstage is NOT a method
+> for blocking access for unauthorized users, that either requires additional
+> backend implementation or a separate service like Google's Identity-Aware
+> Proxy. The identity system only serves to provide a personalized experience
+> and access to a Backstage Identity Token, which can be passed to backend
+> plugins.
 
 Identity management is still work in progress, but there are already a couple of
 pieces in place that can be used.

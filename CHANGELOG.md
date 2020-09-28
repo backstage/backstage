@@ -6,12 +6,42 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 ## Next Release
 
+> Collect changes for the next release below
+
+### Backend (example-backend, or backends created with @backstage/create-app)
+
+- The default mount point for backend plugins have been changed to `/api`. These changes are done in the backend package itself, so it is recommended that you sync up existing backend packages with this new pattern. [#2562](https://github.com/spotify/backstage/pull/2562)
+- A service discovery mechanism for backend plugins has been added, and is now a requirement for several backend plugins. See [packages/backend/src/index.ts](./packages/backend/src/index.ts) for how to set it up using `SingleHostDiscovery` from `@backstage/backend-common`. Note that the default base path for plugins is set to `/api` to that change, but it can be set to use the old behavior via the `basePath` option. [#2600](https://github.com/spotify/backstage/pull/2600)
+
+### @backstage/auth-backend
+
+- The default mount path of backend plugins was changed to `/api/:pluginId`, and as part of that it was needed to enable configuration of the base path of the auth backend, so that it can construct redirect URLs correctly. Note that you will also need to reconfigure any allowed redirect URLs to include `/api` if you switch to the new recommended pattern. [#2562](https://github.com/spotify/backstage/pull/2562)
+- The auth backend now requires an implementation of `PluginEndpointDiscovery` from `@backstage/backend-common` to be passed in as `discovery`. See the changes to `@backstage/backend`.
+
+### @backstage/proxy-backend
+
+- The proxy backend now requires an implementation of `PluginEndpointDiscovery` from `@backstage/backend-common` to be passed in as `discovery`. See the changes to `@backstage/backend`.
+
+### @backstage/techdocs-backend
+
+- The TechDocs backend now requires an implementation of `PluginEndpointDiscovery` from `@backstage/backend-common` to be passed in as `discovery`. See the changes to `@backstage/backend`.
+
+### @backstage/plugin-identity-backend
+
+- This plugin was removed, remove it from your backend if it's there. [#2616](https://github.com/spotify/backstage/pull/2616)
+
+## v0.1.1-alpha.23
+
+### @backstage/core
+
+- Renamed `SessionStateApi` to `SessionApi` and `logout` to `signOut`. Custom implementations of the `SingInPage` app-component will need to rename their `logout` function. The different auth provider items for the `UserSettingsMenu` have been consolidated into a single `ProviderSettingsItem`, meaning you need to replace existing usages of `OAuthProviderSettings` and `OIDCProviderSettings`. [#2555](https://github.com/spotify/backstage/pull/2555).
+
+## v0.1.1-alpha.22
+
 ### @backstage/core
 
 - Introduced initial version of an inverted app/plugin relationship, where plugins export components for apps to use, instead registering themselves directly into the app. This enables more fine-grained control of plugin features, and also composition of plugins such as catalog pages with additional cards and tabs. This breaks the use of `RouteRef`s, and there will be more changes related to this in the future, but this change lays the initial foundation. See `packages/app` and followup PRs for how to update plugins for this change. [#2076](https://github.com/spotify/backstage/pull/2076)
 - Switch to an automatic dependency injection mechanism for all Utility APIs, allowing plugins to ship default implementations of their APIs. See [https://backstage.io/docs/api/utility-apis](https://backstage.io/docs/api/utility-apis). [#2285](https://github.com/spotify/backstage/pull/2285)
-
-> Collect changes for the next release below
 
 ### @backstage/cli
 
@@ -20,6 +50,10 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 ### @backstage/create-app
 
 - Change root `tsc` output dir to `dist-types`, in order to allow for standalone plugin repos. [#2278](https://github.com/spotify/backstage/pull/2278)
+
+### @backstage/catalog-backend
+
+- We have simplified the way that GitHub ingestion works. The `catalog.processors.githubApi` key is deprecated, in favor of `catalog.processors.github`. At the same time, the location type `github/api` is likewise deprecated, in favor of `github`. This location type now serves both raw HTTP reads and APIv3 reads, depending on how you configure it. It also supports having several providers at once - for example, both public GitHub and an internal GitHub Enterprise, with different keys. If you still use the `catalog.processors.githubApi` config key, things will work but you will get a deprecation warning at startup. In a later release, support for the old key will go away entirely. See the [configuration section in the docs](https://backstage.io/docs/features/software-catalog/configuration) for more details.
 
 ## v0.1.1-alpha.21
 

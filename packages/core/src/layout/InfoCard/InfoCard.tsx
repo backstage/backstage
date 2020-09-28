@@ -37,6 +37,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   header: {
+    display: 'inline-block',
     padding: theme.spacing(2, 2, 2, 2.5),
   },
   headerTitle: {
@@ -202,7 +203,7 @@ export const InfoCard = ({
               }}
               title={title}
               subheader={subheader}
-              style={{ display: 'inline-block', ...headerStyle }}
+              style={{ ...headerStyle }}
               {...headerProps}
             />
             <Divider />

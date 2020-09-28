@@ -1,6 +1,8 @@
 ---
 id: vision
 title: Vision
+description: Goal is to provide engineers with the best developer experience in
+the world
 ---
 
 Our goal is to provide engineers with the best developer experience in the
