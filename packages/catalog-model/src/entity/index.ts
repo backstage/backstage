@@ -24,7 +24,7 @@ export {
   getEntityName,
   parseEntityName,
   parseEntityRef,
-  serializeEntityRef,
+  serializeEntityName,
 } from './ref';
 export {
   entityHasChanges,

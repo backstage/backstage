@@ -121,7 +121,7 @@ export function parseEntityRef(
   }
 
   if (typeof ref === 'string') {
-    const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref.trim());
+    const match = /^(.+:)?(.+\/)?(.+)$/.exec(ref.trim());
     if (!match) {
       throw new Error(
         `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`,
@@ -160,22 +160,27 @@ export function parseEntityRef(
  * @param ref The reference to serialize
  * @returns The same reference on either string or compound form
  */
-export function serializeEntityRef(ref: {
-  kind?: string;
-  namespace?: string;
-  name: string;
-}): EntityRef {
-  const { kind, namespace, name } = ref;
-  if (
-    kind?.includes(':') ||
-    kind?.includes('/') ||
-    namespace?.includes(':') ||
-    namespace?.includes('/') ||
-    name.includes(':') ||
-    name.includes('/')
-  ) {
-    return { kind, namespace, name };
+export function serializeEntityName(ref: EntityName | Entity): string {
+  let kind: string;
+  let namespace: string;
+  let name: string;
+
+  if ('metadata' in ref) {
+    kind = ref.kind;
+    name = ref.metadata.name;
+    namespace = ref.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
+  } else {
+    ({ kind, namespace, name } = ref);
   }
 
-  return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
+  if (kind.includes(':') || kind.includes('/')) {
+    throw new Error(`Entity kind "${kind}" may not contain '/' or ':'`);
+  }
+  if (namespace.includes(':') || namespace.includes('/')) {
+    throw new Error(
+      `Entity namespace "${namespace}" may not contain '/' or ':'`,
+    );
+  }
+
+  return `${kind}:${namespace}/${name}`;
 }
