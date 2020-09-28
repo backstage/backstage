@@ -50,6 +50,7 @@ export type LocationProcessor = {
    *
    * @param entity The entity to process
    * @param location The location that the entity came from
+   * @param read Reads the contents of a location
    * @param emit A sink for auxiliary items resulting from the processing
    * @returns The same entity or a modifid version of it
    */
@@ -57,6 +58,7 @@ export type LocationProcessor = {
     entity: Entity,
     location: LocationSpec,
     emit: LocationProcessorEmit,
+    read: LocationProcessorRead,
   ): Promise<Entity>;
 
   /**
@@ -107,3 +109,7 @@ export type LocationProcessorResult =
   | LocationProcessorDataResult
   | LocationProcessorEntityResult
   | LocationProcessorErrorResult;
+
+export type LocationProcessorRead = (
+  location: LocationSpec,
+) => Promise<LocationProcessorResult>;

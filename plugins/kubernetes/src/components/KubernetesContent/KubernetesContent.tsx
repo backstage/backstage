@@ -14,26 +14,78 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect, useState } from 'react';
-import { Typography, Grid } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Grid } from '@material-ui/core';
 import {
-  InfoCard,
+  CardTab,
+  Content,
   Page,
   pageTheme,
-  Content,
-  ContentHeader,
+  Progress,
+  TabbedCard,
   useApi,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
+import {
+  ClusterObjects,
+  FetchResponse,
+  ObjectsByServiceIdResponse,
+} from '@backstage/plugin-kubernetes-backend';
+import { DeploymentTables } from '../DeploymentTables';
+import { DeploymentTriple } from '../../types/types';
+import { V1ConfigMap, V1Service } from '@kubernetes/client-node';
+import { Services } from '../Services';
+import { ConfigMaps } from '../ConfigMaps';
 
-// TODO this is a temporary component used to construct the Kubernetes plugin boilerplate
+interface GroupedResponses extends DeploymentTriple {
+  services: V1Service[];
+  configMaps: V1ConfigMap[];
+}
 
-export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
-  const kubernetesApi = useApi(kubernetesApiRef);
-  const [kubernetesObjects, setKubernetesObjects] = useState<{} | undefined>(
-    undefined,
+const groupResponses = (fetchResponse: FetchResponse[]) => {
+  return fetchResponse.reduce(
+    (prev, next) => {
+      switch (next.type) {
+        case 'deployments':
+          prev.deployments.push(...next.resources);
+          break;
+        case 'pods':
+          prev.pods.push(...next.resources);
+          break;
+        case 'replicasets':
+          prev.replicaSets.push(...next.resources);
+          break;
+        case 'services':
+          prev.services.push(...next.resources);
+          break;
+        case 'configmaps':
+          prev.configMaps.push(...next.resources);
+          break;
+        default:
+      }
+      return prev;
+    },
+    {
+      pods: [],
+      replicaSets: [],
+      deployments: [],
+      services: [],
+      configMaps: [],
+    } as GroupedResponses,
   );
+};
+
+// TODO proper error handling
+
+type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
+
+export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
+  const kubernetesApi = useApi(kubernetesApiRef);
+
+  const [kubernetesObjects, setKubernetesObjects] = useState<
+    ObjectsByServiceIdResponse | undefined
+  >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -50,23 +102,60 @@ export const KubernetesContent: FC<{ entity: Entity }> = ({ entity }) => {
   return (
     <Page theme={pageTheme.tool}>
       <Content>
-        <ContentHeader title="This is where you would see your kubernetes objects" />
         <Grid container spacing={3} direction="column">
-          <Grid item>
-            <InfoCard title="This is where you would see your kubernetes objects">
-              <Typography variant="body1">
-                {kubernetesObjects === undefined && <div>loading....</div>}
-                {error !== undefined && <div>{error}</div>}
-                {kubernetesObjects !== undefined && (
-                  <div>
-                    backend response: {JSON.stringify(kubernetesObjects)}
-                  </div>
-                )}
-              </Typography>
-            </InfoCard>
-          </Grid>
+          {kubernetesObjects === undefined && <Progress />}
+          {error !== undefined && <div>{error}</div>}
+          {kubernetesObjects?.items.map((item, i) => (
+            <Grid item key={i}>
+              <Cluster clusterObjects={item} />
+            </Grid>
+          ))}
         </Grid>
       </Content>
     </Page>
+  );
+};
+
+type ClusterProps = {
+  clusterObjects: ClusterObjects;
+  children?: React.ReactNode;
+};
+
+const Cluster = ({ clusterObjects }: ClusterProps) => {
+  const [selectedTab, setSelectedTab] = useState<string | number>('one');
+
+  const handleChange = (_ev: any, newSelectedTab: string | number) =>
+    setSelectedTab(newSelectedTab);
+
+  const groupedResponses = groupResponses(clusterObjects.resources);
+
+  const configMaps = groupedResponses.configMaps;
+
+  return (
+    <>
+      <TabbedCard
+        value={selectedTab}
+        onChange={handleChange}
+        title={clusterObjects.cluster.name}
+      >
+        <CardTab value="one" label="Deployments">
+          <DeploymentTables
+            deploymentTriple={{
+              deployments: groupedResponses.deployments,
+              replicaSets: groupedResponses.replicaSets,
+              pods: groupedResponses.pods,
+            }}
+          />
+        </CardTab>
+        <CardTab value="two" label="Services">
+          <Services services={groupedResponses.services} />
+        </CardTab>
+        {configMaps && (
+          <CardTab value="three" label="ConfigMaps">
+            <ConfigMaps configMaps={configMaps} />
+          </CardTab>
+        )}
+      </TabbedCard>
+    </>
   );
 };

@@ -23,6 +23,7 @@ import {
   createServiceBuilder,
   useHotMemoize,
   loadBackendConfig,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 
 export interface ServerOptions {
@@ -34,6 +35,7 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'auth-backend' });
   const config = ConfigReader.fromConfigs(await loadBackendConfig());
+  const discovery = SingleHostDiscovery.fromConfig(config);
 
   const database = useHotMemoize(module, () => {
     const knex = Knex({
@@ -52,6 +54,7 @@ export async function startStandaloneServer(
     logger,
     config,
     database,
+    discovery,
   });
 
   const service = createServiceBuilder(module)

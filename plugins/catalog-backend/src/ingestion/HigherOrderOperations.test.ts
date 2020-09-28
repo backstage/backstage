@@ -15,7 +15,12 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
+import {
+  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
+  Location,
+  LocationSpec,
+} from '@backstage/catalog-model';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { LocationUpdateStatus } from '../catalog/types';
 import { DatabaseLocationUpdateLogStatus } from '../database/types';
@@ -200,12 +205,11 @@ describe('HigherOrderOperations', () => {
         target: 'thing',
       });
       expect(entitiesCatalog.entityByName).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entityByName).toHaveBeenNthCalledWith(
-        1,
-        'Component',
-        undefined,
-        'c1',
-      );
+      expect(entitiesCatalog.entityByName).toHaveBeenNthCalledWith(1, {
+        kind: 'Component',
+        namespace: ENTITY_DEFAULT_NAMESPACE,
+        name: 'c1',
+      });
       expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenNthCalledWith(
         1,

@@ -47,6 +47,7 @@ import {
 import { YamlProcessor } from './processors/YamlProcessor';
 import { LocationReader, ReadLocationResult } from './types';
 import { CatalogRulesEnforcer } from './CatalogRules';
+import { ApiDefinitionAtLocationProcessor } from './processors/ApiDefinitionAtLocationProcessor';
 
 // The max amount of nesting depth of generated work items
 const MAX_DEPTH = 10;
@@ -85,6 +86,7 @@ export class LocationReaders implements LocationReader {
       new AzureApiReaderProcessor(config),
       new UrlReaderProcessor(),
       new YamlProcessor(),
+      new ApiDefinitionAtLocationProcessor(),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
@@ -218,7 +220,12 @@ export class LocationReaders implements LocationReader {
     for (const processor of this.processors) {
       if (processor.processEntity) {
         try {
-          current = await processor.processEntity(current, item.location, emit);
+          current = await processor.processEntity(
+            current,
+            item.location,
+            emit,
+            this.readLocation.bind(this),
+          );
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while processing entity at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
@@ -247,5 +254,26 @@ export class LocationReaders implements LocationReader {
         }
       }
     }
+  }
+
+  private async readLocation(
+    location: LocationSpec,
+  ): Promise<LocationProcessorResult> {
+    let locationResult: LocationProcessorResult | undefined;
+
+    await this.handleLocation(
+      {
+        type: 'location',
+        location,
+        optional: false,
+      },
+      r => (locationResult = r),
+    );
+
+    if (!locationResult) {
+      throw new Error('No location loaded');
+    }
+
+    return locationResult;
   }
 }

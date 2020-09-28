@@ -54,7 +54,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
       // TODO: This flow doesn't issue an identity token that can be used to validate
       //       the identity of the user in other backends, which we need in some form.
       done(undefined, {
-        userId: profile.ID!,
+        userId: profile.nameID!,
         profile: {
           email: profile.email!,
           displayName: profile.displayName as string,

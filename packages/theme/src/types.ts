@@ -64,6 +64,8 @@ type PaletteAdditions = {
   banner: {
     info: string;
     error: string;
+    text: string;
+    link: string;
   };
 };
 

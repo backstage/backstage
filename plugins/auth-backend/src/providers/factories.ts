@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../identity';
 import { createGithubProvider } from './github';
 import { createGitlabProvider } from './gitlab';
 import { createGoogleProvider } from './google';
@@ -25,8 +22,7 @@ import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
 import { createAuth0Provider } from './auth0';
 import { createMicrosoftProvider } from './microsoft';
-import { AuthProviderConfig, AuthProviderFactory } from './types';
-import { Config } from '@backstage/config';
+import { AuthProviderFactory, AuthProviderFactoryOptions } from './types';
 
 const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
@@ -39,31 +35,14 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   oauth2: createOAuth2Provider,
 };
 
-export const createAuthProviderRouter = (
+export function createAuthProvider(
   providerId: string,
-  globalConfig: AuthProviderConfig,
-  config: Config,
-  logger: Logger,
-  tokenIssuer: TokenIssuer,
-) => {
+  options: AuthProviderFactoryOptions,
+) {
   const factory = factories[providerId];
   if (!factory) {
     throw Error(`No auth provider available for '${providerId}'`);
   }
 
-  const router = Router();
-
-  const handler = factory({ globalConfig, config, logger, tokenIssuer });
-
-  router.get('/start', handler.start.bind(handler));
-  router.get('/handler/frame', handler.frameHandler.bind(handler));
-  router.post('/handler/frame', handler.frameHandler.bind(handler));
-  if (handler.logout) {
-    router.post('/logout', handler.logout.bind(handler));
-  }
-  if (handler.refresh) {
-    router.get('/refresh', handler.refresh.bind(handler));
-  }
-
-  return router;
-};
+  return factory(options);
+}

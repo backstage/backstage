@@ -147,4 +147,4 @@ const templaters = new Templaters();
 templaters.register('handlebars', new HandlebarsTemplater());
 ```
 
-And then pass this in to the `createRouter` function.
+And then pass this into the `createRouter` function.

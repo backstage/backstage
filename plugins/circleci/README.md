@@ -55,9 +55,6 @@ import { Router as CircleCIRouter } from '@backstage/plugin-circleci';
 proxy:
   '/circleci/api':
     target: https://circleci.com/api/v1.1
-    changeOrigin: true
-    pathRewrite:
-      '^/proxy/circleci/api/': '/'
     headers:
       Circle-Token:
         $secret:

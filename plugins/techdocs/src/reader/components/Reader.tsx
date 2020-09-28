@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useApi, Progress } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
@@ -23,6 +23,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ParsedEntityId } from '../../types';
 import { useTheme } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
+import TechDocsProgressBar from './TechDocsProgressBar';
 
 import transformer, {
   addBaseUrl,
@@ -150,7 +151,7 @@ export const Reader = ({ entityId }: Props) => {
 
   return (
     <>
-      {loading ? <Progress /> : null}
+      {loading ? <TechDocsProgressBar /> : null}
       <div ref={shadowDomRef} />
     </>
   );

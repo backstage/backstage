@@ -9,6 +9,8 @@ backend:
   baseUrl: http://localhost:7000
   listen:
     port: 7000
+  csp:
+    connect-src: ["'self'", 'https:']
   {{#if dbTypeSqlite}}
   database:
     client: sqlite3
@@ -44,8 +46,8 @@ proxy:
     changeOrigin: true
 
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
-  requestUrl: http://localhost:7000/techdocs/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  requestUrl: http://localhost:7000/api/techdocs/docs
   generators:
     techdocs: 'docker'
 
