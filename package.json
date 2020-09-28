@@ -16,7 +16,7 @@
     "test": "lerna run test --since origin/master -- --coverage",
     "test:all": "lerna run test -- --coverage",
     "lint": "lerna run lint --since origin/master --",
-    "lint:docs": "git ls-files | grep -h \".md\" | xargs vale",
+    "lint:docs": "node ./scripts/check-docs-quality",
     "lint:all": "lerna run lint --",
     "lint:type-deps": "node scripts/check-type-dependencies.js",
     "docgen": "lerna run docgen",
@@ -47,11 +47,12 @@
     "lerna": "^3.20.2",
     "lint-staged": "^10.1.0",
     "prettier": "^2.0.5",
-    "recursive-readdir": "^2.2.2"
+    "recursive-readdir": "^2.2.2",
+    "shx": "^0.3.2"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && node ./scripts/check-docs-quality"
     }
   },
   "prettier": "@spotify/prettier-config",
@@ -62,6 +63,9 @@
     ],
     "*.{json,md}": [
       "prettier --write"
+    ],
+    "*.{md}": [
+      "yarn run lint:docs"
     ]
   },
   "jest": {
